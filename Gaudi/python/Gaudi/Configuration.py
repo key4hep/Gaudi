@@ -1,11 +1,12 @@
 # File: Gaudi/python/Gaudi/Configuration.py
 # Author: Pere Mato (pere.mato@cern.ch)
+from __future__ import absolute_import
 
 from GaudiKernel.Constants import *
 from GaudiKernel.Configurable import *
 from GaudiKernel.ConfigurableDb import loadConfigurableDb, cfgDb
 from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
-from CommonGaudiConfigurables import *
+from Gaudi.CommonGaudiConfigurables import *
 from GaudiKernel.ProcessJobOptions import importOptions, importUnits
 from GaudiKernel.ProcessJobOptions import InstallRootLoggingHandler as _InstallRootLoggingHandler
 
@@ -80,10 +81,11 @@ def configurationDict(all=False):
             conf_dict[n][p] = v
     # purge empty configurables
     keys = conf_dict.keys()
+    ret_dict = {}
     for n in keys:
-        if not conf_dict[n]:
-            del conf_dict[n]
-    return conf_dict
+        if conf_dict[n]:
+            ret_dict[n] = conf_dict[n]
+    return ret_dict
 
 
 def getConfigurable(name, defaultType=None):

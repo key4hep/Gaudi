@@ -7,6 +7,7 @@
     independent of the underlying implementation package.
     Two main class are defined: Task and WorkManager
 """
+from __future__ import print_function
 
 __all__ = ['Task', 'WorkManager']
 excluded_varnames = ['HOSTNAME', 'SSH_CLIENT', 'SSH_CONNECTION', 'DISPLAY']
@@ -183,7 +184,7 @@ class WorkManager(object):
                 self._mergeStatistics(stat)
             end = time.time()
             self._printStatistics()
-            print 'Time elapsed since server creation %f' % (end - start)
+            print('Time elapsed since server creation %f' % (end - start))
         # --- Call the Local Finalize
         task.finalize()
 
@@ -191,12 +192,14 @@ class WorkManager(object):
         njobs = 0
         for stat in self.stats.values():
             njobs += stat.njob
-        print 'Job execution statistics:'
-        print 'job count | % of all jobs | job time sum | time per job | job server'
+        print('Job execution statistics:')
+        print(
+            'job count | % of all jobs | job time sum | time per job | job server'
+        )
         for name, stat in self.stats.items():
-            print '       %d |        %6.2f |     %8.3f |    %8.3f | %s' % (
-                stat.njob, 100. * stat.njob / njobs, stat.time,
-                stat.time / stat.njob, name)
+            print('       %d |        %6.2f |     %8.3f |    %8.3f | %s' %
+                  (stat.njob, 100. * stat.njob / njobs, stat.time,
+                   stat.time / stat.njob, name))
 
     def _mergeStatistics(self, stat):
         if stat.name not in self.stats:
@@ -228,8 +231,8 @@ class SshSession(object):
                            (sys.executable, ppprefix, sys.version.split()[0]))
         self.session.read_lazy()
         self.session.read_lazy()
-        print 'started ppserver in ', hostname
+        print('started ppserver in ', hostname)
 
     def __del__(self):
         self.session.close()
-        print 'killed ppserver in ', self.host
+        print('killed ppserver in ', self.host)

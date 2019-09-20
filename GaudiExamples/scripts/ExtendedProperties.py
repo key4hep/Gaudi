@@ -8,6 +8,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
 # =============================================================================
@@ -103,7 +104,7 @@ def configure(gaudi=None):
 # =============================================================================
 if '__main__' == __name__:
 
-    print __doc__, __author__
+    print(__doc__, __author__)
 
     gaudi = gaudimodule.AppMgr()
     configure(gaudi)
@@ -120,20 +121,20 @@ if '__main__' == __name__:
     #
     props = alg.properties()
 
-    print 'All Properties of %s ' % alg.name()
+    print('All Properties of %s ' % alg.name())
     for p in props:
         v = props[p].value()
         t = type(v).__name__
-        print "Python: Name/Value:  '%s' / '%s' " % (p, v)
+        print("Python: Name/Value:  '%s' / '%s' " % (p, v))
 
     # get the properties in the form of python dictionary:
-    print 'All Properties of %s ' % alg.name()
+    print('All Properties of %s ' % alg.name())
     properties = {}
     for p in props:
         properties[p] = props[p].value()
 
     for p in properties:
-        print "Python: Name/Value:  '%s' / '%s' " % (p, properties[p])
+        print("Python: Name/Value:  '%s' / '%s' " % (p, properties[p]))
 
 # =============================================================================
 # The END

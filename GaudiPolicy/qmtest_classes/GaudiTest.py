@@ -1,3 +1,4 @@
+from __future__ import print_function
 ########################################################################
 # File:   GaudiTest.py
 # Author: Marco Clemencic CERN/PH-LBC
@@ -676,7 +677,7 @@ class ReferenceFileValidator:
     def __call__(self, stdout, result):
         causes = []
         if os.path.isfile(self.reffile):
-            orig = open(self.reffile).xreadlines()
+            orig = open(self.reffile).readlines()
             if self.preproc:
                 orig = self.preproc(orig)
         else:
@@ -1115,7 +1116,7 @@ class GaudiFilterExecutable(qm.executable.Filter):
                     max_fds = os.sysconf("SC_OPEN_MAX")
                 except:
                     max_fds = 256
-                for fd in xrange(max_fds):
+                for fd in range(max_fds):
                     try:
                         os.close(fd)
                     except:
@@ -1587,7 +1588,7 @@ class GaudiExeTest(ExecTestBase):
                     "causes": causes
                 }),
             }
-            exec (self.validator in globals(), exported_symbols)
+            exec (self.validator, globals(), exported_symbols)
         else:
             self.ValidateWithReference(stdout, stderr, result, causes)
 
@@ -1945,7 +1946,7 @@ class GaudiExeTest(ExecTestBase):
             # Write the output file
             codecs.open(destfile, "w", encoding='utf-8').write(xml)
         except:
-            print 'WARNING: problem generating Eclipse launcher'
+            print('WARNING: problem generating Eclipse launcher')
 
 
 try:
@@ -2367,7 +2368,7 @@ class XMLResultStream(ResultStream):
             else:
                 value.text = convert_xml_illegal_chars(result[field])
 
-        if result.has_key("ExecTest.stdout"):  # "ExecTest.stdout" in result :
+        if "ExecTest.stdout" in result:  # "ExecTest.stdout" in result :
             Measurement = ET.SubElement(Results, "Measurement")
             value = ET.SubElement(Measurement, "Value")
             if "<pre>" in result["ExecTest.stdout"][0:6]:

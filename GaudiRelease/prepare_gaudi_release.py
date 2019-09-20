@@ -4,6 +4,7 @@ Script to prepare the release of Gaudi.
 
 @author Marco Clemencic
 '''
+from __future__ import print_function
 
 import os
 import sys
@@ -135,7 +136,7 @@ def main():
         m = re.match(r'^\s*set\(\s*heptools_version\s+(\S*)\s*\)', l)
         if m:
             HEPToolsVers = m.group(1)
-            print "Using HEPTools", HEPToolsVers
+            print("Using HEPTools", HEPToolsVers)
             break
     else:
         logging.error('Cannot find HEPTools version')

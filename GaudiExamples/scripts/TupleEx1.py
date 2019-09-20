@@ -16,6 +16,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
@@ -143,10 +144,10 @@ class TupleEx1(TupleAlgo):
         # =====================================================================
         tuple3 = self.nTuple(3, "Fixed-size arrays/vectors")
 
-        tuple3.array('arflat', vct([flat() for i in xrange(0, 50)]))
-        tuple3.array('arexpo', vct([expo() for i in xrange(0, 62)]))
-        tuple3.array('argau', vct([gauss() for i in xrange(0, 42)]))
-        t = tuple([gauss() for i in xrange(0, 42)])
+        tuple3.array('arflat', vct([flat() for i in range(0, 50)]))
+        tuple3.array('arexpo', vct([expo() for i in range(0, 62)]))
+        tuple3.array('argau', vct([gauss() for i in range(0, 42)]))
+        t = tuple([gauss() for i in range(0, 42)])
         tuple3.array('argau2', vct(t))
 
         tuple3.write()
@@ -194,7 +195,7 @@ def configure(gaudi=None):
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2006-11-26
 if '__main__' == __name__:
-    print __doc__
+    print(__doc__)
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)
     gaudi.run(20)

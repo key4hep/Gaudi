@@ -14,7 +14,7 @@ shutil.copy('ROOTIO.dst', 'ROOTIO_corrupted.dst')
 
 f = open('ROOTIO_corrupted.dst', 'rb+')
 f.seek(1024)
-f.write('corruption!')
+f.write(b'corruption!')
 f.close()
 
 esel = EventSelector()

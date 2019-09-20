@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os.path
 from GaudiKernel.RootMap import getMaps, checkDict
 from GaudiKernel.RootMap import printMaps, shortPrintMaps
@@ -7,7 +8,7 @@ from GaudiKernel.RootMap import printKeys
 
 
 def _help(argv):
-    print """
+    print("""
   %s [-h] [-s|-e|-c] [-r] [-p pattern] [listofpath]
 
      -h: dump this Help
@@ -23,7 +24,7 @@ def _help(argv):
   rootmap file(s) on separate lines. The output is sorted according to
   the name of the entry. A Warning is issued if an entry appears
   several times.
-  """ % os.path.basename(argv[0])
+  """ % os.path.basename(argv[0]))
 
 
 if __name__ == "__main__":

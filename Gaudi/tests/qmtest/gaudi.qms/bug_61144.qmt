@@ -13,7 +13,7 @@ import Test_confDb # only the _merge_confDb.py in InstallArea/python/* are used 
 #------------------------------------------------------------------------------\
 # https://savannah.cern.ch/bugs/?61144
 from Configurables import MyTestTool
-print MyTestTool()
+print(MyTestTool())
 #------------------------------------------------------------------------------/
 
 </text></argument>

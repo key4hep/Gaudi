@@ -35,6 +35,7 @@ def build():
                        stdout=PIPE,
                        stderr=PIPE)
     build_log, build_err = build_proc.communicate()
+    build_log, build_err = build_log.decode('utf-8'), build_err.decode('utf-8')
     build_returncode = build_proc.returncode
 
 
@@ -70,6 +71,7 @@ def test_env():
         stdout=PIPE,
         stderr=PIPE)
     out, _err = getenv.communicate()
+    out = out.decode('utf-8')
     assert getenv.returncode == 0, getenv.returncode
 
     root_inc_path = [

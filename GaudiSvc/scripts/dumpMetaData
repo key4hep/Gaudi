@@ -22,5 +22,5 @@ if __name__ == '__main__':
 
     try:
         pprint(getMetaData(filename))
-    except RuntimeError, x:
+    except RuntimeError as x:
         parser.error(str(x))

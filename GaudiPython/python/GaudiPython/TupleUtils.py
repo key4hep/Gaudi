@@ -10,6 +10,7 @@ This module contains set of simple and useful utilities to booking and
 manipulation with N-Tuples (in the spirit of GaudiTuples<TYPE>)
 
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
@@ -198,8 +199,10 @@ def _TupleUtils_AtExit_():
     AtExit function for GaudiPython.TupleUtils module
     """
     if activeTuples():
-        print 'WARNING: the list of local TupleTools is not empty!'
-        print 'WARNING: please use GaudiPython.TupleUtils.releaseTuples() at the end'
+        print('WARNING: the list of local TupleTools is not empty!')
+        print(
+            'WARNING: please use GaudiPython.TupleUtils.releaseTuples() at the end'
+        )
 
 
 import atexit
@@ -208,10 +211,10 @@ atexit.register(_TupleUtils_AtExit_)
 # =============================================================================
 if "__main__" == __name__:
     import sys
-    print __doc__, __all__
+    print(__doc__, __all__)
     for o in __all__:
-        print "\n\n\t", o, "\n"
-        print sys.modules[__name__].__dict__[o].__doc__
+        print("\n\n\t", o, "\n")
+        print(sys.modules[__name__].__dict__[o].__doc__)
 
 # =============================================================================
 # The end

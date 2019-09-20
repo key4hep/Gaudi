@@ -455,7 +455,9 @@ _parser = JobOptsParser()
 
 
 def _import_python(file):
-    execfile(file, {})
+    with open(file) as f:
+        code = compile(f.read(), file, 'exec')
+        exec (code, {})
 
 
 def _import_pickle(file):

@@ -5,6 +5,7 @@
     components to Python. It is itself based on the ROOT cppyy
     Python extension module.
 """
+from __future__ import absolute_import, print_function
 
 __all__ = [
     'gbl', 'InterfaceCast', 'Interface', 'PropertyEntry', 'AppMgr',
@@ -25,8 +26,12 @@ try:
     import cppyy
 except ImportError:
     # FIXME: backward compatibility
-    print "# WARNING: using PyCintex as cppyy implementation"
+    print("# WARNING: using PyCintex as cppyy implementation")
     import PyCintex as cppyy
+
+if sys.version_info >= (3, ):
+    # Python 2 compatibility
+    long = int
 
 if ROOT6WorkAroundEnabled('ROOT-5478'):
     # Trigger the loading of GaudiKernelDict
@@ -34,7 +39,7 @@ if ROOT6WorkAroundEnabled('ROOT-5478'):
     # Trigger the loading of GaudiPythonDict
     cppyy.gbl.Chrono
 
-import Pythonizations
+from . import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
 # available.
 from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
@@ -110,9 +115,12 @@ class InterfaceCast(object):
                 if obj.queryInterface(self.type.interfaceID(), ip).isSuccess():
                     return ip
                 else:
-                    print "ERROR: queryInterface failed for", obj, "interface:", self.type
+                    print("ERROR: queryInterface failed for", obj,
+                          "interface:", self.type)
             except Exception as e:
-                print "ERROR: exception", e, "caught when retrieving interface", self.type, "for object", obj
+                print("ERROR: exception", e,
+                      "caught when retrieving interface", self.type,
+                      "for object", obj)
                 import traceback
                 traceback.print_stack()
         return None
@@ -620,7 +628,7 @@ class iDataSvc(iService):
                 node = root.registry()
             else:
                 return
-        print node.identifier()
+        print(node.identifier())
         if node.object():
             for l in self.leaves(node):
                 self.dump(l)
@@ -781,7 +789,7 @@ class iNTupleSvc(iDataSvc):
             Usage:
               defineOutput({'LUN1':'MyFile1.root', 'LUN2':'Myfile2.root'}, svc='Gaudi::RootCnvSvc')
         """
-        import Persistency as prs
+        from . import Persistency as prs
         helper = prs.get(typ)
         helper.configure(AppMgr())
         self.Output = [
@@ -896,7 +904,7 @@ class iEventSelector(iService):
         self.__dict__['g'] = AppMgr()
 
     def open(self, stream, typ='Gaudi::RootCnvSvc', **kwargs):
-        import Persistency as prs
+        from . import Persistency as prs
         helper = prs.get(typ)
         helper.configure(self.g)
         self.Input = helper.formatInput(stream, **kwargs)
@@ -942,6 +950,8 @@ class AppMgr(iService):
         global _gaudi
         if _gaudi:
             return
+        # Make sure the python stdout buffer is flushed before c++ runs
+        sys.stdout.flush()
         # Protection against multiple calls to exit() if the finalization fails
         self.__dict__['_exit_called'] = False
         # keep the Gaudi namespace around (so it is still available during atexit shutdown)...
@@ -981,9 +991,11 @@ class AppMgr(iService):
                 GaudiKernel.Proxy.Configurable.applyConfigurableUsers()
             # This is the default and could be overridden with "selfopts"
             self.OutputLevel = 3
-            selfprops = Configurable.allConfigurables.get('ApplicationMgr', {})
-            if selfprops:
-                selfprops = expandvars(selfprops.getValuedProperties())
+            try:
+                appMgr = Configurable.allConfigurables['ApplicationMgr']
+                selfprops = expandvars(appMgr.getValuedProperties())
+            except KeyError:
+                selfprops = {}
             for p, v in selfprops.items():
                 setattr(self, p, v)
             for p, v in selfoptions.items():
@@ -1029,14 +1041,25 @@ class AppMgr(iService):
         if hasattr(Configurable, "_configurationLocked"):
             Configurable._configurationLocked = True
 
-        # Ensure that the exit method is called when exiting from Python
+        self._install_exit_handlers()
+
+    def _install_exit_handlers(self):
+        """Ensure that the exit method is called when exiting from Python, and
+        try to ensure that ROOT doesn't intefere too much."""
         import atexit
         atexit.register(self.exit)
+
+        try:
+            exit_handlers = atexit._exithandlers
+        except AttributeError:
+            # Python 3's atext does not expose _exithandlers, so we can't do
+            # anything more
+            return
 
         # ---Hack to avoid bad interactions with the ROOT exit handler
         # Look for an exit handler installed by ROOT
         root_handler_installed = False
-        for h in atexit._exithandlers:
+        for h in exit_handlers:
             func = h[0]
             if hasattr(func, "__module__") and func.__module__ == "ROOT":
                 root_handler_installed = True
@@ -1209,20 +1232,26 @@ class AppMgr(iService):
         """
 
         def printAlgo(algName, appMgr, prefix=' '):
-            print prefix + algName
+            print(prefix + algName)
             alg = appMgr.algorithm(algName.split("/")[-1])
             prop = alg.properties()
-            if prop.has_key("Members"):
+            if "Members" in prop:
                 subs = prop["Members"].value()
                 for i in subs:
                     printAlgo(i.strip('"'), appMgr, prefix + "     ")
 
         mp = self.properties()
         prefix = 'ApplicationMgr    SUCCESS '
-        print prefix + "****************************** Algorithm Sequence ****************************"
+        print(
+            prefix +
+            "****************************** Algorithm Sequence ****************************"
+        )
         for i in mp["TopAlg"].value():
             printAlgo(i, self, prefix)
-        print prefix + "******************************************************************************"
+        print(
+            prefix +
+            "******************************************************************************"
+        )
 
     def config(self, **args):
         """
@@ -1445,8 +1474,8 @@ def getComponentProperties(name):
                 else:
                     obj = factory.instantiate(svcloc)
             except RuntimeError as text:
-                print 'Error instantiating', cname, ' from ', name
-                print text
+                print('Error instantiating', cname, ' from ', name)
+                print(text)
                 continue
             prop = iProperty('dummy', obj)
             properties[cname] = [ctype, prop.properties()]

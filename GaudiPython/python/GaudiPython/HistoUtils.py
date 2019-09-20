@@ -23,6 +23,7 @@ The module contains following public symbols:
   - dumpHisto  for dumping of the histogram in text format (a'la HBOOK)
 
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
@@ -1029,10 +1030,10 @@ class HistoFile:
 # =============================================================================
 if '__main__' == __name__:
     import sys
-    print __doc__
+    print(__doc__)
     for o in __all__:
-        print o
-        print sys.modules[__name__].__dict__[o].__doc__
+        print(o)
+        print(sys.modules[__name__].__dict__[o].__doc__)
 
 # =============================================================================
 # The END

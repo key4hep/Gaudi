@@ -24,7 +24,10 @@ StatusCode PythonConfig::evaluateConfig( const std::string& filename, const std:
     // some python helper
     std::string command( preAction );
     command += "\nfor name in '";
-    command += filename + "'.split(','): execfile(name)\n";
+    command += filename + "'.split(','):\n";
+    command += "    with open(name) as f:\n";
+    command += "        code = compile(f.read(), name, 'exec')\n";
+    command += "        exec(code)\n";
     command += "from GaudiKernel.Configurable import expandvars\nfrom GaudiKernel.Proxy.Configurable import "
                "applyConfigurableUsers\napplyConfigurableUsers()\n";
     command += postAction;

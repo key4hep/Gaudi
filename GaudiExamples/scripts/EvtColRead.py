@@ -8,6 +8,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
@@ -45,7 +46,7 @@ def configure(gaudi=None):
 # The actual job excution
 # =============================================================================
 if '__main__' == __name__:
-    print __doc__
+    print(__doc__)
     # configuration (options)
     from Configurables import GaudiPersistency, FileCatalog, ApplicationMgr
     GaudiPersistency()

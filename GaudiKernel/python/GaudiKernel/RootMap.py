@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os
 import sys
 
@@ -39,7 +40,7 @@ def _procRootMap(rtmpfile, rtmapdict):
         if line:
             if line[0] != '#':
                 entry, lib = _getEntry(line)
-                if not rtmapdict.has_key(entry):
+                if entry not in rtmapdict:
                     rtmapdict[entry] = []
                 rtmapdict[entry].append((os.path.join(
                     os.path.dirname(rtmpfile), lib), block))
@@ -48,7 +49,7 @@ def _procRootMap(rtmpfile, rtmapdict):
 
 
 def _procSysRootMap(rtmapdict):
-    if os.environ.has_key("ROOTSYS"):
+    if "ROOTSYS" in os.environ:
         rtmpfile = os.path.join(os.environ["ROOTSYS"], "etc", "system.rootmap")
         block = ""
         for line in open(rtmpfile, 'r'):
@@ -56,14 +57,14 @@ def _procSysRootMap(rtmapdict):
             if line:
                 if line[0] != '#':
                     entry, lib = _getEntry(line)
-                    if not rtmapdict.has_key(entry):
+                    if entry not in rtmapdict:
                         rtmapdict[entry] = []
                     rtmapdict[entry].append((os.path.join(
                         os.environ["ROOTSYS"], "lib", lib), block))
                 else:
                     block = _getBlock(line)
     else:
-        print "WARNING: No ROOTSYS defined!"
+        print("WARNING: No ROOTSYS defined!")
 
 
 def _isRootMap(filename):
@@ -106,12 +107,12 @@ def printMaps(maps, recomp=None):
         kys = filter(recomp.search, kys)
     for k in kys:
         if len(maps[k]) > 1:
-            print "!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!"
+            print("!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!")
         for l in maps[k]:
-            print frmat % k,
+            print(frmat % k, end=' ')
             for m in l:
-                print m,
-            print " "
+                print(m, end=' ')
+            print(" ")
     return
 
 
@@ -122,13 +123,13 @@ def shortPrintMaps(maps, recomp=None):
         kys = filter(recomp.search, kys)
     for k in kys:
         if len(maps[k]) > 1:
-            print k, "!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!"
+            print(k, "!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!")
         else:
-            print k
+            print(k)
         for l in maps[k]:
             for m in l:
-                print "\t%s" % m,
-            print " "
+                print("\t%s" % m, end=' ')
+            print(" ")
     return
 
 
@@ -139,9 +140,9 @@ def printKeys(maps, recomp=None):
         kys = filter(recomp.search, kys)
     for k in kys:
         if len(maps[k]) > 1:
-            print "!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!"
+            print("!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!")
         for l in maps[k]:
-            print k
+            print(k)
     return
 
 
@@ -152,10 +153,10 @@ def checkDict(maps, recomp=None):
         kys = filter(recomp.search, kys)
     for k in kys:
         if len(maps[k]) > 1:
-            print "!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!"
-            print k
+            print("!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!")
+            print(k)
             for l in maps[k]:
                 for m in l:
-                    print "\t%s" % m,
-                print " "
+                    print("\t%s" % m, end=' ')
+                print(" ")
     return

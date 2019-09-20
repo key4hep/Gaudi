@@ -10,6 +10,7 @@
    M.Frank  CERN/LHCb
 
 """
+from __future__ import print_function
 import os
 import sys
 import time
@@ -83,16 +84,16 @@ def update():
 def printDelta(s0, s1):
     for s in s1:
         if s == 'time':
-            print '%15s : %10.2F sec' % (s, (s1[s] - s0[s]))
+            print('%15s : %10.2F sec' % (s, (s1[s] - s0[s])))
         else:
-            print '%15s : %10.2F MB' % (s, (s1[s] - s0[s]) / 1.E6)
+            print('%15s : %10.2F MB' % (s, (s1[s] - s0[s]) / 1.E6))
 
 
 import GaudiPython
 appMgr = GaudiPython.AppMgr()
 sel = appMgr.evtsel()
 evt = appMgr.evtsvc()
-print sel.Input
+print(sel.Input)
 
 start = update()
 # test 1
@@ -104,11 +105,11 @@ while 1 > 0:
     # if not evt['/Event/DAQ/RawEvent']:
     #    print 'Failed to access /Event/DAQ/RawEvent'
     if not evt['/Event/Rec/Header']:
-        print 'Failed to access /Event/Rec/Header'
+        print('Failed to access /Event/Rec/Header')
         break
     N += 1
     if N > 100000:
         break
 end = update()
-print 'Read %d events' % N
+print('Read %d events' % N)
 printDelta(start, end)

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 import time
@@ -42,7 +43,7 @@ def generateOptions(counter, cmask, invmask, sampling_period, startatevent,
     pfaud.START_AT_EVENT = startatevent
     #pfaud.LEVEL = 5
     AuditorSvc().Auditors.append(pfaud)
-    print pfaud
+    print(pfaud)
 
 
 class XmlDictObject(dict):
@@ -62,7 +63,7 @@ class XmlDictObject(dict):
         self.__setitem__(item, value)
 
     def __str__(self):
-        if self.has_key('_text'):
+        if '_text' in self:
             return self.__getitem__('_text')
         else:
             return ''
@@ -141,7 +142,7 @@ def _ConvertXmlToDictRecurse(node, dictclass):
     for child in node:
         # recursively add the element's children
         newitem = _ConvertXmlToDictRecurse(child, dictclass)
-        if nodedict.has_key(child.tag):
+        if child.tag in nodedict:
             # found duplicate tag, force a list
             if type(nodedict[child.tag]) is type([]):
                 # append to existing list

@@ -1,6 +1,7 @@
 """
 Example of usage of ConfigurableUser classes (for high level configuration).
 """
+from __future__ import print_function
 from Gaudi.Configuration import *
 
 
@@ -58,8 +59,8 @@ def PostConfAction():
     """
     Action printing the result of the configuration of the ApplicationMgr.
     """
-    print "==== Configuration completed ===="
-    print ApplicationMgr()
+    print("==== Configuration completed ====")
+    print(ApplicationMgr())
 
 
 appendPostConfigAction(PostConfAction)

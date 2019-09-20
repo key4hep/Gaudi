@@ -76,10 +76,11 @@ class Application(object):
 
         c_opts = (c_opt_t * len(opts))()
         for idx, item in enumerate(opts.items()):
-            c_opts[idx].key, c_opts[idx].value = item
+            c_opts[idx].key = item[0].encode('ascii')
+            c_opts[idx].value = item[1].encode('ascii')
 
         self._impl = _GaudiKernelLib._py_Gaudi__Application__create(
-            appType, c_opts, ctypes.c_long(len(c_opts)))
+            appType.encode('ascii'), c_opts, ctypes.c_long(len(c_opts)))
 
     @classmethod
     def create(cls, appType, opts):

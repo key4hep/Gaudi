@@ -31,7 +31,7 @@ namespace Gaudi {
      *   - <c> items   </c>
      *   - <c> values  </c>
      *   - <c> get     </c>
-     *   - <c> has_key </c>
+     *   - <c> has_key </c> (for Python 2)
      *
      *  Thus it behaves practically identically
      *  with builtin-type <c>dict</c>

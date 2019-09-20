@@ -1,3 +1,4 @@
+from __future__ import print_function
 # explicit list for wildcard imports
 __all__ = [
     "GaudiHandle",
@@ -197,8 +198,10 @@ class GaudiHandleArray(list):
             # not yet there, so add it
             list.append(self, value)
         else:
-            print "%s    WARNING %r with instance name %r already in list. Not adding %r" % \
-                  (self.__class__.__name__, oldValue, oldValue.getName(), value)
+            print(
+                "%s    WARNING %r with instance name %r already in list. Not adding %r"
+                % (self.__class__.__name__, oldValue, oldValue.getName(),
+                   value))
 
     def isPublic(self):
         return self.__class__.handleType.isPublic

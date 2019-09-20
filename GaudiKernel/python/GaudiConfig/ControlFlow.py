@@ -3,6 +3,7 @@ Classes for the implementation of the Control Flow Structure Syntax.
 
 @see: https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
 '''
+from __future__ import print_function
 
 
 class ControlFlowNode(object):
@@ -40,6 +41,15 @@ class ControlFlowNode(object):
 
     def __eq__(self, other):
         return (repr(self) == repr(other))
+
+    def __hash__(self):
+        """Return a unique identifier for this object.
+
+        As we use the `repr` of this object to check for equality, we use it
+        here to define uniqueness.
+        """
+        # The hash of the 1-tuple containing the repr of this object
+        return hash((repr(self), ))
 
     def getFullName(self):
         '''
@@ -205,12 +215,12 @@ class _TestVisitor(object):
 
     def enter(self, visitee):
         self.depths += 1
-        print "%sEntering %s" % (self.depths * " ", type(visitee))
+        print("%sEntering %s" % (self.depths * " ", type(visitee)))
         if isinstance(visitee, ControlFlowLeaf):
-            print "%s Algorithm name: %s" % (" " * self.depths, visitee)
+            print("%s Algorithm name: %s" % (" " * self.depths, visitee))
 
     def leave(self, visitee):
-        print "%sLeaving %s" % (self.depths * " ", type(visitee))
+        print("%sLeaving %s" % (self.depths * " ", type(visitee)))
         self.depths -= 1
 
 
@@ -325,11 +335,11 @@ def test():
     aLine = line("MyTriggerPath", expression)
     visitor = _TestVisitor()
     visitor2 = DotVisitor()
-    print "\nPrinting trigger line:"
-    print aLine
-    print "\nPrinting expression:"
-    print expression
-    print "\nTraversing through expression:\n"
+    print("\nPrinting trigger line:")
+    print(aLine)
+    print("\nPrinting expression:")
+    print(expression)
+    print("\nTraversing through expression:\n")
     expression.visitNode(visitor)
     expression.visitNode(visitor2)
     visitor2.write("out.dot")

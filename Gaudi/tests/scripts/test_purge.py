@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Gaudi.Configuration import *
 from GaudiKernel.Configurable import purge
 
@@ -15,11 +16,11 @@ second = configurationDict()
 from pprint import PrettyPrinter
 pp = PrettyPrinter()
 
-print "first =",
+print("first =", end=' ')
 pp.pprint(first)
 
-print "purged =",
+print("purged =", end=' ')
 pp.pprint(purged)
 
-print "second =",
+print("second =", end=' ')
 pp.pprint(second)

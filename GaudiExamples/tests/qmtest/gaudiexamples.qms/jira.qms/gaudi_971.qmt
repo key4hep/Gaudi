@@ -27,15 +27,14 @@ for file_el in data.getroot().iterfind('File'):
             logical.append(lfn)
             break
 
-import codecs
-with codecs.open('GAUDI-971.xml', 'w', encoding='utf-8') as catalog:
-    catalog.write('&lt;?xml version="1.0" encoding="utf-8" standalone="no" ?&gt;\n')
-    catalog.write('&lt;!DOCTYPE POOLFILECATALOG SYSTEM "InMemory"&gt;\n')
+with open('GAUDI-971.xml', 'wb') as catalog:
+    catalog.write(b'&lt;?xml version="1.0" encoding="utf-8" standalone="no" ?&gt;\n')
+    catalog.write(b'&lt;!DOCTYPE POOLFILECATALOG SYSTEM "InMemory"&gt;\n')
     data.write(catalog, encoding='utf-8', xml_declaration=False)
 
-#print '#' * 80
-#print open('GAUDI-971.xml').read()
-#print '#' * 80
+#print('#' * 80)
+#print(open('GAUDI-971.xml').read())
+#print('#' * 80)
 
 FileCatalog(Catalogs = [ "xmlcatalog_file:GAUDI-971.xml" ])
 

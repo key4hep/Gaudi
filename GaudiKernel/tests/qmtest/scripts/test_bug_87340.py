@@ -4,6 +4,7 @@ Test that the there is no signature for MsgStream operator<< <char []> in
 GaudiKernel.
 See https://savannah.cern.ch/bugs?87340
 """
+from __future__ import print_function
 import os
 import sys
 import re
@@ -21,27 +22,34 @@ varname = 'LD_LIBRARY_PATH'
 searchpath.extend(os.environ.get(varname, "").split(os.pathsep))
 
 try:
-    lib = (p for p in (os.path.join(n, libname) for n in searchpath)
-           if os.path.exists(p)).next()
+    lib = next(
+        p for p in (os.path.join(n, libname) for n in searchpath)
+        if os.path.exists(p))
 except StopIteration:
-    print >> sys.stderr, 'FAILURE: Cannot find', repr(
-        libname), 'in', searchpath
+    print(
+        'FAILURE: Cannot find',
+        repr(libname),
+        'in',
+        searchpath,
+        file=sys.stderr)
     sys.exit(2)
 
 nm = Popen(["nm", '-C', lib], stdout=PIPE)
 output, _ = nm.communicate()
+output = output.decode('utf-8')
 
 if nm.returncode:
-    print output
-    print >> sys.stderr, 'FAILURE: nm call failed'
+    print(output)
+    print('FAILURE: nm call failed', file=sys.stderr)
     sys.exit(nm.returncode)
 
 signature = re.compile(r"MsgStream&amp; operator&lt;&lt; &lt;char \[\d+\]&gt;")
 
-lines = filter(signature.search, output.splitlines())
+lines = list(filter(signature.search, output.splitlines()))
 if lines:
-    print "\n".join(lines)
-    print >> sys.stderr, "FAILURE: found MsgStream operator<< specialization"
+    print("\n".join(lines))
+    print(
+        "FAILURE: found MsgStream operator<< specialization", file=sys.stderr)
     sys.exit(1)
 else:
-    print "SUCCESS: no MsgStream operator<< specialization found"
+    print("SUCCESS: no MsgStream operator<< specialization found")

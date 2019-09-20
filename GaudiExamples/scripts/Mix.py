@@ -9,10 +9,12 @@
 Simple example to illustrate the problem for task #13911
 https://savannah.cern.ch/task/?13911
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
 __date__ = "2010-04-24"
 # =============================================================================
+import sys
 
 from Gaudi.Configuration import *
 from Configurables import HelloWorld, GaudiSequencer, Sequencer
@@ -31,7 +33,8 @@ from GaudiPython.GaudiAlgs import GaudiAlgo, SUCCESS
 class SimpleAlgo(GaudiAlgo):
     def execute(self):
 
-        print 'I am SimpleAlgo.execute!  ', self.name()
+        print('I am SimpleAlgo.execute!  ', self.name())
+        sys.stdout.flush()
 
         return SUCCESS
 
@@ -78,11 +81,12 @@ def configure():
 if '__main__' == __name__:
 
     # make printout of the own documentations
-    print '*' * 120
-    print __doc__
-    print ' Author  : %s ' % __author__
-    print ' Date    : %s ' % __date__
-    print '*' * 120
+    print('*' * 120)
+    print(__doc__)
+    print(' Author  : %s ' % __author__)
+    print(' Date    : %s ' % __date__)
+    print('*' * 120)
+    sys.stdout.flush()
 
     configure()
 

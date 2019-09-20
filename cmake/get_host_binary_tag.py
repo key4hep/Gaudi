@@ -8,6 +8,7 @@ Inspired by
 * https://github.com/HEP-SF/documents/tree/master/HSF-TN/draft-2015-NAM
 * https://github.com/HEP-SF/tools
 '''
+from __future__ import print_function
 
 import os
 import re
@@ -125,8 +126,8 @@ def _compiler_version(cmd=os.environ.get('CC', 'cc')):
     # prevent interference from localization
     env = dict(os.environ)
     env['LC_ALL'] = 'C'
-    m = re.search(r'(gcc|clang|icc|LLVM) version (\d+)\.(\d+)',
-                  check_output([cmd, '-v'], stderr=STDOUT, env=env))
+    output = check_output([cmd, '-v'], stderr=STDOUT, env=env).decode('utf-8')
+    m = re.search(r'(gcc|clang|icc|LLVM) version (\d+)\.(\d+)', output)
     if not m:  # prevent crashes if the compiler is not supported
         return 'unknown'
     comp = 'clang' if m.group(1) == 'LLVM' else m.group(1)

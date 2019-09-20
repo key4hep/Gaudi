@@ -38,6 +38,7 @@ def cmake_script(name, cwd=None):
                  stderr=PIPE,
                  cwd=cwd)
     out, err = proc.communicate()
+    out, err = out.decode('utf-8'), err.decode('utf-8')
     trace_line = re.compile(r'^(/.*)\(([0-9]+)\): ')
     new_err = []
     for line in err.splitlines():
@@ -58,7 +59,7 @@ def get_ranges(numbers):
     from itertools import groupby
     from operator import itemgetter
     for _key, group in groupby(
-            enumerate(numbers), lambda (index, number): number - index):
+            enumerate(numbers), lambda index, number: number - index):
         group = map(itemgetter(1), group)
         yield group[0], group[-1]
 

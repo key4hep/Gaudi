@@ -16,6 +16,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
@@ -106,7 +107,7 @@ def configure(gaudi=None):
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2006-11-26
 if '__main__' == __name__:
-    print __doc__
+    print(__doc__)
     from GaudiPython.Bindings import AppMgr
     gaudi = AppMgr()
     configure(gaudi)

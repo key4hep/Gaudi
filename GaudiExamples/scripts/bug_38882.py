@@ -2,6 +2,7 @@
 # =============================================================================
 
 # =============================================================================
+from __future__ import print_function
 __author__ = 'Marco Clemencic'
 # =============================================================================
 
@@ -25,7 +26,7 @@ class TestAlg(GaudiAlgo):
 
     def execute(self):
         """ The main method 'execute', it is invoked for each event """
-        print "=== %s Execute ===" % self.name()
+        print("=== %s Execute ===" % self.name())
         return SUCCESS
 
 

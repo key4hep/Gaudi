@@ -67,7 +67,7 @@ tup1 = TupleUtils.nTuple(
     "It is a title for my n-tuple",  # the title
     LUN='MYLUN1')  # logical unit
 # fill it:
-for i in xrange(0, 5000):
+for i in range(0, 5000):
     tup1.column('i', i)  # int
     tup1.column('g1', gauss())  # double
     tup1.column('g2', gauss())  # double
@@ -86,7 +86,7 @@ tup2 = TupleUtils.nTuple(
     LUN='MYLUN1')  # logical unit
 
 # fill it:
-for i in xrange(0, 1000):
+for i in range(0, 1000):
 
     # Lorentz Vector
     lv1 = Math.PxPyPzEVector(gauss(), gauss(), gauss(), gauss())
@@ -102,7 +102,7 @@ tup3 = TupleUtils.nTuple(
     LUN='MYLUN2')  # logical unit
 
 # fill it:
-for i in xrange(0, 1000):
+for i in range(0, 1000):
 
     # 3D-Vector
     v1 = Math.XYZVector(gauss(), gauss(), gauss())
@@ -118,7 +118,7 @@ tup4 = TupleUtils.nTuple(
     LUN='MYLUN3')  # logical unit
 
 # fill it:
-for i in xrange(0, 1000):
+for i in range(0, 1000):
 
     # 3D-Point
     p1 = Math.XYZPoint(gauss(), gauss(), gauss())
@@ -142,18 +142,18 @@ cpp.gInterpreter.Declare('#include <CLHEP/Matrix/Vector.h>')
 vct2 = cpp.CLHEP.HepVector
 
 # fill it!
-for i in xrange(0, 100):
+for i in range(0, 100):
 
     # variable size vector:
     v1 = vct1()
-    n = max(10, long(50 + 25 * gauss()))
+    n = max(10, int(50 + 25 * gauss()))
     n = min(n, 100)
     while n > v1.size():
         v1.push_back(gauss())
 
     tup5.farray('vct1', v1, 'len1', 100)  # std::vector<double>
 
-    n2 = min(50, max(5, long(50 + 25 * gauss())))
+    n2 = min(50, max(5, int(50 + 25 * gauss())))
     v2 = vct2(n2)
 
     tup5.farray('vct2', v2, 'len2', 70)  # CLHEP::HepVector<double>
@@ -169,7 +169,7 @@ tup6 = TupleUtils.nTuple(
 
 Gaudi = cpp.Gaudi
 
-for i in xrange(0, 10):
+for i in range(0, 10):
 
     v1 = vct1()
     for j in range(0, 5):
@@ -206,7 +206,7 @@ tup7 = TupleUtils.nTuple(
     "N-tuple: FixMatrices",  # the title
     LUN='MYLUN3')  # logical unit
 
-for i in xrange(0, 100):
+for i in range(0, 100):
 
     m2 = Gaudi.Matrix2x2()
     tup7.matrix("m2", m2)  # Gaudi::Matrix2x2
@@ -235,7 +235,7 @@ tup8 = TupleUtils.nTuple(
     "N-tuple: FixSymMatrices",  # the title
     LUN='MYLUN2')  # logical unit
 
-for i in xrange(0, 100):
+for i in range(0, 100):
 
     m2 = Gaudi.SymMatrix2x2()
     tup8.matrix("m2", m2)  # Gaudi::SymMatrix2x2
@@ -264,7 +264,7 @@ tup9 = TupleUtils.nTuple(
     "N-tuple: Gaudi::Time",  # the title
     LUN='MYLUN2')  # logical unit
 
-for i in xrange(0, 100):
+for i in range(0, 100):
 
     t = cpp.Gaudi.Time()
 

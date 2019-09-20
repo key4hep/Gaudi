@@ -1,3 +1,4 @@
+from __future__ import print_function
 from ROOT import *
 import sys
 import re
@@ -81,7 +82,7 @@ def createInFlightGraph(nevts):
     graph.SetLineStyle(2)
     graph.SetTitle(
         "GaudiHive Backlog (Brunel, 100 evts);Events Finished;Event Backlog")
-    print NEventsInFlight
+    print(NEventsInFlight)
     return graph
 
 
@@ -141,6 +142,6 @@ def doPlot(logfilename, logfilename_copy):
 if __name__ == "__main__":
     argc = len(sys.argv)
     if argc != 3:
-        print "Usage: plotBacklogPyRoot.py logfilename logfilename_copy"
+        print("Usage: plotBacklogPyRoot.py logfilename logfilename_copy")
         sys.exit(1)
     doPlot(sys.argv[1], sys.argv[2])

@@ -33,6 +33,7 @@
 * (3) TupleAlgo - analogue for GaudiTupleAlg  C++ class from GaudiAlg package *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV  Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
@@ -208,7 +209,7 @@ def _init_(self, name, **args):
     for key in args:
         setattr(self, key, args[key])
     # take some care about the ownership of the algorithms
-    if not appMgr.__dict__.has_key('GaudiPythonAlgos'):
+    if 'GaudiPythonAlgos' not in appMgr.__dict__:
         appMgr.__dict__['GaudiPythonAlgos'] = []
     appMgr.__dict__['GaudiPythonAlgos'].append(self)
 
@@ -911,7 +912,7 @@ class objectmethod(object):
         self.method = m
 
     def __call__(self, *args):
-        print args
+        print(args)
         return self.method(*args)
 
 
@@ -1678,10 +1679,10 @@ import GaudiPython.HistoUtils
 
 
 def _help_():
-    print __doc__, __author__
-    print '\t\t\tDoc-string for class GaudiAlgo \n', GaudiAlgo.__doc__
-    print '\t\t\tDoc-string for class HistoAlgo \n', HistoAlgo.__doc__
-    print '\t\t\tDoc-string for class TupleAlgo \n', TupleAlgo.__doc__
+    print(__doc__, __author__)
+    print('\t\t\tDoc-string for class GaudiAlgo \n', GaudiAlgo.__doc__)
+    print('\t\t\tDoc-string for class HistoAlgo \n', HistoAlgo.__doc__)
+    print('\t\t\tDoc-string for class TupleAlgo \n', TupleAlgo.__doc__)
 
 
 # =============================================================================

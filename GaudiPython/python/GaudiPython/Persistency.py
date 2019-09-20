@@ -148,9 +148,9 @@ class RootPersistency(PersistencyHelper):
             svc = 'Gaudi::RootCnvSvc'
         else:
             svc = 'Gaudi::RootEvtSelector'
-        return map(
-            str,
-            [FileDescription(f, 'READ', svc, **fileargs) for f in filenames])
+        return [
+            str(FileDescription(f, 'READ', svc, **fileargs)) for f in filenames
+        ]
 
     def formatOutput(self, filename, **kwargs):
         '''

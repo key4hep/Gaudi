@@ -633,7 +633,12 @@ void configGenerator::genHeader( std::ostream& py, std::ostream& db )
   // python file part
   std::string now = Gaudi::Time::current().format( true );
   py << "#" << now //<< "\n"
-     << "\"\"\"Automatically generated. DO NOT EDIT please\"\"\"\n";
+     << "\"\"\"Automatically generated. DO NOT EDIT please\"\"\"\n"
+     << "import sys\n"
+     << "if sys.version_info >= (3,):\n"
+     << "    # Python 2 compatibility\n"
+     << "    long = int\n";
+
   if ( m_importGaudiHandles ) { py << "from GaudiKernel.GaudiHandles import *\n"; }
 
   if ( m_importDataObjectHandles ) { py << "from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase\n"; }
@@ -729,7 +734,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     pvalue = cvalue;
     ptype  = "int";
   } else if ( ti == typeIndex<long long>() || ti == typeIndex<unsigned long long>() ) {
-    pvalue = cvalue + "L";
+    pvalue = "long(" + cvalue + ")";
     ptype  = "long";
   } else if ( ti == typeIndex<float>() || ti == typeIndex<double>() ) {
     // forces python to handle this as a float: put a dot in there...

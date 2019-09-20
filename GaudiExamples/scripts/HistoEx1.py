@@ -10,6 +10,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
@@ -79,7 +80,7 @@ def configure(gaudi=None):
 # The actual job excution
 # =============================================================================
 if '__main__' == __name__:
-    print __doc__, __author__
+    print(__doc__ + __author__)
 
     from GaudiPython.Bindings import AppMgr
     gaudi = AppMgr()
@@ -91,9 +92,9 @@ if '__main__' == __name__:
 
     alg = gaudi.algorithm('HistoEx1')
     histos = alg.Histos()
-    for key in histos:
+    for key in sorted(histos):
         histo = histos[key]
         if hasattr(histo, 'dump'):
-            print histo.dump(80, 20, True)
+            print(histo.dump(80, 20, True))
 
 # =============================================================================

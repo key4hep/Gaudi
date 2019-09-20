@@ -1,3 +1,4 @@
+from __future__ import print_function
 # cpluginsvc is a ctypes-based wrapper for the C-exposed API of GaudiPluginService
 __doc__ = '''
 cpluginsvc is a ctypes-based wrapper for the C-API of the GaudiPluginService.
@@ -102,19 +103,19 @@ class Factory(ctypes.Structure):
 
     @property
     def name(self):
-        return self._id
+        return self._id.decode('ascii')
 
     @property
     def library(self):
-        return _lib.cgaudi_factory_get_library(self)
+        return _lib.cgaudi_factory_get_library(self).decode('ascii')
 
     @property
     def type(self):
-        return _lib.cgaudi_factory_get_type(self)
+        return _lib.cgaudi_factory_get_type(self).decode('ascii')
 
     @property
     def classname(self):
-        return _lib.cgaudi_factory_get_classname(self)
+        return _lib.cgaudi_factory_get_classname(self).decode('ascii')
 
     @property
     def properties(self):
@@ -132,7 +133,7 @@ class Factory(ctypes.Structure):
 
     def __repr__(self):
         return "<Factory id=%s library=%s type=%s class=%s props=%d>" % (
-            self._id,
+            self.name,
             self.library,
             self.type,
             self.classname,
@@ -155,11 +156,11 @@ class Property(ctypes.Structure):
 
     @property
     def key(self):
-        return _lib.cgaudi_property_get_key(self)
+        return _lib.cgaudi_property_get_key(self).decode('ascii')
 
     @property
     def value(self):
-        return _lib.cgaudi_property_get_value(self)
+        return _lib.cgaudi_property_get_value(self).decode('ascii')
 
     pass
 
@@ -225,7 +226,7 @@ if __name__ == "__main__":
             print("** could not load [%s] for factory [%s]" % (f.library,
                                                                f.name))
             continue
-        print f
+        print(f)
         for k, v in f.properties.items():
             print("\t%s: %s" % (k, v))
 

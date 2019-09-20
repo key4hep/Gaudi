@@ -16,6 +16,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
 # =============================================================================
@@ -78,7 +79,7 @@ class TupleEx3(TupleAlgo):
 
             # prepare some data array (std::vector<double>)
             v1 = vct1()
-            n = long(50 + 2 * flat())
+            n = int(50 + 2 * flat())
             # fill it with some random data
             for j in range(0, n):
                 v1.push_back(gauss())
@@ -86,7 +87,7 @@ class TupleEx3(TupleAlgo):
             tup.farray('gauss', v1, 'len1', 150)
 
             # prepare some data array (CLHEP::HepVector<double>)
-            n = long(50 + 2 * flat())
+            n = int(50 + 2 * flat())
             v2 = vct2(n)
             # fill N-tuple
             tup.farray('breit', v2, 'len2', 150)
@@ -234,7 +235,7 @@ def configure(gaudi=None):
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2007-01-24
 if '__main__' == __name__:
-    print __doc__
+    print(__doc__)
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)
     gaudi.run(10)

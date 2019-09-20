@@ -47,12 +47,12 @@ class _CfgDb(dict):
                     C++ Gaudi component which is mapped by the Configurable)
         """
         cfg = {'package': package, 'module': module, 'lib': lib}
-        if self.has_key(configurable):
+        if configurable in self:
             # check if it comes from the same library...
             if cfg['lib'] != self[configurable]['lib']:
                 log.debug("dup!! [%s] p=%s m=%s lib=%s", configurable, package,
                           module, lib)
-                if self._duplicates.has_key(configurable):
+                if configurable in self._duplicates:
                     self._duplicates[configurable] += [cfg]
                 else:
                     self._duplicates[configurable] = [cfg]
@@ -77,7 +77,7 @@ class _CfgDb(dict):
                 module = line[0]
                 lib = line[1]
                 self.add(cname, pkg, module, lib)
-            except Exception:
+            except IndexError:
                 f.close()
                 raise Exception(
                     "invalid line format: %s:%d: %r" % (fname, i + 1, ll))

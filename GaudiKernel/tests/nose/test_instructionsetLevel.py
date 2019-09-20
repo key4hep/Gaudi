@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 def test():
     out = Popen(['instructionsetLevel.exe', 'all'],
                 stdout=PIPE).communicate()[0]
+    out = out.decode('utf-8')
     known_flags = set(l.strip() for l in out.splitlines())
 
     expected = set()
@@ -14,6 +15,7 @@ def test():
             break
 
     out = Popen(['instructionsetLevel.exe'], stdout=PIPE).communicate()[0]
+    out = out.decode('utf-8')
     found = set(l.strip() for l in out.splitlines())
     # FIXME: these seem not to be reported by Linux
     found -= set(['sse3', 'avx512f'])

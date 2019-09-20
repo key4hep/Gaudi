@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Plot timeline from TimelineSvc"""
+from __future__ import print_function
 
 __author__ = "Frank Winklmeier"
 
@@ -104,7 +105,7 @@ def plot(data,
         if alg not in colors and len(mycolors) > 0:
             colors[alg] = mycolors.pop(0)
             if len(mycolors) == 0:
-                print "Too many algorithm to show"
+                print("Too many algorithm to show")
 
         if alg in colors:
             t0 = d.start - tmin

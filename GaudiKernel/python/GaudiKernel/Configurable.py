@@ -1,6 +1,7 @@
 # File: AthenaCommon/python/Configurable.py
 # Author: Wim Lavrijsen (WLavrijsen@lbl.gov)
 # Author: Martin Woudstra (Martin.Woudstra@cern.ch)
+from __future__ import absolute_import
 
 import copy
 import string
@@ -8,6 +9,7 @@ import types
 import os
 import sys
 from inspect import isclass
+import six
 import GaudiKernel.ConfigurableMeta as ConfigurableMeta
 from GaudiKernel.Constants import error_explanation, \
     VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL
@@ -103,7 +105,8 @@ class PropertyReference(object):
 # base class for configurable Gaudi algorithms/services/algtools/etc. ======
 
 
-class Configurable(object):
+class Configurable(
+        six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)):
     """Base class for Gaudi components that implement the IProperty interface.
        Provides most of the boilerplate code, but the actual useful classes
        are its derived ConfigurableAlgorithm, ConfigurableService, and
@@ -117,8 +120,6 @@ class Configurable(object):
     indentUnit = '| '
     printHeaderWidth = 100
     printHeaderPre = 5
-
-    __metaclass__ = ConfigurableMeta.ConfigurableMeta
 
     __slots__ = (
         '__children',  # controlled components, e.g. private AlgTools
@@ -144,19 +145,21 @@ class Configurable(object):
            of a type with the same name will return the same instance."""
 
         global log
+        func_code = six.get_function_code(cls.__init__)
+        func_defaults = six.get_function_defaults(cls.__init__)
         # try to get the name of the Configurable (having a name is compulsory)
         if 'name' in kwargs:
             # simple keyword (by far the easiest)
             name = kwargs['name']
-        elif 'name' in cls.__init__.func_code.co_varnames:
+        elif 'name' in func_code.co_varnames:
             # either positional in args, or default
-            index = list(cls.__init__.func_code.co_varnames).index('name')
+            index = list(func_code.co_varnames).index('name')
             try:
                 # var names index is offset by one as __init__ is to be called with self
                 name = args[index - 1]
             except IndexError:
                 # retrieve default value, then
-                name = cls.__init__.func_defaults[index - (len(args) + 1)]
+                name = func_defaults[index - (len(args) + 1)]
         else:
             # positional index is assumed (will work most of the time)
             try:
@@ -302,14 +305,15 @@ class Configurable(object):
 
         for meth, nArgs in meths.items():
             try:
-                f = getattr(klass, meth).im_func
+                f = six.get_unbound_function(getattr(klass, meth))
             except AttributeError:
                 raise NotImplementedError(
                     "%s is missing in class %s" % (meth, str(klass)))
 
             # in addition, verify the number of arguments w/o defaults
-            nargcount = f.func_code.co_argcount
-            ndefaults = f.func_defaults and len(f.func_defaults) or 0
+            nargcount = six.get_function_code(f).co_argcount
+            fdefaults = six.get_function_defaults(f)
+            ndefaults = fdefaults and len(fdefaults) or 0
             if not nargcount - ndefaults <= nArgs <= nargcount:
                 raise TypeError("%s.%s requires exactly %d arguments" %
                                 (klass, meth, nArgs))
@@ -483,8 +487,11 @@ class Configurable(object):
         except (AttributeError, KeyError):
             pass
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
+
+    # Python 2 compatibility
+    __nonzero__ = __bool__
 
     def remove(self, items):
         if type(items) != list and type(items) != tuple:
@@ -521,7 +528,7 @@ class Configurable(object):
 
                 # merge properties, new over pre-existing
                 for proxy in self._properties.values():
-                    if proxy.history.has_key(cc):
+                    if cc in proxy.history:
                         proxy.__set__(ccbd, proxy.__get__(cc))
 
                 # consolidate
@@ -1125,6 +1132,15 @@ class ConfigurableAlgorithm(Configurable):
     def __eq__(self, other):
         return (repr(self) == repr(other))
 
+    def __hash__(self):
+        """Return a unique identifier for this object.
+
+        As we use the `repr` of this object to check for equality, we use it
+        here to define uniqueness.
+        """
+        # The hash of the 1-tuple containing the repr of this object
+        return hash((repr(self), ))
+
 
 class ConfigurableService(Configurable):
     __slots__ = {
@@ -1543,8 +1559,8 @@ def applyConfigurableUsers():
         # easiest way to fix bug #103803.
         # <https://savannah.cern.ch/bugs/?103803>
         while True:
-            yield (c for c in Configurable.allConfigurables.values()
-                   if c.isApplicable()).next()
+            yield next(c for c in Configurable.allConfigurables.values()
+                       if c.isApplicable())
 
     debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
     for c in applicableConfUsers():
@@ -1656,10 +1672,9 @@ def getNeededConfigurables():
     This is needed because in Athena the implementation have to be different (the
     configuration is used in a different moment).
     """
-    return [
+    return sorted(
         k for k, v in Configurable.allConfigurables.items()
-        if v.getGaudiType() != "User"
-    ]  # Exclude ConfigurableUser instances
+        if v.getGaudiType() != "User")  # Exclude ConfigurableUser instances
 
 
 def purge():
@@ -1672,7 +1687,7 @@ def purge():
     # FIXME: (MCl) this is needed because instances of ConfigurableGeneric are not
     #        migrated to the correct class when this is known.
     ConfigurableGeneric.configurables.clear()
-    from ProcessJobOptions import _included_files
+    from .ProcessJobOptions import _included_files
     import os.path
     import sys
     for file in _included_files:
@@ -1767,7 +1782,7 @@ class SuperAlgorithm(ControlFlowNode):
                      type(instance).__name__)
             return instance
         else:
-            instance = super(SuperAlgorithm, cls).__new__(cls, name, **kwargs)
+            instance = super(SuperAlgorithm, cls).__new__(cls)
             Configurable.allConfigurables[name] = instance
             return instance
 

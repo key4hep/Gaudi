@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os
 import sys
 import tempfile
@@ -26,7 +27,8 @@ try:
         optfiles = sys.argv[1:]
     else:
         optfiles = ["main.py"]
-    outname = 'out-{0}'.format(sha1(str(optfiles)).hexdigest()[:8])
+    hash = sha1(str(optfiles).encode('utf-8')).hexdigest()
+    outname = 'out-{0}'.format(hash[:8])
 
     # parse the option file and cache the configuration (python only)
     cmd = [
@@ -34,15 +36,15 @@ try:
         which("gaudirun.py"), "-n", "-v", "--output", outname + ".1.py"
     ] + optfiles
     proc = Popen(cmd, stdout=PIPE)
-    print "=========================================="
-    print "======== First pass (python only) ========"
-    print "=========================================="
-    print "= cmd:", " ".join(cmd)
+    print("==========================================")
+    print("======== First pass (python only) ========")
+    print("==========================================")
+    print("= cmd:", " ".join(cmd))
     out, err = proc.communicate()
-    print out
+    print(out)
     if err:
-        print "=== stderr: ==="
-        print err
+        print("=== stderr: ===")
+        print(err)
     expected = eval(open(outname + ".1.py").read())
 
     # parse the option file, export old options, parse again
@@ -52,16 +54,16 @@ try:
         outname + '.opts'
     ] + optfiles
     proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    print ""
-    print "=========================================="
-    print "========== Second pass (export) =========="
-    print "=========================================="
-    print "= cmd:", " ".join(cmd)
+    print("")
+    print("==========================================")
+    print("========== Second pass (export) ==========")
+    print("==========================================")
+    print("= cmd:", " ".join(cmd))
     out, err = proc.communicate()
-    print out
+    print(out)
     if err:
-        print "=== stderr: ==="
-        print err
+        print("=== stderr: ===")
+        print(err)
 
     cmd = [
         "python",
@@ -69,24 +71,24 @@ try:
         outname + '.opts'
     ]
     proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    print ""
-    print "=========================================="
-    print "========== Second pass (import) =========="
-    print "=========================================="
-    print "= cmd:", " ".join(cmd)
+    print("")
+    print("==========================================")
+    print("========== Second pass (import) ==========")
+    print("==========================================")
+    print("= cmd:", " ".join(cmd))
     out, err = proc.communicate()
-    print out
+    print(out)
     if err:
-        print "=== stderr: ==="
-        print err
+        print("=== stderr: ===")
+        print(err)
     result = eval(open(outname + ".2.py").read())
 
     if result != expected:
-        print "Configuration from old options differs from the python one"
+        print("Configuration from old options differs from the python one")
         retcode = 1
 
-except RuntimeError, x:
-    print x
+except RuntimeError as x:
+    print(x)
     retcode = 1
 
 sys.exit(retcode)

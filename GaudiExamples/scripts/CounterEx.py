@@ -13,6 +13,8 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
+import six
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
@@ -77,11 +79,13 @@ class Counter(GaudiAlgo):
         executed = self.counter('executed')
         prnt = int(executed.flag())
         if 0 == prnt % 1000:
-            print " Event number %s " % prnt
+            six.print_(" Event number %s " % prnt, flush=True)
             self.printStat()
             bc = self.counter('eff')
-            line = "(%s += %s)%s" % (bc.eff() * 100, bc.effErr() * 100, '%')
-            print ' Efficiency (binomial counter "eff"): %s' % line
+            line = "(%.12g += %.12g)%s" % (bc.eff() * 100, bc.effErr() * 100,
+                                           '%')
+            six.print_(
+                ' Efficiency (binomial counter "eff"): %s' % line, flush=True)
 
         return SUCCESS
 
@@ -113,7 +117,7 @@ def configure(gaudi=None):
 # The actual job excution
 # =============================================================================
 if '__main__' == __name__:
-    print __doc__, __author__
+    print(__doc__ + __author__)
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)
     gaudi.run(5400)

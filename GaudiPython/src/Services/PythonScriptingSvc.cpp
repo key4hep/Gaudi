@@ -1,5 +1,16 @@
 #include "Python.h"
 
+// Python 3 compatibility
+#if PY_MAJOR_VERSION >= 3
+
+#  define PySys_SetArgv_Char_t wchar_t
+
+#else
+
+#  define PySys_SetArgv_Char_t char
+
+#endif
+
 // Include Files
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
@@ -54,7 +65,12 @@ StatusCode PythonScriptingSvc::initialize()
     }
   }
 
+  // Python 3 compatibility
+#if PY_MAJOR_VERSION >= 3
+  wchar_t* progName[] = {const_cast<wchar_t*>( L"GaudiPython" )};
+#else
   char* progName[] = {const_cast<char*>( "GaudiPython" )};
+#endif
 
   // Initialize the Python interpreter.  Required.
   Py_Initialize();
