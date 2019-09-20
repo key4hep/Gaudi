@@ -1,6 +1,7 @@
 """
 Hand-written confDb file for tests.
 """
+from __future__ import print_function
 
 
 def _fillCfgDb():
@@ -32,7 +33,7 @@ try:
     _fillCfgDb()
     # house cleaning...
     del _fillCfgDb
-except Exception, err:
-    print "Py:ConfigurableDb   ERROR Problem with [%s] content!" % __name__
-    print "Py:ConfigurableDb   ERROR", err
-    print "Py:ConfigurableDb   ERROR   ==> culprit is package [Test] !"
+except Exception as err:
+    print("Py:ConfigurableDb   ERROR Problem with [%s] content!" % __name__)
+    print("Py:ConfigurableDb   ERROR", err)
+    print("Py:ConfigurableDb   ERROR   ==> culprit is package [Test] !")

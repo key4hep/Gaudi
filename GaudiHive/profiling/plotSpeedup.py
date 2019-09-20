@@ -4,6 +4,7 @@ Script that fetches all the logfiles from disk and reads the timings.
 Parameters can be changed according to the working points considered.
 Some parameters of the plots are hardcoded.
 """
+from __future__ import print_function
 
 from ROOT import *
 
@@ -22,7 +23,7 @@ filename_scheleton = "timing_measurement_BrunelScenario_n150_eif%s_aif%s_nthread
 def getRuntime(n_algos_in_flight, n_evts_in_flight, cloneFlag):
     filename = filename_scheleton % (n_evts_in_flight, n_algos_in_flight,
                                      cloneFlag)
-    print filename
+    print(filename)
     rt = 0.
     for line in open(filename, "r").readlines():
         rt = float(line[:-1])
@@ -96,7 +97,7 @@ def make_plot(runtimes, cloneFlag):
     first = True
     for colour, n_evts_in_flight, line_style in zip(
             colour_l, n_evts_in_flight_l, line_style_l):
-        print n_evts_in_flight
+        print(n_evts_in_flight)
         graph = getSingleGraph(n_evts_in_flight, cloneFlag, runtimes, colour,
                                line_style)
         opts = "LSame"

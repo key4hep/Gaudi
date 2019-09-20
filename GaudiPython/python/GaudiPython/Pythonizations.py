@@ -3,6 +3,8 @@
 """ This Pythonizations module provides a number of useful pythonizations
     of adaptation of some classes.
 """
+from __future__ import print_function
+import six
 
 __all__ = []
 
@@ -10,7 +12,7 @@ try:
     from cppyy import gbl
 except ImportError:
     # FIXME: backward compatibility
-    print "# WARNING: using PyCintex as cppyy implementation"
+    print("# WARNING: using PyCintex as cppyy implementation")
     from PyCintex import gbl
 
 if not hasattr(gbl, 'ostream'):
@@ -500,14 +502,19 @@ gbl.Gaudi.Utils.MapBase.__len__ = lambda s: s.size()
 gbl.Gaudi.Utils.MapBase.__iter__ = __mapbase_iter__
 gbl.Gaudi.Utils.MapBase.keys = __mapbase_keys__
 gbl.Gaudi.Utils.MapBase.__iteritems__ = __mapbase_iteritems__
-gbl.Gaudi.Utils.MapBase.iteritems = __mapbase_iteritems__
-gbl.Gaudi.Utils.MapBase.items = __mapbase_items__
 gbl.Gaudi.Utils.MapBase.values = __mapbase_values__
 gbl.Gaudi.Utils.MapBase.__contains__ = __mapbase_contains__
-gbl.Gaudi.Utils.MapBase.has_key = __mapbase_contains__
 gbl.Gaudi.Utils.MapBase.get = __mapbase_get__
 gbl.Gaudi.Utils.MapBase.__str__ = __mapbase_str__
 gbl.Gaudi.Utils.MapBase.__repr__ = __mapbase_str__
 gbl.Gaudi.Utils.MapBase.__setitem__ = __mapbase_setitem__
 gbl.Gaudi.Utils.MapBase.__delitem__ = __mapbase_delitem__
 gbl.Gaudi.Utils.MapBase.__getitem__ = lambda s, key: s.at(key)
+if six.PY2:
+    # Behaviour is like Python 2 dict
+    gbl.Gaudi.Utils.MapBase.iteritems = __mapbase_iteritems__
+    gbl.Gaudi.Utils.MapBase.items = __mapbase_items__
+    gbl.Gaudi.Utils.MapBase.has_key = __mapbase_contains__
+else:
+    # Behaviour is like Python 3+ dict
+    gbl.Gaudi.Utils.MapBase.items = __mapbase_iteritems__

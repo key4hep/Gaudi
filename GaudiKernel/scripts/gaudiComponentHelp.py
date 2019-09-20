@@ -2,6 +2,7 @@
 """
 Print help messages for gaudi components
 """
+from __future__ import print_function
 from Gaudi import Configuration
 import Configurables
 import os
@@ -33,27 +34,27 @@ if __name__ == "__main__":
 
     cfgDb = Configuration.cfgDb
     if opts.list:
-        print "Available components:\n%s" % (21 * "=")
+        print("Available components:\n%s" % (21 * "="))
         for item in sorted(cfgDb):
-            print "  %s (from %s)" % (item, cfgDb[item]["lib"])
+            print("  %s (from %s)" % (item, cfgDb[item]["lib"]))
         sys.exit()
     elif opts.name:
         name = opts.name
         if name not in cfgDb:
-            print "Component %s not found." % (name)
+            print("Component %s not found." % (name))
             sys.exit()
-        print "\nDumping component information for %s:\n%s" % (
-            name, (35 + len(name)) * "=")
-        print "  Library: %s" % (cfgDb[name]["lib"])
-        print "  Package: %s" % (cfgDb[name]["package"])
-        print "\nProperties:\n%s" % (11 * "-")
+        print("\nDumping component information for %s:\n%s" %
+              (name, (35 + len(name)) * "="))
+        print("  Library: %s" % (cfgDb[name]["lib"]))
+        print("  Package: %s" % (cfgDb[name]["package"]))
+        print("\nProperties:\n%s" % (11 * "-"))
         try:
             properties = getattr(Configurables,
                                  name)().getPropertiesWithDescription()
         except AttributeError:
-            print "  Not a configurable component. No properties to show."
+            print("  Not a configurable component. No properties to show.")
             sys.exit()
         for label, (value, desc) in sorted(properties.iteritems()):
-            print("  %s\t : %s\t (%s) " % (label, value, str(desc).replace(
-                "None", " no description "))).expandtabs(30)
+            print(("  %s\t : %s\t (%s) " % (label, value, str(desc).replace(
+                "None", " no description "))).expandtabs(30))
         sys.exit()

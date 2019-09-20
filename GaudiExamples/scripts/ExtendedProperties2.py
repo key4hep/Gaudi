@@ -7,6 +7,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
 # =============================================================================
@@ -35,7 +36,7 @@ ApplicationMgr(EvtSel="NONE", TopAlg=[ep2], EvtMax=10)
 # =============================================================================
 if '__main__' == __name__:
 
-    print __doc__, __author__
+    print(__doc__, __author__)
 
     # make sure cling can generate all required methods in Gaudi::Property
     import cppyy
@@ -68,18 +69,18 @@ if '__main__' == __name__:
     try:
         xp2.SVector5 = [1, 2, 3, 4, 5, 6]
     except Exception as e:
-        print ' Exception: ', e
+        print(' Exception: ', e)
 
     try:
         xp2.Point3D = (1, 2, 3, 4)
     except Exception as e:
-        print ' Exception: ', e
+        print(' Exception: ', e)
 
     if not isWin:
         try:
             xp2.Vector4D = (1, 2, 3)
         except Exception as e:
-            print ' Exception: ', e
+            print(' Exception: ', e)
 
     xp2.Vectors3D = [(1, 2, 3), (4, 5, 6), [7, 8, 9]]
     if not isWin:

@@ -11,7 +11,7 @@ import stat
 import time
 import re
 import codecs
-from StringIO import StringIO
+from io import BytesIO
 
 # Class for generic exception coming from the zipdir() function
 
@@ -109,7 +109,7 @@ def checkEncoding(fileObj):
     # find the encoding of the file, if specified (in the first two lines)
     enc_exp = re.compile(r"coding[:=]\s*([-\w.]+)")
     for l in islice(fileObj, 2):
-        m = enc_exp.search(l)
+        m = enc_exp.search(l.decode('ascii'))
         if m:
             enc = m.group(1)
             break
@@ -156,7 +156,7 @@ def zipdir(directory, no_pyc=False):
         (added, modified, untouched, removed) = _zipChanges(
             directory, infolist)
         if added or modified or removed:
-            tempBuf = StringIO()
+            tempBuf = BytesIO()
             z = zipfile.PyZipFile(tempBuf, "w", zipfile.ZIP_DEFLATED)
             for f in added + modified + untouched:
                 src = os.path.join(directory, f)

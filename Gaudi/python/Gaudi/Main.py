@@ -1,8 +1,11 @@
+from __future__ import print_function
 import sys
 import os
 from time import time
 from Gaudi import Configuration
 import logging
+
+import six
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +34,8 @@ class BootstrapHelper(object):
             self.value = value
 
         def __str__(self):
-            return str(self.value)
+            # TODO why bytes
+            return bytes(self.value).decode('utf-8')
 
         toString = __str__
 
@@ -70,15 +74,19 @@ class BootstrapHelper(object):
                 self.lib.py_bootstrap_fsm_terminate(self.ptr))
 
         def getService(self, name):
-            return self.lib.py_bootstrap_getService(self.ptr, name)
+            return self.lib.py_bootstrap_getService(self.ptr,
+                                                    name.encode('ascii'))
 
         def setProperty(self, name, value):
             return BootstrapHelper.StatusCode(
-                self.lib.py_bootstrap_setProperty(self.ptr, name, value))
+                self.lib.py_bootstrap_setProperty(self.ptr,
+                                                  name.encode('ascii'),
+                                                  value.encode('ascii')))
 
         def getProperty(self, name):
             return BootstrapHelper.Property(
-                self.lib.py_bootstrap_getProperty(self.ptr, name))
+                self.lib.py_bootstrap_getProperty(self.ptr,
+                                                  name.encode('ascii')))
 
         def printAlgsSequences(self):
             return self.lib.py_helper_printAlgsSequences(self.ptr)
@@ -155,20 +163,19 @@ def toOpt(value):
     '''
     Helper to convert values to old .opts format.
 
-    >>> print toOpt('some "text"')
+    >>> print(toOpt('some "text"'))
     "some \\"text\\""
-    >>> print toOpt('first\\nsecond')
+    >>> print(toOpt('first\\nsecond'))
     "first
     second"
-    >>> print toOpt({'a': [1, 2, '3']})
+    >>> print(toOpt({'a': [1, 2, '3']}))
     {"a": [1, 2, "3"]}
     '''
-    if isinstance(value, basestring):
+    if isinstance(value, six.string_types):
         return '"{0}"'.format(value.replace('"', '\\"'))
     elif isinstance(value, dict):
         return '{{{0}}}'.format(', '.join(
-            '{0}: {1}'.format(toOpt(k), toOpt(v))
-            for k, v in value.iteritems()))
+            '{0}: {1}'.format(toOpt(k), toOpt(v)) for k, v in value.items()))
     elif hasattr(value, '__iter__'):
         return '[{0}]'.format(', '.join(map(toOpt, value)))
     else:
@@ -225,16 +232,22 @@ class gaudimain(object):
     def generatePyOutput(self, all=False):
         from pprint import pformat
         conf_dict = Configuration.configurationDict(all)
-        return pformat(conf_dict)
+        formatted = pformat(conf_dict)
+        # Python 2 compatibility
+        if six.PY2:
+            return formatted
+        else:
+            # undo splitting of strings on multiple lines
+            import re
+            return re.sub(r'"\n +"', '', formatted, flags=re.MULTILINE)
 
     def generateOptsOutput(self, all=False):
-        from pprint import pformat
         conf_dict = Configuration.configurationDict(all)
         out = []
-        names = conf_dict.keys()
+        names = list(conf_dict.keys())
         names.sort()
         for n in names:
-            props = conf_dict[n].keys()
+            props = list(conf_dict[n].keys())
             props.sort()
             for p in props:
                 out.append('%s.%s = %s;' % (n, p, toOpt(conf_dict[n][p])))
@@ -259,9 +272,10 @@ class gaudimain(object):
         log.info(msg)
         conf_dict = Configuration.configurationDict(all)
         if old_format:
-            print self.generateOptsOutput(all)
+            print(self.generateOptsOutput(all))
         else:
-            print self.generatePyOutput(all)
+            print(self.generatePyOutput(all))
+        sys.stdout.flush()
 
     def writeconfig(self, filename, all=False):
         write = {".pkl": lambda filename, all: self._writepickle(filename),
@@ -319,7 +333,7 @@ class gaudimain(object):
 
         # FIXME: this is to make sure special properties are correctly
         # expanded before we fill conf_dict
-        for c in Configurable.allConfigurables.values():
+        for c in list(Configurable.allConfigurables.values()):
             if hasattr(c, 'getValuedProperties'):
                 c.getValuedProperties()
 
@@ -336,7 +350,8 @@ class gaudimain(object):
                 if type(v) == str:
                     # properly escape quotes in the string
                     v = '"%s"' % v.replace('"', '\\"')
-                elif type(v) == long:
+                elif sys.version_info < (
+                        3, ) and type(v) == long:  # Python 3 compatibility
                     v = '%d' % v  # prevent pending 'L'
                 conf_dict['{}.{}'.format(n, p)] = str(v)
 

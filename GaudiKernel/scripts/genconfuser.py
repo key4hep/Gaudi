@@ -28,7 +28,7 @@ def _inheritsfrom(derived, basenames):
 
     'basenames' can be a string or an iterable (of strings).
     """
-    if isinstance(basenames, basestring):
+    if isinstance(basenames, str):
         basenames = (basenames, )
     for b in derived.__bases__:
         if b.__name__ in basenames:

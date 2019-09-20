@@ -1,3 +1,4 @@
+from __future__ import print_function
 ###############################################################
 # Job options file
 # ==============================================================
@@ -42,9 +43,9 @@ sor = HelloWorld('OR') | EventCounter('ORCounter')
 
 all = ParentAlg() >> StopperAlg(StopCount=20) >> top >> sand >> sor
 
-print '# --- Configured Control Flow Expression:'
-print '#', all
-print '# ---'
+print('# --- Configured Control Flow Expression:')
+print('#', all)
+print('# ---')
 EventLoopMgr(PrintControlFlowExpression=True)
 # -----------------------------------------------------------------
 ApplicationMgr(

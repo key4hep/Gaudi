@@ -16,11 +16,11 @@ preprocessor = (normalizeExamples +
 validateWithReference(preproc=preprocessor)
 
 from itertools import takewhile, islice, dropwhile
-stdout = filter(str.strip,
-                takewhile(str.strip,
+stdout = filter(lambda x: x.strip(),
+                takewhile(lambda x: x.strip(),
                           islice(dropwhile(lambda l: 'Metadata collected:' not in l,
                                  stdout.splitlines()), 1, None)))
-stdout.sort()
+stdout = sorted(stdout)
 from subprocess import check_output, CalledProcessError
 try:
     info = eval(check_output(['dumpMetaData', 'TupleEx.root']))

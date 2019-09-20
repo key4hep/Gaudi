@@ -1,3 +1,4 @@
+from __future__ import print_function
 from ROOT import *
 import sys
 import re
@@ -76,7 +77,7 @@ def getCountLatexes(vals, xmax):
     max_nclones = int(max(vals, key=getNclones)[1])
 
     latexes = []
-    for i in xrange(1, max_nclones + 1):
+    for i in range(1, max_nclones + 1):
         n_algos = len(
             filter(lambda runtime_nclones: runtime_nclones[1] == i, vals))
         latexes.append(getText(xmax * 1.01, i, n_algos, .7, 0, 600, 12))
@@ -117,6 +118,6 @@ def doPlot(logfilename):
 if __name__ == "__main__":
     argc = len(sys.argv)
     if argc != 2:
-        print "Usage: plotClonesPyRoot.py logfilename"
+        print("Usage: plotClonesPyRoot.py logfilename")
         sys.exit(1)
     doPlot(sys.argv[1])

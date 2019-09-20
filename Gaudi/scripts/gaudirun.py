@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os
 import sys
 from tempfile import mkstemp
@@ -97,7 +98,7 @@ def getArgsFromQmt(qmtfile):
             tmp_opts = NamedTemporaryFile(suffix='.py')
         else:
             tmp_opts = NamedTemporaryFile(suffix='.opts')
-        tmp_opts.write(options.text)
+        tmp_opts.write(options.text.encode('ascii'))
         tmp_opts.flush()
         args.append(tmp_opts.name)
         _qmt_tmp_opt_files.append(tmp_opts)
@@ -125,7 +126,8 @@ def getArgsFromQmt(qmtfile):
 if __name__ == "__main__":
     # ensure that we (and the subprocesses) use the C standard localization
     if os.environ.get('LC_ALL') != 'C':
-        print '# setting LC_ALL to "C"'
+        print('# setting LC_ALL to "C"')
+        # !!!!
         os.environ['LC_ALL'] = 'C'
 
     from optparse import OptionParser
@@ -302,7 +304,7 @@ if __name__ == "__main__":
         else:
             argv.append(a)
     if argv != sys.argv[1:]:
-        print '# Running', sys.argv[0], 'with arguments', argv
+        print('# Running', sys.argv[0], 'with arguments', argv)
 
     opts, args = parser.parse_args(args=argv)
 

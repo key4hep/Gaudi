@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Gaudi.Configuration import *
 
 appliedConf = []
@@ -7,8 +8,8 @@ class ConfigurableUserTest(ConfigurableUser):
     __slots__ = {}
 
     def __apply_configuration__(self):
-        print "Applying", self.getName()
-        print self
+        print("Applying", self.getName())
+        print(self)
         appliedConf.append(self.getName())
 
 
@@ -69,12 +70,12 @@ class Action(object):
 
     def __call__(self):
         calledActions.append(self.msg)
-        print self.msg
+        print(self.msg)
 
 
 def ActionFunction():
     calledActions.append("Action Function")
-    print "Action Function"
+    print("Action Function")
 
 
 appendPostConfigAction(Action("Action Object One"))
@@ -125,4 +126,4 @@ for name, (prop, value) in expected.items():
     assert allConfs[name].getProp(prop) == value, "%s.%s != %s" % (name, prop,
                                                                    value)
 
-print "Success."
+print("Success.")

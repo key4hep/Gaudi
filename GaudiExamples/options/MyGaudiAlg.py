@@ -1,3 +1,4 @@
+from __future__ import print_function
 ###############################################################
 # Job options file
 # ==============================================================
@@ -10,7 +11,7 @@ GaudiExamplesCommonConf()
 mygalg = MyGaudiAlgorithm('MyGaudiAlg', OutputLevel=DEBUG)
 mygalg.PrivToolHandle.String = "Is a private tool"
 
-print mygalg
+print(mygalg)
 
 mygalg.tracks.Path = 'BestTracks/Tracks'
 mygalg.hits.Path = 'Rec/Hits'
@@ -18,7 +19,7 @@ mygalg.raw.AlternativePaths = ['/copy/RAW', '/Rec/RAW', '/DAQ/RAW']
 
 mygalg.RootInTES = '/Skim'
 
-print mygalg
+print(mygalg)
 
 ApplicationMgr(
     EvtMax=10,

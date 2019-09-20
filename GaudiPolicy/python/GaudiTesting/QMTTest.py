@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from BaseTest import *
+from GaudiTesting.BaseTest import *
 import logging
 import os
 import sys

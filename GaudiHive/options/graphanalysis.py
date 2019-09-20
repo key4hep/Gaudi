@@ -1,3 +1,4 @@
+from __future__ import print_function
 from pygraph.classes.digraph import digraph
 from pygraph.algorithms.cycles import find_cycle
 from pygraph.algorithms.accessibility import connected_components
@@ -40,10 +41,10 @@ def analyze_and_fix_cycles(gr):
             has_loop = False
             continue
         n_cycles += 1
-        print cycle
-        print "Removed loop by deleting edge (%s,%s)" % (cycle[-1], cycle[0])
+        print(cycle)
+        print("Removed loop by deleting edge (%s,%s)" % (cycle[-1], cycle[0]))
         gr.del_edge((cycle[-1], cycle[0]))
-    print "\nIN TOTAL %i CYCLES\n" % (n_cycles)
+    print("\nIN TOTAL %i CYCLES\n" % (n_cycles))
     return n_cycles > 0  # whether it needed to fix cycles
 
 
@@ -54,10 +55,10 @@ def analyze_connected_componets(gr):
         cc_size[i] = 0
     for k, v in cc.iteritems():
         cc_size[v] = cc_size[v] + 1
-    print "Connected components have the following size:"
+    print("Connected components have the following size:")
     #    for k,v in cc_size.iteritems():
     #      print "%i : %i" %(k,v)
-    print "NUMBER OF CONNECTED COMPONENTS: %i" % (len(cc_size.keys()))
+    print("NUMBER OF CONNECTED COMPONENTS: %i" % (len(cc_size.keys())))
 
 
 def analyze_critical_path(gr):
@@ -73,9 +74,9 @@ def analyze_critical_path(gr):
     for edge in edges:
         critical_time += gr.edge_weight(edge)
 
-    print "Total time   : %s" % total_time
-    print "Critical path: %s" % critical_time
-    print "POSSIBLE SPEEDUP: %s" % (total_time / critical_time)
+    print("Total time   : %s" % total_time)
+    print("Critical path: %s" % critical_time)
+    print("POSSIBLE SPEEDUP: %s" % (total_time / critical_time))
 
 
 def print_graph_to_json(gr, filename):

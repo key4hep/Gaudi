@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Gaudi.Configuration import *
 from GaudiPython import AppMgr, gbl, setOwnership, PyAlgorithm, SUCCESS, FAILURE, InterfaceCast
 from ROOT import TBufferFile, TBuffer
@@ -213,7 +214,7 @@ class CollectHistograms(PyAlgorithm):
         # send 100 at a time
         chunk = 100
         reps = len(ks) / chunk + 1
-        for i in xrange(reps):
+        for i in range(reps):
             someKeys = ks[i * chunk:(i + 1) * chunk]
             smalld = dict([(key, self._gmpc.hDict[key]) for key in someKeys])
             self._gmpc.hq.put((self._gmpc.nodeID, smalld))
@@ -306,7 +307,7 @@ class EventCommunicator(object):
         elif self._gmpc.nodeType == 'Worker':
             downstream = 1
 
-        for i in xrange(downstream):
+        for i in range(downstream):
             self.qout.put('FINISHED')
         if self._gmpc.nodeType != 'Writer':
             self.qout.join()
@@ -622,7 +623,7 @@ class GMPComponent(object):
                     objects += 1
                 histDict[n] = o
         else:
-            print 'WARNING : no histograms to recover?'
+            print('WARNING : no histograms to recover?')
         return histDict
 
     def Initialize(self):
@@ -1477,11 +1478,11 @@ class Coord(object):
         # one queue from Reader-Workers
         rwk = JoinableQueue()
         # one queue from each worker to writer
-        workersWriter = [JoinableQueue() for i in xrange(self.nWorkers)]
+        workersWriter = [JoinableQueue() for i in range(self.nWorkers)]
         d = {}
         d[-1] = (None, rwk)  # Reader
         d[-2] = (workersWriter, None)  # Writer
-        for i in xrange(self.nWorkers):
+        for i in range(self.nWorkers):
             d[i] = (rwk, workersWriter[i])
         return d
 

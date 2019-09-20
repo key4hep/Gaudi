@@ -5,6 +5,7 @@ release of Gaudi.
 See https://twiki.cern.ch/twiki/bin/view/Gaudi/GaudiSVNRepository for a
 description of the repository structure.
 """
+from __future__ import print_function
 __author__ = "Marco Clemencic <Marco.Clemencic@cern.ch>"
 
 import os
@@ -17,7 +18,7 @@ from ConfigParser import ConfigParser
 
 
 def svn(*args, **kwargs):
-    print "> svn", " ".join(args)
+    print("> svn", " ".join(args))
     return Popen(["svn"] + list(args), **kwargs)
 
 

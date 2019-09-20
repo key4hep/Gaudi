@@ -8,6 +8,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
 # =============================================================================
@@ -98,7 +99,7 @@ def configure(gaudi=None):
 # =============================================================================
 if '__main__' == __name__:
 
-    print __doc__, __author__
+    print(__doc__, __author__)
 
     gaudi = gaudimodule.AppMgr()
     configure(gaudi)
@@ -107,10 +108,10 @@ if '__main__' == __name__:
     alg = gaudi.algorithm('PropertyAlg')
 
     props = alg.properties()
-    print 'Properties of %s ' % alg.name()
+    print('Properties of %s ' % alg.name())
     for p in props:
         v = props[p].value()
-        print "Python: Name/Value:  '%s' / '%s' " % (p, v)
+        print("Python: Name/Value:  '%s' / '%s' " % (p, v))
 
 # =============================================================================
 # The END

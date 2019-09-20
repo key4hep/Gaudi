@@ -344,7 +344,7 @@ macro(gaudi_project project version)
   endif()
 
   #-- Set up the boost_python_version variable for the project
-  find_package(PythonInterp 2.7)
+  find_package(PythonInterp)
   find_package(Boost)
   if((Boost_VERSION GREATER 106700) OR (Boost_VERSION EQUAL 106700))
      set(boost_python_version "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
@@ -787,8 +787,11 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
             if (d.startswith('${CMAKE_BINARY_DIR}') or
                 d.startswith('${CMAKE_SOURCE_DIR}')) and
                (os.path.exists(d) or 'python.zip' in d)]
-if os.path.exists('${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py'):
-    execfile('${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py')
+fname = '${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py'
+if os.path.exists(fname):
+    with open(fname) as f:
+        code = compile(f.read(), fname, 'exec')
+        exec(code)
 ")
       endforeach()
     endif()
@@ -2765,6 +2768,7 @@ function(gaudi_install_python_modules)
   file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} python/*)
   foreach(dir ${sub-dir})
     if(NOT dir STREQUAL python/.svn
+       AND NOT dir MATCHES "__pycache__"
        AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir}
        AND NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
       set(pyfile ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
@@ -2796,6 +2800,7 @@ function(gaudi_install_scripts)
           PATTERN "CVS" EXCLUDE
           PATTERN ".svn" EXCLUDE
           PATTERN "*~" EXCLUDE
+          PATTERN "__pycache__" EXCLUDE
           PATTERN "*.pyc" EXCLUDE)
 endfunction()
 

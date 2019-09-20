@@ -8,6 +8,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
@@ -33,7 +34,7 @@ ApplicationMgr(EvtSel="NONE", TopAlg=[ap], EvtMax=10)
 # =============================================================================
 if '__main__' == __name__:
 
-    print __doc__, __author__
+    print(__doc__, __author__)
 
     # make sure cling can generate all required methods in Gaudi::Property
     import cppyy

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from ROOT import *
 '''
 Script to parse all the logs and produce the speedup plot.
@@ -114,10 +115,10 @@ if len(sys.argv) > 1:
 
 # main loop: just printouts
 for neif in neif_l:
-    print "Events in flight: %s" % neif
+    print("Events in flight: %s" % neif)
     for tn in nts:
-        print "%s %s %s" % (tn, xtractTiming(neif, tn, False),
-                            xtractTiming(neif, tn, True))
+        print("%s %s %s" % (tn, xtractTiming(neif, tn, False),
+                            xtractTiming(neif, tn, True)))
 
 len_nt = len(nts) + 1
 # Prepare ideal speedup graph

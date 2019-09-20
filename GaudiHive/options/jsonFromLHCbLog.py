@@ -1,3 +1,4 @@
+from __future__ import print_function
 from pygraph.classes.graph import graph
 
 
@@ -74,4 +75,4 @@ def load_brunel_scenario(filename):
 if __name__ == "__main__":
     json = {}
     json["algorithms"] = load_brunel_scenario("Brunel.TES.trace.log")
-    print json
+    print(json)

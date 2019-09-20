@@ -3,6 +3,43 @@
 
 #include "Python.h"
 
+// Python 3 compatibility
+#if PY_MAJOR_VERSION >= 3
+
+#  define PyInt_FromLong PyLong_FromLong
+
+#  define PyBuffer_Type PyMemoryView_Type
+
+// Taken from ROOT's TPyBufferFactory
+static PyObject* PyBuffer_FromReadWriteMemory( void* ptr, int size ) {
+#  if PY_VERSION_HEX > 0x03000000
+  // Python 3 will set an exception if nullptr, just rely on size == 0
+  if ( !ptr ) {
+    static long dummy[1];
+    ptr  = dummy;
+    size = 0;
+  }
+#  endif
+  Py_buffer bufinfo = {
+    ptr,
+    NULL,
+    size,
+    1,
+    0,
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+#  if PY_VERSION_HEX < 0x03030000
+    {0, 0},
+#  endif
+    NULL
+  };
+  return PyMemoryView_FromBuffer( &bufinfo );
+}
+#endif
+
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgTool.h"
@@ -134,11 +171,17 @@ namespace GaudiPython {
   private:
     template <class T>
     static Py_ssize_t Array_length( PyObject* self ) {
-#if PY_VERSION_HEX < 0x02050000
+#if PY_MAJOR_VERSION >= 3
+      Py_buffer bufinfo;
+      ( *( self->ob_type->tp_as_buffer->bf_getbuffer ) )( self, &bufinfo, PyBUF_SIMPLE );
+      Py_ssize_t size = bufinfo.len;
+#else
+#  if PY_VERSION_HEX < 0x02050000
       const
-#endif
+#  endif
           char*  buf  = 0;
       Py_ssize_t size = ( *( self->ob_type->tp_as_buffer->bf_getcharbuffer ) )( self, 0, &buf );
+#endif
       return size / sizeof( T );
     }
 
@@ -158,8 +201,14 @@ namespace GaudiPython {
 #if PY_VERSION_HEX < 0x02050000
       const
 #endif
-          char*  buf  = nullptr;
+          char* buf = nullptr;
+#if PY_MAJOR_VERSION >= 3
+      Py_buffer bufinfo;
+      ( *( self->ob_type->tp_as_buffer->bf_getbuffer ) )( self, &bufinfo, PyBUF_SIMPLE );
+      Py_ssize_t size = bufinfo.len;
+#else
       Py_ssize_t size = ( *( self->ob_type->tp_as_buffer->bf_getcharbuffer ) )( self, 0, &buf );
+#endif
       if ( idx < 0 || idx >= size / int( sizeof( T ) ) ) {
         PyErr_SetString( PyExc_IndexError, "buffer index out of range" );
         return nullptr;
@@ -176,8 +225,8 @@ namespace GaudiPython {
       meth.sq_item   = (intargfunc)&Array_item<T>;
       meth.sq_length = (inquiry)&Array_length<T>;
 #else
-      meth.sq_item   = (ssizeargfunc)&Array_item<T>;
-      meth.sq_length = (lenfunc)&Array_length<T>;
+      meth.sq_item    = (ssizeargfunc)&Array_item<T>;
+      meth.sq_length  = (lenfunc)&Array_length<T>;
 #endif
       type.tp_as_sequence = &meth;
       PyObject* buf       = PyBuffer_FromReadWriteMemory( ptr, size * sizeof( T ) );

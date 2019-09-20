@@ -21,7 +21,7 @@ class DataObjectHandleBase(object):
         """
         if isinstance(other, DataObjectHandleBase):
             return self.Path == other.Path
-        if isinstance(other, basestring):
+        if isinstance(other, str):
             return self.Path == other
         if other is None:
             return False

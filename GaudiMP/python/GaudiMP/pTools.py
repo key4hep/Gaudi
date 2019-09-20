@@ -378,7 +378,7 @@ class FileRecordsAgent():
             cob = ob2.containedObjects()[0]
             min = cob.earliest()
             max = cob.latest()
-            for j in xrange(sz):
+            for j in range(sz):
                 cob = ob.containedObjects()[j]
                 self.log.debug('Adding TimeSpanFSR')
                 if cob.earliest() < min:
@@ -407,7 +407,7 @@ class FileRecordsAgent():
         baseLumi = LumiFSR(l)
         # Now deal with the argument Non-empty Keyed Container of LumiFSRs
         nCont = keyedC.numberOfObjects()
-        for i in xrange(nCont):
+        for i in range(nCont):
             obj = keyedC.containedObject(i)
             nextLumi = LumiFSR(obj)
             baseLumi.merge(nextLumi)
@@ -602,7 +602,7 @@ class Syncer(object):
         self.d = {}
         self.manyEvents = manyEvents
 
-        for i in xrange(-2, nWorkers):
+        for i in range(-2, nWorkers):
             self.d[i] = SyncMini(Event(), lastEvent=Event())
             if self.manyEvents:
                 self.limitFirst = firstEvent
@@ -620,7 +620,7 @@ class Syncer(object):
             return sc
 
         # Regular version ----------------------------
-        for i in xrange(0, self.limit, self.step):
+        for i in range(0, self.limit, self.step):
             if self.checkAll():
                 self.log.info('%s : All procs done @ %i s' % (step, i))
                 break

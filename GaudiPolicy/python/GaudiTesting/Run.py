@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+import importlib
 import os
 import sys
 import xml.sax.saxutils as XSS
-import BaseTest as GT
+from GaudiTesting import BaseTest as GT
 import logging
 
 # FIXME: module alias for backward compatibility
@@ -14,14 +16,14 @@ def basic_report(results):
     Report function taking the dictionary from BasicTest.run() and display
     stdout and stderr from it.
     '''
-    print '=== stdout ==='
-    print results.get('stdout', '')
-    print '=== stderr ==='
-    print results.get('stderr', '')
-    print '=== result ==='
-    print results.get('Status')
+    print('=== stdout ===')
+    print(results.get('stdout', ''))
+    print('=== stderr ===')
+    print(results.get('stderr', ''))
+    print('=== result ===')
+    print(results.get('Status'))
     if results.get('Status') != 'passed' and 'Causes' in results:
-        print '   ', 'unexpected ' + ', '.join(results['Causes'])
+        print('   ', 'unexpected ' + ', '.join(results['Causes']))
 
 
 def quiet_report(results):
@@ -37,10 +39,10 @@ def ctest_report(results):
     from it in a CTest-friendly way.
     '''
     # It's weird, I know, but it tells CTest not to cut the output.
-    print 'CTEST_FULL_OUTPUT'
-    print results.get('stdout', '')
+    print('CTEST_FULL_OUTPUT')
+    print(results.get('stdout', ''))
     handler = {'Environment': lambda v: '\n'.join('{0}={1}'.format(*item)
-                                                  for item in sorted(v.iteritems())),
+                                                  for item in sorted(v.items())),
                'Causes': lambda v: 'unexpected ' + ', '.join(v)}
 
     def id_handler(v):
@@ -181,8 +183,7 @@ def main():
         test_module = os.environ.get('GAUDI_QMTEST_MODULE',
                                      'GaudiTesting.QMTTest')
         test_class = os.environ.get('GAUDI_QMTEST_CLASS', 'QMTTest')
-        exec ('from {} import {} as test_class'.format(test_module,
-                                                       test_class))
+        test_class = getattr(importlib.import_module(test_module), test_class)
         fileToTest = test_class(filename)
         results = fileToTest.run()
 

@@ -54,8 +54,8 @@
 # <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Properties.opts'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on pclhcb117 on Fri Jun 24 17:52:46 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v31r0)
+                                          running on cern.ch on Fri Apr 12 22:35:10 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -172,7 +172,7 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 PropertyAlg          INFO executing....
 PropertyProxy        INFO executing....
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 51.3164 | total time (skipping 1st evt) 75895 ns
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 54.7266 | total time (skipping 1st evt) 327468 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 PropertyAlg          INFO finalizing....
 PropertyProxy        INFO finalizing....

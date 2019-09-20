@@ -59,4 +59,10 @@ for new in aliases:
 _gbl.update(aliases)
 __all__.extend(aliases)
 # remove temporaries
-del _gbl, new
+del _gbl
+# The `new` var is only scoped in its `for` loop in Python 3, so we only need
+# to 'worry' about cleanup in Python 2
+try:
+    del new
+except NameError:
+    pass

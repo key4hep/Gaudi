@@ -13,6 +13,8 @@ import logging
 
 from subprocess import Popen, PIPE, STDOUT
 
+import six
+
 
 def sanitize_for_xml(data):
     '''
@@ -38,7 +40,7 @@ def dumpProcs(name):
     if 'WORKSPACE' in os.environ:
         p = Popen(['ps', '-fH', '-U', getuser()], stdout=PIPE)
         with open(os.path.join(os.environ['WORKSPACE'], name), 'w') as f:
-            f.write(p.communicate()[0])
+            f.write(p.communicate()[0].decode('utf-8'))
 
 
 def kill_tree(ppid, sig):
@@ -49,7 +51,7 @@ def kill_tree(ppid, sig):
     log = logging.getLogger('kill_tree')
     ps_cmd = ['ps', '--no-headers', '-o', 'pid', '--ppid', str(ppid)]
     get_children = Popen(ps_cmd, stdout=PIPE, stderr=PIPE)
-    children = map(int, get_children.communicate()[0].split())
+    children = map(int, get_children.communicate()[0].decode('utf-8').split())
     for child in children:
         kill_tree(child, sig)
     try:
@@ -104,7 +106,7 @@ class BaseTest(object):
                 optionFile = tempfile.NamedTemporaryFile(suffix='.py')
             else:
                 optionFile = tempfile.NamedTemporaryFile(suffix='.opts')
-            optionFile.file.write(self.options)
+            optionFile.file.write(self.options.encode('utf-8'))
             optionFile.seek(0)
             self.args.append(RationalizePath(optionFile.name))
 
@@ -112,8 +114,8 @@ class BaseTest(object):
         if self.environment is None:
             self.environment = os.environ
         else:
-            self.environment = dict(self.environment.items() +
-                                    os.environ.items())
+            self.environment = dict(
+                list(self.environment.items()) + list(os.environ.items()))
 
         platform_id = (os.environ.get('BINARY_TAG')
                        or os.environ.get('CMTCONFIG') or platform.platform())
@@ -148,7 +150,7 @@ class BaseTest(object):
 
             prog = which(prog) or prog
 
-            args = map(RationalizePath, self.args)
+            args = list(map(RationalizePath, self.args))
 
             if prog_ext == ".py":
                 params = ['python', RationalizePath(prog)] + args
@@ -177,7 +179,10 @@ class BaseTest(object):
                 self.proc = Popen(
                     params, stdout=PIPE, stderr=PIPE, env=self.environment)
                 logging.debug('(pid: %d)', self.proc.pid)
-                self.out, self.err = self.proc.communicate()
+                out, err = self.proc.communicate()
+                # Use `or ''` as the result is None if there was no output
+                self.out = out.decode('utf-8') or ''
+                self.err = err.decode('utf-8') or ''
 
             thread = threading.Thread(target=target)
             thread.start()
@@ -194,7 +199,7 @@ class BaseTest(object):
                     '--eval-command=thread apply all backtrace'
                 ]
                 gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-                self.stack_trace = gdb.communicate()[0]
+                self.stack_trace = gdb.communicate()[0].decode('utf-8')
 
                 kill_tree(self.proc.pid, signal.SIGTERM)
                 thread.join(60)
@@ -257,14 +262,14 @@ class BaseTest(object):
             'Stack Trace': 'stack_trace'
         }
         resultDict = [(key, getattr(self, attr))
-                      for key, attr in field_mapping.iteritems()
+                      for key, attr in field_mapping.items()
                       if getattr(self, attr)]
         resultDict.append(('Working Directory',
                            RationalizePath(
                                os.path.join(os.getcwd(), self.workdir))))
-        # print dict(resultDict).keys()
-        resultDict.extend(self.result.annotations.iteritems())
-        # print self.result.annotations.keys()
+        # print(dict(resultDict).keys())
+        resultDict.extend(self.result.annotations.items())
+        # print(self.result.annotations.keys())
         return dict(resultDict)
 
     # -------------------------------------------------#
@@ -299,12 +304,13 @@ class BaseTest(object):
         if causes is None:
             causes = self.causes
 
-        reflines = filter(None,
-                          map(lambda s: s.rstrip(), reference.splitlines()))
+        reflines = list(
+            filter(None, map(lambda s: s.rstrip(), reference.splitlines())))
         if not reflines:
             raise RuntimeError("Empty (or null) reference")
         # the same on standard output
-        outlines = filter(None, map(lambda s: s.rstrip(), stdout.splitlines()))
+        outlines = list(
+            filter(None, map(lambda s: s.rstrip(), stdout.splitlines())))
 
         res_field = "GaudiTest.RefBlock"
         if id:
@@ -678,12 +684,13 @@ class Result:
         self.annotations = annotations.copy()
 
     def __getitem__(self, key):
-        assert type(key) in types.StringTypes
+        assert isinstance(key, six.string_types)
         return self.annotations[key]
 
     def __setitem__(self, key, value):
-        assert type(key) in types.StringTypes
-        assert type(value) in types.StringTypes
+        assert isinstance(key, six.string_types)
+        assert isinstance(
+            value, six.string_types), '{!r} is not a string'.format(value)
         self.annotations[key] = value
 
     def Quote(self, string):
@@ -739,8 +746,8 @@ class BasicOutputValidator:
             def keep_line(l):
                 return not to_ignore.match(l)
 
-            return filter(keep_line, s1.splitlines()) == filter(
-                keep_line, s2.splitlines())
+            return list(filter(keep_line, s1.splitlines())) == list(
+                filter(keep_line, s2.splitlines()))
         else:
             return s1.splitlines() == s2.splitlines()
 
@@ -762,7 +769,7 @@ class FilePreprocessor:
         return output
 
     def __call__(self, input):
-        if hasattr(input, "__iter__"):
+        if not isinstance(input, six.string_types):
             lines = input
             mergeback = False
         else:
@@ -795,7 +802,7 @@ class LineSkipper(FilePreprocessor):
     def __init__(self, strings=[], regexps=[]):
         import re
         self.strings = strings
-        self.regexps = map(re.compile, regexps)
+        self.regexps = list(map(re.compile, regexps))
 
     def __processLine__(self, line):
         for s in self.strings:
@@ -1035,7 +1042,7 @@ class ReferenceFileValidator:
     def __call__(self, stdout, result):
         causes = []
         if os.path.isfile(self.reffile):
-            orig = open(self.reffile).xreadlines()
+            orig = open(self.reffile).readlines()
             if self.preproc:
                 orig = self.preproc(orig)
                 result[self.result_key + '.preproc.orig'] = \
@@ -1047,8 +1054,8 @@ class ReferenceFileValidator:
             new = self.preproc(new)
 
         diffs = difflib.ndiff(orig, new, charjunk=difflib.IS_CHARACTER_JUNK)
-        filterdiffs = map(lambda x: x.strip(),
-                          filter(lambda x: x[0] != " ", diffs))
+        filterdiffs = list(
+            map(lambda x: x.strip(), filter(lambda x: x[0] != " ", diffs)))
         if filterdiffs:
             result[self.result_key] = result.Quote("\n".join(filterdiffs))
             result[self.result_key] += result.Quote("""

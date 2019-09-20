@@ -7,6 +7,7 @@
 *                                                                             *
 *******************************************************************************
 """
+from __future__ import print_function
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
@@ -30,8 +31,8 @@ ApplicationMgr(EvtSel="NONE", TopAlg=[ske], EvtMax=10)
 # =============================================================================
 if '__main__' == __name__:
 
-    print __doc__
-    print __author__
+    print(__doc__)
+    print(__author__)
 
     from GaudiPython.Bindings import AppMgr
 
@@ -49,13 +50,13 @@ if '__main__' == __name__:
 
     key = SK('new Key')
 
-    print 'set new key: ', key
+    print('set new key: ', key)
 
     ske.Key = key
 
     keys = [key, 'rrr', SK('s')]
 
-    print 'set new keys: ', keys
+    print('set new keys: ', keys)
 
     ske.Keys = keys
 

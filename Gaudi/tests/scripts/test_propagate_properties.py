@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Gaudi.Configuration import *
 
 # use cases:
@@ -110,12 +111,12 @@ def check(conf, prop, exp):
     v = conf.getProp(prop)
     good = v == exp
     if not good:
-        print "ERROR:",
-    print "%s.%s is %r (expected %r)," % (conf.name(), prop, v, exp),
+        print("ERROR:", end=' ')
+    print("%s.%s is %r (expected %r)," % (conf.name(), prop, v, exp), end=' ')
     if hasattr(conf, prop):
-        print "set"
+        print("set")
     else:
-        print "unset"
+        print("unset")
     return good
 
 

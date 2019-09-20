@@ -53,6 +53,22 @@ build:gcc8:dbg:
     paths:
       - .ccache
 
+build:gcc8:opt:python3:
+  stage: build
+  tags:
+    - cvmfs
+  variables:
+    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BUILDDIR: build-opt-python3
+    HEPTOOLS_VERSION: 96python3
+  script:
+    - ci-utils/build
+  artifacts:
+    paths:
+      - ${BUILDDIR}
+      - .ccache
+    expire_in: 1 week
+
 check-formatting:
   stage: build
   dependencies: []
@@ -125,6 +141,24 @@ test:gcc8:dbg:
       - ${TESTS_REPORT}
     when: always
     expire_in: 1 week
+
+test:gcc8:opt:python3:
+  stage: test
+  dependencies:
+    - build:gcc8:opt:python3
+  tags:
+    - cvmfs
+  variables:
+    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BUILDDIR: build-opt-python3
+  script:
+    - ci-utils/test
+  artifacts:
+    paths:
+      - ${TESTS_REPORT}
+    when: always
+    expire_in: 1 week
+  allow_failure: true
 
 test_public_headers_build:
   stage: test

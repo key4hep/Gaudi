@@ -1,3 +1,4 @@
+from __future__ import print_function
 from GaudiKernel.ProcessJobOptions import InstallRootLoggingHandler
 import logging
 InstallRootLoggingHandler("# ", level=logging.INFO)
@@ -31,7 +32,7 @@ CommonConf()
 # apply all ConfigurableUser instances
 from GaudiKernel.Configurable import applyConfigurableUsers
 applyConfigurableUsers()
-print "Done."
+print("Done.")
 
 expected_order = ["CommonConf", "Application"]
 if applied_order != expected_order:

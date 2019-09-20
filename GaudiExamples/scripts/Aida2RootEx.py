@@ -7,6 +7,7 @@
 #  @date 2007-01-24
 # =============================================================================
 " Simple example to illustrate the usage of aida2root converter "
+from __future__ import print_function
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@phys.syr.edu"
 # =============================================================================
@@ -137,7 +138,7 @@ def useScript(histos):
     for histo in histos:
         root = hsvc.getAsROOT(histo)
         if not root:
-            print "ERROR in access the histogram '%s' " % histo
+            print("ERROR in access the histogram '%s' " % histo)
             continue
         canvas = ROOT.TCanvas('canvas_%d' % i, histo, 250, 250)
         root.Draw()
@@ -152,7 +153,7 @@ def useScript(histos):
             # strictly speaking, it is not needed, but avoids a message on the stderr
             os.remove(name)
         canvas.Print(name)
-        print "The file name is '%s'" % name
+        print("The file name is '%s'" % name)
         i += 1
 
 
@@ -162,7 +163,7 @@ def useScript(histos):
 # The actual job execution
 # =============================================================================
 if '__main__' == __name__:
-    print __doc__, __author__
+    print(__doc__, __author__)
 
     from GaudiPython.Bindings import AppMgr
 

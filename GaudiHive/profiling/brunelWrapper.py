@@ -4,6 +4,7 @@ This script acts as a wrapper in order to generate Gaudi configs for running
 with different parameters in order to perform performance measurements.
 It takes command line arguments.
 """
+from __future__ import print_function
 
 import optparse
 """
@@ -110,7 +111,7 @@ if __name__ == "__main__":
     if options.bg:
         command += " &"
 
-    print command
+    print(command)
     if options.execbrunel:
         import os
         os.system(command)

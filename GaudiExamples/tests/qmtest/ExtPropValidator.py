@@ -75,7 +75,7 @@ def validate(stdout, stderr, result, causes):
     output = map(lambda l: l.rstrip(), stdout.splitlines())
     i = output.__iter__()
     try:
-        while not signature.match(i.next()):
+        while not signature.match(next(i)):
             pass
 
         properties = {}

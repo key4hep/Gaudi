@@ -36,7 +36,7 @@ if not re.search(expected,stdout):
     causes.append("missing regexp match")
     result["GaudiTest.regexp"] = result.Quote(expected.replace("\\n","\n"))
 
-class Cause:
+class Cause(Exception):
     def __init__(self, msg):
         self.msg = msg
 
@@ -51,7 +51,7 @@ try:
     if entries[0] != 'Timing' or len(entries) != 401:
         raise Cause('timing log content')
 
-except Cause, c:
+except Cause as c:
     causes.append(c.msg)
 
 </text></argument>

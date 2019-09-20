@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Gaudi.Configuration import *
 from GaudiPython import AppMgr, gbl
 from ROOT import TFile, TBufferFile, TBuffer
@@ -68,12 +69,12 @@ def CompareTrees(pname, sname):
     if pMeta == sMeta:
         pass
     else:
-        print 'Meta Data differs'
+        print('Meta Data differs')
 
     if pEvent == sEvent:
         pass
     else:
-        print 'Event data differs'
+        print('Event data differs')
 
     if pOther != sOther:
         pset = set(pOther)
@@ -81,11 +82,11 @@ def CompareTrees(pname, sname):
         pExtra = pset - sset
         sExtra = sset - pset
         if pExtra:
-            print 'Extra Data in parallel file : ', pExtra
+            print('Extra Data in parallel file : ', pExtra)
         if sExtra:
-            print 'Extra Data in serial   file : ', sExtra
+            print('Extra Data in serial   file : ', sExtra)
         if sExtra or pExtra:
-            print 'Files will have different sizes'
+            print('Files will have different sizes')
     pf.Close()
     sf.Close()
 
@@ -98,9 +99,9 @@ def switchDict(d):
     nvals = len(vals)
     for v in vals:
         if vals.count(v) > 1:
-            print 'Dictionary cannot be switched, values not unique'
+            print('Dictionary cannot be switched, values not unique')
             return None
-    print 'Dict has keys/values : %i/%i' % (nkeys, nvals)
+    print('Dict has keys/values : %i/%i' % (nkeys, nvals))
     pairs = d.items()  # returns (key, val) tuples in a list
     newd = {}
     for k, entry in pairs:
@@ -116,11 +117,11 @@ def printDict(d, name='unspecified'):
     #   key     value
     #   ...
     #
-    print '-' * 80
-    print 'Dictionary %s : ' % (name)
+    print('-' * 80)
+    print('Dictionary %s : ' % (name))
     for k in iter(d.keys()):
-        print '\t', k, '\t', d[k]
-    print '-' * 80
+        print('\t', k, '\t', d[k])
+    print('-' * 80)
 
 
 def Reader(readerType, filename, qacross, qToEngine):
@@ -169,7 +170,7 @@ def Reader(readerType, filename, qacross, qToEngine):
             pass
         lsks = len(serOrder.keys())
         lpks = len(order.keys())
-        print 'Events in Files (serial/parallel) : %i / %i' % (lsks, lpks)
+        print('Events in Files (serial/parallel) : %i / %i' % (lsks, lpks))
 
     # now run files in the order specified by the serial ordering
     # and send them one by one to the comparison engine
@@ -185,7 +186,7 @@ def Reader(readerType, filename, qacross, qToEngine):
             [(l, (evt[l].__class__.__name__, evt[l].__repr__())) for l in lst])
         qToEngine.put(ascii)
     qToEngine.put(None)
-    print '%s Reader Finished' % (readerType)
+    print('%s Reader Finished' % (readerType))
 
 
 def ComparisonEngine(pQueue, sQueue):
@@ -202,22 +203,22 @@ def ComparisonEngine(pQueue, sQueue):
         pitem = pQueue.get()
         sitem = sQueue.get()
         if pitem == sitem == None:
-            print 'Termination Signals received ok'
+            print('Termination Signals received ok')
             break
         elif pitem == None:
-            print 'pitem != sitem : ', pitem, sitem
+            print('pitem != sitem : ', pitem, sitem)
             break
         elif sitem == None:
-            print 'pitem != sitem : ', pitem, sitem
+            print('pitem != sitem : ', pitem, sitem)
             break
         results.append(compareEvents(pitem, sitem))
-    print '=' * 80
-    print 'Comparison Engine Finished'
-    print '-' * 80
-    print 'Total Events Checked : %i' % (len(results))
-    print 'Perfect Matches      : %i' % (sum(results))
-    print 'Errors               : %i' % (len(results) - sum(results))
-    print '=' * 80
+    print('=' * 80)
+    print('Comparison Engine Finished')
+    print('-' * 80)
+    print('Total Events Checked : %i' % (len(results)))
+    print('Perfect Matches      : %i' % (sum(results)))
+    print('Errors               : %i' % (len(results) - sum(results)))
+    print('=' * 80)
 
 
 def checkForAddressDifference(a, b):
@@ -261,7 +262,7 @@ def compareEvents(s, p):
             if p[e][0] == 'DataObject':
                 pks.remove(e)
             else:
-                print 'Extra Other thing found!', e, p[e][0]
+                print('Extra Other thing found!', e, p[e][0])
                 return False
 
     # check 2 : same paths?
@@ -273,7 +274,7 @@ def compareEvents(s, p):
     # check 3 : check the content
     l = len(sks)
     diffs = []
-    for i in xrange(l):
+    for i in range(l):
         key = sks[i]
         # compare class name
         if s[key][0] == p[key][0]:
@@ -297,7 +298,7 @@ def compareEvents(s, p):
 
 def CheckFileRecords(par, ser):
 
-    print "Checking File Records"
+    print("Checking File Records")
 
     parFSR = GetFSRdicts(par)
     serFSR = GetFSRdicts(ser)
@@ -307,16 +308,16 @@ def CheckFileRecords(par, ser):
     diff2 = set(parFSR["EventCountFSR"].iteritems()) - \
         set(serFSR["EventCountFSR"].iteritems())
 
-    print "\nDifferent entries in TimeSpanFSR:  \t" + \
-        str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2))
+    print("\nDifferent entries in TimeSpanFSR:  \t" + \
+        str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2)))
 
     for k in ["LumiFSRBeamCrossing", "LumiFSRBeam2", "LumiFSRNoBeam"]:
         diff3 = set(parFSR[k]["key"]) - set(serFSR[k]["key"])
         diff4 = set(parFSR[k]["incr"]) - set(serFSR[k]["incr"])
         diff5 = set(parFSR[k]["integral"]) - set(serFSR[k]["integral"])
-        print "Different entries in " + str(k) + ": \tkey: " + str(
-            len(diff3)) + " increment: " + str(
-                len(diff4)) + " integral: " + str(len(diff5))
+        print("Different entries in " + str(k) + ": \tkey: " +
+              str(len(diff3)) + " increment: " + str(len(diff4)) +
+              " integral: " + str(len(diff5)))
 
 
 def LumiFSR(lumi):
@@ -432,26 +433,26 @@ def CompareFSR(pout, sout):
     parFSR = pout.get()
     serFSR = sout.get()
 
-    print "Comparing File Records"
+    print("Comparing File Records")
 
     diff1 = set(parFSR["TimeSpanFSR"].iteritems()) - \
         set(serFSR["TimeSpanFSR"].iteritems())
     diff2 = set(parFSR["EventCountFSR"].iteritems()) - \
         set(serFSR["EventCountFSR"].iteritems())
 
-    print "\nDifferent entries in TimeSpanFSR:  \t" + \
-        str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2))
+    print("\nDifferent entries in TimeSpanFSR:  \t" + \
+        str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2)))
 
     for k in ["LumiFSRBeamCrossing", "LumiFSRBeam2", "LumiFSRNoBeam"]:
         diff3 = set(parFSR[k]['key']) - set(serFSR[k]['key'])
         diff4 = set(parFSR[k]['incr']) - set(serFSR[k]['incr'])
         diff5 = set(parFSR[k]['integral']) - set(serFSR[k]["integral"])
-        print "Different entries in " + str(k) + ": \tkey: " + str(
-            len(diff3)) + " increment: " + str(
-                len(diff4)) + " integral: " + str(len(diff5))
+        print("Different entries in " + str(k) + ": \tkey: " +
+              str(len(diff3)) + " increment: " + str(len(diff4)) +
+              " integral: " + str(len(diff5)))
 
-    print "\nParallel: \n" + str(parFSR)
-    print "\nSerial: \n" + str(serFSR)
+    print("\nParallel: \n" + str(parFSR))
+    print("\nSerial: \n" + str(serFSR))
 
 
 if __name__ == '__main__':
@@ -459,13 +460,15 @@ if __name__ == '__main__':
     args = sys.argv
     args.pop(0)  # get rid of script name
     if len(args) != 2:
-        print 'Please supply two arguments : > python loadFile <parallelFile> <serialFile>'
+        print(
+            'Please supply two arguments : > python loadFile <parallelFile> <serialFile>'
+        )
         sys.exit(0)
     else:
         par = 'PFN:' + args[0]
         ser = 'PFN:' + args[1]
-        print 'Parallel File to be analysed : %s' % (par)
-        print 'Serial   File to be analysed : %s' % (ser)
+        print('Parallel File to be analysed : %s' % (par))
+        print('Serial   File to be analysed : %s' % (ser))
 
     pname = par[4:]  # TFile doesn't need the "PFN:" prefix
     sname = ser[4:]
@@ -483,7 +486,7 @@ if __name__ == '__main__':
 
     #CompareTrees( pname, sname )
 
-    print "Check File Records"
+    print("Check File Records")
 
     ser = sys.argv[0]
     par = sys.argv[1]

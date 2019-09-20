@@ -1,3 +1,4 @@
+from __future__ import print_function
 ###############################################################
 # Job options file
 ###############################################################
@@ -55,9 +56,9 @@ top = s1 >> s2
 
 MySuperAlg('s2', PercentPass=75, OutputLevel=DEBUG, UseHelloWorld=False)
 
-print '# --- Configured Control Flow Expression:'
-print '#', top
-print '# ---'
+print('# --- Configured Control Flow Expression:')
+print('#', top)
+print('# ---')
 EventLoopMgr(PrintControlFlowExpression=True)
 
 # -----------------------------------------------------------------

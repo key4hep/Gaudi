@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import sys
 import time
@@ -11,11 +11,11 @@ from subprocess import Popen
 if __name__ == '__main__':
     from PyCPUFamily import CPUFamily
     if 'GAUDIPROFILINGROOT' not in os.environ:
-        print """
+        print("""
             **************************************** ERROR *****************************************
             * GaudiProfiler: Environment variable $GAUDIPROFILINGROOT is missing. Process stopped. *
             ****************************************************************************************
-        """
+        """)
         sys.exit()
     if 'GAUDIPROFILERCONFIG' in os.environ:
         configFile = os.environ['GAUDIPROFILERCONFIG']
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     try:
         conf = ConvertXmlToDict(configFile)
     except xml.parsers.expat.ExpatError:
-        print "Invalid xml file: %s" % configFile
+        print("Invalid xml file: %s" % configFile)
         sys.exit()
     #gaudiRunParams = ' '.join(sys.argv[1:])
     storeResultsAt = conf.PFM_CONFIG.PROPERTIES.OUTPUT_DIR
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         sampling_period = []
         if type([]) != type(es.EVENT):
             es.EVENT = [es.EVENT]
-        for x in xrange(len(es.EVENT)):
+        for x in range(len(es.EVENT)):
             counter.append(es.EVENT[x].NAME)
             cmask.append(es.EVENT[x].CMASK)
             invmask.append(es.EVENT[x].INVMASK)
@@ -57,11 +57,11 @@ if __name__ == '__main__':
                startAtEvent, storeResultsAt, family)
         ]).wait()
         if res:
-            print """
+            print("""
             ************************************** ERROR ***************************************
             * GaudiProfiler: PerfMonAuditor failed. Is pfm library and kernel patch installed? *
             ************************************************************************************
-            """
+            """)
             sys.exit(res)
     # post-processing
     os.system("GaudiGenProfilingHtml.exe %s --caa" % storeResultsAt)
@@ -69,4 +69,4 @@ if __name__ == '__main__':
         os.path.sep.join(
             [os.environ['GAUDIPROFILINGROOT'], 'data', 'sorttable.js']),
         os.path.sep.join([storeResultsAt, 'HTML']))
-    print "Results:", os.path.sep.join([storeResultsAt, 'HTML', 'index.html'])
+    print("Results:", os.path.sep.join([storeResultsAt, 'HTML', 'index.html']))

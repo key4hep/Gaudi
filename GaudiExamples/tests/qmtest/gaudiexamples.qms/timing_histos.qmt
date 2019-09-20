@@ -22,11 +22,11 @@ if test.returncode:
     causes.append('root file content')
 
 if out:
-    result['root_file_check.stdout'] = result.Quote(out)
+    result['root_file_check.stdout'] = result.Quote(out.decode('utf-8'))
 
 if err:
     causes.append('standard error')
-    result['root_file_check.stderr'] = result.Quote(err)
+    result['root_file_check.stderr'] = result.Quote(err.decode('utf-8'))
 
 </text></argument>
 </extension>

@@ -1,3 +1,9 @@
+# Python 2 compatibility
+try:
+    long
+except NameError:
+    long = int
+
 from Gaudi.Configuration import *
 
 # common configuration plus output level threshold

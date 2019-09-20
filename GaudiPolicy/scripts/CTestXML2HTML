@@ -25,7 +25,7 @@ def cleanXml(xmlFileName):
     @param xmlFileName: The name of the xml file.
     """
     _illegal_xml_chars_Re = re.compile(
-        u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+        '[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
 
     def hexreplace(match):
         "Return the hex string "
@@ -34,8 +34,8 @@ def cleanXml(xmlFileName):
     def hexConvert(char):
         return hex(ord(char))
 
-    print " Trying to repair the xml file"
-    print " Replacing invalid char"
+    print(" Trying to repair the xml file")
+    print(" Replacing invalid char")
     xmlFile = open(xmlFileName, 'r')
     data = xmlFile.read()
     xmlFile.close()
@@ -50,7 +50,7 @@ def cleanXml(xmlFileName):
         xmlFile.close()
         del tree
     except:
-        print " Removing invalid char"
+        print(" Removing invalid char")
         xmlFile = open(xmlFileName, 'w')
         xmlFile.write(_illegal_xml_chars_Re.sub("", data))
         xmlFile.close()
@@ -65,7 +65,7 @@ def formatMeasurementText(txt, escape=False, preformat=True):
     from codecs import encode
     if hasattr(txt, 'decode'):
         txt = txt.decode(errors='ignore')
-    txt = encode(txt, 'utf-8', 'xmlcharrefreplace')
+    txt = encode(txt, 'utf-8', 'xmlcharrefreplace').decode('utf-8')
     if escape:
         txt = escape_xml(txt)
     if preformat:
@@ -357,7 +357,7 @@ class TestOrganizer:
 
     def _addStatistics(self):  # ,groupContainer,fatherAdresses):
         """ add statistics to the html structure."""
-        for group in self._groups.iteritems():
+        for group in self._groups.items():
             if group[0] not in self.fieldToAvoidList:
                 self._addStatistic(group[1])
 
@@ -388,13 +388,13 @@ class TestOrganizer:
                 stats.clear()
                 stats.set("class", "statistics")
 
-        for stat in group["Statistics"].iteritems():
+        for stat in group["Statistics"].items():
             ET.SubElement(stats, "span", {
                 "class": stat[0]
             }).text = '  ' + stat[0] + ' = ' + str(stat[1])
 
         # process all the subgroups
-        for grp in group.iteritems():
+        for grp in group.items():
             if grp[0] not in self.fieldToAvoidList:
                 self._addStatistic(grp[1])
 
@@ -409,7 +409,7 @@ class TestOrganizer:
             @param xmlFileName: The name of the xml file.
             """
             _illegal_xml_chars_Re = re.compile(
-                u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+                '[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
             xmlFile = open(xmlFileName, 'r')
             data = xmlFile.read()
             xmlFile.close()
@@ -431,7 +431,7 @@ class TestOrganizer:
         else:
             sites = newdataset.getchildren()
         for site in sites:
-            print "    -> Process the site: " + site.get("BuildStamp")
+            print("    -> Process the site: " + site.get("BuildStamp"))
             Testing = site.find("Testing")
             # process each test case
             for Test in Testing.findall("Test"):
@@ -661,7 +661,7 @@ def main():
     inputs = []
     if options.inputFile is not None:
         if not os.path.isfile(options.inputFile):
-            print " The input file is not a valid file"
+            print(" The input file is not a valid file")
             exit(1)
         else:
             inputs.append(options.inputFile)
@@ -675,11 +675,11 @@ def main():
 
     # close the program if there is no file found
     if inputs == []:
-        print " No file found \n"
+        print(" No file found \n")
         exit()
 
-    print "Converting *Test.xml files from %s to HTML format in %s" % (
-        options.inputDirectory, options.outputDirectory)
+    print("Converting *Test.xml files from %s to HTML format in %s" %
+          (options.inputDirectory, options.outputDirectory))
     # verify or create the output directory
     output = options.outputDirectory
     if not os.path.isdir(output):
@@ -707,7 +707,7 @@ def main():
 
     # process each file
     for fileName in inputs:
-        print "Process the file : " + fileName
+        print("Process the file : " + fileName)
         # read and parse the xml file
         try:
             tree = ET.parse(fileName)
@@ -751,7 +751,7 @@ def main():
                     if os.path.isdir(os.path.join(d, 'HTMLTestReportSkel'))
                 ][0]
             except IndexError:
-                print "Cannot find skeleton directory in ${DATA_PATH}"
+                print("Cannot find skeleton directory in ${DATA_PATH}")
                 exit(1)
 
             # Copy the template directory (do not overwrite)
@@ -844,20 +844,22 @@ def main():
                 # write the stdout
                 try:
                     value = Results.find("Measurement").find("Value")
-                    text = value.text
+                    text = value.text or ''
                     if 'encoding' in value.attrib:
                         text = VALUE_DECODE[value.attrib['encoding']](text)
-                    if 'compression' in value.attrib:
-                        text = VALUE_DECOMP[value.attrib['compression']](text)
+                        if 'compression' in value.attrib:
+                            text = VALUE_DECOMP[value.attrib['compression']](
+                                text)
+                        text = text.decode('utf-8')
                     text = dropCustomMeasurements(text)
                     text = formatMeasurementText(text, escape=True)
                     # no "Measurement" or no "Value" or no text
                 except AttributeError as x:
-                    print 'WARNING: {0[id]}: AttributeError: {1}'.format(
-                        summary, x)
+                    print('WARNING: {0[id]}: AttributeError: {1}'.format(
+                        summary, x))
                     text = '<i>no stdout</i>'
                 except KeyError as x:
-                    print 'WARNING: {0[id]}: KeyError: {1}'.format(summary, x)
+                    print('WARNING: {0[id]}: KeyError: {1}'.format(summary, x))
                     # encoding or compressions unknown, keep original text
                     text = formatMeasurementText(value=text, escape=True)
                 with open(os.path.join(testCaseDir, "stdout"), "w") as stdout:
@@ -940,8 +942,8 @@ def main():
             organizer_failed.write()
 
     if sum(failures_count.values()):
-        print 'Some tests failed:'
-        print '\n'.join('  %s: %s' % i for i in failures_count.items())
+        print('Some tests failed:')
+        print('\n'.join('  %s: %s' % i for i in list(failures_count.items())))
         sys.exit(1)
 
     # print " End of the program"
