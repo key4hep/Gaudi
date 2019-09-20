@@ -518,3 +518,34 @@ if six.PY2:
 else:
     # Behaviour is like Python 3+ dict
     gbl.Gaudi.Utils.MapBase.items = __mapbase_iteritems__
+
+#############################################################################
+# Helpers for re-entrant interfaces
+##############################################################################
+# GaudiPython is inherently single threaded and it's unpractical to use the
+# new re-entrant interfaces. Moreover a lot of existing code (like GaudiMP)
+# expects the old signatures.
+gbl.gInterpreter.Declare("""
+#ifndef REENTINTERFACES_PYTHON_HELPERS
+#define REENTINTERFACES_PYTHON_HELPERS
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IEventProcessor.h>
+#include <GaudiKernel/ThreadLocalContext.h>
+
+namespace GaudiPython::Helpers {
+  StatusCode executeEvent( IEventProcessor* self ) {
+    return self->executeEvent( self->createEventContext() );
+  }
+  bool isExecuted( IAlgorithm* self ) {
+    return self->execState( Gaudi::Hive::currentContext() ).state() == AlgExecState::State::Done;
+  }
+  bool filterPassed( IAlgorithm* self ) {
+    return self->execState( Gaudi::Hive::currentContext() ).filterPassed();
+  }
+}
+
+#endif
+""")
+gbl.IEventProcessor.executeEvent = gbl.GaudiPython.Helpers.executeEvent
+gbl.IAlgorithm.isExecuted = gbl.GaudiPython.Helpers.isExecuted
+gbl.IAlgorithm.filterPassed = gbl.GaudiPython.Helpers.filterPassed
