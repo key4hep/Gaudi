@@ -33,8 +33,10 @@ for configurable in [
         VectorDoubleProducer, FrExpTransformer, LdExpTransformer,
         OptFrExpTransformer, OptLdExpTransformer, CountingConsumer
 ]:
-    for prop in configurable.getDefaultProperties().values():
-        if isinstance(prop, DataObjectHandleBase): types.append(prop.type())
+    props = configurable.getDefaultProperties()
+    for prop in (props[propname] for propname in sorted(props)):
+        if isinstance(prop, DataObjectHandleBase):
+            types.append(prop.type())
 
 # check that the type information is passed to python correctly
 print(types)
