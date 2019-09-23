@@ -60,7 +60,9 @@ private:
   PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
   PublicToolHandle<IMyTool>       m_myCopiedToolHandle;
 
-  ToolHandleArray<IMyTool> m_tha;
+  PublicToolHandleArray<IMyTool> m_tha{this,
+                                       "MyPublicToolHandleArrayProperty",
+                                       {"MyTool/AnotherConstGenericToolHandle", "MyTool/AnotherInstanceOfMyTool"}};
 
   DataObjectReadHandle<DataObject> m_tracks{this, "tracks", "/Event/Rec/Tracks", "the tracks"};
   DataObjectReadHandle<DataObject> m_hits{this, "hits", "/Event/Rec/Hits", "the hits"};

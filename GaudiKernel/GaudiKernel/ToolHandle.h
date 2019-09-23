@@ -391,8 +391,9 @@ public:
   template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline ToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
                           std::string doc = "" )
-      : ToolHandleArray( typesAndNames, owner ) {
+      : ToolHandleArray( owner ) {
     owner->addToolsArray( *this );
+    this->setTypesAndNames( typesAndNames );
     auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( name ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
@@ -411,10 +412,11 @@ public:
   /// Autodeclaring constructor with property name, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
-  inline PublicToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
-                                std::string doc = "" )
-      : PublicToolHandleArray( typesAndNames ) {
+  PublicToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
+                         std::string doc = "" )
+      : PublicToolHandleArray() {
     owner->addToolsArray( *this );
+    this->setTypesAndNames( typesAndNames );
     auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( name ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }

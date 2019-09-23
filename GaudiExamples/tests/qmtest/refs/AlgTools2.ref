@@ -27,21 +27,22 @@ JobOptionsSvc        INFO # (49,1): ToolSvc.ToolB.OutputLevel = 2
 JobOptionsSvc        INFO Job options successfully read in from /project/bfys/graven/master/Gaudi/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r5)
-                                          running on stbc-i5.nikhef.nl on Sun Jan 27 20:46:48 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r1)
+                                          running on stbc-i1.nikhef.nl on Thu Aug 22 00:54:28 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 50
+MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 51
 MyAlg               DEBUG Property ['Name': Value] =  'UndefinedToolHandle':
 MyAlg               DEBUG Property ['Name': Value] =  'LegacyToolHandle':MyTool/LegacyToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
 MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
 MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
+MyAlg               DEBUG Property ['Name': Value] =  'MyPublicToolHandleArrayProperty':[ 'MyTool/AnotherConstGenericToolHandle' , 'MyTool/AnotherInstanceOfMyTool' ]
 MyAlg               DEBUG Property ['Name': Value] =  'WrongIfaceTool':MyTool/WrongIfaceTool
 MyAlg               DEBUG Property ['Name': Value] =  'InvalidToolHandle':
 MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing/UnusedToolHandle
@@ -57,13 +58,13 @@ MyAlg               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 MyAlg               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 MyAlg               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 MyAlg               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-MyAlg               DEBUG Property ['Name': Value] =  'RootInTES':
 MyAlg               DEBUG Property ['Name': Value] =  'Context':
 MyAlg               DEBUG Property ['Name': Value] =  'TypePrint':True
 MyAlg               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 MyAlg               DEBUG Property ['Name': Value] =  'StatPrint':True
 MyAlg               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+MyAlg               DEBUG Property ['Name': Value] =  'RootInTES':
 MyAlg               DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 MyAlg               DEBUG Property ['Name': Value] =  'IsIOBound':False
 MyAlg               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
@@ -121,13 +122,13 @@ MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RootInTES':
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Context':
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'TypePrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatPrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RootInTES':
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditRestart':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -167,6 +168,19 @@ MyAlg                INFO unable to retrieve MyTool/WrongIfaceTool (expected) wi
 MyAlg                INFO ....initialization done
 MyAlg               DEBUG input handles: 3
 MyAlg               DEBUG output handles: 1
+MyAlg               DEBUG Registering all Tools in ToolHandleArray MyPublicToolHandleArrayProperty
+ToolSvc.Another...   INFO intialize() has been called
+ToolSvc.Another...   INFO Int    = 100
+ToolSvc.Another...   INFO Double = 100
+ToolSvc.Another...   INFO String = hundred
+ToolSvc.Another...   INFO Bool   = 1
+MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.AnotherConstGenericToolHandle (MyTool)
+ToolSvc.Another...   INFO intialize() has been called
+ToolSvc.Another...   INFO Int    = 100
+ToolSvc.Another...   INFO Double = 100
+ToolSvc.Another...   INFO String = hundred
+ToolSvc.Another...   INFO Bool   = 1
+MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.AnotherInstanceOfMyTool (MyTool)
 MyAlg.PrivToolH...  DEBUG Property update for OutputLevel : new value = 2
 MyAlg.PrivToolH...   INFO intialize() has been called
 MyAlg.PrivToolH...   INFO Int    = 100
@@ -213,13 +227,13 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -245,13 +259,13 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -585,6 +599,8 @@ ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is release
 ToolSvc.ToolA       DEBUG Services to release :
 MyAlg.LegacyToo...   INFO finalize() has been called
 ToolSvc.Generic...   INFO finalize() has been called
+ToolSvc.Another...   INFO finalize() has been called
+ToolSvc.Another...   INFO finalize() has been called
 MyAlg.WrongIfac...   INFO finalize() has been called
 MyAlg.PrivToolH...   INFO finalize() has been called
 ToolSvc.ConstGe...   INFO finalize() has been called
@@ -596,6 +612,8 @@ MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 MyAlg.LegacyToo...   INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
+ToolSvc.Another...   INFO destructor has been called
+ToolSvc.Another...   INFO destructor has been called
 MyAlg.WrongIfac...   INFO destructor has been called
 MyAlg.PrivToolH...   INFO destructor has been called
 ToolSvc.ConstGe...   INFO destructor has been called

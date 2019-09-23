@@ -135,10 +135,11 @@ class GaudiHandleArray(list):
         return rep + '])'
 
     def __str__(self):
-        """Print entries, one per line"""
-        shortName = self.__class__.__name__
-        return "%s:%s" % (shortName,
-                          linesep + linesep.join([str(s) for s in self]))
+        """Print in a form which can be parsed"""
+        return str([str(s) for s in self])
+        #shortName = self.__class__.__name__
+        #return "%s:%s" % (shortName,
+        #                  linesep + linesep.join([str(s) for s in self]))
 
     def __getitem__(self, index):
         if type(index) == str:
