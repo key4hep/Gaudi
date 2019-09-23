@@ -15,9 +15,14 @@ print(mygalg)
 
 mygalg.tracks.Path = 'BestTracks/Tracks'
 mygalg.hits.Path = 'Rec/Hits'
-mygalg.raw.AlternativePaths = ['/copy/RAW', '/Rec/RAW', '/DAQ/RAW']
 
 mygalg.RootInTES = '/Skim'
+
+from Configurables import MyTool
+mygalg.MyPublicToolHandleArrayProperty = [
+    MyTool("FirstInstance"),
+    MyTool("AnotherInstance")
+]
 
 print(mygalg)
 

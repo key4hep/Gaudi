@@ -8,8 +8,8 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r5)
-                                          running on stbc-i5.nikhef.nl on Tue Jan 29 00:40:45 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r1)
+                                          running on stbc-i1.nikhef.nl on Thu Aug 22 00:54:58 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -67,6 +67,16 @@ MyGaudiAlg.Wron...   INFO String = hundred
 MyGaudiAlg.Wron...   INFO Bool   = 1
 MyGaudiAlg           INFO unable to retrieve MyTool/WrongIfaceTool (expected) with exception: unable to dcast AlgTool MyTool/WrongIfaceTool to interface IMyOtherTool
 MyGaudiAlg           INFO ....initialization done
+ToolSvc.Another...   INFO intialize() has been called
+ToolSvc.Another...   INFO Int    = 100
+ToolSvc.Another...   INFO Double = 100
+ToolSvc.Another...   INFO String = hundred
+ToolSvc.Another...   INFO Bool   = 1
+ToolSvc.Another...   INFO intialize() has been called
+ToolSvc.Another...   INFO Int    = 100
+ToolSvc.Another...   INFO Double = 100
+ToolSvc.Another...   INFO String = hundred
+ToolSvc.Another...   INFO Bool   = 1
 MyGaudiAlg.Priv...   INFO intialize() has been called
 MyGaudiAlg.Priv...   INFO Int    = 100
 MyGaudiAlg.Priv...   INFO Double = 100
@@ -100,13 +110,13 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -132,13 +142,13 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -487,6 +497,8 @@ ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is release
 ToolSvc.ToolA       DEBUG Services to release :
 MyGaudiAlg.Lega...   INFO finalize() has been called
 ToolSvc.Generic...   INFO finalize() has been called
+ToolSvc.Another...   INFO finalize() has been called
+ToolSvc.Another...   INFO finalize() has been called
 MyGaudiAlg.Wron...   INFO finalize() has been called
 ToolSvc.PubTool...   INFO finalize() has been called
 ToolSvc.TestPub...   INFO finalize() has been called
@@ -502,6 +514,8 @@ ToolSvc.MyGaudi...   INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 MyGaudiAlg.Lega...   INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
+ToolSvc.Another...   INFO destructor has been called
+ToolSvc.Another...   INFO destructor has been called
 MyGaudiAlg.Wron...   INFO destructor has been called
 ToolSvc.PubTool...   INFO destructor has been called
 ToolSvc.TestPub...   INFO destructor has been called

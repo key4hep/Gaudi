@@ -427,8 +427,6 @@ protected:
       : GaudiHandleArrayBase( myComponentType, myParentName ) {}
 
 public:
-  virtual ~GaudiHandleArray() = default;
-
   /**Set the array of GaudiHandles from typeAndNames given in vector of strings. */
   GaudiHandleArray& operator=( const std::vector<std::string>& myTypesAndNamesList ) {
     setTypesAndNames( myTypesAndNamesList );
@@ -437,15 +435,13 @@ public:
 
   GaudiHandleArrayBase::BaseHandleArray getBaseArray() override {
     GaudiHandleArrayBase::BaseHandleArray baseArray;
-    iterator                              it = begin(), itEnd = end();
-    for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
+    for ( auto& h : m_handleArray ) baseArray.push_back( &h );
     return baseArray;
   }
 
   GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override {
     GaudiHandleArrayBase::ConstBaseHandleArray baseArray;
-    const_iterator                             it = begin(), itEnd = end();
-    for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
+    for ( auto& h : m_handleArray ) baseArray.push_back( &h );
     return baseArray;
   }
 
