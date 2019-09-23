@@ -15,8 +15,15 @@
 #include "GaudiKernel/detected.h"
 
 // Range V3
+#include <range/v3/version.hpp>
 #include <range/v3/view/const.hpp>
 #include <range/v3/view/zip.hpp>
+// upstream has renamed namespace ranges::view ranges::views
+#if RANGE_V3_VERSION < 900
+namespace ranges::views {
+  using namespace ranges::view;
+}
+#endif
 
 #if defined( __clang__ ) && ( __clang_major__ < 9 )
 #  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN                                                                     \
@@ -81,7 +88,7 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
-      return ranges::view::zip( std::forward<Args>( args )... );
+      return ranges::views::zip( std::forward<Args>( args )... );
     }
 
     /// Zips multiple containers together to form a single const range
@@ -90,7 +97,7 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
-      return ranges::view::const_( ranges::view::zip( std::forward<Args>( args )... ) );
+      return ranges::views::const_( ranges::views::zip( std::forward<Args>( args )... ) );
     }
   } // namespace zip
 
