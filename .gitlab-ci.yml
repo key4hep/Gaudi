@@ -66,8 +66,11 @@ build:gcc8:opt:python3:
   artifacts:
     paths:
       - ${BUILDDIR}
-      - .ccache
     expire_in: 1 week
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - .ccache
 
 check-formatting:
   stage: build
