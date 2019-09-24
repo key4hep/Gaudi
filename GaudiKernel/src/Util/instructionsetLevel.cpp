@@ -15,19 +15,16 @@ int main( int argc, char* argv[] ) {
 
   // These names are those reported in flags field of /proc/cpuinfo on Linux
   // See arch/x86/include/asm/cpufeature.h
-  std::vector<std::string> sets{
-      // "80386",
-      "sse",    "sse2",
-      "sse3", // FIXME: This is not reported by Linux (?)
-      "ssse3",  "sse4_1", "sse4_2", "avx", "avx2",
-      "avx512f" // FIXME: This is not reported by Linux (?)
-  };
+  const std::vector<std::string> sets{// "80386",
+                                      "sse",   "sse2",
+                                      "sse3", // Note: This is reported by Linux as 'pni'
+                                      "ssse3", "sse4_1", "sse4_2", "avx", "avx2", "avx512f", "avx512vl", "avx512bw"};
 
   if ( argc == 1 ) {
-    size_t level = System::instructionsetLevel() - 1;
-    if ( level < sets.size() )
-      for ( int i = System::instructionsetLevel() - 1; i >= 0; --i ) { std::cout << sets[i] << std::endl; }
-    else {
+    const std::size_t level = System::instructionsetLevel() - 1;
+    if ( level < sets.size() ) {
+      for ( int i = level; i >= 0; --i ) { std::cout << sets[i] << std::endl; }
+    } else {
       std::cout << "unknown instruction set level: " << level << std::endl;
       return 2;
     }
