@@ -11,13 +11,14 @@ def test():
     expected = set()
     for l in open('/proc/cpuinfo'):
         if l.startswith('flags'):
-            expected = set(l.strip().split()).intersection(known_flags)
+            flags = set(l.strip().split())
+            if 'pni' in flags:
+                flags.add('sse3')
+            expected = flags.intersection(known_flags)
             break
 
     out = Popen(['instructionsetLevel.exe'], stdout=PIPE).communicate()[0]
     out = out.decode('utf-8')
     found = set(l.strip() for l in out.splitlines())
-    # FIXME: these seem not to be reported by Linux
-    found -= set(['sse3', 'avx512f'])
     assert expected == found, ('expected: {0}, found: {1}'.format(
         sorted(expected), sorted(found)))
