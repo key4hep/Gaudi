@@ -343,6 +343,23 @@ macro(gaudi_project project version)
     enable_testing()
   endif()
 
+  # Make sure we select the version of Python provided by LCG (if we are building in that context)
+  if(Python_config_version)
+    set(Python_config_version ${Python_config_version} CACHE STRING "LCG version of Python")
+    find_package(PythonInterp ${Python_config_version} QUIET)
+    find_package(PythonLibs ${Python_config_version} QUIET)
+    if(CMAKE_VERSION VERSION_GREATER 3.12)
+      # This should ensure that FindPython.cmake finds the version we actually want
+      get_filename_component(Python_ROOT_DIR "${PYTHON_EXECUTABLE}" DIRECTORY)
+      get_filename_component(Python_ROOT_DIR "${Python_ROOT_DIR}" DIRECTORY)
+      set(Python_ROOT_DIR "${Python_ROOT_DIR}" CACHE PATH "where to use Python from")
+      set(Python2_ROOT_DIR "${Python_ROOT_DIR}" CACHE PATH "where to use Python from")
+      set(Python3_ROOT_DIR "${Python_ROOT_DIR}" CACHE PATH "where to use Python from")
+      mark_as_advanced(Python_ROOT_DIR Python2_ROOT_DIR Python3_ROOT_DIR)
+    endif()
+    mark_as_advanced(Python_config_version)
+  endif()
+
   #-- Set up the boost_python_version variable for the project
   find_package(PythonInterp)
   find_package(Boost)
@@ -3245,12 +3262,15 @@ macro(gaudi_external_project_environment)
     list(FIND used_gaudi_projects ${pack} gaudi_project_idx)
     if((NOT pack STREQUAL GaudiProject) AND (gaudi_project_idx EQUAL -1))
       message(STATUS "    ${pack}")
-      # this is needed to get the non-cache variables for the packages
-      find_package(${pack} QUIET)
-
-      if(pack STREQUAL PythonInterp OR pack STREQUAL PythonLibs)
+      if(NOT pack MATCHES "^Python(Interp|Libs)?$")
+        # this is needed to get the non-cache variables for the packages
+        find_package(${pack} QUIET)
+      else()
+        # but Python is a bit special (see https://gitlab.cern.ch/gaudi/Gaudi/issues/88)
+        find_package(${pack} ${Python_config_version} QUIET)
         set(pack Python)
       endif()
+
       string(TOUPPER ${pack} _pack_upper)
 
       set(executable ${${_pack_upper}_EXECUTABLE})

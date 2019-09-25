@@ -15,7 +15,9 @@ if (CMAKE_GENERATOR MATCHES "Ninja")
       set(scan_dicts_deps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py)
     endif()
   else()
-    find_package(Python COMPONENTS Interpreter)
+    # Python_config_version is defined by the LCG toolchain and this should guarantee
+    # a consistent use of Python when using LCG (see https://gitlab.cern.ch/gaudi/Gaudi/issues/88).
+    find_package(Python ${Python_config_version} COMPONENTS Interpreter)
     if (TARGET Python::Interpreter)
       set(scan_dicts_deps Python::Interpreter ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py)
     endif()
