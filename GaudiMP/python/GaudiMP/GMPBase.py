@@ -1087,13 +1087,8 @@ class Worker(GMPComponent):
                 self.cntr.setEventCounter(evtNumber)
 
             # subworkers are forked before the first event is processed
-            # reader-thread for ConDB must be closed and reopened in each subworker
-            # this is done by disconnect()
             if self.nIn == 0:
-
-                self.log.info("Fork new subworkers and disconnect from CondDB")
-                condDB = self.a.service('CondDBCnvSvc', gbl.ICondDBReader)
-                condDB.disconnect()
+                self.log.info("Fork new subworkers")
 
                 # Fork subworkers and share services
                 for k in self.subworkers:

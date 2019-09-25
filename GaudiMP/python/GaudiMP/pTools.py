@@ -266,15 +266,17 @@ class FileRecordsAgent():
                 if l == '/FileRecords/EventCountFSR':
                     tup = (self._gmpc.nodeID, l, pickle.dumps(o))
                     self.objectsOut.append(tup)
-                else:
+                elif "KeyedContainer" in o.__class__.__name__:
                     # It's a Keyed Container
-                    assert "KeyedContainer" in o.__class__.__name__
                     nObjects = o.numberOfObjects()
                     if nObjects:
                         self.log.debug("Keyed Container %s with %i objects" %
                                        (l, nObjects))
                         tup = (self._gmpc.nodeID, l, pickle.dumps(o))
                         self.objectsOut.append(tup)
+                else:
+                    self.log.info('Ignoring %s in FSR' % o.__class__.__name__)
+
         self.log.debug('Done with FSR store, just to send to Writer.')
 
         if self.objectsOut:
@@ -362,14 +364,12 @@ class FileRecordsAgent():
             # Event Counter is also easy
             self.ProcessEventCountFSR(path, ob)
         # now other cases may not be so easy...
-        elif "KeyedContainer" in ob.__class__.__name__:
+        elif "KeyedContainer" in ob.__class__.__name__ and "LumiFSR" in ob.__class__.__name__:
             # Keyed Container of LumiFSRs : extract and re-register
-            # self.ProcessLumiFSR( path, ob )
-            if "LumiFSR" in ob.__class__.__name__:
-                self.MergeLumiFSR(path, ob)
-            else:
-                self.log.info("Skipping Merge of Keyed Container %s for %s" %
-                              (ob.__class__.__name__, path))
+            self.MergeLumiFSR(path, ob)
+        else:
+            self.log.info(
+                "Skipping Merge of %s at %s" % (ob.__class__.__name__, path))
 
     def ProcessTimeSpanFSR(self, path, ob):
         ob2 = self.fsr.retrieveObject(path)
