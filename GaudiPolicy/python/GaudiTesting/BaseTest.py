@@ -15,6 +15,23 @@ from subprocess import Popen, PIPE, STDOUT
 
 import six
 
+if sys.version_info < (3, 5):
+    # backport of 'backslashreplace' handling of UnicodeDecodeError
+    # to Python < 3.5
+    from codecs import register_error, backslashreplace_errors
+
+    def _new_backslashreplace_errors(exc):
+        if isinstance(exc, UnicodeDecodeError):
+            code = hex(ord(exc.object[exc.start]))
+            return (u'\\' + code[1:], exc.start + 1)
+        else:
+            return backslashreplace_errors(exc)
+
+    register_error('backslashreplace', _new_backslashreplace_errors)
+    del register_error
+    del backslashreplace_errors
+    del _new_backslashreplace_errors
+
 
 def sanitize_for_xml(data):
     '''
@@ -39,8 +56,8 @@ def dumpProcs(name):
     from getpass import getuser
     if 'WORKSPACE' in os.environ:
         p = Popen(['ps', '-fH', '-U', getuser()], stdout=PIPE)
-        with open(os.path.join(os.environ['WORKSPACE'], name), 'w') as f:
-            f.write(p.communicate()[0].decode('utf-8'))
+        with open(os.path.join(os.environ['WORKSPACE'], name), 'wb') as f:
+            f.write(p.communicate()[0])
 
 
 def kill_tree(ppid, sig):
@@ -51,7 +68,7 @@ def kill_tree(ppid, sig):
     log = logging.getLogger('kill_tree')
     ps_cmd = ['ps', '--no-headers', '-o', 'pid', '--ppid', str(ppid)]
     get_children = Popen(ps_cmd, stdout=PIPE, stderr=PIPE)
-    children = map(int, get_children.communicate()[0].decode('utf-8').split())
+    children = map(int, get_children.communicate()[0].split())
     for child in children:
         kill_tree(child, sig)
     try:
@@ -180,9 +197,8 @@ class BaseTest(object):
                     params, stdout=PIPE, stderr=PIPE, env=self.environment)
                 logging.debug('(pid: %d)', self.proc.pid)
                 out, err = self.proc.communicate()
-                # Use `or ''` as the result is None if there was no output
-                self.out = out.decode('utf-8') or ''
-                self.err = err.decode('utf-8') or ''
+                self.out = out.decode('utf-8', errors='backslashreplace')
+                self.err = err.decode('utf-8', errors='backslashreplace')
 
             thread = threading.Thread(target=target)
             thread.start()
@@ -199,7 +215,8 @@ class BaseTest(object):
                     '--eval-command=thread apply all backtrace'
                 ]
                 gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-                self.stack_trace = gdb.communicate()[0].decode('utf-8')
+                self.stack_trace = gdb.communicate()[0].decode(
+                    'utf-8', errors='backslashreplace')
 
                 kill_tree(self.proc.pid, signal.SIGTERM)
                 thread.join(60)

@@ -1,6 +1,48 @@
 # setting LC_ALL to "C"
 # --> Including file '/home/nnolte/software/stack/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
-['int', 'std::vector<int,std::allocator<int> >', 'float', 'int', 'int', 'float', 'float', 'float', 'int', 'int', 'std::vector<int,std::allocator<int> >', 'int', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >']
+---
+# List of input and output types by class
+"Gaudi::Examples::ContextConsumer":
+"Gaudi::Examples::ContextIntConsumer":
+  InputLocation: "int"
+"Gaudi::Examples::CountingConsumer":
+"Gaudi::Examples::FloatDataConsumer":
+  InputLocation: "float"
+"Gaudi::Examples::FrExpTransformer":
+  InputDoubles: "std::vector<double,std::allocator<double> >"
+  OutputFractions: "std::vector<double,std::allocator<double> >"
+  OutputIntegers: "std::vector<int,std::allocator<int> >"
+"Gaudi::Examples::IntDataConsumer":
+  InputLocation: "int"
+"Gaudi::Examples::IntDataProducer":
+  OutputLocation: "int"
+"Gaudi::Examples::IntIntToFloatFloatData":
+  InputLocation1: "int"
+  InputLocation2: "int"
+  OutputLocation1: "float"
+  OutputLocation2: "float"
+"Gaudi::Examples::IntToFloatData":
+  InputLocation: "int"
+  OutputLocation: "float"
+"Gaudi::Examples::IntVectorsToIntVector":
+  OutputLocation: "std::vector<int,std::allocator<int> >"
+"Gaudi::Examples::LdExpTransformer":
+  InputFractions: "std::vector<double,std::allocator<double> >"
+  InputIntegers: "std::vector<int,std::allocator<int> >"
+  OutputDoubles: "std::vector<double,std::allocator<double> >"
+"Gaudi::Examples::OptFrExpTransformer":
+  InputDoubles: "std::vector<double,std::allocator<double> >"
+  OutputFractions: "std::vector<double,std::allocator<double> >"
+  OutputIntegers: "std::vector<int,std::allocator<int> >"
+"Gaudi::Examples::OptLdExpTransformer":
+  InputFractions: "std::vector<double,std::allocator<double> >"
+  InputIntegers: "std::vector<int,std::allocator<int> >"
+  OutputDoubles: "std::vector<double,std::allocator<double> >"
+"Gaudi::Examples::VectorDataProducer":
+  OutputLocation: "std::vector<int,std::allocator<int> >"
+"Gaudi::Examples::VectorDoubleProducer":
+  OutputLocation: "std::vector<double,std::allocator<double> >"
+---
 # <-- End of file '/home/nnolte/software/stack/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================

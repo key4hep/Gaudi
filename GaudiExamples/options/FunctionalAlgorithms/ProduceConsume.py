@@ -26,18 +26,23 @@ app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
 
 types = []
 
-for configurable in [
+# this printout is useful to check that the type information is passed to python correctly
+print("---\n# List of input and output types by class")
+for configurable in sorted([
         IntDataProducer, VectorDataProducer, FloatDataConsumer,
         IntDataConsumer, IntToFloatData, IntIntToFloatFloatData,
         IntVectorsToIntVector, ContextConsumer, ContextIntConsumer,
         VectorDoubleProducer, FrExpTransformer, LdExpTransformer,
         OptFrExpTransformer, OptLdExpTransformer, CountingConsumer
-]:
-    for prop in configurable.getDefaultProperties().values():
-        if isinstance(prop, DataObjectHandleBase): types.append(prop.type())
-
-# check that the type information is passed to python correctly
-print(types)
+],
+                           key=lambda c: c.getType()):
+    print("\"{}\":".format(configurable.getType()))
+    props = configurable.getDefaultProperties()
+    for propname, prop in sorted(props.items()):
+        if isinstance(prop, DataObjectHandleBase):
+            types.append(prop.type())
+            print("  {}: \"{}\"".format(propname, prop.type()))
+print("---")
 
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
