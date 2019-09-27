@@ -19,7 +19,7 @@ export PATH=${LCG_contrib}/CMake/3.13.4/Linux-x86_64/bin:${LCG_contrib}/ninja/1.
 # - use LHCb compiler wrappers
 export PATH=/cvmfs/lhcb.cern.ch/lib/bin/${LCG_hostos}:${PATH}
 # - enable optional VTune based profiler
-export CMAKE_PREFIX_PATH=${LCG_release_area}:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2017/vtune_amplifier_xe
+export CMAKE_PREFIX_PATH=${LCG_release_area}:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2019/vtune_amplifier
 
 export CCACHE_DIR=${PWD}/.ccache
 unset CMTCONFIG
