@@ -542,6 +542,9 @@ namespace GaudiPython::Helpers {
   bool filterPassed( IAlgorithm* self ) {
     return self->execState( Gaudi::Hive::currentContext() ).filterPassed();
   }
+  StatusCode ialg_execute( IAlgorithm* self ) {
+    return self->execute( Gaudi::Hive::currentContext() );
+  }
 }
 
 #endif
@@ -549,3 +552,5 @@ namespace GaudiPython::Helpers {
 gbl.IEventProcessor.executeEvent = gbl.GaudiPython.Helpers.executeEvent
 gbl.IAlgorithm.isExecuted = gbl.GaudiPython.Helpers.isExecuted
 gbl.IAlgorithm.filterPassed = gbl.GaudiPython.Helpers.filterPassed
+gbl.IAlgorithm._execute_orig = gbl.IAlgorithm.execute
+gbl.IAlgorithm.execute = lambda self, ctx=None: (gbl.GaudiPython.Helpers.ialg_execute(self) if ctx is None else self._execute_orig(ctx))
