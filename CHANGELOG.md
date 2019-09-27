@@ -7,6 +7,46 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+### Changed
+
+### Added
+
+### Fixed
+
+## [v32r2][] - 2019-09-27
+This is mostly a bugfix release, but there are nonetheless a couple of
+important changes:
+- now Gaudi can be used with Python 3 (#56)
+- the `IAsyncEventProcessor`experimental interface introduced in v32r0 (!878)
+  has been replaced with `IQueueingEventProcessor` (!966)
+- it's now possible to get type information from Python version of `DataHandle`s
+
+### Changed
+- Replace `IAsyncEventProcessor` with `IQueueingEventProcessor` (!966)
+
+### Added
+- GaudiKernel `instructionsetLevel`: Add additional AVX512 levels (!954)
+- Add Python 3 support (#56, !875, !975, #88, !976)
+- Add vecwid256 microarchitecture option to enable `-mprefer-vector-width=256` (!965)
+- Add type information to Python representation of `DataHandle`s (!951)
+
+### Fixed
+- Backward compatible interface of `IAlgorithm` for `GaudiPython` (#75, !977)
+- Misc fixes for `GaudiMP` (#87, #75, !973)
+- Remove unneeded change in refactoring of TES handling (#70, !971)
+- Various ToolHandleArray bug fixes (!960)
+- Functional ranges v3 0.9.x warning suppression (!968)
+- Fix clang `-Wpotentially-evaluated-expression` warning (!970)
+- Switch from Boost test minimal (deprecated) to single header variant (!948)
+- Fixes for MacOS (!956)
+- Make `ContainedObject` assignment consistent with copy construction (!967)
+- `THistSvc::io_reinit`: Handle case of empty new filename (!959)
+- `EventSelector` - Always set context ptr to null on release (!961)
+- Minor improvements to sanitizers (!955)
+- `ChronoStatSvc` - Clear maps in finalize (!958)
+- Minor updates to `Gaudi::Functional` implementation (!952)
+- `THistSvc`: Fix crash in MP if root file already exists (!949)
+- Fix gcc9 warnings (!962)
 
 ## [v32r1][] - 2019-07-18
 Bugfix release, with some backward compatible changes, mostly meant to pick up
@@ -351,7 +391,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r1...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...master
+[v32r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r1...v32r2
 [v32r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...v32r1
 [v32r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...v32r0
 [v31r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r5...v31r0
