@@ -101,17 +101,6 @@ StatusCode MyGaudiAlgorithm::execute() {
   h2->doIt();
   h3->doIt();
 
-#ifdef ATLAS
-  // test nonConst enforcement
-  const ToolHandle<IMyOtherTool> hc1( m_privateOtherInterface );
-// this should work without any warnings/errors
-#  ifdef ALLOW_TOOLHANDLE_NONCONSTNESS
-  hc1->doItAgain();
-#  endif
-  // this should cause a compile time deprecation warning
-  hc1.unConst()->doItAgain();
-#endif
-
   return StatusCode::SUCCESS;
 }
 
