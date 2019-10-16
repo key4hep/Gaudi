@@ -25,8 +25,6 @@ namespace Gaudi {
         using Algorithm::Algorithm;
         /// Initialize
         StatusCode initialize() override;
-        /// Finalize
-        StatusCode finalize() override;
         /// Event callback
         StatusCode execute() override;
 

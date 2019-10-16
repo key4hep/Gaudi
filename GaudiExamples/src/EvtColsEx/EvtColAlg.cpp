@@ -127,9 +127,7 @@ StatusCode Gaudi::Examples::EvtColAlg::execute() {
   tuple->column( "flag", 0 > gauss() ).ignore(); // boolean
 
   // The action of is restored again!
-  tuple->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); ///< The action is restored again! NB !!
-
-  return StatusCode::SUCCESS;
+  return tuple->write();
 }
 // ============================================================================
 using Gaudi::Examples::EvtColAlg;

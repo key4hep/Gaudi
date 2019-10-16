@@ -49,6 +49,7 @@ StatusCode WriteAlg::put( IDataProviderSvc* s, const std::string& path, DataObje
 // Initialize
 //--------------------------------------------------------------------
 StatusCode WriteAlg::initialize() {
+  if ( auto sc = Algorithm::initialize(); !sc ) return sc;
   m_recordSvc = service( "FileRecordDataSvc", true );
   if ( !m_recordSvc ) {
     error() << "Unable to retrieve run records service" << endmsg;
@@ -63,10 +64,12 @@ StatusCode WriteAlg::initialize() {
 StatusCode WriteAlg::finalize() {
   Counter* pObj = new Counter();
   pObj->set( 123456 );
-  put( m_recordSvc.get(), "/FileRecords/SumCount", pObj ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  auto sc = put( m_recordSvc.get(), "/FileRecords/SumCount", pObj );
   m_recordSvc.reset();
   m_evtCount = nullptr;
-  return StatusCode::SUCCESS;
+  // if any sc is not success, report that one
+  if ( auto sc2 = Algorithm::finalize(); sc ) sc = sc2;
+  return sc;
 }
 
 //--------------------------------------------------------------------

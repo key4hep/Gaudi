@@ -115,23 +115,23 @@ StatusCode TupleAlg::execute() {
   Tuple tuple1 = nTuple( 1, "Trivial Row-Wise Tuple", CLID_RowWiseTuple );
 
   // fill N-Tuple with double/float numbers:
-  tuple1->column( "gauss", gauss() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple1->column( "flat", flat() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple1->column( "expo", expo() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple1->column( "breit", breit() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple1->column( "gauss", gauss() ).ignore();
+  tuple1->column( "flat", flat() ).ignore();
+  tuple1->column( "expo", expo() ).ignore();
+  tuple1->column( "breit", breit() ).ignore();
 
   // fill N-Tuple with integer numbers:
-  tuple1->column( "poiss", (int)poisson() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple1->column( "binom", (int)binom() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple1->column( "poiss", (int)poisson() ).ignore();
+  tuple1->column( "binom", (int)binom() ).ignore();
 
   // fill N-Tuple with "reduced" integer numbers:
-  tuple1->column( "pois2", (int)poisson(), 0, 14 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple1->column( "bino2", (int)binom(), 0, 14 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple1->column( "pois2", (int)poisson(), 0, 14 ).ignore();
+  tuple1->column( "bino2", (int)binom(), 0, 14 ).ignore();
 
   // fill N-Tuple with "boolean" numbers:
-  tuple1->column( "poisb", poisson() > 0.0 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple1->column( "poisb", poisson() > 0.0 ).ignore();
 
-  tuple1->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple1->write().ignore();
 
   // ==========================================================================
   // book and fill Column-wise NTuple with "identical" content
@@ -140,23 +140,23 @@ StatusCode TupleAlg::execute() {
   Tuple tuple2 = nTuple( "two", "Column-Wise Tuple" );
 
   // fill N-Tuple with double/float numbers:
-  tuple2->column( "gauss", gauss() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple2->column( "flat", flat() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple2->column( "expo", expo() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple2->column( "breit", breit() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple2->column( "gauss", gauss() ).ignore();
+  tuple2->column( "flat", flat() ).ignore();
+  tuple2->column( "expo", expo() ).ignore();
+  tuple2->column( "breit", breit() ).ignore();
 
   // fill N-Tuple with integer numbers:
-  tuple2->column( "poiss", (int)poisson() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple2->column( "binom", (int)binom() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple2->column( "poiss", (int)poisson() ).ignore();
+  tuple2->column( "binom", (int)binom() ).ignore();
 
   // fill N-Tuple with "reduced" integer numbers:
-  tuple2->column( "pois2", (int)poisson(), 0, 10 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  tuple2->column( "bino2", (int)binom(), 0, 10 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple2->column( "pois2", (int)poisson(), 0, 10 ).ignore();
+  tuple2->column( "bino2", (int)binom(), 0, 10 ).ignore();
 
   // fill N-Tuple with "boolean" numbers:
-  tuple2->column( "poisb", poisson() > 0.0 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple2->column( "poisb", poisson() > 0.0 ).ignore();
 
-  tuple2->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple2->write().ignore();
 
   // ==========================================================================
   // book and fill Column-wise NTuple with "fixed"-size arrays/vectors
@@ -170,7 +170,7 @@ StatusCode TupleAlg::execute() {
     for ( size_t i = 0; i < nCol; ++i ) { array[i] = (float)flat(); }
 
     // fill with simple array/vector (fixed size):
-    tuple3->array( "arflat", array, array + nCol ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple3->array( "arflat", array, array + nCol ).ignore();
   }
 
   {
@@ -180,7 +180,7 @@ StatusCode TupleAlg::execute() {
     for ( size_t i = 0; i < array.size(); ++i ) { array[i] = expo(); }
 
     // fill with simple array/vector (fixed size):
-    tuple3->array( "arexpo", array ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple3->array( "arexpo", array ).ignore();
   }
 
   { // fill with the explicit usage of sequence length
@@ -189,7 +189,7 @@ StatusCode TupleAlg::execute() {
     for ( size_t i = 0; i < nCol; ++i ) { array[i] = gauss(); }
 
     // fill with simple array/vector (fixed size):
-    tuple3->array( "argau", array, nCol ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple3->array( "argau", array, nCol ).ignore();
   }
 
   { // fill with the explicit usage of sequence length
@@ -198,10 +198,10 @@ StatusCode TupleAlg::execute() {
     for ( size_t i = 0; i < nCol; ++i ) { array[i] = gauss(); }
 
     // fill with simple array/vector (fixed size):
-    tuple3->array( "argau2", array, nCol ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple3->array( "argau2", array, nCol ).ignore();
   }
 
-  tuple3->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple3->write().ignore();
 
   // ==========================================================================
   // book and fill Column-wise NTuple with "fixed"-size matrices
@@ -220,7 +220,7 @@ StatusCode TupleAlg::execute() {
       for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = gauss(); }
     }
 
-    tuple4->matrix( "mgau", mtrx, nRow, nCol ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple4->matrix( "mgau", mtrx, nRow, nCol ).ignore();
   };
 
   {
@@ -237,7 +237,7 @@ StatusCode TupleAlg::execute() {
       for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = flat(); }
     }
 
-    tuple4->matrix( "mflat", mtrx, nRow, nCol ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple4->matrix( "mflat", mtrx, nRow, nCol ).ignore();
   };
 
   {
@@ -249,11 +249,10 @@ StatusCode TupleAlg::execute() {
       for ( int iRow = 0; iRow < mtrx.num_row(); ++iRow ) { mtrx[iRow][iCol] = expo(); }
     }
 
-    tuple4->matrix( "mexpo", mtrx, mtrx.num_row(), mtrx.num_col() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple4->matrix( "mexpo", mtrx, mtrx.num_row(), mtrx.num_col() ).ignore();
   };
 
-  tuple4->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple4->write().ignore();
 
   // ==========================================================================
   // book and fill Column-wise NTuple with variable-size arrays/vectors
@@ -265,8 +264,7 @@ StatusCode TupleAlg::execute() {
     std::vector<double> array;
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with the content of vector
-    tuple5->farray( "arr", array.begin(), array.end(), "Len1", 100 )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple5->farray( "arr", array.begin(), array.end(), "Len1", 100 ).ignore();
   }
   {
     const size_t        num = (size_t)poisson();
@@ -274,10 +272,10 @@ StatusCode TupleAlg::execute() {
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with functions of vector
     tuple5->farray( {{"sinar", sinf}, {"cosar", cosf}, {"tanar", tanf}}, array.begin(), array.end(), "Len2", 100 )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+        .ignore();
   }
 
-  tuple5->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple5->write().ignore();
 
   // ==========================================================================
   // book and fill Column-wise NTuple with variable-size matrices
@@ -296,8 +294,7 @@ StatusCode TupleAlg::execute() {
       for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = gauss(); }
     }
 
-    tuple6->fmatrix( "mgau", mtrx.begin(), mtrx.end(), nCol, "Len1", 100 )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple6->fmatrix( "mgau", mtrx.begin(), mtrx.end(), nCol, "Len1", 100 ).ignore();
   };
 
   { // fill with the matrix
@@ -318,7 +315,7 @@ StatusCode TupleAlg::execute() {
                    mtrx.size(), // number of rows (variable)
                    nCol,        // number of columns (fixed!)
                    "Len2", 100 )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+        .ignore();
   };
 
   { // fill with the cross-product of functionXdata vectors
@@ -335,7 +332,7 @@ StatusCode TupleAlg::execute() {
     tuple6
         ->fmatrix( "m3flat", // N-tuple entry name
                    funs.begin(), funs.end(), array.begin(), array.end(), "Len3", 100 )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+        .ignore();
   };
 
   { // fill with the matrix
@@ -355,10 +352,10 @@ StatusCode TupleAlg::execute() {
                    mtrx.num_row(), // number of rows (variable)
                    mtrx.num_col(), // number of columns (fixed!)
                    "Len4", 100 )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+        .ignore();
   };
 
-  tuple6->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple6->write().ignore();
 
   // ============================================================================
 
@@ -368,52 +365,42 @@ StatusCode TupleAlg::execute() {
   // Test for unsupported data types
   Tuple tuple7 = nTuple( "typesCW", "Types Test Column Wise" );
   {
-    tuple7->column( "bool", (bool)0 < flat() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "float", (float)gauss() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "double", (double)gauss() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "short", (short)randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "ushort", (unsigned short)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "int", (int)randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "uint", (unsigned int)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "long", (long)randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "ulong", (unsigned long)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "longlong", (long long)randomRange<char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "char", randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "uchar", randomRange<unsigned char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple7->column( "EventID", evtID ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple7->column( "bool", (bool)0 < flat() ).ignore();
+    tuple7->column( "float", (float)gauss() ).ignore();
+    tuple7->column( "double", (double)gauss() ).ignore();
+    tuple7->column( "short", (short)randomRange<char>() ).ignore();
+    tuple7->column( "ushort", (unsigned short)randomRange<unsigned char>() ).ignore();
+    tuple7->column( "int", (int)randomRange<char>() ).ignore();
+    tuple7->column( "uint", (unsigned int)randomRange<unsigned char>() ).ignore();
+    tuple7->column( "long", (long)randomRange<char>() ).ignore();
+    tuple7->column( "ulong", (unsigned long)randomRange<unsigned char>() ).ignore();
+    tuple7->column( "longlong", (long long)randomRange<char>() ).ignore();
+    tuple7->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() ).ignore();
+    tuple7->column( "char", randomRange<char>() ).ignore();
+    tuple7->column( "uchar", randomRange<unsigned char>() ).ignore();
+    tuple7->column( "EventID", evtID ).ignore();
   }
-  tuple7->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple7->write().ignore();
 
   // Test for unsupported data types
   Tuple tuple8 = nTuple( "typesRW", "Types Test Row Wise", CLID_RowWiseTuple );
   {
-    tuple8->column( "bool", (bool)0 < flat() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "float", (float)gauss() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "double", (double)gauss() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "short", (short)randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "ushort", (unsigned short)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "int", (int)randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "uint", (unsigned int)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "long", (long)randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "ulong", (unsigned long)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "longlong", (long long)randomRange<char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "char", randomRange<char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "uchar", randomRange<unsigned char>() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    tuple8->column( "EventID", evtID ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    tuple8->column( "bool", (bool)0 < flat() ).ignore();
+    tuple8->column( "float", (float)gauss() ).ignore();
+    tuple8->column( "double", (double)gauss() ).ignore();
+    tuple8->column( "short", (short)randomRange<char>() ).ignore();
+    tuple8->column( "ushort", (unsigned short)randomRange<unsigned char>() ).ignore();
+    tuple8->column( "int", (int)randomRange<char>() ).ignore();
+    tuple8->column( "uint", (unsigned int)randomRange<unsigned char>() ).ignore();
+    tuple8->column( "long", (long)randomRange<char>() ).ignore();
+    tuple8->column( "ulong", (unsigned long)randomRange<unsigned char>() ).ignore();
+    tuple8->column( "longlong", (long long)randomRange<char>() ).ignore();
+    tuple8->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() ).ignore();
+    tuple8->column( "char", randomRange<char>() ).ignore();
+    tuple8->column( "uchar", randomRange<unsigned char>() ).ignore();
+    tuple8->column( "EventID", evtID ).ignore();
   }
-  tuple8->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  tuple8->write().ignore();
 
   return StatusCode::SUCCESS;
 }

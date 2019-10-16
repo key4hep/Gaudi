@@ -11,4 +11,8 @@
 #include "../SCSAlg.h"
 #include "HackedStatusCode.h"
 
-void SCSAlg::fncUnchecked2() { test().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); }
+#if __cplusplus >= 201703L && !defined( __CLING__ )
+#  pragma GCC diagnostic ignored "-Wunused-result"
+#endif
+
+void SCSAlg::fncUnchecked2() { test(); }

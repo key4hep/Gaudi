@@ -34,8 +34,8 @@ namespace TupleExample {
    */
   Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Dublet& p ) {
     if ( !t.valid() ) { return t; }
-    t->column( n + "F", p.first ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    t->column( n + "S", p.second ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    t->column( n + "F", p.first ).ignore();
+    t->column( n + "S", p.second ).ignore();
     return t;
   }
 
@@ -49,9 +49,9 @@ namespace TupleExample {
    */
   Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Triplet& p ) {
     if ( !t.valid() ) { return t; }
-    t->column( n + "F", p.first.first ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    t->column( n + "S", p.first.second ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    t->column( n + "T", p.second ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    t->column( n + "F", p.first.first ).ignore();
+    t->column( n + "S", p.first.second ).ignore();
+    t->column( n + "T", p.second ).ignore();
     return t;
   }
 } // namespace TupleExample

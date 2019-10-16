@@ -118,7 +118,7 @@ StatusCode EventSelector::lastOfPreviousStream( bool shutDown, EvtSelectorContex
         EventSelector* thisPtr = const_cast<EventSelector*>( this );
         if ( s->selector() && iter.context() ) {
           Context* ctxt = iter.context();
-          s->selector()->releaseContext( ctxt ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+          if ( status = s->selector()->releaseContext( ctxt ); !status ) return status;
           iter.set( 0, 0 );
         }
         status = thisPtr->m_streamtool->finalizeStream( const_cast<EventSelectorDataStream*>( s ) );
@@ -176,7 +176,7 @@ StatusCode EventSelector::createContext( Context*& refpCtxt ) const {
     StatusCode sc = next( *refpCtxt );
     if ( sc.isFailure() ) {
       error() << " createContext() failed to start with event number " << m_firstEvent << endmsg;
-      releaseContext( refpCtxt ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      if ( sc = releaseContext( refpCtxt ); !sc ) return sc;
       refpCtxt = nullptr;
       return StatusCode::FAILURE;
     }
@@ -264,21 +264,18 @@ StatusCode EventSelector::last( Context& refCtxt ) const {
 
 /// Rewind the dataset
 StatusCode EventSelector::rewind( Context& refCtxt ) const {
+  StatusCode          sc   = StatusCode::SUCCESS;
   EvtSelectorContext* ctxt = dynamic_cast<EvtSelectorContext*>( &refCtxt );
   if ( ctxt ) {
     ctxt->set( 0, -1, 0, 0 );
-    firstOfNextStream( true, *ctxt ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    if ( sc = firstOfNextStream( true, *ctxt ); !sc ) return sc;
     long nskip = m_firstEvent;
     while ( --nskip > 0 ) {
-      StatusCode sc = next( *ctxt );
-      if ( sc.isFailure() ) {
-        error() << "rewind() failed to start with event number " << m_firstEvent << endmsg;
-        return StatusCode::FAILURE;
-      }
+      sc = next( *ctxt );
+      if ( sc.isFailure() ) { error() << "rewind() failed to start with event number " << m_firstEvent << endmsg; }
     }
-    return StatusCode::SUCCESS;
   }
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 /// Create new Opaque address corresponding to the current record

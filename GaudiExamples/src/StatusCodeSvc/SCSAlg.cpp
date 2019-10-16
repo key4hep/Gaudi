@@ -12,6 +12,9 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 
+#if __cplusplus >= 201703L && !defined( __CLING__ )
+#  pragma GCC diagnostic ignored "-Wunused-result"
+#endif
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode SCSAlg::execute() {
@@ -30,15 +33,13 @@ StatusCode SCSAlg::test() { return StatusCode::SUCCESS; }
 
 void __attribute__( ( noinline ) ) SCSAlg::fncChecked() { test().isSuccess(); }
 
-void __attribute__( ( noinline ) ) SCSAlg::fncUnchecked() {
-  test().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-}
+void __attribute__( ( noinline ) ) SCSAlg::fncUnchecked() { test(); }
 
 void SCSAlg::fncIgnored() {
   // Ignore all unchecked StatusCode instances in the current scope.
   StatusCode::ScopedDisableChecking _sc_ignore;
 
-  test().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  test();
 }
 
 // Static Factory declaration

@@ -232,7 +232,8 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
     }
     RootDataConnection* pc = dynamic_cast<RootDataConnection*>( c );
     if ( pc ) {
-      if ( !pc->isConnected() ) pc->connectRead().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      if ( !pc->isConnected() )
+        if ( auto sc = pc->connectRead(); !sc ) return sc;
       *con = pc;
       pc->resetAge();
       pc->addClient( this );

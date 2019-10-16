@@ -217,7 +217,7 @@ public:
         []( std::monostate ) {} );
     m_root.path = std::move( path );
     m_root.root = pObj;
-    preparePartitions().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    if ( auto sc = preparePartitions(); !sc ) return sc;
     return activate( m_defaultPartition );
   }
 
@@ -234,15 +234,17 @@ public:
     m_root.root = pAddr;
     if ( !pAddr ) return StatusCode::FAILURE;
     pAddr->addRef();
-    preparePartitions().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    if ( auto sc = preparePartitions(); !sc ) return sc;
     return activate( m_defaultPartition );
   }
   /// IDataManagerSvc: Pass a default data loader to the service.
   StatusCode setDataLoader( IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc = nullptr ) override {
     m_dataLoader = pDataLoader;
     if ( m_dataLoader )
-      m_dataLoader->setDataProvider( dpsvc ? dpsvc : this ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    for ( auto& i : m_partitions ) { i.second.dataManager->setDataLoader( m_dataLoader.get() ).ignore(); }
+      if ( auto sc = m_dataLoader->setDataProvider( dpsvc ? dpsvc : this ); !sc ) return sc;
+    for ( auto& i : m_partitions ) {
+      if ( auto sc = i.second.dataManager->setDataLoader( m_dataLoader.get() ); !sc ) return sc;
+    }
     return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
@@ -456,7 +458,11 @@ public:
       error() << "Enable to reinitialize base class" << endmsg;
       return sc;
     }
-    detachServices().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    sc = detachServices();
+    if ( !sc.isSuccess() ) {
+      error() << "Failed to detach necessary services." << endmsg;
+      return sc;
+    }
     sc = attachServices();
     if ( !sc.isSuccess() ) {
       error() << "Failed to attach necessary services." << endmsg;
@@ -477,7 +483,7 @@ public:
     clearStore().ignore();
     clearPartitions().ignore();
     m_current = Partition();
-    detachServices().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    detachServices().ignore();
     return Service::finalize();
   }
 

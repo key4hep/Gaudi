@@ -446,7 +446,7 @@ namespace Gaudi::Functional::details {
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
       // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   public:
@@ -511,7 +511,7 @@ namespace Gaudi::Functional::details {
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator )
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator ) {
       // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   protected:
@@ -529,7 +529,7 @@ namespace Gaudi::Functional::details {
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... ) {
       // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   public:
@@ -571,7 +571,7 @@ namespace Gaudi::Functional::details {
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
       // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   public:

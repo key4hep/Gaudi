@@ -36,8 +36,7 @@ void MyGaudiTool::doIt() const
   info() << "doIt() has been called" << endmsg;
   debug() << "doIt() [DEBUG] has been called" << endmsg;
   // show the feature introduced with GAUDI-1078
-  if ( contextSvc() && name().substr( 0, 7 ) == "ToolSvc" )
-    Info( "public tool called by" ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  if ( contextSvc() && name().substr( 0, 7 ) == "ToolSvc" ) Info( "public tool called by" ).ignore();
 }
 
 //------------------------------------------------------------------------------

@@ -316,7 +316,7 @@ namespace {
     inline void ignore() { m_retcode = Gaudi::ReturnCode::Success; }
     inline ~RetCodeGuard() {
       if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) {
-        Gaudi::setAppReturnCode( m_appmgr, m_retcode ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+        Gaudi::setAppReturnCode( m_appmgr, m_retcode ).ignore();
       }
     }
 

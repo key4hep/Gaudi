@@ -21,7 +21,7 @@ namespace Gaudi {
       LegacyAlgorithmAdapter( std::string name, ISvcLocator* svcloc, std::string version = PACKAGE_VERSION )
           : Gaudi::Algorithm( std::move( name ), svcloc, std::move( version ) ) {
         // default cardinality for non-reentrant algorithms
-        setProperty( "Cardinality", 1 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+        setProperty( "Cardinality", 1 ).ignore();
       }
 
       virtual StatusCode execute() = 0;

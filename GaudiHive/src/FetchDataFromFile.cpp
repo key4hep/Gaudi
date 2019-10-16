@@ -31,7 +31,7 @@ namespace Gaudi {
         if ( sc ) {
           for ( const auto& k : outputDataObjs() ) {
             if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "adding data key " << k << endmsg;
-            evtSvc()->addPreLoadItem( k.key() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+            if ( sc = evtSvc()->addPreLoadItem( k.key() ); !sc ) return sc;
           }
         }
         return sc;

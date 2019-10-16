@@ -89,17 +89,14 @@ int Gaudi::Application::run() {
   if ( app->initialize() ) {
     if ( app->start() ) {
       // - main processing loop
-      if ( !processor->executeRun( evtMax ) )
-        setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure )
-            .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      if ( !processor->executeRun( evtMax ) ) setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure ).ignore();
 
       app->stop().ignore();
     } else
-      setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure )
-          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure ).ignore();
     app->finalize().ignore();
   } else
-    setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure ).ignore();
   return getAppReturnCode( prop );
 }
 

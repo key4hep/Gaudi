@@ -123,13 +123,13 @@ StatusCode ReplayOutputStream::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   std::vector<std::string> names;
-  m_evtMgr
-      ->traverseSubTree( RecordOutputStream::locationRoot(),
-                         [&names]( IRegistry* pReg, int lvl ) {
-                           if ( lvl > 0 ) names.push_back( pReg->name() );
-                           return true;
-                         } )
-      .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  if ( auto sc = m_evtMgr->traverseSubTree( RecordOutputStream::locationRoot(),
+                                            [&names]( IRegistry* pReg, int lvl ) {
+                                              if ( lvl > 0 ) names.push_back( pReg->name() );
+                                              return true;
+                                            } );
+       !sc )
+    return sc;
 
   std::for_each( names.begin(), names.end(), [this]( const std::string& name ) {
     SmartIF<IAlgorithm>& alg = this->m_outputStreams[name];

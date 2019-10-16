@@ -33,7 +33,8 @@ DECLARE_COMPONENT( EvtCollectionStream )
 // initialize data writer
 StatusCode EvtCollectionStream::initialize() {
   // Use the Job options service to set the Algorithm's parameters
-  setProperties().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  if ( auto sc = setProperties(); !sc ) return sc;
+
   // Get access to the DataManagerSvc
   m_pTupleSvc = serviceLocator()->service( m_storeName );
   if ( !m_pTupleSvc ) {
