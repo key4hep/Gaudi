@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -106,44 +106,41 @@ public:
 
   /// Constructor from enum type (allowing implicit conversion)
   template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
-  StatusCode( T sc, bool checked = false ) noexcept {
-    *this     = StatusCode( static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance );
-    m_checked = checked;
-  }
+  StatusCode( T sc ) noexcept : StatusCode{static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance} {}
 
-  /// Constructor from code_t in the default category (explicit conversion only)
-  explicit StatusCode( code_t code, const StatusCode::Category& cat = default_category(),
-                       bool checked = false ) noexcept
-      : m_cat( &cat ), m_code( code ), m_checked( checked ) {}
+  /// Constructor from enum type (allowing implicit conversion)
+  template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
+  [[deprecated( "use StatusCode(T) instead" )]] StatusCode( T sc, bool ) noexcept : StatusCode{sc} {}
 
   /// Constructor from code_t and category (explicit conversion only)
-  explicit StatusCode( code_t code, bool checked ) noexcept : StatusCode( code, default_category(), checked ) {}
+  explicit StatusCode( code_t code, const StatusCode::Category& cat ) noexcept : m_cat( &cat ), m_code( code ) {}
+
+  /// Constructor from code_t in the default category (explicit conversion only)
+  [[deprecated( "use StatusCode(code_t, Category) instead" )]] explicit StatusCode(
+      code_t code, const StatusCode::Category& cat, bool ) noexcept
+      : StatusCode{code, cat} {}
+
+  /// Constructor from code_t in the default category (explicit conversion only)
+  explicit StatusCode( code_t code ) noexcept : StatusCode( code, default_category() ) {}
+
+  /// Constructor from code_t and category (explicit conversion only)
+  [[deprecated( "use StatusCode(code_t) instead" )]] explicit StatusCode( code_t code, bool ) noexcept
+      : StatusCode{code} {}
 
   /// Copy constructor
-  StatusCode( const StatusCode& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked ) {
-    rhs.m_checked = true;
-  }
+  StatusCode( const StatusCode& rhs ) noexcept = default;
 
   /// Move constructor
-  StatusCode( StatusCode && rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked ) {
-    rhs.m_checked = true;
-  }
+  StatusCode( StatusCode && rhs ) noexcept = default;
 
 /// Destructor.
 #ifdef STATUSCODE_DESTRUCTOR_LINKAGE
   STATUSCODE_DESTRUCTOR_LINKAGE
 // Used in GaudiExamples.statuscodesvc.* tests
 #endif
-  ~StatusCode() {
-    if ( UNLIKELY( s_checking ) ) check();
-  }
+  ~StatusCode() = default;
 
-  StatusCode& operator=( const StatusCode& rhs ) noexcept {
-    m_cat     = rhs.m_cat;
-    m_code    = rhs.m_code;
-    m_checked = std::exchange( rhs.m_checked, true );
-    return *this;
-  }
+  StatusCode& operator=( const StatusCode& rhs ) noexcept = default;
 
   bool isSuccess() const;
   bool isFailure() const { return !isSuccess(); }
@@ -153,30 +150,14 @@ public:
   explicit operator bool() const { return isSuccess(); }
 
   /// Retrieve value ("checks" the StatusCode)
-  code_t getCode() const {
-    m_checked = true;
-    return m_code;
-  }
+  code_t getCode() const { return m_code; }
 
   /// Check/uncheck StatusCode
-  const StatusCode& setChecked( bool checked = true ) const {
-    m_checked = checked;
-    return *this;
-  }
-  StatusCode& setChecked( bool checked = true ) {
-    m_checked = checked;
-    return *this;
-  }
+  [[deprecated( "will be removed" )]] const StatusCode& setChecked( bool = true ) const { return *this; }
+  [[deprecated( "will be removed" )]] StatusCode&       setChecked( bool = true ) { return *this; }
 
-  /// Ignore/check StatusCode
-  const StatusCode& ignore() const {
-    setChecked( true );
-    return *this;
-  }
-  StatusCode& ignore() {
-    setChecked( true );
-    return *this;
-  }
+  /// Ignore StatusCode
+  void ignore() const {}
 
   /// Chain code blocks making the execution conditional a success result.
   ///
@@ -257,7 +238,7 @@ public:
   }
 
   /// Has the StatusCode been checked?
-  bool checked() const { return m_checked; }
+  [[deprecated( "will be removed" )]] bool checked() const { return true; }
 
   /// Retrieve category (does not "check" the StatusCode)
   const StatusCode::Category& getCategory() const { return *m_cat; }
@@ -278,8 +259,6 @@ public:
 
   /// Comparison (values are grouped by category first)
   friend bool operator<( const StatusCode& lhs, const StatusCode& rhs ) {
-    lhs.m_checked = true;
-    rhs.m_checked = true;
     return ( lhs.m_cat < rhs.m_cat || ( lhs.m_cat == rhs.m_cat && lhs.m_code < rhs.m_code ) );
   }
 
@@ -299,9 +278,9 @@ public:
   /// Boolean OR assignment operator
   friend bool& operator|=( bool& lhs, const StatusCode& sc ) { return lhs |= sc.isSuccess(); }
 
-  static GAUDI_API void enableChecking();
-  static GAUDI_API void disableChecking();
-  static GAUDI_API bool checkingEnabled();
+  [[deprecated( "will be removed" )]] static GAUDI_API void enableChecking();
+  [[deprecated( "will be removed" )]] static GAUDI_API void disableChecking();
+  [[deprecated( "will be removed" )]] static GAUDI_API bool checkingEnabled();
 
   /**
    * Simple RAII class to ignore unchecked StatusCode instances in a scope.
@@ -317,23 +296,11 @@ public:
    * }
    * @endcode
    */
-  class ScopedDisableChecking {
-    bool m_enabled;
-
-  public:
-    ScopedDisableChecking() : m_enabled( StatusCode::checkingEnabled() ) {
-      if ( m_enabled ) StatusCode::disableChecking();
-    }
-    ~ScopedDisableChecking() {
-      if ( m_enabled ) StatusCode::enableChecking();
-    }
-  };
+  class [[deprecated( "will be removed" )]] ScopedDisableChecking{};
 
 private:
   const Category* m_cat{&default_category()};                        ///< The status code category
   code_t          m_code{static_cast<code_t>( ErrorCode::SUCCESS )}; ///< The status code value
-  mutable bool    m_checked{false};                                  ///< If the StatusCode has been checked
-  static bool     s_checking; ///< Global flag to control if StatusCode need to be checked
 
   ErrorCode default_value() const; ///< Project onto the default StatusCode values
   void      check();               ///< Do StatusCode check
@@ -389,25 +356,17 @@ inline const StatusCode::Category& StatusCode::default_category() noexcept {
 }
 
 inline bool StatusCode::isSuccess() const {
-  m_checked = true;
   return ( m_code == static_cast<code_t>( ErrorCode::SUCCESS ) || m_cat->isSuccess( m_code ) );
 }
 
-inline bool StatusCode::isRecoverable() const {
-  m_checked = true;
-  return m_cat->isRecoverable( m_code );
-}
+inline bool StatusCode::isRecoverable() const { return m_cat->isRecoverable( m_code ); }
 
 inline StatusCode::ErrorCode StatusCode::default_value() const {
-  bool save_checked = m_checked; // Preserve checked status
-  auto r    = isSuccess() ? ErrorCode::SUCCESS : ( isRecoverable() ? ErrorCode::RECOVERABLE : ErrorCode::FAILURE );
-  m_checked = save_checked;
+  auto r = isSuccess() ? ErrorCode::SUCCESS : ( isRecoverable() ? ErrorCode::RECOVERABLE : ErrorCode::FAILURE );
   return r;
 }
 
 inline bool operator==( const StatusCode& lhs, const StatusCode& rhs ) {
-  lhs.m_checked = true;
-  rhs.m_checked = true;
   return ( lhs.m_code == rhs.m_code ) &&
          ( lhs.m_code == static_cast<StatusCode::code_t>( StatusCode::ErrorCode::SUCCESS ) ||
            lhs.m_code == static_cast<StatusCode::code_t>( StatusCode::ErrorCode::FAILURE ) ||
@@ -421,7 +380,6 @@ inline StatusCode& StatusCode::operator&=( const StatusCode& rhs ) {
   StatusCode::code_t l = static_cast<StatusCode::code_t>( default_value() );
   StatusCode::code_t r = static_cast<StatusCode::code_t>( rhs.default_value() );
   m_code               = AND[l][r];
-  rhs.m_checked        = true;
   return *this;
 }
 
@@ -432,7 +390,6 @@ inline StatusCode& StatusCode::operator|=( const StatusCode& rhs ) {
   StatusCode::code_t l = static_cast<StatusCode::code_t>( default_value() );
   StatusCode::code_t r = static_cast<StatusCode::code_t>( rhs.default_value() );
   m_code               = OR[l][r];
-  rhs.m_checked        = true;
   return *this;
 }
 
