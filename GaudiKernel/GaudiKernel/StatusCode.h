@@ -2,6 +2,7 @@
 #define GAUDIKERNEL_STATUSCODE_H
 
 #include "boost/preprocessor/facilities/overload.hpp"
+#include <functional>
 #include <ostream>
 #include <type_traits>
 #include <utility>
@@ -159,6 +160,74 @@ public:
     return *this;
   }
 
+  /// Chain code blocks making the execution conditional a success result.
+  ///
+  /// The chained execution stops on the first non-success StatusCode in the chain and
+  /// returns it, or continues until the end and returns the last produced StatusCode.
+  ///
+  /// For example:
+  /// \code
+  /// StatusCode myFunction() {
+  ///   return subFunction()
+  ///       .andThen([]() {
+  ///         do_something();
+  ///       })
+  ///       .andThen(anotherFunction)
+  ///       .andThen([]() {
+  ///         if (is_special_case())
+  ///           return do_something_else();
+  ///         return StatusCode::SUCCESS;
+  ///       });
+  /// }
+  /// \endcode
+  template <typename F, typename... ARGS>
+  StatusCode andThen( F&& f, ARGS&&... args ) const {
+    if ( isFailure() ) return *this;
+    return i_invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
+  }
+
+  /// Chain code blocks making the execution conditional a failure result.
+  ///
+  /// Inverse of StatusCode::andThen(), the passed function gets invoked only if
+  /// if the StatusCode is a failure, in which case it either pass it on or overrides it,
+  /// If the StatusCode is a success, it is passed on.
+  ///
+  /// For example:
+  /// \code
+  /// StatusCode myFunction() {
+  ///   return subFunction()
+  ///       .andThen([]() {
+  ///         do_something();
+  ///       })
+  ///       .orElse(reportProblem);
+  /// }
+  /// \endcode
+  template <typename F, typename... ARGS>
+  StatusCode orElse( F&& f, ARGS&&... args ) const {
+    if ( isSuccess() ) return *this;
+    return i_invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
+  }
+
+  /// Throw a GaudiException in case of failures.
+  ///
+  /// It can be chained with StatusCode::then, behaving as a pass-through for a success StatusCode,
+  /// while for non-success a GaudiException is thrown, propagating the failure into the exception
+  /// (using the StatusCode field of the exception).
+  ///
+  /// For example:
+  /// \code
+  /// void myFunction() {
+  ///   doSomething()
+  ///       .andThen( doSomethingElse )
+  ///       .orThrow( "some error", "myFunction" )
+  ///       .andThen( moreActions )
+  ///       .orThrow( "too bad, we were nearly there", "myFunction" );
+  /// }
+  /// \endcode
+  StatusCode orThrow( std::string message, std::string tag ) const {
+    return orElse( &StatusCode::i_doThrow, this, std::move( message ), std::move( tag ) );
+  }
+
   /// Has the StatusCode been checked?
   bool checked() const { return m_checked; }
 
@@ -228,6 +297,21 @@ private:
 
   ErrorCode default_value() const; ///< Project onto the default StatusCode values
   void      check();               ///< Do StatusCode check
+
+  /// Helper function to avoid circular dependency between GaudiException.h and StatusCode.h
+  void i_doThrow( std::string message, std::string tag ) const;
+
+  /// Helper to invoke a callable and return the resulting StatusCode or this, if the callable returns void.
+  template <typename F, typename... ARGS, typename = std::enable_if_t<std::is_invocable_v<F, ARGS...>>>
+  StatusCode i_invoke( F&& f, ARGS&&... args ) const {
+    if constexpr ( std::is_invocable_r_v<StatusCode, F, ARGS...> ) {
+      return std::invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
+    } else {
+      // static_assert( std::is_same_v<void,std::invoke_result_t<F,ARGS...>>); // how paranoid should this be?
+      std::invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
+      return *this;
+    }
+  }
 };
 
 /*

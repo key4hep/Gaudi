@@ -2,6 +2,7 @@
 
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Bootstrap.h"
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IStatusCodeSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -76,4 +77,8 @@ void StatusCode::check() {
       }
     }
   }
+}
+
+void StatusCode::i_doThrow( std::string message, std::string tag ) const {
+  throw GaudiException{std::move( message ), std::move( tag ), *this};
 }
