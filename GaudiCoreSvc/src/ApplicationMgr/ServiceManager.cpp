@@ -148,7 +148,7 @@ StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeN
     if ( !svc ) return StatusCode::FAILURE;
     it            = find( svc.get() ); // now it is in the list because createService added it
     it->priority  = prio;
-    StatusCode sc = StatusCode( StatusCode::SUCCESS, true );
+    StatusCode sc = StatusCode::SUCCESS;
     if ( targetFSMState() >= Gaudi::StateMachine::INITIALIZED ) { // WARNING: this can trigger a recursion!!!
       sc = svc->sysInitialize();
       if ( sc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING ) { sc = svc->sysStart(); }
@@ -175,7 +175,7 @@ StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeN
   // 'it' is defined because either we found the service or we created it
   // Now we can activate the service
   it->active = true; // and make it active
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -245,9 +245,9 @@ StatusCode ServiceManager::removeService( IService* svc )
 //------------------------------------------------------------------------------
 {
   auto it = find( svc );
-  if ( it == m_listsvc.end() ) return StatusCode( StatusCode::FAILURE, true );
+  if ( it == m_listsvc.end() ) return StatusCode::FAILURE;
   m_listsvc.erase( it );
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ StatusCode ServiceManager::initialize()
   // we work on a copy to avoid to operate twice on the services created on demand
   // which are already in the correct state.
 
-  StatusCode sc( StatusCode::SUCCESS, true );
+  StatusCode sc = StatusCode::SUCCESS;
   // call initialize() for all services
   for ( auto& it : activeSvc( m_listsvc ) ) {
     const std::string& name = it->name();
@@ -311,7 +311,7 @@ StatusCode ServiceManager::start()
   // we work on a copy to avoid to operate twice on the services created on demand
   // (which are already in the correct state.
   // only act on active services
-  StatusCode sc( StatusCode::SUCCESS, true );
+  StatusCode sc = StatusCode::SUCCESS;
   // call initialize() for all services
   for ( auto& it : activeSvc( m_listsvc ) ) {
     const std::string& name = it->name();
@@ -345,7 +345,7 @@ StatusCode ServiceManager::stop()
   // which are already in the correct state.
   // only act on active services
 
-  StatusCode sc( StatusCode::SUCCESS, true );
+  StatusCode sc = StatusCode::SUCCESS;
   // call stop() for all services
   for ( const auto& svc : reverse( activeSvc( m_listsvc ) ) ) {
     const std::string& name = svc->name();
@@ -378,7 +378,7 @@ StatusCode ServiceManager::reinitialize()
   // we work on a copy to avoid to operate twice on the services created on demand
   // which are already in the correct state.
   // only act on active services
-  StatusCode sc( StatusCode::SUCCESS, true );
+  StatusCode sc = StatusCode::SUCCESS;
   // Re-Initialize all services
   for ( auto& svc : activeSvc( m_listsvc ) ) {
     sc = svc->sysReinitialize();
@@ -399,7 +399,7 @@ StatusCode ServiceManager::restart()
   // we work on a copy to avoid to operate twice on the services created on demand
   // which are already in the correct state.
   // only act on active services
-  StatusCode sc( StatusCode::SUCCESS, true );
+  StatusCode sc = StatusCode::SUCCESS;
   // Re-Start all services
   for ( auto& svc : activeSvc( m_listsvc ) ) {
     sc = svc->sysRestart();
@@ -416,7 +416,7 @@ StatusCode ServiceManager::finalize()
 //------------------------------------------------------------------------------
 {
   // make sure that HistogramDataSvc and THistSvc get finalized after the
-  // ToolSvc, and the FileMgr and StatusCodeSvc after that
+  // ToolSvc, and the FileMgr after that
   int pri_tool = getPriority( "ToolSvc" );
   if ( pri_tool != 0 ) {
     setPriority( "THistSvc", pri_tool - 10 ).ignore();
@@ -438,14 +438,11 @@ StatusCode ServiceManager::finalize()
     p_inc.reset();
   }
 
-  // make sure the StatusCodeSvc gets finalized really late:
-  setPriority( "StatusCodeSvc", -9999 ).ignore();
-
   // ensure that the list is ordered by priority
   m_listsvc.sort();
   // dump();
 
-  StatusCode sc( StatusCode::SUCCESS, true );
+  StatusCode sc = StatusCode::SUCCESS;
   {
     // we work on a copy to avoid to operate twice on the services created on demand
     // which are already in the correct state.

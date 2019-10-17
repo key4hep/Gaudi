@@ -30,7 +30,6 @@ MessageSvc.OutputLevel  = 3;
 // MessageSvc.UseColors = true;
 ApplicationMgr.OutputLevel = 1;
 ServiceManager.OutputLevel = 2;
-StatusCodeSvc.OutputLevel = 1;
 
 
 
@@ -39,5 +38,3 @@ StatusCodeSvc.OutputLevel = 1;
 //--------------------------------------------------------------
 ApplicationMgr.EvtMax   = 5;
 ApplicationMgr.EvtSel  = "NONE";
-
-

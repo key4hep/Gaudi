@@ -54,10 +54,7 @@ GaudiException::GaudiException( const GaudiException& Exception )
   s_proc = true;
 }
 
-GaudiException::~GaudiException() throw() {
-  m_code.setChecked();
-  s_proc = false;
-}
+GaudiException::~GaudiException() throw() { s_proc = false; }
 
 GaudiException& GaudiException::operator=( const GaudiException& Exception ) {
   m_message   = Exception.message();

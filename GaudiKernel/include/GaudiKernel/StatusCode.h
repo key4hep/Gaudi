@@ -133,11 +133,7 @@ public:
   /// Move constructor
   StatusCode( StatusCode && rhs ) noexcept = default;
 
-/// Destructor.
-#ifdef STATUSCODE_DESTRUCTOR_LINKAGE
-  STATUSCODE_DESTRUCTOR_LINKAGE
-// Used in GaudiExamples.statuscodesvc.* tests
-#endif
+  /// Destructor.
   ~StatusCode() = default;
 
   StatusCode& operator=( const StatusCode& rhs ) noexcept = default;

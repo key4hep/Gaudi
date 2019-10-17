@@ -303,21 +303,6 @@ StatusCode ApplicationMgr::configure() {
     for ( const auto& property : properties ) { log << "Property ['Name': Value] = " << *property << endmsg; }
   }
 
-  // Check if StatusCode need to be checked
-  if ( m_codeCheck ) {
-    StatusCode::enableChecking();
-    sc = svcManager()->addService( "StatusCodeSvc", -9999 );
-    if ( sc.isFailure() ) {
-      log << MSG::FATAL << "Error adding StatusCodeSvc" << endmsg;
-      return StatusCode::FAILURE;
-    } else {
-      ON_VERBOSE
-      log << MSG::VERBOSE << "added service StatusCodeSvc" << endmsg;
-    }
-  } else {
-    StatusCode::disableChecking();
-  }
-
   // set the requested environment variables
   for ( auto& var : m_environment ) {
     const std::string& name  = var.first;
@@ -616,8 +601,6 @@ StatusCode ApplicationMgr::finalize() {
   // svcManager()->removeService( (IService*) m_processingMgr.get() );
   // svcManager()->removeService( (IService*) m_runable.get() );
 
-  if ( m_codeCheck ) { StatusCode::disableChecking(); }
-
   if ( sc.isSuccess() ) {
     log << MSG::INFO << "Application Manager Finalized successfully" << endmsg;
   } else {
@@ -686,7 +669,7 @@ StatusCode ApplicationMgr::terminate() {
 // Reach the required state going through all the needed transitions
 //============================================================================
 StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ignoreFailures ) {
-  StatusCode sc = StatusCode( StatusCode::SUCCESS, true );
+  StatusCode sc = StatusCode::SUCCESS;
 
   switch ( state ) {
 

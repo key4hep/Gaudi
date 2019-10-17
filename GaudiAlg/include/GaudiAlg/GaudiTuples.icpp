@@ -59,9 +59,7 @@ StatusCode GaudiTuples<PBASE>::
     // check the existance of service
     if ( this->ntupleSvc() == 0 ) { return this->Error( "INTupleSvc* points to NULL!" ); }
     // Print ntuple path
-    this->Print( "The N-Tuple   path is set to be '" + nTuplePath() + "'", StatusCode( StatusCode::SUCCESS, true ),
-                 MSG::DEBUG )
-        .ignore();
+    this->Print( "The N-Tuple   path is set to be '" + nTuplePath() + "'", StatusCode::SUCCESS, MSG::DEBUG ).ignore();
   } else {
     this->debug() << "Production of N-Tuples is switched OFF" << endmsg;
   }
@@ -70,9 +68,7 @@ StatusCode GaudiTuples<PBASE>::
     // check the existance of service
     if ( 0 == this->evtColSvc() ) { return this->Error( "INTupleSvc* points to NULL!" ); }
     // Print EvtCol path
-    this->Print( "The EventCol  path is set to be '" + evtColPath() + "'", StatusCode( StatusCode::SUCCESS, true ),
-                 MSG::DEBUG )
-        .ignore();
+    this->Print( "The EventCol  path is set to be '" + evtColPath() + "'", StatusCode::SUCCESS, MSG::DEBUG ).ignore();
   } else {
     this->debug() << "Production of Event Collections is switched OFF" << endmsg;
   }

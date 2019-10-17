@@ -74,7 +74,7 @@ StatusCode PersistencySvc::makeCall( int typ, IOpaqueAddress*& pAddress, DataObj
       break;
     }
 
-    StatusCode status( StatusCode::FAILURE, true );
+    StatusCode status = StatusCode::FAILURE;
     switch ( typ ) {
     case CREATE_OBJ:
       pObject = nullptr;
@@ -171,7 +171,7 @@ SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type ) {
 StatusCode PersistencySvc::setDataProvider( IDataProviderSvc* pDataSvc ) {
   m_dataSvc = pDataSvc;
   for ( auto& i : m_cnvServices ) { i.second.conversionSvc()->setDataProvider( m_dataSvc ).ignore(); }
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 
 /// Access the dataprovider service
@@ -180,7 +180,7 @@ SmartIF<IDataProviderSvc>& PersistencySvc::dataProvider() const { return m_dataS
 /// Set conversion service the converter is connected to
 StatusCode PersistencySvc::setConversionSvc( IConversionSvc* svc ) {
   m_cnvDefault = svc;
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 
 /// Get conversion service the converter is connected to

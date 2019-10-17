@@ -35,7 +35,7 @@ namespace {
   class OutStreamTransition {
   public:
     typedef ReplayOutputStream::OutStreamsMapType::value_type ItemType;
-    OutStreamTransition( MsgStream& msg ) : m_msg( msg ), m_code( StatusCode::SUCCESS, false ) {}
+    OutStreamTransition( MsgStream& msg ) : m_msg( msg ), m_code( StatusCode::SUCCESS ) {}
 
     void operator()( ItemType& item );
 

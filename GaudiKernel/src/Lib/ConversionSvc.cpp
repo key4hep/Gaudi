@@ -48,7 +48,7 @@ StatusCode ConversionSvc::makeCall( int typ, bool ignore_add, bool ignore_obj, b
     cnv = converter( obj_class );
   }
 
-  StatusCode status( StatusCode::FAILURE, true );
+  StatusCode status{StatusCode::FAILURE};
   if ( cnv ) {
     switch ( typ ) {
     case CREATE_OBJ:

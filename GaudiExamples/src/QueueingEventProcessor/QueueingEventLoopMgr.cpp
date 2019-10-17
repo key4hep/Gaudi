@@ -117,7 +117,7 @@ StatusCode QueueingEventLoopMgr::start() {
         --m_inFlight; // yes, this is not accurate.
       } else {
         DEBMSG << "exiting event loop thread" << endmsg;
-        m_done.emplace( StatusCode{StatusCode::SUCCESS, true}, std::move( ctx ) );
+        m_done.emplace( StatusCode::SUCCESS, std::move( ctx ) );
         --m_inFlight; // yes, this is not accurate.
         break;
       }
@@ -186,14 +186,14 @@ std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventCo
     }
   }
 
-  StatusCode outcome{StatusCode::SUCCESS, true};
+  StatusCode outcome = StatusCode::SUCCESS;
   // Check if there was an error processing current event
   if ( UNLIKELY( eventfailed ) ) {
     error() << "Error processing event loop." << endmsg;
     std::ostringstream ost;
     m_aess->dump( ost, context );
     DEBMSG << "Dumping AlgExecStateSvc status:\n" << ost.str() << endmsg;
-    outcome = StatusCode{StatusCode::FAILURE, true};
+    outcome = StatusCode::FAILURE;
   }
 
   return {std::move( outcome ), std::move( context )};

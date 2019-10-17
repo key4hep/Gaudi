@@ -18,7 +18,7 @@ MessageSvc.useColors        = true;
 
 MessageSvc.setVerbose	+= { "HistorySvc" };
 MessageSvc.setDebug	+= { "FastHistorySvc" };
-MessageSvc.setDebug	+= { "StatusCodeSvc", "IncidentSvc" };
+MessageSvc.setDebug	+= { "IncidentSvc" };
 
 HistorySvc.Dump             = false;
 HistorySvc.OutputFile       = "history.dat";

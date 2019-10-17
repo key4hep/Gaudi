@@ -51,18 +51,14 @@ public:
   virtual void before( CustomEventTypeRef, const std::string& ) = 0;
 
   /// Audit the end of a standard "event".
-  virtual void after( StandardEventType, INamedInterface*,
-                      const StatusCode& sc = StatusCode( StatusCode::SUCCESS, true ) ) = 0;
+  virtual void after( StandardEventType, INamedInterface*, const StatusCode& sc = StatusCode::SUCCESS ) = 0;
   /// Audit the end of a standard "event" for callers that do not implement INamedInterface.
-  virtual void after( StandardEventType, const std::string&,
-                      const StatusCode& sc = StatusCode( StatusCode::SUCCESS, true ) ) = 0;
+  virtual void after( StandardEventType, const std::string&, const StatusCode& sc = StatusCode::SUCCESS ) = 0;
 
   /// Audit the end of a custom "event".
-  virtual void after( CustomEventTypeRef, INamedInterface*,
-                      const StatusCode& sc = StatusCode( StatusCode::SUCCESS, true ) ) = 0;
+  virtual void after( CustomEventTypeRef, INamedInterface*, const StatusCode& sc = StatusCode::SUCCESS ) = 0;
   /// Audit the end of a custom "event" for callers that do not implement INamedInterface.
-  virtual void after( CustomEventTypeRef, const std::string&,
-                      const StatusCode& sc = StatusCode( StatusCode::SUCCESS, true ) ) = 0;
+  virtual void after( CustomEventTypeRef, const std::string&, const StatusCode& sc = StatusCode::SUCCESS ) = 0;
 
   /// Tell if the auditor is enabled or not.
   virtual bool isEnabled() const = 0;
