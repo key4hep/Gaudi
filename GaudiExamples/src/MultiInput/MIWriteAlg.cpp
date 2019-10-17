@@ -22,12 +22,14 @@ DECLARE_COMPONENT( WriteAlg )
 // Initialize
 //--------------------------------------------------------------------
 StatusCode WriteAlg::initialize() {
-  StatusCode sc = Algorithm::initialize();
-  if ( sc.isFailure() ) return sc;
-  m_evtnum = 0;
-  m_runnum = 999;
-  randSvc()->engine()->setSeeds( m_randomSeeds );
-  return sc;
+  return Algorithm::initialize()
+      .andThen( [this]() {
+        m_evtnum = 0;
+        m_runnum = 999;
+      } )
+      .andThen( [this]() {
+        return m_randomSeeds.empty() ? StatusCode::SUCCESS : randSvc()->engine()->setSeeds( m_randomSeeds );
+      } );
 }
 
 //--------------------------------------------------------------------
