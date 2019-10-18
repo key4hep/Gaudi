@@ -7,27 +7,36 @@
 
 // Set up the transient data store
 EventDataSvc.ForceLeaves = true;
-EventDataSvc.RootCLID    =    1;
+EventDataSvc.RootCLID    = 1;
 
 //--------------------------------------------------------------
 // Private Application Configuration options
 //--------------------------------------------------------------
 
 // Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
-MessageSvc.OutputLevel     =  3;
+MessageSvc.OutputLevel = 3;
 
-ApplicationMgr.TopAlg += { "GaudiCommonTests/Test1" };
-Test1.OutputLevel     =  2;
-Test1.RootInTES = "";
+ApplicationMgr.TopAlg += {"GaudiCommonTests/Test1"};
+Test1.OutputLevel = 2;
+Test1.RootInTES   = "";
 
-ApplicationMgr.TopAlg += { "GaudiCommonTests/Test2" };
-Test2.OutputLevel     =  2;
-Test2.RootInTES = "microDST/";
+ApplicationMgr.TopAlg += {"GaudiCommonTests/Test2"};
+Test2.OutputLevel = 2;
+Test2.RootInTES   = "microDST";
+
+ApplicationMgr.TopAlg += {"GaudiSequencer/Seq1"};
+Seq1.Members      = {"GaudiCommonTests/Test3"};
+Test3.OutputLevel = 2;
+Seq1.RootInTES    = "";
+
+ApplicationMgr.TopAlg += {"GaudiSequencer/Seq2"};
+Seq2.Members      = {"GaudiCommonTests/Test4"};
+Test4.OutputLevel = 2;
+Seq2.RootInTES    = "microDST";
 
 //--------------------------------------------------------------
 // Event related parameters
 //--------------------------------------------------------------
-ApplicationMgr.EvtMax    = 1;   // events to be processed (default is 10)
-ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
+ApplicationMgr.EvtMax               = 1;      // events to be processed (default is 10)
+ApplicationMgr.EvtSel               = "NONE"; // do not use any event input
 ApplicationMgr.HistogramPersistency = "NONE";
-
