@@ -2,6 +2,7 @@
 #define BOOST_TEST_MODULE test_StatusCode
 #include <boost/test/unit_test.hpp>
 
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/StatusCode.h"
 
 // Define my own error enum/category
@@ -421,4 +422,147 @@ BOOST_AUTO_TEST_CASE( const_definitions ) {
   BOOST_CHECK( testReferencePassing( StatusCode::SUCCESS, StatusCode::SUCCESS ) );
   BOOST_CHECK( testReferencePassing( StatusCode::FAILURE, StatusCode::FAILURE ) );
   BOOST_CHECK( testReferencePassing( StatusCode::RECOVERABLE, StatusCode::RECOVERABLE ) );
+}
+
+BOOST_AUTO_TEST_CASE( chaining ) {
+  int  steps = 0; // counter to see when the chaining stops
+  auto start = [&steps]( StatusCode init = StatusCode::SUCCESS ) -> StatusCode {
+    steps = 1;
+    return init;
+  };
+  auto success_func = [&steps]() -> StatusCode {
+    ++steps;
+    return StatusCode::SUCCESS;
+  };
+  auto failure_func = [&steps]() -> StatusCode {
+    ++steps;
+    return StatusCode::FAILURE;
+  };
+  auto no_return = [&steps]() { ++steps; };
+
+  StatusCode sc = StatusCode::SUCCESS;
+
+  // --- andThen ---
+
+  // simple chain
+  sc = start().andThen( success_func );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 2 );
+
+  // longer chain
+  sc = start().andThen( success_func ).andThen( success_func );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 3 );
+
+  // chain functions not returning StatusCode
+  sc = start().andThen( no_return );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 2 );
+
+  // chain functions not returning StatusCode (longer)
+  sc = start().andThen( no_return ).andThen( success_func );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 3 );
+
+  // category pass through
+  sc = StatusCode{MyErr::SUCCESS}.andThen( []() {
+    // no-op
+  } );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( sc.getCategory().name(), "My" );
+
+  // chain with failure
+  sc = start().andThen( failure_func );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( steps, 2 );
+
+  // longer chain with failure
+  sc = start().andThen( success_func ).andThen( failure_func );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( steps, 3 );
+
+  // early exit after failure
+  sc = start().andThen( failure_func ).andThen( success_func );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( steps, 2 );
+
+  // custom category failure
+  sc = start().andThen( []() { return MyErr::FAILURE; } );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( sc.getCategory().name(), "My" );
+
+  // --- orElse ---
+
+  // simple chain
+  sc = start( StatusCode::FAILURE ).orElse( no_return );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( steps, 2 );
+  sc = start( StatusCode::SUCCESS ).orElse( no_return );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 1 );
+
+  // simple override
+  sc = start( StatusCode::FAILURE ).orElse( success_func );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 2 );
+
+  // longer chain
+  sc = start( StatusCode::FAILURE ).orElse( no_return ).andThen( success_func );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( steps, 2 );
+
+  sc = start( StatusCode::FAILURE ).orElse( success_func ).andThen( success_func );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 3 );
+
+  // category pass through
+  sc = start( MyErr::FAILURE ).orElse( no_return );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( sc.getCategory().name(), "My" );
+
+  // custom category failure
+  sc = start( StatusCode::FAILURE ).orElse( [] { return MyErr::FAILURE; } ).andThen( failure_func );
+  BOOST_CHECK( sc.isFailure() );
+  BOOST_CHECK_EQUAL( sc.getCategory().name(), "My" );
+
+  // --- orThrow ---
+
+  // no throw
+  sc = start().orThrow( "no error", "test_StatusCode" );
+  BOOST_CHECK( sc.isSuccess() );
+  BOOST_CHECK_EQUAL( steps, 1 );
+
+  // throw
+  try {
+    sc = start().andThen( failure_func ).orThrow( "failure", "test_StatusCode" );
+    BOOST_FAIL( "exception expected" );
+  } catch ( GaudiException& exc ) {
+    BOOST_CHECK( exc.code().isFailure() );
+    BOOST_CHECK_EQUAL( exc.message(), "failure" );
+    BOOST_CHECK_EQUAL( exc.tag(), "test_StatusCode" );
+    BOOST_CHECK_EQUAL( steps, 2 );
+  } catch ( ... ) { BOOST_FAIL( "wrong exception" ); }
+
+  // throw (abort chain)
+  try {
+    sc = start().andThen( failure_func ).orThrow( "failure", "test_StatusCode" ).andThen( success_func );
+    BOOST_FAIL( "exception expected" );
+  } catch ( GaudiException& exc ) {
+    BOOST_CHECK( exc.code().isFailure() );
+    BOOST_CHECK_EQUAL( exc.message(), "failure" );
+    BOOST_CHECK_EQUAL( exc.tag(), "test_StatusCode" );
+    BOOST_CHECK_EQUAL( steps, 2 );
+  } catch ( ... ) { BOOST_FAIL( "wrong exception" ); }
+
+  // throw custom category
+  try {
+    sc = start().andThen( []() { return MyErr::FAILURE; } ).orThrow( "failure", "test_StatusCode" );
+    BOOST_FAIL( "exception expected" );
+  } catch ( GaudiException& exc ) {
+    BOOST_CHECK( exc.code().isFailure() );
+    BOOST_CHECK_EQUAL( exc.code().getCategory().name(), "My" );
+    BOOST_CHECK_EQUAL( exc.message(), "failure" );
+    BOOST_CHECK_EQUAL( exc.tag(), "test_StatusCode" );
+    BOOST_CHECK_EQUAL( steps, 1 );
+  } catch ( ... ) { BOOST_FAIL( "wrong exception" ); }
 }
