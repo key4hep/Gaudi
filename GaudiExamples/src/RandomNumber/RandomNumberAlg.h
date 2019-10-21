@@ -17,9 +17,9 @@ protected:
   /// Allocate wrapper for random number generator
   Rndm::Numbers m_numbers;
   /// Initial seed to fill deterministic random numbers
-  uint32_t m_initial;
+  uint32_t m_initial{0};
   /// Pointer to N-tuple
-  NTuple::Tuple* m_ntuple;
+  NTuple::Tuple* m_ntuple{nullptr};
   /// N-tuple items
   NTuple::Item<int>      m_int;
   NTuple::Item<uint32_t> m_deter;

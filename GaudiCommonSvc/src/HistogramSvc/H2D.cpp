@@ -189,7 +189,8 @@ bool Gaudi::Histogram2D::setRms( double rmsX, double rmsY ) {
 
 void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h ) {
   // implement here the copy
-  const char* title = h.title().c_str();
+  std::string titlestr = h.title();
+  const char* title    = titlestr.c_str();
   if ( h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() )
     m_rep.reset( new TH2D( title, title, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(),
                            h.yAxis().bins(), h.yAxis().lowerEdge(), h.yAxis().upperEdge() ) );

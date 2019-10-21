@@ -159,8 +159,9 @@ long long System::remainingTime( TimeType typ, InfoType fetch, long pid ) {
 long long System::ellapsedTime( TimeType typ, InfoType fetch, long pid ) {
   KERNEL_USER_TIMES info;
   long long         ellapsed = currentTime( microSec ) * 10;
-  getProcess()->query( pid, fetch, &info );
-  ellapsed = adjustTime( typ, ellapsed + UNIX_BASE_TIME - info.CreateTime );
+  if ( getProcess()->query( pid, fetch, &info ) ) {
+    ellapsed = adjustTime( typ, ellapsed + UNIX_BASE_TIME - info.CreateTime );
+  }
   return ellapsed;
 }
 

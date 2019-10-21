@@ -210,7 +210,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s ) {
   for ( int j = 0; j < size; j++ ) {
     std::string key, value;
     s >> key >> value;
-    annotation().addItem( key, value );
+    if ( !annotation().addItem( key, value ) ) { annotation().setValue( key, value ); };
     if ( "Title" == key ) { title = value; }
   }
   double lowerEdge, upperEdge, binHeight, binError;

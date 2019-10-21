@@ -15,7 +15,7 @@ public:
   StatusCode execute() override;
 
 private:
-  IPartPropSvc* m_pps;
+  IPartPropSvc* m_pps{nullptr};
 };
 
 namespace HepPDT {

@@ -28,8 +28,8 @@ private:
   Gaudi::Property<int>         m_int;
   Gaudi::Property<double>      m_double;
   Gaudi::Property<std::string> m_string;
-  int                          t_int;
-  double                       t_double;
+  int                          t_int{0};
+  double                       t_double{0};
   std::string                  t_string;
 };
 

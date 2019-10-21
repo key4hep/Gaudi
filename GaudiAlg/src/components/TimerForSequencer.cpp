@@ -53,7 +53,7 @@ MsgStream& TimerForSequencer::fillStream( MsgStream& s ) const {
   float sigma = m_num <= 1ULL ? 0.f : m_factor * sqrt( ( m_sum2 - m_sum * m_sum / m_num ) / ( m_num - 1 ) );
 
   return s << m_name.substr( 0, m_size )
-           << format( "| %9.3f | %9.3f | %8.3f %9.1f %8.2f | %7d | %9.3f |", cpu, ave, min, max, sigma, m_num,
+           << format( "| %9.3f | %9.3f | %8.3f %9.1f %8.2f | %7lu | %9.3f |", cpu, ave, min, max, sigma, m_num,
                       sum * 0.001f );
 }
 

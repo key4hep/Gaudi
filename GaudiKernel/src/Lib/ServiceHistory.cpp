@@ -38,8 +38,9 @@ ServiceHistory::ServiceHistory( const IService* isv, const JobHistory* job )
     , m_version( "none" ) {
 
   const Service* svc = dynamic_cast<const Service*>( isv );
-  m_type             = System::typeinfoName( typeid( *svc ) );
-  m_properties       = svc->getProperties();
+  if ( !svc ) throw GaudiException( "Cannot dynamic cast to Service class", name(), StatusCode::FAILURE );
+  m_type       = System::typeinfoName( typeid( *svc ) );
+  m_properties = svc->getProperties();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -52,8 +53,12 @@ ServiceHistory::ServiceHistory( const IService& isv, const JobHistory* job )
     , m_version( "none" ) {
 
   const Service* svc = dynamic_cast<const Service*>( &isv );
-  m_type             = System::typeinfoName( typeid( *svc ) );
-  m_properties       = svc->getProperties();
+  if ( svc ) {
+    m_type       = System::typeinfoName( typeid( *svc ) );
+    m_properties = svc->getProperties();
+  } else {
+    throw GaudiException( "Cannot dynamic cast to Service class", name(), StatusCode::FAILURE );
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

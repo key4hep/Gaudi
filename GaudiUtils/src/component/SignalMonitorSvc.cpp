@@ -109,8 +109,12 @@ namespace Gaudi {
       MonitoringMode m_monitored[NSIG];
       /// Array of flags for received signals.
       sig_atomic_t m_caught[NSIG];
-      /// Helper variable for default signal action.
+/// Helper variable for default signal action.
+#ifdef _WIN32
+      handler_t m_defaultAction{nullptr};
+#else
       handler_t m_defaultAction;
+#endif
       /// List of replaced signal actions (for the recovery when disable the monitoring).
       handler_t m_oldActions[NSIG];
 

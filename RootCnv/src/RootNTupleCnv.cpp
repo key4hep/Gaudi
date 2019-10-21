@@ -216,7 +216,7 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
             return makeError( "createObj[NTuple]> Cannot determine column!" );
           }
         }
-        if ( status.isSuccess() ) {
+        if ( status.isSuccess() && rpA ) {
           unsigned long* ipar = const_cast<unsigned long*>( rpA->ipar() );
           log() << MSG::DEBUG << "Created N-tuple with description:" << par_val << endl;
           ipar[0]      = reinterpret_cast<uintptr_t>( con );
@@ -573,9 +573,14 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr ) 
           unsigned long ipar[] = {(unsigned long)con, ~0x0u};
           status               = m_dbMgr->createAddress( repSvcType(), pObj->clID(), spar, ipar, pAddr );
           if ( status.isSuccess() ) {
-            RootAddress* rpA                   = dynamic_cast<RootAddress*>( pAddr );
-            ( (unsigned long*)rpA->ipar() )[0] = (unsigned long)con;
-            rpA->section                       = tree;
+            RootAddress* rpA = dynamic_cast<RootAddress*>( pAddr );
+            if ( rpA ) {
+              ( (unsigned long*)rpA->ipar() )[0] = (unsigned long)con;
+              rpA->section                       = tree;
+            } else {
+              log() << MSG::ERROR << "cannot dynamic cast to RootAddress" << endmsg;
+            }
+
           } else {
             pAddr->release();
             pAddr = nullptr;
