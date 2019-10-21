@@ -25,9 +25,9 @@ public:
 
 private:
   IFileMgr*   p_fileMgr;
-  Io::Fd      fd_1, fd_2, fd_3, fd_4;
-  FILE *      fp_1, *fp_2, *fp_3, *fp_4;
-  TFile *     fp_r1, *fp_r2, *fp_r3;
+  Io::Fd      fd_1{-1}, fd_2{-1}, fd_3{-1}, fd_4{-1};
+  FILE *      fp_1{nullptr}, *fp_2{nullptr}, *fp_3{nullptr}, *fp_4{nullptr};
+  TFile *     fp_r1{nullptr}, *fp_r2{nullptr}, *fp_r3{nullptr};
   std::string m_f1, m_f2, m_f3, m_f4, m_fr1, m_fr2, m_fr3;
 
   StatusCode PosixOpenAction( FILEMGR_CALLBACK_ARGS );

@@ -1338,6 +1338,7 @@ int read_S_events( const char* dir, const char* filename ) {
     fprintf( stderr, "ERROR: Unable to open input file: %s\naborting...\n", filename );
     exit( 1 );
   }
+  gzclose( res_file );
   return 0;
 }
 

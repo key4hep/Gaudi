@@ -22,7 +22,7 @@ public:
   StatusCode finalize() override;
 
 private:
-  IProperty* m_remAlg;
+  IProperty* m_remAlg{nullptr};
 };
 
 #endif // GAUDIEXAMPLE_PropertyProxy_H

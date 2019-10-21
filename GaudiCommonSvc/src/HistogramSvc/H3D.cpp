@@ -148,11 +148,12 @@ bool Gaudi::Histogram3D::setRms( double rmsX, double rmsY, double rmsZ ) {
 
 void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h ) {
   // implement here the copy
-  const char* title = h.title().c_str();
+  std::string titlestr = h.title();
+  const char* title    = titlestr.c_str();
   if ( h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() && h.zAxis().isFixedBinning() ) {
-    m_rep.reset( new TH3D( title, title, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(),
-                           h.yAxis().bins(), h.yAxis().lowerEdge(), h.yAxis().upperEdge(), h.zAxis().bins(),
-                           h.zAxis().lowerEdge(), h.zAxis().upperEdge() ) );
+    m_rep = std::make_unique<TH3D>( title, title, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(),
+                                    h.yAxis().bins(), h.yAxis().lowerEdge(), h.yAxis().upperEdge(), h.zAxis().bins(),
+                                    h.zAxis().lowerEdge(), h.zAxis().upperEdge() );
   } else {
     Edges eX, eY, eZ;
     for ( int i = 0; i < h.xAxis().bins(); ++i ) eX.push_back( h.xAxis().binLowerEdge( i ) );

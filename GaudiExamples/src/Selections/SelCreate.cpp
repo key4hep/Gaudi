@@ -71,10 +71,8 @@ namespace Gaudi {
 
         // test "get-or-create":
 
-        Range r1 = getOrCreate<Range, Gaudi::Examples::MyTrack::Container>( name() + "_1" );
-        r1.empty(); // avoid icc remark #177: variable "X" was declared but never referenced
-        Range r2 = getOrCreate<Range, Gaudi::Examples::MyTrack::Selection>( name() + "_2" );
-        r2.empty(); // avoid icc remark #177: variable "X" was declared but never referenced
+        getOrCreate<Range, Gaudi::Examples::MyTrack::Container>( name() + "_1" );
+        getOrCreate<Range, Gaudi::Examples::MyTrack::Selection>( name() + "_2" );
 
         getOrCreate<Gaudi::Examples::MyTrack::Container, Gaudi::Examples::MyTrack::Container>( name() + "_3" );
         getOrCreate<Gaudi::Examples::MyTrack::Selection, Gaudi::Examples::MyTrack::Selection>( name() + "_4" );

@@ -36,7 +36,7 @@ private:
   // int               m_int[3]  ; // gain is ~4.0
   // int               m_int2[2] ; // gain is ~3.0
   // int               m_int100[100] ; // gain is ~2.5
-  int m_int0; // gain is ~3.0
+  int m_int0{0}; // gain is ~3.0
 };
 
 // ============================================================================

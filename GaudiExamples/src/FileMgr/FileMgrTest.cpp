@@ -151,7 +151,12 @@ StatusCode FileMgrTest::initialize() {
       error() << "unable to open t6.txt for writing" << endmsg;
     } else {
       info() << "opened t6.txt for writing, fd: " << fd << " will now close" << endmsg;
-      p_fileMgr->close( fd, name() );
+      r = p_fileMgr->close( fd, name() );
+      if ( r != 0 ) {
+        error() << "unable to close " << m_f1 << " with FD " << fd_1 << endmsg;
+      } else {
+        info() << "closed " << name() << endmsg;
+      }
     }
   }
 

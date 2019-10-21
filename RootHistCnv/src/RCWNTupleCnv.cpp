@@ -293,6 +293,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
 
   status        = m_ntupleSvc->create( CLID_ColumnWiseTuple, title, pObj );
   INTuple* ntup = dynamic_cast<INTuple*>( pObj );
+  if ( !ntup ) { log << MSG::ERROR << "cannot dynamic cast to INTuple" << endmsg; }
 
   INTupleItem* item = nullptr;
 
@@ -331,7 +332,11 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
 
       //      TLeaf* tl = (TLeaf*)tobj;
       TLeaf* tl = dynamic_cast<TLeaf*>( tobj );
-      itemName  = tl->GetName();
+      if ( tl ) {
+        itemName = tl->GetName();
+      } else {
+        log << MSG::ERROR << "cannot dynamic cast to TLeaf" << endmsg;
+      }
 
       //	char* buf_pos = (char*)tl->GetValuePointer();
       //  	cout << " " << itemName << "  " << blockName << "  "
@@ -343,8 +348,8 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
         log << MSG::DEBUG << "loading NTuple item " << itemName;
       }
 
-      int    arraySize;
-      TLeaf* indexLeaf = tl->GetLeafCounter( arraySize );
+      int    arraySize{0};
+      TLeaf* indexLeaf = ( tl ? tl->GetLeafCounter( arraySize ) : nullptr );
 
       if ( arraySize == 0 ) { log << MSG::ERROR << "TLeaf counter size = 0. This should not happen!" << endmsg; }
 
@@ -391,22 +396,26 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
       if ( tobj->IsA()->InheritsFrom( "TLeafI" ) ) {
 
         TLeafI* tli = dynamic_cast<TLeafI*>( tobj );
-        if ( tli->IsUnsigned() ) {
-          unsigned long min = 0, max = 0;
-          if ( hasRange ) {
-            min = tli->GetMinimum();
-            max = tli->GetMaximum();
-          }
+        if ( tli ) {
+          if ( tli->IsUnsigned() ) {
+            unsigned long min = 0, max = 0;
+            if ( hasRange ) {
+              min = tli->GetMinimum();
+              max = tli->GetMaximum();
+            }
 
-          item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+            item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+          } else {
+            long min = 0, max = 0;
+            if ( hasRange ) {
+              min = tli->GetMinimum();
+              max = tli->GetMaximum();
+            }
+
+            item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+          }
         } else {
-          long min = 0, max = 0;
-          if ( hasRange ) {
-            min = tli->GetMinimum();
-            max = tli->GetMaximum();
-          }
-
-          item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+          log << MSG::ERROR << "cannot dynamic cast to TLeafI" << endmsg;
         }
 
         // Float
@@ -414,9 +423,13 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
         float min = 0., max = 0.;
 
         TLeafF* tlf = dynamic_cast<TLeafF*>( tobj );
-        if ( hasRange ) {
-          min = float( tlf->GetMinimum() );
-          max = float( tlf->GetMaximum() );
+        if ( tlf ) {
+          if ( hasRange ) {
+            min = float( tlf->GetMinimum() );
+            max = float( tlf->GetMaximum() );
+          }
+        } else {
+          log << MSG::ERROR << "cannot dynamic cast to TLeafF" << endmsg;
         }
 
         item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
@@ -426,9 +439,13 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
         double min = 0., max = 0.;
 
         TLeafD* tld = dynamic_cast<TLeafD*>( tobj );
-        if ( hasRange ) {
-          min = tld->GetMinimum();
-          max = tld->GetMaximum();
+        if ( tld ) {
+          if ( hasRange ) {
+            min = tld->GetMinimum();
+            max = tld->GetMaximum();
+          }
+        } else {
+          log << MSG::ERROR << "cannot dynamic cast to TLeafD" << endmsg;
         }
 
         item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );

@@ -107,35 +107,35 @@ namespace {
   public:
     bool loaded;
     typedef void ( *pfm_stop_t )( int );
-    pfm_stop_t pfm_stop;
+    pfm_stop_t pfm_stop{nullptr};
     typedef void ( *pfm_self_stop_t )( int );
-    pfm_self_stop_t pfm_self_stop;
+    pfm_self_stop_t pfm_self_stop{nullptr};
     typedef os_err_t ( *pfm_restart_t )( int );
-    pfm_restart_t pfm_restart;
+    pfm_restart_t pfm_restart{nullptr};
     typedef int ( *pfm_read_pmds_t )( int, pfarg_pmd_t*, int );
-    pfm_read_pmds_t pfm_read_pmds;
+    pfm_read_pmds_t pfm_read_pmds{nullptr};
     typedef pfm_err_t ( *pfm_initialize_t )();
-    pfm_initialize_t pfm_initialize;
+    pfm_initialize_t pfm_initialize{nullptr};
     typedef pfm_err_t ( *pfm_find_full_event_t )( const char*, pfmlib_event_t* );
-    pfm_find_full_event_t pfm_find_full_event;
+    pfm_find_full_event_t pfm_find_full_event{nullptr};
     typedef pfm_err_t ( *pfm_dispatch_events_t )( pfmlib_input_param_t*, void*, pfmlib_output_param_t*, void* );
-    pfm_dispatch_events_t pfm_dispatch_events;
+    pfm_dispatch_events_t pfm_dispatch_events{nullptr};
     typedef os_err_t ( *pfm_create_context_t )( pfarg_ctx_t*, char*, void*, size_t );
-    pfm_create_context_t pfm_create_context;
+    pfm_create_context_t pfm_create_context{nullptr};
     typedef os_err_t ( *pfm_write_pmcs_t )( int, pfarg_pmc_t*, int );
-    pfm_write_pmcs_t pfm_write_pmcs;
+    pfm_write_pmcs_t pfm_write_pmcs{nullptr};
     typedef os_err_t ( *pfm_write_pmds_t )( int, pfarg_pmd_t*, int );
-    pfm_write_pmds_t pfm_write_pmds;
+    pfm_write_pmds_t pfm_write_pmds{nullptr};
     typedef os_err_t ( *pfm_load_context_t )( int, pfarg_load_t* );
-    pfm_load_context_t pfm_load_context;
+    pfm_load_context_t pfm_load_context{nullptr};
     typedef os_err_t ( *pfm_start_t )( int fd, pfarg_start_t* );
-    pfm_start_t pfm_start;
+    pfm_start_t pfm_start{nullptr};
     typedef char* ( *pfm_strerror_t )( int );
-    pfm_strerror_t pfm_strerror;
+    pfm_strerror_t pfm_strerror{nullptr};
     typedef pfm_err_t ( *pfm_set_options_t )( pfmlib_options_t* );
-    pfm_set_options_t pfm_set_options;
+    pfm_set_options_t pfm_set_options{nullptr};
     typedef pfm_err_t ( *pfm_get_num_counters_t )( unsigned int* );
-    pfm_get_num_counters_t pfm_get_num_counters;
+    pfm_get_num_counters_t pfm_get_num_counters{nullptr};
     static PFMon&          instance() { return s_instance; }
 
   private:
@@ -363,7 +363,7 @@ private:
   pfarg_load_t              load_arg;
   int                       fd;
   unsigned int              i;
-  int                       ret;
+  int                       ret{0};
   void                      startpm();
   void                      pausepm();
   void                      stoppm();
@@ -373,7 +373,7 @@ private:
   std::string               family;
   char                      event_cstr[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS][MAX_EVENT_NAME_LENGTH];
   char                      prefix_cstr[MAX_PREFIX_NAME_LENGTH];
-  unsigned int              ph_ev_count;
+  unsigned int              ph_ev_count{0};
   bool                      inv[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
   unsigned int              cmask[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
   unsigned int              start_at_event;
@@ -904,15 +904,9 @@ void PerfMonAuditor::after( StandardEventType evt, INamedInterface* alg, const S
   return;
 }
 
-void PerfMonAuditor::i_beforeInitialize( INamedInterface* alg ) {
-  if ( !alg ) return;
-  return;
-}
+void PerfMonAuditor::i_beforeInitialize( INamedInterface* ) {}
 
-void PerfMonAuditor::i_afterInitialize( INamedInterface* alg ) {
-  if ( !alg ) return;
-  return;
-}
+void PerfMonAuditor::i_afterInitialize( INamedInterface* ) {}
 
 void PerfMonAuditor::i_beforeExecute( INamedInterface* alg ) {
   if ( !alg ) return;
