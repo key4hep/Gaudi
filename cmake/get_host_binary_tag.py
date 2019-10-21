@@ -75,6 +75,13 @@ ARCH_DEFS = OrderedDict([
          'pni', 'sse4_2', 'mmx', 'sse2', 'sse4_1', 'lm', 'ssse3', 'popcnt',
          'sse'
      ])), ('core2', set(['pni', 'mmx', 'sse2', 'lm', 'ssse3', 'sse'])),
+    ('znver2',
+     set([
+         'bmi1', 'bmi2', 'clwb', 'f16c', 'fma', 'fsgsbase', 'avx', 'avx2',
+         'adx', 'rdseed', 'mwaitx', 'sha_ni', 'clzero', 'aes', 'cx16',
+         'movbe', 'mmx', 'sse', 'sse2', 'pni', 'sse4a', 'ssse3', 'sse4_1',
+         'sse4_2', 'abm', 'xsavec', 'clflushopt', 'popcnt', 'lm'
+     ])),
     ('x86_64', set([]))
 ])
 

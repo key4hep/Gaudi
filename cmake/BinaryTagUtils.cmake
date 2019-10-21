@@ -64,6 +64,7 @@ set(BTU_KNOWN_x86_ARCHS
   skylake
   skylake_avx512
   canonlake
+  znver2
 
   CACHE STRING "known architectures in order such that any entry can run something compiled for the preceding entries"
 )
