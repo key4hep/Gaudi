@@ -8,8 +8,11 @@
 
 #include "boost/thread.hpp"
 #include "tbb/spin_mutex.h"
-#include "tbb/task_scheduler_init.h"
-#define TBB_PREVIEW_GLOBAL_CONTROL 1
+#include "tbb/tbb_stddef.h"
+#if TBB_INTERFACE_VERSION_MAJOR < 12
+#  include "tbb/task_scheduler_init.h"
+#  define TBB_PREVIEW_GLOBAL_CONTROL 1
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 #include "tbb/global_control.h"
 
 #include <memory>
@@ -64,8 +67,10 @@ private:
   /// Mutex used to protect the initPool and terminatePool methods.
   tbb::spin_mutex m_initMutex;
 
+#if TBB_INTERFACE_VERSION_MAJOR < 12
   /// TBB task scheduler initializer
   std::unique_ptr<tbb::task_scheduler_init> m_tbbSchedInit;
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 
   /// Barrier used to synchronization thread init tasks
   std::unique_ptr<boost::barrier> m_barrier;

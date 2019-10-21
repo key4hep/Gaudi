@@ -13,13 +13,16 @@
 #include "boost/algorithm/string/predicate.hpp"
 
 #include "tbb/concurrent_queue.h"
-#include "tbb/mutex.h"
-#include "tbb/recursive_mutex.h"
+#include "tbb/tbb_stddef.h"
+#if TBB_INTERFACE_VERSION_MAJOR < 12
+#  include "tbb/recursive_mutex.h"
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 
 #include <algorithm>
 #include <iomanip>
 #include <iterator>
 #include <map>
+#include <mutex>
 #include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
@@ -141,7 +144,13 @@ namespace {
     int     eventNumber = -1;
   };
 
+#if TBB_INTERFACE_VERSION_MAJOR < 12
   template <typename T, typename Mutex = tbb::recursive_mutex, typename ReadLock = typename Mutex::scoped_lock,
+
+#else
+  template <typename T, typename Mutex = std::recursive_mutex,
+            typename ReadLock = std::lock_guard<std::recursive_mutex>,
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
             typename WriteLock = ReadLock>
   class Synced {
     T             m_obj;

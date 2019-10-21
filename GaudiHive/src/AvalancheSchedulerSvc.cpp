@@ -16,6 +16,7 @@
 #include <map>
 #include <queue>
 #include <sstream>
+#include <thread>
 #include <unordered_set>
 
 // External libs
@@ -23,7 +24,10 @@
 #include "boost/thread.hpp"
 #include "boost/tokenizer.hpp"
 // DP waiting for the TBB service
-#include "tbb/task_scheduler_init.h"
+#include "tbb/tbb_stddef.h"
+#if TBB_INTERFACE_VERSION_MAJOR < 12
+#  include "tbb/task_scheduler_init.h"
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )
@@ -685,7 +689,11 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, co
         << thisAlgsStates.sizeOfSubset( AState::DATAREADY ) << ", " << thisAlgsStates.sizeOfSubset( AState::SCHEDULED )
         << ", " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << "\n";
       auto threads = ( m_threadPoolSize != -1 ) ? std::to_string( m_threadPoolSize )
+#if TBB_INTERFACE_VERSION_MAJOR < 12
                                                 : std::to_string( tbb::task_scheduler_init::default_num_threads() );
+#else
+                                                : std::to_string( std::thread::hardware_concurrency() );
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
       std::ofstream myfile;
       myfile.open( "IntraEventFSMOccupancy_" + threads + "T.csv", std::ios::app );
       myfile << s.str();

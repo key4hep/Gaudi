@@ -9,12 +9,21 @@
 #include "GaudiKernel/Service.h"
 
 // External libraries
-#include "tbb/recursive_mutex.h"
 #include "tbb/spin_mutex.h"
+#include "tbb/tbb_stddef.h"
+#if TBB_INTERFACE_VERSION_MAJOR < 12
+#  include "tbb/recursive_mutex.h"
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
+
+// System libraries
+#include <mutex>
 
 namespace {
+#if TBB_INTERFACE_VERSION_MAJOR < 12
   typedef tbb::recursive_mutex tsDataSvcMutex;
-  // typedef  tbb::spin_mutex tsDataSvcMutex;
+#else
+  typedef std::recursive_mutex tsDataSvcMutex;
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 } // namespace
 
 // Forward declarations

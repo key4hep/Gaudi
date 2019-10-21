@@ -4,10 +4,12 @@
 #include "ThreadInitTask.h"
 
 #include "tbb/task.h"
-#include "tbb/task_scheduler_init.h"
 #include "tbb/task_scheduler_observer.h"
 #include "tbb/tbb_thread.h"
 #include "tbb/tick_count.h"
+
+#include <chrono>
+#include <thread>
 
 using namespace tbb;
 
@@ -94,18 +96,19 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
     if ( m_threadPoolSize == -1 ) {
       // if requested pool size == -1, use number of available cores
-      m_tbbSchedInit   = std::make_unique<tbb::task_scheduler_init>();
-      thePoolSize      = m_tbbSchedInit->default_num_threads();
-      m_threadPoolSize = thePoolSize;
-    } else if ( m_threadPoolSize >= 0 ) {
-      // Limit the number of threads to requested pool size plus 1
-      m_tbbgc        = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, thePoolSize );
-      m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
-    } else {
+      m_threadPoolSize = std::thread::hardware_concurrency();
+      thePoolSize      = m_threadPoolSize;
+    } else if ( m_threadPoolSize < -1 ) {
       fatal() << "Unexpected ThreadPoolSize \"" << m_threadPoolSize << "\". Allowed negative values are "
               << "-1 (use all available cores) and -100 (don't use a thread pool)" << endmsg;
       return StatusCode::FAILURE;
     }
+
+#if TBB_INTERFACE_VERSION_MAJOR < 12
+    m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
+#endif // TBB_INTERFACE_VERSION_MAJOR < 12
+
+    m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, thePoolSize );
 
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( thePoolSize );
 
@@ -155,7 +158,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
   // If we have a thread pool (via a scheduler), then we want to queue
   // the tasks in TBB to execute on each thread.
-  if ( m_tbbSchedInit ) {
+  if ( tbb::global_control::active_value( global_control::max_allowed_parallelism ) > 0 ) {
 
     // Create one task for each worker thread in the pool
     for ( int i = 0; i < m_threadPoolSize; ++i ) {
@@ -165,7 +168,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
       // Queue the task
       tbb::task::enqueue( *t );
-      this_tbb_thread::sleep( tbb::tick_count::interval_t( .02 ) );
+      std::this_thread::sleep_for( std::chrono::milliseconds( 20 ) );
     }
 
     // Now wait for all the workers to reach the barrier
