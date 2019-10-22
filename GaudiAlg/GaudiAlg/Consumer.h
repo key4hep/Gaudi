@@ -3,6 +3,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/FunctionalFilterDecision.h"
 #include <utility>
 
 namespace Gaudi::Functional {
@@ -20,7 +21,7 @@ namespace Gaudi::Functional {
       StatusCode execute() override final {
         try {
           filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -39,7 +40,7 @@ namespace Gaudi::Functional {
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
           filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();

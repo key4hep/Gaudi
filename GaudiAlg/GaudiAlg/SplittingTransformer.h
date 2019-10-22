@@ -8,6 +8,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/FunctionalFilterDecision.h"
 
 namespace Gaudi::Functional {
 
@@ -70,7 +71,7 @@ namespace Gaudi::Functional {
                                   this->name(), StatusCode::FAILURE );
           }
           for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -138,7 +139,7 @@ namespace Gaudi::Functional {
                                   this->name(), StatusCode::FAILURE );
           }
           for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();

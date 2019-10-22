@@ -3,6 +3,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/FunctionalFilterDecision.h"
 #include <type_traits>
 #include <utility>
 
@@ -20,8 +21,8 @@ namespace Gaudi::Functional {
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
-          this->setFilterPassed( filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
-          return StatusCode::SUCCESS;
+          if ( filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) ) return FilterDecision::PASSED;
+          return FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -39,8 +40,8 @@ namespace Gaudi::Functional {
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
-          this->execState( ctx ).setFilterPassed( filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-          return StatusCode::SUCCESS;
+          if ( filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) ) return FilterDecision::PASSED;
+          return FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
