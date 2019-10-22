@@ -8,6 +8,7 @@
 #include "Gaudi/Algorithm.h"
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/FunctionalFilterDecision.h"
 
 namespace Gaudi::Functional {
 
@@ -56,7 +57,7 @@ namespace Gaudi::Functional {
         std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
         try {
           put( std::get<0>( this->m_outputs ), std::as_const( *this )( std::as_const( ins ) ) );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -112,7 +113,7 @@ namespace Gaudi::Functional {
         std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
         try {
           put( std::get<0>( this->m_outputs ), ( *this )( std::as_const( ins ) ) );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -177,11 +178,11 @@ namespace Gaudi::Functional {
               GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
             },
             this->m_outputs );
+        return FilterDecision::PASSED;
       } catch ( GaudiException& e ) {
         ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
         return e.code();
       }
-      return StatusCode::SUCCESS;
     }
 
     virtual std::tuple<Outs...> operator()( const vector_of_const_<In>& inputs ) const = 0;

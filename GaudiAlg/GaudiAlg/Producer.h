@@ -3,6 +3,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/FunctionalFilterDecision.h"
 #include <utility>
 
 namespace Gaudi::Functional {
@@ -28,7 +29,7 @@ namespace Gaudi::Functional {
                 GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
               },
               this->m_outputs );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -59,7 +60,7 @@ namespace Gaudi::Functional {
               GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
 
               this->m_outputs );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -77,7 +78,7 @@ namespace Gaudi::Functional {
       StatusCode execute() override final {
         try {
           put( std::get<0>( this->m_outputs ), std::as_const( *this )() );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -95,7 +96,7 @@ namespace Gaudi::Functional {
       StatusCode execute( const EventContext& ) const override final {
         try {
           put( std::get<0>( this->m_outputs ), ( *this )() );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();

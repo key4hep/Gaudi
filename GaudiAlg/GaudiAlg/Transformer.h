@@ -3,6 +3,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/FunctionalFilterDecision.h"
 #include "GaudiKernel/GaudiException.h"
 #include <type_traits>
 #include <utility>
@@ -30,7 +31,7 @@ namespace Gaudi ::Functional {
       StatusCode execute() override final {
         try {
           put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -50,7 +51,7 @@ namespace Gaudi ::Functional {
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
           put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -84,7 +85,7 @@ namespace Gaudi ::Functional {
                 GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
               },
               this->m_outputs );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -112,7 +113,7 @@ namespace Gaudi ::Functional {
                 GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
               },
               this->m_outputs );
-          return StatusCode::SUCCESS;
+          return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -137,19 +138,20 @@ namespace Gaudi ::Functional {
       // derived classes can NOT implement execute
       StatusCode execute() override final {
         try {
-          std::apply(
-              [&]( auto&... ohandle ) {
-                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
-                std::apply(
-                    [&ohandle..., this]( bool passed, auto&&... data ) {
-                      this->setFilterPassed( passed );
-                      ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-                    },
-                    filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
-                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
-              },
-              this->m_outputs );
-          return StatusCode::SUCCESS;
+          if ( std::apply(
+                   [&]( auto&... ohandle ) {
+                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
+                     return std::apply(
+                         [&ohandle..., this]( bool passed, auto&&... data ) {
+                           ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+                           return passed;
+                         },
+                         filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
+                   },
+                   this->m_outputs ) )
+            return FilterDecision::PASSED;
+          return FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -168,21 +170,20 @@ namespace Gaudi ::Functional {
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
-          std::apply(
-              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
+          if ( std::apply(
+                   GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN[&]( auto&... ohandle ) {
+                     return std::apply(
+                         [&ohandle..., &ctx, this]( bool passed, auto&&... data ) {
+                           ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+                           return passed;
+                         },
+                         filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
+                   },
+                   GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
 
-                  [&]( auto&... ohandle ) {
-                    std::apply(
-                        [&ohandle..., &ctx, this]( bool passed, auto&&... data ) {
-                          this->execState( ctx ).setFilterPassed( passed );
-                          ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-                        },
-                        filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-                  },
-              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
-
-              this->m_outputs );
-          return StatusCode::SUCCESS;
+                   this->m_outputs ) )
+            return FilterDecision::PASSED;
+          return FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();

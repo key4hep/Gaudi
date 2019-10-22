@@ -4,6 +4,7 @@
 #include <numeric>
 #include <set>
 
+#include "GaudiKernel/FunctionalFilterDecision.h"
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAuditorSvc.h"
@@ -462,7 +463,11 @@ namespace Gaudi {
 
       status = execute( ctx );
 
-      if ( status.isFailure() ) { status = exceptionSvc()->handleErr( *this, status ); }
+      if ( status == Gaudi::Functional::FilterDecision::FAILED ) {
+        algState.setFilterPassed( false );
+      } else if ( status.isFailure() ) {
+        status = exceptionSvc()->handleErr( *this, status );
+      }
 
     } catch ( const GaudiException& Exception ) {
 
