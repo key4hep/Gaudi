@@ -102,6 +102,3 @@ StatusCode GaudiPython::PyAlgorithm::execute() { return GaudiPython::call_python
 StatusCode GaudiPython::PyAlgorithm::stop() { return GaudiPython::call_python_method( m_self, "stop" ); }
 // ============================================================================
 StatusCode GaudiPython::PyAlgorithm::finalize() { return GaudiPython::call_python_method( m_self, "finalize" ); }
-
-StatusCode GaudiPython::PyAlgorithm::beginRun() { return GaudiPython::call_python_method( m_self, "beginRun" ); }
-StatusCode GaudiPython::PyAlgorithm::endRun() { return GaudiPython::call_python_method( m_self, "endRun" ); }

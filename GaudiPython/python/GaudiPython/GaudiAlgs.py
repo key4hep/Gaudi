@@ -1307,8 +1307,6 @@ _alg_map_ = {
     'exist_': _exist_,  # check  the event data
     'getDet': _getDet,  # access to detector data
     'finalize': _finalize_,  # algorithm finalization
-    'beginRun': _success_,  # dummy function returning success
-    'endRun': _success_,  # dummy function returning success
     #
     'hasProperty':
     _hasProperty_,  # check the existence of property with given name

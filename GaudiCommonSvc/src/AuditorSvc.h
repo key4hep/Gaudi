@@ -56,16 +56,6 @@ public:
   // inform Auditors that the execute() has been called
   void afterExecute( INamedInterface* ini, const StatusCode& ) override;
 
-  // inform Auditors that the beginRun() is about to be called
-  void beforeBeginRun( INamedInterface* ini ) override;
-  // inform Auditors that the beginRun() has been called
-  void afterBeginRun( INamedInterface* ini ) override;
-
-  // inform Auditors that the endRun() is about to be called
-  void beforeEndRun( INamedInterface* ini ) override;
-  // inform Auditors that the endRun() has been called
-  void afterEndRun( INamedInterface* ini ) override;
-
   // inform Auditors that the finalize() is about to be called
   void beforeFinalize( INamedInterface* ini ) override;
   // inform Auditors that the finalize() has been called

@@ -80,12 +80,6 @@ public:
   void beforeFinalize( INamedInterface* ) override;
   void afterFinalize( INamedInterface* ) override;
 
-  void beforeBeginRun( INamedInterface* ) override;
-  void afterBeginRun( INamedInterface* ) override;
-
-  void beforeEndRun( INamedInterface* ) override;
-  void afterEndRun( INamedInterface* ) override;
-
   virtual StatusCode initialize();
   virtual StatusCode finalize();
 

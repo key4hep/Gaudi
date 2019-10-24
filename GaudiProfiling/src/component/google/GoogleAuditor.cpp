@@ -188,8 +188,6 @@ namespace Google {
     void beforeInitialize( INamedInterface* i ) override { return before( IAuditor::Initialize, i ); }
     void beforeReinitialize( INamedInterface* i ) override { return before( IAuditor::ReInitialize, i ); }
     void beforeExecute( INamedInterface* i ) override { return before( IAuditor::Execute, i ); }
-    void beforeBeginRun( INamedInterface* i ) override { return before( IAuditor::BeginRun, i ); }
-    void beforeEndRun( INamedInterface* i ) override { return before( IAuditor::EndRun, i ); }
     void beforeFinalize( INamedInterface* i ) override { return before( IAuditor::Finalize, i ); }
 
     void afterInitialize( INamedInterface* i ) override {
@@ -199,8 +197,6 @@ namespace Google {
       return after( IAuditor::ReInitialize, i, StatusCode::SUCCESS );
     }
     void afterExecute( INamedInterface* i, const StatusCode& s ) override { return after( IAuditor::Execute, i, s ); }
-    void afterBeginRun( INamedInterface* i ) override { return after( IAuditor::BeginRun, i, StatusCode::SUCCESS ); }
-    void afterEndRun( INamedInterface* i ) override { return after( IAuditor::EndRun, i, StatusCode::SUCCESS ); }
     void afterFinalize( INamedInterface* i ) override { return after( IAuditor::Finalize, i, StatusCode::SUCCESS ); }
 
   protected:
@@ -214,11 +210,10 @@ namespace Google {
     virtual bool alreadyRunning() = 0;
 
   private:
-    Gaudi::Property<std::vector<std::string>> m_when{
-        this,
-        "ActivateAt",
-        {"Initialize", "ReInitialize", "Execute", "BeginRun", "EndRun", "Finalize"},
-        "List of phases to activate the Auditoring during"};
+    Gaudi::Property<std::vector<std::string>> m_when{this,
+                                                     "ActivateAt",
+                                                     {"Initialize", "ReInitialize", "Execute", "Finalize"},
+                                                     "List of phases to activate the Auditoring during"};
     Gaudi::Property<std::vector<std::string>> m_veto{
         this, "DisableFor", {}, "List of component names to disable the auditing for"};
     Gaudi::Property<std::vector<std::string>> m_list{
