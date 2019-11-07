@@ -1,5 +1,5 @@
-#ifndef GAUDIKERNEL_COUNTERS_H
-#define GAUDIKERNEL_COUNTERS_H 1
+
+#pragma once
 
 /**
  * @namespace Gaudi::Accumulators
@@ -344,7 +344,7 @@ namespace Gaudi::Accumulators {
       ValueHandler::merge( m_value, InputTransform{}( by ) );
       return *this;
     }
-    GenericAccumulator() : m_value( ValueHandler::DefaultValue() ) {}
+    GenericAccumulator() = default;
     template <typename... Args>
     GenericAccumulator( std::in_place_t, Args&&... args ) : m_value( std::forward<Args>( args )... ) {}
     GenericAccumulator( const GenericAccumulator& other ) : m_value( ValueHandler::getValue( other.m_value ) ) {}
@@ -363,7 +363,7 @@ namespace Gaudi::Accumulators {
     void reset( InnerType in ) { m_value = std::move( in ); }
 
   private:
-    typename ValueHandler::InternalType m_value;
+    typename ValueHandler::InternalType m_value{ValueHandler::DefaultValue()};
   };
 
   /**
@@ -674,10 +674,7 @@ namespace Gaudi::Accumulators {
       return printImpl( o, tableFormat );
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
-    bool       toBePrinted() const override {
-      return this->nEntries() > 0;
-      ;
-    }
+    bool       toBePrinted() const override { return this->nEntries() > 0; }
   };
 
   /**
@@ -701,10 +698,7 @@ namespace Gaudi::Accumulators {
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
 
-    bool toBePrinted() const override {
-      return this->nEntries() > 0;
-      ;
-    }
+    bool toBePrinted() const override { return this->nEntries() > 0; }
   };
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   using SummingCounter = AveragingCounter<Arithmetic, Atomicity>;
@@ -730,10 +724,7 @@ namespace Gaudi::Accumulators {
       return printImpl( o, tableFormat );
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
-    bool       toBePrinted() const override {
-      return this->nEntries() > 0;
-      ;
-    }
+    bool       toBePrinted() const override { return this->nEntries() > 0; }
   };
 
   /**
@@ -796,7 +787,7 @@ namespace Gaudi::Accumulators {
 
   namespace details::MsgCounter {
     struct Logger {
-      CommonMessagingBase const* parent;
+      CommonMessagingBase const* parent = nullptr;
       std::string                msg;
       MSG::Level                 lvl;
 
@@ -871,6 +862,7 @@ namespace Gaudi::Accumulators {
     using PrintableCounter::print;
     std::ostream& print( std::ostream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
+    bool          toBePrinted() const override { return this->value() > 0; }
   };
 
   /**
@@ -1061,5 +1053,3 @@ public:
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   MsgStream&    fillStream( MsgStream& o ) const { return print( o ); }
 };
-
-#endif // GAUDIKERNEL_COUNTERS_H
