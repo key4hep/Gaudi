@@ -871,6 +871,7 @@ namespace Gaudi::Accumulators {
     using PrintableCounter::print;
     std::ostream& print( std::ostream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
+    bool          toBePrinted() const override { return this->value() > 0; }
   };
 
   /**
