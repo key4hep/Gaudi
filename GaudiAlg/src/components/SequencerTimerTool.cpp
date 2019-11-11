@@ -60,20 +60,21 @@ StatusCode SequencerTimerTool::initialize() {
 //=========================================================================
 StatusCode SequencerTimerTool::finalize() {
 
-  std::string line( m_headerSize + 68, '-' );
-  info() << line << endmsg << "This machine has a speed about " << format( "%6.2f", 1000. * m_speedRatio )
-         << " times the speed of a 2.8 GHz Xeon.";
-  if ( m_normalised ) info() << " *** All times are renormalized ***";
-  info() << endmsg << TimerForSequencer::header( m_headerSize ) << endmsg << line << endmsg;
+  if ( !m_timerList.empty() ) {
+    std::string line( m_headerSize + 68, '-' );
+    info() << line << endmsg << "This machine has a speed about " << format( "%6.2f", 1000. * m_speedRatio )
+           << " times the speed of a 2.8 GHz Xeon.";
+    if ( m_normalised ) info() << " *** All times are renormalized ***";
+    info() << endmsg << TimerForSequencer::header( m_headerSize ) << endmsg << line << endmsg;
 
-  std::string lastName;
-  for ( const auto& timr : m_timerList ) {
-    if ( lastName == timr.name() ) continue; // suppress duplicate
-    lastName = timr.name();
-    info() << timr << endmsg;
+    std::string lastName;
+    for ( const auto& timr : m_timerList ) {
+      if ( lastName == timr.name() ) continue; // suppress duplicate
+      lastName = timr.name();
+      info() << timr << endmsg;
+    }
+    info() << line << endmsg;
   }
-  info() << line << endmsg;
-
   return GaudiHistoTool::finalize();
 }
 
