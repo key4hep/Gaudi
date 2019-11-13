@@ -100,6 +100,17 @@ int main() {
     std::cout << bin << std::endl;
   }
 
+  // Testing bulk increment iwth Binomialcounter
+  {
+
+    BinomialCounter<> bin;
+    // bin += { .nPass = 4, .nTotal = 10 }; // C++20 only...
+    bin += {4, 10};
+    bin += {1, 9};
+    bin += {0, 1};
+    std::cout << bin << std::endl;
+  }
+
   // Testing StatEntity, the backward compatible counter
   {
     StatEntity se;
