@@ -3,6 +3,7 @@ from __future__ import print_function
 import re
 
 import six
+import io
 from os.path import join, exists, isabs
 
 
@@ -46,7 +47,7 @@ def find_deps(filename, searchpath, deps=None):
                 lambda m: m and find_file(m.group(1), searchpath),
                 six.moves.map(
                     re.compile(r'^\s*#\s*include\s*["<]([^">]*)[">]').match,
-                    open(filename)))):
+                    io.open(filename, encoding="utf-8")))):
         deps.add(included)
         find_deps(included, searchpath, deps)
 
