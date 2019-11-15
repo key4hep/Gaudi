@@ -483,6 +483,12 @@ namespace Gaudi {
     //   return m_value;
     // }
 
+    template <typename Dummy = TYPE, typename = std::enable_if_t<std::is_constructible_v<std::string_view, Dummy>>>
+    operator std::string_view() const {
+      m_handlers.useReadHandler( *this );
+      return m_value;
+    }
+
     /// equality comparison
     template <class T>
     bool operator==( const T& other ) const {
