@@ -453,6 +453,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic, atomicity Atomicity>
   struct TrueAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, TrueTo1> {
+    using GenericAccumulator<Arithmetic, unsigned long, Atomicity, TrueTo1>::GenericAccumulator;
     unsigned long nTrueEntries() const { return this->value(); };
   };
 
@@ -468,6 +469,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic, atomicity Atomicity>
   struct FalseAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, FalseTo1> {
+    using GenericAccumulator<Arithmetic, unsigned long, Atomicity, FalseTo1>::GenericAccumulator;
     unsigned long nFalseEntries() const { return this->value(); };
   };
 
@@ -498,7 +500,19 @@ namespace Gaudi::Accumulators {
       if ( 1 > nbEntries ) return Result{-1};
       return sqrt( static_cast<Result>( this->nTrueEntries() * this->nFalseEntries() ) / nbEntries ) / nbEntries;
     }
-    auto effErr() const { return efficiencyErr(); }
+    auto                                                                      effErr() const { return efficiencyErr(); }
+    using AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator>::operator+=;
+    struct binomial_t {
+      unsigned long nPass;
+      unsigned long nTotal;
+    };
+    BinomialAccumulator& operator+=( binomial_t b ) {
+      assert( b.nPass <= b.nTotal );
+      TrueAccumulator<bool, Atomicity>::mergeAndReset( TrueAccumulator<bool, atomicity::none>{std::in_place, b.nPass} );
+      FalseAccumulator<bool, Atomicity>::mergeAndReset(
+          FalseAccumulator<bool, atomicity::none>{std::in_place, b.nTotal - b.nPass} );
+      return *this;
+    }
   };
 
   /**
