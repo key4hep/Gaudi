@@ -76,6 +76,8 @@ StatusCode IoComponentMgr::initialize() {
 StatusCode IoComponentMgr::finalize() {
   DEBMSG << "--> finalize()" << endmsg;
 
+  for ( auto& io : m_iostack ) { io->release(); }
+
   return StatusCode::SUCCESS;
 }
 
@@ -273,15 +275,7 @@ StatusCode IoComponentMgr::io_reinitialize() {
       allgood = false;
       error() << "problem in [" << io->name() << "]->io_reinit() !" << endmsg;
     }
-    // we are done with this guy... release it
-    io->release();
   }
-
-  // we are done.
-  // FIXME: shall we allow for multiple io_reinitialize ?
-  // m_iostack.clear();
-  // m_ioregistry.clear();
-  // m_cdict.clear();
 
   return allgood ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
