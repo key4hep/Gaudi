@@ -1,5 +1,6 @@
+#include "Gaudi/Accumulators.h"
 #include "Gaudi/Chrono/Counters.h"
-#include "GaudiKernel/Counters.h"
+#include "GaudiKernel/StatEntity.h"
 
 #include <chrono>
 #include <iostream>
