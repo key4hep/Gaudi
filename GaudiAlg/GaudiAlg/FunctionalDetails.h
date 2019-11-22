@@ -384,18 +384,13 @@ namespace Gaudi::Functional::details {
                    "EventContext can only appear as first argument" );
 
     template <typename Algorithm, typename Handles>
-    static auto apply( const Algorithm& algo, Handles& handles ) {
-      return std::apply(
-          [&]( const auto&... handle ) {
-            const auto& ctx = Gaudi::Hive::currentContext();
-            return algo( ctx, get( handle, algo, ctx )... );
-          },
-          handles );
+    static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
+      return std::apply( [&]( const auto&... handle ) { return algo( ctx, get( handle, algo, ctx )... ); }, handles );
     }
 
     template <typename Algorithm, typename Handles>
-    static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
-      return std::apply( [&]( const auto&... handle ) { return algo( ctx, get( handle, algo, ctx )... ); }, handles );
+    static auto apply( const Algorithm& algo, Handles& handles ) {
+      return apply( algo, Gaudi::Hive::currentContext(), handles );
     }
   };
 
