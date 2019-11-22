@@ -25,8 +25,8 @@ namespace Gaudi::Functional {
     ////// N -> Many of the same one (value of Many not known at compile time, but known at configuration time)
     template <typename Out, typename... In, typename Traits_>
     class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_, true>
-        : public details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
-      using base_class = details::DataHandleMixin<void, std::tuple<In...>, Traits_>;
+        : public details::DataHandleMixin<std::tuple<>, std::tuple<In...>, Traits_> {
+      using base_class = details::DataHandleMixin<std::tuple<>, std::tuple<In...>, Traits_>;
 
     public:
       constexpr static std::size_t N = base_class::N_in;
@@ -93,8 +93,8 @@ namespace Gaudi::Functional {
 
     template <typename Out, typename... In, typename Traits_>
     class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_, false>
-        : public details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
-      using base_class = details::DataHandleMixin<void, std::tuple<In...>, Traits_>;
+        : public details::DataHandleMixin<std::tuple<>, std::tuple<In...>, Traits_> {
+      using base_class = details::DataHandleMixin<std::tuple<>, std::tuple<In...>, Traits_>;
 
     public:
       constexpr static std::size_t N = base_class::N_in;

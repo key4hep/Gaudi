@@ -482,7 +482,7 @@ namespace Gaudi::Functional::details {
   };
 
   template <typename Traits_>
-  class DataHandleMixin<void, std::tuple<>, Traits_> : public BaseClass_t<Traits_> {
+  class DataHandleMixin<std::tuple<>, std::tuple<>, Traits_> : public BaseClass_t<Traits_> {
     static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
   public:
@@ -497,7 +497,7 @@ namespace Gaudi::Functional::details {
   };
 
   template <typename... In, typename Traits_>
-  class DataHandleMixin<void, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_> {
+  class DataHandleMixin<std::tuple<>, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_> {
     static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
     template <typename IArgs, std::size_t... I>
@@ -535,7 +535,7 @@ namespace Gaudi::Functional::details {
   };
 
   template <typename... Out, typename Traits_>
-  class DataHandleMixin<std::tuple<Out...>, void, Traits_> : public BaseClass_t<Traits_> {
+  class DataHandleMixin<std::tuple<Out...>, std::tuple<>, Traits_> : public BaseClass_t<Traits_> {
     static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
     template <typename OArgs, std::size_t... J>

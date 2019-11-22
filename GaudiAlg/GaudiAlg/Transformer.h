@@ -50,7 +50,11 @@ namespace Gaudi ::Functional {
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
-          put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
+          if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
+            put( std::get<0>( this->m_outputs ), ( *this )( ctx ) );
+          } else {
+            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
+          }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;

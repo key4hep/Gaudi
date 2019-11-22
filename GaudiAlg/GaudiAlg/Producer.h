@@ -14,8 +14,8 @@ namespace Gaudi::Functional {
     struct Producer;
 
     template <typename... Out, typename Traits_>
-    struct Producer<std::tuple<Out...>(), Traits_, true> : DataHandleMixin<std::tuple<Out...>, void, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
+    struct Producer<std::tuple<Out...>(), Traits_, true> : DataHandleMixin<std::tuple<Out...>, std::tuple<>, Traits_> {
+      using DataHandleMixin<std::tuple<Out...>, std::tuple<>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
@@ -41,8 +41,8 @@ namespace Gaudi::Functional {
     };
 
     template <typename... Out, typename Traits_>
-    struct Producer<std::tuple<Out...>(), Traits_, false> : DataHandleMixin<std::tuple<Out...>, void, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
+    struct Producer<std::tuple<Out...>(), Traits_, false> : DataHandleMixin<std::tuple<Out...>, std::tuple<>, Traits_> {
+      using DataHandleMixin<std::tuple<Out...>, std::tuple<>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ) const override final {
@@ -72,8 +72,8 @@ namespace Gaudi::Functional {
     };
 
     template <typename Out, typename Traits_>
-    struct Producer<Out(), Traits_, true> : public DataHandleMixin<std::tuple<Out>, void, Traits_> {
-      using DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
+    struct Producer<Out(), Traits_, true> : public DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_> {
+      using DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
@@ -90,8 +90,8 @@ namespace Gaudi::Functional {
     };
 
     template <typename Out, typename Traits_>
-    struct Producer<Out(), Traits_, false> : public DataHandleMixin<std::tuple<Out>, void, Traits_> {
-      using DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
+    struct Producer<Out(), Traits_, false> : public DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_> {
+      using DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ) const override final {
         try {
