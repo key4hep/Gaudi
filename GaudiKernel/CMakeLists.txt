@@ -177,6 +177,9 @@ gaudi_add_unit_test(test_reverse  tests/src/test_reverse.cpp
 gaudi_add_unit_test(test_GaudiTimer tests/src/test_GaudiTimer.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_Counters tests/src/CountersUnitTest.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 
 gaudi_add_compile_test(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx
                        ERRORS "FAIL01;FAIL02;FAIL03;FAIL04")

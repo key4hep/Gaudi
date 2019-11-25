@@ -191,9 +191,6 @@ gaudi_add_test(nose
                COMMAND nosetests -v
                ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
 
-gaudi_add_executable(countersUnitTest src/CounterEx/CountersUnitTest.cpp
-                     LINK_LIBRARIES GaudiKernel)
-
 gaudi_add_executable(testAppMgrStateMachine src/testing/TestAppMgrStateMachine.cpp
                      LINK_LIBRARIES GaudiKernel)
 

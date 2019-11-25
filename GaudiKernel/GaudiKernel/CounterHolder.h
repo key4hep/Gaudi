@@ -1,14 +1,13 @@
 #ifndef GAUDIKERNEL_COUNTERHOLDER_H
 #define GAUDIKERNEL_COUNTERHOLDER_H
 
+#include <Gaudi/Accumulators.h>
 #include <algorithm>
 #include <functional>
 #include <map>
 #include <mutex>
 #include <string>
 #include <type_traits>
-
-#include "GaudiKernel/Counters.h"
 
 class INamedInterface;
 
