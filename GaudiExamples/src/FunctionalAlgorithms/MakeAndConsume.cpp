@@ -107,6 +107,22 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( IntToFloatData )
 
+  struct IntFloatToFloatData final : Gaudi::Functional::Transformer<float( const int&, const float& ), BaseClass_t> {
+
+    IntFloatToFloatData( const std::string& name, ISvcLocator* svcLoc )
+        : Transformer( name, svcLoc,
+                       {KeyValue( "InputLocation", "/Event/MyInt" ), KeyValue{"OtherInput", "/Event/MyOtherFloat"}},
+                       KeyValue( "OutputLocation", "/Event/OtherFloat" ) ) {}
+
+    float operator()( const int& in1, const float& in2 ) const override {
+      info() << "Converting: " << in1 << " from " << inputLocation<int>() << " and " << in2 << " from "
+             << inputLocation<float>() << " and storing it into " << outputLocation() << endmsg;
+      return in1 + in2;
+    }
+  };
+
+  DECLARE_COMPONENT( IntFloatToFloatData )
+
   struct IntIntToFloatFloatData final
       : Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), BaseClass_t> {
     IntIntToFloatFloatData( const std::string& name, ISvcLocator* svcLoc )
