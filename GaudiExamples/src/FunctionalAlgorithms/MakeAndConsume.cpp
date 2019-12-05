@@ -180,6 +180,19 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( ContextConsumer )
 
+  struct ContextTransformer final : Gaudi::Functional::Transformer<int( const EventContext& ), BaseClass_t> {
+
+    ContextTransformer( const std::string& name, ISvcLocator* svcLoc )
+        : Transformer( name, svcLoc, KeyValue{"OutputLoc", "/Event/SomeOtherInt"} ) {}
+
+    int operator()( const EventContext& ctx ) const override {
+      info() << "executing ContextConsumer, got " << ctx << endmsg;
+      return 9;
+    }
+  };
+
+  DECLARE_COMPONENT( ContextTransformer )
+
   struct ContextIntConsumer final : Gaudi::Functional::Consumer<void( const EventContext&, const int& ), BaseClass_t> {
 
     ContextIntConsumer( const std::string& name, ISvcLocator* svcLoc )

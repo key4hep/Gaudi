@@ -22,9 +22,9 @@ namespace Gaudi::Functional {
     ////// Many of the same -> 1
     template <typename Out, typename In, typename Traits_>
     struct MergingTransformer<Out( const vector_of_const_<In>& ), Traits_, true>
-        : DataHandleMixin<std::tuple<Out>, void, Traits_> {
+        : DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_> {
     private:
-      using base_class = DataHandleMixin<std::tuple<Out>, void, Traits_>;
+      using base_class = DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_>;
 
     public:
       using KeyValue  = typename base_class::KeyValue;
@@ -78,9 +78,9 @@ namespace Gaudi::Functional {
 
     template <typename Out, typename In, typename Traits_>
     struct MergingTransformer<Out( const vector_of_const_<In>& ), Traits_, false>
-        : DataHandleMixin<std::tuple<Out>, void, Traits_> {
+        : DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_> {
     private:
-      using base_class = DataHandleMixin<std::tuple<Out>, void, Traits_>;
+      using base_class = DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_>;
 
     public:
       using KeyValue  = typename base_class::KeyValue;
@@ -143,10 +143,10 @@ namespace Gaudi::Functional {
 
   template <typename... Outs, typename In, typename Traits_>
   struct MergingMultiTransformer<std::tuple<Outs...>( vector_of_const_<In> const& ), Traits_>
-      : details::DataHandleMixin<std::tuple<Outs...>, void, Traits_> {
+      : details::DataHandleMixin<std::tuple<Outs...>, std::tuple<>, Traits_> {
 
   private:
-    using base_class = details::DataHandleMixin<std::tuple<Outs...>, void, Traits_>;
+    using base_class = details::DataHandleMixin<std::tuple<Outs...>, std::tuple<>, Traits_>;
 
   public:
     using KeyValue  = typename base_class::KeyValue;

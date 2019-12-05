@@ -14,8 +14,9 @@ namespace Gaudi::Functional {
     struct Consumer;
 
     template <typename... In, typename Traits_>
-    struct Consumer<void( const In&... ), Traits_, true> : DataHandleMixin<void, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<void, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+    struct Consumer<void( const In&... ), Traits_, true>
+        : DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_> {
+      using DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
@@ -33,8 +34,9 @@ namespace Gaudi::Functional {
     };
 
     template <typename... In, typename Traits_>
-    struct Consumer<void( const In&... ), Traits_, false> : DataHandleMixin<void, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<void, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+    struct Consumer<void( const In&... ), Traits_, false>
+        : DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_> {
+      using DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ctx ) const override final {
