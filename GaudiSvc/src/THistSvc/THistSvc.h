@@ -20,6 +20,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
+#include "TEfficiency.h"
 #include "TList.h"
 #include "TObject.h"
 #include "TTree.h"
@@ -91,6 +92,16 @@ public:
   /// Return TGraph with given name
   StatusCode getGraph( const std::string& name, TGraph*& ) const override;
 
+  /// Register a new TEfficiency with a given name
+  StatusCode regEfficiency( const std::string& name ) override;
+  /// Register an existing TEfficiency with a given name and moved unique_ptr
+  StatusCode regEfficiency( const std::string& name, std::unique_ptr<TEfficiency> ) override;
+  /// @deprecated {Just kept for compatibiltiy to current ATLAS code. Pleas use std::unique_ptrs instead!}
+  /// Register a new TEfficiency with a given name and a raw pointer
+  virtual StatusCode regEfficiency( const std::string& name, TEfficiency* ) override;
+  /// Return TEfficiency with given name
+  StatusCode getEfficiency( const std::string& name, TEfficiency*& ) const override;
+
   /// @}
 
   /// @name Functions managing shared objects
@@ -104,6 +115,8 @@ public:
   StatusCode regShared( const std::string& name, std::unique_ptr<TH3>, LockedHandle<TH3>& ) override;
   /// Register shared object of type TGraph and return LockedHandle for that object
   StatusCode regShared( const std::string& name, std::unique_ptr<TGraph>, LockedHandle<TGraph>& ) override;
+  /// Register shared object of type TEfficiency and return LockedHandle for that object
+  StatusCode regShared( const std::string& name, std::unique_ptr<TEfficiency>, LockedHandle<TEfficiency>& ) override;
   /// Retrieve shared object with given name as TH1 through LockedHandle
   StatusCode getShared( const std::string& name, LockedHandle<TH1>& ) const override;
   /// Retrieve shared object with given name as TH2 through LockedHandle
@@ -112,6 +125,8 @@ public:
   StatusCode getShared( const std::string& name, LockedHandle<TH3>& ) const override;
   /// Retrieve shared object with given name as TGraph through LockedHandle
   StatusCode getShared( const std::string& name, LockedHandle<TGraph>& ) const override;
+  /// Retrieve shared object with given name as TEfficiency through LockedHandle
+  StatusCode getShared( const std::string& name, LockedHandle<TEfficiency>& ) const override;
 
   /// @}
 
@@ -129,7 +144,16 @@ public:
   StatusCode merge( TObject* ) override;
 
   /// Check if object with given name is managed by THistSvcMT
+  /// exists calls existsHist and only works for TH1-descendants
   bool exists( const std::string& name ) const override;
+  /// Check if histogram with given name is managed by THistSvcMT
+  bool existsHist( const std::string& name ) const override;
+  /// Check if tree with given name is managed by THistSvcMT
+  bool existsTree( const std::string& name ) const override;
+  /// Check if graph with given name is managed by THistSvcMT
+  bool existsGraph( const std::string& name ) const override;
+  /// Check if TEfficiency with given name is managed by THistSvcMT
+  bool existsEfficiency( const std::string& name ) const override;
 
   /// @}
 
@@ -139,6 +163,7 @@ public:
   std::vector<std::string> getHists() const override;
   std::vector<std::string> getTrees() const override;
   std::vector<std::string> getGraphs() const override;
+  std::vector<std::string> getEfficiencies() const override;
 
   StatusCode getTHists( TDirectory* td, TList&, bool recurse = false ) const override;
   StatusCode getTHists( const std::string& name, TList&, bool recurse = false ) const override;
@@ -149,6 +174,11 @@ public:
   StatusCode getTTrees( const std::string& name, TList&, bool recurse = false ) const override;
   StatusCode getTTrees( TDirectory* td, TList& tl, bool recurse = false, bool reg = false ) override;
   StatusCode getTTrees( const std::string& name, TList& tl, bool recurse = false, bool reg = false ) override;
+
+  StatusCode getTEfficiencies( TDirectory* td, TList&, bool recurse = false ) const override;
+  StatusCode getTEfficiencies( const std::string& name, TList&, bool recurse = false ) const override;
+  StatusCode getTEfficiencies( TDirectory* td, TList& tl, bool recurse = false, bool reg = false ) override;
+  StatusCode getTEfficiencies( const std::string& name, TList& tl, bool recurse = false, bool reg = false ) override;
 
   /// @}
 
