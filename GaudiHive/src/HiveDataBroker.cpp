@@ -197,8 +197,9 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
 
       auto r = producers.emplace( id, &alg );
       if ( !r.second ) {
-        throw GaudiException( "multiple algorithms declare " + id.key() + " as output. This is not allowed", __func__,
-                              StatusCode::FAILURE );
+        throw GaudiException( "multiple algorithms declare " + id.key() + " as output (" + alg.alg->name() + " and " +
+                                  producers[id]->alg->name() + " at least). This is not allowed",
+                              __func__, StatusCode::FAILURE );
       }
     }
   }
