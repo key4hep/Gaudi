@@ -16,6 +16,24 @@ variables:
   LCG_contrib: "/cvmfs/sft.cern.ch/lcg/contrib"
   CCACHE_VERSION: "3.7.1-7651f"
 
+build:gcc8:opt:
+  stage: build
+  tags:
+    - cvmfs
+  variables:
+    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BUILDDIR: build-opt8
+  script:
+    - ci-utils/build
+  artifacts:
+    paths:
+      - ${BUILDDIR}
+    expire_in: 1 week
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - .ccache
+
 build:gcc9:opt:
   stage: build
   tags:
@@ -109,6 +127,23 @@ doxygen:
     paths:
       - public
     expire_in: 1 day
+
+test:gcc8:opt:
+  stage: test
+  dependencies:
+    - build:gcc8:opt
+  tags:
+    - cvmfs
+  variables:
+    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BUILDDIR: build-opt8
+  script:
+    - ci-utils/test
+  artifacts:
+    paths:
+      - ${TESTS_REPORT}
+    when: always
+    expire_in: 1 week
 
 test:gcc9:opt:
   stage: test
