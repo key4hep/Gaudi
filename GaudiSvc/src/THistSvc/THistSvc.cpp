@@ -439,6 +439,29 @@ StatusCode THistSvc::getGraph( const std::string& id, TGraph*& graph ) const {
   }
 }
 
+StatusCode THistSvc::regEfficiency( const std::string& id ) {
+  std::unique_ptr<TEfficiency> eff = nullptr;
+  return regHist_i( std::move( eff ), id, false );
+}
+
+StatusCode THistSvc::regEfficiency( const std::string& id, std::unique_ptr<TEfficiency> eff ) {
+  return regHist_i( std::move( eff ), id, false );
+}
+
+StatusCode THistSvc::regEfficiency( const std::string& id, TEfficiency* eff_ptr ) {
+  std::unique_ptr<TEfficiency> eff( eff_ptr );
+  return regHist_i( std::move( eff ), id, false );
+}
+
+StatusCode THistSvc::getEfficiency( const std::string& id, TEfficiency*& eff ) const {
+  eff = getHist_i<TEfficiency>( id );
+  if ( eff != nullptr ) {
+    return StatusCode::SUCCESS;
+  } else {
+    return StatusCode::FAILURE;
+  }
+}
+
 StatusCode THistSvc::regShared( const std::string& id, std::unique_ptr<TH1> hist, LockedHandle<TH1>& lh ) {
   lh = regShared_i<TH1>( id, std::move( hist ) );
   if ( lh ) {
@@ -475,6 +498,16 @@ StatusCode THistSvc::regShared( const std::string& id, std::unique_ptr<TGraph> g
   }
 }
 
+StatusCode THistSvc::regShared( const std::string& id, std::unique_ptr<TEfficiency> eff,
+                                LockedHandle<TEfficiency>& lh ) {
+  lh = regShared_i<TEfficiency>( id, std::move( eff ) );
+  if ( lh ) {
+    return StatusCode::SUCCESS;
+  } else {
+    return StatusCode::FAILURE;
+  }
+}
+
 StatusCode THistSvc::getShared( const std::string& name, LockedHandle<TH1>& lh ) const {
   lh = getShared_i<TH1>( name );
   if ( lh ) {
@@ -504,6 +537,15 @@ StatusCode THistSvc::getShared( const std::string& name, LockedHandle<TH3>& lh )
 
 StatusCode THistSvc::getShared( const std::string& name, LockedHandle<TGraph>& lh ) const {
   lh = getShared_i<TGraph>( name );
+  if ( lh ) {
+    return StatusCode::SUCCESS;
+  } else {
+    return StatusCode::FAILURE;
+  }
+}
+
+StatusCode THistSvc::getShared( const std::string& name, LockedHandle<TEfficiency>& lh ) const {
+  lh = getShared_i<TEfficiency>( name );
   if ( lh ) {
     return StatusCode::SUCCESS;
   } else {
@@ -614,7 +656,19 @@ StatusCode THistSvc::merge( TObject* obj ) {
   }
 }
 
-bool THistSvc::exists( const std::string& name ) const { return ( getHist_i<TH1>( name, 0, true ) != nullptr ); }
+bool THistSvc::exists( const std::string& name ) const { return existsHist( name ); }
+
+bool THistSvc::existsHist( const std::string& name ) const { return ( getHist_i<TH1>( name, 0, true ) != nullptr ); }
+
+bool THistSvc::existsEfficiency( const std::string& name ) const {
+  return ( getHist_i<TEfficiency>( name, 0, true ) != nullptr );
+}
+
+bool THistSvc::existsGraph( const std::string& name ) const {
+  return ( getHist_i<TGraph>( name, 0, true ) != nullptr );
+}
+
+bool THistSvc::existsTree( const std::string& name ) const { return ( getHist_i<TTree>( name, 0, true ) != nullptr ); }
 
 std::vector<std::string> THistSvc::getHists() const {
   std::vector<std::string> names;
@@ -637,6 +691,15 @@ std::vector<std::string> THistSvc::getGraphs() const {
   names.reserve( m_uids.size() );
   transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
                 []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TGraph" ); } );
+  return names;
+}
+
+std::vector<std::string> THistSvc::getEfficiencies() const {
+  std::vector<std::string> names;
+  names.reserve( m_uids.size() );
+  transform_if(
+      std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
+      []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TEfficiency" ); } );
   return names;
 }
 
@@ -1020,6 +1083,207 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs, boo
   return getTTrees( gDirectory, tl, rcs, reg );
 }
 
+StatusCode THistSvc::getTEfficiencies( TDirectory* td, TList& tl, bool rcs ) const {
+  GlobalDirectoryRestore restore( m_svcMut );
+
+  gErrorIgnoreLevel = kBreak;
+
+  if ( !td->cd() ) {
+    error() << "getTEfficiencies: No such TDirectory \"" << td->GetPath() << "\"" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "getTEfficiencies: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys"
+            << endmsg;
+  }
+
+  TIter nextkey( td->GetListOfKeys() );
+  while ( TKey* key = (TKey*)nextkey() ) {
+    auto& log = debug();
+    if ( msgLevel( MSG::DEBUG ) ) log << "  key: " << key->GetName();
+    TObject* obj = key->ReadObj();
+    if ( obj != 0 && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
+      if ( msgLevel( MSG::DEBUG ) ) log << " (" << obj->IsA()->GetName() << ")";
+    } else if ( obj != 0 && obj->IsA()->InheritsFrom( "TEfficiency" ) ) {
+      if ( msgLevel( MSG::DEBUG ) ) log << " (" << obj->IsA()->GetName() << ")";
+      tl.Add( obj );
+    } else if ( obj != 0 ) {
+      if ( msgLevel( MSG::DEBUG ) ) log << " [" << obj->IsA()->GetName() << "]";
+    }
+    if ( msgLevel( MSG::DEBUG ) ) log << endmsg;
+  }
+
+  // operate recursively
+  if ( rcs ) {
+    nextkey = td->GetListOfKeys();
+    while ( TKey* key = (TKey*)nextkey() ) {
+      TObject* obj = key->ReadObj();
+      if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
+        TDirectory* tt = dynamic_cast<TDirectory*>( obj );
+        getTHists( tt, tl, rcs );
+      }
+    }
+  }
+
+  return StatusCode::SUCCESS;
+}
+
+StatusCode THistSvc::getTEfficiencies( const std::string& dir, TList& tl, bool rcs ) const {
+
+  GlobalDirectoryRestore restore( m_svcMut );
+
+  gErrorIgnoreLevel = kBreak;
+
+  StatusCode sc;
+
+  std::string stream, rem, r2;
+  parseString( dir, stream, rem );
+
+  auto itr = m_files.find( stream );
+  if ( itr != m_files.end() ) {
+    r2 = itr->second.first->GetName();
+    r2 += ":/";
+    r2 += rem;
+
+    if ( msgLevel( MSG::DEBUG ) ) {
+      debug() << "getTEfficiencies: \"" << dir << "\" looks like a stream name."
+              << " associated TFile: \"" << itr->second.first->GetName() << "\"" << endmsg;
+    }
+
+    if ( gDirectory->cd( r2.c_str() ) ) {
+      m_curstream = stream;
+      sc          = getTEfficiencies( gDirectory, tl, rcs );
+      m_curstream = "";
+      return sc;
+    } else {
+      if ( msgLevel( MSG::DEBUG ) ) { debug() << "getTEfficiencies: no such TDirectory \"" << r2 << "\"" << endmsg; }
+    }
+
+  } else {
+    if ( msgLevel( MSG::DEBUG ) ) { debug() << "getTEfficiencies: stream \"" << stream << "\" not found" << endmsg; }
+  }
+
+  if ( !gDirectory->cd( dir.c_str() ) ) {
+    error() << "getTEfficiencies: No such TDirectory/stream \"" << dir << "\"" << endmsg;
+    sc = StatusCode::FAILURE;
+  } else {
+    sc = getTHists( gDirectory, tl, rcs );
+  }
+
+  return sc;
+}
+
+StatusCode THistSvc::getTEfficiencies( TDirectory* td, TList& tl, bool rcs, bool reg ) {
+  GlobalDirectoryRestore restore( m_svcMut );
+
+  gErrorIgnoreLevel = kBreak;
+
+  if ( !td->cd() ) {
+    error() << "getTEfficiencies: No such TDirectory \"" << td->GetPath() << "\"" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "getTEfficiencies: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys"
+            << endmsg;
+  }
+
+  TIter nextkey( td->GetListOfKeys() );
+  while ( TKey* key = (TKey*)nextkey() ) {
+    auto& log = debug();
+    if ( msgLevel( MSG::DEBUG ) ) log << "  key: " << key->GetName();
+    TObject* obj = key->ReadObj();
+    if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
+      if ( msgLevel( MSG::DEBUG ) ) log << " (" << obj->IsA()->GetName() << ")";
+    } else if ( obj && obj->IsA()->InheritsFrom( "TEfficiency" ) ) {
+      if ( msgLevel( MSG::DEBUG ) ) log << " (" << obj->IsA()->GetName() << ")";
+      tl.Add( obj );
+      if ( reg && m_curstream != "" ) {
+        std::string dir = td->GetPath();
+        std::string fil = td->GetFile()->GetName();
+        dir.erase( 0, fil.length() + 1 );
+        std::string id = "/" + m_curstream;
+        if ( dir == "/" ) {
+          id = id + "/" + key->GetName();
+        } else {
+          id = id + dir + "/" + key->GetName();
+        }
+        if ( !exists( id ) ) {
+          if ( msgLevel( MSG::DEBUG ) ) log << "  reg as \"" << id << "\"";
+          regHist( id ).ignore();
+        } else {
+          if ( msgLevel( MSG::DEBUG ) ) log << "  already registered";
+        }
+      }
+    } else if ( obj ) {
+      if ( msgLevel( MSG::DEBUG ) ) log << " [" << obj->IsA()->GetName() << "]";
+    }
+    if ( msgLevel( MSG::DEBUG ) ) log << endmsg;
+  }
+
+  // operate recursively
+  if ( rcs ) {
+    nextkey = td->GetListOfKeys();
+    while ( TKey* key = (TKey*)nextkey() ) {
+      TObject* obj = key->ReadObj();
+      if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
+        TDirectory* tt = dynamic_cast<TDirectory*>( obj );
+        getTEfficiencies( tt, tl, rcs, reg );
+      }
+    }
+  }
+
+  return StatusCode::SUCCESS;
+}
+
+StatusCode THistSvc::getTEfficiencies( const std::string& dir, TList& tl, bool rcs, bool reg ) {
+  GlobalDirectoryRestore restore( m_svcMut );
+
+  gErrorIgnoreLevel = kBreak;
+
+  StatusCode sc;
+
+  std::string stream, rem, r2;
+  parseString( dir, stream, rem );
+
+  auto itr = m_files.find( stream );
+  if ( itr != m_files.end() ) {
+    r2 = itr->second.first->GetName();
+    r2 += ":/";
+    r2 += rem;
+
+    if ( msgLevel( MSG::DEBUG ) ) {
+      debug() << "getTEfficiencies: \"" << dir << "\" looks like a stream name."
+              << " associated TFile: \"" << itr->second.first->GetName() << "\"" << endmsg;
+    }
+
+    if ( gDirectory->cd( r2.c_str() ) ) {
+      m_curstream = stream;
+      sc          = getTEfficiencies( gDirectory, tl, rcs, reg );
+      m_curstream.clear();
+      return sc;
+    }
+    if ( msgLevel( MSG::DEBUG ) ) { debug() << "getTEfficiencies: no such TDirectory \"" << r2 << "\"" << endmsg; }
+  } else {
+    if ( msgLevel( MSG::DEBUG ) ) { debug() << "getTEfficiencies: stream \"" << stream << "\" not found" << endmsg; }
+  }
+
+  if ( !gDirectory->cd( dir.c_str() ) ) {
+    error() << "getTEfficiencies: No such TDirectory/stream \"" << dir << "\"" << endmsg;
+    sc = StatusCode::FAILURE;
+  } else {
+    if ( reg ) {
+      warning() << "Unable to register histograms automatically "
+                << "without a valid stream name" << endmsg;
+      reg = false;
+    }
+    sc = getTEfficiencies( gDirectory, tl, rcs, reg );
+  }
+
+  return sc;
+}
+
 //*************************************************************************//
 
 void THistSvc::handle( const Incident& /* inc */ ) {
@@ -1142,14 +1406,16 @@ StatusCode THistSvc::io_reinit() {
         } else if ( cl->InheritsFrom( "TH1" ) ) {
           dynamic_cast<TH1*>( hid.obj )->SetDirectory( newdir );
           dynamic_cast<TH1*>( hid.obj )->Reset();
+        } else if ( cl->InheritsFrom( "TEfficiency" ) ) {
+          dynamic_cast<TEfficiency*>( hid.obj )->SetDirectory( newdir );
         } else if ( cl->InheritsFrom( "TGraph" ) ) {
           olddir->Remove( hid.obj );
           newdir->Append( hid.obj );
         } else {
           error() << "id: \"" << hid.id << "\" is not a inheriting from a class "
                   << "we know how to handle (received [" << cl->GetName() << "], "
-                  << "expected [TTree, TH1 or TGraph]) !" << endmsg << "attaching to current dir [" << newdir->GetPath()
-                  << "] "
+                  << "expected [TTree, TH1, TGraph or TEfficiency]) !" << endmsg << "attaching to current dir ["
+                  << newdir->GetPath() << "] "
                   << "nonetheless..." << endmsg;
           olddir->Remove( hid.obj );
           newdir->Append( hid.obj );

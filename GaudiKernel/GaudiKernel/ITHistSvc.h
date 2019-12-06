@@ -19,6 +19,7 @@ class TTree;
 class TList;
 class TDirectory;
 class TGraph;
+class TEfficiency;
 
 class GAUDI_API ITHistSvc : virtual public IService {
 public:
@@ -81,6 +82,21 @@ public:
 
   /// @}
 
+  /// @name Functions to manage TEfficiency-ies
+  /// @{
+
+  /// Register a new TEfficiency with a given name
+  virtual StatusCode regEfficiency( const std::string& name ) = 0;
+  /// Register an existing TEfficiency with a given name and moved unique_ptr
+  virtual StatusCode regEfficiency( const std::string& name, std::unique_ptr<TEfficiency> ) = 0;
+  /// @deprecated {Just kept for compatibiltiy to current ATLAS code. Pleas use std::unique_ptrs instead!}
+  /// Register a new TEfficiency with a given name and a raw pointer
+  virtual StatusCode regEfficiency( const std::string& name, TEfficiency* ) = 0;
+  /// Return TGraph with given name
+  virtual StatusCode getEfficiency( const std::string& name, TEfficiency*& ) const = 0;
+
+  /// @}
+
   /// @name Functions managing shared objects
   /// @{
 
@@ -92,6 +108,8 @@ public:
   virtual StatusCode regShared( const std::string& name, std::unique_ptr<TH3>, LockedHandle<TH3>& ) = 0;
   /// Register shared object of type TGraph and return LockedHandle for that object
   virtual StatusCode regShared( const std::string& name, std::unique_ptr<TGraph>, LockedHandle<TGraph>& ) = 0;
+  /// Register shared object of type TEfficiency and return LockedHandle for that object
+  virtual StatusCode regShared( const std::string& name, std::unique_ptr<TEfficiency>, LockedHandle<TEfficiency>& ) = 0;
   /// Retrieve shared object with given name as TH1 through LockedHandle
   virtual StatusCode getShared( const std::string& name, LockedHandle<TH1>& ) const = 0;
   /// Retrieve shared object with given name as TH2 through LockedHandle
@@ -100,6 +118,8 @@ public:
   virtual StatusCode getShared( const std::string& name, LockedHandle<TH3>& ) const = 0;
   /// Retrieve shared object with given name as TGraph through LockedHandle
   virtual StatusCode getShared( const std::string& name, LockedHandle<TGraph>& ) const = 0;
+  /// Retrieve shared object with given name as TEfficiency through LockedHandle
+  virtual StatusCode getShared( const std::string& name, LockedHandle<TEfficiency>& ) const = 0;
 
   /// @}
 
@@ -116,17 +136,27 @@ public:
   /// Merge all clones for given TObject*
   virtual StatusCode merge( TObject* ) = 0;
 
-  /// Check if object with given name is managed by THistSvcMT
+  /// Check if histogram with given name is managed by THistSvcMT
+  /// exists calls existsHist and only works for TH1-descendants
   virtual bool exists( const std::string& name ) const = 0;
+  /// Check if histogram with given name is managed by THistSvcMT
+  virtual bool existsHist( const std::string& name ) const = 0;
+  /// Check if tree with given name is managed by THistSvcMT
+  virtual bool existsTree( const std::string& name ) const = 0;
+  /// Check if graph with given name is managed by THistSvcMT
+  virtual bool existsGraph( const std::string& name ) const = 0;
+  /// Check if TEfficiency with given name is managed by THistSvcMT
+  virtual bool existsEfficiency( const std::string& name ) const = 0;
 
   /// @}
 
   /// @name Functions returning lists of all histograms, trees and graphs
   /// @{
 
-  virtual std::vector<std::string> getHists() const  = 0;
-  virtual std::vector<std::string> getTrees() const  = 0;
-  virtual std::vector<std::string> getGraphs() const = 0;
+  virtual std::vector<std::string> getHists() const        = 0;
+  virtual std::vector<std::string> getTrees() const        = 0;
+  virtual std::vector<std::string> getGraphs() const       = 0;
+  virtual std::vector<std::string> getEfficiencies() const = 0;
 
   virtual StatusCode getTHists( TDirectory* td, TList&, bool recurse = false ) const                      = 0;
   virtual StatusCode getTHists( const std::string& name, TList&, bool recurse = false ) const             = 0;
@@ -138,6 +168,10 @@ public:
   virtual StatusCode getTTrees( TDirectory* td, TList&, bool recurse = false, bool reg = false )          = 0;
   virtual StatusCode getTTrees( const std::string& name, TList&, bool recurse = false, bool reg = false ) = 0;
 
+  virtual StatusCode getTEfficiencies( TDirectory* td, TList&, bool recurse = false ) const                      = 0;
+  virtual StatusCode getTEfficiencies( const std::string& name, TList&, bool recurse = false ) const             = 0;
+  virtual StatusCode getTEfficiencies( TDirectory* td, TList&, bool recurse = false, bool reg = false )          = 0;
+  virtual StatusCode getTEfficiencies( const std::string& name, TList&, bool recurse = false, bool reg = false ) = 0;
   /// @}
 
   /// virtual destructor
