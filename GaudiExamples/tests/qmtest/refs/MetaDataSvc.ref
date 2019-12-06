@@ -128,7 +128,7 @@ NTupleSvc.EnableFaultHandler:False
 NTupleSvc.ForceLeaves:False
 NTupleSvc.InhibitPathes:[  ]
 NTupleSvc.Input:[  ]
-NTupleSvc.Output:[ "MYLUN DATAFILE='TupleEx.root' OPT='NEW' TYP='ROOT'" ]
+NTupleSvc.Output:[ 'MYLUN DATAFILE=\'TupleEx.root\' OPT=\'NEW\' TYP=\'ROOT\'' ]
 NTupleSvc.OutputLevel:3
 NTupleSvc.RootCLID:1
 NTupleSvc.RootName:/NTUPLES
