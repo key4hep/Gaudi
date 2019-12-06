@@ -461,11 +461,19 @@ namespace Gaudi::Functional::details {
     decltype( auto ) inputLocation() const {
       return getKey( std::get<N>( m_inputs ) );
     }
+    template <typename T>
+    decltype( auto ) inputLocation() const {
+      return getKey( std::get<details::InputHandle_t<Traits_, std::decay_t<T>>>( m_inputs ) );
+    }
     constexpr unsigned int inputLocationSize() const { return N_in; }
 
     template <std::size_t N = 0>
     decltype( auto ) outputLocation() const {
       return getKey( std::get<N>( m_outputs ) );
+    }
+    template <typename T>
+    decltype( auto ) outputLocation() const {
+      return getKey( std::get<details::OutputHandle_t<Traits_, std::decay_t<T>>>( m_outputs ) );
     }
     constexpr unsigned int outputLocationSize() const { return N_out; }
 
