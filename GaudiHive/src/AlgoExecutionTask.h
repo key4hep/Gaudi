@@ -8,26 +8,21 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SmartIF.h"
 
+#include "AvalancheSchedulerSvc.h"
+
 // External libs
 #include "tbb/task.h"
 
 class AlgoExecutionTask : public tbb::task {
 public:
-  AlgoExecutionTask( IAlgorithm* algorithm, const EventContext& ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem,
-                     std::function<StatusCode()> promote2ExecutedClosure )
-      : m_algorithm( algorithm )
-      , m_evtCtx( ctx )
-      , m_aess( aem )
-      , m_serviceLocator( svcLocator )
-      , m_promote2ExecutedClosure( std::move( promote2ExecutedClosure ) ){};
+  AlgoExecutionTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem )
+      : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ){};
   tbb::task* execute() override;
 
 private:
-  SmartIF<IAlgorithm>         m_algorithm;
-  const EventContext&         m_evtCtx;
-  IAlgExecStateSvc*           m_aess;
-  SmartIF<ISvcLocator>        m_serviceLocator;
-  std::function<StatusCode()> m_promote2ExecutedClosure;
+  AvalancheSchedulerSvc* m_scheduler;
+  IAlgExecStateSvc*      m_aess;
+  SmartIF<ISvcLocator>   m_serviceLocator;
 };
 
 #endif
