@@ -119,7 +119,8 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     } else if ( dynamic_cast<TGraph*>( hist ) ) {
       dir->Append( hist );
     } else {
-      error() << "id: \"" << idr << "\" is not a TH, TTree, TGraph, or TEfficiency. Attaching it to current dir." << endmsg;
+      error() << "id: \"" << idr << "\" is not a TH, TTree, TGraph, or TEfficiency. Attaching it to current dir."
+              << endmsg;
       dir->Append( hist );
     }
   }

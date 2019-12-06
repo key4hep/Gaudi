@@ -153,9 +153,9 @@ public:
   /// @name Functions returning lists of all histograms, trees and graphs
   /// @{
 
-  virtual std::vector<std::string> getHists() const  = 0;
-  virtual std::vector<std::string> getTrees() const  = 0;
-  virtual std::vector<std::string> getGraphs() const = 0;
+  virtual std::vector<std::string> getHists() const        = 0;
+  virtual std::vector<std::string> getTrees() const        = 0;
+  virtual std::vector<std::string> getGraphs() const       = 0;
   virtual std::vector<std::string> getEfficiencies() const = 0;
 
   virtual StatusCode getTHists( TDirectory* td, TList&, bool recurse = false ) const                      = 0;
@@ -172,7 +172,7 @@ public:
   virtual StatusCode getTEfficiencies( const std::string& name, TList&, bool recurse = false ) const             = 0;
   virtual StatusCode getTEfficiencies( TDirectory* td, TList&, bool recurse = false, bool reg = false )          = 0;
   virtual StatusCode getTEfficiencies( const std::string& name, TList&, bool recurse = false, bool reg = false ) = 0;
- /// @}
+  /// @}
 
   /// virtual destructor
   virtual ~ITHistSvc() = default;

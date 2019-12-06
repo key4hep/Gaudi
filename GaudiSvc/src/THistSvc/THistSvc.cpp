@@ -498,7 +498,8 @@ StatusCode THistSvc::regShared( const std::string& id, std::unique_ptr<TGraph> g
   }
 }
 
-StatusCode THistSvc::regShared( const std::string& id, std::unique_ptr<TEfficiency> eff, LockedHandle<TEfficiency>& lh ) {
+StatusCode THistSvc::regShared( const std::string& id, std::unique_ptr<TEfficiency> eff,
+                                LockedHandle<TEfficiency>& lh ) {
   lh = regShared_i<TEfficiency>( id, std::move( eff ) );
   if ( lh ) {
     return StatusCode::SUCCESS;
@@ -659,9 +660,13 @@ bool THistSvc::exists( const std::string& name ) const { return existsHist( name
 
 bool THistSvc::existsHist( const std::string& name ) const { return ( getHist_i<TH1>( name, 0, true ) != nullptr ); }
 
-bool THistSvc::existsEfficiency( const std::string& name ) const { return ( getHist_i<TEfficiency>( name, 0, true ) != nullptr ); }
+bool THistSvc::existsEfficiency( const std::string& name ) const {
+  return ( getHist_i<TEfficiency>( name, 0, true ) != nullptr );
+}
 
-bool THistSvc::existsGraph( const std::string& name ) const { return ( getHist_i<TGraph>( name, 0, true ) != nullptr ); }
+bool THistSvc::existsGraph( const std::string& name ) const {
+  return ( getHist_i<TGraph>( name, 0, true ) != nullptr );
+}
 
 bool THistSvc::existsTree( const std::string& name ) const { return ( getHist_i<TTree>( name, 0, true ) != nullptr ); }
 
@@ -692,8 +697,9 @@ std::vector<std::string> THistSvc::getGraphs() const {
 std::vector<std::string> THistSvc::getEfficiencies() const {
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
-  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TEfficiency" ); } );
+  transform_if(
+      std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
+      []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TEfficiency" ); } );
   return names;
 }
 
@@ -1088,7 +1094,8 @@ StatusCode THistSvc::getTEfficiencies( TDirectory* td, TList& tl, bool rcs ) con
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "getTEfficiencies: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+    debug() << "getTEfficiencies: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys"
+            << endmsg;
   }
 
   TIter nextkey( td->GetListOfKeys() );
@@ -1178,7 +1185,8 @@ StatusCode THistSvc::getTEfficiencies( TDirectory* td, TList& tl, bool rcs, bool
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "getTEfficiencies: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+    debug() << "getTEfficiencies: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys"
+            << endmsg;
   }
 
   TIter nextkey( td->GetListOfKeys() );
@@ -1400,14 +1408,14 @@ StatusCode THistSvc::io_reinit() {
           dynamic_cast<TH1*>( hid.obj )->Reset();
         } else if ( cl->InheritsFrom( "TEfficiency" ) ) {
           dynamic_cast<TEfficiency*>( hid.obj )->SetDirectory( newdir );
-	} else if ( cl->InheritsFrom( "TGraph" ) ) {
+        } else if ( cl->InheritsFrom( "TGraph" ) ) {
           olddir->Remove( hid.obj );
           newdir->Append( hid.obj );
         } else {
           error() << "id: \"" << hid.id << "\" is not a inheriting from a class "
                   << "we know how to handle (received [" << cl->GetName() << "], "
-                  << "expected [TTree, TH1, TGraph or TEfficiency]) !" << endmsg << "attaching to current dir [" << newdir->GetPath()
-                  << "] "
+                  << "expected [TTree, TH1, TGraph or TEfficiency]) !" << endmsg << "attaching to current dir ["
+                  << newdir->GetPath() << "] "
                   << "nonetheless..." << endmsg;
           olddir->Remove( hid.obj );
           newdir->Append( hid.obj );

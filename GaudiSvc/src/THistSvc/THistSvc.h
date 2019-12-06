@@ -16,11 +16,11 @@
 #include "GaudiKernel/Service.h"
 
 // ROOT includes:
+#include "TEfficiency.h"
 #include "TGraph.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
-#include "TEfficiency.h"
 #include "TList.h"
 #include "TObject.h"
 #include "TTree.h"
