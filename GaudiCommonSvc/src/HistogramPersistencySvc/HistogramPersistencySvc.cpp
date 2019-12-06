@@ -123,7 +123,7 @@ StatusCode HistogramPersistencySvc::reinitialize() {
     enable( true );
   } else if ( m_histPersName == "NONE" ) {
     enable( false );
-    if ( m_warnings ) { warning() << "Histograms saving not required." << endmsg; }
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "Histograms saving not required." << endmsg;
   } else {
     setConversionSvc( service( m_histPersName ) ).ignore();
     if ( !conversionSvc() ) { return StatusCode::FAILURE; }
