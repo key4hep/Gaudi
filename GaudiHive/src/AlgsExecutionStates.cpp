@@ -16,12 +16,24 @@ StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState ) {
     return StatusCode::FAILURE;
   }
 
+  // Allow cycling of a single state
+  if ( m_states[iAlgo] == newState ) return StatusCode::SUCCESS;
+
   switch ( transition( m_states[iAlgo], newState ) ) {
-  case transition( INITIAL, CONTROLREADY ):   // Fallthrough
-  case transition( CONTROLREADY, DATAREADY ): // Fallthrough
-  case transition( DATAREADY, SCHEDULED ):    // Fallthrough
-  case transition( SCHEDULED, ERROR ):        // Fallthrough
-  case transition( SCHEDULED, EVTACCEPTED ):  // Fallthrough
+  case transition( INITIAL, CONTROLREADY ):
+    [[fallthrough]];
+  case transition( CONTROLREADY, DATAREADY ):
+    [[fallthrough]];
+  case transition( DATAREADY, SCHEDULED ):
+    [[fallthrough]];
+  case transition( DATAREADY, RESOURCELESS ):
+    [[fallthrough]];
+  case transition( RESOURCELESS, SCHEDULED ):
+    [[fallthrough]];
+  case transition( SCHEDULED, ERROR ):
+    [[fallthrough]];
+  case transition( SCHEDULED, EVTACCEPTED ):
+    [[fallthrough]];
   case transition( SCHEDULED, EVTREJECTED ):
     m_states[iAlgo] = newState;
     return StatusCode::SUCCESS;
