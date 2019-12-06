@@ -1,7 +1,7 @@
 # default values for some variables defined in .gitlab-ci.yml
 : ${TARGET_BRANCH:=master}
 
-: ${BINARY_TAG:=x86_64-centos7-gcc8-opt}
+: ${BINARY_TAG:=x86_64-centos7-gcc9-opt}
 : ${BUILDDIR:=build.${BINARY_TAG}}
 : ${TESTS_REPORT:=test_report}
 
@@ -9,7 +9,7 @@
 : ${LCG_release_area:=/cvmfs/sft.cern.ch/lcg/releases}
 : ${LCG_contrib:=/cvmfs/sft.cern.ch/lcg/contrib}
 
-: ${CCACHE_VERSION:=3.3.4-e92e5}
+: ${CCACHE_VERSION:=3.7.1-7651f}
 
 # initial required environment
 # - get Python, nosetests and xenv from LHCb installation

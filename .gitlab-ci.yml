@@ -8,20 +8,20 @@ image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
 variables:
   NO_LBLOGIN: "1"
   TARGET_BRANCH: master
-  BINARY_TAG: x86_64-centos7-gcc8-opt
+  BINARY_TAG: x86_64-centos7-gcc9-opt
   BUILDDIR: build-opt
   TESTS_REPORT: "test_report"
   LCG_hostos: "x86_64-centos7"
   LCG_release_area: "/cvmfs/sft.cern.ch/lcg/releases"
   LCG_contrib: "/cvmfs/sft.cern.ch/lcg/contrib"
-  CCACHE_VERSION: "3.3.4-e92e5"
+  CCACHE_VERSION: "3.7.1-7651f"
 
-build:gcc8:opt:
+build:gcc9:opt:
   stage: build
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt
   script:
     - ci-utils/build
@@ -34,13 +34,12 @@ build:gcc8:opt:
     paths:
       - .ccache
     
-
-build:gcc8:dbg:
+build:gcc9:dbg:
   stage: build
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-dbg
+    BINARY_TAG: x86_64-centos7-gcc9-dbg
     BUILDDIR: build-dbg
   script:
     - ci-utils/build
@@ -89,14 +88,14 @@ check-formatting:
 doxygen:
   stage: test
   dependencies:
-    - build:gcc8:opt
+    - build:gcc9:opt
   tags:
     - cvmfs
   only:
     - master
     - tags
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt
   script:
     - . ci-utils/env_setup.sh
@@ -111,14 +110,14 @@ doxygen:
       - public
     expire_in: 1 day
 
-test:gcc8:opt:
+test:gcc9:opt:
   stage: test
   dependencies:
-    - build:gcc8:opt
+    - build:gcc9:opt
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt
   script:
     - ci-utils/test
@@ -128,14 +127,14 @@ test:gcc8:opt:
     when: always
     expire_in: 1 week
 
-test:gcc8:dbg:
+test:gcc9:dbg:
   stage: test
   dependencies:
-    - build:gcc8:dbg
+    - build:gcc9:dbg
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-dbg
+    BINARY_TAG: x86_64-centos7-gcc9-dbg
     BUILDDIR: build-dbg
   script:
     - ci-utils/test
@@ -165,11 +164,11 @@ test:gcc8:opt:python3:
 test_public_headers_build:
   stage: test
   dependencies:
-    - build:gcc8:opt
+    - build:gcc9:opt
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt
   script:
     - ci-utils/test_public_headers_build
