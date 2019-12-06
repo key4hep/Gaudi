@@ -52,14 +52,14 @@ build:gcc9:dbg:
     paths:
       - .ccache
 
-build:gcc8:opt:python3:
+build:gcc9:opt:python3:
   stage: build
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt-python3
-    HEPTOOLS_VERSION: 96python3
+    HEPTOOLS_VERSION: 96bpython3
   script:
     - ci-utils/build
   artifacts:
@@ -144,14 +144,14 @@ test:gcc9:dbg:
     when: always
     expire_in: 1 week
 
-test:gcc8:opt:python3:
+test:gcc9:opt:python3:
   stage: test
   dependencies:
-    - build:gcc8:opt:python3
+    - build:gcc9:opt:python3
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
+    BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt-python3
   script:
     - ci-utils/test
