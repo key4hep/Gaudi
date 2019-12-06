@@ -981,6 +981,8 @@ lineSkipper = LineSkipper(
         # The signal handler complains about SIGXCPU not
         # defined on some platforms
         'SIGXCPU',
+        # Message demoted to DEBUG in gaudi/Gaudi!992
+        'Histograms saving not required.',
     ],
     regexps=[
         r"^JobOptionsSvc        INFO *$",
