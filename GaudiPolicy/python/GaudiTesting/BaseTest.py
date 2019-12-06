@@ -1020,6 +1020,7 @@ lineSkipper = LineSkipper(
         r"^ ID=",
         # Ignore added/removed properties
         r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
+        r"Property(.*)'Audit(Begin|End)Run':",
         # these were missing in tools
         r"Property(.*)'AuditRe(start|initialize)':",
         r"Property(.*)'IsIOBound':",
