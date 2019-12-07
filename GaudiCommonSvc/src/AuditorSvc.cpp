@@ -176,12 +176,6 @@ void AuditorSvc::afterExecute( INamedInterface*, const StatusCode& ) {
                         StatusCode::FAILURE );
 }
 
-OBSOLETION( beforeBeginRun )
-OBSOLETION( afterBeginRun )
-
-OBSOLETION( beforeEndRun )
-OBSOLETION( afterEndRun )
-
 OBSOLETION( beforeFinalize )
 OBSOLETION( afterFinalize )
 

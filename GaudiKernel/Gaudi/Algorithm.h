@@ -138,20 +138,6 @@ namespace Gaudi {
      */
     StatusCode sysFinalize() override;
 
-    /** beginRun method invoked by the framework. This method is responsible
-        for any beginRun actions required by the framework itself.
-        It will in turn invoke the beginRun() method of the derived algorithm,
-        and of any sub-algorithms which it creates.
-    */
-    StatusCode sysBeginRun() override;
-
-    /** endRun method invoked by the framework. This method is responsible
-        for any endRun actions required by the framework itself.
-        It will in turn invoke the endRun() method of the derived algorithm,
-        and of any sub-algorithms which it creates.
-    */
-    StatusCode sysEndRun() override;
-
     /** The identifying name of the algorithm object. This is the name of a
      *  particular instantiation of an algorithm object as opposed to the name
      *  of the algorithm itself, e.g. "LinearTrackFit" may be the name of a
@@ -192,14 +178,6 @@ namespace Gaudi {
     Gaudi::StateMachine::State FSMState() const override { return m_state; }
     /// returns the state the algorithm will be in after the ongoing transition
     Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
-
-    /** Algorithm begin run. This method is called at the beginning
-     *  of the event loop.
-     */
-    [[deprecated( "try using Algorithm::Start instead" )]] StatusCode beginRun() override;
-
-    /// Algorithm end run. This method is called at the end of the event loop
-    [[deprecated( "try using Algorithm::Stop instead" )]] StatusCode endRun() override;
 
     /// Is this algorithm enabled or disabled?
     bool isEnabled() const override;
@@ -534,9 +512,6 @@ namespace Gaudi {
     Gaudi::Property<bool> m_auditorExecute{this, "AuditExecute", m_auditInit.value(), "trigger auditor on execute()"};
     Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", m_auditInit.value(),
                                             "trigger auditor on finalize()"};
-    Gaudi::Property<bool> m_auditorBeginRun{this, "AuditBeginRun", m_auditInit.value(),
-                                            "trigger auditor on beginRun()"};
-    Gaudi::Property<bool> m_auditorEndRun{this, "AuditEndRun", m_auditInit.value(), "trigger auditor on endRun()"};
     Gaudi::Property<bool> m_auditorStart{this, "AuditStart", m_auditInit.value(), "trigger auditor on start()"};
     Gaudi::Property<bool> m_auditorStop{this, "AuditStop", m_auditInit.value(), "trigger auditor on stop()"};
 
@@ -564,10 +539,6 @@ namespace Gaudi {
     Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
     Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
     bool                       m_isFinalized;                                   ///< Algorithm has been finalized flag
-
-    /// temporary flags to check if derived class's begin/endRun methods called
-    bool m_beginRunCalled;
-    bool m_endRunCalled;
 
     /// implementation of service method
     StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;

@@ -75,12 +75,6 @@ void Auditor::before( StandardEventType evt, INamedInterface* obj ) {
   case Execute:
     beforeExecute( obj );
     break;
-  case BeginRun:
-    beforeBeginRun( obj );
-    break;
-  case EndRun:
-    beforeEndRun( obj );
-    break;
   case Finalize:
     beforeFinalize( obj );
     break;
@@ -111,12 +105,6 @@ void Auditor::after( StandardEventType evt, INamedInterface* obj, const StatusCo
   case Execute:
     afterExecute( obj, sc );
     break;
-  case BeginRun:
-    afterBeginRun( obj );
-    break;
-  case EndRun:
-    afterEndRun( obj );
-    break;
   case Finalize:
     afterFinalize( obj );
     break;
@@ -141,10 +129,6 @@ void Auditor::beforeReinitialize( INamedInterface* ) {}
 void Auditor::afterReinitialize( INamedInterface* ) {}
 void Auditor::beforeExecute( INamedInterface* ) {}
 void Auditor::afterExecute( INamedInterface*, const StatusCode& ) {}
-void Auditor::beforeBeginRun( INamedInterface* ) {}
-void Auditor::afterBeginRun( INamedInterface* ) {}
-void Auditor::beforeEndRun( INamedInterface* ) {}
-void Auditor::afterEndRun( INamedInterface* ) {}
 void Auditor::beforeFinalize( INamedInterface* ) {}
 void Auditor::afterFinalize( INamedInterface* ) {}
 

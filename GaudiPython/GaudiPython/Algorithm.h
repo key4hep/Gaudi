@@ -38,8 +38,6 @@ namespace GaudiPython {
   public:
     StatusCode  initialize() override;
     StatusCode  start() override;
-    StatusCode  beginRun() override;
-    StatusCode  endRun() override;
     StatusCode  execute() override;
     StatusCode  stop() override;
     StatusCode  finalize() override;
@@ -83,8 +81,6 @@ namespace GaudiPython {
     // ========================================================================
     StatusCode initialize() override { return GaudiPython::call_python_method( m_self, "initialize" ); }
     StatusCode start() override { return GaudiPython::call_python_method( m_self, "start" ); }
-    StatusCode beginRun() override { return GaudiPython::call_python_method( m_self, "beginRun" ); }
-    StatusCode endRun() override { return GaudiPython::call_python_method( m_self, "endRun" ); }
     StatusCode execute() override { return GaudiPython::call_python_method( m_self, "execute" ); }
     StatusCode stop() override { return GaudiPython::call_python_method( m_self, "stop" ); }
     StatusCode finalize() override { return GaudiPython::call_python_method( m_self, "finalize" ); }

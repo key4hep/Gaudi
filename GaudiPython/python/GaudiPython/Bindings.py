@@ -1550,12 +1550,6 @@ class PyAlgorithm(_PyAlgorithm):
     def finalize(self):
         return 1
 
-    def beginRun(self):
-        return 1
-
-    def endRun(self):
-        return 1
-
 
 # ----Enable tab completion----------------------------------------------------
 try:

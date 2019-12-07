@@ -116,27 +116,6 @@ public:
   */
   virtual StatusCode sysFinalize() = 0;
 
-  /** beginRun method invoked by the framework. This method is responsible
-      for any beginRun actions required by the framework itself.
-      It will in turn invoke the beginRun() method of the derived algorithm,
-      and of any sub-algorithms which it creates.
-  */
-  virtual StatusCode sysBeginRun() = 0;
-
-  /** endRun method invoked by the framework. This method is responsible
-      for any endRun actions required by the framework itself.
-      It will in turn invoke the endRun() method of the derived algorithm,
-      and of any sub-algorithms which it creates.
-  */
-  virtual StatusCode sysEndRun() = 0;
-
-  /** Algorithm begin run. This method is called at the beginning of the event loop.
-   */
-  virtual StatusCode beginRun() = 0;
-  /** Algorithm end run. This method is called at the end of the event loop.
-   */
-  virtual StatusCode endRun() = 0;
-
   /// reference to AlgExecState of Alg
   virtual AlgExecState& execState( const EventContext& ctx ) const = 0;
 

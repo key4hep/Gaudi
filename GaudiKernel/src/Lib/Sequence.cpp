@@ -1,6 +1,3 @@
-// This is allow implementation of deprecated methods beginRun and endRun
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 #include "GaudiKernel/IAlgManager.h"
 #include <Gaudi/Sequence.h>
 
@@ -84,28 +81,6 @@ StatusCode Sequence::restart() {
   }
 
   return Algorithm::restart();
-}
-
-StatusCode Sequence::beginRun() {
-  if ( !Algorithm::beginRun() ) return StatusCode::FAILURE;
-
-  // call beginRun for sub-algorithms
-  if ( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
-    error() << "error calling beginRun for one or several sub-algorithms of Sequence " << name() << endmsg;
-    return StatusCode::FAILURE;
-  }
-
-  return StatusCode::SUCCESS;
-}
-
-StatusCode Sequence::endRun() {
-  // call endRun for sub-algorithms
-  if ( !for_algorithms<&Algorithm::sysEndRun>( m_subAlgms ) ) {
-    error() << "error calling endRun for one or several sub-algorithms of Sequence " << name() << endmsg;
-    return StatusCode::FAILURE;
-  }
-
-  return Algorithm::endRun();
 }
 
 void Sequence::acceptDHVisitor( IDataHandleVisitor* vis ) const {

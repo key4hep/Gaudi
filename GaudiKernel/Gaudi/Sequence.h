@@ -68,20 +68,6 @@ namespace Gaudi {
      */
     StatusCode finalize() override;
 
-    /** beginRun method invoked by the framework. This method is responsible
-        for any beginRun actions required by the framework itself.
-        It will in turn invoke the beginRun() method of the derived algorithm,
-        and of any sub-algorithms which it creates.
-    */
-    StatusCode beginRun() override;
-
-    /** endRun method invoked by the framework. This method is responsible
-        for any endRun actions required by the framework itself.
-        It will in turn invoke the endRun() method of the derived algorithm,
-        and of any sub-algorithms which it creates.
-    */
-    StatusCode endRun() override;
-
     void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
   private:

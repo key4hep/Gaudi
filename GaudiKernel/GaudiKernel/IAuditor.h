@@ -21,7 +21,7 @@ public:
   DeclareInterfaceID( IAuditor, 3, 0 );
 
   /// Defines the standard (= used by the framework) auditable event types.
-  enum StandardEventType { Initialize, ReInitialize, Execute, BeginRun, EndRun, Finalize, Start, Stop, ReStart };
+  enum StandardEventType { Initialize, ReInitialize, Execute, Finalize, Start, Stop, ReStart };
 
   /// Type used to allow users to specify a custom event to be audit.
   /// Examples of custom events are callbacks (see
@@ -74,16 +74,6 @@ public:
   virtual void afterExecute( INamedInterface*, const StatusCode& ) = 0;
 
   /// \deprecated use before
-  virtual void beforeBeginRun( INamedInterface* ) = 0;
-  /// \deprecated use after
-  virtual void afterBeginRun( INamedInterface* ) = 0;
-
-  /// \deprecated use before
-  virtual void beforeEndRun( INamedInterface* ) = 0;
-  /// \deprecated use after
-  virtual void afterEndRun( INamedInterface* ) = 0;
-
-  /// \deprecated use before
   virtual void beforeFinalize( INamedInterface* ) = 0;
   /// \deprecated use after
   virtual void afterFinalize( INamedInterface* ) = 0;
@@ -98,7 +88,7 @@ public:
 /// Simple mapping function from IAuditor::StandardEventType to string.
 inline const char* toStr( IAuditor::StandardEventType e ) {
   static const std::array<const char*, IAuditor::StandardEventType::ReStart + 1> s_tbl = {
-      {"Initialize", "ReInitialize", "Execute", "BeginRun", "EndRun", "Finalize", "Start", "Stop", "ReStart"}};
+      {"Initialize", "ReInitialize", "Execute", "Finalize", "Start", "Stop", "ReStart"}};
   return e <= IAuditor::StandardEventType::ReStart ? s_tbl[e] : nullptr;
 }
 
