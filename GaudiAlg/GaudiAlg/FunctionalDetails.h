@@ -528,7 +528,10 @@ namespace Gaudi::Functional::details {
     decltype( auto ) inputLocation() const {
       return getKey( std::get<N>( m_inputs ) );
     }
-
+    template <typename T>
+    decltype( auto ) inputLocation() const {
+      return getKey( std::get<details::InputHandle_t<Traits_, std::decay_t<T>>>( m_inputs ) );
+    }
     constexpr unsigned int inputLocationSize() const { return N_in; }
 
   protected:
