@@ -32,13 +32,13 @@ public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if BASE derives from Algorithm
   template <typename U = BASE, typename = std::enable_if_t<std::is_base_of_v<Gaudi::Algorithm, BASE>, U>>
-  FixTESPath( const std::string& name, ISvcLocator* pSvcLocator ) : BASE( name, pSvcLocator ) {}
+  FixTESPath( std::string name, ISvcLocator* pSvcLocator ) : BASE( std::move(name), pSvcLocator ) {}
 
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if BASE derives from AlgTool.
   template <typename U = BASE, typename = std::enable_if_t<std::is_base_of_v<AlgTool, BASE>, U>>
-  FixTESPath( const std::string& type, const std::string& name, const IInterface* ancestor )
-      : BASE( type, name, ancestor ) {
+  FixTESPath( std::string type, std::string name, const IInterface* ancestor )
+      : BASE( std::move(type), std::move(name), ancestor ) {
     // setup RootInTES from parent if available
     if ( const IProperty* ancestorProp = dynamic_cast<const IProperty*>( ancestor );
          ancestorProp && ancestorProp->hasProperty( "RootInTES" ) ) {

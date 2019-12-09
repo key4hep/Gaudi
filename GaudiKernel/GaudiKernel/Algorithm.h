@@ -35,13 +35,6 @@ namespace Gaudi {
       /// Set the executed flag to the specified state
       void setExecuted( bool state ) const;
 
-      /** Reset the executed state of the Algorithm for the duration
-       *  of the current event.
-       */
-      [[deprecated( "resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each "
-                    "Algorithm" )]] void
-      resetExecuted();
-
       /// Did this algorithm pass or fail its filter criterion for the last event?
       bool filterPassed() const;
 

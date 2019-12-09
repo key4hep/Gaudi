@@ -241,11 +241,7 @@ public:
   T* get() const { return &_get( true )->getData(); }
   T* getIfExists() const {
     auto data = _get( false );
-    if ( data ) {
-      return &data->getData();
-    } else {
-      return nullptr;
-    }
+    return data ? &data->getData() : nullptr;
   }
 
   /**

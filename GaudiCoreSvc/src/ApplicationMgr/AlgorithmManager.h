@@ -44,8 +44,8 @@ public:
     AlgorithmItem( IAlgorithm* s, bool managed = false ) : algorithm( s ), managed( managed ) {}
     SmartIF<IAlgorithm> algorithm;
     bool                managed;
-    inline bool         operator==( const std::string& name ) const { return algorithm->name() == name; }
-    inline bool         operator==( const IAlgorithm* ptr ) const { return algorithm.get() == ptr; }
+    bool         operator==( std::string_view name ) const { return algorithm->name() == name; }
+    bool         operator==( const IAlgorithm* ptr ) const { return algorithm.get() == ptr; }
   };
 
   /// typedefs and classes

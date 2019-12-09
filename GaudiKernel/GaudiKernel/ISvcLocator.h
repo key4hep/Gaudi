@@ -94,8 +94,8 @@ public:
 
   /// Templated method to access a service by type and name.
   template <class T>
-  StatusCode service( const std::string& type, const std::string& name, T*& svc, bool createIf = true ) {
-    return service( type + "/" + name, svc, createIf );
+  StatusCode service( std::string_view type, std::string_view name, T*& svc, bool createIf = true ) {
+    return service( std::string{type}.append( "/" ).append( name ), svc, createIf );
   }
 #endif
 

@@ -639,7 +639,7 @@ public:
    *  @param name           name of the algorithm
    *  @param pSvcLocator    pointer to Service Locator
    */
-  GaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
+  GaudiAlgorithm( std::string name, ISvcLocator* pSvcLocator );
   // ==========================================================================
   //
   // no default/copy constructor, no assignment -- except that ROOT really

@@ -23,8 +23,6 @@ namespace Gaudi {
           .setState( state ? AlgExecState::State::Done : AlgExecState::State::None );
     }
 
-    void LegacyAlgorithmAdapter::resetExecuted() { execState( Gaudi::Hive::currentContext() ).reset(); }
-
     bool LegacyAlgorithmAdapter::filterPassed() const {
       return execState( Gaudi::Hive::currentContext() ).filterPassed();
     }

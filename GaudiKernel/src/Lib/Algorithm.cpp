@@ -55,13 +55,6 @@ namespace Gaudi {
     }
   } // namespace Details
 
-  // Constructor
-  Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const std::string& version )
-      : m_name( name )
-      , m_version( version )
-      , // incremented by AlgResourcePool
-      m_pSvcLocator( pSvcLocator ) {}
-
   // IAlgorithm implementation
   StatusCode Algorithm::sysInitialize() {
 

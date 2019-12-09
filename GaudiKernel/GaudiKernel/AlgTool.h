@@ -108,7 +108,7 @@ public:
    *  @param name the full name of the concrete sub-algtool
    *  @param parent the parent of the concrete sub-algtool
    */
-  AlgTool( const std::string& type, const std::string& name, const IInterface* parent );
+  AlgTool( std::string type, std::string name, const IInterface* parent );
 
   /// Retrieve pointer to service locator.
   SmartIF<ISvcLocator>& serviceLocator() const override;

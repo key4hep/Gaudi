@@ -40,9 +40,9 @@ namespace Gaudi::Functional {
       using KeyValue  = typename base_class::KeyValue;
       using KeyValues = typename base_class::KeyValues;
 
-      MergingTransformer( const std::string& name, ISvcLocator* locator, const KeyValues& inputs,
+      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs,
                           const KeyValue& output )
-          : base_class( name, locator, output )
+          : base_class( std::move(name), locator, output )
           , m_inputLocations{this, inputs.first, inputs.second,
                              [=]( Gaudi::Details::PropertyBase& ) {
                                this->m_inputs =
@@ -96,9 +96,9 @@ namespace Gaudi::Functional {
       using KeyValue  = typename base_class::KeyValue;
       using KeyValues = typename base_class::KeyValues;
 
-      MergingTransformer( const std::string& name, ISvcLocator* locator, const KeyValues& inputs,
+      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs,
                           const KeyValue& output )
-          : base_class( name, locator, output )
+          : base_class(std::move(name), locator, output )
           , m_inputLocations{this, inputs.first, inputs.second,
                              [=]( Gaudi::Details::PropertyBase& ) {
                                this->m_inputs =

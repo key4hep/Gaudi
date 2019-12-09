@@ -42,8 +42,8 @@ template class GaudiCommon<Algorithm>;
 // ============================================================================
 // Standard algorithm like constructor
 // ============================================================================
-GaudiAlgorithm::GaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiCommon<Algorithm>( name, pSvcLocator ) {
+GaudiAlgorithm::GaudiAlgorithm( std::string name, ISvcLocator* pSvcLocator )
+    : GaudiCommon<Algorithm>( std::move(name), pSvcLocator ) {
   setProperty( "RegisterForContextService", true ).ignore();
 }
 // ============================================================================

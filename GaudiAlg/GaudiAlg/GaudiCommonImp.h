@@ -21,7 +21,7 @@
 #include "GaudiAlg/GetData.h"
 // ============================================================================
 /** @file
- *  The implementation of inline/templated methods for class GaudiCommon
+ *  The implementation of templated methods for class GaudiCommon
  *  @see    GaudiCommon
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
@@ -32,7 +32,7 @@
 // ============================================================================
 template <class PBASE>
 template <class TYPE>
-inline typename Gaudi::Utils::GetData<TYPE>::return_type
+typename Gaudi::Utils::GetData<TYPE>::return_type
 GaudiCommon<PBASE>::get( IDataProviderSvc* service, const std::string& location, const bool useRootInTES ) const {
   // check the environment
   Assert( service, "get():: IDataProvider* points to NULL!" );
@@ -45,7 +45,7 @@ GaudiCommon<PBASE>::get( IDataProviderSvc* service, const std::string& location,
 // ============================================================================
 template <class PBASE>
 template <class TYPE>
-inline typename Gaudi::Utils::GetData<TYPE>::return_type
+typename Gaudi::Utils::GetData<TYPE>::return_type
 GaudiCommon<PBASE>::getIfExists( IDataProviderSvc* service, const std::string& location,
                                  const bool useRootInTES ) const {
   // check the environment
@@ -59,7 +59,7 @@ GaudiCommon<PBASE>::getIfExists( IDataProviderSvc* service, const std::string& l
 // ============================================================================
 template <class PBASE>
 template <class TYPE>
-inline bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, const std::string& location,
+bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, const std::string& location,
                                        const bool useRootInTES ) const {
   // check the environment
   Assert( service, "exist():: IDataProvider* points to NULL!" );
@@ -74,7 +74,7 @@ inline bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, const std::str
 // ============================================================================
 template <class PBASE>
 template <class TYPE, class TYPE2>
-inline typename Gaudi::Utils::GetData<TYPE>::return_type
+typename Gaudi::Utils::GetData<TYPE>::return_type
 GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc* service, const std::string& location,
                                  const bool useRootInTES ) const {
   // check the environment
@@ -88,7 +88,7 @@ GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc* service, const std::string& l
 // ============================================================================
 template <class PBASE>
 template <class TOOL>
-inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const std::string& name, const IInterface* parent,
+TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const std::string& name, const IInterface* parent,
                                        bool create ) const {
   // for empty names delegate to another method
   if ( name.empty() ) return tool<TOOL>( type, parent, create );
@@ -109,7 +109,7 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const std::strin
 // ============================================================================
 template <class PBASE>
 template <class TOOL>
-inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const IInterface* parent, bool create ) const {
+TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const IInterface* parent, bool create ) const {
   // check the environment
   Assert( PBASE::toolSvc(), "IToolSvc* points to NULL!" );
   // retrieve the tool from Tool Service
@@ -128,7 +128,7 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const IInterface
 // ============================================================================
 template <class PBASE>
 template <class SERVICE>
-inline SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name, const bool create ) const {
+SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name, const bool create ) const {
   Assert( this->svcLoc(), "ISvcLocator* points to NULL!" );
   SmartIF<SERVICE> s;
   // check if we already have this service
@@ -154,7 +154,7 @@ inline SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name, const 
 // Short-cut  to get a pointer to the UpdateManagerSvc
 // ============================================================================
 template <class PBASE>
-inline IUpdateManagerSvc* GaudiCommon<PBASE>::updMgrSvc() const {
+IUpdateManagerSvc* GaudiCommon<PBASE>::updMgrSvc() const {
   if ( !m_updMgrSvc ) { m_updMgrSvc = svc<IUpdateManagerSvc>( "UpdateManagerSvc", true ); }
   return m_updMgrSvc;
 }
@@ -162,14 +162,14 @@ inline IUpdateManagerSvc* GaudiCommon<PBASE>::updMgrSvc() const {
 // Assertion - throw exception, if condition is not fulfilled
 // ============================================================================
 template <class PBASE>
-inline void GaudiCommon<PBASE>::Assert( const bool ok, const std::string& msg, const StatusCode sc ) const {
+void GaudiCommon<PBASE>::Assert( const bool ok, const std::string& msg, const StatusCode sc ) const {
   if ( !ok ) Exception( msg, sc );
 }
 // ============================================================================
 // Assertion - throw exception, if condition is not fulfilled
 // ============================================================================
 template <class PBASE>
-inline void GaudiCommon<PBASE>::Assert( const bool ok, const char* msg, const StatusCode sc ) const {
+void GaudiCommon<PBASE>::Assert( const bool ok, const char* msg, const StatusCode sc ) const {
   if ( !ok ) Exception( msg, sc );
 }
 // ============================================================================

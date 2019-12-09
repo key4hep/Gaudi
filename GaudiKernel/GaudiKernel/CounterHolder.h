@@ -29,12 +29,12 @@ class GAUDI_API CounterHolder : public BASE {
 public:
   using BASE::BASE;
 
-  void declareCounter( const std::string& tag, Gaudi::Accumulators::PrintableCounter& r ) {
+  void declareCounter( std::string tag, Gaudi::Accumulators::PrintableCounter& r ) {
     std::lock_guard lock{m_mutex};
-    m_counters.emplace( tag, r );
+    m_counters.emplace( std::move(tag), r );
   }
 
-  const Gaudi::Accumulators::PrintableCounter* findCounter( const std::string& tag ) const {
+  const Gaudi::Accumulators::PrintableCounter* findCounter( std::string_view tag ) const {
     std::lock_guard lock{m_mutex};
     auto            p = m_counters.find( tag );
     return p != m_counters.end() ? &p->second.get() : nullptr;
@@ -64,7 +64,7 @@ public:
   }
 
 private:
-  std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>> m_counters;
+  std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>,std::less<>> m_counters;
   mutable std::mutex                                                                   m_mutex;
 };
 #endif
