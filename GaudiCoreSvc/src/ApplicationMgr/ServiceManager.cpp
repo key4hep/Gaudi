@@ -221,7 +221,7 @@ const std::list<IService*>& ServiceManager::getServices() const
 }
 
 //------------------------------------------------------------------------------
-bool ServiceManager::existsService( const std::string& name ) const
+bool ServiceManager::existsService( std::string_view name ) const
 //------------------------------------------------------------------------------
 {
   return find( name ) != m_listsvc.end();
@@ -238,7 +238,7 @@ StatusCode ServiceManager::removeService( IService* svc )
 }
 
 //------------------------------------------------------------------------------
-StatusCode ServiceManager::removeService( const std::string& name )
+StatusCode ServiceManager::removeService( std::string_view name )
 //------------------------------------------------------------------------------
 {
   auto it = find( name );

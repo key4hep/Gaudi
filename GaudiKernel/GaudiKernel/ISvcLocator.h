@@ -78,7 +78,7 @@ public:
   virtual const std::list<IService*>& getServices() const = 0;
 
   /// Check the existence of a service given a service name
-  virtual bool existsService( const std::string& name ) const = 0;
+  virtual bool existsService( std::string_view name ) const = 0;
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /// Templated method to access a service by name.

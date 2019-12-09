@@ -79,7 +79,7 @@ public:
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode removeService( const std::string& nam ) = 0;
+  virtual StatusCode removeService( std::string_view nam ) = 0;
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /** Declare an abstract factory for a given service type

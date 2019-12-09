@@ -55,7 +55,7 @@ namespace Gaudi {
                            const bool createIf = true ) override;
 #endif
     const std::list<IService*>& getServices() const override;
-    bool                        existsService( const std::string& name ) const override;
+    bool                        existsService( std::string_view name ) const override;
 
     /// Returns a smart pointer to a service.
     SmartIF<IService>& service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) override;
@@ -221,7 +221,7 @@ StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString
 const std::list<IService*>& Gaudi::BootSvcLocator::getServices() const {
   return s_appmgrInstance ? s_svclocInstance->getServices() : s_bootServices;
 }
-bool Gaudi::BootSvcLocator::existsService( const std::string& name ) const {
+bool Gaudi::BootSvcLocator::existsService( std::string_view name ) const {
   return s_appmgrInstance && s_svclocInstance->existsService( name );
 }
 
