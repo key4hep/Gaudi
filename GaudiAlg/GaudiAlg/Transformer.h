@@ -123,9 +123,9 @@ namespace Gaudi ::Functional {
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
+          GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
           std::apply(
               [this, &ctx]( auto&... ohandle ) {
-                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
                 if constexpr ( sizeof...( In ) == 0 ) {
                   std::apply( [&ohandle...](
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
@@ -139,9 +139,9 @@ namespace Gaudi ::Functional {
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
                               filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
                 }
-                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
               },
               this->m_outputs );
+          GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
