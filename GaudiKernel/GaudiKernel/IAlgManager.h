@@ -47,8 +47,8 @@ public:
                                       ) = 0;
   /// Create an instance of a algorithm type that has been declared beforehand and assigns to it a name.
   /// It returns a pointer to an IAlgorithm.
-  virtual StatusCode createAlgorithm( const std::string& algtype, // Algorithm type name
-                                      const std::string& algname, // Algorithm name to be assigned
+  virtual StatusCode createAlgorithm( std::string algtype, // Algorithm type name
+                                      std::string algname, // Algorithm name to be assigned
                                       IAlgorithm*&       alg,     // Returned algorithm
                                       bool managed       = false, // Flag to indicate if the algorithm is managed
                                       bool checkIfExists = true // Flag to indicate if clones of existing algorithms can
@@ -56,7 +56,7 @@ public:
                                       ) = 0;
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /// Find an algorithm with given name in the list of known algorithms
-  virtual StatusCode getAlgorithm( const std::string& name, // Algorithm name to be searched
+  virtual StatusCode getAlgorithm( std::string_view name, // Algorithm name to be searched
                                    IAlgorithm*&       alg   // Returned algorithm
                                    ) const {
     SmartIF<IAlgorithm>& si = const_cast<IAlgManager*>( this )->algorithm( name, false );
@@ -65,7 +65,7 @@ public:
   }
 #endif
   /// Check the existence of an algorithm with a given name in the list of known algorithms
-  virtual bool existsAlgorithm( const std::string& name // Algorithm name to be searched
+  virtual bool existsAlgorithm( std::string_view name // Algorithm name to be searched
                                 ) const = 0;
   /// Return the list of Algorithms
   virtual const std::vector<IAlgorithm*>& getAlgorithms() const = 0;

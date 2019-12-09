@@ -100,7 +100,7 @@ public:
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode declareSvcType( const std::string& svcname, const std::string& svctype ) = 0;
+  virtual StatusCode declareSvcType( std::string svcname, std::string svctype ) = 0;
 
   /** Creates and instance of a service type that has been declared beforehand and
    * assigns it a name. It returns a pointer to an IService.
@@ -186,8 +186,8 @@ public:
   virtual StatusCode restartServices() { return restart(); }
 #endif
 
-  virtual int        getPriority( const std::string& name ) const    = 0;
-  virtual StatusCode setPriority( const std::string& name, int pri ) = 0;
+  virtual int        getPriority( std::string_view name ) const    = 0;
+  virtual StatusCode setPriority( std::string_view name, int pri ) = 0;
 
   /// Get the value of the initialization loop check flag.
   virtual bool loopCheckEnabled() const = 0;

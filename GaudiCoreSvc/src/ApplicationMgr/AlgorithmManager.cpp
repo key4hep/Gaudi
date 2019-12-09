@@ -47,7 +47,7 @@ StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
 }
 
 // createService
-StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const std::string& algname,
+StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string algname,
                                               IAlgorithm*& algorithm, bool managed, bool checkIfExists ) {
   // Check is the algorithm is already existing
   if ( checkIfExists ) {
@@ -84,7 +84,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
   }
   m_algs.emplace_back( algorithm, managed );
   // let the algorithm know its type
-  algorithm->setType( algtype );
+  algorithm->setType( std::move(actualalgtype) );
   // this is needed to keep the reference count correct, since isValidInterface(algorithm)
   // implies an increment of the counter by 1
   algorithm->release();
@@ -115,7 +115,7 @@ SmartIF<IAlgorithm>& AlgorithmManager::algorithm( const Gaudi::Utils::TypeNameSt
 }
 
 // existsAlgorithm
-bool AlgorithmManager::existsAlgorithm( const std::string& name ) const {
+bool AlgorithmManager::existsAlgorithm( std::string_view name ) const {
   return m_algs.end() != std::find( m_algs.begin(), m_algs.end(), name );
 }
 

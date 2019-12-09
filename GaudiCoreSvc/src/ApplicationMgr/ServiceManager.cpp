@@ -248,12 +248,10 @@ StatusCode ServiceManager::removeService( std::string_view name )
 }
 
 //------------------------------------------------------------------------------
-StatusCode ServiceManager::declareSvcType( const std::string& svcname, const std::string& svctype )
+StatusCode ServiceManager::declareSvcType( std::string svcname, std::string svctype )
 //------------------------------------------------------------------------------
 {
-  // once we get to C++17, replace with m_maptype.insert_or_assign...
-  auto p = m_maptype.emplace( svcname, svctype );
-  if ( !p.second ) p.first->second = svctype;
+  m_maptype.insert_or_assign( std::move(svcname), std::move(svctype) );
   return StatusCode::SUCCESS;
 }
 
@@ -480,14 +478,14 @@ StatusCode ServiceManager::finalize()
 }
 
 //------------------------------------------------------------------------------
-int ServiceManager::getPriority( const std::string& name ) const {
+int ServiceManager::getPriority( std::string_view name ) const {
   //------------------------------------------------------------------------------
   auto it = find( name );
   return ( it != m_listsvc.end() ) ? it->priority : 0;
 }
 
 //------------------------------------------------------------------------------
-StatusCode ServiceManager::setPriority( const std::string& name, int prio ) {
+StatusCode ServiceManager::setPriority( std::string_view name, int prio ) {
   //------------------------------------------------------------------------------
   auto it = find( name );
   if ( it == m_listsvc.end() ) return StatusCode::FAILURE;

@@ -57,7 +57,7 @@ public:
 
   // typedefs and classes
   typedef std::list<ServiceItem>                    ListSvc;
-  typedef GaudiUtils::Map<std::string, std::string> MapType;
+  typedef std::map<std::string, std::string,std::less<>> MapType;
 
   /// default creator
   ServiceManager( IInterface* application );
@@ -84,7 +84,7 @@ public:
   StatusCode removeService( std::string_view name ) override;
 
   /// implementation of ISvcManager::declareSvcType
-  StatusCode declareSvcType( const std::string& svcname, const std::string& svctype ) override;
+  StatusCode declareSvcType( std::string svcname, std::string svctype ) override;
 
   /// implementation of ISvcManager::createService
   /// NOTE: as this returns a &, we must guarantee
@@ -108,8 +108,8 @@ public:
   StatusCode restart() override;
 
   /// manage priorities of services
-  int        getPriority( const std::string& name ) const override;
-  StatusCode setPriority( const std::string& name, int pri ) override;
+  int        getPriority( std::string_view name ) const override;
+  StatusCode setPriority( std::string_view name, int pri ) override;
 
   /// Get the value of the initialization loop check flag.
   bool loopCheckEnabled() const override;
