@@ -56,8 +56,7 @@ public:
 
   StatusCode createService( const std::string& name, const InterfaceID& iid, void** ppSvc ) const;
 
-  StatusCode createService( std::string_view type, std::string_view name, const InterfaceID& iid,
-                            void** ppSvc ) const;
+  StatusCode createService( std::string_view type, std::string_view name, const InterfaceID& iid, void** ppSvc ) const;
 
   SmartIF<IService> service( const std::string& name, const bool quiet = false, const bool createIf = true ) const;
 

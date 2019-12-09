@@ -576,18 +576,18 @@ std::string ToolSvc::nameTool( std::string_view toolname, const IInterface* pare
 //------------------------------------------------------------------------------
 {
 
-  if ( !parent ) { return std::string{this->name()}.append(".").append(toolname); } // RETURN
+  if ( !parent ) { return std::string{this->name()}.append( "." ).append( toolname ); } // RETURN
 
   // check that parent has a name!
   auto named_parent = SmartIF<INamedInterface>( const_cast<IInterface*>( parent ) );
   if ( named_parent ) {
-    auto fullname = std::string{named_parent->name()}.append(".").append(toolname);
+    auto fullname = std::string{named_parent->name()}.append( "." ).append( toolname );
     return fullname; // RETURN
   }
 
   error() << "Private Tools only allowed for components implementing INamedInterface" << endmsg;
   //
-  return std::string{"."}.append(toolname);
+  return std::string{"."}.append( toolname );
 }
 
 //------------------------------------------------------------------------------
@@ -607,7 +607,7 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
 
   // Cache tool name in case of errors
   const auto& toolName = itool->name();
-  StatusCode        sc;
+  StatusCode  sc;
 
   // Finalise the tool inside a try block
   try {

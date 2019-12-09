@@ -49,7 +49,7 @@ public:
   };
 
   /// typedefs and classes
-  typedef std::map<std::string, std::string,std::less<>> AlgTypeAliasesMap;
+  typedef std::map<std::string, std::string, std::less<>> AlgTypeAliasesMap;
 
   /// default creator
   AlgorithmManager( IInterface* iface );
@@ -59,8 +59,8 @@ public:
   /// implementation of IAlgManager::removeAlgorithm
   StatusCode removeAlgorithm( IAlgorithm* alg ) override;
   /// implementation of IAlgManager::createAlgorithm
-  StatusCode createAlgorithm( std::string algtype, std::string algname, IAlgorithm*& algorithm,
-                              bool managed = false, bool checkIfExists = true ) override;
+  StatusCode createAlgorithm( std::string algtype, std::string algname, IAlgorithm*& algorithm, bool managed = false,
+                              bool checkIfExists = true ) override;
 
   /// implementation of IAlgManager::existsAlgorithm
   bool existsAlgorithm( std::string_view name ) const override;

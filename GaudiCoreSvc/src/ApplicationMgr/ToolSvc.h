@@ -56,8 +56,8 @@ public:
                        bool createIf ) override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  StatusCode retrieve( std::string_view tooltype, std::string_view toolname, const InterfaceID& iid,
-                       IAlgTool*& tool, const IInterface* parent, bool createIf ) override;
+  StatusCode retrieve( std::string_view tooltype, std::string_view toolname, const InterfaceID& iid, IAlgTool*& tool,
+                       const IInterface* parent, bool createIf ) override;
 
   /// Get names of all tool instances of a given type
   std::vector<std::string> getInstances( std::string_view toolType ) override;

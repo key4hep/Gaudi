@@ -47,8 +47,8 @@ StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
 }
 
 // createService
-StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string algname,
-                                              IAlgorithm*& algorithm, bool managed, bool checkIfExists ) {
+StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string algname, IAlgorithm*& algorithm,
+                                              bool managed, bool checkIfExists ) {
   // Check is the algorithm is already existing
   if ( checkIfExists ) {
     if ( existsAlgorithm( algname ) ) {
@@ -84,7 +84,7 @@ StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string a
   }
   m_algs.emplace_back( algorithm, managed );
   // let the algorithm know its type
-  algorithm->setType( std::move(actualalgtype) );
+  algorithm->setType( std::move( actualalgtype ) );
   // this is needed to keep the reference count correct, since isValidInterface(algorithm)
   // implies an increment of the counter by 1
   algorithm->release();

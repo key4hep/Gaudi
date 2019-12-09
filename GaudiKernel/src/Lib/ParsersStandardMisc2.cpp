@@ -26,6 +26,6 @@ StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string>& result, co
   return Gaudi::Parsers::parse_( result, input );
 }
 
-StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string,std::less<>>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string, std::less<>>& result, const std::string& input ) {
   return Gaudi::Parsers::parse_( result, input );
 }

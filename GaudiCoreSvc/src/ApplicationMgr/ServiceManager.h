@@ -50,14 +50,14 @@ public:
     SmartIF<IService> service;
     long              priority;
     bool              active;
-    bool       operator==( std::string_view name ) const { return service->name() == name; }
-    bool       operator==( const IService* ptr ) const { return service.get() == ptr; }
-    bool       operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
+    bool              operator==( std::string_view name ) const { return service->name() == name; }
+    bool              operator==( const IService* ptr ) const { return service.get() == ptr; }
+    bool              operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
   };
 
   // typedefs and classes
-  typedef std::list<ServiceItem>                    ListSvc;
-  typedef std::map<std::string, std::string,std::less<>> MapType;
+  typedef std::list<ServiceItem>                          ListSvc;
+  typedef std::map<std::string, std::string, std::less<>> MapType;
 
   /// default creator
   ServiceManager( IInterface* application );

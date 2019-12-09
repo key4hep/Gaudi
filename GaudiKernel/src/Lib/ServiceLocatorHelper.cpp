@@ -40,9 +40,9 @@ StatusCode ServiceLocatorHelper::createService( const std::string& name, const I
   return sc;
 }
 
-StatusCode ServiceLocatorHelper::createService( std::string_view type, std::string_view name,
-                                                const InterfaceID& iid, void** ppSvc ) const {
-  return createService( std::string{type}.append("/").append(name), iid, ppSvc );
+StatusCode ServiceLocatorHelper::createService( std::string_view type, std::string_view name, const InterfaceID& iid,
+                                                void** ppSvc ) const {
+  return createService( std::string{type}.append( "/" ).append( name ), iid, ppSvc );
 }
 
 SmartIF<IService> ServiceLocatorHelper::service( const std::string& name, const bool quiet,

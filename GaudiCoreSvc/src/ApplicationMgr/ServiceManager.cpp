@@ -251,7 +251,7 @@ StatusCode ServiceManager::removeService( std::string_view name )
 StatusCode ServiceManager::declareSvcType( std::string svcname, std::string svctype )
 //------------------------------------------------------------------------------
 {
-  m_maptype.insert_or_assign( std::move(svcname), std::move(svctype) );
+  m_maptype.insert_or_assign( std::move( svcname ), std::move( svctype ) );
   return StatusCode::SUCCESS;
 }
 

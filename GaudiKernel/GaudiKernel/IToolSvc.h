@@ -60,8 +60,8 @@ public:
    *  @param parent constant reference to parent (def=none)
    * @param createIf creation flag (def=create if not existing)
    */
-  virtual StatusCode retrieve( std::string_view type, std::string_view name, const InterfaceID& iid,
-                               IAlgTool*& tool, const IInterface* parent = 0, bool createIf = true ) = 0;
+  virtual StatusCode retrieve( std::string_view type, std::string_view name, const InterfaceID& iid, IAlgTool*& tool,
+                               const IInterface* parent = 0, bool createIf = true ) = 0;
 
   /** Get the names of all instances of tools of a given type.
    *  @param toolType type of tool
@@ -145,8 +145,7 @@ public:
    *
    */
   template <class T>
-  StatusCode retrieveTool( std::string_view type, T*& tool, const IInterface* parent = nullptr,
-                           bool createIf = true ) {
+  StatusCode retrieveTool( std::string_view type, T*& tool, const IInterface* parent = nullptr, bool createIf = true ) {
     return retrieve( type, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }
 
@@ -194,8 +193,8 @@ public:
    *
    */
   template <class T>
-  StatusCode retrieveTool( std::string_view type, std::string_view name, T*& tool,
-                           const IInterface* parent = nullptr, bool createIf = true ) {
+  StatusCode retrieveTool( std::string_view type, std::string_view name, T*& tool, const IInterface* parent = nullptr,
+                           bool createIf = true ) {
     return retrieve( type, name, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }
 

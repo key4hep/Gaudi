@@ -311,7 +311,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<std::string, std::string >& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, std::string>& result, const std::string& input );
     GAUDI_API StatusCode parse( std::map<std::string, std::string, std::less<>>& result, const std::string& input );
     // ========================================================================
     /** parse the <c>std::map\<std::string , int\></c> value
