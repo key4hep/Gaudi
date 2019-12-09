@@ -45,7 +45,7 @@ public:
    *  @param parent constant reference to the parent (def=none)
    *  @param createIf creation flag (def=create if not existing)
    */
-  virtual StatusCode retrieve( const std::string& type, const InterfaceID& iid, IAlgTool*& tool,
+  virtual StatusCode retrieve( std::string_view type, const InterfaceID& iid, IAlgTool*& tool,
                                const IInterface* parent = 0, bool createIf = true ) = 0;
 
   /** Retrieve tool with tool dependent part of the name specified
@@ -60,13 +60,13 @@ public:
    *  @param parent constant reference to parent (def=none)
    * @param createIf creation flag (def=create if not existing)
    */
-  virtual StatusCode retrieve( const std::string& type, const std::string& name, const InterfaceID& iid,
+  virtual StatusCode retrieve( std::string_view type, std::string_view name, const InterfaceID& iid,
                                IAlgTool*& tool, const IInterface* parent = 0, bool createIf = true ) = 0;
 
   /** Get the names of all instances of tools of a given type.
    *  @param toolType type of tool
    */
-  virtual std::vector<std::string> getInstances( const std::string& toolType ) = 0;
+  virtual std::vector<std::string> getInstances( std::string_view toolType ) = 0;
 
   /** Get the names all tool instances.
    */
@@ -145,7 +145,7 @@ public:
    *
    */
   template <class T>
-  StatusCode retrieveTool( const std::string& type, T*& tool, const IInterface* parent = nullptr,
+  StatusCode retrieveTool( std::string_view type, T*& tool, const IInterface* parent = nullptr,
                            bool createIf = true ) {
     return retrieve( type, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }
@@ -194,7 +194,7 @@ public:
    *
    */
   template <class T>
-  StatusCode retrieveTool( const std::string& type, const std::string& name, T*& tool,
+  StatusCode retrieveTool( std::string_view type, std::string_view name, T*& tool,
                            const IInterface* parent = nullptr, bool createIf = true ) {
     return retrieve( type, name, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }

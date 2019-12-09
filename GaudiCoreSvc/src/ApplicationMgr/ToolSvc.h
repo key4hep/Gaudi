@@ -52,15 +52,15 @@ public:
   StatusCode stop() override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  StatusCode retrieve( const std::string& type, const InterfaceID& iid, IAlgTool*& tool, const IInterface* parent,
+  StatusCode retrieve( std::string_view type, const InterfaceID& iid, IAlgTool*& tool, const IInterface* parent,
                        bool createIf ) override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  StatusCode retrieve( const std::string& tooltype, const std::string& toolname, const InterfaceID& iid,
+  StatusCode retrieve( std::string_view tooltype, std::string_view toolname, const InterfaceID& iid,
                        IAlgTool*& tool, const IInterface* parent, bool createIf ) override;
 
   /// Get names of all tool instances of a given type
-  std::vector<std::string> getInstances( const std::string& toolType ) override;
+  std::vector<std::string> getInstances( std::string_view toolType ) override;
 
   /// Get names of all tool instances
   std::vector<std::string> getInstances() const override;
@@ -78,10 +78,10 @@ public:
   StatusCode create( const std::string& type, const std::string& name, const IInterface* parent, IAlgTool*& tool );
 
   /// Check if the tool instance exists
-  bool existsTool( const std::string& toolname ) const;
+  bool existsTool( std::string_view toolname ) const;
 
   /// Get Tool full name by combining nameByUser and "parent" part
-  std::string nameTool( const std::string& nameByUser, const IInterface* parent );
+  std::string nameTool( std::string_view nameByUser, const IInterface* parent );
 
   void registerObserver( IToolSvc::Observer* obs ) override;
 
