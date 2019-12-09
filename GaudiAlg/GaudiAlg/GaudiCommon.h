@@ -128,10 +128,10 @@ protected: // definitions
 protected: // few actual data types
   // ==========================================================================
   /// the actual type of general counters
-  typedef std::map<std::string, StatEntity,std::less<>>                                                    StatisticsOwn;
-  typedef std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>,std::less<>> Statistics;
+  typedef std::map<std::string, StatEntity, std::less<>> StatisticsOwn;
+  typedef std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>, std::less<>> Statistics;
   /// the actual type error/warning counter
-  typedef std::map<std::string, unsigned int,std::less<>> Counter;
+  typedef std::map<std::string, unsigned int, std::less<>> Counter;
   /// storage for active tools
   typedef std::vector<IAlgTool*> AlgTools;
   /// storage for active services
@@ -446,7 +446,7 @@ public:
    *  @param message      Message to be associated with the exception
    */
   void Assert( const bool ok, const std::string& message = "",
-                      const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
+               const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Assertion - throw exception if the given condition is not fulfilled
    *
    *  @see GaudiException
@@ -456,7 +456,7 @@ public:
    *  @param message      Message to be associated with the exception
    */
   void Assert( const bool ok, const char* message,
-                      const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
+               const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Create and (re)-throw a given GaudiException
    *
    *  @see GaudiException
@@ -513,16 +513,14 @@ public:
    *  @return the counter itself
    */
   //[[deprecated( "see LHCBPS-1758" )]]
-  StatEntity& counter( std::string_view tag ) const {
-    return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag );
-  }
+  StatEntity& counter( std::string_view tag ) const { return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag ); }
   StatEntity& counter( std::string_view tag ) {
     std::lock_guard<std::mutex> lock( m_countersOwnMutex );
     // Return referenced StatEntity if it already exists, else create it
-    auto p = m_countersOwn.find(tag);
-    if ( UNLIKELY(p==m_countersOwn.end()) ) {
-      auto [iter,b] = m_countersOwn.try_emplace(std::string{tag});
-      assert(b);
+    auto p = m_countersOwn.find( tag );
+    if ( UNLIKELY( p == m_countersOwn.end() ) ) {
+      auto [iter, b] = m_countersOwn.try_emplace( std::string{tag} );
+      assert( b );
       this->declareCounter( iter->first, iter->second );
       p = iter;
     }
@@ -606,7 +604,7 @@ public:
    */
   template <class CallerClass, class CondType>
   void registerCondition( const std::string& condition, CondType*& condPtrDest,
-                                 StatusCode ( CallerClass::*mf )() = NULL ) {
+                          StatusCode ( CallerClass::*mf )() = NULL ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), condition, mf, condPtrDest );
   }
   /// just to avoid conflicts with the version using a pointer to a template class.
@@ -650,14 +648,14 @@ public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from Algorithm
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of_v<Gaudi::Algorithm, PBASE>, U>>
-  GaudiCommon( std::string name, ISvcLocator* pSvcLocator ) : base_class( std::move(name), pSvcLocator ) {
+  GaudiCommon( std::string name, ISvcLocator* pSvcLocator ) : base_class( std::move( name ), pSvcLocator ) {
     initGaudiCommonConstructor();
   }
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of_v<AlgTool, PBASE>, U>>
   GaudiCommon( std::string type, std::string name, const IInterface* ancestor )
-      : base_class( std::move(type), std::move(name), ancestor ) {
+      : base_class( std::move( type ), std::move( name ), ancestor ) {
     initGaudiCommonConstructor( this->parent() );
   }
 

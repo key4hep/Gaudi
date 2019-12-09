@@ -31,7 +31,7 @@ public:
 
   void declareCounter( std::string tag, Gaudi::Accumulators::PrintableCounter& r ) {
     std::lock_guard lock{m_mutex};
-    m_counters.emplace( std::move(tag), r );
+    m_counters.emplace( std::move( tag ), r );
   }
 
   const Gaudi::Accumulators::PrintableCounter* findCounter( std::string_view tag ) const {
@@ -64,7 +64,7 @@ public:
   }
 
 private:
-  std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>,std::less<>> m_counters;
-  mutable std::mutex                                                                   m_mutex;
+  std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>, std::less<>> m_counters;
+  mutable std::mutex                                                                                m_mutex;
 };
 #endif

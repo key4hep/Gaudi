@@ -435,7 +435,7 @@ namespace Gaudi::Functional::details {
     template <typename IArgs, typename OArgs, std::size_t... I, std::size_t... J>
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const IArgs& inputs, std::index_sequence<I...>,
                      const OArgs& outputs, std::index_sequence<J...> )
-        : BaseClass_t<Traits_>( std::move(name), pSvcLocator )
+        : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
       this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
@@ -451,21 +451,22 @@ namespace Gaudi::Functional::details {
     // generic constructor:  N -> M
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs,
                      const std::array<KeyValue, N_out>& outputs )
-        : DataHandleMixin( std::move(name), pSvcLocator, inputs, std::index_sequence_for<In...>{}, outputs,
+        : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{}, outputs,
                            std::index_sequence_for<Out...>{} ) {}
 
     // special cases: forward to the generic case...
     // 1 -> 1
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValue& output )
-        : DataHandleMixin( std::move(name), locator, std::array<KeyValue, 1>{input}, std::array<KeyValue, 1>{output} ) {}
+        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{input},
+                           std::array<KeyValue, 1>{output} ) {}
     // 1 -> N
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& input,
                      const std::array<KeyValue, N_out>& outputs )
-        : DataHandleMixin( std::move(name), locator, std::array<KeyValue, 1>{input}, outputs ) {}
+        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{input}, outputs ) {}
     // N -> 1
     DataHandleMixin( std::string name, ISvcLocator* locator, const std::array<KeyValue, N_in>& inputs,
                      const KeyValue& output )
-        : DataHandleMixin( std::move(name), locator, inputs, std::array<KeyValue, 1>{output} ) {}
+        : DataHandleMixin( std::move( name ), locator, inputs, std::array<KeyValue, 1>{output} ) {}
 
     template <std::size_t N = 0>
     decltype( auto ) inputLocation() const {
@@ -499,7 +500,8 @@ namespace Gaudi::Functional::details {
     static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
   public:
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator ) : BaseClass_t<Traits_>( std::move(name), pSvcLocator ) {
+    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator )
+        : BaseClass_t<Traits_>( std::move( name ), pSvcLocator ) {
       this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
     }
 
@@ -515,7 +517,7 @@ namespace Gaudi::Functional::details {
 
     template <typename IArgs, std::size_t... I>
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const IArgs& inputs, std::index_sequence<I...> )
-        : BaseClass_t<Traits_>( std::move(name), pSvcLocator )
+        : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... ) {
       this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
     }
@@ -527,12 +529,12 @@ namespace Gaudi::Functional::details {
 
     // generic constructor:  N -> 0
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs )
-        : DataHandleMixin( std::move(name), pSvcLocator, inputs, std::index_sequence_for<In...>{} ) {}
+        : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{} ) {}
 
     // special cases: forward to the generic case...
     // 1 -> 0
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& input )
-        : DataHandleMixin( std::move(name), locator, std::array<KeyValue, 1>{input} ) {}
+        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{input} ) {}
 
     template <std::size_t N = 0>
     decltype( auto ) inputLocation() const {
@@ -555,9 +557,8 @@ namespace Gaudi::Functional::details {
     static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
     template <typename OArgs, std::size_t... J>
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const OArgs& outputs,
-                     std::index_sequence<J...> )
-        : BaseClass_t<Traits_>( std::move(name), pSvcLocator )
+    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const OArgs& outputs, std::index_sequence<J...> )
+        : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
       this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
     }
@@ -569,11 +570,11 @@ namespace Gaudi::Functional::details {
 
     // generic constructor:  0 -> N
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_out>& outputs )
-        : DataHandleMixin( std::move(name), pSvcLocator, outputs, std::index_sequence_for<Out...>{} ) {}
+        : DataHandleMixin( std::move( name ), pSvcLocator, outputs, std::index_sequence_for<Out...>{} ) {}
 
     // 0 -> 1
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& output )
-        : DataHandleMixin( std::move(name), locator, std::array<KeyValue, 1>{output} ) {}
+        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{output} ) {}
 
     template <std::size_t N = 0>
     decltype( auto ) outputLocation() const {

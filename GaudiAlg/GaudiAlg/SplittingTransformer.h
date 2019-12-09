@@ -45,7 +45,7 @@ namespace Gaudi::Functional {
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const std::array<KeyValue, N>& inputs,
                             const KeyValues& outputs )
-          : base_class( std::move(name), locator, inputs )
+          : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
                 this, outputs.first, outputs.second,
                 [=]( Gaudi::Details::PropertyBase& ) {
@@ -60,9 +60,8 @@ namespace Gaudi::Functional {
                 },
                 Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
 
-      SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input,
-                            const KeyValues& output )
-          : SplittingTransformer( std::move(name), locator, std::array<KeyValue, 1>{input}, output ) {
+      SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
+          : SplittingTransformer( std::move( name ), locator, std::array<KeyValue, 1>{input}, output ) {
         static_assert( N == 1, "single input argument requires single input signature" );
       }
 
@@ -113,7 +112,7 @@ namespace Gaudi::Functional {
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const std::array<KeyValue, N>& inputs,
                             const KeyValues& outputs )
-          : base_class( std::move(name), locator, inputs )
+          : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
                 this, outputs.first, outputs.second,
                 [=]( Gaudi::Details::PropertyBase& ) {
@@ -128,9 +127,8 @@ namespace Gaudi::Functional {
                 },
                 Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
 
-      SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input,
-                            const KeyValues& output )
-          : SplittingTransformer( std::move(name), locator, std::array<KeyValue, 1>{input}, output ) {
+      SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
+          : SplittingTransformer( std::move( name ), locator, std::array<KeyValue, 1>{input}, output ) {
         static_assert( N == 1, "single input argument requires single input signature" );
       }
 

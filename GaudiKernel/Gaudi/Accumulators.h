@@ -638,14 +638,14 @@ namespace Gaudi::Accumulators {
     PrintableCounter() = default;
     template <class OWNER>
     PrintableCounter( OWNER* o, std::string tag ) {
-      o->declareCounter( std::move(tag), *this );
+      o->declareCounter( std::move( tag ), *this );
     }
     /// destructor
     virtual ~PrintableCounter() = default;
     // add tag to printout
     template <typename stream>
     stream& printImpl( stream& s, std::string_view tag ) const {
-      s << boost::format{" | %|-48.48s|%|50t|"} % ( std::string{'\"'}.append(tag ).append("\"") );
+      s << boost::format{" | %|-48.48s|%|50t|"} % ( std::string{'\"'}.append( tag ).append( "\"" ) );
       return print( s, true );
     }
     /// prints the counter to a stream
@@ -812,7 +812,7 @@ namespace Gaudi::Accumulators {
     template <typename stream>
     stream& printImpl( stream& o, std::string_view tag ) const {
       // override default print to add a '*' in from of the name
-      o << boost::format{" |*%|-48.48s|%|50t|"} % ( std::string{"\""}.append(tag).append("\"") );
+      o << boost::format{" |*%|-48.48s|%|50t|"} % ( std::string{"\""}.append( tag ).append( "\"" ) );
       return print( o, true );
     }
     /// prints the counter to a stream in table format, with the given tag

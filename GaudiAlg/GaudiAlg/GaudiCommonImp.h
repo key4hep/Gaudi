@@ -45,9 +45,9 @@ GaudiCommon<PBASE>::get( IDataProviderSvc* service, const std::string& location,
 // ============================================================================
 template <class PBASE>
 template <class TYPE>
-typename Gaudi::Utils::GetData<TYPE>::return_type
-GaudiCommon<PBASE>::getIfExists( IDataProviderSvc* service, const std::string& location,
-                                 const bool useRootInTES ) const {
+typename Gaudi::Utils::GetData<TYPE>::return_type GaudiCommon<PBASE>::getIfExists( IDataProviderSvc*  service,
+                                                                                   const std::string& location,
+                                                                                   const bool useRootInTES ) const {
   // check the environment
   Assert( service, "get():: IDataProvider* points to NULL!" );
   // get the helper object:
@@ -60,7 +60,7 @@ GaudiCommon<PBASE>::getIfExists( IDataProviderSvc* service, const std::string& l
 template <class PBASE>
 template <class TYPE>
 bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, const std::string& location,
-                                       const bool useRootInTES ) const {
+                                const bool useRootInTES ) const {
   // check the environment
   Assert( service, "exist():: IDataProvider* points to NULL!" );
   // check the data object
@@ -74,9 +74,9 @@ bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, const std::string& lo
 // ============================================================================
 template <class PBASE>
 template <class TYPE, class TYPE2>
-typename Gaudi::Utils::GetData<TYPE>::return_type
-GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc* service, const std::string& location,
-                                 const bool useRootInTES ) const {
+typename Gaudi::Utils::GetData<TYPE>::return_type GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc*  service,
+                                                                                   const std::string& location,
+                                                                                   const bool useRootInTES ) const {
   // check the environment
   Assert( service, "getOrCreate():: svc points to NULL!" );
   // get the helper object
@@ -89,7 +89,7 @@ GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc* service, const std::string& l
 template <class PBASE>
 template <class TOOL>
 TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const std::string& name, const IInterface* parent,
-                                       bool create ) const {
+                                bool create ) const {
   // for empty names delegate to another method
   if ( name.empty() ) return tool<TOOL>( type, parent, create );
   Assert( this->toolSvc(), "tool():: IToolSvc* points to NULL!" );
