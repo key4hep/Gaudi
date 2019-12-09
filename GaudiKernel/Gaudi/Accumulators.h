@@ -637,23 +637,23 @@ namespace Gaudi::Accumulators {
   struct PrintableCounter {
     PrintableCounter() = default;
     template <class OWNER>
-    PrintableCounter( OWNER* o, const std::string& tag ) {
-      o->declareCounter( tag, *this );
+    PrintableCounter( OWNER* o, std::string tag ) {
+      o->declareCounter( std::move(tag), *this );
     }
     /// destructor
     virtual ~PrintableCounter() = default;
     // add tag to printout
     template <typename stream>
-    stream& printImpl( stream& s, const std::string& tag ) const {
-      s << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
+    stream& printImpl( stream& s, std::string_view tag ) const {
+      s << boost::format{" | %|-48.48s|%|50t|"} % ( std::string{'\"'}.append(tag ).append("\"") );
       return print( s, true );
     }
     /// prints the counter to a stream
     virtual std::ostream& print( std::ostream&, bool tableFormat = false ) const = 0;
     virtual MsgStream&    print( MsgStream&, bool tableFormat = true ) const     = 0;
     /// prints the counter to a stream in table format, with the given tag
-    virtual std::ostream& print( std::ostream& o, const std::string& tag ) const { return printImpl( o, tag ); }
-    virtual MsgStream&    print( MsgStream& o, const std::string& tag ) const { return printImpl( o, tag ); }
+    virtual std::ostream& print( std::ostream& o, std::string_view tag ) const { return printImpl( o, tag ); }
+    virtual MsgStream&    print( MsgStream& o, std::string_view tag ) const { return printImpl( o, tag ); }
     /** hint whether we should print that counter or not.
         Typically empty counters may not be printed */
     virtual bool toBePrinted() const { return true; }
@@ -810,14 +810,14 @@ namespace Gaudi::Accumulators {
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
 
     template <typename stream>
-    stream& printImpl( stream& o, const std::string& tag ) const {
+    stream& printImpl( stream& o, std::string_view tag ) const {
       // override default print to add a '*' in from of the name
-      o << boost::format{" |*%|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
+      o << boost::format{" |*%|-48.48s|%|50t|"} % ( std::string{"\""}.append(tag).append("\"") );
       return print( o, true );
     }
     /// prints the counter to a stream in table format, with the given tag
-    std::ostream& print( std::ostream& o, const std::string& tag ) const override { return printImpl( o, tag ); }
-    MsgStream&    print( MsgStream& o, const std::string& tag ) const override { return printImpl( o, tag ); }
+    std::ostream& print( std::ostream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
+    MsgStream&    print( MsgStream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
     bool          toBePrinted() const override { return this->nEntries() > 0; }
   };
 
