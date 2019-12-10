@@ -178,13 +178,13 @@ public:
    *  @return pointer to the data object
    */
   template <class TYPE>
-  typename Gaudi::Utils::GetData<TYPE>::return_type get( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type get( IDataProviderSvc* svc, std::string_view location,
                                                          const bool useRootInTES = true ) const;
   /** Quicker version of the get function which bypasses the check on the
    *  retrieved data.
    */
   template <class TYPE>
-  typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( IDataProviderSvc* svc, std::string_view location,
                                                                  const bool useRootInTES = true ) const;
   /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
@@ -213,7 +213,7 @@ public:
    *  @retval true     Failed to locate the data object or container
    */
   template <class TYPE>
-  bool exist( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const;
+  bool exist( IDataProviderSvc* svc, std::string_view location, const bool useRootInTES = true ) const;
   /** @brief Get the existing data object from Gaudi Event Transient store.
    *        Alternatively, create new object and register it in TES
    *        and return if object does not exist.
@@ -242,7 +242,7 @@ public:
    *  @return A valid pointer to the data object
    */
   template <class TYPE, class TYPE2>
-  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, std::string_view location,
                                                                  const bool useRootInTES = true ) const;
   /** @brief Register a data object or container into Gaudi Event Transient Store
    *
@@ -269,10 +269,10 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  DataObject* put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, const std::string& location,
+  DataObject* put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, std::string_view location,
                    const bool useRootInTES = true ) const;
   // [[deprecated( "please pass std::unique_ptr as 2nd argument" )]]
-  DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
+  DataObject* put( IDataProviderSvc* svc, DataObject* object, std::string_view location,
                    const bool useRootInTES = true ) const {
     return put( svc, std::unique_ptr<DataObject>( object ), location, useRootInTES );
   }
@@ -302,7 +302,7 @@ public:
    *  @return       A pointer to the tool
    */
   template <class TOOL>
-  TOOL* tool( const std::string& type, const std::string& name, const IInterface* parent = 0,
+  TOOL* tool( std::string_view type, std::string_view name, const IInterface* parent = 0,
               bool create = true ) const;
   /** A useful method for the easy location of tools.
    *
@@ -327,7 +327,7 @@ public:
    *  @return       A pointer to the tool
    */
   template <class TOOL>
-  TOOL* tool( const std::string& type, const IInterface* parent = 0, bool create = true ) const;
+  TOOL* tool( std::string_view type, const IInterface* parent = 0, bool create = true ) const;
   /** A useful method for the easy location of services
    *
    *  @code
@@ -351,7 +351,7 @@ public:
    *  @return       A pointer to the service
    */
   template <class SERVICE>
-  SmartIF<SERVICE> svc( const std::string& name, const bool create = true ) const;
+  SmartIF<SERVICE> svc( std::string_view name, const bool create = true ) const;
   /// Short-cut to locate the Update Manager Service.
   IUpdateManagerSvc* updMgrSvc() const;
 
@@ -380,7 +380,7 @@ public:
    *  @return       StatusCode
    */
   WARN_UNUSED
-  StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
+  StatusCode Error( std::string_view msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the warning message and return with the given StatusCode.
    *
    *  Also performs statistical analysis of the warning messages and
@@ -405,7 +405,7 @@ public:
    *  @return       The given StatusCode
    */
   WARN_UNUSED
-  StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
+  StatusCode Warning( std::string_view msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the info message and return with the given StatusCode.
    *
    *  Also performs statistical analysis of the info messages and
@@ -422,7 +422,7 @@ public:
    *  @return       The given StatusCode
    */
   WARN_UNUSED
-  StatusCode Info( const std::string& msg, const StatusCode st = StatusCode::SUCCESS, const size_t mx = 10 ) const;
+  StatusCode Info( std::string_view msg, const StatusCode st = StatusCode::SUCCESS, const size_t mx = 10 ) const;
   /** Print the message and return with the given StatusCode.
    *
    *  @see MsgStream
@@ -435,7 +435,7 @@ public:
    *  @return       The given StatusCode
    */
   WARN_UNUSED
-  StatusCode Print( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
+  StatusCode Print( std::string_view msg, const StatusCode st = StatusCode::SUCCESS,
                     const MSG::Level lev = MSG::INFO ) const;
   /** Assertion - throw exception if the given condition is not fulfilled
    *
@@ -445,17 +445,7 @@ public:
    *  @param ok           Condition which should be "true"
    *  @param message      Message to be associated with the exception
    */
-  void Assert( const bool ok, const std::string& message = "",
-               const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
-  /** Assertion - throw exception if the given condition is not fulfilled
-   *
-   *  @see GaudiException
-   *
-   *  @exception          Exception for invalid condition
-   *  @param ok           Condition which should be "true"
-   *  @param message      Message to be associated with the exception
-   */
-  void Assert( const bool ok, const char* message,
+  void Assert( const bool ok, std::string_view message = "",
                const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Create and (re)-throw a given GaudiException
    *
@@ -465,7 +455,7 @@ public:
    *  @param msg    Exception message
    *  @param exc    (previous) exception of type GaudiException
    */
-  void Exception( const std::string& msg, const GaudiException& exc,
+  void Exception( std::string_view msg, const GaudiException& exc,
                   const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Create and (re)-throw a given exception
    *
@@ -476,7 +466,7 @@ public:
    *  @param exc    (previous) exception of type std::exception
    *  @param sc     StatusCode
    */
-  void Exception( const std::string& msg, const std::exception& exc,
+  void Exception( std::string_view msg, const std::exception& exc,
                   const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Create and throw an exception with the given message
    *
@@ -486,7 +476,7 @@ public:
    *  @param msg    Exception message
    *  @param sc     StatusCode
    */
-  void Exception( const std::string& msg = "no message",
+  void Exception( std::string_view msg = "no message",
                   const StatusCode   sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
 
 private:
@@ -727,6 +717,10 @@ private:
   /// List of active  services
   mutable Services m_services;
   // ==========================================================================
+  static auto increment(Counter& c, std::string_view which) {
+        auto i = c.find(which);
+        return  i!=c.end() ? ++(i->second) : c.emplace(which,1).first->second;
+  }
   /// Counter of errors
   mutable Counter m_errors;
   /// counter of warnings

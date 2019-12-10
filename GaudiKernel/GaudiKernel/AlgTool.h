@@ -135,22 +135,22 @@ public:
    *  creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( const std::string& name, T*& svc, bool createIf = true ) const {
+  StatusCode service( std::string_view name, T*& svc, bool createIf = true ) const {
     return service_i( name, createIf, T::interfaceID(), (void**)&svc );
   }
 
   /** Access a service by name, type creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( const std::string& type, const std::string& name, T*& svc ) const {
+  StatusCode service( std::string_view type, std::string_view name, T*& svc ) const {
     return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &svc ) );
   }
 
   /// Return a pointer to the service identified by name (or "type/name")
-  SmartIF<IService> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const;
+  SmartIF<IService> service( std::string_view name, const bool createIf = true, const bool quiet = false ) const;
 
   template <typename T>
-  SmartIF<T> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const {
+  SmartIF<T> service( std::string_view name, const bool createIf = true, const bool quiet = false ) const {
     return SmartIF<T>( service( name, createIf, quiet ) );
   }
 
@@ -322,8 +322,8 @@ private:
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
 
   /** implementation of service method */
-  StatusCode service_i( const std::string& algName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
-  StatusCode service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+  StatusCode service_i( std::string_view algName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
+  StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
                         void** ppS ) const;
 
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool

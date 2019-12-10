@@ -37,25 +37,25 @@ SmartDataObjectPtr& SmartDataObjectPtr::operator=( const SmartDataObjectPtr& cop
 }
 
 /// Retrieve the object from the data store.
-StatusCode SmartDataObjectPtr::retrieve( IRegistry* pRegistry, const std::string& path, DataObject*& refpObject ) {
+StatusCode SmartDataObjectPtr::retrieve( IRegistry* pRegistry, std::string_view path, DataObject*& refpObject ) {
   return ( m_dataProvider && pRegistry ) ? m_dataProvider->retrieveObject( pRegistry, path, refpObject )
                                          : StatusCode::FAILURE;
 }
 
 /// Retrieve the object from the data store.
-StatusCode SmartDataObjectPtr::retrieve( const std::string& fullPath, DataObject*& refpObject ) {
+StatusCode SmartDataObjectPtr::retrieve( std::string_view fullPath, DataObject*& refpObject ) {
   return m_dataProvider ? m_dataProvider->retrieveObject( fullPath, refpObject ) : StatusCode::FAILURE;
 }
 
 /// Retrieve the object from the data store.
-StatusCode SmartDataObjectPtr::find( IRegistry* pDirectory, const std::string& path, DataObject*& refpObject ) {
+StatusCode SmartDataObjectPtr::find( IRegistry* pDirectory, std::string_view path, DataObject*& refpObject ) {
   return ( m_dataProvider && pDirectory ) ? m_dataProvider->findObject( pDirectory, path, refpObject )
                                           : StatusCode::FAILURE;
   ;
 }
 
 /// Retrieve the object from the data store.
-StatusCode SmartDataObjectPtr::find( const std::string& fullPath, DataObject*& refpObject ) {
+StatusCode SmartDataObjectPtr::find( std::string_view fullPath, DataObject*& refpObject ) {
   return m_dataProvider ? m_dataProvider->findObject( fullPath, refpObject ) : StatusCode::FAILURE;
 }
 
@@ -65,7 +65,7 @@ StatusCode SmartDataObjectPtr::update( IRegistry* pRegistry ) {
 }
 
 /// update the object from the data store.
-StatusCode SmartDataObjectPtr::update( const std::string& fullPath ) {
+StatusCode SmartDataObjectPtr::update( std::string_view fullPath ) {
   return ( m_dataProvider ) ? m_dataProvider->updateObject( fullPath ) : StatusCode::FAILURE;
 }
 

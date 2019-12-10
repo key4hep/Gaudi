@@ -422,19 +422,19 @@ std::vector<IAlgTool*>& AlgTool::tools() {
 
 //------------------------------------------------------------------------------
 /// implementation of service method
-StatusCode AlgTool::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
+StatusCode AlgTool::service_i( std::string_view svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.getService( svcName, createIf, iid, ppSvc );
 }
 
 //------------------------------------------------------------------------------
-StatusCode AlgTool::service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+StatusCode AlgTool::service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
                                void** ppSvc ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.createService( svcType, svcName, iid, ppSvc );
 }
 
-SmartIF<IService> AlgTool::service( const std::string& name, const bool createIf, const bool quiet ) const {
+SmartIF<IService> AlgTool::service( std::string_view name, const bool createIf, const bool quiet ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.service( name, quiet, createIf );
 }

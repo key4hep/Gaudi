@@ -76,7 +76,7 @@ namespace Gaudi {
      *  This version is dealing with the general case, where AnyDataWrapper cannot be used
      */
     template <class TYPE, std::enable_if_t<!std::is_constructible_v<TYPE>, void*> = nullptr>
-    inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location ) {
+    typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, std::string_view location ) {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
       StatusCode sc = service->retrieveObject( location, obj );
@@ -94,7 +94,7 @@ namespace Gaudi {
      *  where TYPE is constructible
      */
     template <class TYPE, std::enable_if_t<std::is_constructible_v<TYPE>, void*> = nullptr>
-    inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location ) {
+    typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, std::string_view location ) {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
       StatusCode sc = service->retrieveObject( location, obj );
@@ -137,12 +137,12 @@ namespace Gaudi {
        *  @return the data
        */
       template <class COMMON>
-      inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
+      return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
                                      const bool checkData = true ) const {
         // use Data Provider Service
         return_type obj = getFromTS<Type>( service, location );
         if ( checkData ) { // check the data
-          common.Assert( obj, "get():: No valid data at '" + location + "'" );
+          common.Assert( obj, std::string{"get():: No valid data at '"}.append( location ).append( "'") );
         }
         // debug printout
         if ( common.msgLevel( MSG::DEBUG ) ) {
@@ -175,11 +175,11 @@ namespace Gaudi {
        *  @return the data
        */
       template <class COMMON>
-      inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
+      return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
                                      const bool checkData = true ) const {
         /// try to be efficient:
         /// 1. load object only once:
-        DataObject* object = this->getData( service, location );
+        DataObject* object = this->getData( service, std::string{location} );
         if ( object ) {
           /// 2. try to get the selection
           typedef typename TYPE::Selection Selection_;
@@ -202,10 +202,10 @@ namespace Gaudi {
             return make_range( cnt );
           }
           // no valid data
-          if ( checkData ) common.Assert( false, "get():: No valid data at '" + location + "'" );
+          if ( checkData ) common.Assert( false, std::string{"get():: No valid data at '"}.append( location ).append( "'") );
         }
         // no valid data
-        if ( checkData ) common.Assert( false, "get():: No data at '" + location + "'" );
+        if ( checkData ) common.Assert( false, std::string{"get():: No data at '"}.append( location).append( "'" ) );
         // the fictive return
         return return_type();
       }
@@ -226,9 +226,9 @@ namespace Gaudi {
        *  @param location  the location
        *  @return the object for TES
        */
-      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const {
+      DataObject* getData( IDataProviderSvc* service, std::string location ) const {
         /// Try to be efficient
-        SmartDataObjectPtr getter( SmartDataObjectPtr::ObjectLoader::access(), service, nullptr, location );
+        SmartDataObjectPtr getter( SmartDataObjectPtr::ObjectLoader::access(), service, nullptr, std::move(location) );
         return getter.accessData();
       }
       // ======================================================================
@@ -262,9 +262,9 @@ namespace Gaudi {
        *  @return the data
        */
       template <class COMMON>
-      inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
+      return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
                                      const bool checkData = true ) const {
-        return return_type( m_range( common, service, location, checkData ), location );
+        return return_type( m_range( common, service, location, checkData ), std::string{location} );
       }
       // ======================================================================
     public:
@@ -289,8 +289,8 @@ namespace Gaudi {
        *  @param location  the location
        *  @return the object for TES
        */
-      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const {
-        return m_range.getData( service, location );
+      DataObject* getData( IDataProviderSvc* service, std::string location ) const {
+        return m_range.getData( service,std::move( location ));
       }
       // ======================================================================
     private:
@@ -330,7 +330,7 @@ namespace Gaudi {
        *  @param location location of objects in TES
        *  @return true for valid data
        */
-      inline bool operator()( IDataProviderSvc* service, const std::string& location ) const {
+      bool operator()( IDataProviderSvc* service, std::string_view location ) const {
         /// use Data Provider Service
         return getFromTS<TYPE>( service, location );
       }
@@ -348,10 +348,9 @@ namespace Gaudi {
        *  @param location location of objects in TES
        *  @return true for valid data
        */
-      inline bool operator()( IDataProviderSvc* service, const std::string& location ) const {
-        DataObject* object = this->getData( service, location );
-        if ( !object ) { return false; }
-        return dynamic_cast<typename TYPE::Selection*>( object ) || dynamic_cast<typename TYPE::Container*>( object );
+      bool operator()( IDataProviderSvc* service, std::string location ) const {
+        DataObject* object = this->getData( service, std::move(location) );
+        return object && ( dynamic_cast<typename TYPE::Selection*>( object ) || dynamic_cast<typename TYPE::Container*>( object ) );
       }
       // ======================================================================
     protected:
@@ -361,9 +360,9 @@ namespace Gaudi {
        *  @param location  the location
        *  @return the object for TES
        */
-      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const {
+      DataObject* getData( IDataProviderSvc* service, std::string location ) const {
         /// Try to be efficient
-        SmartDataObjectPtr getter( SmartDataObjectPtr::ObjectLoader::access(), service, nullptr, location );
+        SmartDataObjectPtr getter( SmartDataObjectPtr::ObjectLoader::access(), service, nullptr, std::move(location) );
         return getter.accessData();
       }
       // ======================================================================
@@ -416,9 +415,9 @@ namespace Gaudi {
        *  @return the data
        */
       template <class COMMON>
-      inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const std::string& location2 ) const {
-        SmartDataPtr<TYPE> obj( service, location );
+      return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
+                                     std::string_view location2 ) const {
+        SmartDataPtr<TYPE> obj( service, std::string{location} );
         if ( !obj ) {
           auto o = std::make_unique<TYPE2>();
           auto r = o.get();
@@ -431,7 +430,7 @@ namespace Gaudi {
         }
         auto ret = obj.ptr();
         /// check the data
-        common.Assert( !( !ret ), "get():: No valid data at '" + location + "'" );
+        common.Assert( !( !ret ), std::string{"get():: No valid data at '"}.append(location).append("\'")  );
         if ( common.msgLevel( MSG::DEBUG ) ) {
           common.debug() << "The object of type '" << System::typeinfoName( typeid( *ret ) )
                          << "' has been retrieved from TS at address '" << location << "'" << endmsg;
@@ -467,9 +466,9 @@ namespace Gaudi {
        *  @return the data
        */
       template <class COMMON>
-      inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const std::string& location2 ) const {
-        DataObject* obj = m_getter.getData( service, location );
+      return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
+                                     std::string_view location2 ) const {
+        DataObject* obj = m_getter.getData( service, std::string{location} );
         if ( !obj ) {
           common.put( service, std::make_unique<TYPE2>(), location2 );
           if ( common.msgLevel( MSG::DEBUG ) ) {
@@ -513,9 +512,10 @@ namespace Gaudi {
        *  @return the data
        */
       template <class COMMON>
-      inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const std::string& location2 ) const {
-        return return_type( m_range( common, service, location, location2 ), location );
+      return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string location,
+                              std::string_view location2 ) const {
+        auto range = m_range( common, service, location, location2 );
+        return return_type( std::move( range ), std::move( location ) );
       }
       // ======================================================================
     private:

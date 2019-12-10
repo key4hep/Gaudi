@@ -596,7 +596,7 @@ public:
    *  @return A valid pointer to the object
    */
   template <class TYPE, class TYPE2>
-  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, std::string_view location,
                                                                  const bool useRootInTES = true ) const {
     return GaudiCommon<Algorithm>::getOrCreate<TYPE, TYPE2>( svc, location, useRootInTES );
   }

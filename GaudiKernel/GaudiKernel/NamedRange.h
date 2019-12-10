@@ -96,7 +96,7 @@ namespace Gaudi {
   public:
     // ========================================================================
     /// get a "slice" of a range, in Python style
-    inline NamedRange_ slice( long index1, long index2 ) const {
+    NamedRange_ slice( long index1, long index2 ) const {
       return NamedRange_( Base::slice( index1, index2 ), m_name );
     }
     // ========================================================================
@@ -105,7 +105,7 @@ namespace Gaudi {
     /// get the name of the range
     const std::string& name() const { return m_name; }
     /// set the name of the range
-    void setName( const std::string& value ) { m_name = value; }
+    void setName( std::string value ) { m_name = std::move(value); }
     // ========================================================================
   private:
     // ========================================================================
@@ -125,7 +125,7 @@ namespace Gaudi {
    *  @date 2007-11-29
    */
   template <class CONTAINER>
-  inline NamedRange_<CONTAINER> range( const CONTAINER& cnt, std::string name ) {
+  NamedRange_<CONTAINER> range( const CONTAINER& cnt, std::string name ) {
     return NamedRange_<CONTAINER>( cnt.begin(), cnt.end(), std::move( name ) );
   }
   // ==========================================================================

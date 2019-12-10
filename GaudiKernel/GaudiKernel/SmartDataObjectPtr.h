@@ -132,27 +132,27 @@ protected:
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode find( IRegistry* pDirectory, const std::string& path, DataObject*& refpObject );
+  StatusCode find( IRegistry* pDirectory, std::string_view path, DataObject*& refpObject );
 
   /** Find the specified object from the data store.
       @param  fullPath     String containing the full path necessary to locate the object.
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode find( const std::string& fullPath, DataObject*& refpObject );
+  StatusCode find( std::string_view fullPath, DataObject*& refpObject );
 
   /** Retrieve the specified object from the data store.
       @param  pDirectory   Pointer to the directory entry holding the object.
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode retrieve( IRegistry* pDirectory, const std::string& path, DataObject*& refpObject );
+  StatusCode retrieve( IRegistry* pDirectory, std::string_view path, DataObject*& refpObject );
   /** Retrieve the specified object from the data store.
       @param  fullPath     String containing the full path necessary to locate the object.
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode retrieve( const std::string& fullPath, DataObject*& refpObject );
+  StatusCode retrieve( std::string_view fullPath, DataObject*& refpObject );
 
   /** Update the specified object from the data store.
       @param  pDirectory   Pointer to the directory entry holding the object.
@@ -163,7 +163,7 @@ protected:
       @param  fullPath     String containing the full path necessary to locate the object.
       @return              StatusCode indicating success or failure.
   */
-  StatusCode update( const std::string& fullPath );
+  StatusCode update( std::string_view fullPath );
 
 protected:
   /// Pointer to contained object
