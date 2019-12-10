@@ -29,13 +29,13 @@ public:
 
 private:
   /// Default (catch-all) "before" Auditor hook
-  void i_before( CustomEventTypeRef evt, const std::string& caller ) override;
+  void i_before( CustomEventTypeRef evt, std::string_view caller ) override;
 
   /// Default (catch-all) "after" Auditor hook
-  void i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc ) override;
+  void i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& sc ) override;
 
   /// Compute the id string to be used for the chrono entity.
-  inline std::string i_id( CustomEventTypeRef evt, const std::string& caller ) { return caller + ":" + evt; }
+  std::string i_id( CustomEventTypeRef evt, std::string_view caller ) { return std::string{caller} + ":" + evt; }
 
   SmartIF<IChronoStatSvc>& chronoSvc() { return m_chronoSvc; }
   SmartIF<IChronoStatSvc>  m_chronoSvc;

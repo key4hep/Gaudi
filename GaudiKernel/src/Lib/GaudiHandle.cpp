@@ -45,7 +45,7 @@ std::string GaudiHandleBase::name() const {
   }
 }
 
-void GaudiHandleBase::setName( const std::string& myName ) { m_typeAndName = type() + '/' + myName; }
+void GaudiHandleBase::setName( std::string_view myName ) { m_typeAndName = type().append( "/" ).append( myName); }
 
 std::string GaudiHandleBase::pythonPropertyClassName() const { return componentType() + "Handle"; }
 

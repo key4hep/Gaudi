@@ -83,8 +83,8 @@ public:
 
 private:
   // management helper
-  SmartIF<IAuditor> newAuditor_( MsgStream&, const std::string& );
-  SmartIF<IAuditor> findAuditor_( const std::string& );
+  SmartIF<IAuditor> newAuditor_( MsgStream&, std::string_view );
+  SmartIF<IAuditor> findAuditor_( std::string_view );
   StatusCode        syncAuditors_();
 
   Gaudi::Property<std::vector<std::string>> m_audNameList{this, "Auditors", {}, "list of auditors names"};

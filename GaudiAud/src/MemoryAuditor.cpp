@@ -11,29 +11,46 @@
 // MemoryAuditor:
 //  An auditor that monitors memory usage
 
-#ifdef __ICC
-// disable icc warning #654: overloaded virtual function "B::Y" is only partially overridden in class "C"
-//   TODO: there is only a partial overload of IAuditor::before and IAuditor::after
-#  pragma warning( disable : 654 )
-#endif
 
-#include "MemoryAuditor.h"
+#include "CommonAuditor.h"
+#include "ProcStats.h"
 #include "GaudiKernel/MsgStream.h"
+
+/// Monitors the memory use of each algorithm
+///
+/// @author M. Shapiro, LBNL
+/// @author Marco Clemencic
+class MemoryAuditor : public CommonAuditor {
+public:
+  using CommonAuditor::CommonAuditor;
+
+protected:
+  /// Default (catch-all) "before" Auditor hook
+  void i_before( CustomEventTypeRef evt, std::string_view caller ) override;
+
+  /// Default (catch-all) "after" Auditor hook
+  void i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& sc ) override;
+
+  /// Report the memory usage.
+  virtual void i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller );
+
+};
+
 
 DECLARE_COMPONENT( MemoryAuditor )
 
-void MemoryAuditor::i_before( CustomEventTypeRef evt, const std::string& caller ) {
+void MemoryAuditor::i_before( CustomEventTypeRef evt, std::string_view caller ) {
   i_printinfo( "Memory usage before", evt, caller );
 }
 
-void MemoryAuditor::i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& ) {
+void MemoryAuditor::i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& ) {
   i_printinfo( "Memory usage has changed after", evt, caller );
 }
 
-void MemoryAuditor::i_printinfo( const std::string& msg, CustomEventTypeRef evt, const std::string& caller ) {
-  procInfo pInfo;
-  // The fetch method returns true if memory usage has changed...
-  if ( getProcInfo( pInfo ) ) {
+void MemoryAuditor::i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller ) {
+  /// Get the process informations.
+  /// fetch true if it was possible to retrieve the informations.
+  if (procInfo pInfo; ProcStats::instance()->fetch( pInfo )) {
     info() << msg << " " << caller << " " << evt << " virtual size = " << pInfo.vsize << " MB"
            << " resident set size = " << pInfo.rss << " MB" << endmsg;
   }

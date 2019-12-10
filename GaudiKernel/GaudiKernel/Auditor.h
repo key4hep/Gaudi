@@ -48,7 +48,7 @@ public:
   /** Constructor
       @param name    The algorithm object's name
       @param svcloc  A pointer to a service location service */
-  Auditor( const std::string& name, ISvcLocator* svcloc );
+  Auditor( std::string name, ISvcLocator* svcloc );
 
   Auditor( const Auditor& a ) = delete;
   Auditor& operator=( const Auditor& rhs ) = delete;
@@ -106,7 +106,7 @@ public:
   /** Access a service by name, creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( const std::string& name, T*& svc, bool createIf = false ) const {
+  StatusCode service( std::string_view name, T*& svc, bool createIf = false ) const {
     auto ptr = serviceLocator()->service<T>( name, createIf );
     if ( ptr ) {
       svc = ptr.get();
@@ -118,7 +118,7 @@ public:
   }
 
   template <class T = IService>
-  SmartIF<T> service( const std::string& name, bool createIf = false ) const {
+  SmartIF<T> service( std::string_view name, bool createIf = false ) const {
     return serviceLocator()->service<T>( name, createIf );
   }
 

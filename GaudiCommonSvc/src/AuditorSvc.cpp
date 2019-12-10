@@ -29,7 +29,7 @@ DECLARE_COMPONENT( AuditorSvc )
 //------------------------------------------------------------------
 
 //- private helpers ---
-SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
+SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, std::string_view name ) {
   // locate the auditor factory, instantiate a new auditor, initialize it
   StatusCode                   sc;
   Gaudi::Utils::TypeNameString item( name );
@@ -48,11 +48,10 @@ SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, const std::string& na
   return aud;
 }
 
-SmartIF<IAuditor> AuditorSvc::findAuditor_( const std::string& name ) {
+SmartIF<IAuditor> AuditorSvc::findAuditor_( std::string_view name ) {
   // find an auditor by name, return 0 on error
-  const std::string item_name = Gaudi::Utils::TypeNameString( name ).name();
-  auto              it        = std::find_if( std::begin( m_pAudList ), std::end( m_pAudList ),
-                          [&]( const IAuditor* i ) { return i->name() == item_name; } );
+  auto it        = std::find_if( std::begin( m_pAudList ), std::end( m_pAudList ),
+                                 [item_name = Gaudi::Utils::TypeNameString( name ).name()]( const IAuditor* i ) { return i->name() == item_name; } );
   return SmartIF<IAuditor>{it != std::end( m_pAudList ) ? *it : nullptr};
 }
 

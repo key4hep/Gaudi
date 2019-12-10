@@ -44,12 +44,12 @@ public:
 
 protected:
   /// catch all "before" method, implemented in the derived class
-  virtual void i_before( CustomEventTypeRef evt, const std::string& caller ) = 0;
+  virtual void i_before( CustomEventTypeRef evt, std::string_view caller ) = 0;
   /// catch all "after" method, implemented in the derived class
-  virtual void i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc ) = 0;
+  virtual void i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& sc ) = 0;
 
   /// Check if we are requested to audit the passed event type.
-  inline bool i_auditEventType( const std::string& evt ) {
+  bool i_auditEventType( std::string_view evt ) {
     // Note: there is no way to extract from a Property type the type returned by
     // value().
     const std::vector<std::string>& v = m_types.value();

@@ -106,13 +106,13 @@ namespace Google {
     }
 
     /// Check if auditing is enabled for the given component
-    inline bool isComponentEnabled( const std::string& name ) const {
+    inline bool isComponentEnabled( std::string_view name ) const {
       return ( std::find( m_veto.begin(), m_veto.end(), name ) == m_veto.end() &&
                ( m_list.empty() || std::find( m_list.begin(), m_list.end(), name ) != m_list.end() ) );
     }
 
     // Construct the dump name based on processing phase and component name
-    std::string getDumpName( CustomEventTypeRef type, const std::string& name ) const {
+    std::string getDumpName( CustomEventTypeRef type, std::string_view name ) const {
       std::ostringstream t;
       t << name << "-" << type;
       if ( type == "Execute" ) t << "-Event" << m_nEvts;
