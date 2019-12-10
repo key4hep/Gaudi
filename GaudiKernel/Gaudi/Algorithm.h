@@ -164,7 +164,7 @@ namespace Gaudi {
     /** The type of the algorithm object.
      */
     const std::string& type() const override { return m_type; }
-    void               setType( const std::string& type ) override { m_type = type; } // BH, TODO: move to proper place
+    void               setType( std::string type ) override { m_type = std::move(type); } // BH, TODO: move to proper place
 
     const std::string& version() const override;
 
@@ -203,21 +203,21 @@ namespace Gaudi {
 
     /// Access a service by name, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
+    StatusCode service( std::string_view name, T*& psvc, bool createIf = true ) const {
       return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
     }
 
     /// Access a service by name and type, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const {
+    StatusCode service( std::string_view svcType, std::string_view svcName, T*& psvc ) const {
       return service_i( svcType, svcName, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
     }
 
     /// Return a pointer to the service identified by name (or "type/name")
-    SmartIF<IService> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const;
+    SmartIF<IService> service( std::string_view name, const bool createIf = true, const bool quiet = false ) const;
 
     template <class T>
-    SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const {
+    SmartIF<T> service( std::string_view name, bool createIf = true, bool quiet = false ) const {
       return service( name, createIf, quiet ).as<T>();
     }
 
@@ -536,8 +536,8 @@ namespace Gaudi {
     bool                       m_isFinalized;                                   ///< Algorithm has been finalized flag
 
     /// implementation of service method
-    StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
-    StatusCode service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+    StatusCode service_i( std::string_view svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
+    StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
                           void** ppSvc ) const;
 
     /// delete copy constructor: NO COPY ALLOWED

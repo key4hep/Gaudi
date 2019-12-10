@@ -49,7 +49,7 @@ public:
   /** The type of the algorithm
    */
   virtual const std::string& type() const                  = 0;
-  virtual void               setType( const std::string& ) = 0;
+  virtual void               setType( std::string ) = 0;
 
   /** StringKey rep of name
    */

@@ -42,7 +42,7 @@ public:
   typedef std::pair<std::string, std::ostream*> NamedStream;
   typedef std::multimap<int, NamedStream>       StreamMap;
   typedef std::multimap<StatusCode, Message>    MessageMap;
-  typedef std::map<std::string, int>            ThresholdMap;
+  typedef std::map<std::string, int,std::less<>>            ThresholdMap;
 
   // Default constructor.
   MessageSvc( const std::string& name, ISvcLocator* svcloc );
@@ -82,7 +82,7 @@ public:
   void eraseMessage( const StatusCode& code, const Message& message ) override;
 
   // Implementation of IMessageSvc::insertStream()
-  void insertStream( int message_type, const std::string& name, std::ostream* stream ) override;
+  void insertStream( int message_type, std::string name, std::ostream* stream ) override;
 
   // Implementation of IMessageSvc::eraseStream()
   void eraseStream() override;
@@ -109,13 +109,13 @@ public:
   int outputLevel() const override;
 
   // Implementation of IMessageSvc::ouputLevel()
-  int outputLevel( const std::string& source ) const override;
+  int outputLevel( std::string_view source ) const override;
 
   // Implementation of IMessageSvc::setOuputLevel()
   void setOutputLevel( int new_level ) override;
 
   // Implementation of IMessageSvc::setOuputLevel()
-  void setOutputLevel( const std::string& source, int new_level ) override;
+  void setOutputLevel( std::string_view source, int new_level ) override;
 
   // Implementation of IMessageSvc::useColor()
   bool useColor() const override { return m_color; }

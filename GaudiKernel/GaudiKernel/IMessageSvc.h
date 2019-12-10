@@ -105,7 +105,7 @@ public:
       @param name Stream name
       @param stream Pointer to a C++ stream
   */
-  virtual void insertStream( int type, const std::string& name, std::ostream* stream ) = 0;
+  virtual void insertStream( int type, std::string name, std::ostream* stream ) = 0;
 
   /// Delete all the streams.
   virtual void eraseStream() = 0;
@@ -138,7 +138,7 @@ public:
   /** Retrieve the current output level threshold for a given message source
       @param source Message source. Typically the alg/svc name
   */
-  virtual int outputLevel( const std::string& source ) const = 0;
+  virtual int outputLevel( std::string_view source ) const = 0;
 
   /// Set new global output level threshold
   virtual void setOutputLevel( int new_level ) = 0;
@@ -147,7 +147,7 @@ public:
       @param source  Message source
       @param new_level Severity level
   */
-  virtual void setOutputLevel( const std::string& source, int new_level ) = 0;
+  virtual void setOutputLevel( std::string_view source, int new_level ) = 0;
 
   /** Show whether colors are used
    */

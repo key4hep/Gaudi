@@ -31,37 +31,37 @@ public:
       , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), requester.name() )
       , // use requester msg level
       m_requesterName( requester.name() ) {}
-  ServiceLocatorHelper( ISvcLocator& svcLoc, const std::string& loggedName, const std::string& requesterName )
+  ServiceLocatorHelper( ISvcLocator& svcLoc, std::string loggedName, std::string requesterName )
       : m_svcLoc( svcLoc )
-      , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), loggedName )
+      , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), std::move(loggedName) )
       , // use requester msg level
-      m_requesterName( requesterName ) {}
-  ServiceLocatorHelper( ISvcLocator& svcLoc, const std::string& requesterName )
+      m_requesterName( std::move(requesterName) ) {}
+  ServiceLocatorHelper( ISvcLocator& svcLoc, std::string requesterName )
       : m_svcLoc( svcLoc )
       , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), requesterName )
       , // use requester msg level
-      m_requesterName( requesterName ) {}
+      m_requesterName( std::move(requesterName) ) {}
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   ServiceLocatorHelper( ISvcLocator&       svcLoc,
                         const MsgStream&   log, // use requester msg level
-                        const std::string& requesterName )
-      : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( requesterName ) {}
+                        std::string requesterName )
+      : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( std::move(requesterName) ) {}
 #endif
 
-  StatusCode getService( const std::string& name, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
+  StatusCode getService( std::string_view name, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
     return createIf ? createService( name, iid, ppSvc ) : locateService( name, iid, ppSvc, true );
   }
 
-  StatusCode locateService( const std::string& name, const InterfaceID& iid, void** ppSvc, bool quiet = false ) const;
+  StatusCode locateService( std::string_view name, const InterfaceID& iid, void** ppSvc, bool quiet = false ) const;
 
-  StatusCode createService( const std::string& name, const InterfaceID& iid, void** ppSvc ) const;
+  StatusCode createService( std::string_view name, const InterfaceID& iid, void** ppSvc ) const;
 
   StatusCode createService( std::string_view type, std::string_view name, const InterfaceID& iid, void** ppSvc ) const;
 
-  SmartIF<IService> service( const std::string& name, const bool quiet = false, const bool createIf = true ) const;
+  SmartIF<IService> service( std::string_view name, const bool quiet = false, const bool createIf = true ) const;
 
   template <typename T>
-  SmartIF<T> service( const std::string& name, const bool quiet = false, const bool createIf = true ) const {
+  SmartIF<T> service( std::string_view name, const bool quiet = false, const bool createIf = true ) const {
     return service( name, quiet, createIf ).as<T>();
   }
 

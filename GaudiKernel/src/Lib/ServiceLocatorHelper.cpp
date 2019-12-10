@@ -14,7 +14,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 
-StatusCode ServiceLocatorHelper::locateService( const std::string& name, const InterfaceID& iid, void** ppSvc,
+StatusCode ServiceLocatorHelper::locateService( std::string_view name, const InterfaceID& iid, void** ppSvc,
                                                 bool quiet ) const {
   auto theSvc = service( name, quiet, false );
   if ( !theSvc ) return StatusCode::FAILURE;
@@ -28,7 +28,7 @@ StatusCode ServiceLocatorHelper::locateService( const std::string& name, const I
   return sc;
 }
 
-StatusCode ServiceLocatorHelper::createService( const std::string& name, const InterfaceID& iid, void** ppSvc ) const {
+StatusCode ServiceLocatorHelper::createService( std::string_view name, const InterfaceID& iid, void** ppSvc ) const {
   auto theSvc = service( name, false, true );
   if ( !theSvc ) return StatusCode::FAILURE;
   StatusCode sc = theSvc->queryInterface( iid, ppSvc );
@@ -45,7 +45,7 @@ StatusCode ServiceLocatorHelper::createService( std::string_view type, std::stri
   return createService( std::string{type}.append( "/" ).append( name ), iid, ppSvc );
 }
 
-SmartIF<IService> ServiceLocatorHelper::service( const std::string& name, const bool quiet,
+SmartIF<IService> ServiceLocatorHelper::service( std::string_view name, const bool quiet,
                                                  const bool createIf ) const {
   SmartIF<IService> theSvc = serviceLocator()->service( name, createIf );
 
