@@ -50,9 +50,9 @@ public:
 
   DataObjID()                   = default;
   DataObjID( const DataObjID& ) = default;
-  DataObjID( const std::string& key );
-  DataObjID( const CLID& clid, const std::string& key );
-  DataObjID( const std::string& className, const std::string& key );
+  DataObjID( std::string key );
+  DataObjID( const CLID& clid, std::string key );
+  DataObjID( std::string className, std::string key );
 
   // only return the last part of the key
   const std::string& key() const { return m_key; }
@@ -62,7 +62,7 @@ public:
 
   CLID clid() const { return m_clid; }
 
-  void updateKey( const std::string& key );
+  void updateKey( std::string key );
 
   friend bool operator<( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash < rhs.m_hash; }
   friend bool operator==( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash == rhs.m_hash; }
@@ -87,21 +87,21 @@ private:
   static std::once_flag m_ip;
 };
 
-inline DataObjID::DataObjID( const std::string& key ) : m_key( key ) { hashGen(); }
+inline DataObjID::DataObjID( std::string key ) : m_key( std::move(key) ) { hashGen(); }
 
-inline DataObjID::DataObjID( const CLID& clid, const std::string& key ) : m_clid( clid ), m_key( key ) {
+inline DataObjID::DataObjID( const CLID& clid, std::string key ) : m_clid( clid ), m_key( std::move(key) ) {
   setClassName();
   hashGen();
 }
 
-inline DataObjID::DataObjID( const std::string& className, const std::string& key )
-    : m_key( key ), m_className( className ) {
+inline DataObjID::DataObjID( std::string className, std::string key )
+    : m_key( std::move(key) ), m_className( std::move(className )) {
   setClid();
   hashGen();
 }
 
-inline void DataObjID::updateKey( const std::string& key ) {
-  m_key = key;
+inline void DataObjID::updateKey( std::string key ) {
+  m_key = std::move(key);
   hashGen();
 }
 
