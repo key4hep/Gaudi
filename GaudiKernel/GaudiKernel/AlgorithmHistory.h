@@ -68,7 +68,7 @@ public: // functions
   explicit AlgorithmHistory( const Gaudi::Algorithm& alg, const JobHistory* job );
 
   // All-fields Constructor for persistency
-  explicit AlgorithmHistory( const std::string& algVersion, const std::string& algName, const std::string& algType,
+  explicit AlgorithmHistory( std::string algVersion, std::string algName, std::string algType,
                              const PropertyList& props, const HistoryList& subHists );
   // Destructor.
   virtual ~AlgorithmHistory();
@@ -98,14 +98,16 @@ public: // functions
   // Return the jobHistory
   const JobHistory* jobHistory() const { return m_jobHistory; }
 
-  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
+  std::ostream& dump( std::ostream&, bool isXML, int indent ) const override;
 
   const std::string& name() const override { return algorithm_name(); }
   const std::string& type() const override { return algorithm_type(); }
   const std::string& version() const override { return algorithm_version(); }
-};
 
-// Output stream.
-GAUDI_API std::ostream& operator<<( std::ostream& lhs, const AlgorithmHistory& rhs );
+  // Output stream.
+  friend std::ostream& operator<<( std::ostream& lhs, const AlgorithmHistory& rhs ) {
+    return rhs.dump( lhs, false, 0 );
+  }
+};
 
 #endif

@@ -69,10 +69,3 @@ const CLID& HistoryObj::classID() {
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-// Output stream.
-
-std::ostream& operator<<( std::ostream& lhs, const HistoryObj& rhs ) {
-  rhs.dump( lhs, false );
-  return lhs;
-}

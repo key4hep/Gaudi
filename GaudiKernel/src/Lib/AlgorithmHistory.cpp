@@ -46,13 +46,12 @@ AlgorithmHistory::AlgorithmHistory( const Gaudi::Algorithm& alg, const JobHistor
 
 //**********************************************************************
 
-AlgorithmHistory::AlgorithmHistory( const std::string& algVersion, const std::string& algName,
-                                    const std::string& algType, const PropertyList& props,
-                                    const HistoryList& subHists )
-    : m_algorithm_type( algType )
-    , // FIXME type_info???
-    m_algorithm_version( algVersion )
-    , m_algorithm_name( algName )
+AlgorithmHistory::AlgorithmHistory( std::string algVersion, std::string algName, std::string algType,
+                                    const PropertyList& props,
+                                    const HistoryList&  subHists )
+    : m_algorithm_type( std::move( algType ) ) // FIXME type_info???
+    , m_algorithm_version( std::move( algVersion ) )
+    , m_algorithm_name( std::move( algName ) )
     , m_algorithm( nullptr )
     , m_properties( props )
     , m_subalgorithm_histories( subHists )
@@ -76,7 +75,7 @@ const CLID& AlgorithmHistory::classID() {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
+std::ostream& AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
 
   if ( !isXML ) {
     ost << "Type: " << algorithm_type() << endl;
@@ -105,17 +104,7 @@ void AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) cons
     indent( ost, ind );
     ost << "</COMPONENT>" << std::endl;
   }
-}
-
-//**********************************************************************
-// Free functions.
-//**********************************************************************
-
-// Output stream.
-
-ostream& operator<<( ostream& lhs, const AlgorithmHistory& rhs ) {
-  rhs.dump( lhs, false );
-  return lhs;
+  return ost;
 }
 
 //**********************************************************************

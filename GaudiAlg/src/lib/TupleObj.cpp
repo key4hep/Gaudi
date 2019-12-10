@@ -246,7 +246,7 @@ namespace {
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   2002-07-14
    */
-  std::vector<std::string> tokenize( const std::string& value, const std::string& separators = " " ) {
+  std::vector<std::string> tokenize( std::string_view value, std::string_view separators = " " ) {
     std::vector<std::string> tokens;
     auto                     it1 = value.begin();
     auto                     it2 = value.begin();

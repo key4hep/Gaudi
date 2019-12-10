@@ -52,7 +52,8 @@ public:
 
   AlgorithmHistory* algorithmHistory() const { return m_algHist; }
 
-  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
+  std::ostream&        dump( std::ostream&, const bool isXML, int indent ) const override;
+  friend std::ostream& operator<<( std::ostream& lhs, const DataHistory& rhs ) { return rhs.dump( lhs, false, 0 ); }
 
 private:
   CLID              m_dataClassID;
@@ -60,7 +61,5 @@ private:
   AlgorithmHistory* m_algHist;
   std::string       m_dummy = "none";
 };
-
-GAUDI_API std::ostream& operator<<( std::ostream& lhs, const DataHistory& rhs );
 
 #endif

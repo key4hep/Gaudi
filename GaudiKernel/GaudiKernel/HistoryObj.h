@@ -30,20 +30,19 @@ class IVersHistoryObj;
 
 class GAUDI_API HistoryObj : public DataObject {
 public:
-  HistoryObj()          = default;
   virtual ~HistoryObj() = default;
 
   const CLID&        clID() const override { return classID(); }
   static const CLID& classID();
   static std::string convert_string( const std::string& );
 
-  virtual void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const = 0;
+  virtual std::ostream& dump( std::ostream&, bool isXML = false, int indent = 0 ) const = 0;
+
+  // Output stream.
+  friend std::ostream& operator<<( std::ostream& lhs, const HistoryObj& rhs ) { return rhs.dump( lhs, false, 0 ); }
 
 protected:
   virtual void indent( std::ostream&, int ) const;
 };
-
-// Output stream.
-GAUDI_API std::ostream& operator<<( std::ostream& lhs, const HistoryObj& rhs );
 
 #endif

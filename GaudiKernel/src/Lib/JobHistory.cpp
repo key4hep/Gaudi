@@ -93,7 +93,7 @@ void JobHistory::addProperty( const std::string& client, const PropertyBase* pro
   m_ppl.emplace_back( client, prop );
 }
 
-void JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const {
+std::ostream& JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const {
 
   if ( !isXML ) {
     ost << "Release: " << release_version() << endl;
@@ -117,17 +117,8 @@ void JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const 
     for ( const auto& itr : environment() ) ost << itr << endl;
   } else {
   }
-}
 
-//**********************************************************************
-// Free functions.
-//**********************************************************************
-
-// Output stream.
-
-ostream& operator<<( ostream& lhs, const JobHistory& rhs ) {
-  rhs.dump( lhs, false );
-  return lhs;
+  return ost;
 }
 
 //**********************************************************************

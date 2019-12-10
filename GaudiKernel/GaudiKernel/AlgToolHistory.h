@@ -53,8 +53,8 @@ private: // data
 public:
   AlgToolHistory( const AlgTool& alg, const JobHistory* job );
 
-  AlgToolHistory( const std::string& algVersion, const std::string& algName, const std::string& algType,
-                  const AlgTool* tool, const PropertyList& props, const JobHistory* job );
+  AlgToolHistory( std::string algVersion, std::string algName, std::string algType, const AlgTool* tool,
+                  const PropertyList& props, const JobHistory* job );
 
   // Class IDs
   const CLID&        clID() const override { return classID(); }
@@ -78,14 +78,13 @@ public:
   // Return the jobHistory
   const JobHistory* jobHistory() const { return m_jobHistory; }
 
-  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
+  std::ostream& dump( std::ostream&, bool isXML, int indent ) const override;
 
   const std::string& name() const override { return algtool_name(); }
   const std::string& type() const override { return algtool_type(); }
   const std::string& version() const override { return algtool_version(); }
-};
 
-// Output stream.
-GAUDI_API std::ostream& operator<<( std::ostream& lhs, const AlgToolHistory& rhs );
+  friend std::ostream& operator<<( std::ostream& lhs, const AlgToolHistory& rhs ) { return rhs.dump( lhs, false, 0 ); }
+};
 
 #endif
