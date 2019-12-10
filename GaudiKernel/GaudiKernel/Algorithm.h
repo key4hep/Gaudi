@@ -18,9 +18,9 @@ namespace Gaudi {
 #pragma GCC diagnostic ignored "-Woverloaded-virtual"
     class LegacyAlgorithmAdapter : public Gaudi::Algorithm {
     public:
-      LegacyAlgorithmAdapter( const std::string& name, ISvcLocator* svcloc,
-                              const std::string& version = PACKAGE_VERSION )
-          : Gaudi::Algorithm( name, svcloc, version ) {
+      LegacyAlgorithmAdapter( std::string name, ISvcLocator* svcloc,
+                              std::string version = PACKAGE_VERSION )
+          : Gaudi::Algorithm( std::move(name), svcloc, std::move(version) ) {
         // default cardinality for non-reentrant algorithms
         setProperty( "Cardinality", 1 );
       }
