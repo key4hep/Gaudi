@@ -87,21 +87,21 @@ private:
   static std::once_flag m_ip;
 };
 
-inline DataObjID::DataObjID( std::string key ) : m_key( std::move(key) ) { hashGen(); }
+inline DataObjID::DataObjID( std::string key ) : m_key( std::move( key ) ) { hashGen(); }
 
-inline DataObjID::DataObjID( const CLID& clid, std::string key ) : m_clid( clid ), m_key( std::move(key) ) {
+inline DataObjID::DataObjID( const CLID& clid, std::string key ) : m_clid( clid ), m_key( std::move( key ) ) {
   setClassName();
   hashGen();
 }
 
 inline DataObjID::DataObjID( std::string className, std::string key )
-    : m_key( std::move(key) ), m_className( std::move(className )) {
+    : m_key( std::move( key ) ), m_className( std::move( className ) ) {
   setClid();
   hashGen();
 }
 
 inline void DataObjID::updateKey( std::string key ) {
-  m_key = std::move(key);
+  m_key = std::move( key );
   hashGen();
 }
 

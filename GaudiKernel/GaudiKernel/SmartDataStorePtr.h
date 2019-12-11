@@ -63,7 +63,7 @@ public:
       @param  pDirectory    Pointer to the data directory entry.
   */
   SmartDataStorePtr( IDataProviderSvc* pService, IRegistry* pRegistry, std::string path )
-      : SmartDataObjectPtr( LOADER::access(), pService, pRegistry, std::move(path) ), m_pObject( nullptr ) {}
+      : SmartDataObjectPtr( LOADER::access(), pService, pRegistry, std::move( path ) ), m_pObject( nullptr ) {}
   /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */

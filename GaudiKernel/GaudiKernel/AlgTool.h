@@ -323,8 +323,7 @@ private:
 
   /** implementation of service method */
   StatusCode service_i( std::string_view algName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
-  StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
-                        void** ppS ) const;
+  StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid, void** ppS ) const;
 
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool

@@ -72,7 +72,7 @@ public:
       @param  fullPath      Full path leading to the data object.
   */
   SmartDataPtr( IDataProviderSvc* pService, std::string fullPath )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, std::move(fullPath) ) {}
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, std::move( fullPath ) ) {}
 
   /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
@@ -97,7 +97,7 @@ public:
       @param  path          Path to the data object relative to the parent object.
   */
   SmartDataPtr( IDataProviderSvc* pService, DataObject* pObject, std::string path )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, std::move(path) ) {
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, std::move( path ) ) {
     if ( pObject ) this->m_pRegistry = pObject->registry();
   }
 
@@ -123,7 +123,8 @@ public:
       @param  path          Path to the data object relative to the parent object.
   */
   SmartDataPtr( SmartDataObjectPtr& refObject, std::string path )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), refObject.directory(), std::move(path) ) {}
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), refObject.directory(),
+                                                                   std::move( path ) ) {}
 
   /** Copy constructor: Construct an copy of a SmartDataPtr instance.
       @param  copy          Copy Smart Pointer to object.

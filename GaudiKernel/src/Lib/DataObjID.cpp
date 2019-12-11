@@ -19,7 +19,8 @@
 
 namespace {
   std::string quote( std::string_view in ) {
-    if ( !in.empty() && in.front() == in.back() && ( in.front() == '\'' || in.front() == '\"' ) ) return std::string{in};
+    if ( !in.empty() && in.front() == in.back() && ( in.front() == '\'' || in.front() == '\"' ) )
+      return std::string{in};
     std::stringstream s;
     s << std::quoted( in );
     return s.str();

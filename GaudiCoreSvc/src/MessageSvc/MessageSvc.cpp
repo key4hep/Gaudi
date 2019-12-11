@@ -474,7 +474,7 @@ void MessageSvc::i_reportMessage( const StatusCode& code, const std::string& sou
 //
 
 void MessageSvc::insertStream( int key, std::string name, std::ostream* stream ) {
-  m_streamMap.emplace( key, NamedStream( std::move(name), stream ) );
+  m_streamMap.emplace( key, NamedStream( std::move( name ), stream ) );
 }
 
 //#############################################################################
@@ -596,11 +596,11 @@ void MessageSvc::setOutputLevel( int new_level ) {
 void MessageSvc::setOutputLevel( std::string_view source, int level ) {
   // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
-  auto i = m_thresholdMap.find(source);
-  if (i!=m_thresholdMap.end()) {
-      i->second = level;
+  auto                                   i = m_thresholdMap.find( source );
+  if ( i != m_thresholdMap.end() ) {
+    i->second = level;
   } else {
-      m_thresholdMap.emplace( source, level);
+    m_thresholdMap.emplace( source, level );
   }
 }
 

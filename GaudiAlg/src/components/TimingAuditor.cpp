@@ -253,7 +253,7 @@ void TimingAuditor::before( CustomEventTypeRef evt, const std::string& name ) {
 
   // look for the user timer in the map
   int         timer = 0;
-  std::string nick  = std::string{name}.append( ":").append( evt );
+  std::string nick  = std::string{name}.append( ":" ).append( evt );
   auto        found = m_mapUser.find( nick );
 
   if ( m_mapUser.end() == found ) {

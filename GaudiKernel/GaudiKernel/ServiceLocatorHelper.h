@@ -33,19 +33,19 @@ public:
       m_requesterName( requester.name() ) {}
   ServiceLocatorHelper( ISvcLocator& svcLoc, std::string loggedName, std::string requesterName )
       : m_svcLoc( svcLoc )
-      , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), std::move(loggedName) )
+      , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), std::move( loggedName ) )
       , // use requester msg level
-      m_requesterName( std::move(requesterName) ) {}
+      m_requesterName( std::move( requesterName ) ) {}
   ServiceLocatorHelper( ISvcLocator& svcLoc, std::string requesterName )
       : m_svcLoc( svcLoc )
       , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), requesterName )
       , // use requester msg level
-      m_requesterName( std::move(requesterName) ) {}
+      m_requesterName( std::move( requesterName ) ) {}
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  ServiceLocatorHelper( ISvcLocator&       svcLoc,
-                        const MsgStream&   log, // use requester msg level
-                        std::string requesterName )
-      : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( std::move(requesterName) ) {}
+  ServiceLocatorHelper( ISvcLocator&     svcLoc,
+                        const MsgStream& log, // use requester msg level
+                        std::string      requesterName )
+      : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( std::move( requesterName ) ) {}
 #endif
 
   StatusCode getService( std::string_view name, bool createIf, const InterfaceID& iid, void** ppSvc ) const {

@@ -96,16 +96,14 @@ namespace Gaudi {
   public:
     // ========================================================================
     /// get a "slice" of a range, in Python style
-    NamedRange_ slice( long index1, long index2 ) const {
-      return NamedRange_( Base::slice( index1, index2 ), m_name );
-    }
+    NamedRange_ slice( long index1, long index2 ) const { return NamedRange_( Base::slice( index1, index2 ), m_name ); }
     // ========================================================================
   public:
     // ========================================================================
     /// get the name of the range
     const std::string& name() const { return m_name; }
     /// set the name of the range
-    void setName( std::string value ) { m_name = std::move(value); }
+    void setName( std::string value ) { m_name = std::move( value ); }
     // ========================================================================
   private:
     // ========================================================================

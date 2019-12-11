@@ -75,10 +75,10 @@ public:
 
 protected:
   /** The component type */
-  void setComponentType( std::string componentType ) { m_componentType = std::move(componentType); }
+  void setComponentType( std::string componentType ) { m_componentType = std::move( componentType ); }
 
   /** The name of the parent */
-  void setParentName( std::string parent ) { m_parentName = std::move(parent); }
+  void setParentName( std::string parent ) { m_parentName = std::move( parent ); }
 
 private:
   //

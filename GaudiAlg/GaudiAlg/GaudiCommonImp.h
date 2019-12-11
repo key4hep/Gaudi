@@ -45,9 +45,8 @@ GaudiCommon<PBASE>::get( IDataProviderSvc* service, std::string_view location, c
 // ============================================================================
 template <class PBASE>
 template <class TYPE>
-typename Gaudi::Utils::GetData<TYPE>::return_type GaudiCommon<PBASE>::getIfExists( IDataProviderSvc*  service,
-                                                                                   std::string_view location,
-                                                                                   const bool useRootInTES ) const {
+typename Gaudi::Utils::GetData<TYPE>::return_type
+GaudiCommon<PBASE>::getIfExists( IDataProviderSvc* service, std::string_view location, const bool useRootInTES ) const {
   // check the environment
   Assert( service, "get():: IDataProvider* points to NULL!" );
   // get the helper object:
@@ -59,8 +58,7 @@ typename Gaudi::Utils::GetData<TYPE>::return_type GaudiCommon<PBASE>::getIfExist
 // ============================================================================
 template <class PBASE>
 template <class TYPE>
-bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, std::string_view location,
-                                const bool useRootInTES ) const {
+bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, std::string_view location, const bool useRootInTES ) const {
   // check the environment
   Assert( service, "exist():: IDataProvider* points to NULL!" );
   // check the data object
@@ -74,9 +72,8 @@ bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, std::string_view loca
 // ============================================================================
 template <class PBASE>
 template <class TYPE, class TYPE2>
-typename Gaudi::Utils::GetData<TYPE>::return_type GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc*  service,
-                                                                                   std::string_view location,
-                                                                                   const bool useRootInTES ) const {
+typename Gaudi::Utils::GetData<TYPE>::return_type
+GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc* service, std::string_view location, const bool useRootInTES ) const {
   // check the environment
   Assert( service, "getOrCreate():: svc points to NULL!" );
   // get the helper object
@@ -96,8 +93,15 @@ TOOL* GaudiCommon<PBASE>::tool( std::string_view type, std::string_view name, co
   // get the tool from Tool Service
   TOOL*            Tool = nullptr;
   const StatusCode sc   = this->toolSvc()->retrieveTool( type, name, Tool, parent, create );
-  if ( sc.isFailure() ) { Exception( std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'/'").append(  name ).append( "'" ), sc ); }
-  if ( !Tool ) { Exception( std::string{"tool():: Could not retrieve Tool '"}.append( type ).append(  "'/'" ).append( name ).append( "'" ) ); }
+  if ( sc.isFailure() ) {
+    Exception(
+        std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'/'" ).append( name ).append( "'" ),
+        sc );
+  }
+  if ( !Tool ) {
+    Exception(
+        std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'/'" ).append( name ).append( "'" ) );
+  }
   // insert tool into list of tools
   PBASE::registerTool( Tool );
   m_managedTools.push_back( Tool );
@@ -115,7 +119,9 @@ TOOL* GaudiCommon<PBASE>::tool( std::string_view type, const IInterface* parent,
   // retrieve the tool from Tool Service
   TOOL*            Tool = nullptr;
   const StatusCode sc   = this->toolSvc()->retrieveTool( type, Tool, parent, create );
-  if ( sc.isFailure() ) { Exception( std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'"), sc ); }
+  if ( sc.isFailure() ) {
+    Exception( std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'" ), sc );
+  }
   if ( !Tool ) { Exception( std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'" ) ); }
   // add the tool into the list of known tools to be properly released
   PBASE::registerTool( Tool );
@@ -137,13 +143,17 @@ SmartIF<SERVICE> GaudiCommon<PBASE>::svc( std::string_view name, const bool crea
     // Try to get the requested interface
     s = *it;
     // check the results
-    if ( !s ) { Exception( std::string{"svc():: Could not retrieve Svc '"}.append( name ).append( "'" ), StatusCode::FAILURE ); }
+    if ( !s ) {
+      Exception( std::string{"svc():: Could not retrieve Svc '"}.append( name ).append( "'" ), StatusCode::FAILURE );
+    }
   } else {
     auto baseSvc = this->svcLoc()->service( name, create );
     // Try to get the requested interface
     s = baseSvc;
     // check the results
-    if ( !baseSvc || !s ) { Exception( std::string{"svc():: Could not retrieve Svc '"}.append(name).append( "'" ), StatusCode::FAILURE ); }
+    if ( !baseSvc || !s ) {
+      Exception( std::string{"svc():: Could not retrieve Svc '"}.append( name ).append( "'" ), StatusCode::FAILURE );
+    }
     // add the tool into list of known tools, to be properly released
     addToServiceList( baseSvc );
   }

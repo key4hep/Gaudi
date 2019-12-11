@@ -164,7 +164,7 @@ namespace Gaudi {
     /** The type of the algorithm object.
      */
     const std::string& type() const override { return m_type; }
-    void               setType( std::string type ) override { m_type = std::move(type); } // BH, TODO: move to proper place
+    void setType( std::string type ) override { m_type = std::move( type ); } // BH, TODO: move to proper place
 
     const std::string& version() const override;
 

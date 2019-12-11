@@ -45,8 +45,7 @@ StatusCode ServiceLocatorHelper::createService( std::string_view type, std::stri
   return createService( std::string{type}.append( "/" ).append( name ), iid, ppSvc );
 }
 
-SmartIF<IService> ServiceLocatorHelper::service( std::string_view name, const bool quiet,
-                                                 const bool createIf ) const {
+SmartIF<IService> ServiceLocatorHelper::service( std::string_view name, const bool quiet, const bool createIf ) const {
   SmartIF<IService> theSvc = serviceLocator()->service( name, createIf );
 
   if ( theSvc ) {

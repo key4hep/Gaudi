@@ -11,10 +11,9 @@
 // MemoryAuditor:
 //  An auditor that monitors memory usage
 
-
 #include "CommonAuditor.h"
-#include "ProcStats.h"
 #include "GaudiKernel/MsgStream.h"
+#include "ProcStats.h"
 
 /// Monitors the memory use of each algorithm
 ///
@@ -33,9 +32,7 @@ protected:
 
   /// Report the memory usage.
   virtual void i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller );
-
 };
-
 
 DECLARE_COMPONENT( MemoryAuditor )
 
@@ -50,7 +47,7 @@ void MemoryAuditor::i_after( CustomEventTypeRef evt, std::string_view caller, co
 void MemoryAuditor::i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller ) {
   /// Get the process informations.
   /// fetch true if it was possible to retrieve the informations.
-  if (procInfo pInfo; ProcStats::instance()->fetch( pInfo )) {
+  if ( procInfo pInfo; ProcStats::instance()->fetch( pInfo ) ) {
     info() << msg << " " << caller << " " << evt << " virtual size = " << pInfo.vsize << " MB"
            << " resident set size = " << pInfo.rss << " MB" << endmsg;
   }

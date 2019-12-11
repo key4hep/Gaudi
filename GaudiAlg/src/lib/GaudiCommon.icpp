@@ -295,13 +295,13 @@ void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const {
 template <class PBASE>
 StatusCode GaudiCommon<PBASE>::Error( std::string_view msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of errors
-  const size_t num = increment(m_errors,msg);
+  const size_t num = increment( m_errors, msg );
   // If suppressed, just return
   if ( num > mx ) {
     return st;
   } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
   {
-    return Print( std::string{"The   ERROR message is suppressed : '"}.append(msg).append("'"), st, MSG::ERROR );
+    return Print( std::string{"The   ERROR message is suppressed : '"}.append( msg ).append( "'" ), st, MSG::ERROR );
   }
   // return message
   return Print( msg, st, MSG::ERROR );
@@ -314,13 +314,13 @@ StatusCode GaudiCommon<PBASE>::Error( std::string_view msg, const StatusCode st,
 template <class PBASE>
 StatusCode GaudiCommon<PBASE>::Warning( std::string_view msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of warnings
-  const size_t num = increment(m_warnings,msg);
+  const size_t num = increment( m_warnings, msg );
   // If suppressed, just return
   if ( num > mx ) {
     return st;
   } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
   {
-    return Print( std::string{"The WARNING message is suppressed : '"}.append( msg ).append( "'"), st, MSG::WARNING );
+    return Print( std::string{"The WARNING message is suppressed : '"}.append( msg ).append( "'" ), st, MSG::WARNING );
   }
   // return message
   return Print( msg, st, MSG::WARNING );
@@ -333,7 +333,7 @@ StatusCode GaudiCommon<PBASE>::Warning( std::string_view msg, const StatusCode s
 template <class PBASE>
 StatusCode GaudiCommon<PBASE>::Info( std::string_view msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of warnings
-  const size_t num = increment(m_infos,msg);
+  const size_t num = increment( m_infos, msg );
   // If suppressed, just return
   if ( num > mx ) {
     return st;
@@ -383,9 +383,9 @@ StatusCode GaudiCommon<PBASE>::Print( std::string_view msg, const StatusCode st,
 template <class PBASE>
 void GaudiCommon<PBASE>::Exception( std::string_view msg, const GaudiException& exc, const StatusCode sc ) const {
   // increase local counter of exceptions
-  increment(m_exceptions,msg);
+  increment( m_exceptions, msg );
   Print( std::string{"Exception (re)throw: "}.append( msg ), sc, MSG::FATAL ).ignore();
-  throw GaudiException( (this->name() + ":: ").append( msg ), this->name(), sc, exc );
+  throw GaudiException( ( this->name() + ":: " ).append( msg ), this->name(), sc, exc );
 }
 // ============================================================================
 
@@ -395,9 +395,9 @@ void GaudiCommon<PBASE>::Exception( std::string_view msg, const GaudiException& 
 template <class PBASE>
 void GaudiCommon<PBASE>::Exception( std::string_view msg, const std::exception& exc, const StatusCode sc ) const {
   // increase local counter of exceptions
-  increment(m_exceptions,msg);
+  increment( m_exceptions, msg );
   Print( std::string{"Exception (re)throw: "}.append( msg ), sc, MSG::FATAL ).ignore();
-  throw GaudiException( (this->name() + ":: ").append(  msg ) + "(" + exc.what() + ")", "", sc );
+  throw GaudiException( ( this->name() + ":: " ).append( msg ) + "(" + exc.what() + ")", "", sc );
 }
 // ============================================================================
 
@@ -407,9 +407,9 @@ void GaudiCommon<PBASE>::Exception( std::string_view msg, const std::exception& 
 template <class PBASE>
 void GaudiCommon<PBASE>::Exception( std::string_view msg, const StatusCode sc ) const {
   // increase local counter of exceptions
-  increment(m_exceptions,msg);
+  increment( m_exceptions, msg );
   Print( std::string{"Exception throw: "}.append( msg ), sc, MSG::FATAL ).ignore();
-  throw GaudiException( (this->name() + ":: ").append( msg), "", sc );
+  throw GaudiException( ( this->name() + ":: " ).append( msg ), "", sc );
 }
 // ============================================================================
 

@@ -302,8 +302,7 @@ public:
    *  @return       A pointer to the tool
    */
   template <class TOOL>
-  TOOL* tool( std::string_view type, std::string_view name, const IInterface* parent = 0,
-              bool create = true ) const;
+  TOOL* tool( std::string_view type, std::string_view name, const IInterface* parent = 0, bool create = true ) const;
   /** A useful method for the easy location of tools.
    *
    *  @code
@@ -477,7 +476,7 @@ public:
    *  @param sc     StatusCode
    */
   void Exception( std::string_view msg = "no message",
-                  const StatusCode   sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
+                  const StatusCode sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
 
 private:
   /// accessor to all owned counters
@@ -717,9 +716,9 @@ private:
   /// List of active  services
   mutable Services m_services;
   // ==========================================================================
-  static auto increment(Counter& c, std::string_view which) {
-        auto i = c.find(which);
-        return  i!=c.end() ? ++(i->second) : c.emplace(which,1).first->second;
+  static auto increment( Counter& c, std::string_view which ) {
+    auto i = c.find( which );
+    return i != c.end() ? ++( i->second ) : c.emplace( which, 1 ).first->second;
   }
   /// Counter of errors
   mutable Counter m_errors;

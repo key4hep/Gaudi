@@ -50,8 +50,10 @@ SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, std::string_view name
 
 SmartIF<IAuditor> AuditorSvc::findAuditor_( std::string_view name ) {
   // find an auditor by name, return 0 on error
-  auto it        = std::find_if( std::begin( m_pAudList ), std::end( m_pAudList ),
-                                 [item_name = Gaudi::Utils::TypeNameString( name ).name()]( const IAuditor* i ) { return i->name() == item_name; } );
+  auto it = std::find_if( std::begin( m_pAudList ), std::end( m_pAudList ),
+                          [item_name = Gaudi::Utils::TypeNameString( name ).name()]( const IAuditor* i ) {
+                            return i->name() == item_name;
+                          } );
   return SmartIF<IAuditor>{it != std::end( m_pAudList ) ? *it : nullptr};
 }
 
