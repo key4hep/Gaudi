@@ -417,7 +417,7 @@ namespace concurrency {
     /// Get node index
     const unsigned int& getNodeIndex() const { return m_nodeIndex; }
     /// Get node name
-    const std::string& getNodeName() const { return m_nodeName; }
+    const std::string& name() const { return m_nodeName; }
 
   public:
     PrecedenceRulesGraph* m_graph;
@@ -560,7 +560,7 @@ namespace concurrency {
     /// Destructor
     virtual ~DataNode() = default;
 
-    const DataObjID& getPath() { return m_data_object_path; }
+    const DataObjID& name() const { return m_data_object_path; }
 
     /// Entry point for a visitor
     virtual bool accept( IGraphVisitor& visitor ) {

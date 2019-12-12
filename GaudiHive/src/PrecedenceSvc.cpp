@@ -99,12 +99,23 @@ StatusCode PrecedenceSvc::initialize() {
   if ( m_verifyRules ) {
     ON_DEBUG debug() << "Verifying task precedence rules" << endmsg;
 
+    // Check if CF properties are self-consistent
     auto propValidator = concurrency::NodePropertiesValidator();
     m_PRGraph.accept( propValidator );
     if ( !propValidator.passed() )
       warning() << propValidator.reply() << endmsg;
     else
       ON_DEBUG debug() << propValidator.reply() << endmsg;
+
+    // Check for violations in the DF topology
+    auto prodValidator = concurrency::ProductionAmbiguityFinder();
+    m_PRGraph.accept( prodValidator );
+    if ( !prodValidator.passed() ) {
+      error() << prodValidator.reply() << endmsg;
+      return StatusCode::FAILURE;
+    } else {
+      ON_DEBUG debug() << prodValidator.reply() << endmsg;
+    }
   }
 
   if ( sc.isSuccess() ) info() << "PrecedenceSvc initialized successfully" << endmsg;

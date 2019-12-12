@@ -80,7 +80,7 @@ namespace concurrency {
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visitEnter( ConditionNode& node ) const {
 
-    if ( node.m_condSvc->isValidID( *( m_slot->eventContext ), node.getPath() ) )
+    if ( node.m_condSvc->isValidID( *( m_slot->eventContext ), node.name() ) )
       return false; // do not enter this ConditionNode if the condition has bee already loaded
 
     return true;
@@ -166,13 +166,13 @@ namespace concurrency {
 
     // Leave a sub-slot if this is the exit node
     EventSlot* oldSlot = nullptr;
-    if ( m_slot->parentSlot && m_slot->entryPoint == node.getNodeName() ) {
+    if ( m_slot->parentSlot && m_slot->entryPoint == node.name() ) {
       oldSlot = m_slot;
       m_slot  = m_slot->parentSlot;
     }
 
     // If children are in sub-slots, loop over all
-    auto searchResult = m_slot->subSlotsByNode.find( node.getNodeName() );
+    auto searchResult = m_slot->subSlotsByNode.find( node.name() );
     if ( searchResult != m_slot->subSlotsByNode.end() ) {
       bool breakout = false;
       for ( unsigned int slotIndex : searchResult->second ) {

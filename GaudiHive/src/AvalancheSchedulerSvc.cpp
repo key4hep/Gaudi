@@ -158,15 +158,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
       fatal() << "Could not convert IAlgorithm into Gaudi::Algorithm: this will result in a crash." << endmsg;
       return StatusCode::FAILURE;
     }
-    for ( auto id : algoPtr->outputDataObjs() ) {
-      auto r = globalOutp.insert( id );
-      if ( !r.second ) {
-        warning() << "multiple algorithms declare " << id
-                  << " as output! could be a single instance in multiple paths "
-                     "though, or control flow may guarantee only one runs...!"
-                  << endmsg;
-      }
-    }
+    for ( auto id : algoPtr->outputDataObjs() ) globalOutp.insert( id );
   }
 
   std::ostringstream ostdd;
