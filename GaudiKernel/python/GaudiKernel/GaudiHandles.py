@@ -38,6 +38,9 @@ class GaudiHandle(object):
         # return "%s:%s" % (self.__class__.__name__, self.toStringProperty())
         return self.toStringProperty()
 
+    def __opt_value__(self):
+        return self.toStringProperty()
+
     #
     # Several member functions which are the same as Configurables
     #
@@ -108,7 +111,6 @@ class ServiceHandle(GaudiHandle):
 class GaudiHandleArray(list):
     """A list of GaudiHandles. Only handles of one type are allowed, as specified by self.__class__.handleType
     """
-    __slots__ = ('typesAndNames')
     handleType = None  # must be set by derived class to the handle type
 
     def __init__(self, typesAndNames=None):
@@ -219,13 +221,6 @@ class GaudiHandleArray(list):
         if rep[-1] == ',':
             rep = rep[:-1]
         return rep + ']'
-
-    # pickle support
-    def __getstate__(self):
-        return {'typesAndNames': self.typesAndNames}
-
-    def __setstate__(self, dict):
-        self.typesAndNames = dict['typesAndNames']
 
 
 class ServiceHandleArray(GaudiHandleArray):

@@ -15,6 +15,12 @@ class DataObjectHandleBase(object):
         self.Mode = mode
         self.Type = _type
 
+    def __getstate__(self):
+        return {'Path': self.Path}
+
+    def __setstate__(self, state):
+        self.Path = state['Path']
+
     def __eq__(self, other):
         """
         Need especially Configurable.isPropertySet when checked against default.
@@ -60,3 +66,6 @@ class DataObjectHandleBase(object):
 
     def type(self):
         return self.Type
+
+    def __opt_value__(self):
+        return repr(str(self))

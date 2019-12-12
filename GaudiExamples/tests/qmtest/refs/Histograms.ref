@@ -1,29 +1,10 @@
-JobOptionsSvc        INFO # =======> /home/chris/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Histograms.opts
-JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
-JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
-JobOptionsSvc        INFO # (22,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::HistoProps/Histos2"]
-JobOptionsSvc        INFO # (23,1): SimpleHistos.HistoPrint = 1
-JobOptionsSvc        INFO # (24,1): SimpleHistos.OutputLevel = 2
-JobOptionsSvc        INFO # (27,1): Histos2.Histo2 = ["Title", -5, 5, 200]
-JobOptionsSvc        INFO # (28,1): Histos2.Histo2 = ["Title", -5, 5]
-JobOptionsSvc        INFO # (29,1): Histos2.Histo2 = [-5, 5]
-JobOptionsSvc        INFO # (30,1): Histos2.Histo2 = [-5, 5, "Title"]
-JobOptionsSvc        INFO # (31,1): Histos2.Histo2 = [-5, 5, "Title", 200]
-JobOptionsSvc        INFO # (32,1): Histos2.Histo2 = [-5, 5, 200, "Title"]
-JobOptionsSvc        INFO # (33,1): Histos2.Histo2 = [-5, 5, 200]
-JobOptionsSvc        INFO # (39,1): ApplicationMgr.EvtMax = 50000
-JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO # (47,1): ApplicationMgr.HistogramPersistency = "ROOT"
-JobOptionsSvc        INFO # (48,1): RootHistSvc.OutputFile = "histo.root"
-JobOptionsSvc        INFO # (57,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
-JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
-JobOptionsSvc        INFO # (63,1): HistogramDataSvc.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /home/chris/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Histograms.opts
+# setting LC_ALL to "C"
+# --> Including file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Histograms_c2.py'
+# <-- End of file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Histograms_c2.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r5)
-                                          running on localhost on Sat Dec  8 13:27:01 2018
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r2)
+                                          running on marco-XPS-13 on Tue Jul 10 09:18:48 2018
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
@@ -84,7 +65,6 @@ HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
-HistogramDataSvc     INFO Added stream file:../data/input.hbook as InFile
 HistogramDataSvc     INFO  Predefined 1D-Histograms:
 HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
 SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'

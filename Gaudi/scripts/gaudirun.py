@@ -6,21 +6,21 @@ import sys
 from tempfile import mkstemp
 
 
-def getArgsWithoutoProfilerInfo(args):
+def getArgsWithoutProfilerInfo(args):
     """
     Remove from the arguments the presence of the profiler and its output in
     order to relaunch the script w/o infinite loops.
 
-    >>> getArgsWithoutoProfilerInfo(['--profilerName', 'igprof', 'myopts.py'])
+    >>> getArgsWithoutProfilerInfo(['--profilerName', 'igprof', 'myopts.py'])
     ['myopts.py']
 
-    >>> getArgsWithoutoProfilerInfo(['--profilerName=igprof', 'myopts.py'])
+    >>> getArgsWithoutProfilerInfo(['--profilerName=igprof', 'myopts.py'])
     ['myopts.py']
 
-    >>> getArgsWithoutoProfilerInfo(['--profilerName', 'igprof', '--profilerExtraOptions', 'a b c', 'myopts.py'])
+    >>> getArgsWithoutProfilerInfo(['--profilerName', 'igprof', '--profilerExtraOptions', 'a b c', 'myopts.py'])
     ['myopts.py']
 
-    >>> getArgsWithoutoProfilerInfo(['--profilerName', 'igprof', '--options', 'a b c', 'myopts.py'])
+    >>> getArgsWithoutProfilerInfo(['--profilerName', 'igprof', '--options', 'a b c', 'myopts.py'])
     ['--options', 'a b c', 'myopts.py']
     """
     newargs = []
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         os.environ['LC_ALL'] = 'C'
 
     from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] <opts_file> ...")
+    parser = OptionParser(usage="%prog [options] <opts_file|function_id> ...")
     parser.add_option(
         "-n",
         "--dry-run",
@@ -389,7 +389,7 @@ if __name__ == "__main__":
         profilerOutput = opts.profilerOutput or (profilerName + ".output")
 
         # To restart the application removing the igprof option and prepending the string
-        args = getArgsWithoutoProfilerInfo(sys.argv)
+        args = getArgsWithoutProfilerInfo(sys.argv)
 
         igprofPerfOptions = "-d -pp -z -o igprof.pp.gz".split()
 
@@ -488,10 +488,20 @@ if __name__ == "__main__":
     from Gaudi.Main import gaudimain
     c = gaudimain()
 
+    from GaudiConfig2 import CALLABLE_FORMAT, mergeConfigs, invokeConfig, Configurable
+
+    callables = []
+    opt_files = []
+    for arg in args:
+        if CALLABLE_FORMAT.match(arg):
+            callables.append(arg)
+        else:
+            opt_files.append(arg)
+
     # Prepare the "configuration script" to parse (like this it is easier than
     # having a list with files and python commands, with an if statements that
     # decides to do importOptions or exec)
-    options = ["importOptions(%r)" % f for f in args]
+    options = ["importOptions(%r)" % f for f in opt_files]
     # The option lines are inserted into the list of commands using their
     # position on the command line
     optlines = list(opts.options)
@@ -551,6 +561,12 @@ if __name__ == "__main__":
     if 'GAUDI_TEMP_OPTS_FILE' in os.environ:
         os.remove(os.environ['GAUDI_TEMP_OPTS_FILE'])
         opts.use_temp_opts = False
+
+    # Run callables
+    config = mergeConfigs(*[invokeConfig(f) for f in callables])
+    # make configurations available to getAllOpts
+    # FIXME the whole machinery has to be inverted, to avoid relying on globals
+    Configurable.instances = mergeConfigs(Configurable.instances, config)
 
     if opts.verbose and not opts.use_temp_opts:
         c.printconfig(opts.old_opts, opts.all_opts)

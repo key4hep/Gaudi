@@ -16,7 +16,6 @@ JobOptionsSvc        INFO # (39,1): ApplicationMgr.EvtMax = 50000
 JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (47,1): ApplicationMgr.HistogramPersistency = "ROOT"
 JobOptionsSvc        INFO # (48,1): RootHistSvc.OutputFile = "histo.root"
-JobOptionsSvc        INFO # (57,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
 JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
 JobOptionsSvc        INFO # (63,1): HistogramDataSvc.OutputLevel = 2
 JobOptionsSvc        INFO # =======> /home/chris/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Aida2Root.opts
@@ -86,7 +85,6 @@ HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
-HistogramDataSvc     INFO Added stream file:../data/input.hbook as InFile
 HistogramDataSvc     INFO  Predefined 1D-Histograms:
 HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
 SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'

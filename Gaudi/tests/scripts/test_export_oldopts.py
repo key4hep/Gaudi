@@ -41,10 +41,10 @@ try:
     print("==========================================")
     print("= cmd:", " ".join(cmd))
     out, err = proc.communicate()
-    print(out)
+    print(out.decode('utf-8'))
     if err:
         print("=== stderr: ===")
-        print(err)
+        print(err.decode('utf-8'))
     expected = eval(open(outname + ".1.py").read())
 
     # parse the option file, export old options, parse again
@@ -60,10 +60,10 @@ try:
     print("==========================================")
     print("= cmd:", " ".join(cmd))
     out, err = proc.communicate()
-    print(out)
+    print(out.decode('utf-8'))
     if err:
         print("=== stderr: ===")
-        print(err)
+        print(err.decode('utf-8'))
 
     cmd = [
         "python",
@@ -77,10 +77,10 @@ try:
     print("==========================================")
     print("= cmd:", " ".join(cmd))
     out, err = proc.communicate()
-    print(out)
+    print(out.decode('utf-8'))
     if err:
         print("=== stderr: ===")
-        print(err)
+        print(err.decode('utf-8'))
     result = eval(open(outname + ".2.py").read())
 
     if result != expected:

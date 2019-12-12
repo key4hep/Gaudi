@@ -178,6 +178,13 @@ test_public_headers_build:
     paths:
       - .ccache
 
+test-python3:
+  image: python:3-slim
+  stage: test
+  script:
+    - pip install nose coverage
+    - PYTHONPATH=GaudiConfiguration/python nosetests -v --with-coverage --cover-package=GaudiConfig2 --cover-min-percentage=100 GaudiConfiguration/tests/nose
+
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration
 deploy-doxygen:
