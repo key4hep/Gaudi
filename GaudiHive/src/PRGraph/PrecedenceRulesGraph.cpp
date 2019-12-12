@@ -99,17 +99,17 @@ namespace concurrency {
 
           // Say if it's conditions data or not
           if ( castNode )
-            output << indent << "missing conditions data: " << dataNode->getPath() << std::endl;
+            output << indent << "missing conditions data: " << dataNode->name() << std::endl;
           else
-            output << indent << "missing data: " << dataNode->getPath() << std::endl;
+            output << indent << "missing data: " << dataNode->name() << std::endl;
 
           // Find out if the algorithm needs it because of a tool
-          DataHandleFinder finder( dataNode->getPath() );
+          DataHandleFinder finder( dataNode->name() );
           this->getAlgorithm()->acceptDHVisitor( &finder );
           if ( finder.holderNames().size() > 1 ) {
             output << indent << "required by tool:";
             for ( auto const& holderName : finder.holderNames() ) {
-              if ( holderName != this->getNodeName() ) output << " " << holderName;
+              if ( holderName != this->name() ) output << " " << holderName;
             }
             output << std::endl;
           }
@@ -117,7 +117,7 @@ namespace concurrency {
           // State which algs produce this data
           output << indent << "can be produced by alg(s): ";
           for ( auto algoNode : dataNode->getProducers() ) {
-            output << "( " << algoNode->getNodeName() << " in state: " << states[algoNode->getAlgoIndex()] << " ) ";
+            output << "( " << algoNode->name() << " in state: " << states[algoNode->getAlgoIndex()] << " ) ";
           }
           output << std::endl;
 
@@ -218,8 +218,7 @@ namespace concurrency {
             parent->m_children.erase( std::remove( parent->m_children.begin(), parent->m_children.end(), algoNode ),
                                       parent->m_children.end() );
             // clean up also auxiliary BGL-based graph of precedence rules
-            if ( m_enableAnalysis )
-              boost::remove_edge( node( algoNode->getNodeName() ), node( parent->getNodeName() ), m_PRGraph );
+            if ( m_enableAnalysis ) boost::remove_edge( node( algoNode->name() ), node( parent->name() ), m_PRGraph );
           }
           algoNode->m_parents.clear();
 
@@ -278,8 +277,7 @@ namespace concurrency {
         algo.second->addOutputDataNode( dataNode );
 
         // Mirror the action above in the BGL-based graph
-        if ( m_enableAnalysis )
-          boost::add_edge( node( algo.second->getNodeName() ), node( output.fullKey() ), m_PRGraph );
+        if ( m_enableAnalysis ) boost::add_edge( node( algo.second->name() ), node( output.fullKey() ), m_PRGraph );
       }
     }
 
@@ -296,8 +294,7 @@ namespace concurrency {
           algo.second->addInputDataNode( dataNode );
 
           // Mirror the action above in the BGL-based graph
-          if ( m_enableAnalysis )
-            boost::add_edge( node( input.fullKey() ), node( algo.second->getNodeName() ), m_PRGraph );
+          if ( m_enableAnalysis ) boost::add_edge( node( input.fullKey() ), node( algo.second->name() ), m_PRGraph );
         }
       }
     }
@@ -511,7 +508,7 @@ namespace concurrency {
     AlgorithmNode* an = dynamic_cast<AlgorithmNode*>( node );
     if ( dn != 0 ) {
       if ( node != m_headNode ) {
-        ost << node->getNodeName() << " [Seq] ";
+        ost << node->name() << " [Seq] ";
         ost << ( ( dn->m_modeConcurrent ) ? " [Concurrent] " : " [Sequential] " );
         ost << ( ( dn->m_modePromptDecision ) ? " [Prompt] " : "" );
         ost << ( ( dn->m_modeOR ) ? " [OR] " : "" );
@@ -520,7 +517,7 @@ namespace concurrency {
       }
       for ( const auto& i : dn->getDaughters() ) dumpControlFlow( ost, i, indent + 1 );
     } else if ( an != 0 ) {
-      ost << node->getNodeName() << " [Alg] ";
+      ost << node->name() << " [Alg] ";
       if ( an != 0 ) {
         auto ar = an->getAlgorithm();
         ost << " [n= " << ar->cardinality() << "]";
@@ -542,13 +539,13 @@ namespace concurrency {
 
     for ( auto& pair : m_dataPathToDataNodeMap ) {
 
-      for ( auto algoNode : pair.second->getProducers() ) ost << idt << "  " << algoNode->getNodeName() << "\n";
+      for ( auto algoNode : pair.second->getProducers() ) ost << idt << "  " << algoNode->name() << "\n";
 
       ost << idt << "  V\n";
       ost << idt << "  o " << pair.first << "\n";
       ost << idt << "  V\n";
 
-      for ( auto algoNode : pair.second->getConsumers() ) ost << idt << "  " << algoNode->getNodeName() << "\n";
+      for ( auto algoNode : pair.second->getConsumers() ) ost << idt << "  " << algoNode->name() << "\n";
 
       ost << idt << "====================================\n";
     }
@@ -634,8 +631,8 @@ namespace concurrency {
 
   void PrecedenceRulesGraph::addEdgeToPrecTrace( const AlgorithmNode* u, const AlgorithmNode* v ) {
 
-    std::string u_name = u == nullptr ? "ENTRY" : u->getNodeName();
-    std::string v_name = v->getNodeName();
+    std::string u_name = u == nullptr ? "ENTRY" : u->name();
+    std::string v_name = v->name();
 
     precedence::AlgoTraceVertex source;
 

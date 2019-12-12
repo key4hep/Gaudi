@@ -46,7 +46,7 @@ namespace concurrency {
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v     = *vp.first;
       auto                        index = get( &AlgoTraceProps::m_name, execPlan );
-      if ( index[v] == node.getNodeName() ) {
+      if ( index[v] == node.name() ) {
         runThroughAdjacents( v, execPlan );
         float rank = m_nodesSucceeded;
         node.setRank( rank );
@@ -94,7 +94,7 @@ namespace concurrency {
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v     = *vp.first;
       auto                        index = get( &AlgoTraceProps::m_name, execPlan );
-      if ( index[v] == node.getNodeName() ) {
+      if ( index[v] == node.name() ) {
         auto  index_runtime = get( &AlgoTraceProps::m_runtime, execPlan );
         float rank          = index_runtime[v];
         node.setRank( rank );
@@ -126,7 +126,7 @@ namespace concurrency {
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v     = *vp.first;
       auto                        index = get( &precedence::AlgoTraceProps::m_name, execPlan );
-      if ( index[v] == node.getNodeName() ) {
+      if ( index[v] == node.name() ) {
         auto  index_eccentricity = get( &precedence::AlgoTraceProps::m_eccentricity, execPlan );
         float rank               = index_eccentricity[v];
         node.setRank( rank );
