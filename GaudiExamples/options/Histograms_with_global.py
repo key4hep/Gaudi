@@ -6,12 +6,14 @@ C.AuditorSvc('AuditorSvc', Auditors=['ChronoAuditor'])
 # algorithms
 algorithms = [
     C.GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=3),
-    C.Gaudi.Examples.HistoProps('Histos2', Histo2=(-5, 5, 200)),
+    C.Gaudi.Examples.R7.GaudiHistoAlgorithm('SimpleR7Histos', OutputLevel=2),
+    C.Gaudi.Examples.Boost.GaudiHistoAlgorithm(
+        'SimpleBoostHistos', OutputLevel=2),
 ]
 
 app = C.ApplicationMgr(
     'ApplicationMgr',
-    TopAlg=['SimpleHistos', 'Histos2'],
+    TopAlg=['SimpleHistos', 'SimpleR7Histos', 'SimpleBoostHistos'],
     EvtMax=50000,
     EvtSel='NONE',
 )
@@ -37,5 +39,5 @@ C.RootHistCnv.PersSvc('RootHistSvc', OutputFile='histo.root')
 
 C.HistogramSvc(
     'HistogramDataSvc',
-    Predefined1DHistos={"/stat/Histos2/2": ("TEST2", -100, 200)},
-    OutputLevel=2)
+    OutputLevel=2,
+    Input=["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"])
