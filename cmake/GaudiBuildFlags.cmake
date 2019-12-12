@@ -196,9 +196,10 @@ endif()
 set(GAUDI_ARCH_DEFAULT)
 if(BINARY_TAG_MICROARCH)
   set(GAUDI_ARCH_DEFAULT ${BINARY_TAG_MICROARCH})
-elseif(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0" AND
-   BINARY_TAG_ARCH STREQUAL "x86_64")
-  # Special case: x86_64-*-gcc6 or higher is equivalent to x86_64+sse4.2-*
+elseif( ( (BINARY_TAG_COMP_NAME STREQUAL "gcc"   AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0" ) OR 
+          (BINARY_TAG_COMP_NAME STREQUAL "clang" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0" ) ) AND
+    BINARY_TAG_ARCH STREQUAL "x86_64")
+  # Special case: x86_64-*-{gcc6,clang6} or higher is equivalent to x86_64+sse4.2-*
   set(GAUDI_ARCH_DEFAULT "sse4.2")
 else()
   # if no extra flags and not special case, compare host and target architecture
