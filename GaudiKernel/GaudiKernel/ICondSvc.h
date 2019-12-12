@@ -4,6 +4,7 @@
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/EventContext.h"
+#include "GaudiKernel/EventIDRange.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IService.h"
 
@@ -49,6 +50,9 @@ public:
 
   /// dump the condition store
   virtual void dump( std::ostream& ost ) const = 0;
+
+  /// retrieve all valid ranges for one Object ID
+  virtual StatusCode validRanges( std::vector<EventIDRange>& ranges, const DataObjID& id ) const = 0;
 
   /// Asynchronously setup conditions
   virtual ConditionSlotFuture* startConditionSetup( const EventContext& ctx ) = 0;

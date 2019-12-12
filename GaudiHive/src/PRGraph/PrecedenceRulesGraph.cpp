@@ -82,13 +82,13 @@ namespace concurrency {
       for ( auto dataNode : this->getInputDataNodes() ) {
 
         // Was the data produced?
-        ConditionNode*    castNode = dynamic_cast<ConditionNode*>( dataNode );
+        ConditionNode*    conditionNode = dynamic_cast<ConditionNode*>( dataNode );
         DataReadyPromoter visitor( slot, {} );
         bool              wasProduced = false;
-        if ( castNode ) {
+        if ( conditionNode ) {
           // ConditionNodes always request data on visit()
           // Instead take the opposite of visitEnter(), since you may not enter if it already exists
-          wasProduced = !visitor.visitEnter( *castNode );
+          wasProduced = !visitor.visitEnter( *conditionNode );
         } else {
           // For DataNodes, the check is done in visit()
           wasProduced = visitor.visit( *dataNode );
@@ -98,7 +98,7 @@ namespace concurrency {
         if ( !wasProduced ) {
 
           // Say if it's conditions data or not
-          if ( castNode )
+          if ( conditionNode )
             output << indent << "missing conditions data: " << dataNode->name() << std::endl;
           else
             output << indent << "missing data: " << dataNode->name() << std::endl;
@@ -114,15 +114,24 @@ namespace concurrency {
             output << std::endl;
           }
 
-          // State which algs produce this data
-          output << indent << "can be produced by alg(s): ";
-          for ( auto algoNode : dataNode->getProducers() ) {
-            output << "( " << algoNode->name() << " in state: " << states[algoNode->getAlgoIndex()] << " ) ";
+          if ( conditionNode ) {
+            // State which IOVs the data exists for
+            output << indent << "current EventID: " << EventIDBase( slot.eventContext->eventID() ) << std::endl;
+            std::vector<EventIDRange> validRanges;
+            conditionNode->m_condSvc->validRanges( validRanges, dataNode->name() );
+            for ( auto& range : validRanges ) { output << indent << "interval of validity: " << range << std::endl; }
+            if ( validRanges.empty() ) output << indent << "no interval(s) of validity" << std::endl;
+          } else {
+            // State which algs produce this data
+            output << indent << "can be produced by alg(s): ";
+            for ( auto algoNode : dataNode->getProducers() ) {
+              output << "( " << algoNode->name() << " in state: " << states[algoNode->getAlgoIndex()] << " ) ";
+            }
+            output << std::endl;
           }
-          output << std::endl;
 
           // See where data is available (ignore conditions, since these are top-level)
-          if ( !castNode ) {
+          if ( !conditionNode ) {
             std::vector<EventSlot>* testSubSlots = &slot.allSubSlots;
             auto*                   subSlotMap   = &slot.subSlotsByNode;
 
