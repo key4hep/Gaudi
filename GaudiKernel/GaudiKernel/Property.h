@@ -36,6 +36,8 @@ namespace Gaudi {
       const std::string name() const { return std::string{m_name}; }
       /// property documentation
       std::string documentation() const { return std::string{m_documentation}; }
+      /// property semantics
+      std::string semantics() const { return std::string{m_semantics}; }
       /// property type-info
       const std::type_info* type_info() const { return m_typeinfo; }
       /// property type
@@ -84,6 +86,8 @@ namespace Gaudi {
       void setName( std::string value ) { m_name = to_view( std::move( value ) ); }
       /// set the documentation string
       void setDocumentation( std::string value ) { m_documentation = to_view( std::move( value ) ); }
+      /// set the semantics string
+      void setSemantics( std::string value ) { m_semantics = to_view( std::move( value ) ); }
       /// the printout of the property value
       virtual std::ostream& fillStream( std::ostream& ) const;
       /// clones the current property
@@ -108,9 +112,11 @@ namespace Gaudi {
 
     protected:
       /// constructor from the property name and the type
-      PropertyBase( const std::type_info& type, std::string name = "", std::string doc = "" )
+      PropertyBase( const std::type_info& type, std::string name = "", std::string doc = "",
+                    std::string semantics = "" )
           : m_name( to_view( std::move( name ) ) )
           , m_documentation( to_view( std::move( doc ) ) )
+          , m_semantics( to_view( std::move( semantics ) ) )
           , m_typeinfo( &type ) {}
       /// constructor from the property name and the type
       PropertyBase( std::string name, const std::type_info& type )
@@ -127,6 +133,8 @@ namespace Gaudi {
       std::string_view m_name;
       /// property doc string
       std::string_view m_documentation;
+      /// property semantics
+      std::string_view m_semantics;
       /// property type
       const std::type_info* m_typeinfo;
       /// type of owner of the property (if defined)
@@ -375,8 +383,8 @@ namespace Gaudi {
     // ==========================================================================
     /// the constructor with property name, value and documentation.
     template <class T = StorageType>
-    Property( std::string name, T&& value, std::string doc = "" )
-        : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
+    Property( std::string name, T&& value, std::string doc = "", std::string semantics = "" )
+        : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ), std::move( semantics ) )
         , m_value( std::forward<T>( value ) ) {
       m_verifier( m_value );
     }
@@ -391,9 +399,9 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
-    Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
-        : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) ) {
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, std::string doc = "", std::string semantics = "" )
+        : Property( std::move( name ), std::forward<T>( value ), std::move( doc ), std::move( semantics ) ) {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
     }
@@ -402,8 +410,8 @@ namespace Gaudi {
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
-              std::string doc = "" )
-        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ) ) {
+              std::string doc = "", std::string semantics = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ), std::move( semantics ) ) {
       declareUpdateHandler( std::move( handler ) );
     }
 
@@ -411,24 +419,28 @@ namespace Gaudi {
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )( PropertyBase& ),
-              std::string doc = "" )
+              std::string doc = "", std::string semantics = "" )
         : Property(
               owner, std::move( name ), std::forward<T>( value ),
-              [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) ) {}
+              [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ),
+              std::move( semantics ) ) {}
     /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
-    Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "" )
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "",
+              std::string semantics = "" )
         : Property(
               owner, std::move( name ), std::forward<T>( value ),
-              [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ) ) {}
+              [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ), std::move( semantics ) ) {
+    }
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
-              Details::Property::ImmediatelyInvokeHandler invoke, std::string doc = "" )
-        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ) ) {
+              Details::Property::ImmediatelyInvokeHandler invoke, std::string doc = "", std::string semantics = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ),
+                    std::move( semantics ) ) {
       if ( invoke ) useUpdateHandler();
     }
 

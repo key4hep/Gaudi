@@ -523,6 +523,8 @@ main()")
   find_program(gaudirun_cmd gaudirun.py HINTS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
+  find_program(confdb2_merge_cmd merge_confdb2_parts HINTS ${binary_paths})
+
   # genconf is special because it must be known before we actually declare the
   # target in GaudiKernel/src/Util (because we need to be dynamic and agnostic).
   if(TARGET genconf)
@@ -646,6 +648,7 @@ main()")
 
   #--- Special global targets for merging files.
   gaudi_merge_files(ConfDB lib ${CMAKE_PROJECT_NAME}.confdb)
+  gaudi_merge_files(ConfDB2 lib ${CMAKE_PROJECT_NAME}.confdb2)
   gaudi_merge_files(ComponentsList lib ${CMAKE_PROJECT_NAME}.components)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
@@ -1861,7 +1864,7 @@ function(gaudi_generate_configurables library)
   endif()
 
   add_custom_command(
-    OUTPUT ${genconf_products} ${outdir}/${library}.confdb
+    OUTPUT ${genconf_products} ${outdir}/${library}.confdb ${outdir}/${library}.confdb2_part
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
@@ -1878,6 +1881,8 @@ function(gaudi_generate_configurables library)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   # Notify the project level target
   gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}.confdb)
+  set_property(GLOBAL PROPERTY MergedConfDB2_COMMAND ${env_cmd} --xml ${env_xml} ${confdb2_merge_cmd})
+  gaudi_merge_files_append(ConfDB2 ${library}Conf ${outdir}/${library}.confdb2_part)
   #----Installation details-------------------------------------------------------
   install(FILES ${genconf_products} DESTINATION python/${package} OPTIONAL)
 

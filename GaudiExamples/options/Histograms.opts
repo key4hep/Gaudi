@@ -54,7 +54,7 @@ RootHistSvc.OutputFile  = "histo.root";
 //RndmGenSvc.Engine.Seeds = { 70, 71, 0 };
 
 //Input Histogram
-HistogramDataSvc.Input = { "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'" };
+//HistogramDataSvc.Input = { "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'" };
 
 HistogramDataSvc.Predefined1DHistos  =
   {

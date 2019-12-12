@@ -156,7 +156,64 @@ class BootstrapHelper(object):
         return (a, b, c)
 
 
-_bootstrap = None
+def getAllOpts(explicit_defaults=False):
+    from itertools import chain
+    # old conf
+    from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
+    old_opts = {}
+
+    # some algorithms may be generater when we call "getValuedProperties"
+    # so we need a few iterations before we get the full list
+    # (see GaudiConfig.ControlFlow)
+    needed_conf = []
+    count = 0
+    new_count = -1
+    while count != new_count:
+        count = new_count
+        needed_conf = getNeededConfigurables()
+        new_count = len(needed_conf)
+        for n in needed_conf:
+            c = Configurable.allConfigurables[n]
+            if hasattr(c, 'getValuedProperties'):
+                c.getValuedProperties()
+
+    for n in needed_conf:
+        c = Configurable.allConfigurables[n]
+        items = (chain(c.getDefaultProperties().items(),
+                       c.getValuedProperties().items())
+                 if explicit_defaults else c.getValuedProperties().items())
+        for p, v in items:
+            # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
+            if hasattr(Configurable, "PropertyReference") and type(
+                    v) == Configurable.PropertyReference:
+                # this is done in "getFullName", but the exception is ignored,
+                # so we do it again to get it
+                v = v.__resolve__()
+            if isinstance(v, str):
+                # properly escape quotes in the string (see gaudi/Gaudi#78)
+                v = '"%s"' % v.replace('"', '\\"')
+            elif sys.version_info < (3, ) and isinstance(v, long):
+                v = '%d' % v  # prevent pending 'L'
+            elif hasattr(v, '__opt_value__'):
+                v = v.__opt_value__()
+            old_opts['.'.join((n, p))] = str(v)
+
+    import GaudiConfig2
+    opts = GaudiConfig2.all_options(explicit_defaults)
+
+    conflicts = [
+        n for n in set(opts).intersection(old_opts) if opts[n] != old_opts[n]
+    ]
+    if conflicts:
+        conflicts.sort()
+        log.error('Some properties are set in old and new style configuration')
+        log.warning('name: old -> new')
+        for n in conflicts:
+            log.warning('%s: %s -> %s', n, old_opts[n], opts[n])
+            sys.exit(10)
+
+    opts.update(old_opts)
+    return opts
 
 
 def toOpt(value):
@@ -180,6 +237,36 @@ def toOpt(value):
         return '[{0}]'.format(', '.join(map(toOpt, value)))
     else:
         return repr(value)
+
+
+def parseOpt(s):
+    '''
+    Helper to parse option strings to Python values.
+
+    Ideally it should just be "eval", but the string parser of Gaudi
+    is different from the Python one, so we get string options that
+    cannot be just evaluated.
+
+    >>> print(parseOpt('123'))
+    123
+    >>> print(parseOpt('"some\\n\\\\"text\\\\""'))
+    some
+    "text"
+    >>> print(parseOpt(''))
+    <BLANKLINE>
+
+    (see gaudi/Gaudi#78)
+    '''
+    import re
+    quoted_string = re.compile(r'^"(.*)"$', re.DOTALL)
+    # FIXME: this is needed because we cannot use repr for strings
+    #        (see gaudi/Gaudi#78)
+    if not s:  # pass through empty strings
+        return s
+    m = quoted_string.match(s)
+    if m:
+        return m.group(1).replace('\\"', '"')
+    return eval(s)
 
 
 class gaudimain(object):
@@ -231,8 +318,13 @@ class gaudimain(object):
 
     def generatePyOutput(self, all=False):
         from pprint import pformat
-        conf_dict = Configuration.configurationDict(all)
-        formatted = pformat(conf_dict)
+        from collections import defaultdict
+        optDict = defaultdict(dict)
+        allOpts = getAllOpts(all)
+        for key in allOpts:
+            c, p = key.rsplit('.', 1)
+            optDict[c][p] = parseOpt(allOpts[key])
+        formatted = pformat(dict(optDict))
         # Python 2 compatibility
         if six.PY2:
             return formatted
@@ -242,16 +334,10 @@ class gaudimain(object):
             return re.sub(r'"\n +"', '', formatted, flags=re.MULTILINE)
 
     def generateOptsOutput(self, all=False):
-        conf_dict = Configuration.configurationDict(all)
-        out = []
-        names = list(conf_dict.keys())
-        names.sort()
-        for n in names:
-            props = list(conf_dict[n].keys())
-            props.sort()
-            for p in props:
-                out.append('%s.%s = %s;' % (n, p, toOpt(conf_dict[n][p])))
-        return "\n".join(out)
+        opts = getAllOpts(all)
+        keys = sorted(opts)
+        return '\n'.join(
+            '{} = {};'.format(key, toOpt(parseOpt(opts[key]))) for key in keys)
 
     def _writepickle(self, filename):
         # --- Lets take the first file input file as the name of the pickle file
@@ -270,7 +356,6 @@ class gaudimain(object):
         if not all:
             msg += ' (different from default)'
         log.info(msg)
-        conf_dict = Configuration.configurationDict(all)
         if old_format:
             print(self.generateOptsOutput(all))
         else:
@@ -326,34 +411,11 @@ class gaudimain(object):
             def expandvars(data):
                 return data
 
-        from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
+        from GaudiKernel.Proxy.Configurable import Configurable
 
         self.log.debug('runSerial: apply options')
-        conf_dict = {'ApplicationMgr.JobOptionsType': '"NONE"'}
-
-        # FIXME: this is to make sure special properties are correctly
-        # expanded before we fill conf_dict
-        for c in list(Configurable.allConfigurables.values()):
-            if hasattr(c, 'getValuedProperties'):
-                c.getValuedProperties()
-
-        for n in getNeededConfigurables():
-            c = Configurable.allConfigurables[n]
-            for p, v in c.getValuedProperties().items():
-                v = expandvars(v)
-                # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
-                if hasattr(Configurable, "PropertyReference") and type(
-                        v) == Configurable.PropertyReference:
-                    # this is done in "getFullName", but the exception is ignored,
-                    # so we do it again to get it
-                    v = v.__resolve__()
-                if type(v) == str:
-                    # properly escape quotes in the string
-                    v = '"%s"' % v.replace('"', '\\"')
-                elif sys.version_info < (
-                        3, ) and type(v) == long:  # Python 3 compatibility
-                    v = '%d' % v  # prevent pending 'L'
-                conf_dict['{}.{}'.format(n, p)] = str(v)
+        conf_dict = expandvars(getAllOpts())
+        conf_dict['ApplicationMgr.JobOptionsType'] = '"NONE"'
 
         if self.printsequence:
             conf_dict['ApplicationMgr.PrintAlgsSequence'] = 'true'

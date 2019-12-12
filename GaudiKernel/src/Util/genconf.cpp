@@ -121,6 +121,9 @@ namespace {
   }
   std::ostream& operator<<( std::ostream& os, component_t type ) { return os << toString( type ); }
 
+  std::set<std::string> ignored_interfaces{
+      {"IInterface", "IProperty", "INamedInterface", "IAlgorithm", "IAlgTool", "IService", "IAuditor"}};
+
   //-----------------------------------------------------------------------------
   /// Translate a valid C++ typename into a valid python one
   std::string pythonizeName( const std::string& name ) {
@@ -173,6 +176,8 @@ class configGenerator {
   /// Configurables and know their default values, host module,...
   stringstream m_dbBuf;
 
+  stringstream m_db2Buf;
+
   /// Configurable customization. Contains customization for:
   ///  - Name of the module where configurable base classes are defined
   ///  - Name of the configurable base class for the Algorithm component
@@ -217,7 +222,7 @@ public:
 
 private:
   bool genComponent( const std::string& libName, const std::string& componentName, component_t componentType,
-                     const vector<PropertyBase*>& properties );
+                     const vector<PropertyBase*>& properties, const std::vector<std::string>& interfaces );
   void genImport( std::ostream& s, const boost::format& frmt, std::string indent );
   void genHeader( std::ostream& pyOut, std::ostream& dbOut );
   void genBody( std::ostream& pyOut, std::ostream& dbOut ) {
@@ -472,6 +477,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     m_importDataObjectHandles = false;
     m_pyBuf.str( "" );
     m_dbBuf.str( "" );
+    m_db2Buf.str( "" );
 
     //--- Load component library ----------------------------------------------
     System::ImageHandle handle;
@@ -565,7 +571,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
       if ( prop ) {
-        if ( !genComponent( iLib, name, type, prop->getProperties() ) ) { allGood = false; }
+        if ( !genComponent( iLib, name, type, prop->getProperties(), prop->getInterfaceNames() ) ) { allGood = false; }
         prop.reset();
       } else {
         LOG_ERROR << "could not cast IInterface* object to an IProperty* !";
@@ -587,6 +593,12 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     if ( !userModule.empty() ) py << "from " << userModule << " import *" << endl;
     genBody( py, db );
     genTrailer( py, db );
+
+    {
+      const std::string db2Name = ( fs::path( m_outputDirName ) / fs::path( iLib + ".confdb2_part" ) ).string();
+      std::fstream      db2( db2Name, std::ios_base::out | std::ios_base::trunc );
+      db2 << "{\n" << m_db2Buf.str() << "}\n";
+    }
 
   } //> end loop over libraries
 
@@ -660,13 +672,39 @@ void configGenerator::genTrailer( std::ostream& /*py*/, std::ostream& db )
 
 //-----------------------------------------------------------------------------
 bool configGenerator::genComponent( const std::string& libName, const std::string& componentName,
-                                    component_t componentType, const vector<PropertyBase*>& properties )
+                                    component_t componentType, const vector<PropertyBase*>& properties,
+                                    const vector<std::string>& interfaces )
 //-----------------------------------------------------------------------------
 {
   auto cname = pythonizeName( componentName );
 
   std::vector<std::pair<std::string, std::string>> propDoc;
   propDoc.reserve( properties.size() );
+
+  m_db2Buf << "    '" << componentName << "': {\n";
+  m_db2Buf << "        '__component_type__': '";
+  switch ( componentType ) {
+  case component_t::Algorithm:
+    m_db2Buf << "Algorithm";
+    break;
+  case component_t::AlgTool:
+    m_db2Buf << "AlgTool";
+    break;
+  case component_t::ApplicationMgr: // FALLTROUGH
+  case component_t::Service:
+    m_db2Buf << "Service";
+    break;
+  case component_t::Auditor:
+    m_db2Buf << "Auditor";
+    break;
+  default:
+    m_db2Buf << "Unknown";
+  }
+  m_db2Buf << "',\n        '__interfaces__': (";
+  for ( const auto& intf : std::set<std::string>( begin( interfaces ), end( interfaces ) ) ) {
+    if ( ignored_interfaces.find( intf ) == end( ignored_interfaces ) ) { m_db2Buf << '\'' << intf << "', "; }
+  }
+  m_db2Buf << "),\n        'properties': {\n";
 
   m_pyBuf << "\nclass " << cname << "( " << m_configurable[componentType] << " ) :\n";
   m_pyBuf << "  __slots__ = { \n";
@@ -685,6 +723,12 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
     string pvalue, ptype;
     pythonizeValue( prop, pvalue, ptype );
     m_pyBuf << "    '" << pname << "' : " << pvalue << ", # " << ptype << "\n";
+
+    m_db2Buf << "            '" << pname << "': ('" << System::typeinfoName( *prop->type_info() ) << "', " << pvalue
+             << ", '''" << prop->documentation() << " [" << prop->ownerTypeName() << "]'''";
+    auto sem = prop->semantics();
+    if ( !sem.empty() ) { m_db2Buf << ", '" << sem << '\''; }
+    m_db2Buf << "),\n";
 
     if ( prop->documentation() != "none" ) {
       propDoc.emplace_back( pname, prop->documentation() + " [" + prop->ownerTypeName() + "]" );
@@ -713,6 +757,8 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
   const string pyName  = ( fs::path( m_outputDirName ) / fs::path( libName + "Conf.py" ) ).string();
   const string modName = fs::basename( fs::path( pyName ).leaf() );
 
+  m_db2Buf << "        },\n    },\n";
+
   // now the db part
   m_dbBuf << m_pkgName << "." << modName << " " << libName << " " << cname << "\n" << flush;
 
@@ -730,12 +776,10 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     ptype  = "bool";
   } else if ( ti == typeIndex<char>() || ti == typeIndex<signed char>() || ti == typeIndex<unsigned char>() ||
               ti == typeIndex<short>() || ti == typeIndex<unsigned short>() || ti == typeIndex<int>() ||
-              ti == typeIndex<unsigned int>() || ti == typeIndex<long>() || ti == typeIndex<unsigned long>() ) {
+              ti == typeIndex<unsigned int>() || ti == typeIndex<long>() || ti == typeIndex<unsigned long>() ||
+              ti == typeIndex<long long>() || ti == typeIndex<unsigned long long>() ) {
     pvalue = cvalue;
     ptype  = "int";
-  } else if ( ti == typeIndex<long long>() || ti == typeIndex<unsigned long long>() ) {
-    pvalue = "long(" + cvalue + ")";
-    ptype  = "long";
   } else if ( ti == typeIndex<float>() || ti == typeIndex<double>() ) {
     // forces python to handle this as a float: put a dot in there...
     pvalue = boost::to_lower_copy( cvalue );

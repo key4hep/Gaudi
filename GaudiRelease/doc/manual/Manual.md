@@ -6,6 +6,7 @@
 * @subpage GaudiPluginService-readme
 * @subpage MetaDataSvc-readme
 * @subpage profiling_tools
+* @subpage GaudiConfig2-readme
 
 ## For Mainatiners
 

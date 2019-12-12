@@ -193,15 +193,21 @@ protected:
                                   ::exit( 0 );
                                 },
                                 "For SI's \"Exit\" command via callback"};
-  Gaudi::Property<std::vector<std::string>> m_topAlgNameList{
-      this, "TopAlg", {}, &ApplicationMgr::evtLoopPropertyHandler, "List of top level algorithms names"};
+  Gaudi::Property<std::vector<std::string>> m_topAlgNameList{this,
+                                                             "TopAlg",
+                                                             {},
+                                                             &ApplicationMgr::evtLoopPropertyHandler,
+                                                             "List of top level algorithms names",
+                                                             "vector<Algorithm>"};
   Gaudi::Property<std::vector<std::string>> m_outStreamNameList{
       this, "OutStream", {}, &ApplicationMgr::evtLoopPropertyHandler, "List of output stream names"};
   Gaudi::Property<std::string> m_outStreamType{this, "OutStreamType", "OutputStream",
                                                &ApplicationMgr::evtLoopPropertyHandler,
                                                "[[deprecated]] Output stream type"};
-  Gaudi::Property<std::string> m_messageSvcType{this, "MessageSvcType", "MessageSvc", "MessageSvc type"};
-  Gaudi::Property<std::string> m_jobOptionsSvcType{this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type"};
+  Gaudi::Property<std::string> m_messageSvcType{this, "MessageSvcType", "MessageSvc", "MessageSvc type",
+                                                "Service:IMessageSvc"};
+  Gaudi::Property<std::string> m_jobOptionsSvcType{this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type",
+                                                   "Service:IJobOptionsSvc"};
 
   std::string                m_name        = "ApplicationMgr";             ///< Name
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::OFFLINE; ///< Internal State
@@ -222,8 +228,9 @@ protected:
   //
 
   Gaudi::Property<int> m_evtMax{this, "EvtMax", -1, "Number of events to be processed (-1 means all events)"};
-  Gaudi::Property<std::vector<std::string>> m_extSvcNameList{this, "ExtSvc", {}, "List of external services names"};
-  Gaudi::Property<bool>                     m_extSvcCreates{this, "ExtSvcCreates", true,
+  Gaudi::Property<std::vector<std::string>> m_extSvcNameList{
+      this, "ExtSvc", {}, "List of external services names", "vector<Service>"};
+  Gaudi::Property<bool> m_extSvcCreates{this, "ExtSvcCreates", true,
                                         "LHCb (default) or ATLAS definition of \"ExtSvc\""};
 
   Gaudi::Property<std::vector<std::string>> m_dllNameList{this, "Dlls", {}, "List of DDL's names"};
