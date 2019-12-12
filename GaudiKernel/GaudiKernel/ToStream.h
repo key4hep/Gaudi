@@ -72,10 +72,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-05-12
      */
-    inline std::ostream& toStream( const std::string& obj, std::ostream& s ) {
-      auto c = ( std::string::npos == obj.find( '\'' ) ? '\'' : '\"' );
-      return s << c << obj << c;
-    }
+    inline std::ostream& toStream( const std::string& obj, std::ostream& s ) { return s << std::quoted( obj, '\'' ); }
     /** the printout of boolean values "a'la Python"
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-09-09
