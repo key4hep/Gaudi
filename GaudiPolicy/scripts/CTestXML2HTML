@@ -850,7 +850,7 @@ def main():
                         if 'compression' in value.attrib:
                             text = VALUE_DECOMP[value.attrib['compression']](
                                 text)
-                        text = text.decode('utf-8')
+                        text = text.decode('utf-8', errors='ignore')
                     text = dropCustomMeasurements(text)
                     text = formatMeasurementText(text, escape=True)
                     # no "Measurement" or no "Value" or no text
