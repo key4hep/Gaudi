@@ -5,9 +5,12 @@
 #include "../PrecedenceRulesGraph.h"
 #include "IGraphVisitor.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <sstream>
+#include <unordered_map>
+#include <vector>
 
 namespace concurrency {
 
@@ -130,9 +133,7 @@ namespace concurrency {
     std::string reply() const;
     bool        passed() const {
       return std::all_of( m_unconditionalProducers.begin(), m_unconditionalProducers.end(),
-                          []( const std::pair<DataNode*, std::set<AlgorithmNode*, CompareNodes<AlgorithmNode*>>>& pr ) {
-                            return pr.second.size() == 1;
-                          } );
+                          []( const auto& pr ) { return pr.second.size() == 1; } );
     };
     void reset() override {
       m_foundViolations = false;
@@ -143,15 +144,59 @@ namespace concurrency {
   private:
     bool m_foundViolations{false};
 
-    template <typename T>
-    struct CompareNodes {
-      bool operator()( const T& a, const T& b ) const { return a->name() < b->name(); }
-    };
-
     using visitor_book =
         std::map<DataNode*, std::set<AlgorithmNode*, CompareNodes<AlgorithmNode*>>, CompareNodes<DataNode*>>;
     visitor_book m_conditionalProducers;
     visitor_book m_unconditionalProducers;
+  };
+
+  /**@class TarjanSCCFinder Validators.h
+   *
+   * The visitor implements the Tarjan algorithm for searching strongly
+   * connected components in the data flow realm of precedence rules graph.
+   *
+   */
+  class TarjanSCCFinder : public IGraphVisitor {
+  public:
+    using IGraphVisitor::visit;
+    using IGraphVisitor::visitEnter;
+
+    bool visitEnter( ConditionNode& ) const override { return false; };
+    bool visitEnter( DecisionNode& ) const override { return false; };
+    bool visitEnter( AlgorithmNode& node ) const override {
+      // check if the node was already visited
+      return m_lowlinks.find( &node ) != m_lowlinks.end() ? false : true;
+    }
+
+    bool visit( AlgorithmNode& nodeAt ) override;
+
+    bool passed() const {
+      return m_scc.empty() ||
+             !std::any_of( m_scc.begin(), m_scc.end(), []( const auto& pr ) { return pr.second.size() > 1; } );
+    };
+
+    std::string reply();
+
+    void reset() override {
+      m_nodes_count = 0;
+      m_stack.clear();
+      m_lowlinks.clear();
+      m_scc.clear();
+      m_status = std::ostringstream{"  No strongly connected components found in DF realm"};
+    };
+
+  private:
+    bool on_stack( const AlgorithmNode& node ) const {
+      return std::find( m_stack.begin(), m_stack.end(), &node ) != m_stack.end() ? true : false;
+    }
+
+    unsigned int m_nodes_count{0};
+
+    std::unordered_map<AlgorithmNode*, std::pair<unsigned int, unsigned int>> m_lowlinks;
+    std::map<unsigned int, std::vector<AlgorithmNode*>>                       m_scc;
+    std::vector<AlgorithmNode*>                                               m_stack;
+
+    std::ostringstream m_status{"  No strongly connected components found in DF realm"};
   };
 
 } // namespace concurrency

@@ -116,6 +116,15 @@ StatusCode PrecedenceSvc::initialize() {
     } else {
       ON_DEBUG debug() << prodValidator.reply() << endmsg;
     }
+
+    auto sccFinder = concurrency::TarjanSCCFinder();
+    m_PRGraph.accept( sccFinder );
+    if ( !sccFinder.passed() ) {
+      error() << sccFinder.reply() << endmsg;
+      return StatusCode::FAILURE;
+    } else {
+      ON_DEBUG debug() << sccFinder.reply() << endmsg;
+    }
   }
 
   if ( sc.isSuccess() ) info() << "PrecedenceSvc initialized successfully" << endmsg;

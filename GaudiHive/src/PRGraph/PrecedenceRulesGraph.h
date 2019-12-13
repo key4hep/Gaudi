@@ -614,6 +614,11 @@ namespace concurrency {
     virtual ~IPrecedenceRulesGraph() = default;
   };
 
+  template <typename T>
+  struct CompareNodes {
+    bool operator()( const T& a, const T& b ) const { return a->name() < b->name(); }
+  };
+
   class PrecedenceRulesGraph : public CommonMessaging<IPrecedenceRulesGraph> {
   public:
     /// Constructor

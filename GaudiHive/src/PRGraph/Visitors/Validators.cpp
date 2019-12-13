@@ -1,6 +1,9 @@
 #include "Validators.h"
 
+#include <algorithm>
+
 namespace concurrency {
+
   //---------------------------------------------------------------------------
   bool NodePropertiesValidator::visit( DecisionNode& node ) {
 
@@ -216,6 +219,77 @@ namespace concurrency {
     }
 
     return status.str();
+  }
+
+  //---------------------------------------------------------------------------
+  bool TarjanSCCFinder::visit( AlgorithmNode& nodeAt ) {
+
+    // DFS ******************************************************
+
+    // put the node on stack
+    m_stack.push_back( &nodeAt );
+
+    // initialize and cache the low-link value of this node
+    m_nodes_count += 1;
+    unsigned int lowlink_init{m_nodes_count};
+    // record initial low-link value of this node
+    m_lowlinks.insert( {&nodeAt, {lowlink_init, lowlink_init}} );
+    auto& lowlink = m_lowlinks[&nodeAt].second;
+
+    for ( const auto& output : nodeAt.getOutputDataNodes() ) {
+      for ( const auto& consumer : output->getConsumers() ) {
+        consumer->accept( *this );
+        // DFS callback ******************************************
+        // propagate the low-link value back
+        if ( on_stack( *consumer ) ) {
+          if ( lowlink > m_lowlinks[consumer].second ) lowlink = m_lowlinks[consumer].second;
+          // this allows to detect loops (i.e., a cycle consisting of a single algorithm node: A->d->A),
+          // but there is a protection against this case at Algorithm::initialize()
+          if ( consumer == &nodeAt ) m_scc.insert( {lowlink, {&nodeAt}} );
+        }
+      }
+    }
+
+    // If an SCC is found, book-keep it and take it off the stack
+    if ( lowlink_init == lowlink ) {
+      if ( m_scc.find( lowlink ) == m_scc.end() ) m_scc.insert( {lowlink, {}} );
+
+      for ( auto stackNodeRIter = m_stack.rbegin(); stackNodeRIter != m_stack.rend(); ++stackNodeRIter ) {
+
+        bool lastSCCNodeOnStack{*stackNodeRIter == &nodeAt};
+        if ( lowlink == m_lowlinks[*stackNodeRIter].second ) m_scc[lowlink].push_back( *stackNodeRIter );
+
+        m_stack.pop_back();
+        if ( lastSCCNodeOnStack ) break;
+      }
+    }
+
+    return true;
+  }
+
+  //---------------------------------------------------------------------------
+  std::string TarjanSCCFinder::reply() {
+
+    if ( !passed() ) {
+
+      m_status << "  Strongly connected components found in DF realm:";
+
+      for ( auto& pr : m_scc ) {
+        if ( pr.second.size() > 1 ) {
+          m_status << "\n o [lowlink:" << std::to_string( pr.first ) << "] |";
+
+          // rotate SCCs to get reproducible order
+          std::vector sortedSCC( pr.second.begin(), pr.second.end() );
+          std::sort( sortedSCC.begin(), sortedSCC.end(), CompareNodes<AlgorithmNode*>() );
+          std::rotate( pr.second.begin(), std::find( pr.second.begin(), pr.second.end(), sortedSCC.front() ),
+                       pr.second.end() );
+
+          for ( const auto& algoPtr : pr.second ) m_status << " " << algoPtr->name() << " |";
+        }
+      }
+    }
+
+    return m_status.str();
   }
 
 } // namespace concurrency
