@@ -135,6 +135,7 @@ namespace Gaudi {
     }
     for ( auto& h : inputHandles() ) {
       if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
+        // TODO: this case leads to a segfault as the SC, seemingly, is not propagated up properly
         error() << "Explicit circular data dependency detected for id " << h->fullKey() << endmsg;
         sc = StatusCode::FAILURE;
       }
