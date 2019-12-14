@@ -1,4 +1,14 @@
 #!/usr/bin/env gaudirun.py
+#####################################################################################
+# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+#                                                                                   #
+# This software is distributed under the terms of the Apache version 2 licence,     #
+# copied verbatim in the file "LICENSE".                                            #
+#                                                                                   #
+# In applying this licence, CERN does not waive the privileges and immunities       #
+# granted to it by virtue of its status as an Intergovernmental Organization        #
+# or submit itself to any jurisdiction.                                             #
+#####################################################################################
 """
 The options file models an intra-event stall in algorithm scheduling.
 An early exit from a group of algorithms called 'EarlyExitBranch' is performed due to
