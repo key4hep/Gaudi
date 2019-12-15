@@ -95,6 +95,13 @@ typedef std::vector<std::string> Strings_t;
 typedef std::vector<fs::path>    LibPathNames_t;
 
 namespace {
+
+  std::string quote( std::string_view sv ) {
+    std::ostringstream s;
+    s << std::quoted( sv, '\'' );
+    return s.str();
+  }
+
   const std::string py_tab = "    ";
 
   /// Regular expression to validate the property names.
@@ -711,7 +718,7 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
     m_db2Buf << "Unknown";
   }
   m_db2Buf << "',\n        '__interfaces__': (";
-  for ( const auto& intf : std::set<std::string>( begin( interfaces ), end( interfaces ) ) ) {
+  for ( const auto& intf : std::set<std::string>{begin( interfaces ), end( interfaces )} ) {
     if ( ignored_interfaces.find( intf ) == end( ignored_interfaces ) ) { m_db2Buf << '\'' << intf << "', "; }
   }
   m_db2Buf << "),\n        'properties': {\n";
@@ -801,7 +808,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     }
     ptype = "float";
   } else if ( ti == typeIndex<string>() ) {
-    pvalue = "'" + cvalue + "'";
+    pvalue = quote( cvalue );
     ptype  = "str";
   } else if ( ti == typeIndex<GaudiHandleBase>() ) {
     const GaudiHandleProperty& hdl  = dynamic_cast<const GaudiHandleProperty&>( *p );
