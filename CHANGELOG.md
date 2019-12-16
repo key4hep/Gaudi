@@ -13,6 +13,59 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+## [v33r0][] - 2019-12-16
+This major release of Gaudi contains additions, improvements and fixes, but most of all it adds
+the agreed on copyright statement and license:
+
+> © 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations,
+> Apache version 2 license
+
+Among the new features I'd like to highlight:
+- new Python Configurables implementation (!721)
+- experimental `Gaudi::Accumulators::Histogram<...>` (!1020)
+- `StatusCode::{andThen|orElse|orThrow}` chaining functions (!988)
+
+### Changed
+- Enable sse 4.2 by default for clang >= 6.0 (!1019)
+- Use gcc9 in Gilab-CI builds (!1013)
+- Remove begin/endRun methods (!1008)
+- Make `HistogramPersistencySvc` a little quieter (!992)
+- Reorganization of Counters headers (!1006)
+- Add new `StatusCode` category to return *filter passed* states from functional algorithms (!981)
+- Use `xenv` 1.0.0 if not available from the system (!984)
+- Remove const-incorrect `ToolHandle`s exception for ATLAS (!978)
+
+### Added
+- Set Gaudi copyright and license (!1018)
+- Add experimental support for histograms as counters (!1020)
+- Add detection of strongly connected components in the data flow precedence rules (!998)
+- Debug output for a stall expecting conditions data (!994)
+- Add PRG validators for detection of unconditional "editing" of data objects (!980)
+- Prototype for a renewed Python Configurables implementation (!721)
+- Add helpers to chain `StatusCode` dependent executions (!988)
+- Update `THistSvc` to support `TEfficiency` (!1011)
+- Support bulk increment of `BinomialAccumulator` (!999)
+
+### Fixed
+- `genconf`: fix quoting of strings containing quotes (!1023)
+- Ignore unicode decode errors in test stdout (!1021)
+- Do not use `xenv` from LCG (!1005)
+- Properly escape strings with embedded quotes in `Gaudi::Utils::toStream` (!1012)
+- Detect ROOT C++ standard from `ROOTConfig.cmake` (!985)
+- Adjust clang warning suppression pragmas in `Transformer.h` (!1014)
+- Improve scheduler performance with fewer calls to updateState (!870)
+- `Gaudi::Functional`: Add possibility to query input/output location by type (!1009, !1015)
+- Enable `Gaudi::Functional::Transformer<Result(const EventContext&)>` (!1007)
+- More precise message for multiple algorithms having the same output in `HiveDataBroker` (!1003)
+- Add flag to turn on/off use of `std::filesystem` (!987)
+- `IoComponentMgr`: Only release components during finalize (!1004)
+- Allow calling `f(std::string_view)` with a `Gaudi::Property<std::string>` (!1002)
+- Specify file encoding when reading (!1000)
+- Suppress printout of unused `MsgCounter` instances (!996)
+- Do not print `SequencerTimerTool` header in finalize if there are no timing results (!997)
+- Support for latest TBB and fixes for C++GSL and Range-v3 (!982)
+- Fixes for "defects" detected by Coverity (!939)
+
 ## [v32r2][] - 2019-09-27
 This is mostly a bugfix release, but there are nonetheless a couple of
 important changes:
@@ -391,7 +444,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r0...master
+[v33r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...v33r0
 [v32r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r1...v32r2
 [v32r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...v32r1
 [v32r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...v32r0
