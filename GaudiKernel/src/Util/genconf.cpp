@@ -800,7 +800,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
   } else if ( ti == typeIndex<float>() || ti == typeIndex<double>() ) {
     // forces python to handle this as a float: put a dot in there...
     pvalue = boost::to_lower_copy( cvalue );
-    if ( pvalue == "nan" ) {
+    if ( std::string::npos != pvalue.find( "nan" ) ) {
       pvalue = "float('nan')";
       std::cout << "WARNING: default value for [" << p->name() << "] is NaN !!" << std::endl;
     } else if ( std::string::npos == pvalue.find( "." ) && std::string::npos == pvalue.find( "e" ) ) {
