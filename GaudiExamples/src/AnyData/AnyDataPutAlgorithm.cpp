@@ -27,18 +27,12 @@
 // Declaration of the Algorithm Factory
 DECLARE_COMPONENT( AnyDataPutAlgorithm )
 
-namespace {
-  using std::vector;
-}
-
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
 AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name, ISvcLocator* pSvcLocator )
     : GaudiAlgorithm( name, pSvcLocator ) {
-  for ( int i = 0; i < 100; i++ ) {
-    m_id_vec.emplace_back( "/Event/Test/Ids" + std::to_string( i ), Gaudi::DataHandle::Writer, this );
-  }
+  for ( int i = 0; i < 100; i++ ) { m_id_vec.emplace_back( "/Event/Test/Ids" + std::to_string( i ), this ); }
 }
 
 //=============================================================================
@@ -49,12 +43,12 @@ StatusCode AnyDataPutAlgorithm::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   auto i = std::make_unique<AnyDataWrapper<int>>( 0 );
-  auto j = std::make_unique<AnyDataWrapper<vector<int>>>( std::vector<int>{0, 1, 2, 3} );
+  auto j = std::make_unique<AnyDataWrapper<std::vector<int>>>( std::vector<int>{0, 1, 2, 3} );
 
   put( std::move( i ), m_loc + "/One" );
   put( std::move( j ), m_loc + "/Two" );
 
-  m_ids.put( vector<int>( {42, 84} ) );
+  m_ids.put( std::vector<int>( {42, 84} ) );
 
   for ( int i = 0; i < 100; ++i ) m_id_vec[i].put( std::move( i ) );
 
