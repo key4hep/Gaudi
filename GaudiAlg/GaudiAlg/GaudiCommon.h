@@ -504,7 +504,7 @@ public:
   //[[deprecated( "see LHCBPS-1758" )]]
   StatEntity& counter( std::string_view tag ) const { return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag ); }
   StatEntity& counter( std::string_view tag ) {
-    std::lock_guard<std::mutex> lock( m_countersOwnMutex );
+    auto lock = std::scoped_lock{m_countersOwnMutex};
     // Return referenced StatEntity if it already exists, else create it
     auto p = m_countersOwn.find( tag );
     if ( UNLIKELY( p == m_countersOwn.end() ) ) {

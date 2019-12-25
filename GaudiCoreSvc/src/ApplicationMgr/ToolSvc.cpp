@@ -277,7 +277,7 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
     return retrieve( tooltype, toolname, iid, tool, this, createIf );
   }
 
-  std::lock_guard<CallMutex> lock( m_mut );
+  auto lock = std::scoped_lock{m_mut};
 
   IAlgTool*  itool = nullptr;
   StatusCode sc( StatusCode::FAILURE );
@@ -328,8 +328,8 @@ std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
 //------------------------------------------------------------------------------
 {
 
-  std::lock_guard<CallMutex> lock( m_mut );
-  std::vector<std::string>   tools;
+  auto                     lock = std::scoped_lock{m_mut};
+  std::vector<std::string> tools;
   for ( const auto& tool : m_instancesTools ) {
     if ( tool->type() == toolType ) tools.push_back( tool->name() );
   }
@@ -339,8 +339,8 @@ std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
 std::vector<std::string> ToolSvc::getInstances() const
 //------------------------------------------------------------------------------
 {
-  std::lock_guard<CallMutex> lock( m_mut );
-  std::vector<std::string>   tools{m_instancesTools.size()};
+  auto                     lock = std::scoped_lock{m_mut};
+  std::vector<std::string> tools{m_instancesTools.size()};
   std::transform( std::begin( m_instancesTools ), std::end( m_instancesTools ), std::begin( tools ),
                   []( const IAlgTool* t ) { return t->name(); } );
   return tools;
@@ -349,15 +349,15 @@ std::vector<std::string> ToolSvc::getInstances() const
 std::vector<IAlgTool*> ToolSvc::getTools() const
 //------------------------------------------------------------------------------
 {
-  std::lock_guard<CallMutex> lock( m_mut );
+  auto lock = std::scoped_lock{m_mut};
   return std::vector<IAlgTool*>{std::begin( m_instancesTools ), std::end( m_instancesTools )};
 }
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::releaseTool( IAlgTool* tool )
 //------------------------------------------------------------------------------
 {
-  std::lock_guard<CallMutex> lock( m_mut );
-  StatusCode                 sc( StatusCode::SUCCESS );
+  auto       lock = std::scoped_lock{m_mut};
+  StatusCode sc( StatusCode::SUCCESS );
   // test if tool is in known list (protect trying to access a previously deleted tool)
   if ( m_instancesTools.rend() != std::find( m_instancesTools.rbegin(), m_instancesTools.rend(), tool ) ) {
     unsigned long count = tool->refCount();
@@ -447,7 +447,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
 //------------------------------------------------------------------------------
 {
 
-  std::lock_guard<CallMutex> lock( m_mut );
+  auto lock = std::scoped_lock{m_mut};
   // protect against empty type
   if ( UNLIKELY( tooltype.empty() ) ) {
     error() << "create(): No Tool Type given" << endmsg;
@@ -594,8 +594,8 @@ std::string ToolSvc::nameTool( std::string_view toolname, const IInterface* pare
 bool ToolSvc::existsTool( std::string_view fullname ) const
 //------------------------------------------------------------------------------
 {
-  std::lock_guard<CallMutex> lock( m_mut );
-  auto                       i = std::find_if( std::begin( m_instancesTools ), std::end( m_instancesTools ),
+  auto lock = std::scoped_lock{m_mut};
+  auto i    = std::find_if( std::begin( m_instancesTools ), std::end( m_instancesTools ),
                          [&]( const IAlgTool* tool ) { return tool->name() == fullname; } );
   return i != std::end( m_instancesTools );
 }
@@ -651,10 +651,10 @@ void ToolSvc::registerObserver( IToolSvc::Observer* obs ) {
   //------------------------------------------------------------------------------
   if ( !obs ) throw GaudiException( "Received NULL pointer", this->name() + "::registerObserver", StatusCode::FAILURE );
 
-  std::lock_guard<CallMutex> lock( m_mut );
+  auto lock = std::scoped_lock{m_mut};
   obs->setUnregister( [this, obs]() {
-    std::lock_guard<CallMutex> lock( m_mut );
-    auto                       i = std::find( m_observers.begin(), m_observers.end(), obs );
+    auto lock = std::scoped_lock{m_mut};
+    auto i    = std::find( m_observers.begin(), m_observers.end(), obs );
     if ( i != m_observers.end() ) m_observers.erase( i );
   } );
   m_observers.push_back( obs );

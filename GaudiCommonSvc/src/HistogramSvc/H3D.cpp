@@ -110,7 +110,7 @@ bool Gaudi::Histogram3D::reset() {
 
 bool Gaudi::Histogram3D::fill( double x, double y, double z, double weight ) {
   // avoid race conditiosn when filling the histogram
-  std::lock_guard<std::mutex> guard( m_fillSerialization );
+  auto guard = std::scoped_lock{m_fillSerialization};
   m_rep->Fill( x, y, z, weight );
   return true;
 }

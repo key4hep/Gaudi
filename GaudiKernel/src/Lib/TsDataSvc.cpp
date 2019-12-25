@@ -51,7 +51,7 @@
 #include <vector>
 
 // Macro to lock a scope
-#define STD_LOCK_GUARD_MACRO std::lock_guard<tsDataSvcMutex> lock( m_accessMutex );
+#define STD_LOCK_GUARD_MACRO std::scoped_lock lock{m_accessMutex};
 
 namespace {
   std::string operator+( char c, std::string_view sr ) {

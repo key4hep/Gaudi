@@ -359,7 +359,7 @@ StatusCode MessageSvc::finalize() {
 // ---------------------------------------------------------------------------
 //
 void MessageSvc::reportMessage( const Message& msg, int outputLevel ) {
-  std::unique_lock<std::recursive_mutex> lock( m_reportMutex );
+  auto lock = std::unique_lock{m_reportMutex};
   i_reportMessage( msg, outputLevel );
 }
 
@@ -445,7 +445,7 @@ void MessageSvc::reportMessage( const std::string& source, int type, const std::
 // ---------------------------------------------------------------------------
 //
 void MessageSvc::reportMessage( const StatusCode& code, const std::string& source ) {
-  std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
+  auto lock = std::unique_lock{m_messageMapMutex};
   i_reportMessage( code, source );
 }
 
@@ -530,7 +530,7 @@ void MessageSvc::eraseStream( std::ostream* stream ) {
 //
 
 void MessageSvc::insertMessage( const StatusCode& key, const Message& msg ) {
-  std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
+  auto lock = std::unique_lock{m_messageMapMutex};
   m_messageMap.emplace( key, msg );
 }
 
@@ -542,7 +542,7 @@ void MessageSvc::insertMessage( const StatusCode& key, const Message& msg ) {
 //
 
 void MessageSvc::eraseMessage() {
-  std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
+  auto lock = std::unique_lock{m_messageMapMutex};
   m_messageMap.clear();
 }
 
@@ -554,7 +554,7 @@ void MessageSvc::eraseMessage() {
 //
 
 void MessageSvc::eraseMessage( const StatusCode& key ) {
-  std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
+  auto lock = std::unique_lock{m_messageMapMutex};
   m_messageMap.erase( key );
 }
 
@@ -566,7 +566,7 @@ void MessageSvc::eraseMessage( const StatusCode& key ) {
 //
 
 void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg ) {
-  std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
+  auto lock = std::unique_lock{m_messageMapMutex};
 
   erase_if( m_messageMap, m_messageMap.equal_range( key ),
             [&]( MessageMap::const_reference j ) { return j.second == msg; } );
@@ -581,8 +581,8 @@ int MessageSvc::outputLevel() const {
 // ---------------------------------------------------------------------------
 int MessageSvc::outputLevel( std::string_view source ) const {
   // ---------------------------------------------------------------------------
-  std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
-  auto                                   it = m_thresholdMap.find( source );
+  auto lock = std::unique_lock{m_thresholdMapMutex};
+  auto it   = m_thresholdMap.find( source );
   return it != m_thresholdMap.end() ? it->second : m_outputLevel.value();
 }
 
@@ -595,12 +595,14 @@ void MessageSvc::setOutputLevel( int new_level ) {
 // ---------------------------------------------------------------------------
 void MessageSvc::setOutputLevel( std::string_view source, int level ) {
   // ---------------------------------------------------------------------------
-  std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
-  auto                                   i = m_thresholdMap.find( source );
-  if ( i != m_thresholdMap.end() ) {
-    i->second = level;
-  } else {
+  auto lock = std::unique_lock{m_thresholdMapMutex};
+
+  // only write if we really have to...
+  auto i = m_thresholdMap.find( source );
+  if ( i == m_thresholdMap.end() ) {
     m_thresholdMap.emplace( source, level );
+  } else if ( i->second != level ) {
+    i->second = level;
   }
 }
 

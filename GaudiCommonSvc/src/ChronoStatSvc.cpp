@@ -67,9 +67,7 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css ) {
 
   // Add the content of the maps, leave the rest unchanged
 
-  lock_t lock( m_mutex );
-  lock_t otherLock( css.m_mutex );
-
+  auto lock = std::scoped_lock{m_mutex, css.m_mutex};
   // Merge Chronomaps
   for ( auto& item : css.m_chronoEntities ) {
     const IChronoStatSvc::ChronoTag& key = item.first;
@@ -355,8 +353,8 @@ void ChronoStatSvc::statPrint( const IChronoStatSvc::StatTag& statTag ) {
  */
 // ============================================================================
 const ChronoEntity* ChronoStatSvc::chrono( const IChronoStatSvc::ChronoTag& t ) const {
-  lock_t lock( m_mutex );
-  auto   it = m_chronoEntities.find( t );
+  auto lock = std::scoped_lock{m_mutex};
+  auto it   = m_chronoEntities.find( t );
   return m_chronoEntities.end() != it ? &( it->second ) : nullptr;
 }
 // ============================================================================
@@ -387,7 +385,7 @@ void ChronoStatSvc::saveStats() {
   // ChronoEntity
   std::vector<std::pair<const ChronoEntity*, const ChronoTag*>> chronos;
   {
-    lock_t lock( m_mutex );
+    auto lock = std::scoped_lock{m_mutex};
     chronos.reserve( m_chronoEntities.size() );
     std::transform( std::begin( m_chronoEntities ), std::end( m_chronoEntities ), std::back_inserter( chronos ),
                     []( ChronoMap::const_reference i ) { return std::make_pair( &i.second, &i.first ); } );
@@ -523,7 +521,7 @@ void ChronoStatSvc::handle( const Incident& /* inc */ ) {
 
   if ( !m_ofd.is_open() ) return;
 
-  lock_t lock( m_mutex );
+  auto lock = std::scoped_lock{m_mutex};
   for ( const auto& itr : m_chronoEntities ) {
     if ( itr.first.find( ":Execute" ) == std::string::npos ) continue;
 

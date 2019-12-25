@@ -44,33 +44,33 @@ namespace Gaudi {
 
     public:
       /// Return the pointer for the current context (null for a new context).
-      inline T* get() const {
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+      T* get() const {
+        auto lock = std::scoped_lock{m_ptrs_lock};
         return m_ptrs[currentContextId()];
       }
       /// Set the pointer for the current context.
-      inline T*& set( T* ptr ) {
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+      T*& set( T* ptr ) {
+        auto lock                         = std::scoped_lock{m_ptrs_lock};
         return m_ptrs[currentContextId()] = ptr;
       }
 
       /// Assignment operator (@see set).
-      inline T*& operator=( T* ptr ) { return set( ptr ); }
+      T*& operator=( T* ptr ) { return set( ptr ); }
 
       /// Return true if the pointer is not null.
-      inline bool isValid() const { return get(); }
+      bool isValid() const { return get(); }
 
       /// Conversion to boolean (@see isValid).
-      inline operator bool() const { return isValid(); }
+      operator bool() const { return isValid(); }
 
       /// Comparison with another pointer.
-      inline bool operator==( T* rhs ) const { return get() == rhs; }
+      bool operator==( T* rhs ) const { return get() == rhs; }
 
       /// @{ Dereference operators.
-      inline T&       operator*() { return *get(); }
-      inline const T& operator*() const { return *get(); }
-      inline T*       operator->() { return get(); }
-      inline const T* operator->() const { return get(); }
+      T&       operator*() { return *get(); }
+      const T& operator*() const { return *get(); }
+      T*       operator->() { return get(); }
+      const T* operator->() const { return get(); }
       /// @}
 
       /// @{Non thread-safe methods.
@@ -92,7 +92,7 @@ namespace Gaudi {
       template <class Mapper, class BinaryOperation>
       auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init, BinaryOperation op ) const
           -> decltype( init ) {
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+        auto lock = std::scoped_lock{m_ptrs_lock};
         return std::accumulate( m_ptrs.begin(), m_ptrs.end(), init, [&f, &op]( const auto& partial, const auto& p ) {
           return op( partial, f( p.second ) );
         } );
@@ -101,26 +101,26 @@ namespace Gaudi {
       /// Call a function on each contained pointer.
       template <class F>
       void for_each( F f ) const {
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+        auto lock = std::scoped_lock{m_ptrs_lock};
         for ( auto& i : m_ptrs ) f( i.second );
       }
 
       /// Call a function on each contained pointer. (non-const version)
       template <class F>
       void for_each( F f ) {
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+        auto lock = std::scoped_lock{m_ptrs_lock};
         for ( auto& i : m_ptrs ) f( i.second );
       }
 
       /// Call a function on each element, passing slot# as well
       template <class F>
       void for_all( F f ) const {
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+        auto lock = std::scoped_lock{m_ptrs_lock};
         for ( auto& i : m_ptrs ) f( i.first, i.second );
       }
       template <class F>
       void for_all( F f ) {
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+        auto lock = std::scoped_lock{m_ptrs_lock};
         for ( auto& i : m_ptrs ) f( i.first, i.second );
       }
 

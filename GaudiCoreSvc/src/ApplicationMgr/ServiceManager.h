@@ -20,10 +20,10 @@
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/SmartIF.h"
 
-#include "boost/thread.hpp"
 #include <algorithm>
 #include <list>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -141,19 +141,19 @@ public:
 
 private:
   ListSvc::iterator find( std::string_view name ) {
-    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    auto lck = std::scoped_lock{m_gLock};
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
   ListSvc::const_iterator find( std::string_view name ) const {
-    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    auto lck = std::scoped_lock{m_gLock};
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
   ListSvc::iterator find( const IService* ptr ) {
-    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    auto lck = std::scoped_lock{m_gLock};
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
   ListSvc::const_iterator find( const IService* ptr ) const {
-    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    auto lck = std::scoped_lock{m_gLock};
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
 
@@ -184,11 +184,8 @@ private:
   GaudiUtils::Map<InterfaceID, SmartIF<IInterface>> m_defaultImplementations;
 
   /// Mutex to synchronize shared service initialization between threads
-  typedef boost::recursive_mutex     Mutex_t;
-  typedef boost::lock_guard<Mutex_t> LockGuard_t;
-
-  mutable Mutex_t                        m_gLock;
-  mutable std::map<std::string, Mutex_t> m_lockMap;
+  mutable std::recursive_mutex                        m_gLock;
+  mutable std::map<std::string, std::recursive_mutex> m_lockMap;
 
 private:
   void dump() const;

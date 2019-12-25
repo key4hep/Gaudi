@@ -58,7 +58,7 @@ namespace {
 // ============================================================================
 IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc ) {}
 // ============================================================================
-IncidentSvc::~IncidentSvc() { std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex ); }
+IncidentSvc::~IncidentSvc() { auto lock = std::unique_lock{m_listenerMapMutex}; }
 // ============================================================================
 // Inherited Service overrides:
 // ============================================================================
@@ -84,7 +84,7 @@ StatusCode IncidentSvc::finalize() {
 
   {
     // clear the local storage of allocated Incident objects.
-    std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
+    auto lock = std::unique_lock{m_listenerMapMutex};
     for ( auto& fi : m_firedIncidents ) {
       std::for_each( fi.second.unsafe_begin(), fi.second.unsafe_end(), []( auto i ) { delete i; } );
       fi.second.clear();
@@ -100,8 +100,8 @@ StatusCode IncidentSvc::finalize() {
 // ============================================================================
 void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, long prio, bool rethrow,
                                bool singleShot ) {
-  static const std::string               all{"ALL"};
-  std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
+  static const std::string all{"ALL"};
+  auto                     lock = std::unique_lock{m_listenerMapMutex};
 
   const std::string& ltype = ( !type.empty() ? type : all );
 
@@ -145,7 +145,7 @@ IncidentSvc::removeListenerFromList( ListenerMap::iterator i, IIncidentListener*
 }
 // ============================================================================
 void IncidentSvc::removeListener( IIncidentListener* lis, const std::string& type ) {
-  std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
+  auto lock = std::unique_lock{m_listenerMapMutex};
 
   bool scheduleForRemoval = ( m_currentIncidentType && type == *m_currentIncidentType );
   if ( type.empty() ) {
@@ -166,7 +166,7 @@ namespace {
 // ============================================================================
 void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& listenerType ) {
 
-  std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
+  auto lock = std::unique_lock{m_listenerMapMutex};
 
   // Wouldn't it be better to write a small 'ReturnCode' service which
   // looks for these 'special' incidents and does whatever needs to
@@ -254,8 +254,8 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
 // ============================================================================
 
 void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::string& type ) const {
-  static const std::string               ALL{"ALL"};
-  std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
+  static const std::string ALL{"ALL"};
+  auto                     lock = std::unique_lock{m_listenerMapMutex};
 
   const std::string& ltype = ( !type.empty() ? type : ALL );
 

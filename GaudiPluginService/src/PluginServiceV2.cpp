@@ -48,12 +48,9 @@ namespace std {
 }
 #endif
 
-#define REG_SCOPE_LOCK std::lock_guard<std::recursive_mutex> _guard( m_mutex );
-
 namespace {
   std::mutex registrySingletonMutex;
 }
-#define SINGLETON_LOCK std::lock_guard<std::mutex> _guard( ::registrySingletonMutex );
 
 #include <algorithm>
 
@@ -112,7 +109,7 @@ namespace Gaudi {
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
         Registry& Registry::instance() {
-          SINGLETON_LOCK
+          auto            _guard = std::scoped_lock{::registrySingletonMutex};
           static Registry r;
           return r;
         }
@@ -138,7 +135,7 @@ namespace Gaudi {
         Registry::Registry() {}
 
         void Registry::initialize() {
-          REG_SCOPE_LOCK
+          auto _guard = std::scoped_lock{m_mutex};
 #if defined( _WIN32 )
           const char* envVar = "PATH";
           const char  sep    = ';';
@@ -223,8 +220,8 @@ namespace Gaudi {
         }
 
         Registry::FactoryInfo& Registry::add( const KeyType& id, FactoryInfo info ) {
-          REG_SCOPE_LOCK
-          FactoryMap& facts = factories();
+          auto        _guard = std::scoped_lock{m_mutex};
+          FactoryMap& facts  = factories();
 
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
           // add an alias for the factory using the Reflex convention
@@ -250,7 +247,7 @@ namespace Gaudi {
         }
 
         const Registry::FactoryInfo& Registry::getInfo( const KeyType& id, const bool load ) const {
-          REG_SCOPE_LOCK
+          auto                     _guard  = std::scoped_lock{m_mutex};
           static const FactoryInfo unknown = {"unknown"};
           const FactoryMap&        facts   = factories();
           auto                     f       = facts.find( id );
@@ -273,16 +270,16 @@ namespace Gaudi {
         }
 
         Registry& Registry::addProperty( const KeyType& id, const KeyType& k, const std::string& v ) {
-          REG_SCOPE_LOCK
-          FactoryMap& facts = factories();
-          auto        f     = facts.find( id );
+          auto        _guard = std::scoped_lock{m_mutex};
+          FactoryMap& facts  = factories();
+          auto        f      = facts.find( id );
 
           if ( f != facts.end() ) f->second.properties[k] = v;
           return *this;
         }
 
         std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
-          REG_SCOPE_LOCK
+          auto              _guard = std::scoped_lock{m_mutex};
           std::set<KeyType> l;
           for ( const auto& f : factories() ) {
             if ( f.second.is_set() ) l.insert( f.first );

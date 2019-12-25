@@ -30,36 +30,36 @@ public:
   using BASE::BASE;
 
   void declareCounter( std::string tag, Gaudi::Accumulators::PrintableCounter& r ) {
-    std::lock_guard lock{m_mutex};
+    auto lock = std::scoped_lock{m_mutex};
     m_counters.emplace( std::move( tag ), r );
   }
 
   const Gaudi::Accumulators::PrintableCounter* findCounter( std::string_view tag ) const {
-    std::lock_guard lock{m_mutex};
-    auto            p = m_counters.find( tag );
+    auto lock = std::scoped_lock{m_mutex};
+    auto p    = m_counters.find( tag );
     return p != m_counters.end() ? &p->second.get() : nullptr;
   }
 
   template <typename Callable>
   void forEachCounter( Callable&& f ) const {
-    std::lock_guard lock{m_mutex};
+    auto lock = std::scoped_lock{m_mutex};
     std::for_each( m_counters.begin(), m_counters.end(),
                    [f = std::forward<Callable>( f )]( const auto& p ) { std::invoke( f, p.first, p.second.get() ); } );
   }
 
   int nCounters() const {
-    std::lock_guard lock{m_mutex};
+    auto lock = std::scoped_lock{m_mutex};
     return m_counters.size();
   }
 
   std::size_t nOfCountersToBePrinted() {
-    std::lock_guard lock{m_mutex};
+    auto lock = std::scoped_lock{m_mutex};
     return count_if( begin( m_counters ), end( m_counters ),
                      []( const auto& c ) { return c.second.get().toBePrinted(); } );
   }
 
   void clearCounters() {
-    std::lock_guard lock{m_mutex};
+    auto lock = std::scoped_lock{m_mutex};
     m_counters.clear();
   }
 
