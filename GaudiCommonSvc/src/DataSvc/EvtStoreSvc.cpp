@@ -221,6 +221,16 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
 
   tbb::concurrent_queue<size_t> m_freeSlots;
 
+  Gaudi::Property<std::vector<std::string>> m_inhibitPrefixes{
+      this,
+      "InhibitedPathPrefixes",
+      {},
+      "Prefixes of TES locations that will not be loaded by the persistency service "};
+  Gaudi::Property<bool> m_followLinksToAncestors{
+      this, "FollowLinksToAncestors", true,
+      "Load objects which reside in files other than the one corresponding to the root of the event store"};
+  std::string_view m_onlyThisID; // let's be a bit risky... we 'know' when the underlying string goes out of scope...
+
 public:
   using extends::extends;
 
@@ -384,6 +394,7 @@ StatusCode EvtStoreSvc::freeStore( size_t partition ) {
 }
 /// Remove all data objects in one 'slot' of the data store.
 StatusCode EvtStoreSvc::clearStore( size_t partition ) {
+  m_onlyThisID = {};
   return m_partitions[partition].with_lock( []( Partition& p ) {
     p.store.clear();
     return StatusCode::SUCCESS;
@@ -397,6 +408,7 @@ StatusCode EvtStoreSvc::clearSubTree( std::string_view top ) {
   } );
 }
 StatusCode EvtStoreSvc::clearStore() {
+  m_onlyThisID = {};
   return fwd( []( Partition& p ) {
     p.store.clear();
     return StatusCode::SUCCESS;
@@ -433,15 +445,13 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, DataObject* pObject ) {
 StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAddr ) {
   auto rootAddr = std::unique_ptr<IOpaqueAddress>( pRootAddr );
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "setRoot( " << root_path << ", (IOpaqueAddress*)" << (void*)rootAddr.get() << " )" << endmsg;
+    debug() << "setRoot( " << root_path << ", (IOpaqueAddress*)" << rootAddr.get();
+    if ( rootAddr ) debug() << "[ " << rootAddr->par()[0] << ", " << rootAddr->par()[1] << " ]";
+    debug() << " )" << endmsg;
   }
   clearStore().ignore();
   if ( !rootAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
-  if ( msgLevel( MSG::DEBUG ) ) {
-    const std::string* par = rootAddr->par();
-    debug() << "par[0]=" << par[0] << endmsg;
-    debug() << "par[1]=" << par[1] << endmsg;
-  }
+  if ( !m_followLinksToAncestors ) m_onlyThisID = rootAddr->par()[0];
   auto object = createObj( *m_dataLoader, *rootAddr ); // Call data loader
   if ( !object ) return Status::INVALID_OBJECT;
   if ( msgLevel( MSG::DEBUG ) ) { debug() << "Root Object " << root_path << " created " << endmsg; }
@@ -461,13 +471,29 @@ StatusCode EvtStoreSvc::registerAddress( std::string_view path, IOpaqueAddress* 
 }
 StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path, IOpaqueAddress* pAddr ) {
   auto addr = std::unique_ptr<IOpaqueAddress>( pAddr );
+  if ( !addr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "registerAddress( (IRegistry*)" << (void*)pReg << ", " << path << ", (IOpaqueAddress*)" << addr.get()
             << "[ " << addr->par()[0] << ", " << addr->par()[1] << " ]"
             << " )" << endmsg;
   }
-  if ( !addr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
   if ( path.empty() || path[0] != '/' ) return StatusCode::FAILURE;
+  if ( !m_onlyThisID.empty() && addr->par()[0] != m_onlyThisID ) {
+    if ( msgLevel( MSG::DEBUG ) )
+      debug() << "Attempt to load " << addr->par()[1] << " from file " << addr->par()[0] << " blocked -- different file"
+              << endmsg;
+    return StatusCode::SUCCESS;
+  }
+  if ( std::any_of( m_inhibitPrefixes.begin(), m_inhibitPrefixes.end(),
+                    [addrPath = addr->par()[1]]( std::string_view prefix ) {
+                      return boost::algorithm::starts_with( addrPath, prefix );
+                    } ) ) {
+    if ( msgLevel( MSG::DEBUG ) )
+      debug() << "Attempt to load " << addr->par()[1] << " from file " << addr->par()[0] << " blocked -- path inhibited"
+              << endmsg;
+    return StatusCode::SUCCESS;
+  }
+
   auto object = createObj( *m_dataLoader, *addr ); // Call data loader
   if ( !object ) return Status::INVALID_OBJECT;
   auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + std::string{path};
