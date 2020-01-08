@@ -521,7 +521,11 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, DataObject* pObject ) {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "setRoot( " << root_path << ", (DataObject*)" << (void*)pObject << " )" << endmsg;
   }
-  clearStore().ignore();
+  if ( UNLIKELY( !fwd( []( Partition& p ) {
+                    return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+                  } ).isSuccess() ) ) {
+    throw GaudiException{"setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE};
+  }
   return registerObject( nullptr, root_path, pObject );
 }
 StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAddr ) {
@@ -531,7 +535,11 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
     if ( rootAddr ) debug() << "[ " << rootAddr->par()[0] << ", " << rootAddr->par()[1] << " ]";
     debug() << " )" << endmsg;
   }
-  clearStore().ignore();
+  if ( UNLIKELY( !fwd( []( Partition& p ) {
+                    return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+                  } ).isSuccess() ) ) {
+    throw GaudiException{"setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE};
+  }
   if ( !rootAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
   if ( !m_followLinksToAncestors ) m_onlyThisID = rootAddr->par()[0];
   auto object = createObj( *m_dataLoader, *rootAddr ); // Call data loader
