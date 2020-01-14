@@ -57,7 +57,7 @@ endif()
 # Hide some Boost/ROOT/XercesC compile time warnings
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} )
 if( XERCESC_FOUND )
-   include_directories( SYSTEM ${XERCESC_INCLUDE_DIRS} )
+   include_directories( SYSTEM ${XercesC_INCLUDE_DIRS} )
 endif()
 
 #---Libraries---------------------------------------------------------------
