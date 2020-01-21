@@ -91,9 +91,12 @@ def test_parent_handling():
 
     t = SimpleOptsAlgTool('ATool', parent=p)
     assert t.name == 'Dummy.ATool'
+    assert t.getName() == 'Dummy.ATool'
+    assert t.getGaudiType() == 'AlgTool'
 
     t = SimpleOptsAlgTool('BTool', parent='Dummy.ATool')
     assert t.name == 'Dummy.ATool.BTool'
+    assert t.getName() == 'Dummy.ATool.BTool'
 
 
 @with_setup(setup_func, teardown_func)
