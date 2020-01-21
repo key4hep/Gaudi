@@ -235,6 +235,12 @@ class Configurable(ConfigMetaHelper):
     def is_property_set(self, propname):
         return self._descriptors[propname].__is_set__(self, type(self))
 
+    def getGaudiType(self):
+        return self.__component_type__
+
+    def getName(self):
+        return self.name
+
     def merge(self, other):
         '''
         Merge the properties of the other instance into the current one.

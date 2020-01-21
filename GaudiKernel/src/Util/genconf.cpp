@@ -249,7 +249,7 @@ private:
   void genTrailer( std::ostream& pyOut, std::ostream& dbOut );
 
   /// handle the "marshalling" of Properties
-  void pythonizeValue( const PropertyBase* prop, string& pvalue, string& ptype );
+  void pythonizeValue( const PropertyBase* prop, string& pvalue, string& ptype, string& ptype2 );
 };
 
 int createAppMgr();
@@ -737,12 +737,12 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
       return false;
     }
 
-    string pvalue, ptype;
-    pythonizeValue( prop, pvalue, ptype );
+    string pvalue, ptype, ptype2;
+    pythonizeValue( prop, pvalue, ptype, ptype2 );
     m_pyBuf << "    '" << pname << "' : " << pvalue << ", # " << ptype << "\n";
 
-    m_db2Buf << "            '" << pname << "': ('" << System::typeinfoName( *prop->type_info() ) << "', " << pvalue
-             << ", '''" << prop->documentation() << " [" << prop->ownerTypeName() << "]'''";
+    m_db2Buf << "            '" << pname << "': ('" << ptype2 << "', " << pvalue << ", '''" << prop->documentation()
+             << " [" << prop->ownerTypeName() << "]'''";
     auto sem = prop->semantics();
     if ( !sem.empty() ) { m_db2Buf << ", '" << sem << '\''; }
     m_db2Buf << "),\n";
@@ -783,11 +783,13 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
 }
 
 //-----------------------------------------------------------------------------
-void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, string& ptype )
+void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, string& ptype, string& ptype2 )
 //-----------------------------------------------------------------------------
 {
   const std::string     cvalue = p->toString();
   const std::type_index ti     = std::type_index( *p->type_info() );
+  ptype2                       = System::typeinfoName( *p->type_info() );
+
   if ( ti == typeIndex<bool>() ) {
     pvalue = ( cvalue == "0" || cvalue == "False" || cvalue == "false" ) ? "False" : "True";
     ptype  = "bool";
@@ -816,6 +818,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
 
     pvalue               = base.pythonRepr();
     ptype                = "GaudiHandle";
+    ptype2               = base.pythonPropertyClassName();
     m_importGaudiHandles = true;
   } else if ( ti == typeIndex<GaudiHandleArrayBase>() ) {
     const GaudiHandleArrayProperty& hdl  = dynamic_cast<const GaudiHandleArrayProperty&>( *p );
@@ -823,6 +826,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
 
     pvalue               = base.pythonRepr();
     ptype                = "GaudiHandleArray";
+    ptype2               = base.pythonPropertyClassName();
     m_importGaudiHandles = true;
   } else if ( ti == typeIndex<DataObjectHandleBase>() ) {
     const DataObjectHandleProperty& hdl  = dynamic_cast<const DataObjectHandleProperty&>( *p );
