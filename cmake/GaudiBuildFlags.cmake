@@ -270,6 +270,10 @@ if(NOT GAUDI_FLAGS_SET EQUAL GAUDI_FLAGS_OPTIONS)
       else()
         set(arch_opts "${arch_opts} -m${_arch_opt}")
       endif()
+      # clang requires -ffp-contract=fast with -mfma
+      if(BINARY_TAG_COMP_NAME STREQUAL "clang" AND _arch_opt STREQUAL "fma")
+        set(arch_opts "${arch_opts} -ffp-contract=fast")
+      endif()
     endforeach()
     message(STATUS "Arch Flags:       ${arch_opts}")
     # Common compilation flags
