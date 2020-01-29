@@ -66,5 +66,8 @@ gaudi_add_module(GaudiPython src/Services/*.cpp
 gaudi_add_dictionary(GaudiPython dict/kernel.h dict/selection_kernel.xml
                      LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
+#---Test-----------------------------------------------------------------------
+gaudi_add_test(QMTest QMTEST)
+
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()

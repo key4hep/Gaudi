@@ -20,34 +20,6 @@
 
 #  define PyBuffer_Type PyMemoryView_Type
 
-// Taken from ROOT's TPyBufferFactory
-static PyObject* PyBuffer_FromReadWriteMemory( void* ptr, int size ) {
-#  if PY_VERSION_HEX > 0x03000000
-  // Python 3 will set an exception if nullptr, just rely on size == 0
-  if ( !ptr ) {
-    static long dummy[1];
-    ptr  = dummy;
-    size = 0;
-  }
-#  endif
-  Py_buffer bufinfo = {
-    ptr,
-    NULL,
-    size,
-    1,
-    0,
-    1,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-#  if PY_VERSION_HEX < 0x03030000
-    {0, 0},
-#  endif
-    NULL
-  };
-  return PyMemoryView_FromBuffer( &bufinfo );
-}
 #endif
 
 #include "GaudiKernel/DataObject.h"
@@ -95,6 +67,37 @@ typedef int Py_ssize_t;
 namespace GaudiPython {
 
   struct Helper {
+    // Python 3 compatibility
+#if PY_MAJOR_VERSION >= 3
+    // Taken from ROOT's TPyBufferFactory
+    static PyObject* PyBuffer_FromReadWriteMemory( void* ptr, int size ) {
+#  if PY_VERSION_HEX > 0x03000000
+      // Python 3 will set an exception if nullptr, just rely on size == 0
+      if ( !ptr ) {
+        static long dummy[1];
+        ptr  = dummy;
+        size = 0;
+      }
+#  endif
+      Py_buffer bufinfo = {
+        ptr,
+        NULL,
+        size,
+        1,
+        0,
+        1,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+#  if PY_VERSION_HEX < 0x03030000
+        {0, 0},
+#  endif
+        NULL
+      };
+      return PyMemoryView_FromBuffer( &bufinfo );
+    }
+#endif
     // This is a number of static functions to overcome the current problem with PyLCGDict that
     // does not allow to return instances of complex objects by calling arguments
     // (reference to pointers)
