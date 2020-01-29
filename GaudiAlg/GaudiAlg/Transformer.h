@@ -171,8 +171,8 @@ namespace Gaudi ::Functional {
 
     template <typename... Out, typename... In, typename Traits_>
     struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, true>
-        : DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>::DataHandleMixin;
+        : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
+      using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
@@ -203,8 +203,8 @@ namespace Gaudi ::Functional {
 
     template <typename... Out, typename... In, typename Traits_>
     struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, false>
-        : DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>::DataHandleMixin;
+        : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
+      using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {

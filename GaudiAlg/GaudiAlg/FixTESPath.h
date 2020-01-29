@@ -47,13 +47,12 @@ public:
   }
 
   StatusCode initialize() override {
-    const StatusCode sc = BASE::initialize();
-    if ( sc.isFailure() ) return sc;
-    // TODO: just call 'acceptDHVisitor` and remove m_updateDataHandles...
-    SmartIF<IDataManagerSvc> dataMgrSvc{BASE::evtSvc()};
-    this->m_updateDataHandles = FixTESPathDetails::fixDataHandlePath(
-        rootInTES(), dataMgrSvc->rootName(), BASE::msgLevel( MSG::DEBUG ) ? &this->debug() : nullptr );
-    return sc;
+    return BASE::initialize().andThen( [&] {
+      // TODO: just call 'acceptDHVisitor` and remove m_updateDataHandles...
+      SmartIF<IDataManagerSvc> dataMgrSvc{BASE::evtSvc()};
+      this->m_updateDataHandles = FixTESPathDetails::fixDataHandlePath(
+          rootInTES(), dataMgrSvc->rootName(), BASE::msgLevel( MSG::DEBUG ) ? &this->debug() : nullptr );
+    } );
   }
 
   /** @brief Returns the "rootInTES" string.

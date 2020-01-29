@@ -196,6 +196,11 @@ namespace Gaudi::Functional::details {
       return in;
     }
 
+    template <typename In, typename = std::enable_if_t<!std::is_pointer_v<std::decay_t<In>>>>
+    In operator()( In&& in ) const {
+      return std::forward<In>( in );
+    }
+
     template <typename In>
     const In& operator()( const In* in ) const {
       assert( in != nullptr );
@@ -377,7 +382,9 @@ namespace Gaudi::Functional::details {
 
     template <typename Algorithm, typename Handles>
     static auto apply( const Algorithm& algo, Handles& handles ) {
-      return std::apply( [&]( const auto&... handle ) { return algo( details::deref( handle.get() )... ); }, handles );
+      return std::apply(
+          [&]( const auto&... handle ) { return algo( get( handle, algo, Gaudi::Hive::currentContext() )... ); },
+          handles );
     }
     template <typename Algorithm, typename Handles>
     static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
