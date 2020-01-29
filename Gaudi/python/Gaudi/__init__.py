@@ -30,6 +30,7 @@ class _ConfigurablesModule(object):
         # If set to true, does not raise an AttributeError if the configurable is not found.
         self.ignoreMissingConfigurables = False
         self.__name__ = __configurables_module_fullname__
+        self.__loader__ = None
 
     def __getattr__(self, name):
         # trigger the load of the configurables database
@@ -40,6 +41,14 @@ class _ConfigurablesModule(object):
         # handle the special cases (needed for modules): __all__, __path__
         if name == "__all__":
             retval = cfgDb.keys()
+        elif name == "__spec__":
+            import importlib
+            retval = importlib.machinery.ModuleSpec(
+                name=__configurables_module_fullname__,
+                loader=self.__loader__,
+            )
+        elif name == "__package__":
+            retval = self.__name__
         elif name == "__path__":
             raise AttributeError("'module' object has no attribute '__path__'")
         elif name in cfgDb.keys():  # ignore private names
