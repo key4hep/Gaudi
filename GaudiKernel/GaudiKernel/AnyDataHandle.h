@@ -14,6 +14,6 @@
 #include <GaudiKernel/DataObjectHandle.h>
 
 template <typename T>
-using AnyDataHandle = DataObjectHandle<AnyDataWrapper<T>>;
+using AnyDataHandle [[deprecated( "please just use DataObjectHandle" )]] = DataObjectHandle<AnyDataWrapper<T>>;
 
 #endif

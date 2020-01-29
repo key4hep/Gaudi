@@ -37,6 +37,6 @@ private:
 
   DataObjectWriteHandle<std::vector<int>> m_ids{this, "Output", "/Event/Test/Ids"};
 
-  std::vector<AnyDataHandle<int>> m_id_vec;
+  std::vector<DataObjectWriteHandle<int>> m_id_vec;
 };
 #endif // ANYDATA_ANADATAPUTALGORITHM_H
