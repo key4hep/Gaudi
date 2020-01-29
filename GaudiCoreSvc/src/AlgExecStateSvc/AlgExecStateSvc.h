@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,8 +15,8 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Service.h"
 
-#include <map>
 #include <mutex>
+#include <unordered_map>
 #include <vector>
 
 /** @class AlgExecStateSvc
@@ -58,12 +58,12 @@ private:
   std::vector<EventStatus::Status> m_eventStatus;
   std::vector<Gaudi::StringKey>    m_preInitAlgs;
 
-  std::map<Gaudi::StringKey, std::atomic<unsigned int>> m_errorCount;
+  std::unordered_map<Gaudi::StringKey, std::atomic<unsigned int>> m_errorCount;
 
   void           init();
   void           checkInit() const;
   std::once_flag m_initFlag;
-  bool           m_isInit = false;
+  bool           m_isInit{false};
 
   std::mutex m_mut;
 };
