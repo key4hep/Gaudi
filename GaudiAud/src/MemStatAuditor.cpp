@@ -8,45 +8,63 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef __ICC
-// disable icc warning #654: overloaded virtual function "B::Y" is only partially overridden in class "C"
-//   TODO: there is only a partial overload of IAuditor::before and IAuditor::after
-#  pragma warning( disable : 654 )
-#endif
 
+/** @class MemStatAuditor MemStatAuditor.h GaudiAud/MemStatAudit.h
+
+    Just a minor modification of MemoryAuditor to allow
+    the output memory statistics table to be printed
+
+    @author  Vanya Belyaev
+    @author  Marco Clemencic
+    @date    04/02/2001
+*/
+
+#include "CommonAuditor.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/MsgStream.h"
-
 #include "GaudiKernel/Stat.h"
-
-/// local
-#include "MemStatAuditor.h"
 #include "ProcStats.h"
+
+class MemStatAuditor : public CommonAuditor {
+public:
+  using CommonAuditor::CommonAuditor;
+
+  StatusCode initialize() override;
+
+  void i_before( CustomEventTypeRef /*evt*/, std::string_view /*caller*/ ) override {
+    // It's not interesting to monitor the memory usage before the methods.
+  }
+
+  void i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& ) override {
+    i_printinfo( "Memory usage has changed after", evt, caller );
+  }
+
+private:
+  void                    i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller );
+  SmartIF<IChronoStatSvc> m_stat;
+
+  /// vsize of the previous call to printinfo
+  double m_vSize = -1;
+};
 
 DECLARE_COMPONENT( MemStatAuditor )
 
 StatusCode MemStatAuditor::initialize() {
-  StatusCode sc = CommonAuditor::initialize();
-  if ( UNLIKELY( sc.isFailure() ) ) return sc;
-
-  m_stat = serviceLocator()->service( "ChronoStatSvc" );
-  if ( UNLIKELY( !m_stat.get() ) ) {
-    error() << "Cannot get ChronoStatSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  return StatusCode::SUCCESS;
+  return CommonAuditor::initialize().andThen( [&]() -> StatusCode {
+    m_stat = serviceLocator()->service( "ChronoStatSvc" );
+    if ( UNLIKELY( !m_stat ) ) {
+      error() << "Cannot get ChronoStatSvc" << endmsg;
+      return StatusCode::FAILURE;
+    }
+    return StatusCode::SUCCESS;
+  } );
 }
 
-void MemStatAuditor::i_before( CustomEventTypeRef /*evt*/, const std::string& /*caller*/ ) {
-  // It's not interesting to monitor the memory usage before the methods.
-}
-
-void MemStatAuditor::i_printinfo( const std::string& msg, CustomEventTypeRef evt, const std::string& caller ) {
+void MemStatAuditor::i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller ) {
   // cannot be exactly 0
   double deltaVSize = 0.00001;
 
-  procInfo pInfo;
-  if ( getProcInfo( pInfo ) ) {
+  if ( procInfo pInfo; ProcStats::instance()->fetch( pInfo ) ) {
 
     if ( pInfo.vsize > 0 ) {
       if ( m_vSize > 0 ) { deltaVSize = pInfo.vsize - m_vSize; }
@@ -60,7 +78,7 @@ void MemStatAuditor::i_printinfo( const std::string& msg, CustomEventTypeRef evt
   }
   // fill the stat for every call, not just when there is a change
   // only monitor the increment in VSize
-  // Stat stv(statSvc(), caller + ":VMemUsage", pInfo.vsize);
-  // Stat str(statSvc(), caller + ":RMemUsage", pInfo.rss);
-  Stat sts( statSvc(), caller + ":VMem", deltaVSize );
+  // Stat stv(m_stat, caller + ":VMemUsage", pInfo.vsize);
+  // Stat str(m_stat, caller + ":RMemUsage", pInfo.rss);
+  Stat sts( m_stat, std::string{caller}.append( ":VMem" ), deltaVSize );
 }

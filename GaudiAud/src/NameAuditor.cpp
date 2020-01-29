@@ -12,16 +12,24 @@
 //  An auditor that prints the name of each algorithm method before
 // and after it is called///
 
-#include "NameAuditor.h"
+#include "CommonAuditor.h"
 
-#include "GaudiKernel/MsgStream.h"
+/**
+ * @brief Prints the name of each algorithm before entering the algorithm and after leaving it
+ * @author M. Shapiro, LBNL
+ * @author Marco Clemencic
+ */
+struct NameAuditor : CommonAuditor {
+  using CommonAuditor::CommonAuditor;
+
+  /// Print a message on "before".
+  void i_before( CustomEventTypeRef evt, std::string_view caller ) override {
+    info() << "About to Enter " << caller << " with auditor trigger " << evt << endmsg;
+  }
+  /// Print a message on "after".
+  void i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& ) override {
+    info() << "Just Exited " << caller << " with auditor trigger " << evt << endmsg;
+  }
+};
 
 DECLARE_COMPONENT( NameAuditor )
-
-void NameAuditor::i_before( CustomEventTypeRef evt, const std::string& caller ) {
-  info() << "About to Enter " << caller << " with auditor trigger " << evt << endmsg;
-}
-
-void NameAuditor::i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& ) {
-  info() << "Just Exited " << caller << " with auditor trigger " << evt << endmsg;
-}

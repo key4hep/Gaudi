@@ -75,10 +75,10 @@ public:
 
 protected:
   /** The component type */
-  void setComponentType( const std::string& componentType ) { m_componentType = componentType; }
+  void setComponentType( std::string componentType ) { m_componentType = std::move( componentType ); }
 
   /** The name of the parent */
-  void setParentName( const std::string& parent ) { m_parentName = parent; }
+  void setParentName( std::string parent ) { m_parentName = std::move( parent ); }
 
 private:
   //
@@ -137,7 +137,7 @@ public:
   void setTypeAndName( std::string myTypeAndName );
 
   /** Set the instance name (part after the '/') without changing the class type */
-  void setName( const std::string& myName );
+  void setName( std::string_view myName );
 
   /** Name of the componentType with "Handle" appended. Used as the python class name
       for the property in the genconf-generated configurables.
@@ -481,13 +481,13 @@ public:
   const T& operator[]( int index ) const { return m_handleArray[index]; }
 
   /** Get pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
-  T* operator[]( const std::string& name ) {
+  T* operator[]( std::string_view name ) {
     auto it = std::find_if( begin(), end(), [&]( const_reference r ) { return r.name() == name; } );
     return it != end() ? &*it : nullptr;
   }
 
   /** Get const pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
-  const T* operator[]( const std::string& name ) const {
+  const T* operator[]( std::string_view name ) const {
     auto it = std::find_if( begin(), end(), [&]( const_reference r ) { return r.name() == name; } );
     return it != end() ? &*it : nullptr;
   }

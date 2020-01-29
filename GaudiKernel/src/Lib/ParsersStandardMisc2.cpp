@@ -25,3 +25,7 @@ StatusCode Gaudi::Parsers::parse( std::map<int, double>& result, const std::stri
 StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string>& result, const std::string& input ) {
   return Gaudi::Parsers::parse_( result, input );
 }
+
+StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string, std::less<>>& result, const std::string& input ) {
+  return Gaudi::Parsers::parse_( result, input );
+}

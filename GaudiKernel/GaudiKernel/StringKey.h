@@ -45,7 +45,8 @@ namespace Gaudi {
   public:
     // ========================================================================
     /// constructor from plain C-string, perform hashing
-    StringKey( const char* key = "" ); // constructor, perform hashing
+    StringKey( const char* key = "" ) : StringKey{std::string{key}} {}
+    //
     /// constructor from std::string, perform hashing
     StringKey( std::string key ); // constructor, perform hashing
     // ========================================================================
@@ -65,18 +66,26 @@ namespace Gaudi {
     /** equality                                                            Key
      *  for efficiency reason compare the hash-values first
      */
-    bool operator==( const StringKey& o ) const { return m_hash == o.m_hash && m_str == o.m_str; }
+    friend bool operator==( const StringKey& lhs, const StringKey& rhs ) {
+      return lhs.m_hash == rhs.m_hash && lhs.m_str == rhs.m_str;
+    }
     /** equality, without hashing                                        string
      *  rely on the native string equality
      */
-    bool operator==( const std::string& o ) const { return m_str == o; }
+    friend bool operator==( const StringKey& lhs, const std::string& rhs ) { return lhs.m_str == rhs; }
+    friend bool operator==( const std::string& lhs, const StringKey& rhs ) { return rhs == lhs; }
+    friend bool operator==( const StringKey& lhs, std::string_view rhs ) { return lhs.m_str == rhs; }
+    friend bool operator==( std::string_view lhs, const StringKey& rhs ) { return rhs == lhs; }
     // ========================================================================
   public: // non-equality
     // ========================================================================
     /// non equality                                                      Key
-    bool operator!=( const StringKey& o ) const { return !( *this == o ); }
+    friend bool operator!=( const StringKey& lhs, const StringKey& rhs ) { return !( lhs == rhs ); }
     /// non-equality                                                   string
-    bool operator!=( const std::string& o ) const { return !( *this == o ); }
+    friend bool operator!=( const StringKey& lhs, std::string_view rhs ) { return !( lhs == rhs ); }
+    friend bool operator!=( const StringKey& lhs, const std::string& rhs ) { return !( lhs == rhs ); }
+    friend bool operator!=( std::string_view lhs, const StringKey& rhs ) { return !( lhs == rhs ); }
+    friend bool operator!=( const std::string& lhs, const StringKey& rhs ) { return !( lhs == rhs ); }
     // ========================================================================
     // ordering
     // ========================================================================
@@ -101,13 +110,15 @@ namespace Gaudi {
      *
      *  @endcode
      */
-    bool operator<( const StringKey& o ) const { return m_hash == o.m_hash ? m_str < o.m_str : m_hash < o.m_hash; }
+    friend bool operator<( const StringKey& lhs, const StringKey& rhs ) {
+      return lhs.m_hash == rhs.m_hash ? lhs.m_str < rhs.m_str : lhs.m_hash < rhs.m_hash;
+    }
     /// greater                                                             key
-    bool operator>( const StringKey& o ) const { return o < *this; }
+    friend bool operator>( const StringKey& lhs, const StringKey& rhs ) { return rhs < lhs; }
     /// less or equal                                                       key
-    bool operator<=( const StringKey& o ) const { return !( *this > o ); }
+    friend bool operator<=( const StringKey& lhs, const StringKey& rhs ) { return !( lhs > rhs ); }
     /// greater or equal                                                    key
-    bool operator>=( const StringKey& o ) const { return !( *this < o ); }
+    friend bool operator>=( const StringKey& lhs, const StringKey& rhs ) { return !( lhs < rhs ); }
     // ========================================================================
     // few helper methods for indirect usage, mainly for Python
     // ========================================================================
@@ -130,11 +141,11 @@ namespace Gaudi {
     /// equality operator for python
     bool __eq__( const StringKey& right ) const;
     /// equality operators for python
-    bool __eq__( const std::string& right ) const;
+    bool __eq__( std::string_view right ) const;
     /// non-equality operator for python
     bool __neq__( const StringKey& right ) const;
     /// non-equality operator for python
-    bool __neq__( const std::string& right ) const;
+    bool __neq__( const std::string_view right ) const;
     // ========================================================================
   public:
     // ========================================================================
@@ -149,54 +160,6 @@ namespace Gaudi {
     std::size_t m_hash; //          the hash
     // ========================================================================
   };
-  // ==========================================================================
-  /** equality operator with C-arrays
-   *  @author Vanya BELYAEV Iavn.Belyaev@nikhef.nl
-   *  @date 2009-10-07
-   */
-  template <unsigned int N>
-  inline bool operator==( const Gaudi::StringKey& key1, const char ( &key2 )[N] ) {
-    return key1.str().size() == N && std::equal( key2, key2 + N, key1.str().begin() );
-  }
-  // ==========================================================================
-  /** non-equality operator with C-arrays
-   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-   *  @date 2009-10-07
-   */
-  template <unsigned int N>
-  inline bool operator!=( const Gaudi::StringKey& key1, const char ( &key2 )[N] ) {
-    return !( key1 == key2 );
-  }
-  // ==========================================================================
-  /** "right" form of equality operator
-   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-   *  @date 2009-10-07
-   */
-  inline bool operator==( const std::string& key1, const Gaudi::StringKey& key2 ) { return key2 == key1; }
-  // ==========================================================================
-  /** "right" form of equality operator
-   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-   *  @date 2009-10-07
-   */
-  template <unsigned int N>
-  inline bool operator==( const char ( &key1 )[N], const Gaudi::StringKey& key2 ) {
-    return key2 == key1;
-  }
-  // ==========================================================================
-  /** "right" form of non-equality operator
-   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-   *  @date 2009-10-07
-   */
-  inline bool operator!=( const std::string& key1, const Gaudi::StringKey& key2 ) { return key2 != key1; }
-  // ==========================================================================
-  /** "right" form of non-equality operator
-   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-   *  @date 2009-10-07
-   */
-  template <unsigned int N>
-  inline bool operator!=( const char ( &key1 )[N], const Gaudi::StringKey& key2 ) {
-    return key2 != key1;
-  }
   // ==========================================================================
   /** hash-function: heeded for boost::hash
    *  @attention NEVER use the actual hash value for anything stored in

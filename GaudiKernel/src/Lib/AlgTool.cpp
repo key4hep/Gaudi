@@ -125,9 +125,9 @@ StatusCode AlgTool::setProperties()
 }
 
 //------------------------------------------------------------------------------
-AlgTool::AlgTool( const std::string& type, const std::string& name, const IInterface* parent )
+AlgTool::AlgTool( std::string type, std::string name, const IInterface* parent )
     //------------------------------------------------------------------------------
-    : m_type( type ), m_name( name ), m_parent( parent ) {
+    : m_type( std::move( type ) ), m_name( std::move( name ) ), m_parent( parent ) {
   addRef(); // Initial count set to 1
 
   IInterface* _p = const_cast<IInterface*>( parent );
@@ -141,32 +141,32 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
   } else if ( Auditor* _aud = dynamic_cast<Auditor*>( _p ) ) {
     m_svcLocator = _aud->serviceLocator();
   } else {
-    throw GaudiException( "Failure to create tool '" + type + "/" + name + "': illegal parent type '" +
+    throw GaudiException( "Failure to create tool '" + m_type + "/" + m_name + "': illegal parent type '" +
                               System::typeinfoName( typeid( *_p ) ) + "'",
                           "AlgTool", StatusCode::FAILURE );
   }
 
   // inherit output level from parent
-  { // get the "OutputLevel" property from parent
-    SmartIF<IProperty> pprop( _p );
-    if ( pprop && pprop->hasProperty( "OutputLevel" ) ) { m_outputLevel.assign( pprop->getProperty( "OutputLevel" ) ); }
+  // get the "OutputLevel" property from parent
+  if ( SmartIF<IProperty> pprop( _p ); pprop && pprop->hasProperty( "OutputLevel" ) ) {
+    m_outputLevel.assign( pprop->getProperty( "OutputLevel" ) );
   }
 
-  {
-    // Auditor monitoring properties
-    // Initialize the default value from ApplicationMgr AuditAlgorithms
-    Gaudi::Property<bool> audit( false );
-    // note that here we need that the service locator is already defined
-    auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
-    if ( appMgr && appMgr->hasProperty( "AuditTools" ) ) { audit.assign( appMgr->getProperty( "AuditTools" ) ); }
-    m_auditInit           = audit;
-    m_auditorInitialize   = audit;
-    m_auditorStart        = audit;
-    m_auditorStop         = audit;
-    m_auditorFinalize     = audit;
-    m_auditorReinitialize = audit;
-    m_auditorRestart      = audit;
+  // Auditor monitoring properties
+  // Initialize the default value from ApplicationMgr AuditAlgorithms
+  Gaudi::Property<bool> audit( false );
+  // note that here we need that the service locator is already defined
+  if ( auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
+       appMgr && appMgr->hasProperty( "AuditTools" ) ) {
+    audit.assign( appMgr->getProperty( "AuditTools" ) );
   }
+  m_auditInit           = audit;
+  m_auditorInitialize   = audit;
+  m_auditorStart        = audit;
+  m_auditorStop         = audit;
+  m_auditorFinalize     = audit;
+  m_auditorReinitialize = audit;
+  m_auditorRestart      = audit;
 }
 
 //-----------------------------------------------------------------------------
@@ -422,19 +422,19 @@ std::vector<IAlgTool*>& AlgTool::tools() {
 
 //------------------------------------------------------------------------------
 /// implementation of service method
-StatusCode AlgTool::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
+StatusCode AlgTool::service_i( std::string_view svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.getService( svcName, createIf, iid, ppSvc );
 }
 
 //------------------------------------------------------------------------------
-StatusCode AlgTool::service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+StatusCode AlgTool::service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
                                void** ppSvc ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.createService( svcType, svcName, iid, ppSvc );
 }
 
-SmartIF<IService> AlgTool::service( const std::string& name, const bool createIf, const bool quiet ) const {
+SmartIF<IService> AlgTool::service( std::string_view name, const bool createIf, const bool quiet ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.service( name, quiet, createIf );
 }

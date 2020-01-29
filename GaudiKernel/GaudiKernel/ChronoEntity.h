@@ -43,55 +43,55 @@ public:
   IChronoSvc::ChronoStatus stop();
   // ==========================================================================
   /// return the last delta-time of type "type"
-  inline IChronoSvc::ChronoTime delta( IChronoSvc::ChronoType type ) const;
+  IChronoSvc::ChronoTime delta( IChronoSvc::ChronoType type ) const;
   /// return the status of chrono
-  inline IChronoSvc::ChronoStatus status() const;
+  IChronoSvc::ChronoStatus status() const;
   // ==========================================================================
 public:
   // ==========================================================
   // Access to Chrono Statistics
   // ==========================================================
   /// number of chrono measurements
-  inline unsigned long nOfMeasurements() const;
+  unsigned long nOfMeasurements() const;
   // ==========================================================
   /// minimal measurement for user time
-  inline double uMinimalTime() const;
+  double uMinimalTime() const;
   /// minimal measurement for kernel time
-  inline double kMinimalTime() const;
+  double kMinimalTime() const;
   /// minimal measurement for elapsed time
-  inline double eMinimalTime() const;
+  double eMinimalTime() const;
   /// maximal measurement for user time
-  inline double uMaximalTime() const;
+  double uMaximalTime() const;
   /// maximal measurement for kernel time
-  inline double kMaximalTime() const;
+  double kMaximalTime() const;
   /// maximal measurement for elapsed time
-  inline double eMaximalTime() const;
+  double eMaximalTime() const;
   /// total user time
-  inline double uTotalTime() const;
+  double uTotalTime() const;
   /// total Kernel time
-  inline double kTotalTime() const;
+  double kTotalTime() const;
   /// total Elapsed time
-  inline double eTotalTime() const;
+  double eTotalTime() const;
   /// total time
-  inline double totalTime() const;
+  double totalTime() const;
   /// average Kernel Time
-  inline double kMeanTime() const;
+  double kMeanTime() const;
   /// average User   Time
-  inline double uMeanTime() const;
+  double uMeanTime() const;
   /// average Elapsed   Time
-  inline double eMeanTime() const;
+  double eMeanTime() const;
   /// r.m.s Kernel Time
-  inline double kRMSTime() const;
+  double kRMSTime() const;
   /// r.m.s User Time
-  inline double uRMSTime() const;
+  double uRMSTime() const;
   /// r.m.s Elapsed Time
-  inline double eRMSTime() const;
+  double eRMSTime() const;
   /// error in mean Kernel time
-  inline double kMeanErrorTime() const;
+  double kMeanErrorTime() const;
   /// error in mean User   time
-  inline double uMeanErrorTime() const;
+  double uMeanErrorTime() const;
   /// error in mean Elapsed   time
-  inline double eMeanErrorTime() const;
+  double eMeanErrorTime() const;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -121,21 +121,21 @@ public:
    *  @return the string representations
    *  @see boost::format
    */
-  inline std::string outputUserTime( const std::string& fmt, System::TimeType unit ) const;
+  std::string outputUserTime( std::string_view fmt, System::TimeType unit ) const;
   /** print the chrono according the format and units
    *  @param fmt  the format string
    *  @param unit the unit
    *  @return the string representations
    *  @see boost::format
    */
-  inline std::string outputSystemTime( const std::string& fmt, System::TimeType unit ) const;
+  std::string outputSystemTime( std::string_view fmt, System::TimeType unit ) const;
   /** print the chrono according the format and units
    *  @param fmt  the format string
    *  @param unit the unit
    *  @return the string representations
    *  @see boost::format
    */
-  inline std::string outputElapsedTime( const std::string& fmt, System::TimeType unit ) const;
+  std::string outputElapsedTime( std::string_view fmt, System::TimeType unit ) const;
   // ==========================================================================
   /** print the chrono according the format and units
    *
@@ -155,7 +155,7 @@ public:
    *  @return the string representations
    *  @see boost::format
    */
-  std::string outputTime( IChronoSvc::ChronoType typ, const std::string& fmt, System::TimeType unit ) const;
+  std::string outputTime( IChronoSvc::ChronoType typ, std::string_view fmt, System::TimeType unit ) const;
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -290,7 +290,7 @@ inline IChronoSvc::ChronoTime ChronoEntity::delta( IChronoSvc::ChronoType type )
  *  @see boost::format
  */
 // ============================================================================
-inline std::string ChronoEntity::outputUserTime( const std::string& fmt, System::TimeType unit ) const {
+inline std::string ChronoEntity::outputUserTime( std::string_view fmt, System::TimeType unit ) const {
   return outputTime( IChronoSvc::USER, fmt, unit );
 }
 // ============================================================================
@@ -301,7 +301,7 @@ inline std::string ChronoEntity::outputUserTime( const std::string& fmt, System:
  *  @see boost::format
  */
 // ============================================================================
-inline std::string ChronoEntity::outputSystemTime( const std::string& fmt, System::TimeType unit ) const {
+inline std::string ChronoEntity::outputSystemTime( std::string_view fmt, System::TimeType unit ) const {
   return outputTime( IChronoSvc::KERNEL, fmt, unit );
 }
 // ============================================================================
@@ -312,7 +312,7 @@ inline std::string ChronoEntity::outputSystemTime( const std::string& fmt, Syste
  *  @see boost::format
  */
 // ============================================================================
-inline std::string ChronoEntity::outputElapsedTime( const std::string& fmt, System::TimeType unit ) const {
+inline std::string ChronoEntity::outputElapsedTime( std::string_view fmt, System::TimeType unit ) const {
   return outputTime( IChronoSvc::ELAPSED, fmt, unit );
 }
 // ============================================================================

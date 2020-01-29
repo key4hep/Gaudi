@@ -35,8 +35,6 @@ public:
   ServiceHistory( const IService*, const JobHistory* );
   ServiceHistory( const IService&, const JobHistory* );
 
-  virtual ~ServiceHistory() = default;
-
   // Class IDs
   const CLID&        clID() const override { return classID(); }
   static const CLID& classID();
@@ -48,11 +46,14 @@ public:
 
   const JobHistory* jobHistory() const { return m_jobHistory; }
 
-  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
+  std::ostream& dump( std::ostream&, const bool isXML, int indent ) const override;
 
   const std::string& name() const override { return m_name; }
   const std::string& type() const override { return m_type; }
   const std::string& version() const override { return m_version; }
+
+  // Output stream.
+  friend std::ostream& operator<<( std::ostream& lhs, const ServiceHistory& rhs ) { return rhs.dump( lhs, false, 0 ); }
 
 private:
   const IService*   m_pService;
@@ -60,8 +61,5 @@ private:
   std::string       m_name, m_type, m_version;
   PropertyList      m_properties;
 };
-
-// Output stream.
-GAUDI_API std::ostream& operator<<( std::ostream& lhs, const ServiceHistory& rhs );
 
 #endif

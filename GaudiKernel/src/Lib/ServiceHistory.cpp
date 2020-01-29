@@ -81,7 +81,7 @@ const CLID& ServiceHistory::classID() {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void ServiceHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
+std::ostream& ServiceHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
 
   if ( !isXML ) {
 
@@ -117,17 +117,5 @@ void ServiceHistory::dump( std::ostream& ost, const bool isXML, int ind ) const 
     indent( ost, ind );
     ost << "</COMPONENT>" << endl;
   }
-}
-
-//**********************************************************************
-// Free functions.
-//**********************************************************************
-
-// Output stream.
-
-ostream& operator<<( ostream& lhs, const ServiceHistory& rhs ) {
-
-  rhs.dump( lhs, false );
-
-  return lhs;
+  return ost;
 }

@@ -473,8 +473,8 @@ void MessageSvc::i_reportMessage( const StatusCode& code, const std::string& sou
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::insertStream( int key, const std::string& name, std::ostream* stream ) {
-  m_streamMap.emplace( key, NamedStream( name, stream ) );
+void MessageSvc::insertStream( int key, std::string name, std::ostream* stream ) {
+  m_streamMap.emplace( key, NamedStream( std::move( name ), stream ) );
 }
 
 //#############################################################################
@@ -579,7 +579,7 @@ int MessageSvc::outputLevel() const {
 }
 
 // ---------------------------------------------------------------------------
-int MessageSvc::outputLevel( const std::string& source ) const {
+int MessageSvc::outputLevel( std::string_view source ) const {
   // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
   auto                                   it = m_thresholdMap.find( source );
@@ -593,16 +593,14 @@ void MessageSvc::setOutputLevel( int new_level ) {
 }
 
 // ---------------------------------------------------------------------------
-void MessageSvc::setOutputLevel( const std::string& source, int level ) {
+void MessageSvc::setOutputLevel( std::string_view source, int level ) {
   // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
-
-  // only write if we really have to...
-  auto i = m_thresholdMap.find( source );
-  if ( i == m_thresholdMap.end() ) {
-    m_thresholdMap[source] = level;
-  } else if ( i->second != level ) {
+  auto                                   i = m_thresholdMap.find( source );
+  if ( i != m_thresholdMap.end() ) {
     i->second = level;
+  } else {
+    m_thresholdMap.emplace( source, level );
   }
 }
 

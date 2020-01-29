@@ -81,16 +81,14 @@ public: // functions
   const PropertyPairList&  propertyPairs() const { return m_ppl; }
   time_t                   start_time() const { return m_start_time; }
 
-  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
+  std::ostream& dump( std::ostream&, bool isXML, int indent ) const override;
 
   const std::string& name() const override { return m_machine; }
   const std::string& version() const override { return m_release_version; }
   const std::string& type() const override { return m_osname; }
 
-private:
+  // Output stream.
+  friend std::ostream& operator<<( std::ostream& lhs, const JobHistory& rhs ) { return rhs.dump( lhs, false, 0 ); }
 };
-
-// Output stream.
-GAUDI_API std::ostream& operator<<( std::ostream& lhs, const JobHistory& rhs );
 
 #endif

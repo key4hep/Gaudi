@@ -62,15 +62,15 @@ public:
                             should be used to load the object.
       @param  pDirectory    Pointer to the data directory entry.
   */
-  SmartDataStorePtr( IDataProviderSvc* pService, IRegistry* pRegistry, const std::string& path )
-      : SmartDataObjectPtr( LOADER::access(), pService, pRegistry, path ), m_pObject( 0 ) {}
+  SmartDataStorePtr( IDataProviderSvc* pService, IRegistry* pRegistry, std::string path )
+      : SmartDataObjectPtr( LOADER::access(), pService, pRegistry, std::move( path ) ), m_pObject( nullptr ) {}
   /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */
-  SmartDataStorePtr( const SmartDataObjectPtr& copy ) : SmartDataObjectPtr( copy ), m_pObject( 0 ) {}
+  SmartDataStorePtr( const SmartDataObjectPtr& copy ) : SmartDataObjectPtr( copy ), m_pObject( nullptr ) {}
 
   /// Standard Destructor
-  virtual ~SmartDataStorePtr() {}
+  virtual ~SmartDataStorePtr() = default;
 
   /// Automatic conversion to data type
   SmartDataStorePtr& operator=( DataObject* pObj ) {

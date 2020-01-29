@@ -38,13 +38,12 @@ AlgToolHistory::AlgToolHistory( const AlgTool& alg, const JobHistory* job )
 
 //**********************************************************************
 
-AlgToolHistory::AlgToolHistory( const std::string& algVersion, const std::string& algName, const std::string& algType,
-                                const AlgTool* tool, const PropertyList& props,
-                                const JobHistory* job )
-    : m_type( algType )
-    , // FIXME type_info???
-    m_version( algVersion )
-    , m_name( algName )
+AlgToolHistory::AlgToolHistory( std::string algVersion, std::string algName, std::string algType, const AlgTool* tool,
+                                const PropertyList& props,
+                                const JobHistory*   job )
+    : m_type( std::move( algType ) ) // FIXME type_info???
+    , m_version( std::move( algVersion ) )
+    , m_name( std::move( algName ) )
     , m_tool( tool )
     , m_properties( props )
     , m_jobHistory( job ) {}
@@ -59,7 +58,7 @@ const CLID& AlgToolHistory::classID() {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void AlgToolHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
+std::ostream& AlgToolHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
 
   if ( !isXML ) {
 
@@ -95,13 +94,5 @@ void AlgToolHistory::dump( std::ostream& ost, const bool isXML, int ind ) const 
     indent( ost, ind );
     ost << "</COMPONENT>" << endl;
   }
-}
-
-//**********************************************************************
-
-ostream& operator<<( ostream& lhs, const AlgToolHistory& rhs ) {
-
-  rhs.dump( lhs, false );
-
-  return lhs;
+  return ost;
 }

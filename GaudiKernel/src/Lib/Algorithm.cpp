@@ -55,13 +55,6 @@ namespace Gaudi {
     }
   } // namespace Details
 
-  // Constructor
-  Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const std::string& version )
-      : m_name( name )
-      , m_version( version )
-      , // incremented by AlgResourcePool
-      m_pSvcLocator( pSvcLocator ) {}
-
   // IAlgorithm implementation
   StatusCode Algorithm::sysInitialize() {
 
@@ -491,7 +484,7 @@ namespace Gaudi {
         if ( auto nCnt = nOfCountersToBePrinted(); nCnt ) {
           auto& os = info() << "Number of counters : " << nCnt
                             << "\n |    Counter                                      |";
-          forEachCounter( [&]( const std::string& label, const auto& counter ) {
+          forEachCounter( [&]( const auto& label, const auto& counter ) {
             if ( counter.toBePrinted() ) counter.print( os << '\n', label );
           } );
           os << endmsg;
@@ -669,19 +662,19 @@ namespace Gaudi {
    ** Protected Member Functions
    **/
 
-  StatusCode Algorithm::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid,
+  StatusCode Algorithm::service_i( std::string_view svcName, bool createIf, const InterfaceID& iid,
                                    void** ppSvc ) const {
     const ServiceLocatorHelper helper( *serviceLocator(), *this );
     return helper.getService( svcName, createIf, iid, ppSvc );
   }
 
-  StatusCode Algorithm::service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+  StatusCode Algorithm::service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
                                    void** ppSvc ) const {
     const ServiceLocatorHelper helper( *serviceLocator(), *this );
     return helper.createService( svcType, svcName, iid, ppSvc );
   }
 
-  SmartIF<IService> Algorithm::service( const std::string& name, const bool createIf, const bool quiet ) const {
+  SmartIF<IService> Algorithm::service( std::string_view name, const bool createIf, const bool quiet ) const {
     const ServiceLocatorHelper helper( *serviceLocator(), *this );
     return helper.service( name, quiet, createIf );
   }

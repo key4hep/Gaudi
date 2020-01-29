@@ -76,11 +76,11 @@ namespace GaudiToolLocal {
   public:
     // ========================================================================
     /// make the increment
-    long increment( const std::string& object ) { return ++m_map[object]; }
+    long increment( std::string_view object ) { return ++get( object ); }
     /// make the decrement
-    long decrement( const std::string& object ) { return --m_map[object]; }
+    long decrement( std::string_view object ) { return --get( object ); }
     /// current count
-    long counts( const std::string& object ) { return m_map[object]; }
+    long counts( std::string_view object ) { return get( object ); }
     /// make a report
     void report() const {
       /// keep the silence?
@@ -96,9 +96,14 @@ namespace GaudiToolLocal {
     // ========================================================================
   private:
     // ========================================================================
-    typedef std::map<std::string, long> Map;
-    Map                                 m_map;
-    std::string                         m_message;
+    using Map = std::map<std::string, long, std::less<>>;
+    long& get( std::string_view which ) {
+      auto i = m_map.find( which );
+      if ( i == m_map.end() ) i = m_map.emplace( which, long{} ).first;
+      return i->second;
+    }
+    Map         m_map;
+    std::string m_message;
     // ========================================================================
   };
   // ==========================================================================
@@ -139,8 +144,9 @@ bool GaudiTool::summaryEnabled() // is summary enabled?
 // ============================================================================
 // Standard constructor
 // ============================================================================
-GaudiTool::GaudiTool( const std::string& this_type, const std::string& this_name, const IInterface* parent )
-    : GaudiCommon<CounterHolder<AlgTool>>( this_type, this_name, parent ), m_local( this_type + "/" + this_name ) {
+GaudiTool::GaudiTool( std::string this_type, std::string this_name, const IInterface* parent )
+    : GaudiCommon<CounterHolder<AlgTool>>( std::move( this_type ), std::move( this_name ), parent )
+    , m_local( type() + "/" + name() ) {
   // make instance counts
   GaudiToolLocal::s_InstanceCounter.increment( m_local );
 }

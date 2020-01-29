@@ -75,10 +75,10 @@ public:
   /** The standard message service.
    *  Returns a pointer to the standard message service.
    */
-  inline const SmartIF<IMessageSvc>& msgSvc() const { return m_msgsvc; }
+  const SmartIF<IMessageSvc>& msgSvc() const { return m_msgsvc; }
 
   /// Return an uninitialized MsgStream.
-  inline MsgStream& msgStream() const {
+  MsgStream& msgStream() const {
     if ( UNLIKELY( ( !m_msgStream.get() ) ) ) create_msgStream();
     return *m_msgStream;
   }
@@ -93,34 +93,34 @@ public:
    *
    *  @return Reference to the predefined stream
    */
-  inline MsgStream& msgStream( const MSG::Level level ) const { return msgStream() << level; }
+  MsgStream& msgStream( const MSG::Level level ) const { return msgStream() << level; }
 
   /// shortcut for the method msgStream(MSG::ALWAYS)
-  inline MsgStream& always() const { return msgStream( MSG::ALWAYS ); }
+  MsgStream& always() const { return msgStream( MSG::ALWAYS ); }
 
   /// shortcut for the method msgStream(MSG::FATAL)
-  inline MsgStream& fatal() const { return msgStream( MSG::FATAL ); }
+  MsgStream& fatal() const { return msgStream( MSG::FATAL ); }
 
   /// shortcut for the method msgStream(MSG::ERROR)
-  inline MsgStream& err() const { return msgStream( MSG::ERROR ); }
+  MsgStream& err() const { return msgStream( MSG::ERROR ); }
 
   /// shortcut for the method msgStream(MSG::ERROR)
-  inline MsgStream& error() const { return msgStream( MSG::ERROR ); }
+  MsgStream& error() const { return msgStream( MSG::ERROR ); }
 
   /// shortcut for the method msgStream(MSG::WARNING)
-  inline MsgStream& warning() const { return msgStream( MSG::WARNING ); }
+  MsgStream& warning() const { return msgStream( MSG::WARNING ); }
 
   /// shortcut for the method msgStream(MSG::INFO)
-  inline MsgStream& info() const { return msgStream( MSG::INFO ); }
+  MsgStream& info() const { return msgStream( MSG::INFO ); }
 
   /// shortcut for the method msgStream(MSG::DEBUG)
-  inline MsgStream& debug() const { return msgStream( MSG::DEBUG ); }
+  MsgStream& debug() const { return msgStream( MSG::DEBUG ); }
 
   /// shortcut for the method msgStream(MSG::VERBOSE)
-  inline MsgStream& verbose() const { return msgStream( MSG::VERBOSE ); }
+  MsgStream& verbose() const { return msgStream( MSG::VERBOSE ); }
 
   /// shortcut for the method msgStream(MSG::INFO)
-  inline MsgStream& msg() const { return msgStream( MSG::INFO ); }
+  MsgStream& msg() const { return msgStream( MSG::INFO ); }
 
 private:
   template <typename Base>
@@ -145,18 +145,13 @@ public:
   using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
 
   /// get the cached level (originally extracted from the embedded MsgStream)
-  inline MSG::Level msgLevel() const {
+  MSG::Level msgLevel() const {
     if ( LIKELY( m_commonMessagingReady ) ) return m_level;
     return setUpMessaging();
   }
 
-  /// Backward compatibility function for getting the output level
-  [[deprecated( "please use msgLevel() instead of outputLevel()" )]] inline MSG::Level outputLevel() const {
-    return msgLevel();
-  }
-
   /// get the output level from the embedded MsgStream
-  inline bool msgLevel( MSG::Level lvl ) const { return UNLIKELY( msgLevel() <= lvl ); }
+  bool msgLevel( MSG::Level lvl ) const { return UNLIKELY( msgLevel() <= lvl ); }
 
 private:
   // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions

@@ -45,16 +45,8 @@ const CLID& DataHistory::classID() {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void DataHistory::dump( std::ostream& ost, const bool /*isXML*/, int /*ind*/ ) const {
-  ost << "ClassID: " << dataClassID() << endl
-      << "Key: " << dataKey() << endl
-      << "AlgorithmHistory: " << (void*)algorithmHistory() << endl;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-ostream& operator<<( ostream& lhs, const DataHistory& rhs ) {
-
-  rhs.dump( lhs, false );
-  return lhs;
+std::ostream& DataHistory::dump( std::ostream& ost, bool /*isXML*/, int /*ind*/ ) const {
+  return ost << "ClassID: " << dataClassID() << '\n'
+             << "Key: " << dataKey() << '\n'
+             << "AlgorithmHistory: " << (void*)algorithmHistory() << endl;
 }

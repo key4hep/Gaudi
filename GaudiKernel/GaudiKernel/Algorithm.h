@@ -18,9 +18,8 @@ namespace Gaudi {
 #pragma GCC diagnostic ignored "-Woverloaded-virtual"
     class LegacyAlgorithmAdapter : public Gaudi::Algorithm {
     public:
-      LegacyAlgorithmAdapter( const std::string& name, ISvcLocator* svcloc,
-                              const std::string& version = PACKAGE_VERSION )
-          : Gaudi::Algorithm( name, svcloc, version ) {
+      LegacyAlgorithmAdapter( std::string name, ISvcLocator* svcloc, std::string version = PACKAGE_VERSION )
+          : Gaudi::Algorithm( std::move( name ), svcloc, std::move( version ) ) {
         // default cardinality for non-reentrant algorithms
         setProperty( "Cardinality", 1 );
       }
@@ -34,13 +33,6 @@ namespace Gaudi {
 
       /// Set the executed flag to the specified state
       void setExecuted( bool state ) const;
-
-      /** Reset the executed state of the Algorithm for the duration
-       *  of the current event.
-       */
-      [[deprecated( "resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each "
-                    "Algorithm" )]] void
-      resetExecuted();
 
       /// Did this algorithm pass or fail its filter criterion for the last event?
       bool filterPassed() const;

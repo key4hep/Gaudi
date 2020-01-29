@@ -236,14 +236,15 @@ namespace {
 }
 
 //------------------------------------------------------------------------------
-StatusCode ToolSvc::retrieve( const std::string& tooltype, const InterfaceID& iid, IAlgTool*& tool,
+StatusCode ToolSvc::retrieve( std::string_view tooltype, const InterfaceID& iid, IAlgTool*& tool,
                               const IInterface* parent, bool createIf )
 //------------------------------------------------------------------------------
 {
   // check for tools, which by name are required to be public:
   if ( ba::ends_with( tooltype, s_PUBLIC ) ) {
     // parent for PUBLIC tool is 'this', i.e. ToolSvc
-    return retrieve( ba::erase_tail_copy( tooltype, s_PUBLIC.size() ), iid, tool, this, createIf );
+    tooltype.remove_suffix( s_PUBLIC.size() );
+    return retrieve( tooltype, iid, tool, this, createIf );
   }
 
   // protect against empty type
@@ -252,27 +253,28 @@ StatusCode ToolSvc::retrieve( const std::string& tooltype, const InterfaceID& ii
     return StatusCode::FAILURE;
   }
   auto pos = tooltype.find( '/' );
-  if ( std::string::npos == pos ) { return retrieve( tooltype, tooltype, iid, tool, parent, createIf ); }
+  if ( std::string_view::npos == pos ) { return retrieve( tooltype, tooltype, iid, tool, parent, createIf ); }
   return retrieve( tooltype.substr( 0, pos ), tooltype.substr( pos + 1 ), iid, tool, parent, createIf );
 }
 
 // ===================================================================================
 
 //------------------------------------------------------------------------------
-StatusCode ToolSvc::retrieve( const std::string& tooltype, const std::string& toolname, const InterfaceID& iid,
+StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolname, const InterfaceID& iid,
                               IAlgTool*& tool, const IInterface* parent, bool createIf )
 //------------------------------------------------------------------------------
 {
   // check the applicability of another method:
   // ignore the provided name if it is empty or the type contains a name
-  if ( toolname.empty() || ( std::string::npos != tooltype.find( '/' ) ) ) {
+  if ( toolname.empty() || ( std::string_view::npos != tooltype.find( '/' ) ) ) {
     return retrieve( tooltype, iid, tool, parent, createIf );
   }
 
   // check for tools, which by name are required to be public:
   if ( ba::ends_with( toolname, s_PUBLIC ) ) {
     // parent for PUBLIC tool is this, i.e. ToolSvc
-    return retrieve( tooltype, ba::erase_tail_copy( toolname, s_PUBLIC.size() ), iid, tool, this, createIf );
+    toolname.remove_suffix( s_PUBLIC.size() );
+    return retrieve( tooltype, toolname, iid, tool, this, createIf );
   }
 
   std::lock_guard<CallMutex> lock( m_mut );
@@ -302,7 +304,7 @@ StatusCode ToolSvc::retrieve( const std::string& tooltype, const std::string& to
       warning() << "Tool " << toolname << " not found and creation not requested" << endmsg;
       return sc;
     }
-    sc = create( tooltype, toolname, parent, itool );
+    sc = create( std::string{tooltype}, std::string{toolname}, parent, itool );
     if ( sc.isFailure() ) { return sc; }
   }
 
@@ -322,7 +324,7 @@ StatusCode ToolSvc::retrieve( const std::string& tooltype, const std::string& to
   return sc;
 }
 //------------------------------------------------------------------------------
-std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
+std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
 //------------------------------------------------------------------------------
 {
 
@@ -570,26 +572,26 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
 }
 
 //------------------------------------------------------------------------------
-std::string ToolSvc::nameTool( const std::string& toolname, const IInterface* parent )
+std::string ToolSvc::nameTool( std::string_view toolname, const IInterface* parent )
 //------------------------------------------------------------------------------
 {
 
-  if ( !parent ) { return this->name() + "." + toolname; } // RETURN
+  if ( !parent ) { return std::string{this->name()}.append( "." ).append( toolname ); } // RETURN
 
   // check that parent has a name!
   auto named_parent = SmartIF<INamedInterface>( const_cast<IInterface*>( parent ) );
   if ( named_parent ) {
-    auto fullname = named_parent->name() + "." + toolname;
+    auto fullname = std::string{named_parent->name()}.append( "." ).append( toolname );
     return fullname; // RETURN
   }
 
   error() << "Private Tools only allowed for components implementing INamedInterface" << endmsg;
   //
-  return "." + toolname;
+  return std::string{"."}.append( toolname );
 }
 
 //------------------------------------------------------------------------------
-bool ToolSvc::existsTool( const std::string& fullname ) const
+bool ToolSvc::existsTool( std::string_view fullname ) const
 //------------------------------------------------------------------------------
 {
   std::lock_guard<CallMutex> lock( m_mut );
@@ -604,8 +606,8 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
 {
 
   // Cache tool name in case of errors
-  const std::string toolName = itool->name();
-  StatusCode        sc;
+  const auto& toolName = itool->name();
+  StatusCode  sc;
 
   // Finalise the tool inside a try block
   try {

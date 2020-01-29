@@ -99,7 +99,10 @@ namespace Gaudi {
      *  @param name    The algorithm object's name
      *  @param svcloc  A pointer to a service location service
      */
-    Algorithm( const std::string& name, ISvcLocator* svcloc, const std::string& version = PACKAGE_VERSION );
+    Algorithm( std::string name, ISvcLocator* svcloc, std::string version = PACKAGE_VERSION )
+        : m_name( std::move( name ) )
+        , m_version( std::move( version ) ) // incremented by AlgResourcePool
+        , m_pSvcLocator( svcloc ) {}
 
     /** Reinitialization method invoked by the framework. This method is responsible
      *  for any reinitialization required by the framework itself.
@@ -161,7 +164,7 @@ namespace Gaudi {
     /** The type of the algorithm object.
      */
     const std::string& type() const override { return m_type; }
-    void               setType( const std::string& type ) override { m_type = type; } // BH, TODO: move to proper place
+    void setType( std::string type ) override { m_type = std::move( type ); } // BH, TODO: move to proper place
 
     const std::string& version() const override;
 
@@ -200,21 +203,21 @@ namespace Gaudi {
 
     /// Access a service by name, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
+    StatusCode service( std::string_view name, T*& psvc, bool createIf = true ) const {
       return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
     }
 
     /// Access a service by name and type, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const {
+    StatusCode service( std::string_view svcType, std::string_view svcName, T*& psvc ) const {
       return service_i( svcType, svcName, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
     }
 
     /// Return a pointer to the service identified by name (or "type/name")
-    SmartIF<IService> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const;
+    SmartIF<IService> service( std::string_view name, const bool createIf = true, const bool quiet = false ) const;
 
     template <class T>
-    SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const {
+    SmartIF<T> service( std::string_view name, bool createIf = true, bool quiet = false ) const {
       return service( name, createIf, quiet ).as<T>();
     }
 
@@ -226,56 +229,39 @@ namespace Gaudi {
     /** The standard Chrono & Stat service,
      *  Return a pointer to the service if present
      */
-    SmartIF<IChronoStatSvc>&                                             chronoSvc() const;
-    [[deprecated( "use chronoSvc() instead" )]] SmartIF<IChronoStatSvc>& chronoStatService() const {
-      return chronoSvc();
-    }
+    SmartIF<IChronoStatSvc>& chronoSvc() const;
 
     /** The standard detector data service.
      *  May not be invoked before sysInitialize() has been invoked.
      */
-    SmartIF<IDataProviderSvc>&                                          detSvc() const;
-    [[deprecated( "use detSvc() instead" )]] SmartIF<IDataProviderSvc>& detDataService() const { return detSvc(); }
+    SmartIF<IDataProviderSvc>& detSvc() const;
 
     /** The standard detector data persistency conversion service.
      *  May not be invoked before sysInitialize() has been invoked.
      */
-    SmartIF<IConversionSvc>&                                             detCnvSvc() const;
-    [[deprecated( "use detCnvSvc() instead" )]] SmartIF<IConversionSvc>& detDataCnvService() const {
-      return detCnvSvc();
-    }
+    SmartIF<IConversionSvc>& detCnvSvc() const;
 
     /** The standard event data service.
      *  May not be invoked before sysInitialize() has been invoked.
      */
     SmartIF<IDataProviderSvc>& eventSvc() const;
     /// shortcut for  method eventSvc
-    SmartIF<IDataProviderSvc>&                                            evtSvc() const { return eventSvc(); }
-    [[deprecated( "use eventSvc() instead" )]] SmartIF<IDataProviderSvc>& eventDataService() const {
-      return eventSvc();
-    }
+    SmartIF<IDataProviderSvc>& evtSvc() const { return eventSvc(); }
 
     /** The standard event data persistency conversion service.
      *  May not be invoked before sysInitialize() has been invoked.
      */
-    SmartIF<IConversionSvc>&                                               eventCnvSvc() const;
-    [[deprecated( "use eventCnvSvc() instead" )]] SmartIF<IConversionSvc>& eventDataCnvService() const {
-      return eventCnvSvc();
-    }
+    SmartIF<IConversionSvc>& eventCnvSvc() const;
 
     /** The standard histogram service.
      *  May not be invoked before sysInitialize() has been invoked.
      */
-    SmartIF<IHistogramSvc>&                                            histoSvc() const;
-    [[deprecated( "use histoSvc() instead" )]] SmartIF<IHistogramSvc>& histogramDataService() const {
-      return histoSvc();
-    }
+    SmartIF<IHistogramSvc>& histoSvc() const;
 
     /** The standard N tuple service.
      *  Returns a pointer to the N tuple service if present.
      */
-    SmartIF<INTupleSvc>&                                             ntupleSvc() const;
-    [[deprecated( "use ntupleSvc() instead" )]] SmartIF<INTupleSvc>& ntupleService() const { return ntupleSvc(); }
+    SmartIF<INTupleSvc>& ntupleSvc() const;
 
     /** The standard RandomGen service,
      *  Return a pointer to the service if present
@@ -349,7 +335,7 @@ namespace Gaudi {
      *   @retval NULL No monitor service is present
      *   @retval non-NULL A monitor service is present and available to be used
      */
-    inline SmartIF<IMonitorSvc>& monitorSvc() const {
+    SmartIF<IMonitorSvc>& monitorSvc() const {
       // If not already located try to locate it without forcing a creation
       if ( !m_pMonitorSvc ) {
         m_pMonitorSvc = service( m_monitorSvcName, false, true ); // do not create and be quiet
@@ -384,7 +370,6 @@ namespace Gaudi {
   public:
     void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
-  public:
     void registerTool( IAlgTool* tool ) const;
     void deregisterTool( IAlgTool* tool ) const;
 
@@ -551,14 +536,14 @@ namespace Gaudi {
     bool                       m_isFinalized;                                   ///< Algorithm has been finalized flag
 
     /// implementation of service method
-    StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
-    StatusCode service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+    StatusCode service_i( std::string_view svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
+    StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
                           void** ppSvc ) const;
 
-    /// Private Copy constructor: NO COPY ALLOWED
-    Algorithm( const Algorithm& a ) = delete;
+    /// delete copy constructor: NO COPY ALLOWED
+    Algorithm( const Algorithm& ) = delete;
 
-    /// Private assignment operator: NO ASSIGNMENT ALLOWED
-    Algorithm& operator=( const Algorithm& rhs ) = delete;
+    /// delete assignment operator: NO ASSIGNMENT ALLOWED
+    Algorithm& operator=( const Algorithm& ) = delete;
   };
 } // namespace Gaudi

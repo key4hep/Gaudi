@@ -732,15 +732,14 @@ public:
    *  @param name tool name
    *  @param parent pointer to parent object (service, algorithm or tool)
    */
-  GaudiTool( const std::string& type, const std::string& name, const IInterface* parent );
+  GaudiTool( std::string type, std::string name, const IInterface* parent );
 
   /// destructor, virtual and protected
   ~GaudiTool() override;
   // ==========================================================================
 private:
   // ==========================================================================
-  /// no default/copy constructor, no assignment
-  GaudiTool()                   = delete;
+  /// no copy constructor, no assignment
   GaudiTool( const GaudiTool& ) = delete;
   GaudiTool& operator=( const GaudiTool& ) = delete;
   // ==========================================================================

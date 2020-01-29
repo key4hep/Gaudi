@@ -293,15 +293,15 @@ void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const {
 // Print the error  message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Error( const std::string& msg, const StatusCode st, const size_t mx ) const {
+StatusCode GaudiCommon<PBASE>::Error( std::string_view msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of errors
-  const size_t num = ++m_errors[msg];
+  const size_t num = increment( m_errors, msg );
   // If suppressed, just return
   if ( num > mx ) {
     return st;
   } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
   {
-    return Print( "The   ERROR message is suppressed : '" + msg + "'", st, MSG::ERROR );
+    return Print( std::string{"The   ERROR message is suppressed : '"}.append( msg ).append( "'" ), st, MSG::ERROR );
   }
   // return message
   return Print( msg, st, MSG::ERROR );
@@ -312,15 +312,15 @@ StatusCode GaudiCommon<PBASE>::Error( const std::string& msg, const StatusCode s
 // Print the warning  message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Warning( const std::string& msg, const StatusCode st, const size_t mx ) const {
+StatusCode GaudiCommon<PBASE>::Warning( std::string_view msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of warnings
-  const size_t num = ++m_warnings[msg];
+  const size_t num = increment( m_warnings, msg );
   // If suppressed, just return
   if ( num > mx ) {
     return st;
   } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
   {
-    return Print( "The WARNING message is suppressed : '" + msg + "'", st, MSG::WARNING );
+    return Print( std::string{"The WARNING message is suppressed : '"}.append( msg ).append( "'" ), st, MSG::WARNING );
   }
   // return message
   return Print( msg, st, MSG::WARNING );
@@ -331,15 +331,15 @@ StatusCode GaudiCommon<PBASE>::Warning( const std::string& msg, const StatusCode
 // Print the info message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Info( const std::string& msg, const StatusCode st, const size_t mx ) const {
+StatusCode GaudiCommon<PBASE>::Info( std::string_view msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of warnings
-  const size_t num = ++m_infos[msg];
+  const size_t num = increment( m_infos, msg );
   // If suppressed, just return
   if ( num > mx ) {
     return st;
   } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
   {
-    return Print( "The INFO message is suppressed : '" + msg + "'", st, MSG::INFO );
+    return Print( std::string{"The INFO message is suppressed : '"}.append( msg ).append( "'" ), st, MSG::INFO );
   }
   // return message
   return Print( msg, st, MSG::INFO );
@@ -350,7 +350,7 @@ StatusCode GaudiCommon<PBASE>::Info( const std::string& msg, const StatusCode st
 //  Print the message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Print( const std::string& msg, const StatusCode st, const MSG::Level lvl ) const {
+StatusCode GaudiCommon<PBASE>::Print( std::string_view msg, const StatusCode st, const MSG::Level lvl ) const {
   // perform printout ?
   if ( !this->msgLevel( lvl ) ) { return st; } // RETURN
 
@@ -381,11 +381,11 @@ StatusCode GaudiCommon<PBASE>::Print( const std::string& msg, const StatusCode s
 // Create and (re)-throw the exception
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::Exception( const std::string& msg, const GaudiException& exc, const StatusCode sc ) const {
+void GaudiCommon<PBASE>::Exception( std::string_view msg, const GaudiException& exc, const StatusCode sc ) const {
   // increase local counter of exceptions
-  ++m_exceptions[msg];
-  Print( "Exception (re)throw: " + msg, sc, MSG::FATAL ).ignore();
-  throw GaudiException( this->name() + ":: " + msg, this->name(), sc, exc );
+  increment( m_exceptions, msg );
+  Print( std::string{"Exception (re)throw: "}.append( msg ), sc, MSG::FATAL ).ignore();
+  throw GaudiException( ( this->name() + ":: " ).append( msg ), this->name(), sc, exc );
 }
 // ============================================================================
 
@@ -393,11 +393,11 @@ void GaudiCommon<PBASE>::Exception( const std::string& msg, const GaudiException
 // Create and (re)-throw the exception
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::Exception( const std::string& msg, const std::exception& exc, const StatusCode sc ) const {
+void GaudiCommon<PBASE>::Exception( std::string_view msg, const std::exception& exc, const StatusCode sc ) const {
   // increase local counter of exceptions
-  ++m_exceptions[msg];
-  Print( "Exception (re)throw: " + msg, sc, MSG::FATAL ).ignore();
-  throw GaudiException( this->name() + ":: " + msg + "(" + exc.what() + ")", "", sc );
+  increment( m_exceptions, msg );
+  Print( std::string{"Exception (re)throw: "}.append( msg ), sc, MSG::FATAL ).ignore();
+  throw GaudiException( ( this->name() + ":: " ).append( msg ) + "(" + exc.what() + ")", "", sc );
 }
 // ============================================================================
 
@@ -405,11 +405,11 @@ void GaudiCommon<PBASE>::Exception( const std::string& msg, const std::exception
 // Create and throw the exception
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::Exception( const std::string& msg, const StatusCode sc ) const {
+void GaudiCommon<PBASE>::Exception( std::string_view msg, const StatusCode sc ) const {
   // increase local counter of exceptions
-  ++m_exceptions[msg];
-  Print( "Exception throw: " + msg, sc, MSG::FATAL ).ignore();
-  throw GaudiException( this->name() + ":: " + msg, "", sc );
+  increment( m_exceptions, msg );
+  Print( std::string{"Exception throw: "}.append( msg ), sc, MSG::FATAL ).ignore();
+  throw GaudiException( ( this->name() + ":: " ).append( msg ), "", sc );
 }
 // ============================================================================
 
@@ -422,7 +422,7 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const {
   // we anyway want to print
   auto countToBePrinted = [&]() {
     unsigned n = 0;
-    this->forEachCounter( [&n]( const std::string&, const auto& counter ) { n += counter.toBePrinted(); } );
+    this->forEachCounter( [&n]( const auto&, const auto& counter ) { n += counter.toBePrinted(); } );
     return n;
   };
   auto nbPrintedCounters =
@@ -431,7 +431,7 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const {
   if ( nbPrintedCounters == 0 ) return 0;
   MsgStream& msg = this->msgStream( level );
   msg << "Number of counters : " << nbPrintedCounters << "\n" << m_header.value();
-  this->forEachCounter( [&]( const std::string& label, const auto& counter ) {
+  this->forEachCounter( [&]( const auto& label, const auto& counter ) {
     if ( m_printEmptyCounters || this->msgLevel( MSG::DEBUG ) || counter.toBePrinted() ) {
       std::ostringstream ost;
       counter.print( ost, label );
@@ -453,7 +453,7 @@ long GaudiCommon<PBASE>::printErrors( const MSG::Level level ) const {
   // format for printout
   boost::format ftm( " #%|-10s| = %|.8s| %|23t| Message = '%s'" );
 
-  auto print = [&]( const Counter& c, const std::string& label ) {
+  auto print = [&]( const Counter& c, const auto& label ) {
     for ( const auto& i : c ) { this->msgStream( level ) << ( ftm % label % i.second % i.first ) << endmsg; }
   };
 
@@ -494,13 +494,13 @@ long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const {
 // ============================================================================
 template <class PBASE>
 DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object,
-                                     const std::string& location, const bool useRootInTES ) const {
+                                     std::string_view location, const bool useRootInTES ) const {
   // check arguments
   Assert( svc, "put():: Invalid 'service'!" );
   Assert( static_cast<bool>( object ), "put():: Invalid 'Object'!" );
   Assert( !location.empty(), "put():: Invalid 'address' = '' " );
   // final data location
-  const std::string& fullLocation = this->fullTESLocation( location, useRootInTES );
+  const auto& fullLocation = this->fullTESLocation( location, useRootInTES );
   // register the object!
   const StatusCode status = '/' == fullLocation[0] ? svc->registerObject( fullLocation, object.get() )
                                                    : svc->registerObject( "/Event/" + fullLocation, object.get() );

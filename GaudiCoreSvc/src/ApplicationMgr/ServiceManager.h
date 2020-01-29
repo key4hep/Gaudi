@@ -50,14 +50,14 @@ public:
     SmartIF<IService> service;
     long              priority;
     bool              active;
-    inline bool       operator==( const std::string& name ) const { return service->name() == name; }
-    inline bool       operator==( const IService* ptr ) const { return service.get() == ptr; }
-    inline bool       operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
+    bool              operator==( std::string_view name ) const { return service->name() == name; }
+    bool              operator==( const IService* ptr ) const { return service.get() == ptr; }
+    bool              operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
   };
 
   // typedefs and classes
-  typedef std::list<ServiceItem>                    ListSvc;
-  typedef GaudiUtils::Map<std::string, std::string> MapType;
+  typedef std::list<ServiceItem>                          ListSvc;
+  typedef std::map<std::string, std::string, std::less<>> MapType;
 
   /// default creator
   ServiceManager( IInterface* application );
@@ -72,7 +72,7 @@ public:
   const std::list<IService*>& getServices() const override;
 
   /// implementation of ISvcLocation::existsService
-  bool existsService( const std::string& name ) const override;
+  bool existsService( std::string_view name ) const override;
 
   /// implementation of ISvcManager::addService
   StatusCode addService( IService* svc, int prio = DEFAULT_SVC_PRIORITY ) override;
@@ -81,10 +81,10 @@ public:
   /// implementation of ISvcManager::removeService
   StatusCode removeService( IService* svc ) override;
   /// implementation of ISvcManager::removeService
-  StatusCode removeService( const std::string& name ) override;
+  StatusCode removeService( std::string_view name ) override;
 
   /// implementation of ISvcManager::declareSvcType
-  StatusCode declareSvcType( const std::string& svcname, const std::string& svctype ) override;
+  StatusCode declareSvcType( std::string svcname, std::string svctype ) override;
 
   /// implementation of ISvcManager::createService
   /// NOTE: as this returns a &, we must guarantee
@@ -108,8 +108,8 @@ public:
   StatusCode restart() override;
 
   /// manage priorities of services
-  int        getPriority( const std::string& name ) const override;
-  StatusCode setPriority( const std::string& name, int pri ) override;
+  int        getPriority( std::string_view name ) const override;
+  StatusCode setPriority( std::string_view name, int pri ) override;
 
   /// Get the value of the initialization loop check flag.
   bool loopCheckEnabled() const override;
@@ -140,19 +140,19 @@ public:
   void outputLevelUpdate() override;
 
 private:
-  inline ListSvc::iterator find( const std::string& name ) {
+  ListSvc::iterator find( std::string_view name ) {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
-  inline ListSvc::const_iterator find( const std::string& name ) const {
+  ListSvc::const_iterator find( std::string_view name ) const {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
-  inline ListSvc::iterator find( const IService* ptr ) {
+  ListSvc::iterator find( const IService* ptr ) {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
-  inline ListSvc::const_iterator find( const IService* ptr ) const {
+  ListSvc::const_iterator find( const IService* ptr ) const {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }

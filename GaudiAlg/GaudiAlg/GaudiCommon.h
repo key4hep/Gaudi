@@ -66,13 +66,13 @@ namespace Gaudi {
 
 namespace GaudiCommon_details {
   constexpr const struct svc_eq_t {
-    bool operator()( const std::string& n, const SmartIF<IService>& s ) const { return n == s->name(); };
-    bool operator()( const SmartIF<IService>& s, const std::string& n ) const { return s->name() == n; };
+    bool operator()( std::string_view n, const SmartIF<IService>& s ) const { return n == s->name(); };
+    bool operator()( const SmartIF<IService>& s, std::string_view n ) const { return s->name() == n; };
     bool operator()( const SmartIF<IService>& s, const SmartIF<IService>& n ) const { return s->name() == n->name(); };
   } svc_eq{};
   constexpr const struct svc_lt_t {
-    bool operator()( const std::string& n, const SmartIF<IService>& s ) const { return n < s->name(); };
-    bool operator()( const SmartIF<IService>& s, const std::string& n ) const { return s->name() < n; };
+    bool operator()( std::string_view n, const SmartIF<IService>& s ) const { return n < s->name(); };
+    bool operator()( const SmartIF<IService>& s, std::string_view n ) const { return s->name() < n; };
     bool operator()( const SmartIF<IService>& s, const SmartIF<IService>& n ) const { return s->name() < n->name(); };
   } svc_lt{};
 } // namespace GaudiCommon_details
@@ -128,10 +128,10 @@ protected: // definitions
 protected: // few actual data types
   // ==========================================================================
   /// the actual type of general counters
-  typedef std::map<std::string, StatEntity>                                                    StatisticsOwn;
-  typedef std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>> Statistics;
+  typedef std::map<std::string, StatEntity, std::less<>> StatisticsOwn;
+  typedef std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>, std::less<>> Statistics;
   /// the actual type error/warning counter
-  typedef std::map<std::string, unsigned int> Counter;
+  typedef std::map<std::string, unsigned int, std::less<>> Counter;
   /// storage for active tools
   typedef std::vector<IAlgTool*> AlgTools;
   /// storage for active services
@@ -178,13 +178,13 @@ public:
    *  @return pointer to the data object
    */
   template <class TYPE>
-  typename Gaudi::Utils::GetData<TYPE>::return_type get( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type get( IDataProviderSvc* svc, std::string_view location,
                                                          const bool useRootInTES = true ) const;
   /** Quicker version of the get function which bypasses the check on the
    *  retrieved data.
    */
   template <class TYPE>
-  typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( IDataProviderSvc* svc, std::string_view location,
                                                                  const bool useRootInTES = true ) const;
   /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
@@ -213,7 +213,7 @@ public:
    *  @retval true     Failed to locate the data object or container
    */
   template <class TYPE>
-  bool exist( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const;
+  bool exist( IDataProviderSvc* svc, std::string_view location, const bool useRootInTES = true ) const;
   /** @brief Get the existing data object from Gaudi Event Transient store.
    *        Alternatively, create new object and register it in TES
    *        and return if object does not exist.
@@ -242,7 +242,7 @@ public:
    *  @return A valid pointer to the data object
    */
   template <class TYPE, class TYPE2>
-  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, std::string_view location,
                                                                  const bool useRootInTES = true ) const;
   /** @brief Register a data object or container into Gaudi Event Transient Store
    *
@@ -269,10 +269,10 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  DataObject* put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, const std::string& location,
+  DataObject* put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, std::string_view location,
                    const bool useRootInTES = true ) const;
   // [[deprecated( "please pass std::unique_ptr as 2nd argument" )]]
-  DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
+  DataObject* put( IDataProviderSvc* svc, DataObject* object, std::string_view location,
                    const bool useRootInTES = true ) const {
     return put( svc, std::unique_ptr<DataObject>( object ), location, useRootInTES );
   }
@@ -302,8 +302,7 @@ public:
    *  @return       A pointer to the tool
    */
   template <class TOOL>
-  TOOL* tool( const std::string& type, const std::string& name, const IInterface* parent = 0,
-              bool create = true ) const;
+  TOOL* tool( std::string_view type, std::string_view name, const IInterface* parent = 0, bool create = true ) const;
   /** A useful method for the easy location of tools.
    *
    *  @code
@@ -327,7 +326,7 @@ public:
    *  @return       A pointer to the tool
    */
   template <class TOOL>
-  TOOL* tool( const std::string& type, const IInterface* parent = 0, bool create = true ) const;
+  TOOL* tool( std::string_view type, const IInterface* parent = 0, bool create = true ) const;
   /** A useful method for the easy location of services
    *
    *  @code
@@ -351,9 +350,9 @@ public:
    *  @return       A pointer to the service
    */
   template <class SERVICE>
-  SmartIF<SERVICE> svc( const std::string& name, const bool create = true ) const;
+  SmartIF<SERVICE> svc( std::string_view name, const bool create = true ) const;
   /// Short-cut to locate the Update Manager Service.
-  inline IUpdateManagerSvc* updMgrSvc() const;
+  IUpdateManagerSvc* updMgrSvc() const;
 
 public:
   /** Print the error message and return with the given StatusCode.
@@ -380,7 +379,7 @@ public:
    *  @return       StatusCode
    */
   WARN_UNUSED
-  StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
+  StatusCode Error( std::string_view msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the warning message and return with the given StatusCode.
    *
    *  Also performs statistical analysis of the warning messages and
@@ -405,7 +404,7 @@ public:
    *  @return       The given StatusCode
    */
   WARN_UNUSED
-  StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
+  StatusCode Warning( std::string_view msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the info message and return with the given StatusCode.
    *
    *  Also performs statistical analysis of the info messages and
@@ -422,7 +421,7 @@ public:
    *  @return       The given StatusCode
    */
   WARN_UNUSED
-  StatusCode Info( const std::string& msg, const StatusCode st = StatusCode::SUCCESS, const size_t mx = 10 ) const;
+  StatusCode Info( std::string_view msg, const StatusCode st = StatusCode::SUCCESS, const size_t mx = 10 ) const;
   /** Print the message and return with the given StatusCode.
    *
    *  @see MsgStream
@@ -435,7 +434,7 @@ public:
    *  @return       The given StatusCode
    */
   WARN_UNUSED
-  StatusCode Print( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
+  StatusCode Print( std::string_view msg, const StatusCode st = StatusCode::SUCCESS,
                     const MSG::Level lev = MSG::INFO ) const;
   /** Assertion - throw exception if the given condition is not fulfilled
    *
@@ -445,18 +444,8 @@ public:
    *  @param ok           Condition which should be "true"
    *  @param message      Message to be associated with the exception
    */
-  inline void Assert( const bool ok, const std::string& message = "",
-                      const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
-  /** Assertion - throw exception if the given condition is not fulfilled
-   *
-   *  @see GaudiException
-   *
-   *  @exception          Exception for invalid condition
-   *  @param ok           Condition which should be "true"
-   *  @param message      Message to be associated with the exception
-   */
-  inline void Assert( const bool ok, const char* message,
-                      const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
+  void Assert( const bool ok, std::string_view message = "",
+               const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Create and (re)-throw a given GaudiException
    *
    *  @see GaudiException
@@ -465,7 +454,7 @@ public:
    *  @param msg    Exception message
    *  @param exc    (previous) exception of type GaudiException
    */
-  void Exception( const std::string& msg, const GaudiException& exc,
+  void Exception( std::string_view msg, const GaudiException& exc,
                   const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Create and (re)-throw a given exception
    *
@@ -476,7 +465,7 @@ public:
    *  @param exc    (previous) exception of type std::exception
    *  @param sc     StatusCode
    */
-  void Exception( const std::string& msg, const std::exception& exc,
+  void Exception( std::string_view msg, const std::exception& exc,
                   const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
   /** Create and throw an exception with the given message
    *
@@ -486,12 +475,12 @@ public:
    *  @param msg    Exception message
    *  @param sc     StatusCode
    */
-  void Exception( const std::string& msg = "no message",
-                  const StatusCode   sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
+  void Exception( std::string_view msg = "no message",
+                  const StatusCode sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
 
 private:
   /// accessor to all owned counters
-  inline StatisticsOwn countersOwn() const { return m_countersOwn; }
+  StatisticsOwn countersOwn() const { return m_countersOwn; }
 
 public:
   /** accessor to certain counter by name
@@ -513,30 +502,29 @@ public:
    *  @return the counter itself
    */
   //[[deprecated( "see LHCBPS-1758" )]]
-  inline StatEntity& counter( const std::string& tag ) const {
-    return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag );
-  }
-  inline StatEntity& counter( const std::string& tag ) {
+  StatEntity& counter( std::string_view tag ) const { return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag ); }
+  StatEntity& counter( std::string_view tag ) {
     std::lock_guard<std::mutex> lock( m_countersOwnMutex );
     // Return referenced StatEntity if it already exists, else create it
-    auto p = this->findCounter( tag );
-    if ( !p ) {
-      auto& counter = m_countersOwn[tag];
-      this->declareCounter( tag, counter );
-      return counter;
+    auto p = m_countersOwn.find( tag );
+    if ( UNLIKELY( p == m_countersOwn.end() ) ) {
+      auto [iter, b] = m_countersOwn.try_emplace( std::string{tag} );
+      assert( b );
+      this->declareCounter( iter->first, iter->second );
+      p = iter;
     }
-    return m_countersOwn[tag];
+    return p->second;
   }
   // ==========================================================================
 public:
   /// Insert the actual C++ type of the algorithm/tool in the messages ?
-  inline bool typePrint() const { return m_typePrint; }
+  bool typePrint() const { return m_typePrint; }
   /// Print properties at initialization ?
-  inline bool propsPrint() const { return m_propsPrint; }
+  bool propsPrint() const { return m_propsPrint; }
   /// Print statistical counters at finalization ?
-  inline bool statPrint() const { return m_statPrint; }
+  bool statPrint() const { return m_statPrint; }
   /// Print error counters at finalization ?
-  inline bool errorsPrint() const { return m_errorsPrint; }
+  bool errorsPrint() const { return m_errorsPrint; }
   // ==========================================================================
 public:
   /** perform the actual printout of statistical counters
@@ -570,7 +558,7 @@ public:
    *  @endcode
    */
   template <class CallerClass>
-  inline void registerCondition( const std::string& condition, StatusCode ( CallerClass::*mf )() = nullptr ) {
+  void registerCondition( const std::string& condition, StatusCode ( CallerClass::*mf )() = nullptr ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), condition, mf );
   }
   /** register the current instance to the UpdateManagerSvc as a consumer for a condition.
@@ -604,13 +592,13 @@ public:
    *  @endcode
    */
   template <class CallerClass, class CondType>
-  inline void registerCondition( const std::string& condition, CondType*& condPtrDest,
-                                 StatusCode ( CallerClass::*mf )() = NULL ) {
+  void registerCondition( const std::string& condition, CondType*& condPtrDest,
+                          StatusCode ( CallerClass::*mf )() = NULL ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), condition, mf, condPtrDest );
   }
   /// just to avoid conflicts with the version using a pointer to a template class.
   template <class CallerClass>
-  inline void registerCondition( char* condition, StatusCode ( CallerClass::*mf )() = NULL ) {
+  void registerCondition( char* condition, StatusCode ( CallerClass::*mf )() = NULL ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), std::string( condition ), mf );
   }
   /** register the current instance to the UpdateManagerSvc as a consumer for a condition.
@@ -629,7 +617,7 @@ public:
    *  @endcode
    */
   template <class CallerClass, class TargetClass>
-  inline void registerCondition( TargetClass* condition, StatusCode ( CallerClass::*mf )() = NULL ) {
+  void registerCondition( TargetClass* condition, StatusCode ( CallerClass::*mf )() = NULL ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), condition, mf );
   }
   /** asks the UpdateManagerSvc to perform an update of the instance (if needed) without waiting the
@@ -643,20 +631,20 @@ public:
    *  }
    *  @endcode
    */
-  inline StatusCode runUpdate() { return updMgrSvc()->update( this ); }
+  StatusCode runUpdate() { return updMgrSvc()->update( this ); }
 
 public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from Algorithm
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of_v<Gaudi::Algorithm, PBASE>, U>>
-  GaudiCommon( const std::string& name, ISvcLocator* pSvcLocator ) : base_class( name, pSvcLocator ) {
+  GaudiCommon( std::string name, ISvcLocator* pSvcLocator ) : base_class( std::move( name ), pSvcLocator ) {
     initGaudiCommonConstructor();
   }
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of_v<AlgTool, PBASE>, U>>
-  GaudiCommon( const std::string& type, const std::string& name, const IInterface* ancestor )
-      : base_class( type, name, ancestor ) {
+  GaudiCommon( std::string type, std::string name, const IInterface* ancestor )
+      : base_class( std::move( type ), std::move( name ), ancestor ) {
     initGaudiCommonConstructor( this->parent() );
   }
 
@@ -670,7 +658,6 @@ public:
    */
   StatusCode finalize() override;
 
-private:
   GaudiCommon()                     = delete;
   GaudiCommon( const GaudiCommon& ) = delete;
   GaudiCommon& operator=( const GaudiCommon& ) = delete;
@@ -714,7 +701,7 @@ public:
 public:
   // ==========================================================================
   /// Returns the "context" string. Used to identify different processing states.
-  inline const std::string& context() const { return m_context; }
+  const std::string& context() const { return m_context; }
 
 private:
   // ==========================================================================
@@ -729,6 +716,10 @@ private:
   /// List of active  services
   mutable Services m_services;
   // ==========================================================================
+  static auto increment( Counter& c, std::string_view which ) {
+    auto i = c.find( which );
+    return i != c.end() ? ++( i->second ) : c.emplace( which, 1 ).first->second;
+  }
   /// Counter of errors
   mutable Counter m_errors;
   /// counter of warnings

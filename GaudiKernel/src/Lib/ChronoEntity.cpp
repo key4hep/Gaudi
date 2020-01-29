@@ -115,15 +115,14 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
   /// @todo: cache the format
   boost::format fmt( "Tot=%2$5.3g%1$s %4$43s #=%3$3lu" );
 
-  static const auto tbl = {std::make_tuple( 500, microsecond, " [us]" ), std::make_tuple( 500, millisecond, " [ms]" ),
-                           std::make_tuple( 500, second, "  [s]" ),      std::make_tuple( 500, minute, "[min]" ),
-                           std::make_tuple( 500, hour, "  [h]" ),        std::make_tuple( 10, day, "[day]" ),
-                           std::make_tuple( 5, week, "  [w]" ),          std::make_tuple( 20, month, "[mon]" ),
-                           std::make_tuple( -1, year, "  [y]" )};
+  static const auto tbl = {
+      std::tuple{500, microsecond, " [us]"}, std::tuple{500, millisecond, " [ms]"}, std::tuple{500, second, "  [s]"},
+      std::tuple{500, minute, "[min]"},      std::tuple{500, hour, "  [h]"},        std::tuple{10, day, "[day]"},
+      std::tuple{5, week, "  [w]"},          std::tuple{20, month, "[mon]"},        std::tuple{-1, year, "  [y]"}};
 
-  auto i = std::find_if(
-      std::begin( tbl ), std::prev( std::end( tbl ) ),
-      [&]( const std::tuple<int, double, const char*>& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
+  auto i = std::find_if( begin( tbl ), std::prev( end( tbl ) ), [&]( const std::tuple<int, double, const char*>& i ) {
+    return total < std::get<0>( i ) * std::get<1>( i );
+  } );
   long double unit = std::get<1>( *i );
   fmt % std::get<2>( *i ) % (double)( total / unit ) % number;
 
@@ -172,9 +171,8 @@ ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e ) {
  *  @see boost::format
  */
 // ============================================================================
-std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, const std::string& fmt,
-                                      System::TimeType unit ) const {
-  boost::format _fmt( fmt );
+std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, std::string_view fmt, System::TimeType unit ) const {
+  boost::format _fmt( std::string{fmt} );
   // allow various number of arguments
   using namespace boost::io;
   _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );

@@ -31,13 +31,6 @@ Gaudi::StringKey::StringKey( std::string key )
     , m_hash( std::hash<std::string>()( m_str ) ) // NB! hashing here!!!
 {}
 // ============================================================================
-// constructor from the string: perform hashing
-// ============================================================================
-Gaudi::StringKey::StringKey( const char* key )
-    : m_str( key )
-    , m_hash( std::hash<std::string>()( m_str ) ) // NB! hashing here!!!
-{}
-// ============================================================================
 // the representation of the object
 // ============================================================================
 std::string Gaudi::StringKey::toString() const { return Gaudi::Utils::toString( m_str ); }
@@ -51,19 +44,19 @@ std::string Gaudi::StringKey::__str__() const { return toString(); }
 std::string Gaudi::StringKey::__repr__() const { return toString(); }
 // ============================================================================
 // equality operator for python
-bool Gaudi::StringKey::__eq__( const Gaudi::StringKey& right ) const { return this == &right || *this == right; }
+bool Gaudi::StringKey::__eq__( const Gaudi::StringKey& right ) const { return *this == right; }
 // ============================================================================
 // equality operators for python
 // ============================================================================
-bool Gaudi::StringKey::__eq__( const std::string& right ) const { return *this == right; }
+bool Gaudi::StringKey::__eq__( std::string_view right ) const { return *this == right; }
 // ============================================================================
 // non-equality operator for python
 // ============================================================================
-bool Gaudi::StringKey::__neq__( const Gaudi::StringKey& right ) const { return this != &right && *this != right; }
+bool Gaudi::StringKey::__neq__( const Gaudi::StringKey& right ) const { return *this != right; }
 // ============================================================================
 // non-equality operator for python
 // ============================================================================
-bool Gaudi::StringKey::__neq__( const std::string& right ) const { return *this != right; }
+bool Gaudi::StringKey::__neq__( std::string_view right ) const { return *this != right; }
 // ============================================================================
 /*  send the object to stream (needed to use it as property)
  *  @see Gaudi::Utils::toString

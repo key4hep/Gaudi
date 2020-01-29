@@ -596,7 +596,7 @@ public:
    *  @return A valid pointer to the object
    */
   template <class TYPE, class TYPE2>
-  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, const std::string& location,
+  typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( IDataProviderSvc* svc, std::string_view location,
                                                                  const bool useRootInTES = true ) const {
     return GaudiCommon<Algorithm>::getOrCreate<TYPE, TYPE2>( svc, location, useRootInTES );
   }
@@ -639,7 +639,7 @@ public:
    *  @param name           name of the algorithm
    *  @param pSvcLocator    pointer to Service Locator
    */
-  GaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
+  GaudiAlgorithm( std::string name, ISvcLocator* pSvcLocator );
   // ==========================================================================
   //
   // no default/copy constructor, no assignment -- except that ROOT really

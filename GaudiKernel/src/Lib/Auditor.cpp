@@ -19,7 +19,8 @@
 #include "GaudiKernel/MsgStream.h"
 
 // Constructor
-Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator ) : m_name( name ), m_pSvcLocator( pSvcLocator ) {}
+Auditor::Auditor( std::string name, ISvcLocator* pSvcLocator )
+    : m_name( std::move( name ) ), m_pSvcLocator( pSvcLocator ) {}
 
 // IAuditor implementation
 StatusCode Auditor::sysInitialize() {

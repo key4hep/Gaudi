@@ -11,32 +11,25 @@
 // ChronoAuditor:
 // An auditor that monitors time
 
-#ifdef __ICC
-// disable icc warning #654: overloaded virtual function "B::Y" is only partially overridden in class "C"
-//   TODO: there is only a partial overload of IAuditor::before and IAuditor::after
-#  pragma warning( disable : 654 )
-#endif
-
 #include "ChronoAuditor.h"
 
 DECLARE_COMPONENT( ChronoAuditor )
 
 StatusCode ChronoAuditor::initialize() {
-  StatusCode sc = CommonAuditor::initialize();
-  if ( UNLIKELY( sc.isFailure() ) ) return sc;
-
-  m_chronoSvc = serviceLocator()->service( "ChronoStatSvc" );
-  if ( UNLIKELY( !m_chronoSvc.get() ) ) {
-    error() << "Cannot get ChronoStatSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  return StatusCode::SUCCESS;
+  return CommonAuditor::initialize().andThen( [&]() -> StatusCode {
+    m_chronoSvc = serviceLocator()->service( "ChronoStatSvc" );
+    if ( UNLIKELY( !m_chronoSvc.get() ) ) {
+      error() << "Cannot get ChronoStatSvc" << endmsg;
+      return StatusCode::FAILURE;
+    }
+    return StatusCode::SUCCESS;
+  } );
 }
 
-void ChronoAuditor::i_before( CustomEventTypeRef evt, const std::string& caller ) {
+void ChronoAuditor::i_before( CustomEventTypeRef evt, std::string_view caller ) {
   chronoSvc()->chronoStart( i_id( evt, caller ) );
 }
 
-void ChronoAuditor::i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& ) {
+void ChronoAuditor::i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& ) {
   chronoSvc()->chronoStop( i_id( evt, caller ) );
 }
