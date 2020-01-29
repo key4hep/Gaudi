@@ -40,6 +40,8 @@ fsrAlgs = GaudiSequencer(
 app = ApplicationMgr()
 #app.ExtSvc = [ EvtStoreSvc("EventDataSvc",OutputLevel=DEBUG ) ]
 app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
+EvtStoreSvc("EventDataSvc").InhibitedPathPrefixes = ['/Event/Header']
+EvtStoreSvc("EventDataSvc").FollowLinksToAncestors = True
 # - Algorithms
 app.TopAlg = [evtAlgs, fsrAlgs]
 # - Events
