@@ -337,8 +337,9 @@ namespace Gaudi {
   private:
     ValueType m_nsecs = 0; //< Time value as nsecs from #epoch().
 
-    inline void TimeAssert( bool cond, const std::string& msg = "time assertion failed" ) const {
-      if ( !cond ) throw TimeException( msg );
+    // Taking string_view means there will never be any dynamic allocation if cond == true
+    inline void TimeAssert( bool cond, std::string_view msg = "time assertion failed" ) const {
+      if ( !cond ) throw TimeException( std::string{msg} );
     }
   };
 } // namespace Gaudi
