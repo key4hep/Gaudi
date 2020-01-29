@@ -115,6 +115,7 @@ class ConfigurablesDB(object):
                         root)
 
         self.__name__ = modulename
+        self.__loader__ = None
         self._root = root or modulename
         assert ((not root) or modulename.startswith(root + '.')), \
             'modulename should be (indirect submodule of root)'
@@ -170,6 +171,14 @@ class ConfigurablesDB(object):
         '''
         if name in self._alt_names:
             entry = getattr(self, self._alt_names[name])
+        elif name == "__spec__":  # pragma no cover
+            import importlib
+            entry = importlib.machinery.ModuleSpec(
+                name=self.__package__,
+                loader=self.__loader__,
+            )
+        elif name == "__package__":  # pragma no cover
+            entry = self.__name__
         else:
             if name not in self._classes:
                 raise AttributeError(
