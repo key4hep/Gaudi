@@ -60,7 +60,7 @@ void IncidentAsyncTestSvc::handle( const Incident& incident ) {
     }
   } else if ( incident.type() == IncidentType::EndEvent ) {
     {
-      auto g   = std::unique_lock{m_eraseMutex};
+      auto g   = std::scoped_lock{m_eraseMutex};
       auto res = m_ctxData.unsafe_erase( incident.context() );
       if ( res == 0 ) {
         warning() << " Context is missing for '" << incident.type() << "' event=" << incident.context().evt() << endmsg;

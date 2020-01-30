@@ -101,7 +101,7 @@ public:
 
   // Implementation of IMessageSvc::setDefaultStream()
   void setDefaultStream( std::ostream* stream ) override {
-    std::unique_lock<std::recursive_mutex> lock( m_reportMutex );
+    auto lock       = std::scoped_lock{m_reportMutex};
     m_defaultStream = stream;
   }
 
