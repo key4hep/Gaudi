@@ -38,7 +38,7 @@ namespace Gaudi {
     /// Fill bin content
     bool fill( double x, double y, double z, double weight ) override {
       // avoid race conditions when filling the profile
-      std::lock_guard<std::mutex> guard( m_fillSerialization );
+      auto guard = std::scoped_lock{m_fillSerialization};
       m_rep->Fill( x, y, z, weight );
       return true;
     }

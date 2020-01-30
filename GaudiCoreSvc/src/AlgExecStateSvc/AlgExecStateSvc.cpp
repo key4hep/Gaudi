@@ -105,7 +105,7 @@ void AlgExecStateSvc::addAlg( const Gaudi::StringKey& alg ) {
   {
     // in theory, this should only get called during initialization (serial)
     // so shouldn't have to protect with a mutex...
-    std::lock_guard<std::mutex> lock( m_mut );
+    auto lock = std::scoped_lock{m_mut};
 
     AlgExecState s;
     for ( auto& a : m_algStates ) a[alg] = s;

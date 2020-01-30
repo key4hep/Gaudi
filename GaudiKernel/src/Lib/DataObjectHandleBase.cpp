@@ -40,7 +40,7 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
 //---------------------------------------------------------------------------
 DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBase& other ) {
   // avoid modification of searchDone in other while we are copying
-  std::lock_guard<std::mutex> guard( other.m_searchMutex );
+  auto guard = std::scoped_lock{other.m_searchMutex};
   // FIXME: operator= should not change our owner, only our 'value'
   Gaudi::DataHandle::operator=( other );
   m_EDS                      = other.m_EDS;
@@ -88,7 +88,7 @@ DataObject* DataObjectHandleBase::fetch() const {
   // branch we _first_ grab the mutex, to avoid objKey changing while we use it
 
   // take a lock to be sure we only execute this once at a time
-  std::lock_guard<std::mutex> guard( m_searchMutex );
+  auto guard = std::scoped_lock{m_searchMutex};
 
   StatusCode sc = m_EDS->retrieveObject( objKey(), p );
   if ( m_searchDone ) { // another thread has done the search while we were blocked

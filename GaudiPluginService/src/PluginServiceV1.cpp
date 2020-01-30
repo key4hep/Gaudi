@@ -26,12 +26,9 @@
 #include <cxxabi.h>
 #include <sys/stat.h>
 
-#define REG_SCOPE_LOCK std::lock_guard<std::recursive_mutex> _guard( m_mutex );
-
 namespace {
   std::mutex registrySingletonMutex;
 }
-#define SINGLETON_LOCK std::lock_guard<std::mutex> _guard( ::registrySingletonMutex );
 
 #include <algorithm>
 
@@ -134,7 +131,7 @@ namespace Gaudi {
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
         Registry& Registry::instance() {
-          SINGLETON_LOCK
+          auto            _guard = std::scoped_lock{::registrySingletonMutex};
           static Registry r;
           return r;
         }
@@ -142,7 +139,7 @@ namespace Gaudi {
         Registry::Registry() : m_initialized( false ) {}
 
         void Registry::initialize() {
-          REG_SCOPE_LOCK
+          auto _guard = std::scoped_lock{m_mutex};
           if ( m_initialized ) return;
           m_initialized = true;
 #if defined( _WIN32 )
@@ -236,9 +233,9 @@ namespace Gaudi {
         Registry::FactoryInfo& Registry::add( const std::string& id, void* factory, const std::string& type,
                                               const std::string& rtype, const std::string& className,
                                               const Properties& props ) {
-          REG_SCOPE_LOCK
-          FactoryMap& facts = factories();
-          auto        entry = facts.find( id );
+          auto        _guard = std::scoped_lock{m_mutex};
+          FactoryMap& facts  = factories();
+          auto        entry  = facts.find( id );
           if ( entry == facts.end() ) {
             // this factory was not known yet
             entry = facts.emplace( id, FactoryInfo( "unknown", factory, type, rtype, className, props ) ).first;
@@ -259,9 +256,9 @@ namespace Gaudi {
         }
 
         void* Registry::get( const std::string& id, const std::string& type ) const {
-          REG_SCOPE_LOCK
-          const FactoryMap& facts = factories();
-          auto              f     = facts.find( id );
+          auto              _guard = std::scoped_lock{m_mutex};
+          const FactoryMap& facts  = factories();
+          auto              f      = facts.find( id );
           if ( f != facts.end() ) {
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
             const Properties& props = f->second.properties;
@@ -288,7 +285,7 @@ namespace Gaudi {
         }
 
         const Registry::FactoryInfo& Registry::getInfo( const std::string& id ) const {
-          REG_SCOPE_LOCK
+          auto                     _guard = std::scoped_lock{m_mutex};
           static const FactoryInfo unknown( "unknown" );
           const FactoryMap&        facts = factories();
           auto                     f     = facts.find( id );
@@ -296,15 +293,15 @@ namespace Gaudi {
         }
 
         Registry& Registry::addProperty( const std::string& id, const std::string& k, const std::string& v ) {
-          REG_SCOPE_LOCK
-          FactoryMap& facts = factories();
-          auto        f     = facts.find( id );
+          auto        _guard = std::scoped_lock{m_mutex};
+          FactoryMap& facts  = factories();
+          auto        f      = facts.find( id );
           if ( f != facts.end() ) f->second.properties[k] = v;
           return *this;
         }
 
         std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
-          REG_SCOPE_LOCK
+          auto              _guard = std::scoped_lock{m_mutex};
           std::set<KeyType> l;
           for ( const auto& f : factories() ) {
             if ( f.second.ptr ) l.insert( f.first );

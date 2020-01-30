@@ -148,7 +148,7 @@ private:
   bool isMT() const;
 
   ChronoEntity& getEntity( const ChronoTag& chronoTag ) {
-    lock_t lock( m_mutex );
+    auto lock = std::scoped_lock{m_mutex};
     return m_chronoEntities[chronoTag];
   }
 
@@ -161,8 +161,7 @@ private:
   /// chrono part
   ChronoMap m_chronoEntities;
   /// Mutex protecting m_chronoEntities.
-  mutable std::mutex                  m_mutex;
-  typedef std::lock_guard<std::mutex> lock_t;
+  mutable std::mutex m_mutex;
 
   /// level of info printing
   MSG::Level m_chronoPrintLevel = MSG::INFO;

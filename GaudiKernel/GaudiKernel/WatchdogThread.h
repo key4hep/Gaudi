@@ -12,10 +12,10 @@
 #define GAUDIKERNEL_WATCHDOGTHREAD_H_
 
 #include <memory>
+#include <mutex>
 
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/thread_time.hpp>
+#include "boost/date_time/posix_time/posix_time_types.hpp"
+#include "boost/thread/thread_time.hpp"
 
 // for GAUDI_API
 #include "GaudiKernel/Kernel.h"
@@ -54,7 +54,7 @@ public:
 
   /// Function to call to notify the watchdog thread that we are still alive.
   inline void ping() {
-    boost::mutex::scoped_lock lock( m_lastPingMutex );
+    auto lock  = std::scoped_lock{m_lastPingMutex};
     m_lastPing = boost::get_system_time();
     onPing();
   }
@@ -67,7 +67,7 @@ public:
 
   /// Get the time of latest ping.
   inline boost::system_time getLastPing() const {
-    boost::mutex::scoped_lock lock( m_lastPingMutex );
+    auto lock = std::scoped_lock{m_lastPingMutex};
     return m_lastPing;
   }
 
@@ -103,7 +103,7 @@ private:
   void i_run();
 
   /// Mutex for the access to the m_lastPing data member.
-  mutable boost::mutex m_lastPingMutex;
+  mutable std::mutex m_lastPingMutex;
 };
 
 #endif /* WATCHDOGTHREAD_H_ */

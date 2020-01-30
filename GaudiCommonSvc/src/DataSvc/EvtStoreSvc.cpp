@@ -159,7 +159,7 @@ namespace {
 
 #else
   template <typename T, typename Mutex = std::recursive_mutex,
-            typename ReadLock = std::lock_guard<std::recursive_mutex>,
+            typename ReadLock = std::scoped_lock<std::recursive_mutex>,
 #endif // TBB_INTERFACE_VERSION_MAJOR < 12
             typename WriteLock = ReadLock>
   class Synced {
