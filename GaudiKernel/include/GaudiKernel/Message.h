@@ -54,7 +54,7 @@ public:
   const std::string& getSource() const;
 
   /// Set the message source.
-  void setSource( std::string src );
+  void setSource( std::string_view src );
 
   /// Get the format string.
   const std::string& getFormat() const;
@@ -75,7 +75,7 @@ public:
   void setTimeFormat( std::string timeFormat ) const;
 
   /// Needed to build maps
-  bool operator<( const Message& test );
+  friend bool operator<( const Message& lhs, const Message& rhs );
 
   /// Insert the message into a stream.
   friend std::ostream& operator<<( std::ostream& stream, const Message& msg );
@@ -171,11 +171,5 @@ private:
   /// The default time format (accepts strftime formatters plus \%f for milliseconds).
   static constexpr const char* DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
 };
-
-/// Insert the message into a stream.
-GAUDI_API std::ostream& operator<<( std::ostream& stream, const Message& msg );
-
-/// Insert the message into a stream.
-GAUDI_API bool operator==( const Message& a, const Message& b );
 
 #endif

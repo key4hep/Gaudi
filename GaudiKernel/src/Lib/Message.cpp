@@ -93,7 +93,7 @@ const std::string& Message::getSource() const { return m_source; }
 // Purpose: Set the message source.
 // ---------------------------------------------------------------------------
 //
-void Message::setSource( std::string src ) { m_source = std::move( src ); }
+void Message::setSource( std::string_view src ) { m_source = src; }
 
 //#############################################################################
 // ---------------------------------------------------------------------------
@@ -113,8 +113,8 @@ std::ostream& operator<<( std::ostream& stream, const Message& msg ) {
 // Purpose: comparison operator needed for maps
 // ---------------------------------------------------------------------------
 //
-bool Message::operator<( const Message& b ) {
-  return m_type < b.m_type || m_source < b.m_source || m_message < b.m_message;
+bool operator<( const Message& lhs, const Message& rhs ) {
+  return lhs.m_type < rhs.m_type || lhs.m_source < rhs.m_source || lhs.m_message < rhs.m_message;
 }
 
 //#############################################################################

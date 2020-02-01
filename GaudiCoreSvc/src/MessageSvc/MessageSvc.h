@@ -61,16 +61,13 @@ public:
   void reportMessage( const Message& msg, int outputLevel ) override;
 
   // Implementation of IMessageSvc::reportMessage()
-  void reportMessage( const StatusCode& code, const std::string& source = "" ) override;
+  void reportMessage( const StatusCode& code, std::string_view source = "" ) override;
 
   // Implementation of IMessageSvc::reportMessage()
-  void reportMessage( const char* source, int type, const char* message ) override;
-
-  // Implementation of IMessageSvc::reportMessage()
-  void reportMessage( const std::string& source, int type, const std::string& message ) override;
+  void reportMessage( std::string source, int type, std::string message ) override;
 
   // Implementation of IMessageSvc::insertMessage()
-  void insertMessage( const StatusCode& code, const Message& message ) override;
+  void insertMessage( const StatusCode& code, Message message ) override;
 
   // Implementation of IMessageSvc::eraseMessage()
   void eraseMessage() override;
@@ -127,14 +124,14 @@ public:
   int messageCount( MSG::Level logLevel ) const override;
 
   // Implementation of IInactiveMessageCounter::incrInactiveCount()
-  void incrInactiveCount( MSG::Level level, const std::string& src ) override;
+  void incrInactiveCount( MSG::Level level, std::string_view src ) override;
 
 protected:
   /// Internal implementation of reportMessage(const Message&,int) without lock.
   virtual void i_reportMessage( const Message& msg, int outputLevel );
 
   /// Internal implementation of reportMessage(const StatusCode&,const std::string&) without lock.
-  virtual void i_reportMessage( const StatusCode& code, const std::string& source );
+  virtual void i_reportMessage( const StatusCode& code, std::string_view source );
 
 private:
   Gaudi::Property<std::string>  m_defaultFormat{this, "Format", Message::getDefaultFormat(), ""};
@@ -180,7 +177,7 @@ private:
       {},
       "for each message source specified,  print a stack trace for the unprotected and unseen messages"};
 
-  Gaudi::Property<std::map<std::string, std::string>> m_loggedStreamsName{
+  Gaudi::Property<std::map<std::string, std::string, std::less<>>> m_loggedStreamsName{
       this, "loggedStreams", {}, "MessageStream sources we want to dump into a logfile"};
 
   std::ostream* m_defaultStream = &std::cout; ///< Pointer to the output stream.
@@ -199,11 +196,11 @@ private:
     MsgAry() = default;
   };
 
-  std::map<std::string, MsgAry> m_sourceMap, m_inactiveMap;
+  std::map<std::string, MsgAry, std::less<>> m_sourceMap, m_inactiveMap;
 
   std::array<int, MSG::NUM_LEVELS> m_msgCount;
 
-  std::map<std::string, std::shared_ptr<std::ostream>> m_loggedStreams;
+  std::map<std::string, std::shared_ptr<std::ostream>, std::less<>> m_loggedStreams;
 
   void setupColors( Gaudi::Details::PropertyBase& prop );
   void setupLimits( Gaudi::Details::PropertyBase& prop );
@@ -211,9 +208,6 @@ private:
   void setupInactCount( Gaudi::Details::PropertyBase& prop );
 
   void setupLogStreams();
-
-  void tee( const std::string& sourceName, const std::string& logFileName,
-            const std::set<std::string>& declaredOutFileNames );
 
   /// Mutex to synchronize multiple threads printing.
   mutable std::recursive_mutex m_reportMutex;

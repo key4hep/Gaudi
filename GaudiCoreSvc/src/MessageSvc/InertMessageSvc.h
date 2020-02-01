@@ -53,7 +53,7 @@ public:
   void reportMessage( const Message& msg, int outputLevel ) override;
 
   /// Implementation of IMessageSvc::reportMessage()
-  void reportMessage( const StatusCode& code, const std::string& source = "" ) override;
+  void reportMessage( const StatusCode& code, std::string_view source = "" ) override;
 
 private:
   void m_activate();
