@@ -20,7 +20,7 @@ namespace Gaudi {
   namespace Parsers {
     namespace Utils {
       // ===========================================================================
-      std::string replaceEnvironments( const std::string& input );
+      std::string replaceEnvironments( std::string_view input );
       // ===========================================================================
     } // namespace Utils
   }   // namespace Parsers

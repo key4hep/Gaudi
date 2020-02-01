@@ -24,13 +24,13 @@ namespace Gaudi {
     class IncludedFiles;
     // ============================================================================
 
-    bool Parse( const std::string& filename, const std::string& search_path, IncludedFiles* included,
+    bool Parse( std::string_view filename, std::string_view search_path, IncludedFiles* included, Messages* messages,
+                Node* root );
+
+    bool Parse( const Position& from, std::string_view filename, std::string_view search_path, IncludedFiles* included,
                 Messages* messages, Node* root );
 
-    bool Parse( const Position& from, const std::string& filename, const std::string& search_path,
-                IncludedFiles* included, Messages* messages, Node* root );
-
-    bool ParseUnits( const Position& from, const std::string& filename, const std::string& search_path,
+    bool ParseUnits( const Position& from, std::string_view filename, std::string_view search_path,
                      IncludedFiles* included, Messages* messages, Node* root );
     // ============================================================================
   } // namespace Parsers

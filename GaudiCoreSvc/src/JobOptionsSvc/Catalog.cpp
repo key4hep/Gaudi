@@ -46,11 +46,13 @@ bool gp::Catalog::Add( Property* property ) {
   return true;
 }
 // ============================================================================
-gp::Property* gp::Catalog::Find( const std::string& client, const std::string& name ) {
+gp::Property* gp::Catalog::Find( std::string_view client, std::string_view name ) {
   auto it = catalog_.find( client );
   if ( it == catalog_.end() ) return nullptr;
 
-  auto pit = std::find_if( it->second.begin(), it->second.end(), Property::Equal( name ) );
+  auto pit = std::find_if( it->second.begin(), it->second.end(),
+                           [&]( const Property& property ) { return name == property.NameInClient(); } );
+
   return ( pit != it->second.end() ) ? &*pit : nullptr;
 }
 // ============================================================================

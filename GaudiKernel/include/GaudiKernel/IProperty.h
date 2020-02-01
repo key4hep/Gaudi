@@ -88,13 +88,13 @@ public:
   virtual StatusCode getProperty( Gaudi::Details::PropertyBase* p // Pointer to property to be set
                                   ) const = 0;
   /// Get the property by name
-  virtual const Gaudi::Details::PropertyBase& getProperty( const std::string& name // Property name
+  virtual const Gaudi::Details::PropertyBase& getProperty( std::string_view name // Property name
                                                            ) const = 0;
   /// Get the property by std::string
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const = 0;
+  virtual StatusCode getProperty( std::string_view n, std::string& v ) const = 0;
   /// Get list of properties
   virtual const std::vector<Gaudi::Details::PropertyBase*>& getProperties() const = 0;
 
   /// Return true if we have a property with the given name.
-  virtual bool hasProperty( const std::string& name ) const = 0;
+  virtual bool hasProperty( std::string_view name ) const = 0;
 };

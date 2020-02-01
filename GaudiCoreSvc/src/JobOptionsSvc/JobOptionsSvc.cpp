@@ -139,8 +139,8 @@ void JobOptionsSvc::fillServiceCatalog( const gp::Catalog& catalog ) {
   }
 }
 
-StatusCode JobOptionsSvc::readOptions( const std::string& file, const std::string& path ) {
-  std::string search_path = path;
+StatusCode JobOptionsSvc::readOptions( std::string_view file, std::string_view path ) {
+  std::string search_path = std::string{path};
   if ( search_path.empty() && !m_dir_search_path.empty() ) { search_path = m_dir_search_path; }
   //
   if ( msgLevel( MSG::DEBUG ) )

@@ -35,7 +35,7 @@ namespace Gaudi {
      *  AST tree (http://en.wikipedia.org/wiki/Abstract_syntax_tree).
      *  Returns true if there were no errors during analysis.
      */
-    bool ReadOptions( const std::string& filename, const std::string& search_path, Messages* messages, Catalog* catalog,
+    bool ReadOptions( std::string_view filename, std::string_view search_path, Messages* messages, Catalog* catalog,
                       Units* units, PragmaOptions* pragma, Node* root );
     // ============================================================================
   } // namespace Parsers

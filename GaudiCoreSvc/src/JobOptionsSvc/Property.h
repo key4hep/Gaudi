@@ -34,14 +34,6 @@ namespace Gaudi {
         }
       };
 
-      class Equal {
-      public:
-        Equal( const std::string& short_name ) : short_name_( short_name ) {}
-        bool operator()( const Property& property ) const { return short_name_ == property.NameInClient(); }
-
-      private:
-        std::string short_name_;
-      };
       // ----------------------------------------------------------------------------
       Property( PropertyName property_name, PropertyValue property_value )
           : property_name_( std::move( property_name ) ), property_value_( std::move( property_value ) ) {}

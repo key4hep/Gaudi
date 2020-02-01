@@ -29,9 +29,9 @@ namespace Gaudi {
     class PropertyValue final {
       // ----------------------------------------------------------------------------
     public:
-      typedef std::variant<std::string, std::vector<std::string>, std::map<std::string, std::string>> Value;
-      typedef std::vector<std::string>                                                                VectorOfStrings;
-      typedef std::map<std::string, std::string>                                                      MapOfStrings;
+      using VectorOfStrings = std::vector<std::string>;
+      using MapOfStrings    = std::map<std::string, std::string, std::less<>>;
+      using Value           = std::variant<std::string, VectorOfStrings, MapOfStrings>;
 
       // ----------------------------------------------------------------------------
       explicit PropertyValue( Value value, bool is_reference = false )

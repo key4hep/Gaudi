@@ -25,26 +25,25 @@
 
 namespace gp = Gaudi::Parsers;
 
-static bool IncludeNode( gp::Node* node, const std::string& search_path, gp::IncludedFiles* included,
+static bool IncludeNode( gp::Node* node, std::string_view search_path, gp::IncludedFiles* included,
                          gp::Messages* messages ) {
   gp::Node include_root;
   bool     status = gp::Parse( node->position, node->value, search_path, included, messages, &include_root );
   if ( !status ) return false;
   node->value = include_root.value; // Save absolute file path
   node->children.reserve( node->children.size() + include_root.children.size() );
-  std::copy( std::begin( include_root.children ), std::end( include_root.children ),
-             std::back_inserter( node->children ) );
+  std::copy( begin( include_root.children ), end( include_root.children ), std::back_inserter( node->children ) );
   return true;
 }
 // ============================================================================
-static bool UnitsNode( gp::Node* node, const std::string& search_path, gp::IncludedFiles* included,
+static bool UnitsNode( gp::Node* node, std::string_view search_path, gp::IncludedFiles* included,
                        gp::Messages* messages ) {
   gp::Node units_root;
   bool     status = gp::ParseUnits( node->position, node->value, search_path, included, messages, &units_root );
   if ( !status ) return false;
   node->value = units_root.value; // Save absolute file path
   node->children.reserve( node->children.size() + units_root.children.size() );
-  std::copy( std::begin( units_root.children ), std::end( units_root.children ), std::back_inserter( node->children ) );
+  std::copy( begin( units_root.children ), end( units_root.children ), std::back_inserter( node->children ) );
   return true;
 }
 // ============================================================================
@@ -112,7 +111,7 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
   }
   // ------------------------------------------------------------------------
   case gp::Node::kMap: {
-    std::map<std::string, std::string> result;
+    gp::PropertyValue::MapOfStrings result;
     for ( const auto& child : node->children ) {
       auto kvalue = GetPropertyValue( &child.children[0], catalog, units );
       auto vvalue = GetPropertyValue( &child.children[1], catalog, units );
@@ -268,8 +267,8 @@ static bool ConditionNode( gp::Node* node, gp::Catalog* catalog, gp::Node** next
   return true;
 }
 // ============================================================================
-static bool Analyze( gp::Node* node, const std::string& search_path, gp::IncludedFiles* included,
-                     gp::Messages* messages, gp::Catalog* catalog, gp::Units* units, gp::PragmaOptions* pragma ) {
+static bool Analyze( gp::Node* node, std::string_view search_path, gp::IncludedFiles* included, gp::Messages* messages,
+                     gp::Catalog* catalog, gp::Units* units, gp::PragmaOptions* pragma ) {
   // ----------------------------------------------------------------------------
   bool      result       = true;
   bool      local_result = true;
@@ -377,7 +376,7 @@ bool Unreference( gp::Catalog& catalog, gp::Messages* messages ) {
 }
 
 // ============================================================================
-bool gp::ReadOptions( const std::string& filename, const std::string& search_path, Messages* messages, Catalog* catalog,
+bool gp::ReadOptions( std::string_view filename, std::string_view search_path, Messages* messages, Catalog* catalog,
                       Units* units, PragmaOptions* pragma, Node* root ) {
   // Extract Path
   IncludedFiles included;

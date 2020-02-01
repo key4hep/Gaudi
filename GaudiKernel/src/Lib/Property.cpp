@@ -81,7 +81,7 @@ std::ostream& PropertyBase::fillStream( std::ostream& stream ) const {
  *  @date   2006-09-09
  */
 // ============================================================================
-bool Gaudi::Utils::hasProperty( const IInterface* p, const std::string& name ) {
+bool Gaudi::Utils::hasProperty( const IInterface* p, std::string_view name ) {
   // delegate to another method after trivial check
   return p && getProperty( p, name );
 }
@@ -104,7 +104,7 @@ bool Gaudi::Utils::hasProperty( const IInterface* p, const std::string& name ) {
  *  @date   2006-09-09
  */
 // ============================================================================
-bool Gaudi::Utils::hasProperty( const IProperty* p, const std::string& name ) {
+bool Gaudi::Utils::hasProperty( const IProperty* p, std::string_view name ) {
   // delegate the actual work to another method ;
   return p && p->hasProperty( name );
 }
@@ -183,24 +183,18 @@ StatusCode GaudiHandleArrayProperty::fromString( const std::string& source ) {
 
 // ============================================================================
 namespace {
-  template <typename C, typename BinaryPredicate>
-  bool equal_( const C& c1, const C& c2, BinaryPredicate&& p ) {
-    return c1.size() == c2.size() &&
-           std::equal( std::begin( c1 ), std::end( c1 ), std::begin( c2 ), std::forward<BinaryPredicate>( p ) );
+  template <typename C1, typename C2, typename BinaryPredicate>
+  bool equal_( const C1& c1, const C2& c2, BinaryPredicate&& p ) {
+    return std::equal( begin( c1 ), end( c1 ), begin( c2 ), end( c2 ), std::forward<BinaryPredicate>( p ) );
   }
 
   // match (case insensitive) property by name
-  struct is_iByName {
-    /// constructor from name
-    is_iByName( const std::string& name ) : m_name( name ) {}
-    /// the most essential method:
-    bool operator()( const PropertyBase* p ) const {
-      return p && equal_( m_name, p->name(), boost::algorithm::is_iequal{} );
+  template <typename String>
+  auto is_iByName( String&& name ) {
+    return [name = std::forward<String>( name )]( const PropertyBase* p ) {
+      return p && equal_( name, p->name(), boost::algorithm::is_iequal{} );
     };
-
-  private:
-    const std::string& m_name;
-  };
+  }
 } // namespace
 // ============================================================================
 /*  simple function which gets the property with given name
@@ -221,13 +215,13 @@ namespace {
  *  @date   2006-09-09
  */
 // ============================================================================
-PropertyBase* Gaudi::Utils::getProperty( const IProperty* p, const std::string& name ) {
+PropertyBase* Gaudi::Utils::getProperty( const IProperty* p, std::string_view name ) {
   // trivial check
   if ( !p ) { return nullptr; } // RETURN
   // get all properties
   const auto& props = p->getProperties();
   // comparison criteria:
-  auto ifound = std::find_if( props.begin(), props.end(), is_iByName{name} );
+  auto ifound = std::find_if( props.begin(), props.end(), is_iByName( name ) );
   return ifound != props.end() ? *ifound : nullptr;
 }
 // ============================================================================
@@ -249,7 +243,7 @@ PropertyBase* Gaudi::Utils::getProperty( const IProperty* p, const std::string& 
  *  @date   2006-09-09
  */
 // ============================================================================
-PropertyBase* Gaudi::Utils::getProperty( const IInterface* p, const std::string& name ) {
+PropertyBase* Gaudi::Utils::getProperty( const IInterface* p, std::string_view name ) {
   // trivial check
   if ( !p ) { return nullptr; } // RETURN
   // remove const-qualifier
@@ -282,7 +276,7 @@ PropertyBase* Gaudi::Utils::getProperty( const IInterface* p, const std::string&
  *  @date   2006-09-09
  */
 // ============================================================================
-bool Gaudi::Utils::hasProperty( const std::vector<const PropertyBase*>* p, const std::string& name ) {
+bool Gaudi::Utils::hasProperty( const std::vector<const PropertyBase*>* p, std::string_view name ) {
   // delegate to another method
   return getProperty( p, name );
 }
@@ -309,10 +303,10 @@ bool Gaudi::Utils::hasProperty( const std::vector<const PropertyBase*>* p, const
  *  @date   2006-09-09
  */
 // ============================================================================
-const PropertyBase* Gaudi::Utils::getProperty( const std::vector<const PropertyBase*>* p, const std::string& name ) {
+const PropertyBase* Gaudi::Utils::getProperty( const std::vector<const PropertyBase*>* p, std::string_view name ) {
   // trivial check
   if ( !p ) { return nullptr; } // RETURN
-  auto ifound = std::find_if( p->begin(), p->end(), is_iByName{name} );
+  auto ifound = std::find_if( p->begin(), p->end(), is_iByName( name ) );
   return p->end() != ifound ? *ifound : nullptr; // RETURN
 }
 // ============================================================================

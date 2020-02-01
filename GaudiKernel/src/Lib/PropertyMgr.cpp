@@ -38,18 +38,11 @@ namespace {
   // ==========================================================================
   /// case insensitive comparison of strings
   constexpr struct NoCaseCmp_t {
-    inline bool operator()( const std::string& v1, const std::string& v2 ) const {
-      return v1.size() == v2.size() && std::equal( std::begin( v1 ), std::end( v1 ), std::begin( v2 ),
-                                                   []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
+    bool operator()( std::string_view v1, std::string_view v2 ) const {
+      return std::equal( begin( v1 ), end( v1 ), begin( v2 ), end( v2 ),
+                         []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
     }
   } noCaseCmp{};
-  // ==========================================================================
-  /// get the property by name
-  struct PropByName {
-    std::string m_name;
-
-    inline bool operator()( const PropertyBase* p ) const { return p && noCaseCmp( p->name(), m_name ); }
-  };
   // ==========================================================================
 } // namespace
 // ====================================================================
@@ -105,14 +98,15 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, Gaudi::Data
 // ====================================================================
 // get the property by name form the proposed list
 // ====================================================================
-PropertyBase* PropertyMgr::property( const std::string& name, const std::vector<PropertyBase*>& props ) const {
-  auto it = std::find_if( props.begin(), props.end(), PropByName{name} );
+PropertyBase* PropertyMgr::property( std::string_view name, const std::vector<PropertyBase*>& props ) const {
+  auto it = std::find_if( props.begin(), props.end(),
+                          [=]( const PropertyBase* p ) { return p && noCaseCmp( p->name(), name ); } );
   return ( it != props.end() ) ? *it : nullptr; // RETURN
 }
 // ====================================================================
 // retrieve the property by name
 // ====================================================================
-PropertyBase* PropertyMgr::property( const std::string& name ) const {
+PropertyBase* PropertyMgr::property( std::string_view name ) const {
   // local property ?
   PropertyBase* lp = property( name, m_properties );
   if ( lp ) return lp; // RETURN
@@ -175,17 +169,17 @@ StatusCode PropertyMgr::getProperty( PropertyBase* p ) const {
  *  Implementation of IProperty::getProperty
  */
 // =====================================================================
-const PropertyBase& PropertyMgr::getProperty( const std::string& name ) const {
+const PropertyBase& PropertyMgr::getProperty( std::string_view name ) const {
   const PropertyBase* p = property( name );
-  if ( !p ) throw std::out_of_range( "Property " + name + " not found." ); // Not found
-  return *p;                                                               // RETURN
+  if ( !p ) throw std::out_of_range( "Property " + std::string{name} + " not found." ); // Not found
+  return *p;                                                                            // RETURN
 }
 // =====================================================================
 /* Get the property by name
  *  Implementation of IProperty::getProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::getProperty( const std::string& n, std::string& v ) const {
+StatusCode PropertyMgr::getProperty( std::string_view n, std::string& v ) const {
   // get the property
   const PropertyBase* p = property( n );
   if ( !p ) return StatusCode::FAILURE;
@@ -211,9 +205,9 @@ StatusCode PropertyMgr::queryInterface( const InterfaceID& iid, void** pinterfac
 // =====================================================================
 // Implementation of IProperty::hasProperty
 // =====================================================================
-bool PropertyMgr::hasProperty( const std::string& name ) const {
+bool PropertyMgr::hasProperty( std::string_view name ) const {
   return any_of( begin( m_properties ), end( m_properties ),
-                 [&name]( const PropertyBase* prop ) { return noCaseCmp( prop->name(), name ); } );
+                 [name]( const PropertyBase* prop ) { return noCaseCmp( prop->name(), name ); } );
 }
 void PropertyMgr::assertUniqueName( const std::string& name ) const {
   if ( LIKELY( !hasProperty( name ) ) ) return;

@@ -673,7 +673,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API bool hasProperty( const IProperty* p, const std::string& name );
+    GAUDI_API bool hasProperty( const IProperty* p, std::string_view name );
     // ========================================================================
     /** simple function which check the existence of the property with
      *  the given name.
@@ -692,7 +692,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API bool hasProperty( const IInterface* p, const std::string& name );
+    GAUDI_API bool hasProperty( const IInterface* p, std::string_view name );
     // ========================================================================
     /** simple function which gets the property with given name
      *  from the component
@@ -711,7 +711,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IProperty* p, const std::string& name );
+    GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IProperty* p, std::string_view name );
     // ========================================================================
     /** simple function which gets the property with given name
      *  from the component
@@ -730,7 +730,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IInterface* p, const std::string& name );
+    GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IInterface* p, std::string_view name );
     // ========================================================================
     /** check  the property by name from  the list of the properties
      *
@@ -754,7 +754,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API bool hasProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, const std::string& name );
+    GAUDI_API bool hasProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, std::string_view name );
     // ========================================================================
     /** get the property by name from  the list of the properties
      *
@@ -779,7 +779,7 @@ namespace Gaudi {
      *  @date   2006-09-09
      */
     GAUDI_API const Gaudi::Details::PropertyBase*
-                    getProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, const std::string& name );
+                    getProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, std::string_view name );
     // ========================================================================
     /** simple function to set the property of the given object from the value
      *
