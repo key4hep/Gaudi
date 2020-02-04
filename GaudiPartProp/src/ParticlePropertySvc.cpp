@@ -134,10 +134,8 @@ namespace Gaudi {
                                              double mass, double tlife, const std::string& evtName, int pythiaId,
                                              double maxWidth ) {
     //
-    auto i = m_owned.insert( std::make_unique<ParticleProperty>( particle, geantId, jetsetId, charge, mass, tlife,
-                                                                 evtName, pythiaId, maxWidth ) );
-    //
-    return i.second ? push_back( i.first->get() ) : StatusCode::FAILURE;
+    auto& pp = m_owned.emplace_back( particle, geantId, jetsetId, charge, mass, tlife, evtName, pythiaId, maxWidth );
+    return push_back( &pp );
   }
   // =============================================================================
   /// Add a particle property.
