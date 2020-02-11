@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -131,6 +131,8 @@ class ConfigurablesDB(object):
             alt_name = _normalize_cpp_type_name(cname)
             if alt_name != cname:
                 self._alt_names[alt_name] = cname
+            if ' ' in cname:  # allow matching of 'T<A, B>' a well as 'T<A,B>'
+                self._alt_names[cname.replace(' ', '')] = cname
         self.__all__ = list(
             self._namespaces.union(self._classes).union(self._alt_names))
 
@@ -169,21 +171,7 @@ class ConfigurablesDB(object):
         '''
         Helper to instantiate on demand Configurable classes.
         '''
-        if name in self._alt_names:
-            entry = getattr(self, self._alt_names[name])
-        elif name == "__spec__":  # pragma no cover
-            import importlib
-            entry = importlib.machinery.ModuleSpec(
-                name=self.__package__,
-                loader=self.__loader__,
-            )
-        elif name == "__package__":  # pragma no cover
-            entry = self.__name__
-        else:
-            if name not in self._classes:
-                raise AttributeError(
-                    'module {!r} has no attribute {!r}'.format(
-                        self.__name__, name))
+        if name in self._classes:
             fullname = ('::'.join([self._namespace, name])
                         if self._namespace else name)
             from ._configurables import makeConfigurableClass
@@ -194,6 +182,19 @@ class ConfigurablesDB(object):
                 __qualname__=name,
                 __cpp_type__=fullname,
                 **_DB[fullname])
+        elif name.replace(' ', '') in self._alt_names:
+            entry = getattr(self, self._alt_names[name.replace(' ', '')])
+        elif name == "__spec__":  # pragma no cover
+            import importlib
+            entry = importlib.machinery.ModuleSpec(
+                name=self.__package__,
+                loader=self.__loader__,
+            )
+        elif name == "__package__":  # pragma no cover
+            entry = self.__name__
+        else:
+            raise AttributeError('module {!r} has no attribute {!r}'.format(
+                self.__name__, name))
         setattr(self, name, entry)
         return entry
 
