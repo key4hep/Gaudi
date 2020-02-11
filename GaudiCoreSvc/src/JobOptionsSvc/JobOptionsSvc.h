@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -35,6 +35,7 @@ public:
   JobOptionsSvc( const std::string& name, ISvcLocator* svc );
 
   StatusCode initialize() override;
+  StatusCode start() override;
 
   /** Override default properties of the calling client
          @param client Name of the client algorithm or service
@@ -71,8 +72,10 @@ public:
 
 private:
   void fillServiceCatalog( const Gaudi::Parsers::Catalog& catalog );
-  void dump( const std::string& file, const Gaudi::Parsers::Catalog& catalog ) const;
-  /// dump the content of Properties catalog to the predefined file
+
+  /// dump properties catalog to file
+  template <typename C>
+  void dump( const std::string& file, const C& catalog ) const;
 
 private:
   Gaudi::Property<std::string> m_source_type{this, "TYPE"};
