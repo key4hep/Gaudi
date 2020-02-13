@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -49,6 +49,18 @@ def test_get_by_full_type():
     assert C.getByType('TestConf::MyAlg') is C.TestConf.MyAlg
     name = 'TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >'
     assert C.getByType('TestConf::' + name) is getattr(C.TestConf, name)
+
+
+def test_get_by_full_type_ignore_spaces():
+    from GaudiConfig2 import Configurables as C
+
+    name = 'TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >'
+    stripped_name = name.replace(' ', '')
+    assert (C.getByType('TestConf::' + name) is
+            C.getByType('TestConf::' + stripped_name))
+    mix_name = name.replace(' ', '', 1)
+    assert (C.getByType('TestConf::' + name) is
+            C.getByType('TestConf::' + mix_name))
 
 
 @raises(AttributeError)
