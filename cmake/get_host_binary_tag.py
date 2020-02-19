@@ -155,7 +155,7 @@ def arch():
     # Get host flags from /proc/cpuinfo
     host_flags = set()
     if sys.platform == 'darwin':
-        for l in check_output(['sysctl', '-a']).split('\n'):
+        for l in check_output(['sysctl', '-a']).decode('utf-8').split('\n'):
             if l.startswith('machdep.cpu.features') or l.startswith(
                     'machdep.cpu.extfeatures') or l.startswith(
                         'machdep.cpu.leaf7_features'):
