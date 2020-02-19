@@ -131,9 +131,10 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
   if ( number > 1 ) {
     /// @todo: cache the format
     boost::format fmt1( "Ave/Min/Max=%2$5.3g(+-%3$5.3g)/%4$5.3g/%5$5.3g%1$s" );
-    i = std::find_if(
-        std::begin( tbl ), std::prev( std::end( tbl ) ),
-        [&]( const std::tuple<int, double, const std::string>& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
+    i    = std::find_if( std::begin( tbl ), std::prev( std::end( tbl ) ),
+                      [&]( const std::tuple<int, double, const std::string>& i ) {
+                        return total < std::get<0>( i ) * std::get<1>( i );
+                      } );
     unit = std::get<1>( *i );
     fmt1 % std::get<2>( *i ) % (double)( mean / unit ) % (double)( rms / unit ) % (double)( minimal / unit ) %
         (double)( maximal / unit );
