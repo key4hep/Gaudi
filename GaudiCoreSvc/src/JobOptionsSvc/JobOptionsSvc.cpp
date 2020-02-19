@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -54,6 +54,12 @@ StatusCode JobOptionsSvc::initialize() {
 }
 
 // ============================================================================
+StatusCode JobOptionsSvc::start() {
+  if ( !m_dump.empty() ) { dump( m_dump, m_svc_catalog ); }
+  return StatusCode::SUCCESS;
+}
+
+// ============================================================================
 StatusCode JobOptionsSvc::addPropertyToCatalogue( const std::string&                  client,
                                                   const Gaudi::Details::PropertyBase& property ) {
   auto p = std::make_unique<Gaudi::Property<std::string>>( property.name(), "" );
@@ -88,7 +94,8 @@ StatusCode JobOptionsSvc::setMyProperties( const std::string& client, IProperty*
 /// Get the list of clients
 std::vector<std::string> JobOptionsSvc::getClients() const { return m_svc_catalog.getClients(); }
 
-void JobOptionsSvc::dump( const std::string& file, const gp::Catalog& catalog ) const {
+template <typename C>
+void JobOptionsSvc::dump( const std::string& file, const C& catalog ) const {
   std::ofstream out( file, std::ios_base::out | std::ios_base::trunc );
   if ( !out ) {
     error() << "Unable to open dump-file \"" + file + "\"" << endmsg;
