@@ -15,6 +15,7 @@
 // ============================================================================
 // STD&STL
 // ============================================================================
+#include <deque>
 #include <map>
 #include <set>
 // ============================================================================
@@ -180,8 +181,8 @@ namespace Gaudi {
     MapPythiaID m_pythiaidmap; ///< Map for Pythia Ids
 
     // local storage of ALL properties
-    std::set<std::unique_ptr<ParticleProperty>> m_owned;
-    std::set<std::string>                       m_replaced;
+    std::deque<ParticleProperty> m_owned;
+    std::set<std::string>        m_replaced;
 
     SmartIF<IFileAccess> m_fileAccess;
   };
