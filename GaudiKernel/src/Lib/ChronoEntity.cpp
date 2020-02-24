@@ -117,7 +117,15 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
   /// @todo: cache the format
   boost::format fmt( "Tot=%2$5.3g%1$s %4$43s #=%3$3lu" );
 
-  static const auto tbl = {
+  static const std::array<std::tuple<int, double, std::string_view>, 9> tbl{{{500, microsecond, " [us]"},
+                                                                             {500, millisecond, " [ms]"},
+                                                                             {500, second, "  [s]"},
+                                                                             {500, minute, "[min]"},
+                                                                             {500, hour, "  [h]"},
+                                                                             {10, day, "[day]"},
+                                                                             {5, week, "  [w]"},
+                                                                             {20, month, "[mon]"},
+                                                                             {-1, year, "  [y]"}}};
       std::tuple{500, microsecond, " [us]"s}, std::tuple{500, millisecond, " [ms]"s}, std::tuple{500, second, "  [s]"s},
       std::tuple{500, minute, "[min]"s},      std::tuple{500, hour, "  [h]"s},        std::tuple{10, day, "[day]"s},
       std::tuple{5, week, "  [w]"s},          std::tuple{20, month, "[mon]"s},        std::tuple{-1, year, "  [y]"s}};
