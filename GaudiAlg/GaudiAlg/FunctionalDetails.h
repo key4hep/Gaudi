@@ -35,7 +35,7 @@ namespace ranges::views {
 }
 #endif
 
-#if defined( __clang__ ) && ( __clang_major__ < 9 ) || defined(__APPLE__) && ( __clang_major__ < 12 )
+#if defined( __clang__ ) && ( __clang_major__ < 9 ) || defined( __APPLE__ ) && ( __clang_major__ < 12 )
 #  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN                                                                     \
     _Pragma( "clang diagnostic push" ) _Pragma( "clang diagnostic ignored \"-Wunused-lambda-capture\"" )
 #  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END _Pragma( "clang diagnostic pop" )
