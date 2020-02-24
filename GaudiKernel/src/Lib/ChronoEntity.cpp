@@ -19,7 +19,6 @@
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
-using namespace std::literals::string_literals;
 
 // ============================================================================
 // GaudiKernel
@@ -126,13 +125,8 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
                                                                              {5, week, "  [w]"},
                                                                              {20, month, "[mon]"},
                                                                              {-1, year, "  [y]"}}};
-      std::tuple{500, microsecond, " [us]"s}, std::tuple{500, millisecond, " [ms]"s}, std::tuple{500, second, "  [s]"s},
-      std::tuple{500, minute, "[min]"s},      std::tuple{500, hour, "  [h]"s},        std::tuple{10, day, "[day]"s},
-      std::tuple{5, week, "  [w]"s},          std::tuple{20, month, "[mon]"s},        std::tuple{-1, year, "  [y]"s}};
-
-  auto i = std::find_if( begin( tbl ), std::prev( end( tbl ) ), [&]( const std::tuple<int, double, std::string>& i ) {
-    return total < std::get<0>( i ) * std::get<1>( i );
-  } );
+  auto        i    = std::find_if( begin( tbl ), std::prev( end( tbl ) ),
+                         [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
   long double unit = std::get<1>( *i );
   fmt % std::get<2>( *i ) % (double)( total / unit ) % number;
 
@@ -140,9 +134,7 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
     /// @todo: cache the format
     boost::format fmt1( "Ave/Min/Max=%2$5.3g(+-%3$5.3g)/%4$5.3g/%5$5.3g%1$s" );
     i    = std::find_if( std::begin( tbl ), std::prev( std::end( tbl ) ),
-                      [&]( const std::tuple<int, double, const std::string>& i ) {
-                        return total < std::get<0>( i ) * std::get<1>( i );
-                      } );
+                      [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
     unit = std::get<1>( *i );
     fmt1 % std::get<2>( *i ) % (double)( mean / unit ) % (double)( rms / unit ) % (double)( minimal / unit ) %
         (double)( maximal / unit );
