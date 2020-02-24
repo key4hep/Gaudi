@@ -8,6 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include "Gaudi/Accumulators.h"
+#include "Gaudi/Arena/Monotonic.h"
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
@@ -40,18 +42,27 @@
 #include <vector>
 
 namespace {
+  using LocalArena = Gaudi::Arena::Monotonic<>;
+
+  template <typename T>
+  using LocalAlloc = Gaudi::Allocator::MonotonicArena<T>;
+
+  using pool_string = std::basic_string<char, std::char_traits<char>, LocalAlloc<char>>;
 
   class Entry final : public IRegistry {
-    std::unique_ptr<DataObject>     m_data;
-    std::unique_ptr<IOpaqueAddress> m_addr;
-    std::string                     m_identifier;
-    static IDataProviderSvc*        s_svc;
+    std::unique_ptr<DataObject>        m_data;
+    std::unique_ptr<IOpaqueAddress>    m_addr;
+    pool_string                        m_identifierStorage;
+    mutable std::optional<std::string> m_identifier;
+    static IDataProviderSvc*           s_svc;
 
   public:
+    using allocator_type = LocalAlloc<char>;
     static void setDataProviderSvc( IDataProviderSvc* p ) { s_svc = p; }
 
-    Entry( std::string id, std::unique_ptr<DataObject> data, std::unique_ptr<IOpaqueAddress> addr = {} ) noexcept
-        : m_data{std::move( data )}, m_addr{std::move( addr )}, m_identifier{std::move( id )} {
+    Entry( std::string_view id, std::unique_ptr<DataObject> data, std::unique_ptr<IOpaqueAddress> addr,
+           allocator_type alloc ) noexcept
+        : m_data{std::move( data )}, m_addr{std::move( addr )}, m_identifierStorage{id, alloc} {
       if ( m_data ) m_data->setRegistry( this );
       if ( m_addr ) m_addr->setRegistry( this );
     }
@@ -61,10 +72,18 @@ namespace {
     Entry& operator=( Entry&& rhs ) = delete;
 
     // required by IRegistry...
-    unsigned long     addRef() override { return -1; }
-    unsigned long     release() override { return -1; }
-    const name_type&  name() const override { return m_identifier; } // should really be from last '/' onward...
-    const id_type&    identifier() const override { return m_identifier; }
+    unsigned long    addRef() override { return -1; }
+    unsigned long    release() override { return -1; }
+    const name_type& name() const override {
+      // should really be from last '/' onward...
+      if ( !m_identifier ) m_identifier.emplace( m_identifierStorage );
+      return *m_identifier;
+    }
+    const id_type& identifier() const override {
+      if ( !m_identifier ) m_identifier.emplace( m_identifierStorage );
+      return *m_identifier;
+    }
+    std::string_view  identifierView() const { return m_identifierStorage; }
     IDataProviderSvc* dataSvc() const override { return s_svc; }
     DataObject*       object() const override { return const_cast<DataObject*>( m_data.get() ); }
     IOpaqueAddress*   address() const override { return m_addr.get(); }
@@ -75,27 +94,46 @@ namespace {
   };
   IDataProviderSvc* Entry::s_svc = nullptr;
 
-  using UnorderedMap = std::unordered_map<std::string_view, Entry>;
-  using OrderedMap   = std::map<std::string_view, Entry>;
+  using UnorderedMap =
+      std::unordered_map<std::string_view, Entry, std::hash<std::string_view>, std::equal_to<std::string_view>,
+                         LocalAlloc<std::pair<const std::string_view, Entry>>>;
+  using OrderedMap = std::map<std::string_view, Entry>;
 
   template <typename Map = UnorderedMap>
   class Store {
-    Map m_store;
+    LocalArena  m_resource;
+    std::size_t m_est_size;
+    // Optional purely to make [re]construction simpler, should "always" be valid
+    std::optional<Map> m_store{std::in_place, &m_resource};
     static_assert( std::is_same_v<typename Map::key_type, std::string_view> );
 
     const auto& emplace( std::string_view k, std::unique_ptr<DataObject> d, std::unique_ptr<IOpaqueAddress> a = {} ) {
       // tricky way to insert a string_view key which points to the
       // string contained in the mapped type...
-      auto [i, b] = m_store.try_emplace( k, std::string{k}, std::move( d ), std::move( a ) );
+      auto [i, b] = m_store->try_emplace( k, k, std::move( d ), std::move( a ), &m_resource );
       if ( !b ) throw std::runtime_error( "failed to insert " + std::string{k} );
-      auto nh  = m_store.extract( i );
-      nh.key() = nh.mapped().identifier(); // "re-point" key to the string contained in the Entry
-      auto r   = m_store.insert( std::move( nh ) );
+      auto nh  = m_store->extract( i );
+      nh.key() = nh.mapped().identifierView(); // "re-point" key to the string contained in the Entry
+      auto r   = m_store->insert( std::move( nh ) );
       if ( !r.inserted ) throw std::runtime_error( "failed to insert " + std::string{k} );
       return r.position->second;
     }
 
   public:
+    Store( std::size_t est_size, std::size_t pool_size ) : m_resource{pool_size}, m_est_size{est_size} {}
+    [[nodiscard]] bool        empty() const { return m_store->empty(); }
+    [[nodiscard]] std::size_t size() const { return m_store->size(); }
+    [[nodiscard]] std::size_t used_bytes() const noexcept { return m_resource.size(); }
+    [[nodiscard]] std::size_t used_blocks() const noexcept { return m_resource.num_blocks(); }
+    [[nodiscard]] std::size_t used_buckets() const { return m_store->bucket_count(); }
+    [[nodiscard]] std::size_t num_allocations() const noexcept { return m_resource.num_allocations(); }
+
+    void reset() {
+      m_store.reset();                            // kill the old map
+      m_resource.reset();                         // tell the memory pool it can start re-using its resources
+      m_store.emplace( m_est_size, &m_resource ); // initialise the new map with a sane number of buckets
+    }
+
     const DataObject* put( std::string_view k, std::unique_ptr<DataObject> data,
                            std::unique_ptr<IOpaqueAddress> addr = {} ) {
       return emplace( k, std::move( data ), std::move( addr ) ).object();
@@ -105,21 +143,21 @@ namespace {
       return d ? d->object() : nullptr;
     }
     const Entry* find( std::string_view k ) const noexcept {
-      auto i = m_store.find( k );
-      return i != m_store.end() ? &( i->second ) : nullptr;
+      auto i = m_store->find( k );
+      return i != m_store->end() ? &( i->second ) : nullptr;
     }
 
-    auto begin() const noexcept { return m_store.begin(); }
-    auto end() const noexcept { return m_store.end(); }
-    void clear() noexcept { m_store.clear(); }
-    auto erase( std::string_view k ) { return m_store.erase( k ); }
+    [[nodiscard]] auto begin() const noexcept { return m_store->begin(); }
+    [[nodiscard]] auto end() const noexcept { return m_store->end(); }
+    void               clear() noexcept { m_store->clear(); }
+    auto               erase( std::string_view k ) { return m_store->erase( k ); }
     template <typename Predicate>
     void erase_if( Predicate p ) {
-      auto i   = m_store.begin();
-      auto end = m_store.end();
+      auto i   = m_store->begin();
+      auto end = m_store->end();
       while ( i != end ) {
         if ( std::invoke( p, std::as_const( *i ) ) )
-          i = m_store.erase( i );
+          i = m_store->erase( i );
         else
           ++i;
       }
@@ -150,8 +188,11 @@ namespace {
 
   // HiveWhiteBoard helpers
   struct Partition final {
-    Store<> store;
-    int     eventNumber = -1;
+    // Use optional to allow re-constructing in-place without an ugly
+    // exception-unsafe placement-new conconction, and also to make it easier
+    // to pass constructor arguments to Store<>.
+    std::optional<Store<>> store;
+    int                    eventNumber = -1;
   };
 
 #if TBB_INTERFACE_VERSION_MAJOR < 12
@@ -210,6 +251,35 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc"};
   Gaudi::Property<size_t>      m_slots{this, "EventSlots", 1, "number of event slots"};
+  Gaudi::Property<bool>        m_printPoolStats{this, "PrintPoolStats", false, "Print memory pool statistics"};
+  Gaudi::Property<std::size_t> m_poolSize{this, "PoolSize", 1024, "Initial per-event memory pool size [KiB]"};
+  Gaudi::Property<std::size_t> m_estStoreBuckets{this, "StoreBuckets", 100, "Estimated number of buckets in the store"};
+  mutable Gaudi::Accumulators::AveragingCounter<std::size_t> m_usedPoolSize, m_servedPoolAllocations,
+      m_usedPoolAllocations, m_storeEntries, m_storeBuckets;
+
+  // Convert to bytes
+  std::size_t poolSize() const { return m_poolSize * 1024; }
+
+  void fillStats( Partition& p ) const {
+    if ( LIKELY( !m_printPoolStats ) ) return;
+    auto n_allocs = p.store->num_allocations();
+    if ( n_allocs ) {
+      m_storeEntries += p.store->size();
+      m_usedPoolSize += p.store->used_bytes();
+      m_storeBuckets += p.store->used_buckets();
+      m_usedPoolAllocations += p.store->used_blocks();
+      m_servedPoolAllocations += n_allocs;
+    }
+  }
+
+  void initStore( Partition& p ) const {
+    if ( p.store ) {
+      // re-use the existing memory pool
+      p.store->reset();
+    } else {
+      p.store.emplace( m_estStoreBuckets, poolSize() );
+    }
+  }
 
   SmartIF<IConversionSvc> m_dataLoader;
 
@@ -319,6 +389,10 @@ public:
       return StatusCode::FAILURE;
     }
     m_partitions = std::vector<Synced<Partition>>( m_slots );
+    // m_partitions is now full of empty std::optionals, fill them now.
+    for ( auto& synced_p : m_partitions ) {
+      synced_p.with_lock( [this]( Partition& p ) { initStore( p ); } );
+    }
     for ( size_t i = 0; i < m_slots; i++ ) { m_freeSlots.push( i ); }
     selectStore( 0 ).ignore();
 
@@ -330,6 +404,12 @@ public:
     return setDataLoader( loader, nullptr );
   }
   StatusCode finalize() override {
+    if ( m_printPoolStats ) {
+      info() << "Mean memory pool usage: " << float( 1e-3f * m_usedPoolSize.mean() ) << " KiB serving "
+             << float( m_servedPoolAllocations.mean() ) << " allocations from " << float( m_usedPoolAllocations.mean() )
+             << " to produce " << float( m_storeEntries.mean() ) << " entries in " << float( m_storeBuckets.mean() )
+             << " buckets" << endmsg;
+    }
     setDataLoader( nullptr, nullptr ).ignore(); // release
     return extends::finalize();
   }
@@ -395,22 +475,24 @@ StatusCode EvtStoreSvc::freeStore( size_t partition ) {
 /// Remove all data objects in one 'slot' of the data store.
 StatusCode EvtStoreSvc::clearStore( size_t partition ) {
   m_onlyThisID = {};
-  return m_partitions[partition].with_lock( []( Partition& p ) {
-    p.store.clear();
+  return m_partitions[partition].with_lock( [this]( Partition& p ) {
+    fillStats( p );
+    initStore( p ); // replace with a clean store
     return StatusCode::SUCCESS;
   } );
 }
 StatusCode EvtStoreSvc::clearSubTree( std::string_view top ) {
   top = normalize_path( top, rootName() );
   return fwd( [&]( Partition& p ) {
-    p.store.erase_if( [top]( const auto& value ) { return boost::algorithm::starts_with( value.first, top ); } );
+    p.store->erase_if( [top]( const auto& value ) { return boost::algorithm::starts_with( value.first, top ); } );
     return StatusCode::SUCCESS;
   } );
 }
 StatusCode EvtStoreSvc::clearStore() {
   m_onlyThisID = {};
-  return fwd( []( Partition& p ) {
-    p.store.clear();
+  return fwd( [this]( Partition& p ) {
+    fillStats( p );
+    initStore( p ); // replace with a clean store
     return StatusCode::SUCCESS;
   } );
 }
@@ -419,7 +501,7 @@ StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* 
     top      = normalize_path( top, rootName() );
     auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
     std::set<const Entry*, decltype( cmp )> keys{std::move( cmp )};
-    for ( const auto& v : p.store ) {
+    for ( const auto& v : *p.store ) {
       if ( boost::algorithm::starts_with( v.second.identifier(), top ) ) keys.insert( &v.second );
     }
     auto k = keys.begin();
@@ -439,7 +521,11 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, DataObject* pObject ) {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "setRoot( " << root_path << ", (DataObject*)" << (void*)pObject << " )" << endmsg;
   }
-  clearStore().ignore();
+  if ( UNLIKELY( !fwd( []( Partition& p ) {
+                    return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+                  } ).isSuccess() ) ) {
+    throw GaudiException{"setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE};
+  }
   return registerObject( nullptr, root_path, pObject );
 }
 StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAddr ) {
@@ -449,13 +535,18 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
     if ( rootAddr ) debug() << "[ " << rootAddr->par()[0] << ", " << rootAddr->par()[1] << " ]";
     debug() << " )" << endmsg;
   }
-  clearStore().ignore();
+  if ( UNLIKELY( !fwd( []( Partition& p ) {
+                    return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+                  } ).isSuccess() ) ) {
+    throw GaudiException{"setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE};
+  }
   if ( !rootAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
   if ( !m_followLinksToAncestors ) m_onlyThisID = rootAddr->par()[0];
   auto object = createObj( *m_dataLoader, *rootAddr ); // Call data loader
   if ( !object ) return Status::INVALID_OBJECT;
   if ( msgLevel( MSG::DEBUG ) ) { debug() << "Root Object " << root_path << " created " << endmsg; }
-  auto dummy = Entry{root_path, {}, {}};
+  LocalArena dummy_arena{root_path.size() + 1};
+  auto       dummy = Entry{root_path, {}, {}, &dummy_arena};
   object->setRegistry( &dummy );
   rootAddr->setRegistry( &dummy );
   auto status = m_dataLoader->fillObjRefs( rootAddr.get(), object.get() );
@@ -498,7 +589,8 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
   if ( !object ) return Status::INVALID_OBJECT;
   auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + std::string{path};
   // the data loader expects the path _including_ the root
-  auto dummy = Entry{fullpath, {}, {}};
+  LocalArena dummy_arena{fullpath.size() + 1};
+  auto       dummy = Entry{fullpath, {}, {}, &dummy_arena};
   object->setRegistry( &dummy );
   addr->setRegistry( &dummy );
   auto status = m_dataLoader->fillObjRefs( addr.get(), object.get() );
@@ -513,7 +605,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
             << endmsg;
   }
   fwd( [&]( Partition& p ) {
-    p.store.put( normalize_path( fullpath, rootName() ), std::move( object ), std::move( addr ) );
+    p.store->put( normalize_path( fullpath, rootName() ), std::move( object ), std::move( addr ) );
     return StatusCode::SUCCESS;
   } ).ignore();
   return status;
@@ -532,11 +624,11 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view 
       auto dir = path;
       for ( auto i = dir.rfind( '/' ); i != std::string_view::npos; i = dir.rfind( '/' ) ) {
         dir = dir.substr( 0, i );
-        if ( !p.store.find( dir ) ) {
+        if ( !p.store->find( dir ) ) {
           if ( msgLevel( MSG::DEBUG ) ) {
             debug() << "registerObject: adding directory " << std::quoted( dir ) << endmsg;
           }
-          p.store.put( dir, std::unique_ptr<DataObject>{} );
+          p.store->put( dir, std::unique_ptr<DataObject>{} );
         }
       }
     }
@@ -545,7 +637,7 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view 
       debug() << "registerObject: " << std::quoted( path ) << " (DataObject*)" << static_cast<void*>( ptr )
               << ( ptr ? " -> " + System::typeinfoName( typeid( *ptr ) ) : std::string{} ) << endmsg;
     }
-    p.store.put( path, std::move( object ) );
+    p.store->put( path, std::move( object ) );
     return StatusCode::SUCCESS;
   } );
 }
@@ -553,7 +645,7 @@ StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, std::string_view 
   if ( pDirectory ) return StatusCode::FAILURE;
   return fwd( [&]( Partition& p ) {
     path    = normalize_path( path, rootName() );
-    pObject = const_cast<DataObject*>( p.store.get( path ) );
+    pObject = const_cast<DataObject*>( p.store->get( path ) );
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "retrieveObject: " << std::quoted( path ) << " (DataObject*)" << (void*)pObject
               << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
@@ -568,7 +660,7 @@ StatusCode EvtStoreSvc::findObject( std::string_view fullPath, DataObject*& pObj
   return retrieveObject( nullptr, fullPath, pObject );
 }
 StatusCode EvtStoreSvc::unregisterObject( std::string_view sr ) {
-  return fwd( [&]( Partition& p ) { return p.store.erase( sr ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE; } );
+  return fwd( [&]( Partition& p ) { return p.store->erase( sr ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE; } );
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item ) {
   auto i = std::find( m_preLoads.begin(), m_preLoads.begin(), item );
