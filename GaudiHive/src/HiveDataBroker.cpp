@@ -20,6 +20,12 @@
 #include "range/v3/view/transform.hpp"
 #include <Gaudi/Algorithm.h>
 #include <algorithm>
+// upstream has renamed namespace ranges::view ranges::views
+#if RANGE_V3_VERSION < 900
+namespace ranges::views {
+  using namespace ranges::view;
+}
+#endif
 
 DECLARE_COMPONENT( HiveDataBrokerSvc )
 
