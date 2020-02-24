@@ -65,8 +65,8 @@ StatusCode HiveDataBrokerSvc::initialize() {
   if ( sc.isFailure() ) return sc;
 
   // warn about non-reentrant algorithms
-  ranges::for_each( m_algorithms | ranges::view::transform( []( const auto& entry ) { return entry.alg; } ) |
-                        ranges::view::remove_if( []( const auto* alg ) { return alg->cardinality() == 0; } ),
+  ranges::for_each( m_algorithms | ranges::views::transform( []( const auto& entry ) { return entry.alg; } ) |
+                        ranges::views::remove_if( []( const auto* alg ) { return alg->cardinality() == 0; } ),
                     [&]( const Gaudi::Algorithm* alg ) {
                       this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{*alg} << endmsg;
                     } );
@@ -133,7 +133,7 @@ StatusCode HiveDataBrokerSvc::stop() {
 }
 
 StatusCode HiveDataBrokerSvc::finalize() {
-  ranges::for_each( m_algorithms | ranges::view::transform( &AlgEntry::alg ),
+  ranges::for_each( m_algorithms | ranges::views::transform( &AlgEntry::alg ),
                     []( Gaudi::Algorithm* alg ) { alg->sysFinalize(); } );
   m_algorithms.clear();
   return Service::finalize();
@@ -304,7 +304,7 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
                                           : deps.insert( std::next( current ), entry ) );
     }
   }
-  auto range = ( deps | ranges::view::transform( []( auto& i ) { return i->alg; } ) | ranges::view::reverse );
+  auto range = ( deps | ranges::views::transform( []( auto& i ) { return i->alg; } ) | ranges::views::reverse );
   return {begin( range ), end( range )};
 }
 
