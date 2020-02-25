@@ -70,6 +70,7 @@ GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject = gbl.DataObject
 SUCCESS = gbl.StatusCode(gbl.StatusCode.SUCCESS, True)
 FAILURE = gbl.StatusCode(gbl.StatusCode.FAILURE, True)
+nullptr = gbl.nullptr
 # Helper to create a StringProperty
 cppyy.gbl.gInterpreter.Declare('''
 namespace GaudiPython { namespace Helpers {
@@ -823,9 +824,9 @@ class iToolSvc(iService):
         if quiet:
             self.OutputLevel = 6
         if name.rfind('.') == -1:
-            itool = Helper.tool(self._its, '', name, None, False)
+            itool = Helper.tool(self._its, '', name, nullptr, False)
         elif name[0:8] == 'ToolSvc.':
-            itool = Helper.tool(self._its, '', name[8:], None, False)
+            itool = Helper.tool(self._its, '', name[8:], nullptr, False)
         elif name.count('.') > 1:
             ptool = self._retrieve(name[:name.rfind('.')])
             itool = Helper.tool(self._its, '', name[name.rfind('.') + 1:],
@@ -841,7 +842,7 @@ class iToolSvc(iService):
     def retrieve(self, name):
         return iAlgTool(name, self._retrieve(name, quiet=False))
 
-    def create(self, typ, name=None, parent=None, interface=None):
+    def create(self, typ, name=None, parent=nullptr, interface=None):
         if not name:
             name = typ
         itool = Helper.tool(self._its, typ, name, parent, True)
