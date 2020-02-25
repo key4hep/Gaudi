@@ -43,12 +43,6 @@
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
 
-#ifdef __CLING__
-#  define WARN_UNUSED
-#else
-#  define WARN_UNUSED [[nodiscard]]
-#endif
-
 // ============================================================================
 // forward declarations
 // ============================================================================
@@ -378,7 +372,6 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       StatusCode
    */
-  WARN_UNUSED
   StatusCode Error( std::string_view msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the warning message and return with the given StatusCode.
    *
@@ -403,7 +396,6 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       The given StatusCode
    */
-  WARN_UNUSED
   StatusCode Warning( std::string_view msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the info message and return with the given StatusCode.
    *
@@ -420,7 +412,6 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       The given StatusCode
    */
-  WARN_UNUSED
   StatusCode Info( std::string_view msg, const StatusCode st = StatusCode::SUCCESS, const size_t mx = 10 ) const;
   /** Print the message and return with the given StatusCode.
    *
@@ -433,7 +424,6 @@ public:
    *  @param lev    Printout level for the given message
    *  @return       The given StatusCode
    */
-  WARN_UNUSED
   StatusCode Print( std::string_view msg, const StatusCode st = StatusCode::SUCCESS,
                     const MSG::Level lev = MSG::INFO ) const;
   /** Assertion - throw exception if the given condition is not fulfilled
