@@ -34,9 +34,8 @@ namespace details {
     if ( UNLIKELY( !c ) ) return Range();
     using std::begin;
     using std::end;
-    auto first = begin( *c );
-    auto last  = end( *c );
-    // return Range( first, last );
+    auto first  = begin( *c );
+    auto last   = end( *c );
     auto _first = reinterpret_cast<typename Range::const_iterator*>( &first );
     auto _last  = reinterpret_cast<typename Range::const_iterator*>( &last );
     return Range( *_first, *_last );
@@ -77,6 +76,10 @@ namespace details {
   template <typename T>
   struct Payload_helper<Gaudi::Range_<T>> {
     using type = Gaudi::Range_<T>;
+  };
+  template <typename T>
+  struct Payload_helper<Gaudi::NamedRange_<T>> {
+    using type = Gaudi::NamedRange_<T>;
   };
 
   template <typename T>
@@ -218,6 +221,51 @@ auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range {
   }
   if ( UNLIKELY( !m_converter ) ) {
     m_converter = ::details::select_range_converter<ValueType>( dataObj );
+    if ( !m_converter ) {
+      throw GaudiException( "The type requested for " + objKey() + " (" + System::typeinfoName( typeid( ValueType ) ) +
+                                ")" + " cannot be obtained from object in event store" + " (" +
+                                System::typeinfoName( typeid( *dataObj ) ) + ").",
+                            "Wrong DataObjectType", StatusCode::FAILURE );
+    }
+  }
+  return ( *m_converter )( dataObj );
+}
+
+//---------------------------------------------------------------------------
+/// specialization for NamedRange_
+
+template <typename T>
+class DataObjectHandle<Gaudi::NamedRange_<T>> : public DataObjectHandleBase {
+public:
+  using ValueType = std::remove_cv_t<std::remove_pointer_t<typename T::value_type>>;
+  using Range     = Gaudi::NamedRange_<typename ValueType::ConstVector>;
+
+  using DataObjectHandleBase::DataObjectHandleBase;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  Range get() const;
+
+  std::string pythonRepr() const override {
+    auto repr = DataObjectHandleBase::pythonRepr();
+    boost::replace_all( repr, default_type, System::typeinfoName( typeid( Gaudi::NamedRange_<T> ) ) );
+    return repr;
+  }
+
+private:
+  mutable ::details::Converter_t<Range> m_converter = nullptr;
+};
+
+template <typename ValueType>
+auto DataObjectHandle<Gaudi::NamedRange_<ValueType>>::get() const -> Range {
+  auto dataObj = fetch();
+  if ( UNLIKELY( !dataObj ) ) {
+    throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+                          m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
+  }
+  if ( UNLIKELY( !m_converter ) ) {
+    m_converter = ::details::select_range_converter<ValueType, Range>( dataObj );
     if ( !m_converter ) {
       throw GaudiException( "The type requested for " + objKey() + " (" + System::typeinfoName( typeid( ValueType ) ) +
                                 ")" + " cannot be obtained from object in event store" + " (" +
