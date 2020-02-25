@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,10 +9,10 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "AlgExecStateSvc.h"
+#include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 
 DECLARE_COMPONENT( AlgExecStateSvc )
@@ -21,29 +21,14 @@ DECLARE_COMPONENT( AlgExecStateSvc )
 
 void AlgExecStateSvc::init() {
 
-  // seriously? do we have no way of getting a Service by type???
-  std::string wbn;
-  for ( auto& is : serviceLocator()->getServices() ) {
-    IHiveWhiteBoard* iwb = dynamic_cast<IHiveWhiteBoard*>( is );
-    if ( iwb ) {
-      wbn = is->name();
-      if ( msgLevel( MSG::VERBOSE ) ) verbose() << "HiveWhiteBoard service name is " << wbn << endmsg;
-      break;
-    }
-  }
+  const std::size_t slots = Gaudi::Concurrency::ConcurrencyFlags::concurrent()
+                                ? Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents()
+                                : 1;
 
-  SmartIF<IHiveWhiteBoard> wbs;
-  wbs = serviceLocator()->service( wbn, false );
+  m_algStates.resize( slots );
+  m_eventStatus.resize( slots );
 
-  if ( wbs.isValid() ) {
-    m_algStates.resize( wbs->getNumberOfStores() );
-    m_eventStatus.resize( wbs->getNumberOfStores() );
-  } else {
-    m_algStates.resize( 1 );
-    m_eventStatus.resize( 1 );
-  }
-
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "resizing state containers to : " << m_algStates.size() << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) debug() << "resizing state containers to : " << slots << endmsg;
 
   SmartIF<IAlgManager> algMan( serviceLocator() );
   if ( !algMan.isValid() ) {
@@ -53,9 +38,8 @@ void AlgExecStateSvc::init() {
 
   m_isInit = true;
 
-  auto algos = algMan->getAlgorithms();
-  for ( auto& alg : algos ) addAlg( alg );
-  for ( auto& alg : m_preInitAlgs ) addAlg( alg );
+  for ( const auto& alg : algMan->getAlgorithms() ) addAlg( alg );
+  for ( const auto& alg : m_preInitAlgs ) addAlg( alg );
 
   if ( msgLevel( MSG::VERBOSE ) ) {
     std::ostringstream ost;
@@ -69,7 +53,6 @@ void AlgExecStateSvc::init() {
 void AlgExecStateSvc::checkInit() const {
 
   if ( !m_isInit ) {
-    fatal() << "AlgExecStateSvc not initialized before first use" << endmsg;
     throw GaudiException( "AlgExecStateSvc not initialized before first use!", "AlgExecStateSvc", StatusCode::FAILURE );
   }
 }
@@ -77,7 +60,7 @@ void AlgExecStateSvc::checkInit() const {
 //-----------------------------------------------------------------------------
 
 void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) const {
-  size_t slotID = ctx.valid() ? ctx.slot() : 0;
+  const size_t slotID = ctx.valid() ? ctx.slot() : 0;
 
   ost << "  [slot: " << slotID << ", incident: " << m_eventStatus.at( slotID ) << "]:\n\n";
 
@@ -85,7 +68,7 @@ void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) c
   auto  ml       = std::accumulate( begin( algState ), end( algState ), size_t{0},
                              []( size_t m, const auto& as ) { return std::max( m, as.first.str().length() ); } );
 
-  for ( auto& e : algState ) ost << "  + " << std::setw( ml ) << e.first.str() << "  " << e.second << '\n';
+  for ( const auto& e : algState ) ost << "  + " << std::setw( ml ) << e.first.str() << "  " << e.second << '\n';
 }
 
 //-----------------------------------------------------------------------------
@@ -105,7 +88,7 @@ void AlgExecStateSvc::addAlg( const Gaudi::StringKey& alg ) {
   {
     // in theory, this should only get called during initialization (serial)
     // so shouldn't have to protect with a mutex...
-    auto lock = std::scoped_lock{m_mut};
+    std::scoped_lock lock( m_mut );
 
     AlgExecState s;
     for ( auto& a : m_algStates ) a[alg] = s;
@@ -181,7 +164,7 @@ void AlgExecStateSvc::updateEventStatus( const bool& fail, const EventContext& c
 //-----------------------------------------------------------------------------
 
 void AlgExecStateSvc::reset( const EventContext& ctx ) {
-  if ( msgLevel( MSG::DEBUG ) ) verbose() << "reset(" << ctx.slot() << ")" << endmsg;
+  if ( msgLevel( MSG::VERBOSE ) ) verbose() << "reset(" << ctx.slot() << ")" << endmsg;
 
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
   for ( auto& e : m_algStates.at( ctx.slot() ) ) e.second.reset();
