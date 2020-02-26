@@ -11,11 +11,8 @@
 
 #pragma once
 
-// Forward declarations to avoid issues with relative include order of Gaudi/Accumulators.h and Gaudi/Chrono/Counters.h
-namespace std::chrono {
-  template <typename, typename>
-  struct duration;
-}
+#include <chrono>
+
 namespace Gaudi::Accumulators {
   template <class Rep, class Period>
   auto sqrt( std::chrono::duration<Rep, Period> d );

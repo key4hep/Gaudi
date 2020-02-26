@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
+
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -115,23 +116,25 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
   /// @todo: cache the format
   boost::format fmt( "Tot=%2$5.3g%1$s %4$43s #=%3$3lu" );
 
-  static const auto tbl = {
-      std::tuple{500, microsecond, " [us]"}, std::tuple{500, millisecond, " [ms]"}, std::tuple{500, second, "  [s]"},
-      std::tuple{500, minute, "[min]"},      std::tuple{500, hour, "  [h]"},        std::tuple{10, day, "[day]"},
-      std::tuple{5, week, "  [w]"},          std::tuple{20, month, "[mon]"},        std::tuple{-1, year, "  [y]"}};
-
-  auto i = std::find_if( begin( tbl ), std::prev( end( tbl ) ), [&]( const std::tuple<int, double, const char*>& i ) {
-    return total < std::get<0>( i ) * std::get<1>( i );
-  } );
+  static const std::array<std::tuple<int, double, std::string_view>, 9> tbl{{{500, microsecond, " [us]"},
+                                                                             {500, millisecond, " [ms]"},
+                                                                             {500, second, "  [s]"},
+                                                                             {500, minute, "[min]"},
+                                                                             {500, hour, "  [h]"},
+                                                                             {10, day, "[day]"},
+                                                                             {5, week, "  [w]"},
+                                                                             {20, month, "[mon]"},
+                                                                             {-1, year, "  [y]"}}};
+  auto        i    = std::find_if( begin( tbl ), std::prev( end( tbl ) ),
+                         [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
   long double unit = std::get<1>( *i );
   fmt % std::get<2>( *i ) % (double)( total / unit ) % number;
 
   if ( number > 1 ) {
     /// @todo: cache the format
     boost::format fmt1( "Ave/Min/Max=%2$5.3g(+-%3$5.3g)/%4$5.3g/%5$5.3g%1$s" );
-    i = std::find_if(
-        std::begin( tbl ), std::prev( std::end( tbl ) ),
-        [&]( const std::tuple<int, double, const char*>& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
+    i    = std::find_if( std::begin( tbl ), std::prev( std::end( tbl ) ),
+                      [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
     unit = std::get<1>( *i );
     fmt1 % std::get<2>( *i ) % (double)( mean / unit ) % (double)( rms / unit ) % (double)( minimal / unit ) %
         (double)( maximal / unit );
