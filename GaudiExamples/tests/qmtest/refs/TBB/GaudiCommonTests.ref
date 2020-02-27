@@ -32,7 +32,7 @@ StatusCodeSvc        INFO initialize
 Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 37
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 35
 Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -41,13 +41,13 @@ Test1               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test1               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test1               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test1               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test1               DEBUG Property ['Name': Value] =  'RootInTES':
 Test1               DEBUG Property ['Name': Value] =  'Context':
 Test1               DEBUG Property ['Name': Value] =  'TypePrint':True
 Test1               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test1               DEBUG Property ['Name': Value] =  'StatPrint':True
 Test1               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test1               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test1               DEBUG Property ['Name': Value] =  'RootInTES':
 Test1               DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 Test1               DEBUG Property ['Name': Value] =  'IsIOBound':False
 Test1               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
@@ -74,7 +74,7 @@ Test1               DEBUG Data Deps for Test1
 Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 37
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 35
 Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -83,13 +83,13 @@ Test2               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test2               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test2               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test2               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test2               DEBUG Property ['Name': Value] =  'RootInTES':microDST/
 Test2               DEBUG Property ['Name': Value] =  'Context':
 Test2               DEBUG Property ['Name': Value] =  'TypePrint':True
 Test2               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test2               DEBUG Property ['Name': Value] =  'StatPrint':True
 Test2               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test2               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test2               DEBUG Property ['Name': Value] =  'RootInTES':microDST/
 Test2               DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 Test2               DEBUG Property ['Name': Value] =  'IsIOBound':False
 Test2               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
@@ -121,7 +121,7 @@ ToolSvc.Sequenc...   INFO This machine has a speed about   4.17 times the speed 
 Test3               DEBUG Property update for OutputLevel : new value = 2
 Test3               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test3               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test3               DEBUG List of ALL properties of GaudiCommonTests/Test3  #properties = 37
+Test3               DEBUG List of ALL properties of GaudiCommonTests/Test3  #properties = 35
 Test3               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test3               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test3               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -130,13 +130,13 @@ Test3               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test3               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test3               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test3               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test3               DEBUG Property ['Name': Value] =  'RootInTES':
 Test3               DEBUG Property ['Name': Value] =  'Context':
 Test3               DEBUG Property ['Name': Value] =  'TypePrint':True
 Test3               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test3               DEBUG Property ['Name': Value] =  'StatPrint':True
 Test3               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test3               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test3               DEBUG Property ['Name': Value] =  'RootInTES':
 Test3               DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 Test3               DEBUG Property ['Name': Value] =  'IsIOBound':False
 Test3               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
@@ -146,8 +146,6 @@ Test3               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSv
 Test3               DEBUG Property ['Name': Value] =  'Timeline':False
 Test3               DEBUG Property ['Name': Value] =  'AuditStop':False
 Test3               DEBUG Property ['Name': Value] =  'AuditStart':False
-Test3               DEBUG Property ['Name': Value] =  'AuditEndRun':False
-Test3               DEBUG Property ['Name': Value] =  'AuditBeginRun':False
 Test3               DEBUG Property ['Name': Value] =  'AuditFinalize':False
 Test3               DEBUG Property ['Name': Value] =  'AuditExecute':False
 Test3               DEBUG Property ['Name': Value] =  'AuditRestart':False
@@ -162,11 +160,11 @@ Test3               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 Test3               DEBUG input handles: 0
 Test3               DEBUG output handles: 0
 Test3               DEBUG Data Deps for Test3
-Seq2                 INFO Member list: GaudiCommonTests/Test4, with rootInTES 'microDST'
+Seq2                 INFO Member list: GaudiCommonTests/Test4, with rootInTES 'microDST/'
 Test4               DEBUG Property update for OutputLevel : new value = 2
 Test4               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test4               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test4               DEBUG List of ALL properties of GaudiCommonTests/Test4  #properties = 37
+Test4               DEBUG List of ALL properties of GaudiCommonTests/Test4  #properties = 35
 Test4               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test4               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test4               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -175,13 +173,13 @@ Test4               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test4               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test4               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test4               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test4               DEBUG Property ['Name': Value] =  'RootInTES':microDST/
 Test4               DEBUG Property ['Name': Value] =  'Context':
 Test4               DEBUG Property ['Name': Value] =  'TypePrint':True
 Test4               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test4               DEBUG Property ['Name': Value] =  'StatPrint':True
 Test4               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test4               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test4               DEBUG Property ['Name': Value] =  'RootInTES':microDST/
 Test4               DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 Test4               DEBUG Property ['Name': Value] =  'IsIOBound':False
 Test4               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
@@ -191,8 +189,6 @@ Test4               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSv
 Test4               DEBUG Property ['Name': Value] =  'Timeline':False
 Test4               DEBUG Property ['Name': Value] =  'AuditStop':False
 Test4               DEBUG Property ['Name': Value] =  'AuditStart':False
-Test4               DEBUG Property ['Name': Value] =  'AuditEndRun':False
-Test4               DEBUG Property ['Name': Value] =  'AuditBeginRun':False
 Test4               DEBUG Property ['Name': Value] =  'AuditFinalize':False
 Test4               DEBUG Property ['Name': Value] =  'AuditExecute':False
 Test4               DEBUG Property ['Name': Value] =  'AuditRestart':False
@@ -207,9 +203,8 @@ Test4               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 Test4               DEBUG input handles: 0
 Test4               DEBUG output handles: 0
 Test4               DEBUG Data Deps for Test4
-EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 Test1                INFO Execute
@@ -323,10 +318,5 @@ Test4               DEBUG Tools to release :
 Test4               DEBUG Services to release :
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
-ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   4.17 times the speed of a 2.8 GHz Xeon.
-ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
-ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
