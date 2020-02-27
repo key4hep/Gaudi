@@ -71,7 +71,7 @@ namespace details {
 
   template <typename T>
   struct Payload_helper {
-    using type = std::conditional_t<std::is_base_of_v<DataObject, T>, T, AnyDataWrapper<T>>;
+    using type = std::conditional_t<std::is_base_of_v<DataObject, T>, T, AnyDataWrapper<std::remove_const_t<T>>>;
   };
   template <typename T>
   struct Payload_helper<Gaudi::Range_<T>> {
