@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,6 +13,8 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
+
+#include <fmt/format.h>
 
 StatusCode ServiceLocatorHelper::locateService( std::string_view name, const InterfaceID& iid, void** ppSvc,
                                                 bool quiet ) const {
@@ -42,7 +44,7 @@ StatusCode ServiceLocatorHelper::createService( std::string_view name, const Int
 
 StatusCode ServiceLocatorHelper::createService( std::string_view type, std::string_view name, const InterfaceID& iid,
                                                 void** ppSvc ) const {
-  return createService( std::string{type}.append( "/" ).append( name ), iid, ppSvc );
+  return createService( fmt::format( "{}/{}", type, name ), iid, ppSvc );
 }
 
 SmartIF<IService> ServiceLocatorHelper::service( std::string_view name, const bool quiet, const bool createIf ) const {
