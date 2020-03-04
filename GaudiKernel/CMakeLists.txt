@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -78,9 +78,17 @@ endif()
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries}
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries} fmt::fmt
                   INCLUDE_DIRS Boost ROOT TBB ${CPPGSL_INCLUDE_DIRS}
                   PUBLIC_HEADERS Gaudi GaudiKernel)
+
+# Ensure libfmt is on the LD_LIBRARY_PATH
+string(TOUPPER "${CMAKE_BUILD_TYPE}" _upper_build_type)
+get_target_property(fmt_loc fmt::fmt IMPORTED_LOCATION_${_upper_build_type})
+get_filename_component(fmt_loc "${fmt_loc}" DIRECTORY)
+get_target_property(fmt_inc fmt::fmt INTERFACE_INCLUDE_DIRECTORIES)
+gaudi_env(PREPEND LD_LIBRARY_PATH "${fmt_loc}"
+          PREPEND ROOT_INCLUDE_PATH "${fmt_inc}")
 
 #---Tests-------------------------------------------------------------------
 if( CPPUNIT_FOUND )

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -38,6 +38,14 @@ include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
 
 # Declare project name and version
 gaudi_project(Gaudi v33r1)
+
+# Special hack to make sure downstream projects see fmt::fmt
+# This is going to be much cleaner with gaudi/Gaudi!986 (CMake modernization)
+if(EXISTS ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/GaudiPlatformConfig.cmake)
+file(APPEND ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/GaudiPlatformConfig.cmake "
+find_package(fmt REQUIRED)
+")
+endif()
 
 # These tests do not really fit in a subdirectory.
 add_test(NAME cmake.CMakeModules
