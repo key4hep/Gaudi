@@ -26,49 +26,6 @@ namespace {
 
   bool isDefault( const std::string& s ) { return s.empty(); }
 
-  template <typename Container>
-  bool veto( const Container* props, const char* name ) { // avoid changing properties explicitly present in the JOS...
-    return props &&
-           std::any_of( begin( *props ), end( *props ), [name]( const auto* prop ) { return prop->name() == name; } );
-  }
-
-  template <typename F, typename... Args>
-  void for_each_arg( F&& f, Args&&... args ) {
-    // the std::initializer_list only exists to provide a 'context' in which to
-    // expand the variadic pack
-    (void)std::initializer_list<int>{( f( std::forward<Args>( args ) ), 0 )...};
-  }
-
-  // utility class to populate some properties in the job options service
-  // for a given instance name in case those options are not explicitly
-  // set a-priori (effectively inheriting their values from the GaudiSequencer)
-  class populate_JobOptionsSvc_t {
-    std::vector<std::string> m_props;
-    IJobOptionsSvc*          m_jos;
-    std::string              m_name;
-
-    template <typename Properties, typename Key, typename Value>
-    void addPropertyToCatalogue( const Properties* props, const std::tuple<Key, Value>& arg ) {
-      const auto& key   = std::get<0>( arg );
-      const auto& value = std::get<1>( arg );
-      if ( isDefault( value ) || veto( props, key ) ) return;
-      m_jos->addPropertyToCatalogue( m_name, Gaudi::Property<std::decay_t<Value>>{key, value} ).ignore();
-      m_props.push_back( key );
-    }
-
-  public:
-    template <typename... Args>
-    populate_JobOptionsSvc_t( std::string name, IJobOptionsSvc* jos, Args&&... args )
-        : m_jos{jos}, m_name{std::move( name )} {
-      const auto* props = m_jos->getProperties( m_name );
-      for_each_arg( [&]( auto&& arg ) { this->addPropertyToCatalogue( props, std::forward<decltype( arg )>( arg ) ); },
-                    std::forward<Args>( args )... );
-    }
-    ~populate_JobOptionsSvc_t() {
-      std::for_each( begin( m_props ), end( m_props ),
-                     [&]( const std::string& key ) { m_jos->removePropertyFromCatalogue( m_name, key ).ignore(); } );
-    }
-  };
 } // namespace
 
 //-----------------------------------------------------------------------------
@@ -197,14 +154,19 @@ StatusCode GaudiSequencer::decodeNames() {
     StatusCode          result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm( typeName, false ); // do not create it now
     if ( !myIAlg ) {
-      // ensure some magic properties are set while we create the subalgorithm so
-      // that it effectively inherites 'our' settings -- if they have non-default
-      // values... and are not set explicitly already.
-      populate_JobOptionsSvc_t populate_guard{theName, jos, std::forward_as_tuple( "Context", context() ),
-                                              std::forward_as_tuple( "RootInTES", rootInTES() )};
-      Gaudi::Algorithm*        myAlg = nullptr;
-      result                         = createSubAlgorithm( theType, theName, myAlg );
-      myIAlg                         = myAlg; // ensure that myIAlg.isValid() from here onwards!
+      Gaudi::Algorithm* myAlg = nullptr;
+      result                  = createSubAlgorithm( theType, theName, myAlg );
+      if ( myAlg ) {
+        // Override the default values of the special properties Context and RootInTES,
+        // which will be superseded by the explicit value in options (if present).
+        if ( !isDefault( context() ) && myAlg->hasProperty( "Context" ) ) {
+          myAlg->setProperty( "Context", context() ).ignore();
+        }
+        if ( !isDefault( rootInTES() ) && myAlg->hasProperty( "RootInTES" ) ) {
+          myAlg->setProperty( "RootInTES", rootInTES() ).ignore();
+        }
+      }
+      myIAlg = myAlg; // ensure that myIAlg.isValid() from here onwards!
     } else {
       Gaudi::Algorithm* myAlg = dynamic_cast<Gaudi::Algorithm*>( myIAlg.get() );
       if ( myAlg ) {
