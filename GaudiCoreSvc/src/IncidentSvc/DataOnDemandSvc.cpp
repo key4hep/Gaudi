@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,18 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <map>
-#include <math.h>
-#include <set>
-#include <string>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+#include "DataOnDemandSvc.h"
 #include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/DataIncident.h"
@@ -36,15 +25,11 @@
 #include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/TypeNameString.h"
-// ============================================================================
-// Local
-// ============================================================================
-#include "DataOnDemandSvc.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/algorithm/string/predicate.hpp"
-#include "boost/format.hpp"
+#include <fmt/format.h>
+#include <map>
+#include <math.h>
+#include <set>
+#include <string>
 // ============================================================================
 // anonymous namespace to hide few local functions
 // ============================================================================
@@ -664,26 +649,17 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
   //
   if ( _m.empty() ) { return; }
 
-  // find the correct formats
-  size_t n1 = 0;
-  size_t n2 = 0;
+  // set width of the columns
+  size_t n1 = 10; // minimum width
+  size_t n2 = 10; // minimum width
   size_t n3 = 0;
   for ( const auto& i : _m ) {
     n1 = std::max( n1, i.first.size() );
     n2 = std::max( n2, i.second.first.size() );
     n3 = std::max( n3, i.second.second.size() );
   }
-  if ( 10 > n1 ) { n1 = 10; }
-  if ( 10 > n2 ) { n2 = 10; }
-  if ( 60 < n1 ) { n1 = 60; }
-  if ( 60 < n2 ) { n2 = 60; }
-  //
-
-  const std::string _f = " | %%1$-%1%.%1%s | %%2$-%2%.%2%s | %%3$%3%.%3%s |";
-  boost::format     _ff( _f );
-  _ff % n1 % n2 % n3;
-
-  const std::string _format = _ff.str();
+  n1 = std::min( n1, size_t{60} ); // maximum width
+  n2 = std::min( n2, size_t{60} ); // maximum width
 
   auto& msg = msgStream( level );
 
@@ -693,19 +669,15 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
     msg << "Data-On-Demand Actions has been used for:";
   }
 
-  boost::format fmt1( _format );
-  fmt1 % "Address" % "Creator" % ( mode ? "S" : "#" );
-  //
-  const std::string header = fmt1.str();
-  std::string       line   = std::string( header.size(), '-' );
-  line[0]                  = ' ';
-
+  const auto header = fmt::format( " | {3:<{0}.{0}s} | {4:<{1}.{1}s} | {5:>{2}.{2}s} |", n1, n2, n3, "Address",
+                                   "Creator", ( mode ? "S" : "#" ) );
+  const auto line   = fmt::format( " {0:-^{1}}", "", header.size() - 1 );
   msg << '\n' << line << '\n' << header << '\n' << line;
 
   // make the actual printout:
   for ( const auto& item : _m ) {
-    boost::format fmt( _format );
-    msg << '\n' << ( fmt % item.first % item.second.first % item.second.second );
+    msg << fmt::format( "\n | {3:<{0}.{0}s} | {4:<{1}.{1}s} | {5:>{2}.{2}s} |", n1, n2, n3, item.first,
+                        item.second.first, item.second.second );
   }
 
   msg << '\n' << line << endmsg;

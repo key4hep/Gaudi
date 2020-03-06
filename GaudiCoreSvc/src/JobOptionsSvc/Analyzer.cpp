@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,18 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// STD:
-// ============================================================================
-#include <iostream>
-#include <memory>
-// ============================================================================
-// BOOST:
-// ============================================================================
-#include <boost/format.hpp>
-// ============================================================================
 #include "Analyzer.h"
 #include "Catalog.h"
+#include "GaudiKernel/Environment.h"
 #include "IncludedFiles.h"
 #include "Messages.h"
 #include "Node.h"
@@ -28,11 +19,12 @@
 #include "PropertyName.h"
 #include "PropertyValue.h"
 #include "Units.h"
-// ============================================================================
-#include "GaudiKernel/Environment.h"
-// ============================================================================
+#include <fmt/format.h>
+#include <iostream>
+#include <memory>
+
 namespace gp = Gaudi::Parsers;
-// ============================================================================
+
 static bool IncludeNode( gp::Node* node, const std::string& search_path, gp::IncludedFiles* included,
                          gp::Messages* messages ) {
   gp::Node include_root;
@@ -203,9 +195,10 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
     // ----------------------------------------------------------------------
     try {
       if ( node->children[1].type == gp::Node::kEqual ) {
-        std::string message = str( boost::format( "Reassignment of option '%1%' ." ) % property->FullName() );
+        std::string message = fmt::format( "Reassignment of option '{}'.", property->FullName() );
+
         if ( exists->HasDefinedPosition() ) {
-          message += " Previously defined at " + exists->DefinedPosition().ToString() + ".";
+          message += fmt::format( " Previously defined at {}.", exists->DefinedPosition().ToString() );
         }
         reassign = true;
         // INFO: we don't need this warning
@@ -218,7 +211,7 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
     } catch ( const gp::PropertyValueException& ex ) {
       std::string message = ex.what();
       if ( exists->HasDefinedPosition() ) {
-        message += " Previously defined at " + exists->DefinedPosition().ToString() + ".";
+        message += fmt::format( " Previously defined at {}.", exists->DefinedPosition().ToString() );
       }
       messages->AddError( node->position, message );
       return false;
@@ -228,9 +221,9 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
   bool result = true;
   if ( !exists || reassign ) { result = catalog->Add( new gp::Property( *property, *value ) ); }
 
-  if ( result && is_print ) { /*;%|72t|%2% %3%*/
-    std::string message = str( boost::format( "%1% %2% %3%" ) % property->FullName() %
-                               SignString( node->children[1].type ) % value->ToString() );
+  if ( result && is_print ) {
+    std::string message =
+        fmt::format( "{} {} {}", property->FullName(), SignString( node->children[1].type ), value->ToString() );
     messages->AddInfo( node->position, message );
   }
   return result;
@@ -244,7 +237,7 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
   // --------------------------------------------------------------------------
   gp::Units::Container::mapped_type exists;
   if ( units->Find( name, exists ) ) {
-    std::string message = str( boost::format( "Unit '%1%' already defined" ) % name );
+    std::string message = fmt::format( "Unit '{}' already defined", name );
     if ( exists.second.Exists() ) { message += " at " + exists.second.ToString(); }
     messages->AddError( node->children[1].position, message );
     return false;
@@ -252,7 +245,7 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
   // --------------------------------------------------------------------------
   bool result = units->Add( name, right / left, node->children[1].position );
   if ( result && is_print ) {
-    std::string message = str( boost::format( "%1% %2% = %3%" ) % left % name % right );
+    std::string message = fmt::format( "{} {} = {}", left, name, right );
     messages->AddInfo( node->position, message );
   }
   return result;
