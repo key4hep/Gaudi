@@ -348,91 +348,91 @@ Aida2Root         SUCCESS Get the native ROOT representation of histograms!
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/Gaussian mean=0, sigma=1':
 TH1.Print Name  = Gaussian mean=0, sigma=1, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |         0       |
-Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |   8.0318767e-06 |
-Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |   8.3266727e-17 |
-Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    |  -6.5724078e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |   8.8817842e-16 |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    |  -3.2860385e-06 |
+Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |        0        |
+Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |  8.0318767e-06  |
+Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |  8.3266727e-17  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |  8.8817842e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/101':
 TH1.Print Name  = Exponential, Entries= 50000, Total sum= 49658
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |      0.96517991 |  0.96517991     |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0040808808 |  0.0040808808   |         0       |
-Aida2Root            INFO  | 'rms'          |      0.90938655 |  0.90938655     |         0       |
+Aida2Root            INFO  | 'mean'         |      0.96517991 |  0.96517991     |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0040808808 |  0.0040808808   |        0        |
+Aida2Root            INFO  | 'rms'          |      0.90938655 |  0.90938655     |        0        |
 Aida2Root            INFO  | 'rmsErr'       |    0.0042216943 |  0.0028856185   |   0.0013360758  |
-Aida2Root            INFO  | 'skewness'     |        1.505338 |  1.505338       |         0       |
-Aida2Root            INFO  | 'skewnessErr'  |     0.010991445 |  0.010992109    |  -6.6404201e-07 |
-Aida2Root            INFO  | 'kurtosis'     |       2.2807676 |  2.2807676      |   8.8817842e-16 |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.021980897 |  0.021984217    |  -3.3200418e-06 |
+Aida2Root            INFO  | 'skewness'     |        1.505338 |  1.505338       |        0        |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010991445 |  0.010992109    | -6.6404201e-07  |
+Aida2Root            INFO  | 'kurtosis'     |       2.2807676 |  2.2807676      |  8.8817842e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.021980897 |  0.021984217    | -3.3200418e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/102':
 TH1.Print Name  = Breit, Entries= 50000, Total sum= 46887
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0023133771 | -0.0023133771   |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0055634417 |  0.0055634417   |         0       |
-Aida2Root            INFO  | 'rms'          |       1.2046746 |  1.2046746      |         0       |
+Aida2Root            INFO  | 'mean'         |   -0.0023133771 | -0.0023133771   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0055634417 |  0.0055634417   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.2046746 |  1.2046746      |        0        |
 Aida2Root            INFO  | 'rmsErr'       |     0.006591625 |  0.0039339474   |   0.0026576776  |
 Aida2Root            INFO  | 'skewness'     |    -0.024043048 | -0.024043048    |   4.510281e-16  |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011311537 |  0.011312261    |  -7.2376851e-07 |
-Aida2Root            INFO  | 'kurtosis'     |       3.6150624 |  3.6150624      |  -1.7763568e-15 |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.022620903 |  0.022624521    |  -3.6186483e-06 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011311537 |  0.011312261    | -7.2376851e-07  |
+Aida2Root            INFO  | 'kurtosis'     |       3.6150624 |  3.6150624      | -1.7763568e-15  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022620903 |  0.022624521    | -3.6186483e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/1111':
 TH1.Print Name  = Forced Numeric ID time test, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |         0       |
-Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |   8.0318767e-06 |
-Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |   8.3266727e-17 |
-Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    |  -6.5724078e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |   8.8817842e-16 |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    |  -3.2860385e-06 |
+Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |        0        |
+Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |  8.0318767e-06  |
+Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |  8.3266727e-17  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |  8.8817842e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/test1':
 TH1.Print Name  = Forced Alpha ID time test, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |         0       |
-Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |   8.0318767e-06 |
-Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |   8.3266727e-17 |
-Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    |  -6.5724078e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |   8.8817842e-16 |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    |  -3.2860385e-06 |
+Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |        0        |
+Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |  8.0318767e-06  |
+Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |  8.3266727e-17  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |  8.8817842e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir2/bino':
 TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48609
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |       1.9168672 |  1.9168672      |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0050508742 |  0.0050508742   |         0       |
-Aida2Root            INFO  | 'rms'          |       1.1135889 |  1.1135889      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0029010613 |  0.0035715074   |  -0.00067044612 |
-Aida2Root            INFO  | 'skewness'     |       0.2405079 |  0.2405079      |   1.3877788e-16 |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011109397 |  0.011110082    |  -6.8565237e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     -0.68044605 | -0.68044605     |  -1.3322676e-15 |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.022216737 |  0.022220165    |  -3.4280844e-06 |
+Aida2Root            INFO  | 'mean'         |       1.9168672 |  1.9168672      |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0050508742 |  0.0050508742   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.1135889 |  1.1135889      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0029010613 |  0.0035715074   | -0.00067044612  |
+Aida2Root            INFO  | 'skewness'     |       0.2405079 |  0.2405079      |  1.3877788e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011109397 |  0.011110082    | -6.8565237e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     -0.68044605 | -0.68044605     | -1.3322676e-15  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022216737 |  0.022220165    | -3.4280844e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir1/bino':
 TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48609
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |       1.9168672 |  1.9168672      |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0050508742 |  0.0050508742   |         0       |
-Aida2Root            INFO  | 'rms'          |       1.1135889 |  1.1135889      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0029010613 |  0.0035715074   |  -0.00067044612 |
-Aida2Root            INFO  | 'skewness'     |       0.2405079 |  0.2405079      |   1.3877788e-16 |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011109397 |  0.011110082    |  -6.8565237e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     -0.68044605 | -0.68044605     |  -1.3322676e-15 |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.022216737 |  0.022220165    |  -3.4280844e-06 |
+Aida2Root            INFO  | 'mean'         |       1.9168672 |  1.9168672      |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0050508742 |  0.0050508742   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.1135889 |  1.1135889      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0029010613 |  0.0035715074   | -0.00067044612  |
+Aida2Root            INFO  | 'skewness'     |       0.2405079 |  0.2405079      |  1.3877788e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011109397 |  0.011110082    | -6.8565237e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     -0.68044605 | -0.68044605     | -1.3322676e-15  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022216737 |  0.022220165    | -3.4280844e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/poisson':
 TH1.Print Name  = Poisson, Entries= 50000, Total sum= 47432
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |       1.8071344 |  1.8071344      |         0       |
-Aida2Root            INFO  | 'meanErr'      |    0.0054122364 |  0.0054122364   |         0       |
-Aida2Root            INFO  | 'rms'          |        1.178725 |  1.178725       |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0030136138 |  0.0038270291   |  -0.00081341524 |
-Aida2Root            INFO  | 'skewness'     |      0.33766693 |  0.33766693     |   4.4408921e-16 |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011246372 |  0.011247083    |  -7.1133047e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     -0.75987087 | -0.75987087     |  -4.4408921e-16 |
-Aida2Root            INFO  | 'kurtosisErr'  |      0.02249061 |  0.022494166    |  -3.5564637e-06 |
+Aida2Root            INFO  | 'mean'         |       1.8071344 |  1.8071344      |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0054122364 |  0.0054122364   |        0        |
+Aida2Root            INFO  | 'rms'          |        1.178725 |  1.178725       |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0030136138 |  0.0038270291   | -0.00081341524  |
+Aida2Root            INFO  | 'skewness'     |      0.33766693 |  0.33766693     |  4.4408921e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011246372 |  0.011247083    | -7.1133047e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     -0.75987087 | -0.75987087     | -4.4408921e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |      0.02249061 |  0.022494166    | -3.5564637e-06  |
 Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/Gaussian V Flat':
 TH1.Print Name  = Gaussian V Flat, Entries= 50000, Total sum= 25028
 Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/Exponential V Flat':

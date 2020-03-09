@@ -14,34 +14,21 @@
 #  pragma warning( disable : 2259 )
 #endif
 
-// ============================================================================
-// Include files
-// ============================================================================
-// ROOT
-// ============================================================================
-#include "TH1D.h"
-#include "TH2D.h"
-#include "TH3D.h"
-#include "TProfile.h"
-#include "TProfile2D.h"
-// ============================================================================
-// AIDA
-// ============================================================================
+#include "GaudiUtils/Aida2ROOT.h"
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IHistogram2D.h"
 #include "AIDA/IHistogram3D.h"
 #include "AIDA/IProfile1D.h"
 #include "AIDA/IProfile2D.h"
-// ============================================================================
-// GaudiAlg
-// ============================================================================
 #include "GaudiAlg/GaudiHistoAlg.h"
-#include "GaudiUtils/Aida2ROOT.h"
 #include "GaudiUtils/HistoStats.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/format.hpp"
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TH3D.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
+#include <fmt/format.h>
+
 // ============================================================================
 /** @class Aida2Root
  *
@@ -90,14 +77,7 @@ private:
 /// Declaration of the Algorithm Factory
 // ============================================================================
 DECLARE_COMPONENT( Aida2Root )
-// ============================================================================
-namespace {
-  inline std::string print( const double aida, const double root, const std::string& name, const std::string& format ) {
-    boost::format fmt( format );
-    fmt % name % aida % root % ( aida - root );
-    return fmt.str();
-  }
-} // namespace
+
 // ============================================================================
 /// finalize the algorithm
 // ============================================================================
@@ -119,18 +99,19 @@ StatusCode Aida2Root::finalize() {
       root->Print();
 
       info() << " |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      | " << endmsg;
-      const std::string format = " | %1$-14.14s | %2$ 15.8g | %3$- 15.8g | %4$= 15.8g | ";
-      info() << print( Gaudi::Utils::HistoStats::mean( aida ), root->GetMean(), "'mean'", format ) << endmsg;
-      info() << print( Gaudi::Utils::HistoStats::meanErr( aida ), root->GetMeanError(), "'meanErr'", format ) << endmsg;
-      info() << print( Gaudi::Utils::HistoStats::rms( aida ), root->GetRMS(), "'rms'", format ) << endmsg;
-      info() << print( Gaudi::Utils::HistoStats::rmsErr( aida ), root->GetRMSError(), "'rmsErr'", format ) << endmsg;
-      info() << print( Gaudi::Utils::HistoStats::skewness( aida ), root->GetSkewness(), "'skewness'", format )
+      auto print = []( double aida, double root, std::string_view name ) {
+        return fmt::format( " | {:<14.14s} | {:>15.8g} | {:< 15.8g} | {:^ 15.8g} | ", name, aida, root,
+                            ( aida - root ) );
+      };
+      info() << print( Gaudi::Utils::HistoStats::mean( aida ), root->GetMean(), "'mean'" ) << endmsg;
+      info() << print( Gaudi::Utils::HistoStats::meanErr( aida ), root->GetMeanError(), "'meanErr'" ) << endmsg;
+      info() << print( Gaudi::Utils::HistoStats::rms( aida ), root->GetRMS(), "'rms'" ) << endmsg;
+      info() << print( Gaudi::Utils::HistoStats::rmsErr( aida ), root->GetRMSError(), "'rmsErr'" ) << endmsg;
+      info() << print( Gaudi::Utils::HistoStats::skewness( aida ), root->GetSkewness(), "'skewness'" ) << endmsg;
+      info() << print( Gaudi::Utils::HistoStats::skewnessErr( aida ), root->GetSkewness( 11 ), "'skewnessErr'" )
              << endmsg;
-      info() << print( Gaudi::Utils::HistoStats::skewnessErr( aida ), root->GetSkewness( 11 ), "'skewnessErr'", format )
-             << endmsg;
-      info() << print( Gaudi::Utils::HistoStats::kurtosis( aida ), root->GetKurtosis(), "'kurtosis'", format )
-             << endmsg;
-      info() << print( Gaudi::Utils::HistoStats::kurtosisErr( aida ), root->GetKurtosis( 11 ), "'kurtosisErr'", format )
+      info() << print( Gaudi::Utils::HistoStats::kurtosis( aida ), root->GetKurtosis(), "'kurtosis'" ) << endmsg;
+      info() << print( Gaudi::Utils::HistoStats::kurtosisErr( aida ), root->GetKurtosis( 11 ), "'kurtosisErr'" )
              << endmsg;
     }
   }
