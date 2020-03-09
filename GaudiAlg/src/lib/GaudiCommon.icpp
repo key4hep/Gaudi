@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,14 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// include files
-// ============================================================================
-// STL & STD
-// ============================================================================
-#include <algorithm>
-#include <cstdlib>
-#include <numeric>
 // ============================================================================
 /* @file GaudiCommon.cpp
  *
@@ -26,8 +18,12 @@
  *  @author Rob Lambert Rob.Lambert@cern.ch
  *  @date   2009-08-04
  */
-// GaudiKernel
 // ============================================================================
+#include "GaudiAlg/GaudiCommon.h"
+
+#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiAlg/GaudiTool.h"
+#include "GaudiAlg/Print.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
@@ -45,28 +41,11 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/reverse.h"
-// ============================================================================
-// GaudiAlg
-// ============================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiAlg/GaudiCommon.h"
-#include "GaudiAlg/GaudiTool.h"
-#include "GaudiAlg/Print.h"
-// ============================================================================
-// GaudiUtils
-// ============================================================================
 #include "GaudiUtils/RegEx.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/format.hpp"
-#include "boost/tokenizer.hpp"
-// ============================================================================
-// Disable warning on windows
-#ifdef _WIN32
-#  pragma warning( disable : 4661 ) // incomplete explicit templates
-#endif
-// ============================================================================
+#include <algorithm>
+#include <cstdlib>
+#include <fmt/format.h>
+#include <numeric>
 
 // ============================================================================
 // constructor initialisation
@@ -450,11 +429,11 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const {
 // ============================================================================
 template <class PBASE>
 long GaudiCommon<PBASE>::printErrors( const MSG::Level level ) const {
-  // format for printout
-  boost::format ftm( " #%|-10s| = %|.8s| %|23t| Message = '%s'" );
-
   auto print = [&]( const Counter& c, const auto& label ) {
-    for ( const auto& i : c ) { this->msgStream( level ) << ( ftm % label % i.second % i.first ) << endmsg; }
+    for ( const auto& i : c ) {
+      this->msgStream( level ) << fmt::format( " #{:<10s} = {:<8d} Message = '{}'", label, i.second, i.first )
+                               << endmsg;
+    }
   };
 
   print( m_exceptions, "EXCEPTIONS" );
