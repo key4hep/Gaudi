@@ -224,7 +224,7 @@ namespace Gaudi::Functional::details {
     struct get_from_handle {
       template <template <typename> class Handle, typename I, typename = std::enable_if_t<std::is_convertible_v<I, In>>>
       auto operator()( const Handle<I>& h ) -> const In& {
-        return *h.get();
+        return deref( h.get() );
       }
       template <template <typename> class Handle, typename I,
                 typename = std::enable_if_t<std::is_convertible_v<I*, In>>>
