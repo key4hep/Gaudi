@@ -94,7 +94,8 @@ StatusCode ViewTester::execute() // the execution of the algorithm
       }
     } else {
       // Disable the view node if there are no views
-      scheduler->scheduleEventView( &context, m_viewNodeName, nullptr );
+      scheduler->scheduleEventView( &context, m_viewNodeName, nullptr )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     }
   }
 

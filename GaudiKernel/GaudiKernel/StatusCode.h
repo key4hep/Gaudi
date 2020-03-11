@@ -58,7 +58,11 @@ struct is_StatusCode_enum : std::false_type {};
  *
  * \remark See https://akrzemi1.wordpress.com/2017/07/12/your-own-error-code for details on the underlying design
  */
-class StatusCode final {
+class
+#if __cplusplus >= 201703L && !defined( __CLING__ )
+    [[nodiscard]]
+#endif
+    StatusCode final {
 public:
   typedef unsigned long code_t; ///< type of StatusCode value
 
@@ -121,7 +125,7 @@ public:
   }
 
   /// Move constructor
-  StatusCode( StatusCode&& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked ) {
+  StatusCode( StatusCode && rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked ) {
     rhs.m_checked = true;
   }
 
@@ -191,7 +195,7 @@ public:
   /// }
   /// \endcode
   template <typename F, typename... ARGS>
-  StatusCode andThen( F&& f, ARGS&&... args ) const {
+  StatusCode andThen( F && f, ARGS && ... args ) const {
     if ( isFailure() ) return *this;
     return i_invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
   }
@@ -213,7 +217,7 @@ public:
   /// }
   /// \endcode
   template <typename F, typename... ARGS>
-  StatusCode orElse( F&& f, ARGS&&... args ) const {
+  StatusCode orElse( F && f, ARGS && ... args ) const {
     if ( isSuccess() ) return *this;
     return i_invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
   }
@@ -313,7 +317,7 @@ private:
 
   /// Helper to invoke a callable and return the resulting StatusCode or this, if the callable returns void.
   template <typename F, typename... ARGS, typename = std::enable_if_t<std::is_invocable_v<F, ARGS...>>>
-  StatusCode i_invoke( F&& f, ARGS&&... args ) const {
+  StatusCode i_invoke( F && f, ARGS && ... args ) const {
     if constexpr ( std::is_invocable_r_v<StatusCode, F, ARGS...> ) {
       return std::invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
     } else {

@@ -75,7 +75,7 @@ namespace HiveRndm {
     double shoot() {
       if ( 0 != m_generator ) {
         if ( m_buffer_index == 0 ) { // we are out of numbers
-          this->shootArray( m_buffer, m_buffer_size );
+          this->shootArray( m_buffer, m_buffer_size ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
           m_buffer_index = m_buffer_size - 1;
         }
         const double number = m_buffer[m_buffer_index];

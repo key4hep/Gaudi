@@ -139,8 +139,9 @@ StatusCode HiveDataBrokerSvc::stop() {
 }
 
 StatusCode HiveDataBrokerSvc::finalize() {
-  ranges::for_each( m_algorithms | ranges::views::transform( &AlgEntry::alg ),
-                    []( Gaudi::Algorithm* alg ) { alg->sysFinalize(); } );
+  ranges::for_each( m_algorithms | ranges::views::transform( &AlgEntry::alg ), []( Gaudi::Algorithm* alg ) {
+    alg->sysFinalize().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  } );
   m_algorithms.clear();
   return Service::finalize();
 }

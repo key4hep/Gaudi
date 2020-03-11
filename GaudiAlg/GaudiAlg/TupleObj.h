@@ -1006,7 +1006,8 @@ namespace Tuples {
 
       // adjust the length
       if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
-        Warning( "farray('" + name + "'): array is overflow, skip extra entries" );
+        Warning( "farray('" + name + "'): array is overflow, skip extra entries" )
+            .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         last = std::next( first, maxv );
       }
 

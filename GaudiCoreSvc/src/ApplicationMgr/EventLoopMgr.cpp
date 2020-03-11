@@ -113,7 +113,7 @@ StatusCode EventLoopMgr::reinitialize() {
   }
 
   // Check to see whether a new Event Selector has been specified
-  setProperty( m_appMgrProperty->getProperty( "EvtSel" ) );
+  if ( sc = setProperty( m_appMgrProperty->getProperty( "EvtSel" ) ); !sc ) return sc;
   if ( m_evtsel != "NONE" || m_evtsel.length() == 0 ) {
     auto theSvc    = serviceLocator()->service<IService>( "EventSelector" );
     auto theEvtSel = theSvc.as<IEvtSelector>();
@@ -121,7 +121,7 @@ StatusCode EventLoopMgr::reinitialize() {
       // Setup Event Selector
       if ( m_evtSelector.get() && m_evtContext ) {
         // Need to release context before switching to new event selector
-        m_evtSelector->releaseContext( m_evtContext );
+        if ( sc = m_evtSelector->releaseContext( m_evtContext ); !sc ) return sc;
         m_evtContext = nullptr;
       }
       m_evtSelector = theEvtSel;
@@ -146,7 +146,7 @@ StatusCode EventLoopMgr::reinitialize() {
       info() << "EventSelector service changed to " << theSvc->name() << endmsg;
     } else if ( m_evtSelector ) {
       if ( m_evtContext ) {
-        m_evtSelector->releaseContext( m_evtContext );
+        if ( sc = m_evtSelector->releaseContext( m_evtContext ); !sc ) return sc;
         m_evtContext = nullptr;
       }
       sc = m_evtSelector->createContext( m_evtContext );
@@ -156,11 +156,11 @@ StatusCode EventLoopMgr::reinitialize() {
       }
     }
   } else if ( m_evtSelector && m_evtContext ) {
-    m_evtSelector->releaseContext( m_evtContext );
+    sc            = m_evtSelector->releaseContext( m_evtContext );
     m_evtSelector = nullptr;
     m_evtContext  = nullptr;
   }
-  return StatusCode::SUCCESS;
+  return sc;
 }
 
 //--------------------------------------------------------------------------------------------

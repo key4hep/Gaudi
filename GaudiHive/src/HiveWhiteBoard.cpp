@@ -256,24 +256,30 @@ public:
   StatusCode setDataLoader( IConversionSvc* pDataLoader, IDataProviderSvc* = nullptr ) override {
     if ( pDataLoader ) pDataLoader->addRef();
     if ( m_dataLoader ) m_dataLoader->release();
-    if ( pDataLoader ) pDataLoader->setDataProvider( this );
+    if ( pDataLoader ) pDataLoader->setDataProvider( this ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_dataLoader = pDataLoader;
     for_( m_partitions, [&]( Partition& p ) { p.dataManager->setDataLoader( m_dataLoader, this ).ignore(); } );
     return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
   StatusCode addPreLoadItem( const DataStoreItem& item ) override {
-    for_( m_partitions, [&]( Partition& p ) { p.dataProvider->addPreLoadItem( item ); } );
+    for_( m_partitions, [&]( Partition& p ) {
+      p.dataProvider->addPreLoadItem( item ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    } );
     return StatusCode::SUCCESS;
   }
   /// Remove an item from the preload list
   StatusCode removePreLoadItem( const DataStoreItem& item ) override {
-    for_( m_partitions, [&]( Partition& p ) { p.dataProvider->removePreLoadItem( item ); } );
+    for_( m_partitions, [&]( Partition& p ) {
+      p.dataProvider->removePreLoadItem( item ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    } );
     return StatusCode::SUCCESS;
   }
   /// Clear the preload list
   StatusCode resetPreLoad() override {
-    for_( m_partitions, [&]( Partition& p ) { p.dataProvider->resetPreLoad(); } );
+    for_( m_partitions, [&]( Partition& p ) {
+      p.dataProvider->resetPreLoad().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    } );
     return StatusCode::SUCCESS;
   }
   /// load all preload items of the list
@@ -493,7 +499,7 @@ public:
       error() << "Unable to reinitialize base class" << endmsg;
       return sc;
     }
-    detachServices();
+    detachServices().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     sc = attachServices();
     if ( !sc.isSuccess() ) {
       error() << "Failed to attach necessary services." << endmsg;

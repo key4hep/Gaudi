@@ -96,7 +96,7 @@ namespace GaudiTesting {
             error() << "Cannot get IEventProcessor" << endmsg;
             return StatusCode::FAILURE;
           }
-          ep->stopRun();
+          if ( auto sc = ep->stopRun(); !sc ) return sc;
         } else { // "failure"
           return StatusCode::FAILURE;
         }

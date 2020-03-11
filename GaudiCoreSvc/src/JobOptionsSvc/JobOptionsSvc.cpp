@@ -109,8 +109,10 @@ void JobOptionsSvc::dump( const std::string& file, const C& catalog ) const {
 void JobOptionsSvc::fillServiceCatalog( const gp::Catalog& catalog ) {
   for ( const auto& client : catalog ) {
     for ( const auto& current : client.second ) {
-      addPropertyToCatalogue( client.first,
-                              Gaudi::Property<std::string>{current.NameInClient(), current.ValueAsString()} );
+      if ( auto sc = addPropertyToCatalogue(
+               client.first, Gaudi::Property<std::string>{current.NameInClient(), current.ValueAsString()} );
+           !sc )
+        throw GaudiException( "Failed to fill the catalog", name(), sc );
     }
   }
 }

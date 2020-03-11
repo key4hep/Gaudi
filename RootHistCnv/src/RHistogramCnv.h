@@ -103,7 +103,7 @@ namespace RootHistCnv {
           }
         }
       }
-      error( "Histogram object is invalid!" );
+      error( "Histogram object is invalid!" ).ignore();
       return nullptr;
     }
     /// Inquire class type

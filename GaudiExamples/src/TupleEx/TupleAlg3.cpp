@@ -102,10 +102,10 @@ StatusCode TupleAlg3::execute() {
     LV lv2 = lv;
     lv2.SetE( ::sqrt( lv.P2() + 4 * GeV * GeV ) );
 
-    tuple->column( "lv1", lv );
-    tuple->column( "lv2", lv2 );
+    tuple->column( "lv1", lv ).ignore();
+    tuple->column( "lv2", lv2 ).ignore();
 
-    tuple->write();
+    tuple->write().ignore();
   }
   // ==========================================================================
   // book and fill simple NTuple with 3D Vectors & Points
@@ -122,16 +122,16 @@ StatusCode TupleAlg3::execute() {
     p1.SetY( flat() );
     p1.SetZ( flat() );
 
-    tuple->column( "p3", p1 );
+    tuple->column( "p3", p1 ).ignore();
 
     V3 p2;
     p2.SetX( gauss() );
     p2.SetY( gauss() );
     p2.SetZ( gauss() );
 
-    tuple->column( "v3", p2 );
+    tuple->column( "v3", p2 ).ignore();
 
-    tuple->write();
+    tuple->write().ignore();
   }
   // ==========================================================================
   // book and fill simple NTuple with Math-vectors
@@ -148,11 +148,11 @@ StatusCode TupleAlg3::execute() {
     std::generate( v2.begin(), v2.end(), breit );
     std::generate( v3.begin(), v3.end(), flat );
 
-    tuple->array( "g", v1 );
-    tuple->array( "b", v2 );
-    tuple->array( "f", v3 );
+    tuple->array( "g", v1 ).ignore();
+    tuple->array( "b", v2 ).ignore();
+    tuple->array( "f", v3 ).ignore();
 
-    tuple->write();
+    tuple->write().ignore();
   }
   // ==========================================================================
   // book and fill simple NTuple with S-matrices
@@ -169,11 +169,11 @@ StatusCode TupleAlg3::execute() {
     std::generate( v2.begin(), v2.end(), breit );
     std::generate( v3.begin(), v3.end(), flat );
 
-    tuple->matrix( "g", v1 );
-    tuple->matrix( "b", v2 );
-    tuple->matrix( "f", v3 );
+    tuple->matrix( "g", v1 ).ignore();
+    tuple->matrix( "b", v2 ).ignore();
+    tuple->matrix( "f", v3 ).ignore();
 
-    tuple->write();
+    tuple->write().ignore();
   }
 
   // ==========================================================================
@@ -200,12 +200,12 @@ StatusCode TupleAlg3::execute() {
       vm4.insert( std::make_pair( i, i * 5 ) );
     }
 
-    tuple->fmatrix( "map1", vm1, "n1", 500 );
-    tuple->fmatrix( "map2", vm2, "n2", 500 );
-    tuple->fmatrix( "map3", vm3, "n3", 500 );
-    tuple->fmatrix( "map4", vm4, "n4", 500 );
+    tuple->fmatrix( "map1", vm1, "n1", 500 ).ignore();
+    tuple->fmatrix( "map2", vm2, "n2", 500 ).ignore();
+    tuple->fmatrix( "map3", vm3, "n3", 500 ).ignore();
+    tuple->fmatrix( "map4", vm4, "n4", 500 ).ignore();
 
-    tuple->write();
+    tuple->write().ignore();
   }
 
   return StatusCode::SUCCESS;

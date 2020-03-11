@@ -412,18 +412,18 @@ namespace concurrency {
     auto dataPromoter = DataReadyPromoter( *m_slot, m_cause );
 
     if ( AState::INITIAL == states[node.getAlgoIndex()] ) {
-      states.set( node.getAlgoIndex(), AState::CONTROLREADY );
+      states.set( node.getAlgoIndex(), AState::CONTROLREADY ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       if ( dataPromoter.visit( node ) ) {
-        states.set( node.getAlgoIndex(), AState::SCHEDULED );
-        states.set( node.getAlgoIndex(), AState::EVTACCEPTED );
+        states.set( node.getAlgoIndex(), AState::SCHEDULED ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+        states.set( node.getAlgoIndex(), AState::EVTACCEPTED ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         decision = 1;
         ++m_nodesSucceeded;
         // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
         return true;
       }
     } else if ( AState::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit( node ) ) {
-      states.set( node.getAlgoIndex(), AState::SCHEDULED );
-      states.set( node.getAlgoIndex(), AState::EVTACCEPTED );
+      states.set( node.getAlgoIndex(), AState::SCHEDULED ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      states.set( node.getAlgoIndex(), AState::EVTACCEPTED ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       decision = 1;
       ++m_nodesSucceeded;
       // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;

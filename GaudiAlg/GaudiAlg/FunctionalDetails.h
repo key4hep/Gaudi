@@ -445,7 +445,8 @@ namespace Gaudi::Functional::details {
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
-      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
+      // make sure this algorithm is seen as reentrant by Gaudi
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   public:
@@ -509,7 +510,8 @@ namespace Gaudi::Functional::details {
   public:
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator )
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator ) {
-      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
+      // make sure this algorithm is seen as reentrant by Gaudi
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   protected:
@@ -526,7 +528,8 @@ namespace Gaudi::Functional::details {
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const IArgs& inputs, std::index_sequence<I...> )
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... ) {
-      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
+      // make sure this algorithm is seen as reentrant by Gaudi
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   public:
@@ -567,7 +570,8 @@ namespace Gaudi::Functional::details {
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const OArgs& outputs, std::index_sequence<J...> )
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
-      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
+      // make sure this algorithm is seen as reentrant by Gaudi
+      this->setProperty( "Cardinality", 0 ).ignore();
     }
 
   public:

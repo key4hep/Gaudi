@@ -99,13 +99,11 @@ namespace Tuples {
 
     public:
       StatusCode Error( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override {
-        m_handler1( name() + " " + msg, sc );
-        return sc;
+        return m_handler1( name() + " " + msg, sc );
       }
 
       StatusCode Warning( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override {
-        m_handler2( name() + " " + msg, sc );
-        return sc;
+        return m_handler2( name() + " " + msg, sc );
       }
 
     private:

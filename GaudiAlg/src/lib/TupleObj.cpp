@@ -122,11 +122,18 @@ namespace {
     using element_t = typename C::mapped_type::element_type;
     using map_t     = struct tuple_type_<element_t>;
     auto item       = container.emplace( name, std::make_unique<element_t>() );
-    if ( !item.second ) { parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not inserted" ); }
+    if ( !item.second ) {
+      parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not inserted" )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    }
     StatusCode sc = addItem( name, *( item.first->second ) );
-    if ( sc.isFailure() ) { parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not added", sc ); }
+    if ( sc.isFailure() ) {
+      parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not added", sc )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    }
     if ( !parent->addItem( name, map_t::fmt ) ) {
-      parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not unique" );
+      parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not unique" )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     }
     return item.first->second.get();
   }
@@ -276,7 +283,8 @@ StatusCode Tuples::TupleObj::fill( const char* format... ) {
   for ( auto token = tokens.cbegin(); tokens.cend() != token && status.isSuccess(); ++token ) {
     double val = va_arg( valist, double );
     status     = column( *token, val );
-    if ( status.isFailure() ) Error( "fill(): Can not add column '" + *token + "' " );
+    if ( status.isFailure() )
+      Error( "fill(): Can not add column '" + *token + "' " ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   }
   // mandatory !!!
   va_end( valist );

@@ -53,7 +53,7 @@ StatusCode ReadAlg::initialize() {
   }
   if ( !m_incidentName.empty() ) {
     auto prp = m_recordSvc.as<IProperty>();
-    setProperty( "IncidentName", prp->getProperty( "IncidentName" ) );
+    if ( auto sc = setProperty( "IncidentName", prp->getProperty( "IncidentName" ) ); !sc ) return sc;
     m_incidentSvc = service( "IncidentSvc", true );
     if ( !m_incidentSvc ) {
       error() << "Failed to access IncidentSvc." << endmsg;

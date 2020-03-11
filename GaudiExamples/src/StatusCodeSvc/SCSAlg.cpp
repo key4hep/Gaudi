@@ -12,6 +12,9 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 
+#if __cplusplus >= 201703L && !defined( __CLING__ )
+#  pragma GCC diagnostic ignored "-Wunused-result"
+#endif
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode SCSAlg::execute() {

@@ -71,7 +71,7 @@ const string RootStatCnv::containerName( IRegistry* pReg ) const {
 const string RootStatCnv::fileName( IRegistry* pReg ) const {
   string      path = topLevel( pReg );
   DataObject* pObj = nullptr;
-  dataProvider()->retrieveObject( path, pObj );
+  dataProvider()->retrieveObject( path, pObj ).ignore();
   if ( pObj ) {
     NTuple::File* fptr = dynamic_cast<NTuple::File*>( pObj );
     if ( fptr ) { return fptr->name(); }

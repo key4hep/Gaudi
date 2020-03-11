@@ -480,7 +480,7 @@ NTuple::Directory* NTupleSvc::createDirectory( const std::string& fullPath ) {
               if ( status.isSuccess() ) return p;
             }
           }
-          unregisterObject( p );
+          unregisterObject( p ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         }
         p->release();
         p = nullptr;

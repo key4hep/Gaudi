@@ -465,7 +465,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
       }
 
       if ( item ) {
-        ntup->add( item );
+        ntup->add( item ).ignore();
       } else {
         log << MSG::ERROR << "Unable to create ntuple item \"" << itemName << "\"" << endmsg;
       }

@@ -56,7 +56,8 @@ public:
       return sc;
     }
     /// Release old tool
-    if ( tool ) toolSvc()->releaseTool( tool );
+    if ( tool )
+      if ( sc = toolSvc()->releaseTool( tool ); !sc ) return sc;
     /// Now check if the partition is present. If not: try to create it
     IInterface* partititon = nullptr;
     sc                     = m_actor->get( m_partName, partititon );
@@ -67,9 +68,9 @@ public:
   /// Finalize
   STATUS finalize() override {
     SmartIF<IAlgTool> tool( m_actor );
-    if ( tool ) toolSvc()->releaseTool( tool );
+    if ( tool ) toolSvc()->releaseTool( tool ).ignore();
     m_actor = nullptr;
-    return STATUS::SUCCESS;
+    return extends::finalize();
   }
 
   /// Execute procedure

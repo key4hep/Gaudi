@@ -90,7 +90,7 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer ) {
     // cout << "Retrieving Mandatory Object : " << m_currentItem->path() << endl;
     status = m_TES->retrieveObject( m_currentItem->path(), obj );
     if ( status.isSuccess() ) {
-      m_TESMgr->traverseSubTree( obj, this );
+      m_TESMgr->traverseSubTree( obj, this ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } else {
       string text( "WARNING: Cannot retrieve TES object(s) for serialisation: " );
       text += m_currentItem->path();
@@ -107,7 +107,9 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer ) {
     m_currentItem = ( *i );
     // cout << "Retrieving Optional Object : " << m_currentItem->path() << endl;
     status = m_TES->retrieveObject( m_currentItem->path(), obj );
-    if ( status.isSuccess() ) { m_TESMgr->traverseSubTree( obj, this ); }
+    if ( status.isSuccess() ) {
+      m_TESMgr->traverseSubTree( obj, this ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    }
   }
 
   // Prepare for serialization:
@@ -233,9 +235,9 @@ void GaudiMP::TESSerializer::loadBuffer( TBufferFile& buffer ) {
         sc = m_TESMgr->setRoot( location, obj );
         if ( sc.isFailure() ) throw GaudiException( "Cannot set root at location " + location, "", sc );
       } else {
-        m_TES->findObject( location, dummy );
+        m_TES->findObject( location, dummy ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         if ( !dummy )
-          m_TES->registerObject( location, obj );
+          m_TES->registerObject( location, obj ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         else {
           // skipping to the next object
           // (flush the remaining metadata in the buffer)

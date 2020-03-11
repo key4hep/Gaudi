@@ -52,7 +52,7 @@ StatusCode GaudiSequencer::initialize() {
     m_timer = m_timerTool->addTimer( name() );
     m_timerTool->increaseIndent();
   } else {
-    release( m_timerTool );
+    release( m_timerTool ).ignore();
     m_timerTool = nullptr;
   }
 

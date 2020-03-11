@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #ifndef GAUDISVC_PYTHONCONFIG_H
 #define GAUDISVC_PYTHONCONFIG_H
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Property.h"
@@ -22,7 +23,9 @@ class PythonAdaptor {
 public:
   PythonAdaptor( IJobOptionsSvc* jos ) : m_IJobOptionsSvc( jos ) {}
   void addPropertyToJobOptions( const std::string& client, const std::string& name, const std::string& value ) {
-    m_IJobOptionsSvc->addPropertyToCatalogue( client, Gaudi::Property<std::string>( name, value ) );
+    if ( auto sc = m_IJobOptionsSvc->addPropertyToCatalogue( client, Gaudi::Property<std::string>( name, value ) );
+         !sc )
+      throw GaudiException( "Failed to add property", "PythonAdaptor", sc );
   }
 
 private:

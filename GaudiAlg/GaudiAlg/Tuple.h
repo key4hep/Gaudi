@@ -323,7 +323,9 @@ namespace Tuples {
 template <class ITEM>
 inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColumn<ITEM>& item ) {
   if ( !tuple.valid() ) return tuple; // no action for invalid tuple
-  tuple->column( item.name(), item.value() );
+  tuple->column( item.name(), item.value() )
+      .orThrow( "Failed to fill the tuple", "operator<<( Tuples::Tuple&, ...)" )
+      .ignore();
   return tuple;
 }
 // ============================================================================
