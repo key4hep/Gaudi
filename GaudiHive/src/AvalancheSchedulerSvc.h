@@ -251,7 +251,6 @@ private:
 
   /// Algorithm promotion
   StatusCode enqueue( unsigned int iAlgo, int si, EventContext* );
-  StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si, EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted( unsigned int iAlgo, int si, EventContext* );
   StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
                                      EventContext* ); // tests of an asynchronous scheduler

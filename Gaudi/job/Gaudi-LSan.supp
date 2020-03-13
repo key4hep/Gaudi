@@ -93,14 +93,6 @@ leak:THistWrite::initialize
 #    #29 0x7fde3ae1fc5a in Gaudi::RootDataConnection::loadObj(std::basic_string_view<char, std::char_traits<char> >, std::basic_string_view<char, std::char_traits<char> >, unsigned long, DataObject*&) ../RootCnv/src/RootDataConnection.cpp:507
 leak:Gaudi::RootDataConnection::loadObj
 
-# AvalancheSchedulerSvc leaks TBB tasks ...
-# Direct leak of 224 byte(s) in 7 object(s) allocated from:
-#    #0 0x7fc0cb524da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
-#    #1 0x7fc0ba979f7b in function<AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*)::<lambda()> > /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0-3fa06/x86_64-centos7/include/c++/8.2.0/bits/std_function.h:249
-#    #2 0x7fc0ba97d181 in AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:969
-#    #3 0x7fc0ba98354d in AvalancheSchedulerSvc::updateStates(int, int, int, int) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:660
-leak:AvalancheSchedulerSvc::promoteToAsyncScheduled
-
 #Direct leak of 176 byte(s) in 1 object(s) allocated from:
 #    #0 0x7f56e2dc2da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
 #    #1 0x7f56cb992ae4 in Gaudi::RootCnvSvc::createAddress(long, unsigned int const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const*, unsigned long const*, IOpaqueAddress*&) ../RootCnv/src/RootCnvSvc.cpp:349
