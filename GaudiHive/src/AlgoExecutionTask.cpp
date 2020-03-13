@@ -94,11 +94,7 @@ tbb::task* AlgoExecutionTask::execute() {
   m_aess->updateEventStatus( eventfailed, evtCtx );
 
   // Release algorithm
-  StatusCode releaseAlgSC = m_scheduler->m_algResourcePool->releaseAlgorithm( algName, iAlgoPtr );
-  if ( !releaseAlgSC.isSuccess() ) {
-    log << MSG::ERROR << "[Event " << evtCtx.evt() << ", Slot " << evtCtx.slot() << "] "
-        << "Instance of algorithm " << algName << " could not be properly put back." << endmsg;
-  }
+  m_scheduler->m_algResourcePool->releaseAlgorithm( algName, iAlgoPtr ).ignore();
 
   // Create a lambda to update scheduler state
   auto schedulerPtr = m_scheduler; // can't capture m_scheduler directly for some reason (implied this* ?)

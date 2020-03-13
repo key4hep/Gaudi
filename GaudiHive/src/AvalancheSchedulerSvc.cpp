@@ -909,7 +909,7 @@ StatusCode AvalancheSchedulerSvc::enqueue( unsigned int iAlgo, int si, EventCont
 
       } else { // schedule the blocking algorithm, if not too many of them already in flight
 
-        if ( UNLIKELY( m_IOBoundAlgosInFlight == m_maxIOBoundAlgosInFlight ) ) {
+        if ( LIKELY( m_IOBoundAlgosInFlight < m_maxIOBoundAlgosInFlight ) ) {
 
           auto promote2ExecutedClosure = [this, iAlgo, iAlgoPtr, eventContext]() {
             this->m_actionsQueue.push( [this, iAlgo, iAlgoPtr, eventContext]() {
