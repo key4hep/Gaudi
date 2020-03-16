@@ -275,7 +275,7 @@ private:
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
   /// Struct to hold entries in the alg queues
-  struct AlgQueueEntry {
+  struct TaskSpec {
     unsigned int  algIndex;
     int           slotIndex;
     EventContext* contextPtr;
@@ -285,12 +285,12 @@ private:
 
   /// Comparison operator to sort the queues
   struct AlgQueueSort {
-    bool operator()( const AlgQueueEntry& i, const AlgQueueEntry& j ) const { return ( i.rank < j.rank ); }
+    bool operator()( const TaskSpec& i, const TaskSpec& j ) const { return ( i.rank < j.rank ); }
   };
 
   /// Queues for scheduled algorithms
-  tbb::concurrent_priority_queue<AlgQueueEntry, AlgQueueSort> m_scheduledQueue;
-  std::queue<AlgQueueEntry>                                   m_retryQueue;
+  tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledQueue;
+  std::queue<TaskSpec>                                   m_retryQueue;
 
   // Prompt the scheduler to call updateStates
   std::atomic<bool> m_needsUpdate{true};

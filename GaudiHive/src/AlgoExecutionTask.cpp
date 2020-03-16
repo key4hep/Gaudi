@@ -31,12 +31,12 @@ namespace Gaudi {
 tbb::task* AlgoExecutionTask::execute() {
 
   // Get queue data
-  AvalancheSchedulerSvc::AlgQueueEntry queuePop;
-  if ( !m_scheduler->m_scheduledQueue.try_pop( queuePop ) ) return nullptr;
+  AvalancheSchedulerSvc::TaskSpec taskSpec;
+  if ( !m_scheduler->m_scheduledQueue.try_pop( taskSpec ) ) return nullptr;
 
-  std::string   algName  = m_scheduler->index2algname( queuePop.algIndex );
-  EventContext& evtCtx   = *queuePop.contextPtr;
-  IAlgorithm*   iAlgoPtr = queuePop.algPtr;
+  std::string   algName  = m_scheduler->index2algname( taskSpec.algIndex );
+  EventContext& evtCtx   = *taskSpec.contextPtr;
+  IAlgorithm*   iAlgoPtr = taskSpec.algPtr;
 
   Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( iAlgoPtr );
   if ( !this_algo ) { throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE ); }
@@ -98,8 +98,8 @@ tbb::task* AlgoExecutionTask::execute() {
 
   // Create a lambda to update scheduler state
   auto schedulerPtr = m_scheduler; // can't capture m_scheduler directly for some reason (implied this* ?)
-  m_scheduler->m_actionsQueue.push( [schedulerPtr, queuePop]() -> StatusCode {
-    return schedulerPtr->promoteToExecuted( queuePop.algIndex, queuePop.slotIndex, queuePop.contextPtr );
+  m_scheduler->m_actionsQueue.push( [schedulerPtr, taskSpec]() -> StatusCode {
+    return schedulerPtr->promoteToExecuted( taskSpec.algIndex, taskSpec.slotIndex, taskSpec.contextPtr );
   } );
 
   Gaudi::Hive::setCurrentContextEvt( -1 );

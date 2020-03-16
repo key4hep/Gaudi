@@ -582,7 +582,7 @@ StatusCode AvalancheSchedulerSvc::updateStates() {
   StatusCode global_sc( StatusCode::SUCCESS );
 
   // Retry algs
-  AlgQueueEntry queuePop;
+  TaskSpec queuePop;
   const size_t  retries = m_retryQueue.size();
   for ( unsigned int retryIndex = 0; retryIndex < retries; ++retryIndex ) {
 
