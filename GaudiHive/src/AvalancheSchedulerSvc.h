@@ -250,11 +250,8 @@ private:
   StatusCode setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );
 
   /// Algorithm promotion
-  StatusCode enqueue( unsigned int iAlgo, int si, EventContext* );
-  StatusCode promoteToExecuted( unsigned int iAlgo, int si, EventContext* );
-  StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
-                                     EventContext* ); // tests of an asynchronous scheduler
-  StatusCode promoteToFinished( unsigned int iAlgo, int si );
+  StatusCode enqueue( unsigned int iAlgo, int si, EventContext*, bool blocking );
+  StatusCode promoteToExecuted( unsigned int iAlgo, int si, EventContext*, bool blocking );
 
   /// Check if scheduling in a particular slot is in a stall
   bool isStalled( const EventSlot& ) const;
@@ -281,6 +278,7 @@ private:
     EventContext* contextPtr;
     unsigned int  rank;
     IAlgorithm*   algPtr;
+    bool          blocking;
   };
 
   /// Comparison operator to sort the queues
