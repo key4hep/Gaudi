@@ -14,6 +14,7 @@
 #include "GaudiAlg/ScalarTransformer.h"
 #include "GaudiAlg/Transformer.h"
 #include "GaudiKernel/KeyedContainer.h"
+#include "GaudiKernel/SharedObjectsContainer.h"
 #include <cmath>
 #include <numeric>
 
@@ -339,4 +340,53 @@ namespace Gaudi::Examples {
   };
 
   DECLARE_COMPONENT( VoidConsumer )
+
+  struct S : public KeyedObject<int> {
+    using KeyedObject::KeyedObject;
+    int a;
+    using ConstVector = std::vector<S const*>;
+    using Selection   = SharedObjectsContainer<S>;
+    using Container   = KeyedContainer<S, Containers::HashMap>;
+  };
+
+  struct SDataProducer final : Gaudi::Functional::Producer<S::Container(), BaseClass_t> {
+
+    SDataProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyS" ) ) {}
+
+    S::Container operator()() const override {
+      S::Container out{};
+      for ( int i = 0; i < j; ++i ) out.insert( new S{} );
+      info() << "storing KeyedContainer of size " << out.size() << " into " << outputLocation() << endmsg;
+      return out;
+    }
+    Gaudi::Property<int> j{this, "j", 5};
+  };
+
+  DECLARE_COMPONENT( SDataProducer )
+
+  struct SRangesToIntVector final
+      : public Gaudi::Functional::MergingTransformer<
+            std::vector<int>( const Gaudi::Functional::vector_of_const_<Gaudi::Range_<std::vector<S const*>>>& ),
+            BaseClass_t> {
+
+    SRangesToIntVector( const std::string& name, ISvcLocator* svcLoc )
+        : MergingTransformer( name, svcLoc, {"InputRanges", {}},
+                              {"OutputLocation", "/Event/MyConcatenatedIntVector"} ) {}
+
+    std::vector<int> operator()(
+        const Gaudi::Functional::vector_of_const_<Gaudi::Range_<std::vector<S const*>>>& SVectors ) const override {
+      std::vector<int> out;
+      // Concatenate the input vectors to form the output
+      for ( const auto& SVector : SVectors ) {
+        info() << "Concatening range of size " << SVector.size() << endmsg;
+        for ( auto* s : SVector ) { out.push_back( s->a ); }
+      }
+      info() << "Storing output vector " << out << " to " << outputLocation() << endmsg;
+      return out;
+    }
+  };
+
+  DECLARE_COMPONENT( SRangesToIntVector )
+
 } // namespace Gaudi::Examples

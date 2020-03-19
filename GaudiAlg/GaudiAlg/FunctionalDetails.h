@@ -211,6 +211,18 @@ namespace Gaudi::Functional::details {
   /////////////////////////////////////////
   // if Container is a pointer, then we're optional items
   namespace details2 {
+    template <typename T>
+    struct is_gaudi_range : std::false_type {};
+
+    template <typename T, typename IT>
+    struct is_gaudi_range<Gaudi::Range_<T, IT>> : std::true_type {};
+
+    template <typename T, typename IT>
+    struct is_gaudi_range<Gaudi::NamedRange_<T, IT>> : std::true_type {};
+
+    template <typename T>
+    constexpr static bool is_gaudi_range_v = is_gaudi_range<T>::value;
+
     template <typename Container, typename Value>
     void push_back( Container& c, const Value& v, std::true_type ) {
       c.push_back( v );
@@ -228,7 +240,8 @@ namespace Gaudi::Functional::details {
       }
       template <template <typename> class Handle, typename I, typename IT>
       auto operator()( const Handle<Gaudi::Range_<I, IT>>& h ) -> const In {
-        return h.get();
+        auto x = h.get();
+        return x;
       }
       template <template <typename> class Handle, typename I, typename IT>
       auto operator()( const Handle<Gaudi::NamedRange_<I, IT>>& h ) -> const In {
@@ -254,10 +267,11 @@ namespace Gaudi::Functional::details {
   template <typename Container>
   class vector_of_const_ {
     static constexpr bool is_pointer = std::is_pointer_v<Container>;
+    static constexpr bool is_range   = details2::is_gaudi_range_v<Container>;
     using val_t                      = std::add_const_t<std::remove_pointer_t<Container>>;
     using ptr_t                      = std::add_pointer_t<val_t>;
     using ref_t                      = std::add_lvalue_reference_t<val_t>;
-    using ContainerVector            = std::vector<ptr_t>;
+    using ContainerVector            = std::vector<std::conditional_t<is_range, std::remove_const_t<val_t>, ptr_t>>;
     ContainerVector m_containers;
 
   public:
@@ -280,12 +294,18 @@ namespace Gaudi::Functional::details {
       friend bool operator!=( const iterator& lhs, const iterator& rhs ) { return lhs.m_i != rhs.m_i; }
       friend bool operator==( const iterator& lhs, const iterator& rhs ) { return lhs.m_i == rhs.m_i; }
       friend auto operator-( const iterator& lhs, const iterator& rhs ) { return lhs.m_i - rhs.m_i; }
-      ret_t       operator*() const { return details2::deref_if( *m_i, std::bool_constant<!is_pointer>{} ); }
-      iterator&   operator++() {
+      ret_t       operator*() const {
+        if constexpr ( is_range ) {
+          return *m_i;
+        } else {
+          return details2::deref_if( *m_i, std::bool_constant<!is_pointer>{} );
+        }
+      }
+      iterator& operator++() {
         ++m_i;
         return *this;
       }
-      iterator& operator--() {
+      const iterator& operator--() {
         --m_i;
         return *this;
       }
@@ -296,7 +316,8 @@ namespace Gaudi::Functional::details {
     void reserve( size_type size ) { m_containers.reserve( size ); }
     template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_pointer,ptr_t,val_t>>
     void push_back( T&& container ) {
-      details2::push_back( m_containers, std::forward<T>( container ), std::bool_constant<is_pointer>{} );
+      details2::push_back( m_containers, std::forward<T>( container ),
+                           std::bool_constant < is_pointer or is_range > {} );
     } // note: does not copy its argument, so we're not really a container...
     iterator  begin() const { return m_containers.begin(); }
     iterator  end() const { return m_containers.end(); }

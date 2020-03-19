@@ -20,6 +20,7 @@ from Configurables import Gaudi__Examples__IntDataConsumer as IntDataConsumer
 from Configurables import Gaudi__Examples__IntToFloatData as IntToFloatData
 from Configurables import Gaudi__Examples__IntIntToFloatFloatData as IntIntToFloatFloatData
 from Configurables import Gaudi__Examples__IntVectorsToIntVector as IntVectorsToIntVector
+from Configurables import Gaudi__Examples__SRangesToIntVector as SRangesToIntVector
 from Configurables import Gaudi__Examples__ContextConsumer as ContextConsumer
 from Configurables import Gaudi__Examples__ContextIntConsumer as ContextIntConsumer
 from Configurables import Gaudi__Examples__VectorDoubleProducer as VectorDoubleProducer
@@ -28,6 +29,7 @@ from Configurables import Gaudi__Examples__LdExpTransformer as LdExpTransformer
 from Configurables import Gaudi__Examples__OptFrExpTransformer as OptFrExpTransformer
 from Configurables import Gaudi__Examples__OptLdExpTransformer as OptLdExpTransformer
 from Configurables import Gaudi__Examples__CountingConsumer as CountingConsumer
+from Configurables import Gaudi__Examples__SDataProducer as SDataProducer
 from Configurables import EvtStoreSvc
 # Application setup
 app = ApplicationMgr()
@@ -61,27 +63,42 @@ VectorDataProducer1 = VectorDataProducer(
     "VectorDataProducer1", OutputLocation="/Event/IntVector1")
 VectorDataProducer2 = VectorDataProducer(
     "VectorDataProducer2", OutputLocation="/Event/IntVector2")
+SDataProducer1 = SDataProducer(
+    "SDataProducer1", OutputLocation="/Event/S1", j=3)
+SDataProducer2 = SDataProducer(
+    "SDataProducer2", OutputLocation="/Event/S2", j=10)
 app.TopAlg = [
-    IntDataProducer("IntDataProducer"), OtherIntDataProducer,
+    IntDataProducer("IntDataProducer"),
+    OtherIntDataProducer,
     IntDataConsumer("IntDataConsumer"),
     IntToFloatData("IntToFloatData"),
     IntIntToFloatFloatData("IntIntToFloatFloatData"),
     FloatDataConsumer("FloatDataConsumer"),
     ContextConsumer("ContextConsumer"),
     ContextIntConsumer("ContextIntConsumer"),
-    VectorDoubleProducer("VectorDoubleProducer"), VectorDataProducer1,
+    VectorDoubleProducer("VectorDoubleProducer"),
+    VectorDataProducer1,
     VectorDataProducer2,
     IntVectorsToIntVector(
         "IntVectorsToIntVector",
         InputLocations=[
             str(VectorDataProducer1.OutputLocation),
             str(VectorDataProducer2.OutputLocation)
-        ]),
+        ],
+        OutputLocation="/Event/wurst"),
     FrExpTransformer("FrExpTransformer"),
     LdExpTransformer("LdExpTransfomer"),
     OptFrExpTransformer("OptFrExpTransformer"),
     OptLdExpTransformer("OptLdExpTransformer"),
-    CountingConsumer("CountingConsumer")
+    CountingConsumer("CountingConsumer"),
+    SDataProducer1,
+    SDataProducer2,
+    SRangesToIntVector(
+        "SRangesToIntVector",
+        InputRanges=[
+            str(SDataProducer1.OutputLocation),
+            str(SDataProducer2.OutputLocation)
+        ]),
 ]
 # - Events
 app.EvtMax = 2
