@@ -249,8 +249,8 @@ private:
   StatusCode setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );
 
   /// Algorithm promotion
-  StatusCode enqueue( unsigned int iAlgo, int si, EventContext*, bool blocking );
-  StatusCode promoteToExecuted( unsigned int iAlgo, int si, EventContext*, bool blocking );
+  StatusCode schedule( unsigned int iAlgo, int si, EventContext*, bool blocking );
+  StatusCode signoff( unsigned int iAlgo, int si, EventContext*, bool blocking );
 
   /// Check if scheduling in a particular slot is in a stall
   bool isStalled( const EventSlot& ) const;

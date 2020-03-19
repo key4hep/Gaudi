@@ -99,7 +99,7 @@ tbb::task* AlgoExecutionTask::execute() {
   // Create a lambda to update scheduler state
   auto schedulerPtr = m_scheduler; // can't capture m_scheduler directly for some reason (implied this* ?)
   m_scheduler->m_actionsQueue.push( [schedulerPtr, taskSpec]() -> StatusCode {
-    return schedulerPtr->promoteToExecuted( taskSpec.algIndex, taskSpec.slotIndex, taskSpec.contextPtr,
+    return schedulerPtr->signoff( taskSpec.algIndex, taskSpec.slotIndex, taskSpec.contextPtr,
                                             taskSpec.blocking );
   } );
 

@@ -582,7 +582,7 @@ StatusCode AvalancheSchedulerSvc::updateStates() {
     queuePop = m_retryQueue.front();
     m_retryQueue.pop();
 
-    global_sc = enqueue( queuePop.algIndex, queuePop.slotIndex, queuePop.contextPtr, queuePop.blocking );
+    global_sc = schedule( queuePop.algIndex, queuePop.slotIndex, queuePop.contextPtr, queuePop.blocking );
   }
 
   // Loop over all slots
@@ -602,7 +602,7 @@ StatusCode AvalancheSchedulerSvc::updateStates() {
     for ( auto it = thisAlgsStates.begin( AState::DATAREADY ); it != thisAlgsStates.end( AState::DATAREADY ); ++it ) {
       uint algIndex = *it;
       bool blocking = m_useIOBoundAlgScheduler ? m_precSvc->isBlocking( index2algname( algIndex ) ) : false;
-      partial_sc    = enqueue( algIndex, iSlot, thisSlot.eventContext.get(), blocking );
+      partial_sc    = schedule( algIndex, iSlot, thisSlot.eventContext.get(), blocking );
 
       ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
           << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << index2algname( algIndex )
@@ -615,7 +615,7 @@ StatusCode AvalancheSchedulerSvc::updateStates() {
       for ( auto it = subslotStates.begin( AState::DATAREADY ); it != subslotStates.end( AState::DATAREADY ); ++it ) {
         uint algIndex{*it};
         bool blocking = m_useIOBoundAlgScheduler ? m_precSvc->isBlocking( index2algname( algIndex ) ) : false;
-        partial_sc    = enqueue( algIndex, iSlot, subslot.eventContext.get(), blocking );
+        partial_sc    = schedule( algIndex, iSlot, subslot.eventContext.get(), blocking );
         // The following verbosity is expensive when the number of sub-slots is high
         /*ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
             << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << index2algname( algIndex )
@@ -867,7 +867,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
 //---------------------------------------------------------------------------
 
-StatusCode AvalancheSchedulerSvc::enqueue( unsigned int iAlgo, int si, EventContext* eventContext, bool blocking ) {
+StatusCode AvalancheSchedulerSvc::schedule( unsigned int iAlgo, int si, EventContext* eventContext, bool blocking ) {
 
   // Use the algorithm rank to sort the queue
   const std::string& algName( index2algname( iAlgo ) ); // TODO add name field to TaskSpec
@@ -910,7 +910,7 @@ StatusCode AvalancheSchedulerSvc::enqueue( unsigned int iAlgo, int si, EventCont
           auto iAlgPtrCopy{iAlgoPtr};
           this->m_algResourcePool->releaseAlgorithm( algName, iAlgPtrCopy ).ignore();
           this->m_actionsQueue.push( [this, iAlgo, iAlgoPtr, eventContext, blocking]() {
-            return this->AvalancheSchedulerSvc::promoteToExecuted( iAlgo, eventContext->slot(), eventContext,
+            return this->AvalancheSchedulerSvc::signoff( iAlgo, eventContext->slot(), eventContext,
                                                                    blocking );
           } );
           return StatusCode::SUCCESS;
@@ -960,7 +960,7 @@ StatusCode AvalancheSchedulerSvc::enqueue( unsigned int iAlgo, int si, EventCont
 /**
  * The call to this method is triggered only from within the AlgoExecutionTask.
  */
-StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si, EventContext* eventContext,
+StatusCode AvalancheSchedulerSvc::signoff( unsigned int iAlgo, int si, EventContext* eventContext,
                                                      bool blocking ) {
 
   const std::string& algName( index2algname( iAlgo ) );
