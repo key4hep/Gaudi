@@ -116,7 +116,7 @@ StatusCode IOBoundAlgSchedulerSvc::push( IAlgTask& task ) {
   // the temporary lambda should be moved into the queue in here
   auto actionn = [&]() {
     debug() << " .. launching I/O-bound algo-closure .. " << endmsg;
-    return task.execute();
+    return task();
   };
 
   m_actionsQueue.push( actionn );

@@ -40,7 +40,7 @@ public:
       , m_serviceLocator( svcLocator )
       , m_promote2ExecutedClosure( std::move( promote2ExecutedClosure ) ) {}
 
-  StatusCode execute() override final;
+  StatusCode operator()() override final;
 
 private:
   SmartIF<IAlgorithm>         m_algorithm;

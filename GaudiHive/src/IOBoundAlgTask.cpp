@@ -18,7 +18,7 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 
-StatusCode IOBoundAlgTask::execute() {
+StatusCode IOBoundAlgTask::operator()() {
 
   IAlgorithm* ialg      = m_algorithm.get();
   Algorithm*  this_algo = dynamic_cast<Algorithm*>( ialg );

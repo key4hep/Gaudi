@@ -154,7 +154,6 @@ private:
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
   Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<std::string>  m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
                                                           "Maximum number of simultaneous I/O-bound algorithms"};
   Gaudi::Property<bool>         m_simulateExecution{
@@ -165,7 +164,7 @@ private:
   Gaudi::Property<bool>        m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
                                                  "Dump intra-event concurrency dynamics to csv file"};
   Gaudi::Property<bool>        m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
-                                                 "Turn on preemptive way of scheduling of I/O-bound algorithms"};
+                                                 "Enable preemptive scheduling of I/O-bound algorithms"};
 
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};
 

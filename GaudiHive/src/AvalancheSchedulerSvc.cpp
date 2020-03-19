@@ -131,13 +131,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     return StatusCode::FAILURE;
   }
 
-  // Get dedicated scheduler for I/O-bound algorithms
-  if ( m_useIOBoundAlgScheduler ) {
-    m_IOBoundAlgScheduler = serviceLocator()->service( m_IOBoundAlgSchedulerSvcName );
-    if ( !m_IOBoundAlgScheduler.isValid() )
-      fatal() << "Error retrieving IOBoundSchedulerAlgSvc interface IAccelerator." << endmsg;
-  }
-
   // Set the MaxEventsInFlight parameters from the number of WB stores
   m_maxEventsInFlight = m_whiteboard->getNumberOfStores();
 
@@ -910,38 +903,37 @@ StatusCode AvalancheSchedulerSvc::enqueue( unsigned int iAlgo, int si, EventCont
         // schedule the task
         tbb::task::enqueue( *algoTask );
         ++m_algosInFlight;
-        sc = setAlgState( iAlgo, eventContext, AState::SCHEDULED );
-
-        ON_DEBUG debug() << "Algorithm " << index2algname( iAlgo ) << " was submitted on event " << eventContext->evt()
-                         << " in slot " << si << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
 
       } else { // schedule the blocking algorithm, if not too many of them already in flight
 
         auto promote2ExecutedClosure = [this, iAlgo, iAlgoPtr, algName, eventContext, blocking]() {
           auto iAlgPtrCopy{iAlgoPtr};
-          // Release algorithm
           this->m_algResourcePool->releaseAlgorithm( algName, iAlgPtrCopy ).ignore();
-
           this->m_actionsQueue.push( [this, iAlgo, iAlgoPtr, eventContext, blocking]() {
             return this->AvalancheSchedulerSvc::promoteToExecuted( iAlgo, eventContext->slot(), eventContext,
                                                                    blocking );
           } );
           return StatusCode::SUCCESS;
         };
-        IOBoundAlgTask* theTask =
-            new IOBoundAlgTask( iAlgoPtr, *eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
-        // schedule the task
-        ++m_IOBoundAlgosInFlight;
-        sc = m_IOBoundAlgScheduler->push( *theTask ).andThen( [this, algName, iAlgo, si, eventContext]() {
-          ON_DEBUG debug() << "[Asynchronous] Algorithm " << algName << " was submitted on event "
-                           << eventContext->evt() << " in slot " << si << ". Algorithms scheduled are "
-                           << m_IOBoundAlgosInFlight << endmsg;
 
-          // Update alg state
-          return setAlgState( iAlgo, eventContext, AState::SCHEDULED );
-        } );
+        auto theTask =
+            IOBoundAlgTask( iAlgoPtr, *eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
+
+        // Schedule the blocking task in an independent thread
+        ++m_IOBoundAlgosInFlight;
+        std::thread _t( std::move( theTask ) );
+        _t.detach();
 
       } // end scheduling blocking Algorithm
+
+      sc = setAlgState( iAlgo, eventContext, AState::SCHEDULED );
+
+      ON_DEBUG debug() << "Algorithm " << algName << " was submitted on event " << eventContext->evt() << " in slot "
+                       << si << ". Algorithms scheduled: " << m_algosInFlight + m_IOBoundAlgosInFlight
+                       << ( !blocking ? ""
+                                      : ( " (oversubscribed with " + std::to_string( m_IOBoundAlgosInFlight ) +
+                                          " blocking ones)" ) )
+                       << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
       AlgoExecutionTask theTask( this, serviceLocator(), m_algExecStateSvc );
@@ -950,7 +942,6 @@ StatusCode AvalancheSchedulerSvc::enqueue( unsigned int iAlgo, int si, EventCont
       --m_algosInFlight;
       sc = StatusCode::SUCCESS;
     }
-
   } else { // if no Algorithm instance available, retry later
 
     // Add the algorithm to the retry queue
