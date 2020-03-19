@@ -240,8 +240,7 @@ namespace Gaudi::Functional::details {
       }
       template <template <typename> class Handle, typename I, typename IT>
       auto operator()( const Handle<Gaudi::Range_<I, IT>>& h ) -> const In {
-        auto x = h.get();
-        return x;
+        return h.get();
       }
       template <template <typename> class Handle, typename I, typename IT>
       auto operator()( const Handle<Gaudi::NamedRange_<I, IT>>& h ) -> const In {
@@ -305,7 +304,7 @@ namespace Gaudi::Functional::details {
         ++m_i;
         return *this;
       }
-      const iterator& operator--() {
+      iterator& operator--() {
         --m_i;
         return *this;
       }

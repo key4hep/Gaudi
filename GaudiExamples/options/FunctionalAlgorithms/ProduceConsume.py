@@ -84,8 +84,7 @@ app.TopAlg = [
         InputLocations=[
             str(VectorDataProducer1.OutputLocation),
             str(VectorDataProducer2.OutputLocation)
-        ],
-        OutputLocation="/Event/wurst"),
+        ]),
     FrExpTransformer("FrExpTransformer"),
     LdExpTransformer("LdExpTransfomer"),
     OptFrExpTransformer("OptFrExpTransformer"),

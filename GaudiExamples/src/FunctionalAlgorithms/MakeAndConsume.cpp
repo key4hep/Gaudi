@@ -372,7 +372,7 @@ namespace Gaudi::Examples {
 
     SRangesToIntVector( const std::string& name, ISvcLocator* svcLoc )
         : MergingTransformer( name, svcLoc, {"InputRanges", {}},
-                              {"OutputLocation", "/Event/MyConcatenatedIntVector"} ) {}
+                              {"OutputLocation", "/Event/MyConcatenatedIntFromSVector"} ) {}
 
     std::vector<int> operator()(
         const Gaudi::Functional::vector_of_const_<Gaudi::Range_<std::vector<S const*>>>& SVectors ) const override {

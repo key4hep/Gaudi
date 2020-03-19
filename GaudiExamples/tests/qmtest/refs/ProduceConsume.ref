@@ -46,7 +46,7 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v33r0)
-                                          running on lbquantaperf01 on Thu Mar 19 12:23:19 2020
+                                          running on lbquantaperf01 on Thu Mar 19 13:47:12 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -68,7 +68,7 @@ VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /
 VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector2
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
-IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/wurst
+IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
 FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
 FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
 FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7
@@ -101,7 +101,7 @@ SDataProducer1       INFO storing KeyedContainer of size 3 into /Event/S1
 SDataProducer2       INFO storing KeyedContainer of size 10 into /Event/S2
 SRangesToIntVector   INFO Concatening range of size 3
 SRangesToIntVector   INFO Concatening range of size 10
-SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntVector
+SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -117,7 +117,7 @@ VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /
 VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector2
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
-IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/wurst
+IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
 FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
 FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
 FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7
@@ -146,7 +146,7 @@ SDataProducer1       INFO storing KeyedContainer of size 3 into /Event/S1
 SDataProducer2       INFO storing KeyedContainer of size 10 into /Event/S2
 SRangesToIntVector   INFO Concatening range of size 3
 SRangesToIntVector   INFO Concatening range of size 10
-SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntVector
+SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
 ApplicationMgr       INFO Application Manager Stopped successfully
 CountingConsumer     INFO Number of counters : 3
  |    Counter                                      |
