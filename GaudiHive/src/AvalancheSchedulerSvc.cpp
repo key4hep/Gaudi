@@ -910,8 +910,7 @@ StatusCode AvalancheSchedulerSvc::schedule( unsigned int iAlgo, int si, EventCon
           auto iAlgPtrCopy{iAlgoPtr};
           this->m_algResourcePool->releaseAlgorithm( algName, iAlgPtrCopy ).ignore();
           this->m_actionsQueue.push( [this, iAlgo, iAlgoPtr, eventContext, blocking]() {
-            return this->AvalancheSchedulerSvc::signoff( iAlgo, eventContext->slot(), eventContext,
-                                                                   blocking );
+            return this->AvalancheSchedulerSvc::signoff( iAlgo, eventContext->slot(), eventContext, blocking );
           } );
           return StatusCode::SUCCESS;
         };
@@ -929,10 +928,10 @@ StatusCode AvalancheSchedulerSvc::schedule( unsigned int iAlgo, int si, EventCon
       sc = setAlgState( iAlgo, eventContext, AState::SCHEDULED );
 
       ON_DEBUG debug() << "Algorithm " << algName << " was submitted on event " << eventContext->evt() << " in slot "
-                       << si << ". Algorithms scheduled: " << m_algosInFlight + m_IOBoundAlgosInFlight
-                       << ( !blocking ? ""
-                                      : ( " (oversubscribed with " + std::to_string( m_IOBoundAlgosInFlight ) +
-                                          " blocking ones)" ) )
+                       << si << ". Scheduled algorithms: " << m_algosInFlight + m_IOBoundAlgosInFlight
+                       << ( m_useIOBoundAlgScheduler
+                                ? " (including " + std::to_string( m_IOBoundAlgosInFlight ) + " off the runtime)"
+                                : "" )
                        << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
@@ -960,8 +959,7 @@ StatusCode AvalancheSchedulerSvc::schedule( unsigned int iAlgo, int si, EventCon
 /**
  * The call to this method is triggered only from within the AlgoExecutionTask.
  */
-StatusCode AvalancheSchedulerSvc::signoff( unsigned int iAlgo, int si, EventContext* eventContext,
-                                                     bool blocking ) {
+StatusCode AvalancheSchedulerSvc::signoff( unsigned int iAlgo, int si, EventContext* eventContext, bool blocking ) {
 
   const std::string& algName( index2algname( iAlgo ) );
 
@@ -984,7 +982,11 @@ StatusCode AvalancheSchedulerSvc::signoff( unsigned int iAlgo, int si, EventCont
   StatusCode sc = setAlgState( iAlgo, eventContext, state, true );
 
   ON_DEBUG debug() << ( blocking ? "[Asynchronous] " : "" ) << "Algorithm " << algName << " executed in slot " << si
-                   << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
+                   << ". Scheduled algorithms: " << m_algosInFlight + m_IOBoundAlgosInFlight
+                   << ( m_useIOBoundAlgScheduler
+                            ? " (including " + std::to_string( m_IOBoundAlgosInFlight ) + " off the runtime)"
+                            : "" )
+                   << endmsg;
 
   // Prompt a call to updateStates
   m_needsUpdate.store( true );
