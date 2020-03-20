@@ -38,6 +38,7 @@
 #if TBB_INTERFACE_VERSION_MAJOR < 12
 #  include "tbb/task_scheduler_init.h"
 #endif // TBB_INTERFACE_VERSION_MAJOR < 12
+#include "tbb/task.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )
@@ -897,8 +898,8 @@ StatusCode AvalancheSchedulerSvc::schedule( unsigned int iAlgo, int si, EventCon
         m_scheduledQueue.push( {iAlgo, si, eventContext, rank, iAlgoPtr, blocking} );
 
         // launch a TBB task that will execute the Algorithm according to the above queued specs
-        tbb::task* algoTask =
-            new ( tbb::task::allocate_root() ) AlgoExecutionTask( this, serviceLocator(), m_algExecStateSvc );
+        auto algoTask = new ( tbb::task::allocate_root() )
+            AlgoExecutionTask<tbb::task>( this, serviceLocator(), m_algExecStateSvc );
 
         // schedule the task
         tbb::task::enqueue( *algoTask );
@@ -934,7 +935,7 @@ StatusCode AvalancheSchedulerSvc::schedule( unsigned int iAlgo, int si, EventCon
                        << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
-      AlgoExecutionTask theTask( this, serviceLocator(), m_algExecStateSvc );
+      AlgoExecutionTask<tbb::task> theTask( this, serviceLocator(), m_algExecStateSvc );
       ++m_algosInFlight;
       theTask.execute();
       --m_algosInFlight;
