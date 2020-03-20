@@ -102,10 +102,8 @@ build:gcc9:opt:python3:
 check-formatting:
   stage: build
   dependencies: []
-  image: debian:unstable
+  image: gitlab-registry.cern.ch/gaudi/gaudi/format-checker:latest
   script:
-    - apt update && apt install -y clang-format-8 python-pip git
-    - pip install yapf==0.24.0
     - ci-utils/check-formatting
   artifacts:
     paths:
