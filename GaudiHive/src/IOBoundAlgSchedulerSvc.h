@@ -62,7 +62,7 @@ private:
 
   // Actions management -----------------------------------------------------
 
-  typedef std::function<StatusCode()> action;
+  typedef std::function<void()> action;
   /// This is done since the copy of the lambda storage is too expensive
   // typedef std::shared_ptr<action> actionPtr;
   /// Queue where closures are stored and picked for execution

@@ -13,7 +13,6 @@
 #include "RetCodeGuard.h"
 
 // Framework
-#include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
@@ -53,23 +52,20 @@ tbb::task* AlgoExecutionTask::execute() {
   if ( !Gaudi::Concurrency::ThreadInitDone ) {
     log << MSG::DEBUG << "New thread detected: 0x" << std::hex << pthread_self() << std::dec
         << ". Doing thread local initialization." << endmsg;
-    SmartIF<IThreadPoolSvc> tps;
-    tps = m_serviceLocator->service( "ThreadPoolSvc" );
-    if ( !tps.isValid() ) {
-      log << MSG::ERROR << "unable to get the ThreadPoolSvc to trigger thread local initialization" << endmsg;
-      throw GaudiException( "retrieval of ThrePoolSvc failed", "AlgoExecutionTask", StatusCode::FAILURE );
+    if ( SmartIF<IThreadPoolSvc> tps{m_serviceLocator->service( "ThreadPoolSvc" )} ) {
+      tps->initThisThread();
+    } else {
+      log << MSG::ERROR << "Unable to get the ThreadPoolSvc to trigger thread local initialization" << endmsg;
+      throw GaudiException( "Retrieval of ThreadPoolSvc failed", "AlgoExecutionTask", StatusCode::FAILURE );
     }
-
-    tps->initThisThread();
   }
 
   // select the appropriate store
   this_algo->whiteboard()->selectStore( evtCtx.valid() ? evtCtx.slot() : 0 ).ignore();
-  StatusCode sc( StatusCode::FAILURE );
   try {
     RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-    sc = iAlgoPtr->sysExecute( evtCtx );
-    if ( UNLIKELY( !sc.isSuccess() ) ) {
+
+    if ( auto sc = iAlgoPtr->sysExecute( evtCtx ); UNLIKELY( !sc ) ) {
       log << MSG::WARNING << "Execution of algorithm " << algName << " failed" << endmsg;
       eventfailed = true;
     }
@@ -96,11 +92,10 @@ tbb::task* AlgoExecutionTask::execute() {
   // Release algorithm
   m_scheduler->m_algResourcePool->releaseAlgorithm( algName, iAlgoPtr ).ignore();
 
-  // Create a lambda to update scheduler state
+  // schedule a sign-off of what happened in this task
   auto schedulerPtr = m_scheduler; // can't capture m_scheduler directly for some reason (implied this* ?)
   m_scheduler->m_actionsQueue.push( [schedulerPtr, taskSpec]() -> StatusCode {
-    return schedulerPtr->signoff( taskSpec.algIndex, taskSpec.slotIndex, taskSpec.contextPtr,
-                                            taskSpec.blocking );
+    return schedulerPtr->signoff( taskSpec.algIndex, taskSpec.slotIndex, taskSpec.contextPtr, taskSpec.blocking );
   } );
 
   Gaudi::Hive::setCurrentContextEvt( -1 );

@@ -26,7 +26,7 @@ class IAlgTask {
 public:
   virtual ~IAlgTask() = default;
 
-  virtual StatusCode operator()() = 0;
+  virtual void operator()() = 0;
 };
 
 #endif /* GAUDIKERNEL_GAUDIKERNEL_IALGTASK_H_ */

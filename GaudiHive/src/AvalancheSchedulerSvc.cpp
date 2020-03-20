@@ -912,7 +912,6 @@ StatusCode AvalancheSchedulerSvc::schedule( unsigned int iAlgo, int si, EventCon
           this->m_actionsQueue.push( [this, iAlgo, iAlgoPtr, eventContext, blocking]() {
             return this->AvalancheSchedulerSvc::signoff( iAlgo, eventContext->slot(), eventContext, blocking );
           } );
-          return StatusCode::SUCCESS;
         };
 
         auto theTask =
