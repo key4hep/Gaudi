@@ -13,6 +13,44 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+## [v33r1][] - 2020-03-23
+This release contains multiple fixes and some ABI changes, in particular:
+- `StatusCode` values not checked now produce a compile time warning.
+- some interfaces have been changed to accept `std::string_view` instead of `const std::string&`
+
+By default, Gaudi now uses LCG 97 (ROOT 6.20/02).
+
+### Changed
+- Removed `FindXercesC.cmake` now that new versions of Xerces are integrated with CMake (!1048)
+- Add `[[nodiscard]]` attribute to `StatusCode` (!763)
+- Use local memory pool in EvtStoreSvc (!1026)
+- Deprecate use of `AnyDataHandle` (!1029)
+- Cleanup some string handling & remove long deprecated functions (!1016)
+- confDB2: Use 'PublicToolHandle', 'PrivateToolHandle' and 'ServiceHandle' instead of GaudiHandleBase as cpp_type (!1034)
+
+### Added
+- Add options to EvtStoreSvc to restrict registering addresses (#84, !1032)
+
+### Fixed
+- Make formatting check more stable and fast (!1050)
+- Fix propagation of `GaudiSequencer` `RootInTES` (#94, !990)
+- Fix handling of const vector in `DataObjectHandle` for `MergingTransformer` (!1045)
+- Minor fixes to build on MacOS (!1044)
+- Avoid explicit call to `EnableAutoLoading` for ROOT > 6.18 (!1036)
+- Use PyROOT nullptr instead of None (1035)
+- Support `DataObjectHandle<Gaudi::NamedRange_<T>>` (!1043)
+- AlgExecStateSvc: Remove a fatal message and minor cleanups (!1037)
+- Improve memory management in `ParticlePropertySvc` (!1040)
+- JobOptionSvc: Fix DUMPFILE option (!1041)
+- Resolve "GaudiConfigDB2: Fragile handling of templated components" (#115, !1042)
+- Prefer `std::scoped_lock` over `lock_guard` (!1030, !1038)
+- Reduce dynamic allocation in `GaudiKernel/Time.h` (!1033)
+- Allow legacy algorithms to work with LHCb condition handles (!1031)
+- Fix Cling warnings when using `GaudiPython::Helper` struct (!1028)
+- Define a module `__spec__` for Configurables (!1027)
+- clang requires -ffp-contract=fast with -mfma to actually enable FMA instructions (!1022)
+- genconf: Fixing the handling of NAN (!1025)
+
 ## [v33r0][] - 2019-12-16
 This major release of Gaudi contains additions, improvements and fixes, but most of all it adds
 the agreed on copyright statement and license:
@@ -444,7 +482,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r0...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r1...master
+[v33r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r0...v33r1
 [v33r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...v33r0
 [v32r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r1...v32r2
 [v32r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...v32r1

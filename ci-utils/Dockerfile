@@ -11,8 +11,8 @@
 
 # IMPORTANT: when an update is needed, run
 #
-# docker build -t gitlab-registry.cern.ch/gaudi/format-checker .
-# docker push gitlab-registry.cern.ch/gaudi/format-checker
+# docker build -t gitlab-registry.cern.ch/gaudi/gaudi/format-checker .
+# docker push gitlab-registry.cern.ch/gaudi/gaudi/format-checker
 
 FROM debian:unstable
 
