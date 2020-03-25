@@ -245,8 +245,8 @@ private:
 
   // States management ------------------------------------------------------
 
-  /// Loop on algorithm in the slots and promote them to successive states
-  StatusCode updateStates();
+  /// Loop on all slots to schedule DATAREADY algorithms and sign off ready events
+  StatusCode iterate();
 
   // Update algorithm state in the appropriate event slot
   StatusCode setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );

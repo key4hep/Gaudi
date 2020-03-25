@@ -395,7 +395,7 @@ void AvalancheSchedulerSvc::activate() {
 
     // If all queued actions have been processed, update the slot states
     if ( m_needsUpdate.load() && m_actionsQueue.empty() ) {
-      sc = updateStates();
+      sc = iterate();
       ON_VERBOSE {
         if ( sc.isFailure() )
           verbose() << "updateStates did not succeed (which is not bad per se)." << endmsg;
@@ -489,7 +489,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
       result = StatusCode::FAILURE;
     }
 
-    if ( this->updateStates().isFailure() ) {
+    if ( this->iterate().isFailure() ) {
       error() << "Failed to call AvalancheSchedulerSvc::updateStates for slot " << thisSlotNum << endmsg;
       result = StatusCode::FAILURE;
     }
@@ -560,18 +560,15 @@ StatusCode AvalancheSchedulerSvc::tryPopFinishedEvent( EventContext*& eventConte
 }
 
 //--------------------------------------------------------------------------
-// States Management
 
 /**
- * Update the state of the algorithms.
- * The oldest events are checked before the newest, in order to reduce the
- * event backlog.
- * To check if the event is finished the algorithm checks if:
- * * No algorithms have been signed off by the control flow
- * * No algorithms have been signed off by the data flow
- * * No algorithms have been scheduled
+ * Loop on all slots to schedule DATAREADY algorithms, sign off ready ones or
+ * detect execution stalls. To check if an event is finished the method verifies
+ * that the root control flow decision of the task precedence graph is resolved
+ * and there are no algorithms moving in-between INITIAL and EVTACCEPTED FSM
+ * states.
  */
-StatusCode AvalancheSchedulerSvc::updateStates() {
+StatusCode AvalancheSchedulerSvc::iterate() {
 
   StatusCode global_sc( StatusCode::SUCCESS );
 
