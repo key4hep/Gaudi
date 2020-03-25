@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIHIVE_ALGOEXECUTIONTASK_H
-#define GAUDIHIVE_ALGOEXECUTIONTASK_H
+#ifndef GAUDIHIVE_ALGTASK_H
+#define GAUDIHIVE_ALGTASK_H
 
 #include "AvalancheSchedulerSvc.h"
 #include "RetCodeGuard.h"
@@ -39,15 +39,24 @@ public:
   AlgoExecutionTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem )
       : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ){};
 
+  AlgoExecutionTask( AvalancheSchedulerSvc::TaskSpec&& ts, AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator,
+                     IAlgExecStateSvc* aem )
+      : m_ts( std::move( ts ) ), m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ){};
+
   T* execute() override {
 
-    // Get queue data
-    AvalancheSchedulerSvc::TaskSpec taskSpec;
-    if ( !m_scheduler->m_scheduledQueue.try_pop( taskSpec ) ) return nullptr;
+    SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
+    MsgStream            log( messageSvc, "AlgoExecutionTask" );
 
-    std::string   algName  = m_scheduler->index2algname( taskSpec.algIndex );
-    EventContext& evtCtx   = *taskSpec.contextPtr;
-    IAlgorithm*   iAlgoPtr = taskSpec.algPtr;
+    // Get task specification dynamically if it was not provided statically
+    if ( !m_ts.algPtr )
+      if ( !m_scheduler->m_scheduledQueue.try_pop( m_ts ) ) {
+        log << MSG::WARNING << "Specification not complete or void while task is running" << endmsg;
+        return nullptr;
+      }
+
+    EventContext& evtCtx   = *( m_ts.contextPtr );
+    IAlgorithm*&  iAlgoPtr = m_ts.algPtr;
 
     Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( iAlgoPtr );
     if ( !this_algo ) { throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE ); }
@@ -57,9 +66,6 @@ public:
 
     // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
     const SmartIF<IProperty> appmgr( m_serviceLocator );
-
-    SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
-    MsgStream            log( messageSvc, "AlgoExecutionTask" );
 
     if ( !Gaudi::Concurrency::ThreadInitDone ) {
       log << MSG::DEBUG << "New thread detected: 0x" << std::hex << pthread_self() << std::dec
@@ -78,47 +84,47 @@ public:
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
 
       if ( auto sc = iAlgoPtr->sysExecute( evtCtx ); UNLIKELY( !sc ) ) {
-        log << MSG::WARNING << "Execution of algorithm " << algName << " failed" << endmsg;
+        log << MSG::WARNING << "Execution of algorithm " << m_ts.algName << " failed" << endmsg;
         eventfailed = true;
       }
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
-      log << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << algName
+      log << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << m_ts.algName
           << endmsg;
       log << MSG::ERROR << Exception << endmsg;
       eventfailed = true;
     } catch ( const std::exception& Exception ) {
-      log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << algName << endmsg;
+      log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << m_ts.algName << endmsg;
       log << MSG::ERROR << Exception.what() << endmsg;
       eventfailed = true;
     } catch ( ... ) {
-      log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << algName << endmsg;
+      log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << m_ts.algName << endmsg;
       eventfailed = true;
     }
 
-    // DP it is important to propagate the failure of an event.
-    // We need to stop execution when this happens so that execute run can
-    // then receive the FAILURE
+    // A FAILURE in algorithm execution must be communicated to the framework
     m_aess->updateEventStatus( eventfailed, evtCtx );
 
     // Release algorithm
-    m_scheduler->m_algResourcePool->releaseAlgorithm( algName, iAlgoPtr ).ignore();
+    m_scheduler->m_algResourcePool->releaseAlgorithm( m_ts.algName, iAlgoPtr ).ignore();
 
-    // schedule a sign-off of what happened in this task
-    auto schedulerPtr = m_scheduler; // can't capture m_scheduler directly for some reason (implied this* ?)
-    m_scheduler->m_actionsQueue.push( [schedulerPtr, taskSpec]() -> StatusCode {
-      return schedulerPtr->signoff( taskSpec.algIndex, taskSpec.slotIndex, taskSpec.contextPtr, taskSpec.blocking );
-    } );
+    // schedule a sign-off of the Algorithm execution
+    m_scheduler->m_actionsQueue.push( std::move( [schdlr = this->m_scheduler, ts = std::move( this->m_ts )]() mutable {
+      return schdlr->signoff( std::move( ts ) );
+    } ) );
 
     Gaudi::Hive::setCurrentContextEvt( -1 );
 
     return nullptr;
   }
 
+  void operator()() { execute(); };
+
 private:
-  AvalancheSchedulerSvc* m_scheduler;
-  IAlgExecStateSvc*      m_aess;
-  SmartIF<ISvcLocator>   m_serviceLocator;
+  AvalancheSchedulerSvc::TaskSpec m_ts;
+  AvalancheSchedulerSvc*          m_scheduler;
+  IAlgExecStateSvc*               m_aess;
+  SmartIF<ISvcLocator>            m_serviceLocator;
 };
 
 #endif

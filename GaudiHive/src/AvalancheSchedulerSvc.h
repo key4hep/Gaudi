@@ -31,6 +31,7 @@
 #include <functional>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <unordered_map>
 #include <vector>
@@ -250,9 +251,10 @@ private:
   // Update algorithm state in the appropriate event slot
   StatusCode setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );
 
-  /// Algorithm promotion
-  StatusCode schedule( unsigned int iAlgo, int si, EventContext*, bool blocking );
-  StatusCode signoff( unsigned int iAlgo, int si, EventContext*, bool blocking );
+  /// Algorithm scheduling
+  struct TaskSpec;
+  StatusCode schedule( TaskSpec&& );
+  StatusCode signoff( TaskSpec&& );
 
   /// Check if scheduling in a particular slot is in a stall
   bool isStalled( const EventSlot& ) const;
@@ -274,17 +276,38 @@ private:
 
   /// Struct to hold entries in the alg queues
   struct TaskSpec {
-    unsigned int  algIndex;
-    int           slotIndex;
-    EventContext* contextPtr;
-    unsigned int  rank;
-    IAlgorithm*   algPtr;
-    bool          blocking;
+    /// Default constructor
+    TaskSpec(){};
+    TaskSpec( IAlgorithm* algPtr, unsigned int algIndex, const std::string& algName, unsigned int algRank,
+              bool blocking, int slotIndex, EventContext* eventContext )
+        : algPtr( algPtr )
+        , algIndex( algIndex )
+        , algName( algName )
+        , algRank( algRank )
+        , blocking( blocking )
+        , slotIndex( slotIndex )
+        , contextPtr( eventContext ){};
+    /// Copy constructor (to keep a lambda capturing a TaskSpec storable as a std::function value)
+    TaskSpec( const TaskSpec& ) = default;
+    /// Assignment operator
+    TaskSpec& operator=( const TaskSpec& ) = delete;
+    /// Move constructor
+    TaskSpec( TaskSpec&& ) = default;
+    /// Move assignment
+    TaskSpec& operator=( TaskSpec&& ) = default;
+
+    IAlgorithm*      algPtr{nullptr};
+    unsigned int     algIndex{0};
+    std::string_view algName;
+    unsigned int     algRank{0};
+    bool             blocking{false};
+    int              slotIndex{0};
+    EventContext*    contextPtr{nullptr};
   };
 
   /// Comparison operator to sort the queues
   struct AlgQueueSort {
-    bool operator()( const TaskSpec& i, const TaskSpec& j ) const { return ( i.rank < j.rank ); }
+    bool operator()( const TaskSpec& i, const TaskSpec& j ) const { return ( i.algRank < j.algRank ); }
   };
 
   /// Queues for scheduled algorithms
