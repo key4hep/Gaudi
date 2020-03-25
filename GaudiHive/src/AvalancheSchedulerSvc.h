@@ -248,8 +248,8 @@ private:
   /// Loop on all slots to schedule DATAREADY algorithms and sign off ready events
   StatusCode iterate();
 
-  // Update algorithm state in the appropriate event slot
-  StatusCode setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );
+  // Update algorithm state and, optionally, revise states of other downstream algorithms
+  StatusCode revise( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );
 
   /// Algorithm scheduling
   struct TaskSpec;

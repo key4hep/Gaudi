@@ -673,9 +673,8 @@ StatusCode AvalancheSchedulerSvc::iterate() {
 }
 
 //---------------------------------------------------------------------------
-// Update states in the appropriate event slot
-StatusCode AvalancheSchedulerSvc::setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state,
-                                               bool iterate ) {
+// Update algorithm state and, optionally, revise states of other downstream algorithms
+StatusCode AvalancheSchedulerSvc::revise( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate ) {
   StatusCode sc;
   auto       slotIndex = contextPtr->slot();
   EventSlot& slot      = m_eventSlots[slotIndex];
@@ -691,7 +690,7 @@ StatusCode AvalancheSchedulerSvc::setAlgState( unsigned int iAlgo, EventContext*
     if ( LIKELY( sc.isSuccess() ) ) {
       ON_VERBOSE verbose() << "Promoted " << index2algname( iAlgo ) << " to " << state << " on slot " << slotIndex
                            << " and subslot " << subSlotIndex << endmsg;
-      // TODO: remove iteration from here, or rename the method
+      // Revise states of algorithms downstream the precedence graph
       if ( iterate ) sc = m_precSvc->iterate( subSlot, cs );
     }
   } else {
@@ -701,7 +700,7 @@ StatusCode AvalancheSchedulerSvc::setAlgState( unsigned int iAlgo, EventContext*
     if ( LIKELY( sc.isSuccess() ) ) {
       ON_VERBOSE verbose() << "Promoted " << index2algname( iAlgo ) << " to " << state << " on slot " << slotIndex
                            << endmsg;
-      // TODO: remove iteration from here, or rename the method
+      // Revise states of algorithms downstream the precedence graph
       if ( iterate ) sc = m_precSvc->iterate( slot, cs );
     }
   }
@@ -914,7 +913,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
 
       } // end scheduling blocking Algorithm
 
-      sc = setAlgState( algIndex, contextPtr, AState::SCHEDULED );
+      sc = revise( algIndex, contextPtr, AState::SCHEDULED );
 
       ON_DEBUG debug() << "Algorithm " << algName << " was submitted on event " << contextPtr->evt() << " in slot "
                        << slotIndex << ". Scheduled algorithms: " << m_algosInFlight + m_IOBoundAlgosInFlight
@@ -932,7 +931,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
     }
   } else { // if no Algorithm instance available, retry later
 
-    sc = setAlgState( ts.algIndex, ts.contextPtr, AState::RESOURCELESS );
+    sc = revise( ts.algIndex, ts.contextPtr, AState::RESOURCELESS );
     // Add the algorithm to the retry queue
     m_retryQueue.push( std::move( ts ) );
   }
@@ -967,7 +966,7 @@ StatusCode AvalancheSchedulerSvc::signoff( TaskSpec&& tspec ) {
                      : AState::ERROR;
 
   // Update alg state and iterate PrecedenceSvc
-  StatusCode sc = setAlgState( ts.algIndex, ts.contextPtr, state, true );
+  StatusCode sc = revise( ts.algIndex, ts.contextPtr, state, true );
 
   ON_DEBUG debug() << ( ts.blocking ? "[Asynchronous] " : "" ) << "Algorithm " << ts.algName << " executed in slot "
                    << ts.slotIndex << ". Scheduled algorithms: " << m_algosInFlight + m_IOBoundAlgosInFlight
