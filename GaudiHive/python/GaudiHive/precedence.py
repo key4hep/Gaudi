@@ -194,8 +194,10 @@ class CruncherSequence(object):
             import pprint
 
             print("\n===== Statistics on Algorithms =====")
-            print("Total number of algorithm nodes: ", len(self.unique_algos) +
-                  sum([self.dupl_algos[i] - 1 for i in self.dupl_algos]))
+            print(
+                "Total number of algorithm nodes: ",
+                len(self.unique_algos) + sum(
+                    [self.dupl_algos[i] - 1 for i in self.dupl_algos]))
             print("Number of unique algorithms: ", len(self.unique_algos))
             print("  -->", len(self.dupl_algos),
                   "of them being re-used with the following distribution: ",
@@ -203,8 +205,10 @@ class CruncherSequence(object):
             # pprint.pprint(dupl_algos)
 
             print("\n===== Statistics on Sequencers =====")
-            print("Total number of sequencers: ", len(self.unique_sequencers) +
-                  sum([self.dupl_seqs[i] - 1 for i in self.dupl_seqs]))
+            print(
+                "Total number of sequencers: ",
+                len(self.unique_sequencers) + sum(
+                    [self.dupl_seqs[i] - 1 for i in self.dupl_seqs]))
             print("Number of unique sequencers: ", len(self.unique_sequencers))
             print("  -->", len(self.dupl_seqs),
                   "of them being re-used with the following distribution: ",
