@@ -40,7 +40,7 @@ scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
     OutputLevel=DEBUG,
     Optimizer="DRE",
-    PreemptiveIOBoundTasks=False,
+    PreemptiveBlockingTasks=False,
     DumpIntraEventDynamics=False)
 
 AlgResourcePool(OutputLevel=DEBUG)
