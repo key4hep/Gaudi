@@ -159,7 +159,7 @@ class CruncherSequence(object):
 
     def __init__(self,
                  timeValue,
-                 IOboolValue,
+                 BlockingBoolValue,
                  sleepFraction,
                  cfgPath,
                  dfgPath,
@@ -170,14 +170,14 @@ class CruncherSequence(object):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
-        IOboolValue -- *BooleanValue object to set whether an algorithm has to experience IO-bound execution
+        BlockingBoolValue -- *BooleanValue object to set whether an algorithm has to experience CPU-blocking execution
         cfgPath -- relative to $GAUDIHIVEROOT/data path to GRAPHML file with control flow dependencies
         dfgPath -- relative to $GAUDIHIVEROOT/data path to GRAPHML file with data flow dependencies
         showStat -- print out statistics on precedence graph
         """
 
         self.timeValue = timeValue
-        self.IOboolValue = IOboolValue
+        self.BlockingBoolValue = BlockingBoolValue
         self.sleepFraction = sleepFraction
 
         self.cfg = nx.read_graphml(_buildFilePath(cfgPath))
@@ -303,7 +303,7 @@ class CruncherSequence(object):
                     varRuntime=varRuntime,
                     avgRuntime=avgRuntime,
                     SleepFraction=self.sleepFraction
-                    if self.IOboolValue.get() else 0.,
+                    if self.BlockingBoolValue.get() else 0.,
                     Timeline=self.enableTimeline)
 
                 self._declare_data_deps(algo_name, algo_daughter)

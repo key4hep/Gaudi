@@ -94,8 +94,8 @@ class IAlgorithm;
  *   o Other mechanisms of throughput maximization
  *
  *     The scheduler is able to maximize the overall throughput of data processing
- *     by scheduling the CPU-blocking tasks efficiently. The mechanism can be
- *     applied to the following types of tasks:
+ *     by preemptive scheduling CPU-blocking tasks. The mechanism can be applied
+ *     to the following types of tasks:
  *     - I/O-bound tasks;
  *     - tasks with computation offloading (accelerators, GPGPUs, clouds,
  *       quantum computing devices..joke);
@@ -157,17 +157,18 @@ private:
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
   Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
-                                                          "Maximum number of simultaneous I/O-bound algorithms"};
-  Gaudi::Property<bool>         m_simulateExecution{
+  Gaudi::Property<unsigned int> m_maxBlockingAlgosInFlight{
+      this, "MaxBlockingAlgosInFlight", 0, "Maximum allowed number of simultaneously running CPU-blocking algorithms"};
+  Gaudi::Property<bool> m_simulateExecution{
       this, "SimulateExecution", false,
       "Flag to perform single-pass simulation of execution flow before the actual execution"};
   Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
                                                   "The following modes are currently available: PCE, COD, DRE,  E"};
   Gaudi::Property<bool>        m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
                                                  "Dump intra-event concurrency dynamics to csv file"};
-  Gaudi::Property<bool>        m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
-                                                 "Enable preemptive scheduling of I/O-bound algorithms"};
+  Gaudi::Property<bool>        m_enablePreemptiveBlockingTasks{
+      this, "PreemptiveBlockingTasks", false,
+      "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly."};
 
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};
 
@@ -219,9 +220,6 @@ private:
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
-  /// A shortcut to IO-bound algorithm scheduler
-  SmartIF<IAccelerator> m_IOBoundAlgScheduler;
-
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
 
@@ -241,7 +239,7 @@ private:
   unsigned int m_algosInFlight = 0;
 
   /// Number of algorithms presently in flight
-  unsigned int m_IOBoundAlgosInFlight = 0;
+  unsigned int m_blockingAlgosInFlight = 0;
 
   // States management ------------------------------------------------------
 

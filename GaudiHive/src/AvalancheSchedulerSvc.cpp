@@ -598,7 +598,7 @@ StatusCode AvalancheSchedulerSvc::iterate() {
       uint               algIndex{*it};
       const std::string& algName{index2algname( algIndex )};
       unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
-      bool               blocking{m_useIOBoundAlgScheduler ? m_precSvc->isBlocking( algName ) : false};
+      bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
 
       partial_sc =
           schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, thisSlot.eventContext.get() ) );
@@ -615,7 +615,7 @@ StatusCode AvalancheSchedulerSvc::iterate() {
         uint               algIndex{*it};
         const std::string& algName{index2algname( algIndex )};
         unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
-        bool               blocking{m_useIOBoundAlgScheduler ? m_precSvc->isBlocking( algName ) : false};
+        bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
         partial_sc =
             schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, subslot.eventContext.get() ) );
       }
@@ -868,7 +868,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
 
   auto ts = std::move( tspec );
 
-  if ( UNLIKELY( ts.blocking && m_IOBoundAlgosInFlight == m_maxIOBoundAlgosInFlight ) ) {
+  if ( UNLIKELY( ts.blocking && m_blockingAlgosInFlight == m_maxBlockingAlgosInFlight ) ) {
     m_retryQueue.push( std::move( ts ) );
     return StatusCode::SUCCESS;
   }
@@ -909,7 +909,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
         auto algoTask = AlgoExecutionTask<ITask>( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
 
         // Schedule the blocking task in an independent thread
-        ++m_IOBoundAlgosInFlight;
+        ++m_blockingAlgosInFlight;
         std::thread _t( std::move( algoTask ) );
         _t.detach();
 
@@ -919,9 +919,9 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
 
       ON_DEBUG debug() << "Scheduled " << algName << " [slot:" << slotIndex << ", event:" << contextPtr->evt()
                        << ", rank:" << algRank << ", blocking:" << ( blocking ? "yes" : "no" )
-                       << "]. Scheduled algorithms: " << m_algosInFlight + m_IOBoundAlgosInFlight
-                       << ( m_useIOBoundAlgScheduler
-                                ? " (including " + std::to_string( m_IOBoundAlgosInFlight ) + " - off TBB runtime)"
+                       << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
+                       << ( m_enablePreemptiveBlockingTasks
+                                ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
                                 : "" )
                        << endmsg;
 
@@ -958,7 +958,7 @@ StatusCode AvalancheSchedulerSvc::signoff( TaskSpec&& tspec ) {
   if ( LIKELY( !ts.blocking ) )
     --m_algosInFlight;
   else
-    --m_IOBoundAlgosInFlight;
+    --m_blockingAlgosInFlight;
 
   const AlgExecState& algstate = m_algExecStateSvc->algExecState( ts.algPtr, *( ts.contextPtr ) );
   AState              state    = algstate.execStatus().isSuccess()
@@ -970,9 +970,9 @@ StatusCode AvalancheSchedulerSvc::signoff( TaskSpec&& tspec ) {
 
   ON_DEBUG debug() << "Executed " << ts.algName << " [slot:" << ts.slotIndex << ", event:" << ts.contextPtr->evt()
                    << ", rank:" << ts.algRank << ", blocking:" << ( ts.blocking ? "yes" : "no" )
-                   << "]. Scheduled algorithms: " << m_algosInFlight + m_IOBoundAlgosInFlight
-                   << ( m_useIOBoundAlgScheduler
-                            ? " (including " + std::to_string( m_IOBoundAlgosInFlight ) + " - off TBB runtime)"
+                   << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
+                   << ( m_enablePreemptiveBlockingTasks
+                            ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
                             : "" )
                    << endmsg;
 

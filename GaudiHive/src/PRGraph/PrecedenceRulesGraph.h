@@ -70,7 +70,7 @@ namespace precedence {
         , m_algorithm( algo )
         , m_inverted( inverted )
         , m_allPass( allPass )
-        , m_isIOBound( algo->isIOBound() ) {}
+        , m_isBlocking( algo->isBlocking() ) {}
 
     std::string m_name{""};
     int         m_nodeIndex{-1};
@@ -84,7 +84,7 @@ namespace precedence {
     /// Whether the selection result is relevant or always "pass"
     bool m_allPass{false};
     /// If an algorithm is blocking
-    bool m_isIOBound{false};
+    bool m_isBlocking{false};
   };
 
   struct DecisionHubProps {
@@ -374,7 +374,7 @@ namespace precedence {
   };
 
   struct Operations {
-    std::string operator()( const AlgoProps& props ) const { return props.m_isIOBound ? "IO-bound" : "CPU-bound"; }
+    std::string operator()( const AlgoProps& props ) const { return props.m_isBlocking ? "Blocking" : "CPU-bound"; }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
 
@@ -493,7 +493,7 @@ namespace concurrency {
         , m_algoName( algoPtr->name() )
         , m_inverted( inverted )
         , m_allPass( allPass )
-        , m_isIOBound( algoPtr->isIOBound() ){};
+        , m_isBlocking( algoPtr->isBlocking() ){};
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -522,10 +522,10 @@ namespace concurrency {
     /// Get algorithm index
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
 
-    /// Set the I/O-boundness flag
-    void setIOBound( bool value ) { m_isIOBound = value; }
-    /// Check if algorithm is I/O-bound
-    bool isIOBound() const { return m_isIOBound; }
+    /// Set the CPU-blocking flag
+    void setBlocking( bool value ) { m_isBlocking = value; }
+    /// Check if algorithm is CPU-blocking
+    bool isBlocking() const { return m_isBlocking; }
 
     /// Check if positive control flow decision is enforced
     bool isOptimist() const { return m_allPass; };
@@ -552,8 +552,8 @@ namespace concurrency {
     bool m_allPass;
     /// Algorithm rank of any kind
     float m_rank = -1;
-    /// If an algorithm is blocking
-    bool m_isIOBound;
+    /// If an algorithm is CPU-blocking
+    bool m_isBlocking;
 
     /// Algorithm outputs (DataNodes)
     std::vector<DataNode*> m_outputs;
