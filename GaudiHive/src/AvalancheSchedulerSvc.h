@@ -252,7 +252,7 @@ private:
   /// Algorithm scheduling
   struct TaskSpec;
   StatusCode schedule( TaskSpec&& );
-  StatusCode signoff( TaskSpec&& );
+  StatusCode signoff( const TaskSpec& );
 
   /// Check if scheduling in a particular slot is in a stall
   bool isStalled( const EventSlot& ) const;

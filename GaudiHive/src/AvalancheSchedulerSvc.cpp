@@ -864,9 +864,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
 //---------------------------------------------------------------------------
 
-StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
-
-  auto ts = std::move( tspec );
+StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
 
   if ( UNLIKELY( ts.blocking && m_blockingAlgosInFlight == m_maxBlockingAlgosInFlight ) ) {
     m_retryQueue.push( std::move( ts ) );
@@ -891,7 +889,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
       int              slotIndex{ts.slotIndex};
       EventContext*    contextPtr{ts.contextPtr};
 
-      if ( LIKELY( !ts.blocking ) ) {
+      if ( LIKELY( !blocking ) ) {
         // Add the algorithm to the scheduled queue
         m_scheduledQueue.push( std::move( ts ) );
 
@@ -947,11 +945,9 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& tspec ) {
 //---------------------------------------------------------------------------
 
 /**
- * The call to this method is triggered only from within the AlgoExecutionTask.
+ * The call to this method is triggered only from within the AlgTask.
  */
-StatusCode AvalancheSchedulerSvc::signoff( TaskSpec&& tspec ) {
-
-  auto ts = std::move( tspec );
+StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
 
   Gaudi::Hive::setCurrentContext( ts.contextPtr );
 

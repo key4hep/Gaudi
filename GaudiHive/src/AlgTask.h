@@ -109,9 +109,8 @@ public:
     m_scheduler->m_algResourcePool->releaseAlgorithm( m_ts.algName, iAlgoPtr ).ignore();
 
     // schedule a sign-off of the Algorithm execution
-    m_scheduler->m_actionsQueue.push( std::move( [schdlr = this->m_scheduler, ts = std::move( this->m_ts )]() mutable {
-      return schdlr->signoff( std::move( ts ) );
-    } ) );
+    m_scheduler->m_actionsQueue.push(
+        std::move( [schdlr = this->m_scheduler, ts = std::move( this->m_ts )]() { return schdlr->signoff( ts ); } ) );
 
     Gaudi::Hive::setCurrentContextEvt( -1 );
 
