@@ -894,8 +894,8 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
         m_scheduledQueue.push( std::move( ts ) );
 
         // Prepare a TBB task that will execute the Algorithm according to the above queued specs
-        auto algoTask = new ( tbb::task::allocate_root() )
-            AlgoExecutionTask<tbb::task>( this, serviceLocator(), m_algExecStateSvc );
+        auto algoTask =
+            new ( tbb::task::allocate_root() ) AlgTask<tbb::task>( this, serviceLocator(), m_algExecStateSvc );
 
         // schedule the task
         tbb::task::enqueue( *algoTask );
@@ -904,7 +904,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
       } else { // schedule blocking algorithm in independent thread
 
         // Prepare Gaudi task that will execute the Algorithm according to the above queued specs
-        auto algoTask = AlgoExecutionTask<ITask>( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
+        auto algoTask = AlgTask<ITask>( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
 
         // Schedule the blocking task in an independent thread
         ++m_blockingAlgosInFlight;
@@ -924,7 +924,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
                        << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
-      AlgoExecutionTask<ITask> theTask( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
+      AlgTask<ITask> theTask( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
       ++m_algosInFlight;
       theTask();
       --m_algosInFlight;

@@ -113,7 +113,7 @@ class IAlgorithm;
 class AvalancheSchedulerSvc : public extends<Service, IScheduler> {
 
   template <class T>
-  friend class AlgoExecutionTask;
+  friend class AlgTask;
 
 public:
   /// Constructor

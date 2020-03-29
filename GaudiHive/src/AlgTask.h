@@ -34,13 +34,13 @@ namespace Gaudi {
 } // namespace Gaudi
 
 template <class T>
-class AlgoExecutionTask : public T {
+class AlgTask : public T {
 public:
-  AlgoExecutionTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem )
+  AlgTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem )
       : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ){};
 
-  AlgoExecutionTask( AvalancheSchedulerSvc::TaskSpec&& ts, AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator,
-                     IAlgExecStateSvc* aem )
+  AlgTask( AvalancheSchedulerSvc::TaskSpec&& ts, AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator,
+           IAlgExecStateSvc* aem )
       : m_ts( std::move( ts ) ), m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ){};
 
   T* execute() override {
