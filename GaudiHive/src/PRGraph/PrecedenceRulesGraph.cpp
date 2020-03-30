@@ -319,39 +319,51 @@ namespace concurrency {
     StatusCode global_sc( StatusCode::SUCCESS, true );
 
     // Production of DataNodes by AlgorithmNodes (DataNodes are created here)
+    std::vector<decltype(m_algoNameToAlgoNodeMap)::value_type*> sortedAlgs;
     for ( auto& algo : m_algoNameToAlgoNodeMap ) {
+      sortedAlgs.push_back (&algo);
+    }
+    std::sort (sortedAlgs.begin(), sortedAlgs.end(),
+               [] (const auto* a, const auto* b) { return a->first < b->first; });
+    for ( auto* algo : sortedAlgs ) {
 
-      auto& outputs = m_algoNameToAlgoOutputsMap[algo.first];
+      auto& outputs = m_algoNameToAlgoOutputsMap[algo->first];
       for ( auto output : outputs ) {
         const auto sc = addDataNode( output );
         if ( !sc.isSuccess() ) {
-          error() << "Extra producer (" << algo.first << ") for DataObject @ " << output
+          error() << "Extra producer (" << algo->first << ") for DataObject @ " << output
                   << " has been detected: this is not allowed." << endmsg;
           global_sc = sc;
         }
         auto dataNode = getDataNode( output );
-        dataNode->addProducerNode( algo.second.get() );
-        algo.second->addOutputDataNode( dataNode );
+        dataNode->addProducerNode( algo->second.get() );
+        algo->second->addOutputDataNode( dataNode );
 
         // Mirror the action above in the BGL-based graph
-        if ( m_enableAnalysis ) boost::add_edge( node( algo.second->name() ), node( output.fullKey() ), m_PRGraph );
+        if ( m_enableAnalysis ) boost::add_edge( node( algo->second->name() ), node( output.fullKey() ), m_PRGraph );
       }
     }
 
     // Consumption of DataNodes by AlgorithmNodes
+    sortedAlgs.clear();
     for ( auto& algo : m_algoNameToAlgoNodeMap ) {
+      sortedAlgs.push_back (&algo);
+    }
+    std::sort (sortedAlgs.begin(), sortedAlgs.end(),
+               [] (const auto* a, const auto* b) { return a->first < b->first; });
+    for ( auto* algo : sortedAlgs ) {
 
-      for ( auto input : m_algoNameToAlgoInputsMap[algo.first] ) {
+      for ( auto input : m_algoNameToAlgoInputsMap[algo->first] ) {
 
         auto itP = m_dataPathToDataNodeMap.find( input );
 
         DataNode* dataNode = ( itP != m_dataPathToDataNodeMap.end() ? getDataNode( input ) : nullptr );
         if ( dataNode ) {
-          dataNode->addConsumerNode( algo.second.get() );
-          algo.second->addInputDataNode( dataNode );
+          dataNode->addConsumerNode( algo->second.get() );
+          algo->second->addInputDataNode( dataNode );
 
           // Mirror the action above in the BGL-based graph
-          if ( m_enableAnalysis ) boost::add_edge( node( input.fullKey() ), node( algo.second->name() ), m_PRGraph );
+          if ( m_enableAnalysis ) boost::add_edge( node( input.fullKey() ), node( algo->second->name() ), m_PRGraph );
         }
       }
     }
@@ -594,15 +606,24 @@ namespace concurrency {
     ost << idt << "Data origins and destinations:\n";
     ost << idt << "====================================\n";
 
+    std::vector<const DataObjID*> vec;
+    vec.reserve (m_dataPathToDataNodeMap.size());
     for ( auto& pair : m_dataPathToDataNodeMap ) {
+      vec.push_back (&pair.first);
+    }
+    std::sort (vec.begin(), vec.end(),
+               []( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); } );
 
-      for ( auto algoNode : pair.second->getProducers() ) ost << idt << "  " << algoNode->name() << "\n";
+    for (const DataObjID* id : vec) {
+      const DataNode& node = *m_dataPathToDataNodeMap.find(*id)->second;
+
+      for ( auto algoNode : node.getProducers() ) ost << idt << "  " << algoNode->name() << "\n";
 
       ost << idt << "  V\n";
-      ost << idt << "  o " << pair.first << "\n";
+      ost << idt << "  o " << id << "\n";
       ost << idt << "  V\n";
 
-      for ( auto algoNode : pair.second->getConsumers() ) ost << idt << "  " << algoNode->name() << "\n";
+      for ( auto algoNode : node.getConsumers() ) ost << idt << "  " << algoNode->name() << "\n";
 
       ost << idt << "====================================\n";
     }
