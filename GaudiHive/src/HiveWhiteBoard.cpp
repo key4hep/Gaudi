@@ -26,10 +26,6 @@
 #include "ThreadLocalStorage.h"
 #include "boost/callable_traits.hpp"
 #include "tbb/concurrent_queue.h"
-#include "tbb/tbb_stddef.h"
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-#  include "tbb/recursive_mutex.h"
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 #include <mutex>
 #include <utility>
 
@@ -67,12 +63,7 @@ namespace {
   // C++20: replace with http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0290r2.html
   //         http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4033.html
 
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-  template <typename T, typename Mutex = tbb::recursive_mutex, typename ReadLock = typename Mutex::scoped_lock,
-#else
-  template <typename T, typename Mutex = std::recursive_mutex,
-            typename ReadLock = std::scoped_lock<std::recursive_mutex>,
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
+  template <typename T, typename Mutex = std::recursive_mutex, typename ReadLock = std::scoped_lock<Mutex>,
             typename WriteLock = ReadLock>
   class Synced {
     T             m_obj;
