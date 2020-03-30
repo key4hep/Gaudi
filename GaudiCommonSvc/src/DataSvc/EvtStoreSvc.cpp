@@ -19,16 +19,11 @@
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/System.h"
+#include "tbb/concurrent_queue.h"
 
 #include "ThreadLocalStorage.h"
 
 #include "boost/algorithm/string/predicate.hpp"
-
-#include "tbb/concurrent_queue.h"
-#include "tbb/tbb_stddef.h"
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-#  include "tbb/recursive_mutex.h"
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 
 #include <algorithm>
 #include <iomanip>
@@ -195,13 +190,7 @@ namespace {
     int                    eventNumber = -1;
   };
 
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-  template <typename T, typename Mutex = tbb::recursive_mutex, typename ReadLock = typename Mutex::scoped_lock,
-
-#else
-  template <typename T, typename Mutex = std::recursive_mutex,
-            typename ReadLock = std::scoped_lock<std::recursive_mutex>,
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
+  template <typename T, typename Mutex = std::recursive_mutex, typename ReadLock = std::scoped_lock<Mutex>,
             typename WriteLock = ReadLock>
   class Synced {
     T             m_obj;
