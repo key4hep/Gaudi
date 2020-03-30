@@ -187,6 +187,12 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
   // setting this pointer will avoid that a call to removeListener() during
   // the loop triggers a segfault
   m_currentIncidentType = &incident.type();
+  std::string curIncTyp;
+  if ( m_currentIncidentType != nullptr ) {
+    curIncTyp = *m_currentIncidentType;
+  } else {
+    curIncTyp = "UNKNOWN";
+  }
 
   bool firedSingleShot = false;
 
@@ -204,19 +210,19 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
       error() << "Exception with tag=" << exc.tag()
               << " is caught"
                  " handling incident "
-              << *m_currentIncidentType << endmsg;
+              << curIncTyp << " in listener " << getListenerName( listener.iListener ) << endmsg;
       error() << exc << endmsg;
       if ( listener.rethrow ) { throw exc; }
     } catch ( const std::exception& exc ) {
       error() << "Standard std::exception is caught"
                  " handling incident "
-              << *m_currentIncidentType << endmsg;
+              << curIncTyp << " in listener " << getListenerName( listener.iListener ) << endmsg;
       error() << exc.what() << endmsg;
       if ( listener.rethrow ) { throw exc; }
     } catch ( ... ) {
       error() << "UNKNOWN Exception is caught"
                  " handling incident "
-              << *m_currentIncidentType << endmsg;
+              << curIncTyp << " in listener " << getListenerName( listener.iListener ) << endmsg;
       if ( listener.rethrow ) { throw; }
     }
     // check wheter one of the listeners is singleShot
