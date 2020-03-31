@@ -18,23 +18,23 @@ namespace Gaudi::Functional {
 
   namespace details {
 
-    template <typename Signature, typename Traits_, bool isLegacy>
+    template <typename Derived, typename Signature, typename Traits_, bool isLegacy>
     struct Producer;
 
-    template <typename... Out, typename Traits_, bool legacy>
-    struct Producer<std::tuple<Out...>(), Traits_, legacy> : MultiTransformer<std::tuple<Out...>(), Traits_, legacy> {
-      using MultiTransformer<std::tuple<Out...>(), Traits_, legacy>::MultiTransformer;
+    template <typename Derived, typename... Out, typename Traits_, bool legacy>
+    struct Producer<Derived, std::tuple<Out...>(), Traits_, legacy> : MultiTransformer<Derived, std::tuple<Out...>(), Traits_, legacy> {
+      using MultiTransformer<Derived, std::tuple<Out...>(), Traits_, legacy>::MultiTransformer;
     };
 
-    template <typename Out, typename Traits_, bool legacy>
-    struct Producer<Out(), Traits_, legacy> : Transformer<Out(), Traits_, legacy> {
-      using Transformer<Out(), Traits_, legacy>::Transformer;
+    template <typename Derived, typename Out, typename Traits_, bool legacy>
+    struct Producer<Derived, Out(), Traits_, legacy> : Transformer<Derived, Out(), Traits_, legacy> {
+      using Transformer<Derived, Out(), Traits_, legacy>::Transformer;
     };
 
   } // namespace details
 
-  template <typename Signature, typename Traits_ = Traits::useDefaults>
-  using Producer = details::Producer<Signature, Traits_, details::isLegacy<Traits_>>;
+  template <typename Derived, typename Signature, typename Traits_ = Traits::useDefaults>
+  using Producer = details::Producer<Derived, Signature, Traits_, details::isLegacy<Traits_>>;
 
 } // namespace Gaudi::Functional
 

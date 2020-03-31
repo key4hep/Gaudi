@@ -28,12 +28,12 @@ namespace Gaudi ::Functional {
 
   namespace details {
 
-    template <typename Signature, typename Traits_, bool isLegacy>
+    template <typename Derived, typename Signature, typename Traits_, bool isLegacy>
     struct Transformer;
 
     // general N -> 1 algorithms
-    template <typename Out, typename... In, typename Traits_>
-    struct Transformer<Out( const In&... ), Traits_, true>
+    template <typename Derived, typename Out, typename... In, typename Traits_>
+    struct Transformer<Derived, Out( const In&... ), Traits_, true>
         : DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_> {
       using DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
@@ -41,11 +41,11 @@ namespace Gaudi ::Functional {
       StatusCode execute() override final {
         try {
           if constexpr ( sizeof...( In ) == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )() );
+            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )() );
           } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )( Gaudi::Hive::currentContext() ) );
+            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )( Gaudi::Hive::currentContext() ) );
           } else {
-            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), this->m_inputs ) );
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
@@ -53,13 +53,10 @@ namespace Gaudi ::Functional {
           return e.code();
         }
       }
-
-      // instead they MUST implement this operator
-      virtual Out operator()( const In&... ) const = 0;
     };
 
-    template <typename Out, typename... In, typename Traits_>
-    struct Transformer<Out( const In&... ), Traits_, false>
+    template <typename Derived, typename Out, typename... In, typename Traits_>
+    struct Transformer<Derived, Out( const In&... ), Traits_, false>
         : DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_> {
       using DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
@@ -67,11 +64,11 @@ namespace Gaudi ::Functional {
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
           if constexpr ( sizeof...( In ) == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )() );
+            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )() );
           } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )( ctx ) );
+            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )( ctx ) );
           } else {
-            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
+            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), ctx, this->m_inputs ) );
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
@@ -79,19 +76,16 @@ namespace Gaudi ::Functional {
           return e.code();
         }
       }
-
-      // instead they MUST implement this operator
-      virtual Out operator()( const In&... ) const = 0;
     };
 
     //
     // general N -> M algorithms
     //
-    template <typename Signature, typename Traits_, bool isLegacy>
+    template <typename Derived, typename Signature, typename Traits_, bool isLegacy>
     struct MultiTransformer;
 
-    template <typename... Out, typename... In, typename Traits_>
-    struct MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, true>
+    template <typename Derived, typename... Out, typename... In, typename Traits_>
+    struct MultiTransformer<Derived, std::tuple<Out...>( const In&... ), Traits_, true>
         : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
       using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
@@ -120,13 +114,10 @@ namespace Gaudi ::Functional {
           return e.code();
         }
       }
-
-      // instead they MUST implement this operator
-      virtual std::tuple<Out...> operator()( const In&... ) const = 0;
     };
 
-    template <typename... Out, typename... In, typename Traits_>
-    struct MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, false>
+    template <typename Derived, typename... Out, typename... In, typename Traits_>
+    struct MultiTransformer<Derived, std::tuple<Out...>( const In&... ), Traits_, false>
         : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
       using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
@@ -139,15 +130,15 @@ namespace Gaudi ::Functional {
                 if constexpr ( sizeof...( In ) == 0 ) {
                   std::apply( [&ohandle...](
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              ( *this )() );
+                              ( *static_cast<Derived const*>(this) )() );
                 } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
                   std::apply( [&ohandle...](
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              ( *this )( ctx ) );
+                              ( *static_cast<Derived const*>(this) )( ctx ) );
                 } else {
                   std::apply( [&ohandle...](
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
+                              filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), ctx, this->m_inputs ) );
                 }
               },
               this->m_outputs );
@@ -158,19 +149,16 @@ namespace Gaudi ::Functional {
           return e.code();
         }
       }
-
-      // instead they MUST implement this operator
-      virtual std::tuple<Out...> operator()( const In&... ) const = 0;
     };
 
     //
     // general N -> M algorithms with filter functionality
     //
-    template <typename Signature, typename Traits_, bool isLegacy>
+    template <typename Derived, typename Signature, typename Traits_, bool isLegacy>
     struct MultiTransformerFilter;
 
-    template <typename... Out, typename... In, typename Traits_>
-    struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, true>
+    template <typename Derived, typename... Out, typename... In, typename Traits_>
+    struct MultiTransformerFilter<Derived, std::tuple<Out...>( const In&... ), Traits_, true>
         : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
       using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
@@ -185,7 +173,7 @@ namespace Gaudi ::Functional {
                              ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                              return passed;
                            },
-                           filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+                           filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), this->m_inputs ) );
                        GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
                      },
                      this->m_outputs )
@@ -196,13 +184,10 @@ namespace Gaudi ::Functional {
           return e.code();
         }
       }
-
-      // instead they MUST implement this operator
-      virtual std::tuple<bool, Out...> operator()( const In&... ) const = 0;
     };
 
-    template <typename... Out, typename... In, typename Traits_>
-    struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, false>
+    template <typename Derived, typename... Out, typename... In, typename Traits_>
+    struct MultiTransformerFilter<Derived, std::tuple<Out...>( const In&... ), Traits_, false>
         : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
       using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
@@ -216,7 +201,7 @@ namespace Gaudi ::Functional {
                              ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                              return passed;
                            },
-                           filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
+                           filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), ctx, this->m_inputs ) );
                      },
                      GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
 
@@ -228,20 +213,17 @@ namespace Gaudi ::Functional {
           return e.code();
         }
       }
-
-      // instead they MUST implement this operator
-      virtual std::tuple<bool, Out...> operator()( const In&... ) const = 0;
     };
   } // namespace details
 
-  template <typename Signature, typename Traits_ = Traits::useDefaults>
-  using Transformer = details::Transformer<Signature, Traits_, details::isLegacy<Traits_>>;
+  template <typename Derived, typename Signature, typename Traits_ = Traits::useDefaults>
+  using Transformer = details::Transformer<Derived, Signature, Traits_, details::isLegacy<Traits_>>;
 
-  template <typename Signature, typename Traits_ = Traits::useDefaults>
-  using MultiTransformer = details::MultiTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
+  template <typename Derived, typename Signature, typename Traits_ = Traits::useDefaults>
+  using MultiTransformer = details::MultiTransformer<Derived, Signature, Traits_, details::isLegacy<Traits_>>;
 
-  template <typename Signature, typename Traits_ = Traits::useDefaults>
-  using MultiTransformerFilter = details::MultiTransformerFilter<Signature, Traits_, details::isLegacy<Traits_>>;
+  template <typename Derived, typename Signature, typename Traits_ = Traits::useDefaults>
+  using MultiTransformerFilter = details::MultiTransformerFilter<Derived, Signature, Traits_, details::isLegacy<Traits_>>;
 
 } // namespace Gaudi::Functional
 

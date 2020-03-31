@@ -18,10 +18,10 @@ namespace Gaudi {
       // using ObjectType = DataObject;
       using ObjectType = KeyedContainer<KeyedObject<std::size_t>>;
 
-      struct CreateObject : Gaudi::Functional::Producer<ObjectType()> {
+      struct CreateObject : Gaudi::Functional::Producer<CreateObject, ObjectType()> {
         CreateObject( const std::string& name, ISvcLocator* svcLoc )
             : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/SomeData" ) ) {}
-        ObjectType operator()() const override {
+        ObjectType operator()() const{
           ObjectType o;
           o.setVersion( 42 );
           info() << "Created object with version " << static_cast<int>( o.version() ) << endmsg;
@@ -30,10 +30,10 @@ namespace Gaudi {
       };
       DECLARE_COMPONENT( CreateObject )
 
-      struct UseObject : Gaudi::Functional::Consumer<void( const ObjectType& )> {
+      struct UseObject : Gaudi::Functional::Consumer<UseObject, void( const ObjectType& )> {
         UseObject( const std::string& name, ISvcLocator* svcLoc )
             : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/SomeData" ) ) {}
-        void operator()( const ObjectType& o ) const override {
+        void operator()( const ObjectType& o ) const {
           info() << "Retrieved object with version " << static_cast<int>( o.version() ) << endmsg;
           if ( o.version() != 42 ) throw GaudiException( "Wrong object version", name(), StatusCode::FAILURE );
         }

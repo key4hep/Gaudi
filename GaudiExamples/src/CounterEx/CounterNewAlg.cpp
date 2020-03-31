@@ -55,9 +55,9 @@
  */
 // ============================================================================
 
-class CounterNewAlg : public Gaudi::Functional::Producer<int()> {
+class CounterNewAlg : public Gaudi::Functional::Producer<CounterNewAlg, int()> {
 public:
-  int operator()() const override;
+  int operator()() const;
 
   CounterNewAlg( const std::string& name, ISvcLocator* pSvc )
       : Producer( name, pSvc, KeyValue( "OutputLocation", "dummy" ) ) {

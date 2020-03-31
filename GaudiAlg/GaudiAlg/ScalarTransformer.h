@@ -19,16 +19,16 @@ namespace Gaudi::Functional {
   template <typename ScalarOp, typename TransformerSignature, typename Traits_ = Traits::useDefaults>
   class ScalarTransformer;
   template <typename ScalarOp, typename Out, typename... In, typename Traits_>
-  class ScalarTransformer<ScalarOp, Out( const In&... ), Traits_> : public Transformer<Out( const In&... ), Traits_> {
+  class ScalarTransformer<ScalarOp, Out( const In&... ), Traits_> : public Transformer<ScalarOp, Out( const In&... ), Traits_> {
 
     /// Access the scalar operator
     const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>( *this ); }
 
   public:
-    using Transformer<Out( const In&... ), Traits_>::Transformer;
+    using Transformer<ScalarOp, Out( const In&... ), Traits_>::Transformer;
 
     /// The main operator
-    Out operator()( const In&... in ) const override final {
+    Out operator()( const In&... in ) const {
       const auto inrange = details::zip::range( in... );
       Out        out;
       out.reserve( inrange.size() );
@@ -49,16 +49,16 @@ namespace Gaudi::Functional {
   class MultiScalarTransformer;
   template <typename ScalarOp, typename... Out, typename... In, typename Traits_>
   class MultiScalarTransformer<ScalarOp, std::tuple<Out...>( const In&... ), Traits_>
-      : public MultiTransformer<std::tuple<Out...>( const In&... ), Traits_> {
+      : public MultiTransformer<ScalarOp, std::tuple<Out...>( const In&... ), Traits_> {
 
     /// Access the scalar operator
     const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>( *this ); }
 
   public:
-    using MultiTransformer<std::tuple<Out...>( const In&... ), Traits_>::MultiTransformer;
+    using MultiTransformer<ScalarOp, std::tuple<Out...>( const In&... ), Traits_>::MultiTransformer;
 
     /// The main operator
-    std::tuple<Out...> operator()( const In&... in ) const override final {
+    std::tuple<Out...> operator()( const In&... in ) const {
       const auto         inrange = details::zip::range( in... );
       std::tuple<Out...> out;
       std::apply( [sz = inrange.size()]( auto&&... o ) { ( o.reserve( sz ), ... ); }, out );
