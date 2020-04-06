@@ -46,7 +46,7 @@ public:
   T* execute() override {
 
     SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
-    MsgStream            log( messageSvc, "AlgoExecutionTask" );
+    MsgStream            log( messageSvc, "AlgTask" );
 
     // Get task specification dynamically if it was not provided statically
     if ( !m_ts.algPtr )
@@ -59,7 +59,7 @@ public:
     IAlgorithm*&  iAlgoPtr = m_ts.algPtr;
 
     Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( iAlgoPtr );
-    if ( !this_algo ) { throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE ); }
+    if ( !this_algo ) { throw GaudiException( "Cast to Algorithm failed!", "AlgTask", StatusCode::FAILURE ); }
 
     bool eventfailed = false;
     Gaudi::Hive::setCurrentContext( evtCtx );
@@ -74,7 +74,7 @@ public:
         tps->initThisThread();
       } else {
         log << MSG::ERROR << "Unable to get the ThreadPoolSvc to trigger thread local initialization" << endmsg;
-        throw GaudiException( "Retrieval of ThreadPoolSvc failed", "AlgoExecutionTask", StatusCode::FAILURE );
+        throw GaudiException( "Retrieval of ThreadPoolSvc failed", "AlgTask", StatusCode::FAILURE );
       }
     }
 

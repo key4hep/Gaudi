@@ -319,6 +319,17 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
+  // Inform about task scheduling prescriptions
+  info() << "Task scheduling settings:" << endmsg;
+  info() << " o Avalanche generation mode: "
+         << ( m_optimizationMode.empty() ? "disabled" : m_optimizationMode.toString() ) << endmsg;
+  info() << " o Preemptive scheduling of CPU-blocking tasks: "
+         << ( m_enablePreemptiveBlockingTasks
+                  ? ( "enabled (max. " + std::to_string( m_maxBlockingAlgosInFlight ) + " concurrent tasks)" )
+                  : "disabled" )
+         << endmsg;
+  info() << " o Scheduling of condition tasks: " << ( m_enableCondSvc ? "enabled" : "disabled" ) << endmsg;
+
   if ( m_showControlFlow ) m_precSvc->dumpControlFlow();
 
   if ( m_showDataFlow ) m_precSvc->dumpDataFlow();
