@@ -1,2 +1,3 @@
 cmake/GaudiProjectConfig.cmake export-subst
 release.notes export-subst
+*.icpp gitlab-language=cpp
