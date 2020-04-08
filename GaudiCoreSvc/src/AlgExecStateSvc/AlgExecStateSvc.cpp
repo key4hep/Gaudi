@@ -22,7 +22,7 @@ DECLARE_COMPONENT( AlgExecStateSvc )
 void AlgExecStateSvc::init() {
 
   const std::size_t slots = Gaudi::Concurrency::ConcurrencyFlags::concurrent()
-                                ? Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents()
+                                ? std::max( (size_t)1, Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents() )
                                 : 1;
 
   m_algStates.resize( slots );
