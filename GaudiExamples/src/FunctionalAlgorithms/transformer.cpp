@@ -18,8 +18,9 @@
 namespace Gaudi {
   namespace Examples {
 
-    struct SelectTracks final : Functional::Transformer<SelectTracks, Gaudi::Examples::MyTrack::Selection(
-                                    const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )> {
+    struct SelectTracks final
+        : Functional::Transformer<SelectTracks, Gaudi::Examples::MyTrack::Selection(
+                                                    const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )> {
 
       SelectTracks( const std::string& name, ISvcLocator* pSvc )
           : Transformer( name, pSvc, {KeyValue( "InputData", {"MyTracks"} )},

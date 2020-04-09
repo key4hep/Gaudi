@@ -21,7 +21,7 @@ namespace Gaudi {
       struct CreateObject : Gaudi::Functional::Producer<CreateObject, ObjectType()> {
         CreateObject( const std::string& name, ISvcLocator* svcLoc )
             : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/SomeData" ) ) {}
-        ObjectType operator()() const{
+        ObjectType operator()() const {
           ObjectType o;
           o.setVersion( 42 );
           info() << "Created object with version " << static_cast<int>( o.version() ) << endmsg;

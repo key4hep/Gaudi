@@ -41,11 +41,13 @@ namespace Gaudi ::Functional {
       StatusCode execute() override final {
         try {
           if constexpr ( sizeof...( In ) == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )() );
+            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>( this ) )() );
           } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )( Gaudi::Hive::currentContext() ) );
+            put( std::get<0>( this->m_outputs ),
+                 ( *static_cast<Derived const*>( this ) )( Gaudi::Hive::currentContext() ) );
           } else {
-            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), this->m_inputs ) );
+            put( std::get<0>( this->m_outputs ),
+                 filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>( this ), this->m_inputs ) );
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
@@ -64,11 +66,12 @@ namespace Gaudi ::Functional {
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
           if constexpr ( sizeof...( In ) == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )() );
+            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>( this ) )() );
           } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>(this) )( ctx ) );
+            put( std::get<0>( this->m_outputs ), ( *static_cast<Derived const*>( this ) )( ctx ) );
           } else {
-            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), ctx, this->m_inputs ) );
+            put( std::get<0>( this->m_outputs ),
+                 filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>( this ), ctx, this->m_inputs ) );
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
@@ -130,15 +133,17 @@ namespace Gaudi ::Functional {
                 if constexpr ( sizeof...( In ) == 0 ) {
                   std::apply( [&ohandle...](
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              ( *static_cast<Derived const*>(this) )() );
+                              ( *static_cast<Derived const*>( this ) )() );
                 } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
                   std::apply( [&ohandle...](
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              ( *static_cast<Derived const*>(this) )( ctx ) );
+                              ( *static_cast<Derived const*>( this ) )( ctx ) );
                 } else {
-                  std::apply( [&ohandle...](
-                                  auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), ctx, this->m_inputs ) );
+                  std::apply(
+                      [&ohandle...]( auto&&... data ) {
+                        ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+                      },
+                      filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>( this ), ctx, this->m_inputs ) );
                 }
               },
               this->m_outputs );
@@ -173,7 +178,7 @@ namespace Gaudi ::Functional {
                              ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                              return passed;
                            },
-                           filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), this->m_inputs ) );
+                           filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>( this ), this->m_inputs ) );
                        GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
                      },
                      this->m_outputs )
@@ -201,7 +206,8 @@ namespace Gaudi ::Functional {
                              ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                              return passed;
                            },
-                           filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), ctx, this->m_inputs ) );
+                           filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>( this ), ctx,
+                                                              this->m_inputs ) );
                      },
                      GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
 
@@ -223,7 +229,8 @@ namespace Gaudi ::Functional {
   using MultiTransformer = details::MultiTransformer<Derived, Signature, Traits_, details::isLegacy<Traits_>>;
 
   template <typename Derived, typename Signature, typename Traits_ = Traits::useDefaults>
-  using MultiTransformerFilter = details::MultiTransformerFilter<Derived, Signature, Traits_, details::isLegacy<Traits_>>;
+  using MultiTransformerFilter =
+      details::MultiTransformerFilter<Derived, Signature, Traits_, details::isLegacy<Traits_>>;
 
 } // namespace Gaudi::Functional
 

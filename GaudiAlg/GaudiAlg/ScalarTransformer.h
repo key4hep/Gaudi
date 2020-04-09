@@ -19,7 +19,8 @@ namespace Gaudi::Functional {
   template <typename ScalarOp, typename TransformerSignature, typename Traits_ = Traits::useDefaults>
   class ScalarTransformer;
   template <typename ScalarOp, typename Out, typename... In, typename Traits_>
-  class ScalarTransformer<ScalarOp, Out( const In&... ), Traits_> : public Transformer<ScalarOp, Out( const In&... ), Traits_> {
+  class ScalarTransformer<ScalarOp, Out( const In&... ), Traits_>
+      : public Transformer<ScalarOp, Out( const In&... ), Traits_> {
 
     /// Access the scalar operator
     const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>( *this ); }

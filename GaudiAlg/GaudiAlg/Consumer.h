@@ -31,7 +31,7 @@ namespace Gaudi::Functional {
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
-          filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), this->m_inputs );
+          filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>( this ), this->m_inputs );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -48,7 +48,7 @@ namespace Gaudi::Functional {
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
-          filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>(this), ctx, this->m_inputs );
+          filter_evtcontext_t<In...>::apply( *static_cast<Derived const*>( this ), ctx, this->m_inputs );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;

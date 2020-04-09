@@ -58,12 +58,12 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( IntDataProducer )
 
-  struct VectorDataProducer final : Gaudi::Functional::Producer<VectorDataProducer,std::vector<int>(), BaseClass_t> {
+  struct VectorDataProducer final : Gaudi::Functional::Producer<VectorDataProducer, std::vector<int>(), BaseClass_t> {
 
     VectorDataProducer( const std::string& name, ISvcLocator* svcLoc )
         : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyVector" ) ) {}
 
-    std::vector<int> operator()() const{
+    std::vector<int> operator()() const {
       info() << "executing VectorDataProducer, storing [3,3,3,3] into " << outputLocation() << endmsg;
       return {3, 3, 3, 3};
     }
@@ -108,7 +108,7 @@ namespace Gaudi::Examples {
         : Transformer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ),
                        KeyValue( "OutputLocation", "/Event/MyFloat" ) ) {}
 
-    float operator()( const int& input ) const{
+    float operator()( const int& input ) const {
       info() << "Converting: " << input << " from " << inputLocation() << " and storing it into " << outputLocation()
              << endmsg;
       return input;
@@ -117,7 +117,8 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( IntToFloatData )
 
-  struct IntFloatToFloatData final : Gaudi::Functional::Transformer<IntFloatToFloatData, float( const int&, const float& ), BaseClass_t> {
+  struct IntFloatToFloatData final
+      : Gaudi::Functional::Transformer<IntFloatToFloatData, float( const int&, const float& ), BaseClass_t> {
 
     IntFloatToFloatData( const std::string& name, ISvcLocator* svcLoc )
         : Transformer( name, svcLoc,
@@ -134,7 +135,8 @@ namespace Gaudi::Examples {
   DECLARE_COMPONENT( IntFloatToFloatData )
 
   struct IntIntToFloatFloatData final
-      : Gaudi::Functional::MultiTransformer<IntIntToFloatFloatData, std::tuple<float, float>( const int&, const int& ), BaseClass_t> {
+      : Gaudi::Functional::MultiTransformer<IntIntToFloatFloatData, std::tuple<float, float>( const int&, const int& ),
+                                            BaseClass_t> {
     IntIntToFloatFloatData( const std::string& name, ISvcLocator* svcLoc )
         : MultiTransformer(
               name, svcLoc,
@@ -142,7 +144,7 @@ namespace Gaudi::Examples {
               {KeyValue( "OutputLocation1", {"/Event/MyMultiFloat1"} ),
                KeyValue( "OutputLocation2", {"/Event/MyMultiFloat2"} )} ) {}
 
-    std::tuple<float, float> operator()( const int& input1, const int& input2 ) const{
+    std::tuple<float, float> operator()( const int& input1, const int& input2 ) const {
       info() << "Number of inputs : " << inputLocationSize() << ", number of outputs : " << outputLocationSize()
              << endmsg;
       info() << "Converting " << input1 << " from " << inputLocation<0>() << " and " << input2 << " from "
@@ -188,25 +190,23 @@ namespace Gaudi::Examples {
     FloatDataConsumer( const std::string& name, ISvcLocator* svcLoc )
         : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyFloat" ) ) {}
 
-    void operator()( const float& input ) const {
-      info() << "executing FloatDataConsumer: " << input << endmsg;
-    }
+    void operator()( const float& input ) const { info() << "executing FloatDataConsumer: " << input << endmsg; }
   };
 
   DECLARE_COMPONENT( FloatDataConsumer )
 
-  struct ContextConsumer final : Gaudi::Functional::Consumer<ContextConsumer, void( const EventContext& ), BaseClass_t> {
+  struct ContextConsumer final
+      : Gaudi::Functional::Consumer<ContextConsumer, void( const EventContext& ), BaseClass_t> {
 
     using Consumer::Consumer;
 
-    void operator()( const EventContext& ctx ) const {
-      info() << "executing ContextConsumer, got " << ctx << endmsg;
-    }
+    void operator()( const EventContext& ctx ) const { info() << "executing ContextConsumer, got " << ctx << endmsg; }
   };
 
   DECLARE_COMPONENT( ContextConsumer )
 
-  struct ContextTransformer final : Gaudi::Functional::Transformer<ContextTransformer, int( const EventContext& ), BaseClass_t> {
+  struct ContextTransformer final
+      : Gaudi::Functional::Transformer<ContextTransformer, int( const EventContext& ), BaseClass_t> {
 
     ContextTransformer( const std::string& name, ISvcLocator* svcLoc )
         : Transformer( name, svcLoc, KeyValue{"OutputLoc", "/Event/SomeOtherInt"} ) {}
@@ -219,7 +219,8 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( ContextTransformer )
 
-  struct ContextIntConsumer final : Gaudi::Functional::Consumer<ContextIntConsumer, void( const EventContext&, const int& ), BaseClass_t> {
+  struct ContextIntConsumer final
+      : Gaudi::Functional::Consumer<ContextIntConsumer, void( const EventContext&, const int& ), BaseClass_t> {
 
     ContextIntConsumer( const std::string& name, ISvcLocator* svcLoc )
         : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ) ) {}
@@ -231,7 +232,8 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( ContextIntConsumer )
 
-  struct VectorDoubleProducer final : Gaudi::Functional::Producer<VectorDoubleProducer, std::vector<double>(), BaseClass_t> {
+  struct VectorDoubleProducer final
+      : Gaudi::Functional::Producer<VectorDoubleProducer, std::vector<double>(), BaseClass_t> {
 
     VectorDoubleProducer( const std::string& name, ISvcLocator* svcLoc )
         : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyVectorOfDoubles" ) ) {}

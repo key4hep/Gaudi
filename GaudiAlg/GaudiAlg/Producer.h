@@ -22,7 +22,8 @@ namespace Gaudi::Functional {
     struct Producer;
 
     template <typename Derived, typename... Out, typename Traits_, bool legacy>
-    struct Producer<Derived, std::tuple<Out...>(), Traits_, legacy> : MultiTransformer<Derived, std::tuple<Out...>(), Traits_, legacy> {
+    struct Producer<Derived, std::tuple<Out...>(), Traits_, legacy>
+        : MultiTransformer<Derived, std::tuple<Out...>(), Traits_, legacy> {
       using MultiTransformer<Derived, std::tuple<Out...>(), Traits_, legacy>::MultiTransformer;
     };
 
