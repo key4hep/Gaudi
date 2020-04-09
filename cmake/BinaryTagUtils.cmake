@@ -219,7 +219,7 @@ function(get_host_binary_tag variable)
     set(HOST_BINARY_TAG ${HOST_BINARY_TAG} CACHE STRING "BINARY_TAG of the host")
     mark_as_advanced(HOST_BINARY_TAG)
   endif()
-  string(REGEX REPLACE "-opt\\$" "-${type}" value "${HOST_BINARY_TAG}")
+  string(REGEX REPLACE "-opt$" "-${type}" value "${HOST_BINARY_TAG}")
   set(${variable} ${value} PARENT_SCOPE)
 endfunction()
 
