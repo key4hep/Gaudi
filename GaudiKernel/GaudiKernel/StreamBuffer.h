@@ -122,11 +122,10 @@ public:
   /// Definition of the contained link set
   class ContainedLink {
   public:
-    ContainedObject* first;
-    long             second;
-    long             third;
-    ContainedLink() : first( 0 ), second( INVALID ), third( INVALID ) {}
-    ContainedLink( const ContainedLink& copy ) : first( copy.first ), second( copy.second ), third( copy.third ) {}
+    ContainedObject* first  = nullptr;
+    long             second = INVALID;
+    long             third  = INVALID;
+    ContainedLink()         = default;
     ContainedLink( ContainedObject* pObj, long hint, long link ) : first( pObj ), second( hint ), third( link ) {}
   };
   /// Definition of the contained link set
