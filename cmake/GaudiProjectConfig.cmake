@@ -569,6 +569,7 @@ main()")
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
+                           USE_SOURCE_PERMISSIONS
                            FILES_MATCHING
                            PATTERN "*.cmake"
                            PATTERN "*.cmake.in"

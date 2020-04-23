@@ -215,11 +215,19 @@ function(get_host_binary_tag variable)
   if(NOT HOST_BINARY_TAG)
     execute_process(COMMAND "${HOST_BINARY_TAG_COMMAND}"
                     OUTPUT_VARIABLE HOST_BINARY_TAG
+                    RESULT_VARIABLE HOST_BINARY_RETURN
+                    ERROR_VARIABLE  HOST_BINARY_ERROR
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(HOST_BINARY_TAG ${HOST_BINARY_TAG} CACHE STRING "BINARY_TAG of the host")
+    if(HOST_BINARY_RETURN OR NOT HOST_BINARY_TAG)
+      message(FATAL_ERROR "Error getting host binary tag\nFailed to execute ${HOST_BINARY_TAG_COMMAND}\n"
+                          "HOST_BINARY_TAG value: ${HOST_BINARY_TAG}\n"
+                          "Program Return Value: ${HOST_BINARY_RETURN}\n"
+                          "Error Message: ${HOST_BINARY_ERROR}\n")
+    endif()
     mark_as_advanced(HOST_BINARY_TAG)
   endif()
-  string(REGEX REPLACE "-opt\\$" "-${type}" value "${HOST_BINARY_TAG}")
+  string(REGEX REPLACE "-opt$" "-${type}" value "${HOST_BINARY_TAG}")
   set(${variable} ${value} PARENT_SCOPE)
 endfunction()
 
