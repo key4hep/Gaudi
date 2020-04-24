@@ -241,6 +241,9 @@ class Configurable(ConfigMetaHelper):
     def getName(self):
         return self.name
 
+    def getFullJobOptName(self):
+        return "{}/{}".format(self.__cpp_type__, self.name)
+
     def merge(self, other):
         '''
         Merge the properties of the other instance into the current one.
