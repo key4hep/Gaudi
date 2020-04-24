@@ -359,7 +359,12 @@ class _DictHelper(MutableMapping):
         return default
 
     #  __contains__, , get, __eq__,  __ne__
-    # popitem, clear, update, setdefault
+    # popitem, clear, setdefault
+
+    def update(self, otherMap):
+        self.is_dirty = True
+        for key, value in otherMap.items():
+            self.data[self.key_semantics.store(key)] = self.value_semantics.store(value)
 
     def opt_value(self):
         return {
