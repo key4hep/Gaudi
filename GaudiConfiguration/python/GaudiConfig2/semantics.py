@@ -364,7 +364,8 @@ class _DictHelper(MutableMapping):
     def update(self, otherMap):
         self.is_dirty = True
         for key, value in otherMap.items():
-            self.data[self.key_semantics.store(key)] = self.value_semantics.store(value)
+            self.data[self.key_semantics.store(
+                key)] = self.value_semantics.store(value)
 
     def opt_value(self):
         return {
