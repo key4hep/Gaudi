@@ -477,12 +477,6 @@ add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
 
 if(GAUDI_ATLAS)
-  # FIXME: this macro is used in ATLAS to simplify the migration to Gaudi v25,
-  #        unfortunately it's not possible to detect the version of Gaudi at this point
-  #        so we assume that any CMake-based build in ATLAS uses Gaudi >= v25
-  add_definitions(-DHAVE_GAUDI_PLUGINSVC)
-
-  add_definitions(-DATLAS_GAUDI_V21)
   add_definitions(-DATLAS)
   include(AthenaBuildFlags OPTIONAL)
 else()
