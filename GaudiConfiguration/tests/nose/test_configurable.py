@@ -73,6 +73,7 @@ def test_configurable():
 
     assert a.getFullJobOptName() == MyAlg.__cpp_type__ + '/abc'
 
+    assert a.toStringProperty() == MyAlg.__cpp_type__ + '/abc'
 
 def test_properties():
     p = MyAlg()
