@@ -20,6 +20,7 @@
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/Property.h>
 #include <gsl/span>
+#include <type_traits>
 
 #define GAUDI_ASSERT_THROW_NAME( cond, msg, name )                                                                     \
   if ( !cond ) throw GaudiException{msg, name, StatusCode::FAILURE};
@@ -113,9 +114,9 @@ namespace {
 
 extern "C" {
 // helper to invoke the factory from Python
-Gaudi::Application* _py_Gaudi__Application__create( const char* name, const c_opt_t* options, long n ) {
+Gaudi::Application* _py_Gaudi__Application__create( const char* name, const c_opt_t* options, unsigned long n ) {
   Gaudi::Application::Options opts;
-  gsl::span                   py_opts{options, n};
+  gsl::span                   py_opts{options, static_cast<std::remove_cv_t<decltype( gsl::dynamic_extent )>>( n )};
   for ( auto& opt : py_opts ) { opts[opt.key] = opt.value; }
   return Gaudi::Application::create( name, std::move( opts ) ).release();
 }

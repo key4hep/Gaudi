@@ -99,7 +99,7 @@ class Application(object):
             c_opts[idx].value = item[1].encode('ascii')
 
         self._impl = _GaudiKernelLib._py_Gaudi__Application__create(
-            appType.encode('ascii'), c_opts, ctypes.c_long(len(c_opts)))
+            appType.encode('ascii'), c_opts, ctypes.c_ulong(len(c_opts)))
 
     @classmethod
     def create(cls, appType, opts):
