@@ -17,7 +17,6 @@
 #include "PrecedenceSvc.h"
 
 // Framework include files
-#include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/ICondSvc.h"
@@ -39,7 +38,7 @@
 // External libs
 #include "tbb/concurrent_priority_queue.h"
 #include "tbb/concurrent_queue.h"
-#include "tbb/task.h"
+#include "tbb/task_group.h"
 
 class IAlgorithm;
 
@@ -112,15 +111,15 @@ class IAlgorithm;
  */
 class AvalancheSchedulerSvc : public extends<Service, IScheduler> {
 
-  template <class T>
   friend class AlgTask;
 
 public:
   /// Constructor
   using extends::extends;
 
-  /// Destructor
-  ~AvalancheSchedulerSvc() override = default;
+  /// Destructor. Need to enforce noexcept specification as otherwise the noexcept(false) destructor of the
+  /// tbb::task_group member violates the contract
+  ~AvalancheSchedulerSvc() noexcept override {}
 
   /// Initialise
   StatusCode initialize() override;
@@ -321,6 +320,7 @@ private:
 
   /// Queues for scheduled algorithms
   tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledQueue;
+  tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledBlockingQueue;
   std::queue<TaskSpec>                                   m_retryQueue;
 
   // Prompt the scheduler to call updateStates
@@ -332,6 +332,16 @@ private:
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
   size_t                  m_maxEventsInFlight{0};
   size_t                  m_maxAlgosInFlight{1};
+
+  // Task management --------------------------------------------------------
+
+  tbb::task_group m_taskGroup;
+
+public:
+  // get next schedule-able TaskSpec
+  bool next( TaskSpec& ts, bool blocking = false ) {
+    return blocking ? m_scheduledBlockingQueue.try_pop( ts ) : m_scheduledQueue.try_pop( ts );
+  };
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

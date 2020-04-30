@@ -16,7 +16,6 @@
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/ITask.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include <Gaudi/Algorithm.h> // can be removed ASA dynamic casts to Algorithm are removed
 
@@ -38,7 +37,6 @@
 #if TBB_INTERFACE_VERSION_MAJOR < 12
 #  include "tbb/task_scheduler_init.h"
 #endif // TBB_INTERFACE_VERSION_MAJOR < 12
-#include "tbb/task.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )
@@ -937,22 +935,16 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
         // Add the algorithm to the scheduled queue
         m_scheduledQueue.push( std::move( ts ) );
 
-        // Prepare a TBB task that will execute the Algorithm according to the above queued specs
-        auto algoTask =
-            new ( tbb::task::allocate_root() ) AlgTask<tbb::task>( this, serviceLocator(), m_algExecStateSvc );
-
         // schedule the task
-        tbb::task::enqueue( *algoTask );
+        m_taskGroup.run( AlgTask( this, serviceLocator(), m_algExecStateSvc ) );
         ++m_algosInFlight;
 
       } else { // schedule blocking algorithm in independent thread
-
-        // Prepare Gaudi task that will execute the Algorithm according to the above queued specs
-        auto algoTask = AlgTask<ITask>( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
+        m_scheduledBlockingQueue.push( std::move( ts ) );
 
         // Schedule the blocking task in an independent thread
         ++m_blockingAlgosInFlight;
-        std::thread _t( std::move( algoTask ) );
+        std::thread _t( AlgTask( this, serviceLocator(), m_algExecStateSvc, true ) );
         _t.detach();
 
       } // end scheduling blocking Algorithm
@@ -968,7 +960,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
                        << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
-      AlgTask<ITask> theTask( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
+      AlgTask theTask( this, serviceLocator(), m_algExecStateSvc, false );
       ++m_algosInFlight;
       sc = revise( ts.algIndex, ts.contextPtr, AState::SCHEDULED );
       theTask();

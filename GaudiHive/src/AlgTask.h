@@ -33,30 +33,25 @@ namespace Gaudi {
   }
 } // namespace Gaudi
 
-template <class T>
-class AlgTask : public T {
+class AlgTask {
 public:
-  AlgTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem )
-      : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ){};
+  AlgTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem, bool blocking = false )
+      : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ), m_blocking( blocking ){};
 
-  AlgTask( AvalancheSchedulerSvc::TaskSpec&& ts, AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator,
-           IAlgExecStateSvc* aem )
-      : m_ts( std::move( ts ) ), m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ){};
-
-  T* execute() override {
+  void operator()() const {
 
     SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
     MsgStream            log( messageSvc, "AlgTask" );
 
     // Get task specification dynamically if it was not provided statically
-    if ( !m_ts.algPtr )
-      if ( !m_scheduler->m_scheduledQueue.try_pop( m_ts ) ) {
-        log << MSG::WARNING << "Specification not complete or void while task is running" << endmsg;
-        return nullptr;
-      }
+    AvalancheSchedulerSvc::TaskSpec ts;
+    if ( !m_scheduler->next( ts, m_blocking ) ) {
+      log << MSG::WARNING << "Missing specification while task is running" << endmsg;
+      return;
+    }
 
-    EventContext& evtCtx   = *( m_ts.contextPtr );
-    IAlgorithm*&  iAlgoPtr = m_ts.algPtr;
+    EventContext& evtCtx   = *( ts.contextPtr );
+    IAlgorithm*&  iAlgoPtr = ts.algPtr;
 
     Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( iAlgoPtr );
     if ( !this_algo ) { throw GaudiException( "Cast to Algorithm failed!", "AlgTask", StatusCode::FAILURE ); }
@@ -84,21 +79,21 @@ public:
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
 
       if ( UNLIKELY( iAlgoPtr->sysExecute( evtCtx ).isFailure() ) ) {
-        log << MSG::WARNING << "Execution of algorithm " << m_ts.algName << " failed" << endmsg;
+        log << MSG::WARNING << "Execution of algorithm " << ts.algName << " failed" << endmsg;
         eventfailed = true;
       }
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
-      log << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << m_ts.algName
+      log << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ts.algName
           << endmsg;
       log << MSG::ERROR << Exception << endmsg;
       eventfailed = true;
     } catch ( const std::exception& Exception ) {
-      log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << m_ts.algName << endmsg;
+      log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << ts.algName << endmsg;
       log << MSG::ERROR << Exception.what() << endmsg;
       eventfailed = true;
     } catch ( ... ) {
-      log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << m_ts.algName << endmsg;
+      log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ts.algName << endmsg;
       eventfailed = true;
     }
 
@@ -106,24 +101,22 @@ public:
     m_aess->updateEventStatus( eventfailed, evtCtx );
 
     // Release algorithm
-    m_scheduler->m_algResourcePool->releaseAlgorithm( m_ts.algName, iAlgoPtr ).ignore();
+    m_scheduler->m_algResourcePool->releaseAlgorithm( ts.algName, iAlgoPtr ).ignore();
 
     // schedule a sign-off of the Algorithm execution
     m_scheduler->m_actionsQueue.push(
-        [schdlr = this->m_scheduler, ts = std::move( this->m_ts )]() { return schdlr->signoff( ts ); } );
+        [schdlr = this->m_scheduler, ts = std::move( ts )]() { return schdlr->signoff( ts ); } );
 
     Gaudi::Hive::setCurrentContextEvt( -1 );
-
-    return nullptr;
   }
 
-  void operator()() { execute(); };
-
 private:
-  AvalancheSchedulerSvc::TaskSpec m_ts;
-  AvalancheSchedulerSvc*          m_scheduler;
-  IAlgExecStateSvc*               m_aess;
-  SmartIF<ISvcLocator>            m_serviceLocator;
+  // Shortcuts to services
+  AvalancheSchedulerSvc* m_scheduler;
+  IAlgExecStateSvc*      m_aess;
+  SmartIF<ISvcLocator>   m_serviceLocator;
+  // Marks the task as CPU-blocking or not
+  bool m_blocking{false};
 };
 
 #endif
