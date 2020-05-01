@@ -441,6 +441,9 @@ StatusCode AvalancheSchedulerSvc::deactivate() {
     action thisAction;
     while ( m_actionsQueue.try_pop( thisAction ) ) {};
 
+    // Ensure there are no scheduled tasks
+    m_taskGroup.wait();
+
     // This would be the last action
     m_actionsQueue.push( [this]() -> StatusCode {
       ON_VERBOSE verbose() << "Deactivating scheduler" << endmsg;

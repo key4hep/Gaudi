@@ -182,6 +182,9 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
     ON_DEBUG debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
     m_barrier->wait();
 
+    // task gropu's wait() must come after the barrier's wait()
+    taskGroup.wait();
+
     // Check to make sure all Tools were invoked.
     // I'm not sure this mechanism is worthwhile.
     for ( auto& t : m_threadInitTools ) {
