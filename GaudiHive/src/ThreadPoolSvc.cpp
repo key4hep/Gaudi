@@ -170,7 +170,6 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
     // Create one task for each worker thread in the pool
     for ( int i = 0; i < m_threadPoolSize; ++i ) {
-
       ON_DEBUG debug() << "creating ThreadInitTask " << i << endmsg;
 
       // Queue the task
@@ -182,7 +181,8 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
     ON_DEBUG debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
     m_barrier->wait();
 
-    // task gropu's wait() must come after the barrier's wait()
+    // task group's wait() must come after the barrier's wait()
+    ON_DEBUG debug() << "waiting for all ThreadInitTask's in the group to complete" << endmsg;
     taskGroup.wait();
 
     // Check to make sure all Tools were invoked.
