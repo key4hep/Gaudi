@@ -17,7 +17,6 @@
 #include "GaudiKernel/ToolHandle.h"
 
 #include "boost/thread.hpp"
-#include "tbb/task.h"
 #include <string>
 #include <vector>
 
@@ -28,9 +27,7 @@
  *  @author Charles Leggett
  */
 
-class ThreadInitTask : virtual public tbb::task
-
-{
+class ThreadInitTask {
 
 public:
   ThreadInitTask( ToolHandleArray<IThreadInitTool>& tools, boost::barrier* b, ISvcLocator* svcLocator,
@@ -41,7 +38,7 @@ public:
    *
    *  Will loop over IThreadInitTools and execute each one.
    */
-  tbb::task* execute() override;
+  void operator()() const;
 
   static bool execFailed() { return m_execFailed; }
 

@@ -13,10 +13,10 @@
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "ThreadInitTask.h"
 
+#include "tbb/task_group.h"
+
 #include <chrono>
 #include <thread>
-
-#include "tbb/task.h"
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
@@ -166,15 +166,15 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
   // the tasks in TBB to execute on each thread.
   if ( tbb::global_control::active_value( tbb::global_control::max_allowed_parallelism ) > 0 ) {
 
+    tbb::task_group taskGroup;
+
     // Create one task for each worker thread in the pool
     for ( int i = 0; i < m_threadPoolSize; ++i ) {
 
-      ON_DEBUG   debug() << "creating ThreadInitTask " << i << endmsg;
-      tbb::task* t = new ( tbb::task::allocate_root() )
-          ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate );
+      ON_DEBUG debug() << "creating ThreadInitTask " << i << endmsg;
 
       // Queue the task
-      tbb::task::enqueue( *t );
+      taskGroup.run( ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate ) );
       std::this_thread::sleep_for( std::chrono::milliseconds( 20 ) );
     }
 
@@ -212,8 +212,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
     ON_DEBUG debug() << "launching ThreadInitTask " << taskType << "in this thread." << endmsg;
 
     boost::barrier* noBarrier = nullptr;
-    ThreadInitTask  theTask( m_threadInitTools, noBarrier, serviceLocator(), terminate );
-    theTask.execute();
+    ThreadInitTask( m_threadInitTools, noBarrier, serviceLocator(), terminate )();
   }
 
   // Now, we do some error checking
@@ -231,17 +230,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 // activate them late. This method is used to initialize one of these threads
 // when it is detected
 
-// note TBB generates address sanitizer errors here, e.g.
-//
-// ==51081==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7fe7decf5195 at pc 0x7fe7e5da48bf bp
-// 0x7fe7decf4f70 sp 0x7fe7decf4f68 WRITE of size 1 at 0x7fe7decf5195 thread T4
-//    #0 0x7fe7e5da48be in tbb::task::task()
-//    /cvmfs/lhcb.cern.ch/lib/lcg/releases/tbb/2019_U1-5939b/x86_64-centos7-gcc8-dbg/include/tbb/task.h:586
-//
-// Use GAUDI_NO_SANITIZE_ADDRESS to suppress these.
-// To be looked at again when TBB is updated.
-
-void GAUDI_NO_SANITIZE_ADDRESS ThreadPoolSvc::initThisThread() {
+void ThreadPoolSvc::initThisThread() {
 
   if ( Gaudi::Concurrency::ThreadInitDone ) {
     // this should never happen
@@ -250,6 +239,5 @@ void GAUDI_NO_SANITIZE_ADDRESS ThreadPoolSvc::initThisThread() {
   }
 
   boost::barrier* noBarrier = nullptr;
-  ThreadInitTask  theTask( m_threadInitTools, noBarrier, serviceLocator(), false );
-  theTask.execute();
+  ThreadInitTask( m_threadInitTools, noBarrier, serviceLocator(), false )();
 }
