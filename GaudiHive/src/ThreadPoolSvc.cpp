@@ -21,6 +21,9 @@
 #include <chrono>
 #include <thread>
 
+#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
+#define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
+
 using namespace tbb;
 
 namespace Gaudi {
@@ -82,7 +85,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
   m_threadPoolSize = poolSize;
 
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "ThreadPoolSvc::initPool() poolSize = " << poolSize << endmsg;
+  ON_DEBUG debug() << "ThreadPoolSvc::initPool() poolSize = " << poolSize << endmsg;
   // There is a problem in the piece of the code below.  if
   // m_threadPoolSize is set to something negative which is < -1,
   // algorithm below might not behave as expected. For the time being
@@ -94,20 +97,13 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
   // -100 prevents the creation of the pool and the scheduler directly
   // executes the tasks.
-  // -1 means use all available cores
+  // -1 means use all available hardware threads
 
   if ( -100 != m_threadPoolSize ) {
-    if ( msgLevel( MSG::DEBUG ) ) debug() << "Initialising a thread pool of size " << m_threadPoolSize << endmsg;
-
-    // Leave -1 in case selected, increment otherwise
-    // - What?
-    int thePoolSize = m_threadPoolSize;
-    if ( thePoolSize >= 0 ) thePoolSize += 1;
+    ON_DEBUG debug() << "Initialising a thread pool of size " << m_threadPoolSize << endmsg;
 
     if ( m_threadPoolSize == -1 ) {
-      // if requested pool size == -1, use number of available cores
       m_threadPoolSize = std::thread::hardware_concurrency();
-      thePoolSize      = m_threadPoolSize;
     } else if ( m_threadPoolSize < -1 ) {
       fatal() << "Unexpected ThreadPoolSize \"" << m_threadPoolSize << "\". Allowed negative values are "
               << "-1 (use all available cores) and -100 (don't use a thread pool)" << endmsg;
@@ -115,15 +111,21 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
     }
 
 #if TBB_INTERFACE_VERSION_MAJOR < 12
-    m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
+    m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( m_threadPoolSize + 1 );
 #endif // TBB_INTERFACE_VERSION_MAJOR < 12
 
-    m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, thePoolSize );
+    ON_VERBOSE verbose() << "Maximum allowed parallelism before adjusting: "
+                         << tbb::global_control::active_value( global_control::max_allowed_parallelism ) << endmsg;
 
-    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( thePoolSize );
+    // to get the number of threads we need, request one thread more to account for how TBB calculates
+    // its soft limit of the number of threads for the global thread pool
+    m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, m_threadPoolSize + 1 );
+
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( m_threadPoolSize );
 
     // Create the barrier for task synchronization at termination
-    m_barrier = std::make_unique<boost::barrier>( thePoolSize );
+    // (here we increase the number of threads by one to account for calling thread)
+    m_barrier = std::make_unique<boost::barrier>( m_threadPoolSize + 1 );
 
   } else {
     // don't use a thread pool
@@ -131,9 +133,8 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
     m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, 0 );
   }
 
-  if ( msgLevel( MSG::DEBUG ) )
-    debug() << "Thread Pool initialization complete. Max task concurrency: "
-            << tbb::global_control::active_value( global_control::max_allowed_parallelism ) << endmsg;
+  ON_DEBUG debug() << "Thread Pool initialization complete. Maximum allowed parallelism: "
+                   << tbb::global_control::active_value( global_control::max_allowed_parallelism ) << endmsg;
 
   m_init = true;
 
@@ -144,7 +145,8 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
 StatusCode ThreadPoolSvc::terminatePool() {
   tbb::spin_mutex::scoped_lock lock( m_initMutex );
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "ThreadPoolSvc::terminatePool()" << endmsg;
+
+  ON_DEBUG debug() << "ThreadPoolSvc::terminatePool()" << endmsg;
 
   if ( !m_init ) {
     error() << "Trying to terminate uninitialized thread pool!" << endmsg;
@@ -155,7 +157,7 @@ StatusCode ThreadPoolSvc::terminatePool() {
   const bool terminate = true;
   if ( launchTasks( terminate ).isFailure() ) return StatusCode::FAILURE;
 
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "Thread pool termination complete!" << endmsg;
+  ON_DEBUG debug() << "Thread pool termination complete!" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -172,7 +174,8 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
     // Create one task for each worker thread in the pool
     for ( int i = 0; i < m_threadPoolSize; ++i ) {
-      if ( msgLevel( MSG::DEBUG ) ) debug() << "creating ThreadInitTask " << i << endmsg;
+
+      ON_DEBUG   debug() << "creating ThreadInitTask " << i << endmsg;
       tbb::task* t = new ( tbb::task::allocate_root() )
           ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate );
 
@@ -182,7 +185,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
     }
 
     // Now wait for all the workers to reach the barrier
-    if ( msgLevel( MSG::DEBUG ) ) debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
+    ON_DEBUG debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
     m_barrier->wait();
 
     // Check to make sure all Tools were invoked.
@@ -212,7 +215,8 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
   // In single-threaded mode, there is no scheduler, so we simply call
   // the task wrapper directly in this thread.
   else {
-    if ( msgLevel( MSG::DEBUG ) ) debug() << "launching ThreadInitTask " << taskType << "in this thread." << endmsg;
+    ON_DEBUG debug() << "launching ThreadInitTask " << taskType << "in this thread." << endmsg;
+
     boost::barrier* noBarrier = nullptr;
     ThreadInitTask  theTask( m_threadInitTools, noBarrier, serviceLocator(), terminate );
     theTask.execute();

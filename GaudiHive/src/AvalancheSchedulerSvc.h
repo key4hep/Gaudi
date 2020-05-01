@@ -152,7 +152,9 @@ private:
 
   Gaudi::Property<int> m_threadPoolSize{
       this, "ThreadPoolSize", -1,
-      "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+      "Size of the global thread pool initialised by TBB; a value of -1 requests to use"
+      "all available hardware threads; -100 requests to bypass TBB executing "
+      "all algorithms in the scheduler's thread."};
   Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
   Gaudi::Property<std::string>  m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
