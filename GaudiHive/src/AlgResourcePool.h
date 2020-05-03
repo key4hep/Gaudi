@@ -19,7 +19,6 @@
 
 #include <atomic>
 #include <bitset>
-#include <functional>
 #include <list>
 #include <mutex>
 #include <string>
