@@ -83,7 +83,7 @@ public:
     try {
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
 
-      if ( auto sc = iAlgoPtr->sysExecute( evtCtx ); UNLIKELY( sc.isFailure() ) ) {
+      if ( UNLIKELY( iAlgoPtr->sysExecute( evtCtx ).isFailure() ) ) {
         log << MSG::WARNING << "Execution of algorithm " << m_ts.algName << " failed" << endmsg;
         eventfailed = true;
       }
@@ -110,7 +110,7 @@ public:
 
     // schedule a sign-off of the Algorithm execution
     m_scheduler->m_actionsQueue.push(
-        std::move( [schdlr = this->m_scheduler, ts = std::move( this->m_ts )]() { return schdlr->signoff( ts ); } ) );
+        [schdlr = this->m_scheduler, ts = std::move( this->m_ts )]() { return schdlr->signoff( ts ); } );
 
     Gaudi::Hive::setCurrentContextEvt( -1 );
 
