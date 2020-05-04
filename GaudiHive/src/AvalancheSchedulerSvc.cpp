@@ -937,9 +937,9 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
       AlgTask<ITask> theTask( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
       ++m_algosInFlight;
+      sc = revise( ts.algIndex, ts.contextPtr, AState::SCHEDULED );
       theTask();
       --m_algosInFlight;
-      sc = StatusCode::SUCCESS;
     }
   } else { // if no Algorithm instance available, retry later
 
