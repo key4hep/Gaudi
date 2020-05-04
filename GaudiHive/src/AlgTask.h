@@ -83,7 +83,7 @@ public:
     try {
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
 
-      if ( auto sc = iAlgoPtr->sysExecute( evtCtx ); UNLIKELY( !sc ) ) {
+      if ( auto sc = iAlgoPtr->sysExecute( evtCtx ); UNLIKELY( sc.isFailure() ) ) {
         log << MSG::WARNING << "Execution of algorithm " << m_ts.algName << " failed" << endmsg;
         eventfailed = true;
       }
