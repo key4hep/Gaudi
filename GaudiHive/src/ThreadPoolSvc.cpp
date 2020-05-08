@@ -13,18 +13,13 @@
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "ThreadInitTask.h"
 
-#include "tbb/task.h"
-#include "tbb/task_scheduler_observer.h"
-#include "tbb/tbb_thread.h"
-#include "tbb/tick_count.h"
-
 #include <chrono>
 #include <thread>
 
+#include "tbb/task.h"
+
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
-
-using namespace tbb;
 
 namespace Gaudi {
   namespace Concurrency {
@@ -45,8 +40,7 @@ ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ) : e
 StatusCode ThreadPoolSvc::initialize() {
 
   // Initialise mother class (read properties, ...)
-  StatusCode sc( Service::initialize() );
-  if ( !sc.isSuccess() ) {
+  if ( Service::initialize().isFailure() ) {
     warning() << "Base class could not be initialized" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -56,11 +50,11 @@ StatusCode ThreadPoolSvc::initialize() {
 
     return StatusCode::FAILURE;
   }
-  if ( m_threadInitTools.size() != 0 ) {
+
+  if ( m_threadInitTools.size() != 0 )
     info() << "retrieved " << m_threadInitTools.size() << " thread init tools" << endmsg;
-  } else {
+  else
     info() << "no thread init tools attached" << endmsg;
-  }
 
   return StatusCode::SUCCESS;
 }
@@ -69,10 +63,9 @@ StatusCode ThreadPoolSvc::initialize() {
 
 StatusCode ThreadPoolSvc::finalize() {
 
-  if ( !m_init ) {
+  if ( !m_init )
     warning() << "Looks like the ThreadPoolSvc was created, but thread pool "
               << "was never initialized" << endmsg;
-  }
 
   return StatusCode::SUCCESS;
 }
@@ -115,11 +108,12 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 #endif // TBB_INTERFACE_VERSION_MAJOR < 12
 
     ON_VERBOSE verbose() << "Maximum allowed parallelism before adjusting: "
-                         << tbb::global_control::active_value( global_control::max_allowed_parallelism ) << endmsg;
+                         << tbb::global_control::active_value( tbb::global_control::max_allowed_parallelism ) << endmsg;
 
     // to get the number of threads we need, request one thread more to account for how TBB calculates
     // its soft limit of the number of threads for the global thread pool
-    m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, m_threadPoolSize + 1 );
+    m_tbbgc =
+        std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism, m_threadPoolSize + 1 );
 
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( m_threadPoolSize );
 
@@ -130,11 +124,11 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
   } else {
     // don't use a thread pool
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );
-    m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, 0 );
+    m_tbbgc = std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism, 0 );
   }
 
   ON_DEBUG debug() << "Thread Pool initialization complete. Maximum allowed parallelism: "
-                   << tbb::global_control::active_value( global_control::max_allowed_parallelism ) << endmsg;
+                   << tbb::global_control::active_value( tbb::global_control::max_allowed_parallelism ) << endmsg;
 
   m_init = true;
 
@@ -170,7 +164,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
   // If we have a thread pool (via a scheduler), then we want to queue
   // the tasks in TBB to execute on each thread.
-  if ( tbb::global_control::active_value( global_control::max_allowed_parallelism ) > 0 ) {
+  if ( tbb::global_control::active_value( tbb::global_control::max_allowed_parallelism ) > 0 ) {
 
     // Create one task for each worker thread in the pool
     for ( int i = 0; i < m_threadPoolSize; ++i ) {
@@ -200,7 +194,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
         ost << "not all threads " << ( terminate ? "terminated" : "initialized" ) << " for tool " << t << " : "
             << t->nInit() << " out of " << m_threadPoolSize << " are currently active.";
         if ( terminate ) {
-          // it is likely the case that tbb activated new theads
+          // it is likely the case that TBB activated new threads
           // late in the game, and extra initializations were done
           info() << ost.str() << endmsg;
         } else {
