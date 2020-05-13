@@ -69,7 +69,13 @@ GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject = gbl.DataObject
 SUCCESS = gbl.StatusCode(gbl.StatusCode.SUCCESS, True)
 FAILURE = gbl.StatusCode(gbl.StatusCode.FAILURE, True)
-nullptr = gbl.nullptr
+# Workaround for ROOT-10770
+if hasattr(cppyy, 'nullptr'):
+    nullptr = cppyy.nullptr
+elif hasattr(gbl, 'nullptr'):
+    nullptr = gbl.nullptr
+else:
+    nullptr = None
 # Helper to create a StringProperty
 cppyy.gbl.gInterpreter.Declare('''
 namespace GaudiPython { namespace Helpers {
