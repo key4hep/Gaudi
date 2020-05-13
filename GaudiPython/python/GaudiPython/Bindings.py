@@ -87,7 +87,7 @@ namespace GaudiPython { namespace Helpers {
 
 # toIntArray, toShortArray, etc.
 for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
-    exec ("%s = Helper.%s" % (l, l))
+    exec("%s = Helper.%s" % (l, l))
     __all__.append(l)
 
 # FIXME: (MCl) Hack to handle ROOT 5.18 and ROOT >= 5.20
@@ -103,9 +103,13 @@ else:
 
 
 # ----Convenient accessors to PyROOT functionality ----------------------------
-ROOT = cppyy.libPyROOT
-makeNullPointer = cppyy.libPyROOT.MakeNullPointer
-setOwnership = cppyy.libPyROOT.SetOwnership
+# See https://sft.its.cern.ch/jira/browse/ROOT-10771
+if hasattr(cppyy, 'libPyROOT'):
+    ROOT = cppyy.libPyROOT
+else:
+    import ROOT
+makeNullPointer = ROOT.MakeNullPointer
+setOwnership = ROOT.SetOwnership
 
 
 def deprecation(message):
