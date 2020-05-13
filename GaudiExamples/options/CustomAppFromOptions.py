@@ -12,7 +12,11 @@
 #
 # The custom application class is implemented in C++ via ROOT interpreter
 
-import cppyy
+# Workaround for ROOT-10769
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import cppyy
 
 # - we have to load GaudiKernel get the base class
 cppyy.gbl.gSystem.Load("libGaudiKernel.so")

@@ -32,12 +32,11 @@ import sys
 import string
 import warnings
 import re
-try:
+
+# Workaround for ROOT-10769
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
     import cppyy
-except ImportError:
-    # FIXME: backward compatibility
-    print("# WARNING: using PyCintex as cppyy implementation")
-    import PyCintex as cppyy
 
 if sys.version_info >= (3, ):
     # Python 2 compatibility

@@ -47,7 +47,11 @@ if '__main__' == __name__:
     print(__doc__, __author__)
 
     # make sure cling can generate all required methods in Gaudi::Property
-    import cppyy
+    # Workaround for ROOT-10769
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import cppyy
     cppyy.gbl.gInterpreter.Declare('#define NO_C_ARRAY_AS_PROPERTY_WARNING')
     cppyy.gbl.gInterpreter.Declare('#include "GaudiKernel/CArrayAsProperty.h"')
 
