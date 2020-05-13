@@ -87,7 +87,7 @@ build:gcc9:opt:python3:
   variables:
     BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt-python3
-    HEPTOOLS_VERSION: 96bpython3
+    HEPTOOLS_VERSION: 97python3
   script:
     - ci-utils/build
   artifacts:
