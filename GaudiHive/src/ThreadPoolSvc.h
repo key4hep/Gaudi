@@ -16,9 +16,9 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/ToolHandle.h"
 
-#include "boost/thread.hpp"
+#include "boost/thread/barrier.hpp"
+
 #include "tbb/spin_mutex.h"
-#include "tbb/tbb_stddef.h"
 #if TBB_INTERFACE_VERSION_MAJOR < 12
 #  include "tbb/task_scheduler_init.h"
 #  define TBB_PREVIEW_GLOBAL_CONTROL 1
