@@ -11,7 +11,7 @@
 #####################################################################################
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, IOBoundAlgSchedulerSvc
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
@@ -30,18 +30,16 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
     OutputLevel=DEBUG,
-    PreemptiveIOBoundTasks=True,
-    MaxIOBoundAlgosInFlight=50)
-
-IOBoundAlgSchedulerSvc(OutputLevel=INFO)
+    PreemptiveBlockingTasks=True,
+    MaxBlockingAlgosInFlight=50)
 
 #timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
 timeValue = precedence.RealTimeValue(
     path="cms/reco/algs-time.json", defaultTime=0.0)
 
-#ifIObound = precedence.UniformBooleanValue(False)
+#ifBlocking = precedence.UniformBooleanValue(False)
 # the CMS reco scenario has 707 algorithms in total
-ifIObound = precedence.RndBiasedBooleanValue(
+ifBlocking = precedence.RndBiasedBooleanValue(
     pattern={
         True: 70,
         False: 637
@@ -49,7 +47,7 @@ ifIObound = precedence.RndBiasedBooleanValue(
 
 sequencer = precedence.CruncherSequence(
     timeValue,
-    ifIObound,
+    ifBlocking,
     sleepFraction=0.9,
     cfgPath="cms/reco/cf.graphml",
     dfgPath="cms/reco/df.graphml",

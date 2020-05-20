@@ -15,8 +15,8 @@
 #include <vector>
 
 // Framework include files
-#include "GaudiKernel/IAlgTask.h"
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/ITask.h"
 
 /**@class IAccelerator IAccelerator.h GaudiKernel/IAccelerator.h
  *
@@ -30,6 +30,6 @@ public:
   /// InterfaceID
   DeclareInterfaceID( IAccelerator, 1, 0 );
 
-  virtual StatusCode push( IAlgTask& task ) = 0;
+  virtual StatusCode push( ITask& task ) = 0;
 };
 #endif

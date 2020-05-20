@@ -1035,7 +1035,7 @@ lineSkipper = LineSkipper(
         r"Property(.*)'Audit(Begin|End)Run':",
         # these were missing in tools
         r"Property(.*)'AuditRe(start|initialize)':",
-        r"Property(.*)'IsIOBound':",
+        r"Property(.*)'Blocking':",
         # removed with gaudi/Gaudi!273
         r"Property(.*)'ErrorCount(er)?':",
         # added with gaudi/Gaudi!306

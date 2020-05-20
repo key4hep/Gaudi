@@ -55,7 +55,7 @@ public:
   }
 
   /// Check if a task is CPU-blocking
-  bool isBlocking( const std::string& name ) const override { return m_PRGraph.getAlgorithmNode( name )->isIOBound(); }
+  bool isBlocking( const std::string& name ) const override { return m_PRGraph.getAlgorithmNode( name )->isBlocking(); }
 
   /// Dump precedence rules
   void              dumpControlFlow() const override;

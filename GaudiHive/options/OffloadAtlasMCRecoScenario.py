@@ -11,7 +11,7 @@
 #####################################################################################
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, IOBoundAlgSchedulerSvc, CPUCrunchSvc
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCrunchSvc
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
@@ -32,19 +32,17 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
     OutputLevel=INFO,
-    PreemptiveIOBoundTasks=True,
-    MaxIOBoundAlgosInFlight=50,
+    PreemptiveBlockingTasks=True,
+    MaxBlockingAlgosInFlight=50,
     DumpIntraEventDynamics=True)
-
-IOBoundAlgSchedulerSvc(OutputLevel=INFO)
 
 CPUCrunchSvc(shortCalib=True)
 
 #timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
 timeValue = precedence.RealTimeValue(
     path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json", defaultTime=0.0)
-#ifIObound = precedence.UniformBooleanValue(False)
-ifIObound = precedence.RndBiasedBooleanValue(
+#ifBlocking = precedence.UniformBooleanValue(False)
+ifBlocking = precedence.RndBiasedBooleanValue(
     pattern={
         True: 17,
         False: 152
@@ -52,7 +50,7 @@ ifIObound = precedence.RndBiasedBooleanValue(
 
 sequencer = precedence.CruncherSequence(
     timeValue,
-    ifIObound,
+    ifBlocking,
     sleepFraction=0.9,
     cfgPath="atlas/mcreco/cf.mcreco.TriggerOff.graphml",
     dfgPath="atlas/mcreco/df.mcreco.TriggerOff.3rdEvent.graphml",

@@ -400,10 +400,10 @@ namespace Gaudi {
 
     const std::vector<IAlgTool*>& tools() const;
 
-    // Return the I/O-boundness flag
-    bool isIOBound() const { return m_isIOBound; }
-    // Set the I/O-boundness flag
-    void setIOBound( bool value ) { m_isIOBound = value; }
+    // Return the blocking flag
+    bool isBlocking() const { return m_blocking; }
+    // Set the blocking flag
+    void setBlocking( bool value ) { m_blocking = value; }
 
   protected:
     std::vector<IAlgTool*>& tools();
@@ -522,8 +522,10 @@ namespace Gaudi {
     Gaudi::Property<std::vector<std::string>> m_neededResources{
         this, "NeededResources", {}, "named resources needed during event looping"};
 
-    Gaudi::Property<bool> m_isIOBound{this, "IsIOBound", false,
-                                      "if the algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)"};
+    Gaudi::Property<bool> m_blocking{
+        this, "Blocking", false,
+        "if algorithm invokes CPU-blocking system calls (offloads computations to accelerators or "
+        "quantum processors, performs disk or network I/O, is bound by resource synchronization, etc)"};
 
     // The default should be changed to "false" for v29
     Gaudi::Property<bool> m_filterCircDeps{this, "FilterCircularDependencies", true,

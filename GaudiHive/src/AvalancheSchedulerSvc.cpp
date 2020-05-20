@@ -9,15 +9,14 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "AvalancheSchedulerSvc.h"
-
-#include "AlgoExecutionTask.h"
-#include "IOBoundAlgTask.h"
+#include "AlgTask.h"
 
 // Framework includes
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
+#include "GaudiKernel/ITask.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include <Gaudi/Algorithm.h> // can be removed ASA dynamic casts to Algorithm are removed
 
@@ -26,6 +25,7 @@
 #include <map>
 #include <queue>
 #include <sstream>
+#include <string_view>
 #include <thread>
 #include <unordered_set>
 
@@ -38,6 +38,7 @@
 #if TBB_INTERFACE_VERSION_MAJOR < 12
 #  include "tbb/task_scheduler_init.h"
 #endif // TBB_INTERFACE_VERSION_MAJOR < 12
+#include "tbb/task.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )
@@ -129,13 +130,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   if ( !m_whiteboard.isValid() ) {
     fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
     return StatusCode::FAILURE;
-  }
-
-  // Get dedicated scheduler for I/O-bound algorithms
-  if ( m_useIOBoundAlgScheduler ) {
-    m_IOBoundAlgScheduler = serviceLocator()->service( m_IOBoundAlgSchedulerSvcName );
-    if ( !m_IOBoundAlgScheduler.isValid() )
-      fatal() << "Error retrieving IOBoundSchedulerAlgSvc interface IAccelerator." << endmsg;
   }
 
   // Set the MaxEventsInFlight parameters from the number of WB stores
@@ -325,6 +319,17 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
+  // Inform about task scheduling prescriptions
+  info() << "Task scheduling settings:" << endmsg;
+  info() << " o Avalanche generation mode: "
+         << ( m_optimizationMode.empty() ? "disabled" : m_optimizationMode.toString() ) << endmsg;
+  info() << " o Preemptive scheduling of CPU-blocking tasks: "
+         << ( m_enablePreemptiveBlockingTasks
+                  ? ( "enabled (max. " + std::to_string( m_maxBlockingAlgosInFlight ) + " concurrent tasks)" )
+                  : "disabled" )
+         << endmsg;
+  info() << " o Scheduling of condition tasks: " << ( m_enableCondSvc ? "enabled" : "disabled" ) << endmsg;
+
   if ( m_showControlFlow ) m_precSvc->dumpControlFlow();
 
   if ( m_showDataFlow ) m_precSvc->dumpDataFlow();
@@ -401,12 +406,12 @@ void AvalancheSchedulerSvc::activate() {
 
     // If all queued actions have been processed, update the slot states
     if ( m_needsUpdate.load() && m_actionsQueue.empty() ) {
-      sc = updateStates();
+      sc = iterate();
       ON_VERBOSE {
         if ( sc.isFailure() )
-          verbose() << "updateStates did not succeed (which is not bad per se)." << endmsg;
+          verbose() << "Iteration did not succeed (which is not bad per se)." << endmsg;
         else
-          verbose() << "updateStates succeeded." << endmsg;
+          verbose() << "Iteration succeeded." << endmsg;
       }
       else sc.ignore();
     }
@@ -495,7 +500,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
       result = StatusCode::FAILURE;
     }
 
-    if ( this->updateStates().isFailure() ) {
+    if ( this->iterate().isFailure() ) {
       error() << "Failed to call AvalancheSchedulerSvc::updateStates for slot " << thisSlotNum << endmsg;
       result = StatusCode::FAILURE;
     }
@@ -503,7 +508,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
     return result;
   }; // end of lambda
 
-  // Kick off the scheduling!
+  // Kick off scheduling
   ON_VERBOSE {
     verbose() << "Pushing the action to update the scheduler for slot " << eventContext->slot() << endmsg;
     verbose() << "Free slots available " << m_freeSlots.load() << endmsg;
@@ -566,30 +571,24 @@ StatusCode AvalancheSchedulerSvc::tryPopFinishedEvent( EventContext*& eventConte
 }
 
 //--------------------------------------------------------------------------
-// States Management
 
 /**
- * Update the state of the algorithms.
- * The oldest events are checked before the newest, in order to reduce the
- * event backlog.
- * To check if the event is finished the algorithm checks if:
- * * No algorithms have been signed off by the control flow
- * * No algorithms have been signed off by the data flow
- * * No algorithms have been scheduled
+ * Loop on all slots to schedule DATAREADY algorithms, sign off ready ones or
+ * detect execution stalls. To check if an event is finished the method verifies
+ * that the root control flow decision of the task precedence graph is resolved
+ * and there are no algorithms moving in-between INITIAL and EVTACCEPTED FSM
+ * states.
  */
-StatusCode AvalancheSchedulerSvc::updateStates() {
+StatusCode AvalancheSchedulerSvc::iterate() {
 
   StatusCode global_sc( StatusCode::SUCCESS );
 
-  // Retry algs
-  AlgQueueEntry queuePop;
-  const size_t  retries = m_retryQueue.size();
+  // Retry algorithms
+  const size_t retries = m_retryQueue.size();
   for ( unsigned int retryIndex = 0; retryIndex < retries; ++retryIndex ) {
-
-    queuePop = m_retryQueue.front();
+    TaskSpec retryTS = std::move( m_retryQueue.front() );
     m_retryQueue.pop();
-
-    global_sc = enqueue( queuePop.algIndex, queuePop.slotIndex, queuePop.contextPtr );
+    global_sc = schedule( std::move( retryTS ) );
   }
 
   // Loop over all slots
@@ -600,25 +599,23 @@ StatusCode AvalancheSchedulerSvc::updateStates() {
 
     int iSlot = thisSlot.eventContext->slot();
 
-    // Cache the states of the algos to improve readability and performance
+    // Cache the states of the algorithms to improve readability and performance
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     StatusCode partial_sc( StatusCode::FAILURE, true );
 
     // Perform DR->SCHEDULED
     for ( auto it = thisAlgsStates.begin( AState::DATAREADY ); it != thisAlgsStates.end( AState::DATAREADY ); ++it ) {
-      uint algIndex = *it;
+      uint               algIndex{*it};
+      const std::string& algName{index2algname( algIndex )};
+      unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
+      bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
 
-      bool IOBound = false;
-      if ( m_useIOBoundAlgScheduler ) IOBound = m_precSvc->isBlocking( index2algname( algIndex ) );
-
-      if ( !IOBound )
-        partial_sc = enqueue( algIndex, iSlot, thisSlot.eventContext.get() );
-      else
-        partial_sc = promoteToAsyncScheduled( algIndex, iSlot, thisSlot.eventContext.get() );
+      partial_sc =
+          schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, thisSlot.eventContext.get() ) );
 
       ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
-          << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << index2algname( algIndex )
+          << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << algName
           << " on processing slot " << iSlot << endmsg;
     }
 
@@ -626,12 +623,12 @@ StatusCode AvalancheSchedulerSvc::updateStates() {
     for ( auto& subslot : thisSlot.allSubSlots ) {
       auto& subslotStates = subslot.algsStates;
       for ( auto it = subslotStates.begin( AState::DATAREADY ); it != subslotStates.end( AState::DATAREADY ); ++it ) {
-        uint algIndex{*it};
-        partial_sc = enqueue( algIndex, iSlot, subslot.eventContext.get() );
-        // The following verbosity is expensive when the number of sub-slots is high
-        /*ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
-            << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << index2algname( algIndex )
-            << " on processing subslot " << subslot.eventContext->slot() << endmsg;*/
+        uint               algIndex{*it};
+        const std::string& algName{index2algname( algIndex )};
+        unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
+        bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
+        partial_sc =
+            schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, subslot.eventContext.get() ) );
       }
     }
 
@@ -681,29 +678,44 @@ StatusCode AvalancheSchedulerSvc::updateStates() {
     partial_sc.ignore();
   } // end loop on slots
 
-  ON_VERBOSE verbose() << "States Updated." << endmsg;
+  ON_VERBOSE verbose() << "Iteration done." << endmsg;
   m_needsUpdate.store( false );
   return global_sc;
 }
 
 //---------------------------------------------------------------------------
-// Update states in the appropriate event slot
-StatusCode AvalancheSchedulerSvc::setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state,
-                                               bool iterate ) {
-  StatusCode updateSc;
-  EventSlot& thisSlot = m_eventSlots[contextPtr->slot()];
-  Cause      cs       = {Cause::source::Task, index2algname( iAlgo )};
-  if ( contextPtr->usesSubSlot() ) {
+// Update algorithm state and, optionally, revise states of other downstream algorithms
+StatusCode AvalancheSchedulerSvc::revise( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate ) {
+  StatusCode sc;
+  auto       slotIndex = contextPtr->slot();
+  EventSlot& slot      = m_eventSlots[slotIndex];
+  Cause      cs        = {Cause::source::Task, index2algname( iAlgo )};
+
+  if ( UNLIKELY( contextPtr->usesSubSlot() ) ) {
     // Sub-slot
-    size_t const subSlotIndex = contextPtr->subSlot();
-    updateSc                  = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, state );
-    if ( updateSc.isSuccess() && iterate ) updateSc = m_precSvc->iterate( thisSlot.allSubSlots[subSlotIndex], cs );
+    auto       subSlotIndex = contextPtr->subSlot();
+    EventSlot& subSlot      = slot.allSubSlots[subSlotIndex];
+
+    sc = subSlot.algsStates.set( iAlgo, state );
+
+    if ( LIKELY( sc.isSuccess() ) ) {
+      ON_VERBOSE verbose() << "Promoted " << index2algname( iAlgo ) << " to " << state << " [slot:" << slotIndex
+                           << ", subslot:" << subSlotIndex << ", event:" << contextPtr->evt() << "]" << endmsg;
+      // Revise states of algorithms downstream the precedence graph
+      if ( iterate ) sc = m_precSvc->iterate( subSlot, cs );
+    }
   } else {
     // Event level (standard behaviour)
-    updateSc = thisSlot.algsStates.set( iAlgo, state );
-    if ( updateSc.isSuccess() && iterate ) updateSc = m_precSvc->iterate( thisSlot, cs );
+    sc = slot.algsStates.set( iAlgo, state );
+
+    if ( LIKELY( sc.isSuccess() ) ) {
+      ON_VERBOSE verbose() << "Promoted " << index2algname( iAlgo ) << " to " << state << " [slot:" << slotIndex
+                           << ", event:" << contextPtr->evt() << "]" << endmsg;
+      // Revise states of algorithms downstream the precedence graph
+      if ( iterate ) sc = m_precSvc->iterate( slot, cs );
+    }
   }
-  return updateSc;
+  return sc;
 }
 
 //---------------------------------------------------------------------------
@@ -785,7 +797,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
       for ( auto it = slot.algsStates.begin( AState::SCHEDULED ); it != slot.algsStates.end( AState::SCHEDULED );
             ++it ) {
 
-        const std::string algoName{index2algname( *it )};
+        const std::string& algoName{index2algname( *it )};
 
         outputMS << "  task: " << std::setw( indt ) << algoName << " evt/slot: " << slot.eventContext->evt() << "/"
                  << slot.eventContext->slot();
@@ -863,188 +875,113 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
 //---------------------------------------------------------------------------
 
-StatusCode AvalancheSchedulerSvc::enqueue( unsigned int iAlgo, int si, EventContext* eventContext ) {
+StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
 
-  // Use the algorithm rank to sort the queue
-  const std::string& algName( index2algname( iAlgo ) );
-  unsigned int       rank = 0;
-  if ( !m_optimizationMode.empty() ) { rank = m_precSvc->getPriority( algName ); }
-
-  // Get algorithm pointer
-  IAlgorithm* iAlgoPtr = nullptr;
-  StatusCode  getAlgSC( m_algResourcePool->acquireAlgorithm( algName, iAlgoPtr ) );
-
-  // Check if the algorithm is available
-  AState state;
-  if ( getAlgSC.isSuccess() ) {
-
-    // Add the algorithm to the scheduled queue
-    m_scheduledQueue.push( {iAlgo, si, eventContext, rank, iAlgoPtr} );
-    ++m_algosInFlight;
-
-    // Avoid to use tbb if the pool size is 1 and run in this thread
-    if ( -100 != m_threadPoolSize ) {
-
-      // the child task that executes an Algorithm
-      tbb::task* algoTask =
-          new ( tbb::task::allocate_root() ) AlgoExecutionTask( this, serviceLocator(), m_algExecStateSvc );
-      // schedule the algoTask
-      tbb::task::enqueue( *algoTask );
-    } else {
-
-      AlgoExecutionTask theTask( this, serviceLocator(), m_algExecStateSvc );
-      theTask.execute();
-    }
-
-    ON_DEBUG debug() << "Algorithm " << index2algname( iAlgo ) << " was submitted on event " << eventContext->evt()
-                     << " in slot " << si << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
-
-    state = AState::SCHEDULED;
-  } else {
-
-    // Add the algorithm to the retry queue
-    m_retryQueue.push( {iAlgo, si, eventContext, rank, nullptr} );
-
-    state = AState::RESOURCELESS;
+  if ( UNLIKELY( ts.blocking && m_blockingAlgosInFlight == m_maxBlockingAlgosInFlight ) ) {
+    m_retryQueue.push( std::move( ts ) );
+    return StatusCode::SUCCESS;
   }
 
-  // Update alg state
-  StatusCode updateSc = setAlgState( iAlgo, eventContext, state );
+  // Check if a free Algorithm instance is available
+  StatusCode getAlgSC( m_algResourcePool->acquireAlgorithm( ts.algName, ts.algPtr ) );
+
+  // If an instance is available, proceed to scheduling
+  StatusCode sc;
+  if ( LIKELY( getAlgSC.isSuccess() ) ) {
+
+    // Decide how to schedule the task and schedule it
+    if ( LIKELY( -100 != m_threadPoolSize ) ) {
+
+      // Cache values before moving the TaskSpec further
+      unsigned int     algIndex{ts.algIndex};
+      std::string_view algName( ts.algName );
+      unsigned int     algRank{ts.algRank};
+      bool             blocking{ts.blocking};
+      int              slotIndex{ts.slotIndex};
+      EventContext*    contextPtr{ts.contextPtr};
+
+      if ( LIKELY( !blocking ) ) {
+        // Add the algorithm to the scheduled queue
+        m_scheduledQueue.push( std::move( ts ) );
+
+        // Prepare a TBB task that will execute the Algorithm according to the above queued specs
+        auto algoTask =
+            new ( tbb::task::allocate_root() ) AlgTask<tbb::task>( this, serviceLocator(), m_algExecStateSvc );
+
+        // schedule the task
+        tbb::task::enqueue( *algoTask );
+        ++m_algosInFlight;
+
+      } else { // schedule blocking algorithm in independent thread
+
+        // Prepare Gaudi task that will execute the Algorithm according to the above queued specs
+        auto algoTask = AlgTask<ITask>( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
+
+        // Schedule the blocking task in an independent thread
+        ++m_blockingAlgosInFlight;
+        std::thread _t( std::move( algoTask ) );
+        _t.detach();
+
+      } // end scheduling blocking Algorithm
+
+      sc = revise( algIndex, contextPtr, AState::SCHEDULED );
+
+      ON_DEBUG debug() << "Scheduled " << algName << " [slot:" << slotIndex << ", event:" << contextPtr->evt()
+                       << ", rank:" << algRank << ", blocking:" << ( blocking ? "yes" : "no" )
+                       << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
+                       << ( m_enablePreemptiveBlockingTasks
+                                ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
+                                : "" )
+                       << endmsg;
+
+    } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
+      AlgTask<ITask> theTask( std::move( ts ), this, serviceLocator(), m_algExecStateSvc );
+      ++m_algosInFlight;
+      sc = revise( ts.algIndex, ts.contextPtr, AState::SCHEDULED );
+      theTask();
+      --m_algosInFlight;
+    }
+  } else { // if no Algorithm instance available, retry later
+
+    sc = revise( ts.algIndex, ts.contextPtr, AState::RESOURCELESS );
+    // Add the algorithm to the retry queue
+    m_retryQueue.push( std::move( ts ) );
+  }
 
   ON_VERBOSE dumpSchedulerState( -1 );
 
-  if ( updateSc.isSuccess() )
-    ON_VERBOSE verbose() << "Promoting " << index2algname( iAlgo ) << " to " << state << " on slot " << si << endmsg;
-  return updateSc;
-}
-
-//---------------------------------------------------------------------------
-
-StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, int si, EventContext* eventContext ) {
-
-  if ( m_IOBoundAlgosInFlight == m_maxIOBoundAlgosInFlight ) return StatusCode::FAILURE;
-
-  // bool IOBound = m_precSvc->isBlocking(algName);
-
-  const std::string& algName( index2algname( iAlgo ) );
-  IAlgorithm*        ialgoPtr = nullptr;
-  StatusCode         sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
-
-  if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
-
-    ++m_IOBoundAlgosInFlight;
-    auto promote2ExecutedClosure = [this, iAlgo, ialgoPtr, eventContext]() {
-      this->m_actionsQueue.push( [this, iAlgo, ialgoPtr, eventContext]() {
-        return this->AvalancheSchedulerSvc::promoteToAsyncExecuted( iAlgo, eventContext->slot(), ialgoPtr,
-                                                                    eventContext );
-      } );
-      return StatusCode::SUCCESS;
-    };
-    // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from
-    // tbb::task)? it seems it works..
-
-    // FIXME - The memory allocation here is causing memory leaks as detected by the gcc leak sanitizer
-    //
-    // clang-format off
-    // Direct leak of 224 byte(s) in 7 object(s) allocated from:
-    //   #0 0x7fc0cb524da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
-    //   #1 0x7fc0ba979f7b in function<AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*)::<lambda()> > /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0-3fa06/x86_64-centos7/include/c++/8.2.0/bits/std_function.h:249
-    //   #2 0x7fc0ba97d181 in AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:969
-    //   #3 0x7fc0ba98354d in AvalancheSchedulerSvc::updateStates(int, int, int, int) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:660
-    // clang-format on
-    //
-    // These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
-    //
-    IOBoundAlgTask* theTask = new ( tbb::task::allocate_root() )
-        IOBoundAlgTask( ialgoPtr, *eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
-    if ( sc = m_IOBoundAlgScheduler->push( *theTask ); !sc ) return sc;
-    //
-    // FIXME
-
-    ON_DEBUG debug() << "[Asynchronous] Algorithm " << algName << " was submitted on event " << eventContext->evt()
-                     << " in slot " << si << ". algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
-
-    // Update alg state
-    StatusCode updateSc = setAlgState( iAlgo, eventContext, AState::SCHEDULED );
-
-    ON_VERBOSE if ( updateSc.isSuccess() ) verbose()
-        << "[Asynchronous] Promoting " << algName << " to SCHEDULED on slot " << si << endmsg;
-    return updateSc;
-  } else {
-    ON_DEBUG debug() << "[Asynchronous] Could not acquire instance for algorithm " << index2algname( iAlgo )
-                     << " on slot " << si << endmsg;
-    return sc;
-  }
-}
-
-//---------------------------------------------------------------------------
-
-/**
- * The call to this method is triggered only from within the AlgoExecutionTask.
- */
-StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si, EventContext* eventContext ) {
-
-  const std::string& algName( index2algname( iAlgo ) );
-
-  Gaudi::Hive::setCurrentContext( eventContext );
-
-  --m_algosInFlight;
-
-  ON_DEBUG debug() << "Trying to handle execution result of " << algName << " on slot " << si << endmsg;
-
-  const AlgExecState& algstate = m_algExecStateSvc->algExecState( algName, *eventContext );
-  AState              state    = algstate.execStatus().isSuccess()
-                     ? ( algstate.filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED )
-                     : AState::ERROR;
-
-  // Update alg state and iterate PrecedenceSvc
-  StatusCode sc = setAlgState( iAlgo, eventContext, state, true );
-
-  ON_VERBOSE if ( sc.isSuccess() ) verbose()
-      << "Promoting " << algName << " on slot " << si << " to " << state << endmsg;
-
-  ON_DEBUG debug() << "Algorithm " << algName << " executed in slot " << si << ". Algorithms scheduled are "
-                   << m_algosInFlight << endmsg;
-
-  // Prompt a call to updateStates
-  m_needsUpdate.store( true );
   return sc;
 }
 
 //---------------------------------------------------------------------------
 
 /**
- * The call to this method is triggered only from within the IOBoundAlgTask.
+ * The call to this method is triggered only from within the AlgTask.
  */
-StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
-                                                          EventContext* eventContext ) {
-  Gaudi::Hive::setCurrentContext( eventContext );
-  StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
+StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
 
-  if ( sc.isFailure() ) {
-    error() << "[Asynchronous]  [Event " << eventContext->evt() << ", Slot " << eventContext->slot() << "] "
-            << "Instance of algorithm " << algo->name() << " could not be properly put back." << endmsg;
-    return StatusCode::FAILURE;
-  }
+  Gaudi::Hive::setCurrentContext( ts.contextPtr );
 
-  --m_IOBoundAlgosInFlight;
+  if ( LIKELY( !ts.blocking ) )
+    --m_algosInFlight;
+  else
+    --m_blockingAlgosInFlight;
 
-  ON_DEBUG debug() << "[Asynchronous] Trying to handle execution result of " << algo->name() << " on slot " << si
-                   << endmsg;
-
-  const AlgExecState& algstate = m_algExecStateSvc->algExecState( algo, *eventContext );
+  const AlgExecState& algstate = m_algExecStateSvc->algExecState( ts.algPtr, *( ts.contextPtr ) );
   AState              state    = algstate.execStatus().isSuccess()
                      ? ( algstate.filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED )
                      : AState::ERROR;
 
-  // Update alg state and iterate PrecedenceSvc
-  sc = setAlgState( iAlgo, eventContext, state, true );
+  // Update algorithm state and revise the downstream states
+  auto sc = revise( ts.algIndex, ts.contextPtr, state, true );
 
-  ON_VERBOSE if ( sc.isSuccess() ) verbose()
-      << "[Asynchronous] Promoting " << algo->name() << " on slot " << si << " to " << state << endmsg;
-
-  ON_DEBUG debug() << "[Asynchronous] Algorithm " << algo->name() << " executed in slot " << si
-                   << ". Algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
+  ON_DEBUG debug() << "Executed " << ts.algName << " [slot:" << ts.slotIndex << ", event:" << ts.contextPtr->evt()
+                   << ", rank:" << ts.algRank << ", blocking:" << ( ts.blocking ? "yes" : "no" )
+                   << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
+                   << ( m_enablePreemptiveBlockingTasks
+                            ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
+                            : "" )
+                   << endmsg;
 
   // Prompt a call to updateStates
   m_needsUpdate.store( true );

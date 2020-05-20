@@ -57,8 +57,8 @@ StatusCode CPUCruncher::initialize() {
     return StatusCode::FAILURE;
   }
 
-  // if an algorithm was setup to sleep, for whatever period, it effectively becomes I/O-bound
-  if ( m_sleepFraction != 0.0f ) setIOBound( true );
+  // if an algorithm was setup to sleep, for whatever period, it effectively models CPU-blocking behavior
+  if ( m_sleepFraction != 0.0f ) setBlocking( true );
 
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
   // we need to wait until initialize when we've read in the input and output key
@@ -166,8 +166,8 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   // Start to measure the total time here, together with the dreaming process straight ahead
   tbb::tick_count starttbb = tbb::tick_count::now();
 
-  // If the algorithm was set as I/O-bound, we will replace requested part of crunching with plain sleeping
-  if ( isIOBound() ) {
+  // If the algorithm was declared as CPU-blocking, we will replace requested part of crunching with plain sleeping
+  if ( isBlocking() ) {
     // in this block (and not in other places around) msgLevel is checked for the same reason as above, when
     // preparing to sleep several lines above: to reduce as much as possible the overhead around sleeping
     DEBUG_MSG << "Dreaming time will be: " << int( 1000 * dreamtime ) << " ms" << endmsg;

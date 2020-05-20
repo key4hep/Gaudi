@@ -10,7 +10,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 """
-The simplest possible configuration for asynchronous scheduling of single blocking algorithm.
+The simplest possible configuration for preemptive scheduling of single blocking algorithm.
 """
 
 from Gaudi.Configuration import *
@@ -32,15 +32,15 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 
 AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
-    PreemptiveIOBoundTasks=True,
-    MaxIOBoundAlgosInFlight=blockingAlgosInFlight,
+    PreemptiveBlockingTasks=True,
+    MaxBlockingAlgosInFlight=blockingAlgosInFlight,
     OutputLevel=VERBOSE)
 
 blockingAlg = CPUCruncher(
     name="BlockingAlg",
     avgRuntime=2.,
     Cardinality=3,
-    IsIOBound=True,  # tag algorithm as blocking
+    Blocking=True,  # tag algorithm as blocking
     SleepFraction=0.7,  # simulate blocking nature
     OutputLevel=DEBUG)
 

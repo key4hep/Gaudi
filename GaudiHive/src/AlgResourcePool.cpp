@@ -16,7 +16,7 @@
 #include <functional>
 #include <queue>
 
-// DP TODO: Manage smartifs and not pointers to algos
+// DP TODO: Manage SmartIFs and not pointers to algorithms
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AlgResourcePool )
@@ -26,7 +26,7 @@ DECLARE_COMPONENT( AlgResourcePool )
 
 //---------------------------------------------------------------------------
 
-// destructor
+// Destructor
 AlgResourcePool::~AlgResourcePool() {
   for ( auto& algoId_algoQueue : m_algqueue_map ) {
     auto* queue = algoId_algoQueue.second;
@@ -36,7 +36,7 @@ AlgResourcePool::~AlgResourcePool() {
 
 //---------------------------------------------------------------------------
 
-// initialize the pool with the list of algos known to the IAlgManager
+// Initialize the pool with the list of algorithms known to the IAlgManager
 StatusCode AlgResourcePool::initialize() {
 
   StatusCode sc( Service::initialize() );
@@ -65,7 +65,7 @@ StatusCode AlgResourcePool::start() {
   StatusCode startSc = Service::start();
   if ( !startSc.isSuccess() ) return startSc;
 
-  // sys-Start the algos
+  // sys-Start the algorithms
   for ( auto& ialgo : m_algList ) {
     startSc = ialgo->sysStart();
     if ( startSc.isFailure() ) {
@@ -78,11 +78,11 @@ StatusCode AlgResourcePool::start() {
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorithm*& algo, bool blocking ) {
+StatusCode AlgResourcePool::acquireAlgorithm( std::string_view name, IAlgorithm*& algo, bool blocking ) {
 
-  std::hash<std::string> hash_function;
-  size_t                 algo_id        = hash_function( name );
-  auto                   itQueueIAlgPtr = m_algqueue_map.find( algo_id );
+  std::hash<std::string_view> hash_function;
+  size_t                      algo_id        = hash_function( name );
+  auto                        itQueueIAlgPtr = m_algqueue_map.find( algo_id );
 
   if ( itQueueIAlgPtr == m_algqueue_map.end() ) {
     error() << "Algorithm " << name << " requested, but not recognised" << endmsg;
@@ -97,7 +97,7 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
     if ( !itQueueIAlgPtr->second->try_pop( algo ) ) { sc = StatusCode::FAILURE; }
   }
 
-  // Note that reentrant algos are not consumed so we put them
+  // Note that reentrant algorithms are not consumed so we put them
   // back immediately in the queue at the end of this function.
   // Now we may still be called again in between and get this
   // error. In such a case, the Scheduler will retry later.
@@ -123,7 +123,7 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
     }
     m_resource_mutex.unlock();
     if ( 0 == algo->cardinality() ) {
-      // push back reentrant algos immediately as it can be reused
+      // push back reentrant algorithms immediately as it can be reused
       itQueueIAlgPtr->second->push( algo );
     }
   }
@@ -132,10 +132,10 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::releaseAlgorithm( const std::string& name, IAlgorithm*& algo ) {
+StatusCode AlgResourcePool::releaseAlgorithm( std::string_view name, IAlgorithm*& algo ) {
 
-  std::hash<std::string> hash_function;
-  size_t                 algo_id = hash_function( name );
+  std::hash<std::string_view> hash_function;
+  size_t                      algo_id = hash_function( name );
 
   // release resources used by the algorithm
   m_resource_mutex.lock();
@@ -149,7 +149,7 @@ StatusCode AlgResourcePool::releaseAlgorithm( const std::string& name, IAlgorith
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::acquireResource( const std::string& name ) {
+StatusCode AlgResourcePool::acquireResource( std::string_view name ) {
   m_resource_mutex.lock();
   m_available_resources[m_resource_indices[name]] = false;
   m_resource_mutex.unlock();
@@ -158,7 +158,7 @@ StatusCode AlgResourcePool::acquireResource( const std::string& name ) {
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::releaseResource( const std::string& name ) {
+StatusCode AlgResourcePool::releaseResource( std::string_view name ) {
   m_resource_mutex.lock();
   m_available_resources[m_resource_indices[name]] = true;
   m_resource_mutex.unlock();
@@ -218,7 +218,7 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
 
   StatusCode sc = StatusCode::SUCCESS;
 
-  // Fill the top alg list ----
+  // Fill the top algorithm list ----
   const std::vector<std::string>& topAlgNames = m_topAlgNames.value();
   for ( auto& name : topAlgNames ) {
     IAlgorithm* algo( nullptr );
@@ -232,11 +232,11 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
       createAlg( item_type, item_name, algo );
       algoSmartIF = algo;
     }
-    // Init and start
+
     algoSmartIF->sysInitialize().ignore();
     m_topAlgList.push_back( algoSmartIF );
   }
-  // Top Alg list filled ----
+  // Top algorithm list filled ----
 
   // Now we unroll it ----
   for ( auto& algoSmartIF : m_topAlgList ) {
@@ -323,7 +323,7 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
       auto ret = m_resource_indices.emplace( resource_name, resource_counter );
       // insert successful means == wasn't known before. So increment counter
       if ( ret.second ) ++resource_counter;
-      // Resize for every algo according to the found resources
+      // Resize for every algorithm according to the found resources
       requirements.resize( resource_counter );
       // in any case the return value holds the proper product index
       requirements[ret.first->second] = true;
@@ -383,7 +383,7 @@ StatusCode AlgResourcePool::stop() {
   StatusCode stopSc = Service::stop();
   if ( !stopSc.isSuccess() ) return stopSc;
 
-  // sys-Stop the algos
+  // sys-Stop the algorithm
   for ( auto& ialgo : m_algList ) {
     stopSc = ialgo->sysStop();
     if ( stopSc.isFailure() ) {

@@ -8,25 +8,22 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_GAUDIKERNEL_IALGTASK_H_
-#define GAUDIKERNEL_GAUDIKERNEL_IALGTASK_H_
+#ifndef GAUDIKERNEL_GAUDIKERNEL_ITASK_H_
+#define GAUDIKERNEL_GAUDIKERNEL_ITASK_H_
 
-#include "GaudiKernel/StatusCode.h"
-
-/**@class IAlgTask IAlgTask.h GaudiKernel/IAlgTask.h
+/**@class ITask ITask.h GaudiKernel/ITask.h
  *
- *  General interface for a wrapper around Gaudi algorithm.
+ *  General interface for a Gaudi task.
  *
  *  @author  Illya Shapoval
  *  @version 1.0
  */
 
-// Does it have to inherit from IInterface ?
-class IAlgTask {
+class ITask {
 public:
-  virtual ~IAlgTask() = default;
+  virtual ~ITask() = default;
 
-  virtual StatusCode execute() = 0;
+  virtual ITask* execute() = 0;
 };
 
-#endif /* GAUDIKERNEL_GAUDIKERNEL_IALGTASK_H_ */
+#endif /* GAUDIKERNEL_GAUDIKERNEL_ITASK_H_ */

@@ -31,6 +31,7 @@
 #include <functional>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <unordered_map>
 #include <vector>
@@ -93,8 +94,8 @@ class IAlgorithm;
  *   o Other mechanisms of throughput maximization
  *
  *     The scheduler is able to maximize the overall throughput of data processing
- *     by scheduling the CPU-blocking tasks efficiently. The mechanism can be
- *     applied to the following types of tasks:
+ *     by preemptive scheduling CPU-blocking tasks. The mechanism can be applied
+ *     to the following types of tasks:
  *     - I/O-bound tasks;
  *     - tasks with computation offloading (accelerators, GPGPUs, clouds,
  *       quantum computing devices..joke);
@@ -110,7 +111,9 @@ class IAlgorithm;
  *  @version 1.0
  */
 class AvalancheSchedulerSvc : public extends<Service, IScheduler> {
-  friend class AlgoExecutionTask;
+
+  template <class T>
+  friend class AlgTask;
 
 public:
   /// Constructor
@@ -154,18 +157,18 @@ private:
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
   Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<std::string>  m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
-  Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
-                                                          "Maximum number of simultaneous I/O-bound algorithms"};
-  Gaudi::Property<bool>         m_simulateExecution{
+  Gaudi::Property<unsigned int> m_maxBlockingAlgosInFlight{
+      this, "MaxBlockingAlgosInFlight", 0, "Maximum allowed number of simultaneously running CPU-blocking algorithms"};
+  Gaudi::Property<bool> m_simulateExecution{
       this, "SimulateExecution", false,
       "Flag to perform single-pass simulation of execution flow before the actual execution"};
   Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
                                                   "The following modes are currently available: PCE, COD, DRE,  E"};
   Gaudi::Property<bool>        m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
                                                  "Dump intra-event concurrency dynamics to csv file"};
-  Gaudi::Property<bool>        m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
-                                                 "Turn on preemptive way of scheduling of I/O-bound algorithms"};
+  Gaudi::Property<bool>        m_enablePreemptiveBlockingTasks{
+      this, "PreemptiveBlockingTasks", false,
+      "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly."};
 
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};
 
@@ -217,9 +220,6 @@ private:
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
-  /// A shortcut to IO-bound algorithm scheduler
-  SmartIF<IAccelerator> m_IOBoundAlgScheduler;
-
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
 
@@ -239,23 +239,20 @@ private:
   unsigned int m_algosInFlight = 0;
 
   /// Number of algorithms presently in flight
-  unsigned int m_IOBoundAlgosInFlight = 0;
+  unsigned int m_blockingAlgosInFlight = 0;
 
   // States management ------------------------------------------------------
 
-  /// Loop on algorithm in the slots and promote them to successive states
-  StatusCode updateStates();
+  /// Loop on all slots to schedule DATAREADY algorithms and sign off ready events
+  StatusCode iterate();
 
-  // Update algorithm state in the appropriate event slot
-  StatusCode setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );
+  // Update algorithm state and, optionally, revise states of other downstream algorithms
+  StatusCode revise( unsigned int iAlgo, EventContext* contextPtr, AState state, bool iterate = false );
 
-  /// Algorithm promotion
-  StatusCode enqueue( unsigned int iAlgo, int si, EventContext* );
-  StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si, EventContext* ); // tests of an asynchronous scheduler
-  StatusCode promoteToExecuted( unsigned int iAlgo, int si, EventContext* );
-  StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
-                                     EventContext* ); // tests of an asynchronous scheduler
-  StatusCode promoteToFinished( unsigned int iAlgo, int si );
+  /// Algorithm scheduling
+  struct TaskSpec;
+  StatusCode schedule( TaskSpec&& );
+  StatusCode signoff( const TaskSpec& );
 
   /// Check if scheduling in a particular slot is in a stall
   bool isStalled( const EventSlot& ) const;
@@ -276,22 +273,44 @@ private:
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
   /// Struct to hold entries in the alg queues
-  struct AlgQueueEntry {
-    unsigned int  algIndex;
-    int           slotIndex;
-    EventContext* contextPtr;
-    unsigned int  rank;
-    IAlgorithm*   algPtr;
+  struct TaskSpec {
+    /// Default constructor
+    TaskSpec(){};
+    TaskSpec( IAlgorithm* algPtr, unsigned int algIndex, const std::string& algName, unsigned int algRank,
+              bool blocking, int slotIndex, EventContext* eventContext )
+        : algPtr( algPtr )
+        , algIndex( algIndex )
+        , algName( algName )
+        , algRank( algRank )
+        , blocking( blocking )
+        , slotIndex( slotIndex )
+        , contextPtr( eventContext ){};
+    /// Copy constructor (to keep a lambda capturing a TaskSpec storable as a std::function value)
+    TaskSpec( const TaskSpec& ) = default;
+    /// Assignment operator
+    TaskSpec& operator=( const TaskSpec& ) = delete;
+    /// Move constructor
+    TaskSpec( TaskSpec&& ) = default;
+    /// Move assignment
+    TaskSpec& operator=( TaskSpec&& ) = default;
+
+    IAlgorithm*      algPtr{nullptr};
+    unsigned int     algIndex{0};
+    std::string_view algName;
+    unsigned int     algRank{0};
+    bool             blocking{false};
+    int              slotIndex{0};
+    EventContext*    contextPtr{nullptr};
   };
 
   /// Comparison operator to sort the queues
   struct AlgQueueSort {
-    bool operator()( const AlgQueueEntry& i, const AlgQueueEntry& j ) const { return ( i.rank < j.rank ); }
+    bool operator()( const TaskSpec& i, const TaskSpec& j ) const { return ( i.algRank < j.algRank ); }
   };
 
   /// Queues for scheduled algorithms
-  tbb::concurrent_priority_queue<AlgQueueEntry, AlgQueueSort> m_scheduledQueue;
-  std::queue<AlgQueueEntry>                                   m_retryQueue;
+  tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledQueue;
+  std::queue<TaskSpec>                                   m_retryQueue;
 
   // Prompt the scheduler to call updateStates
   std::atomic<bool> m_needsUpdate{true};
