@@ -238,8 +238,8 @@ public:
   ///       .orThrow( "too bad, we were nearly there", "myFunction" );
   /// }
   /// \endcode
-  const StatusCode& orThrow( std::string message, std::string tag ) const {
-    if ( isFailure() ) i_doThrow( std::move( message ), std::move( tag ) );
+  const StatusCode& orThrow( std::string_view message, std::string_view tag ) const {
+    if ( isFailure() ) i_doThrow( message, tag );
     return *this;
   }
 
@@ -314,7 +314,7 @@ private:
   void      check();               ///< Do StatusCode check
 
   /// Helper function to avoid circular dependency between GaudiException.h and StatusCode.h
-  void i_doThrow( std::string message, std::string tag ) const;
+  void i_doThrow( std::string_view message, std::string_view tag ) const;
 
   /// Helper to invoke a callable and return the resulting StatusCode or this, if the callable returns void.
   template <typename F, typename... ARGS, typename = std::enable_if_t<std::is_invocable_v<F, ARGS...>>>
