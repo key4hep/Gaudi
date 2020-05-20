@@ -17,7 +17,7 @@ JobOptionsSvc        INFO # (35,1): Histos2.Histo2 = [-5, 5, 200]
 JobOptionsSvc        INFO # (41,1): ApplicationMgr.EvtMax = 50000
 JobOptionsSvc        INFO # (42,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (49,1): ApplicationMgr.HistogramPersistency = "ROOT"
-JobOptionsSvc        INFO # (50,1): RootHistSvc.OutputFile = "histo.root"
+JobOptionsSvc        INFO # (50,1): RootHistSvc.OutputFile = "histo-opts.root"
 JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
 JobOptionsSvc        INFO # (61,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
 JobOptionsSvc        INFO # (65,1): HistogramDataSvc.OutputLevel = 2
@@ -86,7 +86,7 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
-RootHistSvc          INFO Writing ROOT histograms to: histo.root
+RootHistSvc          INFO Writing ROOT histograms to: histo-opts.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 HistogramDataSvc     INFO  Predefined 1D-Histograms:
 HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
