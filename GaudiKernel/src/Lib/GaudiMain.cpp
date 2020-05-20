@@ -17,6 +17,7 @@
 #include <gsl/span>
 #include <iostream>
 #include <string_view>
+#include <type_traits>
 
 extern "C" GAUDI_API int GaudiMain( int argc, char** argv ) {
   Gaudi::Application::Options opts;
@@ -24,7 +25,7 @@ extern "C" GAUDI_API int GaudiMain( int argc, char** argv ) {
   std::string_view appType{"Gaudi::Application"};
   std::string_view optsFile;
 
-  gsl::span args{argv, argc};
+  gsl::span args{argv, static_cast<std::remove_cv_t<decltype( gsl::dynamic_extent )>>( argc )};
 
   auto usage = [name = args[0]]( std::ostream& out ) -> std::ostream& {
     return out << "usage: " << name << " [options] option_file\n";
