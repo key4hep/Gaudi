@@ -257,6 +257,12 @@ class _ListHelper(MutableSequence):
             raise RuntimeError('cannot remove elements from the default value')
         self.data.__delitem__(key)
 
+    def __eq__(self, other):
+        return self.data == other.data
+
+    def __ne__(self, other):
+        return self.data != other.data
+
     def insert(self, key, value):
         self.is_dirty = True
         self.data.insert(key, self.value_semantics.store(value))
@@ -280,9 +286,9 @@ class _ListHelper(MutableSequence):
 class SequenceSemantics(PropertySemantics):
     __handled_types__ = (re.compile(r'(std::)?(vector|list)<.*>$'), )
 
-    def __init__(self, cpp_type, name=None):
+    def __init__(self, cpp_type, name=None, valueSem=None):
         super(SequenceSemantics, self).__init__(cpp_type, name)
-        self.value_semantics = getSemanticsFor(
+        self.value_semantics = valueSem or getSemanticsFor(
             list(extract_template_args(cpp_type))[0])
 
     def store(self, value):

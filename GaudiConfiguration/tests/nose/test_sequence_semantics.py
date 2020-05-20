@@ -110,3 +110,27 @@ def test_nested_vector():
 def test_nested_vector_bad():
     s = S.getSemanticsFor('std::vector<std::vector<std::string>, a<s> >')
     s.store([['a', 'b'], ['c', 0, 'e']])
+
+
+def test_merge():
+    s = S.getSemanticsFor('std::vector<int>')
+    s1 = s.store([1, 2])
+    s2 = s.store([1, 2])
+    assert s1 == s2
+    s.merge(s1, s2)
+
+
+@raises(ValueError)
+def test_merge_fail():
+    s = S.getSemanticsFor('std::vector<int>')
+    s1 = s.store([1, 2])
+    s2 = s.store([1, 1])
+    assert s1 != s2
+    s.merge(s1, s2)
+
+
+def testValueSem():
+    from GaudiConfig2.semantics import SequenceSemantics, FloatSemantics
+    s = SequenceSemantics('std::vector<int>', None,
+                          FloatSemantics('float', None))
+    assert type(s.value_semantics) == FloatSemantics
