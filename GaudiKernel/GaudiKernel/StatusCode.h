@@ -238,8 +238,9 @@ public:
   ///       .orThrow( "too bad, we were nearly there", "myFunction" );
   /// }
   /// \endcode
-  StatusCode orThrow( std::string message, std::string tag ) const {
-    return orElse( &StatusCode::i_doThrow, this, std::move( message ), std::move( tag ) );
+  const StatusCode& orThrow( std::string message, std::string tag ) const {
+    if ( isFailure() ) i_doThrow( std::move( message ), std::move( tag ) );
+    return *this;
   }
 
   /// Has the StatusCode been checked?
