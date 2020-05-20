@@ -39,6 +39,13 @@ def test_default():
     assert dict(d) == {'a': 'A', 'b': 'B', 'c': 'C'}
 
 
+def test_empyDict():
+    s = S.getSemanticsFor('std::map<std::string, std::string>')
+    d = s.store({})
+    assert d.is_dirty
+    assert d == {}
+
+
 @raises(RuntimeError)
 def test_default_read_only():
     s = S.getSemanticsFor('std::map<std::string, std::string>')
