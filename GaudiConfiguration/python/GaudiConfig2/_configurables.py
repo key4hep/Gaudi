@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -216,7 +216,9 @@ class Configurable(ConfigMetaHelper):
         return state
 
     def __setstate__(self, state):
-        self.__init__(state.get('name'), **state['properties'])
+        self._name = None
+        self.name = state.get('name')
+        self._properties = state['properties']
 
     def __opt_value__(self):
         if self.__cpp_type__ == self.name:
