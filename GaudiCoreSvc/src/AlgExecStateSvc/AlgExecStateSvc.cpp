@@ -109,6 +109,19 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
   if ( UNLIKELY( itr == algState.end() ) ) {
     throw GaudiException{"cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE};
   }
+
+  // Assuming the alg is known, look for its state in the sub-slot
+  if ( ctx.usesSubSlot() ) {
+    auto& subSlots    = m_algSubSlotStates[ctx.slot()];
+    auto& thisSubSlot = subSlots[ctx.subSlot()];
+    auto  subitr      = thisSubSlot.find( algName );
+    if ( UNLIKELY( subitr == thisSubSlot.end() ) ) {
+      throw GaudiException{"cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE};
+    } else {
+      return subitr->second;
+    }
+  }
+
   return itr->second;
 }
 
@@ -119,10 +132,32 @@ AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContex
 
   auto& algState = m_algStates.at( ctx.slot() );
   auto  itr      = algState.find( iAlg->nameKey() );
-
   if ( UNLIKELY( itr == algState.end() ) ) {
     throw GaudiException{std::string{"cannot find Alg "} + iAlg->name() + " in AlgStateMap", name(),
                          StatusCode::FAILURE};
+  }
+
+  // Sub-slots are dynamic
+  // Assuming the alg is known, look for a subslot
+  // Return the existing state, or create a new one
+  if ( ctx.usesSubSlot() ) {
+
+    // Check that there is any sub-slot information for this slot
+    if ( ctx.slot() >= m_algSubSlotStates.size() ) m_algSubSlotStates.resize( ctx.slot() + 1 );
+
+    // Check that there is information for this sub-slot
+    auto& subSlots = m_algSubSlotStates[ctx.slot()];
+    if ( ctx.subSlot() >= subSlots.size() ) subSlots.resize( ctx.subSlot() + 1 );
+
+    // Find (or create) the state of the algorithm in this sub-slot
+    auto& thisSubSlot = subSlots[ctx.subSlot()];
+    auto  subitr      = thisSubSlot.find( iAlg->name() );
+    if ( subitr == thisSubSlot.end() ) {
+      thisSubSlot[iAlg->name()] = AlgExecState();
+      return thisSubSlot[iAlg->name()];
+    } else {
+      return subitr->second;
+    }
   }
 
   return itr->second;
@@ -168,6 +203,13 @@ void AlgExecStateSvc::reset( const EventContext& ctx ) {
 
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
   for ( auto& e : m_algStates.at( ctx.slot() ) ) e.second.reset();
+
+  // Also clear sub slots
+  if ( ctx.slot() < m_algSubSlotStates.size() ) {
+    for ( auto& subSlot : m_algSubSlotStates[ctx.slot()] ) {
+      for ( auto& e : subSlot ) e.second.reset();
+    }
+  }
 
   m_eventStatus.at( ctx.slot() ) = EventStatus::Invalid;
 }
