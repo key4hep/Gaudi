@@ -104,7 +104,7 @@ StatusCode PrecedenceSvc::initialize() {
     return StatusCode::FAILURE;
   }
 
-  ON_DEBUG debug() << m_PRGraph.dumpDataFlow() << endmsg;
+  if ( m_showDataFlow ) { debug() << m_PRGraph.dumpDataFlow() << endmsg; }
 
   if ( m_verifyRules ) {
     ON_DEBUG debug() << "Verifying task precedence rules" << endmsg;
