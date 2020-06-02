@@ -388,8 +388,10 @@ private:
                                                 << "Set it via the \"CL=\" parameter in the \"Output\" Property"
                                                 << endmsg;
                                           }};
-  Gaudi::Property<std::vector<std::string>> m_outputfile{this, "Output", {}, &THistSvc::setupOutputFile};
-  Gaudi::Property<std::vector<std::string>> m_inputfile{this, "Input", {}, &THistSvc::setupInputFile};
+  Gaudi::Property<std::vector<std::string>> m_outputfile{
+      this, "Output", {}, &THistSvc::setupOutputFile, "", "OrderedSet<std::string>"};
+  Gaudi::Property<std::vector<std::string>> m_inputfile{
+      this, "Input", {}, &THistSvc::setupInputFile, "", "OrderedSet<std::string>"};
 
   /// @}
 

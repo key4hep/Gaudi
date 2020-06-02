@@ -310,6 +310,25 @@ class SequenceSemantics(PropertySemantics):
         return value.opt_value()
 
 
+class OrderedSetSemantics(SequenceSemantics):
+    '''
+    Extend the sequence-semantics with a merge-method to behave like a
+    OrderedSet: Values are unique but the order is maintained.
+    Use 'OrderedSet<T>' as fifth parameter of the Gaudi::Property<T> constructor 
+    to invoke this merging method. 
+    '''
+    __handled_types__ = (re.compile(r"^OrderedSet<.*>$"), )
+
+    def __init__(self, cpp_type, name=None):
+        super(OrderedSetSemantics, self).__init__(cpp_type, name)
+
+    def merge(self, bb, aa):
+        for b in bb:
+            if b not in aa:
+                aa.append(b)
+        return aa
+
+
 class _DictHelper(MutableMapping):
     def __init__(self, key_semantics, value_semantics):
         self.key_semantics = key_semantics
@@ -413,8 +432,8 @@ class MappingSemantics(PropertySemantics):
 
 
 SEMANTICS = [
-    c for c in globals().values()
-    if isinstance(c, type) and PropertySemantics in c.__bases__
+    c for c in globals().values() if isinstance(c, type)
+    and issubclass(c, PropertySemantics) and c is not PropertySemantics
 ]
 
 
