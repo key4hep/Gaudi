@@ -87,7 +87,8 @@ private:
   SmartIF<IAuditor> findAuditor_( std::string_view );
   StatusCode        syncAuditors_();
 
-  Gaudi::Property<std::vector<std::string>> m_audNameList{this, "Auditors", {}, "list of auditors names"};
+  Gaudi::Property<std::vector<std::string>> m_audNameList{
+      this, "Auditors", {}, "list of auditors names", "OrderedSet<std::string>"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "enable/disable alltogether the auditors"};
 
   // Manager list of Auditors

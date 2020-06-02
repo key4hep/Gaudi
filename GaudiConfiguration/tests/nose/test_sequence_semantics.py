@@ -112,6 +112,14 @@ def test_nested_vector_bad():
     s.store([['a', 'b'], ['c', 0, 'e']])
 
 
+def test_sequence_semantics():
+    s = S.getSemanticsFor("OrderedSet<std::string>")
+    a = ["a", "b", "c"]
+    b = ["b", "c", "d"]
+    c = s.merge(b, a)
+    assert c == ["a", "b", "c", "d"]
+
+
 def test_merge():
     s = S.getSemanticsFor('std::vector<int>')
     s1 = s.store([1, 2])
