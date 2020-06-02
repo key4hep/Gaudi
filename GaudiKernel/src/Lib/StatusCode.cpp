@@ -89,6 +89,6 @@ void StatusCode::check() {
   }
 }
 
-void StatusCode::i_doThrow( std::string message, std::string tag ) const {
-  throw GaudiException{std::move( message ), std::move( tag ), *this};
+void StatusCode::i_doThrow( std::string_view message, std::string_view tag ) const {
+  throw GaudiException{std::string{message}, std::string{tag}, *this};
 }

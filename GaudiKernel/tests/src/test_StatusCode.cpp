@@ -542,6 +542,13 @@ BOOST_AUTO_TEST_CASE( chaining ) {
   BOOST_CHECK( sc.isSuccess() );
   BOOST_CHECK_EQUAL( steps, 1 );
 
+  // this is just to check that there's no warning on ignoring the
+  // return value of orThrow
+#pragma GCC diagnostic push
+#pragma GCC diagnostic error "-Wunused-result"
+  StatusCode{StatusCode::SUCCESS}.orThrow( "no error", "test_StatusCode" );
+#pragma GCC diagnostic pop
+
   // throw
   try {
     sc = start().andThen( failure_func ).orThrow( "failure", "test_StatusCode" );
