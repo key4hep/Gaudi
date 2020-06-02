@@ -252,8 +252,6 @@ namespace concurrency {
 
     if ( !sc.isSuccess() ) error() << "Could not build the data dependency realm." << endmsg;
 
-    ON_DEBUG debug() << dumpDataFlow() << endmsg;
-
     return sc;
   }
 

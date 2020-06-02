@@ -99,6 +99,8 @@ private:
                                                    "Override default name of the GRAPHML precedence rules file."};
   Gaudi::Property<bool>        m_verifyRules{this, "VerifyTaskPrecedenceRules", true,
                                       "Verify task precedence rules for common errors."};
+  Gaudi::Property<bool>        m_showDataFlow{this, "ShowDataFlow", false,
+                                       "Show the configuration of DataFlow between Algorithms"};
 };
 
 #endif /* GAUDIHIVE_PRECEDENCESVC_H_ */
