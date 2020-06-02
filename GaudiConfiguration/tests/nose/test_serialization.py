@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -22,6 +22,14 @@ def setup_func():
 def teaardown_func():
     Configurable.instances.clear()
     useGlobalInstances(False)
+
+
+class MyDerivedAlg(MyAlg):
+    """Derived algorithm with __init__ override"""
+
+    def __init__(self):
+        super(MyDerivedAlg, self).__init__()
+        self.AnIntProp = 42
 
 
 @with_setup(setup_func, teaardown_func)
@@ -97,6 +105,11 @@ def test_pickle():
     p = AlgWithMaps(MSS={'a': 'B'})
     q = loads(dumps(p))
     assert dict(q.MSS) == {'a': 'B'}
+    assert dumps(q) == dumps(p)
+
+    p = MyDerivedAlg()
+    q = loads(dumps(p))
+    assert q.AnIntProp == 42
     assert dumps(q) == dumps(p)
 
 
