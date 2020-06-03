@@ -105,6 +105,16 @@ public:
     return std::any_cast<std::decay_t<T> const&>( m_extension );
   }
 
+  template <typename T>
+  T* tryGetExtension() noexcept {
+    return std::any_cast<T>( &m_extension );
+  }
+
+  template <typename T>
+  const T* tryGetExtension() const noexcept {
+    return std::any_cast<T>( &m_extension );
+  }
+
   bool hasExtension() const { return m_extension.has_value(); }
 
   template <typename T>
