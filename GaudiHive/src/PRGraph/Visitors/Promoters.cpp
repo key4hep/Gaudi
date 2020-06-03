@@ -73,6 +73,16 @@ namespace concurrency {
       }
     }
 
+    // Check parent slot if necessary
+    if ( m_slot->parentSlot ) {
+      for ( auto algoNode : producers ) {
+        const auto& state = m_slot->parentSlot->algsStates[algoNode->getAlgoIndex()];
+        if ( AState::EVTACCEPTED == state || AState::EVTREJECTED == state ) {
+          return true; // skip checking other producers if one was found to be executed
+        }
+      }
+    }
+
     // return true only if this DataNode is produced
     return false;
   }
