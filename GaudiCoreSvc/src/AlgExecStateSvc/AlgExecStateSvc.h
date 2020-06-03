@@ -53,8 +53,7 @@ public:
 
 private:
   // one vector entry per event slot
-  std::vector<AlgStateMap_t>              m_algStates;
-  std::vector<std::vector<AlgStateMap_t>> m_algSubSlotStates;
+  std::vector<AlgStateMap_t> m_algStates;
 
   std::vector<EventStatus::Status> m_eventStatus;
   std::vector<Gaudi::StringKey>    m_preInitAlgs;
