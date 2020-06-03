@@ -94,8 +94,17 @@ StatusCode ViewTester::execute() // the execution of the algorithm
       }
     } else {
       // Disable the view node if there are no views
-      scheduler->scheduleEventView( &context, m_viewNodeName, nullptr ).ignore();
+      scheduler->scheduleEventView( &context, m_viewNodeName, nullptr )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     }
+  }
+
+  VERBOSE_MSG << "outputs number: " << m_outputHandles.size() << endmsg;
+  for ( auto& outputHandle : m_outputHandles ) {
+    if ( !outputHandle->isValid() ) continue;
+
+    VERBOSE_MSG << "put to TS: " << outputHandle->objKey() << endmsg;
+    outputHandle->put( std::make_unique<DataObject>() );
   }
 
   setFilterPassed( true );
