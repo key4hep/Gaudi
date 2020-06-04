@@ -95,6 +95,10 @@ public:
     return getExtension<T>();
   }
 
+  void resetExtension() { m_extension.reset(); }
+
+  std::any detachExtension() { return std::move( m_extension ); }
+
   template <typename T>
   auto& getExtension() {
     return std::any_cast<std::decay_t<T>&>( m_extension );
