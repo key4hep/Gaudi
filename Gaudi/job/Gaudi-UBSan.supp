@@ -28,10 +28,7 @@ vptr:GaudiUtils/src/component/XMLFileCatalog.cpp
 #     #0 0x7fd5ce2fb0d9 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-centos7/include/c++/8.1.0/bits/shared_ptr_base.h:161
 #     #1 0x7fd5aecaed10 in (anonymous namespace)::RealFileSystem::dir_begin(llvm::Twine const&, std::error_code&) (/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_94/ROOT/6.14.04/x86_64-centos7-gcc8-dbg/lib/libCling.so+0x249cd10)
 #     #2 0x7fd5ad2e5981 in clang::driver::toolchains::Generic_GCC::GCCInstallationDetector::ScanLibDirForGCCTriple(llvm::Triple const&, llvm::opt::ArgList const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, llvm::StringRef, bool) (/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_94/ROOT/6.14.04/x86_64-centos7-gcc8-dbg/lib/libCling.so+0xad3981)
-# Include gcc version so we don't automatically apply these to newer releases.
-vptr:include/c++/7.3.0/bits/shared_ptr_base.h
-vptr:include/c++/8.1.0/bits/shared_ptr_base.h
-vptr:include/c++/8.2.0/bits/shared_ptr_base.h
+vptr:bits/shared_ptr_base.h
 
 # TBB
 # /cvmfs/lhcb.cern.ch/lib/lcg/releases/tbb/2018_U1-d3621/x86_64-centos7-gcc7-dbg/include/tbb/task.h:780:34: runtime error: member call on address 0x7fccb4ac8e00 which does not point to an object of type 'scheduler'
