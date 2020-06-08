@@ -168,3 +168,13 @@ leak:std::vector<unsigned int, std::allocator<unsigned int> >::_M_fill_insert
 
 # Suppresses *everything* that comes via the runtime interceptor.
 leak:_interceptor_
+
+#Direct leak of 48 byte(s) in 2 object(s) allocated from:
+#    #0 0x7f9fde9b458f in operator new(unsigned long, std::nothrow_t const&) /build/gcc/build/contrib/gcc-9.2.0/src/gcc/9.2.0/libsanitizer/lsan/lsan_interceptors.cc:227
+#    #1 0x7f9fdd3675bd in __cxa_thread_atexit /build/gcc/build/contrib/gcc-9.2.0/src/gcc/9.2.0/libstdc++-v3/libsupc++/atexit_thread.cc:146
+leak:__cxa_thread_atexit
+
+#Indirect leak of 2560 byte(s) in 10 object(s) allocated from:
+#    #0 0x7f7edaccf333 in operator new(unsigned long) /build/gcc/build/contrib/gcc-9.2.0/src/gcc/9.2.0/libsanitizer/lsan/lsan_interceptors.cc:222
+#    #1 0x7f7ecb4679ad in std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >::operator=(std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&) (/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_96b/ROOT/6.18.04/x86_64-centos7-gcc9-dbg/lib/libCling.so+0xacb9ad)
+leak:std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >::operator=(std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&)
