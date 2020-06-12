@@ -54,7 +54,7 @@ void GaudiAlg::Print1D::print( MsgStream& stream, const AIDA::IHistogram1D* aida
 }
 // ============================================================================
 std::string GaudiAlg::Print1D::toString( const AIDA::IHistogram1D* aida, const GaudiAlg::HistoID& ID ) {
-  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5}/{:<.5}", ID.idAsString(),
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g}", ID.idAsString(),
                       fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
                       aida->allEntries(), aida->mean(), aida->rms() );
 }
@@ -64,9 +64,10 @@ void GaudiAlg::Print2D::print( MsgStream& stream, const AIDA::IHistogram2D* aida
 }
 // ============================================================================
 std::string GaudiAlg::Print2D::toString( const AIDA::IHistogram2D* aida, const GaudiAlg::HistoID& ID ) {
-  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5}/{:<.5},<Y>/sY={:.5}/{:<.5}", ID.idAsString(),
-                      fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
-                      aida->allEntries(), aida->meanX(), aida->rmsX(), aida->meanY(), aida->rmsY() );
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g}",
+                      ID.idAsString(), fmt::format( "\"{:.45}\"", aida->title() ),
+                      ( aida->allEntries() - aida->extraEntries() ), aida->allEntries(), aida->meanX(), aida->rmsX(),
+                      aida->meanY(), aida->rmsY() );
 }
 // ============================================================================
 void GaudiAlg::Print3D::print( MsgStream& stream, const AIDA::IHistogram3D* aida, const GaudiAlg::HistoID& ID ) {
@@ -75,7 +76,7 @@ void GaudiAlg::Print3D::print( MsgStream& stream, const AIDA::IHistogram3D* aida
 // ============================================================================
 std::string GaudiAlg::Print3D::toString( const AIDA::IHistogram3D* aida, const GaudiAlg::HistoID& ID ) {
   return fmt::format(
-      " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5}/{:<.5},<Y>/sY={:.5}/{:<.5},<Z>/sZ={:.5}/{:<.5}",
+      " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g},<Z>/sZ={:.5g}/{:<.5g}",
       ID.idAsString(), fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
       aida->allEntries(), aida->meanX(), aida->rmsX(), aida->meanY(), aida->rmsY(), aida->meanZ(), aida->rmsZ() );
 }
@@ -85,7 +86,7 @@ void GaudiAlg::Print1DProf::print( MsgStream& stream, const AIDA::IProfile1D* ai
 }
 // ============================================================================
 std::string GaudiAlg::Print1DProf::toString( const AIDA::IProfile1D* aida, const GaudiAlg::HistoID& ID ) {
-  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5}/{:<.5}", ID.idAsString(),
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g}", ID.idAsString(),
                       fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
                       aida->allEntries(), aida->mean(), aida->rms() );
 }
@@ -95,9 +96,10 @@ void GaudiAlg::Print2DProf::print( MsgStream& stream, const AIDA::IProfile2D* ai
 }
 // ============================================================================
 std::string GaudiAlg::Print2DProf::toString( const AIDA::IProfile2D* aida, const GaudiAlg::HistoID& ID ) {
-  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5}/{:<.5},<Y>/sY={:.5}/{:<.5}", ID.idAsString(),
-                      fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
-                      aida->allEntries(), aida->meanX(), aida->rmsX(), aida->meanY(), aida->rmsY() );
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g}",
+                      ID.idAsString(), fmt::format( "\"{:.45}\"", aida->title() ),
+                      ( aida->allEntries() - aida->extraEntries() ), aida->allEntries(), aida->meanX(), aida->rmsX(),
+                      aida->meanY(), aida->rmsY() );
 }
 // ============================================================================
 std::string GaudiAlg::PrintStat::print( const StatEntity& stat, const std::string& tag ) {
