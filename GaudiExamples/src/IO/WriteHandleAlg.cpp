@@ -9,8 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Framework include files
-#include "GaudiKernel/MsgStream.h"
-
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
@@ -26,14 +24,12 @@ StatusCode WriteHandleAlg::execute() // the execution of the algorithm
   // Set collision to the current event number from the context;
   // if the context doesn't exist, set it to some dummy value
   // this fallback allows to stay compatible with non-hive infrastructure
-  Collision* c = new Collision( Gaudi::Hive::currentContext().evt() );
+  auto c = std::make_unique<Collision>( Gaudi::Hive::currentContext().evt() );
 
-  if ( m_useHandle )
-    m_output_handle.put( c );
-  else
-    return eventSvc()
-        ->registerObject( "/Event", "MyCollision", c )
-        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-
-  return StatusCode::SUCCESS;
+  if ( m_useHandle ) {
+    m_output_handle.put( std::move( c ) );
+    return StatusCode::SUCCESS;
+  } else {
+    return eventSvc()->registerObject( "/Event", "MyCollision", c.release() );
+  }
 }

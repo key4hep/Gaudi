@@ -210,7 +210,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
     if ( !outputHandle->isValid() ) continue;
 
     VERBOSE_MSG << "put to TS: " << outputHandle->objKey() << endmsg;
-    outputHandle->put( new DataObject() );
+    outputHandle->put( std::make_unique<DataObject>() );
   }
 
   tbb::tick_count endtbb        = tbb::tick_count::now();

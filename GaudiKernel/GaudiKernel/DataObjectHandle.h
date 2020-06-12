@@ -131,8 +131,9 @@ public:
    */
   T* put( std::unique_ptr<T> object ) const;
 
-  // [[deprecated("please pass a std::unique_ptr instead of a raw pointer")]]
-  T* put( T* object ) const { return put( std::unique_ptr<T>( object ) ); }
+  [[deprecated( "please pass a std::unique_ptr instead of a raw pointer" )]] T* put( T* object ) const {
+    return put( std::unique_ptr<T>( object ) );
+  }
 
   std::string pythonRepr() const override {
     auto repr = DataObjectHandleBase::pythonRepr();
