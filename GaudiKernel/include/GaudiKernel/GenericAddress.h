@@ -63,6 +63,8 @@ public:
     m_ipar[1] = ip2;
   }
 
+  GenericAddress& operator= ( const GenericAddress& copy ) = default;
+
   /// Add reference to object
   unsigned long addRef() override { return ++m_refCount; }
   /// release reference to object
