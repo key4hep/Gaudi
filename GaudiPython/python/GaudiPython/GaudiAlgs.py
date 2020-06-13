@@ -1396,7 +1396,7 @@ def _Tools_a_(self):
     >>> alg   = ...             ## get the algorithm
     >>> tools = alg.Tools()     ## get the tools
     >>> for tool in tools :
-    ...        print tool
+    ...        print(tool)
 
     """
     _cmp = getattr(self, '_ialg')
@@ -1417,7 +1417,7 @@ def _Tools_t_(self):
     >>> tool  = ...              ## get the tool
     >>> tools = tool.Tools()     ## get the tools
     >>> for t in tools :
-    ...        print t
+    ...        print(t)
 
     """
     _cmp = getattr(self, '_itool')
@@ -1462,14 +1462,14 @@ def _Counters_a_(self, name=None):
     >>> alg  = ...             ## get the algorithm
     >>> cnts = alg.Counters()  ## get the counters
     >>> for key in cnts :
-    ...        print key, cnts[key]
+    ...        print(key, cnts[key])
 
 
     Retrieve the counter, managed GaudiCommon<TYPE> base by name:
 
     >>> alg = ...                        ## get the algorithm
     >>> cnt = alg.Counters('MyCounter')  ## get the counter
-    >>> print cnt
+    >>> print(cnt)
 
     """
     _cmp = getattr(self, '_ialg')
@@ -1489,14 +1489,14 @@ def _Counters_t_(self, name=None):
     >>> tool = ...              ## get the tool
     >>> cnts = tool.Counters()  ## get the counters
     >>> for key in cnts :
-    ...        print key, cnts[key]
+    ...        print(key, cnts[key])
 
 
     Retrieve the counter, managed GaudiCommon<TYPE> base by name:
 
     >>> tool = ...                         ## get the tool
     >>> cnt  = tool.Counters('MyCounter')  ## get the counter
-    >>> print cnt
+    >>> print(cnt)
 
     """
     _cmp = getattr(self, '_itool')
@@ -1528,7 +1528,7 @@ def _Counter_a_(self, name):
 
     >>> alg  = ...                     ## get the algorithm
     >>> cnt  = alg.Counter('#accept')  ## get the counter
-    >>> print cnt
+    >>> print(cnt)
 
     """
     _cmp = getattr(self, '_ialg')
@@ -1547,7 +1547,7 @@ def _Counter_t_(self, name):
 
     >>> tool = ...                      ## get the tool
     >>> cnt  = tool.Counter('#accept')  ## get the counter
-    >>> print cnt
+    >>> print(cnt)
 
     """
     _cmp = getattr(self, '_itool')
@@ -1616,13 +1616,13 @@ def _Histos_a_(self, name=None):
     >>> alg = ...              ## get the algorithm
     >>> histos = alg.Histos()  ## get all histograms & profiles
     >>> for key in histos :
-    ...        print key, histos[key]
+    ...        print(key, histos[key])
 
     Retrive the histogram with the certain ID :
 
     >>> alg = ...                           ## get the algorithm
     >>> histo = alg.Histos('some histo ID') ## get the histo by ID
-    >>> print histo
+    >>> print(histo)
 
     """
     _cmp = getattr(self, '_ialg')
@@ -1642,13 +1642,13 @@ def _Histos_t_(self, name=None):
     >>> tool = ...              ## get the tool
     >>> histos = tool.Histos()  ## get all histograms & profiles
     >>> for key in histos :
-    ...        print key, histos[key]
+    ...        print(key, histos[key])
 
     Retrive the historgam with certain ID :
 
     >>> tool = ...                           ## get the tool
     >>> histo = tool.Histos('some histo ID') ## get the histo by ID
-    >>> print histo
+    >>> print(histo)
 
     """
     _cmp = getattr(self, '_itool')

@@ -162,7 +162,7 @@ if gbl.gROOT.GetVersionInt() <= 51800:
 #  @code
 #
 #    >>> m = ...  ## the map
-#    >>> for key in m : print key , m[key]
+#    >>> for key in m : print(key , m[key])
 #
 #  @endcode
 #  @see Gaudi::Utils::MapBase
@@ -181,7 +181,7 @@ def __mapbase_iter__(self):
     The iterator for MapBase-based containers
 
     >>> m = ...  ## the map
-    >>> for key in m : print key , m[key]
+    >>> for key in m : print(key , m[key])
 
     """
     _size = len(self)
@@ -197,7 +197,7 @@ def __mapbase_iter__(self):
 #  @code
 #
 #    >>> m = ...  ## the map
-#    >>> for key,value in m.iteritems() : print key , value
+#    >>> for key,value in m.iteritems() : print(key , value)
 #
 #  @endcode
 #  @see Gaudi::Utils::MapBase
@@ -219,7 +219,7 @@ def __mapbase_iteritems__(self):
     The iterator for MapBase-based containers
 
     >>> m = ...  ## the map
-    >>> for key,value in m.iteritems() : print key, value
+    >>> for key,value in m.iteritems() : print(key, value)
 
     """
     _size = len(self)
@@ -344,7 +344,7 @@ def __mapbase_values__(self):
 #  @code
 #
 #    >>> m      = ...        ## the map
-#    >>> if 'a' in m : print 'key is in the map!'
+#    >>> if 'a' in m : print('key is in the map!')
 #
 #  @endcode
 #  @see Gaudi::Utils::MapBase
@@ -410,7 +410,7 @@ def __mapbase_get__(self, key, value=None):
 #  @code
 #
 #    >>> m      = ...        ## the map
-#    >>> print m
+#    >>> print(m)
 #
 #  @endcode
 #  @see Gaudi::Utils::MapBase
@@ -426,7 +426,7 @@ def __mapbase_str__(self):
     Representation of MapBase-based maps:
 
     >>> m     = ...        ## the map
-    >>> print map
+    >>> print(map)
 
     """
     _result = ' { '
