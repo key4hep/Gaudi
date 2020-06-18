@@ -138,17 +138,12 @@ class GaudiHandleArray(list):
 
     def __repr__(self):
         """Return class name with list of type/name strings as argument"""
-        rep = self.__class__.__name__ + '(['
-        for h in self:
-            rep += repr(h.toStringProperty()) + ','
-        # remove last comma
-        if rep[-1] == ',':
-            rep = rep[:-1]
-        return rep + '])'
+        return self.__class__.__name__ + '([' + ','.join(
+            repr(h.toStringProperty()) for h in self) + '])'
 
     def __str__(self):
         """Print in a form which can be parsed"""
-        return str([str(s) for s in self])
+        return self.toStringProperty()
         #shortName = self.__class__.__name__
         #return "%s:%s" % (shortName,
         #                  linesep + linesep.join([str(s) for s in self]))
@@ -223,14 +218,7 @@ class GaudiHandleArray(list):
     # Member functions which are the same as Configurables
     #
     def toStringProperty(self):
-        rep = '['
-        # add entries
-        for v in self:
-            rep += repr(v.toStringProperty()) + ','
-        # remove last comma
-        if rep[-1] == ',':
-            rep = rep[:-1]
-        return rep + ']'
+        return '[' + ','.join(repr(v.toStringProperty()) for v in self) + ']'
 
 
 class ServiceHandleArray(GaudiHandleArray):
