@@ -29,7 +29,7 @@ class TestCase(unittest.TestCase):
 
     def test_010_Function(self):
         import PyExample
-        self.assertEquals(PyExample.greet(), "hello, world")
+        self.assertEqual(PyExample.greet(), "hello, world")
 
 
 if __name__ == '__main__':
