@@ -14,17 +14,22 @@
 #include "GaudiKernel/System.h"
 #include "boost/lexical_cast.hpp"
 #include "boost/tokenizer.hpp"
-#include "range/v3/algorithm/for_each.hpp"
-#include "range/v3/view/remove_if.hpp"
-#include "range/v3/view/reverse.hpp"
-#include "range/v3/view/transform.hpp"
 #include <Gaudi/Algorithm.h>
 #include <algorithm>
+#ifdef __cpp_lib_ranges
+#  include <ranges>
+namespace ranges = std::ranges;
+#else
+#  include "range/v3/algorithm/for_each.hpp"
+#  include "range/v3/view/filter.hpp"
+#  include "range/v3/view/reverse.hpp"
+#  include "range/v3/view/transform.hpp"
 // upstream has renamed namespace ranges::view ranges::views
-#if RANGE_V3_VERSION < 900
+#  if RANGE_V3_VERSION < 900
 namespace ranges::views {
   using namespace ranges::view;
 }
+#  endif
 #endif
 
 DECLARE_COMPONENT( HiveDataBrokerSvc )
@@ -72,7 +77,7 @@ StatusCode HiveDataBrokerSvc::initialize() {
 
   // warn about non-reentrant algorithms
   ranges::for_each( m_algorithms | ranges::views::transform( []( const auto& entry ) { return entry.alg; } ) |
-                        ranges::views::remove_if( []( const auto* alg ) { return alg->cardinality() == 0; } ),
+                        ranges::views::filter( []( const auto* alg ) { return alg->cardinality() > 0; } ),
                     [&]( const Gaudi::Algorithm* alg ) {
                       this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{*alg} << endmsg;
                     } );
