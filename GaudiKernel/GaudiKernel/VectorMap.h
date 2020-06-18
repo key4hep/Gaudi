@@ -126,9 +126,9 @@ namespace GaudiUtils {
     /// allocator (could be useful for optimizations)
     typedef ALLOCATOR allocator_type;
     /// the types to conform STL
-    typedef typename ALLOCATOR::const_reference reference;
+    typedef typename ALLOCATOR::value_type const& reference;
     /// the types to conform STL
-    typedef typename ALLOCATOR::const_reference const_reference;
+    typedef typename ALLOCATOR::value_type const& const_reference;
     /// the types to conform STL
     typedef typename ALLOCATOR::size_type size_type;
     /// the types to conform STL

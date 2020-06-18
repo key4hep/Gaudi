@@ -719,11 +719,15 @@ namespace Gaudi {
     }
   };
 
+#if __cpp_impl_three_way_comparison < 201711
+  // Don't want this with c++20 --- it'll just call itself.
+  // The default c++20 rules will properly use Property::operator==.
   /// delegate (value == property) to property operator==
   template <class T, class TP, class V, class H>
   bool operator==( const T& v, const Property<TP, V, H>& p ) {
     return p == v;
   }
+#endif
 
   /// delegate (value != property) to property operator!=
   template <class T, class TP, class V, class H>
