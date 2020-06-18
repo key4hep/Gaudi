@@ -1567,8 +1567,11 @@ def applyConfigurableUsers():
         # easiest way to fix bug #103803.
         # <https://savannah.cern.ch/bugs/?103803>
         while True:
-            yield next(c for c in Configurable.allConfigurables.values()
-                       if c.isApplicable())
+            try:
+                yield next(c for c in Configurable.allConfigurables.values()
+                           if c.isApplicable())
+            except StopIteration:
+                break
 
     debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
     for c in applicableConfUsers():
