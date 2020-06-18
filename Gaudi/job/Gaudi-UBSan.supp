@@ -28,10 +28,7 @@ vptr:GaudiUtils/src/component/XMLFileCatalog.cpp
 #     #0 0x7fd5ce2fb0d9 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-centos7/include/c++/8.1.0/bits/shared_ptr_base.h:161
 #     #1 0x7fd5aecaed10 in (anonymous namespace)::RealFileSystem::dir_begin(llvm::Twine const&, std::error_code&) (/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_94/ROOT/6.14.04/x86_64-centos7-gcc8-dbg/lib/libCling.so+0x249cd10)
 #     #2 0x7fd5ad2e5981 in clang::driver::toolchains::Generic_GCC::GCCInstallationDetector::ScanLibDirForGCCTriple(llvm::Triple const&, llvm::opt::ArgList const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, llvm::StringRef, bool) (/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_94/ROOT/6.14.04/x86_64-centos7-gcc8-dbg/lib/libCling.so+0xad3981)
-# Include gcc version so we don't automatically apply these to newer releases.
-vptr:include/c++/7.3.0/bits/shared_ptr_base.h
-vptr:include/c++/8.1.0/bits/shared_ptr_base.h
-vptr:include/c++/8.2.0/bits/shared_ptr_base.h
+vptr:bits/shared_ptr_base.h
 
 # TBB
 # /cvmfs/lhcb.cern.ch/lib/lcg/releases/tbb/2018_U1-d3621/x86_64-centos7-gcc7-dbg/include/tbb/task.h:780:34: runtime error: member call on address 0x7fccb4ac8e00 which does not point to an object of type 'scheduler'
@@ -40,3 +37,50 @@ vptr:include/c++/8.2.0/bits/shared_ptr_base.h
 #               ^~~~~~~~~~~~~~~~~~~~~~~
 #               vptr for 'tbb::internal::custom_scheduler<tbb::internal::IntelSchedulerTraits>'
 vptr:include/tbb/task.h
+
+# Gaudi - listcomponents
+#/cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:181:12: runtime error: reference binding to null pointer of type 'const struct extended_type_info_typeid'	
+#    #0 0x7f1847675979 in boost::serialization::singleton<boost::serialization::extended_type_info_typeid<std::vector<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::get_instance() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:181	
+#    #1 0x7f1847675b21 in boost::serialization::singleton<boost::serialization::extended_type_info_typeid<std::vector<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::get_const_instance() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:196
+#    #2 0x7f1847675b21 in boost::archive::detail::oserializer<boost::archive::text_oarchive, std::vector<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >::oserializer() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/archive/detail/oserializer.hpp:116	
+#    #3 0x7f1847675b21 in boost::serialization::detail::singleton_wrapper<boost::archive::detail::oserializer<boost::archive::text_oarchive, std::vector<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::singleton_wrapper() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:147
+#    #4 0x7f1847675b21 in boost::serialization::singleton<boost::archive::detail::oserializer<boost::archive::text_oarchive, std::vector<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::tuple<int, double, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::get_instance() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:171
+#    #5 0x7f184754d477 in __static_initialization_and_destruction_0 /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:207
+#    #6 0x7f184754ef44 in _GLOBAL__sub_I_TestSerializationAlgo.cpp Online/ZeroMQ/component/TestSerializationAlgo.cpp:99
+#    #7 0x7f1849d7c9b2 in _dl_init_internal (/lib64/ld-linux-x86-64.so.2+0xf9b2)
+#    #8 0x7f1849d8158d in dl_open_worker (/lib64/ld-linux-x86-64.so.2+0x1458d)
+#    #9 0x7f1849d7c7c3 in _dl_catch_error (/lib64/ld-linux-x86-64.so.2+0xf7c3)
+#    #10 0x7f1849d80b7a in _dl_open (/lib64/ld-linux-x86-64.so.2+0x13b7a)
+#    #11 0x7f1848aacfaa in dlopen_doit (/lib64/libdl.so.2+0xfaa)
+#    #12 0x7f1849d7c7c3 in _dl_catch_error (/lib64/ld-linux-x86-64.so.2+0xf7c3)
+#    #13 0x7f1848aad5ac in _dlerror_run (/lib64/libdl.so.2+0x15ac)
+#    #14 0x7f1848aad040 in __dlopen_check (/lib64/libdl.so.2+0x1040)
+#    #15 0x4089e4 in main Gaudi/GaudiPluginService/src/listcomponents.cpp:114
+#    #16 0x7f1848109554 in __libc_start_main (/lib64/libc.so.6+0x22554)
+#    #17 0x403348  (Gaudi/InstallArea/x86_64-centos7-gcc9-dbg+ubsan/bin/listcomponents.exe+0x403348)
+vptr:Gaudi/GaudiPluginService/src/listcomponents.cpp
+
+#/cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:181:12: runtime error: reference binding to null pointer of type 'const struct extended_type_info_typeid'	
+#    #0 0x7f1b07822066 in boost::serialization::singleton<boost::serialization::extended_type_info_typeid<std::map<int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<int>, std::allocator<std::pair<int const, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::get_instance() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:181	
+#    #1 0x7f1b0782220e in boost::serialization::singleton<boost::serialization::extended_type_info_typeid<std::map<int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<int>, std::allocator<std::pair<int const, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::get_const_instance() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:196	
+#    #2 0x7f1b0782220e in boost::archive::detail::oserializer<boost::archive::text_oarchive, std::map<int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<int>, std::allocator<std::pair<int const, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >::oserializer() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/archive/detail/oserializer.hpp:116	
+#    #3 0x7f1b0782220e in boost::serialization::detail::singleton_wrapper<boost::archive::detail::oserializer<boost::archive::text_oarchive, std::map<int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<int>, std::allocator<std::pair<int const, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::singleton_wrapper() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:147	
+#    #4 0x7f1b0782220e in boost::serialization::singleton<boost::archive::detail::oserializer<boost::archive::text_oarchive, std::map<int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<int>, std::allocator<std::pair<int const, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::get_instance() /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:171	
+#    #5 0x7f1b076f14c3 in __static_initialization_and_destruction_0 /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-eebf1/x86_64-centos7-gcc9-dbg/include/boost/serialization/singleton.hpp:207	
+#    #6 0x7f1b076f2f44 in _GLOBAL__sub_I_TestSerializationAlgo.cpp Online/ZeroMQ/component/TestSerializationAlgo.cpp:99	
+#    #7 0x7f1b141079b2 in _dl_init_internal (/lib64/ld-linux-x86-64.so.2+0xf9b2)	
+#    #8 0x7f1b1410c58d in dl_open_worker (/lib64/ld-linux-x86-64.so.2+0x1458d)
+#    #9 0x7f1b141077c3 in _dl_catch_error (/lib64/ld-linux-x86-64.so.2+0xf7c3)
+#    #10 0x7f1b1410bb7a in _dl_open (/lib64/ld-linux-x86-64.so.2+0x13b7a)
+#    #11 0x7f1b0cab3faa in dlopen_doit (/lib64/libdl.so.2+0xfaa)
+#    #12 0x7f1b141077c3 in _dl_catch_error (/lib64/ld-linux-x86-64.so.2+0xf7c3)
+#    #13 0x7f1b0cab45ac in _dlerror_run (/lib64/libdl.so.2+0x15ac)
+#    #14 0x7f1b0cab4040 in __dlopen_check (/lib64/libdl.so.2+0x1040)
+#    #15 0x7f1b11cdbca0 in doLoad Gaudi/GaudiKernel/src/Lib/System.cpp:98
+#    #16 0x7f1b11ce3378 in loadWithoutEnvironment Gaudi/GaudiKernel/src/Lib/System.cpp:141
+#    #17 0x7f1b11ce3b31 in System::loadDynamicLib(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, void**) Gaudi/GaudiKernel/src/Lib/System.cpp:174
+#    #18 0x459b01 in configGenerator::genConfig(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) Gaudi/GaudiKernel/src/Util/genconf.cpp:501
+#    #19 0x4724f5 in main Gaudi/GaudiKernel/src/Util/genconf.cpp:434
+#    #20 0x7f1b0ccd9554 in __libc_start_main (/lib64/libc.so.6+0x22554)
+#    #21 0x436fa8  (Gaudi/InstallArea/x86_64-centos7-gcc9-dbg+ubsan/bin/genconf.exe+0x436fa8)
+vptr:Gaudi/GaudiKernel/src/Util/genconf.cpp
