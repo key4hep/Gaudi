@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -185,13 +185,13 @@ public:
                std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>* = nullptr )
       : GaudiHandleBase( other ) {
     m_pObject = other.get();
-    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject.load() )->addRef();
   }
 
   /** Copy constructor needed for correct ref-counting */
   GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other ) {
-    m_pObject = other.m_pObject;
-    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
+    m_pObject = other.m_pObject.load();
+    if ( m_pObject ) ::details::nonConst( m_pObject.load() )->addRef();
   }
 
   /** Assignment operator for correct ref-counting */
@@ -203,7 +203,7 @@ public:
     release().ignore();
     m_pObject = other.get();
     // update ref-counting
-    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject.load() )->addRef();
     return *this;
   }
 
@@ -212,22 +212,24 @@ public:
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();
-    m_pObject = other.m_pObject;
+    m_pObject = other.m_pObject.load();
     // update ref-counting
-    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject.load() )->addRef();
     return *this;
   }
 
   /** Retrieve the component. Release existing component if needed. */
   StatusCode retrieve() const {
     // not really const, because it updates m_pObject
-    StatusCode sc = StatusCode::SUCCESS;
-    if ( m_pObject && release().isFailure() ) { sc = StatusCode::FAILURE; }
-    if ( sc && retrieve( m_pObject ).isFailure() ) {
-      m_pObject = nullptr;
-      sc        = StatusCode::FAILURE;
-    }
-    return sc;
+    // Do the lookup into a temporary pointer.
+    T* p = nullptr;
+    if ( retrieve( p ).isFailure() ) { return StatusCode::FAILURE; }
+
+    // If m_pObject is null, then copy p to m_pObject.
+    // Otherwise, release p.
+    T* old = nullptr;
+    if ( m_pObject.compare_exchange_strong( old, p ) ) { return StatusCode::SUCCESS; }
+    return release( p );
   }
 
   /** Release the component. */
@@ -328,7 +330,7 @@ private:
   //
   // Data members
   //
-  mutable T* m_pObject = nullptr;
+  mutable std::atomic<T*> m_pObject = nullptr;
 };
 
 /**
