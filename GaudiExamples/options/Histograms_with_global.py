@@ -45,7 +45,7 @@ except TypeError:
     pass  # this is expected
 
 app.HistogramPersistency = 'ROOT'
-C.RootHistCnv.PersSvc('RootHistSvc', OutputFile='histo.root')
+C.RootHistCnv.PersSvc('RootHistSvc', OutputFile='histo-c2g.root')
 
 C.HistogramSvc(
     'HistogramDataSvc',

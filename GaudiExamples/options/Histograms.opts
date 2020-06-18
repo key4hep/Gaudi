@@ -47,7 +47,7 @@ ApplicationMgr.EvtSel  = "NONE";
 //ApplicationMgr.HistogramPersistency = "HBOOK";
 //HbookHistSvc.OutputFile = "histo.hbook";
 ApplicationMgr.HistogramPersistency = "ROOT";
-RootHistSvc.OutputFile  = "histo.root";
+RootHistSvc.OutputFile  = "histo-opts.root";
 
 //NTupleSvc.Output = { "FILE1 DATAFILE='NTuple.hbook' OPT='NEW' TYP='HBOOK'" };
 //NTupleSvc.Output = { "FILE1 DATAFILE='NTuple.root' OPT='NEW' TYP='ROOT'" };
