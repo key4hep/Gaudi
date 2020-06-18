@@ -109,8 +109,7 @@ StatusCode DataSvc::clearSubTree( DataObject* pObject ) {
 
 /// IDataManagerSvc: Remove all data objects in the data store.
 StatusCode DataSvc::clearStore() {
-  if ( !checkRoot() ) return Status::INVALID_ROOT;
-  m_root.reset();
+  if ( checkRoot() ) m_root.reset();
   return StatusCode::SUCCESS;
 }
 

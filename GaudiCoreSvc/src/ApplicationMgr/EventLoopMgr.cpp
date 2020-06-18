@@ -172,7 +172,10 @@ StatusCode EventLoopMgr::stop() {
     m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndEvent ) );
     m_endEventFired = true;
   }
-  return MinimalEventLoopMgr::stop();
+  return m_evtDataMgrSvc
+      ->clearStore()                                               //
+      .andThen( [this]() { return MinimalEventLoopMgr::stop(); } ) //
+      .orElse( [this]() { DEBMSG << "Clear of Event data store failed" << endmsg; } );
 }
 
 //--------------------------------------------------------------------------------------------
