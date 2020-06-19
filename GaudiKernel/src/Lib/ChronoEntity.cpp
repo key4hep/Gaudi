@@ -8,28 +8,17 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#define GAUDIKERNEL_CHRONOENTITY_CPP 1
-// ============================================================================
-// include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <algorithm>
-#include <cmath>
-#include <cstdio>
-#include <iomanip>
-#include <iostream>
-
-// ============================================================================
-// GaudiKernel
-// ============================================================================
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/System.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/format.hpp"
+#include <algorithm>
+#include <boost/format.hpp>
+#include <cmath>
+#include <cstdio>
+#include <fmt/format.h>
+#include <iomanip>
+#include <iostream>
+
 // ============================================================================
 /** @file
  *  implementation file for class ChronoEntity
@@ -114,7 +103,8 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
                                   const double maximal, const unsigned long number ) const {
 
   /// @todo: cache the format
-  boost::format fmt( "Tot=%2$5.3g%1$s %4$43s #=%3$3lu" );
+  const auto fmt      = "Tot={1:5.3g}{0:5} {3} #={2:3}";
+  const auto stat_fmt = "Ave/Min/Max={1:8.3g}(+-{2:8.3g})/{3:8.3g}/{4:8.3g}{0:5}";
 
   static const std::array<std::tuple<int, double, std::string_view>, 9> tbl{{{500, microsecond, " [us]"},
                                                                              {500, millisecond, " [ms]"},
@@ -125,25 +115,26 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
                                                                              {5, week, "  [w]"},
                                                                              {20, month, "[mon]"},
                                                                              {-1, year, "  [y]"}}};
-  auto        i    = std::find_if( begin( tbl ), std::prev( end( tbl ) ),
-                         [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
-  long double unit = std::get<1>( *i );
-  fmt % std::get<2>( *i ) % (double)( total / unit ) % number;
 
-  if ( number > 1 ) {
-    /// @todo: cache the format
-    boost::format fmt1( "Ave/Min/Max=%2$5.3g(+-%3$5.3g)/%4$5.3g/%5$5.3g%1$s" );
-    i    = std::find_if( std::begin( tbl ), std::prev( std::end( tbl ) ),
-                      [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
-    unit = std::get<1>( *i );
-    fmt1 % std::get<2>( *i ) % (double)( mean / unit ) % (double)( rms / unit ) % (double)( minimal / unit ) %
-        (double)( maximal / unit );
-    fmt % fmt1.str();
-  } else {
-    fmt % "";
-  }
+  auto             i         = find_if( begin( tbl ), prev( end( tbl ) ),
+                    [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
+  long double      unit      = std::get<1>( *i );
+  std::string_view unit_name = std::get<2>( *i );
 
-  return fmt.str();
+  auto stats = [&]() -> std::string {
+    if ( number > 1 ) {
+      auto             i         = find_if( begin( tbl ), prev( end( tbl ) ),
+                        [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
+      auto             unit      = std::get<1>( *i );
+      std::string_view unit_name = std::get<2>( *i );
+      return fmt::format( stat_fmt, unit_name, (double)( mean / unit ), (double)( rms / unit ),
+                          (double)( minimal / unit ), (double)( maximal / unit ) );
+    } else {
+      return {};
+    }
+  };
+
+  return fmt::format( fmt, unit_name, (double)( total / unit ), number, stats() );
 }
 // ============================================================================
 // compound assignment operator

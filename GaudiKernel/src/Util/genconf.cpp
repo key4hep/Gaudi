@@ -24,52 +24,43 @@
 #  pragma warning( disable : 279 )
 #endif
 
-#include "boost/program_options.hpp"
-
-// Include files----------------------------------------------------------------
-#include "boost/algorithm/string/case_conv.hpp"
-#include "boost/algorithm/string/classification.hpp"
-#include "boost/algorithm/string/replace.hpp"
-#include "boost/algorithm/string/split.hpp"
-#include "boost/algorithm/string/trim.hpp"
-#include "boost/filesystem/convenience.hpp"
-#include "boost/filesystem/exception.hpp"
-#include "boost/filesystem/operations.hpp"
-#include "boost/format.hpp"
-#include "boost/regex.hpp"
-
+#include <Gaudi/Algorithm.h>
+#include <Gaudi/PluginService.h>
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/Auditor.h>
+#include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/DataObjectHandleBase.h>
+#include <GaudiKernel/DataObjectHandleProperty.h>
+#include <GaudiKernel/GaudiHandle.h>
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/IAlgTool.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IAppMgrUI.h>
+#include <GaudiKernel/IAuditor.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/System.h>
+#include <GaudiKernel/Time.h>
+#include <algorithm>
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/exception.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/console.hpp>
-
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/DataObjectHandleBase.h"
-#include "GaudiKernel/DataObjectHandleProperty.h"
-#include "GaudiKernel/GaudiHandle.h"
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IAuditor.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/System.h"
-
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Auditor.h"
-#include "GaudiKernel/Service.h"
-#include <Gaudi/Algorithm.h>
-
-#include "GaudiKernel/Time.h"
-
-#include <Gaudi/PluginService.h>
-
-#include <algorithm>
+#include <boost/program_options.hpp>
+#include <boost/regex.hpp>
 #include <exception>
+#include <fmt/format.h>
 #include <fstream>
 #include <iostream>
 #include <set>
@@ -240,7 +231,7 @@ public:
 private:
   bool genComponent( const std::string& libName, const std::string& componentName, component_t componentType,
                      const vector<PropertyBase*>& properties, const std::vector<std::string>& interfaces );
-  void genImport( std::ostream& s, const boost::format& frmt, std::string indent );
+  void genImport( std::ostream& s, std::string_view frmt, std::string indent );
   void genHeader( std::ostream& pyOut, std::ostream& dbOut );
   void genBody( std::ostream& pyOut, std::ostream& dbOut ) {
     pyOut << m_pyBuf.str() << flush;
@@ -625,7 +616,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
   return allGood ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-void configGenerator::genImport( std::ostream& s, const boost::format& frmt, std::string indent = "" ) {
+void configGenerator::genImport( std::ostream& s, std::string_view frmt, std::string indent = "" ) {
 
   std::string::size_type pos = 0, nxtpos = 0;
   std::string            mod;
@@ -637,7 +628,7 @@ void configGenerator::genImport( std::ostream& s, const boost::format& frmt, std
     // Prepare import string
     mod = m_configurable[component_t::Module].substr( pos, nxtpos - pos );
     std::ostringstream import;
-    import << boost::format( frmt ) % mod;
+    import << fmt::format( frmt, mod );
 
     // append a normal import or a try/except enclosed one depending
     // on availability of a fall-back module (next in the list)
@@ -672,7 +663,7 @@ void configGenerator::genHeader( std::ostream& py, std::ostream& db )
 
   if ( m_importDataObjectHandles ) { py << "from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase\n"; }
 
-  genImport( py, boost::format( "from %1%.Configurable import *" ) );
+  genImport( py, "from {}.Configurable import *" );
 
   // db file part
   db << "##  -*- ascii -*-  \n"

@@ -22,44 +22,26 @@
 // coming from TString.h
 #  pragma warning( disable : 4996 )
 #endif
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
+#include "GaudiUtils/HistoDump.h"
+#include "AIDA/IAnnotation.h"
+#include "AIDA/IAxis.h"
+#include "AIDA/IHistogram1D.h"
+#include "AIDA/IProfile1D.h"
+#include "GaudiKernel/StatusCode.h"
+#include "GaudiUtils/HistoStats.h"
+#include "GaudiUtils/HistoTableFormat.h"
+#include "TAxis.h"
+#include "TH1.h"
+#include "TProfile.h"
 #include <cmath>
+#include <fmt/format.h>
 #include <iostream>
 #include <numeric>
 #include <sstream>
 #include <utility>
 #include <vector>
-// ============================================================================
-// AIDA
-// ============================================================================
-#include "AIDA/IAnnotation.h"
-#include "AIDA/IAxis.h"
-#include "AIDA/IHistogram1D.h"
-#include "AIDA/IProfile1D.h"
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/StatusCode.h"
-// ============================================================================
-// ROOT
-// ============================================================================
-#include "TAxis.h"
-#include "TH1.h"
-#include "TProfile.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/format.hpp"
-// ============================================================================
-// Local
-// ============================================================================
-#include "GaudiUtils/HistoDump.h"
-#include "GaudiUtils/HistoStats.h"
-#include "GaudiUtils/HistoTableFormat.h"
+
 // ============================================================================
 namespace {
   // ==========================================================================
@@ -356,21 +338,13 @@ namespace {
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string yLabel( double value ) {
-    boost::format fmt( "%10.3g" );
-    fmt % value;
-    return fmt.str();
-  }
+  inline std::string yLabel( double value ) { return fmt::format( "{:10.3g}", value ); }
   // ==========================================================================
   /** make the label for x-axis
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string xLabel( const double value ) {
-    boost::format fmt( "%9.3g" );
-    fmt % value;
-    return fmt.str();
-  }
+  inline std::string xLabel( const double value ) { return fmt::format( "{:9.3g}", value ); }
   // ==========================================================================
   /// get "correct" symbol
   char symbBin( const Histo::Bin& bin, const double yLow, const double yHigh, const bool yNull, const bool errors ) {
@@ -598,44 +572,38 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IHistogram1D* histo,
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
   if ( sc.isFailure() ) { return stream; } // RETURN
-  //
-  stream << boost::format( " Histo TES   : \"%s\"" ) % path( histo ) << std::endl
-         << boost::format( " Histo Title : \"%s\"" ) % histo->title() << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Mean        : %11.5g +- %-10.4g " ) % Gaudi::Utils::HistoStats::mean( histo ) %
-                Gaudi::Utils::HistoStats::meanErr( histo )
-         << std::endl
-         << boost::format( " Rms         : %11.5g +- %-10.4g " ) % Gaudi::Utils::HistoStats::rms( histo ) %
-                Gaudi::Utils::HistoStats::rmsErr( histo )
-         << std::endl
-         << boost::format( " Skewness    : %11.5g +- %-10.4g " ) % Gaudi::Utils::HistoStats::skewness( histo ) %
-                Gaudi::Utils::HistoStats::skewnessErr( histo )
-         << std::endl
-         << boost::format( " Kurtosis    : %11.5g +- %-10.4g " ) % Gaudi::Utils::HistoStats::kurtosis( histo ) %
-                Gaudi::Utils::HistoStats::kurtosisErr( histo )
-         << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Entries     :\n | %=9s | %=9s | %=9s | %9s | %=11s | %=11s | %=11s |" ) % "All" %
-                "In Range" % "Underflow" % "Overflow" % "#Equivalent" % "Integral" % "Total"
-         << std::endl
-         << boost::format( " | %=9d | %=9d | %=9d | %=9d | %=11.5g | %=11.5g | %=11.5g |" ) % histo->allEntries() %
-                histo->entries() % histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ) %
-                histo->binEntries( AIDA::IAxis::OVERFLOW_BIN ) % histo->equivalentBinEntries() %
-                histo->sumBinHeights() % histo->sumAllBinHeights()
-         << std::endl
-         << std::endl;
-  //
+
+  stream << fmt::format( R"( Histo TES   : "{}"
+ Histo Title : "{}"
+
+ Mean        : {:11.5g} +- {:<10.4g}
+ Rms         : {:11.5g} +- {:<10.4g}
+ Skewness    : {:11.5g} +- {:<10.4g}
+ Kurtosis    : {:11.5g} +- {:<10.4g}
+
+ Entries     :
+ |    All    |  In Range | Underflow |  Overflow | #Equivalent |   Integral  |    Total    |
+ | {:^9} | {:^9} | {:^9} | {:^9} | {:^11.5g} | {:^11.5g} | {:^11.5g} |
+
+)",
+                         path( histo ), histo->title(), //
+                         Gaudi::Utils::HistoStats::mean( histo ), Gaudi::Utils::HistoStats::meanErr( histo ),
+                         Gaudi::Utils::HistoStats::rms( histo ), Gaudi::Utils::HistoStats::rmsErr( histo ),
+                         Gaudi::Utils::HistoStats::skewness( histo ), Gaudi::Utils::HistoStats::skewnessErr( histo ),
+                         Gaudi::Utils::HistoStats::kurtosis( histo ), Gaudi::Utils::HistoStats::kurtosisErr( histo ),
+                         histo->allEntries(), histo->entries(), histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ),
+                         histo->binEntries( AIDA::IAxis::OVERFLOW_BIN ), histo->equivalentBinEntries(),
+                         histo->sumBinHeights(), histo->sumAllBinHeights() );
+
   const AIDA::IAnnotation& a = histo->annotation();
-  if ( 0 != a.size() ) {
-    stream << " Annotation" << std::endl;
+  if ( a.size() ) {
+    stream << " Annotation\n";
     for ( int i = 0; i < a.size(); ++i ) {
-      stream << boost::format( " | %-25.25s : %-45.45s | " ) % a.key( i ) % a.value( i ) << std::endl;
+      stream << fmt::format( " | {:<25.25s} : {:<45.45s} |\n", a.key( i ), a.value( i ) );
     }
-    stream << std::endl;
+    stream << '\n';
   }
-  //
+
   return dumpText( hist, width, height, errors, stream );
 }
 // ============================================================================
@@ -675,38 +643,33 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IProfile1D* histo, s
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist, spread );
   if ( sc.isFailure() ) { return stream; } // RETURN
-  //
-  stream << boost::format( " Histo TES   : \"%s\"" ) % path( histo ) << std::endl
-         << boost::format( " Histo Title : \"%s\"" ) % histo->title() << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Mean        : %11.5g " ) % histo->mean() << std::endl
-         << boost::format( " Rms         : %11.5g " ) % histo->rms() << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Entries     :\n | %=9s | %=9s | %=9s | %9s | %=11s | %=11s |" ) % "All" % "In Range" %
-                "Underflow" %
-                "Overflow"
-                // % "#Equivalent"
-                % "Integral" % "Total"
-         << std::endl
-         << boost::format( " | %=9d | %=9d | %=9d | %=9d | %=11.5g | %=11.5g |" ) % histo->allEntries() %
-                histo->entries() % histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ) %
-                histo->binEntries( AIDA::IAxis::OVERFLOW_BIN )
-                // % histo -> equivalentBinEntries ()
-                % histo->sumBinHeights() % histo->sumAllBinHeights()
-         << std::endl
-         << std::endl;
-  //
+
+  stream << fmt::format( R"( Histo TES   : "{}"
+ Histo Title : "{}"
+
+ Mean        : {:11.5g}
+ Rms         : {:11.5g}
+
+ Entries     :
+ |    All    |  In Range | Underflow |  Overflow |   Integral  |    Total    |
+ | {:^9} | {:^9} | {:^9} | {:^9} | {:^11.5g} | {:^11.5g} |
+
+)",
+                         path( histo ), histo->title(), //
+                         histo->mean(), histo->rms(), histo->allEntries(), histo->entries(),
+                         histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ),
+                         histo->binEntries( AIDA::IAxis::OVERFLOW_BIN ), histo->sumBinHeights(),
+                         histo->sumAllBinHeights() );
+
   const AIDA::IAnnotation& a = histo->annotation();
-  if ( 0 != a.size() ) {
-    stream << " Annotation" << std::endl;
+  if ( a.size() ) {
+    stream << " Annotation\n";
     for ( int i = 0; i < a.size(); ++i ) {
-      stream << boost::format( " | %-25.25s : %-45.45s | " ) % a.key( i ) % a.value( i ) << std::endl;
+      stream << fmt::format( " | {:<25.25s} : {:<45.45s} |\n", a.key( i ), a.value( i ) );
     }
     stream << std::endl;
   }
-  //
+
   return dumpText( hist, width, height, true, stream );
 }
 // ============================================================================
@@ -746,26 +709,26 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TH1* histo, std::ostream& 
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
   if ( sc.isFailure() ) { return stream; } // RETURN
-  //
-  stream << boost::format( " Histo Name  : \"%s\"" ) % histo->GetName() << std::endl
-         << boost::format( " Histo Title : \"%s\"" ) % histo->GetTitle() << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Mean        : %11.5g +- %-10.4g " ) % histo->GetMean() % histo->GetMeanError() << std::endl
-         << boost::format( " Rms         : %11.5g +- %-10.4g " ) % histo->GetRMS() % histo->GetRMSError() << std::endl
-         << boost::format( " Skewness    : %11.5g            " ) % histo->GetSkewness() << std::endl
-         << boost::format( " Kurtosis    : %11.5g            " ) % histo->GetKurtosis() << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Entries     :\n | %=11s | %=11s | %=11s | %=11s | %=11s |" ) % "All" % "Underflow" %
-                "Overflow" % "#Equivalent" % "Integral"
-         << std::endl
-         << boost::format( " | %=11.5g | %=11.5g | %=11.5g | %=11.5g | %=11.5g |" ) % histo->GetEntries() %
-                histo->GetBinContent( 0 ) % histo->GetBinContent( histo->GetNbinsX() + 1 ) %
-                histo->GetEffectiveEntries() % histo->Integral()
-         << std::endl
-         << std::endl;
-  //
+
+  stream << fmt::format( R"( Histo Name  : "{}"
+ Histo Title : "{}"
+
+ Mean        : {:11.5g} +- {:<10.4g}
+ Rms         : {:11.5g} +- {:<10.4g}
+ Skewness    : {:11.5g}
+ Kurtosis    : {:11.5g}
+
+ Entries     :
+ |     All     |  Underflow  |   Overflow  | #Equivalent |   Integral  |
+ | {:^11.5g} | {:^11.5g} | {:^11.5g} | {:^11.5g} | {:^11.5g} |
+
+)",
+                         histo->GetName(), histo->GetTitle(), //
+                         histo->GetMean(), histo->GetMeanError(), histo->GetRMS(), histo->GetRMSError(),
+                         histo->GetSkewness(), histo->GetKurtosis(), histo->GetEntries(), histo->GetBinContent( 0 ),
+                         histo->GetBinContent( histo->GetNbinsX() + 1 ), histo->GetEffectiveEntries(),
+                         histo->Integral() );
+
   return dumpText( hist, width, height, errors, stream );
 }
 // ============================================================================
@@ -786,23 +749,23 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TProfile* histo, std::ostr
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist, true );
   if ( sc.isFailure() ) { return stream; } // RETURN
-  //
-  stream << boost::format( " Profile Name  : \"%s\"" ) % histo->GetName() << std::endl
-         << boost::format( " Profile Title : \"%s\"" ) % histo->GetTitle() << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Mean          : %11.5g " ) % histo->GetMean() << std::endl
-         << boost::format( " Rms           : %11.5g " ) % histo->GetRMS() << std::endl
-         << std::endl;
-  //
-  stream << boost::format( " Entries       :\n | %=11s | %=11s | %=11s | %=11s |" ) % "All" % "Underflow" % "Overflow" %
-                "Integral"
-         << std::endl
-         << boost::format( " | %=11.5g | %=11.5g | %=11.5g | %=11.5g |" ) % histo->GetEntries() %
-                histo->GetBinContent( 0 ) % histo->GetBinContent( histo->GetNbinsX() + 1 ) % histo->Integral()
-         << std::endl
-         << std::endl;
-  //
+
+  stream << fmt::format( R"( Profile Name  : "{}"
+ Profile Title : "{}"
+
+ Mean        : {:11.5g}
+ Rms         : {:11.5g}
+
+ Entries     :
+ |     All     |  Underflow  |   Overflow  |   Integral  |
+ | {:^11.5g} | {:^11.5g} | {:^11.5g} | {:^11.5g} |
+
+)",
+                         histo->GetName(), histo->GetTitle(), //
+                         histo->GetMean(), histo->GetRMS(), histo->GetSkewness(), histo->GetKurtosis(),
+                         histo->GetEntries(), histo->GetBinContent( 0 ), histo->GetBinContent( histo->GetNbinsX() + 1 ),
+                         histo->Integral() );
+
   return dumpText( hist, width, height, true, stream );
 }
 // ============================================================================

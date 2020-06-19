@@ -8,22 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <sstream>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/IStatSvc.h"
 #include "GaudiKernel/Stat.h"
+#include "GaudiKernel/IStatSvc.h"
 #include "GaudiKernel/StatEntity.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/format.hpp"
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <sstream>
 // ============================================================================
 /** @file
  *  Implementation file for class Stat
@@ -98,21 +88,20 @@ std::string Stat::toString() const {
 }
 // ============================================================================
 /*  printout to std::ostream
- *  @param s the reference to the output stream
+ *  @param o the reference to the output stream
  */
 // ============================================================================
 std::ostream& Stat::print( std::ostream& o ) const {
-  if ( m_group.empty() && m_tag.empty() ) { return !m_entity ? ( o << "NULL" ) : ( o << m_entity ); }
-  if ( !m_group.empty() ) {
-    if ( m_entity ) {
-      return o << boost::format( " %|1$15s|::%|2$-15s| %|32t|%3%" ) % ( "\"" + m_group ) % ( m_tag + "\"" ) %
-                      ( *m_entity );
+  auto        entity = ( m_entity ) ? fmt::format( "{}", *m_entity ) : "NULL";
+  std::string tag;
+  if ( !m_tag.empty() ) {
+    if ( !m_group.empty() ) {
+      tag = fmt::format( "\"{}::{}\"", m_group, m_tag );
     } else {
-      return o << boost::format( " %|1$15s|::%|2$-15s| %|32t|%NULL%" ) % ( "\"" + m_group ) % ( m_tag + "\"" );
+      tag = fmt::format( "\"{}\"", m_tag );
     }
   }
-  if ( m_entity ) { return o << boost::format( " %|1$=30s| %|32t|%2%" ) % ( "\"" + m_tag + "\"" ) % ( *m_entity ); }
-  return o << boost::format( " %|1$=30s| %|32t|%NULL%" ) % ( "\"" + m_tag + "\"" );
+  return o << fmt::format( " {:^30} {}", tag, entity );
 }
 // ============================================================================
 // external operator for addition of Stat and a number

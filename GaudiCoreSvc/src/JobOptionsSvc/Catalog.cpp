@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,17 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
 #include "Catalog.h"
-// ============================================================================
-// Boost:
-// ============================================================================
-#include <boost/format.hpp>
-// ============================================================================
-// Namesapce aliases:
-// ============================================================================
+#include <fmt/format.h>
+
 namespace gp = Gaudi::Parsers;
-// ============================================================================
 namespace {
   constexpr struct select1st_t {
     template <typename S, typename T>
@@ -31,7 +24,7 @@ namespace {
     }
   } select1st{};
 } // namespace
-// ============================================================================
+
 std::vector<std::string> gp::Catalog::ClientNames() const {
   std::vector<std::string> result;
   std::transform( std::begin( catalog_ ), std::end( catalog_ ), std::back_inserter( result ), select1st );
@@ -72,23 +65,26 @@ std::string gp::Catalog::ToString() const {
 // print the content of the catalogue to std::ostream
 // ============================================================================
 std::ostream& Gaudi::Parsers::Catalog::fillStream( std::ostream& o ) const {
-  o << "// " << std::string( 82, '=' ) << std::endl
-    << "//       Parser catalog " << std::endl
-    << "// " << std::string( 82, '=' ) << std::endl;
+  o << R"(// ==================================================================================
+//       Parser catalog
+// ==================================================================================
+)";
 
   size_t nComponents = 0;
   size_t nProperties = 0;
 
   for ( const auto& client : catalog_ ) {
-    o << boost::format( "// Properties of '%1%' %|43t|# = %2%" ) % client.first % client.second.size() << std::endl;
+    o << fmt::format( "// Properties of {:<25} # = {}", fmt::format( "'{}'", client.first ), client.second.size() );
     ++nComponents;
     nProperties += client.second.size();
     for ( const auto& current : client.second ) {
-      o << boost::format( "%1%   %|44t| = %2% ; " ) % current.FullName() % current.ValueAsString() << '\n';
+      o << fmt::format( "{:<44} = {} ;", current.FullName(), current.ValueAsString() );
     }
   }
-  o << "// " << std::string( 82, '=' ) << '\n'
-    << boost::format( "// End parser catalog #Components=%1% #Properties=%2%" ) % nComponents % nProperties << '\n'
-    << "// " << std::string( 82, '=' ) << std::endl;
+  o << fmt::format( R"(// ==================================================================================
+// End parser catalog #Components={1} #Properties={2}
+// ==================================================================================
+)",
+                    nComponents, nProperties );
   return o;
 }

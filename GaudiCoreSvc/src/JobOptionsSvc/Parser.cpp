@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,27 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// STD:
-// ============================================================================
-#include <fstream>
-// ============================================================================
-// BOOST:
-// ============================================================================
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
-// ============================================================================
+#include "Parser.h"
+#include "GaudiKernel/PathResolver.h"
 #include "Grammar.h"
 #include "IncludedFiles.h"
 #include "Iterator.h"
 #include "Messages.h"
 #include "Node.h"
-#include "Parser.h"
 #include "Utils.h"
-// ============================================================================
-// Gaudi:
-// ============================================================================
-#include "GaudiKernel/PathResolver.h"
+#include <boost/filesystem.hpp>
+#include <fmt/format.h>
+#include <fstream>
+
 // ============================================================================
 namespace classic = boost::spirit::classic;
 namespace bf      = boost::filesystem;
@@ -113,8 +104,8 @@ namespace {
       return ParseStream<Grammar>( file, absolute_path, messages, root );
     } else {
       assert( included_from != NULL );
-      messages->AddWarning( from, str( boost::format( "File %1% already included from %2%" ) % absolute_path %
-                                       included_from->ToString() ) );
+      messages->AddWarning(
+          from, fmt::format( "File {} already included from {}", absolute_path, included_from->ToString() ) );
       return true;
     }
   }

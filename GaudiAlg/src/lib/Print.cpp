@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,39 +8,23 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <ctype.h>
-#include <functional>
-#include <string>
-#include <vector>
-// ============================================================================
-// AIDA
-// ============================================================================
+#include "GaudiAlg/Print.h"
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IHistogram2D.h"
 #include "AIDA/IHistogram3D.h"
 #include "AIDA/IProfile1D.h"
 #include "AIDA/IProfile2D.h"
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+#include "GaudiAlg/HistoID.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/INTuple.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/StatEntity.h"
-// ============================================================================
-// GaudiAlg
-// ============================================================================
-#include "GaudiAlg/HistoID.h"
-#include "GaudiAlg/Print.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/format.hpp"
+#include <ctype.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <functional>
+#include <string>
+#include <vector>
 // ============================================================================
 /** @file
  *  Implementation file for functions for namespace GaudiAlg::Print
@@ -70,12 +54,9 @@ void GaudiAlg::Print1D::print( MsgStream& stream, const AIDA::IHistogram1D* aida
 }
 // ============================================================================
 std::string GaudiAlg::Print1D::toString( const AIDA::IHistogram1D* aida, const GaudiAlg::HistoID& ID ) {
-  boost::format fmt( " ID=%|-25|%|30t| \"%|.45s|\" %|79t| Ents/All=%|5|/%|-5|<X>/sX=%|.5|/%|-.5|" );
-  fmt % ID.idAsString() % aida->title();
-  fmt % ( aida->allEntries() - aida->extraEntries() ) % aida->allEntries();
-  fmt % aida->mean() % aida->rms();
-  //
-  return fmt.str();
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g}", ID.idAsString(),
+                      fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
+                      aida->allEntries(), aida->mean(), aida->rms() );
 }
 // ============================================================================
 void GaudiAlg::Print2D::print( MsgStream& stream, const AIDA::IHistogram2D* aida, const GaudiAlg::HistoID& ID ) {
@@ -83,13 +64,10 @@ void GaudiAlg::Print2D::print( MsgStream& stream, const AIDA::IHistogram2D* aida
 }
 // ============================================================================
 std::string GaudiAlg::Print2D::toString( const AIDA::IHistogram2D* aida, const GaudiAlg::HistoID& ID ) {
-  boost::format fmt( " ID=%|-25|%|30t| \"%|.45s|\" %|79t| Ents/All=%|5|/%|-5|<X>/sX=%|.5|/%|-.5|,<Y>/sY=%|.5|/%|-.5|" );
-  fmt % ID.idAsString() % aida->title();
-  fmt % ( aida->allEntries() - aida->extraEntries() ) % aida->allEntries();
-  fmt % aida->meanX() % aida->rmsX();
-  fmt % aida->meanY() % aida->rmsY();
-  //
-  return fmt.str();
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g}",
+                      ID.idAsString(), fmt::format( "\"{:.45}\"", aida->title() ),
+                      ( aida->allEntries() - aida->extraEntries() ), aida->allEntries(), aida->meanX(), aida->rmsX(),
+                      aida->meanY(), aida->rmsY() );
 }
 // ============================================================================
 void GaudiAlg::Print3D::print( MsgStream& stream, const AIDA::IHistogram3D* aida, const GaudiAlg::HistoID& ID ) {
@@ -97,15 +75,10 @@ void GaudiAlg::Print3D::print( MsgStream& stream, const AIDA::IHistogram3D* aida
 }
 // ============================================================================
 std::string GaudiAlg::Print3D::toString( const AIDA::IHistogram3D* aida, const GaudiAlg::HistoID& ID ) {
-  boost::format fmt( " ID=%|-25|%|30t| \"%|.45s|\" %|79t| "
-                     "Ents/All=%|5|/%|-5|<X>/sX=%|.5|/%|-.5|,<Y>/sY=%|.5|/%|-.5|,<Z>/sZ=%|.5|/%|-.5|" );
-  fmt % ID.idAsString() % aida->title();
-  fmt % ( aida->allEntries() - aida->extraEntries() ) % aida->allEntries();
-  fmt % aida->meanX() % aida->rmsX();
-  fmt % aida->meanY() % aida->rmsY();
-  fmt % aida->meanZ() % aida->rmsZ();
-  //
-  return fmt.str();
+  return fmt::format(
+      " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g},<Z>/sZ={:.5g}/{:<.5g}",
+      ID.idAsString(), fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
+      aida->allEntries(), aida->meanX(), aida->rmsX(), aida->meanY(), aida->rmsY(), aida->meanZ(), aida->rmsZ() );
 }
 // ============================================================================
 void GaudiAlg::Print1DProf::print( MsgStream& stream, const AIDA::IProfile1D* aida, const GaudiAlg::HistoID& ID ) {
@@ -113,12 +86,9 @@ void GaudiAlg::Print1DProf::print( MsgStream& stream, const AIDA::IProfile1D* ai
 }
 // ============================================================================
 std::string GaudiAlg::Print1DProf::toString( const AIDA::IProfile1D* aida, const GaudiAlg::HistoID& ID ) {
-  boost::format fmt( " ID=%|-25|%|30t| \"%|.55s|\" %|79t| Ents/All=%|5|/%|-5|<X>/sX=%|.5|/%|-.5|" );
-  fmt % ID.idAsString() % aida->title();
-  fmt % ( aida->allEntries() - aida->extraEntries() ) % aida->allEntries();
-  fmt % aida->mean() % aida->rms();
-  //
-  return fmt.str();
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g}", ID.idAsString(),
+                      fmt::format( "\"{:.45}\"", aida->title() ), ( aida->allEntries() - aida->extraEntries() ),
+                      aida->allEntries(), aida->mean(), aida->rms() );
 }
 // ============================================================================
 void GaudiAlg::Print2DProf::print( MsgStream& stream, const AIDA::IProfile2D* aida, const GaudiAlg::HistoID& ID ) {
@@ -126,13 +96,10 @@ void GaudiAlg::Print2DProf::print( MsgStream& stream, const AIDA::IProfile2D* ai
 }
 // ============================================================================
 std::string GaudiAlg::Print2DProf::toString( const AIDA::IProfile2D* aida, const GaudiAlg::HistoID& ID ) {
-  boost::format fmt( " ID=%|-25|%|30t| \"%|.55s|\" %|79t| Ents/All=%|5|/%|-5|<X>/sX=%|.5|/%|-.5|,<Y>/sY=%|.5|/%|-.5|" );
-  fmt % ID.idAsString() % aida->title();
-  fmt % ( aida->allEntries() - aida->extraEntries() ) % aida->allEntries();
-  fmt % aida->meanX() % aida->rmsX();
-  fmt % aida->meanY() % aida->rmsY();
-  //
-  return fmt.str();
+  return fmt::format( " ID={:25}  {:47}  Ents/All={:>5}/{:<5}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g}",
+                      ID.idAsString(), fmt::format( "\"{:.45}\"", aida->title() ),
+                      ( aida->allEntries() - aida->extraEntries() ), aida->allEntries(), aida->meanX(), aida->rmsX(),
+                      aida->meanY(), aida->rmsY() );
 }
 // ============================================================================
 std::string GaudiAlg::PrintStat::print( const StatEntity& stat, const std::string& tag ) {
@@ -142,9 +109,7 @@ std::string GaudiAlg::PrintStat::print( const StatEntity& stat, const std::strin
 }
 // ============================================================================
 std::string GaudiAlg::PrintTuple::print( const INTuple* tuple, const GaudiAlg::TupleID& ID ) {
-  boost::format fmt( " ID=%|-12|%|18t|%|-s|" );
-  fmt % ID.idAsString() % print( tuple );
-  return fmt.str();
+  return fmt::format( " ID={:<14}{}", ID.idAsString(), print( tuple ) );
 }
 // ============================================================================
 namespace {
@@ -162,11 +127,8 @@ namespace {
 } // namespace
 // ============================================================================
 std::string GaudiAlg::PrintTuple::print( const INTuple* tuple ) {
-  boost::format fmt( "Title=\"%|.39s|\" %|48t|#items=%|-3|%|50t|{%|.81s|}" );
-  fmt % tuple->title();
-  fmt % tuple->items().size();
-  fmt % _print( tuple->items() );
-  return fmt.str();
+  return fmt::format( "Title={:41} #items={:<3}{{{:.81}}}", fmt::format( "\"{:.39}\"", tuple->title() ),
+                      tuple->items().size(), _print( tuple->items() ) );
 }
 // ============================================================================
 
