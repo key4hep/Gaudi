@@ -32,12 +32,11 @@ import sys
 import string
 import warnings
 import re
-try:
+
+# Workaround for ROOT-10769
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
     import cppyy
-except ImportError:
-    # FIXME: backward compatibility
-    print("# WARNING: using PyCintex as cppyy implementation")
-    import PyCintex as cppyy
 
 if sys.version_info >= (3, ):
     # Python 2 compatibility
@@ -70,7 +69,13 @@ GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject = gbl.DataObject
 SUCCESS = gbl.StatusCode(gbl.StatusCode.SUCCESS, True)
 FAILURE = gbl.StatusCode(gbl.StatusCode.FAILURE, True)
-nullptr = gbl.nullptr
+# Workaround for ROOT-10770
+if hasattr(cppyy, 'nullptr'):
+    nullptr = cppyy.nullptr
+elif hasattr(gbl, 'nullptr'):
+    nullptr = gbl.nullptr
+else:
+    nullptr = None
 # Helper to create a StringProperty
 cppyy.gbl.gInterpreter.Declare('''
 namespace GaudiPython { namespace Helpers {
@@ -82,7 +87,7 @@ namespace GaudiPython { namespace Helpers {
 
 # toIntArray, toShortArray, etc.
 for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
-    exec ("%s = Helper.%s" % (l, l))
+    exec("%s = Helper.%s" % (l, l))
     __all__.append(l)
 
 # FIXME: (MCl) Hack to handle ROOT 5.18 and ROOT >= 5.20
@@ -98,9 +103,13 @@ else:
 
 
 # ----Convenient accessors to PyROOT functionality ----------------------------
-ROOT = cppyy.libPyROOT
-makeNullPointer = cppyy.libPyROOT.MakeNullPointer
-setOwnership = cppyy.libPyROOT.SetOwnership
+# See https://sft.its.cern.ch/jira/browse/ROOT-10771
+if hasattr(cppyy, 'libPyROOT'):
+    ROOT = cppyy.libPyROOT
+else:
+    import ROOT
+makeNullPointer = ROOT.MakeNullPointer
+setOwnership = ROOT.SetOwnership
 
 
 def deprecation(message):

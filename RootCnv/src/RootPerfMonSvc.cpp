@@ -30,6 +30,7 @@
 #include "TBranch.h"
 #include "TDirectory.h"
 #include "TMap.h"
+#include "TObjString.h"
 #include "TSystem.h"
 
 using namespace std;
