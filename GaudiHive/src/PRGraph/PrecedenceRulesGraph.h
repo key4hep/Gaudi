@@ -680,15 +680,7 @@ namespace concurrency {
     SmartIF<ISvcLocator>& serviceLocator() const override { return m_svcLocator; }
     ///
     /// Print a string representing the control flow state
-    void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const {
-      if ( slot.parentSlot ) {
-        // Start at sub-slot entry point
-        m_decisionNameToDecisionHubMap.at( slot.entryPoint )->printState( output, slot, recursionLevel );
-      } else {
-        // Start at the head node for whole-event slots
-        m_headNode->printState( output, slot, recursionLevel );
-      }
-    }
+    void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const;
 
     /// BGL-based facilities
     void         enableAnalysis() { m_enableAnalysis = true; };

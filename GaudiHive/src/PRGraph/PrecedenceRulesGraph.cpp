@@ -256,6 +256,45 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
+  void PrecedenceRulesGraph::printState( std::stringstream& output, EventSlot& slot,
+                                         const unsigned int& recursionLevel ) const {
+    if ( slot.parentSlot ) {
+      // Start at sub-slot entry point
+      m_decisionNameToDecisionHubMap.at( slot.entryPoint )->printState( output, slot, recursionLevel );
+    } else {
+      // Start at the head node for whole-event slots
+      m_headNode->printState( output, slot, recursionLevel );
+    }
+
+    // Find detached conditions algs in interesting states
+    if ( m_conditionsRealmEnabled ) {
+      bool              firstPrint = true;
+      SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
+      auto&             condAlgs = condSvc->condAlgs();
+      for ( const auto algo : condAlgs ) {
+        auto itA = m_algoNameToAlgoNodeMap.find( algo->name() );
+        if ( itA != m_algoNameToAlgoNodeMap.end() ) {
+
+          concurrency::AlgorithmNode* algoNode = itA->second.get();
+
+          // Ignore boring states (reduces verbosity)
+          auto& thisState = slot.algsStates[algoNode->getAlgoIndex()];
+          if ( thisState == AlgsExecutionStates::State::INITIAL ||
+               thisState == AlgsExecutionStates::State::EVTACCEPTED )
+            continue;
+
+          // Make output
+          if ( firstPrint ) {
+            firstPrint = false;
+            output << std::endl << "Detached algorithms:" << std::endl;
+          }
+          algoNode->printState( output, slot, recursionLevel );
+        }
+      }
+    }
+  }
+
+  //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::registerIODataObjects( const Gaudi::Algorithm* algo ) {
 
     const std::string& algoName = algo->name();
