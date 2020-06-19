@@ -13,6 +13,51 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+## [v33r2][] - 2020-06-19
+This is a bugfix release with just a couple of minor backward compatible improvements.
+
+We also updated the LCG baseline version to [LCG 97a](http://lcginfo.cern.ch/release/97a/) (ROOT 6.20/06).
+
+This is the last release with the legacy CMake configuration. From the next release (v34r0)
+we will use a modern CMake configuration (see gaudi/Gaudi!922 and gaudi/Gaudi!986 for details).
+
+### Added
+- Improve event context extension management (gaudi/Gaudi!1080)
+- Introducing Set-semantics (gaudi/Gaudi!1066)
+- Make gitlab use cpp syntax highlighting for icpp files (gaudi/Gaudi!1057)
+
+### Fixed
+- Fixes for ROOT master (gaudi/Gaudi!1071)
+- Use fmtlib instead of `boost::format` (where possible) (gaudi/Gaudi!1046, gaudi/Gaudi#112)
+- Conditions alg test, with stall debug info (gaudi/Gaudi!1092)
+- Make sure the TES is cleaned by `EventLoopMgr` before finalize (gaudi/Gaudi!1082, LHCBPS-1850)
+- Fix race condition between tests (gaudi/Gaudi!1074)
+- Fix propagation of `StopIteration` exception (gaudi/Gaudi!1093, gaudi/Gaudi#129)
+- Update HiveDataBroker to use C++20 ranges if available. (gaudi/Gaudi!1089)
+- Fixes for C++20 (gaudi/Gaudi!1085)
+- Fix thread-safety problem in GaudiHandle (gaudi/Gaudi!1084)
+- Misc. sanitiser improvements (gaudi/Gaudi!1081)
+- Make `GaudiHandleArray.__str__` consistent with `GaudiHandle.__str__` (gaudi/Gaudi!1070)
+- Fix trivial typo in message (gaudi/Gaudi!1087)
+- `GaudiConfig2`: fix unpickling of derived Configurables (gaudi/Gaudi!1076, gaudi/Gaudi#124)
+- Remove data flow dumps or make them configurable (gaudi/Gaudi!1075)
+- Change `StatusCode::orThrow` so that the return value can be ignored (gaudi/Gaudi!1073, gaudi/Gaudi#118)
+- Fix bugs in `ThreadPoolSvc` (gaudi/Gaudi!1068)
+- Sequence semantics update (gaudi/Gaudi!1069)
+- Remove now unused `ATLAS_GAUDI_V21` and `HAVE_GAUDI_PLUGINSVC` definitions (gaudi/Gaudi!1062)
+- Few fixes to `GaudiConfig2` (gaudi/Gaudi!1061)
+- Fix compatibility with C++ GSL 3 (gaudi/Gaudi!1063, gaudi/Gaudi#121)
+- Consolidate and optimize scheduling of blocking tasks (gaudi/Gaudi!1051)
+- Do not run public headers build test on generated headers (gaudi/Gaudi!974)
+- Add array `operator<<` into `SerializeSTL.h` (gaudi/Gaudi!1049)
+- Dereference instead of `operator*` in `get_from_handle` to enable `Gaudi::Ranges` in `MergingTransformer`s (gaudi/Gaudi!1047)
+- Fixes for `GetHostBinaryTag` (gaudi/Gaudi!1058)
+- Remove unused capture of `this` in `MultiTransformerFilter` (gaudi/Gaudi!1059)
+- Fix deprecated copy constructor warning in `StreamBuffer::ContainedLink` (gaudi/Gaudi!1060)
+- `AlgExecStateSvc`: require minimum state size to be 1 (gaudi/Gaudi!1055)
+- `IncidentSvc`: improve error reporting (gaudi/Gaudi!1054)
+- Remove mention of deprecated `tbb::recursive_mutex` (gaudi/Gaudi!1053)
+
 ## [v33r1][] - 2020-03-23
 This release contains multiple fixes and some ABI changes, in particular:
 - `StatusCode` values not checked now produce a compile time warning.
@@ -482,7 +527,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r1...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r2...master
+[v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r1...v33r2
 [v33r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r0...v33r1
 [v33r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...v33r0
 [v32r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r1...v32r2

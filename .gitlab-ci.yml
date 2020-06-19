@@ -87,7 +87,7 @@ build:gcc9:opt:python3:
   variables:
     BINARY_TAG: x86_64-centos7-gcc9-opt
     BUILDDIR: build-opt-python3
-    HEPTOOLS_VERSION: 97python3
+    HEPTOOLS_VERSION: 97apython3
   script:
     - ci-utils/build
   artifacts:
@@ -158,6 +158,7 @@ test:gcc8:opt:
       - ${TESTS_REPORT}
     when: always
     expire_in: 1 week
+  retry: 2
 
 test:gcc9:opt:
   stage: test
@@ -175,6 +176,7 @@ test:gcc9:opt:
       - ${TESTS_REPORT}
     when: always
     expire_in: 1 week
+  retry: 2
 
 test:gcc9:dbg:
   stage: test
@@ -192,6 +194,7 @@ test:gcc9:dbg:
       - ${TESTS_REPORT}
     when: always
     expire_in: 1 week
+  retry: 2
 
 test:gcc9:opt:python3:
   stage: test
@@ -209,6 +212,7 @@ test:gcc9:opt:python3:
       - ${TESTS_REPORT}
     when: always
     expire_in: 1 week
+  retry: 2
 
 test_public_headers_build:
   stage: test

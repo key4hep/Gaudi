@@ -23,7 +23,7 @@
 
 # initial required environment
 # - get Python, nosetests and xenv from LHCb installation
-source /cvmfs/lhcb.cern.ch/lib/var/lib/LbEnv/prod/${LCG_hostos}/bin/activate
+source /cvmfs/lhcb.cern.ch/lib/var/lib/LbEnv/stable/${LCG_hostos}/bin/activate
 # - add CMake and Ninja-build
 export PATH=${LCG_contrib}/CMake/latest/Linux-x86_64/bin:${LCG_contrib}/ninja/1.7.2.gcc0ea.kitware.dyndep-1/x86_64-slc6:${PATH}
 # - use LHCb compiler wrappers
