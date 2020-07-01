@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -114,6 +114,11 @@ macro(parse_binary_tag)
     set(${_variable}_MICROARCH)
   endif()
 
+  if(${_variable}_COMP MATCHES "\\+")
+    string(REGEX MATCHALL "[^+]+" ${_variable}_COMP_SUBTYPE "${${_variable}_COMP}")
+    list(GET ${_variable}_COMP_SUBTYPE 0 ${_variable}_COMP)
+    list(REMOVE_AT ${_variable}_COMP_SUBTYPE 0)
+  endif()
   if(${_variable}_COMP MATCHES "([^0-9.]+)([0-9.]+)")
     set(${_variable}_COMP_NAME    ${CMAKE_MATCH_1})
     set(${_variable}_COMP_VERSION ${CMAKE_MATCH_2})
@@ -277,6 +282,17 @@ function(compatible_binary_tags variable)
   # - finally reverse the list
   list(REVERSE archs)
 
+  # prepare the list of compiler sub-types (if needed)
+  set(comps ${BINARY_TAG_COMP})
+  if(BINARY_TAG_COMP_SUBTYPE)
+    set(subtype ${BINARY_TAG_COMP})
+    foreach(st ${BINARY_TAG_COMP_SUBTYPE})
+      set(subtype "${subtype}+${st}")
+      list(APPEND comps "${subtype}")
+    endforeach()
+    list(REVERSE comps)
+  endif()
+
   # prepare the list of build sub-types (if needed)
   set(subtypes)
   if(BINARY_TAG_SUBTYPE)
@@ -291,11 +307,13 @@ function(compatible_binary_tags variable)
   set(out)
   foreach(a ${archs})
     foreach(t ${types})
-      foreach(st ${subtypes})
-        list(APPEND out "${a}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${t}${st}")
+      foreach(c ${comps})
+        foreach(st ${subtypes})
+          list(APPEND out "${a}-${BINARY_TAG_OS}-${c}-${t}${st}")
+        endforeach()
+        # the list of subtypes might be empty, so we explicitly add the simple tag
+        list(APPEND out "${a}-${BINARY_TAG_OS}-${c}-${t}")
       endforeach()
-      # the list of subtypes might be empty, so we explicitly add the simple tag
-      list(APPEND out "${a}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${t}")
     endforeach()
   endforeach()
 

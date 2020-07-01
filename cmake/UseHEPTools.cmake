@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -37,18 +37,24 @@ macro(use_heptools heptools_version)
                             LCG_externals_${LCG_SYSTEM}-opt.txt)
   endif()
 
+  if("${BINARY_TAG_COMP_SUBTYPE}" MATCHES "py3")
+    set(_lcg_py3 python3)
+  else()
+    set(_lcg_py3)
+  endif()
+
   # Find the toolchain description
   find_file(LCG_TOOLCHAIN_INFO
             NAMES ${_info_names}
             HINTS ENV CMTPROJECTPATH
-            PATH_SUFFIXES LCG_${heptools_version})
+            PATH_SUFFIXES LCG_${heptools_version}${_lcg_py3})
 
   if(LCG_TOOLCHAIN_INFO)
     message(STATUS "Using heptools ${heptools_version} from ${LCG_TOOLCHAIN_INFO}")
 
     get_filename_component(LCG_releases ${LCG_TOOLCHAIN_INFO} PATH CACHE)
     set(LCG_external ${LCG_releases})
-    if(LCG_releases MATCHES "LCG_${heptools_version}\$")
+    if(LCG_releases MATCHES "LCG_${heptools_version}${_lcg_py3}\$")
       get_filename_component(LCG_releases_base ${LCG_releases} PATH)
     else()
       set(LCG_releases_base ${LCG_releases})
@@ -93,7 +99,7 @@ macro(use_heptools heptools_version)
     #    CACHE FILEPATH "The CMake toolchain file" FORCE)
 
   else()
-    message(FATAL_ERROR "Cannot find heptools ${heptools_version}.")
+    message(FATAL_ERROR "Cannot find heptools ${heptools_version} (using suffix LCG_${heptools_version}${_lcg_py3}).")
   endif()
 
 endmacro()
