@@ -47,8 +47,10 @@ StatusCode IncidentProcAlg::execute() {
   const EventContext& context = Gaudi::Hive::currentContext();
   auto                incPack = m_incSvc->getIncidents( &context );
   MsgStream           log( msgSvc(), name() );
-  log << MSG::DEBUG << " Number of Incidents to process = " << incPack.incidents.size()
-      << " Context= " << Gaudi::Hive::currentContext() << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) {
+    log << MSG::DEBUG << " Number of Incidents to process = " << incPack.incidents.size()
+        << " Context= " << Gaudi::Hive::currentContext() << endmsg;
+  }
   while ( incPack.incidents.size() ) {
     if ( incPack.incidents.size() != incPack.listeners.size() ) {
       log << MSG::WARNING << " Size of fired incidents and listeners do not match!" << endmsg;
@@ -57,7 +59,10 @@ StatusCode IncidentProcAlg::execute() {
       auto& inc = incPack.incidents.at( t );
       auto& lis = incPack.listeners.at( t );
       for ( auto& l : lis ) {
-        log << MSG::DEBUG << "Calling '" << getListenerName( l ) << "' for incident [" << inc->type() << "]" << endmsg;
+        if ( msgLevel( MSG::DEBUG ) ) {
+          log << MSG::DEBUG << "Calling '" << getListenerName( l ) << "' for incident [" << inc->type() << "]"
+              << endmsg;
+        }
 
         // handle exceptions if they occur
         try {
