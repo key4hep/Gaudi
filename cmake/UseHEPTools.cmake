@@ -43,18 +43,24 @@ macro(use_heptools heptools_version)
     set(_lcg_py3)
   endif()
 
+  if("${LCG_LAYER}" STREQUAL "")
+    set(_LCG_LAYER)
+  else()
+    set(_LCG_LAYER "_${LCG_LAYER}")
+  endif()
+
   # Find the toolchain description
   find_file(LCG_TOOLCHAIN_INFO
             NAMES ${_info_names}
             HINTS ENV CMTPROJECTPATH
-            PATH_SUFFIXES LCG_${heptools_version}${_lcg_py3})
+            PATH_SUFFIXES LCG_${heptools_version}${_lcg_py3}${_LCG_LAYER})
 
   if(LCG_TOOLCHAIN_INFO)
     message(STATUS "Using heptools ${heptools_version} from ${LCG_TOOLCHAIN_INFO}")
 
     get_filename_component(LCG_releases ${LCG_TOOLCHAIN_INFO} PATH CACHE)
     set(LCG_external ${LCG_releases})
-    if(LCG_releases MATCHES "LCG_${heptools_version}${_lcg_py3}\$")
+    if(LCG_releases MATCHES "LCG_${heptools_version}${_lcg_py3}${_LCG_LAYER}\$")
       get_filename_component(LCG_releases_base ${LCG_releases} PATH)
     else()
       set(LCG_releases_base ${LCG_releases})
@@ -62,13 +68,23 @@ macro(use_heptools heptools_version)
     set(ENV{LCG_releases_base} ${LCG_releases_base})
 
     file(STRINGS ${LCG_TOOLCHAIN_INFO} _lcg_infos)
+    set(_lcg_gen_infos)
+    if(LCG_USE_GENERATORS)
+      string(REPLACE "LCG_externals_" "LCG_generators_" LCG_GENERATORS_INFO "${LCG_TOOLCHAIN_INFO}")
+      if(EXISTS "${LCG_GENERATORS_INFO}")
+        message(STATUS "Using heptools ${heptools_version} generators from ${LCG_GENERATORS_INFO}")
+        file(STRINGS ${LCG_GENERATORS_INFO} _lcg_gen_infos)
+      else()
+        message(FATAL_ERROR "LCG generators requested (LCG_USE_GENERATORS=${LCG_USE_GENERATORS}), but ${LCG_GENERATORS_INFO} does not exist")
+      endif()
+    endif()
 
     if(LCG_FORCE_COMPILER)
       string(REPLACE "-" ";" _l "${LCG_FORCE_COMPILER}")
       lcg_set_compiler(${_l})
     endif()
 
-    foreach(_l ${_lcg_infos})
+    foreach(_l IN LISTS _lcg_infos _lcg_gen_infos)
       if(_l MATCHES "^COMPILER:")
         string(REPLACE "COMPILER:" "" _l "${_l}")
         string(STRIP _l "${_l}")
@@ -99,7 +115,7 @@ macro(use_heptools heptools_version)
     #    CACHE FILEPATH "The CMake toolchain file" FORCE)
 
   else()
-    message(FATAL_ERROR "Cannot find heptools ${heptools_version} (using suffix LCG_${heptools_version}${_lcg_py3}).")
+    message(FATAL_ERROR "Cannot find heptools ${heptools_version} (using suffix LCG_${heptools_version}${_lcg_py3}${_LCG_LAYER}).")
   endif()
 
 endmacro()
