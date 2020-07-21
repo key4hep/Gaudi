@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -1061,48 +1061,27 @@ class AppMgr(iService):
         if hasattr(Configurable, "_configurationLocked"):
             Configurable._configurationLocked = True
 
-        self._install_exit_handlers()
-
-    def _install_exit_handlers(self):
-        """Ensure that the exit method is called when exiting from Python, and
-        try to ensure that ROOT doesn't intefere too much."""
+        # Ensure that the exit method is called when exiting from Python
         import atexit
         atexit.register(self.exit)
 
-        try:
-            exit_handlers = atexit._exithandlers
-        except AttributeError:
-            # Python 3's atext does not expose _exithandlers, so we can't do
-            # anything more
-            return
-
         # ---Hack to avoid bad interactions with the ROOT exit handler
-        # Look for an exit handler installed by ROOT
-        root_handler_installed = False
-        for h in exit_handlers:
-            func = h[0]
+        # let's install a private version of atexit.register that detects when
+        # the ROOT exit handler is installed and adds our own after it to ensure
+        # it is called before.
+        orig_register = atexit.register
+
+        def register(func, *targs, **kargs):
+            orig_register(func, *targs, **kargs)
             if hasattr(func, "__module__") and func.__module__ == "ROOT":
-                root_handler_installed = True
-                break
+                orig_register(self.exit)
+                # we do not need to remove out handler from the list because
+                # it can be safely called more than once
 
-        # If the handler is not yet installed, let's install our private version
-        # that detects that the ROOT exit handler is installed and add our own
-        # after it to ensure it is called before.
-        if not root_handler_installed:
-            orig_register = atexit.register
-
-            def register(func, *targs, **kargs):
-                orig_register(func, *targs, **kargs)
-                if hasattr(func, "__module__") and func.__module__ == "ROOT":
-                    orig_register(self.exit)
-                    # we do not need to remove out handler from the list because
-                    # it can be safely called more than once
-
-            register.__doc__ = (
-                orig_register.__doc__ +
-                "\nNote: version hacked by GaudiPython to work " +
-                "around a problem with the ROOT exit handler")
-            atexit.register = register
+        register.__doc__ = (orig_register.__doc__ +
+                            "\nNote: version hacked by GaudiPython to work " +
+                            "around a problem with the ROOT exit handler")
+        atexit.register = register
 
     def state(self):
         return self._isvc.FSMState()
