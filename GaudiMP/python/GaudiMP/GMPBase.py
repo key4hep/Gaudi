@@ -1236,42 +1236,6 @@ class Writer(GMPComponent):
         self.config['MessageSvc'].Format = '%-13s ' % '[Writer]' + \
             self.msgFormat
 
-        # Now process the output writers
-        for key, lst in self.writerDict.iteritems():
-            self.log.info('Writer Type : %s\t : %i' % (key, len(lst)))
-
-        # Modify the name of the output file to reflect that it came
-        #  from a parallel processing
-        #
-        # Event Writers
-        for m in self.writerDict["events"]:
-            self.log.debug('Processing Event Writer : %s' % (m))
-            newName = m.getNewName('.', '.p%i.' % self.nWorkers)
-            self.config[m.key].Output = newName
-
-        # Now, if there are no event writers, the FileRecords file
-        #   will fail to open, as it only opens an UPDATE version
-        #   of the existing Event Output File
-        # So, if there are no event writers, edit the string of the
-        #   FileRecord Writer
-
-        # FileRecords Writers
-        for m in self.writerDict["records"]:
-            self.log.debug('Processing FileRecords Writer: %s' % (m))
-            newName = m.getNewName(
-                '.', '.p%i.' % self.nWorkers, extra=" OPT='RECREATE'")
-            self.config[m.key].Output = newName
-
-        # same for histos
-        hs = "HistogramPersistencySvc"
-        n = None
-        if hs in self.config.keys():
-            n = self.config[hs].OutputFile
-        if n:
-            newName = self.config[hs].OutputFile.replace(
-                '.', '.p%i.' % (self.nWorkers))
-            self.config[hs].OutputFile = newName
-
     def Engine(self):
         # rename process
         import os
