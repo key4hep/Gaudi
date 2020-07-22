@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -126,7 +126,7 @@ def getArgsFromQmt(qmtfile):
     # - temporarily switch to that directory and rationalize the paths
     old_cwd = os.getcwd()
     os.chdir(testdir)
-    args = map(rationalizepath, args)
+    args = [rationalizepath(arg) for arg in args]
     os.chdir(old_cwd)
 
     return args
@@ -541,10 +541,10 @@ if __name__ == "__main__":
     if options:
         g = {}
         l = {}
-        exec ("from Gaudi.Configuration import *", g, l)
+        exec("from Gaudi.Configuration import *", g, l)
         for o in options:
             logging.debug(o)
-            exec (o, g, l)
+            exec(o, g, l)
 
     import GaudiKernel.Proxy.Configurable
     if opts.no_conf_user_apply:
@@ -563,10 +563,10 @@ if __name__ == "__main__":
     if opts.post_options:
         g = {}
         l = {}
-        exec ("from Gaudi.Configuration import *", g, l)
+        exec("from Gaudi.Configuration import *", g, l)
         for o in opts.post_options:
             logging.debug(o)
-            exec (o, g, l)
+            exec(o, g, l)
 
     if 'GAUDI_TEMP_OPTS_FILE' in os.environ:
         os.remove(os.environ['GAUDI_TEMP_OPTS_FILE'])
