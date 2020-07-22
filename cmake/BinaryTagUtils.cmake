@@ -119,8 +119,8 @@ macro(parse_binary_tag)
     set(${_variable}_COMP_VERSION ${CMAKE_MATCH_2})
     if(NOT ${_variable}_COMP_NAME STREQUAL "icc")
       # all known compilers except icc have one digit per version level
-      # so we map "XY" to "X.Y"
-      string(REGEX MATCHALL "[0-9]" _out "${${_variable}_COMP_VERSION}")
+      # or is less than 20 so we map "1X" to "1X" and "XY" to "X.Y"
+      string(REGEX MATCHALL "(1[0-9]|[0-9])" _out "${${_variable}_COMP_VERSION}")
       set(${_variable}_COMP_VERSION)
       list(GET _out 0 ${_variable}_COMP_VERSION)
       list(REMOVE_AT _out 0)

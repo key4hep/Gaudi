@@ -12,9 +12,10 @@
 
 int main() {
   {
-    StatusCode sc = 42; // FAIL01: no implicit conversion from int
-    int        i  = sc; // FAIL02: no implicit conversion to int
-    bool       b  = sc; // FAIL03: no implicit conversion to bool
+    StatusCode sc{};
+    sc     = 42; // FAIL01: no implicit conversion from int
+    int  i = sc; // FAIL02: no implicit conversion to int
+    bool b = sc; // FAIL03: no implicit conversion to bool
     (void)i;
     (void)b; // silence "unused" compiler warnings
   }
