@@ -1013,7 +1013,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   std::vector<std::string>            newList;
   std::map<std::string, unsigned int> dllInList, duplicateList;
   {
-    for ( const auto it : m_dllNameList ) {
+    for ( const auto& it : m_dllNameList ) {
       if ( 0 == dllInList[it] ) {
         newList.push_back( it ); // first instance of this module
       } else {

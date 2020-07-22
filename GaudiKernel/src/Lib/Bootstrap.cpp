@@ -246,7 +246,10 @@ bool PyHelper( setProperty )( IInterface* p, char* name, char* value ) {
 }
 const char* PyHelper( getProperty )( IInterface* p, char* name ) {
   auto prop = SmartIF<IProperty>( p );
-  return prop ? prop->getProperty( name ).toString().c_str() : nullptr;
+  if ( !prop ) return nullptr;
+  static std::string value;
+  value = prop->getProperty( name ).toString();
+  return value.c_str();
 }
 bool PyHelper( configureApp )( IInterface* app ) {
   auto ui = SmartIF<IAppMgrUI>( app );

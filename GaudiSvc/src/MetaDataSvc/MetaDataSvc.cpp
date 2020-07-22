@@ -69,7 +69,7 @@ StatusCode MetaDataSvc::collectData() {
   {
     auto joSvc = service<IJobOptionsSvc>( "JobOptionsSvc" );
     if ( !joSvc.isValid() ) return StatusCode::FAILURE;
-    for ( const auto c : joSvc->getClients() ) {
+    for ( const auto& c : joSvc->getClients() ) {
       // get options for this client
       const auto props = joSvc->getProperties( c );
       if ( props ) {
