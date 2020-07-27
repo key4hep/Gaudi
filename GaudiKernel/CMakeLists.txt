@@ -86,7 +86,20 @@ gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
 
 # Ensure libfmt is on the LD_LIBRARY_PATH
 string(TOUPPER "${CMAKE_BUILD_TYPE}" _upper_build_type)
-get_target_property(fmt_loc fmt::fmt IMPORTED_LOCATION_${_upper_build_type})
+set(fmt_loc "")
+foreach(_type "_${_upper_build_type}" "_RELEASE" "_DEBUG" "_RELWITHDEBINFO" "")
+   get_property(_locIsSet TARGET fmt::fmt
+                PROPERTY "IMPORTED_LOCATION${_type}" SET )
+   if(NOT _locIsSet)
+      continue()
+   endif()
+   unset(_locIsSet)
+   get_target_property(fmt_loc fmt::fmt "IMPORTED_LOCATION${_type}")
+   break()
+endforeach()
+if("${fmt_loc}" STREQUAL "")
+   message(SEND_ERROR "Could not find the location of the fmt library")
+endif()
 get_filename_component(fmt_loc "${fmt_loc}" DIRECTORY)
 get_target_property(fmt_inc fmt::fmt INTERFACE_INCLUDE_DIRECTORIES)
 gaudi_env(PREPEND LD_LIBRARY_PATH "${fmt_loc}"
