@@ -20,8 +20,8 @@
 #include "GaudiKernel/FileIncident.h"
 #include "GaudiKernel/IFileMgr.h"
 #include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/ServiceHandle.h"
+#include <Gaudi/Property.h>
 // BOOST includes
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>

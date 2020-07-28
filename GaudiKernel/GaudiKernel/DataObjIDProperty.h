@@ -12,7 +12,7 @@
 #define GAUDIKERNEL_DATAOBJIDPROPERTY_H 1
 
 #include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 [[deprecated( "replace DataObjIDProperty by Gaudi::Property<DataObjID>" )]] typedef Gaudi::Property<DataObjID>
     DataObjIDProperty;

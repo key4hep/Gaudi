@@ -27,6 +27,10 @@ from Configurables import MyTestTool
 MyTestTool().PubToolHndl = "Public1"
 MyTestTool().PrivToolHndl = "Pivate1"
 MyTestTool().PrivEmptyToolHndl = ""
+
+MyTestTool().Int = 42
+MyTestTool().Text = 'value'
+MyTestTool().DataHandle = '/Event/X'
 #------------------------------------------------------------------------------/
 
 </text></argument>

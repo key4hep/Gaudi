@@ -14,6 +14,7 @@ Bunch of fake configurables used for testing.
 
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel.Proxy.Configurable import *
+from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
 
 
 class APublicTool(ConfigurableAlgTool):
@@ -50,7 +51,10 @@ class MyTestTool(ConfigurableAlgTool):
     __slots__ = {
         'PubToolHndl': PublicToolHandle('APublicTool'),
         'PrivToolHndl': PrivateToolHandle('APrivateTool'),
-        'PrivEmptyToolHndl': PrivateToolHandle('')
+        'PrivEmptyToolHndl': PrivateToolHandle(''),
+        'Text': 'some text',
+        'Int': 23,
+        'DataHandle': DataObjectHandleBase('Location', 'R'),
     }
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):

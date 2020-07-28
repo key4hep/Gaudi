@@ -788,6 +788,7 @@ RECURSIVE              = YES
 EXCLUDE                = @CMAKE_SOURCE_DIR@/GaudiRelease/doc/GaudiHive-release-notes.md
 EXCLUDE               += @CMAKE_SOURCE_DIR@/ReleaseNotes
 EXCLUDE               += @CMAKE_SOURCE_DIR@/InstallArea
+#EXCLUDE               += @CMAKE_SOURCE_DIR@/GaudiExamples
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -803,7 +804,7 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =  */tests/* */dict/* */cmake/* */GaudiExamples/* @CMAKE_BINARY_DIR@
+EXCLUDE_PATTERNS       =  */tests/* */dict/* */cmake/* @CMAKE_BINARY_DIR@
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the

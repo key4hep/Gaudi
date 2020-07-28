@@ -39,8 +39,6 @@ public:
 
   /// Destructor.
   ~ToolSvc() override;
-  /// Initialize the service.
-  StatusCode initialize() override;
 
   /// Finalize the service.
   StatusCode finalize() override;

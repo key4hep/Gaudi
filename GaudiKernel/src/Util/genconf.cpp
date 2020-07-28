@@ -848,12 +848,11 @@ int createAppMgr()
                                                                                                             // options
   propMgr->setProperty( "AppName", "" ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); // No initial printout
                                                                                                  // message
-  propMgr->setProperty( "OutputLevel", "7" ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); // No other
-                                                                                                      // printout
-                                                                                                      // messages
+  propMgr->setProperty( "OutputLevel", 7 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); // No other printout
+                                                                                                    // messages
   appUI->configure().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   auto msgSvc = SmartIF<IMessageSvc>{iface}.as<IProperty>();
-  msgSvc->setProperty( "setWarning", "['DefaultName', 'PropertyHolder']" )
+  msgSvc->setPropertyRepr( "setWarning", "['DefaultName', 'PropertyHolder']" )
       .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   msgSvc->setProperty( "Format", "%T %0W%M" ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   return EXIT_SUCCESS;

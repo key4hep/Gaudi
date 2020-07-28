@@ -22,9 +22,9 @@
 
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/Message.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
+#include <Gaudi/Property.h>
 
 // Forward declarations
 class ISvcLocator;

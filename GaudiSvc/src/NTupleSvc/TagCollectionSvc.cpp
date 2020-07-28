@@ -44,7 +44,7 @@
 #include "GaudiKernel/ISvcManager.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 #include "TagCollectionSvc.h"
 

@@ -15,7 +15,7 @@
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IDataHandleHolder.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 #include <algorithm>
 #include <unordered_set>

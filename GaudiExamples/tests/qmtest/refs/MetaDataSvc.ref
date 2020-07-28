@@ -1,9 +1,10 @@
-# --> Including file '/workspace/build/GAUDI/GAUDI_HEAD/GaudiExamples/options/TupleEx.py'
-# <-- End of file '/workspace/build/GAUDI/GAUDI_HEAD/GaudiExamples/options/TupleEx.py'
+# setting LC_ALL to "C"
+# --> Including file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/TupleEx.py'
+# <-- End of file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/TupleEx.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v999r999)
-                                          running on lbbuild41.cern.ch on Wed Jul 18 05:29:14 2018
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r0)
+                                          running on marco-XPS-13 on Sun May 26 11:41:28 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
@@ -19,48 +20,161 @@ EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 Gaudi::MetaDataSvc  DEBUG started
 Gaudi::MetaDataSvc  DEBUG Metadata collected:
+AlgContextSvc.AuditFinalize:False
+AlgContextSvc.AuditInitialize:False
+AlgContextSvc.AuditReinitialize:False
+AlgContextSvc.AuditRestart:False
+AlgContextSvc.AuditServices:False
+AlgContextSvc.AuditStart:False
+AlgContextSvc.AuditStop:False
+AlgContextSvc.BypassIncidents:False
+AlgContextSvc.Check:True
+AlgContextSvc.OutputLevel:3
+AlgExecStateSvc.AuditFinalize:False
+AlgExecStateSvc.AuditInitialize:False
+AlgExecStateSvc.AuditReinitialize:False
+AlgExecStateSvc.AuditRestart:False
+AlgExecStateSvc.AuditServices:False
+AlgExecStateSvc.AuditStart:False
+AlgExecStateSvc.AuditStop:False
+AlgExecStateSvc.OutputLevel:3
+AppMgrRunable.AuditFinalize:False
+AppMgrRunable.AuditInitialize:False
+AppMgrRunable.AuditReinitialize:False
+AppMgrRunable.AuditRestart:False
+AppMgrRunable.AuditServices:False
+AppMgrRunable.AuditStart:False
+AppMgrRunable.AuditStop:False
+AppMgrRunable.EvtMax:10
+AppMgrRunable.OutputLevel:3
 ApplicationMgr.ActivateHistory:False
 ApplicationMgr.AlgTypeAliases:{  }
-ApplicationMgr.AppName:ApplicationMgr
-ApplicationMgr.AppVersion:
+ApplicationMgr.AppName:'ApplicationMgr'
+ApplicationMgr.AppVersion:''
 ApplicationMgr.AuditAlgorithms:False
 ApplicationMgr.AuditServices:False
 ApplicationMgr.AuditTools:False
 ApplicationMgr.CreateSvc:[  ]
 ApplicationMgr.Dlls:[  ]
 ApplicationMgr.Environment:{  }
-ApplicationMgr.EventLoop:EventLoopMgr
+ApplicationMgr.EventLoop:'EventLoopMgr'
 ApplicationMgr.EvtMax:10
-ApplicationMgr.EvtSel:NONE
+ApplicationMgr.EvtSel:'NONE'
 ApplicationMgr.Exit:0
 ApplicationMgr.ExtSvc:[ 'RndmGenSvc' , 'Gaudi::MetaDataSvc' ]
 ApplicationMgr.ExtSvcCreates:True
 ApplicationMgr.Go:0
-ApplicationMgr.HistogramPersistency:ROOT
+ApplicationMgr.HistogramPersistency:'ROOT'
 ApplicationMgr.InitializationLoopCheck:True
-ApplicationMgr.JobOptionsPath:
-ApplicationMgr.JobOptionsPostAction:
-ApplicationMgr.JobOptionsPreAction:
-ApplicationMgr.JobOptionsSvcType:JobOptionsSvc
-ApplicationMgr.JobOptionsType:NONE
-ApplicationMgr.MessageSvcType:MessageSvc
+ApplicationMgr.JobOptionsPath:''
+ApplicationMgr.JobOptionsPostAction:''
+ApplicationMgr.JobOptionsPreAction:''
+ApplicationMgr.JobOptionsSvcType:'JobOptionsSvc'
+ApplicationMgr.JobOptionsType:'NONE'
+ApplicationMgr.MessageSvcType:'MessageSvc'
 ApplicationMgr.OutStream:[  ]
-ApplicationMgr.OutStreamType:OutputStream
+ApplicationMgr.OutStreamType:'OutputStream'
 ApplicationMgr.OutputLevel:3
 ApplicationMgr.PluginDebugLevel:0
 ApplicationMgr.PrintAlgsSequence:False
 ApplicationMgr.PropertiesPrint:False
 ApplicationMgr.ReturnCode:0
-ApplicationMgr.Runable:AppMgrRunable
+ApplicationMgr.Runable:'AppMgrRunable'
 ApplicationMgr.StalledEventMonitoring:False
 ApplicationMgr.StatusCodeCheck:False
 ApplicationMgr.StopOnSignal:False
 ApplicationMgr.SvcMapping:[ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' , 'HistogramSvc/HistogramDataSvc' , 'HbookCnv::PersSvc/HbookHistSvc' , 'RootHistCnv::PersSvc/RootHistSvc' , 'EvtPersistencySvc/EventPersistencySvc' , 'DetPersistencySvc/DetectorPersistencySvc' , 'HistogramPersistencySvc/HistogramPersistencySvc' ]
 ApplicationMgr.SvcOptMapping:[  ]
 ApplicationMgr.TopAlg:[ 'TupleAlg/Tuple' , 'TupleAlg2/Tuple2' , 'TupleAlg3/Tuple3' ]
+EventDataSvc.AuditFinalize:False
+EventDataSvc.AuditInitialize:False
+EventDataSvc.AuditReinitialize:False
+EventDataSvc.AuditRestart:False
+EventDataSvc.AuditServices:False
+EventDataSvc.AuditStart:False
+EventDataSvc.AuditStop:False
+EventDataSvc.DataAccessName:'DataAccess'
+EventDataSvc.DataFaultName:'DataFault'
+EventDataSvc.EnableAccessHandler:False
+EventDataSvc.EnableFaultHandler:False
+EventDataSvc.ForceLeaves:False
+EventDataSvc.InhibitPathes:[  ]
+EventDataSvc.OutputLevel:3
+EventDataSvc.RootCLID:110
+EventDataSvc.RootName:'/Event'
+EventLoopMgr.AuditFinalize:False
+EventLoopMgr.AuditInitialize:False
+EventLoopMgr.AuditReinitialize:False
+EventLoopMgr.AuditRestart:False
+EventLoopMgr.AuditServices:False
+EventLoopMgr.AuditStart:False
+EventLoopMgr.AuditStop:False
+EventLoopMgr.EvtSel:'NONE'
+EventLoopMgr.HistogramPersistency:''
+EventLoopMgr.OutStream:[  ]
+EventLoopMgr.OutStreamType:'OutputStream'
+EventLoopMgr.OutputLevel:3
+EventLoopMgr.PrintControlFlowExpression:False
+EventLoopMgr.TopAlg:[ 'TupleAlg/Tuple' , 'TupleAlg2/Tuple2' , 'TupleAlg3/Tuple3' ]
+EventLoopMgr.Warnings:True
+EventPersistencySvc.AuditFinalize:False
+EventPersistencySvc.AuditInitialize:False
+EventPersistencySvc.AuditReinitialize:False
+EventPersistencySvc.AuditRestart:False
+EventPersistencySvc.AuditServices:False
+EventPersistencySvc.AuditStart:False
+EventPersistencySvc.AuditStop:False
+EventPersistencySvc.CnvServices:[  ]
+EventPersistencySvc.OutputLevel:3
+Gaudi::MetaDataSvc.AuditFinalize:False
+Gaudi::MetaDataSvc.AuditInitialize:False
+Gaudi::MetaDataSvc.AuditReinitialize:False
+Gaudi::MetaDataSvc.AuditRestart:False
+Gaudi::MetaDataSvc.AuditServices:False
+Gaudi::MetaDataSvc.AuditStart:False
+Gaudi::MetaDataSvc.AuditStop:False
+Gaudi::MetaDataSvc.Enabled:True
 Gaudi::MetaDataSvc.OutputLevel:2
-IAlgManager.Algorithms:Tuple, Tuple2, Tuple3
-ISvcLocator.Services:MessageSvc, JobOptionsSvc, RndmGenSvc.Engine, RndmGenSvc, Gaudi::MetaDataSvc, AppMgrRunable, IncidentSvc, EventPersistencySvc, EventDataSvc, AlgContextSvc, TimelineSvc, RootHistSvc, HistogramPersistencySvc, HistogramDataSvc, NTupleSvc, AlgExecStateSvc, EventLoopMgr, ToolSvc
+HistogramDataSvc.AuditFinalize:False
+HistogramDataSvc.AuditInitialize:False
+HistogramDataSvc.AuditReinitialize:False
+HistogramDataSvc.AuditRestart:False
+HistogramDataSvc.AuditServices:False
+HistogramDataSvc.AuditStart:False
+HistogramDataSvc.AuditStop:False
+HistogramDataSvc.DataAccessName:'DataAccess'
+HistogramDataSvc.DataFaultName:'DataFault'
+HistogramDataSvc.EnableAccessHandler:False
+HistogramDataSvc.EnableFaultHandler:False
+HistogramDataSvc.ForceLeaves:False
+HistogramDataSvc.InhibitPathes:[  ]
+HistogramDataSvc.Input:[  ]
+HistogramDataSvc.OutputLevel:3
+HistogramDataSvc.Predefined1DHistos:{  }
+HistogramDataSvc.RootCLID:1
+HistogramDataSvc.RootName:'/stat'
+HistogramPersistencySvc.AuditFinalize:False
+HistogramPersistencySvc.AuditInitialize:False
+HistogramPersistencySvc.AuditReinitialize:False
+HistogramPersistencySvc.AuditRestart:False
+HistogramPersistencySvc.AuditServices:False
+HistogramPersistencySvc.AuditStart:False
+HistogramPersistencySvc.AuditStop:False
+HistogramPersistencySvc.CnvServices:[ 'RootHistSvc' ]
+HistogramPersistencySvc.ConvertHistos:[  ]
+HistogramPersistencySvc.ExcludeHistos:[  ]
+HistogramPersistencySvc.HistogramPersistency:'ROOT'
+HistogramPersistencySvc.OutputFile:''
+HistogramPersistencySvc.OutputLevel:3
+HistogramPersistencySvc.Warnings:True
+IncidentSvc.AuditFinalize:False
+IncidentSvc.AuditInitialize:False
+IncidentSvc.AuditReinitialize:False
+IncidentSvc.AuditRestart:False
+IncidentSvc.AuditServices:False
+IncidentSvc.AuditStart:False
+IncidentSvc.AuditStop:False
+IncidentSvc.OutputLevel:3
 JobOptionsSvc.AuditFinalize:False
 JobOptionsSvc.AuditInitialize:False
 JobOptionsSvc.AuditReinitialize:False
@@ -68,13 +182,15 @@ JobOptionsSvc.AuditRestart:False
 JobOptionsSvc.AuditServices:False
 JobOptionsSvc.AuditStart:False
 JobOptionsSvc.AuditStop:False
-JobOptionsSvc.DUMPFILE:
+JobOptionsSvc.DUMPFILE:''
+JobOptionsSvc.GlobalDefaults:[  ]
 JobOptionsSvc.OutputLevel:3
-JobOptionsSvc.PATH:../options/job.opts
-JobOptionsSvc.PYTHONACTION:
-JobOptionsSvc.PYTHONPARAMS:
-JobOptionsSvc.SEARCHPATH:/workspace/build/GAUDI/GAUDI_HEAD/GaudiExamples/tests/qmtest:/workspace/build/GAUDI/GAUDI_HEAD/GaudiExamples/options
-JobOptionsSvc.TYPE:NONE
+JobOptionsSvc.PATH:'../options/job.opts'
+JobOptionsSvc.PYTHONACTION:''
+JobOptionsSvc.PYTHONPARAMS:''
+JobOptionsSvc.ReportUnused:False
+JobOptionsSvc.SEARCHPATH:'/home/marco/Devel/workspace/Gaudi/GaudiExamples/tests/qmtest:/home/marco/Devel/workspace/Gaudi/GaudiExamples/options'
+JobOptionsSvc.TYPE:'NONE'
 MessageSvc.AuditFinalize:False
 MessageSvc.AuditInitialize:False
 MessageSvc.AuditReinitialize:False
@@ -82,7 +198,7 @@ MessageSvc.AuditRestart:False
 MessageSvc.AuditServices:False
 MessageSvc.AuditStart:False
 MessageSvc.AuditStop:False
-MessageSvc.Format:% F%18W%S%7W%R%T %0W%M
+MessageSvc.Format:'% F%18W%S%7W%R%T %0W%M'
 MessageSvc.OutputLevel:3
 MessageSvc.alwaysColorCode:[  ]
 MessageSvc.alwaysLimit:0
@@ -107,7 +223,7 @@ MessageSvc.setVerbose:[  ]
 MessageSvc.setWarning:[  ]
 MessageSvc.showStats:False
 MessageSvc.statLevel:0
-MessageSvc.timeFormat:%Y-%m-%d %H:%M:%S,%f
+MessageSvc.timeFormat:'%Y-%m-%d %H:%M:%S,%f'
 MessageSvc.tracedInactiveSources:[  ]
 MessageSvc.useColors:False
 MessageSvc.verboseColorCode:[  ]
@@ -121,8 +237,8 @@ NTupleSvc.AuditRestart:False
 NTupleSvc.AuditServices:False
 NTupleSvc.AuditStart:False
 NTupleSvc.AuditStop:False
-NTupleSvc.DataAccessName:DataAccess
-NTupleSvc.DataFaultName:DataFault
+NTupleSvc.DataAccessName:'DataAccess'
+NTupleSvc.DataFaultName:'DataFault'
 NTupleSvc.EnableAccessHandler:False
 NTupleSvc.EnableFaultHandler:False
 NTupleSvc.ForceLeaves:False
@@ -131,12 +247,254 @@ NTupleSvc.Input:[  ]
 NTupleSvc.Output:[ 'MYLUN DATAFILE=\'TupleEx.root\' OPT=\'NEW\' TYP=\'ROOT\'' ]
 NTupleSvc.OutputLevel:3
 NTupleSvc.RootCLID:1
-NTupleSvc.RootName:/NTUPLES
-RFileCnv.GlobalCompression:LZMA:6
-ToolSvc:
-Tuple.NTupleLUN:MYLUN
-Tuple2.NTupleLUN:MYLUN
-Tuple3.NTupleLUN:MYLUN
+NTupleSvc.RootName:'/NTUPLES'
+NTupleSvcConversions.AuditFinalize:False
+NTupleSvcConversions.AuditInitialize:False
+NTupleSvcConversions.AuditReinitialize:False
+NTupleSvcConversions.AuditRestart:False
+NTupleSvcConversions.AuditServices:False
+NTupleSvcConversions.AuditStart:False
+NTupleSvcConversions.AuditStop:False
+NTupleSvcConversions.OutputLevel:3
+RFileCnv.GlobalCompression:"LZMA:6"
+RndmGenSvc.AuditFinalize:False
+RndmGenSvc.AuditInitialize:False
+RndmGenSvc.AuditReinitialize:False
+RndmGenSvc.AuditRestart:False
+RndmGenSvc.AuditServices:False
+RndmGenSvc.AuditStart:False
+RndmGenSvc.AuditStop:False
+RndmGenSvc.Engine:'HepRndm::Engine<CLHEP::RanluxEngine>'
+RndmGenSvc.Engine.AuditFinalize:False
+RndmGenSvc.Engine.AuditInitialize:False
+RndmGenSvc.Engine.AuditReinitialize:False
+RndmGenSvc.Engine.AuditRestart:False
+RndmGenSvc.Engine.AuditServices:False
+RndmGenSvc.Engine.AuditStart:False
+RndmGenSvc.Engine.AuditStop:False
+RndmGenSvc.Engine.Column:0
+RndmGenSvc.Engine.Luxury:3
+RndmGenSvc.Engine.OutputLevel:3
+RndmGenSvc.Engine.Row:1
+RndmGenSvc.Engine.Seeds:[ 1234567 , 0 ]
+RndmGenSvc.Engine.SetSingleton:False
+RndmGenSvc.Engine.UseTable:False
+RndmGenSvc.OutputLevel:3
+RootHistSvc.AuditFinalize:False
+RootHistSvc.AuditInitialize:False
+RootHistSvc.AuditReinitialize:False
+RootHistSvc.AuditRestart:False
+RootHistSvc.AuditServices:False
+RootHistSvc.AuditStart:False
+RootHistSvc.AuditStop:False
+RootHistSvc.ForceAlphaIds:False
+RootHistSvc.OutputEnabled:True
+RootHistSvc.OutputFile:'UndefinedROOTOutputFileName'
+RootHistSvc.OutputLevel:3
+TimelineSvc.AuditFinalize:False
+TimelineSvc.AuditInitialize:False
+TimelineSvc.AuditReinitialize:False
+TimelineSvc.AuditRestart:False
+TimelineSvc.AuditServices:False
+TimelineSvc.AuditStart:False
+TimelineSvc.AuditStop:False
+TimelineSvc.DumpTimeline:False
+TimelineSvc.OutputLevel:3
+TimelineSvc.Partial:False
+TimelineSvc.RecordTimeline:False
+TimelineSvc.TimelineFile:'timeline.csv'
+Tuple.AuditAlgorithms:False
+Tuple.AuditExecute:False
+Tuple.AuditFinalize:False
+Tuple.AuditInitialize:False
+Tuple.AuditReinitialize:False
+Tuple.AuditRestart:False
+Tuple.AuditStart:False
+Tuple.AuditStop:False
+Tuple.AutoStringIDPurgeMap:{ '/' : '=SLASH=' }
+Tuple.Blocking:False
+Tuple.Cardinality:1
+Tuple.Context:''
+Tuple.CounterList:[ '.*' ]
+Tuple.EfficiencyRowFormat:' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+Tuple.Enable:True
+Tuple.ErrorMax:1
+Tuple.ErrorsPrint:True
+Tuple.EvtColDir:'Tuple'
+Tuple.EvtColLUN:'EVTCOL'
+Tuple.EvtColOffSet:0
+Tuple.EvtColSplitDir:False
+Tuple.EvtColTopDir:''
+Tuple.EvtColsPrint:False
+Tuple.EvtColsProduce:False
+Tuple.ExtraInputs:[]
+Tuple.ExtraOutputs:[]
+Tuple.FilterCircularDependencies:True
+Tuple.FormatFor1DHistoTable:'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
+Tuple.FullDetail:False
+Tuple.HeaderFor1DHistoTable:'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+Tuple.HistoCheckForNaN:True
+Tuple.HistoCountersPrint:True
+Tuple.HistoDir:'Tuple'
+Tuple.HistoOffSet:0
+Tuple.HistoPrint:False
+Tuple.HistoProduce:True
+Tuple.HistoSplitDir:False
+Tuple.HistoTopDir:''
+Tuple.MonitorHistograms:True
+Tuple.MonitorService:'MonitorSvc'
+Tuple.NTupleDir:'Tuple'
+Tuple.NTupleLUN:'MYLUN'
+Tuple.NTupleOffSet:0
+Tuple.NTuplePrint:True
+Tuple.NTupleProduce:True
+Tuple.NTupleSplitDir:False
+Tuple.NTupleTopDir:''
+Tuple.NeededResources:[  ]
+Tuple.OutputLevel:3
+Tuple.PrintEmptyCounters:False
+Tuple.PropertiesPrint:False
+Tuple.RegisterForContextService:True
+Tuple.RegularRowFormat:' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+Tuple.RequireObjects:[  ]
+Tuple.RootInTES:''
+Tuple.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
+Tuple.StatEntityList:[  ]
+Tuple.StatPrint:True
+Tuple.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+Tuple.Timeline:False
+Tuple.TypePrint:True
+Tuple.UseEfficiencyRowFormat:True
+Tuple.UseSequencialNumericAutoIDs:False
+Tuple.VetoObjects:[  ]
+Tuple2.AuditAlgorithms:False
+Tuple2.AuditExecute:False
+Tuple2.AuditFinalize:False
+Tuple2.AuditInitialize:False
+Tuple2.AuditReinitialize:False
+Tuple2.AuditRestart:False
+Tuple2.AuditStart:False
+Tuple2.AuditStop:False
+Tuple2.AutoStringIDPurgeMap:{ '/' : '=SLASH=' }
+Tuple2.Blocking:False
+Tuple2.Cardinality:1
+Tuple2.Context:''
+Tuple2.CounterList:[ '.*' ]
+Tuple2.EfficiencyRowFormat:' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+Tuple2.Enable:True
+Tuple2.ErrorMax:1
+Tuple2.ErrorsPrint:True
+Tuple2.EvtColDir:'Tuple2'
+Tuple2.EvtColLUN:'EVTCOL'
+Tuple2.EvtColOffSet:0
+Tuple2.EvtColSplitDir:False
+Tuple2.EvtColTopDir:''
+Tuple2.EvtColsPrint:False
+Tuple2.EvtColsProduce:False
+Tuple2.ExtraInputs:[]
+Tuple2.ExtraOutputs:[]
+Tuple2.FilterCircularDependencies:True
+Tuple2.FormatFor1DHistoTable:'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
+Tuple2.FullDetail:False
+Tuple2.HeaderFor1DHistoTable:'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+Tuple2.HistoCheckForNaN:True
+Tuple2.HistoCountersPrint:True
+Tuple2.HistoDir:'Tuple2'
+Tuple2.HistoOffSet:0
+Tuple2.HistoPrint:False
+Tuple2.HistoProduce:True
+Tuple2.HistoSplitDir:False
+Tuple2.HistoTopDir:''
+Tuple2.MonitorHistograms:True
+Tuple2.MonitorService:'MonitorSvc'
+Tuple2.NTupleDir:'Tuple2'
+Tuple2.NTupleLUN:'MYLUN'
+Tuple2.NTupleOffSet:0
+Tuple2.NTuplePrint:True
+Tuple2.NTupleProduce:True
+Tuple2.NTupleSplitDir:False
+Tuple2.NTupleTopDir:''
+Tuple2.NeededResources:[  ]
+Tuple2.OutputLevel:3
+Tuple2.PrintEmptyCounters:False
+Tuple2.PropertiesPrint:False
+Tuple2.RegisterForContextService:True
+Tuple2.RegularRowFormat:' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+Tuple2.RequireObjects:[  ]
+Tuple2.RootInTES:''
+Tuple2.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
+Tuple2.StatEntityList:[  ]
+Tuple2.StatPrint:True
+Tuple2.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+Tuple2.Timeline:False
+Tuple2.TypePrint:True
+Tuple2.UseEfficiencyRowFormat:True
+Tuple2.UseSequencialNumericAutoIDs:False
+Tuple2.VetoObjects:[  ]
+Tuple3.AuditAlgorithms:False
+Tuple3.AuditExecute:False
+Tuple3.AuditFinalize:False
+Tuple3.AuditInitialize:False
+Tuple3.AuditReinitialize:False
+Tuple3.AuditRestart:False
+Tuple3.AuditStart:False
+Tuple3.AuditStop:False
+Tuple3.AutoStringIDPurgeMap:{ '/' : '=SLASH=' }
+Tuple3.Blocking:False
+Tuple3.Cardinality:1
+Tuple3.Context:''
+Tuple3.CounterList:[ '.*' ]
+Tuple3.EfficiencyRowFormat:' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+Tuple3.Enable:True
+Tuple3.ErrorMax:1
+Tuple3.ErrorsPrint:True
+Tuple3.EvtColDir:'Tuple3'
+Tuple3.EvtColLUN:'EVTCOL'
+Tuple3.EvtColOffSet:0
+Tuple3.EvtColSplitDir:False
+Tuple3.EvtColTopDir:''
+Tuple3.EvtColsPrint:False
+Tuple3.EvtColsProduce:False
+Tuple3.ExtraInputs:[]
+Tuple3.ExtraOutputs:[]
+Tuple3.FilterCircularDependencies:True
+Tuple3.FormatFor1DHistoTable:'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
+Tuple3.FullDetail:False
+Tuple3.HeaderFor1DHistoTable:'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+Tuple3.HistoCheckForNaN:True
+Tuple3.HistoCountersPrint:True
+Tuple3.HistoDir:'Tuple3'
+Tuple3.HistoOffSet:0
+Tuple3.HistoPrint:False
+Tuple3.HistoProduce:True
+Tuple3.HistoSplitDir:False
+Tuple3.HistoTopDir:''
+Tuple3.MonitorHistograms:True
+Tuple3.MonitorService:'MonitorSvc'
+Tuple3.NTupleDir:'Tuple3'
+Tuple3.NTupleLUN:'MYLUN'
+Tuple3.NTupleOffSet:0
+Tuple3.NTuplePrint:True
+Tuple3.NTupleProduce:True
+Tuple3.NTupleSplitDir:False
+Tuple3.NTupleTopDir:''
+Tuple3.NeededResources:[  ]
+Tuple3.OutputLevel:3
+Tuple3.PrintEmptyCounters:False
+Tuple3.PropertiesPrint:False
+Tuple3.RegisterForContextService:True
+Tuple3.RegularRowFormat:' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+Tuple3.RequireObjects:[  ]
+Tuple3.RootInTES:''
+Tuple3.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
+Tuple3.StatEntityList:[  ]
+Tuple3.StatPrint:True
+Tuple3.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+Tuple3.Timeline:False
+Tuple3.TypePrint:True
+Tuple3.UseEfficiencyRowFormat:True
+Tuple3.UseSequencialNumericAutoIDs:False
+Tuple3.VetoObjects:[  ]
 
 ApplicationMgr       INFO Application Manager Started successfully
 RFileCnv             INFO opening Root file "TupleEx.root" for writing, CompressionLevel='LZMA:6'
@@ -247,7 +605,6 @@ Tuple3            SUCCESS  ID=VectorMaps    Title="Tuple with VectorMaps/'ExtraI
 Tuple3            SUCCESS  ID=Vectors-3D    Title="Tuple with Vectors in 3D "               #items=6  {p3X,p3Y,p3Z,v3X,v3Y,v3Z}
 RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
 EventLoopMgr         INFO Histograms converted successfully according to request.
-ToolSvc              INFO Removing all tools created by ToolSvc
 RFileCnv             INFO dumping contents of /NTUPLES/MYLUN
 TFile: name=TupleEx.root, title=Gaudi Trees, option=CREATE
 ******************************************************************************

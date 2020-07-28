@@ -94,14 +94,6 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css ) {
 StatusCode ChronoStatSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
-  ///
-  // Set my own properties
-  sc = setProperties();
-
-  if ( sc.isFailure() ) {
-    error() << "setting my properties" << endmsg;
-    return StatusCode::FAILURE;
-  }
 
   // only add an EndEvent listener if per-event output requested
   if ( !m_perEventFile.empty() ) {

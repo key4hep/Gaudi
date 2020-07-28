@@ -19,7 +19,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 namespace FixTESPathDetails {
   std::unique_ptr<IDataHandleVisitor> fixDataHandlePath( std::string_view rit, std::string rootName, MsgStream* dbg );

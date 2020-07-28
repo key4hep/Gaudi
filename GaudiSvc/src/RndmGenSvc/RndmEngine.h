@@ -55,8 +55,6 @@ protected:
   using extends::extends;
 
 public:
-  /// Service override: initialization
-  StatusCode initialize() override;
   /// Single shot returning single random number
   double rndm() const override;
   /** Multiple shots returning vector with flat random numbers.

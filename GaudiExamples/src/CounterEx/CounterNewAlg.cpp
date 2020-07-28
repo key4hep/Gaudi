@@ -61,7 +61,7 @@ public:
 
   CounterNewAlg( const std::string& name, ISvcLocator* pSvc )
       : Producer( name, pSvc, KeyValue( "OutputLocation", "dummy" ) ) {
-    setProperty( "StatPrint", "true" ).ignore();
+    setProperty( "StatPrint", true ).ignore();
   }
 
 private:

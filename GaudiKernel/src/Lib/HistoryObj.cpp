@@ -20,7 +20,7 @@
 #define GAUDIKERNEL_HISTORYOBJ_CPP
 
 #include "GaudiKernel/HistoryObj.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 using namespace std;
 

@@ -57,7 +57,7 @@ public:
    *  @param pSvc pointer to Service Locator
    */
   CounterAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {
-    setProperty( "StatPrint", "true" ).ignore();
+    setProperty( "StatPrint", true ).ignore();
   }
 
   // copy constructor is disabled

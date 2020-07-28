@@ -30,7 +30,7 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/GenericAddress.h"
 #include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 // Local
 #include "GaudiPI.h"

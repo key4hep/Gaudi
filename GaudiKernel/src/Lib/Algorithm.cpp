@@ -62,8 +62,12 @@ namespace Gaudi {
     // has already been initialized.
     if ( Gaudi::StateMachine::INITIALIZED <= FSMState() ) return StatusCode::SUCCESS;
 
+    // this initializes the messaging, in case property update handlers need to print
+    // and update the property value bypassing the update handler
+    m_outputLevel.value() = setUpMessaging();
+
     // Set the Algorithm's properties
-    if ( !setProperties() ) return StatusCode::FAILURE;
+    bindPropertiesTo( serviceLocator()->getOptsSvc() );
 
     // Bypass the initialization if the algorithm is disabled.
     // Need to do this after setProperties.
@@ -592,19 +596,6 @@ namespace Gaudi {
 
   SmartIF<ISvcLocator>& Algorithm::serviceLocator() const {
     return *const_cast<SmartIF<ISvcLocator>*>( &m_pSvcLocator );
-  }
-
-  // Use the job options service to set declared properties
-  StatusCode Algorithm::setProperties() {
-    if ( !m_pSvcLocator ) return StatusCode::FAILURE;
-    auto jos = m_pSvcLocator->service<IJobOptionsSvc>( "JobOptionsSvc" );
-    if ( !jos ) return StatusCode::FAILURE;
-
-    // this initializes the messaging, in case property update handlers need to print
-    // and update the property value bypassing the update handler
-    m_outputLevel.value() = setUpMessaging();
-
-    return jos->setMyProperties( name(), this );
   }
 
   void Algorithm::initToolHandles() const {

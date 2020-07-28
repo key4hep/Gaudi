@@ -60,7 +60,7 @@ public:
   StatusCode execute() override;
 
   ExtendedProperties( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {
-    setProperty( "PropertiesPrint", "true" ).ignore();
+    setProperty( "PropertiesPrint", true ).ignore();
 
     m_20["key"] = "value";
     m_21.value().push_back( 123 );

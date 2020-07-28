@@ -16,7 +16,7 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/HistoDef.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 namespace Gaudi {
   namespace Details {
     namespace Property {

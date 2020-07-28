@@ -21,8 +21,8 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "GaudiKernel/JobHistory.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/System.h"
+#include <Gaudi/Property.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -89,8 +89,25 @@ const CLID& JobHistory::classID() {
 }
 
 void JobHistory::addProperty( const std::string& client, const PropertyBase* prop ) {
-  //  if (m_props.find(prop) == m_props.end())
-  m_ppl.emplace_back( client, prop );
+  addProperty( client + '.' + prop->name(), prop->toString() );
+}
+
+void JobHistory::addProperty( const std::string& key, const std::string& value ) {
+  /// \fixme strip optional quotes around the string
+  std::string prop_value = value;
+  if ( !prop_value.empty() && prop_value[0] == '"' && prop_value[prop_value.size() - 1] == '"' )
+    prop_value = prop_value.substr( 1, prop_value.size() - 2 );
+
+  std::string client, prop_name;
+  auto        pos = key.rfind( '.' );
+  if ( pos == std::string::npos ) {
+    prop_name = key;
+  } else {
+    client    = key.substr( 0, pos );
+    prop_name = key.substr( pos + 1 );
+  }
+
+  m_ppl.emplace_back( client, std::make_unique<Gaudi::Property<std::string>>( prop_name, prop_value ) );
 }
 
 std::ostream& JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const {
@@ -107,8 +124,8 @@ std::ostream& JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/
     ost << "Properties: [" << endl;
     ;
     for ( const auto& ipprop : propertyPairs() ) {
-      const std::string&  client = ipprop.first;
-      const PropertyBase* prop   = ipprop.second;
+      const auto& client = ipprop.first;
+      const auto& prop   = ipprop.second;
       ost << client << ":  ";
       prop->fillStream( ost );
       ost << endl;

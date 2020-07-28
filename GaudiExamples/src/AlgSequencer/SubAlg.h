@@ -14,7 +14,7 @@
 // Include files
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 /** @class SubAlg
     Trivial Algorithm for tutotial purposes

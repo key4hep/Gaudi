@@ -13,13 +13,14 @@
 
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
+#include <Gaudi/Property.h>
 
-#include "SvcCatalog.h"
+#include "Gaudi/Interfaces/IOptionsSvc.h"
 
+#include <map>
 #include <vector>
 
 namespace Gaudi {
@@ -28,14 +29,83 @@ namespace Gaudi {
   }
 } // namespace Gaudi
 
-class JobOptionsSvc : public extends<Service, IJobOptionsSvc> {
+class JobOptionsSvc : public extends<Service, IJobOptionsSvc, Gaudi::Interfaces::IOptionsSvc> {
 public:
   typedef std::vector<const Gaudi::Details::PropertyBase*> PropertiesT;
+
+private:
+  using StorageType = std::unordered_map<std::string, Gaudi::Details::WeakPropertyRef>;
+
+  StorageType m_options;
+
+  /// Helper to handle of the case mismatches in property names
+  std::unordered_map<std::string, std::string> m_lower_to_correct_case;
+
+  mutable std::map<std::string, std::unique_ptr<Gaudi::Details::PropertyBase>> m_old_iface_compat;
+  mutable std::map<std::string, PropertiesT>                                   m_old_iface_compat_2;
+
+  /// Find an option key in the options storage using case insensitive comparison.
+  /// If the found key does not match the case of the requested one, a warning is printed.
+  StorageType::const_iterator i_find( const std::string& key, bool warn ) const;
+
+  void i_update_case_insensitive_map( const std::string& key );
+
+protected:
+  /// @{
+  void set( const std::string& key, const std::string& value ) override {
+    auto item = i_find( key, true );
+    if ( item != m_options.end() && key != item->first ) {
+      if ( !item->second.isBound() ) { // do not remove references to properties
+        m_options.erase( item );       // Storage is case insensitive, and I want to use the latest version of the case
+        item = m_options.end();
+      }
+    }
+    if ( item == m_options.end() ) {
+      m_options.emplace( key, value );
+      i_update_case_insensitive_map( key );
+    } else {
+      m_options.find( item->first )->second = value;
+    }
+  }
+  std::string get( const std::string& key, const std::string& default_ = {} ) const override {
+    auto item = i_find( key, true );
+    return item != m_options.end() ? std::string{item->second} : default_;
+  }
+  std::string pop( const std::string& key, const std::string& default_ = {} ) override {
+    std::string result = default_;
+
+    auto item = i_find( key, true );
+    if ( item != m_options.end() ) {
+      result = std::move( item->second );
+      m_options.erase( item );
+    }
+    return result;
+  }
+  bool has( const std::string& key ) const override { return i_find( key, false ) != m_options.end(); }
+  std::vector<std::tuple<std::string, std::string>> items() const override {
+    std::vector<std::tuple<std::string, std::string>> v;
+    v.reserve( m_options.size() );
+    std::for_each( begin( m_options ), end( m_options ), [&v]( const auto& item ) { v.emplace_back( item ); } );
+    std::sort( begin( v ), end( v ) );
+    return v;
+  }
+  bool isSet( const std::string& key ) const override {
+    const auto& item = i_find( key, false );
+    return item != m_options.end() && item->second.isSet();
+  }
+
+  void bind( const std::string& prefix, Gaudi::Details::PropertyBase* property ) override;
+
+  void broadcast( const std::regex& filter, const std::string& value, OnlyDefaults defaults_only ) override;
+  /// @}
+
+public:
   // Constructor
   JobOptionsSvc( const std::string& name, ISvcLocator* svc );
 
   StatusCode initialize() override;
   StatusCode start() override;
+  StatusCode stop() override;
 
   /** Override default properties of the calling client
          @param client Name of the client algorithm or service
@@ -57,7 +127,11 @@ public:
   /// Get a property for a client
   const Gaudi::Details::PropertyBase* getClientProperty( const std::string& client,
                                                          const std::string& name ) const override {
-    return m_svc_catalog.getProperty( client, name );
+    const std::string key = client + '.' + name;
+
+    auto p = std::make_unique<Gaudi::Property<std::string>>( name, "" );
+    p->fromString( get( key ) ).ignore();
+    return ( m_old_iface_compat[key] = std::move( p ) ).get();
   }
   /// Get the list of clients
   std::vector<std::string> getClients() const override;
@@ -74,8 +148,8 @@ private:
   void fillServiceCatalog( const Gaudi::Parsers::Catalog& catalog );
 
   /// dump properties catalog to file
-  template <typename C>
-  void dump( const std::string& file, const C& catalog ) const;
+  void dump( const std::string& file, const Gaudi::Parsers::Catalog& catalog ) const;
+  void dump( const std::string& file ) const;
 
 private:
   Gaudi::Property<std::string> m_source_type{this, "TYPE"};
@@ -85,6 +159,11 @@ private:
   Gaudi::Property<std::string> m_pythonAction{this, "PYTHONACTION"};
   Gaudi::Property<std::string> m_pythonParams{this, "PYTHONPARAMS"};
 
-  SvcCatalog m_svc_catalog;
+  Gaudi::Property<std::vector<std::pair<std::string, std::string>>> m_globalDefaultsProp{
+      this, "GlobalDefaults", {}, "Allow definition of global defaults for properties as list of pairs (regex, value)"};
+
+  Gaudi::Property<bool> m_reportUnused{this, "ReportUnused", false, "Print report of properties set, but not used"};
+
+  std::vector<std::pair<std::regex, std::string>> m_globalDefaults;
 };
 #endif /* JOBOPTIONSSVC_H_ */

@@ -10,6 +10,7 @@
 \***********************************************************************************/
 // Include files
 #include <initializer_list>
+#include <sstream>
 #include <tuple>
 
 // from Gaudi
@@ -141,7 +142,6 @@ StatusCode GaudiSequencer::decodeNames() {
   m_entries.clear();
 
   //== Get the "Context" option if in the file...
-  auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
 
   //= Get the Application manager, to see if algorithm exist
   auto appMgr = service<IAlgManager>( "ApplicationMgr" );

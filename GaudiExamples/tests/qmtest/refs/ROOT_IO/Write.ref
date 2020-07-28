@@ -74,6 +74,8 @@ WriteAlg            DEBUG Data Deps for WriteAlg
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service FileRecordDataSvc
+ReadAlg           VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+IncidentSvc         DEBUG Adding [NEW_FILE_RECORD] listener 'ReadAlg' with priority 0
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 ReadAlg             DEBUG input handles: 0
 ReadAlg             DEBUG output handles: 0
@@ -1321,6 +1323,7 @@ ServiceManager      DEBUG Stopping service AppMgrRunable
 ServiceManager      DEBUG Stopping service FileRecordDataSvc
 ApplicationMgr       INFO Application Manager Stopped successfully
 ServiceManager      DEBUG Finalizing service EventLoopMgr
+IncidentSvc         DEBUG Removing [NEW_FILE_RECORD] listener 'ReadAlg'
 RootDst              INFO Events output: 1000
 RootMini             INFO Events output: 1000
 FileRecords          INFO Set up File Summary Record
@@ -1346,8 +1349,8 @@ ServiceManager      DEBUG Finalizing service IncidentSvc
 IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service FileRecordDataSvc
-IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
+IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
 ServiceManager      DEBUG ---- MessageSvc (refCount = 27)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)

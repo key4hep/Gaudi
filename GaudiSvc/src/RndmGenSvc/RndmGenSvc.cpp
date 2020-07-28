@@ -47,26 +47,23 @@ StatusCode RndmGenSvc::initialize() {
   auto mgr = serviceLocator()->as<ISvcManager>();
 
   if ( status.isSuccess() ) {
-    status = setProperties();
-    if ( status.isSuccess() ) { // Check if the Engine service exists:
-      // FIXME: (MCl) why RndmGenSvc cannot create the engine service in a standard way?
-      const bool  CREATE   = false;
-      std::string machName = name() + ".Engine";
-      auto        engine   = serviceLocator()->service<IRndmEngine>( machName, CREATE );
-      if ( !engine && mgr ) {
-        using Gaudi::Utils::TypeNameString;
-        engine = mgr->createService( TypeNameString( machName, m_engineName ) );
-      }
-      if ( engine ) {
-        auto serial  = engine.as<ISerialize>();
-        auto service = engine.as<IService>();
-        if ( serial && service ) {
-          status = service->sysInitialize();
-          if ( status.isSuccess() ) {
-            m_engine    = engine;
-            m_serialize = serial;
-            info() << "Using Random engine:" << m_engineName.value() << endmsg;
-          }
+    // FIXME: (MCl) why RndmGenSvc cannot create the engine service in a standard way?
+    const bool  CREATE   = false;
+    std::string machName = name() + ".Engine";
+    auto        engine   = serviceLocator()->service<IRndmEngine>( machName, CREATE );
+    if ( !engine && mgr ) {
+      using Gaudi::Utils::TypeNameString;
+      engine = mgr->createService( TypeNameString( machName, m_engineName ) );
+    }
+    if ( engine ) {
+      auto serial  = engine.as<ISerialize>();
+      auto service = engine.as<IService>();
+      if ( serial && service ) {
+        status = service->sysInitialize();
+        if ( status.isSuccess() ) {
+          m_engine    = engine;
+          m_serialize = serial;
+          info() << "Using Random engine:" << m_engineName.value() << endmsg;
         }
       }
     }

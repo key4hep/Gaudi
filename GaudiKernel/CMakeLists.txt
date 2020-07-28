@@ -186,6 +186,9 @@ gaudi_add_unit_test(test_PropertyHolder tests/src/test_PropertyHolder.cpp
 gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_WeakPropertyRef tests/src/test_WeakPropertyRef.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 gaudi_add_unit_test(test_StatusCode tests/src/test_StatusCode.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)

@@ -170,26 +170,21 @@ StatusCode HistorySvc::initialize() {
 StatusCode HistorySvc::captureState() {
 
   if ( !m_jobHistory ) {
-    m_jobHistory.reset( new JobHistory );
-    IJobOptionsSvc* jo;
-    if ( service( "JobOptionsSvc", jo ).isFailure() ) {
-      error() << "Could not get jobOptionsSvc - "
-              << "not adding properties to JobHistory" << endmsg;
-    } else {
+    m_jobHistory = std::make_unique<JobHistory>();
 
-      bool foundAppMgr( false );
+    bool foundAppMgr( false );
+    for ( const auto& item : serviceLocator()->getOptsSvc().items() ) {
+      m_jobHistory->addProperty( get<0>( item ), get<1>( item ) );
+      foundAppMgr |= get<0>( item ).compare( 0, 15, "ApplicationMgr." ) == 0;
+    }
 
-      for ( auto& client : jo->getClients() ) {
-        if ( client == "ApplicationMgr" ) foundAppMgr = true;
-        for ( auto prop : *jo->getProperties( client ) ) { m_jobHistory->addProperty( client, prop ); }
-      }
-
-      if ( !foundAppMgr ) {
-        auto ap = service<IProperty>( "ApplicationMgr" );
-        if ( !ap ) {
-          error() << "could not get the ApplicationMgr" << endmsg;
-        } else {
-          for ( auto prop : ap->getProperties() ) { m_jobHistory->addProperty( "ApplicationMgr", prop ); }
+    if ( !foundAppMgr ) {
+      auto ap = service<IProperty>( "ApplicationMgr" );
+      if ( !ap ) {
+        error() << "could not get the ApplicationMgr" << endmsg;
+      } else {
+        for ( auto prop : ap->getProperties() ) {
+          m_jobHistory->addProperty( "ApplicationMgr." + prop->name(), prop->toString() );
         }
       }
     }
@@ -388,7 +383,7 @@ void HistorySvc::dumpProperties( std::ofstream& ofs ) const {
 
   ofs << "GLOBAL" << std::endl;
   for ( const auto& prop : m_jobHistory->propertyPairs() ) {
-    ofs << prop.first << "  " << dumpProp( prop.second ) << std::endl;
+    ofs << prop.first << "  " << dumpProp( prop.second.get() ) << std::endl;
   }
 
   ofs << std::endl << "SERVICES" << std::endl;
@@ -695,8 +690,8 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const {
   std::string client_currently_open = "start";
   for ( auto& item : m_jobHistory->propertyPairs() ) {
     // client is the name of the component of the current property
-    const std::string&                  client = item.first;
-    const Gaudi::Details::PropertyBase* prp    = item.second;
+    const auto& client = item.first;
+    const auto& prp    = item.second;
 
     if ( m_outputFileTypeXML ) {
 
@@ -708,7 +703,7 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const {
       ofs << client << "  ";
     }
 
-    ofs << dumpProp( prp, m_outputFileTypeXML, 6 ) << endl;
+    ofs << dumpProp( prp.get(), m_outputFileTypeXML, 6 ) << endl;
 
     client_currently_open = client;
 

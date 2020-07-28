@@ -10,6 +10,8 @@
 \***********************************************************************************/
 #include "PythonConfig.h"
 
+#include <iostream>
+
 // boost includes
 #include "boost/python.hpp"
 using namespace boost::python;
@@ -24,11 +26,12 @@ StatusCode PythonConfig::evaluateConfig( const std::string& filename, const std:
     object main_namespace = main_module.attr( "__dict__" );
 
     // make the translator class known to Python
-    main_namespace["PythonAdaptor"] = class_<PythonAdaptor>( "PythonAdaptor", boost::python::init<IJobOptionsSvc*>() )
-                                          .def( "addPropertyToJobOptions", &PythonAdaptor::addPropertyToJobOptions );
+    main_namespace["PythonAdaptor"] =
+        class_<PythonAdaptor>( "PythonAdaptor", boost::python::init<Gaudi::Interfaces::IOptionsSvc*>() )
+            .def( "addPropertyToJobOptions", &PythonAdaptor::addPropertyToJobOptions );
 
     // create an instance of it and pass it to Python
-    PythonAdaptor adaptor( m_IJobOptionsSvc );
+    PythonAdaptor adaptor( m_optsSvc );
     main_namespace["adaptor"] = ptr( &adaptor );
 
     // some python helper
@@ -42,8 +45,8 @@ StatusCode PythonConfig::evaluateConfig( const std::string& filename, const std:
                "applyConfigurableUsers\napplyConfigurableUsers()\n";
     command += postAction;
     command += "\nfor n, c in Configurable.allConfigurables.items():\n  for p, v in  c.getValuedProperties().items() "
-               ":\n    v = expandvars(v)\n    if   type(v) == str : v = '\"%s\"' % v # need double quotes\n    elif "
-               "type(v) == long: v = '%d'   % v # prevent pending 'L'\n    adaptor.addPropertyToJobOptions(n,p,str(v))";
+               ":\n    v = expandvars(v)\n    if   type(v) == str : v = repr(v)  # need double quotes\n    elif "
+               "type(v) == long: v = '%d' % v  # prevent pending 'L'\n    adaptor.addPropertyToJobOptions(n,p,str(v))";
 
     // Now fire off the translation
     handle<> ignored( ( PyRun_String( command.c_str(), Py_file_input, main_namespace.ptr(), main_namespace.ptr() ) ) );

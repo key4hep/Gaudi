@@ -46,11 +46,6 @@ StatusCode RootHistCnv::PersSvc::initialize()
   StatusCode status = ConversionSvc::initialize();
   if ( status.isFailure() ) return status;
 
-  // Get my properties from the JobOptionsSvc
-  if ( setProperties().isFailure() ) {
-    error() << "Could not set my properties" << endmsg;
-    return StatusCode::FAILURE;
-  }
   if ( m_outputEnabled ) {
     // Initialize ROOT if output file name is defined
     if ( undefFileName != m_defFileName ) {

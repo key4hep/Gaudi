@@ -86,7 +86,6 @@ ToolSvc             DEBUG START transition for AlgTools[m
 ServiceManager      DEBUG Starting service EventLoopMgr[m
 ServiceManager      DEBUG Starting service HistorySvc[m
 ApplicationMgr       INFO Application Manager Started successfully[m
-HistorySvc        VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc[m
 HistorySvc          DEBUG Registering algorithm: [96;1mHistory[m
 HistorySvc           INFO [mRegistered 1 Algorithms[m
 HistorySvc           INFO Registered 0 AlgTools[m
@@ -174,7 +173,7 @@ StatusCodeSvc       DEBUG all StatusCode instances where checked[m
 ServiceManager      DEBUG Looping over all active services...[m
 ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)[m
 ServiceManager      DEBUG ---- MessageSvc (refCount = 22)[m
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 5)[m
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- HistorySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)[m

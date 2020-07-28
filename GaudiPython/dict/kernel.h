@@ -25,13 +25,13 @@
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/MapBase.h"
 #include "GaudiKernel/ParticleProperty.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/Range.h"
 #include "GaudiKernel/SerializeSTL.h"
 #include "GaudiKernel/Stat.h"
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/VectorMap.h"
+#include <Gaudi/Property.h>
 
 #ifdef _WIN32
 #  include "GaudiKernel/GaudiHandle.h"

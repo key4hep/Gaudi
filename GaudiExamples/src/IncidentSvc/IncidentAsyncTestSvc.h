@@ -13,11 +13,11 @@
 
 #include "GaudiKernel/EventContextHash.h"
 #include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/SmartIF.h"
 #include "IIncidentAsyncTestSvc.h"
 #include "tbb/concurrent_unordered_map.h"
+#include <Gaudi/Property.h>
 #include <mutex>
 class ISvcLocator;
 class IMessageSvc;

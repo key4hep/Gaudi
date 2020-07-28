@@ -44,8 +44,14 @@ void Service::sysInitialize_imp() {
                                        // check if we want to audit the initialize
                                        ( m_auditorInitialize ) ? auditorSvc().get() : nullptr, IAuditor::Initialize );
 
-    m_initSC = setProperties();
-    if ( !m_initSC ) return;
+    // initialize messaging (except for MessageSvc)
+    if ( name() != "MessageSvc" ) {
+      // this initializes the messaging, in case property update handlers need to print
+      // and update the property value bypassing the update handler
+      m_outputLevel.value() = setUpMessaging();
+    }
+
+    bindPropertiesTo( serviceLocator()->getOptsSvc() );
 
     m_initSC = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
     if ( m_initSC.isSuccess() ) m_state = m_targetState;
@@ -285,22 +291,6 @@ const std::string& Service::name() const { return m_name; }
 
 //--- Retrieve pointer to service locator
 SmartIF<ISvcLocator>& Service::serviceLocator() const { return m_svcLocator; }
-
-// Use the job options service to set declared properties
-StatusCode Service::setProperties() {
-  const bool CREATEIF( true );
-  auto       jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", CREATEIF );
-  if ( !jos ) { throw GaudiException( "Service [JobOptionsSvc] not found", name(), StatusCode::FAILURE ); }
-
-  // initialize messaging (except for MessageSvc)
-  if ( name() != "MessageSvc" ) {
-    // this initializes the messaging, in case property update handlers need to print
-    // and update the property value bypassing the update handler
-    m_outputLevel.value() = setUpMessaging();
-  }
-
-  return jos->setMyProperties( name(), this );
-}
 
 //--- Local methods
 // Standard Constructor

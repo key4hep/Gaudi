@@ -25,7 +25,7 @@
 #include "GaudiKernel/DataObjectHandleBase.h"
 #include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 // ============================================================================
 
@@ -85,7 +85,7 @@ public:
   /** set the property form another property
    *  @see IProperty
    */
-  StatusCode setProperty( const Gaudi::Details::PropertyBase& p ) override;
+  StatusCode setProperty( const std::string& name, const Gaudi::Details::PropertyBase& p ) override;
   // ==========================================================================
   /** set the property from the property formatted string
    *  @see IProperty
@@ -95,7 +95,7 @@ public:
   /** set the property from name and the value
    *  @see IProperty
    */
-  StatusCode setProperty( const std::string& n, const std::string& v ) override;
+  StatusCode setPropertyRepr( const std::string& n, const std::string& v ) override;
   // ==========================================================================
   /** get the property
    *  @see IProperty

@@ -58,26 +58,6 @@ ToolSvc::~ToolSvc() {
   std::for_each( std::begin( m_observers ), std::end( m_observers ),
                  [&]( IToolSvc::Observer* obs ) { obs->setUnregister( {} ); } );
 }
-//------------------------------------------------------------------------------
-StatusCode ToolSvc::initialize()
-//------------------------------------------------------------------------------
-{
-
-  // initialize the Service Base class
-  StatusCode status = Service::initialize();
-  if ( UNLIKELY( status.isFailure() ) ) {
-    error() << "Unable to initialize the Service" << endmsg;
-    return status;
-  }
-
-  // set my own (ToolSvc) properties via the jobOptionService
-  if ( UNLIKELY( setProperties().isFailure() ) ) {
-    error() << "Unable to set base properties" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
-  return status;
-}
 
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::finalize()
@@ -512,13 +492,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   // to downcast IAlgTool to AlgTool in order to set the properties via the JobOptions
   // service
   AlgTool* mytool = dynamic_cast<AlgTool*>( toolguard.get() );
-  if ( mytool ) {
-    StatusCode sc = mytool->setProperties();
-    if ( UNLIKELY( sc.isFailure() ) ) {
-      error() << "Error setting properties for tool '" << fullname << "'" << endmsg;
-      return sc;
-    }
-  }
+  if ( mytool ) mytool->bindPropertiesTo( serviceLocator()->getOptsSvc() );
 
   // Initialize the Tool
   StatusCode sc( StatusCode::FAILURE, true );

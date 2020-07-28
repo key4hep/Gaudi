@@ -24,7 +24,7 @@
 
 // Include files
 #include "GaudiKernel/IEvtSelector.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 // STL include files
 #include <iostream>

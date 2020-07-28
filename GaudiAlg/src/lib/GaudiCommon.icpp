@@ -34,7 +34,6 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ObjectVector.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/SmartRef.h"
 #include "GaudiKernel/Stat.h"
@@ -61,19 +60,13 @@ void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent ) 
     }
   }
 
-  // Get the job option service
-  auto jos = PBASE::template service<IJobOptionsSvc>( "JobOptionsSvc" );
-  if ( !jos ) Exception( "Cannot get JobOptionsSvc" );
-
-  // Get the "Context" option if in the file...
-  const auto myList = jos->getProperties( this->name() );
-  if ( myList ) {
-    // Iterate over the list to set the options
-    for ( const auto& iter : *myList ) {
-      const Gaudi::Property<std::string>* sp = dynamic_cast<const Gaudi::Property<std::string>*>( iter );
-      if ( sp && iter->name().compare( "Context" ) == 0 ) { m_context = sp->value(); }
-    }
-  }
+  // Get options values from IOptionsSvc
+  // \fixme this part is not needed because this method is called in the constructor,
+  // and properties are, anyway, set during the initialize... except for Context
+  // which might be set in the contructor by GaudiSequencer.
+  const auto&       optsSvc = this->serviceLocator()->getOptsSvc();
+  const std::string key     = this->name() + ".Context";
+  if ( optsSvc.has( key ) ) { this->setPropertyRepr( "Context", optsSvc.get( key ) ).ignore(); }
 }
 //=============================================================================
 

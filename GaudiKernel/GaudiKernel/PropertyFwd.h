@@ -8,37 +8,16 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-/// Forward declarations for Property.h.
+#pragma once
 
-#ifndef PROPERTY_FWD_H
-#define PROPERTY_FWD_H
+#include <GAUDI_VERSION.h>
 
-/// macro to help implementing backward compatible changed
-/// in derived projects
-#define GAUDI_PROPERTY_v2
-
-namespace Gaudi {
-  namespace Details {
-    class PropertyBase;
-    namespace Property {
-      struct NullVerifier;
-      struct UpdateHandler;
-    } // namespace Property
-  }   // namespace Details
-  template <class TYPE, class VERIFIER, class HANDLERS>
-  class Property;
-} // namespace Gaudi
-
-/// \fixme backward compatibility hack for old Property base class
-using Property
-    //[[deprecated("use Gaudi::Details::PropertyBase instead")]]
-    = Gaudi::Details::PropertyBase;
-
-/// \fixme backward compatibility hack for PropertyWithValue
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using PropertyWithValue
-    //[[deprecated("use Gaudi::Property instead")]]
-    = Gaudi::Property<TYPE, VERIFIER, HANDLERS>;
-
+#if GAUDI_MAJOR_VERSION < 999
+#  if GAUDI_VERSION >= CALC_GAUDI_VERSION( 35, 0 )
+#    error "deprecated header: removed in v35r0, use <Gaudi/PropertyFwd.h>"
+#  elif GAUDI_VERSION >= CALC_GAUDI_VERSION( 34, 0 )
+#    warning "deprecated header: to be removed in v35r0, use <Gaudi/PropertyFwd.h>"
+#  endif
 #endif
+
+#include <Gaudi/PropertyFwd.h>

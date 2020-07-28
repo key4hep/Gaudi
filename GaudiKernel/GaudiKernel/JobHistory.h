@@ -14,10 +14,12 @@
 
 #include "GaudiKernel/HistoryObj.h"
 #include "GaudiKernel/IVersHistoryObj.h"
-#include "GaudiKernel/PropertyFwd.h"
+#include <Gaudi/DeprecationHelpers.h>
+#include <Gaudi/Property.h>
 
 #include <ctime>
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +34,7 @@
 class GAUDI_API JobHistory : public HistoryObj, virtual public IVersHistoryObj {
 
 public:
-  typedef std::vector<std::pair<std::string, const Gaudi::Details::PropertyBase*>> PropertyPairList;
+  typedef std::vector<std::pair<std::string, std::unique_ptr<Gaudi::Property<std::string>>>> PropertyPairList;
 
 private: // data
   std::string m_release_version;
@@ -66,7 +68,9 @@ public: // functions
   static const CLID& classID();
 
   // add a global property
-  void addProperty( const std::string&, const Gaudi::Details::PropertyBase* );
+  GAUDI_DEPRECATED_SINCE_v34r0( "use addProperty( string, string ) instead" ) void addProperty(
+      const std::string&, const Gaudi::Details::PropertyBase* );
+  void addProperty( const std::string& key, const std::string& value );
 
   // Return the job history data.
   std::string              release_version() const { return m_release_version; }
