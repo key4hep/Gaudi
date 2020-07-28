@@ -134,8 +134,8 @@ PropertyBase* PropertyMgr::property( const std::string& name ) const {
  *  Implementation of IProperty::setProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::setProperty( const PropertyBase& p ) {
-  PropertyBase* pp = property( p.name() );
+StatusCode PropertyMgr::setProperty( const std::string& name, const PropertyBase& p ) {
+  PropertyBase* pp = property( name );
   try {
     if ( pp && pp->assign( p ) ) return StatusCode::SUCCESS;
   } // RETURN
@@ -151,14 +151,14 @@ StatusCode PropertyMgr::setProperty( const PropertyBase& p ) {
 StatusCode PropertyMgr::setProperty( const std::string& i ) {
   std::string name, value;
   StatusCode  sc = Gaudi::Parsers::parse( name, value, i );
-  return sc.isFailure() ? sc : setProperty( name, value );
+  return sc.isFailure() ? sc : setPropertyRepr( name, value );
 }
 // =====================================================================
 /* set a property from the string
  *  Implementation of IProperty::setProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::setProperty( const std::string& n, const std::string& v ) {
+StatusCode PropertyMgr::setPropertyRepr( const std::string& n, const std::string& v ) {
   PropertyBase* p = property( n );
   return ( p && p->fromString( v ) ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }

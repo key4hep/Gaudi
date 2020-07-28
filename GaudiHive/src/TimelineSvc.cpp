@@ -48,7 +48,7 @@ StatusCode TimelineSvc::finalize() {
   if ( m_dumpTimeline && m_events.size() > 0 ) {
     MsgStream log( msgSvc(), name() );
 
-    log << MSG::INFO << "Outputting timeline with " << m_events.size() << " entries to file " << m_timelineFile
+    log << MSG::INFO << "Outputting timeline with " << m_events.size() << " entries to file " << m_timelineFile.value()
         << endmsg;
 
     outputTimeline();

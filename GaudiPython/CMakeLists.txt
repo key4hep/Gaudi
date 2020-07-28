@@ -71,3 +71,9 @@ gaudi_add_test(QMTest QMTEST)
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()
+
+foreach(t IN ITEMS test_appmgr_props_from_strings test_atlas_jos_verify_case)
+   gaudi_add_test(${t}
+                  COMMAND nosetests -v
+                  ${CMAKE_CURRENT_SOURCE_DIR}/tests/${t}.py)
+endforeach()

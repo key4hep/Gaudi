@@ -35,31 +35,31 @@ EventAlgs            INFO Member list: Gaudi::Examples::ExtendedEvtCol/Fill
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-Fill              SUCCESS List of ALL properties of Gaudi::Examples::ExtendedEvtCol/Fill  #properties = 65
-Fill              SUCCESS Property ['Name': Value] =  'Tracks':MyTracks
-Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':Fill
-Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':
-Fill              SUCCESS Property ['Name': Value] =  'EvtColLUN':EXTEVT
+Fill              SUCCESS List of ALL properties of Gaudi::Examples::ExtendedEvtCol/Fill  #properties = 66
+Fill              SUCCESS Property ['Name': Value] =  'Tracks':'MyTracks'
+Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':'Fill'
+Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':''
+Fill              SUCCESS Property ['Name': Value] =  'EvtColLUN':'EXTEVT'
 Fill              SUCCESS Property ['Name': Value] =  'EvtColOffSet':0
 Fill              SUCCESS Property ['Name': Value] =  'EvtColSplitDir':False
 Fill              SUCCESS Property ['Name': Value] =  'EvtColsPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'EvtColsProduce':True
-Fill              SUCCESS Property ['Name': Value] =  'NTupleDir':Fill
-Fill              SUCCESS Property ['Name': Value] =  'NTupleTopDir':
-Fill              SUCCESS Property ['Name': Value] =  'NTupleLUN':FILE1
+Fill              SUCCESS Property ['Name': Value] =  'NTupleDir':'Fill'
+Fill              SUCCESS Property ['Name': Value] =  'NTupleTopDir':''
+Fill              SUCCESS Property ['Name': Value] =  'NTupleLUN':'FILE1'
 Fill              SUCCESS Property ['Name': Value] =  'NTupleOffSet':0
 Fill              SUCCESS Property ['Name': Value] =  'NTupleSplitDir':False
 Fill              SUCCESS Property ['Name': Value] =  'NTuplePrint':False
 Fill              SUCCESS Property ['Name': Value] =  'NTupleProduce':False
 Fill              SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 Fill              SUCCESS Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
-Fill              SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
-Fill              SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
-Fill              SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+Fill              SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+Fill              SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable':' | %1$-25.25s %2%'
+Fill              SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
 Fill              SUCCESS Property ['Name': Value] =  'MonitorHistograms':True
 Fill              SUCCESS Property ['Name': Value] =  'FullDetail':False
-Fill              SUCCESS Property ['Name': Value] =  'HistoDir':Fill
-Fill              SUCCESS Property ['Name': Value] =  'HistoTopDir':
+Fill              SUCCESS Property ['Name': Value] =  'HistoDir':'Fill'
+Fill              SUCCESS Property ['Name': Value] =  'HistoTopDir':''
 Fill              SUCCESS Property ['Name': Value] =  'HistoOffSet':0
 Fill              SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
 Fill              SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
@@ -71,11 +71,11 @@ Fill              SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
 Fill              SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Fill              SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-Fill              SUCCESS Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-Fill              SUCCESS Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Fill              SUCCESS Property ['Name': Value] =  'RootInTES':
-Fill              SUCCESS Property ['Name': Value] =  'Context':
+Fill              SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+Fill              SUCCESS Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+Fill              SUCCESS Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+Fill              SUCCESS Property ['Name': Value] =  'RootInTES':''
+Fill              SUCCESS Property ['Name': Value] =  'Context':''
 Fill              SUCCESS Property ['Name': Value] =  'TypePrint':False
 Fill              SUCCESS Property ['Name': Value] =  'PrintEmptyCounters':False
 Fill              SUCCESS Property ['Name': Value] =  'StatPrint':True
@@ -85,7 +85,7 @@ Fill              SUCCESS Property ['Name': Value] =  'Blocking':False
 Fill              SUCCESS Property ['Name': Value] =  'NeededResources':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'Cardinality':1
 Fill              SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
-Fill              SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
+Fill              SUCCESS Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 Fill              SUCCESS Property ['Name': Value] =  'Timeline':False
 Fill              SUCCESS Property ['Name': Value] =  'AuditStop':False
 Fill              SUCCESS Property ['Name': Value] =  'AuditStart':False

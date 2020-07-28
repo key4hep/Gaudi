@@ -65,12 +65,6 @@ namespace Gaudi {
     StatusCode sc = Service::initialize();
     if ( sc.isFailure() ) { return sc; }
 
-    sc = setProperties();
-    if ( sc.isFailure() ) {
-      error() << " Could not set the properties " << endmsg;
-      return sc;
-    }
-
     m_fileAccess = service( "VFSSvc" );
     if ( !m_fileAccess ) {
       error() << " Cannot retrieve the VFS service " << endmsg;

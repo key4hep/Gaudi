@@ -14,8 +14,8 @@
 // Includes
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/System.h"
+#include <Gaudi/Property.h>
 
 #include <algorithm>
 #include <iostream>

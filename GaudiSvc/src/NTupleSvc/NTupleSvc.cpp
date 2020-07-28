@@ -45,9 +45,9 @@
 
 #include "GaudiKernel/ConversionSvc.h"
 #include "GaudiKernel/NTupleImplementation.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/Selector.h"
 #include "GaudiKernel/reverse.h"
+#include <Gaudi/Property.h>
 
 #include "NTupleSvc.h"
 
@@ -67,19 +67,16 @@ NTupleSvc::NTupleSvc( const std::string& name, ISvcLocator* svc ) : base_class( 
 StatusCode NTupleSvc::initialize() {
   StatusCode status = DataSvc::initialize();
   if ( status.isSuccess() ) {
-    status = setProperties();
-    if ( status.isSuccess() ) {
-      StatusCode  iret( StatusCode::SUCCESS, true );
-      DataObject* root = new NTuple::Directory();
-      status           = setRoot( m_rootName, root );
-      for ( auto& i : m_output ) {
-        iret = connect( i );
-        if ( !iret.isSuccess() ) status = iret;
-      }
-      for ( auto& j : m_input ) {
-        iret = connect( j );
-        if ( !iret.isSuccess() ) status = iret;
-      }
+    StatusCode  iret( StatusCode::SUCCESS, true );
+    DataObject* root = new NTuple::Directory();
+    status           = setRoot( m_rootName, root );
+    for ( auto& i : m_output ) {
+      iret = connect( i );
+      if ( !iret.isSuccess() ) status = iret;
+    }
+    for ( auto& j : m_input ) {
+      iret = connect( j );
+      if ( !iret.isSuccess() ) status = iret;
     }
   }
   return status;

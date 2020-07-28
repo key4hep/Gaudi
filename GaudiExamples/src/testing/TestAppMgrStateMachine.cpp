@@ -30,7 +30,7 @@ int main() {
   }
 
   propMgr->setProperty( "JobOptionsType", "NONE" ).ignore();
-  propMgr->setProperty( "EvtMax", "1" ).ignore();
+  propMgr->setProperty( "EvtMax", 1 ).ignore();
 
   CHECK( appMgr->configure() );
   CHECK( appMgr->initialize() );

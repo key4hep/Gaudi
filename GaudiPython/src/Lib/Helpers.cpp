@@ -20,8 +20,8 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/SmartIF.h"
+#include <Gaudi/Property.h>
 // ============================================================================
 // GaudiPython
 // ============================================================================

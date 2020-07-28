@@ -10,7 +10,7 @@
 \***********************************************************************************/
 
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 class GAUDI_API Prescaler : public GaudiAlgorithm {
 

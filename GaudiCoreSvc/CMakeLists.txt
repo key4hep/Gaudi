@@ -36,3 +36,13 @@ gaudi_add_module(GaudiCoreSvc
                  src/AlgExecStateSvc/*.cpp
                  LINK_LIBRARIES GaudiKernel Boost TBB PythonLibs ${extralibs}
                  INCLUDE_DIRS TBB PythonLibs)
+
+foreach(name IN ITEMS base binding bwcompat custom)
+    gaudi_add_unit_test(test_JOS_${name} tests/src/test_JOS/${name}.cpp
+                        LINK_LIBRARIES GaudiKernel TYPE Boost)
+   add_dependencies(test_JOS_${name} GaudiCoreSvc)
+endforeach()
+
+gaudi_add_executable(JOS_benchmark tests/src/test_JOS/benchmark.cpp
+                     LINK_LIBRARIES GaudiKernel)
+add_dependencies(JOS_benchmark GaudiCoreSvc)

@@ -16,6 +16,8 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 
+#include "Gaudi/Interfaces/IOptionsSvc.h"
+
 // ROOT
 #include "RFileCnv.h"
 #include "TFile.h"
@@ -37,11 +39,11 @@ RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc ) : RDirectoryCnv( svc, classI
 //------------------------------------------------------------------------------
 StatusCode RootHistCnv::RFileCnv::initialize() {
   // Set compression level property ...
-  ISvcLocator* svcLoc = Gaudi::svcLocator();
-  auto         jobSvc = svcLoc->service<IJobOptionsSvc>( "JobOptionsSvc" );
-  auto         prop   = jobSvc->getClientProperty( "RFileCnv", "GlobalCompression" );
-  if ( prop ) m_compLevel = prop->toString();
-
+  const auto& optsSvc = serviceLocator()->getOptsSvc();
+  if ( optsSvc.has( "RFileCnv.GlobalCompression" ) ) {
+    auto sc = Gaudi::Parsers::parse( m_compLevel, optsSvc.get( "RFileCnv.GlobalCompression" ) );
+    if ( !sc ) return sc;
+  }
   // initialise base class
   return RDirectoryCnv::initialize();
 }

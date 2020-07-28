@@ -30,7 +30,7 @@
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 // FIXME: (MCl) workaround for ROOT-5850
 namespace AIDA {
@@ -259,11 +259,6 @@ namespace GaudiPython {
     template <class T>
     static T* toAddress( void* a ) {
       return (T*)a;
-    }
-
-    // FIXME: (MCl) workaround for ROOT-6028, ROOT-6054, ROOT-6073
-    static StatusCode setPropertyFromString( Gaudi::Details::PropertyBase& p, const std::string& s ) {
-      return p.fromString( s );
     }
   };
 

@@ -53,8 +53,32 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
     AnonymousPropertyHolder                   mgr;
     Gaudi::Property<std::vector<std::string>> vp{&mgr, "name", {}};
 
-    BOOST_CHECK( Gaudi::Utils::setProperty( &mgr, "name", std::vector<std::string>{{"All"}} ) );
+    auto sc = Gaudi::Utils::setProperty( &mgr, "name", std::vector<std::string>{{"All"}} );
 
+    BOOST_CHECK( sc.isSuccess() );
     BOOST_CHECK( vp == std::vector<std::string>{{"All"}} );
+  }
+  {
+    AnonymousPropertyHolder mgr;
+    Gaudi::Property<bool>   p{&mgr, "flag", false};
+
+    BOOST_CHECK( mgr.setProperty( "flag", "true" ) );
+    BOOST_CHECK_EQUAL( p, true );
+  }
+  {
+    AnonymousPropertyHolder mgr;
+    Gaudi::Property<int>    p{&mgr, "int_prop", false};
+
+    auto orig_policy =
+        Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Exception );
+    BOOST_CHECK_EXCEPTION(
+        mgr.setProperty( "int_prop", "abc" ), GaudiException, []( const GaudiException& err ) -> bool {
+          return err.message() == "error setting property int_prop: std::invalid_argument, cannot parse 'abc' to int";
+        } );
+
+    Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Ignore );
+    BOOST_TEST( mgr.setProperty( "int_prop", "abc" ) == StatusCode::FAILURE );
+
+    Gaudi::Details::Property::setParsingErrorPolicy( orig_policy );
   }
 }

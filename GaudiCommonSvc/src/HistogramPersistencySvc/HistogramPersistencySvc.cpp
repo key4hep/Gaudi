@@ -110,14 +110,12 @@ StatusCode HistogramPersistencySvc::reinitialize() {
   // To keep backward compatibility, we set the property of conversion service
   // into JobOptions catalogue
   if ( !m_outputFile.empty() ) {
-    auto joptsvc = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc" );
-    if ( joptsvc ) {
-      Gaudi::Property<std::string> p( "OutputFile", m_outputFile );
-      if ( m_histPersName == "ROOT" ) {
-        joptsvc->addPropertyToCatalogue( "RootHistSvc", p ).ignore();
-      } else if ( m_histPersName == "HBOOK" ) {
-        joptsvc->addPropertyToCatalogue( "HbookHistSvc", p ).ignore();
-      }
+    auto&             opts       = serviceLocator()->getOptsSvc();
+    const std::string outputFile = '"' + m_outputFile + '"';
+    if ( m_histPersName == "ROOT" ) {
+      opts.set( "RootHistSvc.OutputFile", outputFile );
+    } else if ( m_histPersName == "HBOOK" ) {
+      opts.set( "HbookHistSvc.OutputFile", outputFile );
     }
   }
 

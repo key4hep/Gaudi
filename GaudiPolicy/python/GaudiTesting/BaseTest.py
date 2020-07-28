@@ -961,7 +961,8 @@ for w, o, r in [
      r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+",
      r"\1NN"),
     ('ApplicationMgr', r'(declareMultiSvcType|addMultiSvc): ', ''),
-    ("Property ['Name': Value]", r"( =  '[^']+':)'(.*)'", r'\1\2'),
+    (r"Property \['Name': Value\]", r"( =  '[^']+':)'(.*)'", r'\1\2'),
+    ('TimelineSvc', "to file  'TimelineFile':", "to file "),
     ('DataObjectHandleBase', r'DataObjectHandleBase\("([^"]*)"\)', r"'\1'"),
 ]:  # [ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o, r, w)
@@ -993,8 +994,14 @@ lineSkipper = LineSkipper(
         # The signal handler complains about SIGXCPU not
         # defined on some platforms
         'SIGXCPU',
+        # Message removed with redesing of JobOptionsSvc
+        'ServiceLocatorHelper::service: found service JobOptionsSvc',
+        # Ignore warnings for properties case mismatch
+        'mismatching case for property name:',
         # Message demoted to DEBUG in gaudi/Gaudi!992
         'Histograms saving not required.',
+        # Message added in gaudi/Gaudi!577
+        'Properties are dumped into',
     ],
     regexps=[
         r"^JobOptionsSvc        INFO *$",

@@ -35,7 +35,7 @@ StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 51
+MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 49
 MyAlg               DEBUG Property ['Name': Value] =  'UndefinedToolHandle':
 MyAlg               DEBUG Property ['Name': Value] =  'LegacyToolHandle':MyTool/LegacyToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
@@ -49,28 +49,28 @@ MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToo
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PrivToolHandle':MyTool/PrivToolHandle
-MyAlg               DEBUG Property ['Name': Value] =  'ToolWithName':MyTool
+MyAlg               DEBUG Property ['Name': Value] =  'ToolWithName':'MyTool'
 MyAlg               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 MyAlg               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 MyAlg               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 MyAlg               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 MyAlg               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-MyAlg               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-MyAlg               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-MyAlg               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-MyAlg               DEBUG Property ['Name': Value] =  'Context':
+MyAlg               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+MyAlg               DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+MyAlg               DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+MyAlg               DEBUG Property ['Name': Value] =  'Context':''
 MyAlg               DEBUG Property ['Name': Value] =  'TypePrint':True
 MyAlg               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 MyAlg               DEBUG Property ['Name': Value] =  'StatPrint':True
 MyAlg               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-MyAlg               DEBUG Property ['Name': Value] =  'RootInTES':
+MyAlg               DEBUG Property ['Name': Value] =  'RootInTES':''
 MyAlg               DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 MyAlg               DEBUG Property ['Name': Value] =  'Blocking':False
 MyAlg               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 MyAlg               DEBUG Property ['Name': Value] =  'Cardinality':1
 MyAlg               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-MyAlg               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+MyAlg               DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 MyAlg               DEBUG Property ['Name': Value] =  'Timeline':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditStop':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -110,23 +110,23 @@ MyAlg.MyGaudiTool   DEBUG Initialize base class GaudiCommon<CounterHolder<AlgToo
 MyAlg.MyGaudiTool   DEBUG could not locate CounterSummarySvc, no counter summary will be made
 MyAlg.MyGaudiTool   DEBUG List of ALL properties of MyGaudiTool/MyAlg.MyGaudiTool  #properties = 29
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Bool':True
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'String':hundred
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'String':'hundred'
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Double':100.00000
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Int':100
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ContextService':'AlgContextSvc'
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Context':
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Context':''
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'TypePrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatPrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RootInTES':
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RootInTES':''
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditRestart':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -134,7 +134,7 @@ MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStop':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStart':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditInitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditTools':False
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'OutputLevel':2
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraInputs':[]
@@ -218,20 +218,20 @@ ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<CounterHolder<AlgToo
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
 ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 26
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':'AlgContextSvc'
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -239,7 +239,7 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
@@ -250,20 +250,20 @@ ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<CounterHolder<AlgToo
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
 ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 26
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':'AlgContextSvc'
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -271,7 +271,7 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
@@ -280,7 +280,6 @@ ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
 ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 MyAlg                INFO executing....

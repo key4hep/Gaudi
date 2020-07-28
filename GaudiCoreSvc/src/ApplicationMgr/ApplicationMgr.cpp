@@ -140,6 +140,11 @@ StatusCode ApplicationMgr::i_startup() {
     log << MSG::FATAL << "Error retrieving MessageSvc." << endmsg;
     return StatusCode::FAILURE;
   }
+  sc = m_messageSvc.as<IProperty>()->setProperty( "OutputLevel", m_outputLevel );
+  if ( !sc ) {
+    log << MSG::FATAL << "Error setting OutputLevel option of MessageSvc" << endmsg;
+    return sc;
+  }
 
   auto jobsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "JobOptionsSvc", m_jobOptionsSvcType ) );
   // Create the Job Options service
@@ -147,13 +152,12 @@ StatusCode ApplicationMgr::i_startup() {
     log << MSG::FATAL << "Error creating JobOptionsSvc" << endmsg;
     return StatusCode::FAILURE;
   }
-  // Get the useful interface from Message services
+  // Get the useful interface from JobOptionsSvc services
   m_jobOptionsSvc = m_svcLocator->service( "JobOptionsSvc" );
   if ( !m_jobOptionsSvc ) {
     log << MSG::FATAL << "Error retrieving JobOptionsSvc." << endmsg;
     return StatusCode::FAILURE;
   }
-
   auto jobOptsIProp = jobsvc.as<IProperty>();
   if ( !jobOptsIProp ) {
     log << MSG::FATAL << "Error locating JobOptionsSvc" << endmsg;
@@ -253,11 +257,7 @@ StatusCode ApplicationMgr::configure() {
     MsgStream log( m_messageSvc, name() );
     // Get my own options using the Job options service
     if ( log.level() <= MSG::DEBUG ) log << MSG::DEBUG << "Getting my own properties" << endmsg;
-    sc = m_jobOptionsSvc->setMyProperties( name(), this );
-    if ( !sc.isSuccess() ) {
-      log << MSG::WARNING << "Problems getting my properties from JobOptionsSvc" << endmsg;
-      return sc;
-    }
+    bindPropertiesTo( serviceLocator()->getOptsSvc() );
   }
 
   // Make sure that the OutputLevel is in sync

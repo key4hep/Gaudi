@@ -60,24 +60,6 @@ IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc ) : base_cla
 // ============================================================================
 IncidentSvc::~IncidentSvc() { auto lock = std::scoped_lock{m_listenerMapMutex}; }
 // ============================================================================
-// Inherited Service overrides:
-// ============================================================================
-StatusCode IncidentSvc::initialize() {
-  // initialize the Service Base class
-  StatusCode sc = Service::initialize();
-  if ( sc.isFailure() ) return sc;
-
-  m_currentIncidentType = nullptr;
-
-  // set my own (IncidentSvc) properties via the jobOptionService
-  sc = setProperties();
-  if ( UNLIKELY( sc.isFailure() ) ) {
-    error() << "Could not set my properties" << endmsg;
-    return sc;
-  }
-  return sc;
-}
-// ============================================================================
 StatusCode IncidentSvc::finalize() {
   DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] ", System::milliSec )
          << m_timer.outputUserTime( "Total:%2%[s]", System::Sec ) << endmsg;

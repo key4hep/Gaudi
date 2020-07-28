@@ -53,15 +53,15 @@ namespace Gaudi {
        */
       ExtendedEvtCol( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc ) {
         /// redefine the default values for various properties
-        setProperty( "NTupleProduce", "false" ).ignore();
-        setProperty( "NTuplePrint", "false" ).ignore();
-        setProperty( "HistogramProduce", "false" ).ignore();
-        setProperty( "HistogramPrint", "false" ).ignore();
-        setProperty( "PropertiesPrint", "true" ).ignore();
-        setProperty( "StatPrint", "true" ).ignore();
-        setProperty( "TypePrint", "false" ).ignore();
-        setProperty( "EvtColsProduce", "true" ).ignore();
-        setProperty( "EvtColsPrint", "true" ).ignore();
+        setProperty( "NTupleProduce", false ).ignore();
+        setProperty( "NTuplePrint", false ).ignore();
+        setProperty( "HistogramProduce", false ).ignore();
+        setProperty( "HistogramPrint", false ).ignore();
+        setProperty( "PropertiesPrint", true ).ignore();
+        setProperty( "StatPrint", true ).ignore();
+        setProperty( "TypePrint", false ).ignore();
+        setProperty( "EvtColsProduce", true ).ignore();
+        setProperty( "EvtColsPrint", true ).ignore();
       }
 
     private:

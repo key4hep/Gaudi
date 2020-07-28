@@ -8,16 +8,14 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
 #include "PropertyProxy.h"
+
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
-
-// Static Factory declaration
 
 DECLARE_COMPONENT( PropertyProxy )
 
@@ -39,20 +37,20 @@ PropertyProxy::PropertyProxy( const std::string& name, ISvcLocator* ploc ) : Alg
 
 //------------------------------------------------------------------------------
 StatusCode PropertyProxy::initialize() {
-  //------------------------------------------------------------------------------
+  if ( !Algorithm::initialize() ) return StatusCode::FAILURE;
+
   std::string value( "empty" );
   std::string value1( "empty" );
 
-  this->getProperty( "RInt", value ).ignore();
+  if ( !this->getProperty( "RInt", value ) ) { warning() << "failed to get property RInt" << endmsg; }
   info() << " Got property this.RInt = " << value << ";" << endmsg;
 
-  this->setProperty( "RInt", "1001" ).ignore();
-  info() << " Set property this.RInt = "
-         << "1001"
-         << ";" << endmsg;
+  info() << " Set property this.RInt = 1001;" << endmsg;
+  if ( !this->setProperty( "RInt", 1001 ) ) { warning() << "failed to set property RInt" << endmsg; }
 
   this->getProperty( "RInt", value ).ignore();
   info() << " Got property this.RInt = " << value << ";" << endmsg;
+  if ( value != "1001" ) { error() << "RInt value not what expected" << endmsg; }
 
   this->getProperty( "String", value ).ignore();
   m_remAlg->getProperty( "String", value1 ).ignore();

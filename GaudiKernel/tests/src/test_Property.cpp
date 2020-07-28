@@ -12,7 +12,7 @@
 #define BOOST_TEST_MODULE test_PropertyHolder
 #include <boost/test/unit_test.hpp>
 
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 struct MyClass {};
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE( string_conversion ) {
     BOOST_CHECK_EQUAL( p1.value(), "" );
     p1 = "abc";
     BOOST_CHECK_EQUAL( p1.value(), "abc" );
-    BOOST_CHECK( p1.fromString( "xyz" ) );
+    BOOST_CHECK( p1.fromString( "'xyz'" ) );
     BOOST_CHECK_EQUAL( p1.value(), "xyz" );
     BOOST_CHECK_EQUAL( p1.toString(), "xyz" );
 
@@ -124,33 +124,6 @@ BOOST_AUTO_TEST_CASE( string_conversion ) {
     BOOST_CHECK( p3.fromString( "true" ) );
     BOOST_CHECK_EQUAL( p3.value(), true );
     BOOST_CHECK_EQUAL( p3.toString(), "True" );
-  }
-  {
-    Gaudi::Property<int>         dst{0};
-    Gaudi::Property<std::string> src{"321"};
-    BOOST_CHECK_EQUAL( dst.value(), 0 );
-    BOOST_CHECK( dst.assign( src ) );
-    BOOST_CHECK_EQUAL( dst.value(), 321 );
-    dst = 100;
-    BOOST_CHECK_EQUAL( dst.value(), 100 );
-    BOOST_CHECK( dst.load( src ) );
-    BOOST_CHECK_EQUAL( src.value(), "100" );
-  }
-  {
-    // string property as from options
-    Gaudi::Property<std::string> opt{"\"NONE\""};
-    Gaudi::Property<std::string> p{};
-    BOOST_CHECK( opt.load( p ) );
-    BOOST_CHECK_EQUAL( p.value(), "NONE" );
-  }
-  {
-    // string property as from options
-    Gaudi::Property<std::string>  opt{"\"NONE\""};
-    std::string                   dst;
-    Gaudi::Property<std::string&> p{"test", dst};
-    BOOST_CHECK( opt.load( p ) );
-    BOOST_CHECK_EQUAL( p.value(), "NONE" );
-    BOOST_CHECK_EQUAL( dst, "NONE" );
   }
 }
 
@@ -242,5 +215,72 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
     p->declareUpdateHandler( []( Gaudi::Details::PropertyBase& ) {} );
     BOOST_CHECK( ip.updateCallBack() );
     BOOST_CHECK( p->updateCallBack() );
+  }
+
+  {
+    Gaudi::Property<std::string> p{"OutputLevel", "6"};
+    Gaudi::Property<int>         i;
+    i.assign( p );
+    BOOST_CHECK_EQUAL( i.value(), 6 );
+  }
+  {
+    Gaudi::Property<int> p{"OutputLevel", 6};
+    Gaudi::Property<int> i;
+    i.assign( p );
+    BOOST_CHECK_EQUAL( i.value(), 6 );
+  }
+  {
+    Gaudi::Property<std::string> p{"OutputLevel", "6"};
+    Gaudi::Property<std::string> i;
+    i.assign( p );
+    BOOST_CHECK_EQUAL( i.value(), "6" );
+  }
+}
+
+BOOST_AUTO_TEST_CASE( backward_compatibility_2 ) {
+  // string conversion compatibility
+  {
+    Gaudi::Property<int>         dst{0};
+    Gaudi::Property<std::string> src{"321"};
+    BOOST_CHECK_EQUAL( dst.value(), 0 );
+    BOOST_CHECK( dst.assign( src ) );
+    BOOST_CHECK_EQUAL( dst.value(), 321 );
+    dst = 100;
+    BOOST_CHECK_EQUAL( dst.value(), 100 );
+    BOOST_CHECK( dst.load( src ) );
+    BOOST_CHECK_EQUAL( src.value(), "100" );
+  }
+  {
+    // string property as from options (old JobOptionsSvc)
+    Gaudi::Property<std::string> opt{"\"NONE\""};
+    Gaudi::Property<std::string> p{};
+    BOOST_CHECK( opt.load( p ) );
+    BOOST_CHECK_EQUAL( p.value(), "NONE" );
+  }
+  {
+    // string property as from options (old JobOptionsSvc)
+    Gaudi::Property<std::string>  opt{"\"NONE\""};
+    std::string                   dst;
+    Gaudi::Property<std::string&> p{"test", dst};
+    BOOST_CHECK( opt.load( p ) );
+    BOOST_CHECK_EQUAL( p.value(), "NONE" );
+    BOOST_CHECK_EQUAL( dst, "NONE" );
+  }
+  {
+    Gaudi::Property<std::string> p1{"p1", ""};
+    BOOST_CHECK_EQUAL( p1.value(), "" );
+    p1 = "abc";
+    BOOST_CHECK_EQUAL( p1.value(), "abc" );
+    BOOST_CHECK( p1.fromString( "xyz" ) );
+    BOOST_CHECK_EQUAL( p1.value(), "xyz" );
+    BOOST_CHECK_EQUAL( p1.toString(), "xyz" );
+  }
+  { // this covers the fix to a segfault observed in a few cases
+    Gaudi::Property<std::string, Gaudi::Details::Property::NullVerifier, Gaudi::Details::Property::NoHandler> src{"src",
+                                                                                                                  "42"};
+    Gaudi::Property<int> dst{"dst", 0};
+
+    BOOST_CHECK( dst.assign( src ) );
+    BOOST_CHECK_EQUAL( dst.value(), 42 );
   }
 }

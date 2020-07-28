@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <Gaudi/Application.h>
+#include <Gaudi/Interfaces/IOptionsSvc.h>
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/IAppMgrUI.h>
@@ -36,7 +37,7 @@ namespace {
 
     auto opt = options.upper_bound( prefix );
     while ( opt != end( options ) && std::string_view( opt->first ).substr( 0, prefix_size ) == prefix ) {
-      GAUDI_ASSERT_THROW_NAME( prop->setProperty( opt->first.substr( prefix_size ), opt->second ),
+      GAUDI_ASSERT_THROW_NAME( prop->setPropertyRepr( opt->first.substr( prefix_size ), opt->second ),
                                "failure setting " + opt->first + " to " + opt->second, "Gaudi::Application" );
       // drop processed option and increase iterator
       opt = options.erase( opt );
@@ -64,16 +65,9 @@ Gaudi::Application::Application( Gaudi::Application::Options options ) {
 
   // - prepare job configuration
   {
-    auto sloc = app.as<ISvcLocator>();
-    auto jos  = sloc->service<IJobOptionsSvc>( "JobOptionsSvc" );
-    std::for_each( begin( options ), end( options ), [&jos]( const auto& item ) {
-      std::string_view name    = item.first;
-      const auto       sep_pos = name.find_last_of( '.' );
-      std::string_view client  = name.substr( 0, sep_pos );
-      name.remove_prefix( sep_pos + 1 );
-      jos->addPropertyToCatalogue( std::string{client}, Gaudi::Property<std::string>{std::string{name}, item.second} )
-          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    } );
+    auto  sloc = app.as<ISvcLocator>();
+    auto& jos  = sloc->getOptsSvc();
+    for ( const auto& [name, value] : options ) jos.set( name, value );
   }
 }
 

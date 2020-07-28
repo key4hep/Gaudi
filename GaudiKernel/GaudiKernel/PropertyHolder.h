@@ -31,9 +31,10 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/detected.h"
+#include <Gaudi/Property.h>
 
+#include "Gaudi/Interfaces/IOptionsSvc.h"
 // ============================================================================
 namespace Gaudi {
   namespace Details {
@@ -140,7 +141,7 @@ public:
     if ( !rsvc ) return nullptr;
     const std::string&            nam = rname.empty() ? name : rname;
     Gaudi::Details::PropertyBase* p   = property( nam, rsvc->getProperties() );
-    m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
+    m_remoteProperties.emplace_back( RemProperty{name, rsvc, nam} );
     return p;
   }
 
@@ -149,14 +150,13 @@ public:
   // ==========================================================================
   // IProperty implementation
   // ==========================================================================
-  /** set the property form another property
+  using IProperty::setProperty;
+  /** set the property from another property with a different name
    *  @see IProperty
    */
-  StatusCode setProperty( const Gaudi::Details::PropertyBase& p ) override {
-    Gaudi::Details::PropertyBase* pp = property( p.name() );
-    try {
-      if ( pp && pp->assign( p ) ) return StatusCode::SUCCESS;
-    } catch ( ... ) {}
+  StatusCode setProperty( const std::string& name, const Gaudi::Details::PropertyBase& p ) override {
+    Gaudi::Details::PropertyBase* pp = property( name );
+    if ( pp && pp->assign( p ) ) return StatusCode::SUCCESS;
     return StatusCode::FAILURE;
   }
   // ==========================================================================
@@ -168,59 +168,21 @@ public:
     std::string value;
     StatusCode  sc = Gaudi::Parsers::parse( name, value, s );
     if ( sc.isFailure() ) return sc;
-    return setProperty( name, value );
+    return setPropertyRepr( name, value );
   }
   // ==========================================================================
-  /** set the property from name and the value
+  /** set the property from name and value string representation
    *  @see IProperty
    */
-  StatusCode setProperty( const std::string& n, const std::string& v ) override {
-    Gaudi::Details::PropertyBase* p = property( n );
-    return ( p && p->fromString( v ) ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
-  }
-  /** set the property form the value
-   *
-   *  @code
-   *
-   *  std::vector<double> data = ... ;
-   *  setProperty( "Data" , data ) ;
-   *
-   *  std::map<std::string,double> cuts = ... ;
-   *  setProperty( "Cuts" , cuts ) ;
-   *
-   *  std::map<std::string,std::string> dict = ... ;
-   *  setProperty( "Dictionary" , dict ) ;
-   *
-   *  @endcode
-   *
-   *  Note: the interface IProperty allows setting of the properties either
-   *        directly from other properties or from strings only
-   *
-   *  This is very convenient in resetting of the default
-   *  properties in the derived classes.
-   *  E.g. without this method one needs to convert
-   *  everything into strings to use IProperty::setProperty
-   *
-   *  @code
-   *
-   *    setProperty ( "OutputLevel" , "1"    ) ;
-   *    setProperty ( "Enable"      , "True" ) ;
-   *    setProperty ( "ErrorMax"    , "10"   ) ;
-   *
-   *  @endcode
-   *
-   *  For simple cases it is more or less ok, but for complicated properties
-   *  it is just ugly..
-   *
-   *  @param name      name of the property
-   *  @param value     value of the property
-   *  @see Gaudi::Utils::setProperty
-   *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
-   *  @date 2007-05-13
-   */
-  template <class TYPE>
-  StatusCode setProperty( const std::string& name, const TYPE& value ) {
-    return Gaudi::Utils::setProperty( this, name, value );
+  StatusCode setPropertyRepr( const std::string& n, const std::string& r ) override {
+    try {
+      Gaudi::Details::PropertyBase* p = property( n );
+      /// @fixme SUCCESS is not required to be checked for compatibility with Gaudi::Utils::setProperty
+      return ( p && p->fromString( r ) ) ? StatusCode{StatusCode::SUCCESS, true}
+                                         : StatusCode{StatusCode::FAILURE, true};
+    } catch ( const std::invalid_argument& err ) {
+      throw GaudiException{"error setting property " + n, this->name(), StatusCode::FAILURE, err};
+    }
   }
   // ==========================================================================
   /** get the property
@@ -264,12 +226,15 @@ public:
    *  @see IProperty
    */
   bool hasProperty( const std::string& name ) const override {
-    return any_of( begin( m_properties ), end( m_properties ), [&name]( const Gaudi::Details::PropertyBase* prop ) {
-      return Gaudi::Utils::iequal( prop->name(), name );
-    } );
+    return any_of( begin( m_properties ), end( m_properties ),
+                   [&name]( const Gaudi::Details::PropertyBase* prop ) {
+                     return Gaudi::Utils::iequal( prop->name(), name );
+                   } ) ||
+           any_of( begin( m_remoteProperties ), end( m_remoteProperties ),
+                   [&name]( const auto& prop ) { return Gaudi::Utils::iequal( prop.name, name ); } );
   }
   // ==========================================================================
-protected:
+  /// \fixme property and bindPropertiesTo should be protected
   // get local or remote property by name
   Gaudi::Details::PropertyBase* property( const std::string& name ) const {
     // local property ?
@@ -277,12 +242,20 @@ protected:
     if ( lp ) return lp;
     // look for remote property
     for ( const auto& it : m_remoteProperties ) {
-      if ( !Gaudi::Utils::iequal( it.first, name ) ) continue;
-      const IProperty* p = it.second.first;
+      if ( !Gaudi::Utils::iequal( it.name, name ) ) continue;
+      const IProperty* p = it.owner;
       if ( !p ) continue;
-      return property( it.second.second, p->getProperties() );
+      return property( it.remName, p->getProperties() );
     }
     return nullptr; // RETURN
+  }
+
+  void bindPropertiesTo( Gaudi::Interfaces::IOptionsSvc& optsSvc ) {
+    auto set_prop = [&optsSvc, this]( auto prop ) { optsSvc.bind( this->name(), prop ); };
+    std::for_each( begin( m_properties ), end( m_properties ), set_prop );
+    std::for_each( begin( m_remoteProperties ), end( m_remoteProperties ), [&set_prop, this]( auto& rem ) {
+      if ( rem.owner ) set_prop( this->property( rem.remName, rem.owner->getProperties() ) );
+    } );
   }
 
 private:
@@ -307,9 +280,13 @@ private:
     }
   }
 
-  typedef std::vector<Gaudi::Details::PropertyBase*>                 Properties;
-  typedef std::pair<std::string, std::pair<IProperty*, std::string>> RemProperty;
-  typedef std::vector<RemProperty>                                   RemoteProperties;
+  typedef std::vector<Gaudi::Details::PropertyBase*> Properties;
+  struct RemProperty {
+    std::string name;
+    IProperty*  owner = nullptr;
+    std::string remName;
+  };
+  typedef std::vector<RemProperty> RemoteProperties;
 
   /// Collection of all declared properties.
   Properties m_properties;

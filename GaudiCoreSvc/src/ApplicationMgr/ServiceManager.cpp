@@ -22,6 +22,8 @@
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/reverse.h"
 
+#include "JOSAdapter.h"
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -97,6 +99,13 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
   if ( !isValidInterface( service ) ) {
     fatal() << "Incompatible interface IService version for " << type << endmsg;
     return no_service;
+  }
+
+  if ( name == "JobOptionsSvc" ) {
+    if ( !dynamic_cast<Gaudi::Interfaces::IOptionsSvc*>( service ) ) {
+      warning() << typeName << " does not implement Gaudi::Interfaces::IOptionsSvc, using interface adapter" << endmsg;
+      service = new Gaudi::Details::JOSAdapter{service, this};
+    }
   }
 
   m_listsvc.push_back( service );

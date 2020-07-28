@@ -33,8 +33,13 @@ StatusCode Auditor::sysInitialize() {
     // Setup the default service ... this should be upgraded so as to be configurable.
     if ( !m_pSvcLocator ) return StatusCode::FAILURE;
 
-    // Set the Auditor's properties
-    sc = setProperties();
+    // this initializes the messaging, in case property update handlers need to print
+    // and update the property value bypassing the update handler
+    m_outputLevel.value() = setUpMessaging();
+
+    // Set the Algorithm's properties
+    bindPropertiesTo( serviceLocator()->getOptsSvc() );
+
     if ( !sc.isSuccess() ) return StatusCode::FAILURE;
 
     {
@@ -190,16 +195,3 @@ const std::string& Auditor::name() const { return m_name; }
 bool Auditor::isEnabled() const { return m_isEnabled; }
 
 SmartIF<ISvcLocator>& Auditor::serviceLocator() const { return m_pSvcLocator; }
-
-// Use the job options service to set declared properties
-StatusCode Auditor::setProperties() {
-  if ( !m_pSvcLocator ) return StatusCode::FAILURE;
-  auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
-  if ( !jos ) return StatusCode::FAILURE;
-
-  // this initializes the messaging, in case property update handlers need to print
-  // and update the property value bypassing the update handler
-  m_outputLevel.value() = setUpMessaging();
-
-  return jos->setMyProperties( name(), this );
-}

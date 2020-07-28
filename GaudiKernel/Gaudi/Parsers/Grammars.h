@@ -101,6 +101,7 @@ namespace Gaudi {
 
         str = qi::lexeme[begin_quote[qi::_a = qi::_1] >
                          *( ( enc::char_( '\\' ) >> quote( qi::_a ) )[qi::_val += qi::_a] |
+                            ( enc::char_( '\\' ) >> enc::char_( '\\' ) )[qi::_val += '\\'] |
                             ( enc::char_[qi::_val += qi::_1] - quote( qi::_a ) ) ) > quote( qi::_a )];
       }
       //------------------------------------------------------------------------------

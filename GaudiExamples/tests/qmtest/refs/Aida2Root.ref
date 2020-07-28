@@ -18,7 +18,6 @@ JobOptionsSvc        INFO # (41,1): ApplicationMgr.EvtMax = 50000
 JobOptionsSvc        INFO # (42,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (49,1): ApplicationMgr.HistogramPersistency = "ROOT"
 JobOptionsSvc        INFO # (50,1): RootHistSvc.OutputFile = "histo-opts.root"
-JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
 JobOptionsSvc        INFO # (61,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
 JobOptionsSvc        INFO # (65,1): HistogramDataSvc.OutputLevel = 2
 JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Aida2Root.opts
@@ -33,16 +32,16 @@ ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
 SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 52
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 50
 SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
-SimpleHistos        DEBUG Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
-SimpleHistos        DEBUG Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'ShortFormatFor1DHistoTable':' | %1$-25.25s %2%'
+SimpleHistos        DEBUG Property ['Name': Value] =  'FormatFor1DHistoTable':'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
 SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorHistograms':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'FullDetail':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'HistoDir':SimpleHistos
-SimpleHistos        DEBUG Property ['Name': Value] =  'HistoTopDir':
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoDir':'SimpleHistos'
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoTopDir':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoOffSet':0
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoSplitDir':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoCheckForNaN':True
@@ -54,22 +53,22 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-SimpleHistos        DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-SimpleHistos        DEBUG Property ['Name': Value] =  'Context':
+SimpleHistos        DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'Context':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'TypePrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'StatPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':
+SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'Blocking':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'Cardinality':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 SimpleHistos        DEBUG Property ['Name': Value] =  'Timeline':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStop':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -94,18 +93,18 @@ SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 
 SimpleHistos        DEBUG input handles: 0
 SimpleHistos        DEBUG output handles: 0
 SimpleHistos        DEBUG Data Deps for SimpleHistos
-Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 54
+Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 52
 Histos2           SUCCESS Property ['Name': Value] =  'Histo2':('',-5.00000,5.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'Histo1':('Histogram1',-3.00000,3.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 Histos2           SUCCESS Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
-Histos2           SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
-Histos2           SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
-Histos2           SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+Histos2           SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+Histos2           SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable':' | %1$-25.25s %2%'
+Histos2           SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
 Histos2           SUCCESS Property ['Name': Value] =  'MonitorHistograms':True
 Histos2           SUCCESS Property ['Name': Value] =  'FullDetail':False
-Histos2           SUCCESS Property ['Name': Value] =  'HistoDir':Histos2
-Histos2           SUCCESS Property ['Name': Value] =  'HistoTopDir':
+Histos2           SUCCESS Property ['Name': Value] =  'HistoDir':'Histos2'
+Histos2           SUCCESS Property ['Name': Value] =  'HistoTopDir':''
 Histos2           SUCCESS Property ['Name': Value] =  'HistoOffSet':0
 Histos2           SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
 Histos2           SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
@@ -117,22 +116,22 @@ Histos2           SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
 Histos2           SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
 Histos2           SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
 Histos2           SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Histos2           SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-Histos2           SUCCESS Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-Histos2           SUCCESS Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Histos2           SUCCESS Property ['Name': Value] =  'Context':
+Histos2           SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+Histos2           SUCCESS Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+Histos2           SUCCESS Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+Histos2           SUCCESS Property ['Name': Value] =  'Context':''
 Histos2           SUCCESS Property ['Name': Value] =  'TypePrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'PrintEmptyCounters':False
 Histos2           SUCCESS Property ['Name': Value] =  'StatPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
-Histos2           SUCCESS Property ['Name': Value] =  'RootInTES':
+Histos2           SUCCESS Property ['Name': Value] =  'RootInTES':''
 Histos2           SUCCESS Property ['Name': Value] =  'FilterCircularDependencies':True
 Histos2           SUCCESS Property ['Name': Value] =  'Blocking':False
 Histos2           SUCCESS Property ['Name': Value] =  'NeededResources':[  ]
 Histos2           SUCCESS Property ['Name': Value] =  'Cardinality':1
 Histos2           SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
-Histos2           SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
+Histos2           SUCCESS Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 Histos2           SUCCESS Property ['Name': Value] =  'Timeline':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditStop':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditStart':False
@@ -147,7 +146,7 @@ Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
 Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
 Histos2           SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
 Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
-Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 57
+Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 55
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs2D':[ 'SimpleHistos/321' , 'SimpleHistos/2dprof' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs1D':[ 'SimpleHistos/Expo V Gauss 1DProf' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Histos3D':[ 'SimpleHistos/3D plot AutoID' , 'SimpleHistos/3d' ]
@@ -155,13 +154,13 @@ Aida2Root         SUCCESS Property ['Name': Value] =  'Histos2D':[ 'SimpleHistos
 Aida2Root         SUCCESS Property ['Name': Value] =  'Histos1D':[ 'SimpleHistos/Gaussian mean=0, sigma=1' , 'SimpleHistos/101' , 'SimpleHistos/102' , 'SimpleHistos/1111' , 'SimpleHistos/test1' , 'SimpleHistos/subdir2/bino' , 'SimpleHistos/subdir1/bino' , 'SimpleHistos/poisson' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 Aida2Root         SUCCESS Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
-Aida2Root         SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
-Aida2Root         SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
-Aida2Root         SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+Aida2Root         SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+Aida2Root         SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable':' | %1$-25.25s %2%'
+Aida2Root         SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
 Aida2Root         SUCCESS Property ['Name': Value] =  'MonitorHistograms':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'FullDetail':False
-Aida2Root         SUCCESS Property ['Name': Value] =  'HistoDir':Aida2Root
-Aida2Root         SUCCESS Property ['Name': Value] =  'HistoTopDir':
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoDir':'Aida2Root'
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoTopDir':''
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoOffSet':0
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
@@ -173,22 +172,22 @@ Aida2Root         SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Aida2Root         SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-Aida2Root         SUCCESS Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-Aida2Root         SUCCESS Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Aida2Root         SUCCESS Property ['Name': Value] =  'Context':
+Aida2Root         SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+Aida2Root         SUCCESS Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+Aida2Root         SUCCESS Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+Aida2Root         SUCCESS Property ['Name': Value] =  'Context':''
 Aida2Root         SUCCESS Property ['Name': Value] =  'TypePrint':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'PrintEmptyCounters':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'StatPrint':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
-Aida2Root         SUCCESS Property ['Name': Value] =  'RootInTES':
+Aida2Root         SUCCESS Property ['Name': Value] =  'RootInTES':''
 Aida2Root         SUCCESS Property ['Name': Value] =  'FilterCircularDependencies':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'Blocking':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'NeededResources':[  ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Cardinality':1
 Aida2Root         SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
-Aida2Root         SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
+Aida2Root         SUCCESS Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 Aida2Root         SUCCESS Property ['Name': Value] =  'Timeline':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditStop':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditStart':False

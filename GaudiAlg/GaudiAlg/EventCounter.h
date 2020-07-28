@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 class GAUDI_API EventCounter : public Algorithm {
 public:

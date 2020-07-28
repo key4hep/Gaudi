@@ -12,7 +12,7 @@
 #define ALGORITHM_SEQUENCER_H
 
 // Include files
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 #include <Gaudi/Sequence.h>
 
 #include <mutex>

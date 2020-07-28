@@ -46,22 +46,33 @@ DECLARE_COMPONENT( ReadAlg )
 // Initialize
 //--------------------------------------------------------------------
 StatusCode ReadAlg::initialize() {
+  auto sc = Algorithm::initialize();
+  if ( !sc ) return sc;
+
   m_recordSvc = service( "FileRecordDataSvc", true );
   if ( !m_recordSvc ) {
     error() << "Unable to retrieve run records service" << endmsg;
     return StatusCode::FAILURE;
   }
-  if ( !m_incidentName.empty() ) {
+
+  if ( m_incidentName.empty() ) {
     auto prp = m_recordSvc.as<IProperty>();
-    if ( auto sc = setProperty( "IncidentName", prp->getProperty( "IncidentName" ) ); !sc ) return sc;
-    m_incidentSvc = service( "IncidentSvc", true );
-    if ( !m_incidentSvc ) {
-      error() << "Failed to access IncidentSvc." << endmsg;
-      return StatusCode::FAILURE;
+
+    if ( ( sc = setPropertyRepr( "IncidentName", prp->getProperty( "IncidentName" ).toString() ) ).isFailure() ) {
+      error() << "Failed to copy FileRecordDataSvc.IncidentName (" << prp->getProperty( "IncidentName" ).toString()
+              << ')' << endmsg;
+      return sc;
     }
-    m_incidentSvc->addListener( this, m_incidentName );
   }
-  return StatusCode::SUCCESS;
+
+  m_incidentSvc = service( "IncidentSvc", true );
+  if ( !m_incidentSvc ) {
+    error() << "Failed to access IncidentSvc." << endmsg;
+    return StatusCode::FAILURE;
+  }
+  m_incidentSvc->addListener( this, m_incidentName );
+
+  return sc;
 }
 
 //--------------------------------------------------------------------
@@ -71,7 +82,7 @@ StatusCode ReadAlg::finalize() {
   if ( m_incidentSvc ) m_incidentSvc->removeListener( this );
   m_incidentSvc.reset();
   m_recordSvc.reset();
-  return StatusCode::SUCCESS;
+  return Algorithm::finalize();
 }
 
 //--------------------------------------------------------------------

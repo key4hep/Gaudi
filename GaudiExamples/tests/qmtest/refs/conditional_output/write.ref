@@ -57,11 +57,8 @@ EventPersistenc...  DEBUG Service base class initialized successfully
 EventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EventLoopMgr        DEBUG Creating Output Stream OutputStream/OutputStream
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::PutDataObjectAlg with name DataCreator
-DataCreator       VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::OddEventsFilter with name OddEvents
-OddEvents         VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::EvenEventsFilter with name EvenEvents
-EvenEvents        VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 AlgContextSvc       DEBUG Service base class initialized successfully
 AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0
@@ -74,30 +71,30 @@ DataCreator       VERBOSE ServiceLocatorHelper::service: found service TimelineS
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 DataCreator         DEBUG Initialize base class GaudiCommon<Algorithm>
 DataCreator         DEBUG could not locate CounterSummarySvc, no counter summary will be made
-DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 39
-DataCreator         DEBUG Property ['Name': Value] =  'DataSvc':EventDataSvc
+DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 37
+DataCreator         DEBUG Property ['Name': Value] =  'DataSvc':'EventDataSvc'
 DataCreator         DEBUG Property ['Name': Value] =  'Paths':[ 'A' , 'B' , 'C' , 'D' ]
 DataCreator         DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 DataCreator         DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 DataCreator         DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 DataCreator         DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 DataCreator         DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-DataCreator         DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-DataCreator         DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-DataCreator         DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-DataCreator         DEBUG Property ['Name': Value] =  'Context':
+DataCreator         DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+DataCreator         DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+DataCreator         DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+DataCreator         DEBUG Property ['Name': Value] =  'Context':''
 DataCreator         DEBUG Property ['Name': Value] =  'TypePrint':True
 DataCreator         DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 DataCreator         DEBUG Property ['Name': Value] =  'StatPrint':True
 DataCreator         DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-DataCreator         DEBUG Property ['Name': Value] =  'RootInTES':
+DataCreator         DEBUG Property ['Name': Value] =  'RootInTES':''
 DataCreator         DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 DataCreator         DEBUG Property ['Name': Value] =  'Blocking':False
 DataCreator         DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 DataCreator         DEBUG Property ['Name': Value] =  'Cardinality':1
 DataCreator         DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-DataCreator         DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+DataCreator         DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 DataCreator         DEBUG Property ['Name': Value] =  'Timeline':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditStop':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -125,28 +122,28 @@ OddEvents         VERBOSE ServiceLocatorHelper::service: found service TimelineS
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 OddEvents           DEBUG Initialize base class GaudiCommon<Algorithm>
 OddEvents           DEBUG could not locate CounterSummarySvc, no counter summary will be made
-OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 37
+OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 35
 OddEvents           DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 OddEvents           DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-OddEvents           DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-OddEvents           DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-OddEvents           DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-OddEvents           DEBUG Property ['Name': Value] =  'Context':
+OddEvents           DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+OddEvents           DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+OddEvents           DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+OddEvents           DEBUG Property ['Name': Value] =  'Context':''
 OddEvents           DEBUG Property ['Name': Value] =  'TypePrint':True
 OddEvents           DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 OddEvents           DEBUG Property ['Name': Value] =  'StatPrint':True
 OddEvents           DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-OddEvents           DEBUG Property ['Name': Value] =  'RootInTES':
+OddEvents           DEBUG Property ['Name': Value] =  'RootInTES':''
 OddEvents           DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 OddEvents           DEBUG Property ['Name': Value] =  'Blocking':False
 OddEvents           DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'Cardinality':1
 OddEvents           DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-OddEvents           DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+OddEvents           DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 OddEvents           DEBUG Property ['Name': Value] =  'Timeline':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditStop':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -172,28 +169,28 @@ EvenEvents        VERBOSE ServiceLocatorHelper::service: found service TimelineS
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EvenEvents          DEBUG Initialize base class GaudiCommon<Algorithm>
 EvenEvents          DEBUG could not locate CounterSummarySvc, no counter summary will be made
-EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 37
+EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 35
 EvenEvents          DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 EvenEvents          DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-EvenEvents          DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-EvenEvents          DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-EvenEvents          DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-EvenEvents          DEBUG Property ['Name': Value] =  'Context':
+EvenEvents          DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+EvenEvents          DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+EvenEvents          DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+EvenEvents          DEBUG Property ['Name': Value] =  'Context':''
 EvenEvents          DEBUG Property ['Name': Value] =  'TypePrint':True
 EvenEvents          DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 EvenEvents          DEBUG Property ['Name': Value] =  'StatPrint':True
 EvenEvents          DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-EvenEvents          DEBUG Property ['Name': Value] =  'RootInTES':
+EvenEvents          DEBUG Property ['Name': Value] =  'RootInTES':''
 EvenEvents          DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 EvenEvents          DEBUG Property ['Name': Value] =  'Blocking':False
 EvenEvents          DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'Cardinality':1
 EvenEvents          DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-EvenEvents          DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+EvenEvents          DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 EvenEvents          DEBUG Property ['Name': Value] =  'Timeline':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditStop':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -241,7 +238,7 @@ EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
 HistogramPersis...  DEBUG Service base class initialized successfully
-HistogramPersis...WARNING Histograms saving not required.
+HistogramPersis...  DEBUG Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
 ApplicationMgr       INFO Application Manager Initialized successfully
 ServiceManager      DEBUG Starting service FileRecordDataSvc

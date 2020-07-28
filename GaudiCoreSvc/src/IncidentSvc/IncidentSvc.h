@@ -66,8 +66,6 @@ private:
 
 public:
   // Inherited Service overrides:
-  //
-  StatusCode initialize() override;
   StatusCode finalize() override;
 
   // IIncidentSvc interfaces overwrite

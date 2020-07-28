@@ -34,7 +34,7 @@
 #include "GaudiKernel/IIoComponentMgr.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 // local headers
 #include "THistSvc.h"
@@ -1907,7 +1907,7 @@ void THistSvc::setupInputFile() {
 
 void THistSvc::setupOutputFile() {
   if ( FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
-    debug() << "Delaying connection of Input Files until Initialize"
+    debug() << "Delaying connection of Output Files until Initialize"
             << ". now in " << FSMState() << endmsg;
     m_delayConnect = true;
   } else {

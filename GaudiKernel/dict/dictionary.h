@@ -29,7 +29,6 @@
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/NTupleImplementation.h"
 #include "GaudiKernel/ObjectVector.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/RegistryEntry.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include "GaudiKernel/Service.h"
@@ -37,6 +36,7 @@
 #include "GaudiKernel/SmartRefVector.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/Time.h"
+#include <Gaudi/Property.h>
 
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/IAddressCreator.h"

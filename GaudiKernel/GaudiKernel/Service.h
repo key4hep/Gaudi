@@ -19,12 +19,13 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/IStateful.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ToolHandle.h"
+#include <Gaudi/DeprecationHelpers.h>
 #include <Gaudi/PluginService.h>
+#include <Gaudi/Property.h>
 
 // ============================================================================
 #include <mutex>
@@ -82,10 +83,11 @@ public:
   /** Retrieve pointer to service locator        */
   SmartIF<ISvcLocator>& serviceLocator() const override;
 
-  /** Method for setting declared properties to the values
-      specified for the job.
-  */
-  StatusCode setProperties();
+  GAUDI_DEPRECATED_SINCE_v34r0( "it should not be called explicitely" ) StatusCode setProperties() {
+    if ( !serviceLocator() ) return StatusCode::FAILURE;
+    bindPropertiesTo( serviceLocator()->getOptsSvc() );
+    return StatusCode::SUCCESS;
+  }
 
   /** Access a service by name, creating it if it doesn't already exist.
    */

@@ -17,7 +17,7 @@
 #define APPRETURNCODE_H_
 
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 namespace Gaudi {
   /// ApplicationMgr return code definitions.

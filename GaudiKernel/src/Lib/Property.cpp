@@ -25,13 +25,15 @@
 // ============================================================================
 #include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/SmartIF.h"
+#include <Gaudi/Property.h>
+#include <GaudiKernel/ToStream.h>
 // ============================================================================
 // Boost
 // ============================================================================
-#include "boost/algorithm/string/compare.hpp"
+#include <boost/algorithm/string/compare.hpp>
+#include <boost/utility/string_ref.hpp>
 // ============================================================================
 namespace {
   /// helper class to compare pointers to string using the strings
@@ -104,7 +106,7 @@ bool Gaudi::Utils::hasProperty( const IInterface* p, const std::string& name ) {
 // ============================================================================
 bool Gaudi::Utils::hasProperty( const IProperty* p, const std::string& name ) {
   // delegate the actual work to another method ;
-  return p && getProperty( p, name );
+  return p && p->hasProperty( name );
 }
 // ============================================================================
 //
@@ -131,7 +133,15 @@ void GaudiHandleProperty::toStream( std::ostream& out ) const {
 }
 
 StatusCode GaudiHandleProperty::fromString( const std::string& s ) {
-  m_pValue->setTypeAndName( s );
+  boost::string_ref tn = s;
+  /// \fixme strip optional quotes around the string
+  if ( ( tn.starts_with( '"' ) && tn.ends_with( '"' ) ) || ( tn.starts_with( '\'' ) && tn.ends_with( '\'' ) ) ) {
+    tn.remove_prefix( 1 );
+    tn.remove_suffix( 1 );
+    m_pValue->setTypeAndName( static_cast<std::string>( tn ) );
+  } else {
+    m_pValue->setTypeAndName( s );
+  }
   useUpdateHandler();
   return StatusCode::SUCCESS;
 }
@@ -341,8 +351,8 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
 StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const std::string& value,
                                       const std::string& doc ) {
   if ( !component ) { return StatusCode::FAILURE; } // RETURN
-  if ( !hasProperty( component, name ) ) { return StatusCode::FAILURE; }
-  StatusCode sc = component->setProperty( name, value );
+  if ( !component->hasProperty( name ) ) { return StatusCode::FAILURE; }
+  StatusCode sc = component->setPropertyRepr( name, value );
   if ( !doc.empty() ) {
     PropertyBase* p = getProperty( component, name );
     if ( p ) { p->setDocumentation( doc ); }
@@ -505,6 +515,52 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
 }
 // ============================================================================
 
-// ============================================================================
-// The END
-// ============================================================================
+Gaudi::Details::WeakPropertyRef::operator std::string() const {
+  using Gaudi::Utils::toString;
+  return m_property ? ( ( m_property->type_info() == &typeid( std::string ) ) ? toString( m_property->toString() )
+                                                                              : m_property->toString() )
+                    : m_value;
+}
+
+namespace Gaudi::Details::Property {
+  namespace {
+#ifndef GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY
+#  define GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY Ignore
+#endif
+    ParsingErrorPolicy g_parsingErrorPolicy = ParsingErrorPolicy::GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY;
+  } // namespace
+  ParsingErrorPolicy parsingErrorPolicy() { return g_parsingErrorPolicy; }
+  ParsingErrorPolicy setParsingErrorPolicy( ParsingErrorPolicy p ) {
+    auto tmp             = g_parsingErrorPolicy;
+    g_parsingErrorPolicy = p;
+    return tmp;
+  }
+} // namespace Gaudi::Details::Property
+
+namespace {
+  struct InitParsingErrorPolicy {
+    InitParsingErrorPolicy() {
+      using Gaudi::Details::Property::ParsingErrorPolicy;
+      using Gaudi::Details::Property::setParsingErrorPolicy;
+      std::string policy;
+      if ( System::getEnv( "GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY", policy ) ) {
+        switch ( policy[0] ) {
+        case 'I':
+          setParsingErrorPolicy( ParsingErrorPolicy::Ignore );
+          break;
+        case 'W':
+          setParsingErrorPolicy( ParsingErrorPolicy::Warning );
+          break;
+        case 'E':
+          setParsingErrorPolicy( ParsingErrorPolicy::Exception );
+          break;
+        case 'A':
+          setParsingErrorPolicy( ParsingErrorPolicy::Abort );
+          break;
+        default:
+          break;
+        }
+      }
+    }
+  } initParsingErrorPolicy;
+} // namespace

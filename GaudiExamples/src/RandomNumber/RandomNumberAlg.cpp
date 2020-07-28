@@ -52,8 +52,9 @@ RandomNumberAlg::~RandomNumberAlg() {
 // The "functional" part of the class: For the EmptyAlgorithm example they do
 //  nothing apart from print out info messages.
 StatusCode RandomNumberAlg::initialize() {
-  // Use the Job options service to set the Algorithm's parameters
-  StatusCode status = setProperties();
+  StatusCode status = Algorithm::initialize();
+  if ( !status ) return status;
+
   //
   // The first example is for purists:
   // Every step is done by hand....tends to become complicated,

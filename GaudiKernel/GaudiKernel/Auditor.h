@@ -17,9 +17,10 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h" /*used by service(..)*/
-#include "GaudiKernel/PropertyFwd.h"
 #include "GaudiKernel/PropertyHolder.h"
+#include <Gaudi/DeprecationHelpers.h>
 #include <Gaudi/PluginService.h>
+#include <Gaudi/PropertyFwd.h>
 #include <string>
 #include <vector>
 
@@ -122,12 +123,11 @@ public:
     return serviceLocator()->service<T>( name, createIf );
   }
 
-  /** Set the auditor's properties. This method requests the job options service
-      to set the values of any declared properties. The method is invoked from
-      within sysInitialize() by the framework and does not need to be explicitly
-      called by a concrete auditor.
-  */
-  StatusCode setProperties();
+  GAUDI_DEPRECATED_SINCE_v34r0( "it should not be called explicitely" ) StatusCode setProperties() {
+    if ( !serviceLocator() ) return StatusCode::FAILURE;
+    bindPropertiesTo( serviceLocator()->getOptsSvc() );
+    return StatusCode::SUCCESS;
+  }
 
 private:
   std::string m_name; ///< Auditor's name for identification

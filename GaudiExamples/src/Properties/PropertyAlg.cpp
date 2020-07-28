@@ -190,14 +190,14 @@ StatusCode PropertyAlg::initialize() {
     appmgr->getProperty( "ExtSvc", value ).ignore();
     info() << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
 
-    appmgr->setProperty( "ExtSvc", "[\"EvtDataSvc/EventDataSvc\", \"DetDataSvc/DetectorDataSvc\"]" ).ignore();
+    appmgr->setPropertyRepr( "ExtSvc", "[\"EvtDataSvc/EventDataSvc\", \"DetDataSvc/DetectorDataSvc\"]" ).ignore();
     info() << " Set property ApplicationMgr.ExtSvc = "
            << " [\"EvtDataSvc/EventDataSvc\", \"DetDataSvc/DetectorDataSvc\"]"
            << ";" << endmsg;
     appmgr->getProperty( "ExtSvc", value ).ignore();
     info() << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
 
-    appmgr->setProperty( "ExtSvc", "[ 'EventDataSvc', 'DetectorDataSvc']" ).ignore();
+    appmgr->setPropertyRepr( "ExtSvc", "[ 'EventDataSvc', 'DetectorDataSvc']" ).ignore();
     info() << " Set property ApplicationMgr.ExtSvc = "
            << " [ 'EventDataSvc', 'DetectorDataSvc']"
            << ";" << endmsg;
@@ -216,13 +216,13 @@ StatusCode PropertyAlg::initialize() {
   for ( auto& c : cases ) {
     p_bool = m_bool = !std::get<1>( c );
     try {
-      sc = setProperty( "PBool", std::get<0>( c ) );
+      sc = setPropertyRepr( "PBool", std::get<0>( c ) );
     } catch ( ... ) { sc = StatusCode::FAILURE; }
     if ( !sc || ( p_bool != std::get<1>( c ) ) ) {
       error() << "PBool can not be set to " << std::get<0>( c ) << endmsg;
     }
     try {
-      sc = setProperty( "Bool", std::get<0>( c ) );
+      sc = setPropertyRepr( "Bool", std::get<0>( c ) );
     } catch ( ... ) { sc = StatusCode::FAILURE; }
     if ( !sc || ( m_bool != std::get<1>( c ) ) ) { error() << "Bool can not be set to " << std::get<0>( c ) << endmsg; }
   }
@@ -238,34 +238,34 @@ StatusCode PropertyAlg::initialize() {
   newlog << MSG::ALWAYS << "This should be printed ALWAYS" << endmsg;
 
   // Testing access to the JobOptions catalogue
-  auto jopts = service<IJobOptionsSvc>( "JobOptionsSvc" );
-  if ( !jopts ) {
-    error() << " Unable to access the JobOptionsSvc" << endmsg;
-    return StatusCode::SUCCESS;
-  }
+  auto& opts = serviceLocator()->getOptsSvc();
 
   // Dump of the catalogue
   info() << "=================================================" << endmsg;
-  info() << "Dump of the property catalogue.... " << endmsg;
-  for ( const auto& cit : jopts->getClients() ) {
-    using GaudiUtils::details::ostream_joiner;
-    ostream_joiner(
-        info() << " Properties of " << cit << ": ", *jopts->getProperties( cit ), ", ",
-        []( MsgStream& os, const Gaudi::Details::PropertyBase* p ) -> MsgStream& { return os << p->name(); } )
-        << endmsg;
-  }
+  using GaudiUtils::details::ostream_joiner;
+  ostream_joiner( info() << "Dump of the property catalogue:\n", opts.items(), '\n',
+                  []( MsgStream& os, const auto& item ) -> MsgStream& {
+                    return os << std::get<0>( item ) << ": " << std::get<1>( item );
+                  } )
+      << endmsg;
   info() << "=================================================" << endmsg;
 
   // Change an option of my own....
-  jopts->addPropertyToCatalogue( name(), Gaudi::Property<std::string>( "PInt", "155" ) ).ignore();
-  Gaudi::Property<std::vector<std::string>> sap( "DoubleArray", {"12.12", "13.13"} );
-  if ( jopts->addPropertyToCatalogue( name(), sap ).isSuccess() ) {
-    info() << "Changed property DoubleArray in catalogue" << endmsg;
-    jopts->setMyProperties( name(), this ).ignore();
-    info() << "DoubleArray = " << m_doublearray.value() << endmsg;
-  } else {
-    error() << "Unable to change property in catalogue" << endmsg;
+  opts.set( name() + '.' + "PInt", "154" );
+  info() << "PInt= " << p_int << " [should be 154]" << endmsg;
+
+  auto orig_policy =
+      Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Exception );
+  try {
+    info() << "Try to assign invalid value to DoubleArray" << endmsg;
+    // trying to use an invalid value
+    opts.set( name() + '.' + "DoubleArray", "{\"12.12\", \"13.13\"}" );
+  } catch ( const std::invalid_argument& exc ) {
+    error() << "got invalid_argument exception: " << exc.what() << endmsg;
   }
+  Gaudi::Details::Property::setParsingErrorPolicy( orig_policy );
+
+  info() << "DoubleArray = " << m_doublearray.value() << endmsg;
   info() << "=================================================" << endmsg;
   return StatusCode::SUCCESS;
 }

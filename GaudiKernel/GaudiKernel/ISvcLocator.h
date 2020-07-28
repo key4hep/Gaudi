@@ -16,11 +16,19 @@
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/TypeNameString.h"
+
 #include <list>
 #include <string>
 
 // Forward class declaration
 class IService;
+
+namespace Gaudi {
+  namespace Interfaces {
+    struct IOptionsSvc;
+  }
+} // namespace Gaudi
+#define GAUDI_HAS_IOPTIONS_SVC
 
 /** @class ISvcLocator ISvcLocator.h GaudiKernel/ISvcLocator.h
     The ISvcLocator is the interface implemented by the Service Factory in the
@@ -113,6 +121,9 @@ public:
   SmartIF<IFace> as() {
     return SmartIF<IFace>{this};
   }
+
+  /// Direct access to Gaudi::Interfaces::IOptionsSvc implementation.
+  Gaudi::Interfaces::IOptionsSvc& getOptsSvc();
 };
 
 #endif // GAUDI_ISVCLOCATOR_H

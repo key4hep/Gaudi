@@ -39,11 +39,12 @@
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ToolHandle.h"
+#include <Gaudi/DeprecationHelpers.h>
 #include <Gaudi/PluginService.h>
+#include <Gaudi/Property.h>
 
 // For concurrency
 #include "GaudiKernel/DataHandle.h"
@@ -295,14 +296,11 @@ namespace Gaudi {
     /// register for Algorithm Context Service?
     bool registerContext() const { return m_registerContext; }
 
-    /** Set the algorithm's properties.
-     *  This method requests the job options service
-     *  to set the values of any declared properties.
-     *  The method is invoked from within sysInitialize() by the framework
-     *  and does not need to be explicitly
-     *  called by a concrete algorithm.
-     */
-    StatusCode setProperties();
+    GAUDI_DEPRECATED_SINCE_v34r0( "it should not be called explicitely" ) StatusCode setProperties() {
+      if ( !serviceLocator() ) return StatusCode::FAILURE;
+      bindPropertiesTo( serviceLocator()->getOptsSvc() );
+      return StatusCode::SUCCESS;
+    }
 
     // ==========================================================================
     using PropertyHolderImpl::declareProperty;

@@ -21,7 +21,6 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/LockedChrono.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/TypeNameString.h"

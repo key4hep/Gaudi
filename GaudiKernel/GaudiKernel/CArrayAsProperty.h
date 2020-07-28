@@ -13,7 +13,7 @@
 #endif
 #ifndef GAUDIKERNEL_CARRAYASPROPERTY_H
 #  define GAUDIKERNEL_CARRAYASPROPERTY_H
-#  include "GaudiKernel/Property.h"
+#  include <Gaudi/Property.h>
 
 namespace Gaudi {
   template <class TYPE, size_t N, class VERIFIER, class HANDLERS>

@@ -86,11 +86,11 @@ StatusCode ViewTester::execute() // the execution of the algorithm
 
         StatusCode sc = scheduler->scheduleEventView( &context, m_viewNodeName, std::move( viewContext ) );
         if ( sc.isSuccess() )
-          info() << "Attached view " << viewName << " to node " << m_viewNodeName.toString() << " for " << context
+          info() << "Attached view " << viewName << " to node " << m_viewNodeName.value() << " for " << context
                  << endmsg;
         else
-          error() << "Unable to attach view " << viewName << " to node " << m_viewNodeName.toString() << " for "
-                  << context << endmsg;
+          error() << "Unable to attach view " << viewName << " to node " << m_viewNodeName.value() << " for " << context
+                  << endmsg;
       }
     } else {
       // Disable the view node if there are no views

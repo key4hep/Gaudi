@@ -12,8 +12,8 @@
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/SmartIF.h"
+#include <Gaudi/Property.h>
 #include <iostream>
 #include <string>
 

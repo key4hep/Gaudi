@@ -78,12 +78,14 @@ else:
     nullptr = None
 # Helper to create a StringProperty
 cppyy.gbl.gInterpreter.Declare('''
+#include <stdexcept>
 namespace GaudiPython { namespace Helpers {
-  Gaudi::Property<std::string> mkStringProperty(const std::string &name,
-                                                const std::string &value) {
-    return Gaudi::Property<std::string>{name, value};
+  void setProperty(ISvcLocator* svcLoc, std::string key, std::string value) {
+    if ( !svcLoc ) throw std::runtime_error( "invalid ISvcLocator pointer" );
+    svcLoc->getOptsSvc().set(key, value);
   }
-}}''')
+}}
+''')
 
 # toIntArray, toShortArray, etc.
 for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
@@ -293,53 +295,22 @@ class iProperty(object):
         """
         if hasattr(value, 'toStringProperty'):
             # user defined behaviour
-            value = '%s' % value.toStringProperty()
+            value = str(value.toStringProperty())
+        elif hasattr(value, 'toString'):
+            value = str(value.toString())
+        elif type(value) == long:
+            value = '%d' % value  # prevent pending 'L'
+        else:
+            value = str(value)
+
         ip = self.getInterface()
         if ip:
             if not gbl.Gaudi.Utils.hasProperty(ip, name):
                 raise AttributeError('property %s does not exist' % name)
-            prop = ip.getProperty(name)
-
-            if ROOT6WorkAroundEnabled('ROOT-7201'):
-                canSetValue = (hasattr(prop, 'value')
-                               and 'const&[' not in prop.value.func_doc
-                               and type(value) == type(prop.value()))
-            else:
-                canSetValue = (hasattr(prop, 'value')
-                               and type(value) == type(prop.value()))
-
-            if canSetValue:
-                if not prop.setValue(value):
-                    raise AttributeError(
-                        'property %s could not be set from %s' % (name, value))
-            else:
-                if tuple == type(value):
-                    value = str(value)
-                elif hasattr(value, 'toString'):
-                    value = value.toString()
-                elif not long == type(value):
-                    value = '%s' % value
-                else:
-                    value = '%d' % value
-                if ROOT6WorkAroundEnabled('ROOT-6028'):
-                    sc = cppyy.gbl.GaudiPython.Helper.setPropertyFromString(
-                        prop, value)
-                else:
-                    sc = prop.fromString(value)
-                if sc.isFailure():
-                    raise AttributeError(
-                        'property %s could not be set from %s' % (name, value))
+            ip.setPropertyRepr(name, value)
         else:
-            if type(value) == str:
-                value = '"%s"' % value  # need double quotes
-            elif type(value) == tuple:
-                value = str(value)
-            elif hasattr(value, 'toString'):
-                value = value.toString()
-            elif type(value) == long:
-                value = '%d' % value  # prevent pending 'L'
-            sp = gbl.GaudiPython.Helpers.mkStringProperty(name, str(value))
-            self._optsvc.addPropertyToCatalogue(self._name, sp).ignore()
+            gbl.GaudiPython.Helpers.setProperty(self._svcloc, '.'.join(
+                [self._name, name]), value)
 
     def __getattr__(self, name):
         """
@@ -1039,7 +1010,6 @@ class AppMgr(iService):
         self.__dict__['_optsvc'] = InterfaceCast(gbl.IJobOptionsSvc)(
             Helper.service(self._svcloc, 'JobOptionsSvc'))
         # ------Configurables initialization (part2)-------------------------------
-        mkStringProperty = gbl.GaudiPython.Helpers.mkStringProperty
         for n in getNeededConfigurables():
             c = Configurable.allConfigurables[n]
             if n in ['ApplicationMgr', 'MessageSvc']:
@@ -1053,11 +1023,11 @@ class AppMgr(iService):
                     # so we do it again to get it
                     v = v.__resolve__()
                 if type(v) == str:
-                    v = '"%s"' % v  # need double quotes
-                elif type(v) == long:
+                    v = repr(v)  # need double quotes
+                if type(v) == long:
                     v = '%d' % v  # prevent pending 'L'
-                self._optsvc.addPropertyToCatalogue(
-                    n, mkStringProperty(p, str(v)))
+                gbl.GaudiPython.Helpers.setProperty(self._svcloc,
+                                                    '.'.join([n, p]), str(v))
         if hasattr(Configurable, "_configurationLocked"):
             Configurable._configurationLocked = True
 
@@ -1290,37 +1260,8 @@ class AppMgr(iService):
                 raise RuntimeError(' Unable to read file "' + tmpfilename +
                                    '" ')
             os.remove(tmpfilename)
-        # We need to make sure that the options are taken by the ApplicationMgr
-        # The state is already configured, so we need to do something....
-        if self.FSMState() != Gaudi.StateMachine.OFFLINE:
 
-            # get job-options-service, @see class iJobOptSvc
-            jos = self.optSvc()
-
-            # list of all libraries
-            _dlls = jos.getProperty(self.name(), 'DLLs')
-            # take care about libraries : APPEND if not done yet
-            if _dlls:
-                libs = [l for l in _dlls if not l in self.DLLs]
-                if libs:
-                    self.DLLs += libs
-
-            # all external services
-            _svcs = jos.getProperty(self.name(), 'ExtSvc')
-            # take care about services : APPEND  if not done yet
-            if _svcs:
-                svcs = [s for s in _svcs if not s in self.ExtSvc]
-                if svcs:
-                    self.ExtSvc += svcs
-
-            # get all properties
-            props = jos.getProperties(self.name())
-            # finally treat all other properties (presumably scalar properties)
-            for key in props:
-                if 'DLLS' == key or 'EXTSVC' == key:
-                    continue
-                self.__setattr__(key, props[key])
-        return SUCCESS  # RETURN
+        return SUCCESS
 
     def configure(self):
         return self._appmgr.configure()

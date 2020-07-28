@@ -13,7 +13,7 @@ ApplicationMgr.TopAlg   = { "THistRead" };
 
 // Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
 MessageSvc.OutputLevel  = 3;
-MessageSvc.UseColors = true;
+MessageSvc.useColors = true;
 THistSvc.OutputLevel = 2;
 ApplicationMgr.OutputLevel = 1;
 ServiceManager.OutputLevel = 2;

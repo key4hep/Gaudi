@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 #include <chrono>
 #include <fstream>

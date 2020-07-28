@@ -14,7 +14,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Property.h"
+#include <Gaudi/Property.h>
 
 class GAUDI_API IncidentProcAlg : public Algorithm {
 public:

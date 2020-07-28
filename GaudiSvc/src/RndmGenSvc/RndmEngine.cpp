@@ -37,13 +37,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "RndmEngine.h"
 
-/// Service override: initialization
-StatusCode RndmEngine::initialize() {
-  StatusCode status = Service::initialize();
-  if ( status.isSuccess() ) status = setProperties();
-  return status;
-}
-
 /** IRndmEngine interface implementation  */
 /// Input serialization from stream buffer. Restores the status of the generator engine.
 StreamBuffer& RndmEngine::serialize( StreamBuffer& str ) { return str; }

@@ -26,6 +26,7 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ToolHandle.h"
+#include <Gaudi/DeprecationHelpers.h>
 #include <Gaudi/PluginService.h>
 
 #include "GaudiKernel/DataHandle.h"
@@ -41,6 +42,7 @@ class ToolHandleInfo;
 #include <vector>
 
 // Forward declarations
+class ToolSvc;
 
 /** @class AlgTool AlgTool.h GaudiKernel/AlgTool.h
  *
@@ -57,6 +59,8 @@ class ToolHandleInfo;
 class GAUDI_API AlgTool
     : public DataHandleHolderBase<
           PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>> {
+  friend ToolSvc;
+
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;
 
@@ -124,12 +128,11 @@ public:
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;
 
-  /** Method for setting declared properties to the values specified in the
-   *  jobOptions via the job option service. This method is called by the
-   *  ToolSvc after creating the concrete tool, before passing it to the
-   *  requesting parent and does not need to be called explicitly.
-   */
-  StatusCode setProperties();
+  GAUDI_DEPRECATED_SINCE_v34r0( "it should not be called explicitely" ) StatusCode setProperties() {
+    if ( !serviceLocator() ) return StatusCode::FAILURE;
+    bindPropertiesTo( serviceLocator()->getOptsSvc() );
+    return StatusCode::SUCCESS;
+  }
 
   /** Access a service by name,
    *  creating it if it doesn't already exist.

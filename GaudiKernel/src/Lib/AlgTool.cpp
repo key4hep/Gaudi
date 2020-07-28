@@ -114,17 +114,6 @@ IToolSvc* AlgTool::toolSvc() const
 }
 
 //------------------------------------------------------------------------------
-StatusCode AlgTool::setProperties()
-//------------------------------------------------------------------------------
-{
-  if ( !m_svcLocator ) return StatusCode::FAILURE;
-  auto jos = m_svcLocator->service<IJobOptionsSvc>( "JobOptionsSvc" );
-  if ( !jos ) return StatusCode::FAILURE;
-
-  return jos->setMyProperties( name(), this );
-}
-
-//------------------------------------------------------------------------------
 AlgTool::AlgTool( std::string type, std::string name, const IInterface* parent )
     //------------------------------------------------------------------------------
     : m_type( std::move( type ) ), m_name( std::move( name ) ), m_parent( parent ) {

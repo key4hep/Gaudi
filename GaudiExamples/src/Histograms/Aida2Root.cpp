@@ -47,7 +47,7 @@ public:
 public:
   // standard constructor
   Aida2Root( const std::string& name, ISvcLocator* pSvc ) : GaudiHistoAlg( name, pSvc ) {
-    setProperty( "PropertiesPrint", "True" ).ignore();
+    setProperty( "PropertiesPrint", true ).ignore();
   }
 
 private:

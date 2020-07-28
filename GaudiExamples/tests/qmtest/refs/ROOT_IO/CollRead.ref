@@ -28,7 +28,6 @@ ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:ROOT_IO.tags as EventSelector.DataStreamTool_1
 Gaudi::RootData...   INFO Connect to existing Database file:PFN:ROOT_IO.tags as /EventSelector.DataStreamTool_1 for READ
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:ROOT_IO.tags' SVC='Gaudi::RootCnvSvc' SEL='(Ntrack>15)' FUN='Gaudi::Examples::EvtCollectionSelector'
-HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 93
@@ -39,9 +38,13 @@ Gaudi::Examples::EvtCollectionSelector   SELECTED : True
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
+ReadAlg           SUCCESS Got incident: NEW_FILE_RECORD Source:/FileRecords/D24FDF3A-4164-EA11-A0AF-001E67C9B019
+ReadAlg           SUCCESS Received incident:NEW_FILE_RECORD: /FileRecords/D24FDF3A-4164-EA11-A0AF-001E67C9B019
+ReadAlg           SUCCESS Incident: FileInfo record: /FileRecords/D24FDF3A-4164-EA11-A0AF-001E67C9B019/EvtCount=1000
+ReadAlg           SUCCESS Incident: FileInfo record: /FileRecords/D24FDF3A-4164-EA11-A0AF-001E67C9B019/SumCount=123456
 ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1445375073.028799 0 (0) 1 (1) 2 (2)
-ReadAlg           SUCCESS FileInfo record: F68C0456-5A77-E511-9E13-001E67ABF0AC/EvtCount=1000
-ReadAlg           SUCCESS FileInfo record: F68C0456-5A77-E511-9E13-001E67ABF0AC/SumCount=123456
+ReadAlg           SUCCESS FileInfo record: D24FDF3A-4164-EA11-A0AF-001E67C9B019/EvtCount=1000
+ReadAlg           SUCCESS FileInfo record: D24FDF3A-4164-EA11-A0AF-001E67C9B019/SumCount=123456
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 76
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365
@@ -186,13 +189,12 @@ Gaudi::Examples::EvtCollectionSelector   SELECTED : True
 ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1445375097.009053 0 (0) 1 (1) 2 (2)
 Gaudi::RootNTup...   INFO End of input Ntuple.
 EventLoopMgr         INFO No more events in event selection
-EventLoopMgr         INFO ---> Loop Finished -  WSS 164.902 | total time (skipping 1st evt) 150737631 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:02802356-5A77-E511-9E13-001E67ABF0AC [ROOTIO.mdst]
-RootCnvSvc           INFO Disconnected data IO:F68C0456-5A77-E511-9E13-001E67ABF0AC [ROOTIO.dst]
+RootCnvSvc           INFO Disconnected data IO:A4B01A3B-4164-EA11-A0AF-001E67C9B019 [ROOTIO.mdst]
+RootCnvSvc           INFO Disconnected data IO:D24FDF3A-4164-EA11-A0AF-001E67C9B019 [ROOTIO.dst]
 ToolSvc              INFO Removing all tools created by ToolSvc
-EvtTupleSvc.Eve...   INFO Disconnected data IO:724BB682-5A77-E511-860B-001E67ABF0AC [ROOT_IO.tags]
+EvtTupleSvc.Eve...   INFO Disconnected data IO:B26A8544-4164-EA11-8CAA-001E67C9B019 [ROOT_IO.tags]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
 Number of MyTrack instances:2
