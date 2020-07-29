@@ -130,6 +130,7 @@ leak:TStreamerInfoActions::TActionSequence::CreateReadMemberWiseActions
 leak:TClass::New
 leak:TTree::CreateBasket
 leak:TNetXNGFile::TNetXNGFile
+leak:cling::Interpreter::ShutDown
 
 # XrootD
 leak:XrdSys
