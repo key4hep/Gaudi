@@ -37,7 +37,7 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
 
 # Declare project name and version
-gaudi_project(Gaudi v33r2)
+gaudi_project(Gaudi v34r0)
 
 # Special hack to make sure downstream projects see fmt::fmt
 # This is going to be much cleaner with gaudi/Gaudi!986 (CMake modernization)
