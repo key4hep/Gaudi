@@ -60,7 +60,7 @@ Gaudi = gbl.Gaudi
 _gaudi = None
 
 # ---- Useful shortcuts for classes -------------------------------------------
-gbl.gInterpreter.Declare('#include "GaudiKernel/Property.h"')
+gbl.gInterpreter.Declare('#include "Gaudi/Property.h"')
 Helper = gbl.GaudiPython.Helper
 StringProperty = gbl.Gaudi.Property('std::string')
 StringPropertyRef = gbl.Gaudi.Property('std::string&')

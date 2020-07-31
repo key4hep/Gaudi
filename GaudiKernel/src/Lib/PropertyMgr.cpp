@@ -73,8 +73,7 @@ PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProp
 // ============================================================================
 PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleBase& ref, const std::string& doc ) {
   assertUniqueName( name );
-  m_todelete.emplace_back( new typename GaudiHandleBase::PropertyType( name, ref ) );
-  Property* p = m_todelete.back().get();
+  auto p = m_todelete.emplace_back( std::make_unique<typename GaudiHandleBase::PropertyType>( name, ref ) ).get();
   //
   p->setDocumentation( doc );
   m_properties.push_back( p );
@@ -85,8 +84,7 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandle
 PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleArrayBase& ref,
                                             const std::string& doc ) {
   assertUniqueName( name );
-  m_todelete.emplace_back( new typename GaudiHandleArrayBase::PropertyType( name, ref ) );
-  Property* p = m_todelete.back().get();
+  auto p = m_todelete.emplace_back( std::make_unique<typename GaudiHandleArrayBase::PropertyType>( name, ref ) ).get();
   //
   p->setDocumentation( doc );
   m_properties.push_back( p );
@@ -98,8 +96,7 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandle
 PropertyBase* PropertyMgr::declareProperty( const std::string& name, DataObjectHandleBase& ref,
                                             const std::string& doc ) {
   assertUniqueName( name );
-  m_todelete.emplace_back( new typename DataObjectHandleBase::PropertyType( name, ref ) );
-  Property* p = m_todelete.back().get();
+  auto p = m_todelete.emplace_back( std::make_unique<typename DataObjectHandleBase::PropertyType>( name, ref ) ).get();
   //
   p->setDocumentation( doc );
   m_properties.push_back( p );

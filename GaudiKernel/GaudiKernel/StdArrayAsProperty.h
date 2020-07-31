@@ -23,7 +23,7 @@
  *  Collection of utilities, which allows to use class std::array
  *  as property for Gaudi-components
  *
- *  @attention this file must be "included" before GaudiKernel/Property.h
+ *  @attention this file must be "included" before Gaudi/Property.h
  *
  *  @author Alexander Mazurov alexander.mazurov@cern.ch
  *  @date 2015-02-23

@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #include <Gaudi/Application.h>
 #include <Gaudi/Interfaces/IOptionsSvc.h>
+#include <Gaudi/Property.h>
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/IAppMgrUI.h>
@@ -19,7 +20,6 @@
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/ISvcLocator.h>
-#include <GaudiKernel/Property.h>
 #include <gsl/span>
 #include <type_traits>
 

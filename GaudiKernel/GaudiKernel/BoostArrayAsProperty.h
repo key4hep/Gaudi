@@ -25,7 +25,7 @@
  *  Collection of utilities, which allows to use class boost::array
  *  as property for Gaudi-components
  *
- *  @attention this file must be "included" before GaudiKernel/Property.h
+ *  @attention this file must be "included" before Gaudi/Property.h
  *
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2009-09-16

@@ -8,10 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_DATAOBJECTHANDLEPROPERTY_H
-#define GAUDIKERNEL_DATAOBJECTHANDLEPROPERTY_H 1
+#pragma once
 
-#include "GaudiKernel/Property.h"
+#include "Gaudi/Property.h"
 #include "GaudiKernel/StatusCode.h"
 
 #include <iostream>
@@ -36,8 +35,8 @@ public:
   DataObjectHandleProperty& operator=( const DataObjectHandleBase& value );
 
   DataObjectHandleProperty*   clone() const override;
-  bool                        load( Property& destination ) const override;
-  bool                        assign( const Property& source ) override;
+  bool                        load( Gaudi::Details::PropertyBase& destination ) const override;
+  bool                        assign( const Gaudi::Details::PropertyBase& source ) override;
   std::string                 toString() const override;
   void                        toStream( std::ostream& out ) const override;
   StatusCode                  fromString( const std::string& s ) override;
@@ -48,7 +47,5 @@ private:
   /** Pointer to the real property. Reference would be better,
    *  but Reflex does not support references yet
    */
-  DataObjectHandleBase* m_pValue;
+  DataObjectHandleBase* m_pValue = nullptr;
 };
-
-#endif

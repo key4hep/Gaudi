@@ -30,6 +30,7 @@ See the comments in the code for the details.
 
 #include <Gaudi/Application.h>
 #include <Gaudi/Interfaces/IQueueingEventProcessor.h>
+#include <Gaudi/Property.h>
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/IAppMgrUI.h>
 #include <GaudiKernel/IJobOptionsSvc.h>
@@ -37,7 +38,6 @@ See the comments in the code for the details.
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/IStateful.h>
 #include <GaudiKernel/ISvcLocator.h>
-#include <GaudiKernel/Property.h>
 #include <GaudiKernel/SmartIF.h>
 #include <queue>
 #include <thread>
