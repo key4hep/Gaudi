@@ -23,11 +23,13 @@ HistogramSvc('HistogramDataSvc').Input = [
 from Configurables import GaudiHistoAlgorithm
 from Configurables import Gaudi__Examples__R7__GaudiHistoAlgorithm as R7HistoAlg
 from Configurables import Gaudi__Examples__Boost__GaudiHistoAlgorithm as BoostHistoAlg
+from Configurables import Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg
 
 algs = [
     GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=DEBUG),
     R7HistoAlg('SimpleR7Histos', OutputLevel=DEBUG),
     BoostHistoAlg('SimpleBoostHistos', OutputLevel=DEBUG),
+    CounterHistoAlg('SimpleCounterHistos', OutputLevel=DEBUG),
 ]
 
 app = ApplicationMgr(
