@@ -16,6 +16,7 @@
 #include "GaudiKernel/IInterface.h"
 
 // C++ include files
+#include <chrono>
 #include <functional>
 #include <vector>
 
@@ -53,5 +54,14 @@ public:
   /// Method to inform the scheduler about event views
   virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
                                         std::unique_ptr<EventContext> viewContext ) = 0;
+
+  /// Sample occupancy at fixed interval (ms)
+  /// Negative value to deactivate, 0 to snapshot every change
+  /// Each sample, apply the callback function to the result
+  struct OccupancySnapshot {
+    std::chrono::system_clock::time_point time;
+    std::vector<std::vector<int>>         states;
+  };
+  virtual void recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) = 0;
 };
 #endif
