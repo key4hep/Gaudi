@@ -592,6 +592,8 @@ StatusCode AvalancheSchedulerSvc::iterate() {
   }
 
   // Loop over all slots
+  OccupancySnapshot nextSnap;
+  auto              now = std::chrono::system_clock::now();
   for ( EventSlot& thisSlot : m_eventSlots ) {
 
     // Ignore slots without a valid context (relevant when populating scheduler for first time)
@@ -603,6 +605,31 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     StatusCode partial_sc( StatusCode::FAILURE, true );
+
+    // Make an occupancy snapshot
+    if ( m_snapshotInterval != std::chrono::duration<int64_t, std::milli>::min() &&
+         now - m_lastSnapshot >= m_snapshotInterval ) {
+
+      // Initialise snapshot
+      if ( nextSnap.states.empty() ) {
+        nextSnap.time = now;
+        nextSnap.states.resize( m_eventSlots.size() );
+      }
+
+      // Store alg states
+      std::vector<int>& slotStateTotals = nextSnap.states[iSlot];
+      slotStateTotals.resize( AState::MAXVALUE );
+      for ( uint8_t state = 0; state < AState::MAXVALUE; ++state ) {
+        slotStateTotals[state] = thisSlot.algsStates.sizeOfSubset( AState( state ) );
+      }
+
+      // Add subslot alg states
+      for ( auto& subslot : thisSlot.allSubSlots ) {
+        for ( uint8_t state = 0; state < AState::MAXVALUE; ++state ) {
+          slotStateTotals[state] += subslot.algsStates.sizeOfSubset( AState( state ) );
+        }
+      }
+    }
 
     // Perform DR->SCHEDULED
     for ( auto it = thisAlgsStates.begin( AState::DATAREADY ); it != thisAlgsStates.end( AState::DATAREADY ); ++it ) {
@@ -677,6 +704,12 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     }
     partial_sc.ignore();
   } // end loop on slots
+
+  // Process snapshot
+  if ( !nextSnap.states.empty() ) {
+    m_lastSnapshot = nextSnap.time;
+    m_snapshotCallback( std::move( nextSnap ) );
+  }
 
   ON_VERBOSE verbose() << "Iteration done." << endmsg;
   m_needsUpdate.store( false );
@@ -1024,4 +1057,25 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( const EventContext* sourceC
   m_actionsQueue.push( std::move( action ) );
 
   return StatusCode::SUCCESS;
+}
+
+//---------------------------------------------------------------------------
+
+// Sample occupancy at fixed interval (ms)
+// Negative value to deactivate, 0 to snapshot every change
+// Each sample, apply the callback function to the result
+
+void AvalancheSchedulerSvc::recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) {
+
+  auto action = [this, samplePeriod, callback{std::move( callback )}]() -> StatusCode {
+    if ( samplePeriod < 0 ) {
+      this->m_snapshotInterval = std::chrono::duration<int64_t, std::milli>::min();
+    } else {
+      this->m_snapshotInterval = std::chrono::duration<int64_t, std::milli>( samplePeriod );
+      m_snapshotCallback       = std::move( callback );
+    }
+    return StatusCode::SUCCESS;
+  };
+
+  m_actionsQueue.push( std::move( action ) );
 }

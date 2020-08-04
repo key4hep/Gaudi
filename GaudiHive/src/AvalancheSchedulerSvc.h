@@ -147,11 +147,21 @@ public:
   virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
                                         std::unique_ptr<EventContext> viewContext ) override;
 
+  /// Sample occupancy at fixed interval (ms)
+  /// Negative value to deactivate, 0 to snapshot every change
+  /// Each sample, apply the callback function to the result
+  virtual void recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) override;
+
 private:
   using AState = AlgsExecutionStates::State;
   using action = std::function<StatusCode()>;
 
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
+
+  // Occupancy snapshot data
+  std::chrono::duration<int64_t, std::milli> m_snapshotInterval = std::chrono::duration<int64_t, std::milli>::min();
+  std::chrono::system_clock::time_point      m_lastSnapshot     = std::chrono::system_clock::now();
+  std::function<void( OccupancySnapshot )>   m_snapshotCallback;
 
   Gaudi::Property<int> m_threadPoolSize{
       this, "ThreadPoolSize", -1,
@@ -171,7 +181,6 @@ private:
   Gaudi::Property<bool>        m_enablePreemptiveBlockingTasks{
       this, "PreemptiveBlockingTasks", false,
       "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly."};
-
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};
 
   Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",

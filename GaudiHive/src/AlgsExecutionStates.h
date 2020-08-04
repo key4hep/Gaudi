@@ -36,6 +36,7 @@
 class AlgsExecutionStates final {
 public:
   /// Execution states of the algorithms
+  /// Must have contiguous integer values 0, 1... N
   enum State : uint8_t {
     INITIAL      = 0,
     CONTROLREADY = 1,
@@ -44,7 +45,8 @@ public:
     SCHEDULED    = 4,
     EVTACCEPTED  = 5,
     EVTREJECTED  = 6,
-    ERROR        = 7
+    ERROR        = 7,
+    MAXVALUE     = 8 // Allows loop over all states
   };
 
   AlgsExecutionStates( unsigned int algsNumber, SmartIF<IMessageSvc> MS )
