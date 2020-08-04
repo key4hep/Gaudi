@@ -19,11 +19,16 @@ algorithms = [
     C.Gaudi.Examples.R7.GaudiHistoAlgorithm('SimpleR7Histos', OutputLevel=2),
     C.Gaudi.Examples.Boost.GaudiHistoAlgorithm(
         'SimpleBoostHistos', OutputLevel=2),
+    C.Gaudi.Examples.Counter.GaudiHistoAlgorithm(
+        'SimpleCounterHistos', OutputLevel=2),
 ]
 
 app = C.ApplicationMgr(
     'ApplicationMgr',
-    TopAlg=['SimpleHistos', 'SimpleR7Histos', 'SimpleBoostHistos'],
+    TopAlg=[
+        'SimpleHistos', 'SimpleR7Histos', 'SimpleBoostHistos',
+        'SimpleCounterHistos'
+    ],
     EvtMax=50000,
     EvtSel='NONE',
 )

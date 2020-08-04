@@ -18,7 +18,10 @@ RootHistSvc('RootHistSvc').OutputFile = 'histo.root'
 
 from Configurables import (
     HistoTimingAlg, Gaudi__Examples__R7__HistoTimingAlg as R7HistoTiming,
-    Gaudi__Examples__Boost__HistoTimingAlg as BoostHistoTiming)
+    Gaudi__Examples__Boost__HistoTimingAlg as BoostHistoTiming,
+    HistoTimingAlgDA as CounterHistoTimingDA, HistoTimingAlgIA as
+    CounterHistoTimingIA, HistoTimingAlgD as CounterHistoTimingD,
+    HistoTimingAlgI as CounterHistoTimingI)
 
 seq = GaudiSequencer("TimingSeq", MeasureTime=True)
 seq.Members = [
@@ -26,6 +29,10 @@ seq.Members = [
     HistoTimingAlg("LookupFill", UseLookup=True),
     R7HistoTiming("R7Timing"),
     BoostHistoTiming("BoostTiming"),
+    CounterHistoTimingDA("CounterTimingDA"),
+    CounterHistoTimingIA("CounterTimingIA"),
+    CounterHistoTimingD("CounterTimingA"),
+    CounterHistoTimingI("CounterTimingI"),
 ]
 for alg in seq.Members:
     alg.NumTracks = 20
