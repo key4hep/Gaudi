@@ -10,17 +10,27 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-. $(dirname $0)/env_setup.sh
+# Check for warnings in build logs passed on the command line
 
-${LCG_release_area}/ccache/${CCACHE_VERSION}/${BINARY_TAG/+py3/}/bin/ccache -z -F 2000
+summary=
 
-echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
+# Collect warnings and print full logs if there are any
+for log in "$@"; do
+  warnings=$(grep 'warning:' "${log}") || test $? -le 1
 
-mkdir -p ${BUILDDIR}
-/usr/bin/time -v bash -x -e -c "
-  make BUILDDIR=${BUILDDIR} configure
-  make BUILDDIR=${BUILDDIR} BUILDFLAGS=-j4 GaudiKernel
-  make BUILDDIR=${BUILDDIR}
-" 2>&1 | tee ${BUILDDIR}/build.log
+  if [ -n "$warnings" ]; then
+    echo -e "\nFull build log for ${log}:\n"
+    cat "${log}"
+    summary+="Found $(wc -l <<<"${warnings}") compilation warnings in ${log}:"
+    summary+=$'\n'
+    summary+=$(sort <<< "${warnings}" | uniq -c | sort -bg)
+    summary+=$'\n\n'
+  fi
+done
 
-${LCG_release_area}/ccache/${CCACHE_VERSION}/${BINARY_TAG/+py3/}/bin/ccache -s
+# Print a summary of warnings, if any, and fail
+if [ -n "$summary" ]; then
+  echo ''
+  echo "$summary"
+  exit 1
+fi

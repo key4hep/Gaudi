@@ -61,7 +61,7 @@ build:gcc9:opt:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - .ccache
-    
+
 build:gcc9:dbg:
   stage: build
   tags:
@@ -97,6 +97,42 @@ build:gcc9:opt:python3:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - .ccache
+
+# The build-check:* jobs are a workaround for not being able to set a warning
+# state from the build jobs (based on the exit code).
+# See https://gitlab.com/gitlab-org/gitlab/-/issues/16733
+
+build-check:gcc8:opt:
+  stage: test
+  dependencies:
+    - build:gcc8:opt
+  script:
+    - ci-utils/build-check */build.log
+  allow_failure: true
+
+build-check:gcc9:opt:
+  stage: test
+  dependencies:
+    - build:gcc9:opt
+  script:
+    - ci-utils/build-check */build.log
+  allow_failure: true
+
+build-check:gcc9:dbg:
+  stage: test
+  dependencies:
+    - build:gcc9:dbg
+  script:
+    - ci-utils/build-check */build.log
+  allow_failure: true
+
+build-check:gcc9:opt:python3:
+  stage: test
+  dependencies:
+    - build:gcc9:opt:python3
+  script:
+    - ci-utils/build-check */build.log
+  allow_failure: true
 
 check-formatting:
   stage: build
