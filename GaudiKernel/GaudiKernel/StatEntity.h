@@ -23,8 +23,8 @@ public:
   using AccParent         = Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
                                                         Gaudi::Accumulators::StatAccumulator,
                                                         Gaudi::Accumulators::BinomialAccumulator>;
-  using BinomialAccParent = Gaudi::Accumulators::BinomialAccumulator<double, Gaudi::Accumulators::atomicity::full>;
-  using Gaudi::Accumulators::StatAccumulator<double, Gaudi::Accumulators::atomicity::full>::nEntries;
+  using BinomialAccParent = Gaudi::Accumulators::BinomialAccumulator<Gaudi::Accumulators::atomicity::full, double>;
+  using Gaudi::Accumulators::StatAccumulator<Gaudi::Accumulators::atomicity::full, double>::nEntries;
   using AccParent::reset;
   /// the constructor with automatic registration in the owner's counter map
   StatEntity() = default;
