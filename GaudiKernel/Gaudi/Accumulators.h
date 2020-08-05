@@ -251,7 +251,7 @@ namespace Gaudi::Accumulators {
    * An Adder ValueHandler
    * operator(a, b) means a += b. In case of full atomicity, fetch_add or compare_exchange_weak are used.
    */
-  template <typename Arithmetic, atomicity Atomicity = atomicity::full>
+  template <typename Arithmetic, atomicity Atomicity>
   struct Adder;
 
   /**
@@ -335,6 +335,16 @@ namespace Gaudi::Accumulators {
   using Maximum = Extremum<Arithmetic, Atomicity, std::greater<Arithmetic>, std::numeric_limits<Arithmetic>::lowest>;
 
   /**
+   * constant used to disambiguate construction of an empty Accumulator
+   * versus the copy constructor. Indeed, construction of an empty Accumulator
+   * still takes another Accumulator and copies configuration
+   */
+  struct construct_empty_t {
+    explicit construct_empty_t() = default;
+  };
+  constexpr construct_empty_t construct_empty{};
+
+  /**
    * Generic Accumulator, templated by
    *   - InputType : the type of input data coming to this Accumulator
    *   - InnerType : the type of the accumulated value. May be different from InputType,
@@ -365,6 +375,11 @@ namespace Gaudi::Accumulators {
       return *this;
     }
     GenericAccumulator() = default;
+    /// constructor of an empty GenericAccumulator, copying the (non existent) config from another GenericAccumulator
+    template <atomicity ato, typename VH>
+    GenericAccumulator( construct_empty_t,
+                        const GenericAccumulator<InputType, InnerType, ato, InputTransform, OutputTransform, VH>& )
+        : GenericAccumulator() {}
     template <typename... Args>
     GenericAccumulator( std::in_place_t, Args&&... args ) : m_value( std::forward<Args>( args )... ) {}
     GenericAccumulator( const GenericAccumulator& other ) : m_value( ValueHandler::getValue( other.m_value ) ) {}
@@ -391,26 +406,29 @@ namespace Gaudi::Accumulators {
    * and increase them altogether
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity, template <typename, atomicity> class... Bases>
-  class AccumulatorSet : public Bases<Arithmetic, Atomicity>... {
+  template <typename Arithmetic, atomicity Atomicity, template <atomicity, typename> class... Bases>
+  class AccumulatorSet : public Bases<Atomicity, Arithmetic>... {
   public:
     using InputType            = Arithmetic;
-    using OutputType           = std::tuple<typename Bases<Arithmetic, Atomicity>::OutputType...>;
+    using OutputType           = std::tuple<typename Bases<Atomicity, Arithmetic>::OutputType...>;
     constexpr AccumulatorSet() = default;
+    /// constructor of an empty AccumulatorSet, copying the (non existent) config from another GenericAccumulator
+    template <atomicity ato>
+    AccumulatorSet( construct_empty_t, const AccumulatorSet<Arithmetic, ato, Bases...>& ) : AccumulatorSet() {}
     AccumulatorSet& operator+=( const InputType by ) {
-      ( Bases<Arithmetic, Atomicity>::operator+=( by ), ... );
+      ( Bases<Atomicity, Arithmetic>::operator+=( by ), ... );
       return *this;
     }
-    OutputType value() const { return std::make_tuple( Bases<Arithmetic, Atomicity>::value()... ); }
-    void       reset() { ( Bases<Arithmetic, Atomicity>::reset(), ... ); }
+    OutputType value() const { return std::make_tuple( Bases<Atomicity, Arithmetic>::value()... ); }
+    void       reset() { ( Bases<Atomicity, Arithmetic>::reset(), ... ); }
     template <atomicity Ato>
     void mergeAndReset( AccumulatorSet<Arithmetic, Ato, Bases...>&& other ) {
-      ( Bases<Arithmetic, Atomicity>::mergeAndReset( static_cast<Bases<Arithmetic, Ato>&&>( other ) ), ... );
+      ( Bases<Atomicity, Arithmetic>::mergeAndReset( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
     }
 
   protected:
-    void reset( const std::tuple<typename Bases<Arithmetic, Atomicity>::OutputType...>& t ) {
-      std::apply( [this]( const auto&... i ) { ( this->Bases<Arithmetic, Atomicity>::reset( i ), ... ); }, t );
+    void reset( const std::tuple<typename Bases<Atomicity, Arithmetic>::OutputType...>& t ) {
+      std::apply( [this]( const auto&... i ) { ( this->Bases<Atomicity, Arithmetic>::reset( i ), ... ); }, t );
     }
   };
 
@@ -418,9 +436,11 @@ namespace Gaudi::Accumulators {
    * MaxAccumulator. A MaxAccumulator is an Accumulator storing the max value of the provided arguments
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic = double>
   struct MaxAccumulator
       : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity, Identity, Maximum<Arithmetic, Atomicity>> {
+    using GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity, Identity,
+                             Maximum<Arithmetic, Atomicity>>::GenericAccumulator;
     Arithmetic max() const { return this->value(); }
   };
 
@@ -428,9 +448,11 @@ namespace Gaudi::Accumulators {
    * MinAccumulator. A MinAccumulator is an Accumulator storing the min value of the provided arguments
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic = double>
   struct MinAccumulator
       : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity, Identity, Minimum<Arithmetic, Atomicity>> {
+    using GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity, Identity,
+                             Minimum<Arithmetic, Atomicity>>::GenericAccumulator;
     Arithmetic min() const { return this->value(); }
   };
 
@@ -438,8 +460,18 @@ namespace Gaudi::Accumulators {
    * CountAccumulator. A CountAccumulator is an Accumulator storing the number of provided values
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic = double>
   struct CountAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, Constant<unsigned long, 1UL>> {
+    using GenericAccumulator<Arithmetic, unsigned long, Atomicity, Constant<unsigned long, 1UL>>::GenericAccumulator;
+    CountAccumulator& operator++() {
+      ( *this ) += Arithmetic{};
+      return *this;
+    }
+    CountAccumulator operator++( int ) {
+      auto copy = *this;
+      ++( *this );
+      return copy;
+    }
     unsigned long nEntries() const { return this->value(); }
   };
 
@@ -447,8 +479,9 @@ namespace Gaudi::Accumulators {
    * SumAccumulator. A SumAccumulator is an Accumulator storing the sum of the provided values
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic = double>
   struct SumAccumulator : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity> {
+    using GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity>::GenericAccumulator;
     Arithmetic sum() const { return this->value(); }
   };
 
@@ -456,8 +489,9 @@ namespace Gaudi::Accumulators {
    * SquareAccumulator. A SquareAccumulator is an Accumulator storing the sum of squares of the provided values
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic = double>
   struct SquareAccumulator : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Square> {
+    using GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Square>::GenericAccumulator;
     Arithmetic sum2() const { return this->value(); };
   };
 
@@ -471,7 +505,7 @@ namespace Gaudi::Accumulators {
    * data
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity>
+  template <atomicity Atomicity, typename Arithmetic>
   struct TrueAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, TrueTo1> {
     using GenericAccumulator<Arithmetic, unsigned long, Atomicity, TrueTo1>::GenericAccumulator;
     unsigned long nTrueEntries() const { return this->value(); };
@@ -487,7 +521,7 @@ namespace Gaudi::Accumulators {
    * data
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity>
+  template <atomicity Atomicity, typename Arithmetic>
   struct FalseAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, FalseTo1> {
     using GenericAccumulator<Arithmetic, unsigned long, Atomicity, FalseTo1>::GenericAccumulator;
     unsigned long nFalseEntries() const { return this->value(); };
@@ -498,8 +532,9 @@ namespace Gaudi::Accumulators {
    * data
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic>
   struct BinomialAccumulator : AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator> {
+    using AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator>::AccumulatorSet;
     unsigned long nEntries() const { return this->nTrueEntries() + this->nFalseEntries(); };
 
     template <typename Result = fp_result_type<Arithmetic>>
@@ -528,9 +563,9 @@ namespace Gaudi::Accumulators {
     };
     BinomialAccumulator& operator+=( binomial_t b ) {
       assert( b.nPass <= b.nTotal );
-      TrueAccumulator<bool, Atomicity>::mergeAndReset( TrueAccumulator<bool, atomicity::none>{std::in_place, b.nPass} );
-      FalseAccumulator<bool, Atomicity>::mergeAndReset(
-          FalseAccumulator<bool, atomicity::none>{std::in_place, b.nTotal - b.nPass} );
+      TrueAccumulator<Atomicity, bool>::mergeAndReset( TrueAccumulator<atomicity::none, bool>{std::in_place, b.nPass} );
+      FalseAccumulator<Atomicity, bool>::mergeAndReset(
+          FalseAccumulator<atomicity::none, bool>{std::in_place, b.nTotal - b.nPass} );
       return *this;
     }
   };
@@ -539,9 +574,9 @@ namespace Gaudi::Accumulators {
    * AveragingAccumulator. An AveragingAccumulator is an Accumulator able to compute an average
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic>
   struct AveragingAccumulator : AccumulatorSet<Arithmetic, Atomicity, CountAccumulator, SumAccumulator> {
-
+    using AccumulatorSet<Arithmetic, Atomicity, CountAccumulator, SumAccumulator>::AccumulatorSet;
     template <typename Result = fp_result_type<Arithmetic>>
     auto mean() const {
       auto   n   = this->nEntries();
@@ -554,9 +589,9 @@ namespace Gaudi::Accumulators {
    * SigmaAccumulator. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic>
   struct SigmaAccumulator : AccumulatorSet<Arithmetic, Atomicity, AveragingAccumulator, SquareAccumulator> {
-
+    using AccumulatorSet<Arithmetic, Atomicity, AveragingAccumulator, SquareAccumulator>::AccumulatorSet;
     template <typename Result = fp_result_type<Arithmetic>>
     auto biased_sample_variance() const {
       auto   n   = this->nEntries();
@@ -601,7 +636,7 @@ namespace Gaudi::Accumulators {
    * StatAccumulator. A StatAccumulator is an Accumulator able to compute an average, variance/rms and min/max
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity = atomicity::full>
+  template <atomicity Atomicity, typename Arithmetic>
   using StatAccumulator = AccumulatorSet<Arithmetic, Atomicity, SigmaAccumulator, MinAccumulator, MaxAccumulator>;
 
   /**
@@ -610,14 +645,14 @@ namespace Gaudi::Accumulators {
    * It is templated by the basic accumulator type and has same interface
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, template <typename Int, atomicity Ato> class ContainedAccumulator>
-  class Buffer : public ContainedAccumulator<Arithmetic, atomicity::none> {
-    using prime_type = ContainedAccumulator<Arithmetic, atomicity::full>;
-    using base_type  = ContainedAccumulator<Arithmetic, atomicity::none>;
+  template <template <atomicity Ato, typename... Int> class ContainedAccumulator, typename... Args>
+  class Buffer : public ContainedAccumulator<atomicity::none, Args...> {
+    using prime_type = ContainedAccumulator<atomicity::full, Args...>;
+    using base_type  = ContainedAccumulator<atomicity::none, Args...>;
 
   public:
     Buffer() = delete;
-    Buffer( prime_type& p ) : base_type(), m_prime( p ) {}
+    Buffer( prime_type& p ) : base_type( construct_empty, p ), m_prime( p ) {}
     Buffer( const Buffer& ) = delete;
     void operator=( const Buffer& ) = delete;
     Buffer( Buffer&& other ) : base_type( other ), m_prime( other.m_prime ) { other.reset(); }
@@ -676,10 +711,13 @@ namespace Gaudi::Accumulators {
    * returns a buffer on itself
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity, template <typename Int, atomicity Ato> class Accumulator>
-  struct BufferableCounter : PrintableCounter {
-    using PrintableCounter::PrintableCounter;
-    Buffer<Arithmetic, Accumulator> buffer() { return {*static_cast<Accumulator<Arithmetic, Atomicity>*>( this )}; }
+  template <atomicity Atomicity, template <atomicity Ato, typename... Int> class Accumulator, typename... Args>
+  struct BufferableCounter : PrintableCounter, Accumulator<Atomicity, Args...> {
+    BufferableCounter() = default;
+    template <typename OWNER, typename... CARGS>
+    BufferableCounter( OWNER* o, std::string const& name, CARGS... args )
+        : PrintableCounter( o, name ), Accumulator<Atomicity, Args...>( args... ) {}
+    Buffer<Accumulator, Args...> buffer() { return {*this}; }
   };
 
   /**
@@ -687,8 +725,8 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
-  struct Counter : BufferableCounter<Arithmetic, Atomicity, Counter>, CountAccumulator<Arithmetic, Atomicity> {
-    using BufferableCounter<Arithmetic, Atomicity, Counter>::BufferableCounter;
+  struct Counter : BufferableCounter<Atomicity, CountAccumulator, Arithmetic> {
+    using BufferableCounter<Atomicity, CountAccumulator, Arithmetic>::BufferableCounter;
     Counter& operator++() {
       ( *this ) += Arithmetic{};
       return *this;
@@ -698,7 +736,7 @@ namespace Gaudi::Accumulators {
       ++( *this );
       return copy;
     }
-    using BufferableCounter<Arithmetic, Atomicity, Counter>::print;
+    using BufferableCounter<Atomicity, CountAccumulator, Arithmetic>::print;
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
@@ -719,10 +757,9 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
-  struct AveragingCounter : BufferableCounter<Arithmetic, Atomicity, AveragingCounter>,
-                            AveragingAccumulator<Arithmetic, Atomicity> {
-    using BufferableCounter<Arithmetic, Atomicity, AveragingCounter>::BufferableCounter;
-    using BufferableCounter<Arithmetic, Atomicity, AveragingCounter>::print;
+  struct AveragingCounter : BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic> {
+    using BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>::BufferableCounter;
+    using BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>::print;
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
@@ -745,10 +782,9 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
-  struct SigmaCounter : BufferableCounter<Arithmetic, Atomicity, SigmaCounter>,
-                        SigmaAccumulator<Arithmetic, Atomicity> {
-    using BufferableCounter<Arithmetic, Atomicity, SigmaCounter>::BufferableCounter;
-    using BufferableCounter<Arithmetic, Atomicity, SigmaCounter>::print;
+  struct SigmaCounter : BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic> {
+    using BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>::BufferableCounter;
+    using BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>::print;
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
@@ -769,9 +805,9 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
-  struct StatCounter : BufferableCounter<Arithmetic, Atomicity, StatCounter>, StatAccumulator<Arithmetic, Atomicity> {
-    using BufferableCounter<Arithmetic, Atomicity, StatCounter>::BufferableCounter;
-    using BufferableCounter<Arithmetic, Atomicity, StatCounter>::print;
+  struct StatCounter : BufferableCounter<Atomicity, StatAccumulator, Arithmetic> {
+    using BufferableCounter<Atomicity, StatAccumulator, Arithmetic>::BufferableCounter;
+    using BufferableCounter<Atomicity, StatAccumulator, Arithmetic>::print;
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
@@ -793,9 +829,8 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
-  struct BinomialCounter : BufferableCounter<Arithmetic, Atomicity, BinomialCounter>,
-                           BinomialAccumulator<Arithmetic, Atomicity> {
-    using BufferableCounter<Arithmetic, Atomicity, BinomialCounter>::BufferableCounter;
+  struct BinomialCounter : BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic> {
+    using BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic>::BufferableCounter;
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
