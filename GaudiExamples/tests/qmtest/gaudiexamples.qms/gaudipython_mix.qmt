@@ -13,4 +13,8 @@
   <argument name="program"><text>../../scripts/Mix.py</text></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/Mix.ref</text></argument>
+  <argument name="validator"><text>
+# FIXME workaround for IJobOptionsSvc deprecation warnings (ignore stderr)
+validateWithReference(stderr='')
+  </text></argument>
 </extension>
