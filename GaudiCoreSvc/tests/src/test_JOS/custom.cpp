@@ -15,9 +15,9 @@
 #include "fixture.h"
 
 #include <Gaudi/Interfaces/IOptionsSvc.h>
+#include <Gaudi/Property.h>
 #include <GaudiKernel/IJobOptionsSvc.h>
 #include <GaudiKernel/ISvcLocator.h>
-#include <GaudiKernel/Property.h>
 #include <GaudiKernel/Service.h>
 #include <algorithm>
 #include <map>

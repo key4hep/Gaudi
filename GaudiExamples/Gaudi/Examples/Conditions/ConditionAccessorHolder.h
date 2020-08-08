@@ -10,8 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
+#include <Gaudi/Property.h>
 #include <GaudiKernel/EventContext.h>
-#include <GaudiKernel/Property.h>
 #include <GaudiKernel/StateMachine.h>
 #include <GaudiKernel/StatusCode.h>
 #include <any>

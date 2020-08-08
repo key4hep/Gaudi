@@ -15,8 +15,8 @@
 #include "fixture.h"
 
 #include <Gaudi/Interfaces/IOptionsSvc.h>
+#include <Gaudi/Property.h>
 #include <GaudiKernel/ISvcLocator.h>
-#include <GaudiKernel/Property.h>
 
 BOOST_AUTO_TEST_CASE( PropertyBinding ) {
   Fixture f;

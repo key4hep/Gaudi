@@ -8,12 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include "Gaudi/Property.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Property.h"
 
 namespace {
   /// Recursive function to print the algorithm name and its sub algorithms

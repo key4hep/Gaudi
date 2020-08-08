@@ -76,11 +76,15 @@ DataObjectHandleProperty* DataObjectHandleProperty::clone() const { return new D
 
 //---------------------------------------------------------------------------
 
-bool DataObjectHandleProperty::load( Property& destination ) const { return destination.assign( *this ); }
+bool DataObjectHandleProperty::load( Gaudi::Details::PropertyBase& destination ) const {
+  return destination.assign( *this );
+}
 
 //---------------------------------------------------------------------------
 
-bool DataObjectHandleProperty::assign( const Property& source ) { return fromString( source.toString() ).isSuccess(); }
+bool DataObjectHandleProperty::assign( const Gaudi::Details::PropertyBase& source ) {
+  return fromString( source.toString() ).isSuccess();
+}
 
 //---------------------------------------------------------------------------
 

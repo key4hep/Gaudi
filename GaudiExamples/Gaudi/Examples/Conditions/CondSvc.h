@@ -10,9 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
+#include "Gaudi/Property.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/ICondSvc.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/SmartIF.h"
 

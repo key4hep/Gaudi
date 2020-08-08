@@ -14,9 +14,9 @@
 
 #include "fixture.h"
 
+#include <Gaudi/Property.h>
 #include <GaudiKernel/IJobOptionsSvc.h>
 #include <GaudiKernel/ISvcLocator.h>
-#include <GaudiKernel/Property.h>
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 BOOST_AUTO_TEST_CASE( BackwardCompatibility ) {
