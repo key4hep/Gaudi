@@ -253,16 +253,9 @@ StatusCode MessageSvc::stop() {
   auto& log = info() << "Monitoring Entities (" << m_monitoringEntities.size() << "):";
   std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [&log]( auto& ent ) {
     const auto j = ent.getJSON();
-    // FIXME: we should get the string with `j["str"].get<std::string>()`, but it gives me
-    //        compilation errors
-    std::string x;
-    nlohmann::detail::from_json( j["str"], x );
-    // const auto x = j["str"].get<std::string>();
-    // gives -> error: expected primary-expression before '>' token
-    // and again here
-    bool emptyCounter{false};
-    nlohmann::detail::from_json( j["empty"], emptyCounter );
-    if ( !emptyCounter ) log << '\n' << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + ent.id + "\"" ) << x;
+    if ( !j["empty"].template get<bool>() ) {
+      log << '\n' << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + ent.id + "\"" ) << j["str"].template get<std::string>();
+    }
   } );
   log << endmsg;
 
