@@ -33,8 +33,8 @@ public:
 
   void declareCounter( std::string tag, Gaudi::Accumulators::PrintableCounter& r ) {
     auto lock = std::scoped_lock{m_mutex};
-    m_counters.emplace( std::move( tag ), r );
-    this->serviceLocator()->monitoringHub().registerEntity( {this->name() + '/' + tag, r} );
+    m_counters.emplace( tag, r );
+    this->serviceLocator()->monitoringHub().registerEntity( {this->name() + '/' + std::move( tag ), r} );
   }
 
   const Gaudi::Accumulators::PrintableCounter* findCounter( std::string_view tag ) const {
