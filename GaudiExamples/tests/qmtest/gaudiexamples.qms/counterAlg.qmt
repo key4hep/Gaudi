@@ -10,7 +10,8 @@
     or submit itself to any jurisdiction.
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/CounterEx.opts</text></set></argument>
+  <argument name="program"><text>gaudirun.py</text></argument>
+  <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/CounterAlg.py</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>refs/CounterEx.ref</text></argument>
+  <argument name="reference"><text>refs/CounterAlg.ref</text></argument>
 </extension>

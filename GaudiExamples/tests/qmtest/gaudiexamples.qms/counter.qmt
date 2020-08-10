@@ -10,7 +10,7 @@
     or submit itself to any jurisdiction.
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
-  <argument name="program"><text>../../scripts/CounterEx.py</text></argument>
+  <argument name="program"><text>../../scripts/Counter.py</text></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>refs/CounterEx.pyref</text></argument>
+  <argument name="reference"><text>refs/Counter.ref</text></argument>
 </extension>
