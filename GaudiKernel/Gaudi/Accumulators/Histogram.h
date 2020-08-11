@@ -402,6 +402,18 @@ namespace Gaudi::Accumulators {
    *   counter{owner, "CounterName", {nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}};
    * counter += {val1, val2};
    * \endcode
+   *
+   * When serialized to json, this counter uses type "histogram" with the following fields :
+   *   dimension(integer), empty(bool), subtype(string), nEntries(integer), internalType(string), axis(array), bins(array)
+   * where :
+   *     + subtype can be histogram or profilehistogram
+   *     + internalType is the typeid name of the type used inside the histogram originally in C++
+   *     + axis is an array of triplets, one per dimension, with content (nBins(integer), minValue(number), maxValue(number))
+   *     + bins is an array of values. The length of the array is the product of (nBins+2) for all axis
+   *       the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values above maxValue
+   *       bins are stored row first, so we iterate first on highest dimension
+   *       For each bin the value is either a number (for histogram subtype) or a triplet (for profilehistogram subtype)
+   *       containing (nEntries(integer), sum(number), sum2(number))
    */
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* SubType,
             template<atomicity, typename, typename> typename Accumulator>
