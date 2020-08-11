@@ -23,7 +23,7 @@ HistogramSvc('HistogramDataSvc').Input = [
 from Configurables import GaudiHistoAlgorithm
 from Configurables import Gaudi__Examples__R7__GaudiHistoAlgorithm as R7HistoAlg
 from Configurables import Gaudi__Examples__Boost__GaudiHistoAlgorithm as BoostHistoAlg
-from Configurables import Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg
+from Configurables import Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg, Gaudi__Histograming__RootHistogramSink as RootHistoSink
 
 algs = [
     GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=DEBUG),
@@ -33,5 +33,4 @@ algs = [
 ]
 
 app = ApplicationMgr(
-    EvtMax=50000, EvtSel='NONE', HistogramPersistency='ROOT', TopAlg=algs)
-app.ExtSvc = [MessageSvcSink()]
+    EvtMax=50000, EvtSel='NONE', HistogramPersistency='ROOT', TopAlg=algs, ExtSvc=[MessageSvcSink(), RootHistoSink()])
