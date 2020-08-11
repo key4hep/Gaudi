@@ -500,7 +500,7 @@ public:
     if ( UNLIKELY( p == m_countersOwn.end() ) ) {
       auto [iter, b] = m_countersOwn.try_emplace( std::string{tag} );
       assert( b );
-      this->declareCounter( iter->first, iter->second );
+      this->declareCounter( iter->first, "counter", iter->second );
       p = iter;
     }
     return p->second;

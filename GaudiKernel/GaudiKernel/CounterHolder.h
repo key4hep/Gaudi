@@ -31,10 +31,10 @@ class GAUDI_API CounterHolder : public BASE {
 public:
   using BASE::BASE;
 
-  void declareCounter( std::string tag, Gaudi::Accumulators::PrintableCounter& r ) {
+  void declareCounter( std::string tag, std::string type, Gaudi::Accumulators::PrintableCounter& r ) {
     auto lock = std::scoped_lock{m_mutex};
     m_counters.emplace( tag, r );
-    this->serviceLocator()->monitoringHub().registerEntity( {this->name() + '/' + std::move( tag ), r} );
+    this->serviceLocator()->monitoringHub().registerEntity( {this->name() + '/' + std::move( tag ), type, r} );
   }
 
   const Gaudi::Accumulators::PrintableCounter* findCounter( std::string_view tag ) const {

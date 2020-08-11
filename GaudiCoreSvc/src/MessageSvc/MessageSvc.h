@@ -230,7 +230,9 @@ private:
 
   // Gaudi::MonitoringHub::Sink implementation
   void registerEntity( Gaudi::MonitoringHub::Entity ent ) override {
-    m_monitoringEntities.emplace_back( std::move( ent ) );
+    if (ent.type == "counter") {
+      m_monitoringEntities.emplace_back( std::move( ent ) );
+    }
   }
   std::list<Gaudi::MonitoringHub::Entity> m_monitoringEntities;
 };

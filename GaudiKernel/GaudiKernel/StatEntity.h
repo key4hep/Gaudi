@@ -30,7 +30,7 @@ public:
   StatEntity() = default;
   template <class OWNER>
   StatEntity( OWNER* o, const std::string& tag ) {
-    o->declareCounter( tag, *this );
+    o->declareCounter( tag, "counter", *this );
   }
   StatEntity( const unsigned long entries, const double flag, const double flag2, const double minFlag,
               const double maxFlag ) {
