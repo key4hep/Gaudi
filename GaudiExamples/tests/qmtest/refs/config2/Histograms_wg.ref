@@ -37,7 +37,6 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader': |    Co
 SimpleHistos        DEBUG Property ['Name': Value] =  'Context':
 SimpleHistos        DEBUG Property ['Name': Value] =  'TypePrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'StatPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':
@@ -146,6 +145,26 @@ SimpleHistos        DEBUG Booked 1D Histogram : ID='test1' Path=SimpleHistos Tit
 SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please be patient !
 SimpleR7Histos    SUCCESS Filling Histograms...... Please be patient !
 SimpleBoostHistos SUCCESS Filling Histograms...... Please be patient !
+SimpleBoostHistos    INFO Number of counters : 10
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "Binom V poisson"                               H     50000 |
+ | "Binominal"                                     H     50000 |
+ | "Breit"                                         H     50000 |
+ | "Expo V poisson"                                H     50000 |
+ | "Exponential"                                   H     50000 |
+ | "Exponential V Flat"                            H     50000 |
+ | "Gaussian V Flat"                               H     50000 |
+ | "Gaussian mean=0, sigma=1"                      H     50000 |
+ | "Poisson"                                       H     50000 |
+ | "calls"                                         |     50000 |
+SimpleR7Histos       INFO Number of counters : 6
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "Binominal"                                     H     50000 |
+ | "Breit"                                         H     50000 |
+ | "Exponential"                                   H     50000 |
+ | "Gaussian mean=0, sigma=1"                      H     50000 |
+ | "Poisson"                                       H     50000 |
+ | "calls"                                         |     50000 |
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS 1D histograms in directory "SimpleHistos" : 10
@@ -188,26 +207,6 @@ SimpleHistos      SUCCESS 2D profile histograms in directory "SimpleHistos" : 3
 SimpleHistos        DEBUG Finalize base class GaudiAlgorithm
 SimpleHistos        DEBUG Tools to release :
 SimpleHistos        DEBUG Services to release :
-SimpleR7Histos       INFO Number of counters : 6
- |    Counter                                      |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Exponential"                                   H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
-SimpleBoostHistos    INFO Number of counters : 10
- |    Counter                                      |
- | "Binom V poisson"                               H     50000 |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Expo V poisson"                                H     50000 |
- | "Exponential"                                   H     50000 |
- | "Exponential V Flat"                            H     50000 |
- | "Gaussian V Flat"                               H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
 EventLoopMgr         INFO Histograms converted successfully according to request.
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)

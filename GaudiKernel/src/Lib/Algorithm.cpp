@@ -484,16 +484,6 @@ namespace Gaudi {
         sc = finalize();
       }
       if ( sc.isSuccess() ) {
-
-        if ( auto nCnt = nOfCountersToBePrinted(); nCnt ) {
-          auto& os = info() << "Number of counters : " << nCnt
-                            << "\n |    Counter                                      |";
-          forEachCounter( [&]( const auto& label, const auto& counter ) {
-            if ( counter.toBePrinted() ) counter.print( os << '\n', label );
-          } );
-          os << endmsg;
-        }
-
         // Indicate that this Algorithm has been finalized to prevent duplicate attempts
         m_state = m_targetState;
       }

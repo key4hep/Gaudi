@@ -491,7 +491,7 @@ public:
    *  @param tag counter name
    *  @return the counter itself
    */
-  //[[deprecated( "see LHCBPS-1758" )]]
+  //[[deprecated( "see LHCBPS-1758" )]], on top no garantee about thread safety
   StatEntity& counter( std::string_view tag ) const { return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag ); }
   StatEntity& counter( std::string_view tag ) {
     auto lock = std::scoped_lock{m_countersOwnMutex};
@@ -500,7 +500,7 @@ public:
     if ( UNLIKELY( p == m_countersOwn.end() ) ) {
       auto [iter, b] = m_countersOwn.try_emplace( std::string{tag} );
       assert( b );
-      this->declareCounter( iter->first, "counter", iter->second );
+      this->serviceLocator()->monitoringHub().registerEntity( this->name(), iter->first, "counter", iter->second );
       p = iter;
     }
     return p->second;
@@ -511,17 +511,10 @@ public:
   bool typePrint() const { return m_typePrint; }
   /// Print properties at initialization ?
   bool propsPrint() const { return m_propsPrint; }
-  /// Print statistical counters at finalization ?
-  bool statPrint() const { return m_statPrint; }
   /// Print error counters at finalization ?
   bool errorsPrint() const { return m_errorsPrint; }
   // ==========================================================================
 public:
-  /** perform the actual printout of statistical counters
-   *  @param  level The message level to print at
-   *  @return number of active statistical counters
-   */
-  long printStat( const MSG::Level level = MSG::ALWAYS ) const;
   /** perform the actual printout of error counters
    *  @param  level The message level to print at
    *  @return number of error counters
@@ -745,14 +738,6 @@ private:
                                        }
                                      },
                                      "print the properties of the component"};
-  Gaudi::Property<bool> m_statPrint{this, "StatPrint", true,
-                                    [this]( auto& ) {
-                                      // no action if not yet initialized
-                                      if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED && this->statPrint() ) {
-                                        this->printStat( MSG::ALWAYS );
-                                      }
-                                    },
-                                    "print the table of counters"};
   Gaudi::Property<bool> m_printEmptyCounters{this, "PrintEmptyCounters", false,
                                              "force printing of empty counters, otherwise only printed in DEBUG mode"};
   Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};

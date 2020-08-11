@@ -23,4 +23,4 @@ Gaudi::Interfaces::IOptionsSvc& ISvcLocator::getOptsSvc() {
   return *p;
 }
 
-Gaudi::MonitoringHub& ISvcLocator::monitoringHub() { return as<IAppMgrUI>()->monitoringHub(); }
+Gaudi::Monitoring::Hub& ISvcLocator::monitoringHub() { return as<IAppMgrUI>()->monitoringHub(); }

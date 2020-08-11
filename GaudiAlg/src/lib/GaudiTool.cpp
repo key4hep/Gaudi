@@ -38,7 +38,7 @@
 // ============================================================================
 #include "GaudiCommon.icpp"
 // ============================================================================
-template class GaudiCommon<CounterHolder<AlgTool>>;
+template class GaudiCommon<AlgTool>;
 // ============================================================================
 /** @namespace GaudiToolServices
  *  Collection of default services names to be used
@@ -145,8 +145,7 @@ bool GaudiTool::summaryEnabled() // is summary enabled?
 // Standard constructor
 // ============================================================================
 GaudiTool::GaudiTool( std::string this_type, std::string this_name, const IInterface* parent )
-    : GaudiCommon<CounterHolder<AlgTool>>( std::move( this_type ), std::move( this_name ), parent )
-    , m_local( type() + "/" + name() ) {
+    : GaudiCommon<AlgTool>( std::move( this_type ), std::move( this_name ), parent ), m_local( type() + "/" + name() ) {
   // make instance counts
   GaudiToolLocal::s_InstanceCounter.increment( m_local );
 }
@@ -159,7 +158,7 @@ GaudiTool::~GaudiTool() { GaudiToolLocal::s_InstanceCounter.decrement( m_local )
 // ============================================================================
 StatusCode GaudiTool::initialize() {
   // initialize the base class
-  const StatusCode sc = GaudiCommon<CounterHolder<AlgTool>>::initialize();
+  const StatusCode sc = GaudiCommon<AlgTool>::initialize();
   if ( sc.isFailure() ) { return sc; }
 
   // increment the counter
@@ -184,7 +183,7 @@ StatusCode GaudiTool::finalize() {
   m_histoSvc.reset();
 
   // finalize the base class
-  const StatusCode sc = GaudiCommon<CounterHolder<AlgTool>>::finalize();
+  const StatusCode sc = GaudiCommon<AlgTool>::finalize();
   if ( sc.isFailure() ) { return sc; }
 
   // Decrement the counter

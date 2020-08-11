@@ -18,8 +18,8 @@
 
 #include <string>
 
-namespace Gaudi {
-  struct MonitoringHub;
+namespace Gaudi::Monitoring {
+  struct Hub;
 }
 
 /** @class IAppMgrUI IAppMgrUI.h GaudiKernel/IAppMgrUI.h
@@ -66,7 +66,7 @@ public:
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
   virtual void outputLevelUpdate() = 0;
 
-  virtual Gaudi::MonitoringHub& monitoringHub() {
+  virtual Gaudi::Monitoring::Hub& monitoringHub() {
     throw GaudiException( "IAppMgrUI", "montorHub access not implemented", StatusCode::FAILURE );
   }
 };

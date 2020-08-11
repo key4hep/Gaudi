@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from Gaudi.Configuration import *
+from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
 
 AuditorSvc().Auditors = ['ChronoAuditor']
 MessageSvc().OutputLevel = INFO
@@ -29,5 +30,6 @@ algs = [
     BoostHistoAlg('SimpleBoostHistos', OutputLevel=DEBUG),
 ]
 
-ApplicationMgr(
+app = ApplicationMgr(
     EvtMax=50000, EvtSel='NONE', HistogramPersistency='ROOT', TopAlg=algs)
+app.ExtSvc = [MessageSvcSink()]

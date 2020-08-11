@@ -152,7 +152,7 @@ public:
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
   void outputLevelUpdate() override;
 
-  Gaudi::MonitoringHub& monitoringHub() override { return m_monitoringHub; }
+  Gaudi::Monitoring::Hub& monitoringHub() override { return m_monitoringHub; }
 
   /// Print the sequence of algorithms that have been loaded.
   void printAlgsSequences();
@@ -237,7 +237,7 @@ protected:
 
   SmartIF<IQueueingEventProcessor> m_queueingProcessor; ///< Reference to a queueing processing manager object
 
-  Gaudi::MonitoringHub m_monitoringHub;
+  Gaudi::Monitoring::Hub m_monitoringHub;
 
   //
   // The public ApplicationMgr properties

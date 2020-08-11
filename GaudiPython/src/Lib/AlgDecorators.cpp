@@ -79,52 +79,6 @@ IInterface* GaudiPython::AlgDecorator::svc_( const GaudiAlgorithm* alg, const st
   return alg ? alg->svc<IInterface>( name, create ) : nullptr;
 }
 // ============================================================================
-// get all counters form the algorithm
-// ============================================================================
-size_t GaudiPython::AlgDecorator::_counters_a_( const GaudiAlgorithm* alg, std::vector<std::string>& names,
-                                                GaudiPython::AlgDecorator::Counters& out ) {
-  names.clear();
-  out.clear();
-  if ( !alg ) return 0;
-  alg->forEachCounter( [&]( const std::string& name, auto& counter ) {
-    names.push_back( name );
-    out.push_back( &counter );
-  } );
-  return out.size();
-}
-// ============================================================================
-// get all counters form the tool
-// ============================================================================
-size_t GaudiPython::AlgDecorator::_counters_t_( const GaudiTool* alg, std::vector<std::string>& names,
-                                                GaudiPython::AlgDecorator::Counters& out ) {
-  names.clear();
-  out.clear();
-  if ( !alg ) return 0;
-  alg->forEachCounter( [&]( const std::string& name, auto& counter ) {
-    names.push_back( name );
-    out.push_back( &counter );
-  } );
-  return out.size();
-}
-// ============================================================================
-// get all counters form the algorithm
-// ============================================================================
-size_t GaudiPython::AlgDecorator::_counters_a_( const IAlgorithm* alg, std::vector<std::string>& names,
-                                                GaudiPython::AlgDecorator::Counters& out ) {
-  names.clear();
-  out.clear();
-  return alg ? _counters_a_( dynamic_cast<const GaudiAlgorithm*>( alg ), names, out ) : 0;
-}
-// ============================================================================
-// get all counters form the tool
-// ============================================================================
-size_t GaudiPython::AlgDecorator::_counters_t_( const IAlgTool* alg, std::vector<std::string>& names,
-                                                GaudiPython::AlgDecorator::Counters& out ) {
-  names.clear();
-  out.clear();
-  return alg ? _counters_t_( dynamic_cast<const GaudiTool*>( alg ), names, out ) : 0;
-}
-// ============================================================================
 // get the counter by name
 // ============================================================================
 StatEntity* GaudiPython::AlgDecorator::_counter_a_( const GaudiAlgorithm* cmp, const std::string& name ) {

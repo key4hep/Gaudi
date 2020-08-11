@@ -30,11 +30,11 @@ from Configurables import Gaudi__Examples__OptFrExpTransformer as OptFrExpTransf
 from Configurables import Gaudi__Examples__OptLdExpTransformer as OptLdExpTransformer
 from Configurables import Gaudi__Examples__CountingConsumer as CountingConsumer
 from Configurables import Gaudi__Examples__SDataProducer as SDataProducer
+from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
 from Configurables import EvtStoreSvc
 # Application setup
 app = ApplicationMgr()
-#app.ExtSvc = [ EvtStoreSvc("EventDataSvc",OutputLevel=DEBUG ) ]
-app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
+app.ExtSvc = [EvtStoreSvc("EventDataSvc"), MessageSvcSink()]
 
 types = []
 

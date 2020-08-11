@@ -21,7 +21,6 @@
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
 
-#include <boost/format.hpp>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -124,9 +123,6 @@ StatusCode MessageSvc::initialize() {
 
   // make sure the map of logged stream names is initialized
   setupLogStreams();
-
-  // declare ourself as a monitoding sink
-  serviceLocator()->monitoringHub().addSink( this );
 
   return StatusCode::SUCCESS;
 }
@@ -245,22 +241,6 @@ void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& prop ) {
   }
 }
 #endif
-
-StatusCode MessageSvc::stop() {
-  auto ok = extends::stop();
-  if ( !ok ) return ok;
-  m_monitoringEntities.sort( []( const auto& a, const auto& b ) { return a.id > b.id; } );
-  auto& log = info() << "Monitoring Entities (" << m_monitoringEntities.size() << "):";
-  std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [&log]( auto& ent ) {
-    const auto j = ent.getJSON();
-    if ( !j.at("empty").template get<bool>() ) {
-      log << '\n' << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + ent.id + "\"" ) << j.at("str").template get<std::string>();
-    }
-  } );
-  log << endmsg;
-
-  return ok;
-}
 
 //#############################################################################
 /// Finalize Service
