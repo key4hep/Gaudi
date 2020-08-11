@@ -28,10 +28,6 @@ public:
   using AccParent::reset;
   /// the constructor with automatic registration in the owner's counter map
   StatEntity() = default;
-  template <class OWNER>
-  StatEntity( OWNER* o, const std::string& tag ) {
-    o->declareCounter( tag, "counter", *this );
-  }
   StatEntity( const unsigned long entries, const double flag, const double flag2, const double minFlag,
               const double maxFlag ) {
     reset( std::make_tuple(
@@ -184,4 +180,20 @@ public:
   }
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   MsgStream&    fillStream( MsgStream& o ) const { return print( o ); }
+  /// Basic JSON export for Gaudi::Monitoring::Hub support.
+  virtual nlohmann::json toJSON() const override {
+    return {{"empty", this->nEntries() == 0},
+            {"subtype", "statentity"},
+            {"nEntries", this->nEntries()},
+            {"sum", this->sum()},
+            {"mean", this->mean()},
+            {"sum2", this->sum2()},
+            {"standard_deviation", this->standard_deviation()},
+            {"min", this->min()},
+            {"max", this->max()},
+            {"nTrueEntries", this->nTrueEntries()},
+            {"nFalseEntries", this->nFalseEntries()},
+            {"efficiency", this->efficiency()},
+            {"efficiencyErr", this->efficiencyErr()}};
+  }
 };

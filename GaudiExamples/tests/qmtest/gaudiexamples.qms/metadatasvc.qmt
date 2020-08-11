@@ -16,11 +16,16 @@
   <text>--option</text>
   <text>ApplicationMgr(EvtMax=10).ExtSvc.append('Gaudi::MetaDataSvc')</text>
   <text>--option</text>
+  <text>ApplicationMgr().ExtSvc.append('Gaudi::Monitoring::MessageSvcSink')</text>
+  <text>--option</text>
   <text>from Configurables import Gaudi__MetaDataSvc; Gaudi__MetaDataSvc(OutputLevel=DEBUG)</text>
   <text>--option</text>
   <text>NTupleSvc().Output = ["MYLUN DATAFILE='TupleEx_with_metadata.root' OPT='NEW' TYP='ROOT'"]</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="prerequisites"><set>
+    <tuple><text>gaudiexamples.tupleex_py</text><enumeral>PASS</enumeral></tuple>
+  </set></argument>
 <argument name="reference"><text>refs/MetaDataSvc.ref</text></argument>
 <argument name="validator"><text>
 preprocessor = (normalizeExamples +
@@ -40,7 +45,7 @@ try:
     info.sort()
     if stdout != info:
     	causes.append('metadata content')
-except CalledProcessError:
+except CalledProcessError as e:
     causes.append('dump metadata script failure')
 </text></argument>
 </extension>

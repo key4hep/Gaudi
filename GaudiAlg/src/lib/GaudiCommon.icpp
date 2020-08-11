@@ -113,11 +113,6 @@ template <class PBASE>
 StatusCode GaudiCommon<PBASE>::finalize() {
   StatusCode sc = StatusCode::SUCCESS;
 
-  // print the general information about statistical counters
-  if ( this->msgLevel( MSG::DEBUG ) || ( statPrint() && this->nCounters() > 0 ) ) {
-    // print general statistical counters
-    printStat( statPrint() ? MSG::ALWAYS : MSG::DEBUG );
-  }
   // add all counters to the CounterSummarySvc
   if ( m_counterSummarySvc && this->svcLoc()->existsService( "CounterSummarySvc" ) ) {
     if ( this->msgLevel( MSG::DEBUG ) ) this->debug() << "adding counters to CounterSummarySvc" << endmsg;
@@ -163,7 +158,6 @@ StatusCode GaudiCommon<PBASE>::finalize() {
   }
 
   // clear *ALL* counters explicitly
-  this->clearCounters();
   m_countersOwn.clear(); // then delete any owned counters
   m_exceptions.clear();
   m_infos.clear();
@@ -382,38 +376,6 @@ void GaudiCommon<PBASE>::Exception( std::string_view msg, const StatusCode sc ) 
   increment( m_exceptions, msg );
   Print( std::string{"Exception throw: "}.append( msg ), sc, MSG::FATAL ).ignore();
   throw GaudiException( ( this->name() + ":: " ).append( msg ), "", sc );
-}
-// ============================================================================
-
-// ============================================================================
-// perform the actual printout of counters
-// ============================================================================
-template <class PBASE>
-long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const {
-  // check how many counters think they should be printed or how many
-  // we anyway want to print
-  auto countToBePrinted = [&]() {
-    unsigned n = 0;
-    this->forEachCounter( [&n]( const auto&, const auto& counter ) { n += counter.toBePrinted(); } );
-    return n;
-  };
-  auto nbPrintedCounters =
-      ( ( !m_printEmptyCounters && !this->msgLevel( MSG::DEBUG ) ) ? countToBePrinted() : this->nCounters() );
-  // in case nothing should be printed, let's stop here
-  if ( nbPrintedCounters == 0 ) return 0;
-  MsgStream& msg = this->msgStream( level );
-  msg << "Number of counters : " << nbPrintedCounters << "\n" << m_header.value();
-  this->forEachCounter( [&]( const auto& label, const auto& counter ) {
-    if ( m_printEmptyCounters || this->msgLevel( MSG::DEBUG ) || counter.toBePrinted() ) {
-      std::ostringstream ost;
-      counter.print( ost, label );
-      msg << "\n" << ost.str();
-    }
-  } );
-  //
-  msg << endmsg;
-  //
-  return nbPrintedCounters;
 }
 // ============================================================================
 

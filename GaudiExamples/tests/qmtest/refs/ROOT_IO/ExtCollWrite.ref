@@ -78,7 +78,6 @@ Fill              SUCCESS Property ['Name': Value] =  'RootInTES':''
 Fill              SUCCESS Property ['Name': Value] =  'Context':''
 Fill              SUCCESS Property ['Name': Value] =  'TypePrint':False
 Fill              SUCCESS Property ['Name': Value] =  'PrintEmptyCounters':False
-Fill              SUCCESS Property ['Name': Value] =  'StatPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'Blocking':False

@@ -61,7 +61,7 @@ ApplicationMgr.EventLoop:'EventLoopMgr'
 ApplicationMgr.EvtMax:10
 ApplicationMgr.EvtSel:'NONE'
 ApplicationMgr.Exit:0
-ApplicationMgr.ExtSvc:[ 'RndmGenSvc' , 'Gaudi::MetaDataSvc' ]
+ApplicationMgr.ExtSvc:[ 'RndmGenSvc' , 'Gaudi::MetaDataSvc' , 'Gaudi::Monitoring::MessageSvcSink' ]
 ApplicationMgr.ExtSvcCreates:True
 ApplicationMgr.Go:0
 ApplicationMgr.HistogramPersistency:'ROOT'
@@ -135,6 +135,14 @@ Gaudi::MetaDataSvc.AuditStart:False
 Gaudi::MetaDataSvc.AuditStop:False
 Gaudi::MetaDataSvc.Enabled:True
 Gaudi::MetaDataSvc.OutputLevel:2
+Gaudi::Monitoring::MessageSvcSink.AuditFinalize:False
+Gaudi::Monitoring::MessageSvcSink.AuditInitialize:False
+Gaudi::Monitoring::MessageSvcSink.AuditReinitialize:False
+Gaudi::Monitoring::MessageSvcSink.AuditRestart:False
+Gaudi::Monitoring::MessageSvcSink.AuditServices:False
+Gaudi::Monitoring::MessageSvcSink.AuditStart:False
+Gaudi::Monitoring::MessageSvcSink.AuditStop:False
+Gaudi::Monitoring::MessageSvcSink.OutputLevel:3
 HistogramDataSvc.AuditFinalize:False
 HistogramDataSvc.AuditInitialize:False
 HistogramDataSvc.AuditReinitialize:False
@@ -360,7 +368,6 @@ Tuple.RequireObjects:[  ]
 Tuple.RootInTES:''
 Tuple.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
 Tuple.StatEntityList:[  ]
-Tuple.StatPrint:True
 Tuple.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Tuple.Timeline:False
 Tuple.TypePrint:True
@@ -424,7 +431,6 @@ Tuple2.RequireObjects:[  ]
 Tuple2.RootInTES:''
 Tuple2.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
 Tuple2.StatEntityList:[  ]
-Tuple2.StatPrint:True
 Tuple2.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Tuple2.Timeline:False
 Tuple2.TypePrint:True
@@ -488,7 +494,6 @@ Tuple3.RequireObjects:[  ]
 Tuple3.RootInTES:''
 Tuple3.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
 Tuple3.StatEntityList:[  ]
-Tuple3.StatPrint:True
 Tuple3.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Tuple3.Timeline:False
 Tuple3.TypePrint:True

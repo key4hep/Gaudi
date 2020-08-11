@@ -90,7 +90,6 @@ class Counter(GaudiAlgo):
         prnt = int(executed.flag())
         if 0 == prnt % 1000:
             six.print_(" Event number %s " % prnt, flush=True)
-            self.printStat()
             bc = self.counter('eff')
             line = "(%.12g += %.12g)%s" % (bc.eff() * 100, bc.effErr() * 100,
                                            '%')
@@ -116,9 +115,7 @@ def configure(gaudi=None):
 
     alg = Counter()
     gaudi.setAlgorithms([alg])
-
-    # configure the properties
-    alg.StatPrint = True
+    gaudi.ExtSvc += ['Gaudi::Monitoring::MessageSvcSink']
 
     return SUCCESS
 

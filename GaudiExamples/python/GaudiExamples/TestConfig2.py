@@ -50,6 +50,7 @@ def adjustLogLevels(config):
 def main(nevt=50000, outfile='histo-c2.root', OutputLevel=3):
     msgSvc = C.MessageSvc(OutputLevel=3)
     app = C.ApplicationMgr(MessageSvcType=msgSvc)
+    app.ExtSvc = ["Gaudi::Monitoring::MessageSvcSink"]
     return adjustLogLevels(
         mergeConfigs([app, msgSvc], setUpAlgorithms(), configureTiming(),
                      setFakeEvents(nevt), histogramWriting(outfile)))

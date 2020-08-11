@@ -57,7 +57,6 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader':' |    C
 SimpleHistos        DEBUG Property ['Name': Value] =  'Context':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'TypePrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'StatPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':''
@@ -120,7 +119,6 @@ Histos2           SUCCESS Property ['Name': Value] =  'StatTableHeader':' |    C
 Histos2           SUCCESS Property ['Name': Value] =  'Context':''
 Histos2           SUCCESS Property ['Name': Value] =  'TypePrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'PrintEmptyCounters':False
-Histos2           SUCCESS Property ['Name': Value] =  'StatPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'RootInTES':''
@@ -216,6 +214,26 @@ SimpleR7Histos    SUCCESS Filling Histograms...... Please be patient !
 SimpleBoostHistos SUCCESS Filling Histograms...... Please be patient !
 Histos2           WARNING Gaudi::Examples::HistoProps:: Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID
 HistogramDataSvc    DEBUG  Redefine the parameters for the histogram 'Histos2/2' to be ('TEST2',-100,200,100)
+SimpleBoostHistos    INFO Number of counters : 10
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "Binom V poisson"                               H     50000 |
+ | "Binominal"                                     H     50000 |
+ | "Breit"                                         H     50000 |
+ | "Expo V poisson"                                H     50000 |
+ | "Exponential"                                   H     50000 |
+ | "Exponential V Flat"                            H     50000 |
+ | "Gaussian V Flat"                               H     50000 |
+ | "Gaussian mean=0, sigma=1"                      H     50000 |
+ | "Poisson"                                       H     50000 |
+ | "calls"                                         |     50000 |
+SimpleR7Histos       INFO Number of counters : 6
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "Binominal"                                     H     50000 |
+ | "Breit"                                         H     50000 |
+ | "Exponential"                                   H     50000 |
+ | "Gaussian mean=0, sigma=1"                      H     50000 |
+ | "Poisson"                                       H     50000 |
+ | "calls"                                         |     50000 |
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS 1D histograms in directory "SimpleHistos" : 10
@@ -258,26 +276,6 @@ SimpleHistos      SUCCESS 2D profile histograms in directory "SimpleHistos" : 3
 SimpleHistos        DEBUG Finalize base class GaudiAlgorithm
 SimpleHistos        DEBUG Tools to release :
 SimpleHistos        DEBUG Services to release :
-SimpleR7Histos       INFO Number of counters : 6
- |    Counter                                      |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Exponential"                                   H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
-SimpleBoostHistos    INFO Number of counters : 10
- |    Counter                                      |
- | "Binom V poisson"                               H     50000 |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Expo V poisson"                                H     50000 |
- | "Exponential"                                   H     50000 |
- | "Exponential V Flat"                            H     50000 |
- | "Gaussian V Flat"                               H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
 Histos2           SUCCESS Booked 2 Histogram(s) : 1D=2
 Histos2           SUCCESS 1D histograms in directory "Histos2" : 2
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |

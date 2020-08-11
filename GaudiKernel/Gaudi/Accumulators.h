@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <Gaudi/MonitoringHub.h>
+
 #include <chrono>
 
 namespace Gaudi::Accumulators {
@@ -102,6 +104,24 @@ namespace Gaudi::Accumulators {
  *       StatEntity should not be used and should be dropped when ancient code has been
  *       ported to the other counters
  *
+ * Serialization
+ * -------------
+ *
+ * All counters are serialized into JSON strings using nlohmann's json library (pure header)
+ * See https://github.com/nlohmann/json for details, but here are few notes :
+ *   - all Arithmetic types used in Counters need to be serializable with this library
+ *   - standard types (STL included) already are
+ *   - for custom types, one needs to implement a to_json method along these lines :
+ * @code
+ *   void to_json(json& j, const Person& p) {
+ *       j = nlohmann::json{{"name", p.name}, {"address", p.address}, {"age", p.age}};
+ *   }
+ * @endcode
+ * This method must be declared in yout type namespace
+ *   - for third-party type, it's slightly more complicated and one has to specialize
+ *     a class called adl_serializer for the given type. Just follow the example given in
+ *     this file for std::chrono::duration
+ *
  * Notes
  * -----
  *
@@ -162,6 +182,17 @@ namespace Gaudi::Accumulators {
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/detected.h"
+
+// Json serialization for std::chrono::duration
+namespace nlohmann {
+  template <class Rep, class Period>
+  struct adl_serializer<std::chrono::duration<Rep, Period>> {
+    static void to_json( json& j, const std::chrono::duration<Rep, Period>& d ) { j = d.count(); }
+    static void from_json( const json& j, std::chrono::duration<Rep, Period>& d ) {
+      d = std::chrono::duration<Rep, Period>{j.get<Rep>()};
+    }
+  };
+} // namespace nlohmann
 
 namespace Gaudi::Accumulators {
 
@@ -668,10 +699,11 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   struct PrintableCounter {
+    /// Only needed for backward compatibility in StatEntity. Should be dropped when StatEntity is
     PrintableCounter() = default;
     template <class OWNER>
     PrintableCounter( OWNER* o, std::string tag ) {
-      o->declareCounter( std::move( tag ), "counter", *this );
+      o->serviceLocator()->monitoringHub().registerEntity( o->name(), std::move( tag ), "counter", *this );
     }
     /// destructor
     virtual ~PrintableCounter() = default;
@@ -696,8 +728,8 @@ namespace Gaudi::Accumulators {
       print( ost );
       return ost.str();
     }
-    /// Basic JSON export for Gaudi::MonitoringHub support.
-    virtual nlohmann::json toJSON() const;
+    /// Basic JSON export for Gaudi::Monitoring::Hub support.
+    virtual nlohmann::json toJSON() const = 0;
   };
 
   /**
@@ -749,6 +781,9 @@ namespace Gaudi::Accumulators {
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool       toBePrinted() const override { return this->nEntries() > 0; }
+    virtual nlohmann::json toJSON() const override {
+      return {{"empty", this->nEntries() == 0}, {"subtype", "basic"}, {"nEntries", this->nEntries()}};
+    }
   };
 
   /**
@@ -771,7 +806,14 @@ namespace Gaudi::Accumulators {
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
 
-    bool toBePrinted() const override { return this->nEntries() > 0; }
+    bool                   toBePrinted() const override { return this->nEntries() > 0; }
+    virtual nlohmann::json toJSON() const override {
+      return {{"empty", this->nEntries() == 0},
+              {"subtype", "averaging"},
+              {"nEntries", this->nEntries()},
+              {"sum", this->sum()},
+              {"mean", this->mean()}};
+    }
   };
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   using SummingCounter = AveragingCounter<Arithmetic, Atomicity>;
@@ -797,6 +839,15 @@ namespace Gaudi::Accumulators {
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool       toBePrinted() const override { return this->nEntries() > 0; }
+    virtual nlohmann::json toJSON() const override {
+      return {{"empty", this->nEntries() == 0},
+              {"subtype", "sigma"},
+              {"nEntries", this->nEntries()},
+              {"sum", this->sum()},
+              {"mean", this->mean()},
+              {"sum2", this->sum2()},
+              {"standard_deviation", this->standard_deviation()}};
+    }
   };
 
   /**
@@ -821,6 +872,17 @@ namespace Gaudi::Accumulators {
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool       toBePrinted() const override { return this->nEntries() > 0; }
+    virtual nlohmann::json toJSON() const override {
+      return {{"empty", this->nEntries() == 0},
+              {"subtype", "stat"},
+              {"nEntries", this->nEntries()},
+              {"sum", this->sum()},
+              {"mean", this->mean()},
+              {"sum2", this->sum2()},
+              {"standard_deviation", this->standard_deviation()},
+              {"min", this->min()},
+              {"max", this->max()}};
+    }
   };
 
   /**
@@ -851,9 +913,18 @@ namespace Gaudi::Accumulators {
       return print( o, true );
     }
     /// prints the counter to a stream in table format, with the given tag
-    std::ostream& print( std::ostream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
-    MsgStream&    print( MsgStream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
-    bool          toBePrinted() const override { return this->nEntries() > 0; }
+    std::ostream&          print( std::ostream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
+    MsgStream&             print( MsgStream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
+    bool                   toBePrinted() const override { return this->nEntries() > 0; }
+    virtual nlohmann::json toJSON() const override {
+      return {{"empty", this->nEntries() == 0},
+              {"subtype", "binomial"},
+              {"nEntries", this->nTrueEntries() + this->nFalseEntries()},
+              {"nTrueEntries", this->nTrueEntries()},
+              {"nFalseEntries", this->nFalseEntries()},
+              {"efficiency", this->efficiency()},
+              {"efficiencyErr", this->efficiencyErr()}};
+    }
   };
 
   namespace details::MsgCounter {
@@ -934,6 +1005,9 @@ namespace Gaudi::Accumulators {
     std::ostream& print( std::ostream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     bool          toBePrinted() const override { return this->value() > 0; }
+    virtual nlohmann::json toJSON() const override {
+      return {{"empty", this->value() == 0}, {"subtype", "message"}, {"nEntries", this->value()}};
+    }
   };
 
   /**

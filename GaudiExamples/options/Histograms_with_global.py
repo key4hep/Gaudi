@@ -37,6 +37,7 @@ app.TopAlg[0].OutputLevel = 2
 
 app.MessageSvcType = 'MessageSvc'
 app.MessageSvcType.OutputLevel = 3
+app.ExtSvc = ["Gaudi::Monitoring::MessageSvcSink"]
 
 try:
     app.JobOptionsSvcType = 'MessageSvc'

@@ -11,11 +11,12 @@
 
 from Gaudi.Configuration import *
 from Configurables import CounterAlg
+from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
 
 app = ApplicationMgr()
-counterAlg = CounterAlg();
+counterAlg = CounterAlg()
 app.TopAlg = [counterAlg]
 app.EvtMax = 500
 app.EvtSel = "NONE"
 app.HistogramPersistency = "NONE"
-
+app.ExtSvc += [MessageSvcSink()]
