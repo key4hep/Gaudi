@@ -671,7 +671,7 @@ namespace Gaudi::Accumulators {
     PrintableCounter() = default;
     template <class OWNER>
     PrintableCounter( OWNER* o, std::string tag ) {
-      o->declareCounter( std::move( tag ), *this );
+      o->declareCounter( std::move( tag ), "counter", *this );
     }
     /// destructor
     virtual ~PrintableCounter() = default;
@@ -696,10 +696,9 @@ namespace Gaudi::Accumulators {
       print( ost );
       return ost.str();
     }
+    /// Basic JSON export for Gaudi::MonitoringHub support.
+    virtual nlohmann::json toJSON() const;
   };
-
-  /// Basic JSON export for Gaudi::MonitoringHub support.
-  nlohmann::json toJSON( const PrintableCounter& c );
 
   /**
    * external printout operator to a stream type

@@ -12,9 +12,9 @@
 #include <Gaudi/Accumulators.h>
 
 namespace Gaudi::Accumulators {
-  nlohmann::json toJSON( const PrintableCounter& c ) {
+  nlohmann::json PrintableCounter::toJSON() const {
     std::stringstream ost;
-    c.print( ost, true );
-    return {{"type", "counter"}, {"empty", !c.toBePrinted()}, {"str", ost.str()}};
+    print( ost, true );
+    return {{"empty", !toBePrinted()}, {"str", ost.str()}};
   }
 } // namespace Gaudi::Accumulators

@@ -253,8 +253,8 @@ StatusCode MessageSvc::stop() {
   auto& log = info() << "Monitoring Entities (" << m_monitoringEntities.size() << "):";
   std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [&log]( auto& ent ) {
     const auto j = ent.getJSON();
-    if ( !j["empty"].template get<bool>() ) {
-      log << '\n' << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + ent.id + "\"" ) << j["str"].template get<std::string>();
+    if ( !j.at("empty").template get<bool>() ) {
+      log << '\n' << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + ent.id + "\"" ) << j.at("str").template get<std::string>();
     }
   } );
   log << endmsg;

@@ -16,28 +16,29 @@ namespace Gaudi {
 
     /** Wrapper class for arbitrary monitoring objects.
      *
-     * What qualifies an object to be a monitoring entity is the existence of a non member function toJSON(cont T&)
-     * that returns a JSON object like:
-     * ```json
-     * {
-     *   "type": "some_type_id",
-     *   "str": "basic string representation",
-     *   "some_value_name": value,
-     *   ...
-     * }
-     * ```
-     * The *type* field is used by specific Sink instances to decide if they have to handle the object or not, and
-     * it can be used to know which fields to expect and how to treat them.
+     * What qualifies an object to be a monitoring entity is the existence of toJSON() method
+     * that returns a generic JSON object. It will typically be a dictionnary, but the meaning of each entry
+     * is only defined by the Entity producers, for each type of Entity.
+     *
+     * @param id the name of the entity
+     * @param type the type of the entity, as a string. This is used by specific Sink instances to decide if they
+     * have to handle a given entity or not. It can be used to know which fields to expect and how to treat them.
+     * @param internalType the actual type_info of the internal data in this Entity
+     * @param ptr pointer to the actual data inside this Entity
+     * @param getJSON a function converting the internal data to json. Due to type erasure, it needs to be a
+     * member of this struct
      *
      * A *str* field is requested for fallback to generic handling, if needed.
      */
     struct Entity {
       template <typename T>
-      Entity( std::string id, const T& ent )
-          : id{std::move( id )}, ptr{&ent}, type{typeid( T )}, getJSON{[&ent]() { return toJSON( ent ); }} {}
+      Entity( std::string id, std::string type, const T& ent )
+        : id{std::move( id )}, type{std::move( type )}, internalType{typeid( T )}, ptr{&ent},
+          getJSON{[&ent]() { return ent.toJSON(); }} {}
       std::string           id;
+      std::string           type;
+      const std::type_info& internalType;
       const void*           ptr{nullptr};
-      const std::type_info& type;
       std::function<json()> getJSON;
     };
 
@@ -48,8 +49,8 @@ namespace Gaudi {
     };
 
     template <typename T>
-    void registerEntity( std::string s, const T& ent ) {
-      registerEntity( {std::move( s ), ent} );
+    void registerEntity( std::string s, std::string t, const T& ent ) {
+      registerEntity( {std::move( s ), std::move( t ), ent} );
     }
     void registerEntity( Entity ent ) {
       std::for_each( begin( m_sinks ), end( m_sinks ),
