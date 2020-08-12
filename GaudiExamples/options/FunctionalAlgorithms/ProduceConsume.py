@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,7 +11,7 @@
 ####################################################################
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
-from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
+from GaudiKernel.DataHandle import DataHandle
 from Gaudi.Configuration import *
 from Configurables import Gaudi__Examples__IntDataProducer as IntDataProducer
 from Configurables import Gaudi__Examples__VectorDataProducer as VectorDataProducer
@@ -51,7 +51,7 @@ for configurable in sorted([
     print("\"{}\":".format(configurable.getType()))
     props = configurable.getDefaultProperties()
     for propname, prop in sorted(props.items()):
-        if isinstance(prop, DataObjectHandleBase):
+        if isinstance(prop, DataHandle):
             types.append(prop.type())
             print("  {}: \"{}\"".format(propname, prop.type()))
 print("---")

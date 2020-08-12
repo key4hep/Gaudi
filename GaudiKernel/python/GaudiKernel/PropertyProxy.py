@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -19,16 +19,12 @@ __all__ = [
 ]
 
 import os
-import glob
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel import ConfigurableDb
-from GaudiKernel.DataObjectHandleBase import *
+from GaudiKernel.DataHandle import DataHandle
 
 import logging
 log = logging.getLogger('PropertyProxy')
-
-# dictionary with configurable class : python module entries
-# -->PM#from AthenaCommon import ConfigurableDb
 
 
 def derives_from(derived, base):
@@ -56,8 +52,8 @@ def _isCompatible(tp, value):
         if (type(value) is str) or derives_from(value, 'Configurable'):
             # we can set string properties only from strings or configurables
             return value
-        elif isinstance(value, DataObjectHandleBase):
-            # Implicitly convert DataObjectHandleBase to str for backward
+        elif isinstance(value, DataHandle):
+            # Implicitly convert DataHandle to str for backward
             # compatiblity in cases like B.Input (str) = A.Output (handle)
             return str(value)
         else:
@@ -385,7 +381,7 @@ class GaudiHandleArrayPropertyProxy(GaudiHandlePropertyProxyBase):
         return newValue
 
 
-class DataObjectHandleBasePropertyProxy(PropertyProxy):
+class DataHandlePropertyProxy(PropertyProxy):
     def __init__(self, descr, docString, default):
         PropertyProxy.__init__(self, descr, docString, default)
 
@@ -420,12 +416,12 @@ class DataObjectHandleBasePropertyProxy(PropertyProxy):
         mode = obj.__class__.getDefaultProperty(self.descr.__name__).mode()
         _type = obj.__class__.getDefaultProperty(self.descr.__name__).type()
         if type(value) == str:
-            return DataObjectHandleBase(value, mode, _type)
-        elif isinstance(value, DataObjectHandleBase):
-            return DataObjectHandleBase(value.__str__(), mode, _type)
+            return DataHandle(value, mode, _type)
+        elif isinstance(value, DataHandle):
+            return DataHandle(value.__str__(), mode, _type)
         else:
             raise ValueError("received an instance of %s, but %s expected" %
-                             (type(value), 'str or DataObjectHandleBase'))
+                             (type(value), 'str or DataHandle'))
 
 
 def PropertyProxyFactory(descr, doc, default):
@@ -437,7 +433,7 @@ def PropertyProxyFactory(descr, doc, default):
     if isinstance(default, GaudiHandle):
         return GaudiHandlePropertyProxy(descr, doc, default)
 
-    if isinstance(default, DataObjectHandleBase):
-        return DataObjectHandleBasePropertyProxy(descr, doc, default)
+    if isinstance(default, DataHandle):
+        return DataHandlePropertyProxy(descr, doc, default)
 
     return PropertyProxy(descr, doc, default)

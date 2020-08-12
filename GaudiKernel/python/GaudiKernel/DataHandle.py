@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,12 +8,10 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-__doc__ = """The python module holding python bindings to DataObjectHandle"""
-
-# s = "/Path/to/Address"
+__doc__ = """The python module holding python bindings to DataHandle"""
 
 
-class DataObjectHandleBase(object):
+class DataHandle(object):
 
     __slots__ = ('Path', 'Mode', 'Type')
 
@@ -35,7 +33,7 @@ class DataObjectHandleBase(object):
         """
         Need especially Configurable.isPropertySet when checked against default.
         """
-        if isinstance(other, DataObjectHandleBase):
+        if isinstance(other, DataHandle):
             return self.Path == other.Path
         if isinstance(other, str):
             return self.Path == other
@@ -61,11 +59,11 @@ class DataObjectHandleBase(object):
 
     def __add__(self, other):
         path = ':'.join(i + other for i in self.Path.split(':'))
-        return DataObjectHandleBase(path, self.Mode, self.Type)
+        return DataHandle(path, self.Mode, self.Type)
 
     def __radd__(self, other):
         path = ':'.join(other + i for i in self.Path.split(':'))
-        return DataObjectHandleBase(path, self.Mode, self.Type)
+        return DataHandle(path, self.Mode, self.Type)
 
     def __iadd__(self, other):
         self.Path = ':'.join(i + other for i in self.Path.split(':'))

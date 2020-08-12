@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,8 +21,6 @@
 #include <string>
 
 const DataObjID INVALID_DATAOBJID = DataObjID();
-
-std::string const DataObjectHandleBase::default_type = "unknown_t";
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
@@ -115,30 +113,6 @@ DataObject* DataObjectHandleBase::fetch() const {
   m_searchDone = true;
   return p;
 }
-
-//---------------------------------------------------------------------------
-
-std::string DataObjectHandleBase::toString() const { return objKey(); }
-
-//---------------------------------------------------------------------------
-std::string DataObjectHandleBase::pythonRepr() const {
-  std::string m;
-  switch ( mode() ) {
-  case Gaudi::DataHandle::Mode::Reader:
-    m = "R";
-    break;
-  case Gaudi::DataHandle::Mode::Writer:
-    m = "W";
-    break;
-  default:
-    m = "UNKNOWN";
-    break;
-  }
-  return "DataObjectHandleBase('" + toString() + "', '" + m + "', '" + default_type + "')";
-}
-
-//---------------------------------------------------------------------------
-void DataObjectHandleBase::fromString( const std::string& s ) { Gaudi::Parsers::parse( *this, s ).ignore(); }
 
 //---------------------------------------------------------------------------
 

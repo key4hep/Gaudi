@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -25,7 +25,7 @@ from GaudiKernel.Constants import error_explanation, \
     VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL
 from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
-from GaudiKernel.DataObjectHandleBase import *
+from GaudiKernel.DataHandle import *
 
 from GaudiConfig.ControlFlow import (OrNode, AndNode, OrderedNode, ignore,
                                      InvertNode, ControlFlowLeaf,
@@ -449,8 +449,7 @@ class Configurable(
             return self.__tools[attr]
 
         if attr in self._properties:
-            if isinstance(self._properties[attr].__get__(self),
-                          DataObjectHandleBase):
+            if isinstance(self._properties[attr].__get__(self), DataHandle):
                 return self._properties[attr].__get__(self)
 
         for c in self.__children:
@@ -750,7 +749,7 @@ class Configurable(
         if not hasattr(self, name):
             return False
         default = self.getDefaultProperty(name)
-        if isinstance(default, (list, dict, DataObjectHandleBase)):
+        if isinstance(default, (list, dict, DataHandle)):
             value = getattr(self, name)
             return value != default
         return True

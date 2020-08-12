@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,7 +14,6 @@
 #include <mutex>
 
 #include "GaudiKernel/DataHandle.h"
-#include "GaudiKernel/DataObjectHandleProperty.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
@@ -54,13 +53,7 @@ public:
     p->template setOwnerType<OWNER>();
   }
 
-  std::string toString() const;
-  std::string pythonRepr() const override;
-  void        fromString( const std::string& s );
-
   friend std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d );
-
-  using PropertyType = DataObjectHandleProperty;
 
   /// Check if the data object declared is optional for the algorithm
   bool isOptional() const { return m_optional; }
@@ -101,20 +94,6 @@ protected:
    * so that we are sure that we only call it once
    */
   mutable std::mutex m_searchMutex;
-
-  static const std::string default_type;
 };
-
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-
-namespace Gaudi {
-  namespace Parsers {
-    StatusCode parse( DataObjectHandleBase&, const std::string& );
-  }
-  namespace Utils {
-    GAUDI_API std::ostream& toStream( const DataObjectHandleBase& v, std::ostream& o );
-  }
-} // namespace Gaudi
 
 #endif

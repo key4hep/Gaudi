@@ -10,11 +10,11 @@
                                'Gaudi::Examples::SelFilter/Filter3',
                                'Gaudi::Examples::SelFilter/Filter4',
                                'Gaudi::Examples::SelFilter/Filter5']},
- 'Filter1': {'Input': DataObjectHandleBase("Create1")},
- 'Filter2': {'Input': DataObjectHandleBase("Filter1")},
- 'Filter3': {'Input': DataObjectHandleBase("Filter2")},
- 'Filter4': {'Input': DataObjectHandleBase("Filter3")},
- 'Filter5': {'Input': DataObjectHandleBase("Filter4")}}
+ 'Filter1': {'Input': 'Create1'},
+ 'Filter2': {'Input': 'Filter1'},
+ 'Filter3': {'Input': 'Filter2'},
+ 'Filter4': {'Input': 'Filter3'},
+ 'Filter5': {'Input': 'Filter4'}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v30r1)

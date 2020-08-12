@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -29,8 +29,8 @@
 #include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/Auditor.h>
 #include <GaudiKernel/Bootstrap.h>
-#include <GaudiKernel/DataObjectHandleBase.h>
-#include <GaudiKernel/DataObjectHandleProperty.h>
+#include <GaudiKernel/DataHandle.h>
+#include <GaudiKernel/DataHandleProperty.h>
 #include <GaudiKernel/GaudiHandle.h>
 #include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/IAlgTool.h>
@@ -59,6 +59,7 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
+
 #include <exception>
 #include <fmt/format.h>
 #include <fstream>
@@ -175,8 +176,8 @@ class configGenerator {
 
   /// switch to decide if the generated configurables need
   /// to import GaudiHandles (ie: if one of the components has a XyzHandle<T>)
-  bool m_importGaudiHandles      = false;
-  bool m_importDataObjectHandles = false;
+  bool m_importGaudiHandles = false;
+  bool m_importDataHandles  = false;
 
   /// buffer of generated configurables informations for the "Db" file
   /// The "Db" file is holding informations about the generated configurables
@@ -481,8 +482,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     LOG_INFO << ":::: processing library: " << iLib << "...";
 
     // reset state
-    m_importGaudiHandles      = false;
-    m_importDataObjectHandles = false;
+    m_importGaudiHandles = false;
+    m_importDataHandles  = false;
     m_pyBuf.str( "" );
     m_dbBuf.str( "" );
     m_db2Buf.str( "" );
@@ -661,7 +662,7 @@ void configGenerator::genHeader( std::ostream& py, std::ostream& db )
 
   if ( m_importGaudiHandles ) { py << "from GaudiKernel.GaudiHandles import *\n"; }
 
-  if ( m_importDataObjectHandles ) { py << "from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase\n"; }
+  if ( m_importDataHandles ) { py << "from GaudiKernel.DataHandle import DataHandle\n"; }
 
   genImport( py, "from {}.Configurable import *" );
 
@@ -819,13 +820,13 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     ptype                = "GaudiHandleArray";
     ptype2               = base.pythonPropertyClassName();
     m_importGaudiHandles = true;
-  } else if ( ti == typeIndex<DataObjectHandleBase>() ) {
-    const DataObjectHandleProperty& hdl  = dynamic_cast<const DataObjectHandleProperty&>( *p );
-    const DataObjectHandleBase&     base = hdl.value();
+  } else if ( ti == typeIndex<Gaudi::DataHandle>() ) {
+    const DataHandleProperty& hdl  = dynamic_cast<const DataHandleProperty&>( *p );
+    const Gaudi::DataHandle&  base = hdl.value();
 
-    pvalue                    = base.pythonRepr();
-    ptype                     = "DataObjectHandleBase";
-    m_importDataObjectHandles = true;
+    pvalue              = base.pythonRepr();
+    ptype               = "DataHandle";
+    m_importDataHandles = true;
   } else {
     std::ostringstream v_str;
     v_str.setf( std::ios::showpoint ); // to correctly display floats

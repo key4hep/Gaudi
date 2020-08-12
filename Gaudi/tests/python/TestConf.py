@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,7 +14,7 @@ Bunch of fake configurables used for testing.
 
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel.Proxy.Configurable import *
-from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
+from GaudiKernel.DataHandle import DataHandle
 
 
 class APublicTool(ConfigurableAlgTool):
@@ -54,7 +54,7 @@ class MyTestTool(ConfigurableAlgTool):
         'PrivEmptyToolHndl': PrivateToolHandle(''),
         'Text': 'some text',
         'Int': 23,
-        'DataHandle': DataObjectHandleBase('Location', 'R'),
+        'DataHandle': DataHandle('Location', 'R'),
     }
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
