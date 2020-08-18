@@ -16,12 +16,12 @@
  * Only here for backward compatibility
  */
 class StatEntity : public Gaudi::Accumulators::PrintableCounter,
-                   public Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
+                   public Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full, double,
                                                               Gaudi::Accumulators::StatAccumulator,
                                                               Gaudi::Accumulators::BinomialAccumulator> {
 public:
   inline static const std::string typeString{"statentity"};
-  using AccParent         = Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
+  using AccParent         = Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full, double,
                                                         Gaudi::Accumulators::StatAccumulator,
                                                         Gaudi::Accumulators::BinomialAccumulator>;
   using BinomialAccParent = Gaudi::Accumulators::BinomialAccumulator<Gaudi::Accumulators::atomicity::full, double>;
