@@ -8,6 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+add_definitions(-g -O0)
 gaudi_subdir(GaudiExamples)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiAlg RootCnv)
@@ -211,3 +212,13 @@ gaudi_add_executable(testAppMgrStateMachine src/testing/TestAppMgrStateMachine.c
 
 gaudi_add_executable(QueueingEventProcessorExample src/QueueingEventProcessor/main.cpp
                      LINK_LIBRARIES GaudiKernel)
+
+gaudi_add_library( ToolVisitorTest src/ToolVisitorTest/ToolVisitorTestLib*.cpp
+   LINK_LIBRARIES GaudiKernel
+   PUBLIC_HEADERS GaudiExamples Gaudi)
+
+gaudi_add_executable(ToolVisitorTest_test src/ToolVisitorTest/ToolVisitorTest_test.cpp
+                     LINK_LIBRARIES GaudiKernel GaudiPluginService ToolVisitorTest)
+
+gaudi_add_test(ToolVisitorTest
+               COMMAND ToolVisitorTest_test.exe)
