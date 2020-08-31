@@ -11,6 +11,7 @@
 #ifndef GAUDIKERNEL_RENOUNCETOOLINPUTSVISITOR
 #define GAUDIKERNEL_RENOUNCETOOLINPUTSVISITOR 1
 
+#include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/ToolVisitor.h"
 #include <functional>
 #include <string>
@@ -68,18 +69,17 @@ public:
    * By default this renounce visitor will renounce inputs with keys found in the inputs_names list, and it operates
    * silently.
    */
-  RenounceToolInputsVisitor( std::vector<std::string>&& input_keys,
-                             ILogger& logger=s_noLogger )
-    : m_renounceKeys( std::move(input_keys) ),
-      m_logger( &logger )    // @TODO possible source of use after delete
+  RenounceToolInputsVisitor( std::vector<DataObjID>&& input_keys, ILogger& logger = s_noLogger )
+      : m_renounceKeys( std::move( input_keys ) )
+      , m_logger( &logger ) // @TODO possible source of use after delete
   {}
 
   virtual void visit( IAlgTool* alg_tool ) override;
 
 private:
-  std::vector<std::string>  m_renounceKeys;
-  ILogger                  *m_logger;
+  std::vector<DataObjID> m_renounceKeys;
+  ILogger*               m_logger;
 
-  static NoLogger           s_noLogger USAGE_IS_THREAD_SAFE;
+  static NoLogger s_noLogger USAGE_IS_THREAD_SAFE;
 };
 #endif

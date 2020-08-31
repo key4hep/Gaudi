@@ -62,6 +62,21 @@ public:
     m_handles.erase( &handle );
   }
 
+  bool renounceInput( const DataObjID& id ) override {
+    std::vector<Gaudi::DataHandle*> erase_list;
+    for ( Gaudi::DataHandle* handle : m_handles ) {
+      if ( handle->mode() == Gaudi::DataHandle::Reader && handle->fullKey() == id ) { erase_list.push_back( handle ); }
+    }
+    for ( Gaudi::DataHandle* erase_handle : erase_list ) { m_handles.erase( erase_handle ); }
+    auto elm = m_inputDataObjs.find( id );
+    if ( elm != m_inputDataObjs.end() ) {
+      m_inputDataObjs.erase( elm );
+      return true;
+    } else {
+      return !erase_list.empty();
+    }
+  }
+
   const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
   const DataObjIDColl& outputDataObjs() const override { return m_outputDataObjs; }
 

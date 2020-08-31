@@ -9,34 +9,16 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "GaudiKernel/RenounceToolInputsVisitor.h"
-#include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/IAlgTool.h"
+#include "GaudiKernel/IDataHandleHolder.h"
 
-void RenounceToolInputsVisitor::visit(IAlgTool *alg_tool) {
-  IDataHandleHolder *dh_holder = dynamic_cast<IDataHandleHolder *>(alg_tool);
-  if (dh_holder) {
-    for (Gaudi::DataHandle* input_handle : dh_holder->inputHandles()) {
-      for (const std::string &renounce_input : m_renounceKeys) {
-        if (input_handle->objKey() == renounce_input) {
-          m_logger->renounce(alg_tool->name(), input_handle->objKey());
-          dh_holder->renounce(*input_handle);
-        }
+void RenounceToolInputsVisitor::visit( IAlgTool* alg_tool ) {
+  IDataHandleHolder* dh_holder = dynamic_cast<IDataHandleHolder*>( alg_tool );
+  if ( dh_holder ) {
+    for ( const DataObjID& renounce_input : m_renounceKeys ) {
+      if ( dh_holder->renounceInput( renounce_input ) ) {
+        m_logger->renounce( alg_tool->name(), renounce_input.key() );
       }
     }
-  }
-  std::vector<DataObjID *> erase_list;
-  for (const DataObjID &const_obj_id : dh_holder->inputDataObjs() ) {
-    DataObjID &obj_id = const_cast<DataObjID &>(const_obj_id);
-    for (const std::string &renounce_input : m_renounceKeys) {
-      if (obj_id.key()==renounce_input) {
-        DataObjID *erase_id =&obj_id;
-        erase_list.push_back(erase_id);
-      }
-    }
-  }
-  DataObjIDColl &input_objs = const_cast<DataObjIDColl &>(dh_holder->inputDataObjs());
-  for (DataObjID *obj : erase_list) {
-    m_logger->renounce(alg_tool->name(), obj->key());
-    input_objs.erase(*obj);
   }
 }

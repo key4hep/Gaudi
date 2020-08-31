@@ -38,8 +38,9 @@ public:
 
   DeclareInterfaceID( IDataHandleHolder, 1, 0 );
 
-  virtual void declare( Gaudi::DataHandle& )  = 0;
-  virtual void renounce( Gaudi::DataHandle& ) = 0;
+  virtual void declare( Gaudi::DataHandle& )     = 0;
+  virtual void renounce( Gaudi::DataHandle& )    = 0;
+  virtual bool renounceInput( const DataObjID& ) = 0;
 };
 
 class IDataHandleVisitor {
