@@ -14,7 +14,6 @@
 
 #include "GaudiKernel/HistoryObj.h"
 #include "GaudiKernel/IVersHistoryObj.h"
-#include <Gaudi/DeprecationHelpers.h>
 #include <Gaudi/Property.h>
 
 #include <ctime>
@@ -68,8 +67,7 @@ public: // functions
   static const CLID& classID();
 
   // add a global property
-  GAUDI_DEPRECATED_SINCE_v34r0( "use addProperty( string, string ) instead" ) void addProperty(
-      const std::string&, const Gaudi::Details::PropertyBase* );
+  void addProperty( const std::string&, const Gaudi::Details::PropertyBase* );
   void addProperty( const std::string& key, const std::string& value );
 
   // Return the job history data.

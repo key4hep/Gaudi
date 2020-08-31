@@ -23,7 +23,6 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ToolHandle.h"
-#include <Gaudi/DeprecationHelpers.h>
 #include <Gaudi/PluginService.h>
 #include <Gaudi/Property.h>
 
@@ -83,7 +82,7 @@ public:
   /** Retrieve pointer to service locator        */
   SmartIF<ISvcLocator>& serviceLocator() const override;
 
-  GAUDI_DEPRECATED_SINCE_v34r0( "it should not be called explicitely" ) StatusCode setProperties() {
+  StatusCode setProperties() {
     if ( !serviceLocator() ) return StatusCode::FAILURE;
     bindPropertiesTo( serviceLocator()->getOptsSvc() );
     return StatusCode::SUCCESS;

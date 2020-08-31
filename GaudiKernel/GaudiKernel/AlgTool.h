@@ -26,7 +26,6 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ToolHandle.h"
-#include <Gaudi/DeprecationHelpers.h>
 #include <Gaudi/PluginService.h>
 
 #include "GaudiKernel/DataHandle.h"
@@ -128,7 +127,7 @@ public:
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;
 
-  GAUDI_DEPRECATED_SINCE_v34r0( "it should not be called explicitely" ) StatusCode setProperties() {
+  StatusCode setProperties() {
     if ( !serviceLocator() ) return StatusCode::FAILURE;
     bindPropertiesTo( serviceLocator()->getOptsSvc() );
     return StatusCode::SUCCESS;
