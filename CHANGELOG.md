@@ -13,6 +13,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+## [v34r0][] - 2020-08-04
+This is a release meant to introduce a major rewrite of the *Job Options Service*, as described in the merge request gaudi/Gaudi!577, plus, of course, some fixes.
+
+### Changed
+- Bump version to v34r0 (gaudi/Gaudi!1096)
+- Redesign of job options management (gaudi/Gaudi!577, gaudi/Gaudi#105)
+- Re-apply gaudi/Gaudi!1064: Isolate sub-slot data from the parent slot (gaudi/Gaudi!1095)
+
+### Added
+- Add CopyInputStream (gaudi/Gaudi!1077, gaudi/Gaudi#102)
+
+### Fixed
+- FMT Library Usage Improvement (gaudi/Gaudi!1103)
+- Minor fixes for Clang 10 build, adapt BinaryTagUtils to allow compiler version >10 (gaudi/Gaudi!1097)
+- Do not tinker with output file names in GaudiMP (gaudi/Gaudi!1098)
+- Add support for special LCG versions (gaudi/Gaudi!1099)
+- Fix Python 3 compatibility issues (gaudi/Gaudi!1102, b87519600879cde3be7694d9fd7567c6efd8db1c)
+- Protect messages in event loop (gaudi/Gaudi!1100)
+
 ## [v33r2][] - 2020-06-19
 This is a bugfix release with just a couple of minor backward compatible improvements.
 
@@ -527,7 +546,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r2...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r0...master
+[v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r2...v34r0
 [v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r1...v33r2
 [v33r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r0...v33r1
 [v33r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...v33r0
