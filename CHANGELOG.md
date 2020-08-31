@@ -547,7 +547,7 @@ Details about old versions of the project can be found in the
 
 
 [Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r0...master
-[v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r2...v34r0
+[v34r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r2...v34r0
 [v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r1...v33r2
 [v33r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r0...v33r1
 [v33r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...v33r0
