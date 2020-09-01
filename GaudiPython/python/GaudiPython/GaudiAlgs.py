@@ -1175,12 +1175,13 @@ class TupleDecColumnDispatcher(object):
     def __init__(self, func):
         self.func = func
         self.__doc__ = func.__doc__
+        dispatcher = func.disp if hasattr(func, 'disp') else func.__overload__
 
         mapping = {int: 'int', bool: 'bool', float: 'double'}
         for k in mapping:
             signature = 'const Tuples::Tuple& tuple, const string& name, const %s value' % (
                 mapping[k])
-            mapping[k] = func.disp(signature)
+            mapping[k] = dispatcher(signature)
         self.mapping = mapping
 
     def __call__(self, *a):
@@ -1198,7 +1199,8 @@ class TupleDecColumnDispatcher(object):
         return self.func(*a)
 
 
-if ROOT6WorkAroundEnabled('ROOT-6697'):
+if ROOT6WorkAroundEnabled('ROOT-6697') and (hasattr(
+        _Dec.column, "disp") or hasattr(_Dec.column, "__overload__")):
     _Dec.column = TupleDecColumnDispatcher(_Dec.column)
 
 
