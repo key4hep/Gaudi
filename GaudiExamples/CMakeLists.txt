@@ -213,12 +213,10 @@ gaudi_add_executable(testAppMgrStateMachine src/testing/TestAppMgrStateMachine.c
 gaudi_add_executable(QueueingEventProcessorExample src/QueueingEventProcessor/main.cpp
                      LINK_LIBRARIES GaudiKernel)
 
-gaudi_add_library( ToolVisitorTest src/ToolVisitorTest/ToolVisitorTestLib*.cpp
-   LINK_LIBRARIES GaudiKernel
-   PUBLIC_HEADERS GaudiExamples Gaudi)
+gaudi_add_executable(ToolVisitorTest_test src/ToolVisitorTest/ToolVisitorTest_test.cpp src/ToolVisitorTest/ToolVisitorTestLib.cpp
+                     LINK_LIBRARIES GaudiKernel GaudiPluginService)
 
-gaudi_add_executable(ToolVisitorTest_test src/ToolVisitorTest/ToolVisitorTest_test.cpp
-                     LINK_LIBRARIES GaudiKernel GaudiPluginService ToolVisitorTest)
+set_target_properties(ToolVisitorTest_test PROPERTIES ENABLE_EXPORTS TRUE)
 
 gaudi_add_test(ToolVisitorTest
                COMMAND ToolVisitorTest_test.exe)
