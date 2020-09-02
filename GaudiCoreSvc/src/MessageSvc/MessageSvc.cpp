@@ -287,7 +287,7 @@ StatusCode MessageSvc::finalize() {
       }
     }
     os << "=====================================================" << std::endl;
-    if ( found || m_stats ) std::cout << os.str();
+    if ( found || m_stats ) std::cout << os.str() << std::flush;
   }
 
 #ifndef NDEBUG
@@ -345,7 +345,7 @@ StatusCode MessageSvc::finalize() {
     for ( unsigned int i = 0; i < ml + 25; ++i ) os << "=";
     os << std::endl;
 
-    if ( found ) std::cout << os.str();
+    if ( found ) std::cout << os.str() << std::flush;
   }
 #endif
 
