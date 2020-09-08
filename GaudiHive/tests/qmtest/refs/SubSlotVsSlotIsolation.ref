@@ -535,11 +535,11 @@ viewNodeTwo (7), w/ decision: UNDEFINED(-1)
   +            A5  e: n
   +   viewNodeOne  e: n
   +            A7  e: n
-  +            A3  e: d f: 1 sc: SUCCESS
-  +            A2  e: d f: 1 sc: SUCCESS
+  +            A3  e: n
+  +            A2  e: n
   + createViewSeq  e: n
   +            A1  e: d f: 1 sc: SUCCESS
-  +            A6  e: d f: 1 sc: SUCCESS
+  +            A6  e: n
   +   viewNodeTwo  e: n
 
 =========================================================================================
