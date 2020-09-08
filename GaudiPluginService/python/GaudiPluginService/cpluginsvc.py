@@ -22,7 +22,7 @@ e.g.:
 ...     except Exception:
 ...         print ("** could not load [%s] for factory [%s]" % (f.library, f.name))
 ...         continue
-...     print f
+...     print(f)
 ...     for k,v in f.properties.iteritems():
 ...         print ("\t%s: %s" % (k,v))
 '''

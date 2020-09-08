@@ -532,7 +532,7 @@ def _moment_(self, order, value=0):
     for 1D histogram
 
     >>> h1 = ...
-    >>> print h1.moment ( 5 )
+    >>> print(h1.moment ( 5 ))
 
     """
     return HistoStats.moment(self, order, value)
@@ -548,7 +548,7 @@ def _momentErr_(self, order):
     for 1D histogram
 
     >>> h1 = ...
-    >>> print h1.momentErr ( 5 )
+    >>> print(h1.momentErr ( 5 ))
 
     """
     return HistoStats.momentErr(self, order)
@@ -564,7 +564,7 @@ def _centralMoment_(self, order):
     for 1D histogram
 
     >>> h1 = ...
-    >>> print h1.centralMoment ( 5 )
+    >>> print(h1.centralMoment ( 5 ))
 
     """
     return HistoStats.centralMoment(self, order)
@@ -580,7 +580,7 @@ def _centralMomentErr_(self, order):
     for 1D histogram
 
     >>> h1 = ...
-    >>> print h1.centralMomentErr ( 5 )
+    >>> print(h1.centralMomentErr ( 5 ))
 
     """
     return HistoStats.centralMomentErr(self, order)
@@ -595,7 +595,7 @@ def _skewness_(self):
     Evaluate 'bin-by-bin' skewness for 1D AIDA histogram
 
     >>> h1 = ...
-    >>> print h1.skewness()
+    >>> print(h1.skewness())
 
     """
     return HistoStats.skewness(self)
@@ -610,7 +610,7 @@ def _skewnessErr_(self):
     Evaluate error for 'bin-by-bin' skewness
 
     >>> h1 = ...
-    >>> print h1.skewnessErr()
+    >>> print(h1.skewnessErr())
 
     """
     return HistoStats.skewnessErr(self)
@@ -625,7 +625,7 @@ def _kurtosis_(self):
     Evaluate 'bin-by-bin' kurtosis
 
     >>> h1 = ...
-    >>> print h1.kurtosis ()
+    >>> print(h1.kurtosis ())
 
     """
     return HistoStats.kurtosis(self)
@@ -640,7 +640,7 @@ def _kurtosisErr_(self):
     Evaluate error for 'bin-by-bin' kurtotis for 1D AIDA histogram
 
     >>> h1 = ...
-    >>> print h1.kurtotisErr()
+    >>> print(h1.kurtotisErr())
 
     """
     return HistoStats.kurtosisErr(self)
@@ -807,13 +807,13 @@ def _nEntries_(self, i1, i2=-10000000):
     attention: underflow bin is included!
 
     >>> h1
-    >>> print h1.nEntries ( 10 )
+    >>> print(h1.nEntries ( 10 ))
 
     Get number of entries in histogram form the certain
     minimal bin up to the certain maximal bin (not-included)
 
     >>> h1
-    >>> print h1.nEntries ( 10 , 15 )
+    >>> print(h1.nEntries ( 10 , 15 ))
 
     """
     if i2 < i1 or i2 < 0:
@@ -831,13 +831,13 @@ def _nEntriesFrac_(self, i1, i2=-10000000):
     attention: underflow bin is included!
 
     >>> h1
-    >>> print h1.nEntriesFrac ( 10 )
+    >>> print(h1.nEntriesFrac ( 10 ))
 
     Get the fraction of entries in histogram form the certain
     minimal bin up to the certain maximal bin (not-included)
 
     >>> h1
-    >>> print h1.nEntriesFrac ( 10 , 15 )
+    >>> print(h1.nEntriesFrac ( 10 , 15 ))
 
     """
     if i2 < i1 or i2 < 0:
@@ -855,13 +855,13 @@ def _nEntriesFracErr_(self, i1, i2=-10000000):
     attention: underflow bin is included!
 
     >>> h1
-    >>> print h1.nEntriesFracErr( 10 )
+    >>> print(h1.nEntriesFracErr( 10 ))
 
     Get error  fraction of entries in histogram form the certain
     minimal bin up to the certain maximal bin (not-included)
 
     >>> h1
-    >>> print h1.nEntriesFracErr ( 10 , 15 )
+    >>> print(h1.nEntriesFracErr ( 10 , 15 ))
 
     """
     if i2 < i1 or i2 < 0:
@@ -932,7 +932,7 @@ def _path_(self):
     Get the path in THS for the given AIDA object:
 
     >>> aida =
-    >>> print aida.path()
+    >>> print(aida.path())
 
     """
     return cpp.Gaudi.Utils.Histos.path(self)
@@ -954,11 +954,11 @@ def __dumpHisto__(histo, *args):
     Dump the histogram/profile in text format (a'la HBOOK)
 
     >>> histo
-    >>> print dumpHisto ( histo )
+    >>> print(dumpHisto ( histo ))
 
-    >>> print histo.dump()
-    >>> print histo.dump( 20 , 20 )
-    >>> print histo.dump( 20 , 20 , True )
+    >>> print(histo.dump())
+    >>> print(histo.dump( 20 , 20 ))
+    >>> print(histo.dump( 20 , 20 , True ))
 
     Uses:
 
