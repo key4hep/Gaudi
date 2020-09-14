@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
     auto orig_policy =
         Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Exception );
     BOOST_CHECK_EXCEPTION(
-        mgr.setProperty( "int_prop", "abc" ), GaudiException, []( const GaudiException& err ) -> bool {
+        mgr.setProperty( "int_prop", "abc" ).ignore(), GaudiException, []( const GaudiException& err ) -> bool {
           return err.message() == "error setting property int_prop: std::invalid_argument, cannot parse 'abc' to int";
         } );
 
