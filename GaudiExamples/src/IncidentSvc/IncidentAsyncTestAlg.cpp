@@ -57,7 +57,7 @@ StatusCode IncidentAsyncTestAlg::execute() {
   m_service->getData( &data );
   for ( auto& outputHandle : m_outputObjHandles ) {
     if ( !outputHandle->isValid() ) continue;
-    outputHandle->put( new DataObject() );
+    outputHandle->put( std::make_unique<DataObject>() );
   }
   info() << "Read data " << data << endmsg;
   return StatusCode::SUCCESS;

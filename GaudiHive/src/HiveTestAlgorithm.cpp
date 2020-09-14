@@ -73,7 +73,7 @@ StatusCode HiveTestAlgorithm::execute() {
 
   info() << ":HiveTestAlgorithm::registering outputs... " << evt << endmsg;
 
-  for ( auto& outputHandle : m_outputHandles ) { outputHandle->put( new MyObject( 1000 + evt ) ); }
+  for ( auto& outputHandle : m_outputHandles ) { outputHandle->put( std::make_unique<MyObject>( 1000 + evt ) ); }
 
   return StatusCode::SUCCESS;
 }
