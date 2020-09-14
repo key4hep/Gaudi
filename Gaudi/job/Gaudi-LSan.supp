@@ -59,7 +59,7 @@ leak:THistSvc::regHist_i
 #    #3 0x7f817782ab5d in THistWrite::initialize() ../GaudiExamples/src/THist/THistWrite.cpp:94
 leak:THistWrite::initialize
 
-# Note wure where in this lot the leak is ...
+# Note sure where in this lot the leak is ...
 #Indirect leak of 160 byte(s) in 1 object(s) allocated from:
 #    #0 0x7fde515afec8 in operator new[](unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:231
 #    #1 0x7fde41c7610f in TString::Clobber(int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/base/src/TString.cxx:1198
@@ -130,9 +130,12 @@ leak:TStreamerInfoActions::TActionSequence::CreateReadMemberWiseActions
 leak:TClass::New
 leak:TTree::CreateBasket
 leak:TNetXNGFile::TNetXNGFile
+leak:cling::Interpreter::ShutDown
+leak:TStreamerInfo::ReadBuffer<TVirtualCollectionProxy>
 
 # XrootD
-leak:XrdSys
+#leak:XrdSys
+leak:Xrd*
 
 # Xerces
 leak:xercesc_3_1::MemoryManagerImpl::allocate
