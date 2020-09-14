@@ -75,9 +75,7 @@ public:
 
   /// Clone method to be able to copy an ObjectMemberFunction from the BaseObjectMemberFunction
   /// interface.
-  BaseObjectMemberFunction* makeCopy() const override {
-    return new ObjectMemberFunction<CallerClass>( m_instance, m_memberFunction );
-  }
+  BaseObjectMemberFunction* makeCopy() const override { return new ObjectMemberFunction{m_instance, m_memberFunction}; }
 
   /// Returns the type_info of the CallerClass
   const std::type_info& type() const override { return typeid( CallerClass ); }
@@ -177,22 +175,21 @@ public:
   template <class CallerClass>
   inline void registerCondition( CallerClass* instance, const std::string& condition = "",
                                  typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = nullptr ) {
-    i_registerCondition( condition, new ObjectMemberFunction<CallerClass>( instance, mf ) );
+    i_registerCondition( condition, new ObjectMemberFunction{instance, mf} );
   }
 
   template <class CallerClass, class CondType>
   inline void registerCondition( CallerClass* instance, const std::string& condition,
                                  typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf,
                                  CondType*&                                                     condPtrDest ) {
-    i_registerCondition( condition, new ObjectMemberFunction<CallerClass>( instance, mf ),
-                         new PtrSetter<CondType>( condPtrDest ) );
+    i_registerCondition( condition, new ObjectMemberFunction{instance, mf}, new PtrSetter{condPtrDest} );
   }
 
   /// See above. Needed to avoid conflicts with the next one.
   template <class CallerClass>
   inline void registerCondition( CallerClass* instance, const char* condition,
                                  typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = nullptr ) {
-    i_registerCondition( std::string( condition ), new ObjectMemberFunction<CallerClass>( instance, mf ) );
+    i_registerCondition( std::string( condition ), new ObjectMemberFunction{instance, mf} );
   }
 
   /// Like the first version of registerCondition, but instead declaring the dependency on a condition of the service
@@ -201,7 +198,7 @@ public:
   template <class CallerClass, class ObjectClass>
   inline void registerCondition( CallerClass* instance, ObjectClass* obj,
                                  typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = nullptr ) {
-    i_registerCondition( dynamic_cast<void*>( obj ), new ObjectMemberFunction<CallerClass>( instance, mf ) );
+    i_registerCondition( dynamic_cast<void*>( obj ), new ObjectMemberFunction{instance, mf} );
   }
 
   /// Generic objects can be unregistered from the UpdateManagerSvc. The dependency network is always consistent, but
