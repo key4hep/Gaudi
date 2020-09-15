@@ -76,3 +76,6 @@ endif()
 
 # fmtlib: https://fmt.dev
 find_package(fmt REQUIRED)
+
+# https://github.com/nlohmann/json
+find_package(nlohmann_json REQUIRED)

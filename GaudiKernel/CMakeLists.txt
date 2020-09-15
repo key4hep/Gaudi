@@ -80,7 +80,7 @@ endif()
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries} fmt::fmt
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries} fmt::fmt nlohmann_json::nlohmann_json
                   INCLUDE_DIRS Boost ROOT TBB ${CPPGSL_INCLUDE_DIRS}
                   PUBLIC_HEADERS Gaudi GaudiKernel)
 
@@ -104,6 +104,11 @@ get_filename_component(fmt_loc "${fmt_loc}" DIRECTORY)
 get_target_property(fmt_inc fmt::fmt INTERFACE_INCLUDE_DIRECTORIES)
 gaudi_env(PREPEND LD_LIBRARY_PATH "${fmt_loc}"
           PREPEND ROOT_INCLUDE_PATH "${fmt_inc}")
+# Ensure nlohmann_json is on the ROOT_INCLUDE_PATH
+get_target_property(json_inc nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+foreach(_item IN LISTS json_inc)
+  gaudi_env(PREPEND ROOT_INCLUDE_PATH "${_item}")
+endforeach()
 
 #---Tests-------------------------------------------------------------------
 if( CPPUNIT_FOUND )
