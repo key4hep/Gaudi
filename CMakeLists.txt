@@ -44,6 +44,7 @@ gaudi_project(Gaudi v34r0)
 if(EXISTS ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/GaudiPlatformConfig.cmake)
 file(APPEND ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/GaudiPlatformConfig.cmake "
 find_package(fmt REQUIRED)
+find_package(nlohmann_json REQUIRED)
 ")
 endif()
 
