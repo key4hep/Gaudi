@@ -2,8 +2,6 @@ JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExam
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
-JobOptionsSvc        INFO # (21,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::R7::GaudiHistoAlgorithm/SimpleR7Histos"]
-JobOptionsSvc        INFO # (22,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::Boost::GaudiHistoAlgorithm/SimpleBoostHistos"]
 JobOptionsSvc        INFO # (24,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::HistoProps/Histos2"]
 JobOptionsSvc        INFO # (25,1): SimpleHistos.HistoPrint = 1
 JobOptionsSvc        INFO # (26,1): SimpleHistos.OutputLevel = 2
@@ -210,30 +208,8 @@ SimpleHistos        DEBUG Booked 1D Histogram : ID='1111' Path=SimpleHistos Titl
 SimpleHistos        DEBUG Monitoring histogram 'test1' desc = 'Forced Alpha ID time test'
 SimpleHistos        DEBUG Booked 1D Histogram : ID='test1' Path=SimpleHistos Title='Forced Alpha ID time test'
 SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please be patient !
-SimpleR7Histos    SUCCESS Filling Histograms...... Please be patient !
-SimpleBoostHistos SUCCESS Filling Histograms...... Please be patient !
 Histos2           WARNING Gaudi::Examples::HistoProps:: Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID
 HistogramDataSvc    DEBUG  Redefine the parameters for the histogram 'Histos2/2' to be ('TEST2',-100,200,100)
-SimpleBoostHistos    INFO Number of counters : 10
- |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
- | "Binom V poisson"                               H     50000 |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Expo V poisson"                                H     50000 |
- | "Exponential"                                   H     50000 |
- | "Exponential V Flat"                            H     50000 |
- | "Gaussian V Flat"                               H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
-SimpleR7Histos       INFO Number of counters : 6
- |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Exponential"                                   H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS 1D histograms in directory "SimpleHistos" : 10
