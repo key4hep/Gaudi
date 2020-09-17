@@ -26,34 +26,16 @@ namespace Gaudi::Monitoring {
 
     /** Wrapper class for arbitrary monitoring objects.
      *
-     * What qualifies an object to be a monitoring entity is the existence of toJSON() method
-     * that returns a generic JSON object. It will typically be a dictionnary, but the meaning of each entry
-     * is only defined by the Entity producers, for each type of Entity.
-     *
-     * @param id the name of the entity
-     * @param type the type of the entity, as a string. This is used by specific Sink instances to decide if they
-     * have to handle a given entity or not. It can be used to know which fields to expect and how to treat them.
-     * @param internalType the actual type_info of the internal data in this Entity
-     * @param ptr pointer to the actual data inside this Entity
-     * @param getJSON a function converting the internal data to json. Due to type erasure, it needs to be a
-     * member of this struct
-     *
-     * Here is a list of currently used types and their fields. Note that all fields are not
-     * independant, that is some values are preprocessed.
-     *   - counter : empty(bool), subtype(string)
-     *     Depending on the counter subtype, here are the extra fields :
-     *     + basic and message : nEntries(integer)
-     *     + averaging : basic ones, sum(number), mean(number)
-     *         and we have mean = sum / nEntries
-     *     + sigma : averaging ones, sum2(number), standard_deviation(number)
-     *         and we have standard_deviation = sqrt((sum2 - sum * sum / nEntries)/(nEntries - 1))
-     *     + stat : sigma ones, min(number), max(number)
-     *     + statentity : DEPRECATED so no fields and empty is always true
-     *     + binomial : nEntries(integer), nTrueEntries(integer), nFalseEntries(integer), efficiency(number),
-     * efficiencyErr(number) and we have nEntries = nTrueEntries + nFalseEntries efficiency = nTrueEntries/nEntries
-     *                     efficiencyErr = (nTrueEntries * nFalseEntries)/(nEntries * nEntries)
-     *   - timer : same fields as counter with subtype stat
-     *   - histogram : currently empty, implementation to come
+     * Mainly contains a pointer to the actual data with component, name and type metadata
+     * Any object having a toJSON method can be used as internal data and wrapped into an Entity
+     * 
+     * This toJSON method should generate a json dictionnary with a "type" entry of type string
+     * and as many others as entries as needed. Entity producers are thus free to add their own entries
+     * provided they provide a type one. If the type value contains a ':' character, then the part
+     * preceding it will be considered as a namespace. The rest is free text.
+     * The type in json should match the type member of the Entity. It is used by Sink instances
+     * to decide if they have to handle a given entity or not.
+     * It can also be used to know which fields to expect in the json dictionnary
      */
     struct Entity {
       template <typename T>
@@ -61,14 +43,17 @@ namespace Gaudi::Monitoring {
           : component{std::move( component )}
           , name{std::move( name )}
           , type{std::move( type )}
-          , internalType{typeid( T )}
           , ptr{&ent}
           , getJSON{[&ent]() { return ent.toJSON(); }} {}
+      /// name of the component owning the Entity
       std::string           component;
+      /// name of the entity
       std::string           name;
+      /// type of the entity, see comment above concerning its format and usage
       std::string           type;
-      const std::type_info& internalType;
+      /// pointer to the actual data inside this Entity
       const void*           ptr{nullptr};
+      /// function converting the internal data to json. Due to type erasure, it needs to be a member of this struct
       std::function<json()> getJSON;
     };
 

@@ -500,7 +500,7 @@ public:
     if ( UNLIKELY( p == m_countersOwn.end() ) ) {
       auto [iter, b] = m_countersOwn.try_emplace( std::string{tag} );
       assert( b );
-      this->serviceLocator()->monitoringHub().registerEntity( this->name(), iter->first, "counter", iter->second );
+      this->serviceLocator()->monitoringHub().registerEntity( this->name(), iter->first, StatEntity::typeString, iter->second );
       p = iter;
     }
     return p->second;

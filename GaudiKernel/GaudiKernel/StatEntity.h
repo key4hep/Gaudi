@@ -20,6 +20,7 @@ class StatEntity : public Gaudi::Accumulators::PrintableCounter,
                                                               Gaudi::Accumulators::StatAccumulator,
                                                               Gaudi::Accumulators::BinomialAccumulator> {
 public:
+  inline static const std::string typeString{"statentity"};
   using AccParent         = Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
                                                         Gaudi::Accumulators::StatAccumulator,
                                                         Gaudi::Accumulators::BinomialAccumulator>;
@@ -182,8 +183,8 @@ public:
   MsgStream&    fillStream( MsgStream& o ) const { return print( o ); }
   /// Basic JSON export for Gaudi::Monitoring::Hub support.
   virtual nlohmann::json toJSON() const override {
-    return {{"empty", this->nEntries() == 0},
-            {"subtype", "statentity"},
+    return {{"type", typeString},
+            {"empty", this->nEntries() == 0},
             {"nEntries", this->nEntries()},
             {"sum", this->sum()},
             {"mean", this->mean()},
