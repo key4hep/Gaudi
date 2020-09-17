@@ -14,10 +14,6 @@ from GaudiConfig2 import Configurables as C, Configurable, mergeConfigs
 def setUpAlgorithms():
     algorithms = [
         C.GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=3),
-        C.Gaudi.Examples.R7.GaudiHistoAlgorithm(
-            'SimpleR7Histos', OutputLevel=2),
-        C.Gaudi.Examples.Boost.GaudiHistoAlgorithm(
-            'SimpleBoostHistos', OutputLevel=2),
     ]
     app = C.ApplicationMgr(TopAlg=algorithms)
     return algorithms + [app]

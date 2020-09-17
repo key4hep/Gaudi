@@ -67,14 +67,6 @@ SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 
 SimpleHistos        DEBUG input handles: 0
 SimpleHistos        DEBUG output handles: 0
 SimpleHistos        DEBUG Data Deps for SimpleHistos
-SimpleR7Histos      DEBUG Property update for OutputLevel : new value = 2
-SimpleR7Histos      DEBUG input handles: 0
-SimpleR7Histos      DEBUG output handles: 0
-SimpleR7Histos      DEBUG Data Deps for SimpleR7Histos
-SimpleBoostHistos   DEBUG Property update for OutputLevel : new value = 2
-SimpleBoostHistos   DEBUG input handles: 0
-SimpleBoostHistos   DEBUG output handles: 0
-SimpleBoostHistos   DEBUG Data Deps for SimpleBoostHistos
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
@@ -143,28 +135,6 @@ SimpleHistos        DEBUG Booked 1D Histogram : ID='1111' Path=SimpleHistos Titl
 SimpleHistos        DEBUG Monitoring histogram 'test1' desc = 'Forced Alpha ID time test'
 SimpleHistos        DEBUG Booked 1D Histogram : ID='test1' Path=SimpleHistos Title='Forced Alpha ID time test'
 SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please be patient !
-SimpleR7Histos    SUCCESS Filling Histograms...... Please be patient !
-SimpleBoostHistos SUCCESS Filling Histograms...... Please be patient !
-SimpleBoostHistos    INFO Number of counters : 10
- |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
- | "Binom V poisson"                               H     50000 |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Expo V poisson"                                H     50000 |
- | "Exponential"                                   H     50000 |
- | "Exponential V Flat"                            H     50000 |
- | "Gaussian V Flat"                               H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
-SimpleR7Histos       INFO Number of counters : 6
- |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Exponential"                                   H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS 1D histograms in directory "SimpleHistos" : 10
