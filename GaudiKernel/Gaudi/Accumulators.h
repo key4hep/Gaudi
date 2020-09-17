@@ -490,6 +490,8 @@ namespace Gaudi::Accumulators {
   /**
    * CountAccumulator. A CountAccumulator is an Accumulator storing the number of provided values
    * @see Gaudi::Accumulators for detailed documentation
+   * Note that the Arithmetic type is actually irrelevant here, it's only there
+   * for compatibility with other accumulators when aggregating them
    */
   template <atomicity Atomicity, typename Arithmetic = double>
   struct CountAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, Constant<unsigned long, 1UL>> {
@@ -754,12 +756,15 @@ namespace Gaudi::Accumulators {
   /**
    * A basic counter counting input values
    * @see Gaudi::Accumulators for detailed documentation
+   * Note that the Arithmetic type given to the underlying CountAccumulator is not used
+   * (see doc for CountAccumulator), thus it's hardcoded to int with no restriction
+   * of genericity
    */
-  template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
-  struct Counter : BufferableCounter<Atomicity, CountAccumulator, Arithmetic> {
-    using BufferableCounter<Atomicity, CountAccumulator, Arithmetic>::BufferableCounter;
+  template <atomicity Atomicity = atomicity::full>
+  struct Counter : BufferableCounter<Atomicity, CountAccumulator, int> {
+    using BufferableCounter<Atomicity, CountAccumulator, int>::BufferableCounter;
     Counter& operator++() {
-      ( *this ) += Arithmetic{};
+      ( *this ) += 0; // note that this '0' value is actually not used
       return *this;
     }
     Counter operator++( int ) {
@@ -767,7 +772,7 @@ namespace Gaudi::Accumulators {
       ++( *this );
       return copy;
     }
-    using BufferableCounter<Atomicity, CountAccumulator, Arithmetic>::print;
+    using BufferableCounter<Atomicity, CountAccumulator, int>::print;
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
@@ -1006,7 +1011,7 @@ namespace Gaudi::Accumulators {
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     bool          toBePrinted() const override { return this->value() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"empty", this->value() == 0}, {"subtype", "message"}, {"nEntries", this->value()}};
+      return {{"empty", this->value() == 0}, {"subtype", "message"}, {"level", lvl}, {"nEntries", this->value()}};
     }
   };
 
