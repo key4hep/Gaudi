@@ -137,13 +137,14 @@ namespace Gaudi::Accumulators {
    */
   template <typename HistogramType>
   struct Histogram : PrintableCounter {
+    inline static const std::string typeString{"histogram"};
     using Adapter = Details::HistogramAdapter<HistogramType>;
 
     Histogram( HistogramType h ) : m_hist{std::move( h )} {}
 
     template <class OWNER>
     Histogram( OWNER* o, const std::string& tag, HistogramType h ) : Histogram{std::move( h )} {
-      o->serviceLocator()->monitoringHub().registerEntity( o->name(), tag, "histogram", *this );
+      o->serviceLocator()->monitoringHub().registerEntity( o->name(), tag, typeString, *this );
     }
 
     /// @{
@@ -181,7 +182,7 @@ namespace Gaudi::Accumulators {
     }
     bool                   toBePrinted() const override { return m_hist; }
     virtual nlohmann::json toJSON() const override {
-      return {{"empty", !(bool)m_hist}, {"subtype", "histogram"}, {"nEntries", m_hist.nEntries()}};
+      return {{"type", "histogram"}, {"empty", !(bool)m_hist}, {"nEntries", m_hist.nEntries()}};
     }
 
   private:
