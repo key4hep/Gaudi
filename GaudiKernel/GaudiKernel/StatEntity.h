@@ -197,4 +197,9 @@ public:
             {"efficiency", this->efficiency()},
             {"efficiencyErr", this->efficiencyErr()}};
   }
+  static StatEntity fromJSON(const nlohmann::json& j) {
+    StatEntity res;
+    res.reset( AccParent::extractJSONData( j, { { { { "nEntries", "sum" }, "sum2" }, "min", "max" }, { "nTrueEntries", "nFalseEntries" } } ) );
+    return res;
+  }
 };
