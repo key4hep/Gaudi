@@ -143,7 +143,7 @@ namespace Gaudi::Accumulators {
  *                               nEntries(integer) = nTrueEntries+nFalseEntries
  *                               efficiency(number) = nTrueEntries/nEntries,
  *                               efficiencyErr(number) = (nTrueEntries*nFalseEntries)/(nEntries*nEntries)
- *   - counter:MsgCounter : same as counter:Counter, lvl(number)
+ *   - counter:MsgCounter : same as counter:Counter, level(number), max(number), msg(string)
  *   - statentity : union of fields of counter:StatCounter and counter:BinomialCounter. DEPRECATED
  *   - timer : same fields as counter:StatCounter
  *
@@ -457,6 +457,7 @@ namespace Gaudi::Accumulators {
     }
 
   protected:
+    auto rawValue() const { return ValueHandler::getValue( m_value ); }
     void reset( InnerType in ) { m_value = std::move( in ); }
     static InnerType extractJSONData(const nlohmann::json& j, const JSONStringEntriesType& entries) {
       return j.at( entries ).get<InnerType>();
@@ -1018,74 +1019,33 @@ namespace Gaudi::Accumulators {
   };
 
   namespace details::MsgCounter {
-    struct Logger {
-      CommonMessagingBase const* parent = nullptr;
-      std::string                msg;
-      MSG::Level                 lvl;
-
-      void operator()( bool suppress = false ) const {
-        if ( suppress ) {
-          parent->msgStream( lvl ) << "Suppressing message: " << std::quoted( msg, '\'' ) << endmsg;
-        } else {
-          parent->msgStream( lvl ) << msg << endmsg;
-        }
-      }
-    };
-
     template <atomicity Atomicity>
-    struct Data {
-      std::conditional_t<Atomicity == atomicity::none, unsigned long, std::atomic<unsigned long>> count  = {0};
-      unsigned long                                                                               max    = 0;
-      Logger const*                                                                               logger = nullptr;
-
-      constexpr Data( Logger const* p, unsigned long mx ) : max{mx}, logger{p} {}
-
-      template <atomicity OtherAtomicity>
-      Data( Data<OtherAtomicity> const& other ) {
-        count  = other.count;
-        max    = other.max;
-        logger = other.logger;
-      }
+    struct Handler : Adder<unsigned long, Atomicity> {
+      using Base = Adder<unsigned long, Atomicity>;
+      static void merge( typename Base::InternalType& orig, bool b) { if (b) Base::merge(orig, 1); }
     };
-
-    template <atomicity Atomicity>
-    struct Handler {
-      using InternalType = Data<Atomicity>;
-      using OutputType   = Data<atomicity::none>;
-
-      static constexpr OutputType getValue( InternalType const& v ) noexcept { return v; }
-
-      static void merge( InternalType& orig, bool b ) {
-        if ( b ) {
-          auto count = ++orig.count;
-          if ( UNLIKELY( count <= orig.max ) ) ( *orig.logger )( count == orig.max );
-        }
-      }
-    };
-    struct OutputTransform {
-      template <atomicity Atomicity>
-      constexpr unsigned long operator()( Data<Atomicity> const& v ) const noexcept {
-        return v.count;
-      }
-    };
+    // note that Arithmetic type is unused in this case but needs to be there in case
+    // we want to create AccumulatorSets with this Accumulator
+    template <atomicity Atomicity, typename Arithmetic = double>
+    using MsgAccumulator = GenericAccumulator<bool, unsigned long, Atomicity, Identity,
+                                              Identity, Handler<Atomicity>>;
   } // namespace details::MsgCounter
 
   template <MSG::Level level, atomicity Atomicity = atomicity::full>
-  struct MsgCounter
-      : PrintableCounter,
-        details::MsgCounter::Logger,
-        GenericAccumulator<bool, details::MsgCounter::Data<Atomicity>, Atomicity, Identity,
-                           details::MsgCounter::OutputTransform, details::MsgCounter::Handler<Atomicity>> {
+  class MsgCounter : public PrintableCounter, public details::MsgCounter::MsgAccumulator<Atomicity> {
+  public:
     inline static const std::string typeString{"counter:MsgCounter"};
-   template <typename OWNER>
-    MsgCounter( OWNER* o, std::string const& msg, int nMax = 10 )
-        : PrintableCounter( o, msg, typeString )
-        , details::MsgCounter::Logger{o, msg, level}
-        , GenericAccumulator<bool, details::MsgCounter::Data<Atomicity>, Atomicity, Identity,
-                             details::MsgCounter::OutputTransform, details::MsgCounter::Handler<Atomicity>>{
-              std::in_place, this, nMax} {}
+    template <typename OWNER>
+    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 )
+      : PrintableCounter( o, ms, typeString ),
+        logger(o), msg(ms), max(nMax) {}
     MsgCounter& operator++() {
       ( *this ) += true;
+      return *this;
+    }
+    MsgCounter& operator+=( const bool by ) {
+      details::MsgCounter::MsgAccumulator<Atomicity>::operator+=( by );
+      if (by) log();
       return *this;
     }
     template <typename stream>
@@ -1097,7 +1057,26 @@ namespace Gaudi::Accumulators {
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     bool          toBePrinted() const override { return this->value() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"type", typeString}, {"empty", this->value() == 0}, {"level", lvl}, {"nEntries", this->value()}};
+      return {{"type", typeString}, {"empty", this->value() == 0}, {"nEntries", this->value()},
+              {"level", level}, {"max", max}, {"msg", msg}};
+    }
+    static MsgCounter fromJSON(const nlohmann::json& j) {
+      MsgCounter c = MsgCounter::extractJSONData( j, { "nEntries" } );
+      c.msg = j.at( "msg" ).get<std::string>();
+      c.max = j.at( "max" ).get<unsigned long>();
+    }
+  private:
+    const CommonMessagingBase* logger{nullptr};
+    std::string          msg;
+    unsigned long        max;
+    void log() {
+      if ( UNLIKELY( this->value() <= max ) && logger ) {
+        if ( this->value() == max ) {
+          logger->msgStream( level ) << "Suppressing message: " << std::quoted( msg, '\'' ) << endmsg;
+        } else {
+          logger->msgStream( level ) << msg << endmsg;
+        }
+      }
     }
   };
 
