@@ -17,6 +17,8 @@
   <text>ApplicationMgr(EvtMax=10).ExtSvc.append('Gaudi::MetaDataSvc')</text>
   <text>--option</text>
   <text>from Configurables import Gaudi__MetaDataSvc; Gaudi__MetaDataSvc(OutputLevel=DEBUG)</text>
+  <text>--option</text>
+  <text>NTupleSvc().Output = ["MYLUN DATAFILE='TupleEx_with_metadata.root' OPT='NEW' TYP='ROOT'"]</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/MetaDataSvc.ref</text></argument>
@@ -33,7 +35,7 @@ stdout = filter(lambda x: x.strip(),
 stdout = sorted(stdout)
 from subprocess import check_output, CalledProcessError
 try:
-    info = eval(check_output(['dumpMetaData', 'TupleEx.root']))
+    info = eval(check_output(['dumpMetaData', 'TupleEx_with_metadata.root']))
     info = [':'.join(item) for item in info.items()]
     info.sort()
     if stdout != info:
