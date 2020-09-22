@@ -27,10 +27,10 @@ namespace {
       // backward compatible code for StatEntity support. Should be dropped together
       // with StatEntity when migration to new counters is over
       using boost::algorithm::icontains;
-      type = ( icontains( id, "eff" ) || icontains( id, "acc" ) || icontains( id, "filt" ) ||
-               icontains( id, "fltr" ) || icontains( id, "pass" ) )
-        ? "counter:BinomialCounter"
-        : "counter:StatCounter";
+      type = ( icontains( id, "eff" ) || icontains( id, "acc" ) || icontains( id, "filt" ) || icontains( id, "fltr" ) ||
+               icontains( id, "pass" ) )
+                 ? "counter:BinomialCounter"
+                 : "counter:StatCounter";
     }
     // nEntries is common to all counters
     auto nEntries = j.at( "nEntries" ).get<unsigned int>();
@@ -87,8 +87,7 @@ namespace Gaudi::Monitoring {
 
     // Gaudi::Monitoring::Hub::Sink implementation
     void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override {
-      if ( std::string_view(ent.type.c_str(), 8) == "counter:" ||
-           ent.type == "statentity" ||
+      if ( std::string_view( ent.type.c_str(), 8 ) == "counter:" || ent.type == "statentity" ||
            ent.type == "histogram" ) {
         m_monitoringEntities.emplace_back( std::move( ent ) );
       }
