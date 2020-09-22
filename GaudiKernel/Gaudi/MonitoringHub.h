@@ -28,7 +28,7 @@ namespace Gaudi::Monitoring {
      *
      * Mainly contains a pointer to the actual data with component, name and type metadata
      * Any object having a toJSON method can be used as internal data and wrapped into an Entity
-     * 
+     *
      * This toJSON method should generate a json dictionnary with a "type" entry of type string
      * and as many others as entries as needed. Entity producers are thus free to add their own entries
      * provided they provide a type one. If the type value contains a ':' character, then the part
@@ -46,13 +46,13 @@ namespace Gaudi::Monitoring {
           , ptr{&ent}
           , getJSON{[&ent]() { return ent.toJSON(); }} {}
       /// name of the component owning the Entity
-      std::string           component;
+      std::string component;
       /// name of the entity
-      std::string           name;
+      std::string name;
       /// type of the entity, see comment above concerning its format and usage
-      std::string           type;
+      std::string type;
       /// pointer to the actual data inside this Entity
-      const void*           ptr{nullptr};
+      const void* ptr{nullptr};
       /// function converting the internal data to json. Due to type erasure, it needs to be a member of this struct
       std::function<json()> getJSON;
     };
