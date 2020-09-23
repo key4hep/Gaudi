@@ -21,7 +21,7 @@ HistogramSvc('HistogramDataSvc').Input = [
 
 #from GaudiExamples.GaudiExamplesConf import GaudiHistoAlgorithm
 from Configurables import GaudiHistoAlgorithm
-from Configurables import Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg, Gaudi__Histograming__RootHistogramSink as RootHistoSink
+from Configurables import Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg, Gaudi__Histograming__Sink__Root as RootHistoSink
 
 algs = [
     GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=DEBUG),
