@@ -14,7 +14,8 @@
 #include "GaudiKernel/Service.h"
 
 #include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
+
+#include <fmt/format.h>
 
 #include <map>
 
@@ -37,32 +38,31 @@ namespace {
     if ( type == "counter:AveragingCounter" ) {
       auto sum  = j.at( "sum" ).get<double>();
       auto mean = j.at( "mean" ).get<double>();
-      return log << boost::format{" | %|-48.48s||%|10d| |%|11.7g| |%|#11.5g| |"} % ( "\"" + id + "\"" ) % nEntries %
-                        sum % mean;
+      return log << fmt::format( " | {:48s}|{:10d} |{:11.7g} |{:#11.5g} |", "\"" + id + "\"", nEntries, sum, mean );
     } else if ( type == "counter:SigmaCounter" ) {
       auto sum    = j.at( "sum" ).get<double>();
       auto mean   = j.at( "mean" ).get<double>();
       auto stddev = j.at( "standard_deviation" ).get<double>();
-      return log << boost::format{" | %|-48.48s||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |"} % ( "\"" + id + "\"" ) %
-                        nEntries % sum % mean % stddev;
+      return log << fmt::format( " | {:48s}|{:10d} |{:11.7g} |{:#11.5g} |{:#11.5g} |", "\"" + id + "\"", nEntries, sum,
+                                 mean, stddev );
     } else if ( type == "counter:StatCounter" ) {
       auto sum    = j.at( "sum" ).get<double>();
       auto mean   = j.at( "mean" ).get<double>();
       auto stddev = j.at( "standard_deviation" ).get<double>();
       auto min    = j.at( "min" ).get<double>();
       auto max    = j.at( "max" ).get<double>();
-      return log << boost::format{" | %|-48.48s||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |"} %
-                        ( "\"" + id + "\"" ) % nEntries % sum % mean % stddev % min % max;
+      return log << fmt::format( " | {:48s}|{:10d} |{:11.7g} |{:#11.5g} |{:#11.5g} |{:#12.5g} |{:#12.5g} |",
+                                 "\"" + id + "\"", nEntries, sum, mean, stddev, min, max );
     } else if ( type == "counter:BinomialCounter" ) {
       auto nTrueEntries  = j.at( "nTrueEntries" ).get<unsigned int>();
       auto efficiency    = j.at( "efficiency" ).get<double>();
       auto efficiencyErr = j.at( "efficiencyErr" ).get<double>();
-      return log << boost::format{" |*%|-48.48s||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%% |"} %
-                        ( "\"" + id + "\"" ) % nEntries % nTrueEntries % ( efficiency * 100 ) % ( efficiencyErr * 100 );
+      return log << fmt::format( " |*{:48s}|{:10d} |{:11d} |({:#9.7g} +- {:-#8.7g})% |", "\"" + id + "\"", nEntries,
+                                 nTrueEntries, efficiency * 100, efficiencyErr * 100 );
     } else if ( type == "histogram" ) {
-      return log << boost::format{" | %|-48.48s|H%|10d| |"} % ( "\"" + id + "\"" ) % nEntries;
+      return log << fmt::format( " | {:48s}H{:10d} |", "\"" + id + "\"", nEntries );
     } else { // counter:Counter or counter:MsgCounter
-      return log << boost::format{" | %|-48.48s||%|10d| |"} % ( "\"" + id + "\"" ) % nEntries;
+      return log << fmt::format( " | {:48s}|{:10d} |", "\"" + id + "\"", nEntries );
     }
   }
 } // namespace
@@ -87,7 +87,7 @@ namespace Gaudi::Monitoring {
 
     // Gaudi::Monitoring::Hub::Sink implementation
     void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override {
-      if ( std::string_view( ent.type.c_str(), 8 ) == "counter:" || ent.type == "statentity" ||
+      if ( std::string_view( ent.type ).substr( 0, 8 ) == "counter:" || ent.type == "statentity" ||
            ent.type == "histogram" ) {
         m_monitoringEntities.emplace_back( std::move( ent ) );
       }
