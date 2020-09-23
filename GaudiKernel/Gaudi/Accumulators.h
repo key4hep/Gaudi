@@ -477,7 +477,6 @@ namespace Gaudi::Accumulators {
   class AccumulatorSet : public Bases<Atomicity, Arithmetic>... {
   public:
     using InputType             = InputTypeT;
-    using InputType             = Arithmetic;
     using OutputType            = std::tuple<typename Bases<Atomicity, Arithmetic>::OutputType...>;
     using InternalType          = std::tuple<typename Bases<Atomicity, Arithmetic>::InternalType...>;
     using JSONStringEntriesType = std::tuple<typename Bases<Atomicity, Arithmetic>::JSONStringEntriesType...>;
@@ -496,7 +495,7 @@ namespace Gaudi::Accumulators {
       ( Bases<Atomicity, Arithmetic>::mergeAndReset( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
     }
     template <atomicity Ato>
-    void operator+( AccumulatorSet<Arithmetic, Ato, Bases...>&& other ) {
+    void operator+( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
       ( Bases<Atomicity, Arithmetic>::operator+( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
     }
 

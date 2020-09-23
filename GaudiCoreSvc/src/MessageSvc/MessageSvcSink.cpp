@@ -17,6 +17,7 @@
 
 #include <fmt/format.h>
 
+#include <deque>
 #include <map>
 
 namespace {
@@ -59,7 +60,7 @@ namespace {
       auto efficiencyErr = j.at( "efficiencyErr" ).get<double>();
       return log << fmt::format( " |*{:48s}|{:10d} |{:11d} |({:#9.7g} +- {:-#8.7g})% |", "\"" + id + "\"", nEntries,
                                  nTrueEntries, efficiency * 100, efficiencyErr * 100 );
-    } else if ( type == "histogram" ) {
+    } else if ( std::string_view( type ).substr( 0, 10 ) == "histogram:" ) {
       return log << fmt::format( " | {:48s}H{:10d} |", "\"" + id + "\"", nEntries );
     } else { // counter:Counter or counter:MsgCounter
       return log << fmt::format( " | {:48s}|{:10d} |", "\"" + id + "\"", nEntries );
@@ -94,7 +95,7 @@ namespace Gaudi::Monitoring {
     }
 
   private:
-    std::list<Hub::Entity> m_monitoringEntities;
+    std::deque<Hub::Entity> m_monitoringEntities;
   };
 
   DECLARE_COMPONENT( MessageSvcSink )

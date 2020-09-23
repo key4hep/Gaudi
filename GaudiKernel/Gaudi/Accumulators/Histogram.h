@@ -307,29 +307,29 @@ namespace Gaudi::Accumulators {
    *  - profile histograms are also supported, operator+= takes one more
    *    value in the array of values in that case
    *
-   * This base class is then aliases for the 4 standard cases of HistogramingCounter,
-   * WeightedHistogramingCounter, ProfileHistogramingCounter and WeightedProfileHistogramingCounter
+   * This base class is then aliases for the 4 standard cases of Histogram,
+   * WeightedHistogram, ProfileHistogram and WeightedProfileHistogram
    *
    * Typical usage :
    * \code
-   * HistogramingCounter<2, double, atomicity::full>
+   * Histogram<2, double, atomicity::full>
    *   counter{owner, "CounterName", {nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}};
    * counter += {val1, val2};
    * \endcode
    *
-   * When serialized to json, this counter uses type "histogram" with the following fields :
-   *   dimension(integer), empty(bool), subtype(string), nEntries(integer), internalType(string), axis(array), bins(array)
+   * When serialized to json, this counter uses new types histogram:Histogram, histogram:ProfileHistogram,
+   * histogram:WeightedHistogram and histrogram:WeightedProfileHistogram
+   * All these types have the same fields, namely :
+   *   dimension(integer), empty(bool), nEntries(integer), axis(array), bins(array)
    * where :
-   *     + subtype can be histogram or profilehistogram
-   *     + internalType is the typeid name of the type used inside the histogram originally in C++
    *     + axis is an array of triplets, one per dimension, with content (nBins(integer), minValue(number), maxValue(number))
    *     + bins is an array of values. The length of the array is the product of (nBins+2) for all axis
    *       the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values above maxValue
    *       bins are stored row first, so we iterate first on highest dimension
-   *       For each bin the value is either a number (for histogram subtype) or a triplet (for profilehistogram subtype)
+   *       For each bin the value is either a number (for non profile histograms) or a triplet (for profile histograms)
    *       containing (nEntries(integer), sum(number), sum2(number))
    */
-  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* SubType,
+  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
             template<atomicity, typename, typename> typename Accumulator>
   struct HistogramingCounterBase
     : BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
@@ -337,7 +337,7 @@ namespace Gaudi::Accumulators {
       BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
     template <typename OWNER>
     HistogramingCounterBase( OWNER* owner, std::string const& name, std::initializer_list<Axis<Arithmetic>> axis )
-      : Parent( owner, name, "histogram", axis, std::make_index_sequence<ND>{} ) {}
+      : Parent( owner, name, Type, axis, std::make_index_sequence<ND>{} ) {}
     template <typename OWNER>
     HistogramingCounterBase( OWNER* owner, std::string const& name, Axis<Arithmetic> axis )
       : HistogramingCounterBase( owner, name, {axis} ) {}
@@ -365,34 +365,35 @@ namespace Gaudi::Accumulators {
         totNEntries += this->nEntries(i);
       }
       // build json
-      return nlohmann::json{{"dimension", ND},
-                            {"empty", totNEntries == Arithmetic{}},
-                            {"subtype", SubType},
-                            {"nEntries", totNEntries},
-                            {"internalType", typeid(Arithmetic).name()},
-                            {"axis", this->axis() },
-                            {"bins", bins }};
+      return {{"type", Type},
+              {"dimension", ND},
+              {"empty", totNEntries == Arithmetic{}},
+              {"nEntries", totNEntries},
+              {"axis", this->axis() },
+              {"bins", bins }};
     }
   };
 
   namespace {
-    static const char histogramString[] = "histogram";
-    static const char profilehistogramString[] = "profilehistogram";
+    static const char histogramString[] = "histogram:Histogram";
+    static const char weightedHistogramString[] = "histogram:WeightedHistogram";
+    static const char profilehistogramString[] = "histogram:ProfileHistogram";
+    static const char weightedProfilehistogramString[] = "histogram:WeightedProfileHistogram";
   }
   /// standard histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using HistogramingCounter = HistogramingCounterBase<ND, Atomicity, Arithmetic, histogramString, HistogramingAccumulator>;
+  using Histogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, histogramString, HistogramingAccumulator>;
 
   /// standard histograming counter with weight. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using WeightedHistogramingCounter = HistogramingCounterBase<ND, Atomicity, Arithmetic, histogramString, WeightedHistogramingAccumulator>;
+  using WeightedHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedHistogramString, WeightedHistogramingAccumulator>;
 
   /// profile histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using ProfileHistogramingCounter = HistogramingCounterBase<ND, Atomicity, Arithmetic, profilehistogramString, ProfileHistogramingAccumulator>;
+  using ProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, profilehistogramString, ProfileHistogramingAccumulator>;
 
   /// weighted profile histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using WeightedProfileHistogramingCounter = HistogramingCounterBase<ND, Atomicity, Arithmetic, profilehistogramString, WeightedProfileHistogramingAccumulator>;
+  using WeightedProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedProfilehistogramString, WeightedProfileHistogramingAccumulator>;
 
 } // namespace Gaudi::Accumulators
