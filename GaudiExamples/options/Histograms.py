@@ -29,4 +29,8 @@ algs = [
 ]
 
 app = ApplicationMgr(
-    EvtMax=50000, EvtSel='NONE', HistogramPersistency='ROOT', TopAlg=algs, ExtSvc=[MessageSvcSink(), RootHistoSink()])
+    EvtMax=50000,
+    EvtSel='NONE',
+    HistogramPersistency='ROOT',
+    TopAlg=algs,
+    ExtSvc=[MessageSvcSink(), RootHistoSink()])
