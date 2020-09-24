@@ -320,7 +320,7 @@ namespace Gaudi::Accumulators {
    * When serialized to json, this counter uses new types histogram:Histogram, histogram:ProfileHistogram,
    * histogram:WeightedHistogram and histrogram:WeightedProfileHistogram
    * All these types have the same fields, namely :
-   *   dimension(integer), empty(bool), nEntries(integer), axis(array), bins(array)
+   *   dimension(integer), title(string), empty(bool), nEntries(integer), axis(array), bins(array)
    * where :
    *     + axis is an array of triplets, one per dimension, with content (nBins(integer), minValue(number), maxValue(number))
    *     + bins is an array of values. The length of the array is the product of (nBins+2) for all axis
@@ -331,16 +331,18 @@ namespace Gaudi::Accumulators {
    */
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
             template<atomicity, typename, typename> typename Accumulator>
-  struct HistogramingCounterBase
-    : BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
+  class HistogramingCounterBase
+    : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
+  public:
     using Parent =
       BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
     template <typename OWNER>
-    HistogramingCounterBase( OWNER* owner, std::string const& name, std::initializer_list<Axis<Arithmetic>> axis )
-      : Parent( owner, name, Type, axis, std::make_index_sequence<ND>{} ) {}
+    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title,
+                             std::initializer_list<Axis<Arithmetic>> axis )
+      : Parent( owner, name, Type, axis, std::make_index_sequence<ND>{} ), m_title( title ) {}
     template <typename OWNER>
-    HistogramingCounterBase( OWNER* owner, std::string const& name, Axis<Arithmetic> axis )
-      : HistogramingCounterBase( owner, name, {axis} ) {}
+    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title, Axis<Arithmetic> axis )
+      : HistogramingCounterBase( owner, name, title, {axis} ) {}
     using Parent::print;
     template <typename stream>
     stream& printImpl( stream& o, bool /*tableFormat*/ ) const {
@@ -366,12 +368,15 @@ namespace Gaudi::Accumulators {
       }
       // build json
       return {{"type", Type},
+              {"title", m_title},
               {"dimension", ND},
               {"empty", totNEntries == Arithmetic{}},
               {"nEntries", totNEntries},
               {"axis", this->axis() },
               {"bins", bins }};
     }
+  private:
+    std::string const m_title;
   };
 
   namespace {
