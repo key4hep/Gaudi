@@ -141,11 +141,11 @@ namespace Gaudi {
 
         // "default" case, that is bins containing doubles and atomic
         mutable Gaudi::Accumulators::Histogram<1> m_gauss{
-                                                                    this, "Gauss", "Gaussian mean=0, sigma=1, atomic", {100, -5, 5}};
+                                                          this, "Gauss", "Gaussian mean=0, sigma=1, atomic", {100, -5, 5, "X"}};
         mutable Gaudi::Accumulators::Histogram<2> m_gaussVflat{
-                                                                         this, "GaussFlat", "Gaussian V Flat, atomic", {{50, -5, 5}, {50, -5, 5}}};
+                                                               this, "GaussFlat", "Gaussian V Flat, atomic", {{50, -5, 5, "X"}, {50, -5, 5, "Y"}}};
         mutable Gaudi::Accumulators::Histogram<3> m_gaussVflatVgauss{
-                                                                               this, "GaussFlatGauss", "Gaussian V Flat V Gaussian, atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                     this, "GaussFlatGauss", "Gaussian V Flat V Gaussian, atomic", {{10, -5, 5, "X"}, {10, -5, 5, "Y"}, {10, -5, 5, "Z"}}};
 
         // non atomic versions
         mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::none> m_gauss_noato{

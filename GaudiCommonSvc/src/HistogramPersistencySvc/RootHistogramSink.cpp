@@ -32,12 +32,14 @@ namespace {
     unsigned int nBins;
     double minValue;
     double maxValue;
+    std::string title;
   };
   
   Axis toAxis( nlohmann::json& jAxis ) {
     return { jAxis.at("nBins").get<unsigned int>(),
              jAxis.at("minValue").get<double>(),
-             jAxis.at("maxValue").get<double>() };
+             jAxis.at("maxValue").get<double>(),
+             ";" + jAxis.at("title").get<std::string>() }; // ";" to prepare concatenations of titles
   }
 
   template <typename Traits, std::size_t... index>
@@ -49,6 +51,8 @@ namespace {
     auto axis     = std::array{toAxis( jsonAxis[index] )...};
     auto weights  = j.at( "bins" ).get<std::vector<typename Traits::WeightType>>();
     auto title = j.at("title").get<std::string>();
+    // weird way ROOT has to give titles to axis
+    title += (axis[index].title + ...);
     // compute total number of bins, multiplying bins per axis
     auto totNBins = ((axis[index].nBins+2) * ...);
     assert(weights.size() == totNBins);
