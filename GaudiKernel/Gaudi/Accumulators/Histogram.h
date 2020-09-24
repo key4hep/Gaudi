@@ -113,12 +113,14 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic>
   struct Axis {
-    Axis( unsigned int _nBins, Arithmetic _minValue, Arithmetic _maxValue )
-        : nBins( _nBins ), minValue( _minValue ), maxValue( _maxValue ), ratio( _nBins / ( _maxValue - _minValue ) ){};
+    Axis( unsigned int _nBins, Arithmetic _minValue, Arithmetic _maxValue, const std::string& _title="" )
+      : nBins( _nBins ), minValue( _minValue ), maxValue( _maxValue ), title(_title), ratio( _nBins / ( _maxValue - _minValue ) ){};
     /// number of bins for this Axis
     unsigned int nBins;
     /// min and max values on this axis
     Arithmetic minValue, maxValue;
+    /// title of this axis
+    std::string title;
     /**
      * precomputed ratio to convert a value into bin number
      * equal to nBins/(maxValue-minValue)
@@ -129,7 +131,7 @@ namespace Gaudi::Accumulators {
   /// automatic conversion of the Axis type to json
   template <typename Arithmetic>
   void to_json(nlohmann::json& j, const Axis<Arithmetic>& axis) {
-    j = nlohmann::json{{"nBins", axis.nBins}, {"minValue", axis.minValue}, {"maxValue", axis.maxValue}};
+    j = nlohmann::json{{"nBins", axis.nBins}, {"minValue", axis.minValue}, {"maxValue", axis.maxValue}, {"title", axis.title}};
   }
 
   /// small class used as InputType for regular Histograms
@@ -322,7 +324,7 @@ namespace Gaudi::Accumulators {
    * All these types have the same fields, namely :
    *   dimension(integer), title(string), empty(bool), nEntries(integer), axis(array), bins(array)
    * where :
-   *     + axis is an array of triplets, one per dimension, with content (nBins(integer), minValue(number), maxValue(number))
+   *     + axis is an array of tuples, one per dimension, with content (nBins(integer), minValue(number), maxValue(number), title(string))
    *     + bins is an array of values. The length of the array is the product of (nBins+2) for all axis
    *       the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values above maxValue
    *       bins are stored row first, so we iterate first on highest dimension
