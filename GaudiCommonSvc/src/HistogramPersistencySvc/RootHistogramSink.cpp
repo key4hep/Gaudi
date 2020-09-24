@@ -48,12 +48,13 @@ namespace {
     auto jsonAxis = j.at( "axis" );
     auto axis     = std::array{toAxis( jsonAxis[index] )...};
     auto weights  = j.at( "bins" ).get<std::vector<typename Traits::WeightType>>();
+    auto title = j.at("title").get<std::string>();
     // compute total number of bins, multiplying bins per axis
     auto totNBins = ((axis[index].nBins+2) * ...);
     assert(weights.size() == totNBins);
     // Create Root histogram calling constructors with the args tuple
     auto histo = std::make_from_tuple<typename Traits::Histo>(
-        std::tuple_cat( std::tuple{id.c_str(), id.c_str()},
+        std::tuple_cat( std::tuple{id.c_str(), title.c_str()},
                         std::tuple{axis[index].nBins, axis[index].minValue, axis[index].maxValue}... ) );
     // fill Histo
     for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );

@@ -39,7 +39,7 @@ namespace Gaudi {
           for ( unsigned int iH = 0; iH < m_nHistos; ++iH ) {
             std::ostringstream title;
             title << "Histogram Number " << iH;
-            m_histos.emplace_back( this, title.str(), axis );
+            m_histos.emplace_back( this, title.str(), title.str(), axis );
           }
 
           return sc;
@@ -141,85 +141,85 @@ namespace Gaudi {
 
         // "default" case, that is bins containing doubles and atomic
         mutable Gaudi::Accumulators::Histogram<1> m_gauss{
-                                                                    this, "Gaussian mean=0, sigma=1, atomic", {100, -5, 5}};
+                                                                    this, "Gauss", "Gaussian mean=0, sigma=1, atomic", {100, -5, 5}};
         mutable Gaudi::Accumulators::Histogram<2> m_gaussVflat{
-                                                                         this, "Gaussian V Flat, atomic", {{50, -5, 5}, {50, -5, 5}}};
+                                                                         this, "GaussFlat", "Gaussian V Flat, atomic", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::Histogram<3> m_gaussVflatVgauss{
-                                                                               this, "Gaussian V Flat V Gaussian, atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                               this, "GaussFlatGauss", "Gaussian V Flat V Gaussian, atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // non atomic versions
         mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::none> m_gauss_noato{
-                                                                                                                this, "Gaussian mean=0, sigma=1, non atomic", {100, -5, 5}};
+                                                                                                                this, "GaussNA", "Gaussian mean=0, sigma=1, non atomic", {100, -5, 5}};
         mutable Gaudi::Accumulators::Histogram<2, Gaudi::Accumulators::atomicity::none> m_gaussVflat_noato{
-                                                                                                                     this, "Gaussian V Flat, non atomic", {{50, -5, 5}, {50, -5, 5}}};
+                                                                                                                     this, "GaussFlatNA", "Gaussian V Flat, non atomic", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::Histogram<3, Gaudi::Accumulators::atomicity::none> m_gaussVflatVgauss_noato{
-                                                                                                                           this, "Gaussian V Flat V Gaussian, non atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                                                                           this, "GaussFlatGaussNA", "Gaussian V Flat V Gaussian, non atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // using integers
         mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, int>
-        m_gauss_int{this, "Gaussian mean=0, sigma=1, integer values", {10, -5, 5}};
+        m_gauss_int{this, "GaussInt", "Gaussian mean=0, sigma=1, integer values", {10, -5, 5}};
         mutable Gaudi::Accumulators::Histogram<2, Gaudi::Accumulators::atomicity::full, int>
-        m_gaussVflat_int{this, "Gaussian V Flat, integer values", {{10, -5, 5}, {10, -5, 5}}};
+        m_gaussVflat_int{this, "GaussFlatInt", "Gaussian V Flat, integer values", {{10, -5, 5}, {10, -5, 5}}};
         mutable Gaudi::Accumulators::Histogram<3, Gaudi::Accumulators::atomicity::full, int>
-        m_gaussVflatVgauss_int{this, "Gaussian V Flat V Gaussian, interger values", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+        m_gaussVflatVgauss_int{this, "GaussFlatGaussInt", "Gaussian V Flat V Gaussian, interger values", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // weighted version, "default" case
         mutable Gaudi::Accumulators::WeightedHistogram<1> m_gauss_w{
-                                                                      this, "Gaussian mean=0, sigma=1, weighted", {100, -5, 5}};
+                                                                    this, "GaussW", "Gaussian mean=0, sigma=1, weighted", {100, -5, 5}};
         mutable Gaudi::Accumulators::WeightedHistogram<2> m_gaussVflat_w{
-                                                                           this, "Gaussian V Flat, weighted", {{50, -5, 5}, {50, -5, 5}}};
+                                                                           this, "GaussFlatW", "Gaussian V Flat, weighted", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::WeightedHistogram<3> m_gaussVflatVgauss_w{
-                                                                                 this, "Gaussian V Flat V Gaussian, weighted", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                                 this, "GaussFlatGaussW", "Gaussian V Flat V Gaussian, weighted", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // "default" case, dedicated to testing buffers
         mutable Gaudi::Accumulators::Histogram<1> m_gauss_buf{
-                                                                        this, "Gaussian mean=0, sigma=1, buffered", {100, -5, 5}};
+                                                                        this, "GaussBuf", "Gaussian mean=0, sigma=1, buffered", {100, -5, 5}};
         mutable Gaudi::Accumulators::Histogram<2> m_gaussVflat_buf{
-                                                                             this, "Gaussian V Flat, buffered", {{50, -5, 5}, {50, -5, 5}}};
+                                                                             this, "GaussFlatBuf", "Gaussian V Flat, buffered", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::Histogram<3> m_gaussVflatVgauss_buf{
-                                                                                   this, "Gaussian V Flat V Gaussian, buffered", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                                   this, "GaussFlatGaussBuf", "Gaussian V Flat V Gaussian, buffered", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // Testing profiling histograms in all dimensions and features
 
         // "default" case, that is bins containing doubles and atomic
         mutable Gaudi::Accumulators::ProfileHistogram<1> m_prof_gauss{
-            this, "Profile, Gaussian mean=0, sigma=1, atomic", {100, -5, 5}};
+            this, "ProfGauss", "Profile, Gaussian mean=0, sigma=1, atomic", {100, -5, 5}};
         mutable Gaudi::Accumulators::ProfileHistogram<2> m_prof_gaussVflat{
-                                                                                     this, "Profile, Gaussian V Flat, atomic", {{50, -5, 5}, {50, -5, 5}}};
+                                                                                     this, "ProfGaussFlat", "Profile, Gaussian V Flat, atomic", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::ProfileHistogram<3> m_prof_gaussVflatVgauss{
-                                                                                           this, "Profile, Gaussian V Flat V Gaussian, atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                                           this, "ProfGaussFlatGauss", "Profile, Gaussian V Flat V Gaussian, atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // non atomic versions
         mutable Gaudi::Accumulators::ProfileHistogram<1, Gaudi::Accumulators::atomicity::none> m_prof_gauss_noato{
-            this, "Profile, Gaussian mean=0, sigma=1, non atomic", {100, -5, 5}};
+            this, "ProfGaussNA", "Profile, Gaussian mean=0, sigma=1, non atomic", {100, -5, 5}};
         mutable Gaudi::Accumulators::ProfileHistogram<2, Gaudi::Accumulators::atomicity::none> m_prof_gaussVflat_noato{
-                                                                                                                                 this, "Profile, Gaussian V Flat, non atomic", {{50, -5, 5}, {50, -5, 5}}};
+                                                                                                                                 this, "ProfGaussFlatNA", "Profile, Gaussian V Flat, non atomic", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::ProfileHistogram<3, Gaudi::Accumulators::atomicity::none> m_prof_gaussVflatVgauss_noato{
-                                                                                                                                       this, "Profile, Gaussian V Flat V Gaussian, non atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                                                                                       this, "ProfGaussFlatGaussNA", "Profile, Gaussian V Flat V Gaussian, non atomic", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // using integers internally
         mutable Gaudi::Accumulators::ProfileHistogram<1, Gaudi::Accumulators::atomicity::full, int>
-            m_prof_gauss_int{this, "Profile, Gaussian mean=0, sigma=1, integer values", {10, -5, 5}};
+            m_prof_gauss_int{this, "ProfGaussInt", "Profile, Gaussian mean=0, sigma=1, integer values", {10, -5, 5}};
         mutable Gaudi::Accumulators::ProfileHistogram<2, Gaudi::Accumulators::atomicity::full, int>
-        m_prof_gaussVflat_int{this, "Profile, Gaussian V Flat, integer values", {{10, -5, 5}, {10, -5, 5}}};
+        m_prof_gaussVflat_int{this, "ProfGaussFlatInt", "Profile, Gaussian V Flat, integer values", {{10, -5, 5}, {10, -5, 5}}};
         mutable Gaudi::Accumulators::ProfileHistogram<3, Gaudi::Accumulators::atomicity::full, int>
-        m_prof_gaussVflatVgauss_int{this, "Profile, Gaussian V Flat V Gaussian, interger values", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+        m_prof_gaussVflatVgauss_int{this, "ProfGaussFlatGaussInt", "Profile, Gaussian V Flat V Gaussian, interger values", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // weighted version, "default" case
         mutable Gaudi::Accumulators::WeightedProfileHistogram<1> m_prof_gauss_w{
-            this, "Profile, Gaussian mean=0, sigma=1, weighted", {100, -5, 5}};
+            this, "ProfGaussW", "Profile, Gaussian mean=0, sigma=1, weighted", {100, -5, 5}};
         mutable Gaudi::Accumulators::WeightedProfileHistogram<2> m_prof_gaussVflat_w{
-                                                                                       this, "Profile, Gaussian V Flat, weighted", {{50, -5, 5}, {50, -5, 5}}};
+                                                                                       this, "ProfGaussFlatW", "Profile, Gaussian V Flat, weighted", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::WeightedProfileHistogram<3> m_prof_gaussVflatVgauss_w{
-                                                                                                     this, "Profile, Gaussian V Flat V Gaussian, weighted", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                                                     this, "ProfGaussFlatGaussW", "Profile, Gaussian V Flat V Gaussian, weighted", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
 
         // "default" case, dedicated to testing buffers
         mutable Gaudi::Accumulators::ProfileHistogram<1> m_prof_gauss_buf{
-            this, "Profile, Gaussian mean=0, sigma=1, buffered", {100, -5, 5}};
+            this, "ProfGaussBuf", "Profile, Gaussian mean=0, sigma=1, buffered", {100, -5, 5}};
         mutable Gaudi::Accumulators::ProfileHistogram<2> m_prof_gaussVflat_buf{
-                                                                                         this, "Profile, Gaussian V Flat, buffered", {{50, -5, 5}, {50, -5, 5}}};
+                                                                                         this, "ProfGaussFlatBuf", "Profile, Gaussian V Flat, buffered", {{50, -5, 5}, {50, -5, 5}}};
         mutable Gaudi::Accumulators::ProfileHistogram<3> m_prof_gaussVflatVgauss_buf{
-                                                                                               this, "Profile, Gaussian V Flat V Gaussian, buffered", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
+                                                                                               this, "ProfGaussFlatGaussBuf", "Profile, Gaussian V Flat V Gaussian, buffered", {{10, -5, 5}, {10, -5, 5}, {10, -5, 5}}};
         
       };
       DECLARE_COMPONENT( GaudiHistoAlgorithm )
