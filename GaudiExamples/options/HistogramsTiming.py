@@ -16,10 +16,10 @@ RootHistSvc('RootHistSvc').OutputFile = 'histo.root'
 
 #HistogramSvc('HistogramDataSvc').Input = [ "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'" ]
 
-from Configurables import (
-    HistoTimingAlgDA as CounterHistoTimingDA, HistoTimingAlgIA as
-    CounterHistoTimingIA, HistoTimingAlgD as CounterHistoTimingD,
-    HistoTimingAlgI as CounterHistoTimingI)
+from Configurables import (HistoTimingAlgDA as CounterHistoTimingDA,
+                           HistoTimingAlgIA as CounterHistoTimingIA,
+                           HistoTimingAlgD as CounterHistoTimingD,
+                           HistoTimingAlgI as CounterHistoTimingI)
 
 seq = GaudiSequencer("TimingSeq", MeasureTime=True)
 seq.Members = [

@@ -23,23 +23,22 @@
 
 #include <fmt/format.h>
 
-#include <deque>
 #include <algorithm>
+#include <deque>
 
 namespace {
 
   struct Axis {
     unsigned int nBins;
-    double minValue;
-    double maxValue;
-    std::string title;
+    double       minValue;
+    double       maxValue;
+    std::string  title;
   };
-  
+
   Axis toAxis( nlohmann::json& jAxis ) {
-    return { jAxis.at("nBins").get<unsigned int>(),
-             jAxis.at("minValue").get<double>(),
-             jAxis.at("maxValue").get<double>(),
-             ";" + jAxis.at("title").get<std::string>() }; // ";" to prepare concatenations of titles
+    return {jAxis.at( "nBins" ).get<unsigned int>(), jAxis.at( "minValue" ).get<double>(),
+            jAxis.at( "maxValue" ).get<double>(),
+            ";" + jAxis.at( "title" ).get<std::string>()}; // ";" to prepare concatenations of titles
   }
 
   template <typename Traits, std::size_t... index>
@@ -50,12 +49,12 @@ namespace {
     auto jsonAxis = j.at( "axis" );
     auto axis     = std::array{toAxis( jsonAxis[index] )...};
     auto weights  = j.at( "bins" ).get<std::vector<typename Traits::WeightType>>();
-    auto title = j.at("title").get<std::string>();
+    auto title    = j.at( "title" ).get<std::string>();
     // weird way ROOT has to give titles to axis
-    title += (axis[index].title + ...);
+    title += ( axis[index].title + ... );
     // compute total number of bins, multiplying bins per axis
-    auto totNBins = ((axis[index].nBins+2) * ...);
-    assert(weights.size() == totNBins);
+    auto totNBins = ( ( axis[index].nBins + 2 ) * ... );
+    assert( weights.size() == totNBins );
     // Create Root histogram calling constructors with the args tuple
     auto histo = std::make_from_tuple<typename Traits::Histo>(
         std::tuple_cat( std::tuple{id.c_str(), title.c_str()},
@@ -73,9 +72,7 @@ namespace {
   struct Traits<false, RootHisto> {
     using Histo      = RootHisto;
     using WeightType = double;
-    static auto fill( Histo& histo, unsigned int i, const WeightType& weight ) {
-      histo.SetBinContent( i, weight );
-    }
+    static auto fill( Histo& histo, unsigned int i, const WeightType& weight ) { histo.SetBinContent( i, weight ); }
   };
   template <typename RootHisto>
   struct Traits<true, RootHisto> {
@@ -104,26 +101,25 @@ namespace {
 
   using namespace std::string_literals;
   static const auto registry =
-    std::map{std::pair{std::pair{"histogram:Histogram"s, 1}, &saveRootHisto<1, false, TH1D>},
-             std::pair{std::pair{"histogram:WeightedHistogram"s, 1}, &saveRootHisto<1, false, TH1D>},
-             std::pair{std::pair{"histogram:Histogram"s, 2}, &saveRootHisto<2, false, TH2D>},
-             std::pair{std::pair{"histogram:WeightedHistogram"s, 2}, &saveRootHisto<2, false, TH2D>},
-             std::pair{std::pair{"histogram:Histogram"s, 3}, &saveRootHisto<3, false, TH3D>},
-             std::pair{std::pair{"histogram:WeightedHistogram"s, 3}, &saveRootHisto<3, false, TH3D>},
-             std::pair{std::pair{"histogram:ProfileHistogram"s, 1}, &saveRootHisto<1, true, TProfile>},
-             std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 1}, &saveRootHisto<1, true, TProfile>},
-             std::pair{std::pair{"histogram:ProfileHistogram"s, 2}, &saveRootHisto<2, true, TProfile2D>},
-             std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 2}, &saveRootHisto<2, true, TProfile2D>},
-             std::pair{std::pair{"histogram:ProfileHistogram"s, 3}, &saveRootHisto<3, true, TProfile3D>},
-             std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 3}, &saveRootHisto<3, true, TProfile3D>}};
-}
+      std::map{std::pair{std::pair{"histogram:Histogram"s, 1}, &saveRootHisto<1, false, TH1D>},
+               std::pair{std::pair{"histogram:WeightedHistogram"s, 1}, &saveRootHisto<1, false, TH1D>},
+               std::pair{std::pair{"histogram:Histogram"s, 2}, &saveRootHisto<2, false, TH2D>},
+               std::pair{std::pair{"histogram:WeightedHistogram"s, 2}, &saveRootHisto<2, false, TH2D>},
+               std::pair{std::pair{"histogram:Histogram"s, 3}, &saveRootHisto<3, false, TH3D>},
+               std::pair{std::pair{"histogram:WeightedHistogram"s, 3}, &saveRootHisto<3, false, TH3D>},
+               std::pair{std::pair{"histogram:ProfileHistogram"s, 1}, &saveRootHisto<1, true, TProfile>},
+               std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 1}, &saveRootHisto<1, true, TProfile>},
+               std::pair{std::pair{"histogram:ProfileHistogram"s, 2}, &saveRootHisto<2, true, TProfile2D>},
+               std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 2}, &saveRootHisto<2, true, TProfile2D>},
+               std::pair{std::pair{"histogram:ProfileHistogram"s, 3}, &saveRootHisto<3, true, TProfile3D>},
+               std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 3}, &saveRootHisto<3, true, TProfile3D>}};
+} // namespace
 
 namespace Gaudi::Histograming::Sink {
 
   class Root : public Service, public Gaudi::Monitoring::Hub::Sink {
 
   public:
-
     using Service::Service;
 
     StatusCode initialize() override {
@@ -141,8 +137,8 @@ namespace Gaudi::Histograming::Sink {
       } );
       TFile histoFile( "testHisto.root", "RECREATE" );
       std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( auto& ent ) {
-        auto j   = ent.toJSON();
-        auto dim = j.at( "dimension" ).template get<unsigned int>();
+        auto j     = ent.toJSON();
+        auto dim   = j.at( "dimension" ).template get<unsigned int>();
         auto type  = j.at( "type" ).template get<std::string>();
         auto saver = registry.find( {type, dim} );
         if ( saver == registry.end() )
@@ -162,10 +158,8 @@ namespace Gaudi::Histograming::Sink {
 
   private:
     std::deque<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
-
   };
 
   DECLARE_COMPONENT( Root )
 
 } // namespace Gaudi::Histograming::Sink
-

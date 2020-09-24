@@ -21,10 +21,10 @@
 
 #include <nlohmann/json.hpp>
 
+#include <array>
 #include <cmath>
 #include <type_traits>
 #include <utility>
-#include <array>
 
 namespace Gaudi::Accumulators {
 
@@ -65,19 +65,24 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  struct WeightedCountAccumulator : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight> {
-    using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight>::GenericAccumulator;
+  struct WeightedCountAccumulator
+      : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight> {
+    using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity,
+                             ExtractWeight>::GenericAccumulator;
     Arithmetic nEntries() const { return this->value(); }
   };
 
   /**
    * WeightedSumAccumulator. A WeightedSumAccumulator is an Accumulator storing a weighted sum of values.
-   * It takes a pair (valueTuple, weight) and basically sums the product of the last item othe 2 part of its in put pair : weight and value
+   * It takes a pair (valueTuple, weight) and basically sums the product of the last item othe 2 part of its in put pair
+   * : weight and value
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  struct WeightedSumAccumulator : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, WeightedProduct> {
-    using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, WeightedProduct>::GenericAccumulator;
+  struct WeightedSumAccumulator
+      : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, WeightedProduct> {
+    using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity,
+                             WeightedProduct>::GenericAccumulator;
     Arithmetic sum() const { return this->value(); }
   };
 
@@ -87,8 +92,10 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic = double>
-  struct WeightedSquareAccumulator : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, WeightedSquare> {
-    using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, WeightedSquare>::GenericAccumulator;
+  struct WeightedSquareAccumulator
+      : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, WeightedSquare> {
+    using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity,
+                             WeightedSquare>::GenericAccumulator;
     Arithmetic sum2() const { return this->value(); };
   };
 
@@ -98,7 +105,8 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  using WeightedAveragingAccumulator = AveragingAccumulatorBase<Atomicity, Arithmetic, WeightedCountAccumulator, WeightedSumAccumulator>;
+  using WeightedAveragingAccumulator =
+      AveragingAccumulatorBase<Atomicity, Arithmetic, WeightedCountAccumulator, WeightedSumAccumulator>;
 
   /**
    * WeightedSigmaAccumulator. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
@@ -106,15 +114,20 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  using WeightedSigmaAccumulator = SigmaAccumulatorBase<Atomicity, Arithmetic, WeightedAveragingAccumulator, WeightedSquareAccumulator>;
+  using WeightedSigmaAccumulator =
+      SigmaAccumulatorBase<Atomicity, Arithmetic, WeightedAveragingAccumulator, WeightedSquareAccumulator>;
 
   /**
    * Definition of an Histogram Axis
    */
   template <typename Arithmetic>
   struct Axis {
-    Axis( unsigned int _nBins, Arithmetic _minValue, Arithmetic _maxValue, const std::string& _title="" )
-      : nBins( _nBins ), minValue( _minValue ), maxValue( _maxValue ), title(_title), ratio( _nBins / ( _maxValue - _minValue ) ){};
+    Axis( unsigned int _nBins, Arithmetic _minValue, Arithmetic _maxValue, const std::string& _title = "" )
+        : nBins( _nBins )
+        , minValue( _minValue )
+        , maxValue( _maxValue )
+        , title( _title )
+        , ratio( _nBins / ( _maxValue - _minValue ) ){};
     /// number of bins for this Axis
     unsigned int nBins;
     /// min and max values on this axis
@@ -127,11 +140,12 @@ namespace Gaudi::Accumulators {
      */
     Arithmetic ratio;
   };
-  
+
   /// automatic conversion of the Axis type to json
   template <typename Arithmetic>
-  void to_json(nlohmann::json& j, const Axis<Arithmetic>& axis) {
-    j = nlohmann::json{{"nBins", axis.nBins}, {"minValue", axis.minValue}, {"maxValue", axis.maxValue}, {"title", axis.title}};
+  void to_json( nlohmann::json& j, const Axis<Arithmetic>& axis ) {
+    j = nlohmann::json{
+        {"nBins", axis.nBins}, {"minValue", axis.minValue}, {"maxValue", axis.maxValue}, {"title", axis.title}};
   }
 
   /// small class used as InputType for regular Histograms
@@ -145,13 +159,13 @@ namespace Gaudi::Accumulators {
         localIndex     = ( localIndex < 0 )
                          ? 0
                          : ( ( (unsigned int)localIndex >= axis[dim].nBins ) ? axis[dim].nBins + 1
-                             : (unsigned int)( localIndex + 1 ) );
+                                                                             : (unsigned int)( localIndex + 1 ) );
         // compute global index. Bins are stored in a row first manner
-        index = ( dim > 0 ? ( axis[dim-1].nBins + 2 ) : 0 ) * index + localIndex;
+        index = ( dim > 0 ? ( axis[dim - 1].nBins + 2 ) : 0 ) * index + localIndex;
       }
       return index;
     }
-    auto forInternalCounter() { return this->operator[](ND-1); }
+    auto forInternalCounter() { return this->operator[]( ND - 1 ); }
   };
 
   /// specialization of HistoInputType for ND == 1 in order to have simpler syntax
@@ -159,14 +173,15 @@ namespace Gaudi::Accumulators {
   template <typename Arithmetic>
   class HistoInputType<Arithmetic, 1> {
   public:
-    HistoInputType(Arithmetic a) : value(a) {}
+    HistoInputType( Arithmetic a ) : value( a ) {}
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const {
       int index = std::floor( ( value - axis[0].minValue ) * axis[0].ratio ) + 1;
       return index < 0 ? 0 : ( (unsigned int)index > axis[0].nBins ? axis[0].nBins + 1 : (unsigned int)index );
     }
-    Arithmetic& operator[](int index) { return value; }
-    operator Arithmetic() const { return value; }
-    auto forInternalCounter() { return value; }
+    Arithmetic& operator[]( int index ) { return value; }
+                operator Arithmetic() const { return value; }
+    auto        forInternalCounter() { return value; }
+
   private:
     Arithmetic value;
   };
@@ -178,7 +193,7 @@ namespace Gaudi::Accumulators {
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       return this->first.computeIndex( axis );
     }
-    auto forInternalCounter() { return std::pair(this->first.forInternalCounter(), this->second); }
+    auto forInternalCounter() { return std::pair( this->first.forInternalCounter(), this->second ); }
   };
 
   /**
@@ -204,13 +219,16 @@ namespace Gaudi::Accumulators {
   public:
     using BaseAccumulator = BaseAccumulatorT<Atomicity, Arithmetic>;
     template <std::size_t... Is>
-    HistogramingAccumulatorInternal( std::initializer_list<Axis<Arithmetic>> axis, std::index_sequence<Is...> ) :
-      m_axis{{ *(axis.begin() + Is)... }}, m_totNBins{computeTotNBins()}, m_value( new BaseAccumulator[m_totNBins] ) {
+    HistogramingAccumulatorInternal( std::initializer_list<Axis<Arithmetic>> axis, std::index_sequence<Is...> )
+        : m_axis{{*( axis.begin() + Is )...}}
+        , m_totNBins{computeTotNBins()}
+        , m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
     template <atomicity ato>
-    HistogramingAccumulatorInternal( construct_empty_t,
-                                     const HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other )
+    HistogramingAccumulatorInternal(
+        construct_empty_t,
+        const HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other )
         : m_axis( other.m_axis ), m_totNBins{computeTotNBins()}, m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
@@ -219,7 +237,7 @@ namespace Gaudi::Accumulators {
       return *this;
     }
     void reset() {
-      for ( unsigned int index = 0; index < m_totNBins; index++ ) accumulator(index).reset();
+      for ( unsigned int index = 0; index < m_totNBins; index++ ) accumulator( index ).reset();
     }
     template <atomicity ato>
     void mergeAndReset( HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>&& other ) {
@@ -231,20 +249,20 @@ namespace Gaudi::Accumulators {
 
   protected:
     auto& axis() const { return m_axis; }
-    auto nBins( unsigned int i ) const { return m_axis[i].nBins; }
-    auto minValue( unsigned int i ) const { return m_axis[i].minValue; }
-    auto maxValue( unsigned int i ) const { return m_axis[i].maxValue; }
-    auto ratio( unsigned int i ) const { return m_axis[i].ratio; }
-    auto binValue( unsigned int i ) const { return accumulator( i ).value(); }
-    auto nEntries( unsigned int i ) const { return accumulator( i ).nEntries(); }
-    auto totNBins() const { return m_totNBins; }
+    auto  nBins( unsigned int i ) const { return m_axis[i].nBins; }
+    auto  minValue( unsigned int i ) const { return m_axis[i].minValue; }
+    auto  maxValue( unsigned int i ) const { return m_axis[i].maxValue; }
+    auto  ratio( unsigned int i ) const { return m_axis[i].ratio; }
+    auto  binValue( unsigned int i ) const { return accumulator( i ).value(); }
+    auto  nEntries( unsigned int i ) const { return accumulator( i ).nEntries(); }
+    auto  totNBins() const { return m_totNBins; }
 
   private:
     BaseAccumulator& accumulator( unsigned int index ) const {
       assert( index < m_totNBins );
       return m_value[index];
     }
-    unsigned int         computeTotNBins() const {
+    unsigned int computeTotNBins() const {
       unsigned int nTotBins = 1;
       for ( unsigned int i = 0; i < ND::value; i++ ) { nTotBins *= ( m_axis[i].nBins + 2 ); }
       return nTotBins;
@@ -263,7 +281,8 @@ namespace Gaudi::Accumulators {
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
   template <atomicity Atomicity, typename Arithmetic, typename ND>
-  using HistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value>, Arithmetic, ND, CountAccumulator>;
+  using HistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value>,
+                                                                  Arithmetic, ND, CountAccumulator>;
 
   /**
    * Class implementing a weighted histogram accumulator
@@ -271,7 +290,9 @@ namespace Gaudi::Accumulators {
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
   template <atomicity Atomicity, typename Arithmetic, typename ND>
-  using WeightedHistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, WeightedHistoInputType<Arithmetic, ND::value>, Arithmetic, ND, WeightedCountAccumulator>;
+  using WeightedHistogramingAccumulator =
+      HistogramingAccumulatorInternal<Atomicity, WeightedHistoInputType<Arithmetic, ND::value>, Arithmetic, ND,
+                                      WeightedCountAccumulator>;
 
   /**
    * Class implementing a profile histogram accumulator
@@ -279,7 +300,9 @@ namespace Gaudi::Accumulators {
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
   template <atomicity Atomicity, typename Arithmetic, typename ND>
-  using ProfileHistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value+1, ND::value>, Arithmetic, ND, SigmaAccumulator>;
+  using ProfileHistogramingAccumulator =
+      HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value + 1, ND::value>, Arithmetic, ND,
+                                      SigmaAccumulator>;
 
   /**
    * Class implementing a weighted profile histogram accumulator
@@ -287,7 +310,9 @@ namespace Gaudi::Accumulators {
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
   template <atomicity Atomicity, typename Arithmetic, typename ND>
-  using WeightedProfileHistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, WeightedHistoInputType<Arithmetic, ND::value+1, ND::value>, Arithmetic, ND, WeightedSigmaAccumulator>;
+  using WeightedProfileHistogramingAccumulator =
+      HistogramingAccumulatorInternal<Atomicity, WeightedHistoInputType<Arithmetic, ND::value + 1, ND::value>,
+                                      Arithmetic, ND, WeightedSigmaAccumulator>;
 
   /**
    * A base counter dealing with Histograms
@@ -324,27 +349,27 @@ namespace Gaudi::Accumulators {
    * All these types have the same fields, namely :
    *   dimension(integer), title(string), empty(bool), nEntries(integer), axis(array), bins(array)
    * where :
-   *     + axis is an array of tuples, one per dimension, with content (nBins(integer), minValue(number), maxValue(number), title(string))
+   *     + axis is an array of tuples, one per dimension, with content (nBins(integer), minValue(number),
+   * maxValue(number), title(string))
    *     + bins is an array of values. The length of the array is the product of (nBins+2) for all axis
-   *       the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values above maxValue
-   *       bins are stored row first, so we iterate first on highest dimension
-   *       For each bin the value is either a number (for non profile histograms) or a triplet (for profile histograms)
-   *       containing (nEntries(integer), sum(number), sum2(number))
+   *       the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values above
+   * maxValue bins are stored row first, so we iterate first on highest dimension For each bin the value is either a
+   * number (for non profile histograms) or a triplet (for profile histograms) containing (nEntries(integer),
+   * sum(number), sum2(number))
    */
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
-            template<atomicity, typename, typename> typename Accumulator>
+            template <atomicity, typename, typename> typename Accumulator>
   class HistogramingCounterBase
-    : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
+      : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
   public:
-    using Parent =
-      BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
+    using Parent = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
     template <typename OWNER>
     HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title,
                              std::initializer_list<Axis<Arithmetic>> axis )
-      : Parent( owner, name, Type, axis, std::make_index_sequence<ND>{} ), m_title( title ) {}
+        : Parent( owner, name, Type, axis, std::make_index_sequence<ND>{} ), m_title( title ) {}
     template <typename OWNER>
     HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title, Axis<Arithmetic> axis )
-      : HistogramingCounterBase( owner, name, title, {axis} ) {}
+        : HistogramingCounterBase( owner, name, title, {axis} ) {}
     using Parent::print;
     template <typename stream>
     stream& printImpl( stream& o, bool /*tableFormat*/ ) const {
@@ -362,11 +387,11 @@ namespace Gaudi::Accumulators {
       // get all bin values and compute total nbEntries
       using Acc = Accumulator<Atomicity, Arithmetic, std::integral_constant<int, ND>>;
       std::vector<typename Acc::BaseAccumulator::OutputType> bins;
-      bins.reserve(this->totNBins());
+      bins.reserve( this->totNBins() );
       unsigned int totNEntries{0};
-      for (unsigned int i = 0; i < this->totNBins(); i++) {
-        bins.push_back(this->binValue(i));
-        totNEntries += this->nEntries(i);
+      for ( unsigned int i = 0; i < this->totNBins(); i++ ) {
+        bins.push_back( this->binValue( i ) );
+        totNEntries += this->nEntries( i );
       }
       // build json
       return {{"type", Type},
@@ -374,33 +399,37 @@ namespace Gaudi::Accumulators {
               {"dimension", ND},
               {"empty", totNEntries == Arithmetic{}},
               {"nEntries", totNEntries},
-              {"axis", this->axis() },
-              {"bins", bins }};
+              {"axis", this->axis()},
+              {"bins", bins}};
     }
+
   private:
     std::string const m_title;
   };
 
   namespace {
-    static const char histogramString[] = "histogram:Histogram";
-    static const char weightedHistogramString[] = "histogram:WeightedHistogram";
-    static const char profilehistogramString[] = "histogram:ProfileHistogram";
+    static const char histogramString[]                = "histogram:Histogram";
+    static const char weightedHistogramString[]        = "histogram:WeightedHistogram";
+    static const char profilehistogramString[]         = "histogram:ProfileHistogram";
     static const char weightedProfilehistogramString[] = "histogram:WeightedProfileHistogram";
-  }
+  } // namespace
   /// standard histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
   using Histogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, histogramString, HistogramingAccumulator>;
 
   /// standard histograming counter with weight. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using WeightedHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedHistogramString, WeightedHistogramingAccumulator>;
+  using WeightedHistogram =
+      HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedHistogramString, WeightedHistogramingAccumulator>;
 
   /// profile histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using ProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, profilehistogramString, ProfileHistogramingAccumulator>;
+  using ProfileHistogram =
+      HistogramingCounterBase<ND, Atomicity, Arithmetic, profilehistogramString, ProfileHistogramingAccumulator>;
 
   /// weighted profile histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using WeightedProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedProfilehistogramString, WeightedProfileHistogramingAccumulator>;
+  using WeightedProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedProfilehistogramString,
+                                                           WeightedProfileHistogramingAccumulator>;
 
 } // namespace Gaudi::Accumulators

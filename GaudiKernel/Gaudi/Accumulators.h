@@ -473,7 +473,8 @@ namespace Gaudi::Accumulators {
    * and increase them altogether
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity, typename InputTypeT=Arithmetic, template <atomicity, typename> class... Bases>
+  template <typename Arithmetic, atomicity Atomicity, typename InputTypeT = Arithmetic,
+            template <atomicity, typename> class... Bases>
   class AccumulatorSet : public Bases<Atomicity, Arithmetic>... {
   public:
     using InputType             = InputTypeT;
@@ -483,7 +484,8 @@ namespace Gaudi::Accumulators {
     constexpr AccumulatorSet()  = default;
     /// constructor of an empty AccumulatorSet, copying the (non existent) config from another GenericAccumulator
     template <atomicity ato>
-    AccumulatorSet( construct_empty_t, const AccumulatorSet<Arithmetic, ato, InputType, Bases...>& ) : AccumulatorSet() {}
+    AccumulatorSet( construct_empty_t, const AccumulatorSet<Arithmetic, ato, InputType, Bases...>& )
+        : AccumulatorSet() {}
     AccumulatorSet& operator+=( const InputType by ) {
       ( Bases<Atomicity, Arithmetic>::operator+=( by ), ... );
       return *this;
@@ -645,7 +647,7 @@ namespace Gaudi::Accumulators {
       if ( 1 > nbEntries ) return Result{-1};
       return sqrt( static_cast<Result>( this->nTrueEntries() * this->nFalseEntries() ) / nbEntries ) / nbEntries;
     }
-    auto                                                                      effErr() const { return efficiencyErr(); }
+    auto effErr() const { return efficiencyErr(); }
     using AccumulatorSet<bool, Atomicity, bool, TrueAccumulator, FalseAccumulator>::operator+=;
     struct binomial_t {
       unsigned long nPass;
@@ -665,13 +667,15 @@ namespace Gaudi::Accumulators {
    * This Base class is still templated on the counting and summing accumulators
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <atomicity Atomicity, typename Arithmetic,
-            template<atomicity, typename> typename CountAcc,
-            template<atomicity, typename> typename SumAcc>
-  struct AveragingAccumulatorBase : AccumulatorSet<Arithmetic, Atomicity, typename CountAcc<Atomicity, Arithmetic>::InputType, CountAcc, SumAcc> {
-    static_assert(std::is_same_v<typename CountAcc<Atomicity, Arithmetic>::InputType, typename SumAcc<Atomicity, Arithmetic>::InputType>,
-                  "Incompatible Counters in definition of AveragingAccumulator. Both should have identical Input");
-    using AccumulatorSet<Arithmetic, Atomicity, typename CountAcc<Atomicity, Arithmetic>::InputType, CountAcc, SumAcc>::AccumulatorSet;
+  template <atomicity Atomicity, typename Arithmetic, template <atomicity, typename> typename CountAcc,
+            template <atomicity, typename> typename SumAcc>
+  struct AveragingAccumulatorBase
+      : AccumulatorSet<Arithmetic, Atomicity, typename CountAcc<Atomicity, Arithmetic>::InputType, CountAcc, SumAcc> {
+    static_assert( std::is_same_v<typename CountAcc<Atomicity, Arithmetic>::InputType,
+                                  typename SumAcc<Atomicity, Arithmetic>::InputType>,
+                   "Incompatible Counters in definition of AveragingAccumulator. Both should have identical Input" );
+    using AccumulatorSet<Arithmetic, Atomicity, typename CountAcc<Atomicity, Arithmetic>::InputType, CountAcc,
+                         SumAcc>::AccumulatorSet;
     template <typename Result = fp_result_type<Arithmetic>>
     auto mean() const {
       auto   n   = this->nEntries();
@@ -692,13 +696,15 @@ namespace Gaudi::Accumulators {
    * This Base class is still templated on the averaging and square accumulators
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <atomicity Atomicity, typename Arithmetic,
-            template<atomicity, typename> typename AvgAcc,
-            template<atomicity, typename> typename SquareAcc>
-  struct SigmaAccumulatorBase : AccumulatorSet<Arithmetic, Atomicity, typename AvgAcc<Atomicity, Arithmetic>::InputType, AvgAcc, SquareAcc> {
-    static_assert(std::is_same_v<typename AvgAcc<Atomicity, Arithmetic>::InputType, typename SquareAcc<Atomicity, Arithmetic>::InputType>,
-                  "Incompatible Counters in definition of SigmaAccumulator. Both should have identical Input");
-    using AccumulatorSet<Arithmetic, Atomicity, typename SquareAcc<Atomicity, Arithmetic>::InputType, AvgAcc, SquareAcc>::AccumulatorSet;
+  template <atomicity Atomicity, typename Arithmetic, template <atomicity, typename> typename AvgAcc,
+            template <atomicity, typename> typename SquareAcc>
+  struct SigmaAccumulatorBase
+      : AccumulatorSet<Arithmetic, Atomicity, typename AvgAcc<Atomicity, Arithmetic>::InputType, AvgAcc, SquareAcc> {
+    static_assert( std::is_same_v<typename AvgAcc<Atomicity, Arithmetic>::InputType,
+                                  typename SquareAcc<Atomicity, Arithmetic>::InputType>,
+                   "Incompatible Counters in definition of SigmaAccumulator. Both should have identical Input" );
+    using AccumulatorSet<Arithmetic, Atomicity, typename SquareAcc<Atomicity, Arithmetic>::InputType, AvgAcc,
+                         SquareAcc>::AccumulatorSet;
     template <typename Result = fp_result_type<Arithmetic>>
     auto biased_sample_variance() const {
       auto   n   = this->nEntries();
@@ -751,7 +757,8 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  using StatAccumulator = AccumulatorSet<Arithmetic, Atomicity, Arithmetic, SigmaAccumulator, MinAccumulator, MaxAccumulator>;
+  using StatAccumulator =
+      AccumulatorSet<Arithmetic, Atomicity, Arithmetic, SigmaAccumulator, MinAccumulator, MaxAccumulator>;
 
   /**
    * Buffer is a non atomic Accumulator which, when it goes out-of-scope,

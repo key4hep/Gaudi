@@ -22,7 +22,7 @@ algorithms = [
 
 app = C.ApplicationMgr(
     'ApplicationMgr',
-    TopAlg=[ 'SimpleHistos', 'SimpleCounterHistos' ],
+    TopAlg=['SimpleHistos', 'SimpleCounterHistos'],
     EvtMax=50000,
     EvtSel='NONE',
 )
