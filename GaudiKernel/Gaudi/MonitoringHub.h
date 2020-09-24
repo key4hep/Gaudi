@@ -10,8 +10,8 @@
 \*****************************************************************************/
 #pragma once
 
+#include <deque>
 #include <functional>
-#include <list>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <typeinfo>
@@ -44,7 +44,7 @@ namespace Gaudi::Monitoring {
           , name{std::move( name )}
           , type{std::move( type )}
           , ptr{&ent}
-          , getJSON{[&ent]() { return ent.toJSON(); }} {}
+          , getJSON{[]( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); }} {}
       /// name of the component owning the Entity
       std::string component;
       /// name of the entity
@@ -54,7 +54,8 @@ namespace Gaudi::Monitoring {
       /// pointer to the actual data inside this Entity
       const void* ptr{nullptr};
       /// function converting the internal data to json. Due to type erasure, it needs to be a member of this struct
-      std::function<json()> getJSON;
+      json ( *getJSON )( const void* );
+      json toJSON() const { return ( *getJSON )( ptr ); }
     };
 
     /// Interface reporting services must implement.
@@ -78,10 +79,13 @@ namespace Gaudi::Monitoring {
                      [sink]( Entity ent ) { sink->registerEntity( std::move( ent ) ); } );
       m_sinks.push_back( sink );
     }
-    void removeSink( Sink* sink ) { m_sinks.remove( sink ); }
+    void removeSink( Sink* sink ) {
+      auto it = std::find( begin( m_sinks ), end( m_sinks ), sink );
+      if ( it != m_sinks.end() ) m_sinks.erase( it );
+    }
 
   private:
-    std::list<Sink*>  m_sinks;
-    std::list<Entity> m_entities;
+    std::deque<Sink*>  m_sinks;
+    std::deque<Entity> m_entities;
   };
 } // namespace Gaudi::Monitoring
