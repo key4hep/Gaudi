@@ -1,25 +1,23 @@
 # setting LC_ALL to "C"
-# --> Including file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Histograms.py'
-# <-- End of file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Histograms.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r2)
-                                          running on marco-XPS-13 on Fri Nov 22 18:11:39 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r0)
+                                          running on lblhcbpr11.cern.ch on Fri Sep 25 16:09:52 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
 SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 52
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 49
 SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
-SimpleHistos        DEBUG Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
-SimpleHistos        DEBUG Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'ShortFormatFor1DHistoTable':' | %1$-25.25s %2%'
+SimpleHistos        DEBUG Property ['Name': Value] =  'FormatFor1DHistoTable':'| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |'
 SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorHistograms':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'FullDetail':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'HistoDir':SimpleHistos
-SimpleHistos        DEBUG Property ['Name': Value] =  'HistoTopDir':
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoDir':'SimpleHistos'
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoTopDir':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoOffSet':0
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoSplitDir':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoCheckForNaN':True
@@ -31,21 +29,21 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-SimpleHistos        DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-SimpleHistos        DEBUG Property ['Name': Value] =  'Context':
+SimpleHistos        DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
+SimpleHistos        DEBUG Property ['Name': Value] =  'Context':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'TypePrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':
+SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'Blocking':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'Cardinality':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 SimpleHistos        DEBUG Property ['Name': Value] =  'Timeline':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStop':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -60,6 +58,8 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
 SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
+HistogramDataSvc    DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo-c2.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 HistogramDataSvc     INFO Added stream file:../data/input.hbook as InFile
@@ -139,41 +139,41 @@ ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS 1D histograms in directory "SimpleHistos" : 10
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
- | 101                       | "Exponential"                                 |  50000  |    0.95998 | 0.90886    |     1.5114 |     2.2809 |
- | 102                       | "Breit"                                       |  50000  | -0.0032276 | 1.2027     |   -0.02601 |     3.5939 |
- | 1111                      | "Forced Numeric ID time test"                 |  50000  | -0.0093573 | 1.0017     | -0.0020166 |   0.039768 |
- | AutoID time test          | "AutoID time test"                            |  50000  | -0.0093573 | 1.0017     | -0.0020166 |   0.039768 |
- | Gaussian mean=0, sigma=1  | "Gaussian mean=0, sigma=1"                    |  50000  | -0.0093573 | 1.0017     | -0.0020166 |   0.039768 |
- | poisson                   | "Poisson"                                     |  50000  |     1.8068 | 1.1805     |    0.32702 |   -0.76869 |
- | subdir1/bino              | "Binominal"                                   |  50000  |       1.92 | 1.115      |    0.24185 |   -0.67702 |
- | subdir2/bino              | "Binominal"                                   |  50000  |       1.92 | 1.115      |    0.24185 |   -0.67702 |
- | test1                     | "Forced Alpha ID time test"                   |  50000  | -0.0093573 | 1.0017     | -0.0020166 |   0.039768 |
- | varBinning/x              | "1D Variable Binning"                         |  50000  |   0.030308 | 2.8803     | -0.0052154 |    -1.2979 |
+ | 101                       | "Exponential"                                 |  50000  |    0.97244 | 0.91365    |     1.4781 |     2.1471 |
+ | 102                       | "Breit"                                       |  50000  | -0.0047661 | 1.1982     |   -0.00237 |     3.5536 |
+ | 1111                      | "Forced Numeric ID time test"                 |  50000  |  -0.010746 | 0.99822    | -0.0062505 |    0.03783 |
+ | AutoID time test          | "AutoID time test"                            |  50000  |  -0.010746 | 0.99822    | -0.0062505 |    0.03783 |
+ | Gaussian mean=0, sigma=1  | "Gaussian mean=0, sigma=1"                    |  50000  |  -0.010746 | 0.99822    | -0.0062505 |    0.03783 |
+ | poisson                   | "Poisson"                                     |  50000  |     1.8072 | 1.1794     |    0.33256 |   -0.76904 |
+ | subdir1/bino              | "Binominal"                                   |  50000  |     1.9077 | 1.1167     |    0.25326 |   -0.67131 |
+ | subdir2/bino              | "Binominal"                                   |  50000  |     1.9077 | 1.1167     |    0.25326 |   -0.67131 |
+ | test1                     | "Forced Alpha ID time test"                   |  50000  |  -0.010746 | 0.99822    | -0.0062505 |    0.03783 |
+ | varBinning/x              | "1D Variable Binning"                         |  50000  | -0.0016591 | 2.8821     |   0.010336 |    -1.3177 |
 SimpleHistos      SUCCESS 2D histograms in directory "SimpleHistos" : 5
- ID=Exponential V Flat         "Exponential V Flat"                             Ents/All=49838/50000<X>/sX=0.03068/2.8801,<Y>/sY=0.95528/0.90579
- ID=Gaussian V Flat            "Gaussian V Flat"                                Ents/All=50000/50000<X>/sX=0.030308/2.8803,<Y>/sY=-0.0042333/1.0042
- ID=binVpois                   "Binom V poisson"                                Ents/All=49923/50000<X>/sX=1.8074/1.1812,<Y>/sY=1.9167/1.1142
- ID=expoVpois                  "Expo V poisson"                                 Ents/All=49987/50000<X>/sX=1.8064/1.1804,<Y>/sY=0.96083/0.9102
- ID=varBinning/y               "2D Variable Binning"                            Ents/All=50000/50000<X>/sX=0.030308/2.8803,<Y>/sY=-0.0042333/1.0042
+ ID=Exponential V Flat         "Exponential V Flat"                             Ents/All=49827/50000<X>/sX=-0.0020678/2.8827,<Y>/sY=0.96736/0.90536
+ ID=Gaussian V Flat            "Gaussian V Flat"                                Ents/All=50000/50000<X>/sX=-0.0016591/2.8821,<Y>/sY=-0.0044761/1.0035
+ ID=binVpois                   "Binom V poisson"                                Ents/All=49936/50000<X>/sX=1.8068/1.1798,<Y>/sY=1.9088/1.1168
+ ID=expoVpois                  "Expo V poisson"                                 Ents/All=49987/50000<X>/sX=1.8075/1.1796,<Y>/sY=0.97291/0.91449
+ ID=varBinning/y               "2D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.0016591/2.8821,<Y>/sY=-0.0044761/1.0035
 SimpleHistos      SUCCESS 3D histograms in directory "SimpleHistos" : 3
- ID=3D plot AutoID             "3D plot AutoID"                                 Ents/All=50000/50000<X>/sX=-0.0097151/1.0015,<Y>/sY=0.95875/0.90726,<Z>/sZ=-0.0028438/1.2021
- ID=3d                         "3D plot ForcedID"                               Ents/All=50000/50000<X>/sX=-0.0097151/1.0015,<Y>/sY=0.95875/0.90726,<Z>/sZ=-0.0028438/1.2021
- ID=varBinning/z               "3D Variable Binning"                            Ents/All=50000/50000<X>/sX=0.03068/2.8801,<Y>/sY=-0.0038371/1.0044,<Z>/sZ=0.95528/0.90579
+ ID=3D plot AutoID             "3D plot AutoID"                                 Ents/All=50000/50000<X>/sX=-0.011037/0.99886,<Y>/sY=0.97148/0.91262,<Z>/sZ=-0.0036933/1.1981
+ ID=3d                         "3D plot ForcedID"                               Ents/All=50000/50000<X>/sX=-0.011037/0.99886,<Y>/sY=0.97148/0.91262,<Z>/sZ=-0.0036933/1.1981
+ ID=varBinning/z               "3D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.0020678/2.8827,<Y>/sY=-0.0045774/1.0038,<Z>/sZ=0.96736/0.90536
 SimpleHistos      SUCCESS 1D profile histograms in directory "SimpleHistos" : 9
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
- | Expo V Gauss 1DProf       | "Expo V Gauss 1DProf"                         |  50000  | -0.0093573 | 1.0017     |   -0.73799 |      76.11 |
- | Expo V Gauss 1DProf s     | "Expo V Gauss 1DProf s"                       |  50000  | -0.0093573 | 1.0017     |   -0.73799 |      76.11 |
- | Gauss V Flat 1DProf       | "Gauss V Flat 1DProf"                         |  50000  |   -0.01323 | 5.7672     |          0 |         -3 |
- | Gauss V Flat 1DProf S     | "Gauss V Flat 1DProf S"                       |  50000  |   -0.01323 | 5.7672     |          0 |         -3 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I"          |  24789  |  -0.004588 | 5.7479     |  0.0038837 |    -1.2387 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I  s"       |  24789  |  -0.004588 | 5.7479     |  0.0038837 |    -1.2387 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II"         |  25211  |  -0.021726 | 5.7861     |          0 |         -3 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II s"       |  25211  |  -0.021726 | 5.7861     |          0 |         -3 |
- | varBinning/a              | "1D Profile Variable Binning"                 |  50000  |   0.030308 | 2.8803     |          0 |         -3 |
+ | Expo V Gauss 1DProf       | "Expo V Gauss 1DProf"                         |  50000  |  -0.010746 | 0.99822    |     2.2178 |     83.641 |
+ | Expo V Gauss 1DProf s     | "Expo V Gauss 1DProf s"                       |  50000  |  -0.010746 | 0.99822    |     2.2178 |     83.641 |
+ | Gauss V Flat 1DProf       | "Gauss V Flat 1DProf"                         |  50000  | -0.0066482 | 5.7661     |          0 |         -3 |
+ | Gauss V Flat 1DProf S     | "Gauss V Flat 1DProf S"                       |  50000  | -0.0066482 | 5.7661     |          0 |         -3 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I"          |  24761  |   0.017698 | 5.7622     |   0.010483 |    -1.2479 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I  s"       |  24761  |   0.017698 | 5.7622     |   0.010483 |    -1.2479 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II"         |  25239  |  -0.030533 | 5.7699     |          0 |         -3 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II s"       |  25239  |  -0.030533 | 5.7699     |          0 |         -3 |
+ | varBinning/a              | "1D Profile Variable Binning"                 |  50000  | -0.0016591 | 2.8821     |          0 |         -3 |
 SimpleHistos      SUCCESS 2D profile histograms in directory "SimpleHistos" : 3
- ID=2dprof                     "2D profile1"                                    Ents/All=50000/50000<X>/sX=-0.0092514/1.0016,<Y>/sY=0.95998/0.90886
- ID=321                        "2D profile2"                                    Ents/All=50000/50000<X>/sX=-0.0092514/1.0016,<Y>/sY=0.95998/0.90886
- ID=varBinning/b               "2D Profile Variable Binning"                    Ents/All=50000/50000<X>/sX=0.030308/2.8803,<Y>/sY=-0.0042333/1.0042
+ ID=2dprof                     "2D profile1"                                    Ents/All=50000/50000<X>/sX=-0.010929/0.99846,<Y>/sY=0.97244/0.91365
+ ID=321                        "2D profile2"                                    Ents/All=50000/50000<X>/sX=-0.010929/0.99846,<Y>/sY=0.97244/0.91365
+ ID=varBinning/b               "2D Profile Variable Binning"                    Ents/All=50000/50000<X>/sX=-0.0016591/2.8821,<Y>/sY=-0.0044761/1.0035
 SimpleHistos        DEBUG Finalize base class GaudiAlgorithm
 SimpleHistos        DEBUG Tools to release :
 SimpleHistos        DEBUG Services to release :
@@ -181,11 +181,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DAutoID             INFO Time User   : Tot=   20 [ms] Ave/Min/Max=0.0004(+-0.0632)/    0/   10 [ms] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=   50 [ms] Ave/Min/Max=0.001(+-  0.1)/    0/   10 [ms] #=49999
-1DForcedNumericID    INFO Time User   : Tot=   50 [ms] Ave/Min/Max=0.001(+-  0.1)/    0/   10 [ms] #=49999
-1DOldStyle           INFO Time User   : Tot=   60 [ms] Ave/Min/Max=0.0012(+- 0.11)/    0/   10 [ms] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 0.96  [s]                                             #=  1
+1DForcedAlphaID      INFO Time User   : Tot=   20 [ms] Ave/Min/Max=  0.0004(+-  0.0632)/       0/      10 [ms] #=49999
+1DForcedNumericID    INFO Time User   : Tot=   30 [ms] Ave/Min/Max=  0.0006(+-  0.0775)/       0/      10 [ms] #=49999
+1DAutoID             INFO Time User   : Tot=   30 [ms] Ave/Min/Max=  0.0006(+-  0.0775)/       0/      10 [ms] #=49999
+1DOldStyle           INFO Time User   : Tot=   50 [ms] Ave/Min/Max=   0.001(+-     0.1)/       0/      10 [ms] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 1.07  [s]  #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 ApplicationMgr       INFO Application Manager Finalized successfully
