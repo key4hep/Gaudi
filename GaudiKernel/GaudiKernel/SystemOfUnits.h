@@ -87,6 +87,12 @@ namespace Gaudi {
     constexpr double nanobarn  = 1.e-9 * barn;
     constexpr double picobarn  = 1.e-12 * barn;
 
+    // volume
+    constexpr double liter = 1.e+3 * centimeter3;
+    constexpr double dL    = 1.e-1 * liter;
+    constexpr double cL    = 1.e-2 * liter;
+    constexpr double mL    = 1.e-3 * liter;
+
     // symbols
     constexpr double nm = nanometer;
     constexpr double um = micrometer;
@@ -108,6 +114,8 @@ namespace Gaudi {
     constexpr double km3 = kilometer3;
 
     constexpr double pc = parsec;
+
+    constexpr double L = liter;
 
     //
     // Angle
@@ -131,7 +139,9 @@ namespace Gaudi {
     constexpr double second      = 1.e+9 * nanosecond;
     constexpr double millisecond = 1.e-3 * second;
     constexpr double microsecond = 1.e-6 * second;
+    constexpr double us          = microsecond;
     constexpr double picosecond  = 1.e-12 * second;
+    constexpr double ps          = picosecond;
     constexpr double femtosecond = 1.e-15 * second;
 
     constexpr double hertz     = 1. / second;
@@ -146,9 +156,9 @@ namespace Gaudi {
     //
     // Electric charge [Q]
     //
-    constexpr double eplus   = 1.;             // positron charge
-    constexpr double e_SI    = 1.60217733e-19; // positron charge in coulomb
-    constexpr double coulomb = eplus / e_SI;   // coulomb = 6.24150 e+18 * eplus
+    constexpr double eplus   = 1.;              // positron charge
+    constexpr double e_SI    = 1.602176487e-19; // positron charge in coulomb
+    constexpr double coulomb = eplus / e_SI;    // coulomb = 6.24150 e+18 * eplus
 
     //
     // Energy [E]
@@ -196,6 +206,7 @@ namespace Gaudi {
     // Pressure [E][L^-3]
     //
     constexpr double Pa         = newton / m2; // pascal = 6.24150 e+3 * MeV/mm3
+    constexpr double hep_pascal = Pa;          // to match CLHEP
     constexpr double bar        = 100000 * Pa; // bar    = 6.24150 e+8 * MeV/mm3
     constexpr double atmosphere = 101325 * Pa; // atm    = 6.32420 e+8 * MeV/mm3
 
@@ -259,13 +270,28 @@ namespace Gaudi {
     //
     // Activity [T^-1]
     //
-    constexpr double becquerel = 1. / second;
-    constexpr double curie     = 3.7e+10 * becquerel;
+    constexpr double becquerel     = 1. / second;
+    constexpr double curie         = 3.7e+10 * becquerel;
+    constexpr double kilobecquerel = 1.e+3 * becquerel;
+    constexpr double megabecquerel = 1.e+6 * becquerel;
+    constexpr double gigabecquerel = 1.e+9 * becquerel;
+    constexpr double millicurie    = 1.e-3 * curie;
+    constexpr double microcurie    = 1.e-6 * curie;
+    constexpr double Bq            = becquerel;
+    constexpr double kBq           = kilobecquerel;
+    constexpr double MBq           = megabecquerel;
+    constexpr double GBq           = gigabecquerel;
+    constexpr double Ci            = curie;
+    constexpr double mCi           = millicurie;
+    constexpr double uCi           = microcurie;
 
     //
     // Absorbed dose [L^2][T^-2]
     //
-    constexpr double gray = joule / kilogram;
+    constexpr double gray      = joule / kilogram;
+    constexpr double kilogray  = 1.e+3 * gray;
+    constexpr double milligray = 1.e-3 * gray;
+    constexpr double microgray = 1.e-6 * gray;
 
     //
     // Luminous intensity [I]
