@@ -78,12 +78,13 @@ namespace Gaudi {
           // some random number generators, just to provide numbers
           static Rndm::Numbers Gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
           static Rndm::Numbers Flat( randSvc(), Rndm::Flat( -10.0, 10.0 ) );
+          static Rndm::Numbers Gauss3( randSvc(), Rndm::Gauss( 5.0, 1.0 ) );
 
           // cache some numbers
           const double gauss( Gauss() );
           const double gauss2( Gauss() );
           const double flat( Flat() );
-          const double flat2( Flat() );
+          const double gauss3( Gauss3() );
 
           // updating histograms
           m_gauss += gauss;
@@ -108,25 +109,25 @@ namespace Gaudi {
           }
 
           // updating profile histograms
-          m_prof_gauss += {gauss, flat};
-          m_prof_gaussVflat += {flat, gauss, flat};
-          m_prof_gaussVflatVgauss += {flat, gauss, gauss2, flat2};
-          m_prof_gauss_noato += {gauss, flat};
-          m_prof_gaussVflat_noato += {flat, gauss, flat2};
-          m_prof_gaussVflatVgauss_noato += {flat, gauss, gauss2, flat2};
-          m_prof_gauss_int += {(int)gauss, (int)flat};
-          m_prof_gaussVflat_int += {(int)flat, (int)gauss, (int)flat2};
-          m_prof_gaussVflatVgauss_int += {(int)flat, (int)gauss, (int)gauss2, (int)flat2};
-          m_prof_gauss_w += {{gauss, flat}, .5};
-          m_prof_gaussVflat_w += {{flat, gauss, flat2}, .5};
-          m_prof_gaussVflatVgauss_w += {{flat, gauss, gauss2, flat2}, .5};
+          m_prof_gauss += {gauss, gauss3};
+          m_prof_gaussVflat += {flat, gauss, gauss3};
+          m_prof_gaussVflatVgauss += {flat, gauss, gauss2, gauss3};
+          m_prof_gauss_noato += {gauss, gauss3};
+          m_prof_gaussVflat_noato += {flat, gauss, gauss3};
+          m_prof_gaussVflatVgauss_noato += {flat, gauss, gauss2, gauss3};
+          m_prof_gauss_int += {(int)gauss, (int)gauss3};
+          m_prof_gaussVflat_int += {(int)flat, (int)gauss, (int)gauss3};
+          m_prof_gaussVflatVgauss_int += {(int)flat, (int)gauss, (int)gauss2, (int)gauss3};
+          m_prof_gauss_w += {{gauss, gauss3}, .5};
+          m_prof_gaussVflat_w += {{flat, gauss, gauss3}, .5};
+          m_prof_gaussVflatVgauss_w += {{flat, gauss, gauss2, gauss3}, .5};
           auto prof_gauss_buf            = m_prof_gauss_buf.buffer();
           auto prof_gaussVflat_buf       = m_prof_gaussVflat_buf.buffer();
           auto prof_gaussVflatVgauss_buf = m_prof_gaussVflatVgauss_buf.buffer();
           for ( unsigned int i = 0; i < 10; i++ ) {
-            prof_gauss_buf += {gauss, flat};
-            prof_gaussVflat_buf += {flat, gauss, flat2};
-            prof_gaussVflatVgauss_buf += {flat, gauss, gauss2, flat2};
+            prof_gauss_buf += {gauss, gauss3};
+            prof_gaussVflat_buf += {flat, gauss, gauss3};
+            prof_gaussVflatVgauss_buf += {flat, gauss, gauss2, gauss3};
           }
 
           if ( m_nCalls.nEntries() == 0 ) always() << "Filling Histograms...... Please be patient !" << endmsg;
