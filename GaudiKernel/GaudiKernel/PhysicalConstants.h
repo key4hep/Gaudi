@@ -71,7 +71,7 @@ namespace Gaudi {
     // hbar  = 6.58212e-13 MeV*ns
     // hbarc = 197.32705e-12 MeV*mm
     //
-    constexpr double h_Planck      = 6.6260755e-34 * joule * s;
+    constexpr double h_Planck      = 6.62606896e-34 * joule * s;
     constexpr double hbar_Planck   = h_Planck / twopi;
     constexpr double hbarc         = hbar_Planck * c_light;
     constexpr double hbarc_squared = hbarc * hbarc;
@@ -83,10 +83,10 @@ namespace Gaudi {
     // amu_c2 - atomic equivalent mass unit
     // amu    - atomic mass unit
     //
-    constexpr double electron_mass_c2 = 0.51099906 * MeV;
-    constexpr double proton_mass_c2   = 938.27231 * MeV;
-    constexpr double neutron_mass_c2  = 939.56563 * MeV;
-    constexpr double amu_c2           = 931.49432 * MeV;
+    constexpr double electron_mass_c2 = 0.510998910 * MeV;
+    constexpr double proton_mass_c2   = 938.272013 * MeV;
+    constexpr double neutron_mass_c2  = 939.56536 * MeV;
+    constexpr double amu_c2           = 931.494028 * MeV;
     constexpr double amu              = amu_c2 / c_squared;
 
     //
@@ -109,7 +109,7 @@ namespace Gaudi {
 
     constexpr double twopi_mc2_rcl2 = twopi * electron_mass_c2 * classic_electr_radius * classic_electr_radius;
 
-    constexpr double k_Boltzmann = 8.617385e-11 * MeV / kelvin;
+    constexpr double k_Boltzmann = 8.617343e-11 * MeV / kelvin;
 
     constexpr double STP_Temperature = 273.15 * kelvin;
     constexpr double STP_Pressure    = 1. * atmosphere;

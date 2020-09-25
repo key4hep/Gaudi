@@ -87,6 +87,12 @@ microbarn = 1.e-6 * barn
 nanobarn = 1.e-9 * barn
 picobarn = 1.e-12 * barn
 
+liter = 1.e+3 * centimeter3
+L = liter
+dL = 1.e-1 * liter
+cL = 1.e-2 * liter
+mL = 1.e-3 * liter
+
 # symbols
 mm = millimeter
 mm2 = millimeter2
@@ -139,12 +145,14 @@ megahertz = 1.e+6 * hertz
 ns = nanosecond
 s = second
 ms = millisecond
+us = microsecond
+ps = picosecond
 
 #
 # Electric charge [Q]
 #
 eplus = 1.  # positron charge
-e_SI = 1.60217733e-19  # positron charge in coulomb
+e_SI = 1.602176487e-19  # positron charge in coulomb
 coulomb = eplus / e_SI  # coulomb = 6.24150 e+18 * eplus
 
 #
@@ -262,11 +270,26 @@ mole = 1.
 #
 becquerel = 1. / second
 curie = 3.7e+10 * becquerel
+kilobecquerel = 1.e+3 * becquerel
+megabecquerel = 1.e+6 * becquerel
+gigabecquerel = 1.e+9 * becquerel
+millicurie = 1.e-3 * curie
+microcurie = 1.e-6 * curie
+Bq = becquerel
+kBq = kilobecquerel
+MBq = megabecquerel
+GBq = gigabecquerel
+Ci = curie
+mCi = millicurie
+uCi = microcurie
 
 #
 # Absorbed dose [L^2][T^-2]
 #
 gray = joule / kilogram
+kilogray = 1.e+3 * gray
+milligray = 1.e-3 * gray
+microgray = 1.e-6 * gray
 
 #
 # Luminous intensity [I]

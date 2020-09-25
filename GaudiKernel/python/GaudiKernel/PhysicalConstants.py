@@ -47,6 +47,7 @@
 # 23.02.96 Created
 # 26.03.96 Added constants for standard conditions of temperature
 #          and pressure; also added Gas threshold.
+# 08.07.20 Updated
 # -----
 
 from GaudiKernel.SystemOfUnits import *
@@ -76,7 +77,7 @@ c_squared = c_light * c_light
 # hbar  = 6.58212e-13 MeV*ns
 # hbarc = 197.32705e-12 MeV*mm
 #
-h_Planck = 6.6260755e-34 * joule * s
+h_Planck = 6.62606896e-34 * joule * s
 hbar_Planck = h_Planck / twopi
 hbarc = hbar_Planck * c_light
 hbarc_squared = hbarc * hbarc
@@ -91,10 +92,10 @@ e_squared = eplus * eplus
 # amu_c2 - atomic equivalent mass unit
 # amu    - atomic mass unit
 #
-electron_mass_c2 = 0.51099906 * MeV
-proton_mass_c2 = 938.27231 * MeV
-neutron_mass_c2 = 939.56563 * MeV
-amu_c2 = 931.49432 * MeV
+electron_mass_c2 = 0.510998910 * MeV
+proton_mass_c2 = 938.272013 * MeV
+neutron_mass_c2 = 939.56536 * MeV
+amu_c2 = 931.494028 * MeV
 amu = amu_c2 / c_squared
 
 #
@@ -120,7 +121,7 @@ twopi_mc2_rcl2 = twopi * electron_mass_c2 * \
 #
 #
 #
-k_Boltzmann = 8.617385e-11 * MeV / kelvin
+k_Boltzmann = 8.617343e-11 * MeV / kelvin
 
 #
 #
