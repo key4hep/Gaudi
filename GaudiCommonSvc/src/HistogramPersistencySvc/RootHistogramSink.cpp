@@ -123,19 +123,16 @@ namespace Gaudi::Histograming::Sink {
     using Service::Service;
 
     StatusCode initialize() override {
-      StatusCode sc = Service::initialize();
-      if ( sc.isFailure() ) return sc;
-      serviceLocator()->monitoringHub().addSink( this );
-      return StatusCode::SUCCESS;
+      return Service::initialize().andThen( [&] { serviceLocator()->monitoringHub().addSink( this ); } );
     }
 
     StatusCode stop() override {
       auto ok = Service::stop();
       if ( !ok ) return ok;
       std::sort( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( const auto& a, const auto& b ) {
-        return a.component == b.component ? a.name > b.name : a.component > b.component;
+        return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
       } );
-      TFile histoFile( "testHisto.root", "RECREATE" );
+      TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
       std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( auto& ent ) {
         auto j     = ent.toJSON();
         auto dim   = j.at( "dimension" ).template get<unsigned int>();
@@ -146,7 +143,6 @@ namespace Gaudi::Histograming::Sink {
                                 StatusCode::FAILURE );
         ( *saver->second )( ent.component, ent.name, j );
       } );
-      histoFile.Close();
       return ok;
     }
 
@@ -158,6 +154,9 @@ namespace Gaudi::Histograming::Sink {
 
   private:
     std::deque<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
+
+    Gaudi::Property<std::string> m_fileName{this, "FileName", "testHisto.root",
+                                            "Name of file where to save histograms"};
   };
 
   DECLARE_COMPONENT( Root )
