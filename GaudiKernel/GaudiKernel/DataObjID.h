@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -54,10 +54,13 @@ public:
   DataObjID( const CLID& clid, std::string key );
   DataObjID( std::string className, std::string key );
 
-  // only return the last part of the key
+  /// only return the last part of the key
   const std::string& key() const { return m_key; }
 
-  // combination of the key and the ClassName, mostly for debugging
+  /// return the ClassName (if available)
+  const std::string& className() const { return m_className; }
+
+  /// combination of the key and the ClassName, mostly for debugging
   std::string fullKey() const;
 
   CLID clid() const { return m_clid; }
