@@ -45,7 +45,7 @@ public:
   const Gaudi::DataHandle& value() const;
   bool                     setValue( const Gaudi::DataHandle& value );
 
-private:
+protected:
   /** Pointer to the real property. Reference would be better,
    *  but Reflex does not support references yet
    */
