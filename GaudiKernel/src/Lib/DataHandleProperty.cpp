@@ -34,7 +34,7 @@ namespace Gaudi {
 //---------------------------------------------------------------------------
 
 DataHandleProperty::DataHandleProperty( const std::string& name, Gaudi::DataHandle& ref )
-    : PropertyWithHandlers( name, typeid( Gaudi::DataHandle ) ), m_pValue( &ref ) {}
+    : PropertyWithHandlers( name, typeid( ref ) ), m_pValue( &ref ) {}
 
 //---------------------------------------------------------------------------
 

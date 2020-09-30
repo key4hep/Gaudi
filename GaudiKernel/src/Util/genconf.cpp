@@ -820,9 +820,9 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     ptype                = "GaudiHandleArray";
     ptype2               = base.pythonPropertyClassName();
     m_importGaudiHandles = true;
-  } else if ( ti == typeIndex<Gaudi::DataHandle>() ) {
-    const DataHandleProperty& hdl  = dynamic_cast<const DataHandleProperty&>( *p );
-    const Gaudi::DataHandle&  base = hdl.value();
+  } else if ( auto hdl = dynamic_cast<const DataHandleProperty*>( p ); hdl ) {
+    // dynamic_cast to support also classes derived from DataHandleProperty
+    const Gaudi::DataHandle& base = hdl->value();
 
     pvalue              = base.pythonRepr();
     ptype               = "DataHandle";
