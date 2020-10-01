@@ -13,21 +13,23 @@ __doc__ = """The python module holding python bindings to DataHandle"""
 
 class DataHandle(object):
 
-    __slots__ = ('Path', 'Mode', 'Type')
+    __slots__ = ('Path', 'Mode', 'Type', 'IsCondition')
 
     # define accessTypes
 
-    def __init__(self, path, mode='R', _type="unknown_t"):
+    def __init__(self, path, mode='R', _type="unknown_t", isCond=False):
         object.__init__(self)
         self.Path = path
         self.Mode = mode
         self.Type = _type
+        self.IsCondition = isCond
 
     def __getstate__(self):
-        return {'Path': self.Path}
+        return {s: getattr(self, s) for s in self.__slots__}
 
     def __setstate__(self, state):
-        self.Path = state['Path']
+        for s in state:
+            setattr(self, s, state[s])
 
     def __eq__(self, other):
         """
@@ -52,7 +54,10 @@ class DataHandle(object):
         return self.Path
 
     def __repr__(self):
-        return "%s(\"%s\")" % (self.__class__.__name__, self.__str__())
+        args = "'%s','%s','%s'" % (self.Path, self.Mode, self.Type)
+        if self.IsCondition:
+            args += ",%s" % self.IsCondition
+        return "%s(%s)" % (self.__class__.__name__, args)
 
     def toStringProperty(self):
         return self.__str__()
@@ -74,6 +79,9 @@ class DataHandle(object):
 
     def type(self):
         return self.Type
+
+    def isCondition(self):
+        return self.IsCondition
 
     def __opt_value__(self):
         return repr(str(self))
