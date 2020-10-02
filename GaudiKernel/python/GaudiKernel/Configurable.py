@@ -969,8 +969,8 @@ class Configurable(
                         vv = v.getGaudiHandle()
                     else:
                         vv = v
-                    if isinstance(vv, GaudiHandle) or isinstance(
-                            vv, GaudiHandleArray):
+                    if isinstance(vv,
+                                  (GaudiHandle, GaudiHandleArray, DataHandle)):
                         strVal = repr(vv)
                         # the default may not be a GaudiHandle (?)
                         if hasattr(default, "toStringProperty"):
