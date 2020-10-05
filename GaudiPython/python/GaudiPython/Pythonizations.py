@@ -109,9 +109,9 @@ def _draw_aida_(self, *args):
     return _root.Draw(*args)
 
 
-gbl.AIDA.IHistogram1D.__repr__ = _printHisto1D
+gbl.AIDA.IHistogram1D.__str__ = _printHisto1D
 gbl.AIDA.IHistogram1D.contents = _contentsHisto1D
-gbl.AIDA.IHistogram2D.__repr__ = _printHisto2D
+gbl.AIDA.IHistogram2D.__str__ = _printHisto2D
 for h in (gbl.AIDA.IHistogram, gbl.AIDA.IHistogram1D, gbl.AIDA.IHistogram2D,
           gbl.AIDA.IHistogram3D, gbl.AIDA.IProfile1D, gbl.AIDA.IProfile2D):
     h.Draw = _draw_aida_
