@@ -65,21 +65,21 @@ namespace Gaudi {
 
   private:
     /// Reference to the hosting event selector instance
-    const RootEvtSelector* m_sel;
+    const RootEvtSelector* m_sel{nullptr};
     /// The file container managed by this context
     Files m_files;
     /// The iterator to the
     Files::const_iterator m_fiter;
     /// Current entry of current file
-    long m_entry;
+    long m_entry{-1};
     /// Reference to the top level branch (typically /Event) used to iterate
-    TBranch* m_branch;
+    TBranch* m_branch{nullptr};
     /// Connection fid
     std::string m_fid;
 
   public:
     /// Standard constructor with initialization
-    RootEvtSelectorContext( const RootEvtSelector* s ) : m_sel( s ), m_entry( -1 ), m_branch( nullptr ) {}
+    RootEvtSelectorContext( const RootEvtSelector* s ) : m_sel( s ) {}
     /// Access to the file container
     const Files& files() const { return m_files; }
     /// Set the file container
@@ -186,42 +186,39 @@ StatusCode RootEvtSelector::last( Context& /*refContext*/ ) const { return Statu
 StatusCode RootEvtSelector::next( Context& ctxt ) const {
   RootEvtSelectorContext* pCtxt = dynamic_cast<RootEvtSelectorContext*>( &ctxt );
   if ( pCtxt ) {
-    TBranch* b = pCtxt->branch();
-    if ( !b ) {
-      auto fileit = pCtxt->fileIterator();
-      pCtxt->setBranch( nullptr );
-      pCtxt->setEntry( -1 );
-      if ( fileit != pCtxt->files().end() ) {
-        RootDataConnection* con = nullptr;
-        string              in  = *fileit;
-        StatusCode          sc  = m_dbMgr->connectDatabase( in, IDataConnection::READ, &con );
-        if ( sc.isSuccess() ) {
-          string section = m_rootName[0] == '/' ? m_rootName.substr( 1 ) : m_rootName;
-          b              = con->getBranch( section, m_rootName );
-          if ( b ) {
-            pCtxt->setFID( con->fid() );
-            pCtxt->setBranch( b );
-            return next( ctxt );
-          }
+    // first check for good case where a file is open and not yet ended
+    auto ent = pCtxt->entry();
+    auto* b  = pCtxt->branch();
+    if ( ent >=0 && b && ent + 1 < b->GetEntries()) {
+        pCtxt->setEntry( ++ent );
+        return StatusCode::SUCCESS;
+    }
+    // No current entry usable, are we at the end of a file ? Or was it very first one ?
+    auto fileit = pCtxt->fileIterator();
+    if ( ent > 0 ) {
+      // yes, so go to next
+      ++fileit;
+    }
+    // try to open next file
+    RootDataConnection* con = nullptr;
+    while ( fileit != pCtxt->files().end() ) {
+      auto sc = m_dbMgr->connectDatabase( *fileit, IDataConnection::READ, &con );
+      if ( sc.isSuccess() ) {
+        string section = m_rootName[0] == '/' ? m_rootName.substr( 1 ) : m_rootName;
+        b              = con->getBranch( section, m_rootName );
+        if (b) {
+          // all is fine, setup ctx and return
+          pCtxt->setFileIterator( fileit );
+          pCtxt->setFID( con->fid() );
+          pCtxt->setBranch( b );
+          pCtxt->setEntry( 0 );
+          return StatusCode::SUCCESS;
         }
-        m_dbMgr->disconnect( in ).ignore();
-        pCtxt->setFileIterator( ++fileit );
-        return next( ctxt );
       }
-      return StatusCode::FAILURE;
+      // something went wrong, give up with this file and go to next
+      m_dbMgr->disconnect( *fileit ).ignore();
+      ++fileit;
     }
-    long     ent  = pCtxt->entry();
-    Long64_t nent = b->GetEntries();
-    if ( nent > ( ent + 1 ) ) {
-      pCtxt->setEntry( ++ent );
-      return StatusCode::SUCCESS;
-    }
-    auto fit = pCtxt->fileIterator();
-    pCtxt->setFileIterator( ++fit );
-    pCtxt->setEntry( -1 );
-    pCtxt->setBranch( nullptr );
-    pCtxt->setFID( "" );
-    return next( ctxt );
   }
   return StatusCode::FAILURE;
 }
