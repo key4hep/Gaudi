@@ -67,8 +67,14 @@ namespace Gaudi::Accumulators {
   template <atomicity Atomicity, typename Arithmetic>
   struct WeightedCountAccumulator
       : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight> {
-    using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity,
-                             ExtractWeight>::GenericAccumulator;
+    using Base = GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight>;
+    using Base::GenericAccumulator;
+    using Base::operator+=;
+    //// overload of operator+= to be able to only give weight and no value
+    WeightedCountAccumulator operator+=( const Arithmetic weight ) {
+      *this += {Arithmetic{}, weight};
+      return *this;
+    }
     Arithmetic nEntries() const { return this->value(); }
   };
 
@@ -88,7 +94,7 @@ namespace Gaudi::Accumulators {
 
   /**
    * WeightedSquareAccumulator. A WeightedSquareAccumulator is an Accumulator storing a weighted sum of squared values.
-   * It basically takes a pair (weight, value) as input and sums weight*value*value
+   * It basically takes a pair (value, weight) as input and sums weight*value*value
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic = double>
@@ -101,7 +107,7 @@ namespace Gaudi::Accumulators {
 
   /**
    * WeightedAveragingAccumulator. An AveragingAccumulator is an Accumulator able to compute an average
-   * This implementation takes a pair (weight, value) as input
+   * This implementation takes a pair (value, weight) as input
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
@@ -110,7 +116,7 @@ namespace Gaudi::Accumulators {
 
   /**
    * WeightedSigmaAccumulator. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
-   * This implementation takes a pair (weight, value) as input
+   * This implementation takes a pair (value, weight) as input
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
@@ -151,6 +157,8 @@ namespace Gaudi::Accumulators {
   /// small class used as InputType for regular Histograms
   template <typename Arithmetic, unsigned int ND, unsigned int NIndex = ND>
   struct HistoInputType : std::array<Arithmetic, ND> {
+    // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
+    using ValueType = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       unsigned int index = 0;
       for ( unsigned int dim = 0; dim < NIndex; dim++ ) {
@@ -173,6 +181,7 @@ namespace Gaudi::Accumulators {
   template <typename Arithmetic>
   class HistoInputType<Arithmetic, 1> {
   public:
+    using ValueType = HistoInputType;
     HistoInputType( Arithmetic a ) : value( a ) {}
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const {
       int index = std::floor( ( value - axis[0].minValue ) * axis[0].ratio ) + 1;
@@ -189,6 +198,8 @@ namespace Gaudi::Accumulators {
   /// small class used as InputType for weighted Histograms
   template <typename Arithmetic, unsigned int ND, unsigned int NIndex = ND>
   struct WeightedHistoInputType : std::pair<HistoInputType<Arithmetic, ND, NIndex>, Arithmetic> {
+    // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
+    using ValueType = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
     using std::pair<HistoInputType<Arithmetic, ND, NIndex>, Arithmetic>::pair;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       return this->first.computeIndex( axis );
@@ -245,6 +256,9 @@ namespace Gaudi::Accumulators {
       for ( unsigned int index = 0; index < m_totNBins; index++ ) {
         accumulator( index ).mergeAndReset( std::move( other.accumulator( index ) ) );
       }
+    }
+    auto operator[]( typename InputType::ValueType v ) {
+      return Buffer<BaseAccumulatorT, Atomicity, Arithmetic>{accumulator( v.computeIndex( m_axis ) )};
     }
 
   protected:
@@ -324,7 +338,10 @@ namespace Gaudi::Accumulators {
    *    embedded into braces, as the constructor takes an array of them
    *  - the operator+= takes either an array of values (one per dimension)
    *    or a tuple<array of values, weight>. The value inside the bin
-   *    corresponding to the given values is then increased by 1/weight
+   *    corresponding to the given values is then increased by 1 or weight
+   *  - the prefered syntax is to avoid operator+= and use operator[] to get a
+   *    buffer on the bin you're updating. Syntax becomes :
+   *        ++counter[{x,y}]   or   wcounter[{x,y]] += w
    *  - the Counter is templated by the types of the values given to
    *    operator+ and also by the type stored into the bins
    *  - the counter can be atomic or not and supports buffering. Note that
@@ -341,7 +358,13 @@ namespace Gaudi::Accumulators {
    * \code
    * Histogram<2, double, atomicity::full>
    *   counter{owner, "CounterName", {nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}};
-   * counter += {val1, val2};
+   * ++counter[{val1, val2}];    // prefered syntax
+   * counter += {val1, val2};    // original syntax inherited from counters
+   *
+   * WeightedHistogram<2, double, atomicity::full>
+   *   wcounter{owner, "CounterName", {nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}};
+   * wcounter[{val1, val2}] += w;    // prefered syntax
+   * wcounter += {{val1, val2}, w};  // original syntax inherited from counters
    * \endcode
    *
    * When serialized to json, this counter uses new types histogram:Histogram, histogram:ProfileHistogram,

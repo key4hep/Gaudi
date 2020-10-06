@@ -766,9 +766,9 @@ namespace Gaudi::Accumulators {
    * It is templated by the basic accumulator type and has same interface
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <template <atomicity Ato, typename... Int> class ContainedAccumulator, typename... Args>
+  template <template <atomicity Ato, typename... Int> class ContainedAccumulator, atomicity Atomicity, typename... Args>
   class Buffer : public ContainedAccumulator<atomicity::none, Args...> {
-    using prime_type = ContainedAccumulator<atomicity::full, Args...>;
+    using prime_type = ContainedAccumulator<Atomicity, Args...>;
     using base_type  = ContainedAccumulator<atomicity::none, Args...>;
 
   public:
@@ -841,7 +841,7 @@ namespace Gaudi::Accumulators {
     }
     template <typename OWNER>
     BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, "counter" ) {}
-    Buffer<Accumulator, Args...> buffer() { return {*this}; }
+    Buffer<Accumulator, Atomicity, Args...> buffer() { return {*this}; }
   };
 
   /**

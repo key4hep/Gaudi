@@ -87,47 +87,67 @@ namespace Gaudi {
           const double gauss3( Gauss3() );
 
           // updating histograms
-          m_gauss += gauss;
-          m_gaussVflat += {flat, gauss};
-          m_gaussVflatVgauss += {flat, gauss, gauss2};
-          m_gauss_noato += gauss;
-          m_gaussVflat_noato += {flat, gauss};
-          m_gaussVflatVgauss_noato += {flat, gauss, gauss2};
-          m_gauss_int += (int)gauss;
-          m_gaussVflat_int += {(int)flat, (int)gauss};
-          m_gaussVflatVgauss_int += {(int)flat, (int)gauss, (int)gauss2};
-          m_gauss_w += {gauss, .5};
-          m_gaussVflat_w += {{flat, gauss}, .5};
-          m_gaussVflatVgauss_w += {{flat, gauss, gauss2}, .5};
+          ++m_gauss[gauss];
+          m_gauss += gauss; // also test += operator of accumulator
+          ++m_gaussVflat[{flat, gauss}];
+          m_gaussVflat += {flat, gauss}; // also test += operator of accumulator
+          ++m_gaussVflatVgauss[{flat, gauss, gauss2}];
+          m_gaussVflatVgauss += {flat, gauss, gauss2}; // also test += operator of accumulator
+          ++m_gauss_noato[gauss];
+          ++m_gaussVflat_noato[{flat, gauss}];
+          ++m_gaussVflatVgauss_noato[{flat, gauss, gauss2}];
+          ++m_gauss_int[(int)gauss];
+          ++m_gaussVflat_int[{(int)flat, (int)gauss}];
+          ++m_gaussVflatVgauss_int[{(int)flat, (int)gauss, (int)gauss2}];
+
+          // weighted cases
+          m_gauss_w[gauss] += .5;
+          m_gauss_w += {gauss, .5}; // also test += operator of accumulator
+          m_gaussVflat_w[{flat, gauss}] += .5;
+          m_gaussVflat_w += {{flat, gauss}, .5}; // also test += operator of accumulator
+          m_gaussVflatVgauss_w[{flat, gauss, gauss2}] += .5;
+          m_gaussVflatVgauss_w += {{flat, gauss, gauss2}, .5}; // also test += operator of accumulator
+
+          // using buffers
           auto gauss_buf            = m_gauss_buf.buffer();
           auto gaussVflat_buf       = m_gaussVflat_buf.buffer();
           auto gaussVflatVgauss_buf = m_gaussVflatVgauss_buf.buffer();
           for ( unsigned int i = 0; i < 10; i++ ) {
-            gauss_buf += gauss;
-            gaussVflat_buf += {flat, gauss};
-            gaussVflatVgauss_buf += {flat, gauss, gauss2};
+            ++gauss_buf[gauss];
+            ++gaussVflat_buf[{flat, gauss}];
+            ++gaussVflatVgauss_buf[{flat, gauss, gauss2}];
           }
 
           // updating profile histograms
-          m_prof_gauss += {gauss, gauss3};
-          m_prof_gaussVflat += {flat, gauss, gauss3};
-          m_prof_gaussVflatVgauss += {flat, gauss, gauss2, gauss3};
-          m_prof_gauss_noato += {gauss, gauss3};
-          m_prof_gaussVflat_noato += {flat, gauss, gauss3};
-          m_prof_gaussVflatVgauss_noato += {flat, gauss, gauss2, gauss3};
-          m_prof_gauss_int += {(int)gauss, (int)gauss3};
-          m_prof_gaussVflat_int += {(int)flat, (int)gauss, (int)gauss3};
-          m_prof_gaussVflatVgauss_int += {(int)flat, (int)gauss, (int)gauss2, (int)gauss3};
-          m_prof_gauss_w += {{gauss, gauss3}, .5};
-          m_prof_gaussVflat_w += {{flat, gauss, gauss3}, .5};
-          m_prof_gaussVflatVgauss_w += {{flat, gauss, gauss2, gauss3}, .5};
+          m_prof_gauss[gauss] += gauss3;
+          m_prof_gauss += {gauss, gauss3}; // also test += operator of accumulator
+          m_prof_gaussVflat[{flat, gauss}] += gauss3;
+          m_prof_gaussVflat += {flat, gauss, gauss3}; // also test += operator of accumulator
+          m_prof_gaussVflatVgauss[{flat, gauss, gauss2}] += gauss3;
+          m_prof_gaussVflatVgauss += {flat, gauss, gauss2, gauss3}; // also test += operator of accumulator
+          m_prof_gauss_noato[gauss] += gauss3;
+          m_prof_gaussVflat_noato[{flat, gauss}] += gauss3;
+          m_prof_gaussVflatVgauss_noato[{flat, gauss, gauss2}] += gauss3;
+          m_prof_gauss_int[(int)gauss] += (int)gauss3;
+          m_prof_gaussVflat_int[{(int)flat, (int)gauss}] += (int)gauss3;
+          m_prof_gaussVflatVgauss_int[{(int)flat, (int)gauss, (int)gauss2}] += (int)gauss3;
+
+          // wieghted profile histograms
+          m_prof_gauss_w[gauss] += {gauss3, .5};
+          m_prof_gauss_w += {{gauss, gauss3}, .5}; // also test += operator of accumulator
+          m_prof_gaussVflat_w[{flat, gauss}] += {gauss3, .5};
+          m_prof_gaussVflat_w += {{flat, gauss, gauss3}, .5}; // also test += operator of accumulator
+          m_prof_gaussVflatVgauss_w[{flat, gauss, gauss2}] += {gauss3, .5};
+          m_prof_gaussVflatVgauss_w += {{flat, gauss, gauss2, gauss3}, .5}; // also test += operator of accumulator
+
+          // using buffers on profile histograms
           auto prof_gauss_buf            = m_prof_gauss_buf.buffer();
           auto prof_gaussVflat_buf       = m_prof_gaussVflat_buf.buffer();
           auto prof_gaussVflatVgauss_buf = m_prof_gaussVflatVgauss_buf.buffer();
           for ( unsigned int i = 0; i < 10; i++ ) {
-            prof_gauss_buf += {gauss, gauss3};
-            prof_gaussVflat_buf += {flat, gauss, gauss3};
-            prof_gaussVflatVgauss_buf += {flat, gauss, gauss2, gauss3};
+            prof_gauss_buf[gauss] += gauss3;
+            prof_gaussVflat_buf[{flat, gauss}] += gauss3;
+            prof_gaussVflatVgauss_buf[{flat, gauss, gauss2}] += gauss3;
           }
 
           if ( m_nCalls.nEntries() == 0 ) always() << "Filling Histograms...... Please be patient !" << endmsg;
