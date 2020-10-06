@@ -184,6 +184,8 @@ StatusCode RootEvtSelector::last( Context& /*refContext*/ ) const { return Statu
 
 // Get next iteration item from the event loop context
 StatusCode RootEvtSelector::next( Context& ctxt ) const {
+  // serialize calls to next, in order to ensure thread safety
+  std::lock_guard<std::mutex> guard(m_mutex);
   RootEvtSelectorContext* pCtxt = dynamic_cast<RootEvtSelectorContext*>( &ctxt );
   if ( pCtxt ) {
     // first check for good case where a file is open and not yet ended

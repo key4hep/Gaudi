@@ -149,6 +149,11 @@ namespace Gaudi {
     std::string m_rootName;
     /// Property: File criteria to define item iteration
     std::string m_criteria;
+
+  private:
+    /// a mutex to make the code thread safe
+    mutable std::mutex m_mutex;
+
   };
 } // namespace Gaudi
 #endif // GAUDIROOTCNV_ROOTEVTSELECTOR_H
