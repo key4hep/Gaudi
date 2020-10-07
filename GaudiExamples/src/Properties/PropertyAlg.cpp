@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -243,7 +243,8 @@ StatusCode PropertyAlg::initialize() {
   // Dump of the catalogue
   info() << "=================================================" << endmsg;
   using GaudiUtils::details::ostream_joiner;
-  ostream_joiner( info() << "Dump of the property catalogue:\n", opts.items(), '\n',
+  auto opt_items = opts.items(); // this copy is just to hide differences between gcc and clang outputs
+  ostream_joiner( info() << "Dump of the property catalogue:\n", opt_items, '\n',
                   []( MsgStream& os, const auto& item ) -> MsgStream& {
                     return os << std::get<0>( item ) << ": " << std::get<1>( item );
                   } )
