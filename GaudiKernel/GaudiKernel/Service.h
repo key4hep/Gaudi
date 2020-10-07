@@ -131,6 +131,23 @@ public:
     return service( svcType + "/" + svcName, psvc );
   }
 
+  // ==========================================================================
+  // Tool handling
+
+  using PropertyHolderImpl::declareProperty;
+
+  template <class T>
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<T>& hndl,
+                                                 const std::string& doc = "none" ) {
+    this->declareTool( hndl, hndl.typeAndName() ).ignore();
+    return PropertyHolderImpl::declareProperty( name, hndl, doc );
+  }
+
+  template <class T>
+  StatusCode declareTool( ToolHandle<T>& handle, bool createIf = true ) {
+    return this->declareTool( handle, handle.typeAndName(), createIf );
+  }
+
   /** Declare used tool
    *
    *  @param handle ToolHandle<T>
@@ -148,9 +165,34 @@ public:
                            name(), sc};
     }
 
+    m_toolHandles.push_back( &handle );
+
     return sc;
   }
 
+  // declare ToolHandleArrays to the AlgTool
+  template <class T>
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr,
+                                                 const std::string& doc = "none" ) {
+    addToolsArray( hndlArr );
+    return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
+  }
+
+  template <class T>
+  void addToolsArray( ToolHandleArray<T>& hndlArr ) {
+    m_toolHandleArrays.push_back( &hndlArr );
+  }
+
+  const std::vector<IAlgTool*>& tools() const;
+
+protected:
+  std::vector<IAlgTool*>& tools();
+
+private:
+  // place IAlgTools defined via ToolHandles in m_tools
+  void initToolHandles() const;
+
+public:
   // ==========================================================================
   /** The standard auditor service.May not be invoked before sysInitialize()
    *  has been invoked.
@@ -181,6 +223,12 @@ private:
 
   void setServiceManager( ISvcManager* ism ) override;
 
+  // AlgTools used by Service
+  mutable std::vector<IAlgTool*>             m_tools;
+  mutable std::vector<BaseToolHandle*>       m_toolHandles;
+  mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
+  mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
+
 protected:
   // Properties
 
@@ -192,6 +240,10 @@ protected:
   Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
   Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
   Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
+
+  Gaudi::Property<bool> m_autoRetrieveTools{this, "AutoRetrieveTools", true, "retrieve all AlgTools during initialize"};
+  Gaudi::Property<bool> m_checkToolDeps{this, "CheckToolDeps", true,
+                                        "check data dependencies of AlgTools (error if any found)"};
 
   /** Auditor Service                            */
   mutable SmartIF<IAuditorSvc> m_pAuditorSvc;

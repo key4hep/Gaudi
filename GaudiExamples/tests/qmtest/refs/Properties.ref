@@ -1,17 +1,17 @@
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/units.opts
-JobOptionsSvc        INFO # (1,1): 1 m = 1000
-JobOptionsSvc        INFO # (2,1): 1 cm = 10
-JobOptionsSvc        INFO # (3,1): 1 mm = 1
-JobOptionsSvc        INFO # (4,1): 1 m2 = 1e+06
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/units.opts
+JobOptionsSvc        INFO # (1,1): 1.0 m = 1000.0
+JobOptionsSvc        INFO # (2,1): 1.0 cm = 10.0
+JobOptionsSvc        INFO # (3,1): 1.0 mm = 1.0
+JobOptionsSvc        INFO # (4,1): 1.0 m2 = 1000000.0
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/optsub1/dummy1.opts
 JobOptionsSvc        INFO # (2,1): Dummy1.Property = 1
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/optsub2/dummy2.opts
 JobOptionsSvc        INFO # (2,1): Dummy2.Property = 1
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Properties.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Properties.opts
 JobOptionsSvc        INFO # (14,1): ApplicationMgr.TopAlg = ["PropertyAlg"]
 JobOptionsSvc        INFO # (16,1): ApplicationMgr.TopAlg += ["PropertyAlg", "PropertyProxy"]
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.TopAlg -= ["PropertyAlg"]
@@ -49,11 +49,11 @@ JobOptionsSvc        INFO # (71,1): PropertyProxy.String = "This is set by the p
 JobOptionsSvc        INFO # (74,1): MessageSvc.setDebug += ["EventLoopMgr"]
 JobOptionsSvc        INFO # (75,1): MessageSvc.setVerbose += ["MsgTest"]
 JobOptionsSvc        INFO # (79,1): MessageSvc.setWarning += ["MsgTest"]
-JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Properties.opts
-ApplicationMgr    SUCCESS
+JobOptionsSvc        INFO Job options successfully read in from /bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Properties.opts
+ApplicationMgr    SUCCESS 
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r3)
-                                          running on marco-XPS-13 on Mon Sep 10 17:45:22 2018
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r0)
+                                          running on zeus on Thu Sep 24 13:26:11 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -122,10 +122,10 @@ PropertyAlg          INFO PInt= 155 [should be 155, bounds are 0, 200]
 PropertyAlg          INFO Got an exception when setting a value outside bounds
 PropertyAlg          INFO PInt=  'PInt':155 [should be 155]
 PropertyAlg          INFO ===============Checking Property CallBaks ===============
-PropertyAlg          INFO Accessing PDouble ...
+PropertyAlg          INFO Accessing PDouble ... 
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
 PropertyAlg          INFO Value obtained is: 1.01e+07
-PropertyAlg          INFO Updating PDouble ...
+PropertyAlg          INFO Updating PDouble ... 
 PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
 PropertyAlg          INFO Update handler called for property:  'PDouble':999.00000
 PropertyAlg          INFO ==========Checking Accesing Properties by string=========
@@ -155,6 +155,8 @@ AppMgrRunable.AuditRestart: False
 AppMgrRunable.AuditServices: False
 AppMgrRunable.AuditStart: False
 AppMgrRunable.AuditStop: False
+AppMgrRunable.AutoRetrieveTools: True
+AppMgrRunable.CheckToolDeps: True
 AppMgrRunable.EvtMax: 1
 AppMgrRunable.OutputLevel: 3
 ApplicationMgr.ActivateHistory: False
@@ -176,7 +178,7 @@ ApplicationMgr.ExtSvcCreates: True
 ApplicationMgr.Go: 0
 ApplicationMgr.HistogramPersistency: 'NONE'
 ApplicationMgr.InitializationLoopCheck: True
-ApplicationMgr.JobOptionsPath: '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Properties.opts'
+ApplicationMgr.JobOptionsPath: '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Properties.opts'
 ApplicationMgr.JobOptionsPostAction: ''
 ApplicationMgr.JobOptionsPreAction: ''
 ApplicationMgr.JobOptionsSvcType: 'JobOptionsSvc'
@@ -205,6 +207,8 @@ DetectorDataSvc.AuditRestart: False
 DetectorDataSvc.AuditServices: False
 DetectorDataSvc.AuditStart: False
 DetectorDataSvc.AuditStop: False
+DetectorDataSvc.AutoRetrieveTools: True
+DetectorDataSvc.CheckToolDeps: True
 DetectorDataSvc.DataAccessName: 'DataAccess'
 DetectorDataSvc.DataFaultName: 'DataFault'
 DetectorDataSvc.DetDbLocation: 'empty'
@@ -226,6 +230,8 @@ DetectorPersistencySvc.AuditRestart: False
 DetectorPersistencySvc.AuditServices: False
 DetectorPersistencySvc.AuditStart: False
 DetectorPersistencySvc.AuditStop: False
+DetectorPersistencySvc.AutoRetrieveTools: True
+DetectorPersistencySvc.CheckToolDeps: True
 DetectorPersistencySvc.CnvServices: [  ]
 DetectorPersistencySvc.OutputLevel: 3
 Dummy1.Property: 1
@@ -237,6 +243,8 @@ EventDataSvc.AuditRestart: False
 EventDataSvc.AuditServices: False
 EventDataSvc.AuditStart: False
 EventDataSvc.AuditStop: False
+EventDataSvc.AutoRetrieveTools: True
+EventDataSvc.CheckToolDeps: True
 EventDataSvc.DataAccessName: 'DataAccess'
 EventDataSvc.DataFaultName: 'DataFault'
 EventDataSvc.EnableAccessHandler: False
@@ -253,6 +261,8 @@ EventLoopMgr.AuditRestart: False
 EventLoopMgr.AuditServices: False
 EventLoopMgr.AuditStart: False
 EventLoopMgr.AuditStop: False
+EventLoopMgr.AutoRetrieveTools: True
+EventLoopMgr.CheckToolDeps: True
 EventLoopMgr.EvtSel: ''
 EventLoopMgr.HistogramPersistency: ''
 EventLoopMgr.OutStream: [  ]
@@ -268,6 +278,8 @@ EventPersistencySvc.AuditRestart: False
 EventPersistencySvc.AuditServices: False
 EventPersistencySvc.AuditStart: False
 EventPersistencySvc.AuditStop: False
+EventPersistencySvc.AutoRetrieveTools: True
+EventPersistencySvc.CheckToolDeps: True
 EventPersistencySvc.CnvServices: [  ]
 EventPersistencySvc.OutputLevel: 3
 IncidentSvc.AuditFinalize: False
@@ -277,6 +289,8 @@ IncidentSvc.AuditRestart: False
 IncidentSvc.AuditServices: False
 IncidentSvc.AuditStart: False
 IncidentSvc.AuditStop: False
+IncidentSvc.AutoRetrieveTools: True
+IncidentSvc.CheckToolDeps: True
 IncidentSvc.OutputLevel: 3
 JobOptionsSvc.AuditFinalize: False
 JobOptionsSvc.AuditInitialize: False
@@ -285,14 +299,16 @@ JobOptionsSvc.AuditRestart: False
 JobOptionsSvc.AuditServices: False
 JobOptionsSvc.AuditStart: False
 JobOptionsSvc.AuditStop: False
+JobOptionsSvc.AutoRetrieveTools: True
+JobOptionsSvc.CheckToolDeps: True
 JobOptionsSvc.DUMPFILE: ''
 JobOptionsSvc.GlobalDefaults: [  ]
 JobOptionsSvc.OutputLevel: 3
-JobOptionsSvc.PATH: '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Properties.opts'
+JobOptionsSvc.PATH: '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Properties.opts'
 JobOptionsSvc.PYTHONACTION: ''
 JobOptionsSvc.PYTHONPARAMS: ''
 JobOptionsSvc.ReportUnused: False
-JobOptionsSvc.SEARCHPATH: '/home/marco/Devel/workspace/Gaudi/GaudiExamples/tests/qmtest:/home/marco/Devel/workspace/Gaudi/GaudiExamples/options'
+JobOptionsSvc.SEARCHPATH: '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/tests/qmtest:/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options'
 JobOptionsSvc.TYPE: 'FILE'
 MessageSvc.AuditFinalize: False
 MessageSvc.AuditInitialize: False
@@ -301,6 +317,8 @@ MessageSvc.AuditRestart: False
 MessageSvc.AuditServices: False
 MessageSvc.AuditStart: False
 MessageSvc.AuditStop: False
+MessageSvc.AutoRetrieveTools: True
+MessageSvc.CheckToolDeps: True
 MessageSvc.Format: '% F%18W%S%7W%R%T %0W%M'
 MessageSvc.OutputLevel: 3
 MessageSvc.alwaysColorCode: [  ]
@@ -387,6 +405,8 @@ StatusCodeSvc.AuditRestart: False
 StatusCodeSvc.AuditServices: False
 StatusCodeSvc.AuditStart: False
 StatusCodeSvc.AuditStop: False
+StatusCodeSvc.AutoRetrieveTools: True
+StatusCodeSvc.CheckToolDeps: True
 StatusCodeSvc.Filter: [  ]
 StatusCodeSvc.IgnoreDicts: True
 StatusCodeSvc.OutputLevel: 3
@@ -398,6 +418,8 @@ TimelineSvc.AuditRestart: False
 TimelineSvc.AuditServices: False
 TimelineSvc.AuditStart: False
 TimelineSvc.AuditStop: False
+TimelineSvc.AutoRetrieveTools: True
+TimelineSvc.CheckToolDeps: True
 TimelineSvc.DumpTimeline: False
 TimelineSvc.OutputLevel: 3
 TimelineSvc.Partial: False
@@ -413,13 +435,13 @@ PropertyProxy        INFO  Got property this.RInt = 101;
 PropertyProxy        INFO  Set property this.RInt = 1001;
 PropertyProxy        INFO  Got property this.RInt = 1001;
 PropertyProxy        INFO  Got property this.String = This is set by the proxy;
-EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING Unable to locate service "EventSelector" 
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 PropertyAlg          INFO executing....
 PropertyProxy        INFO executing....
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 48.9531 | total time (skipping 1st evt) 153636 ns
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 53.9609 | total time (skipping 1st evt) 162512 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 PropertyAlg          INFO finalizing....
 PropertyProxy        INFO finalizing....

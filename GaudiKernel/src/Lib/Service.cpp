@@ -13,6 +13,7 @@
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/IAuditorSvc.h"
+#include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -53,7 +54,49 @@ void Service::sysInitialize_imp() {
 
     bindPropertiesTo( serviceLocator()->getOptsSvc() );
 
+    if ( m_checkToolDeps && !m_autoRetrieveTools ) {
+      error() << "Property AutoRetrieveTools must be set TRUE if CheckToolDeps is True" << endmsg;
+      m_initSC = StatusCode::FAILURE;
+      return;
+    }
+
     m_initSC = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
+
+    // Check for data dependencies in AlgTools
+    // visit all sub-algs and tools, build full set. First initialize ToolHandles if needed
+    if ( m_autoRetrieveTools ) {
+      try {
+        if ( !m_toolHandlesInit ) initToolHandles();
+      } catch ( const GaudiException& Exception ) {
+        error() << "Service failed to initilize ToolHandles : " << Exception << endmsg;
+        m_initSC = StatusCode::FAILURE;
+        return;
+      }
+
+      if ( m_checkToolDeps ) {
+        for ( auto& itool : m_tools ) {
+          info() << "  AlgTool: " << itool->name() << endmsg;
+          IDataHandleHolder* idh = dynamic_cast<IDataHandleHolder*>( itool );
+          if ( idh == 0 ) {
+            error() << "dcast to IDataHandleHolder failed" << endmsg;
+            continue;
+          }
+          if ( idh->inputDataObjs().size() != 0 ) {
+            error() << "Service " << name() << " holds AlgTool " << itool->name()
+                    << " which holds at least one ReadDataHandle" << endmsg;
+            for ( auto& obj : idh->inputDataObjs() ) { error() << "   -> InputHandle:  " << obj << endmsg; }
+            m_initSC = StatusCode::FAILURE;
+          }
+          if ( idh->outputDataObjs().size() != 0 ) {
+            error() << "Service " << name() << " holds AlgTool " << itool->name()
+                    << " which holds at least one WriteDataHandle" << endmsg;
+            for ( auto& obj : idh->outputDataObjs() ) { error() << "   -> OutputHandle: " << obj << endmsg; }
+            m_initSC = StatusCode::FAILURE;
+          }
+        }
+      }
+    }
+
     if ( m_initSC.isSuccess() ) m_state = m_targetState;
     return;
   } catch ( const GaudiException& Exception ) {
@@ -322,3 +365,56 @@ SmartIF<IAuditorSvc>& Service::auditorSvc() const {
 }
 
 void Service::setServiceManager( ISvcManager* ism ) { m_svcManager = ism; }
+
+void Service::initToolHandles() const {
+  auto init_one = [&]( BaseToolHandle* th ) {
+    if ( !th->isEnabled() ) {
+      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) && !th->typeAndName().empty() )
+        debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+      return;
+    }
+    if ( !th->get() ) {
+      auto sc = th->retrieve();
+      if ( UNLIKELY( sc.isFailure() ) ) {
+        throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
+      }
+    }
+    auto* tool = th->get();
+    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+      debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
+              << tool->type() << ")" << endmsg;
+    m_tools.push_back( tool );
+  };
+
+  for ( auto thArr : m_toolHandleArrays ) {
+    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+      debug() << "Registering all Tools in ToolHandleArray " << thArr->propertyName() << endmsg;
+    // Iterate over its tools:
+    for ( auto toolHandle : thArr->getBaseArray() ) {
+      // Try to cast it into a BaseToolHandle pointer:
+      BaseToolHandle* bth = dynamic_cast<BaseToolHandle*>( toolHandle );
+      if ( bth ) {
+        init_one( bth );
+      } else {
+        error() << "Error retrieving Tool " << toolHandle->typeAndName() << " in ToolHandleArray "
+                << thArr->propertyName() << ". Not registered" << endmsg;
+      }
+    }
+  }
+
+  for ( BaseToolHandle* th : m_toolHandles ) init_one( th );
+
+  m_toolHandlesInit = true;
+}
+
+const std::vector<IAlgTool*>& Service::tools() const {
+  if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
+
+  return m_tools;
+}
+
+std::vector<IAlgTool*>& Service::tools() {
+  if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
+
+  return m_tools;
+}
