@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,14 +10,14 @@
 #####################################################################################
 # Prepare dummy configurables
 from GaudiKernel.Configurable import ConfigurableAlgorithm, Configurable
-from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
+from GaudiKernel.DataHandle import DataHandle
 
 
 class MyAlg(ConfigurableAlgorithm):
     __slots__ = {
         'Text': 'some text',
         'Int': 23,
-        'DataHandle': DataObjectHandleBase('Location', 'R')
+        'DataHandle': DataHandle('Location', 'R')
     }
 
     def getDlls(self):
@@ -44,14 +44,36 @@ def test_correct():
     assert a.getValuedProperties() == {
         'Int': 42,
         'Text': 'value',
-        'DataHandle': DataObjectHandleBase('/Event/X', 'R')
+        'DataHandle': DataHandle('/Event/X', 'R')
     }
 
 
 def test_str_from_datahandle():
     a = MyAlg()
-    a.Text = DataObjectHandleBase('value', 'R')
+    a.Text = DataHandle('value', 'R')
     assert a.getProp('Text') == 'value'
+
+
+def test_repr_from_datahandle():
+    """Check handle can be constructued from its option value"""
+    h1 = DataHandle('value')
+    ns = {'DataHandle': DataHandle}
+    exec('h2 = ' + repr(h1), ns)
+    h2 = ns['h2']
+    assert h1 == h2
+    assert h2 == 'value'
+    assert h2.mode() == 'R'
+    assert h2.type() == 'unknown_t'
+    assert h2.isCondition() is False
+
+    h1 = DataHandle('value', 'W', 'int', True)
+    exec('h2 = ' + repr(h1), ns)
+    h2 = ns['h2']
+    assert h1 == h2
+    assert h2 == 'value'
+    assert h2.mode() == 'W'
+    assert h2.type() == 'int'
+    assert h2.isCondition() is True
 
 
 def test_invalid_value():

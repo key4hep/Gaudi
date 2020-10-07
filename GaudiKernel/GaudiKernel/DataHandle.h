@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,6 +11,7 @@
 #ifndef GAUDIKERNEL_DATAHANDLE
 #define GAUDIKERNEL_DATAHANDLE 1
 
+#include "GaudiKernel/DataHandleProperty.h"
 #include "GaudiKernel/DataObjID.h"
 
 //---------------------------------------------------------------------------
@@ -44,6 +45,8 @@ namespace Gaudi {
     DataHandle( const DataObjID& k, const bool& isCond, Mode a = Reader, IDataHandleHolder* owner = nullptr )
         : m_key( k ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
 
+    using PropertyType = DataHandleProperty;
+
     virtual ~DataHandle() = default;
 
     virtual void               setOwner( IDataHandleHolder* o ) { m_owner = o; }
@@ -65,6 +68,8 @@ namespace Gaudi {
     // is this a ConditionHandle?
     virtual bool isCondition() const { return m_isCond; }
 
+    friend std::ostream& operator<<( std::ostream& str, const DataHandle& d );
+
   protected:
     /**
      * The key of the object behind this DataHandle
@@ -75,10 +80,19 @@ namespace Gaudi {
     mutable DataObjID  m_key   = {"NONE"};
     IDataHandleHolder* m_owner = nullptr;
 
+    static const std::string default_type;
+
   private:
     Mode m_mode   = Reader;
     bool m_isCond = false;
   };
+
+  namespace Parsers {
+    StatusCode parse( DataHandle&, const std::string& );
+  }
+  namespace Utils {
+    GAUDI_API std::ostream& toStream( const DataHandle& v, std::ostream& o );
+  }
 } // namespace Gaudi
 
 #endif

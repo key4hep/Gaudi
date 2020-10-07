@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,7 +22,7 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/DataObjectHandleBase.h"
+#include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IProperty.h"
 #include <Gaudi/Property.h>
@@ -54,7 +54,7 @@ public:
   /// Declare a property (templated)
   template <class TYPE, typename = std::enable_if_t<!std::is_base_of_v<GaudiHandleBase, TYPE> &&
                                                     !std::is_base_of_v<GaudiHandleArrayBase, TYPE> &&
-                                                    !std::is_base_of_v<DataObjectHandleBase, TYPE>>>
+                                                    !std::is_base_of_v<Gaudi::DataHandle, TYPE>>>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value,
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
@@ -74,7 +74,7 @@ public:
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, GaudiHandleArrayBase& ref,
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandleBase& ref,
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, Gaudi::DataHandle& ref,
                                                  const std::string& doc = "none" );
   /// Declare a remote property
   Gaudi::Details::PropertyBase* declareRemoteProperty( const std::string& name, IProperty* rsvc,

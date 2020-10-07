@@ -1,6 +1,6 @@
 <?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
 <!--
-    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+    (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations
 
     This software is distributed under the terms of the Apache version 2 licence,
     copied verbatim in the file "LICENSE".
@@ -19,7 +19,7 @@
     <tuple><text>gaudi.pickle_write</text><enumeral>PASS</enumeral></tuple>
   </set></argument>
 <argument name="validator"><text>
-from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
+from GaudiKernel.DataHandle import DataHandle
 
 conf_dict = eval('\n'.join(stdout.splitlines()))
 expected = { 'ToolSvc.MyTestTool': { 'PubToolHndl' : 'Public1',

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,7 +26,7 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/DataObjectHandleProperty.h"
+#include "GaudiKernel/DataHandleProperty.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
