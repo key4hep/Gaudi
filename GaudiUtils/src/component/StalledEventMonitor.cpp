@@ -70,7 +70,7 @@ namespace {
       ++m_counter;
       if ( m_maxCount > 0 && m_counter >= m_maxCount ) {
         log << MSG::FATAL << "too much time on a single event: aborting process" << endmsg;
-        std::raise( SIGABRT );
+        std::raise( SIGQUIT );
       }
     }
     void onPing() override {
