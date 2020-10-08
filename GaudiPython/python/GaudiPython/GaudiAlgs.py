@@ -215,7 +215,7 @@ def _init_(self, name, **args):
     status = algMgr.addAlgorithm(self)
     if status.isFailure():
         raise RuntimeError('Unable to add Algorithm "' + name + '"')
-    iAlgorithm.__init__(self, name, self)
+    self._ialg = iAlgorithm(name, self)
     for key in args:
         setattr(self, key, args[key])
     # take some care about the ownership of the algorithms
@@ -515,7 +515,7 @@ def _getProperty_(self, pname):
     """
     if not self.hasProperty(pname):
         raise AttributeError('property %s does not exist' % pname)
-    return iAlgorithm.__getattr__(self, pname)
+    return self._ialg.__getattr__(pname)
 
 
 # =============================================================================
@@ -528,7 +528,7 @@ def _setProperty_(self, pname, pvalue):
     """
     if not self.hasProperty(pname):
         raise AttributeError('property %s does not exist' % pname)
-    return iAlgorithm.__setattr__(self, pname, pvalue)
+    return self._ialg.__setattr__(pname, pvalue)
 
 
 # =============================================================================
@@ -541,7 +541,7 @@ def _get_attr_(self, pname):
     - if the attribute name corresponds to the property name, property value is returned
     """
     if self.hasProperty(pname):
-        return iAlgorithm.__getattr__(self, pname)
+        return self._ialg.__getattr__(pname)
     raise AttributeError('attribute/property %s does not exist' % pname)
 
 
@@ -557,7 +557,7 @@ def _set_attr_(self, pname, pvalue):
     if not self.hasProperty(pname):
         self.__dict__[pname] = pvalue
     else:
-        iAlgorithm.__setattr__(self, pname, pvalue)
+        self._ialg.__setattr__(pname, pvalue)
 
 
 _GaudiAlgorithm = cpp.GaudiPython.PyAlg('GaudiAlgorithm')
@@ -629,7 +629,7 @@ _GaudiTupleAlg = cpp.GaudiPython.PyAlg('GaudiTupleAlg')
 #  @date 2006-11-26
 
 
-class GaudiAlgo(_GaudiAlgorithm, iAlgorithm):
+class GaudiAlgo(_GaudiAlgorithm):
     """
 *******************************************************************************
 *                                                * 'Physisics do not like it, *
@@ -758,7 +758,7 @@ class GaudiAlgo(_GaudiAlgorithm, iAlgorithm):
 #  @date 2006-11-26
 
 
-class HistoAlgo(_GaudiHistoAlg, iAlgorithm):
+class HistoAlgo(_GaudiHistoAlg):
     """
 *******************************************************************************
 *                                                * 'Physisics do not like it, *
@@ -871,7 +871,7 @@ class HistoAlgo(_GaudiHistoAlg, iAlgorithm):
 #  @date 2006-11-26
 
 
-class TupleAlgo(_GaudiTupleAlg, iAlgorithm):
+class TupleAlgo(_GaudiTupleAlg):
     """
 *******************************************************************************
 *                                                * 'Physisics do not like it, *
