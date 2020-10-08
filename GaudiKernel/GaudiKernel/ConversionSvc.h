@@ -218,5 +218,8 @@ protected:
   long m_type;
   /// List of conversion workers
   std::vector<WorkerEntry> m_workers;
+  /// a mutex to make the code thread safe
+  mutable std::mutex m_mutex;
+
 };
 #endif // GAUDIKERNEL_CONVERSIONSVC_H

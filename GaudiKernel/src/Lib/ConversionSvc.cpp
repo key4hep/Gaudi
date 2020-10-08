@@ -137,6 +137,8 @@ StatusCode ConversionSvc::updateRepRefs( IOpaqueAddress* pAddress, DataObject* p
 
 /// Retrieve converter from list
 IConverter* ConversionSvc::converter( const CLID& clid ) {
+  // serialize calls to converter, in order to ensure thread safety
+  std::lock_guard<std::mutex> guard(m_mutex);
   IConverter* cnv = nullptr;
   auto        i   = std::find_if( m_workers.begin(), m_workers.end(), CnvTest( clid ) );
   if ( i != m_workers.end() ) cnv = i->converter();

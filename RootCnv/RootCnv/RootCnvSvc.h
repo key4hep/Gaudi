@@ -106,6 +106,10 @@ namespace Gaudi {
     /// Helper: Use message streamer
     MsgStream& log() const { return *m_log; }
 
+  private:
+    /// a mutex to make the code thread safe
+    mutable std::mutex m_mutex;
+    
   public:
     /// Standard constructor
     RootCnvSvc( const std::string& name, ISvcLocator* svc );

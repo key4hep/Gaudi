@@ -61,7 +61,7 @@ RootCnvSvc::RootCnvSvc( CSTR nam, ISvcLocator* svc )
     : ConversionSvc( nam, svc, ROOT_StorageType ), m_setup{new RootConnectionSetup()} {
   m_setup->cacheBranches.push_back( "*" );
   declareProperty( "LoadSection", m_setup->loadSection = "Event" );
-
+  ROOT::EnableThreadSafety();
   // ROOT Read parameters: must be shared for the entire file!
   declareProperty( "CacheSize", m_setup->cacheSize = 10 * MBYTE );
   declareProperty( "LearnEntries", m_setup->learnEntries = 10 );
@@ -301,6 +301,7 @@ StatusCode RootCnvSvc::connectOutput( CSTR db_name ) { return connectOutput( db_
 
 // Commit pending output on open container
 StatusCode RootCnvSvc::commitOutput( CSTR dsn, bool /* doCommit */ ) {
+  std::lock_guard<std::mutex> guard(m_mutex);
   if ( m_current ) {
     size_t   len     = m_currSection.find( '/', 1 );
     string   section = m_currSection.substr( 1, len == string::npos ? string::npos : len - 1 );
@@ -363,7 +364,8 @@ StatusCode RootCnvSvc::createAddress( long typ, const CLID& clid, const string* 
 
 // Insert null marker for not existent transient object
 StatusCode RootCnvSvc::createNullRep( const std::string& path ) {
-  size_t len     = path.find( '/', 1 );
+ std::lock_guard<std::mutex> guard(m_mutex);
+ size_t len     = path.find( '/', 1 );
   string section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
   m_current->saveObj( section, path, nullptr, nullptr, m_bufferSize, m_splitLevel );
   return S_OK;
@@ -371,6 +373,7 @@ StatusCode RootCnvSvc::createNullRep( const std::string& path ) {
 
 // Insert null marker for not existent transient object
 StatusCode RootCnvSvc::createNullRef( const std::string& path ) {
+ std::lock_guard<std::mutex> guard(m_mutex);
   RootObjectRefs*          refs    = nullptr;
   size_t                   len     = path.find( '/', 1 );
   string                   section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
@@ -383,6 +386,7 @@ StatusCode RootCnvSvc::createNullRef( const std::string& path ) {
 
 // Mark an object for write given an object reference
 StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) {
+ std::lock_guard<std::mutex> guard(m_mutex);
   refpAddr = nullptr;
   if ( !pObj ) return error( "createRep> Current Database is invalid!" );
   CLID                     clid = pObj->clID();
@@ -402,6 +406,7 @@ StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr
 
 // Save object references to data file
 StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pObj ) {
+ std::lock_guard<std::mutex> guard(m_mutex);
   if ( pObj ) {
     typedef vector<IRegistry*> Leaves;
     Leaves                     leaves;
@@ -444,6 +449,7 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
 
 // Read existing object. Open transaction in read mode if not active
 StatusCode RootCnvSvc::i__createObj( IOpaqueAddress* pA, DataObject*& refpObj ) {
+ std::lock_guard<std::mutex> guard(m_mutex);
   refpObj = nullptr;
   if ( !pA ) return S_FAIL;
   RootDataConnection* con  = nullptr;
@@ -473,6 +479,7 @@ StatusCode RootCnvSvc::i__createObj( IOpaqueAddress* pA, DataObject*& refpObj ) 
 
 // Resolve the references of the created transient object.
 StatusCode RootCnvSvc::i__fillObjRefs( IOpaqueAddress* pA, DataObject* pObj ) {
+ std::lock_guard<std::mutex> guard(m_mutex);
   if ( !pA || !pObj ) return error( "read> Cannot read object -- no valid object address present " );
 
   const unsigned long* ipar = pA->ipar();
