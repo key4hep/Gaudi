@@ -145,7 +145,7 @@ class InterfaceCast(object):
                       "for object", obj)
                 import traceback
                 traceback.print_stack()
-        return None
+        return cppyy.nullptr
 
     cast = __call__
 
@@ -260,18 +260,11 @@ class PropertyEntry(object):
 class iProperty(object):
     """ Python equivalent to the C++ Property interface """
 
-    def __init__(self, name, ip=None):
-        if ip:
-            self.__dict__['_ip'] = InterfaceCast(gbl.IProperty)(ip)
-        else:
-            self.__dict__['_ip'] = None
+    def __init__(self, name, ip=cppyy.nullptr):
+        self.__dict__['_ip'] = InterfaceCast(gbl.IProperty)(ip)
         self.__dict__['_svcloc'] = gbl.Gaudi.svcLocator()
         optsvc = Helper.service(self._svcloc, 'JobOptionsSvc')
-        if optsvc:
-            self.__dict__['_optsvc'] = InterfaceCast(
-                gbl.IJobOptionsSvc)(optsvc)
-        else:
-            self.__dict__['_optsvc'] = None
+        self.__dict__['_optsvc'] = InterfaceCast(gbl.IJobOptionsSvc)(optsvc)
         self.__dict__['_name'] = name
 
     def getInterface(self):
@@ -373,12 +366,9 @@ class iProperty(object):
 class iService(iProperty):
     """ Python equivalent to IProperty interface """
 
-    def __init__(self, name, isvc=None):
+    def __init__(self, name, isvc=cppyy.nullptr):
         iProperty.__init__(self, name, isvc)
-        if isvc:
-            self.__dict__['_isvc'] = InterfaceCast(gbl.IService)(isvc)
-        else:
-            self.__dict__['_isvc'] = None
+        self.__dict__['_isvc'] = InterfaceCast(gbl.IService)(isvc)
 
     def retrieveInterface(self):
         isvc = Helper.service(self._svcloc, self._name)
@@ -416,12 +406,9 @@ class iService(iProperty):
 class iAlgorithm(iProperty):
     """ Python equivalent to IAlgorithm interface """
 
-    def __init__(self, name, ialg=None):
+    def __init__(self, name, ialg=cppyy.nullptr):
         iProperty.__init__(self, name, ialg)
-        if ialg:
-            self.__dict__['_ialg'] = InterfaceCast(gbl.IAlgorithm)(ialg)
-        else:
-            self.__dict__['_ialg'] = None
+        self.__dict__['_ialg'] = InterfaceCast(gbl.IAlgorithm)(ialg)
 
     def retrieveInterface(self):
         ialg = Helper.algorithm(
@@ -478,12 +465,9 @@ class iAlgorithm(iProperty):
 class iAlgTool(iProperty):
     """ Python equivalent to IAlgTool interface (not completed yet) """
 
-    def __init__(self, name, itool=None):
+    def __init__(self, name, itool=cppyy.nullptr):
         iProperty.__init__(self, name, itool)
-        if itool:
-            self.__dict__['_itool'] = itool
-        else:
-            self.__dict__['_itool'] = None
+        self.__dict__['_itool'] = itool
         svc = Helper.service(self._svcloc, 'ToolSvc', True)
         self.__dict__['_toolsvc'] = iToolSvc('ToolSvc', svc)
 
@@ -531,7 +515,7 @@ class iDataSvc(iService):
 
     def retrieveObject(self, path):
         if not self._idp:
-            return None
+            return cppyy.nullptr
         return Helper.dataobject(self._idp, path)
 
     # get object from TES
@@ -601,7 +585,7 @@ class iDataSvc(iService):
                 'C++ service %s does not exist' % self.__dict__['_name'])
         return self.unregisterObject(path)
 
-    def leaves(self, node=None):
+    def leaves(self, node=cppyy.nullptr):
         if not node:
             node = self.retrieveObject('')
         ll = gbl.std.vector('IRegistry*')()
@@ -612,7 +596,7 @@ class iDataSvc(iService):
         if self._idm.objectLeaves(node, ll).isSuccess():
             return ll
 
-    def dump(self, node=None):
+    def dump(self, node=cppyy.nullptr):
         if not node:
             root = self.retrieveObject('')
             if root:
@@ -624,7 +608,7 @@ class iDataSvc(iService):
             for l in self.leaves(node):
                 self.dump(l)
 
-    def getList(self, node=None, lst=[], rootFID=None):
+    def getList(self, node=cppyy.nullptr, lst=[], rootFID=None):
         if not node:
             root = self.retrieveObject('')
             if root:
@@ -643,7 +627,7 @@ class iDataSvc(iService):
                     continue
         return lst
 
-    def getHistoNames(self, node=None, lst=[]):
+    def getHistoNames(self, node=cppyy.nullptr, lst=[]):
         if not node:
             root = self.retrieveObject('')
             if root:
