@@ -156,6 +156,8 @@ Gaudi::Monitoring::MessageSvcSink.AuditRestart:False
 Gaudi::Monitoring::MessageSvcSink.AuditServices:False
 Gaudi::Monitoring::MessageSvcSink.AuditStart:False
 Gaudi::Monitoring::MessageSvcSink.AuditStop:False
+Gaudi::Monitoring::MessageSvcSink.AutoRetrieveTools:True
+Gaudi::Monitoring::MessageSvcSink.CheckToolDeps:True
 Gaudi::Monitoring::MessageSvcSink.OutputLevel:3
 HistogramDataSvc.AuditFinalize:False
 HistogramDataSvc.AuditInitialize:False
