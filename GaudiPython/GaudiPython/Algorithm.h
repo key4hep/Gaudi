@@ -80,6 +80,7 @@ namespace GaudiPython {
       // it should not be deleted by Gaudi (added an extra addRef()).
       this->addRef();
       this->addRef();
+      this->setType( System::typeinfoName( typeid( PyAlg ) ) );
     }
     /// get the object
     PyObject* _obj() const { return m_self; } //     get the object

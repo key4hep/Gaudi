@@ -216,7 +216,7 @@ StatusCode GaudiSequencer::decodeNames() {
   GaudiUtils::details::ostream_joiner( msg, m_entries, ", ",
                                        []( auto& os, const AlgorithmEntry& e ) -> decltype( auto ) {
                                          Gaudi::Algorithm* alg = e.algorithm();
-                                         std::string       typ = System::typeinfoName( typeid( *alg ) );
+                                         std::string       typ = alg->type();
                                          os << typ;
                                          if ( alg->name() != typ ) os << "/" << alg->name();
                                          return os;
