@@ -16,8 +16,4 @@
   <argument name="prerequisites"><set>
     <tuple><text>gaudiexamples.evtcolsex.prepare</text><enumeral>PASS</enumeral></tuple>
   </set></argument>
-  <argument name="validator"><text>
-# FIXME workaround for IJobOptionsSvc deprecation warnings (ignore stderr)
-validateWithReference(stderr='')
-  </text></argument>
 </extension>
