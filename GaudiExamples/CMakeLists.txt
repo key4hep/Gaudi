@@ -8,7 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-add_definitions(-g -O0)
 gaudi_subdir(GaudiExamples)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiAlg RootCnv)
