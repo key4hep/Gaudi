@@ -43,6 +43,8 @@ class ToolHandleInfo;
 // Forward declarations
 class ToolSvc;
 
+class ToolVisitor;
+
 /** @class AlgTool AlgTool.h GaudiKernel/AlgTool.h
  *
  *  Base class from which all the concrete tool classes
@@ -59,6 +61,7 @@ class GAUDI_API AlgTool
     : public DataHandleHolderBase<
           PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>> {
   friend ToolSvc;
+  friend class ToolVisitor;
 
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;
