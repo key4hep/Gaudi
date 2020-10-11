@@ -205,9 +205,9 @@ void Message::makeFormattedMsg( const std::string& format ) const {
 
     // Find type of formatting.
     std::string this_format;
-    while ( i != format.end() && *i != FORMAT_PREFIX && *i != MESSAGE && *i != TYPE && *i != SOURCE && *i != FILL &&
-            *i != WIDTH && *i != TIME && *i != UTIME && *i != SLOT && *i != EVTNUM && *i != THREAD && *i != EVENTID &&
-            *i != JUSTIFY_LEFT && *i != JUSTIFY_RIGHT ) {
+    while ( i != format.end() && *i != FORMAT_PREFIX && *i != MESSAGE && *i != TYPE && *i != SOURCE && *i != COMP &&
+            *i != FILL && *i != WIDTH && *i != TIME && *i != UTIME && *i != SLOT && *i != EVTNUM && *i != THREAD &&
+            *i != EVENTID && *i != JUSTIFY_LEFT && *i != JUSTIFY_RIGHT ) {
       this_format += *i++;
     }
 
@@ -283,6 +283,10 @@ void Message::decodeFormat( const std::string& format ) const {
 
     case SOURCE:
       sizeField( m_source );
+      break;
+
+    case COMP:
+      sizeField( m_source, true );
       break;
 
     case TYPE:
@@ -370,18 +374,36 @@ void Message::setWidth( const std::string& formatArg ) const {
 // ---------------------------------------------------------------------------
 //
 
-void Message::sizeField( const std::string& text ) const {
+void Message::sizeField( const std::string& text, bool middle ) const {
   std::string newText;
   if ( m_width == 0 || m_width == static_cast<int>( text.length() ) ) {
     newText = text;
   } else {
-
+    const size_t width = static_cast<size_t>( m_width );
     // Truncate the text if it is too long.
-    if ( m_width < static_cast<int>( text.length() ) ) {
-      newText = text.substr( 0, m_width );
-      for ( int i = 0, j = newText.length() - 1; i < 3 && j >= 0; ++i, --j ) newText[j] = '.';
+    if ( width < text.length() ) {
+      if ( middle && width > 4 ) { // truncate text in the middle
+        size_t iTrunc;
+        // If the text is a component-name-chain, try showing the last component
+        const size_t iDot = text.rfind( '.' );
+        if ( iDot != std::string::npos && width > text.length() - iDot + 3 ) {
+          iTrunc = iDot + 1;
+        } else {
+          // No dot or text after dot too long
+          iTrunc = text.length() - width / 2;
+        }
+        const size_t taillength  = text.length() - iTrunc;
+        const size_t frontlength = width - taillength - 3;
+        newText.reserve( width );
+        newText.append( text, 0, frontlength );
+        newText.append( 3, '.' );
+        newText.append( text, iTrunc );
+      }      // else if middle
+      else { // truncate text at the end
+        newText = text.substr( 0, m_width );
+        for ( int i = 0, j = newText.length() - 1; i < 3 && j >= 0; ++i, --j ) newText[j] = '.';
+      }
     }
-
     // Pad the text.
     else {
       newText = std::string( m_width, m_fill );

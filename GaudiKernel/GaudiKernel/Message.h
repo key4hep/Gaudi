@@ -93,8 +93,8 @@ private:
   /// Decode format.
   void decodeFormat( const std::string& format ) const;
 
-  /// Truncate or pad the output string to the field width as necessary.
-  void sizeField( const std::string& text ) const;
+  /// Truncate or pad the output string to the field width. If middle is true, cut the central part, otherwise the end
+  void sizeField( const std::string& text, bool middle = false ) const;
 
   /// Set the width of a stream.
   void setWidth( const std::string& formatArg ) const;
@@ -142,6 +142,9 @@ private:
 
   /// The character used to indicate that the message source should be printed.
   static const char SOURCE = 'S';
+
+  /// The character used to indicate that the message source should be printed, focus on the component
+  static const char COMP = 'C';
 
   /// The character used to indicate that the slot number should be printed.
   static const char SLOT = 's';
