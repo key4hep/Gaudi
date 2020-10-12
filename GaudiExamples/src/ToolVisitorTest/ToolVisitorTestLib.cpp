@@ -118,7 +118,7 @@ namespace GaudiTesting {
         handle.retrieve().ignore();
       }
       if ( base_name == "tool5" ) {
-        const DataObjID* renounce_id;
+        const DataObjID* renounce_id = nullptr;
         for ( auto& data : m_handles ) {
           if ( data.mode() == Gaudi::DataHandle::Writer && data.objKey() == "Renounce" ) {
             renounce_id = &( data.fullKey() );
