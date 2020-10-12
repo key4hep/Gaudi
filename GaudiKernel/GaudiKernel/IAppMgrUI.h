@@ -67,7 +67,7 @@ public:
   virtual void outputLevelUpdate() = 0;
 
   virtual Gaudi::Monitoring::Hub& monitoringHub() {
-    throw GaudiException( "IAppMgrUI", "montorHub access not implemented", StatusCode::FAILURE );
+    throw GaudiException( "IAppMgrUI", "monitoringHub access not implemented", StatusCode::FAILURE );
   }
 };
 #endif // KERNEL_IAPPMGRUI_H
