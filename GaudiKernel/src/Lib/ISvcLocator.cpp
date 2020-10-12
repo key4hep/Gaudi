@@ -9,6 +9,8 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "GaudiKernel/ISvcLocator.h"
+#include <GaudiKernel/IAppMgrUI.h>
+#include <GaudiKernel/ISvcLocator.h>
 
 #include "Gaudi/Interfaces/IOptionsSvc.h"
 
@@ -20,3 +22,5 @@ Gaudi::Interfaces::IOptionsSvc& ISvcLocator::getOptsSvc() {
   if ( !p ) throw std::runtime_error( "cannot dynamic_cast JobOptionsSvc to IOptionsSvc*" );
   return *p;
 }
+
+Gaudi::Monitoring::Hub& ISvcLocator::monitoringHub() { return as<IAppMgrUI>()->monitoringHub(); }

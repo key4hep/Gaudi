@@ -60,7 +60,7 @@ MyAlg.ToolWithName   INFO Bool   = 1
 MyAlg                INFO ....initialization done
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
-ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<CounterHolder<AlgTool>>
+ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
 ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 26
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
@@ -75,7 +75,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
@@ -92,7 +91,7 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
-ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<CounterHolder<AlgTool>>
+ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
 ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 26
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
@@ -107,7 +106,6 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False

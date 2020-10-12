@@ -75,7 +75,6 @@ namespace GaudiPython {
     PyAlg( PyObject* self, const std::string& name ) : ALGORITHM( name, Gaudi::svcLocator() ), m_self( self ) {
       // the printout of actual type for embedded algorithm has no sense
       this->setProperty( "TypePrint", false );
-      this->setProperty( "StatPrint", true );
       // The owner of the Algorithm is Python (as creator) therefore
       // it should not be deleted by Gaudi (added an extra addRef()).
       this->addRef();

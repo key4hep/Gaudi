@@ -1,3 +1,4 @@
 #include "Histograms.opts"
 
 ApplicationMgr.TopAlg += { "Aida2Root" } ;
+ApplicationMgr.ExtSvc += { "Gaudi::Monitoring::MessageSvcSink" } ;

@@ -1428,85 +1428,6 @@ def _Tools_t_(self):
 
 
 # =============================================================================
-# get the list of counters
-# =============================================================================
-# get all counters
-def _get_all_counters_(self, method, name=None):
-    """
-    get all counters
-    """
-    _cnts = std.vector('const StatEntity*')()
-    _nams = std.vector('std::string')()
-    _func = getattr(AlgDecorator, method)
-    _num = _func(self, _nams, _cnts)
-    if _nams.size() != _num or _cnts.size() != _num:
-        raise RuntimeError('Unable to extract Counters')
-    _res = {}
-    for _i in range(0, _num):
-        _nam = _nams[_i]
-        _cnt = _cnts[_i]
-        _res[_nam] = _cnt
-    if not name:
-        return _res
-    return _res.get(name, None)
-
-
-# =============================================================================
-# get all counters
-
-
-def _Counters_a_(self, name=None):
-    """
-    Retrieve the counters, managed GaudiCommon<TYPE> base:
-
-    >>> alg  = ...             ## get the algorithm
-    >>> cnts = alg.Counters()  ## get the counters
-    >>> for key in cnts :
-    ...        print(key, cnts[key])
-
-
-    Retrieve the counter, managed GaudiCommon<TYPE> base by name:
-
-    >>> alg = ...                        ## get the algorithm
-    >>> cnt = alg.Counters('MyCounter')  ## get the counter
-    >>> print(cnt)
-
-    """
-    _cmp = getattr(self, '_ialg')
-    if not _cmp:
-        self.retrieveInterface()
-    _cmp = getattr(self, '_ialg')
-    return _get_all_counters_(_cmp, '_counters_a_', name)
-
-
-# =============================================================================
-
-
-def _Counters_t_(self, name=None):
-    """
-    Retrieve the counters, managed GaudiCommon<TYPE> base:
-
-    >>> tool = ...              ## get the tool
-    >>> cnts = tool.Counters()  ## get the counters
-    >>> for key in cnts :
-    ...        print(key, cnts[key])
-
-
-    Retrieve the counter, managed GaudiCommon<TYPE> base by name:
-
-    >>> tool = ...                         ## get the tool
-    >>> cnt  = tool.Counters('MyCounter')  ## get the counter
-    >>> print(cnt)
-
-    """
-    _cmp = getattr(self, '_itool')
-    if not _cmp:
-        self.retrieveInterface()
-    _cmp = getattr(self, '_itool')
-    return _get_all_counters_(_cmp, '_counters_t_', name)
-
-
-# =============================================================================
 # get the counter
 # =============================================================================
 
@@ -1662,8 +1583,6 @@ def _Histos_t_(self, name=None):
 
 _Tools_a_.__doc__ += '\n' + AlgDecorator._tools_a_.__doc__
 _Tools_t_.__doc__ += '\n' + AlgDecorator._tools_t_.__doc__
-_Counters_a_.__doc__ += '\n' + AlgDecorator._counters_a_.__doc__
-_Counters_t_.__doc__ += '\n' + AlgDecorator._counters_t_.__doc__
 _Counter_a_.__doc__ += '\n' + AlgDecorator._counter_a_.__doc__
 _Counter_t_.__doc__ += '\n' + AlgDecorator._counter_t_.__doc__
 _Histos_a_.__doc__ += '\n' + HistoDecorator._histos_a_.__doc__
@@ -1671,8 +1590,6 @@ _Histos_t_.__doc__ += '\n' + HistoDecorator._histos_t_.__doc__
 
 iAlgorithm.Tools = _Tools_a_
 iAlgTool.Tools = _Tools_t_
-iAlgorithm.Counters = _Counters_a_
-iAlgTool.Counters = _Counters_t_
 iAlgorithm.Counter = _Counter_a_
 iAlgTool.Counter = _Counter_t_
 iAlgorithm.Histos = _Histos_a_

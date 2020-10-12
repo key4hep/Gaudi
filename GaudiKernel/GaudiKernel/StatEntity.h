@@ -20,18 +20,15 @@ class StatEntity : public Gaudi::Accumulators::PrintableCounter,
                                                               Gaudi::Accumulators::StatAccumulator,
                                                               Gaudi::Accumulators::BinomialAccumulator> {
 public:
+  inline static const std::string typeString{"statentity"};
   using AccParent         = Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
                                                         Gaudi::Accumulators::StatAccumulator,
                                                         Gaudi::Accumulators::BinomialAccumulator>;
-  using BinomialAccParent = Gaudi::Accumulators::BinomialAccumulator<double, Gaudi::Accumulators::atomicity::full>;
-  using Gaudi::Accumulators::StatAccumulator<double, Gaudi::Accumulators::atomicity::full>::nEntries;
+  using BinomialAccParent = Gaudi::Accumulators::BinomialAccumulator<Gaudi::Accumulators::atomicity::full, double>;
+  using Gaudi::Accumulators::StatAccumulator<Gaudi::Accumulators::atomicity::full, double>::nEntries;
   using AccParent::reset;
   /// the constructor with automatic registration in the owner's counter map
   StatEntity() = default;
-  template <class OWNER>
-  StatEntity( OWNER* o, const std::string& tag ) {
-    o->declareCounter( tag, *this );
-  }
   StatEntity( const unsigned long entries, const double flag, const double flag2, const double minFlag,
               const double maxFlag ) {
     reset( std::make_tuple(
@@ -184,4 +181,26 @@ public:
   }
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   MsgStream&    fillStream( MsgStream& o ) const { return print( o ); }
+  /// Basic JSON export for Gaudi::Monitoring::Hub support.
+  virtual nlohmann::json toJSON() const override {
+    return {{"type", typeString},
+            {"empty", this->nEntries() == 0},
+            {"nEntries", this->nEntries()},
+            {"sum", this->sum()},
+            {"mean", this->mean()},
+            {"sum2", this->sum2()},
+            {"standard_deviation", this->standard_deviation()},
+            {"min", this->min()},
+            {"max", this->max()},
+            {"nTrueEntries", this->nTrueEntries()},
+            {"nFalseEntries", this->nFalseEntries()},
+            {"efficiency", this->efficiency()},
+            {"efficiencyErr", this->efficiencyErr()}};
+  }
+  static StatEntity fromJSON( const nlohmann::json& j ) {
+    StatEntity res;
+    res.reset( AccParent::extractJSONData(
+        j, {{{{"nEntries", "sum"}, "sum2"}, "min", "max"}, {"nTrueEntries", "nFalseEntries"}} ) );
+    return res;
+  }
 };

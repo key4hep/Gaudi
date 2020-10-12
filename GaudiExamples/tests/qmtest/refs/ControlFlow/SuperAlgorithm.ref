@@ -53,7 +53,6 @@ s2_Prescaler        DEBUG Property ['Name': Value] =  'StatTableHeader': |    Co
 s2_Prescaler        DEBUG Property ['Name': Value] =  'RootInTES':
 s2_Prescaler        DEBUG Property ['Name': Value] =  'Context':
 s2_Prescaler        DEBUG Property ['Name': Value] =  'TypePrint':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'StatPrint':True
 s2_Prescaler        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 s2_Prescaler        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 s2_Prescaler        DEBUG Property ['Name': Value] =  'NeededResources':[  ]

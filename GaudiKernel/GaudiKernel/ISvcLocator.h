@@ -22,6 +22,9 @@
 
 // Forward class declaration
 class IService;
+namespace Gaudi::Monitoring {
+  struct Hub;
+}
 
 namespace Gaudi {
   namespace Interfaces {
@@ -124,6 +127,8 @@ public:
 
   /// Direct access to Gaudi::Interfaces::IOptionsSvc implementation.
   Gaudi::Interfaces::IOptionsSvc& getOptsSvc();
+
+  Gaudi::Monitoring::Hub& monitoringHub();
 };
 
 #endif // GAUDI_ISVCLOCATOR_H

@@ -24,7 +24,7 @@ namespace utf = boost::unit_test;
 namespace tt  = boost::test_tools;
 
 BOOST_AUTO_TEST_CASE( test_buffer_moving, *utf::tolerance( 1e-14 ) ) {
-  Counter<double, atomicity::full> c;
+  Counter<atomicity::full> c;
   c += 3.5;
   c += 1.2;
   {

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <Gaudi/Accumulators.h>
+#include <Gaudi/MonitoringHub.h>
 #include <ROOT/RHist.hxx>
 #include <boost/format.hpp>
 #include <boost/histogram/algorithm/sum.hpp>
@@ -53,6 +54,9 @@ namespace Gaudi::Accumulators {
       }
       /// Histogram not empty.
       operator bool() const { return hist.GetEntries(); }
+
+      /// get number of entries
+      unsigned int nEntries() const { return hist.GetEntries(); }
     };
 
     /// Adapter for Boost histograms.
@@ -90,6 +94,9 @@ namespace Gaudi::Accumulators {
       }
       /// Histogram not empty.
       operator bool() const { return filled; }
+
+      /// get number of entries
+      unsigned int nEntries() const { return boost::histogram::algorithm::sum( hist ); }
 
     private:
       // flag to record if anything was added to the histogram (information not available in Boost histograms)
@@ -130,13 +137,14 @@ namespace Gaudi::Accumulators {
    */
   template <typename HistogramType>
   struct Histogram : PrintableCounter {
+    inline static const std::string typeString{"histogram"};
     using Adapter = Details::HistogramAdapter<HistogramType>;
 
     Histogram( HistogramType h ) : m_hist{std::move( h )} {}
 
     template <class OWNER>
     Histogram( OWNER* o, const std::string& tag, HistogramType h ) : Histogram{std::move( h )} {
-      o->declareCounter( tag, *this );
+      o->serviceLocator()->monitoringHub().registerEntity( o->name(), tag, typeString, *this );
     }
 
     /// @{
@@ -172,7 +180,10 @@ namespace Gaudi::Accumulators {
     MsgStream& print( MsgStream& s, bool tableFormat = true ) const override {
       return m_hist.printImpl( s, tableFormat );
     }
-    bool toBePrinted() const override { return m_hist; }
+    bool                   toBePrinted() const override { return m_hist; }
+    virtual nlohmann::json toJSON() const override {
+      return {{"type", "histogram"}, {"empty", !(bool)m_hist}, {"nEntries", m_hist.nEntries()}};
+    }
 
   private:
     Adapter m_hist;
