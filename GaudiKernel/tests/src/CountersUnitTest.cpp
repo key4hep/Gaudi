@@ -25,15 +25,15 @@ namespace tt  = boost::test_tools;
 
 BOOST_AUTO_TEST_CASE( test_buffer_moving, *utf::tolerance( 1e-14 ) ) {
   Counter<atomicity::full> c;
-  c += 3.5;
-  c += 1.2;
+  ++c;
+  ++c;
   {
     auto buf = c.buffer();
-    buf += 7.2; // buf1 internal count = 1
+    ++buf; // buf1 internal count = 1
     decltype( buf ) buf2( std::move( buf ) );
-    buf2 += 3.5; // buf3 internal count = 2
+    ++buf2; // buf3 internal count = 2
     decltype( buf ) buf3 = std::move( buf2 );
-    buf3 += 3.7; // buf3 internal count = 3
+    ++buf3; // buf3 internal count = 3
   }
 
   BOOST_TEST( c.nEntries() == 5 );

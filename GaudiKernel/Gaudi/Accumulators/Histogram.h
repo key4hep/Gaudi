@@ -68,7 +68,7 @@ namespace Gaudi::Accumulators {
   struct WeightedCountAccumulator
       : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight> {
     using Base = GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight>;
-    using Base::GenericAccumulator;
+    using Base::Base;
     using Base::operator+=;
     //// overload of operator+= to be able to only give weight and no value
     WeightedCountAccumulator operator+=( const Arithmetic weight ) {
@@ -157,6 +157,9 @@ namespace Gaudi::Accumulators {
   /// small class used as InputType for regular Histograms
   template <typename Arithmetic, unsigned int ND, unsigned int NIndex = ND>
   struct HistoInputType : std::array<Arithmetic, ND> {
+    // allow construction from set of values
+    template <class... U>
+    HistoInputType( U&&... u ) : std::array<Arithmetic, ND>{std::forward<U>( u )...} {}
     // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
     using ValueType = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
@@ -187,7 +190,7 @@ namespace Gaudi::Accumulators {
       int index = std::floor( ( value - axis[0].minValue ) * axis[0].ratio ) + 1;
       return index < 0 ? 0 : ( (unsigned int)index > axis[0].nBins ? axis[0].nBins + 1 : (unsigned int)index );
     }
-    Arithmetic& operator[]( int index ) { return value; }
+    Arithmetic& operator[]( int ) { return value; }
                 operator Arithmetic() const { return value; }
     auto        forInternalCounter() { return value; }
 
