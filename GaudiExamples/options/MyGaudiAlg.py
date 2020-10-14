@@ -19,9 +19,12 @@ from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
 mygalg = MyGaudiAlgorithm('MyGaudiAlg', OutputLevel=DEBUG)
+#mygalg = MyGaudiAlgorithm('MyGaudiAlg', OutputLevel=DEBUG,MyOtherHandleArray=[])
 mygalg.PrivToolHandle.String = "Is a private tool"
 
 print(mygalg)
+
+print(mygalg.MyOtherHandleArray)
 
 mygalg.tracks.Path = 'BestTracks/Tracks'
 mygalg.hits.Path = 'Rec/Hits'

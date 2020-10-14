@@ -73,6 +73,7 @@ private:
   PublicToolHandleArray<IMyTool> m_tha{this,
                                        "MyPublicToolHandleArrayProperty",
                                        {"MyTool/AnotherConstGenericToolHandle", "MyTool/AnotherInstanceOfMyTool"}};
+  PublicToolHandleArray<IMyTool> m_oth{this, "MyOtherHandleArray", {}};
 
   DataObjectReadHandle<DataObject> m_tracks{this, "tracks", "/Event/Rec/Tracks", "the tracks"};
   DataObjectReadHandle<DataObject> m_hits{this, "hits", "/Event/Rec/Hits", "the hits"};
