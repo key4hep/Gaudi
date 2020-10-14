@@ -266,6 +266,13 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                 if not typeAndName:
                     return None
                 # Find corresponding default configurable of private handles
+                # (make sure the name used to instantiate the private tool
+                # includes the name of the owner, see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/141)
+                if '/' in typeAndName:
+                    typeAndName = typeAndName.replace(
+                        '/', '/{}.'.format(obj.name()), 1)
+                else:
+                    typeAndName = "{0}/{1}.{0}".format(typeAndName, obj.name())
                 try:
                     conf = self.getDefaultConfigurable(
                         typeAndName, self.fullPropertyName(obj))
