@@ -8,13 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_RENOUNCETOOLINPUTSVISITOR
-#define GAUDIKERNEL_RENOUNCETOOLINPUTSVISITOR 1
-
+#pragma once
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/ToolVisitor.h"
 #include <functional>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #ifndef USAGE_IS_THREAD_SAFE
@@ -25,42 +24,40 @@ class IAlgTool;
 
 /** Helper class to be used in conjunction with the recursive tool visitor to renounce certain inputs.
  */
-class RenounceToolInputsVisitor : public ToolVisitor::IVisitor {
+class RenounceToolInputsVisitor {
 public:
   /** Helper class interface to optionally log renounce operations.
    */
-  class ILogger {
-  public:
-    virtual ~ILogger() {}
-    virtual void renounce( const std::string& tool_name, const std::string& key ) = 0;
+  struct ILogger {
+    virtual ~ILogger()                                                        = default;
+    virtual void renounce( std::string_view tool_name, std::string_view key ) = 0;
   };
 
   /** A do-nothing helper class which implements the logger interface.
    */
-  class NoLogger : public ILogger {
-  public:
-    virtual void renounce( const std::string&, const std::string& ) override {}
+  struct NoLogger : ILogger {
+    void renounce( std::string_view, std::string_view ) override {}
   };
 
-  class Logger : public ILogger {
-  public:
-    using Functor = std::function<void( const std::string&, const std::string& )>;
-    Logger( Functor&& func ) : m_func( std::move( func ) ) {}
-    virtual void renounce( const std::string& tool_name, const std::string& key ) override { m_func( tool_name, key ); }
+  class Logger final : public ILogger {
+    std::function<void( std::string_view, std::string_view )> m_func;
 
-  private:
-    Functor m_func;
+  public:
+    template <typename F,
+              typename = std::enable_if_t<std::is_invocable_r_v<void, F, std::string_view, std::string_view>>>
+    Logger( F func ) : m_func( std::move( func ) ) {}
+    void renounce( std::string_view tool_name, std::string_view key ) override { m_func( tool_name, key ); }
   };
   /** @brief Create a logger from a function.
    * usage:
    * @verbatim
-   * auto logger=RenounceToolInputsVisitor::createLogger( [this]( const std::string& tool_name, const std::string& key )
+   * auto logger=RenounceToolInputsVisitor::createLogger( [this]( std::string_view tool_name, std::string_view key )
    * { this->msg(MSG::INFO) << " Renounce " << tool_name << " . " << key << endmsg;
    *                                                       });
    * @endverbatim
    */
-  static Logger createLogger( std::function<void( const std::string&, const std::string& )>&& func ) {
-    return Logger( std::move( func ) );
+  static Logger createLogger( std::function<void( std::string_view, std::string_view )> func ) {
+    return Logger{std::move( func )};
   }
 
   /** construct the renounce visitor helper object
@@ -69,12 +66,12 @@ public:
    * By default this renounce visitor will renounce inputs with keys found in the inputs_names list, and it operates
    * silently.
    */
-  RenounceToolInputsVisitor( std::vector<DataObjID>&& input_keys, ILogger& logger = s_noLogger )
+  RenounceToolInputsVisitor( std::vector<DataObjID> input_keys, ILogger& logger = s_noLogger )
       : m_renounceKeys( std::move( input_keys ) )
       , m_logger( &logger ) // @TODO possible source of use after delete
   {}
 
-  virtual void visit( IAlgTool* alg_tool ) override;
+  void operator()( IAlgTool* );
 
 private:
   std::vector<DataObjID> m_renounceKeys;
@@ -82,4 +79,3 @@ private:
 
   static NoLogger s_noLogger USAGE_IS_THREAD_SAFE;
 };
-#endif

@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDITESTING_GAUDIENV
-#define GAUDITESTING_GAUDIENV 1
+#pragma once
+#include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -64,4 +64,3 @@ namespace GaudiTesting {
     SmartIF<IToolSvc>    m_toolSvc;
   };
 } // namespace GaudiTesting
-#endif
