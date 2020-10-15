@@ -63,18 +63,21 @@ public:
   }
 
   bool renounceInput( const DataObjID& id ) override {
-    std::vector<Gaudi::DataHandle*> erase_list;
-    for ( Gaudi::DataHandle* handle : m_handles ) {
-      if ( handle->mode() == Gaudi::DataHandle::Reader && handle->fullKey() == id ) { erase_list.push_back( handle ); }
+    bool renounced = false;
+    // TODO: C++20: use std::erase_if
+    for ( auto i = m_handles.begin(), last = m_handles.end(); i != last; ) {
+      if ( ( *i )->mode() == Gaudi::DataHandle::Reader && ( *i )->fullKey() == id ) {
+        i         = m_handles.erase( i );
+        renounced = true;
+      } else {
+        ++i;
+      }
     }
-    for ( Gaudi::DataHandle* erase_handle : erase_list ) { m_handles.erase( erase_handle ); }
-    auto elm = m_inputDataObjs.find( id );
-    if ( elm != m_inputDataObjs.end() ) {
+    if ( auto elm = m_inputDataObjs.find( id ); elm != m_inputDataObjs.end() ) {
       m_inputDataObjs.erase( elm );
-      return true;
-    } else {
-      return !erase_list.empty();
+      renounced = true;
     }
+    return renounced;
   }
 
   const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
@@ -85,7 +88,6 @@ public:
     if ( mode & Gaudi::DataHandle::Writer ) m_outputDataObjs.emplace( id );
   }
 
-private:
 protected:
   /// initializes all handles - called by the sysInitialize method
   /// of any descendant of this
