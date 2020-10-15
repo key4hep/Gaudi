@@ -154,7 +154,7 @@ namespace GaudiTesting {
       return StatusCode::SUCCESS;
     }
     void dumpData( const std::string& pattern ) const {
-      auto dumper = [this, &pattern]( const IAlgTool* tool ) {
+      auto dumper = [&pattern]( const IAlgTool* tool ) {
         const AlgTool* alg_tool = dynamic_cast<const AlgTool*>( tool );
         if ( alg_tool ) {
           for ( Gaudi::DataHandle* handle : alg_tool->inputHandles() ) {
