@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,6 +22,21 @@ using namespace Gaudi::Accumulators;
 
 namespace utf = boost::unit_test;
 namespace tt  = boost::test_tools;
+
+BOOST_AUTO_TEST_CASE( test_basic_counter, *utf::tolerance( 1e-14 ) ) {
+  Counter<atomicity::full> c;
+  BOOST_TEST( c.nEntries() == 0 );
+  BOOST_TEST( ( ++c ).nEntries() == 1 );
+  BOOST_TEST( ( c++ ).nEntries() == 1 );
+  BOOST_TEST( c.nEntries() == 2 );
+
+  c += 10;
+  BOOST_TEST( c.nEntries() == 12 );
+
+  BOOST_TEST( c.toString() == "#=12     " );
+
+  BOOST_TEST( c.value() == c.nEntries() );
+}
 
 BOOST_AUTO_TEST_CASE( test_buffer_moving, *utf::tolerance( 1e-14 ) ) {
   Counter<atomicity::full> c;
