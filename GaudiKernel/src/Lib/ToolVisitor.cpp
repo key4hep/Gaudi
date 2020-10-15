@@ -11,15 +11,17 @@
 #include "GaudiKernel/ToolVisitor.h"
 #include "GaudiKernel/AlgTool.h"
 
-const std::regex ToolVisitor::s_noFilter;
+namespace {
+  void reverseAppend( const std::vector<IAlgTool*>& src, std::vector<IAlgTool*>& dest, const std::regex& reject_filter,
+                      bool use_filter ) {
+    dest.reserve( dest.size() + src.size() );
+    std::copy_if( src.rbegin(), src.rend(), std::back_inserter( dest ), [&]( const auto& i ) {
+      return !use_filter || !std::regex_match( i->name(), reject_filter );
+    } ); // @TODO include type ?
+  }
+} // namespace
 
-void reverseAppend( const std::vector<IAlgTool*>& src, std::vector<IAlgTool*>& dest, const std::regex& reject_filter,
-                    bool use_filter ) {
-  dest.reserve( dest.size() + src.size() );
-  std::copy_if( src.rbegin(), src.rend(), std::back_inserter( dest ), [&]( const auto& i ) {
-    return !use_filter || !std::regex_match( i->name(), reject_filter );
-  } ); // @TODO include type ?
-}
+const std::regex ToolVisitor::s_noFilter{};
 
 void ToolVisitor::recursiveVisit( const std::vector<IAlgTool*>& tools, IVisitor const& visitor,
                                   const std::regex& reject_filter ) {
@@ -29,7 +31,7 @@ void ToolVisitor::recursiveVisit( const std::vector<IAlgTool*>& tools, IVisitor 
   // reverse tool lost to process tools in given order
   reverseAppend( tools, stack, reject_filter, use_filter );
 
-  // keep track of tools which have been visited to prevent infinit loops in case of circular tool dependencies.
+  // keep track of tools which have been visited to prevent infinite loops in case of circular tool dependencies.
   std::set<IAlgTool*> visited;
   while ( !stack.empty() ) {
     auto* a_tool = stack.back();

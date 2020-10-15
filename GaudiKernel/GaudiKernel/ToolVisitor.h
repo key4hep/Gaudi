@@ -25,10 +25,10 @@ class ToolVisitor {
 
 public:
   /** Visit the given tools and their child tools.
-   *  @param tools list of top level tools to be visited
-   * @param visitor a helper class which will be called for each visited tool
-   * @param reject_filter an optional regular expression to filter out tools by name i.e. they and their child tools are
-   * not visited.
+   * @param tools: list of top level tools to be visited
+   * @param visitor: a helper class which will be called for each visited tool
+   * @param reject_filter: an optional regular expression to filter out tools by name i.e. they and their child tools
+   * are not visited.
    *
    * usage:
    * @verbatim
