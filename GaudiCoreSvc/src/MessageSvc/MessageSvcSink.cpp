@@ -117,8 +117,6 @@ namespace {
   template <typename stream>
   stream printCounter( stream& log, const std::string& id, const nlohmann::json& j ) {
     const auto type = j.at( "type" ).get<std::string>();
-    // binomial counters are slightly different ('*' character)
-    const char* formatString = ( type == "counter:BinomialCounter" ) ? " |*{:48}|{} |" : " | {:48}|{} |";
     // for backward compatibility, we need to deal with statentity in a special way
     // this block should be dropped when StatEntities are gone
     if ( type == "statentity" ) {
@@ -127,9 +125,11 @@ namespace {
                         icontains( id, "fltr" ) || icontains( id, "pass" );
       auto nj    = j;
       nj["type"] = isBinomial ? "counter:BinomialCounter" : "counter:StatCounter";
-      return log << fmt::format( isBinomial ? " |*{:48}|{} |" : " | {:48}|{} |", id, nj );
+      return printCounter( log, id, nj );
     }
-    return log << fmt::format( formatString, id, j );
+    // binomial counters are slightly different ('*' character)
+    return log << fmt::format( " |{}{:48}|{} |", ( type == "counter:BinomialCounter" ? '*' : ' ' ),
+                               fmt::format( "\"{}\"", id ), j );
   }
 
 } // namespace
