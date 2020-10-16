@@ -7,11 +7,56 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+Here is a summary of the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r1...master).
+
 ### Changed
 
 ### Added
 
 ### Fixed
+
+
+## [v34r1][] - 2020-10-16
+This is mostly a bugfix release meant as a checkpoint before the tag of [v35r0][]
+(which will introduce the refactoring of the CMake configuration, gaudi/Gaudi!986, gaudi/Gaudi!922).
+
+We anyway have some important changes:
+- update of physics constants to match the current release of CLHEP (gaudi/Gaudi!1101)
+- a new way of dealing with monitorable quantities like counters and histograms (gaudi/Gaudi!1112, gaudi/Gaudi!1113, gaudi/Gaudi!1129)
+- `DataObjectHandleProperty` renamed to `DataHandleProperty` (gaudi/Gaudi!1091)
+- allow services to *autoretrieve* tool handles (gaudi/Gaudi!1124)
+- new helper class to recursively renounce inputs from all tools of an algorithm or tool (gaudi/Gaudi!1118, gaudi/Gaudi!1130, gaudi/Gaudi!1135)
+
+Here is a summary of the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r0...v34r1).
+
+### Changed
+- Autoretrieve `AlgTools` in `Services`, check for data deps (gaudi/Gaudi!1124)
+- Change `DataObjectHandleProperty` to `DataHandleProperty` (gaudi/Gaudi!1091)
+- Update units and constants (gaudi/Gaudi!1101)
+- Deprecate `put` with a plain pointer as argument (gaudi/Gaudi!1086)
+
+### Added
+- Add helper class to renounce recursively inputs from all tools of an algorithm or tool (gaudi/Gaudi!1118, gaudi/Gaudi!1130, gaudi/Gaudi!1135)
+- New monitoring facility for counters and histograms (gaudi/Gaudi!1112, gaudi/Gaudi!1113, gaudi/Gaudi!1129)
+- Messages: Refine source field truncation (gaudi/Gaudi!1125)
+- DataObjID: Add accessor for class name (gaudi/Gaudi!1126)
+
+### Fixed
+- Fixes for new ROOT/cppyy (gaudi/Gaudi!1116)
+- Resolve "Use of (private) `ToolHandles` may trigger the configuration of spurious public tools" (#141, !1131)
+- Fixes for clang builds (gaudi/Gaudi!1121)
+- Add test reference files for AVX2/AVX512 builds (gaudi/Gaudi!1122)
+- Avoid output file conflict in `MetaDataSvc` test (gaudi/Gaudi!1123)
+- Use Boost filesystem instead of std::fs with clang 10 (gaudi/Gaudi!1120)
+- Tweak leak sanitizer suppressions for Cling, XrootD and TStreamerInfo with LCG97a (gaudi/Gaudi!1104)
+- IUpdateManagerSvc: do not specify unnecessary template arguments (gaudi/Gaudi!1090)
+- Update some python examples to python 3 syntax (gaudi/Gaudi!1088)
+- Test for the scheduler hang on alg exceptions (gaudi/Gaudi!979, gaudi/Gaudi!1078, gaudi/Gaudi!1107)
+- Check build warnings in GitLab CI  (gaudi/Gaudi!1109)
+- Remove deprecation warnings on old `IJobOptionsSvc` (gaudi/Gaudi!1114)
+- Explicitly flush standard output in `MessageSvc::finalize()` (gaudi/Gaudi!1117)
+- Use `Gaudi/Property.h` instead of `GaudiKernel/Property` (gaudi/Gaudi!1105)
+- Algorithm state profiling (gaudi/Gaudi!1072)
 
 ## [v34r0][] - 2020-08-04
 This is a release meant to introduce a major rewrite of the *Job Options Service*, as described in the merge request gaudi/Gaudi!577, plus, of course, some fixes.
@@ -546,18 +591,20 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r0...master
-[v34r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r2...v34r0
-[v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r1...v33r2
-[v33r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v33r0...v33r1
-[v33r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r2...v33r0
-[v32r2]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r1...v32r2
-[v32r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...v32r1
-[v32r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...v32r0
-[v31r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r5...v31r0
-[v30r5]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r4...v30r5
-[v30r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r3...v30r4
-[v30r3]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r2...v30r3
-[v29r5]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r4...v29r5
-[v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r3...v29r4
-[v28r2p1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v28r2...v28r2p1
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r1...master
+[v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/milestones/31
+[v34r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r1
+[v34r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r0
+[v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v33r2
+[v33r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v33r1
+[v33r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v33r0
+[v32r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v32r2
+[v32r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v32r1
+[v32r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v32r0
+[v31r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v31r0
+[v30r5]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v30r5
+[v30r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v30r4
+[v30r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v30r3
+[v29r5]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v29r5
+[v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v29r4
+[v28r2p1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v28r2p1
