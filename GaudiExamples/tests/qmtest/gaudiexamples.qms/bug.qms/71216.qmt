@@ -23,9 +23,13 @@ app = ApplicationMgr(TopAlg = [NTupleAlgorithm()],
                      HistogramPersistency = "ROOT",
                      EvtSel = "NONE", EvtMax = 5)
 </text></argument>
-<argument name="stderr">
-<text>SysError in &lt;TFile::TFile&gt;: file /random/path/ntest.root can not be opened (No such file or directory)
-SysError in &lt;TFile::TFile&gt;: file /random/path/ntest.root can not be opened (No such file or directory)
+<argument name="validator"><text>
+# ignore stderr lines we expect
+stderr = '\n'.join(
+    l for l in stderr.splitlines()
+    if 'file /random/path/ntest.root can not be opened' not in l
+)
+validateWithReference(stderr=stderr)
 </text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 </extension>

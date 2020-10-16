@@ -140,7 +140,7 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
  Alg='HistoEx1', ID=' 2D histo ' , Histo=Histogram 2D " 2D histo " 20 xbins [0.000000,20.000000], 20 ybins [0.000000,20.000000]
  Alg='HistoEx1', ID=' 3D histo ' , Histo= ID= 3D histo                  " 3D histo "                                     Ents/All=20000/20000<X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723,<Z>/sZ=4.5/2.8723
  Alg='HistoEx2', ID=' x vs y    ' , Histo=Histogram 2D " x vs y    " 50 xbins [-2.000000,2.000000], 50 ybins [-4.000000,4.000000]
- Alg='HistoEx2', ID=' x vs y    (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x143b9848>
+ Alg='HistoEx2', ID=' x vs y    (profile)' , Histo=<cppyy.gbl.AIDA.IProfile1D object at 0x143b9848>
 
  Histo TES   : "HistoEx2/ x vs y    (profile)"
  Histo Title : " x vs y    (profile)"
@@ -194,7 +194,7 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 
 
  Alg='HistoEx2', ID=' x vs y+3x ' , Histo=Histogram 2D " x vs y+3x " 50 xbins [-2.000000,2.000000], 50 ybins [-4.000000,4.000000]
- Alg='HistoEx2', ID=' x vs y+3x (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x14314a68>
+ Alg='HistoEx2', ID=' x vs y+3x (profile)' , Histo=<cppyy.gbl.AIDA.IProfile1D object at 0x14314a68>
 
  Histo TES   : "HistoEx2/ x vs y+3x (profile)"
  Histo Title : " x vs y+3x (profile)"
@@ -249,7 +249,7 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 
 
  Alg='HistoEx2', ID=' x vs y-3x ' , Histo=Histogram 2D " x vs y-3x " 50 xbins [-2.000000,2.000000], 50 ybins [-4.000000,4.000000]
- Alg='HistoEx2', ID=' x vs y-3x (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x14316b98>
+ Alg='HistoEx2', ID=' x vs y-3x (profile)' , Histo=<cppyy.gbl.AIDA.IProfile1D object at 0x14316b98>
 
  Histo TES   : "HistoEx2/ x vs y-3x (profile)"
  Histo Title : " x vs y-3x (profile)"
