@@ -16,14 +16,13 @@ C.AuditorSvc('AuditorSvc', Auditors=['ChronoAuditor'])
 # algorithms
 algorithms = [
     C.GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=3),
-    C.Gaudi.Examples.R7.GaudiHistoAlgorithm('SimpleR7Histos', OutputLevel=2),
-    C.Gaudi.Examples.Boost.GaudiHistoAlgorithm(
-        'SimpleBoostHistos', OutputLevel=2),
+    C.Gaudi.Examples.Counter.GaudiHistoAlgorithm(
+        'SimpleCounterHistos', OutputLevel=2),
 ]
 
 app = C.ApplicationMgr(
     'ApplicationMgr',
-    TopAlg=['SimpleHistos', 'SimpleR7Histos', 'SimpleBoostHistos'],
+    TopAlg=['SimpleHistos', 'SimpleCounterHistos'],
     EvtMax=50000,
     EvtSel='NONE',
 )

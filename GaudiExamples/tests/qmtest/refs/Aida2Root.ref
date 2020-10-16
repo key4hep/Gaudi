@@ -1,38 +1,38 @@
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Histograms.opts
+JobOptionsSvc        INFO # =======> /home/sponce/dev4/Gaudi/GaudiExamples/options/Histograms.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
-JobOptionsSvc        INFO # (21,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::R7::GaudiHistoAlgorithm/SimpleR7Histos"]
-JobOptionsSvc        INFO # (22,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::Boost::GaudiHistoAlgorithm/SimpleBoostHistos"]
-JobOptionsSvc        INFO # (24,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::HistoProps/Histos2"]
-JobOptionsSvc        INFO # (25,1): SimpleHistos.HistoPrint = 1
-JobOptionsSvc        INFO # (26,1): SimpleHistos.OutputLevel = 2
-JobOptionsSvc        INFO # (29,1): Histos2.Histo2 = ["Title", -5, 5, 200]
-JobOptionsSvc        INFO # (30,1): Histos2.Histo2 = ["Title", -5, 5]
-JobOptionsSvc        INFO # (31,1): Histos2.Histo2 = [-5, 5]
-JobOptionsSvc        INFO # (32,1): Histos2.Histo2 = [-5, 5, "Title"]
-JobOptionsSvc        INFO # (33,1): Histos2.Histo2 = [-5, 5, "Title", 200]
-JobOptionsSvc        INFO # (34,1): Histos2.Histo2 = [-5, 5, 200, "Title"]
-JobOptionsSvc        INFO # (35,1): Histos2.Histo2 = [-5, 5, 200]
-JobOptionsSvc        INFO # (41,1): ApplicationMgr.EvtMax = 50000
-JobOptionsSvc        INFO # (42,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO # (49,1): ApplicationMgr.HistogramPersistency = "ROOT"
-JobOptionsSvc        INFO # (50,1): RootHistSvc.OutputFile = "histo-opts.root"
-JobOptionsSvc        INFO # (61,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
-JobOptionsSvc        INFO # (65,1): HistogramDataSvc.OutputLevel = 2
-JobOptionsSvc        INFO # =======> /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Aida2Root.opts
+JobOptionsSvc        INFO # (22,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::HistoProps/Histos2"]
+JobOptionsSvc        INFO # (23,1): SimpleHistos.HistoPrint = 1
+JobOptionsSvc        INFO # (24,1): SimpleHistos.OutputLevel = 2
+JobOptionsSvc        INFO # (27,1): Histos2.Histo2 = ["Title", -5, 5, 200]
+JobOptionsSvc        INFO # (28,1): Histos2.Histo2 = ["Title", -5, 5]
+JobOptionsSvc        INFO # (29,1): Histos2.Histo2 = [-5, 5]
+JobOptionsSvc        INFO # (30,1): Histos2.Histo2 = [-5, 5, "Title"]
+JobOptionsSvc        INFO # (31,1): Histos2.Histo2 = [-5, 5, "Title", 200]
+JobOptionsSvc        INFO # (32,1): Histos2.Histo2 = [-5, 5, 200, "Title"]
+JobOptionsSvc        INFO # (33,1): Histos2.Histo2 = [-5, 5, 200]
+JobOptionsSvc        INFO # (39,1): ApplicationMgr.EvtMax = 50000
+JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO # (47,1): ApplicationMgr.HistogramPersistency = "ROOT"
+JobOptionsSvc        INFO # (48,1): ApplicationMgr.ExtSvc = ["Gaudi::Monitoring::MessageSvcSink"]
+JobOptionsSvc        INFO # (49,1): RootHistSvc.OutputFile = "histo-opts.root"
+JobOptionsSvc        INFO # (60,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
+JobOptionsSvc        INFO # (64,1): HistogramDataSvc.OutputLevel = 2
+JobOptionsSvc        INFO # =======> /home/sponce/dev4/Gaudi/GaudiExamples/options/Aida2Root.opts
 JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
-JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/workspace/Gaudi/GaudiExamples/options/Aida2Root.opts
+JobOptionsSvc        INFO # (4,1): ApplicationMgr.ExtSvc += ["Gaudi::Monitoring::MessageSvcSink"]
+JobOptionsSvc        INFO Job options successfully read in from /home/sponce/dev4/Gaudi/GaudiExamples/options/Aida2Root.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r2)
-                                          running on marco-XPS-13 on Fri Nov 22 19:10:36 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r0)
+                                          running on lblhcbpr11.cern.ch on Mon Sep 28 08:58:43 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
 SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 50
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 49
 SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
@@ -92,7 +92,7 @@ SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 
 SimpleHistos        DEBUG input handles: 0
 SimpleHistos        DEBUG output handles: 0
 SimpleHistos        DEBUG Data Deps for SimpleHistos
-Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 52
+Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 51
 Histos2           SUCCESS Property ['Name': Value] =  'Histo2':('',-5.00000,5.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'Histo1':('Histogram1',-3.00000,3.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
@@ -144,7 +144,7 @@ Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
 Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
 Histos2           SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
 Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
-Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 55
+Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 54
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs2D':[ 'SimpleHistos/321' , 'SimpleHistos/2dprof' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs1D':[ 'SimpleHistos/Expo V Gauss 1DProf' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Histos3D':[ 'SimpleHistos/3D plot AutoID' , 'SimpleHistos/3d' ]
@@ -267,195 +267,173 @@ SimpleHistos        DEBUG Booked 1D Histogram : ID='1111' Path=SimpleHistos Titl
 SimpleHistos        DEBUG Monitoring histogram 'test1' desc = 'Forced Alpha ID time test'
 SimpleHistos        DEBUG Booked 1D Histogram : ID='test1' Path=SimpleHistos Title='Forced Alpha ID time test'
 SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please be patient !
-SimpleR7Histos    SUCCESS Filling Histograms...... Please be patient !
-SimpleBoostHistos SUCCESS Filling Histograms...... Please be patient !
 Histos2           WARNING Gaudi::Examples::HistoProps:: Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID
 HistogramDataSvc    DEBUG  Redefine the parameters for the histogram 'Histos2/2' to be ('TEST2',-100,200,100)
-SimpleBoostHistos    INFO Number of counters : 10
- |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
- | "Binom V poisson"                               H     50000 |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Expo V poisson"                                H     50000 |
- | "Exponential"                                   H     50000 |
- | "Exponential V Flat"                            H     50000 |
- | "Gaussian V Flat"                               H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
-SimpleR7Histos       INFO Number of counters : 6
- |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
- | "Binominal"                                     H     50000 |
- | "Breit"                                         H     50000 |
- | "Exponential"                                   H     50000 |
- | "Gaussian mean=0, sigma=1"                      H     50000 |
- | "Poisson"                                       H     50000 |
- | "calls"                                         |     50000 |
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS 1D histograms in directory "SimpleHistos" : 10
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
- | 101                       | "Exponential"                                 |  50000  |    0.96518 | 0.90939    |     1.5053 |     2.2808 |
- | 102                       | "Breit"                                       |  50000  | -0.0023134 | 1.2047     |  -0.024043 |     3.6151 |
- | 1111                      | "Forced Numeric ID time test"                 |  50000  | -0.0031069 | 0.99474    |  0.0057083 |   0.010186 |
- | AutoID time test          | "AutoID time test"                            |  50000  | -0.0031069 | 0.99474    |  0.0057083 |   0.010186 |
- | Gaussian mean=0, sigma=1  | "Gaussian mean=0, sigma=1"                    |  50000  | -0.0031069 | 0.99474    |  0.0057083 |   0.010186 |
- | poisson                   | "Poisson"                                     |  50000  |     1.8071 | 1.1787     |    0.33767 |   -0.75987 |
- | subdir1/bino              | "Binominal"                                   |  50000  |     1.9169 | 1.1136     |    0.24051 |   -0.68045 |
- | subdir2/bino              | "Binominal"                                   |  50000  |     1.9169 | 1.1136     |    0.24051 |   -0.68045 |
- | test1                     | "Forced Alpha ID time test"                   |  50000  | -0.0031069 | 0.99474    |  0.0057083 |   0.010186 |
- | varBinning/x              | "1D Variable Binning"                         |  50000  |   -0.01175 | 2.8801     |   0.012929 |    -1.3182 |
+ | 101                       | "Exponential"                                 |  50000  |    0.96914 | 0.90535    |     1.4869 |     2.2322 |
+ | 102                       | "Breit"                                       |  50000  |  0.0068835 | 1.1951     |   -0.01431 |     3.6439 |
+ | 1111                      | "Forced Numeric ID time test"                 |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | AutoID time test          | "AutoID time test"                            |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | Gaussian mean=0, sigma=1  | "Gaussian mean=0, sigma=1"                    |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | poisson                   | "Poisson"                                     |  50000  |     1.8073 | 1.1765     |    0.32643 |   -0.75799 |
+ | subdir1/bino              | "Binominal"                                   |  50000  |     1.9061 | 1.1128     |    0.25726 |   -0.66968 |
+ | subdir2/bino              | "Binominal"                                   |  50000  |     1.9061 | 1.1128     |    0.25726 |   -0.66968 |
+ | test1                     | "Forced Alpha ID time test"                   |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | varBinning/x              | "1D Variable Binning"                         |  50000  |  -0.028452 | 2.8834     |   0.015929 |    -1.3136 |
 SimpleHistos      SUCCESS 2D histograms in directory "SimpleHistos" : 5
- ID=Exponential V Flat         "Exponential V Flat"                             Ents/All=49806/50000<X>/sX=-0.012664/2.8792,<Y>/sY=0.96613/0.91231
- ID=Gaussian V Flat            "Gaussian V Flat"                                Ents/All=50000/50000<X>/sX=-0.01175/2.8801,<Y>/sY=-0.0061114/0.99824
- ID=binVpois                   "Binom V poisson"                                Ents/All=49940/50000<X>/sX=1.8067/1.1789,<Y>/sY=1.918/1.113
- ID=expoVpois                  "Expo V poisson"                                 Ents/All=49979/50000<X>/sX=1.8069/1.1784,<Y>/sY=0.96532/0.90952
- ID=varBinning/y               "2D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.01175/2.8801,<Y>/sY=-0.0061114/0.99824
+ ID=Exponential V Flat         "Exponential V Flat"                             Ents/All=49848/50000<X>/sX=-0.025596/2.8825,<Y>/sY=0.97604/0.91269
+ ID=Gaussian V Flat            "Gaussian V Flat"                                Ents/All=50000/50000<X>/sX=-0.028452/2.8834,<Y>/sY=-0.0081283/1.0011
+ ID=binVpois                   "Binom V poisson"                                Ents/All=49920/50000<X>/sX=1.8072/1.1764,<Y>/sY=1.9048/1.1125
+ ID=expoVpois                  "Expo V poisson"                                 Ents/All=49978/50000<X>/sX=1.807/1.176,<Y>/sY=0.96904/0.9045
+ ID=varBinning/y               "2D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.028452/2.8834,<Y>/sY=-0.0081283/1.0011
 SimpleHistos      SUCCESS 3D histograms in directory "SimpleHistos" : 3
- ID=3D plot AutoID             "3D plot AutoID"                                 Ents/All=50000/50000<X>/sX=-0.004238/0.99526,<Y>/sY=0.96404/0.90945,<Z>/sZ=-0.0020681/1.2049
- ID=3d                         "3D plot ForcedID"                               Ents/All=50000/50000<X>/sX=-0.004238/0.99526,<Y>/sY=0.96404/0.90945,<Z>/sZ=-0.0020681/1.2049
- ID=varBinning/z               "3D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.012664/2.8792,<Y>/sY=-0.0064149/0.99798,<Z>/sZ=0.96613/0.91231
+ ID=3D plot AutoID             "3D plot AutoID"                                 Ents/All=50000/50000<X>/sX=-0.0096715/1.0012,<Y>/sY=0.97036/0.90558,<Z>/sZ=0.0071234/1.1942
+ ID=3d                         "3D plot ForcedID"                               Ents/All=50000/50000<X>/sX=-0.0096715/1.0012,<Y>/sY=0.97036/0.90558,<Z>/sZ=0.0071234/1.1942
+ ID=varBinning/z               "3D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.025596/2.8825,<Y>/sY=-0.0086423/1.0004,<Z>/sZ=0.97604/0.91269
 SimpleHistos      SUCCESS 1D profile histograms in directory "SimpleHistos" : 9
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
- | Expo V Gauss 1DProf       | "Expo V Gauss 1DProf"                         |  50000  | -0.0031069 | 0.99474    |     2.7047 |     48.574 |
- | Expo V Gauss 1DProf s     | "Expo V Gauss 1DProf s"                       |  50000  | -0.0031069 | 0.99474    |     2.7047 |     48.574 |
- | Gauss V Flat 1DProf       | "Gauss V Flat 1DProf"                         |  50000  |  -0.049884 | 5.7741     |          0 |         -3 |
- | Gauss V Flat 1DProf S     | "Gauss V Flat 1DProf S"                       |  50000  |  -0.049884 | 5.7741     |          0 |         -3 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I"          |  24891  |  -0.035175 | 5.7795     |   0.017822 |    -1.2776 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I  s"       |  24891  |  -0.035175 | 5.7795     |   0.017822 |    -1.2776 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II"         |  25109  |  -0.064465 | 5.7686     |          0 |         -3 |
- | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II s"       |  25109  |  -0.064465 | 5.7686     |          0 |         -3 |
- | varBinning/a              | "1D Profile Variable Binning"                 |  50000  |   -0.01175 | 2.8801     |          0 |         -3 |
+ | Expo V Gauss 1DProf       | "Expo V Gauss 1DProf"                         |  50000  |  -0.009832 | 1.0001     |     1.0944 |     57.826 |
+ | Expo V Gauss 1DProf s     | "Expo V Gauss 1DProf s"                       |  50000  |  -0.009832 | 1.0001     |     1.0944 |     57.826 |
+ | Gauss V Flat 1DProf       | "Gauss V Flat 1DProf"                         |  50000  |  -0.013795 | 5.7724     |          0 |         -3 |
+ | Gauss V Flat 1DProf S     | "Gauss V Flat 1DProf S"                       |  50000  |  -0.013795 | 5.7724     |          0 |         -3 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I"          |  24807  |   0.026854 | 5.7561     | -0.0078314 |    -1.2358 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I  s"       |  24807  |   0.026854 | 5.7561     | -0.0078314 |    -1.2358 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II"         |  25193  |  -0.053822 | 5.7881     |          0 |         -3 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II s"       |  25193  |  -0.053822 | 5.7881     |          0 |         -3 |
+ | varBinning/a              | "1D Profile Variable Binning"                 |  50000  |  -0.028452 | 2.8834     |          0 |         -3 |
 SimpleHistos      SUCCESS 2D profile histograms in directory "SimpleHistos" : 3
- ID=2dprof                     "2D profile1"                                    Ents/All=50000/50000<X>/sX=-0.0030763/0.99475,<Y>/sY=0.96518/0.90939
- ID=321                        "2D profile2"                                    Ents/All=50000/50000<X>/sX=-0.0030763/0.99475,<Y>/sY=0.96518/0.90939
- ID=varBinning/b               "2D Profile Variable Binning"                    Ents/All=50000/50000<X>/sX=-0.01175/2.8801,<Y>/sY=-0.0061114/0.99824
+ ID=2dprof                     "2D profile1"                                    Ents/All=50000/50000<X>/sX=-0.0098803/0.9999,<Y>/sY=0.96914/0.90535
+ ID=321                        "2D profile2"                                    Ents/All=50000/50000<X>/sX=-0.0098803/0.9999,<Y>/sY=0.96914/0.90535
+ ID=varBinning/b               "2D Profile Variable Binning"                    Ents/All=50000/50000<X>/sX=-0.028452/2.8834,<Y>/sY=-0.0081283/1.0011
 SimpleHistos        DEBUG Finalize base class GaudiAlgorithm
 SimpleHistos        DEBUG Tools to release :
 SimpleHistos        DEBUG Services to release :
 Histos2           SUCCESS Booked 2 Histogram(s) : 1D=2
 Histos2           SUCCESS 1D histograms in directory "Histos2" : 2
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
- | 2                         | "TEST2"                                       |  50000  | -0.0027297 | 0.99872    |   0.032975 |  -0.082321 |
- | Histogram1                | "Histogram1"                                  |  50000  |  -0.007594 | 0.98477    | -0.0050642 |   -0.17579 |
+ | 2                         | "TEST2"                                       |  50000  | -0.0023399 | 1.0037     |  0.0098579 |  -0.038565 |
+ | Histogram1                | "Histogram1"                                  |  50000  | -0.0011467 | 0.98662    |  0.0022561 |   -0.15642 |
 Histos2           SUCCESS Exceptions/Errors/Warnings/Infos Statistics : 0/0/1/0
 Histos2           SUCCESS  #WARNINGS   = 1        Message = 'Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID'
 Aida2Root         SUCCESS Get the native ROOT representation of histograms!
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/Gaussian mean=0, sigma=1':
 TH1.Print Name  = Gaussian mean=0, sigma=1, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |        0        |
-Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |        0        |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |  8.0318767e-06  |
-Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |  8.3266727e-17  |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-06  |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.8735014e-16  |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-07  |
-Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |  8.8817842e-16  |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-16  |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/101':
-TH1.Print Name  = Exponential, Entries= 50000, Total sum= 49658
+TH1.Print Name  = Exponential, Entries= 50000, Total sum= 49656
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |      0.96517991 |  0.96517991     |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0040808808 |  0.0040808808   |        0        |
-Aida2Root            INFO  | 'rms'          |      0.90938655 |  0.90938655     |        0        |
-Aida2Root            INFO  | 'rmsErr'       |    0.0042216943 |  0.0028856185   |   0.0013360758  |
-Aida2Root            INFO  | 'skewness'     |        1.505338 |  1.505338       |        0        |
-Aida2Root            INFO  | 'skewnessErr'  |     0.010991445 |  0.010992109    | -6.6404201e-07  |
-Aida2Root            INFO  | 'kurtosis'     |       2.2807676 |  2.2807676      |  8.8817842e-16  |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.021980897 |  0.021984217    | -3.3200418e-06  |
+Aida2Root            INFO  | 'mean'         |       0.9691422 |  0.9691422      |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0040628269 |  0.0040628269   |        0        |
+Aida2Root            INFO  | 'rms'          |      0.90534515 |  0.90534515     |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0041791285 |  0.0028728524   |   0.0013062761  |
+Aida2Root            INFO  | 'skewness'     |       1.4868621 |  1.4868621      |   2.220446e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010991666 |  0.01099233     | -6.6408212e-07  |
+Aida2Root            INFO  | 'kurtosis'     |       2.2322439 |  2.2322439      |        0        |
+Aida2Root            INFO  | 'kurtosisErr'  |      0.02198134 |  0.02198466     | -3.3202423e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/102':
-TH1.Print Name  = Breit, Entries= 50000, Total sum= 46887
+TH1.Print Name  = Breit, Entries= 50000, Total sum= 46912
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0023133771 | -0.0023133771   |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0055634417 |  0.0055634417   |        0        |
-Aida2Root            INFO  | 'rms'          |       1.2046746 |  1.2046746      |        0        |
-Aida2Root            INFO  | 'rmsErr'       |     0.006591625 |  0.0039339474   |   0.0026576776  |
-Aida2Root            INFO  | 'skewness'     |    -0.024043048 | -0.024043048    |   4.510281e-16  |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011311537 |  0.011312261    | -7.2376851e-07  |
-Aida2Root            INFO  | 'kurtosis'     |       3.6150624 |  3.6150624      | -1.7763568e-15  |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.022620903 |  0.022624521    | -3.6186483e-06  |
+Aida2Root            INFO  | 'mean'         |    0.0068835323 |  0.0068835323   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0055176857 |  0.0055176857   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.1950854 |  1.1950854      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |     0.006554158 |  0.003901593    |   0.002652565   |
+Aida2Root            INFO  | 'skewness'     |     -0.01430972 | -0.01430972     |  2.4980018e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011308523 |  0.011309246    | -7.2319005e-07  |
+Aida2Root            INFO  | 'kurtosis'     |       3.6438647 |  3.6438647      |        0        |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022614876 |  0.022618492    | -3.6157563e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/1111':
 TH1.Print Name  = Forced Numeric ID time test, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |        0        |
-Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |        0        |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |  8.0318767e-06  |
-Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |  8.3266727e-17  |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-06  |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.8735014e-16  |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-07  |
-Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |  8.8817842e-16  |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-16  |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/test1':
 TH1.Print Name  = Forced Alpha ID time test, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0031069047 | -0.0031069047   |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0044486326 |  0.0044486326   |        0        |
-Aida2Root            INFO  | 'rms'          |       0.9947445 |  0.9947445      |        0        |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031536902 |  0.0031456583   |  8.0318767e-06  |
-Aida2Root            INFO  | 'skewness'     |     0.005708315 |  0.005708315    |  8.3266727e-17  |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-06  |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.8735014e-16  |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-07  |
-Aida2Root            INFO  | 'kurtosis'     |     0.010186324 |  0.010186324    |  8.8817842e-16  |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-16  |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir2/bino':
-TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48609
+TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48615
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |       1.9168672 |  1.9168672      |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0050508742 |  0.0050508742   |        0        |
-Aida2Root            INFO  | 'rms'          |       1.1135889 |  1.1135889      |        0        |
-Aida2Root            INFO  | 'rmsErr'       |    0.0029010613 |  0.0035715074   | -0.00067044612  |
-Aida2Root            INFO  | 'skewness'     |       0.2405079 |  0.2405079      |  1.3877788e-16  |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011109397 |  0.011110082    | -6.8565237e-07  |
-Aida2Root            INFO  | 'kurtosis'     |     -0.68044605 | -0.68044605     | -1.3322676e-15  |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.022216737 |  0.022220165    | -3.4280844e-06  |
+Aida2Root            INFO  | 'mean'         |       1.9060989 |  1.9060989      |        0        |
+Aida2Root            INFO  | 'meanErr'      |     0.005047036 |  0.005047036    |        0        |
+Aida2Root            INFO  | 'rms'          |       1.1128114 |  1.1128114      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0029106545 |  0.0035687934   | -0.00065813892  |
+Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |   2.220446e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011108711 |  0.011109397    | -6.8552544e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     | -4.4408921e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022215366 |  0.022218794    | -3.4274498e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir1/bino':
-TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48609
+TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48615
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |       1.9168672 |  1.9168672      |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0050508742 |  0.0050508742   |        0        |
-Aida2Root            INFO  | 'rms'          |       1.1135889 |  1.1135889      |        0        |
-Aida2Root            INFO  | 'rmsErr'       |    0.0029010613 |  0.0035715074   | -0.00067044612  |
-Aida2Root            INFO  | 'skewness'     |       0.2405079 |  0.2405079      |  1.3877788e-16  |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011109397 |  0.011110082    | -6.8565237e-07  |
-Aida2Root            INFO  | 'kurtosis'     |     -0.68044605 | -0.68044605     | -1.3322676e-15  |
-Aida2Root            INFO  | 'kurtosisErr'  |     0.022216737 |  0.022220165    | -3.4280844e-06  |
+Aida2Root            INFO  | 'mean'         |       1.9060989 |  1.9060989      |        0        |
+Aida2Root            INFO  | 'meanErr'      |     0.005047036 |  0.005047036    |        0        |
+Aida2Root            INFO  | 'rms'          |       1.1128114 |  1.1128114      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0029106545 |  0.0035687934   | -0.00065813892  |
+Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |   2.220446e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011108711 |  0.011109397    | -6.8552544e-07  |
+Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     | -4.4408921e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022215366 |  0.022218794    | -3.4274498e-06  |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/poisson':
-TH1.Print Name  = Poisson, Entries= 50000, Total sum= 47432
+TH1.Print Name  = Poisson, Entries= 50000, Total sum= 47512
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |       1.8071344 |  1.8071344      |        0        |
-Aida2Root            INFO  | 'meanErr'      |    0.0054122364 |  0.0054122364   |        0        |
-Aida2Root            INFO  | 'rms'          |        1.178725 |  1.178725       |        0        |
-Aida2Root            INFO  | 'rmsErr'       |    0.0030136138 |  0.0038270291   | -0.00081341524  |
-Aida2Root            INFO  | 'skewness'     |      0.33766693 |  0.33766693     |  4.4408921e-16  |
-Aida2Root            INFO  | 'skewnessErr'  |     0.011246372 |  0.011247083    | -7.1133047e-07  |
-Aida2Root            INFO  | 'kurtosis'     |     -0.75987087 | -0.75987087     | -4.4408921e-16  |
-Aida2Root            INFO  | 'kurtosisErr'  |      0.02249061 |  0.022494166    | -3.5564637e-06  |
+Aida2Root            INFO  | 'mean'         |       1.8073329 |  1.8073329      |        0        |
+Aida2Root            INFO  | 'meanErr'      |    0.0053975724 |  0.0053975724   |        0        |
+Aida2Root            INFO  | 'rms'          |       1.1765222 |  1.1765222      |        0        |
+Aida2Root            INFO  | 'rmsErr'       |    0.0030077251 |  0.00381666     | -0.00080893493  |
+Aida2Root            INFO  | 'skewness'     |      0.32643021 |  0.32643021     |  3.3306691e-16  |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011236901 |  0.01123761     | -7.0953469e-07  |
+Aida2Root            INFO  | 'kurtosis'     |      -0.7579914 | -0.7579914      |  4.4408921e-16  |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022471673 |  0.022475221    | -3.5474855e-06  |
 Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/Gaussian V Flat':
-TH1.Print Name  = Gaussian V Flat, Entries= 50000, Total sum= 25028
+TH1.Print Name  = Gaussian V Flat, Entries= 50000, Total sum= 24949
 Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/Exponential V Flat':
-TH1.Print Name  = Exponential V Flat, Entries= 50000, Total sum= 24880
+TH1.Print Name  = Exponential V Flat, Entries= 50000, Total sum= 24757
 Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/binVpois':
-TH1.Print Name  = Binom V poisson, Entries= 50000, Total sum= 46101
+TH1.Print Name  = Binom V poisson, Entries= 50000, Total sum= 46207
 Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/expoVpois':
-TH1.Print Name  = Expo V poisson, Entries= 50000, Total sum= 47111
+TH1.Print Name  = Expo V poisson, Entries= 50000, Total sum= 47190
 Aida2Root            INFO The native ROOT printout for 3D-histogram 'SimpleHistos/3D plot AutoID':
-TH1.Print Name  = 3D plot AutoID, Entries= 50000, Total sum= 46563
+TH1.Print Name  = 3D plot AutoID, Entries= 50000, Total sum= 46587
 Aida2Root            INFO The native ROOT printout for 3D-histogram 'SimpleHistos/3d':
-TH1.Print Name  = 3D plot ForcedID, Entries= 50000, Total sum= 46563
+TH1.Print Name  = 3D plot ForcedID, Entries= 50000, Total sum= 46587
 Aida2Root            INFO The native ROOT printout for 1D-profile 'SimpleHistos/Expo V Gauss 1DProf':
-TH1.Print Name  = Expo V Gauss 1DProf, Entries= 50000, Total sum= 39.1261
+TH1.Print Name  = Expo V Gauss 1DProf, Entries= 50000, Total sum= 42.9343
 Aida2Root            INFO The native ROOT printout for 2D-profile 'SimpleHistos/321':
-TH1.Print Name  = 2D profile2, Entries= 50000, Total sum= 2749.35
+TH1.Print Name  = 2D profile2, Entries= 50000, Total sum= 2732.42
 Aida2Root            INFO The native ROOT printout for 2D-profile 'SimpleHistos/2dprof':
-TH1.Print Name  = 2D profile1, Entries= 50000, Total sum= 2749.35
+TH1.Print Name  = 2D profile1, Entries= 50000, Total sum= 2732.42
 EventLoopMgr         INFO Histograms converted successfully according to request.
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DOldStyle           INFO Time User   : Tot=   10 [ms] Ave/Min/Max=0.0002(+-0.0447)/    0/   10 [ms] #=49999
-1DForcedNumericID    INFO Time User   : Tot=   30 [ms] Ave/Min/Max=0.0006(+-0.0775)/    0/   10 [ms] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=   40 [ms] Ave/Min/Max=0.0008(+-0.0894)/    0/   10 [ms] #=49999
-1DAutoID             INFO Time User   : Tot=   50 [ms] Ave/Min/Max=0.001(+-  0.1)/    0/   10 [ms] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 1.22  [s]                                             #=  1
+1DAutoID             INFO Time User   : Tot=   20 [ms] Ave/Min/Max=  0.0004(+-  0.0632)/       0/      10 [ms] #=49999
+1DOldStyle           INFO Time User   : Tot=   10 [ms] Ave/Min/Max=  0.0002(+-  0.0447)/       0/      10 [ms] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=   70 [ms] Ave/Min/Max=  0.0014(+-   0.118)/       0/      10 [ms] #=49999
+1DForcedNumericID    INFO Time User   : Tot=   80 [ms] Ave/Min/Max=  0.0016(+-   0.126)/       0/      10 [ms] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 1.36  [s]  #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :

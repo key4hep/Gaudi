@@ -417,7 +417,7 @@ namespace Gaudi::Accumulators {
    *        + the type of the internal value (typically Arithmetic or std::atomic<Arithmetic>)
    *        + the default value for the internal type
    */
-  template <typename InputType, typename InnerType, atomicity Atomicity = atomicity::full,
+  template <typename InputTypeT, typename InnerType, atomicity Atomicity = atomicity::full,
             typename InputTransform = Identity, typename OutputTransform = Identity,
             typename ValueHandler = Adder<InnerType, Atomicity>>
   class GenericAccumulator {
@@ -425,6 +425,7 @@ namespace Gaudi::Accumulators {
     friend class GenericAccumulator;
 
   public:
+    using InputType             = InputTypeT;
     using OutputType            = std::decay_t<std::result_of_t<OutputTransform( InnerType )>>;
     using InternalType          = InnerType;
     using JSONStringEntriesType = std::string;
@@ -472,17 +473,19 @@ namespace Gaudi::Accumulators {
    * and increase them altogether
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <typename Arithmetic, atomicity Atomicity, template <atomicity, typename> class... Bases>
+  template <typename Arithmetic, atomicity Atomicity, typename InputTypeT = Arithmetic,
+            template <atomicity, typename> class... Bases>
   class AccumulatorSet : public Bases<Atomicity, Arithmetic>... {
   public:
-    using InputType             = Arithmetic;
+    using InputType             = InputTypeT;
     using OutputType            = std::tuple<typename Bases<Atomicity, Arithmetic>::OutputType...>;
     using InternalType          = std::tuple<typename Bases<Atomicity, Arithmetic>::InternalType...>;
     using JSONStringEntriesType = std::tuple<typename Bases<Atomicity, Arithmetic>::JSONStringEntriesType...>;
     constexpr AccumulatorSet()  = default;
     /// constructor of an empty AccumulatorSet, copying the (non existent) config from another GenericAccumulator
     template <atomicity ato>
-    AccumulatorSet( construct_empty_t, const AccumulatorSet<Arithmetic, ato, Bases...>& ) : AccumulatorSet() {}
+    AccumulatorSet( construct_empty_t, const AccumulatorSet<Arithmetic, ato, InputType, Bases...>& )
+        : AccumulatorSet() {}
     AccumulatorSet& operator+=( const InputType by ) {
       ( Bases<Atomicity, Arithmetic>::operator+=( by ), ... );
       return *this;
@@ -490,11 +493,11 @@ namespace Gaudi::Accumulators {
     OutputType value() const { return std::make_tuple( Bases<Atomicity, Arithmetic>::value()... ); }
     void       reset() { ( Bases<Atomicity, Arithmetic>::reset(), ... ); }
     template <atomicity Ato>
-    void mergeAndReset( AccumulatorSet<Arithmetic, Ato, Bases...>&& other ) {
+    void mergeAndReset( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
       ( Bases<Atomicity, Arithmetic>::mergeAndReset( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
     }
     template <atomicity Ato>
-    void operator+( AccumulatorSet<Arithmetic, Ato, Bases...>&& other ) {
+    void operator+( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
       ( Bases<Atomicity, Arithmetic>::operator+( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
     }
 
@@ -622,8 +625,8 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  struct BinomialAccumulator : AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator> {
-    using AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator>::AccumulatorSet;
+  struct BinomialAccumulator : AccumulatorSet<bool, Atomicity, bool, TrueAccumulator, FalseAccumulator> {
+    using AccumulatorSet<bool, Atomicity, bool, TrueAccumulator, FalseAccumulator>::AccumulatorSet;
     unsigned long nEntries() const { return this->nTrueEntries() + this->nFalseEntries(); };
 
     template <typename Result = fp_result_type<Arithmetic>>
@@ -644,8 +647,8 @@ namespace Gaudi::Accumulators {
       if ( 1 > nbEntries ) return Result{-1};
       return sqrt( static_cast<Result>( this->nTrueEntries() * this->nFalseEntries() ) / nbEntries ) / nbEntries;
     }
-    auto                                                                      effErr() const { return efficiencyErr(); }
-    using AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator>::operator+=;
+    auto effErr() const { return efficiencyErr(); }
+    using AccumulatorSet<bool, Atomicity, bool, TrueAccumulator, FalseAccumulator>::operator+=;
     struct binomial_t {
       unsigned long nPass;
       unsigned long nTotal;
@@ -660,12 +663,19 @@ namespace Gaudi::Accumulators {
   };
 
   /**
-   * AveragingAccumulator. An AveragingAccumulator is an Accumulator able to compute an average
+   * AveragingAccumulatorBase. An AveragingAccumulator is an Accumulator able to compute an average
+   * This Base class is still templated on the counting and summing accumulators
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <atomicity Atomicity, typename Arithmetic>
-  struct AveragingAccumulator : AccumulatorSet<Arithmetic, Atomicity, CountAccumulator, SumAccumulator> {
-    using AccumulatorSet<Arithmetic, Atomicity, CountAccumulator, SumAccumulator>::AccumulatorSet;
+  template <atomicity Atomicity, typename Arithmetic, template <atomicity, typename> typename CountAcc,
+            template <atomicity, typename> typename SumAcc>
+  struct AveragingAccumulatorBase
+      : AccumulatorSet<Arithmetic, Atomicity, typename CountAcc<Atomicity, Arithmetic>::InputType, CountAcc, SumAcc> {
+    static_assert( std::is_same_v<typename CountAcc<Atomicity, Arithmetic>::InputType,
+                                  typename SumAcc<Atomicity, Arithmetic>::InputType>,
+                   "Incompatible Counters in definition of AveragingAccumulator. Both should have identical Input" );
+    using AccumulatorSet<Arithmetic, Atomicity, typename CountAcc<Atomicity, Arithmetic>::InputType, CountAcc,
+                         SumAcc>::AccumulatorSet;
     template <typename Result = fp_result_type<Arithmetic>>
     auto mean() const {
       auto   n   = this->nEntries();
@@ -675,12 +685,26 @@ namespace Gaudi::Accumulators {
   };
 
   /**
-   * SigmaAccumulator. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
+   * AveragingAccumulator. An AveragingAccumulator is an Accumulator able to compute an average
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  struct SigmaAccumulator : AccumulatorSet<Arithmetic, Atomicity, AveragingAccumulator, SquareAccumulator> {
-    using AccumulatorSet<Arithmetic, Atomicity, AveragingAccumulator, SquareAccumulator>::AccumulatorSet;
+  using AveragingAccumulator = AveragingAccumulatorBase<Atomicity, Arithmetic, CountAccumulator, SumAccumulator>;
+
+  /**
+   * SigmaAccumulatorBase. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
+   * This Base class is still templated on the averaging and square accumulators
+   * @see Gaudi::Accumulators for detailed documentation
+   */
+  template <atomicity Atomicity, typename Arithmetic, template <atomicity, typename> typename AvgAcc,
+            template <atomicity, typename> typename SquareAcc>
+  struct SigmaAccumulatorBase
+      : AccumulatorSet<Arithmetic, Atomicity, typename AvgAcc<Atomicity, Arithmetic>::InputType, AvgAcc, SquareAcc> {
+    static_assert( std::is_same_v<typename AvgAcc<Atomicity, Arithmetic>::InputType,
+                                  typename SquareAcc<Atomicity, Arithmetic>::InputType>,
+                   "Incompatible Counters in definition of SigmaAccumulator. Both should have identical Input" );
+    using AccumulatorSet<Arithmetic, Atomicity, typename SquareAcc<Atomicity, Arithmetic>::InputType, AvgAcc,
+                         SquareAcc>::AccumulatorSet;
     template <typename Result = fp_result_type<Arithmetic>>
     auto biased_sample_variance() const {
       auto   n   = this->nEntries();
@@ -722,11 +746,19 @@ namespace Gaudi::Accumulators {
   };
 
   /**
+   * SigmaAccumulator. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
+   * @see Gaudi::Accumulators for detailed documentation
+   */
+  template <atomicity Atomicity, typename Arithmetic>
+  using SigmaAccumulator = SigmaAccumulatorBase<Atomicity, Arithmetic, AveragingAccumulator, SquareAccumulator>;
+
+  /**
    * StatAccumulator. A StatAccumulator is an Accumulator able to compute an average, variance/rms and min/max
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
-  using StatAccumulator = AccumulatorSet<Arithmetic, Atomicity, SigmaAccumulator, MinAccumulator, MaxAccumulator>;
+  using StatAccumulator =
+      AccumulatorSet<Arithmetic, Atomicity, Arithmetic, SigmaAccumulator, MinAccumulator, MaxAccumulator>;
 
   /**
    * Buffer is a non atomic Accumulator which, when it goes out-of-scope,
@@ -734,9 +766,9 @@ namespace Gaudi::Accumulators {
    * It is templated by the basic accumulator type and has same interface
    * @see Gaudi::Accumulators for detailed documentation
    */
-  template <template <atomicity Ato, typename... Int> class ContainedAccumulator, typename... Args>
+  template <template <atomicity Ato, typename... Int> class ContainedAccumulator, atomicity Atomicity, typename... Args>
   class Buffer : public ContainedAccumulator<atomicity::none, Args...> {
-    using prime_type = ContainedAccumulator<atomicity::full, Args...>;
+    using prime_type = ContainedAccumulator<Atomicity, Args...>;
     using base_type  = ContainedAccumulator<atomicity::none, Args...>;
 
   public:
@@ -795,17 +827,21 @@ namespace Gaudi::Accumulators {
   inline std::ostream& operator<<( std::ostream& s, const PrintableCounter& counter ) { return counter.print( s ); }
   inline MsgStream&    operator<<( MsgStream& s, const PrintableCounter& counter ) { return counter.print( s ); }
   /**
-   * An empty ancester of all counters that provides a buffer method that
-   * returns a buffer on itself
+   * An empty ancester of all counters that provides a buffer method that returns a buffer on itself
+   * Also registers the counter to its owner, with default type "counter"
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, template <atomicity Ato, typename... Int> class Accumulator, typename... Args>
   struct BufferableCounter : PrintableCounter, Accumulator<Atomicity, Args...> {
     BufferableCounter() = default;
     template <typename OWNER, typename... CARGS>
-    BufferableCounter( OWNER* o, std::string const& name, std::string const& type, CARGS... args )
-        : PrintableCounter( o, name, type ), Accumulator<Atomicity, Args...>( args... ) {}
-    Buffer<Accumulator, Args...> buffer() { return {*this}; }
+    BufferableCounter( OWNER* o, std::string const& name, const std::string counterType, CARGS... args )
+        : Accumulator<Atomicity, Args...>( args... ) {
+      o->serviceLocator()->monitoringHub().registerEntity( o->name(), name, counterType, *this );
+    }
+    template <typename OWNER>
+    BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, "counter" ) {}
+    Buffer<Accumulator, Atomicity, Args...> buffer() { return {*this}; }
   };
 
   /**

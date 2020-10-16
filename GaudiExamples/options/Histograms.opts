@@ -18,8 +18,6 @@ MessageSvc.OutputLevel  = 3;
 
 // Example of Histogramming using GaudiHistoAlg base class from GaudiAlg
 ApplicationMgr.TopAlg   += { "GaudiHistoAlgorithm/SimpleHistos" };
-ApplicationMgr.TopAlg   += { "Gaudi::Examples::R7::GaudiHistoAlgorithm/SimpleR7Histos" };
-ApplicationMgr.TopAlg   += { "Gaudi::Examples::Boost::GaudiHistoAlgorithm/SimpleBoostHistos" };
 // Exampel of Histograming using "histogram proeprties"
 ApplicationMgr.TopAlg   += { "Gaudi::Examples::HistoProps/Histos2" };
 SimpleHistos.HistoPrint = true;
