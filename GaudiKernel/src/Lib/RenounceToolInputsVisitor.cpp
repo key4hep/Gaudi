@@ -12,13 +12,11 @@
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IDataHandleHolder.h"
 
-void RenounceToolInputsVisitor::visit( IAlgTool* alg_tool ) {
+void RenounceToolInputsVisitor::operator()( IAlgTool* alg_tool ) {
   IDataHandleHolder* dh_holder = dynamic_cast<IDataHandleHolder*>( alg_tool );
   if ( dh_holder ) {
-    for ( const DataObjID& renounce_input : m_renounceKeys ) {
-      if ( dh_holder->renounceInput( renounce_input ) ) {
-        m_logger->renounce( alg_tool->name(), renounce_input.key() );
-      }
+    for ( const DataObjID& id : m_renounceKeys ) {
+      if ( dh_holder->renounceInput( id ) ) { m_logger->renounce( alg_tool->name(), id.key() ); }
     }
   }
 }

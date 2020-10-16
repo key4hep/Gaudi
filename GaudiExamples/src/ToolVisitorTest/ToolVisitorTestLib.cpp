@@ -8,20 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include "GaudiEnv.h"
 #include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/RenounceToolInputsVisitor.h"
 #include "GaudiKernel/ToolVisitor.h"
-
-#include "GaudiKernel/Algorithm.h"
+#include "ITestTool.h"
+#include <deque>
+#include <sstream>
 
 #ifndef NDEBUG
 #  include <iostream>
 #endif
-#include <list>
-#include <sstream>
-
-#include "GaudiEnv.h"
-#include "ITestTool.h"
 
 namespace GaudiTesting {
   void throwConditionFailed( bool condition, const std::string file_name, int line_no,
@@ -41,10 +39,7 @@ namespace GaudiTesting {
     } else if ( pos2 > pos ) {
       pos = pos2;
     }
-    if ( pos != std::string::npos ) {
-      return std::string( &( full_name.c_str()[pos + 1] ), full_name.size() - pos - 1 );
-    }
-    return full_name;
+    return pos != std::string::npos ? full_name.substr( pos + 1 ) : full_name;
   }
 
   class TestTool : public extends<AlgTool, ITestTool> {
@@ -54,8 +49,8 @@ namespace GaudiTesting {
       setDefaults();
     }
 
-    virtual void process() const override {}
-    void         setDefaults() {
+    void process() const override {}
+    void setDefaults() {
       std::string base_name( extractBaseName( name() ) );
       DEBUG_TRACE( std::cout << "DEBUG  " << name() << " setDefaults" << base_name << std::endl; );
       if ( base_name == "tool1" ) {
@@ -88,10 +83,8 @@ namespace GaudiTesting {
     }
 
     // a do-nothing helper class which implements the logger interface
-    class Logger : public RenounceToolInputsVisitor::ILogger {
-    public:
-      virtual void renounce( [[maybe_unused]] const std::string& tool,
-                             [[maybe_unused]] const std::string& input ) override {
+    struct Logger : RenounceToolInputsVisitor::ILogger {
+      void renounce( [[maybe_unused]] std::string_view tool, [[maybe_unused]] std::string_view input ) override {
         DEBUG_TRACE( std::cout << "renounce " << tool << " . " << input << std::endl );
       }
     };
@@ -118,28 +111,25 @@ namespace GaudiTesting {
         handle.retrieve().ignore();
       }
       if ( base_name == "tool5" ) {
-        const DataObjID* renounce_id = nullptr;
-        for ( auto& data : m_handles ) {
-          if ( data.mode() == Gaudi::DataHandle::Writer && data.objKey() == "Renounce" ) {
-            renounce_id = &( data.fullKey() );
-            break;
-          }
+        auto i = std::find_if( m_handles.begin(), m_handles.end(), []( const auto& data ) {
+          return data.mode() == Gaudi::DataHandle::Writer && data.objKey() == "Renounce";
+        } );
+        if ( i != m_handles.end() ) {
+          TestTool::Logger logger;
+          DEBUG_TRACE( std::cout << "DEBUG " << name() << " renounce tools "
+                                 << "Renounce" << std::endl );
+          auto visitor = RenounceToolInputsVisitor{{i->fullKey()}, logger};
+          ToolVisitor::visit( tools(), visitor );
         }
-
-        TestTool::Logger          logger;
-        RenounceToolInputsVisitor renouncer( std::vector<DataObjID>( {*renounce_id} ), logger );
-        DEBUG_TRACE( std::cout << "DEBUG " << name() << " renounce tools "
-                               << "Renounce" << std::endl );
-        ToolVisitor::visit( tools(), renouncer );
       }
       DEBUG_TRACE( std::cout << "DEBUG " << name() << " INITIALIZED: tools " << m_algTools.size()
                              << ", data handles:" << m_handles.size() << std::endl );
       return StatusCode::SUCCESS;
     }
 
-    std::vector<DataObjID>           m_keys;
-    std::list<Gaudi::DataHandle>     m_handles;
-    std::list<ToolHandle<ITestTool>> m_algTools;
+    std::vector<DataObjID>            m_keys;
+    std::deque<Gaudi::DataHandle>     m_handles;
+    std::deque<ToolHandle<ITestTool>> m_algTools;
   };
 
   class TestAlg : public Algorithm {
@@ -155,7 +145,7 @@ namespace GaudiTesting {
       }
     }
     ~TestAlg() { DEBUG_TRACE( std::cout << "DEBUG " << name() << "::dtor" << std::endl ); }
-    virtual StatusCode initialize() override {
+    StatusCode initialize() override {
       for ( auto& handle : m_algTools ) {
         DEBUG_TRACE( std::cout << name() << " tool:" << handle.typeAndName() << std::endl );
         if ( handle.retrieve().isFailure() ) { return StatusCode::FAILURE; }
@@ -164,7 +154,7 @@ namespace GaudiTesting {
       return StatusCode::SUCCESS;
     }
     void dumpData( const std::string& pattern ) const {
-      auto dumper = ToolVisitor::constVisitor( [this, &pattern]( const IAlgTool* tool ) {
+      auto dumper = [&pattern]( const IAlgTool* tool ) {
         const AlgTool* alg_tool = dynamic_cast<const AlgTool*>( tool );
         if ( alg_tool ) {
           for ( Gaudi::DataHandle* handle : alg_tool->inputHandles() ) {
@@ -185,11 +175,11 @@ namespace GaudiTesting {
             }
           }
         }
-      } );
+      };
       ToolVisitor::visit( tools(), dumper );
     }
-    virtual StatusCode execute() override { return StatusCode::SUCCESS; }
-    virtual StatusCode finalize() override {
+    StatusCode execute() override { return StatusCode::SUCCESS; }
+    StatusCode finalize() override {
 #ifndef NDEBUG
       for ( const DataObjID& const_obj_id : this->inputDataObjs() ) {
         DEBUG_TRACE( std::cout << "DEBUG " << name() << " input:" << const_obj_id.key() << std::endl );
@@ -206,7 +196,7 @@ namespace GaudiTesting {
       m_algTools.emplace_back( this, name, "GaudiTesting::TestTool/" + name, "" );
       Ensures( this->declareTool( m_algTools.back(), m_algTools.back().typeAndName(), true ).isSuccess() );
     }
-    std::list<ToolHandle<ITestTool>> m_algTools;
+    std::deque<ToolHandle<ITestTool>> m_algTools;
   };
 
   DECLARE_COMPONENT( TestTool )
