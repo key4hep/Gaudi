@@ -677,7 +677,7 @@ public:
 public:
   // ==========================================================================
   /// Returns the "context" string. Used to identify different processing states.
-  const std::string& context() const { return m_context; }
+  [[deprecated]] const std::string& context() const { return m_context; }
 
 private:
   // ==========================================================================
