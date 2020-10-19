@@ -1,5 +1,6 @@
-# --> Including file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/EvtColsEx/Write.py'
-# <-- End of file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/EvtColsEx/Write.py'
+# setting LC_ALL to "C"
+# --> Including file '/builds/gaudi/Gaudi/GaudiExamples/options/EvtColsEx/Write.py'
+# <-- End of file '/builds/gaudi/Gaudi/GaudiExamples/options/EvtColsEx/Write.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -22,15 +23,15 @@
  'Fill': {'EvtColLUN': 'EVTCOLS'}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
-                                          running on p05614910w96644.cern.ch on Tue Jan 17 22:52:01 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
+                                          running on runner-7f-zqs17-project-38-concurrent-0 on Mon Oct 19 16:15:01 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 EvtTupleSvc          INFO Added stream file:PFN:EvtColsEx.tags as EVTCOLS
-Fill              SUCCESS List of ALL properties of Gaudi::Examples::EvtColAlg/Fill  #properties = 65
+Fill              SUCCESS List of ALL properties of Gaudi::Examples::EvtColAlg/Fill  #properties = 57
 Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':'Fill'
 Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':''
 Fill              SUCCESS Property ['Name': Value] =  'EvtColLUN':'EVTCOLS'
@@ -62,18 +63,13 @@ Fill              SUCCESS Property ['Name': Value] =  'HistoPrint':False
 Fill              SUCCESS Property ['Name': Value] =  'HistoProduce':True
 Fill              SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
-Fill              SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
-Fill              SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Fill              SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-Fill              SUCCESS Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-Fill              SUCCESS Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
-Fill              SUCCESS Property ['Name': Value] =  'RootInTES':''
 Fill              SUCCESS Property ['Name': Value] =  'Context':''
 Fill              SUCCESS Property ['Name': Value] =  'TypePrint':False
-Fill              SUCCESS Property ['Name': Value] =  'PrintEmptyCounters':False
 Fill              SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
+Fill              SUCCESS Property ['Name': Value] =  'RootInTES':''
+Fill              SUCCESS Property ['Name': Value] =  'FilterCircularDependencies':True
 Fill              SUCCESS Property ['Name': Value] =  'Blocking':False
 Fill              SUCCESS Property ['Name': Value] =  'NeededResources':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'Cardinality':1
@@ -93,13 +89,12 @@ Fill              SUCCESS Property ['Name': Value] =  'Enable':True
 Fill              SUCCESS Property ['Name': Value] =  'OutputLevel':3
 Fill              SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
 Fill              SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
-HistogramPersis...WARNING Histograms saving not required.
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
-IODataManager        INFO Referring to dataset EvtColsEx.tags by its file ID:5C96012E-FFDC-E611-9318-001E67ABF0AC
+IODataManager        INFO Referring to dataset EvtColsEx.tags by its file ID:7B48E574-1215-11EB-95AF-0242AC110005
 Gaudi::RootData...   INFO Recreate Database file:PFN:EvtColsEx.tags as /EVTCOLS
 EventSelector     SUCCESS Reading Event record 1001. Record number within stream 1: 1001
 EventSelector     SUCCESS Reading Event record 2001. Record number within stream 1: 2001
@@ -156,9 +151,9 @@ Fill              SUCCESS Booked 0 N-Tuples and 1 Event Tag Collections
 Fill              SUCCESS List of booked Event Tag Collections in directory "EVTCOLS/Fill"
 Fill              SUCCESS  ID=COL1          Title="The most trivial Event Tag Collection"   #items=10 {Address,evtNum,runNum,gauss,flat,expo,breit,poisson,binom,flag} Items:{ 'Address' : 'IOpaqueAddress*' , 'binom' : 'I' , 'breit' : 'D' , 'evtNum' : 'I' , 'expo' : 'D' , 'flag' : 'I' , 'flat' : 'D' , 'gauss' : 'D' , 'poisson' : 'I' , 'runNum' : 'I' }
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:84255519-FFDC-E611-B178-001E67ABF0AC [EvtColsEx.dst]
+RootCnvSvc           INFO Disconnected data IO:72E30EDC-1215-11EB-8949-0242AC110005 [EvtColsEx.dst]
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc          INFO NTuples saved successfully
-EvtTupleSvc.EVT...   INFO Disconnected data IO:5C96012E-FFDC-E611-9318-001E67ABF0AC [EvtColsEx.tags]
+EvtTupleSvc.EVT...   INFO Disconnected data IO:7B48E574-1215-11EB-95AF-0242AC110005 [EvtColsEx.tags]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

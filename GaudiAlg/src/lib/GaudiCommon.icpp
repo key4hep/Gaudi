@@ -116,14 +116,10 @@ StatusCode GaudiCommon<PBASE>::finalize() {
   if ( m_counterSummarySvc && this->svcLoc()->existsService( "CounterSummarySvc" ) ) {
     if ( this->msgLevel( MSG::DEBUG ) ) this->debug() << "adding counters to CounterSummarySvc" << endmsg;
 
-    Gaudi::Utils::RegEx::matchList statList{m_statEntityList.value()};
     Gaudi::Utils::RegEx::matchList counterList{m_counterList.value()};
 
     for ( const auto& i : m_countersOwn ) {
-      if ( statList.Or( i.first ) )
-        m_counterSummarySvc->addCounter( this->name(), i.first, i.second, Gaudi::CounterSummary::SaveStatEntity );
-      else if ( counterList.Or( i.first ) )
-        m_counterSummarySvc->addCounter( this->name(), i.first, i.second );
+      if ( counterList.Or( i.first ) ) m_counterSummarySvc->addCounter( this->name(), i.first, i.second );
     }
   }
   // release all located tools and services
@@ -163,7 +159,6 @@ StatusCode GaudiCommon<PBASE>::finalize() {
   m_warnings.clear();
   m_errors.clear();
   m_counterList.clear();
-  m_statEntityList.clear();
 
   // finalize base class
   return ( sc && base_class::finalize() ? StatusCode::SUCCESS : StatusCode::FAILURE );

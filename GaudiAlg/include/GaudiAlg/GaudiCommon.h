@@ -739,29 +739,11 @@ private:
                                        }
                                      },
                                      "print the properties of the component"};
-  Gaudi::Property<bool> m_printEmptyCounters{this, "PrintEmptyCounters", false,
-                                             "force printing of empty counters, otherwise only printed in DEBUG mode"};
   Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
 
-  Gaudi::Property<std::string> m_context{this, "Context", {}, "note: overridden by parent settings"};
-  Gaudi::Property<std::string> m_header{this, "StatTableHeader",
-                                        " |    Counter                                      |     #     |   "
-                                        " sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
-                                        "the header row for the output Stat-table"};
-  Gaudi::Property<std::string> m_format1{
-      this, "RegularRowFormat", " | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |",
-      "the format for regular row in the output Stat-table"};
-  Gaudi::Property<std::string> m_format2{
-      this, "EfficiencyRowFormat",
-      " |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |",
-      "The format for \"efficiency\" row in the output Stat-table"};
-  Gaudi::Property<bool> m_useEffFormat{this, "UseEfficiencyRowFormat", true,
-                                       "use the special format for printout of efficiency counters"};
-
+  Gaudi::Property<std::string>              m_context{this, "Context", {}, "note: overridden by parent settings"};
   Gaudi::Property<std::vector<std::string>> m_counterList{
       this, "CounterList", {".*"}, "RegEx list, of simple integer counters for CounterSummary"};
-  Gaudi::Property<std::vector<std::string>> m_statEntityList{
-      this, "StatEntityList", {}, "RegEx list, of StatEntity counters for CounterSummary"};
 };
 // ============================================================================
 #include "GaudiAlg/GaudiCommonImp.h"

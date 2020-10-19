@@ -1,6 +1,6 @@
 # setting LC_ALL to "C"
-# --> Including file '/workdir/gaudi/GaudiHive/options/SubSlotVsSlotIsolation.py'
-# <-- End of file '/workdir/gaudi/GaudiHive/options/SubSlotVsSlotIsolation.py'
+# --> Including file '/builds/gaudi/Gaudi/GaudiHive/options/SubSlotVsSlotIsolation.py'
+# <-- End of file '/builds/gaudi/Gaudi/GaudiHive/options/SubSlotVsSlotIsolation.py'
 # Dumping all configurables and properties (different from default)
 {'A1': {'Cardinality': 1,
         'OutputLevel': 2,
@@ -56,8 +56,8 @@
 MessageSvc           INFO Activating in a separate thread
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v33r1)
-                                          running on cbab1f0b7ae0 on Wed May 20 17:52:22 2020
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
+                                          running on runner-7f-zqs17-project-38-concurrent-0 on Mon Oct 19 16:18:29 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 HiveSlimEventLo...  DEBUG Property update for OutputLevel : new value = 2
@@ -71,7 +71,6 @@ createViewSeq       DEBUG Property update for OutputLevel : new value = 1
 createViewSeq     VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 createViewSeq     VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 createViewSeq       DEBUG ==> Initialise
-createViewSeq     VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 createViewSeq     VERBOSE ServiceLocatorHelper::service: found service ApplicationMgr
 createViewSeq       DEBUG Added algorithm A1
 createViewSeq       DEBUG Added algorithm viewNodeOne
@@ -83,7 +82,7 @@ createViewSeq     VERBOSE ServiceLocatorHelper::service: found service ToolSvc
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   4.17 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   2.94 times the speed of a 2.8 GHz Xeon.
 createViewSeq       DEBUG Registering tool ToolSvc.SequencerTimerTool
 createViewSeq       DEBUG Releasing tool 'ToolSvc.SequencerTimerTool'
 createViewSeq       DEBUG De-Registering tool ToolSvc.SequencerTimerTool
@@ -91,32 +90,26 @@ createViewSeq       DEBUG The tool 'ToolSvc.SequencerTimerTool' of type 'Sequenc
 A1                  DEBUG Property update for OutputLevel : new value = 2
 A1                  DEBUG Initialize base class GaudiCommon<Algorithm>
 A1                  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-A1                  DEBUG List of ALL properties of Test::ViewTester/A1  #properties = 40
-A1                  DEBUG Property ['Name': Value] =  'viewNodeName':viewNodeOne
+A1                  DEBUG List of ALL properties of Test::ViewTester/A1  #properties = 33
+A1                  DEBUG Property ['Name': Value] =  'viewNodeName':'viewNodeOne'
 A1                  DEBUG Property ['Name': Value] =  'viewNumber':1
-A1                  DEBUG Property ['Name': Value] =  'baseViewName':viewOne
+A1                  DEBUG Property ['Name': Value] =  'baseViewName':'viewOne'
 A1                  DEBUG Property ['Name': Value] =  'outKeys':[  ]
 A1                  DEBUG Property ['Name': Value] =  'inpKeys':[  ]
 A1                  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 A1                  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-A1                  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 A1                  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-A1                  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-A1                  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-A1                  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-A1                  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-A1                  DEBUG Property ['Name': Value] =  'Context':
+A1                  DEBUG Property ['Name': Value] =  'Context':''
 A1                  DEBUG Property ['Name': Value] =  'TypePrint':True
-A1                  DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 A1                  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 A1                  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-A1                  DEBUG Property ['Name': Value] =  'RootInTES':
+A1                  DEBUG Property ['Name': Value] =  'RootInTES':''
 A1                  DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 A1                  DEBUG Property ['Name': Value] =  'Blocking':False
 A1                  DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 A1                  DEBUG Property ['Name': Value] =  'Cardinality':1
 A1                  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-A1                  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+A1                  DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 A1                  DEBUG Property ['Name': Value] =  'Timeline':False
 A1                  DEBUG Property ['Name': Value] =  'AuditStop':False
 A1                  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -138,32 +131,26 @@ viewNodeOne          INFO Member list: Test::ViewTester/A2, Test::ViewTester/A3
 A2                  DEBUG Property update for OutputLevel : new value = 2
 A2                  DEBUG Initialize base class GaudiCommon<Algorithm>
 A2                  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-A2                  DEBUG List of ALL properties of Test::ViewTester/A2  #properties = 40
-A2                  DEBUG Property ['Name': Value] =  'viewNodeName':
+A2                  DEBUG List of ALL properties of Test::ViewTester/A2  #properties = 33
+A2                  DEBUG Property ['Name': Value] =  'viewNodeName':''
 A2                  DEBUG Property ['Name': Value] =  'viewNumber':0
-A2                  DEBUG Property ['Name': Value] =  'baseViewName':view
+A2                  DEBUG Property ['Name': Value] =  'baseViewName':'view'
 A2                  DEBUG Property ['Name': Value] =  'outKeys':[ '/Event/a2' ]
 A2                  DEBUG Property ['Name': Value] =  'inpKeys':[  ]
 A2                  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 A2                  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-A2                  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 A2                  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-A2                  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-A2                  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-A2                  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-A2                  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-A2                  DEBUG Property ['Name': Value] =  'Context':
+A2                  DEBUG Property ['Name': Value] =  'Context':''
 A2                  DEBUG Property ['Name': Value] =  'TypePrint':True
-A2                  DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 A2                  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 A2                  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-A2                  DEBUG Property ['Name': Value] =  'RootInTES':
+A2                  DEBUG Property ['Name': Value] =  'RootInTES':''
 A2                  DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 A2                  DEBUG Property ['Name': Value] =  'Blocking':False
 A2                  DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 A2                  DEBUG Property ['Name': Value] =  'Cardinality':1
 A2                  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-A2                  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+A2                  DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 A2                  DEBUG Property ['Name': Value] =  'Timeline':False
 A2                  DEBUG Property ['Name': Value] =  'AuditStop':False
 A2                  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -186,32 +173,26 @@ A2                  DEBUG Data Deps for A2
 A3                  DEBUG Property update for OutputLevel : new value = 2
 A3                  DEBUG Initialize base class GaudiCommon<Algorithm>
 A3                  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-A3                  DEBUG List of ALL properties of Test::ViewTester/A3  #properties = 40
-A3                  DEBUG Property ['Name': Value] =  'viewNodeName':
+A3                  DEBUG List of ALL properties of Test::ViewTester/A3  #properties = 33
+A3                  DEBUG Property ['Name': Value] =  'viewNodeName':''
 A3                  DEBUG Property ['Name': Value] =  'viewNumber':0
-A3                  DEBUG Property ['Name': Value] =  'baseViewName':view
+A3                  DEBUG Property ['Name': Value] =  'baseViewName':'view'
 A3                  DEBUG Property ['Name': Value] =  'outKeys':[  ]
 A3                  DEBUG Property ['Name': Value] =  'inpKeys':[ '/Event/a2' ]
 A3                  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 A3                  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-A3                  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 A3                  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-A3                  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-A3                  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-A3                  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-A3                  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-A3                  DEBUG Property ['Name': Value] =  'Context':
+A3                  DEBUG Property ['Name': Value] =  'Context':''
 A3                  DEBUG Property ['Name': Value] =  'TypePrint':True
-A3                  DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 A3                  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 A3                  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-A3                  DEBUG Property ['Name': Value] =  'RootInTES':
+A3                  DEBUG Property ['Name': Value] =  'RootInTES':''
 A3                  DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 A3                  DEBUG Property ['Name': Value] =  'Blocking':False
 A3                  DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 A3                  DEBUG Property ['Name': Value] =  'Cardinality':1
 A3                  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-A3                  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+A3                  DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 A3                  DEBUG Property ['Name': Value] =  'Timeline':False
 A3                  DEBUG Property ['Name': Value] =  'AuditStop':False
 A3                  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -234,32 +215,26 @@ A3                  DEBUG Data Deps for A3
 A4                  DEBUG Property update for OutputLevel : new value = 2
 A4                  DEBUG Initialize base class GaudiCommon<Algorithm>
 A4                  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-A4                  DEBUG List of ALL properties of Test::ViewTester/A4  #properties = 40
-A4                  DEBUG Property ['Name': Value] =  'viewNodeName':viewNodeTwo
+A4                  DEBUG List of ALL properties of Test::ViewTester/A4  #properties = 33
+A4                  DEBUG Property ['Name': Value] =  'viewNodeName':'viewNodeTwo'
 A4                  DEBUG Property ['Name': Value] =  'viewNumber':1
-A4                  DEBUG Property ['Name': Value] =  'baseViewName':viewTwo
+A4                  DEBUG Property ['Name': Value] =  'baseViewName':'viewTwo'
 A4                  DEBUG Property ['Name': Value] =  'outKeys':[ '/Event/a4' ]
 A4                  DEBUG Property ['Name': Value] =  'inpKeys':[  ]
 A4                  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 A4                  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-A4                  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 A4                  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-A4                  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-A4                  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-A4                  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-A4                  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-A4                  DEBUG Property ['Name': Value] =  'Context':
+A4                  DEBUG Property ['Name': Value] =  'Context':''
 A4                  DEBUG Property ['Name': Value] =  'TypePrint':True
-A4                  DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 A4                  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 A4                  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-A4                  DEBUG Property ['Name': Value] =  'RootInTES':
+A4                  DEBUG Property ['Name': Value] =  'RootInTES':''
 A4                  DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 A4                  DEBUG Property ['Name': Value] =  'Blocking':False
 A4                  DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 A4                  DEBUG Property ['Name': Value] =  'Cardinality':1
 A4                  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-A4                  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+A4                  DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 A4                  DEBUG Property ['Name': Value] =  'Timeline':False
 A4                  DEBUG Property ['Name': Value] =  'AuditStop':False
 A4                  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -283,32 +258,26 @@ viewNodeTwo          INFO Member list: Test::ViewTester/A5, Test::ViewTester/A6
 A5                  DEBUG Property update for OutputLevel : new value = 2
 A5                  DEBUG Initialize base class GaudiCommon<Algorithm>
 A5                  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-A5                  DEBUG List of ALL properties of Test::ViewTester/A5  #properties = 40
-A5                  DEBUG Property ['Name': Value] =  'viewNodeName':
+A5                  DEBUG List of ALL properties of Test::ViewTester/A5  #properties = 33
+A5                  DEBUG Property ['Name': Value] =  'viewNodeName':''
 A5                  DEBUG Property ['Name': Value] =  'viewNumber':0
-A5                  DEBUG Property ['Name': Value] =  'baseViewName':view
+A5                  DEBUG Property ['Name': Value] =  'baseViewName':'view'
 A5                  DEBUG Property ['Name': Value] =  'outKeys':[  ]
 A5                  DEBUG Property ['Name': Value] =  'inpKeys':[ '/Event/a4' ]
 A5                  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 A5                  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-A5                  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 A5                  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-A5                  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-A5                  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-A5                  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-A5                  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-A5                  DEBUG Property ['Name': Value] =  'Context':
+A5                  DEBUG Property ['Name': Value] =  'Context':''
 A5                  DEBUG Property ['Name': Value] =  'TypePrint':True
-A5                  DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 A5                  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 A5                  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-A5                  DEBUG Property ['Name': Value] =  'RootInTES':
+A5                  DEBUG Property ['Name': Value] =  'RootInTES':''
 A5                  DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 A5                  DEBUG Property ['Name': Value] =  'Blocking':False
 A5                  DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 A5                  DEBUG Property ['Name': Value] =  'Cardinality':1
 A5                  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-A5                  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+A5                  DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 A5                  DEBUG Property ['Name': Value] =  'Timeline':False
 A5                  DEBUG Property ['Name': Value] =  'AuditStop':False
 A5                  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -331,32 +300,26 @@ A5                  DEBUG Data Deps for A5
 A6                  DEBUG Property update for OutputLevel : new value = 2
 A6                  DEBUG Initialize base class GaudiCommon<Algorithm>
 A6                  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-A6                  DEBUG List of ALL properties of Test::ViewTester/A6  #properties = 40
-A6                  DEBUG Property ['Name': Value] =  'viewNodeName':
+A6                  DEBUG List of ALL properties of Test::ViewTester/A6  #properties = 33
+A6                  DEBUG Property ['Name': Value] =  'viewNodeName':''
 A6                  DEBUG Property ['Name': Value] =  'viewNumber':0
-A6                  DEBUG Property ['Name': Value] =  'baseViewName':view
+A6                  DEBUG Property ['Name': Value] =  'baseViewName':'view'
 A6                  DEBUG Property ['Name': Value] =  'outKeys':[  ]
 A6                  DEBUG Property ['Name': Value] =  'inpKeys':[  ]
 A6                  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 A6                  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-A6                  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 A6                  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-A6                  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-A6                  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-A6                  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-A6                  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-A6                  DEBUG Property ['Name': Value] =  'Context':
+A6                  DEBUG Property ['Name': Value] =  'Context':''
 A6                  DEBUG Property ['Name': Value] =  'TypePrint':True
-A6                  DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 A6                  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 A6                  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-A6                  DEBUG Property ['Name': Value] =  'RootInTES':
+A6                  DEBUG Property ['Name': Value] =  'RootInTES':''
 A6                  DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 A6                  DEBUG Property ['Name': Value] =  'Blocking':False
 A6                  DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 A6                  DEBUG Property ['Name': Value] =  'Cardinality':1
 A6                  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-A6                  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+A6                  DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 A6                  DEBUG Property ['Name': Value] =  'Timeline':False
 A6                  DEBUG Property ['Name': Value] =  'AuditStop':False
 A6                  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -377,32 +340,26 @@ A6                  DEBUG Data Deps for A6
 A7                  DEBUG Property update for OutputLevel : new value = 2
 A7                  DEBUG Initialize base class GaudiCommon<Algorithm>
 A7                  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-A7                  DEBUG List of ALL properties of Test::ViewTester/A7  #properties = 40
-A7                  DEBUG Property ['Name': Value] =  'viewNodeName':
+A7                  DEBUG List of ALL properties of Test::ViewTester/A7  #properties = 33
+A7                  DEBUG Property ['Name': Value] =  'viewNodeName':''
 A7                  DEBUG Property ['Name': Value] =  'viewNumber':0
-A7                  DEBUG Property ['Name': Value] =  'baseViewName':view
+A7                  DEBUG Property ['Name': Value] =  'baseViewName':'view'
 A7                  DEBUG Property ['Name': Value] =  'outKeys':[  ]
 A7                  DEBUG Property ['Name': Value] =  'inpKeys':[  ]
 A7                  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 A7                  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-A7                  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 A7                  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-A7                  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-A7                  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-A7                  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-A7                  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-A7                  DEBUG Property ['Name': Value] =  'Context':
+A7                  DEBUG Property ['Name': Value] =  'Context':''
 A7                  DEBUG Property ['Name': Value] =  'TypePrint':True
-A7                  DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 A7                  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 A7                  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-A7                  DEBUG Property ['Name': Value] =  'RootInTES':
+A7                  DEBUG Property ['Name': Value] =  'RootInTES':''
 A7                  DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 A7                  DEBUG Property ['Name': Value] =  'Blocking':False
 A7                  DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 A7                  DEBUG Property ['Name': Value] =  'Cardinality':1
 A7                  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-A7                  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+A7                  DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
 A7                  DEBUG Property ['Name': Value] =  'Timeline':False
 A7                  DEBUG Property ['Name': Value] =  'AuditStop':False
 A7                  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -422,13 +379,13 @@ A7                  DEBUG output handles: 0
 A7                  DEBUG Data Deps for A7
 createViewSeq     VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgResourcePool     DEBUG List of algorithms is:
-AlgResourcePool     DEBUG   o Test::ViewTester/A1 @ 0x135b850
-AlgResourcePool     DEBUG   o Test::ViewTester/A2 @ 0x138aa90
-AlgResourcePool     DEBUG   o Test::ViewTester/A3 @ 0x138c2b0
-AlgResourcePool     DEBUG   o Test::ViewTester/A4 @ 0x135f230
-AlgResourcePool     DEBUG   o Test::ViewTester/A5 @ 0x138ed80
-AlgResourcePool     DEBUG   o Test::ViewTester/A6 @ 0x13905a0
-AlgResourcePool     DEBUG   o Test::ViewTester/A7 @ 0x1362b30
+AlgResourcePool     DEBUG   o Test::ViewTester/A1 @ 0x148af30
+AlgResourcePool     DEBUG   o Test::ViewTester/A2 @ 0x14bfe50
+AlgResourcePool     DEBUG   o Test::ViewTester/A3 @ 0x14c1be0
+AlgResourcePool     DEBUG   o Test::ViewTester/A4 @ 0x148ebd0
+AlgResourcePool     DEBUG   o Test::ViewTester/A5 @ 0x14cd5f0
+AlgResourcePool     DEBUG   o Test::ViewTester/A6 @ 0x14cf060
+AlgResourcePool     DEBUG   o Test::ViewTester/A7 @ 0x1492880
 AvalancheSchedu...   INFO Found 7 algorithms
 AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   A1
@@ -544,7 +501,7 @@ PrecedenceSvc     WARNING To trace temporal and topological aspects of execution
 HiveSlimEventLo...  DEBUG Context obtained
 HiveSlimEventLo...  FATAL Failed event detected on s: 0  e: 0
 HiveSlimEventLo...  DEBUG Clearing slot 0 (event 0) of the whiteboard
-HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 67.9219 total time 816101
+HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 54.918 total time 12280761
 HiveSlimEventLo...   INFO 0 events were SKIPed
 ApplicationMgr       INFO Application Manager Stopped successfully
 createViewSeq       DEBUG Tools to release :

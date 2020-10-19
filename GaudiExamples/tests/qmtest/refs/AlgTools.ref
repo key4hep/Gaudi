@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /project/bfys/graven/master/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /project/bfys/graven/master/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /project/bfys/graven/master/Gaudi/GaudiExamples/options/AlgTools.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/AlgTools.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.TopAlg = ["MyAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (12,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (17,1): ApplicationMgr.EvtMax = 10
@@ -23,11 +23,11 @@ JobOptionsSvc        INFO # (43,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (44,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /project/bfys/graven/master/Gaudi/GaudiExamples/options/AlgTools.opts
+JobOptionsSvc        INFO Job options successfully read in from /builds/gaudi/Gaudi/GaudiExamples/options/AlgTools.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r5)
-                                          running on stbc-i5.nikhef.nl on Sun Jan 27 20:46:48 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
+                                          running on runner-7f-zqs17-project-38-concurrent-0 on Mon Oct 19 16:15:55 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -62,21 +62,15 @@ ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 26
+ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 19
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':'AlgContextSvc'
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -93,21 +87,15 @@ ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 26
+ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 19
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':'AlgContextSvc'
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -124,7 +112,6 @@ ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
 ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 MyAlg                INFO executing....

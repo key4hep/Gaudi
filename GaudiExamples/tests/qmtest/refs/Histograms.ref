@@ -1,16 +1,16 @@
 # setting LC_ALL to "C"
-# --> Including file '/home/sponce/dev4/Gaudi/GaudiExamples/options/Histograms.py'
-# <-- End of file '/home/sponce/dev4/Gaudi/GaudiExamples/options/Histograms.py'
+# --> Including file '/builds/gaudi/Gaudi/GaudiExamples/options/Histograms.py'
+# <-- End of file '/builds/gaudi/Gaudi/GaudiExamples/options/Histograms.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r0)
-                                          running on lblhcbpr11.cern.ch on Fri Sep 25 16:09:52 2020
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
+                                          running on runner-7f-zqs17-project-38-concurrent-0 on Mon Oct 19 16:16:56 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
 SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 49
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 43
 SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':'|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |'
@@ -28,15 +28,9 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'HistoPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoProduce':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-SimpleHistos        DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-SimpleHistos        DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-SimpleHistos        DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 SimpleHistos        DEBUG Property ['Name': Value] =  'Context':''
 SimpleHistos        DEBUG Property ['Name': Value] =  'TypePrint':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':''
@@ -189,11 +183,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DForcedAlphaID      INFO Time User   : Tot=   10 [ms] Ave/Min/Max=  0.0002(+-  0.0447)/       0/      10 [ms] #=49999
-1DForcedNumericID    INFO Time User   : Tot=   40 [ms] Ave/Min/Max=  0.0008(+-  0.0894)/       0/      10 [ms] #=49999
-1DAutoID             INFO Time User   : Tot=   60 [ms] Ave/Min/Max=  0.0012(+-    0.11)/       0/      10 [ms] #=49999
-1DOldStyle           INFO Time User   : Tot=   80 [ms] Ave/Min/Max=  0.0016(+-   0.126)/       0/      10 [ms] #=49999
-ChronoStatSvc        INFO Time User   : Tot=  2.9  [s]  #=  1
+1DOldStyle           INFO Time User   : Tot=   30 [ms] Ave/Min/Max=  0.0006(+-  0.0775)/       0/      10 [ms] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=   80 [ms] Ave/Min/Max=  0.0016(+-   0.126)/       0/      10 [ms] #=49999
+1DAutoID             INFO Time User   : Tot=  100 [ms] Ave/Min/Max=   0.002(+-   0.141)/       0/      10 [ms] #=49999
+1DForcedNumericID    INFO Time User   : Tot=  120 [ms] Ave/Min/Max=  0.0024(+-   0.155)/       0/      10 [ms] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 3.34  [s]  #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 ApplicationMgr       INFO Application Manager Finalized successfully
