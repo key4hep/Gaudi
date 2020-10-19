@@ -96,7 +96,7 @@ StatusCode GaudiCommon<PBASE>::initialize() {
   }
 
   // properties will be printed if asked for or in "MSG::DEBUG" mode
-  if ( propsPrint() ) {
+  if ( m_propsPrint.value() ) {
     printProps( MSG::ALWAYS );
   } else if ( this->msgLevel( MSG::DEBUG ) ) {
     printProps( MSG::DEBUG );
@@ -154,7 +154,7 @@ StatusCode GaudiCommon<PBASE>::finalize() {
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() ) {
     this->always() << "Exceptions/Errors/Warnings/Infos Statistics : " << m_exceptions.size() << "/" << m_errors.size()
                    << "/" << m_warnings.size() << "/" << m_infos.size() << endmsg;
-    if ( errorsPrint() ) { printErrors(); }
+    if ( m_errorsPrint.value() ) { printErrors(); }
   }
 
   // clear *ALL* counters explicitly
@@ -322,7 +322,7 @@ StatusCode GaudiCommon<PBASE>::Print( std::string_view msg, const StatusCode st,
 
   // use the predefined stream
   MsgStream& str = this->msgStream( lvl );
-  if ( typePrint() ) { str << System::typeinfoName( typeid( *this ) ) << ":: "; }
+  if ( m_typePrint.value() ) { str << System::typeinfoName( typeid( *this ) ) << ":: "; }
 
   // print the message
   str << msg;

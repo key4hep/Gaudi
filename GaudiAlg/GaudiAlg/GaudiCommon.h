@@ -508,14 +508,6 @@ public:
   }
   // ==========================================================================
 public:
-  /// Insert the actual C++ type of the algorithm/tool in the messages ?
-  bool typePrint() const { return m_typePrint; }
-  /// Print properties at initialization ?
-  bool propsPrint() const { return m_propsPrint; }
-  /// Print error counters at finalization ?
-  bool errorsPrint() const { return m_errorsPrint; }
-  // ==========================================================================
-public:
   /** perform the actual printout of error counters
    *  @param  level The message level to print at
    *  @return number of error counters
@@ -725,7 +717,7 @@ private:
                                       [this]( auto& ) {
                                         // no action if not yet initialized
                                         if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
-                                             this->errorsPrint() ) {
+                                             this->m_errorsPrint.value() ) {
                                           this->printErrors();
                                         }
                                       },
@@ -734,7 +726,7 @@ private:
                                      [this]( auto& ) {
                                        // no action if not yet initialized
                                        if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
-                                            this->propsPrint() ) {
+                                            this->m_propsPrint.value() ) {
                                          this->printProps( MSG::ALWAYS );
                                        }
                                      },
