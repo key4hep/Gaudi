@@ -8,23 +8,36 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(RootHistCnv)
-
-gaudi_depends_on_subdirs(GaudiKernel)
-
-find_package(AIDA)
-find_package(ROOT COMPONENTS RIO Hist Matrix Tree Thread MathCore Net REQUIRED)
-find_package(Boost REQUIRED)
+# RootHistCnv subdirectory
 
 # If AIDA is missing, don't build this module:
-if( NOT AIDA_FOUND )
+if(NOT GAUDI_USE_AIDA)
+   message(WARNING "Requirements for building RootHistCnv disabled. "
+      "RootHistCnv will not be built. "
+      "AIDA is disabled.")
    return()
 endif()
 
-# Hide some ROOT, Boost compile time warnings
-include_directories(SYSTEM ${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-
-#---Libraries---------------------------------------------------------------
-gaudi_add_module(RootHistCnv src/*.cpp
-                 LINK_LIBRARIES GaudiKernel ROOT
-                 INCLUDE_DIRS Boost ROOT AIDA)
+# Build the plugin
+gaudi_add_module(RootHistCnv
+                 SOURCES src/DirectoryCnv.cpp
+                         src/PersSvc.cpp
+                         src/RConverter.cpp
+                         src/RCWNTupleCnv.cpp
+                         src/RDirectoryCnv.cpp
+                         src/RFileCnv.cpp
+                         src/RHistogramCnv.cpp
+                         src/RNTupleCnv.cpp
+                         src/RootCompressionSettings.cpp
+                         src/RootDirFcn.cpp
+                         src/RRWNTupleCnv.cpp
+                 LINK GaudiKernel
+                      ROOT::RIO
+                      ROOT::Hist
+                      ROOT::Matrix
+                      ROOT::Tree
+                      ROOT::Thread
+                      ROOT::MathCore
+                      ROOT::Net
+                      Boost::headers
+                      AIDA::aida)

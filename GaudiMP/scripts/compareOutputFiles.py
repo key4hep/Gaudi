@@ -30,8 +30,7 @@ def checkKeys(name):
 
 
 importOptions('$STDOPTS/LHCbApplication.opts')
-#importOptions( '$GAUDIPOOLDBROOT/options/GaudiPoolDbRoot.opts' )
-importOptions('$GAUDICNVROOT/options/Setup.opts')
+importOptions('$ENV_CMAKE_SOURCE_DIR/RootCnv/options/Setup.opts')
 
 OutputStream("DstWriter").Output = ''
 HistogramPersistencySvc().OutputFile = ''

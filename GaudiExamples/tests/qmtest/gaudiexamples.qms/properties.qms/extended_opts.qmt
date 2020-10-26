@@ -10,7 +10,7 @@
     or submit itself to any jurisdiction.
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/ExtendedProperties.opts</text></set></argument>
+<argument name="args"><set><text>../../options/ExtendedProperties.opts</text></set></argument>
 <argument name="validator"><text>
 import ExtPropValidator
 ExtPropValidator.validate(stdout,stderr,result,causes)

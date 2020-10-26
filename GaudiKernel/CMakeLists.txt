@@ -8,25 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiKernel)
+# GaudiKernel subdirectory
 
-gaudi_depends_on_subdirs(GaudiPluginService GaudiPolicy)
-
-find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
-find_package(ROOT REQUIRED COMPONENTS Core)
-find_package(TBB REQUIRED)
-find_package(CppUnit)
-# Runtime dependency for ROOT (required for SLC6 as of LCG 96)
-find_package(LibLZMA)
-
-# Hide some Boost/TBB/CppUnit/ROOT compile time warnings
-include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS}
-   ${ROOT_INCLUDE_DIRS} )
-if( CPPUNIT_FOUND )
-   include_directories( SYSTEM ${CPPUNIT_INCLUDE_DIRS} )
-endif()
-
-# Look for VectorClass required header
+# Look for VectorClass required header (private dependency)
 find_path(VectorClass_INCLUDE_DIR NAMES instrset_detect.cpp)
 if(VectorClass_INCLUDE_DIR AND NOT VectorClass_VERSION)
   # check that the version is good enough
@@ -44,229 +28,318 @@ if(NOT VectorClass_INCLUDE_DIR OR VectorClass_VERSION VERSION_LESS 2.01.02)
   if(VectorClass_INCLUDE_DIR)
     message(STATUS "Found VectorClass instrset_detect ${VectorClass_VERSION} at ${VectorClass_INCLUDE_DIR}")
   endif()
-  message(WARNING "using internal VectorClass instrset_detect")
+  message(WARNING "using internal VectorClass instrset_detect (2.01.02)")
   set(VectorClass_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/contrib" CACHE PATH "" FORCE)
   set(VectorClass_VERSION "1.25" CACHE INTERNAL "" FORCE)
 endif()
 mark_as_advanced(VectorClass_INCLUDE_DIR)
 message(STATUS "Using VectorClass instrset_detect ${VectorClass_VERSION} at ${VectorClass_INCLUDE_DIR}")
 
-include_directories(${VectorClass_INCLUDE_DIR})
-
-# Extra settings when building on MacOS:
-set( extra_sources )
-set( extra_libraries )
-if( APPLE )
-   set( extra_sources src/Lib/Platform/SystemMacOS.h
-                      src/Lib/Platform/SystemMacOS.mm )
-   find_library( FOUNDATION_FRAMEWORK Foundation )
-   set( extra_libraries ${FOUNDATION_FRAMEWORK} )
-elseif( WIN32 )
-   set( extra_sources src/Lib/Platform/SystemWin32.h
-                      src/Lib/Platform/SystemWin32.cpp )
-elseif( UNIX )
-   # The UNIX variable is set for MacOS as well, so we can't put this in the
-   # front.
-   set( extra_sources src/Lib/Platform/SystemLinux.h
-                      src/Lib/Platform/SystemLinux.cpp )
-   set( extra_libraries rt )
+# Build the library
+gaudi_add_library(GaudiKernel
+  SOURCES src/Lib/AlgContext.cpp
+          src/Lib/Algorithm.cpp
+          src/Lib/AlgorithmHistory.cpp
+          src/Lib/AlgTool.cpp
+          src/Lib/AlgToolHistory.cpp
+          src/Lib/AllocatorPool.cpp
+          src/Lib/Application.cpp
+          src/Lib/Auditor.cpp
+          src/Lib/Bootstrap.cpp
+          src/Lib/ChronoEntity.cpp
+          src/Lib/ComponentManager.cpp
+          src/Lib/ConcurrencyFlags.cpp
+          src/Lib/ContainedObject.cpp
+          src/Lib/ConversionSvc.cpp
+          src/Lib/Converter.cpp
+          src/Lib/DataHandle.cpp
+          src/Lib/DataHandleFinder.cpp
+          src/Lib/DataHandleHolderVisitor.cpp
+          src/Lib/DataHistory.cpp
+          src/Lib/DataObject.cpp
+          src/Lib/DataObjectHandleBase.cpp
+          src/Lib/DataHandleProperty.cpp
+          src/Lib/DataObjID.cpp
+          src/Lib/DataStreamTool.cpp
+          src/Lib/DataSvc.cpp
+          src/Lib/DataTypeInfo.cpp
+          src/Lib/Debugger.cpp
+          src/Lib/Dictionary.cpp
+          src/Lib/DirSearchPath.cpp
+          src/Lib/Environment.cpp
+          src/Lib/EventIDBase.cpp
+          src/Lib/EventIDRange.cpp
+          src/Lib/EventSelectorDataStream.cpp
+          src/Lib/FunctionalFilterDecision.cpp
+          src/Lib/GaudiException.cpp
+          src/Lib/GaudiHandle.cpp
+          src/Lib/GaudiMain.cpp
+          src/Lib/Guards.cpp
+          src/Lib/HistoDef.cpp
+          src/Lib/HistoryObj.cpp
+          src/Lib/IChronoStatSvc.cpp
+          src/Lib/IConversionSvc.cpp
+          src/Lib/IDataProviderSvc.cpp
+          src/Lib/IInterface.cpp
+          src/Lib/Incident.cpp
+          src/Lib/IPartitionControl.cpp
+          src/Lib/ISvcLocator.cpp
+          src/Lib/ITimelineSvc.cpp
+          src/Lib/JobHistory.cpp
+          src/Lib/KeyedObjectManager.cpp
+          src/Lib/LegacyAlgorithm.cpp
+          src/Lib/LinkManager.cpp
+          src/Lib/MapBase.cpp
+          src/Lib/Memory.cpp
+          src/Lib/Message.cpp
+          src/Lib/MinimalEventLoopMgr.cpp
+          src/Lib/ModuleInfo.cpp
+          src/Lib/MsgStream.cpp
+          src/Lib/NTupleImplementation.cpp
+          src/Lib/NTupleItems.cpp
+          src/Lib/ParsersCollections.cpp
+          src/Lib/ParsersHistograms.cpp
+          src/Lib/ParsersStandardList1.cpp
+          src/Lib/ParsersStandardList2.cpp
+          src/Lib/ParsersStandardList3.cpp
+          src/Lib/ParsersStandardList4.cpp
+          src/Lib/ParsersStandardMisc1.cpp
+          src/Lib/ParsersStandardMisc2.cpp
+          src/Lib/ParsersStandardMisc3.cpp
+          src/Lib/ParsersStandardMisc4.cpp
+          src/Lib/ParsersStandardMisc5.cpp
+          src/Lib/ParsersStandardSingle.cpp
+          src/Lib/ParsersVct.cpp
+          src/Lib/PathResolver.cpp
+          src/Lib/PrintAlgsSequences.cpp
+          src/Lib/ProcessDescriptor.cpp
+          src/Lib/Property.cpp
+          src/Lib/PropertyMgr.cpp
+          src/Lib/Range.cpp
+          src/Lib/RegistryEntry.cpp
+          src/Lib/RenounceToolInputsVisitor.cpp
+          src/Lib/RndmGenerators.cpp
+          src/Lib/RndmTypeInfos.cpp
+          src/Lib/Selector.cpp
+          src/Lib/Sequence.cpp
+          src/Lib/SerialTaskQueue.cpp
+          src/Lib/Service.cpp
+          src/Lib/ServiceHistory.cpp
+          src/Lib/ServiceLocatorHelper.cpp
+          src/Lib/Sleep.cpp
+          src/Lib/SmartDataObjectPtr.cpp
+          src/Lib/SmartRefBase.cpp
+          src/Lib/Stat.cpp
+          src/Lib/StateMachine.cpp
+          src/Lib/StatusCode.cpp
+          src/Lib/StringKey.cpp
+          src/Lib/System.cpp
+          src/Lib/ThreadLocalContext.cpp
+          src/Lib/Time.cpp
+          src/Lib/Timing.cpp
+          src/Lib/ToolVisitor.cpp
+          src/Lib/TsDataSvc.cpp
+          src/Lib/VirtualDestructors.cpp
+          src/Lib/WatchdogThread.cpp
+  LINK
+    PUBLIC GaudiPluginService
+           Boost::headers
+           Boost::filesystem
+           Boost::thread
+           Boost::regex
+           Boost::system
+           TBB::tbb
+           ${CMAKE_DL_LIBS}
+           ROOT::Core
+           cppgsl::cppgsl
+           fmt::fmt
+           nlohmann_json::nlohmann_json
+)
+gaudi_generate_version_header_file(GaudiKernel)
+target_include_directories(GaudiKernel
+  PRIVATE ${VectorClass_INCLUDE_DIR}
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
+  )
+if(APPLE)
+  target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
+                                     src/Lib/Platform/SystemMacOS.mm)
+  target_link_libraries(GaudiKernel PUBLIC Foundation)
+elseif(WIN32)
+  target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemWin32.h
+                                     src/Lib/Platform/SystemWin32.cpp)
+elseif(UNIX)
+  target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemLinux.h
+                                     src/Lib/Platform/SystemLinux.cpp)
+  target_link_libraries(GaudiKernel PUBLIC ${rt_LIBRARY})
 endif()
 
-# Only use LibLZMA if it was found. As in a standalone build, or when using
-# an older LCG version, it may not have been.
-if( LIBLZMA_FOUND )
-  list( APPEND extra_libraries LibLZMA )
+# Build an executable
+gaudi_add_executable(profile_Property
+                     SOURCES tests/src/profile_Property.cpp
+                     LINK GaudiKernel)
+
+# Build and register tests
+get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+gaudi_add_executable(DirSearchPath_test
+                     SOURCES tests/src/DirSearchPath_test.cpp
+                     LINK GaudiKernel
+                     TEST)
+
+gaudi_add_executable(PathResolver_test SOURCES tests/src/PathResolver_test.cpp
+  LINK GaudiKernel)
+add_test(NAME ${package_name}.PathResolver_test
+         COMMAND run $<TARGET_FILE:PathResolver_test>
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
+gaudi_add_executable(Parsers_test SOURCES tests/src/parsers.cpp
+  LINK GaudiKernel TEST)
+
+gaudi_add_executable(Memory_test SOURCES tests/src/Memory_test.cpp
+  LINK GaudiKernel TEST)
+
+gaudi_add_executable(ContextSpecificPtrTest SOURCES tests/src/test_ContextSpecificPtr.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_GAUDI-905 SOURCES tests/src/GAUDI-905.cpp
+  LINK GaudiKernel TEST)
+
+gaudi_add_executable(test_GAUDI-973 SOURCES tests/src/GAUDI-973.cpp
+  LINK GaudiKernel TEST)
+
+gaudi_add_executable(test_PropertyHolder SOURCES tests/src/test_PropertyHolder.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_Property SOURCES tests/src/test_Property.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_WeakPropertyRef SOURCES tests/src/test_WeakPropertyRef.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_StatusCode SOURCES tests/src/test_StatusCode.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_EventIDBase SOURCES tests/src/test_EventIDBase.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_EventIDRange SOURCES tests/src/test_EventIDRange.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_SystemTypeinfoName SOURCES tests/src/test_SystemTypeinfoName.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_SystemCmdLineArgs SOURCES tests/src/test_SystemCmdLineArgs.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_compose SOURCES tests/src/test_compose.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_reverse SOURCES tests/src/test_reverse.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_Counters SOURCES tests/src/CountersUnitTest.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(AttribStringParser_test SOURCES tests/src/test_AttribStringParser.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_MonotonicArena SOURCES tests/src/test_MonotonicArena.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+gaudi_add_executable(test_GaudiTimer SOURCES tests/src/test_GaudiTimer.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
+add_executable(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx)
+target_link_libraries(test_StatusCodeFail PRIVATE GaudiKernel)
+set_target_properties(test_StatusCodeFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+add_test(NAME ${package_name}.test_StatusCodeFail
+        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_StatusCodeFail)
+set_property(TEST ${package_name}.test_StatusCodeFail PROPERTY PASS_REGULAR_EXPRESSION "FAIL01;FAIL02;FAIL03;FAIL04")
+
+if(GAUDI_USE_CPPUNIT)
+  gaudi_add_executable(test_SerializeSTL SOURCES tests/src/test_SerializeSTL.cpp
+    LINK GaudiKernel CppUnit::cppunit TEST)
+
+  gaudi_add_executable(test_AnyDataObject SOURCES tests/src/test_AnyDataObject.cpp
+    LINK GaudiKernel CppUnit::cppunit TEST)
+
+  gaudi_add_executable(test_DataHandleVector SOURCES tests/src/test_DataHandleVector.cpp
+    LINK GaudiKernel CppUnit::cppunit TEST)
+
+  gaudi_add_executable(test_GaudiTime SOURCES tests/src/test_GaudiTime.cpp
+    LINK GaudiKernel CppUnit::cppunit TEST)
+
+  gaudi_add_executable(test_GaudiTiming SOURCES tests/src/test_GaudiTiming.cpp
+    LINK GaudiKernel CppUnit::cppunit TEST)
+
+  gaudi_add_executable(SerialTaskQueue_test SOURCES tests/src/SerialTaskQueue_test.cpp
+    LINK GaudiKernel TBB::tbb CppUnit::cppunit TEST)
+
+  gaudi_add_executable(test_LockedHandle SOURCES tests/src/test_LockedHandle.cpp
+    LINK GaudiKernel CppUnit::cppunit Boost::thread ${CMAKE_DL_LIBS} TEST)
 endif()
 
-#---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries} fmt::fmt nlohmann_json::nlohmann_json
-                  INCLUDE_DIRS Boost ROOT TBB ${CPPGSL_INCLUDE_DIRS}
-                  PUBLIC_HEADERS Gaudi GaudiKernel)
+# nosetests
+gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
+gaudi_add_tests(nosetests)
 
-# Ensure libfmt is on the LD_LIBRARY_PATH
-string(TOUPPER "${CMAKE_BUILD_TYPE}" _upper_build_type)
-set(fmt_loc "")
-foreach(_type "_${_upper_build_type}" "_RELEASE" "_DEBUG" "_RELWITHDEBINFO" "")
-   get_property(_locIsSet TARGET fmt::fmt
-                PROPERTY "IMPORTED_LOCATION${_type}" SET )
-   if(NOT _locIsSet)
-      continue()
-   endif()
-   unset(_locIsSet)
-   get_target_property(fmt_loc fmt::fmt "IMPORTED_LOCATION${_type}")
-   break()
-endforeach()
-if("${fmt_loc}" STREQUAL "")
-   message(SEND_ERROR "Could not find the location of the fmt library")
+gaudi_add_module(test_CustomFactory
+  SOURCES tests/src/custom_factory.cpp
+  LINK GaudiPluginService)
+
+# Genconf
+gaudi_add_executable(genconf
+  SOURCES src/Util/genconf.cpp
+  LINK GaudiKernel
+       GaudiPluginService
+       Boost::headers
+       Boost::program_options
+       Boost::regex
+       Boost::log
+       Boost::log_setup
+       ROOT::Core)
+target_compile_definitions(genconf PRIVATE BOOST_LOG_DYN_LINK)
+set_target_properties(genconf PROPERTIES ENABLE_EXPORTS TRUE)
+if(WIN32)
+  gaudi_add_executable(genwindef
+    SOURCES src/Util/genwindef.cpp
+            src/Util/LibSymbolInfo.cpp)
 endif()
-get_filename_component(fmt_loc "${fmt_loc}" DIRECTORY)
-get_target_property(fmt_inc fmt::fmt INTERFACE_INCLUDE_DIRECTORIES)
-gaudi_env(PREPEND LD_LIBRARY_PATH "${fmt_loc}"
-          PREPEND ROOT_INCLUDE_PATH "${fmt_inc}")
-# Ensure nlohmann_json is on the ROOT_INCLUDE_PATH
-get_target_property(json_inc nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
-foreach(_item IN LISTS json_inc)
-  gaudi_env(PREPEND ROOT_INCLUDE_PATH "${_item}")
-endforeach()
+gaudi_add_executable(instructionsetLevel
+  SOURCES src/Util/instructionsetLevel.cpp
+  LINK GaudiKernel
+       GaudiPluginService)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
+add_test(NAME ${package_name}.genconf_with_custom_factory
+  COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=$<TARGET_FILE_DIR:test_CustomFactory>:$<TARGET_FILE_DIR:GaudiCoreSvc>:$ENV{LD_LIBRARY_PATH}
+          $<TARGET_FILE:genconf>
+          -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
+          -p CustomFactoryTest
+          -i test_CustomFactory
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
 
-#---Tests-------------------------------------------------------------------
-if( CPPUNIT_FOUND )
-   gaudi_add_unit_test(DirSearchPath_test tests/src/DirSearchPath_test.cpp
-      LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(test_SerializeSTL tests/src/test_SerializeSTL.cpp
-      LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(test_AnyDataObject tests/src/test_AnyDataObject.cpp
-      LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(test_DataHandleVector tests/src/test_DataHandleVector.cpp
-      LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(PathResolver_test tests/src/PathResolver_test.cpp
-      LINK_LIBRARIES GaudiKernel)
-   if( GAUDI_BUILD_TESTS )
-      set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-   endif()
-   gaudi_add_unit_test(test_GaudiTime tests/src/test_GaudiTime.cpp
-      LINK_LIBRARIES GaudiKernel)
-   if (NOT SANITIZER_ENABLED)
-     gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
-        LINK_LIBRARIES GaudiKernel)
-   endif()
-   gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
-      LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(Memory_test tests/src/Memory_test.cpp
-      LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(SerialTaskQueue_test tests/src/SerialTaskQueue_test.cpp
-      LINK_LIBRARIES GaudiKernel TBB)
-   gaudi_add_unit_test(test_LockedHandle tests/src/test_LockedHandle.cpp)
-   if(CMAKE_SYSTEM_NAME MATCHES Linux)
-      target_link_libraries(test_LockedHandle -Wl,--no-as-needed -ldl -Wl,--as-needed ${Boost_LIBRARIES})
-   else()
-      target_link_libraries(test_LockedHandle ${Boost_LIBRARIES})
-   endif()
-endif()
-gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
-   LINK_LIBRARIES GaudiKernel TYPE Boost)
+# QMTest
+gaudi_add_tests(QMTest)
 
-# These are a compile-time tests:
-if( CPPUNIT_FOUND )
-   gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
-      LINK_LIBRARIES GaudiKernel)
-endif()
+# ROOT dictionaries
+gaudi_add_dictionary(GaudiKernelDict
+                     HEADERFILES dict/dictionary.h
+                     SELECTION dict/dictionary.xml
+                     LINK GaudiKernel)
 
-if( GAUDI_CPP11 AND CPPUNIT_FOUND )
-  gaudi_add_unit_test(test_GAUDI-973 tests/src/GAUDI-973.cpp
-                      LINK_LIBRARIES GaudiKernel)
-endif()
+# Install python modules
+gaudi_install(PYTHON)
+# Install other scripts
+gaudi_install(SCRIPTS)
 
-gaudi_add_test(confdb
-               COMMAND nosetests -v
-               ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
-
-gaudi_add_test(nose
-               COMMAND nosetests -v
-               ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
-
-if( GAUDI_BUILD_TESTS )
-  add_library(test_CustomFactory MODULE tests/src/custom_factory.cpp)
-  target_link_libraries(test_CustomFactory GaudiPluginService)
-  install(TARGETS test_CustomFactory LIBRARY DESTINATION lib OPTIONAL)
-
-  get_filename_component(genconf_cmd_name ${genconf_cmd} NAME)
-  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
-  gaudi_add_test(genconf_with_custom_factory
-                 COMMAND ${genconf_cmd_name}
-                             -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
-                             -p CustomFactoryTest
-                             -i test_CustomFactory
-                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
-endif()
-
-if( CPPUNIT_FOUND )
-   gaudi_add_unit_test(AttribStringParser_test tests/src/test_AttribStringParser.cpp
-      LINK_LIBRARIES GaudiKernel)
-endif()
-gaudi_add_unit_test(test_PropertyHolder tests/src/test_PropertyHolder.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_WeakPropertyRef tests/src/test_WeakPropertyRef.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_StatusCode tests/src/test_StatusCode.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_EventIDBase tests/src/test_EventIDBase.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_EventIDRange tests/src/test_EventIDRange.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_SystemTypeinfoName tests/src/test_SystemTypeinfoName.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_SystemCmdLineArgs tests/src/test_SystemCmdLineArgs.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_compose  tests/src/test_compose.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_reverse  tests/src/test_reverse.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_GaudiTimer tests/src/test_GaudiTimer.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_Counters tests/src/CountersUnitTest.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-gaudi_add_unit_test(test_MonotonicArena tests/src/test_MonotonicArena.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
-
-gaudi_add_compile_test(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx
-                       ERRORS "FAIL01;FAIL02;FAIL03;FAIL04")
-
-#---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
-
-#---Installation------------------------------------------------------------
-# Disable generation of ConfUserDB (must be done before gaudi_install_python_modules)
-set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
-
-gaudi_install_python_modules()
-gaudi_install_scripts()
-
-#---Test-----------------------------------------------------------------------
-gaudi_add_test(QMTest QMTEST)
-
-#---Special options
-if(GAUDI_HIDE_WARNINGS)
-  if(UNIX)
-    # This hides warnings from a broken header file in CppUnit, but may
-    # hide problems in the actual test source
-    set_property(SOURCE tests/src/test_SerializeSTL.cpp tests/src/test_GaudiTime.cpp
-                 PROPERTY COMPILE_FLAGS -Wno-unused-parameter)
-    set_property(TARGET GaudiKernelDict PROPERTY COMPILE_FLAGS -Wno-overloaded-virtual)
-  endif()
-  if(WIN32)
-    set_property(TARGET GaudiKernelDict PROPERTY COMPILE_DEFINITIONS _SCL_SECURE_NO_WARNINGS)
-  endif()
-endif()
-
-add_executable(profile_Property tests/src/profile_Property.cpp)
-target_link_libraries(profile_Property GaudiKernel)
-
-find_program(gdb_command NAMES gdb)
-if(gdb_command)
-  get_filename_component(gdb_bindir "${gdb_command}" PATH)
-  # check if gdb was found in $ENV{PATH}
+# Check that gdb can be used for stack traces
+find_program(gdb_cmd gdb)
+mark_as_advanced(gdb_cmd)
+if(gdb_cmd)
+  get_filename_component(gdb_dir "${gdb_cmd}" DIRECTORY)
   file(TO_CMAKE_PATH "$ENV{PATH}" envpath)
-  list(FIND envpath ${gdb_bindir} idx)
-  if(idx LESS 0)
-    # it's not in the standard PATH, so we have to add it
-    gaudi_env(PREPEND PATH ${gdb_bindir})
+  if(NOT gdb_dir IN_LIST envpath)
+    set_property(TARGET target_runtime_paths APPEND
+      PROPERTY runtime_path $<SHELL_PATH:${gdb_dir}>)
   endif()
 else()
   message(WARNING "gdb not found, you will not be able to have stack traces for problems")

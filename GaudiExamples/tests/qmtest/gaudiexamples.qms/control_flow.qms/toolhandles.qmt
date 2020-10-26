@@ -11,6 +11,6 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/ToolHandles.py</text></set></argument>
+<argument name="args"><set><text>../../options/ToolHandles.py</text></set></argument>
 <argument name="reference"><text>refs/ToolHandles.ref</text></argument>
 </extension>

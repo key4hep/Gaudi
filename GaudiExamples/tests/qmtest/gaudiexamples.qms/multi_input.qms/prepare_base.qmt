@@ -13,7 +13,7 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
   <text>-v</text>
-  <text>$GAUDIEXAMPLESROOT/options/MultiInput/PrepareBase.py</text>
+  <text>../../options/MultiInput/PrepareBase.py</text>
 </set></argument>
 <argument name="validator"><text>
 countErrorLines({"ERROR":0})

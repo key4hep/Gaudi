@@ -27,6 +27,8 @@ class QMTTest(BaseTest):
         Parse a QMTest XML test description (.qmt file) to initialize the test
         instance.
         '''
+        from string import Template
+
         log = logging.getLogger('QMTest.XMLParser')
         import xml.etree.ElementTree as ET
         log.debug('parsing %s', path)
@@ -45,11 +47,9 @@ class QMTTest(BaseTest):
                     setattr(self, name,
                             [el.text for el in value.findall('text')])
                 elif name == 'environment':
-                    setattr(
-                        self, name,
-                        dict(
-                            el.text.split('=', 1)
-                            for el in value.findall('text')))
+                    for el in value.findall('text'):
+                        key, value = el.text.split('=', 1)
+                        self.environment[key] = Template(value).safe_substitute(self.environment)
                 else:
                     data = value.text
                     if data is not None:

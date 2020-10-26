@@ -16,6 +16,9 @@
 ApplicationMgr.TopAlg = { "LoopAlg" };
 ApplicationMgr.InitializationLoopCheck = False;
 </text></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+</set></argument>
 <argument name="validator"><text>
 findReferenceBlock('ApplicationMgr       INFO Application Manager Initialized successfully')
 </text></argument>

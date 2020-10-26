@@ -8,36 +8,41 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiMP)
+# GaudiMP subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
+# Build the library
+gaudi_add_library(GaudiMPLib
+                  SOURCES src/Lib/PyROOTPickle.cpp
+                          src/Lib/TESSerializer.cpp
+                  LINK
+                     PUBLIC GaudiKernel
+                            Python::Python
+                            ROOT::Net
+                            ROOT::RIO
+                            ROOT::Thread)
 
-find_package(ROOT COMPONENTS Net RIO Thread REQUIRED)
-find_package(PythonLibs REQUIRED)
-find_package(AIDA)
-
-# The list of sources to build into the module:
-set( module_sources src/component/IoComponentMgr.cpp )
-if( AIDA_FOUND )
-   list( APPEND module_sources src/component/RecordOutputStream.cpp
-      src/component/ReplayOutputStream.cpp )
+# Build the plugin
+gaudi_add_module(GaudiMP
+                 SOURCES src/component/IoComponentMgr.cpp
+                 LINK GaudiMPLib
+                      GaudiAlgLib
+                      Python::Python
+                      ROOT::Net
+                      ROOT::RIO
+                      ROOT::Thread)
+if(GAUDI_USE_AIDA)
+   target_sources(GaudiMP PRIVATE src/component/RecordOutputStream.cpp
+                                  src/component/ReplayOutputStream.cpp)
+   target_link_libraries(GaudiMP PRIVATE AIDA::aida)
 endif()
 
-# Hide some Boost/ROOT compile time warnings
-find_package(Boost)
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+# ROOT dictionaries
+gaudi_add_dictionary(GaudiMPDict
+                     HEADERFILES dict/gaudimp_dict.h
+                     SELECTION dict/selection.xml
+                     LINK GaudiMPLib)
 
-#---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiMPLib src/Lib/*.cpp
-                  LINK_LIBRARIES GaudiKernel PythonLibs ROOT
-                  INCLUDE_DIRS ROOT PythonLibs
-                  PUBLIC_HEADERS GaudiMP)
-gaudi_add_module(GaudiMP ${module_sources}
-                 LINK_LIBRARIES GaudiMPLib PythonLibs ROOT GaudiAlgLib)
-
-#---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(GaudiMP dict/gaudimp_dict.h dict/selection.xml LINK_LIBRARIES GaudiMPLib)
-
-#---Installation------------------------------------------------------------
-gaudi_install_python_modules()
-gaudi_install_scripts()
+# Install python modules
+gaudi_install(PYTHON)
+# Install other scripts
+gaudi_install(SCRIPTS)

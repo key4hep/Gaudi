@@ -16,27 +16,43 @@
 #  GPERFTOOLS_INCLUDE_DIRS (not cached)
 #  GPERFTOOLS_TCMALLOC_LIBRARY
 #  GPERFTOOLS_TCMALLOC_DEBUG_LIBRARY
-#  GPERFTOOLS_TCMALLOC_MINIMALLIBRARY
+#  GPERFTOOLS_TCMALLOC_MINIMAL_LIBRARY
 #  GPERFTOOLS_TCMALLOC_AND_PROFILER_LIBRARY
 #  GPERFTOOLS_PROFILER_LIBRARY
 #  GPERFTOOLS_LIBRARIES (not cached)
 #  GPERFTOOLS_LIBRARY_DIRS (not cached)
 #  GPERFTOOLS_PPROF_EXECUTABLE
-# 
-#  All blame goes to
-#  Sami Kama<sami_dot_kama_at_cern_dot_ch> Apr 2016
 #
+# Imports:
+#
+#  gperftools::gperftools (tcmalloc+profiler)
+#  gperftools::tcmalloc
+#  gperftools::tcmalloc_debug
+#  gperftools::tcmalloc_and_profiler
+#  gperftools::tcmalloc_minimal
+#  gperftools::profiler
+#  gperftools::pprof (executable)
+#
+# Usage of the targets instead of the variables is advised
 
-find_path(GPERFTOOLS_INCLUDE_DIR tcmalloc.h  HINTS ${GPERFTOOLS_INSTALL_DIR} PATH_SUFFIXES  "include/gperftools" "include/google" NO_DEFAULT_PATH ) #override with commandline define
-find_path(GPERFTOOLS_INCLUDE_DIR tcmalloc.h  HINTS ${GPERFTOOLS_INSTALL_DIR} PATH_SUFFIXES  "gperftools" "google" ) #If fails look a system installation
-foreach(component tcmalloc tcmalloc_debug tcmalloc_and_profiler tcmalloc_minimal profiler)
-string(TOUPPER ${component} COMPONENT)
-find_library(GPERFTOOLS_${COMPONENT}_LIBRARY NAMES ${component} HINTS ${GPERFTOOLS_INSTALL_DIR}/lib NO_DEFAULT_PATH )
-find_library(GPERFTOOLS_${COMPONENT}_LIBRARY NAMES ${component} HINTS ${GPERFTOOLS_INSTALL_DIR}/lib  )
-mark_as_advanced(GPERFTOOLS_${COMPONENT}_LIBRARY)
+# Find quietly if already found before
+if(DEFINED CACHE{GPERFTOOLS_INCLUDE_DIR})
+  set(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY YES)
+endif()
+
+find_path(GPERFTOOLS_INCLUDE_DIR tcmalloc.h  HINTS ${GPERFTOOLS_INSTALL_DIR}
+  PATH_SUFFIXES  "include/gperftools" "include/google" NO_DEFAULT_PATH)
+find_path(GPERFTOOLS_INCLUDE_DIR tcmalloc.h  HINTS ${GPERFTOOLS_INSTALL_DIR}
+  PATH_SUFFIXES  "gperftools" "google")
+foreach(component IN ITEMS tcmalloc tcmalloc_debug tcmalloc_and_profiler tcmalloc_minimal profiler)
+  string(TOUPPER ${component} COMPONENT)
+  find_library(GPERFTOOLS_${COMPONENT}_LIBRARY NAMES ${component}
+    HINTS ${GPERFTOOLS_INSTALL_DIR}/lib NO_DEFAULT_PATH)
+  find_library(GPERFTOOLS_${COMPONENT}_LIBRARY NAMES ${component}
+    HINTS ${GPERFTOOLS_INSTALL_DIR}/lib)
+  mark_as_advanced(GPERFTOOLS_${COMPONENT}_LIBRARY)
 endforeach()
 get_filename_component(GPERFTOOLS_INCLUDE_BASE "${GPERFTOOLS_INCLUDE_DIR}" DIRECTORY)
-#message(STATUS "GPERFTOOLS_INCLUDE_DIR=${GPERFTOOLS_INCLUDE_DIR}")
 find_program(GPERFTOOLS_PPROF_EXECUTABLE NAMES pprof
              HINTS ${GPERFTOOLS_INSTALL_DIR}/bin NO_DEFAULT_PATH)
 find_program(GPERFTOOLS_PPROF_EXECUTABLE NAMES pprof
@@ -49,7 +65,6 @@ set(GPERFTOOLS_LIBRARIES ${GPERFTOOLS_TCMALLOC_LIBRARY} ${GPERFTOOLS_PROFILER_LI
 if( GPERFTOOLS_INCLUDE_DIR )
    FILE(STRINGS "${GPERFTOOLS_INCLUDE_DIR}/tcmalloc.h" TCMVERSION REGEX ".define TC_VERSION_[MP].*")
 endif()
-#message(STATUS "TCMVERSION = ${TCMVERSION}")
 if(TCMVERSION)
   LIST(GET TCMVERSION 0 VERMAJ)
   string(REGEX MATCH ".* ([0-9]+)$" MAJ ${VERMAJ})
@@ -73,7 +88,6 @@ if(TCMVERSION)
     set(GPERFTOOLS_VERSION_PATCH 0)
   endif()
   set(GPERFTOOLS_VERSION ${GPERFTOOLS_VERSION_MAJOR}.${GPERFTOOLS_VERSION_MINOR}.${GPERFTOOLS_VERSION_PATCH})
-#  message(STATUS "GPERFTOOLS_VERSION = ${GPERFTOOLS_VERSION}")
 endif()
 # handle the QUIETLY and REQUIRED arguments and set GPERFTOOLS_FOUND to TRUE if
 # all listed variables are TRUE
@@ -88,4 +102,43 @@ if(GPERFTOOLS_TCMALLOC_LIBRARY)
   get_filename_component(GPERFTOOLS_LIBRARY_DIRS ${GPERFTOOLS_TCMALLOC_LIBRARY} PATH)
 elseif(GPERFTOOLS_PROFILER_LIBRARY)
   get_filename_component(GPERFTOOLS_LIBRARY_DIRS ${GPERFTOOLS_PROFILER_LIBRARY} PATH)
+endif()
+
+# Modernisation: create interface targets to link against and use
+if(TARGET gperftools::gperftools)
+    return()
+endif()
+if(GPERFTOOLS_FOUND)
+  if(NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+    message(STATUS "  found components: gperftools tcmalloc tcmalloc_debug "
+      "tcmalloc_and_profiler tcmalloc_minimal profiler")
+  endif()
+  add_library(gperftools::gperftools IMPORTED INTERFACE)
+  target_include_directories(gperftools::gperftools SYSTEM INTERFACE "${GPERFTOOLS_INCLUDE_DIRS}")
+  target_link_libraries(gperftools::gperftools INTERFACE "${GPERFTOOLS_LIBRARIES}")
+  foreach(component IN ITEMS tcmalloc tcmalloc_debug tcmalloc_and_profiler tcmalloc_minimal profiler)
+    string(TOUPPER ${component} COMPONENT)
+    add_library(gperftools::${component} IMPORTED INTERFACE)
+    target_include_directories(gperftools::${component} SYSTEM INTERFACE "${GPERFTOOLS_INCLUDE_DIR}")
+    target_link_libraries(gperftools::${component} INTERFACE "${GPERFTOOLS_${COMPONENT}_LIBRARY}")
+    if(NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+    endif()
+  endforeach()
+  if(NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+    message(STATUS "  Import executable target: gperftools::pprof")
+  endif()
+  add_executable(gperftools::pprof IMPORTED)
+  set_target_properties(gperftools::pprof PROPERTIES IMPORTED_LOCATION ${GPERFTOOLS_PPROF_EXECUTABLE})
+endif()
+
+if(COMMAND __deprecate_var_for_target)
+  foreach(v IN ITEMS GPERFTOOLS_INCLUDE_DIR
+                     GPERFTOOLS_INCLUDE_DIRS GPERFTOOLS_TCMALLOC_LIBRARY
+                     GPERFTOOLS_TCMALLOC_DEBUG_LIBRARY
+                     GPERFTOOLS_TCMALLOC_MINIMAL_LIBRARY
+                     GPERFTOOLS_TCMALLOC_AND_PROFILER_LIBRARY
+                     GPERFTOOLS_PROFILER_LIBRARY GPERFTOOLS_LIBRARIES
+                     GPERFTOOLS_LIBRARY_DIRS GPERFTOOLS_PPROF_EXECUTABLE)
+    variable_watch(${v} __deprecate_var_for_target)
+  endforeach()
 endif()

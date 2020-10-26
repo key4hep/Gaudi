@@ -8,285 +8,165 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
+
 stages:
   - build
   - test
-  - deploy
-
-image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
 
 variables:
-  NO_LBLOGIN: "1"
-  TARGET_BRANCH: master
-  BINARY_TAG: x86_64-centos7-gcc9-opt
-  BUILDDIR: build-opt
-  TESTS_REPORT: "test_report"
-  LCG_hostos: "x86_64-centos7"
-  LCG_release_area: "/cvmfs/sft.cern.ch/lcg/releases"
-  LCG_contrib: "/cvmfs/sft.cern.ch/lcg/contrib"
-  CCACHE_VERSION: "3.7.1-7651f"
+  LCG_VERSION: "97a"
+  CMAKE_GENERATOR: 'Ninja' # default build system
+  NO_LBLOGIN: "1" # prevent lbdocker containers to start LbLogin/LbEnv
 
-build:gcc8:opt:
+# All the configuration
+before_script:
+  # Add Ninja and CMake to the PATH
+  - export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.17.3/Linux-x86_64/bin:/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.8.2.g81279.kitware.dyndep-1.jobserver-1/Linux-x86_64:$PATH"
+  - export CCACHE_DIR=$PWD/.ccache
+
+# Job templates
+.build: &template_build
   stage: build
   tags:
     - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
-    BUILDDIR: build-opt8
   script:
-    - ci-utils/build
+    - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
+    - cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${CI_JOB_NAME}.cmake -DGAUDI_USE_INTELAMPLIFIER:BOOL=TRUE -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    - ccache -z
+    - cmake --build build 2>&1 | tee build/build.log
+    - ccache -s
   artifacts:
     paths:
-      - ${BUILDDIR}
-    expire_in: 1 week
+      - build
+      - lcg-toolchains
+    expire_in: 1 day
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - .ccache
 
-build:gcc9:opt:
-  stage: build
+.build-check: &template_build_check
+  stage: test
+  script:
+    - ci-utils/build-check build/build.log
+  allow_failure: true
+
+.test: &template_test
+  stage: test
   tags:
     - cvmfs
+  script:
+    - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
+    - cd build
+    - if ctest -T test -j $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
+    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
+    - cd ..
+    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - test "$result" = "success"
+  artifacts:
+    paths:
+      - Test.xml
+    reports:
+      junit:
+        - results.xml
+    when: always
+    expire_in: 1 day
+  retry: 2
+
+
+### Build
+x86_64-centos7-gcc9-opt:
+  <<: *template_build
+
+x86_64-centos7-gcc9-dbg:
+  <<: *template_build
+
+view-gcc8:
+  <<: *template_build
+  script:
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
+    # Override Ninja and CMake from the view
+    - export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.17.3/Linux-x86_64/bin:/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.8.2.g81279.kitware.dyndep-1.jobserver-1/Linux-x86_64:$PATH"
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    - ccache -z
+    - cmake --build build 2>&1 | tee build/build.log
+    - ccache -s
+
+lhcb-gcc9:
+  <<: *template_build
   variables:
     BINARY_TAG: x86_64-centos7-gcc9-opt
-    BUILDDIR: build-opt
   script:
-    - ci-utils/build
+    - source /cvmfs/lhcb.cern.ch/lib/LbEnv
+    - lb-project-init --overwrite
+    - ccache -z
+    - make
+    - ccache -s
   artifacts:
     paths:
-      - ${BUILDDIR}
-    expire_in: 1 week
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - .ccache
-
-build:gcc9:dbg:
-  stage: build
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc9-dbg
-    BUILDDIR: build-dbg
-  script:
-    - ci-utils/build
-  artifacts:
-    paths:
-      - ${BUILDDIR}
-    expire_in: 1 week
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - .ccache
-
-build:gcc9:opt:python3:
-  stage: build
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc9+py3-opt
-    BUILDDIR: build-opt-python3
-  script:
-    - ci-utils/build
-  artifacts:
-    paths:
-      - ${BUILDDIR}
-    expire_in: 1 week
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - .ccache
-
-# The build-check:* jobs are a workaround for not being able to set a warning
-# state from the build jobs (based on the exit code).
-# See https://gitlab.com/gitlab-org/gitlab/-/issues/16733
-
-build-check:gcc8:opt:
-  stage: test
-  dependencies:
-    - build:gcc8:opt
-  script:
-    - ci-utils/build-check */build.log
-  allow_failure: true
-
-build-check:gcc9:opt:
-  stage: test
-  dependencies:
-    - build:gcc9:opt
-  script:
-    - ci-utils/build-check */build.log
-  allow_failure: true
-
-build-check:gcc9:dbg:
-  stage: test
-  dependencies:
-    - build:gcc9:dbg
-  script:
-    - ci-utils/build-check */build.log
-  allow_failure: true
-
-build-check:gcc9:opt:python3:
-  stage: test
-  dependencies:
-    - build:gcc9:opt:python3
-  script:
-    - ci-utils/build-check */build.log
-  allow_failure: true
-
-check-formatting:
-  stage: build
-  dependencies: []
-  image: gitlab-registry.cern.ch/gaudi/gaudi/format-checker:latest
-  script:
-    - ci-utils/check-formatting
-  artifacts:
-    paths:
-      - apply-formatting.patch
-    when: on_failure
+      - build.${BINARY_TAG}
     expire_in: 1 day
 
-check-copyright:
-  image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+x86_64-centos7-gcc9-opt:check:
+  dependencies: ["x86_64-centos7-gcc9-opt"]
   script:
-    - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/raw/master/LbDevTools/SourceTools.py?inline=false"
-    - python lb-check-copyright origin/${TARGET_BRANCH}
+    bash ci-utils/check-sources build/build.ninja
+  allow_failure: true
 
-doxygen:
-  stage: test
-  dependencies:
-    - build:gcc9:opt
-  tags:
-    - cvmfs
-  only:
-    - master
-    - tags
+### Tests
+x86_64-centos7-gcc9-opt:test:
+  <<: *template_test
+  dependencies: ["x86_64-centos7-gcc9-opt"]
+
+x86_64-centos7-gcc9-dbg:test:
+  <<: *template_test
+  dependencies: ["x86_64-centos7-gcc9-dbg"]
+
+view-gcc8:test:
+  <<: *template_test
+  dependencies: ["view-gcc8"]
+  script:
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
+    # Override Ninja and CMake from the view
+    - export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.17.3/Linux-x86_64/bin:/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.8.2.g81279.kitware.dyndep-1.jobserver-1/Linux-x86_64:$PATH"
+    - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
+    - cd build
+    - if ctest -T test -j $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
+    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
+    - cd ..
+    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - test "$result" = "success"
+
+
+lhcb-gcc9:test:
+  <<: *template_test
+  dependencies: ["lhcb-gcc9"]
   variables:
     BINARY_TAG: x86_64-centos7-gcc9-opt
-    BUILDDIR: build-opt
   script:
-    - . ci-utils/env_setup.sh
-    - find ${BUILDDIR} -type f -exec touch -d $(date +@%s) \{} \;
-    - make BUILDDIR=${BUILDDIR} doc
-    - rm -rf public
-    - mkdir -p public/doxygen
-    - mv ${BUILDDIR}/doxygen/html ${CI_COMMIT_REF_SLUG}
-    - zip -r -q public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
-  artifacts:
-    paths:
-      - public
-    expire_in: 1 day
+    - source /cvmfs/lhcb.cern.ch/lib/LbEnv
+    - lb-project-init --overwrite
+    - find build.${BINARY_TAG} -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
+    # FIXME: waiting for https://gitlab.cern.ch/lhcb-core/LbDevTools/-/merge_requests/132
+    # - if make test ARGS="-j$(nproc) --no-compress-output" ; then result=success ; else result=failure ; fi
+    # so we use directly ctest
+    - cd build.${BINARY_TAG}
+    - if ctest -T test -j $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
+    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
+    - cd ..
+    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - test "$result" = "success"
 
-test:gcc8:opt:
-  stage: test
-  dependencies:
-    - build:gcc8:opt
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc8-opt
-    BUILDDIR: build-opt8
-  script:
-    - ci-utils/test
-  artifacts:
-    paths:
-      - ${TESTS_REPORT}
-    when: always
-    expire_in: 1 week
-  retry: 2
+### Check build outputs
+x86_64-centos7-gcc9-opt:build-check:
+  <<: *template_build_check
+  dependencies: ["x86_64-centos7-gcc9-opt"]
 
-test:gcc9:opt:
-  stage: test
-  dependencies:
-    - build:gcc9:opt
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc9-opt
-    BUILDDIR: build-opt
-  script:
-    - ci-utils/test
-  artifacts:
-    paths:
-      - ${TESTS_REPORT}
-    when: always
-    expire_in: 1 week
-  retry: 2
+x86_64-centos7-gcc9-dbg:build-check:
+  <<: *template_build_check
+  dependencies: ["x86_64-centos7-gcc9-dbg"]
 
-test:gcc9:dbg:
-  stage: test
-  dependencies:
-    - build:gcc9:dbg
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc9-dbg
-    BUILDDIR: build-dbg
-  script:
-    - ci-utils/test
-  artifacts:
-    paths:
-      - ${TESTS_REPORT}
-    when: always
-    expire_in: 1 week
-  retry: 2
-
-test:gcc9:opt:python3:
-  stage: test
-  dependencies:
-    - build:gcc9:opt:python3
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc9+py3-opt
-    BUILDDIR: build-opt-python3
-  script:
-    - ci-utils/test
-  artifacts:
-    paths:
-      - ${TESTS_REPORT}
-    when: always
-    expire_in: 1 week
-  retry: 2
-
-test_public_headers_build:
-  stage: test
-  dependencies:
-    - build:gcc9:opt
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc9-opt
-    BUILDDIR: build-opt
-  script:
-    - ci-utils/test_public_headers_build
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - .ccache
-
-test-python3:
-  image: python:3-slim
-  stage: test
-  script:
-    - pip install nose coverage
-    - PYTHONPATH=GaudiConfiguration/python nosetests -v --with-coverage --cover-package=GaudiConfig2 --cover-min-percentage=100 GaudiConfiguration/tests/nose
-
-# see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
-# of the configuration
-deploy-doxygen:
-  stage: deploy
-  dependencies:
-    - doxygen
-  only:
-    - master
-    - tags
-  image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
-  script:
-    - test -z "$EOS_ACCOUNT_USERNAME" -o -z "$EOS_ACCOUNT_PASSWORD" -o -z "$EOS_PATH" && exit 0 || true
-    # Script that performs the deploy to EOS. Makes use of the variables defined in the project
-    # It will copy the generated content to the folder in EOS
-    - deploy-eos
-  # do not run any globally defined before_script or after_script for this step
-  before_script: []
-  after_script: []
+view-gcc8:build-check:
+  <<: *template_build_check
+  dependencies: ["view-gcc8"]

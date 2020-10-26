@@ -16,4 +16,7 @@
 countErrorLines()
 </text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests</text>
+</set></argument>
 </extension>

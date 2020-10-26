@@ -19,12 +19,16 @@ from GaudiKernel.GaudiHandles import *
 from GaudiKernel.DataHandle import DataHandle
 
 parser = OptionParser(  # desc='simple script to merge files',
-    usage="%prog [options] input1 input2 ... output")
+    usage="%prog [options] input1 input2 ... [output|--output output]")
 parser.add_option(
     '--ignore-missing',
     action='store_true',
     help='do not fail if an input file is missing, '
     'just ignore it')
+parser.add_option(
+    '-o',
+    '--output',
+    help='output filename (by default use the last argument)')
 
 if __name__ == '__main__':
     opts, args = parser.parse_args()
@@ -35,7 +39,7 @@ if __name__ == '__main__':
     import logging
     logging.basicConfig()
 
-    output = args.pop()
+    output = opts.output or args.pop()
     inputs = args
     missing = [i for i in inputs if not os.path.isfile(i)]
 

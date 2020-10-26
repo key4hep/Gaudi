@@ -12,4 +12,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
   <argument name="program"><text>../../scripts/ArrayProperties.py</text></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+  <argument name="environment"><set>
+  <text>ROOT_INCLUDE_PATH=$ENV_CMAKE_SOURCE_DIR/GaudiKernel/include:$ROOT_INCLUDE_PATH</text>
+  </set></argument>
 </extension>

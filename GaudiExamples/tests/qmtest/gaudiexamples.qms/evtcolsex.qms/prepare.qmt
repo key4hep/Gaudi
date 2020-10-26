@@ -13,7 +13,7 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
   <text>-v</text>
-  <text>$GAUDIEXAMPLESROOT/options/EvtColsEx/Prepare.py</text>
+  <text>../../options/EvtColsEx/Prepare.py</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/EvtColsEx/Prepare.ref</text></argument>

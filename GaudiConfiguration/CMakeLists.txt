@@ -8,15 +8,21 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiConfiguration)
+# GaudiConfiguration subdirectory
 
+# Install python modules
+gaudi_install(PYTHON)
 
-gaudi_install_python_modules()
+# FIXME: gaudi_add_test(nosetests) is not configurable enough, so I copied a bit of it
+_import_nosetests()
+add_test(NAME GaudiConfiguration.nose
+         COMMAND run $<TARGET_FILE:nosetests> -v --with-doctest --with-coverage --cover-package=GaudiConfig2
+                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
 
 # Ideally I would use '--cover-min-percentage=100', but the version of nose we
 # have is a bit old
-gaudi_add_test(nose
-               COMMAND nosetests -v --with-doctest --with-coverage --cover-package=GaudiConfig2
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose
-               PASSREGEX "TOTAL .* 100%"
-               FAILREGEX "FAILED")
+set_tests_properties(GaudiConfiguration.nose
+                     PROPERTIES PASS_REGULAR_EXPRESSION "TOTAL .* 100%"
+                                FAIL_REGULAR_EXPRESSION "FAILED")
+
+# Note: The file tools/print_limits.cpp is a ROOT macro, so it is not meant to be compiled

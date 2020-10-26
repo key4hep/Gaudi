@@ -13,8 +13,7 @@ from subprocess import Popen, PIPE
 
 
 def test():
-    out = Popen(['instructionsetLevel.exe', 'all'],
-                stdout=PIPE).communicate()[0]
+    out = Popen(['instructionsetLevel', 'all'], stdout=PIPE).communicate()[0]
     out = out.decode('utf-8')
     known_flags = set(l.strip() for l in out.splitlines())
 
@@ -27,7 +26,7 @@ def test():
             expected = flags.intersection(known_flags)
             break
 
-    out = Popen(['instructionsetLevel.exe'], stdout=PIPE).communicate()[0]
+    out = Popen(['instructionsetLevel'], stdout=PIPE).communicate()[0]
     out = out.decode('utf-8')
     found = set(l.strip() for l in out.splitlines())
     assert expected == found, ('expected: {0}, found: {1}'.format(

@@ -13,7 +13,7 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
   <text>-v</text>
-  <text>$GAUDIEXAMPLESROOT/options/ROOT_IO/Read.py</text>
+  <text>../../options/ROOT_IO/Read.py</text>
 </set></argument>
 <argument name="options"><text>
 # Options of the test job

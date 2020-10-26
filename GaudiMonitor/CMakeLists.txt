@@ -8,27 +8,19 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiMonitor)
+# GaudiMonitor subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel)
-
-find_package(Boost REQUIRED)
-
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+# Build the plugin
+gaudi_add_module(GaudiMonitor
+                 SOURCES src/ExceptionSvc.cpp
+                         src/HistorySvc.cpp
+                 LINK GaudiKernel)
 
 if(WIN32)
-  set(winsocklib ws2_32.lib)
-endif()
-#---Libraries---------------------------------------------------------------
-gaudi_add_module(GaudiMonitor src/*.cpp
-                 LINK_LIBRARIES GaudiKernel ${winsocklib})
-
-if(WIN32 AND GAUDI_HIDE_WARNINGS)
+  target_link_libraries(GaudiMonitor PRIVATE ws2_32.lib)
   # These are needed because Windows compiler doesn't like standard C and POSIX functions,
-  # but this package containes some imported (external) C file that is compiled here in C++.
-  set_property(TARGET GaudiMonitor
-               PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS)
-  set_property(TARGET GaudiMonitor
-               PROPERTY COMPILE_FLAGS /wd4996)
+  # but this package contains some imported (external) C file that is compiled here in C++.
+  target_compile_definitions(GaudiMonitor PRIVATE _CRT_SECURE_NO_WARNINGS
+                                                  _SCL_SECURE_NO_WARNINGS)
+  target_compile_options(GaudiMonitor /wd4996)
 endif()

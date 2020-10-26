@@ -1,0 +1,11 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>-v</text>
+  <text>../../options/ROOT_IO/WriteAndReadHandleError.py</text>
+</set></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="exit_code"><integer>3</integer></argument>
+<argument name="unsupported_platforms"><set><text>.*</text></set></argument>
+</extension>

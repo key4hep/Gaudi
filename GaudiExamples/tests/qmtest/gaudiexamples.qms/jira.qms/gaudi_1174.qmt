@@ -12,7 +12,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
-  <text>$GAUDIEXAMPLESROOT/options/AlgTools.py</text>
+  <text>../../options/AlgTools.py</text>
 </set></argument>
 <argument name="options"><text>
 from Configurables import MessageSvc

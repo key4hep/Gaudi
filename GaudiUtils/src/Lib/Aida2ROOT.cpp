@@ -26,23 +26,11 @@
 // ============================================================================
 // AIDA
 // ============================================================================
-#include "GaudiKernel/Kernel.h"
-//-- to avoid that the class macro trick affects them
-/// @FIXME: AIDA interfaces visibility
-#ifdef __clang__
-#  pragma clang diagnostic push
-#  pragma clang diagnostic ignored "-Wkeyword-macro"
-#endif
-#define class class GAUDI_API
-#ifdef __clang__
-#  pragma clang diagnostic pop
-#endif
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IHistogram2D.h"
 #include "AIDA/IHistogram3D.h"
 #include "AIDA/IProfile1D.h"
 #include "AIDA/IProfile2D.h"
-#undef class
 // ============================================================================
 // ROOT
 // ============================================================================

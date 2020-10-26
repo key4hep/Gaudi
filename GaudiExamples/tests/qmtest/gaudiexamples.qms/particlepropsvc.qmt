@@ -25,6 +25,9 @@ ApplicationMgr( EvtMax = 1,
                 TopAlg = [GaudiPPS()] )
 
 </text></argument>
+<argument name="environment"><set>
+  <text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+</set></argument>
 <argument name="validator"><text>
 expected = "Opened particle properties file : ../data/ParticleTable.txt"
 if not expected in stdout:

@@ -11,7 +11,7 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/ExtendedProperties.py</text></set></argument>
+<argument name="args"><set><text>../../options/ExtendedProperties.py</text></set></argument>
 <argument name="validator"><text>
 import ExtPropValidator
 ExtPropValidator.validate(stdout,stderr,result,causes)

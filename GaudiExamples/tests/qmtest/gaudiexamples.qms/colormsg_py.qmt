@@ -11,8 +11,11 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/ColorMsg.opts</text></set></argument>
+<argument name="args"><set><text>../../options/ColorMsg.opts</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/ColorMsg_py.ref</text></argument>
 <argument name="unsupported_platforms"><set><text>win32</text></set></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+</set></argument>
 </extension>

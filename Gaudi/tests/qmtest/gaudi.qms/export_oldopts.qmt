@@ -13,4 +13,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>../scripts/test_export_oldopts.py</text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
+</set></argument>
 </extension>

@@ -8,53 +8,45 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiSvc)
+# GaudiSvc subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel)
+# Build the plugin
+gaudi_add_module(GaudiSvc
+                 SOURCES src/CPUCrunchSvc/CPUCrunchSvc.cpp
+                         src/DetectorDataSvc/DetDataSvc.cpp
+                         src/FileMgr/FileMgr.cpp
+                         src/FileMgr/POSIXFileHandler.cpp
+                         src/FileMgr/RootFileHandler.cpp
+                         src/MetaDataSvc/MetaDataSvc.cpp
+                         src/NTupleSvc/CollectionCloneAlg.cpp
+                         src/NTupleSvc/NTupleSvc.cpp
+                         src/NTupleSvc/TagCollectionSvc.cpp
+                         src/THistSvc/THistSvc.cpp
+                   LINK GaudiKernel
+                        Boost::headers
+                        Boost::regex
+                        ROOT::Hist
+                        ROOT::RIO
+                        ROOT::Tree
+                        ROOT::Net
+                        ROOT::Matrix
+                        ROOT::Thread
+                        ROOT::MathCore)
+# ATLAS may want to append GENCONF_OPTIONS --user-module=GaudiSvc.ExtraModules
 
-find_package(Boost REQUIRED COMPONENTS regex)
-find_package(ROOT REQUIRED COMPONENTS Hist RIO Tree Net Matrix Thread MathCore)
-find_package(TBB REQUIRED)
-find_package(CLHEP)
-
-# Decide whether to link against CLHEP:
-set( clhep_lib )
-if( CLHEP_FOUND )
-   set( clhep_lib CLHEP )
+if(GAUDI_USE_CLHEP)
+   target_sources(GaudiSvc PRIVATE src/RndmGenSvc/HepRndmEngines.cpp
+                                   src/RndmGenSvc/RndmEngine.cpp
+                                   src/RndmGenSvc/RndmGenSvc.cpp
+                                   src/RndmGenSvc/HepRndmGenerators.cpp
+                                   src/RndmGenSvc/RndmGen.cpp)
+   target_link_libraries(GaudiSvc PRIVATE CLHEP::CLHEP)
 endif()
 
-# Hide some Boost/ROOT/CLHEP compile time warnings
-include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS} )
-if( CLHEP_FOUND )
-   include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
-endif()
+# QMTest
+gaudi_add_tests(QMTest)
 
-#---Libraries---------------------------------------------------------------
-set( GaudiSvc_srcs
-   src/DetectorDataSvc/*.cpp
-   src/NTupleSvc/*.cpp
-   src/THistSvc/*.cpp
-   src/FileMgr/*.cpp
-   src/CPUCrunchSvc/*.cpp
-   src/MetaDataSvc/*.cpp )
-if( CLHEP_FOUND )
-   list( APPEND GaudiSvc_srcs
-      src/RndmGenSvc/*.cpp )
-endif()
-
-if(NOT GAUDI_ATLAS)
-  gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
-                   LINK_LIBRARIES GaudiKernel Boost ROOT ${clhep_lib}
-                   INCLUDE_DIRS Boost ROOT ${clhep_lib})
-else()
-  gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
-                   LINK_LIBRARIES GaudiKernel Boost ROOT ${clhep_lib}
-                   INCLUDE_DIRS Boost ROOT ${clhep_lib}
-                   GENCONF_USER_MODULE GaudiSvc.ExtraModules)
-endif()
-
-gaudi_install_python_modules()
-gaudi_install_scripts()
-
-#---Test-----------------------------------------------------------------------
-gaudi_add_test(QMTest QMTEST)
+# Install python modules
+gaudi_install(PYTHON)
+# Install other scripts
+gaudi_install(SCRIPTS)

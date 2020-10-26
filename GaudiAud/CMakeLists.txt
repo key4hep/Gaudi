@@ -8,16 +8,18 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiAud)
+# GaudiAud subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel)
+# Build the plugin
+gaudi_add_module(GaudiAud
+                 SOURCES src/AlgContextAuditor.cpp
+                         src/ChronoAuditor.cpp
+                         src/CommonAuditor.cpp
+                         src/MemoryAuditor.cpp
+                         src/MemStatAuditor.cpp
+                         src/NameAuditor.cpp
+                         src/ProcStats.cpp
+                 LINK GaudiKernel)
 
-find_package(Boost REQUIRED)
-
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-
-#---Libraries---------------------------------------------------------------
-gaudi_add_module(GaudiAud src/*.cpp LINK_LIBRARIES GaudiKernel)
-
-gaudi_add_test(QMTest QMTEST)
+# QMTest
+gaudi_add_tests(QMTest)

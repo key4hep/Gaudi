@@ -11,13 +11,16 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/GaudiCommonTests.opts</text></set></argument>
+<argument name="args"><set><text>../../options/GaudiCommonTests.opts</text></set></argument>
 <argument name="options"><text>
 from Gaudi.Configuration import *
 from Configurables import TBBMessageSvc
 msgSvc = TBBMessageSvc(OutputLevel=3)
 ApplicationMgr(MessageSvcType="TBBMessageSvc")
 </text></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+</set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/TBB/GaudiCommonTests.ref</text></argument>
 </extension>

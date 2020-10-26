@@ -8,35 +8,53 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(RootCnv)
+# RootCnv subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
+# Build the library
+gaudi_add_library(RootCnvLib
+                  SOURCES src/RootCnvSvc.cpp
+                          src/RootDataConnection.cpp
+                          src/RootEvtSelector.cpp
+                          src/RootNTupleCnv.cpp
+                          src/RootStatCnv.cpp
+                          src/RootDatabaseCnv.cpp
+                          src/RootDirectoryCnv.cpp
+                          src/RootIOHandler.cpp
+                          src/RootPerfMonSvc.cpp
+                          src/SysProcStat.cpp
+                  LINK
+                    PUBLIC GaudiKernel
+                           GaudiUtilsLib
+                           ROOT::RIO
+                           ROOT::Tree
+                           ROOT::TreePlayer
+                           ROOT::MathCore
+                           ROOT::Net
+                           ROOT::Graf3d
+                           ROOT::Graf
+                           ROOT::Gpad)
 
-find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore Net Graf3d Graf Gpad REQUIRED)
-find_package(Boost REQUIRED)
+# Build the plugin
+gaudi_add_module(RootCnv
+                 SOURCES components/Components.cpp
+                 LINK RootCnvLib)
 
-# Hide some ROOT/Boost compile time warnings
-include_directories(SYSTEM ${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+# Build executable
+gaudi_add_executable(gaudi_merge
+                     SOURCES merge/merge.cpp
+                     LINK RootCnvLib)
+gaudi_add_executable(extract_event
+                     SOURCES merge/extractEvt.cpp
+                     LINK RootCnvLib)
 
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
+# ROOT dictionaries
+gaudi_add_dictionary(RootCnvDict
+                     HEADERFILES dict/RootCnv_dict.h
+                     SELECTION dict/RootCnv_dict.xml
+                     LINK RootCnvLib)
 
-gaudi_add_library(RootCnvLib src/*.cpp
-                  LINK_LIBRARIES GaudiKernel GaudiUtilsLib ROOT
-                  INCLUDE_DIRS GaudiKernel GaudiUtilsLib
-                  PUBLIC_HEADERS RootCnv)
-
-gaudi_add_module(RootCnv components/Components.cpp
-                 LINK_LIBRARIES RootCnvLib)
-
-# Note: the set_property above is needed because that's the way REFLEX_BUILD_LIBRARIES
-#       takes the "-D" flags, and it makes the following lines unneeded.
-#set_property(TARGET RootCnvLib RootCnv RootCnvDict
-#             APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
-
-#---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(RootCnv dict/RootCnv_dict.h  dict/RootCnv_dict.xml LINK_LIBRARIES RootCnvLib)
-
-gaudi_add_executable(gaudi_merge merge/merge.cpp
-                     LINK_LIBRARIES RootCnvLib)
-gaudi_add_executable(extract_event merge/extractEvt.cpp
-                     LINK_LIBRARIES RootCnvLib)
+set_property(TARGET RootCnvLib RootCnv RootCnvDict
+             APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
+        
+# Install other scripts
+gaudi_install(SCRIPTS)

@@ -31,7 +31,7 @@
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/Time.h"
 
-#include "GaudiCoreSvcVersion.h"
+#include "GAUDI_VERSION.h"
 
 using System::getEnv;
 using System::isEnvSet;
@@ -277,9 +277,9 @@ StatusCode ApplicationMgr::configure() {
       log << MSG::ALWAYS << " version " << m_appVersion.value();
     } else {
       log << MSG::ALWAYS << " (GaudiCoreSvc "
-          << "v" << GAUDICORESVC_MAJOR_VERSION << "r" << GAUDICORESVC_MINOR_VERSION
-#if GAUDICORESVC_PATCH_VERSION
-          << "p" << GAUDICORESVC_PATCH_VERSION
+          << "v" << GAUDI_MAJOR_VERSION << "r" << GAUDI_MINOR_VERSION
+#if GAUDI_PATCH_VERSION
+          << "p" << GAUDI_PATCH_VERSION
 #endif
           << ")";
     }

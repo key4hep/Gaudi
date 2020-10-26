@@ -13,7 +13,7 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
   <text>-v</text>
-  <text>$GAUDIEXAMPLESROOT/options/AlgToolsClone.py</text>
+  <text>../../options/AlgToolsClone.py</text>
 </set></argument>
 <argument name="timeout"><integer>120</integer></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>

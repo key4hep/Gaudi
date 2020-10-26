@@ -35,6 +35,9 @@ app.ExtSvc.extend(['ToolSvc', auditSvc])
 app.AuditAlgorithms = True
 
 </text></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+</set></argument>
 <argument name="validator"><text>
 import re
 expected = ( r"Timing\s+SUCCESS\s+The timing is \(in us\)\s*\n" +

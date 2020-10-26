@@ -11,7 +11,7 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/FunctionalAlgorithms/ProduceConsume.py</text></set></argument>
+<argument name="args"><set><text>../../options/FunctionalAlgorithms/ProduceConsume.py</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/ProduceConsume.ref</text></argument>
 </extension>

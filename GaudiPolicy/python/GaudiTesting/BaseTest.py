@@ -106,7 +106,7 @@ class BaseTest(object):
         self.stderr = ''
         self.timeout = 600
         self.exit_code = None
-        self.environment = None
+        self.environment = dict(os.environ)
         self.unsupported_platforms = []
         self.signal = None
         self.workdir = os.curdir
@@ -137,15 +137,9 @@ class BaseTest(object):
             optionFile.seek(0)
             self.args.append(RationalizePath(optionFile.name))
 
-        # If not specified, setting the environment
-        if self.environment is None:
-            self.environment = os.environ
-        else:
-            self.environment = dict(
-                list(self.environment.items()) + list(os.environ.items()))
-
-        platform_id = (os.environ.get('BINARY_TAG')
-                       or os.environ.get('CMTCONFIG') or platform.platform())
+        platform_id = (self.environment.get('BINARY_TAG')
+                       or self.environment.get('CMTCONFIG')
+                       or platform.platform())
         # If at least one regex matches we skip the test.
         skip_test = bool([
             None for prex in self.unsupported_platforms
@@ -165,8 +159,8 @@ class BaseTest(object):
             prog = ''
             if self.program != '':
                 prog = self.program
-            elif "GAUDIEXE" in os.environ:
-                prog = os.environ["GAUDIEXE"]
+            elif "GAUDIEXE" in self.environment:
+                prog = self.environment["GAUDIEXE"]
             else:
                 prog = "Gaudi.exe"
 
@@ -681,8 +675,8 @@ def which(executable):
         fullpath = os.path.join(d, executable)
         if os.path.exists(fullpath):
             return fullpath
-    if executable.endswith('.exe'):
-        return which(executable[:-4])
+        elif executable.endswith('.exe') and os.path.exists(fullpath[:-4]):
+            return fullpath[:-4]
     return None
 
 
@@ -1327,8 +1321,8 @@ def findHistosSummaries(stdout):
 def PlatformIsNotSupported(self, context, result):
     platform = GetPlatform(self)
     unsupported = [
-        re.compile(x) for x in [str(y).strip() for y in unsupported_platforms]
-        if x
+        re.compile(x)
+        for x in [str(y).strip() for y in self.unsupported_platforms] if x
     ]
     for p_re in unsupported:
         if p_re.search(platform):
@@ -1344,7 +1338,14 @@ def GetPlatform(self):
         """
     arch = "None"
     # check architecture name
-    if "BINARY_TAG" in os.environ:
+    if os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in ("Debug", "Developer"):
+        arch = "dummy-dbg"
+    elif os.environ.get(
+            "ENV_CMAKE_BUILD_TYPE",
+            "") in ("Release", "MinSizeRel",
+                    "RelWithDebInfo", ""):  # RelWithDebInfo == -O2 -g -DNDEBUG
+        arch = "dummy-opt"
+    elif "BINARY_TAG" in os.environ:
         arch = os.environ["BINARY_TAG"]
     elif "CMTCONFIG" in os.environ:
         arch = os.environ["CMTCONFIG"]
