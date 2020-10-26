@@ -1046,7 +1046,7 @@ ${RUN_SCRIPT_EXTRA_COMMANDS}
 ")
     # Since we cannot tell file(GENERATE) to create an executable file (at generation time)
     # we create one (at configure time) that source the first one, then we make it executable
-    file(WRITE ${CMAKE_BINARY_DIR}/run "#!/bin/sh\n# Auto-generated script to set the environment before the execution of a command\nsource ${CMAKE_BINARY_DIR}/${_env_file}\nexec \"$@\"\n")
+    file(WRITE ${CMAKE_BINARY_DIR}/run "#!/bin/sh\n# Auto-generated script to set the environment before the execution of a command\n. ${CMAKE_BINARY_DIR}/${_env_file}\nexec \"$@\"\n")
     execute_process(COMMAND chmod a+x ${CMAKE_BINARY_DIR}/run)
     # Add a executable target for convenience
     add_executable(run IMPORTED GLOBAL)
