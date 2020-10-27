@@ -11,6 +11,7 @@
 image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
 
 stages:
+  - pre-build-checks
   - build
   - test
 
@@ -18,6 +19,7 @@ variables:
   LCG_VERSION: "97a"
   CMAKE_GENERATOR: 'Ninja' # default build system
   NO_LBLOGIN: "1" # prevent lbdocker containers to start LbLogin/LbEnv
+  TARGET_BRANCH: master
 
 # All the configuration
 before_script:
@@ -79,6 +81,9 @@ before_script:
 x86_64-centos7-gcc9-opt:
   <<: *template_build
 
+x86_64-centos7-gcc9+py3-opt:
+  <<: *template_build
+
 x86_64-centos7-gcc9-dbg:
   <<: *template_build
 
@@ -101,31 +106,38 @@ lhcb-gcc9:
     - source /cvmfs/lhcb.cern.ch/lib/LbEnv
     - lb-project-init --overwrite
     - ccache -z
-    - make
+    - mkdir build.${BINARY_TAG}
+    - make 2>&1 | tee build.${BINARY_TAG}/build.log
     - ccache -s
   artifacts:
     paths:
       - build.${BINARY_TAG}
     expire_in: 1 day
 
-x86_64-centos7-gcc9-opt:check:
-  dependencies: ["x86_64-centos7-gcc9-opt"]
-  script:
-    bash ci-utils/check-sources build/build.ninja
-  allow_failure: true
-
 ### Tests
 x86_64-centos7-gcc9-opt:test:
   <<: *template_test
-  dependencies: ["x86_64-centos7-gcc9-opt"]
+  needs:
+    - job: "x86_64-centos7-gcc9-opt"
+      artifacts: true
+
+x86_64-centos7-gcc9+py3-opt:test:
+  <<: *template_test
+  needs:
+    - job: "x86_64-centos7-gcc9+py3-opt"
+      artifacts: true
 
 x86_64-centos7-gcc9-dbg:test:
   <<: *template_test
-  dependencies: ["x86_64-centos7-gcc9-dbg"]
+  needs:
+    - job: "x86_64-centos7-gcc9-dbg"
+      artifacts: true
 
 view-gcc8:test:
   <<: *template_test
-  dependencies: ["view-gcc8"]
+  needs:
+    - job: "view-gcc8"
+      artifacts: true
   script:
     - source /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
     # Override Ninja and CMake from the view
@@ -138,10 +150,11 @@ view-gcc8:test:
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
     - test "$result" = "success"
 
-
 lhcb-gcc9:test:
   <<: *template_test
-  dependencies: ["lhcb-gcc9"]
+  needs:
+    - job: "lhcb-gcc9"
+      artifacts: true
   variables:
     BINARY_TAG: x86_64-centos7-gcc9-opt
   script:
@@ -161,12 +174,64 @@ lhcb-gcc9:test:
 ### Check build outputs
 x86_64-centos7-gcc9-opt:build-check:
   <<: *template_build_check
-  dependencies: ["x86_64-centos7-gcc9-opt"]
+  needs:
+    - job: "x86_64-centos7-gcc9-opt"
+      artifacts: true
+
+x86_64-centos7-gcc9+py3-opt:build-check:
+  <<: *template_build_check
+  needs:
+    - job: "x86_64-centos7-gcc9+py3-opt"
+      artifacts: true
 
 x86_64-centos7-gcc9-dbg:build-check:
   <<: *template_build_check
-  dependencies: ["x86_64-centos7-gcc9-dbg"]
+  needs:
+    - job: "x86_64-centos7-gcc9-dbg"
+      artifacts: true
 
 view-gcc8:build-check:
   <<: *template_build_check
-  dependencies: ["view-gcc8"]
+  needs:
+    - job: "view-gcc8"
+      artifacts: true
+
+lhcb-gcc9:build-check:
+  <<: *template_build_check
+  needs:
+    - job: "lhcb-gcc9"
+      artifacts: true
+  variables:
+    BINARY_TAG: x86_64-centos7-gcc9-opt
+  script:
+    - ci-utils/build-check build.${BINARY_TAG}/build.log
+
+### Misc checks
+x86_64-centos7-gcc9-opt:check-unused:
+  stage: test
+  needs:
+    - job: "x86_64-centos7-gcc9-opt"
+      artifacts: true
+  script:
+    - ci-utils/check-sources build/build.ninja
+  allow_failure: true
+
+check-formatting:
+  stage: pre-build-checks
+  image: gitlab-registry.cern.ch/gaudi/gaudi/format-checker:latest
+  script:
+    - ci-utils/check-formatting
+  artifacts:
+    paths:
+      - apply-formatting.patch
+    when: on_failure
+    expire_in: 1 day
+  allow_failure: true
+
+check-copyright:
+  stage: pre-build-checks
+  image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+  script:
+    - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
+    - python lb-check-copyright origin/${TARGET_BRANCH}
+  allow_failure: true
