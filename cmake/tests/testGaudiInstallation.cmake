@@ -218,7 +218,7 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
     # -- check every python package has a __init__.py file
     file(GLOB python_packages LIST_DIRECTORIES TRUE ${GAUDI_INSTALL_DIR}/python/*)
     foreach(dir IN LISTS python_packages)
-        if(IS_DIRECTORY ${dir} AND NOT EXISTS ${dir}/__init__.py)
+        if(IS_DIRECTORY ${dir} AND NOT ${dir} MATCHES "__pycache__" AND NOT EXISTS ${dir}/__init__.py)
             message(FATAL_ERROR "Python packages are not installed correctly,"
             " __init__.py is missing inside ${dir}")
         endif()
