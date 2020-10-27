@@ -21,12 +21,12 @@ from Configurables import WriteHandleAlg, ReadHandleAlg
 dst = OutputStream("RootDst")
 
 dst.ItemList = ["/Event#999"]
-dst.Output = "DATAFILE='PFN:Handle_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+dst.Output = "DATAFILE='PFN:Handle_ROOTIO_err.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 
 # - MiniDST
 mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output = "DATAFILE='PFN:Handle_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+mini.Output = "DATAFILE='PFN:Handle_ROOTIO_err.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 
 # - File Summary Record
 fsr = RecordStream("FileRecords")
@@ -35,7 +35,7 @@ fsr.Output = dst.Output
 fsr.EvtDataSvc = FileRecordDataSvc()
 fsr.EvtConversionSvc = FileRecordPersistencySvc()
 
-FileCatalog(Catalogs=["xmlcatalog_file:Handle_ROOTIO.xml"])
+FileCatalog(Catalogs=["xmlcatalog_file:Handle_ROOTIO_err.xml"])
 
 # Output Levels
 MessageSvc(OutputLevel=INFO)
@@ -45,10 +45,10 @@ RootCnvSvc(OutputLevel=INFO)
 GaudiPersistency()
 
 writer = WriteHandleAlg("Writer", UseHandle=True, OutputLevel=DEBUG)
-writer.DataOutputs.Output.Path = "/Event/MyCollision"
+writer.Output.Path = "/Event/MyCollision"
 
 reader = ReadHandleAlg("Reader", OutputLevel=DEBUG)
-reader.DataInputs.Input.Path = "MyCollisionXOPSX",  # <-- Mistake
+reader.Input.Path = "MyCollisionXOPSX"  # <-- Mistake
 
 # Application setup
 app = ApplicationMgr()
