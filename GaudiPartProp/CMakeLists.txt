@@ -8,14 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiPartProp)
+# GaudiPartProp subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel)
-
-find_package(Boost REQUIRED)
-
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-
-gaudi_add_module(GaudiPartProp src/ParticlePropertySvc.cpp
-                 LINK_LIBRARIES GaudiKernel)
+gaudi_add_module(GaudiPartProp
+                 SOURCES src/ParticlePropertySvc.cpp
+                 LINK GaudiKernel
+                      Boost::headers)

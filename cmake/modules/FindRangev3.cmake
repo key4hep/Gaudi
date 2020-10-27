@@ -14,6 +14,17 @@
 #  - RANGEV3_FOUND
 #  - RANGEV3_INCLUDE_DIR
 #  - RANGEV3_INCLUDE_DIRS (not cached)
+#
+# Imports:
+#
+#  Rangev3::rangev3
+#
+# Usage of the target instead of the variables is advised
+
+# Find quietly if already found before
+if(DEFINED CACHE{RANGEV3_INCLUDE_DIR})
+  set(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY YES)
+endif()
 
 # Look for the header directory:
 find_path( RANGEV3_INCLUDE_DIR
@@ -27,3 +38,22 @@ find_package_handle_standard_args( Rangev3 DEFAULT_MSG RANGEV3_INCLUDE_DIR )
 
 # Mark the cached variables as "advanced":
 mark_as_advanced( RANGEV3_FOUND RANGEV3_INCLUDE_DIR )
+
+# Modernisation: create an interface target to link against
+if(TARGET Rangev3::rangev3)
+    return()
+endif()
+if(RANGEV3_FOUND)
+  add_library(Rangev3::rangev3 IMPORTED INTERFACE)
+  target_include_directories(Rangev3::rangev3 SYSTEM INTERFACE "${RANGEV3_INCLUDE_DIRS}")
+  # Display the imported target for the user to know
+  if(NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+    message(STATUS "  Import target: Rangev3::rangev3")
+  endif()
+endif()
+
+if(COMMAND __deprecate_var_for_target)
+  foreach(v IN ITEMS RANGEV3_INCLUDE_DIR RANGEV3_INCLUDE_DIRS)
+    variable_watch(${v} __deprecate_var_for_target)
+  endforeach()
+endif()

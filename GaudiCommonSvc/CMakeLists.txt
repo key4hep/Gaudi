@@ -8,53 +8,63 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiCommonSvc)
+# GaudiCommonSvc subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel)
-
-find_package(AIDA)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
-find_package(ROOT COMPONENTS Hist RIO REQUIRED)
-find_package(TBB REQUIRED)
-
-# Hide some Boost/ROOT/TBB compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
-
-# Decide whether to link against AIDA:
-set( aida_lib )
-set( histo_lib )
-if( AIDA_FOUND )
-  set( aida_lib AIDA )
-  set( histo_lib GaudiCommonSvcLib )
-endif()
-
-# The list of sources to build into the module:
-set(histo_svc_sources)
-set( module_sources src/*.cpp src/DataSvc/*.cpp
-   src/PersistencySvc/*.cpp )
-if( AIDA_FOUND )
-   list( APPEND module_sources src/HistogramSvc/Factory.cpp
-      src/HistogramPersistencySvc/*.cpp )
-    list( APPEND histo_svc_sources src/HistogramSvc/HistogramSvc.cpp
-                                   src/HistogramSvc/AIDA_visibility_hack.cpp
-                                   src/HistogramSvc/H1D.cpp
-                                   src/HistogramSvc/H2D.cpp
-                                   src/HistogramSvc/H3D.cpp
-                                   src/HistogramSvc/P1D.cpp
-                                   src/HistogramSvc/P2D.cpp )
-endif()
-
-
-#---Libraries---------------------------------------------------------------
-if( AIDA_FOUND )
+# Build the library
+if(GAUDI_USE_AIDA)
   gaudi_add_library(GaudiCommonSvcLib
-                    ${histo_svc_sources}
-                    LINK_LIBRARIES GaudiKernel Boost ROOT TBB
-                    PUBLIC_HEADERS GaudiCommonSvc
-                    INCLUDE_DIRS Boost ROOT TBB ${aida_lib})
+                    SOURCES src/HistogramSvc/HistogramSvc.cpp
+                            src/HistogramSvc/AIDA_visibility_hack.cpp
+                            src/HistogramSvc/H1D.cpp
+                            src/HistogramSvc/H2D.cpp
+                            src/HistogramSvc/H3D.cpp
+                            src/HistogramSvc/P1D.cpp
+                            src/HistogramSvc/P2D.cpp
+                    LINK
+                      PUBLIC GaudiKernel
+                             Boost::system
+                             Boost::filesystem
+                             ROOT::Hist
+                             ROOT::RIO
+                             AIDA::aida)
 endif()
 
+# Build the plugin
 gaudi_add_module(GaudiCommonSvc
-                 ${module_sources}
-                 LINK_LIBRARIES GaudiKernel Boost ROOT TBB ${histo_lib}
-                 INCLUDE_DIRS Boost ROOT TBB ${aida_lib})
+                 SOURCES src/AlgContextSvc.cpp
+                         src/AuditorSvc.cpp
+                         src/ChronoStatSvc.cpp
+                         src/StatusCodeSvc.cpp
+                         src/DataSvc/EvtDataSvc.cpp
+                         src/DataSvc/EvtStoreSvc.cpp
+                         src/DataSvc/FileRecordDataSvc.cpp
+                         src/DataSvc/MultiStoreSvc.cpp
+                         src/DataSvc/PartitionSwitchAlg.cpp
+                         src/DataSvc/PartitionSwitchTool.cpp
+                         src/DataSvc/RecordDataSvc.cpp
+                         src/DataSvc/RunRecordDataSvc.cpp
+                         src/DataSvc/StoreExplorerAlg.cpp
+                         src/DataSvc/StoreSnifferAlg.cpp
+                         src/HistogramPersistencySvc/RootHistogramSink.cpp
+                         src/PersistencySvc/CopyInputStream.cpp
+                         src/PersistencySvc/DataSvcFileEntriesTool.cpp
+                         src/PersistencySvc/DetPersistencySvc.cpp
+                         src/PersistencySvc/EvtCollectionStream.cpp
+                         src/PersistencySvc/EvtPersistencySvc.cpp
+                         src/PersistencySvc/InputCopyStream.cpp
+                         src/PersistencySvc/OutputStream.cpp
+                         src/PersistencySvc/PersistencySvc.cpp
+                         src/PersistencySvc/RecordStream.cpp
+                         src/PersistencySvc/RunRecordStream.cpp
+                         src/PersistencySvc/SequentialOutputStream.cpp
+                         src/PersistencySvc/TagCollectionStream.cpp
+                 LINK GaudiKernel
+                      Boost::system
+                      Boost::filesystem
+                      ROOT::Hist
+                      ROOT::RIO)
+if(GAUDI_USE_AIDA)
+  target_sources(GaudiCommonSvc PRIVATE src/HistogramSvc/Factory.cpp
+                                        src/HistogramPersistencySvc/HistogramPersistencySvc.cpp)
+  target_link_libraries(GaudiCommonSvc PRIVATE AIDA::aida GaudiCommonSvcLib)
+endif()

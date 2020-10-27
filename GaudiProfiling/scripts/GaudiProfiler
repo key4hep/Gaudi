@@ -20,18 +20,18 @@ from subprocess import Popen
 
 if __name__ == '__main__':
     from PyCPUFamily import CPUFamily
-    if 'GAUDIPROFILINGROOT' not in os.environ:
+    if 'ENV_CMAKE_SOURCE_DIR' not in os.environ:
         print("""
-            **************************************** ERROR *****************************************
-            * GaudiProfiler: Environment variable $GAUDIPROFILINGROOT is missing. Process stopped. *
-            ****************************************************************************************
+            ****************************************** ERROR *****************************************
+            * GaudiProfiler: Environment variable $ENV_CMAKE_SOURCE_DIR is missing. Process stopped. *
+            ******************************************************************************************
         """)
         sys.exit()
     if 'GAUDIPROFILERCONFIG' in os.environ:
         configFile = os.environ['GAUDIPROFILERCONFIG']
     else:
         configFile = os.path.sep.join([
-            os.environ['GAUDIPROFILINGROOT'], 'data',
+            os.environ['ENV_CMAKE_SOURCE_DIR'], 'GaudiProfiling', 'data',
             'pfm_config_%s.xml' % CPUFamily()
         ])
     try:
@@ -76,7 +76,8 @@ if __name__ == '__main__':
     # post-processing
     os.system("GaudiGenProfilingHtml.exe %s --caa" % storeResultsAt)
     shutil.copy2(
-        os.path.sep.join(
-            [os.environ['GAUDIPROFILINGROOT'], 'data', 'sorttable.js']),
-        os.path.sep.join([storeResultsAt, 'HTML']))
+        os.path.sep.join([
+            os.environ['ENV_CMAKE_SOURCE_DIR'], 'GaudiProfiling', 'data',
+            'sorttable.js'
+        ]), os.path.sep.join([storeResultsAt, 'HTML']))
     print("Results:", os.path.sep.join([storeResultsAt, 'HTML', 'index.html']))

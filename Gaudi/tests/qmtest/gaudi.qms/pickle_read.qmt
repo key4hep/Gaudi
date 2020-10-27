@@ -18,12 +18,18 @@
   <argument name="prerequisites"><set>
     <tuple><text>gaudi.pickle_write</text><enumeral>PASS</enumeral></tuple>
   </set></argument>
+  <argument name="environment"><set>
+  <text>PYTHONPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/python:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/python:$PYTHONPATH</text>
+  </set></argument>
 <argument name="validator"><text>
 from GaudiKernel.DataHandle import DataHandle
 
-conf_dict = eval('\n'.join(stdout.splitlines()))
+try:
+  conf_dict = eval('\n'.join(stdout.splitlines()))
+except SyntaxError:
+  conf_dict = {}
 expected = { 'ToolSvc.MyTestTool': { 'PubToolHndl' : 'Public1',
-                                     'PrivToolHndl' : 'Pivate1', 
+                                     'PrivToolHndl' : 'Pivate1',
                                      'PrivEmptyToolHndl' : '',
                                      'Int' : 42,
                                      'Text' : 'value',

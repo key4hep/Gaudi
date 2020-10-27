@@ -15,24 +15,13 @@
 // ============================================================================
 #include <cmath>
 #include <string>
+#include <vector>
 // ============================================================================
 // AIDA
 // ============================================================================
-/// @FIXME: AIDA interfaces visibility
-#include "GaudiKernel/Kernel.h"
-#include <vector>
-#ifdef __clang__
-#  pragma clang diagnostic push
-#  pragma clang diagnostic ignored "-Wkeyword-macro"
-#endif
-#define class class GAUDI_API
-#ifdef __clang__
-#  pragma clang diagnostic pop
-#endif
 #include "AIDA/IAxis.h"
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IProfile1D.h"
-#undef class
 // ============================================================================
 // GaudiKernel
 // ============================================================================

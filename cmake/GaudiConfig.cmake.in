@@ -1,0 +1,134 @@
+#[========================================================================[.rst:
+GaudiConfig.cmake
+--------------------------
+
+Imported Targets
+^^^^^^^^^^^^^^^^
+
+The following targets will be imported:
+* Shared libraries
+  * ``Gaudi::GaudiAlgLib``
+  * ``Gaudi::GaudiCommonSvcLib``
+  * ``Gaudi::GaudiExamplesLib``
+  * ``Gaudi::GaudiKernel``
+  * ``Gaudi::GaudiMPLib``
+  * ``Gaudi::GaudiPluginService``
+  * ``Gaudi::GaudiPythonLib``
+  * ``Gaudi::GaudiUtilsLib``
+  * ``Gaudi::RootCnvLib``
+* Header only libraries
+  * ``Gaudi::GaudiHiveHeaders``
+  * ``Gaudi::GaudiProfilingHeaders``
+* Executable
+  * ``Gaudi::Allocator``
+  * ``Gaudi::concurrentRun``
+  * ``Gaudi::extract_event``
+  * ``Gaudi::gaudi_merge``
+  * ``Gaudi::Gaudi``
+  * ``Gaudi::GaudiGenProfilingHtml``
+  * ``Gaudi::genconf``
+  * ``Gaudi::instructionsetLevel``
+  * ``Gaudi::listcomponents``
+  * ``Gaudi::makeThesis``
+  * ``Gaudi::profile_Property``
+* Tests
+  * ``Gaudi::AsyncEventProcessorExample``
+  * ``Gaudi::countersUnitTest``
+  * ``Gaudi::PathResolver_test``
+  * ``Gaudi::Test_GaudiPluginService_LegacyUseCasesLib``
+  * ``Gaudi::Test_GaudiPluginService_UseCasesLib``
+  * ``Gaudi::testAppMgrStateMachine``
+  * ``Gaudi::testXMLFileCatalogRead``
+  * ``Gaudi::testXMLFileCatalogWrite``
+
+Imported functions, options and variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* ``GAUDI_CXX_STANDARD``: The C++ standard used to compile Gaudi. (cached)
+* ``GAUDI_BUILD_TREE_AS_INSTALL_AREA``: boolean, TRUE if Gaudi is used from
+  its build tree, FALSE otherwise (not cached)
+* See GaudiToolbox.cmake for the functions and options (if included)
+
+Dependencies
+^^^^^^^^^^^^
+
+See GaudiDependencies.cmake
+
+Variables to modify the configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Set this variable to TRUE before calling find_package(Gaudi) if needed
+
+* ``GAUDI_NO_TOOLBOX``: do not include GaudiToolBox.cmake (default is to include)
+
+Advice
+^^^^^^
+
+Remember to let CMake handle the transitivity of dependencies and use the
+imported targets stated earlier.
+
+#]========================================================================]
+
+cmake_policy(PUSH)
+cmake_policy(VERSION 3.15)
+
+@PACKAGE_INIT@
+
+# Set the C++ standard used to build Gaudi
+set(GAUDI_CXX_STANDARD @GAUDI_CXX_STANDARD@ CACHE INTERNAL "Version of C++ used to compile Gaudi")
+set(GAUDI_BUILD_TREE_AS_INSTALL_AREA @GAUDI_BUILD_TREE_AS_INSTALL_AREA@)
+
+set_and_check(_gaudi_config_files_location @_gaudi_config_files_location@)
+list(PREPEND CMAKE_MODULE_PATH ${_gaudi_config_files_location}/modules) # Find*.cmake
+list(PREPEND CMAKE_MODULE_PATH ${_gaudi_config_files_location}) # other modules
+
+if(NOT GAUDI_NO_TOOLBOX)
+    if(NOT GAUDI_BUILD_TREE_AS_INSTALL_AREA)
+        # Set environment variables (so that we only need the CMAKE_PREFIX_PATH to use Gaudi)
+        set(ENV{PATH} "@PACKAGE_CMAKE_INSTALL_BINDIR@:$ENV{PATH}")
+        set(ENV{LD_LIBRARY_PATH} "@PACKAGE_CMAKE_INSTALL_LIBDIR@:@PACKAGE_GAUDI_INSTALL_PLUGINDIR@:$ENV{LD_LIBRARY_PATH}")
+        set(ENV{ROOT_INCLUDE_PATH} "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@:$ENV{ROOT_INCLUDE_PATH}")
+        set(ENV{PYTHONPATH} "@PACKAGE_GAUDI_INSTALL_PYTHONDIR@:$ENV{PYTHONPATH}")
+        # NB: it needs to be done before including GaudiToolbox
+    endif()
+    # Import the functions
+    include(GaudiToolbox)
+endif()
+
+# Enable optional dependencies
+@GAUDI_OPTIONAL_DEPENDENCIES@
+
+# Find the dependencies
+if(@PROJECT_NAME@_FIND_QUIETLY)
+    set(GAUDI_DEPENDENCIES_FIND_QUIETLY TRUE)
+endif()
+include(GaudiDependencies)
+
+# Import the targets
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+
+if(GAUDI_BUILD_TREE_AS_INSTALL_AREA AND NOT GAUDI_NO_TOOLBOX)
+    @_set_extract_qmtest_metadata@
+    # Add paths of Gaudi's run script content to the run script downstream
+    file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/gaudienv.sh" __gaudi_exported_paths REGEX "^export .*PATH=\".+\"$")
+    list(TRANSFORM __gaudi_exported_paths REPLACE "^export (.*PATH)=\"(.+)\"$" "\\1=\\2")
+    foreach(exported_path IN LISTS __gaudi_exported_paths)
+        string(REPLACE "=" ";" path_value ${exported_path})
+        list(POP_FRONT path_value path_name)
+        string(TOLOWER ${path_name} path_name)
+        file(TO_CMAKE_PATH "${path_value}" path_value)
+        set_property(TARGET target_runtime_paths APPEND
+            PROPERTY runtime_${path_name} ${path_value})
+    endforeach()
+    # NB: it needs to be done after including GaudiToolbox
+endif()
+
+# Tell we have successfully found Gaudi
+if(NOT @PROJECT_NAME@_FIND_QUIETLY)
+    message(STATUS "Found @PROJECT_NAME@: ${CMAKE_CURRENT_LIST_DIR} (found version @PROJECT_VERSION@)")
+endif()
+
+# Hide this file location to non-advanced users
+mark_as_advanced(@PROJECT_NAME@_DIR)
+
+cmake_policy(POP)

@@ -27,6 +27,9 @@ app = ApplicationMgr(TopAlg = [alg],
                      StalledEventMonitoring = True)
 
 </text></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+</set></argument>
 <argument name="validator"><text>
 import re
 stdout = re.subn(r"size = [0-9]+(\.[0-9]*)? MB", "size = # MB", stdout)[0]

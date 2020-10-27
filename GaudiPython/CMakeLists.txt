@@ -8,72 +8,50 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiPython)
+# GaudiPython subdirectory
 
-gaudi_depends_on_subdirs(GaudiAlg GaudiUtils GaudiKernel)
-
-find_package(AIDA)
-find_package(CLHEP)
-find_package(PythonLibs REQUIRED)
-find_package(pytools)
-
-# Decide whether to link against AIDA:
-set( aida_lib )
-if( AIDA_FOUND )
-   set( aida_lib AIDA )
-   add_definitions( -DAIDA_FOUND )
+# Build the library
+gaudi_add_library(GaudiPythonLib
+                  SOURCES src/Lib/AlgDecorators.cpp
+                          src/Lib/CallbackStreamBuf.cpp
+                          src/Lib/Algorithm.cpp
+                          src/Lib/Helpers.cpp
+                  LINK
+                    PUBLIC GaudiAlgLib
+                           Python::Python)
+if(GAUDI_USE_AIDA)
+   target_sources(GaudiPythonLib PRIVATE src/Lib/HistoDecorator.cpp)
+   target_link_libraries(GaudiPythonLib PUBLIC AIDA::aida)
+endif()
+if(GAUDI_USE_CLHEP)
+   target_sources(GaudiPythonLib PRIVATE src/Lib/TupleDecorator.cpp)
+   target_link_libraries(GaudiPythonLib PUBLIC CLHEP::CLHEP)
 endif()
 
-# Decide whether to link against CLHEP:
-set( clhep_lib )
-if( CLHEP_FOUND )
-   set( clhep_lib CLHEP )
-   add_definitions( -DCLHEP_FOUND )
+# Build the plugin
+gaudi_add_module(GaudiPython
+                 SOURCES src/Services/PythonScriptingSvc.cpp
+                 LINK GaudiPythonLib
+                      GaudiUtilsLib)
+
+# ROOT dictionaries
+gaudi_add_dictionary(GaudiPythonDict
+                     HEADERFILES dict/kernel.h
+                     SELECTION dict/selection_kernel.xml
+                     LINK GaudiPythonLib
+                          GaudiUtilsLib)
+if(GAUDI_USE_AIDA)
+   target_compile_definitions(GaudiPythonDict PRIVATE AIDA_FOUND)
+endif()
+if(GAUDI_USE_CLHEP)
+   target_compile_definitions(GaudiPythonDict PRIVATE CLHEP_FOUND)
 endif()
 
-# The list of sources to build into the library:
-set( lib_sources src/Lib/AlgDecorators.cpp src/Lib/CallbackStreamBuf.cpp
-   src/Lib/Algorithm.cpp src/Lib/Helpers.cpp )
-if( CLHEP_FOUND )
-   list( APPEND lib_sources src/Lib/TupleDecorator.cpp )
-endif()
-if( AIDA_FOUND )
-   list( APPEND lib_sources src/Lib/HistoDecorator.cpp )
-endif()
+# Install python modules
+gaudi_install(PYTHON)
 
-# Hide some ROOT and Boost compile time warnings
-find_package(Boost REQUIRED)
-find_package(ROOT REQUIRED)
-include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
-if( CLHEP_FOUND )
-   include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
-endif()
+# Enable QMTest tests
+gaudi_add_tests(QMTest)
 
-if(NOT ROOT_VERSION VERSION_LESS 6.15)
-  # needed for cppyy at runtime
-  find_package(VDT REQUIRED)
-endif()
-
-#---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiPythonLib ${lib_sources}
-                  LINK_LIBRARIES GaudiAlgLib PythonLibs ${clhep_lib} ${aida_lib}
-                  INCLUDE_DIRS ${clhep_lib} ${aida_lib} PythonLibs
-                  PUBLIC_HEADERS GaudiPython)
-gaudi_add_module(GaudiPython src/Services/*.cpp
-                 LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
-
-#---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(GaudiPython dict/kernel.h dict/selection_kernel.xml
-                     LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
-
-#---Test-----------------------------------------------------------------------
-gaudi_add_test(QMTest QMTEST)
-
-#---Installation------------------------------------------------------------
-gaudi_install_python_modules()
-
-foreach(t IN ITEMS test_appmgr_props_from_strings test_atlas_jos_verify_case)
-   gaudi_add_test(${t}
-                  COMMAND nosetests -v
-                  ${CMAKE_CURRENT_SOURCE_DIR}/tests/${t}.py)
-endforeach()
+# nosetests
+gaudi_add_tests(nosetests)

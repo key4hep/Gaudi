@@ -18,8 +18,8 @@
 </set></argument>
 <argument name="options"><text>
 from Gaudi.Configuration import *
-importOptions("bug_35347.py")
-importOptions("subdir/bug_35347.py")
+importOptions("../pyjobopts/bug_35347.py")
+importOptions("../pyjobopts/subdir/bug_35347.py")
 </text></argument>
 <argument name="validator"><text>
 conf_dict = eval('\n'.join(stdout.splitlines()))

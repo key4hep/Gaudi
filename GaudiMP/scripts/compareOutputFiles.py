@@ -30,8 +30,7 @@ def checkKeys(name):
 
 
 importOptions('$STDOPTS/LHCbApplication.opts')
-#importOptions( '$GAUDIPOOLDBROOT/options/GaudiPoolDbRoot.opts' )
-importOptions('$GAUDICNVROOT/options/Setup.opts')
+importOptions('$ENV_CMAKE_SOURCE_DIR/RootCnv/options/Setup.opts')
 
 OutputStream("DstWriter").Output = ''
 HistogramPersistencySvc().OutputFile = ''
@@ -396,7 +395,7 @@ def GetFSRdict(filename, queue):
     options += "LumiFsrReader().Persistency='ROOT'; LumiFsrReader().EvtMax = 1; from Configurables import LHCbApp; LHCbApp().Persistency='ROOT';  from Configurables import CondDB, DDDBConf;"
     options += " CondDB().UseLatestTags=['%s']; DDDBConf(DataType='%s');" % (
         2011, 2011)
-    exec (options)
+    exec(options)
     app = AppMgr()
     app.run(1)
     fsr = app.filerecordsvc()

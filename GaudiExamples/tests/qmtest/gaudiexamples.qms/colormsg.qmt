@@ -10,7 +10,7 @@
     or submit itself to any jurisdiction.
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/ColorMsg.opts</text></set></argument>
+<argument name="args"><set><text>../../options/ColorMsg.opts</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/ColorMsg.ref</text></argument>
 <argument name="unsupported_platforms"><set><text>win32</text></set></argument>

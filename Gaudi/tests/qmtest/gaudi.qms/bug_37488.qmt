@@ -16,15 +16,20 @@
 <text>-v</text>
 <text>--dry-run</text>
 </set></argument>
-<argument name="environment">
-<set><text>TESTOPTS=test1.opts</text></set>
-</argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
+<text>TESTOPTS=test1.opts</text>
+</set></argument>
 <argument name="options"><text>
 from Gaudi.Configuration import *
+
 importOptions("$TESTOPTS")
 </text></argument>
 <argument name="validator"><text>
-conf_dict = eval('\n'.join(stdout.splitlines()))
+try:
+    conf_dict = eval('\n'.join(stdout.splitlines()))
+except SyntaxError:
+    conf_dict = {}
 expected = {'MessageSvc': {'OutputLevel': 2},
             'myAlg.myTool': {'Bool': True, 'Int': 10}}
 

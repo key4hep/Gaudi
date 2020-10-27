@@ -12,4 +12,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>../scripts/test_compat_aliases.py</text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="environment"><set>
+<text>LD_LIBRARY_PATH=$ENV_CMAKE_BINARY_DIR/GaudiPluginService:$ENV_CMAKE_BINARY_DIR/Gaudi/GaudiPluginService:$LD_LIBRARY_PATH</text>
+</set></argument>
 </extension>

@@ -8,214 +8,202 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiExamples)
-
-gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiAlg RootCnv)
-
-find_package(AIDA)
-find_package(HepPDT)
-find_package(ROOT COMPONENTS Core REQUIRED)
-if(${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR} VERSION_LESS 6.20)
-  find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
-else()
-  find_package(ROOT COMPONENTS Tree RIO Hist Net ROOTHist REQUIRED)
-endif()
-find_package(Boost COMPONENTS python${boost_python_version} REQUIRED)
-find_package(CLHEP)
-find_package(PythonLibs REQUIRED)
-find_package(RELAX)
-find_package(TBB REQUIRED)
-# ROOT runtime
-find_package(PNG)
-
-# Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
-include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
-   ${TBB_INCLUDE_DIRS} )
-if( CLHEP_FOUND )
-   include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
-endif()
-if( HEPPDT_FOUND )
-   include_directories( SYSTEM ${HEPPDT_INCLUDE_DIRS} )
+# GaudiExamples subdirectory
+if(NOT BUILD_TESTING)
+  # Ignore examples if not building tests
+  # see https://gitlab.cern.ch/atlas/atlasexternals/-/merge_requests/664#note_3395313
+  return()
 endif()
 
-find_package(OpenCL)
-if(NOT OpenCL_FOUND)
-  message(STATUS "OpenCL not found, not building OpenCLAlg example.")
+# Build the library
+gaudi_add_library(GaudiExamplesLib
+                  SOURCES src/Lib/Counter.cpp
+                          src/Lib/Event.cpp
+                          src/Lib/MyTrack.cpp
+                          src/Lib/MyVertex.cpp
+                  LINK PUBLIC GaudiKernel)
+
+# Build the plugin
+gaudi_add_module(GaudiExamples
+                 SOURCES src/AbortEvent/AbortEventAlg.cpp
+                         src/AlgSequencer/HelloWorld.cpp
+                         src/AlgSequencer/ParentAlg.cpp
+                         src/AlgSequencer/StopperAlg.cpp
+                         src/AlgSequencer/SubAlg.cpp
+                         src/AlgSequencer/TemplatedAlg.cpp
+                         src/AlgTools/MyAlgorithm.cpp
+                         src/AlgTools/MyGaudiAlgorithm.cpp
+                         src/AlgTools/MyGaudiTool.cpp
+                         src/AlgTools/MyServiceWithTool.cpp
+                         src/AlgTools/MyTool.cpp
+                         src/AlgTools/TestTool.cpp
+                         src/AlgTools/TestToolAlg.cpp
+                         src/AlgTools/TestToolAlgFailure.cpp
+                         src/AlgTools/TestToolFailing.cpp
+                         src/AnyData/AnyDataGetAlgorithm.cpp
+                         src/AnyData/AnyDataPutAlgorithm.cpp
+                         src/Auditors/AuditorTestAlg.cpp
+                         src/Auditors/LoggingAuditor.cpp
+                         src/bug_34121/bug34121_MyAlgorithm.cpp
+                         src/bug_34121/bug34121_Tool.cpp
+                         src/ColorMsg/ColorMsgAlg.cpp
+                         src/ConditionAccessor/Backend.cpp
+                         src/ConditionAccessor/CondSvc.cpp
+                         src/ConditionAccessor/User.cpp
+                         src/CounterEx/CounterAlg.cpp
+                         src/CounterEx/CounterSvcAlg.cpp
+                         src/CounterEx/StatSvcAlg.cpp
+                         src/DataOnDemand/DataCreator.cpp
+                         src/DataOnDemand/MyDataAlgorithm.cpp
+                         src/ExtendedProperties/ArrayProperties.cpp
+                         src/ExtendedProperties/BoostArrayProperties.cpp
+                         src/ExtendedProperties/ExtendedProperties.cpp
+                         src/ExtendedProperties/ExtendedProperties2.cpp
+                         src/FileMgr/FileMgrTest.cpp
+                         src/FunctionalAlgorithms/MakeAndConsume.cpp
+                         src/FunctionalAlgorithms/merging_transformer.cpp
+                         src/FunctionalAlgorithms/selector.cpp
+                         src/FunctionalAlgorithms/TestObjectVersion.cpp
+                         src/FunctionalAlgorithms/transformer.cpp
+                         src/GaudiCommonTests/GaudiCommonTests.cpp
+                         src/Histograms/CounterHistos.cpp
+                         src/History/History.cpp
+                         src/IncidentSvc/IncidentAsyncTestAlg.cpp
+                         src/IncidentSvc/IncidentAsyncTestSvc.cpp
+                         src/IncidentSvc/IncidentListenerTest.cpp
+                         src/IncidentSvc/IncidentListenerTestAlg.cpp
+                         src/IntelProfiler/CpuHungryAlg.cpp
+                         src/Maps/MapAlg.cpp
+                         src/MultipleLogStreams/QotdAlg.cpp
+                         src/NTuples/NTupleAlgorithm.cpp
+                         src/PluginService/BackwardCompatibleAliases.cpp
+                         src/PluginService/SpecialCustomFactory.cpp
+                         src/Properties/CustomPropertiesAlg.cpp
+                         src/Properties/PropertyAlg.cpp
+                         src/Properties/PropertyProxy.cpp
+                         src/QueueingEventProcessor/QueueingEventLoopMgr.cpp
+                         src/QueueingEventProcessor/QueueingApplication.cpp
+                         src/ReEntAlg/ReEntAlg.cpp
+                         src/Selections/SelCreate.cpp
+                         src/Selections/SelFilter.cpp
+                         src/StatusCodeSvc/SCSAlg.cpp
+                         src/StatusCodeSvc/special/SCSAlg_no_inline.cpp
+                         src/StringKeys/StringKeyEx.cpp
+                         src/SvcInitLoop/LoopAlg.cpp
+                         src/SvcInitLoop/ServiceA.cpp
+                         src/SvcInitLoop/ServiceB.cpp
+                         src/testing/GAUDI-1185.cpp
+                         src/testing/TestingAlgs.cpp
+                         src/testing/TestingSvcs.cpp
+                         src/THist/THistRead.cpp
+                         src/THist/THistWrite.cpp
+                         src/Timing/TimingAlg.cpp
+                         src/ToolHandles/Algorithms.cpp
+                         src/ToolHandles/FloatTool.cpp
+                 LINK GaudiKernel
+                      GaudiAlgLib
+                      GaudiUtilsLib
+                      GaudiExamplesLib
+                      ROOT::Tree
+                      ROOT::RIO
+                      ROOT::Hist
+                      ROOT::Net)
+
+if(NOT ROOT_VERSION VERSION_LESS "6.20")
+  find_package(ROOT REQUIRED COMPONENTS ROOTHist)
+  target_link_libraries(GaudiExamples PRIVATE ROOT::ROOTHist)
 endif()
 
-#---Libraries---------------------------------------------------------------
-set(GaudiExamples_srcs
-    src/AbortEvent/*.cpp
-    src/AlgSequencer/*.cpp
-    src/AlgTools/*.cpp
-    src/AnyData/*.cpp
-    src/DataOnDemand/*.cpp
-    src/NTuples/*.cpp
-    src/CounterEx/*.cpp
-    src/Properties/*.cpp
-    src/ExtendedProperties/*.cpp
-    src/ColorMsg/ColorMsgAlg.cpp
-    src/History/History.cpp
-    src/THist/*.cpp
-    src/Maps/*.cpp
-    src/MultipleLogStreams/*.cpp
-    src/GaudiCommonTests/*.cpp
-    src/IncidentSvc/*.cpp
-    src/bug_34121/*.cpp
-    src/Auditors/*.cpp
-    src/Timing/*.cpp
-    src/Selections/*.cpp
-    src/SvcInitLoop/*.cpp
-    src/StringKeys/*.cpp
-    src/StatusCodeSvc/SCSAlg.cpp
-    src/StatusCodeSvc/special/SCSAlg_no_inline.cpp
-    src/FileMgr/*.cpp
-    src/testing/GAUDI-1185.cpp
-    src/testing/TestingAlgs.cpp
-    src/testing/TestingSvcs.cpp
-    src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp
-    src/ToolHandles/*.cpp
-    src/ReEntAlg/*.cpp
-    src/ConditionAccessor/*.cpp
-    src/QueueingEventProcessor/QueueingEventLoopMgr.cpp
-    src/QueueingEventProcessor/QueueingApplication.cpp
-)
-
-# Add the sources requiring non-standard externals:
-if( AIDA_FOUND )
-   list( APPEND GaudiExamples_srcs src/Histograms/*.cpp
-      src/RandomNumber/*.cpp
-      src/EvtColsEx/EvtColAlg.cpp
-      src/IO/*.cpp )
+if(GAUDI_USE_AIDA)
+    target_sources(GaudiExamples PRIVATE src/EvtColsEx/EvtColAlg.cpp
+                                         src/Histograms/Aida2Root.cpp
+                                         src/Histograms/GaudiHistoAlgorithm.cpp
+                                         src/Histograms/HistoAlgorithm.cpp
+                                         src/Histograms/HistoProps.cpp
+                                         src/Histograms/HistoTimingAlg.cpp
+                                         src/IO/EvtCollectionSelector.cpp
+                                         src/IO/EvtCollectionWrite.cpp
+                                         src/IO/EvtExtCollectionSelector.cpp
+                                         src/IO/ExtendedEvtCol.cpp
+                                         src/IO/ReadAlg.cpp
+                                         src/IO/ReadHandleAlg.cpp
+                                         src/IO/ReadTES.cpp
+                                         src/IO/WriteAlg.cpp
+                                         src/IO/WriteHandleAlg.cpp
+                                         src/RandomNumber/RandomNumberAlg.cpp)
+    target_link_libraries(GaudiExamples PRIVATE AIDA::aida)
 endif()
-if( HEPPDT_FOUND )
-   list( APPEND GaudiExamples_srcs src/PartProp/*.cpp )
+if(GAUDI_USE_HEPPDT)
+    target_sources(GaudiExamples PRIVATE src/PartProp/GaudiPPS.cpp
+                                         src/PartProp/PartPropExa.cpp)
+    target_link_libraries(GaudiExamples PRIVATE HepPDT::heppdt)
 endif()
-if( CLHEP_FOUND )
-   list( APPEND GaudiExamples_srcs src/TupleEx/*.cpp )
+if(GAUDI_USE_CLHEP)
+    target_sources(GaudiExamples PRIVATE src/TupleEx/TupleAlg2.cpp
+                                         src/TupleEx/TupleAlg3.cpp
+                                         src/TupleEx/TupleAlg.cpp
+                                         src/TupleEx/TupleDef.cpp)
+    target_link_libraries(GaudiExamples PRIVATE CLHEP::CLHEP)
 endif()
-if( TARGET RootCnvLib )
-  list( APPEND GaudiExamples_srcs src/MultiInput/*.cpp )
-endif()
-if( OpenCL_FOUND )
-   list( APPEND GaudiExamples_srcs src/OpenCL/*.cpp )
-endif()
-if( RANGEV3_FOUND )
-   list( APPEND GaudiExamples_srcs src/FunctionalAlgorithms/*.cpp )
+if(TARGET RootCnvLib)
+    target_sources(GaudiExamples PRIVATE src/MultiInput/DumpAddress.cpp
+                                         src/MultiInput/MIReadAlg.cpp
+                                         src/MultiInput/MIWriteAlg.cpp)
+    target_link_libraries(GaudiExamples PRIVATE RootCnvLib)
 endif()
 
-# Set up the include and linker flags for the examples libraries:
-set( extra_includes )
-set( extra_libs )
-if( AIDA_FOUND )
-   list( APPEND extra_includes ${AIDA_INCLUDE_DIRS} )
-   list( APPEND extra_libs     ${AIDA_LIBRARIES} )
-endif()
-if( CLHEP_FOUND )
-   list( APPEND extra_includes ${CLHEP_INCLUDE_DIRS} )
-   list( APPEND extra_libs     ${CLHEP_LIBRARIES} )
-endif()
-if( HEPPDT_FOUND )
-   list( APPEND extra_includes ${HEPPDT_INCLUDE_DIRS} )
-   list( APPEND extra_libs     ${HEPPDT_LIBRARIES} )
-endif()
-if( TARGET RootCnvLib )
-   list( APPEND extra_libs RootCnvLib )
-endif()
-if( OpenCL_FOUND )
-   list( APPEND extra_includes ${OpenCL_INCLUDE_DIRS} )
-   list( APPEND extra_libs ${OpenCL_LIBRARIES} )
-endif()
+# Build the executable
+gaudi_add_executable(Allocator
+                        SOURCES src/Allocator/Allocator.cpp
+                                src/Allocator/MyClass1A.cpp
+                                src/Allocator/MyClass1.cpp
+                        LINK GaudiExamplesLib
+                            GaudiAlgLib
+                            GaudiKernel)
+gaudi_add_executable(testAppMgrStateMachine
+                     SOURCES src/testing/TestAppMgrStateMachine.cpp
+                     LINK GaudiKernel)
+gaudi_add_executable(QueueingEventProcessorExample
+                     SOURCES src/QueueingEventProcessor/main.cpp
+                     LINK GaudiKernel)
 
-# Now set up the libraries:
-gaudi_add_library( GaudiExamplesLib src/Lib/*.cpp
-   LINK_LIBRARIES GaudiKernel
-   PUBLIC_HEADERS GaudiExamples Gaudi)
-
-gaudi_add_module( GaudiExamples ${GaudiExamples_srcs}
-   INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} ${extra_includes}
-   LINK_LIBRARIES GaudiKernel GaudiAlgLib GaudiUtilsLib GaudiExamplesLib
-   ${ROOT_LIBRARIES} ${extra_libs} )
-
-find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
-          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
-          HINTS ${Gaudi_DIR}/include)
-if(NOT StatusCodeHeader)
-  message(FATAL_ERROR "Cannot find file StatusCode.h for the StatusCodeSvc test")
-endif()
-
-message(STATUS "creating hacked version of ${StatusCodeHeader}")
-file(READ ${StatusCodeHeader} StatusCodeHeaderData)
-string(REPLACE "~StatusCode" "__attribute__ ((noinline)) ~StatusCode" StatusCodeHeaderData "${StatusCodeHeaderData}")
-if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h")
-  file(READ "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" StatusCodeHeaderData_previous)
-endif()
-if(NOT StatusCodeHeaderData_previous STREQUAL StatusCodeHeaderData)
-  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
-endif()
-
-gaudi_add_python_module(PyExample src/PythonModule/*.cpp
-                        LINK_LIBRARIES ${Boost_PYTHON${boost_python_version}_LIBRARY}
-                        INCLUDE_DIRS Boost PythonLibs)
-
-gaudi_install_python_modules()
-configure_file(scripts/TupleEx3.py.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TupleEx3.py @ONLY)
-configure_file(scripts/TupleEx4.py.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TupleEx4.py @ONLY)
-
-#---Executables-------------------------------------------------------------
-if( CLHEP_FOUND AND TARGET GaudiExamplesLib AND
-      TARGET GaudiAlgLib )
-   gaudi_add_executable(Allocator src/Allocator/*.cpp
-      LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ROOT CLHEP
-      INCLUDE_DIRS CLHEP)
-endif()
-
-#---Dictionaries------------------------------------------------------------
-if( TARGET GaudiExamplesLib )
-   gaudi_add_dictionary(GaudiExamples src/IO/dict.h  src/IO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
-endif()
-
-#---Tests-------------------------------------------------------------------
-# Ensure that we have the test variables in the build-time environment
-# (for easier debugging).
-gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
-                PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
-                PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-                PREPEND PYTHONPATH       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
-
-gaudi_add_test(QMTest QMTEST
-               ENVIRONMENT
-               BINARY_TAG=${BINARY_TAG}
-               STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
-               JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
-               JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-               PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
-
-gaudi_add_test(WriteAndReadHandle
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
-
-gaudi_add_test(WriteAndReadHandleError
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py
-               FAILS)
-
-gaudi_add_test(WriteAndReadHandleWhiteBoard
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
-
-gaudi_add_test(nose
-               COMMAND nosetests -v
-               ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
-
-gaudi_add_executable(testAppMgrStateMachine src/testing/TestAppMgrStateMachine.cpp
-                     LINK_LIBRARIES GaudiKernel)
-
-gaudi_add_executable(QueueingEventProcessorExample src/QueueingEventProcessor/main.cpp
-                     LINK_LIBRARIES GaudiKernel)
-
-gaudi_add_executable(ToolVisitorTest_test src/ToolVisitorTest/ToolVisitorTest_test.cpp src/ToolVisitorTest/ToolVisitorTestLib.cpp
-                     LINK_LIBRARIES GaudiKernel GaudiPluginService)
+gaudi_add_executable(ToolVisitorTest_test
+                     SOURCES src/ToolVisitorTest/ToolVisitorTest_test.cpp
+                             src/ToolVisitorTest/ToolVisitorTestLib.cpp
+                     LINK GaudiKernel
+                     TEST)
 
 set_target_properties(ToolVisitorTest_test PROPERTIES ENABLE_EXPORTS TRUE)
 
-gaudi_add_test(ToolVisitorTest
-               COMMAND ToolVisitorTest_test.exe)
+# Generate GaudiExamples_user.confdb
+gaudi_generate_confuserdb()
+
+# Tests
+gaudi_add_tests(QMTest)
+if(TEST "GaudiExamples.jira.gaudi_1174" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set_property(TEST GaudiExamples.jira.gaudi_1174 PROPERTY DISABLED TRUE)
+endif()
+gaudi_add_tests(nosetests)
+
+# Compiled python module
+gaudi_add_python_module(PyExample
+                        SOURCES src/PythonModule/Functions.cpp
+                                src/PythonModule/PyExample.cpp
+                        LINK Python::Python
+                             Boost::python)
+
+# ROOT dictionaries
+gaudi_add_dictionary(GaudiExamplesDict
+                     HEADERFILES src/IO/dict.h
+                     SELECTION src/IO/dict.xml
+                     LINK GaudiExamplesLib)
+
+# Install python modules
+gaudi_install(PYTHON)
+# Install other scripts
+configure_file(scripts/TupleEx3.py.in
+               ${CMAKE_CURRENT_BINARY_DIR}/generated/scripts/TupleEx3.py)
+configure_file(scripts/TupleEx4.py.in
+               ${CMAKE_CURRENT_BINARY_DIR}/generated/scripts/TupleEx4.py)
+gaudi_install(SCRIPTS)
+gaudi_install(SCRIPTS ${CMAKE_CURRENT_BINARY_DIR}/generated/scripts/)

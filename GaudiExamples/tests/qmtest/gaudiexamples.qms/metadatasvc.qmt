@@ -12,7 +12,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
-  <text>$GAUDIEXAMPLESROOT/options/TupleEx.py</text>
+  <text>../../options/TupleEx.py</text>
   <text>--option</text>
   <text>ApplicationMgr(EvtMax=10).ExtSvc.append('Gaudi::MetaDataSvc')</text>
   <text>--option</text>

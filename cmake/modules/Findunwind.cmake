@@ -16,6 +16,17 @@
 #  UNWIND_INCLUDE_DIRS (not cached)
 #  UNWIND_LIBRARIES
 #  UNWIND_LIBRARY_DIRS (not cached)
+#
+# Imports:
+#
+#  unwind::unwind
+#
+# Usage of the target instead of the variables is advised
+
+# Find quietly if already found before
+if(DEFINED CACHE{UNWIND_INCLUDE_DIR})
+  set(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY YES)
+endif()
 
 find_path(UNWIND_INCLUDE_DIR unwind.h)
 find_library(UNWIND_LIBRARIES NAMES unwind)
@@ -29,3 +40,23 @@ INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(unwind DEFAULT_MSG UNWIND_INCLUDE_DIR UNWIND_LIBRARIES)
 
 mark_as_advanced(UNWIND_FOUND UNWIND_INCLUDE_DIR UNWIND_LIBRARIES)
+
+# Modernisation: create an interface target to link against
+if(TARGET unwind::unwind)
+    return()
+endif()
+if(UNWIND_FOUND)
+  add_library(unwind::unwind IMPORTED INTERFACE)
+  target_include_directories(unwind::unwind SYSTEM INTERFACE "${UNWIND_INCLUDE_DIRS}")
+  target_link_libraries(unwind::unwind INTERFACE "${UNWIND_LIBRARIES}")
+  # Display the imported target for the user to know
+  if(NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+    message(STATUS "  Import target: unwind::unwind")
+  endif()
+endif()
+
+if(COMMAND __deprecate_var_for_target)
+  foreach(v IN ITEMS UNWIND_INCLUDE_DIR UNWIND_INCLUDE_DIRS UNWIND_LIBRARIES UNWIND_LIBRARY_DIRS)
+    variable_watch(${v} __deprecate_var_for_target)
+  endforeach()
+endif()

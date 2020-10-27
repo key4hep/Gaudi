@@ -10,7 +10,7 @@
     or submit itself to any jurisdiction.
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/Aida2Root.opts</text></set></argument>
+<argument name="args"><set><text>../../options/Aida2Root.opts</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/Aida2Root.ref</text></argument>
 <argument name="validator"><text>

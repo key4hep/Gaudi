@@ -11,7 +11,7 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
   <argument name="program"><text>gaudirun.py</text></argument>
-  <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/DataOnDemand.py</text></set></argument>
+  <argument name="args"><set><text>../../options/DataOnDemand.py</text></set></argument>
   <argument name="options"><text>
 from Gaudi.Configuration import *
 # modify the DataOnDemandSvc configuration to use the dynamic mapping.

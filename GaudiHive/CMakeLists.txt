@@ -8,36 +8,61 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiHive)
+# GaudiHive subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel GaudiAlg GaudiCommonSvc GaudiCoreSvc)
+# Register the header only library (install include/)
+gaudi_add_header_only_library(GaudiHiveHeaders)
 
-find_package(Boost COMPONENTS system filesystem graph REQUIRED)
-find_package(ROOT COMPONENTS Hist RIO REQUIRED)
-find_package(TBB REQUIRED)
-find_package(pyanalysis)
-find_package(pytools)
+# Build the plugin
+gaudi_add_module(GaudiHive
+                 SOURCES src/AlgResourcePool.cpp
+                         src/AlgsExecutionStates.cpp
+                         src/AvalancheSchedulerSvc.cpp
+                         src/ContextEventCounter.cpp
+                         src/CPUCruncher.cpp
+                         src/FetchDataFromFile.cpp
+                         src/FetchLeavesFromFile.cpp
+                         src/HiveDataBroker.cpp
+                         src/HiveNumbers.cpp
+                         src/HiveReadAlgorithm.cpp
+                         src/HiveSlimEventLoopMgr.cpp
+                         src/HiveTestAlgorithm.cpp
+                         src/HiveWhiteBoard.cpp
+                         src/PrecedenceSvc.cpp
+                         src/PRGraph/PrecedenceRulesGraph.cpp
+                         src/PRGraph/Visitors/Promoters.cpp
+                         src/PRGraph/Visitors/Rankers.cpp
+                         src/PRGraph/Visitors/Validators.cpp
+                         src/ThreadInitTask.cpp
+                         src/ThreadPoolSvc.cpp
+                         src/TimelineSvc.cpp
+                         src/ViewTester.cpp
+                 LINK GaudiHiveHeaders
+                      GaudiKernel
+                      GaudiAlgLib
+                      Boost::headers
+                      Boost::system
+                      Boost::filesystem
+                      Boost::graph
+                      ROOT::Hist
+                      ROOT::RIO
+                      TBB::tbb
+                      Rangev3::rangev3
+                      ${rt_LIBRARY})
 
-set (LIBRT_NAME "rt")
-if (${APPLE})
-  set (LIBRT_NAME "")
-endif (${APPLE})
+# Build executable
+gaudi_add_executable(makeThesis
+                     SOURCES src/bin/makeThesis.cpp)
+gaudi_add_executable(concurrentRun
+                     SOURCES src/bin/concurrentRun.cpp
+                     LINK GaudiKernel
+                          Boost::headers
+                          Boost::program_options)
 
-# Hide some Boost/TBB compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
+# QMTest
+gaudi_add_tests(QMTest)
 
-#---Libraries---------------------------------------------------------------
-set(GaudiHive_srcs
-    src/*.cpp
-    PRGraph/*.cpp
-    PRGraph/Visitors/*.cpp)
-
-gaudi_add_module(GaudiHive ${GaudiHive_srcs}
-                 LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib  ${LIBRT_NAME}
-                 INCLUDE_DIRS Boost ROOT TBB)
-
-
-gaudi_add_test(QMTest QMTEST)
-
-#---Installation-----------------------------------------------------------------------------
-gaudi_install_python_modules()
+# Install python modules
+gaudi_install(PYTHON)
+# Install other scripts
+gaudi_install(SCRIPTS)

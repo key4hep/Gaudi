@@ -18,8 +18,8 @@
 * with 'counters'                                                             *
 *                                                                             *
 * The example is equivalent to C++ example 'CounterEx', see                   *
-* $GAUDIEXAMPLESROOT/src/CounterEx/*.cpp and                                  *
-* $GAUDIEXAMPLESROOT/options/CounterEx.opts                                   *
+*   GaudiExamples/src/CounterEx/*.cpp and                                     *
+*   GaudiExamples/options/CounterEx.opts                                      *
 *                                                                             *
 *******************************************************************************
 """

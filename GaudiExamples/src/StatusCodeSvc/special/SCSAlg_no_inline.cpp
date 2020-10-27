@@ -9,7 +9,8 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "../SCSAlg.h"
-#include "HackedStatusCode.h"
+#define STATUSCODE_DESTRUCTOR_LINKAGE __attribute__( ( noinline ) )
+#include "GaudiKernel/StatusCode.h"
 
 #if __cplusplus >= 201703L && !defined( __CLING__ )
 #  pragma GCC diagnostic ignored "-Wunused-result"

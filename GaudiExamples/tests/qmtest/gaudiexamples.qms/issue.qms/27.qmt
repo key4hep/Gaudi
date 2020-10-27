@@ -11,6 +11,6 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>$GAUDIEXAMPLESROOT/tests/options/TestObjectVersion.py</text></set></argument>
+<argument name="args"><set><text>../../tests/options/TestObjectVersion.py</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 </extension>

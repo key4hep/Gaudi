@@ -6,10 +6,12 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Stefa
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
+This version features a complete rewrite of the CMake configuration. See gaudi/Gaudi!986 and gaudi/Gaudi!922 for details.
 
 Here is a summary of the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r1...master).
 
 ### Changed
+- complete rewrite of CMake configuration in *modern* CMake (gaudi/Gaudi!986, gaudi/Gaudi!922)
 
 ### Added
 

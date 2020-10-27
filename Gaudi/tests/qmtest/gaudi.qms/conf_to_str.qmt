@@ -17,9 +17,16 @@
 <text>--dry-run</text>
 <text>conf_to_str.py</text>
 </set></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
+</set></argument>
 <argument name="validator"><text>
 # skip Athena common messages
-conf_dict = eval('\n'.join(stdout.splitlines()))
+try:
+    conf_dict = eval('\n'.join(stdout.splitlines()))
+except SyntaxError:
+    conf_dict = {}
+
 expected = {'Algorithm1': {'Service': 'MySvc/JustAName'},
             'Algorithm2': {'Members': ['HelloWorld', 'MyAlg/Algorithm1']},
             'Algorithm3': {'Members': ['MyAlg/Algorithm1',

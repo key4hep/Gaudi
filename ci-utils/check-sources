@@ -1,0 +1,46 @@
+#!/bin/bash
+#####################################################################################
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+#                                                                                   #
+# This software is distributed under the terms of the Apache version 2 licence,     #
+# copied verbatim in the file "LICENSE".                                            #
+#                                                                                   #
+# In applying this licence, CERN does not waive the privileges and immunities       #
+# granted to it by virtue of its status as an Intergovernmental Organization        #
+# or submit itself to any jurisdiction.                                             #
+#####################################################################################
+set -eo pipefail
+
+build_file="$1"
+IFS=$'\n'
+
+# FIXME remove this once the system git is not as old...
+git=/cvmfs/lhcb.cern.ch/lib/contrib/git/2.14.2/bin/git
+
+# Find sources not explicitly referenced from CMakeLists.txt files
+not_in_cmakelists=()
+for package in $($git ls-files -- '*/CMakeLists.txt' ':!:cmake/'); do
+  dir=$(dirname $package)
+  pushd "$dir" >/dev/null
+  missing=$($git ls-files --cached --others '*.cpp' ':!:*/contrib/*' | \
+    xargs -n1 -I_path bash -c \
+      "git grep -q '_path' -- CMakeLists.txt || echo $dir/_path")
+  if [ -n "$missing" ]; then
+    not_in_cmakelists+=($missing)
+  fi
+  popd >/dev/null
+done
+
+# If a build file is given, filter only sources not mentioned there
+not_in_build=()
+for src in ${not_in_cmakelists[@]}; do
+  if ! grep -q "$src" "$build_file" 2>/dev/null; then
+    not_in_build+=($src)
+  fi
+done
+
+if [ -n "$not_in_build" ]; then
+  echo -e "Found potentially unused sources:\n"
+  printf '%s\n' "${not_in_build[@]}"
+  exit 1
+fi

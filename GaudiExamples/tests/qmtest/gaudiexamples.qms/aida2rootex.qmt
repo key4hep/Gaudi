@@ -24,4 +24,9 @@ preprocessor = (normalizeExamples +
  
 validateWithReference(preproc = preprocessor)
  </text></argument>
+<argument name="environment"><set>
+<text>STDOPTS=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options</text>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests</text>
+<text>PYTHONPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/python:$PYTHONPATH</text>
+</set></argument>
 </extension>

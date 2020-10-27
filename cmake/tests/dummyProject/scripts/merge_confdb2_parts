@@ -1,0 +1,13 @@
+# This script aims at faking genconf in the dummyProject
+inputs=
+output=
+while [ -n "$1" ] ; do
+  if [ "$1" = "--output" ] ; then 
+    output="$2"
+    shift
+  else
+    inputs="$inputs $1"
+  fi
+  shift
+done
+cat $inputs > $output

@@ -17,6 +17,9 @@
 <text>--dry-run</text>
 <text>reference.py</text>
 </set></argument>
+<argument name="environment"><set>
+<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
+</set></argument>
 <argument name="validator"><text>
 conf_dict = eval('\n'.join(stdout.splitlines()))
 expected = {'MyAlg': {'Cut': 20.0,

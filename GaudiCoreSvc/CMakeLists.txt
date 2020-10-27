@@ -8,41 +8,61 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-gaudi_subdir(GaudiCoreSvc)
+# GaudiCoreSvc subdirectory
 
-gaudi_depends_on_subdirs(GaudiKernel)
-
-find_package(Boost COMPONENTS system filesystem regex thread python${boost_python_version} REQUIRED)
-find_package(TBB REQUIRED)
-find_package(PythonLibs REQUIRED)
-find_package(ROOT REQUIRED)
-
-# Hide some Boost/ROOT/TBB compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
-
-# Only link against the rt library on linux:
-set( extralibs )
-if( UNIX AND NOT APPLE )
-   set( extralibs rt )
-endif()
-
-#---Libraries---------------------------------------------------------------
+# Build the plugin library
 gaudi_add_module(GaudiCoreSvc
-                 src/ApplicationMgr/*.cpp
-                 src/EventSelector/*.cpp
-                 src/IncidentSvc/*.cpp
-                 src/JobOptionsSvc/*.cpp
-                 src/MessageSvc/*.cpp
-                 src/AlgExecStateSvc/*.cpp
-                 LINK_LIBRARIES GaudiKernel Boost TBB PythonLibs ${extralibs}
-                 INCLUDE_DIRS TBB PythonLibs)
+                 SOURCES
+                   src/AlgExecStateSvc/AlgExecStateSvc.cpp
+                   src/ApplicationMgr/AlgorithmManager.cpp
+                   src/ApplicationMgr/ApplicationMgr.cpp
+                   src/ApplicationMgr/AppMgrRunable.cpp
+                   src/ApplicationMgr/DLLClassManager.cpp
+                   src/ApplicationMgr/EventLoopMgr.cpp
+                   src/ApplicationMgr/MinimalEventLoopMgr.cpp
+                   src/ApplicationMgr/ServiceManager.cpp
+                   src/ApplicationMgr/ToolSvc.cpp
+                   src/EventSelector/DataStreamToolFactory.cpp
+                   src/EventSelector/EventCollectionSelector.cpp
+                   src/EventSelector/EventSelector.cpp
+                   src/IncidentSvc/DataOnDemandSvc.cpp
+                   src/IncidentSvc/DODBasicMapper.cpp
+                   src/IncidentSvc/IncidentProcAlg.cpp
+                   src/IncidentSvc/IncidentSvc.cpp
+                   src/JobOptionsSvc/Analyzer.cpp
+                   src/JobOptionsSvc/Catalog.cpp
+                   src/JobOptionsSvc/IncludedFiles.cpp
+                   src/JobOptionsSvc/JobOptionsSvc.cpp
+                   src/JobOptionsSvc/Message.cpp
+                   src/JobOptionsSvc/Node.cpp
+                   src/JobOptionsSvc/Parser.cpp
+                   src/JobOptionsSvc/Position.cpp
+                   src/JobOptionsSvc/Property.cpp
+                   src/JobOptionsSvc/PropertyName.cpp
+                   src/JobOptionsSvc/PropertyValue.cpp
+                   src/JobOptionsSvc/PythonConfig.cpp
+                   src/JobOptionsSvc/Units.cpp
+                   src/JobOptionsSvc/Utils.cpp
+                   src/MessageSvc/InertMessageSvc.cpp
+                   src/MessageSvc/MessageSvc.cpp
+                   src/MessageSvc/MessageSvcSink.cpp
+                   src/MessageSvc/TBBMessageSvc.cpp
+                 LINK
+                   GaudiKernel
+                   Python::Python
+                   Boost::headers
+                   Boost::filesystem
+                   Boost::python
+                   Boost::regex
+                   Boost::system
+                   Boost::thread
+                   TBB::tbb
+                   ${rt_LIBRARY}) # UNIX only
 
 foreach(name IN ITEMS base binding bwcompat custom)
-    gaudi_add_unit_test(test_JOS_${name} tests/src/test_JOS/${name}.cpp
-                        LINK_LIBRARIES GaudiKernel TYPE Boost)
-   add_dependencies(test_JOS_${name} GaudiCoreSvc)
+    gaudi_add_executable(test_JOS_${name} SOURCES tests/src/test_JOS/${name}.cpp
+                         LINK GaudiKernel Boost::unit_test_framework TEST)
 endforeach()
 
-gaudi_add_executable(JOS_benchmark tests/src/test_JOS/benchmark.cpp
-                     LINK_LIBRARIES GaudiKernel)
-add_dependencies(JOS_benchmark GaudiCoreSvc)
+gaudi_add_executable(JOS_benchmark SOURCES tests/src/test_JOS/benchmark.cpp
+                     LINK GaudiKernel)

@@ -13,7 +13,7 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
   <text>-v</text>
-  <text>$GAUDIEXAMPLESROOT/options/FunctionalAlgorithms/SelectTracks.py</text>
+  <text>../../options/FunctionalAlgorithms/SelectTracks.py</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="prerequisites"><set>

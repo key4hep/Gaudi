@@ -11,7 +11,7 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
   <argument name="program"><text>gaudirun.py</text></argument>
-  <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/AlgSequencer.py</text></set></argument>
+  <argument name="args"><set><text>../../options/AlgSequencer.py</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/AlgSequencer_pyopts.ref</text></argument>
 </extension>

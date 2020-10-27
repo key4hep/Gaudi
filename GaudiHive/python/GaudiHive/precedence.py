@@ -25,12 +25,20 @@ def _buildFilePath(filePath):
     if not os.path.exists(filePath):
         __fullFilePath__ = os.path.realpath(
             os.path.join(
-                os.environ.get('GAUDIHIVEROOT', ''), "data", filePath))
+                os.environ.get('ENV_CMAKE_SOURCE_DIR', ''), "GaudiHive",
+                "data", filePath))
         if not os.path.exists(__fullFilePath__):
-            print(
-                "\nERROR: invalid file path '%s'. It must be either absolute, or relative to '$GAUDIHIVEROOT/data/'."
-                % filePath)
-            sys.exit(1)
+            __fullFilePath__ = os.path.realpath(
+                os.path.join(
+                    os.environ.get('ENV_CMAKE_SOURCE_DIR', ''), "Gaudi",
+                    "GaudiHive", "data", filePath))
+            if not os.path.exists(__fullFilePath__):
+                print("\nERROR: invalid file path '%s'. "
+                      "It must be either absolute, or relative to "
+                      "'$ENV_CMAKE_SOURCE_DIR/GaudiHive/data/' or to "
+                      "'$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiHive/data/'." %
+                      filePath)
+                sys.exit(1)
     else:
         __fullFilePath__ = filePath
 
@@ -171,8 +179,8 @@ class CruncherSequence(object):
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
         BlockingBoolValue -- *BooleanValue object to set whether an algorithm has to experience CPU-blocking execution
-        cfgPath -- relative to $GAUDIHIVEROOT/data path to GRAPHML file with control flow dependencies
-        dfgPath -- relative to $GAUDIHIVEROOT/data path to GRAPHML file with data flow dependencies
+        cfgPath -- relative to $ENV_CMAKE_SOURCE_DIR/GaudiHive/data path to GRAPHML file with control flow dependencies
+        dfgPath -- relative to $ENV_CMAKE_SOURCE_DIR/GaudiHive/data path to GRAPHML file with data flow dependencies
         showStat -- print out statistics on precedence graph
         """
 

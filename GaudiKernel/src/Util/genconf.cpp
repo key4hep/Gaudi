@@ -355,28 +355,9 @@ int main( int argc, char** argv )
     // re-shape the input arguments:
     //  - removes spurious spaces,
     //  - split into tokens.
-    Strings_t inputLibs;
-    {
-      std::string tmp = vm["input-libraries"].as<std::string>();
-      boost::trim( tmp );
-      boost::split( inputLibs, tmp, boost::is_any_of( " " ), boost::token_compress_on );
-    }
-
-    //
-    libs.reserve( inputLibs.size() );
-    for ( const auto& iLib : inputLibs ) {
-      std::string lib = fs::path( iLib ).stem().string();
-      if ( lib.compare( 0, 3, "lib" ) == 0 ) {
-        lib = lib.substr( 3 ); // For *NIX remove "lib"
-      }
-      // remove duplicates
-      if ( !lib.empty() && std::find( libs.begin(), libs.end(), lib ) == libs.end() ) { libs.push_back( lib ); }
-    } //> end loop over input-libraries
-    if ( libs.empty() ) {
-      LOG_ERROR << "input component library(ies) required !\n";
-      LOG_ERROR << "'input-libraries' argument was [" << vm["input-libraries"].as<string>() << "]";
-      return EXIT_FAILURE;
-    }
+    std::string tmp = vm["input-libraries"].as<std::string>();
+    boost::trim( tmp );
+    boost::split( libs, tmp, boost::is_any_of( " " ), boost::token_compress_on );
   } else {
     LOG_ERROR << "input component library(ies) required";
     cout << visible << endl;
@@ -455,8 +436,11 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
   const auto endLib = libs.end();
 
-  static const std::string gaudiSvc   = "GaudiCoreSvc";
-  const bool               isGaudiSvc = ( std::find( libs.begin(), endLib, gaudiSvc ) != endLib );
+  static const std::string gaudiSvc = "GaudiCoreSvc";
+  const bool               isGaudiSvc =
+      std::find_if( libs.begin(), endLib, []( const auto& s ) {
+        return s.find( gaudiSvc ) != std::string::npos; // libs can be <name> or path/to/lib<name>.so
+      } ) != endLib;
 
   //--- Instantiate ApplicationMgr --------------------------------------------
   if ( !isGaudiSvc && createAppMgr() ) {
@@ -478,7 +462,10 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
   // iterate over all the requested libraries
   for ( const auto& iLib : libs ) {
-
+    std::string lib = fs::path( iLib ).stem().string();
+    if ( lib.compare( 0, 3, "lib" ) == 0 ) {
+      lib = lib.substr( 3 ); // For *NIX remove "lib"
+    }
     LOG_INFO << ":::: processing library: " << iLib << "...";
 
     // reset state
@@ -520,8 +507,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       // Skip the generation of configurables if the component does not come
       // from the same library we are processing (i.e. we found a symbol that
       // is coming from a library loaded by the linker).
-      if ( libNativeName( iLib ) != info.library ) {
-        LOG_WARNING << "library [" << iLib << "] exposes factory [" << factoryName << "] which is declared in ["
+      if ( libNativeName( lib ) != info.library ) {
+        LOG_WARNING << "library [" << lib << "] exposes factory [" << factoryName << "] which is declared in ["
                     << info.library << "] !!";
         continue;
       }
@@ -580,7 +567,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
       if ( prop ) {
-        if ( !genComponent( iLib, name, type, prop->getProperties(), prop->getInterfaceNames() ) ) { allGood = false; }
+        if ( !genComponent( lib, name, type, prop->getProperties(), prop->getInterfaceNames() ) ) { allGood = false; }
         prop.reset();
       } else {
         LOG_ERROR << "could not cast IInterface* object to an IProperty* !";
@@ -592,8 +579,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     ///
     /// write-out files for this library
     ///
-    const std::string pyName = ( fs::path( m_outputDirName ) / fs::path( iLib + "Conf.py" ) ).string();
-    const std::string dbName = ( fs::path( m_outputDirName ) / fs::path( iLib + ".confdb" ) ).string();
+    const std::string pyName = ( fs::path( m_outputDirName ) / fs::path( lib + "Conf.py" ) ).string();
+    const std::string dbName = ( fs::path( m_outputDirName ) / fs::path( lib + ".confdb" ) ).string();
 
     std::fstream py( pyName, std::ios_base::out | std::ios_base::trunc );
     std::fstream db( dbName, std::ios_base::out | std::ios_base::trunc );
@@ -604,7 +591,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     genTrailer( py, db );
 
     {
-      const std::string db2Name = ( fs::path( m_outputDirName ) / fs::path( iLib + ".confdb2_part" ) ).string();
+      const std::string db2Name = ( fs::path( m_outputDirName ) / fs::path( lib + ".confdb2_part" ) ).string();
       std::fstream      db2( db2Name, std::ios_base::out | std::ios_base::trunc );
       db2 << "{\n" << m_db2Buf.str() << "}\n";
     }

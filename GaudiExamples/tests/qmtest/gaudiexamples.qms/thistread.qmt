@@ -10,7 +10,7 @@
     or submit itself to any jurisdiction.
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
-  <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/THistRead.opts</text></set></argument>
+  <argument name="args"><set><text>../../options/THistRead.opts</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/THistRead.ref</text></argument>
   <argument name="prerequisites"><set>
