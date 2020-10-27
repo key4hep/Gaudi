@@ -109,9 +109,7 @@ namespace Gaudi {
             std::any    factory{};
             Properties  properties{};
 
-            inline bool is_set() const {
-              return factory.has_value();
-            }
+            inline bool             is_set() const { return factory.has_value(); }
             Properties::mapped_type getprop( const Properties::key_type& name ) const;
           };
 

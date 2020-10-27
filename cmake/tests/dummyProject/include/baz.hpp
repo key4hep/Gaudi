@@ -13,6 +13,6 @@
 
 #include <foo.hpp>
 
-bool baz(int a);
+bool baz( int a );
 
 #endif // BAZ_HPP

@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "../SCSAlg.h"
-#define STATUSCODE_DESTRUCTOR_LINKAGE __attribute__ ((noinline))
+#define STATUSCODE_DESTRUCTOR_LINKAGE __attribute__( ( noinline ) )
 #include "GaudiKernel/StatusCode.h"
 
 #if __cplusplus >= 201703L && !defined( __CLING__ )

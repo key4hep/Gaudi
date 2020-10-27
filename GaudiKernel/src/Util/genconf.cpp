@@ -355,9 +355,9 @@ int main( int argc, char** argv )
     // re-shape the input arguments:
     //  - removes spurious spaces,
     //  - split into tokens.
-      std::string tmp = vm["input-libraries"].as<std::string>();
-      boost::trim( tmp );
-      boost::split( libs, tmp, boost::is_any_of( " " ), boost::token_compress_on );
+    std::string tmp = vm["input-libraries"].as<std::string>();
+    boost::trim( tmp );
+    boost::split( libs, tmp, boost::is_any_of( " " ), boost::token_compress_on );
   } else {
     LOG_ERROR << "input component library(ies) required";
     cout << visible << endl;
@@ -436,10 +436,11 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
   const auto endLib = libs.end();
 
-  static const std::string gaudiSvc   = "GaudiCoreSvc";
-  const bool               isGaudiSvc = std::find_if( libs.begin(), endLib, [](const auto& s) {
-        return s.find(gaudiSvc) != std::string::npos; // libs can be <name> or path/to/lib<name>.so
-    } ) != endLib;
+  static const std::string gaudiSvc = "GaudiCoreSvc";
+  const bool               isGaudiSvc =
+      std::find_if( libs.begin(), endLib, []( const auto& s ) {
+        return s.find( gaudiSvc ) != std::string::npos; // libs can be <name> or path/to/lib<name>.so
+      } ) != endLib;
 
   //--- Instantiate ApplicationMgr --------------------------------------------
   if ( !isGaudiSvc && createAppMgr() ) {

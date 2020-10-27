@@ -49,7 +49,8 @@ class QMTTest(BaseTest):
                 elif name == 'environment':
                     for el in value.findall('text'):
                         key, value = el.text.split('=', 1)
-                        self.environment[key] = Template(value).safe_substitute(self.environment)
+                        self.environment[key] = Template(
+                            value).safe_substitute(self.environment)
                 else:
                     data = value.text
                     if data is not None:
@@ -141,7 +142,7 @@ class QMTTest(BaseTest):
                 })
             }
             # print self.validator
-            exec (self.validator, globals(), exported_symbols)
+            exec(self.validator, globals(), exported_symbols)
             return result, self.causes
         else:
             return super(QMTTest, self).ValidateOutput(stdout, stderr, result)

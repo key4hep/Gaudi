@@ -129,11 +129,11 @@ public:
     rhs.m_checked = true;
   }
 
-  /// Destructor.
-  #ifdef STATUSCODE_DESTRUCTOR_LINKAGE
+/// Destructor.
+#ifdef STATUSCODE_DESTRUCTOR_LINKAGE
   STATUSCODE_DESTRUCTOR_LINKAGE
-  // Used in GaudiExamples.statuscodesvc.* tests
-  #endif
+// Used in GaudiExamples.statuscodesvc.* tests
+#endif
   ~StatusCode() {
     if ( UNLIKELY( s_checking ) ) check();
   }

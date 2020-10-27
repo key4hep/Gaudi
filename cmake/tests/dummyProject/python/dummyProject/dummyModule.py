@@ -10,10 +10,10 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-
 """
 A dummy python module.
 """
+
 
 def foo(x):
     """
@@ -24,13 +24,15 @@ def foo(x):
     >>> foo(5)
     6
     """
-    return x+1
+    return x + 1
+
 
 def main():
     """
     A dummy main function.
     """
     print("I'm a dummy main function.")
+
 
 if __name__ == "__main__":
     main()
