@@ -1318,20 +1318,6 @@ def findHistosSummaries(stdout):
     return summaries
 
 
-def PlatformIsNotSupported(self, context, result):
-    platform = GetPlatform(self)
-    unsupported = [
-        re.compile(x)
-        for x in [str(y).strip() for y in self.unsupported_platforms] if x
-    ]
-    for p_re in unsupported:
-        if p_re.search(platform):
-            result.SetOutcome(result.UNTESTED)
-            result[result.CAUSE] = 'Platform not supported.'
-            return True
-    return False
-
-
 def GetPlatform(self):
     """
         Return the platform Id defined in CMTCONFIG or SCRAM_ARCH.
