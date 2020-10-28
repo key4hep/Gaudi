@@ -1338,18 +1338,18 @@ def GetPlatform(self):
         """
     arch = "None"
     # check architecture name
-    if os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in ("Debug", "Developer"):
-        arch = "dummy-dbg"
-    elif os.environ.get("ENV_CMAKE_BUILD_TYPE",
-                        "") in ("Release", "MinSizeRel", "RelWithDebInfo",
-                                ""):  # RelWithDebInfo == -O2 -g -DNDEBUG
-        arch = "dummy-opt"
-    elif "BINARY_TAG" in os.environ:
+    if "BINARY_TAG" in os.environ:
         arch = os.environ["BINARY_TAG"]
     elif "CMTCONFIG" in os.environ:
         arch = os.environ["CMTCONFIG"]
     elif "SCRAM_ARCH" in os.environ:
         arch = os.environ["SCRAM_ARCH"]
+    elif os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in ("Debug", "Developer"):
+        arch = "dummy-dbg"
+    elif os.environ.get("ENV_CMAKE_BUILD_TYPE",
+                        "") in ("Release", "MinSizeRel", "RelWithDebInfo",
+                                ""):  # RelWithDebInfo == -O2 -g -DNDEBUG
+        arch = "dummy-opt"
     return arch
 
 
