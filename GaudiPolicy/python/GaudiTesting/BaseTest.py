@@ -1318,38 +1318,24 @@ def findHistosSummaries(stdout):
     return summaries
 
 
-def PlatformIsNotSupported(self, context, result):
-    platform = GetPlatform(self)
-    unsupported = [
-        re.compile(x)
-        for x in [str(y).strip() for y in self.unsupported_platforms] if x
-    ]
-    for p_re in unsupported:
-        if p_re.search(platform):
-            result.SetOutcome(result.UNTESTED)
-            result[result.CAUSE] = 'Platform not supported.'
-            return True
-    return False
-
-
 def GetPlatform(self):
     """
         Return the platform Id defined in CMTCONFIG or SCRAM_ARCH.
         """
     arch = "None"
     # check architecture name
-    if os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in ("Debug", "Developer"):
-        arch = "dummy-dbg"
-    elif os.environ.get("ENV_CMAKE_BUILD_TYPE",
-                        "") in ("Release", "MinSizeRel", "RelWithDebInfo",
-                                ""):  # RelWithDebInfo == -O2 -g -DNDEBUG
-        arch = "dummy-opt"
-    elif "BINARY_TAG" in os.environ:
+    if "BINARY_TAG" in os.environ:
         arch = os.environ["BINARY_TAG"]
     elif "CMTCONFIG" in os.environ:
         arch = os.environ["CMTCONFIG"]
     elif "SCRAM_ARCH" in os.environ:
         arch = os.environ["SCRAM_ARCH"]
+    elif os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in ("Debug", "Developer"):
+        arch = "dummy-dbg"
+    elif os.environ.get("ENV_CMAKE_BUILD_TYPE",
+                        "") in ("Release", "MinSizeRel", "RelWithDebInfo",
+                                ""):  # RelWithDebInfo == -O2 -g -DNDEBUG
+        arch = "dummy-opt"
     return arch
 
 
