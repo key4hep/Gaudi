@@ -62,18 +62,6 @@ class DataHandle(object):
     def toStringProperty(self):
         return self.__str__()
 
-    def __add__(self, other):
-        path = ':'.join(i + other for i in self.Path.split(':'))
-        return DataHandle(path, self.Mode, self.Type)
-
-    def __radd__(self, other):
-        path = ':'.join(other + i for i in self.Path.split(':'))
-        return DataHandle(path, self.Mode, self.Type)
-
-    def __iadd__(self, other):
-        self.Path = ':'.join(i + other for i in self.Path.split(':'))
-        return self
-
     def mode(self):
         return self.Mode
 
