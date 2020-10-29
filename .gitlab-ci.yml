@@ -36,6 +36,14 @@ before_script:
     - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
     - cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${CI_JOB_NAME}.cmake -DGAUDI_USE_INTELAMPLIFIER:BOOL=TRUE -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
+    # pre-heat ccache cache for GaudiKernel
+    - jobs=$(nproc)
+    - while [[ $jobs -ge 1 ]] ; do
+    -   cmake --build build -j $jobs --target GaudiKernel && break || true
+    -   jobs=$(( $jobs / 2 ))
+    - done
+    # build from scratch
+    - cmake --build build --target clean
     - cmake --build build 2>&1 | tee build/build.log
     - ccache -s
   artifacts:
@@ -95,6 +103,14 @@ view-gcc8:
     - export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.17.3/Linux-x86_64/bin:/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.8.2.g81279.kitware.dyndep-1.jobserver-1/Linux-x86_64:$PATH"
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=2 -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
+    # pre-heat ccache cache for GaudiKernel
+    - jobs=$(nproc)
+    - while [[ $jobs -ge 1 ]] ; do
+    -   cmake --build build -j $jobs --target GaudiKernel && break || true
+    -   jobs=$(( $jobs / 2 ))
+    - done
+    # build from scratch
+    - cmake --build build --target clean
     - cmake --build build 2>&1 | tee build/build.log
     - ccache -s
 
@@ -107,6 +123,14 @@ lhcb-gcc9:
     - lb-project-init --overwrite
     - ccache -z
     - mkdir build.${BINARY_TAG}
+    # pre-heat ccache cache for GaudiKernel
+    - jobs=$(nproc)
+    - while [[ $jobs -ge 1 ]] ; do
+    -   make BUILDFLAGS=-j$jobs GaudiKernel && break || true
+    -   jobs=$(( $jobs / 2 ))
+    - done
+    # build from scratch
+    - make clean
     - make 2>&1 | tee build.${BINARY_TAG}/build.log
     - ccache -s
   artifacts:
