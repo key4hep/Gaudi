@@ -168,7 +168,7 @@ view-gcc8:test:
     - export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.17.3/Linux-x86_64/bin:/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.8.2.g81279.kitware.dyndep-1.jobserver-1/Linux-x86_64:$PATH"
     - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
     - cd build
-    - if ctest -T test -j $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
+    - if ctest -T test -j 4 --no-compress-output ; then result=success ; else result=failure ; fi
     - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
     - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
@@ -185,7 +185,7 @@ lhcb-gcc9:test:
     - source /cvmfs/lhcb.cern.ch/lib/LbEnv
     - lb-project-init --overwrite
     - find build.${BINARY_TAG} -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
-    - if make test ARGS="-j $(nproc) --no-compress-output" ; then result=success ; else result=failure ; fi
+    - if make test ARGS="-j 4 --no-compress-output" ; then result=success ; else result=failure ; fi
     - cp build.${BINARY_TAG}/Testing/$(head -1 build.${BINARY_TAG}/Testing/TAG)/Test.xml .
     - mv build.${BINARY_TAG}/html .
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
