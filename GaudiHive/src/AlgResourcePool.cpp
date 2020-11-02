@@ -15,6 +15,7 @@
 // C++
 #include <functional>
 #include <queue>
+#include <sstream>
 
 // DP TODO: Manage SmartIFs and not pointers to algorithms
 
@@ -94,7 +95,16 @@ StatusCode AlgResourcePool::acquireAlgorithm( std::string_view name, IAlgorithm*
   if ( blocking ) {
     itQueueIAlgPtr->second->pop( algo );
   } else {
-    if ( !itQueueIAlgPtr->second->try_pop( algo ) ) { sc = StatusCode::FAILURE; }
+    if ( !itQueueIAlgPtr->second->try_pop( algo ) ) {
+      if ( m_countAlgInstMisses ) {
+        auto result = m_algInstanceMisses.find( name );
+        if ( result != m_algInstanceMisses.end() )
+          ++( result->second );
+        else
+          m_algInstanceMisses[name] = 1;
+      }
+      sc = StatusCode::FAILURE;
+    }
   }
 
   // Note that reentrant algorithms are not consumed so we put them
@@ -377,6 +387,36 @@ std::list<IAlgorithm*> AlgResourcePool::getTopAlgList() {
 }
 
 //---------------------------------------------------------------------------
+void AlgResourcePool::dumpInstanceMisses() const {
+
+  std::multimap<unsigned int, std::string_view, std::greater<unsigned int>> sortedAlgInstanceMisses;
+
+  for ( auto& p : m_algInstanceMisses ) sortedAlgInstanceMisses.insert( {p.second, p.first} );
+
+  // determine optimal indentation
+  int indnt = std::to_string( sortedAlgInstanceMisses.cbegin()->first ).length();
+
+  std::ostringstream out;
+
+  out << "Hit parade of algorithm instance misses:\n"
+      << std::right << std::setfill( ' ' )
+      << " ===============================================================================\n"
+      << std::setw( indnt + 7 ) << "Misses "
+      << "| Algorithm (# of clones) \n"
+      << " ===============================================================================\n";
+
+  std::hash<std::string_view> hash_function;
+
+  out << std::right << std::setfill( ' ' );
+  for ( const auto& p : sortedAlgInstanceMisses ) {
+    out << std::setw( indnt + 7 ) << std::to_string( p.first ) + " "
+        << "  " << p.second << " (" << m_n_of_allowed_instances.at( hash_function( p.second ) ) << ")\n";
+  }
+
+  info() << out.str() << endmsg;
+}
+
+//---------------------------------------------------------------------------
 
 StatusCode AlgResourcePool::stop() {
 
@@ -391,5 +431,7 @@ StatusCode AlgResourcePool::stop() {
       return stopSc;
     }
   }
+  if ( m_countAlgInstMisses ) dumpInstanceMisses();
+
   return StatusCode::SUCCESS;
 }
