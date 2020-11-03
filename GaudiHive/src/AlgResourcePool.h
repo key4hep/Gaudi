@@ -59,6 +59,7 @@ public:
   std::list<IAlgorithm*> getTopAlgList() override;
 
   StatusCode stop() override;
+  StatusCode finalize() override;
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
