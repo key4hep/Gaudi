@@ -1041,11 +1041,11 @@ if(NOT CMAKE_SCRIPT_MODE_FILE AND NOT TARGET target_runtime_paths)
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/${_env_file}
                   CONTENT "#!/bin/sh
 # Auto-generated script to set environment variables
-export PATH=\"$<SHELL_PATH:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_path>>;${_ENV_PATH}>>\"
-export LD_LIBRARY_PATH=\"$<SHELL_PATH:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_ld_library_path>>;${_ENV_LD_LIBRARY_PATH}>>\"
-export PYTHONPATH=\"$<SHELL_PATH:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_pythonpath>>;${_ENV_PYTHONPATH}>>\"
+export PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_path>>;${_ENV_PATH}>,EXCLUDE,^[^/]>>\"
+export LD_LIBRARY_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_ld_library_path>>;${_ENV_LD_LIBRARY_PATH}>,EXCLUDE,^[^/]>>\"
+export PYTHONPATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_pythonpath>>;${_ENV_PYTHONPATH}>,EXCLUDE,^[^/]>>\"
 $<$<NOT:$<STREQUAL:$ENV{PYTHONHOME},>>:export PYTHONHOME=\"$ENV{PYTHONHOME}\">
-export ROOT_INCLUDE_PATH=\"$<SHELL_PATH:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_root_include_path>>;${_ENV_ROOT_INCLUDE_PATH}>>\"
+export ROOT_INCLUDE_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_root_include_path>>;${_ENV_ROOT_INCLUDE_PATH}>,EXCLUDE,^[^/]>>\"
 export ENV_CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"
 export ENV_CMAKE_BINARY_DIR=\"${CMAKE_BINARY_DIR}\"
 export ENV_CMAKE_BUILD_TYPE=\"$<CONFIG>\"
