@@ -36,6 +36,14 @@ before_script:
     - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
     - cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${CI_JOB_NAME}.cmake -DGAUDI_USE_INTELAMPLIFIER:BOOL=TRUE -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
+    # pre-heat ccache cache for GaudiKernel
+    - jobs=$(nproc)
+    - while [[ $jobs -ge 1 ]] ; do
+    -   cmake --build build -j $jobs --target GaudiKernel && break || true
+    -   jobs=$(( $jobs / 2 ))
+    - done
+    # build from scratch
+    - cmake --build build --target clean
     - cmake --build build 2>&1 | tee build/build.log
     - ccache -s
   artifacts:
@@ -95,6 +103,14 @@ view-gcc8:
     - export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.17.3/Linux-x86_64/bin:/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.8.2.g81279.kitware.dyndep-1.jobserver-1/Linux-x86_64:$PATH"
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=2 -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
+    # pre-heat ccache cache for GaudiKernel
+    - jobs=$(nproc)
+    - while [[ $jobs -ge 1 ]] ; do
+    -   cmake --build build -j $jobs --target GaudiKernel && break || true
+    -   jobs=$(( $jobs / 2 ))
+    - done
+    # build from scratch
+    - cmake --build build --target clean
     - cmake --build build 2>&1 | tee build/build.log
     - ccache -s
 
@@ -107,6 +123,14 @@ lhcb-gcc9:
     - lb-project-init --overwrite
     - ccache -z
     - mkdir build.${BINARY_TAG}
+    # pre-heat ccache cache for GaudiKernel
+    - jobs=$(nproc)
+    - while [[ $jobs -ge 1 ]] ; do
+    -   make BUILDFLAGS=-j$jobs GaudiKernel && break || true
+    -   jobs=$(( $jobs / 2 ))
+    - done
+    # build from scratch
+    - make clean
     - make 2>&1 | tee build.${BINARY_TAG}/build.log
     - ccache -s
   artifacts:
@@ -144,7 +168,7 @@ view-gcc8:test:
     - export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.17.3/Linux-x86_64/bin:/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.8.2.g81279.kitware.dyndep-1.jobserver-1/Linux-x86_64:$PATH"
     - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
     - cd build
-    - if ctest -T test -j $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
+    - if ctest -T test -j 4 --no-compress-output ; then result=success ; else result=failure ; fi
     - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
     - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
@@ -161,15 +185,20 @@ lhcb-gcc9:test:
     - source /cvmfs/lhcb.cern.ch/lib/LbEnv
     - lb-project-init --overwrite
     - find build.${BINARY_TAG} -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
-    # FIXME: waiting for https://gitlab.cern.ch/lhcb-core/LbDevTools/-/merge_requests/132
-    # - if make test ARGS="-j$(nproc) --no-compress-output" ; then result=success ; else result=failure ; fi
-    # so we use directly ctest
-    - cd build.${BINARY_TAG}
-    - if ctest -T test -j $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
-    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
-    - cd ..
+    - if make test ARGS="-j 4 --no-compress-output" ; then result=success ; else result=failure ; fi
+    - cp build.${BINARY_TAG}/Testing/$(head -1 build.${BINARY_TAG}/Testing/TAG)/Test.xml .
+    - mv build.${BINARY_TAG}/html .
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
     - test "$result" = "success"
+  artifacts:
+    paths:
+      - Test.xml
+      - html
+    reports:
+      junit:
+        - results.xml
+    when: always
+    expire_in: 1 day
 
 ### Check build outputs
 x86_64-centos7-gcc9-opt:build-check:
