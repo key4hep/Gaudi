@@ -16,6 +16,5 @@
   <text>../../options/ROOT_IO/WriteAndReadHandleError.py</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-<argument name="exit_code"><integer>3</integer></argument>
-<argument name="unsupported_platforms"><set><text>.*</text></set></argument>
+<argument name="exit_code"><integer>6</integer></argument>
 </extension>
