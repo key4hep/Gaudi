@@ -630,6 +630,9 @@ function(gaudi_add_dictionary dictionary)
     set(gensrcdict ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.cxx)
     set(rootmapname ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.rootmap)
     set(pcmfile ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}_rdict.pcm)
+    if(DEFINED GENREFLEX_JOB_POOL)
+        set(job_pool JOB_POOL ${GENREFLEX_JOB_POOL})
+    endif()
     add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
         COMMAND run
                 ${ROOT_genreflex_CMD} # comes from ROOTConfig.cmake
@@ -644,7 +647,8 @@ function(gaudi_add_dictionary dictionary)
         DEPENDS "${ARG_HEADERFILES};${ARG_SELECTION}"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating ${dictionary}.cxx and ${dictionary}.rootmap and ${dictionary}_rdict.pcm"
-        COMMAND_EXPAND_LISTS)
+        COMMAND_EXPAND_LISTS
+        ${job_pool})
     add_custom_target(${dictionary}-gen ALL DEPENDS "${gensrcdict};${rootmapname};${pcmfile}")
     # Build the dictionary as a plugin
     add_library(${dictionary} MODULE ${gensrcdict})
