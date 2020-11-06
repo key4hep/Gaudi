@@ -23,6 +23,11 @@ import logging
 
 from subprocess import Popen, PIPE, STDOUT
 
+try:
+    from html import escape as escape_for_html
+except ImportError:  # Python2
+    from cgi import escape as escape_for_html
+
 import six
 
 if sys.version_info < (3, 5):
@@ -126,13 +131,28 @@ class BaseTest(object):
     def run(self):
         logging.debug('running test %s', self.name)
 
+        self.result = Result({
+            'CAUSE': None,
+            'EXCEPTION': None,
+            'RESOURCE': None,
+            'TARGET': None,
+            'TRACEBACK': None,
+            'START_TIME': None,
+            'END_TIME': None,
+            'TIMEOUT_DETAIL': None
+        })
+
         if self.options:
             if re.search(
                     r'from\s+Gaudi.Configuration\s+import\s+\*|'
                     'from\s+Configurables\s+import', self.options):
-                optionFile = tempfile.NamedTemporaryFile(suffix='.py')
+                suffix, lang = '.py', 'python'
             else:
-                optionFile = tempfile.NamedTemporaryFile(suffix='.opts')
+                suffix, lang = '.opts', 'c++'
+            self.result[
+                "Options"] = '<code lang="{}"><pre>{}</pre></code>'.format(
+                    lang, escape_for_html(self.options))
+            optionFile = tempfile.NamedTemporaryFile(suffix=suffix)
             optionFile.file.write(self.options.encode('utf-8'))
             optionFile.seek(0)
             self.args.append(RationalizePath(optionFile.name))
@@ -177,18 +197,6 @@ class BaseTest(object):
                 params = ['python', RationalizePath(prog)] + args
             else:
                 params = [RationalizePath(prog)] + args
-
-            validatorRes = Result({
-                'CAUSE': None,
-                'EXCEPTION': None,
-                'RESOURCE': None,
-                'TARGET': None,
-                'TRACEBACK': None,
-                'START_TIME': None,
-                'END_TIME': None,
-                'TIMEOUT_DETAIL': None
-            })
-            self.result = validatorRes
 
             # we need to switch directory because the validator expects to run
             # in the same dir as the program
@@ -236,7 +244,7 @@ class BaseTest(object):
 
                 logging.debug('validating test...')
                 self.result, self.causes = self.ValidateOutput(
-                    stdout=self.out, stderr=self.err, result=validatorRes)
+                    stdout=self.out, stderr=self.err, result=self.result)
 
             # remove the temporary directory if we created it
             if self.use_temp_dir and not self._common_tmpdir:
@@ -269,7 +277,7 @@ class BaseTest(object):
             'Exit Code': 'returnedCode',
             'stderr': 'err',
             'Arguments': 'args',
-            'Environment': 'environment',
+            'Runtime Environment': 'environment',
             'Status': 'status',
             'stdout': 'out',
             'Program Name': 'program',
@@ -291,7 +299,14 @@ class BaseTest(object):
         # print(dict(resultDict).keys())
         resultDict.extend(self.result.annotations.items())
         # print(self.result.annotations.keys())
-        return dict(resultDict)
+        resultDict = dict(resultDict)
+
+        # Special cases
+        if "Validator" in resultDict:
+            resultDict[
+                "Validator"] = '<code lang="{}"><pre>{}</pre></code>'.format(
+                    "python", escape_for_html(resultDict["Validator"]))
+        return resultDict
 
     # -------------------------------------------------#
     # ----------------Validating tool------------------#
@@ -714,8 +729,11 @@ class Result:
             value, six.string_types), '{!r} is not a string'.format(value)
         self.annotations[key] = value
 
-    def Quote(self, string):
-        return string
+    def Quote(self, text):
+        """
+        Convert text to html by escaping special chars and adding <pre> tags.
+        """
+        return "<pre>{}</pre>".format(escape_for_html(text))
 
 
 # -------------------------------------------------------------------------#

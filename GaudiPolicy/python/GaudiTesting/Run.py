@@ -51,8 +51,8 @@ def ctest_report(results):
     # It's weird, I know, but it tells CTest not to cut the output.
     print('CTEST_FULL_OUTPUT')
     print(results.get('stdout', ''))
-    handler = {'Environment': lambda v: '\n'.join('{0}={1}'.format(*item)
-                                                  for item in sorted(v.items())),
+    handler = {'Runtime Environment': lambda v: "<pre>%s</pre>" % '\n'.join('{0}={1}'.format(*item)
+                                                                    for item in sorted(v.items())),
                'Causes': lambda v: 'unexpected ' + ', '.join(v)}
 
     def id_handler(v):
