@@ -79,13 +79,9 @@ namespace Gaudi {
     typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, std::string_view location ) {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
-      StatusCode sc = service->retrieveObject( location, obj );
-      if ( sc.isSuccess() ) {
-        typename _GetType<TYPE>::return_type tobj = dynamic_cast<typename _GetType<TYPE>::return_type>( obj );
-        return tobj;
-      } else {
-        return nullptr;
-      }
+      return service->retrieveObject( location, obj ).isSuccess()
+                 ? dynamic_cast<typename _GetType<TYPE>::return_type>( obj )
+                 : nullptr;
     }
     // ========================================================================
     /** Helper function to provide the minimal lookup and cast functionality
@@ -98,17 +94,13 @@ namespace Gaudi {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
       StatusCode sc = service->retrieveObject( location, obj );
-      if ( sc.isSuccess() ) {
-        typename _GetType<TYPE>::return_type tobj = dynamic_cast<typename _GetType<TYPE>::return_type>( obj );
-        if ( !tobj ) {
-          // try with AnyDataWrapper
-          AnyDataWrapper<TYPE>* tobj2 = dynamic_cast<AnyDataWrapper<TYPE>*>( obj );
-          if ( tobj2 ) { tobj = &( tobj2->getData() ); }
-        }
-        return tobj;
-      } else {
-        return nullptr;
+      if ( sc.isFailure() ) return nullptr;
+      auto tobj = dynamic_cast<typename _GetType<TYPE>::return_type>( obj );
+      if ( !tobj ) {
+        // try with AnyDataWrapper
+        if ( auto tobj2 = dynamic_cast<AnyDataWrapper<TYPE>*>( obj ); tobj2 ) { tobj = &( tobj2->getData() ); }
       }
+      return tobj;
     }
     // ========================================================================
     /** @struct GetData GaudiUtils/GetData.h

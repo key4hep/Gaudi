@@ -40,8 +40,8 @@ gaudi_add_module(GaudiExamples
                          src/AlgTools/TestToolAlg.cpp
                          src/AlgTools/TestToolAlgFailure.cpp
                          src/AlgTools/TestToolFailing.cpp
-                         src/AnyData/AnyDataGetAlgorithm.cpp
-                         src/AnyData/AnyDataPutAlgorithm.cpp
+                         src/AnyData/AnyDataAlgorithm.cpp
+                         src/AnyData/AnyViewAlgorithm.cpp
                          src/Auditors/AuditorTestAlg.cpp
                          src/Auditors/LoggingAuditor.cpp
                          src/bug_34121/bug34121_MyAlgorithm.cpp
