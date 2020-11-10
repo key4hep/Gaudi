@@ -6,17 +6,24 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Stefa
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
+
+
+
+## [v35r0][] - 2020-11-10
 This version features a complete rewrite of the CMake configuration. See gaudi/Gaudi!986 and gaudi/Gaudi!922 for details.
 
 Here is a summary of the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r1...master).
 
 ### Changed
-- complete rewrite of CMake configuration in *modern* CMake (gaudi/Gaudi!986, gaudi/Gaudi!922)
-
-### Added
+- Complete rewrite of CMake configuration in *modern* CMake (gaudi/Gaudi!986, gaudi/Gaudi!922)
 
 ### Fixed
-
+- Restore use of `GENREFLEX_JOB_POOL` (gaudi/Gaudi#151, gaudi/Gaudi!1150)
+- Improve resilience of CI build jobs (gaudi/Gaudi#149, gaudi/Gaudi!1146)
+- Fix test checking the wrong thing (gaudi/Gaudi!1142)
+- Resolve "test wrapper report logic is the wrong way around" (gaudi/Gaudi#3, gaudi/Gaudi!1132)
+- Ignore relative paths when generating the run script (gaudi/Gaudi#147, gaudi/Gaudi!1145)
+- Fix QMTest reference filename lookup (gaudi/Gaudi!1143)
 
 ## [v34r1][] - 2020-10-16
 This is mostly a bugfix release meant as a checkpoint before the tag of [v35r0][]
@@ -593,8 +600,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r1...master
-[v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/milestones/31
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r0...master
+[v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r0
 [v34r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r1
 [v34r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r0
 [v33r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v33r2
