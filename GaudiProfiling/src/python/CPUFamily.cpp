@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,10 +26,14 @@
   __asm__ __volatile__( "cpuid" : "=a"( ax ), "=b"( bx ), "=c"( cx ), "=d"( dx ) : "a"( func ) );
 
 bool is_nehalem() {
+#ifdef __x86_64__
   int a, b, c, d;
   cpuid( 1, a, b, c, d );
   int sse4_2_mask = 1 << 20;
   return ( c & sse4_2_mask );
+#else
+  return false;
+#endif // __x86_64__
 }
 
 const char* CPUFamily() {
