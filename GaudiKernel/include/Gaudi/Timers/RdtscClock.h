@@ -11,7 +11,7 @@
 #pragma once
 
 #ifndef __x86_64__
-#error "<Gaudi/Timers/RdtscClock.h> is only supported on x86"
+#  error "<Gaudi/Timers/RdtscClock.h> is only supported on x86"
 #endif // not __x86_64__
 
 #include <chrono>
