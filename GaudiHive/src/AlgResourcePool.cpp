@@ -393,3 +393,12 @@ StatusCode AlgResourcePool::stop() {
   }
   return StatusCode::SUCCESS;
 }
+
+StatusCode AlgResourcePool::finalize() {
+  // we do not need to hold the ref counts of the algorithms anymore
+  // (this triggers algorithms destructors)
+  m_topAlgList.clear();
+  m_algList.clear();
+  m_flatUniqueAlgList.clear();
+  return extends::finalize();
+}
