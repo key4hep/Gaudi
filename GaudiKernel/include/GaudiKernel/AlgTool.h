@@ -130,7 +130,7 @@ public:
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;
 
-  StatusCode setProperties() {
+  [[deprecated( "not to be called explicitly, will be removed in v36r0" )]] StatusCode setProperties() {
     if ( !serviceLocator() ) return StatusCode::FAILURE;
     bindPropertiesTo( serviceLocator()->getOptsSvc() );
     return StatusCode::SUCCESS;
