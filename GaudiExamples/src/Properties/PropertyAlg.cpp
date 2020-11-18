@@ -12,7 +12,6 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
 #include <sstream>

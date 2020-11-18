@@ -30,7 +30,6 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/ServiceHandle.h"

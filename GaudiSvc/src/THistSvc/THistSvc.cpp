@@ -32,7 +32,6 @@
 #include "GaudiKernel/IFileMgr.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IIoComponentMgr.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include <Gaudi/Property.h>
 

@@ -11,7 +11,6 @@
 // Include files
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
