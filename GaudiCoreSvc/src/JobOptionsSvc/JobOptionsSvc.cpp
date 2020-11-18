@@ -11,6 +11,10 @@
 // ============================================================================
 // Local:
 // ============================================================================
+
+// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
+#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1
+
 #include "JobOptionsSvc.h"
 
 #include "Analyzer.h"

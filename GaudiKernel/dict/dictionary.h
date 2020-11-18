@@ -12,6 +12,11 @@
 #include <cstdlib>
 #include <vector>
 
+// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
+#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include "GaudiKernel/IJobOptionsSvc.h"
+
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Bootstrap.h"
@@ -72,7 +77,6 @@
 #include "GaudiKernel/IInspectable.h"
 #include "GaudiKernel/IInspector.h"
 #include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMagneticFieldSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IMonitorSvc.h"
