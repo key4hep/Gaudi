@@ -48,7 +48,8 @@ gaudi_add_module(GaudiHive
                       ROOT::RIO
                       TBB::tbb
                       Rangev3::rangev3
-                      ${rt_LIBRARY})
+                      ${rt_LIBRARY}
+                      ${GAUDI_ATOMIC_LIBS})
 
 # Build executable
 gaudi_add_executable(makeThesis
