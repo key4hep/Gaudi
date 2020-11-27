@@ -158,7 +158,7 @@ def main():
         action="store",
         type="string",
         help=
-        "output file for confDb data [default = '../genConf/<PackageName>_user_confDb.py']."
+        "output file for confDb data [default = '../genConfDir/<PackageName>_user_confDb.py']."
     )
     parser.add_option(
         "-r",
@@ -202,9 +202,9 @@ def main():
         args = [package_name + ".Configuration"]
         usingConvention = True
 
-    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""), "genConf")
+    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""), "genConfDir")
     if not os.path.exists(genConfDir):
-        genConfDir = os.path.join("..", "genConf")
+        genConfDir = os.path.join("..", "genConfDir")
 
     if not opts.output:
         outputfile = os.path.join(genConfDir, package_name + '_user.confdb')
