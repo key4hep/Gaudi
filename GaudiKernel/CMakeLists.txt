@@ -163,7 +163,7 @@ target_include_directories(GaudiKernel
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
                                      src/Lib/Platform/SystemMacOS.mm)
-  target_link_libraries(GaudiKernel PUBLIC Foundation)
+  target_link_libraries(GaudiKernel PUBLIC "-framework Foundation -framework CoreFoundation")
 elseif(WIN32)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemWin32.h
                                      src/Lib/Platform/SystemWin32.cpp)
