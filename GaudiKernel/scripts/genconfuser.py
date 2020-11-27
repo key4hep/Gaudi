@@ -121,7 +121,7 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
     g, l = {}, {}
     try:
         logging.verbose("importing %s", shortmodname)
-        exec ("import %s as mod" % shortmodname, g, l)
+        exec("import %s as mod" % shortmodname, g, l)
     finally:
         # restore old sys.path
         logging.verbose("restoring old sys.path")
@@ -202,7 +202,8 @@ def main():
         args = [package_name + ".Configuration"]
         usingConvention = True
 
-    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""), "genConfDir")
+    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""),
+                              "genConfDir")
     if not os.path.exists(genConfDir):
         genConfDir = os.path.join("..", "genConfDir")
 
