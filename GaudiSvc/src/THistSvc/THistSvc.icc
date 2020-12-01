@@ -120,12 +120,12 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     hid.shared      = shared;
     TDirectory* dir = changeDir( hid );
 
-    if ( dynamic_cast<TTree*>( hist ) ) {
-      dynamic_cast<TTree*>( hist )->SetDirectory( dir );
-    } else if ( dynamic_cast<TH1*>( hist ) ) {
-      dynamic_cast<TH1*>( hist )->SetDirectory( dir );
-    } else if ( dynamic_cast<TEfficiency*>( hist ) ) {
-      dynamic_cast<TEfficiency*>( hist )->SetDirectory( dir );
+    if ( TTree* tree = dynamic_cast<TTree*>( hist ) ) {
+      tree->SetDirectory( dir );
+    } else if ( TH1* th1 = dynamic_cast<TH1*>( hist ) ) {
+      th1->SetDirectory( dir );
+    } else if ( TEfficiency* teff = dynamic_cast<TEfficiency*>( hist ) ) {
+      teff->SetDirectory( dir );
     } else if ( dynamic_cast<TGraph*>( hist ) ) {
       dir->Append( hist );
     } else {
