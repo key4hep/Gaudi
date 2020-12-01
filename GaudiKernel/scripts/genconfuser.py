@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -121,7 +121,7 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
     g, l = {}, {}
     try:
         logging.verbose("importing %s", shortmodname)
-        exec ("import %s as mod" % shortmodname, g, l)
+        exec("import %s as mod" % shortmodname, g, l)
     finally:
         # restore old sys.path
         logging.verbose("restoring old sys.path")

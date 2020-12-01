@@ -47,7 +47,7 @@ class ConfDB2(object):
 
 # allow overriding the low level DB access for testing
 if 'GAUDICONFIG2_DB' in os.environ:
-    exec ('from {} import {} as _DB'.format(
+    exec('from {} import {} as _DB'.format(
         *os.environ['GAUDICONFIG2_DB'].rsplit('.', 1)))
 else:  # pragma no cover
     _DB = ConfDB2()
