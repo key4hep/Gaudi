@@ -331,7 +331,7 @@ namespace Gaudi::Accumulators {
     static constexpr OutputType DefaultValue() { return Arithmetic{}; }
     static void                 merge( InternalType& a, Arithmetic b ) noexcept {
       if ( DefaultValue() == b ) return; // avoid atomic operation if b is "0"
-      if constexpr ( has_fetch_add_v<InternalType> ) {
+      if constexpr ( has_fetch_add_v<OutputType> ) {
         a.fetch_add( b, std::memory_order_relaxed );
       } else {
         auto current = BaseValueHandler<Arithmetic, atomicity::full>::getValue( a );
