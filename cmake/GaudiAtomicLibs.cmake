@@ -48,12 +48,17 @@ int main() {
 
 # Set up the GAUDI_ATOMIC_LIBS variable.
 set(GAUDI_ATOMIC_LIBS)
-if(NOT GAUDI_HAVE_CXX_ATOMICS_WITHOUT_LIB)
+if(GAUDI_HAVE_CXX_ATOMICS_WITHOUT_LIB)
+  message(STATUS "Explicit atomic library usage does not seem to be necessary")
+else()
   find_library(GAUDI_ATOMIC_LIB NAMES atomic
     HINTS ENV LD_LIBRARY_PATH
     DOC "Path to the atomic library to use during the build")
   mark_as_advanced(GAUDI_ATOMIC_LIB)
   if(GAUDI_ATOMIC_LIB)
     set(GAUDI_ATOMIC_LIBS ${GAUDI_ATOMIC_LIB})
+    message(STATUS "Using atomic library: ${GAUDI_ATOMIC_LIB}")
+  else()
+    message(WARNING "No atomic library found. The build will likely fail.")
   endif()
 endif()
