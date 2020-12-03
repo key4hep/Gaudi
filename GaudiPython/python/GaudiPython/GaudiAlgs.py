@@ -542,6 +542,13 @@ def _get_attr_(self, pname):
     """
     if self.hasProperty(pname):
         return self._ialg.__getattr__(pname)
+    else:
+        # Since self does not inherit from iAlgorithm (see !1116, 4f05f03678),
+        # delegate attribute lookup to self._ialg.
+        try:
+            return getattr(self._ialg, pname)
+        except AttributeError:
+            pass
     raise AttributeError('attribute/property %s does not exist' % pname)
 
 
