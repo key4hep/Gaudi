@@ -81,7 +81,7 @@ endif()
 # a sanitizer)
 option(GAUDI_GENCONF_NO_FAIL "Prevent genconf to fail (for builds with a sanitizer)" FALSE)
 if(GAUDI_GENCONF_NO_FAIL)
-    set(_gaudi_no_fail "|| true")
+    set(_gaudi_no_fail "||" "true")
 endif()
 
 # Default layout fo the installation (may be overridden in the cache)
