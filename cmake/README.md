@@ -6,62 +6,75 @@ The CMake configuration of Gaudi is based on the version 3.15.0 or later of
 CMake. On lxplus (SLC6 and CentOS7) you need to call something **like**:
 
 ```sh
-$ export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.15.0/Linux-x86_64/bin:$PATH
+$ export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH
 ```
 
 ## Quick Start
 
-To quickly get started, you can use the `Makefile`, which
-will take care of the main details (except the value of `BINARY_TAG`):
+Gaudi requires some uncommon external libraries, so the quickest way to build
+it is to use the CERN SFT provided LCG views, for example:
 
 ```sh
-$ make -j 8
-$ make test
+. /cvmfs/sft.cern.ch/lcg/views/LCG_97a/x86_64-centos7-gcc9-opt/setup.sh
 ```
 
-The main targets are:
+Note that the version of CMake in LCG_97a view is too old, so one had to add:
 
-* `configure`
+```sh
+export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH
+```
 
-    just run CMake to generate the build directory (or reconfigure)
+We suggest the use of [Ninja](https://ninja-build.org/) to build, if you wish
+to do so, you can use these settings:
 
-* `all` (default)
+```sh
+export PATH=/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH
+export CMAKE_GENERATOR=Ninja
+```
 
-    build everything (implies `configure`)
+At this point the environment is good enough to use a standard CMake procedure:
 
-* `test`
+```sh
+cd Gaudi
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=$(python -c "import sys; print(sys.version_info[0])")
+```
 
-    run the tests (and generate HTML reports), note that it does not
-    imply the build and does not require installation
-
-* `install`
-
-    populate the `InstallArea` directory, *required for deployment*
-
-More info can be found in the top-level CMakeLists.txt of Gaudi.
+The special option `-DGAUDI_USE_PYTHON_MAJOR` is needed with LCG versions less
+than 99, where the default version of Python is 2, while Gaudi looks for 3 by
+default.
 
 ## Run from the build directory
 
-For testing and debugging (as already mentioned) there is no need to install.
-
-To run an application using the build directory, you can use the script
-`run` in the build directory, for example like this:
+For testing and debugging there is no need to install, but Gaudi requires some
+environment variables to be set, so the build procedure generates a special
+script (`build/run`) that can be used to run a command in the correct environment,
+for example:
 
 ```sh
-$ cd build.$BINARY_TAG
-$ ./run gaudirun.py --help
-$ ./run bash
+build/run gaudirun.py --help
 ```
 
-When using `Makefile` the above lines should be changed in
+or
 
 ```sh
-$ build.$BINARY_TAG/run gaudirun.py --help
-$ build.$BINARY_TAG/run bash
+build/run bash
+```
+
+to have a shell with the correct environment.
+
+## Testing
+
+Gaudi comes with a pool of tests (built by default, unless one passes the
+option `-DBUILD_TESTING=FALSE` to Gaudi) that can be run with
+[`ctest`](https://cmake.org/cmake/help/latest/manual/ctest.1.html):
+
+```sh
+cd build
+ctest
 ```
 
 ## Resources
 
 * [CMake documentation](http://www.cmake.org/cmake/help/documentation.html)
 * `FindTBB.cmake` was taken from <https://bitbucket.org/sergiu/tbb-cmake>
-  And should be removed in a near futur.
+  And should be removed in a near future.
