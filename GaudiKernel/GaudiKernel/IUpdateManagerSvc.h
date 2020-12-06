@@ -198,7 +198,7 @@ public:
   template <class CallerClass, class ObjectClass>
   inline void registerCondition( CallerClass* instance, ObjectClass* obj,
                                  typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = nullptr ) {
-    i_registerCondition( dynamic_cast<void*>( obj ), new ObjectMemberFunction{instance, mf} );
+    i_registerCondition( dynamic_cast<const void*>( obj ), new ObjectMemberFunction{instance, mf} );
   }
 
   /// Generic objects can be unregistered from the UpdateManagerSvc. The dependency network is always consistent, but
@@ -264,11 +264,11 @@ public:
 protected:
   // virtual StatusCode i_registerCondition(const std::string &condition, BaseObjectMemberFunction *mf) = 0;
   virtual void       i_registerCondition( const std::string& condition, BaseObjectMemberFunction* mf,
-                                          BasePtrSetter* ptr_dest = nullptr )       = 0;
-  virtual void       i_registerCondition( void* obj, BaseObjectMemberFunction* mf ) = 0;
-  virtual StatusCode i_update( void* instance )                                     = 0;
-  virtual void       i_unregister( void* instance )                                 = 0;
-  virtual void       i_invalidate( void* instance )                                 = 0;
+                                          BasePtrSetter* ptr_dest = nullptr )             = 0;
+  virtual void       i_registerCondition( const void* obj, BaseObjectMemberFunction* mf ) = 0;
+  virtual StatusCode i_update( void* instance )                                           = 0;
+  virtual void       i_unregister( void* instance )                                       = 0;
+  virtual void       i_invalidate( void* instance )                                       = 0;
 
   friend class PythonHelper;
 };
