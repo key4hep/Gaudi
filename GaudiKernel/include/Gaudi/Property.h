@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -392,20 +392,22 @@ namespace Gaudi {
         using Converter = Details::Property::StringConverter<ValueType>;
         *this           = Converter().fromString( m_value, source );
         return StatusCode::SUCCESS;
-      } catch ( const std::invalid_argument& err ) {
+      } catch ( const std::exception& err ) {
         using Details::Property::parsingErrorPolicy;
         using Details::Property::ParsingErrorPolicy;
+        const std::string errMsg =
+            "Cannot convert '" + source + "' for property '" + name() + "' in class '" + ownerTypeName() + "'";
         switch ( parsingErrorPolicy() ) {
         case ParsingErrorPolicy::Ignore:
           break;
         case ParsingErrorPolicy::Exception:
-          throw;
+          throw GaudiException( errMsg, "Property::fromString", StatusCode::FAILURE, err );
           break;
         case ParsingErrorPolicy::Warning:
-          std::cerr << "Property '" << name() << "': " << err.what() << '\n';
+          std::cerr << "WARNING: " << errMsg << "': " << err.what() << '\n';
           break;
         case ParsingErrorPolicy::Abort:
-          std::cerr << "Property '" << name() << "': " << err.what() << '\n';
+          std::cerr << "FATAL: " << errMsg << "': " << err.what() << '\n';
           std::abort();
           break;
         }

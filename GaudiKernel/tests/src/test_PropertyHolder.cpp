@@ -73,7 +73,9 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
         Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Exception );
     BOOST_CHECK_EXCEPTION(
         mgr.setProperty( "int_prop", "abc" ).ignore(), GaudiException, []( const GaudiException& err ) -> bool {
-          return err.message() == "error setting property int_prop: std::invalid_argument, cannot parse 'abc' to int";
+          return err.message() ==
+                 "Cannot convert 'abc' for property 'int_prop' in class '(anonymous "
+                 "namespace)::AnonymousPropertyHolder': std::invalid_argument, cannot parse 'abc' to int";
         } );
 
     Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Ignore );

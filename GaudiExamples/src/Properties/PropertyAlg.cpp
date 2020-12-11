@@ -115,6 +115,7 @@ StatusCode PropertyAlg::initialize() {
   info() << "EmptyArray  = " << m_emptyarray.value() << endmsg;
   info() << "IntPairArray  = " << u_intpairarray.value() << endmsg;
   info() << "DoublePairArray  = " << u_doublepairarray.value() << endmsg;
+  info() << "StringMap = " << m_strmap << endmsg;
 
   info() << "PInt    = " << p_int << endmsg;
   std::ostringstream os;
@@ -259,11 +260,14 @@ StatusCode PropertyAlg::initialize() {
       Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Exception );
   try {
     info() << "Try to assign invalid value to DoubleArray" << endmsg;
-    // trying to use an invalid value
     opts.set( name() + '.' + "DoubleArray", "{\"12.12\", \"13.13\"}" );
-  } catch ( const std::invalid_argument& exc ) {
-    error() << "got invalid_argument exception: " << exc.what() << endmsg;
-  }
+  } catch ( const GaudiException& exc ) { error() << "got exception: " << exc.what() << endmsg; }
+
+  try {
+    info() << "Try to assign invalid value to StringMap" << endmsg;
+    opts.set( name() + '.' + "StringMap", "{\"one\", {\"une\", \"eins\"}}" );
+  } catch ( const GaudiException& exc ) { error() << "got exception: " << exc.what() << endmsg; }
+
   Gaudi::Details::Property::setParsingErrorPolicy( orig_policy );
 
   info() << "DoubleArray = " << m_doublearray.value() << endmsg;
