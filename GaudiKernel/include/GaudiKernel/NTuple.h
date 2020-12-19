@@ -239,7 +239,7 @@ namespace NTuple {
     /// Standard Destructor
     virtual ~_Accessor() = default;
     /// Default copy constructor.
-    _Accessor (const _Accessor&) = default;
+    _Accessor( const _Accessor& ) = default;
     /// Check if column is present
     bool operator!() const { return m_ptr != 0; }
     /// Check if column is present
