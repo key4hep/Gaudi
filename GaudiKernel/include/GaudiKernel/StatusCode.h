@@ -247,6 +247,15 @@ public:
     return *this;
   }
 
+  /// Throw a GaudiException in case of failures.
+  ///
+  /// See above, but in this case the message is not specified explicitly,
+  /// but taken from `message()`
+  const StatusCode& orThrow( std::string_view tag = "" ) const {
+    if ( isFailure() ) i_doThrow( message(), tag ); // make sure `message()` is only called on error path
+    return *this;
+  }
+
   /// Has the StatusCode been checked?
   bool checked() const { return m_checked; }
 
@@ -277,6 +286,18 @@ public:
   /// Ternary logic operator with RECOVERABLE being the "third" state
   StatusCode& operator&=( const StatusCode& rhs );
   StatusCode& operator|=( const StatusCode& rhs ); ///< @copydoc operator&=
+  //
+  /// Ternary AND operator
+  friend StatusCode operator&( StatusCode lhs, const StatusCode& rhs ) { return lhs &= rhs; }
+
+  /// Ternary OR operator
+  friend StatusCode operator|( StatusCode lhs, const StatusCode& rhs ) { return lhs |= rhs; }
+
+  /// Boolean AND assignment operator
+  friend bool& operator&=( bool& lhs, const StatusCode& sc ) { return lhs &= sc.isSuccess(); }
+
+  /// Boolean OR assignment operator
+  friend bool& operator|=( bool& lhs, const StatusCode& sc ) { return lhs |= sc.isSuccess(); }
 
   static GAUDI_API void enableChecking();
   static GAUDI_API void disableChecking();
@@ -318,7 +339,7 @@ private:
   void      check();               ///< Do StatusCode check
 
   /// Helper function to avoid circular dependency between GaudiException.h and StatusCode.h
-  void i_doThrow( std::string_view message, std::string_view tag ) const;
+  [[noreturn]] void i_doThrow( std::string_view message, std::string_view tag ) const;
 
   /// Helper to invoke a callable and return the resulting StatusCode or this, if the callable returns void.
   template <typename F, typename... ARGS, typename = std::enable_if_t<std::is_invocable_v<F, ARGS...>>>
@@ -414,17 +435,5 @@ inline StatusCode& StatusCode::operator|=( const StatusCode& rhs ) {
   rhs.m_checked        = true;
   return *this;
 }
-
-/// Ternary AND operator
-inline StatusCode operator&( StatusCode lhs, const StatusCode& rhs ) { return lhs &= rhs; }
-
-/// Ternary OR operator
-inline StatusCode operator|( StatusCode lhs, const StatusCode& rhs ) { return lhs |= rhs; }
-
-/// Boolean AND assignment operator
-inline bool& operator&=( bool& lhs, const StatusCode& sc ) { return lhs &= sc.isSuccess(); }
-
-/// Boolean OR assignment operator
-inline bool& operator|=( bool& lhs, const StatusCode& sc ) { return lhs |= sc.isSuccess(); }
 
 #endif // GAUDIKERNEL_STATUSCODE_H
