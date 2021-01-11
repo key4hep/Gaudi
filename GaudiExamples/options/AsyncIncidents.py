@@ -1,6 +1,6 @@
 #!/usr/bin/env gaudirun.py
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -19,7 +19,7 @@ from Gaudi.Configuration import *
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, AlgResourcePool, IncidentProcAlg, IncidentSvc, IncidentAsyncTestSvc, IncidentAsyncTestAlg, CPUCrunchSvc
 from Configurables import GaudiSequencer
 
-msgFmt = "% F%40W%S%4W%s%e%15W%X%7W%R%T %0W%M"
+msgFmt = "% F%40W%S%4W%s%e%7W%R%T %0W%M"
 msgSvc = InertMessageSvc("MessageSvc", OutputLevel=INFO)
 msgSvc.Format = msgFmt
 ApplicationMgr().SvcMapping.append(msgSvc)
@@ -40,7 +40,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
 
-AlgResourcePool(OutputLevel=DEBUG)
+AlgResourcePool(OutputLevel=INFO)
 # Async Incident svc processing algs to be added at the beginning and
 # at the end of event graph to process incidents fired in the context
 # of the given event
@@ -68,36 +68,31 @@ AITestAlg1 = IncidentAsyncTestAlg(
     "IncidentAwareTestAlg1",
     ServiceName="IncidentAwareService1",
     Cardinality=5,
-    inpKeys=['/Event/DAQ/ODIN'])
+    inpKeys=['/Event/a1'])
 
 AITestAlg2 = IncidentAsyncTestAlg(
     "IncidentAwareTestAlg2",
     ServiceName="IncidentAwareService2",
     Cardinality=1,
-    inpKeys=['/Event/Hlt/DecReports'])
+    inpKeys=['/Event/a2'])
 
 FakeInput = CPUCruncher(
     "FakeInput",
-    outKeys=[
-        '/Event/DAQ/ODIN', '/Event/DAQ/RawEvent', '/Event/Hlt/LumiSummary'
-    ],
+    outKeys=['/Event/a1', '/Event/a3', '/Event/a4'],
     varRuntime=.1,
     avgRuntime=.1)
 
-BrunelInit = CPUCruncher(
-    "BrunelInit",
-    inpKeys=['/Event/DAQ/ODIN', '/Event/DAQ/RawEvent'],
-    outKeys=['/Event/Rec/Status', '/Event/Rec/Header'])
+Producer1 = CPUCruncher(
+    "Producer1",
+    inpKeys=['/Event/a1', '/Event/a3'],
+    outKeys=['/Event/a5', '/Event/a6'])
 
-PhysFilter = CPUCruncher("PhysFilter", inpKeys=['/Event/Hlt/LumiSummary'])
+Filter = CPUCruncher("Filter", inpKeys=['/Event/a4'])
 
-HltDecReportsDecoder = CPUCruncher(
-    "HltDecReportsDecoder",
-    inpKeys=['/Event/DAQ/RawEvent'],
-    outKeys=['/Event/Hlt/DecReports'])
+Producer2 = CPUCruncher(
+    "Producer2", inpKeys=['/Event/a3'], outKeys=['/Event/a2'])
 
-HltErrorFilter = CPUCruncher(
-    "HltErrorFilter", inpKeys=['/Event/Hlt/DecReports'])
+Filter2 = CPUCruncher("Filter2", inpKeys=['/Event/a2'])
 
 sequence0 = GaudiSequencer("Sequence0")
 sequence0.ModeOR = False
@@ -109,13 +104,12 @@ sequencex.ShortCircuit = False  # whether the evaluation is lazy or not!
 sequencex.Members += [EventLoopFinalProcAlg]
 sequence1 = GaudiSequencer("Sequence1")
 sequence1.Members += [
-    FakeInput, BrunelInit, PhysFilter, HltDecReportsDecoder, AITestAlg1,
-    AITestAlg2
+    FakeInput, Producer1, Filter, Producer2, AITestAlg1, AITestAlg2
 ]
 sequence1.ModeOR = False
 sequence1.ShortCircuit = False  # whether the evaluation is lazy or not!
 sequence2 = GaudiSequencer("Sequence2")
-sequence2.Members += [sequence0, sequence1, HltErrorFilter, sequencex]
+sequence2.Members += [sequence0, sequence1, Filter2, sequencex]
 
 ApplicationMgr(
     EvtMax=evtMax,
