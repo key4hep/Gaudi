@@ -20,9 +20,11 @@
 #include <atomic>
 #include <bitset>
 #include <list>
+#include <map>
 #include <mutex>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 // External libs
@@ -81,11 +83,19 @@ private:
   /// Recursively flatten an algList
   StatusCode flattenSequencer( Gaudi::Algorithm* sequencer, ListAlg& alglist, unsigned int recursionDepth = 0 );
 
+  /// Dump recorded Algorithm instance misses
+  void dumpInstanceMisses() const;
+  /// Counters for Algorithm instance misses
+  std::unordered_map<std::string_view, unsigned int> m_algInstanceMisses;
+
   Gaudi::Property<bool>                     m_lazyCreation{this, "CreateLazily", false, ""};
   Gaudi::Property<std::vector<std::string>> m_topAlgNames{
       this, "TopAlg", {}, "Names of the algorithms to be passed to the algorithm manager"};
   Gaudi::Property<bool> m_overrideUnClonable{this, "OverrideUnClonable", false,
                                              "Override the un-clonability of algorithms. Use with caution!"};
+  Gaudi::Property<bool> m_countAlgInstMisses{
+      this, "CountAlgorithmInstanceMisses", false,
+      "Count and print out algorithm instance misses. Useful for finding ways to improve throughput scalability."};
 
   /// The list of all algorithms created within the Pool which are not top
   ListAlg m_algList;
