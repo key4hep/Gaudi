@@ -158,44 +158,27 @@ namespace Gaudi {
   struct interface_list_append<interface_list<Is...>, I>
       : interface_list_cat<interface_list<Is...>, interface_list<I>> {};
 
-  // helpers for implementation of interface cast
-  namespace iid_cast_details {
-    template <typename I>
-    constexpr void* void_cast( const I* i ) {
-      return const_cast<I*>( i );
-    }
-
-    template <typename... Is>
-    struct iid_cast_t;
-
-    template <>
-    struct iid_cast_t<> {
-      template <typename P>
-      constexpr void* operator()( const InterfaceID&, P* ) const {
-        return nullptr;
-      }
-    };
-
-    template <typename I, typename... Is>
-    struct iid_cast_t<I, Is...> {
-      template <typename P>
-      inline void* operator()( const InterfaceID& tid, P* ptr ) const {
-        return tid.versionMatch( I::interfaceID() ) ? void_cast<typename I::interface_type>( ptr )
-                                                    : iid_cast_t<Is...>{}( tid, ptr );
-      }
-    };
-  } // namespace iid_cast_details
-
   template <typename... Is>
   std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
     return {Is::name()...};
   }
 
+  // gcc9 has a false positive warning -- see  https://godbolt.org/z/cyjtrr -- gcc10,clang are happy...
+#if defined( __GNUC__ ) && __GNUC__ < 10
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wparentheses"
+#endif
   template <typename... Is, typename P>
-  inline void* iid_cast( const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr ) {
-    constexpr auto iid_cast_ = iid_cast_details::iid_cast_t<Is...>{};
-    return iid_cast_( tid, ptr );
+  void* iid_cast( const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr ) {
+    const void* target = nullptr;
+    ( ( tid.versionMatch( Is::interfaceID() ) &&
+        ( target = static_cast<typename Is::interface_type const*>( ptr ), true ) ) ||
+      ... );
+    return const_cast<void*>( target );
   }
+#if defined( __GNUC__ ) && __GNUC__ < 10
+#  pragma GCC diagnostic pop
+#endif
 
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
