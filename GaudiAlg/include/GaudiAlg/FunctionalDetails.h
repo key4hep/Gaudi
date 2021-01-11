@@ -144,13 +144,13 @@ namespace Gaudi::Functional::details {
 
   template <typename Out1, typename Out2,
             typename = std::enable_if_t<std::is_constructible_v<Out1, Out2> && std::is_base_of_v<DataObject, Out1>>>
-  Out1* put( const DataObjectHandle<Out1>& out_handle, Out2&& out ) {
+  auto put( const DataObjectHandle<Out1>& out_handle, Out2&& out ) {
     return out_handle.put( std::make_unique<Out1>( std::forward<Out2>( out ) ) );
   }
 
   template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible_v<Out1, Out2>>>
-  void put( const DataObjectHandle<AnyDataWrapper<Out1>>& out_handle, Out2&& out ) {
-    out_handle.put( std::forward<Out2>( out ) );
+  auto put( const DataObjectHandle<AnyDataWrapper<Out1>>& out_handle, Out2&& out ) {
+    return out_handle.put( std::forward<Out2>( out ) );
   }
 
   // optional put

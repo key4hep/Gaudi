@@ -8,14 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_ANYDATAWRAPPER_H
-#define GAUDIKERNEL_ANYDATAWRAPPER_H
-
-// Include files
+#pragma once
 #include "GaudiKernel/DataObject.h"
 #include <cstddef>
 #include <iterator>
 #include <optional>
+#include <utility>
 
 namespace details {
   using std::size;
@@ -32,24 +30,37 @@ struct GAUDI_API AnyDataWrapperBase : DataObject {
   virtual std::optional<std::size_t> size() const = 0;
 };
 
-template <class T>
-class GAUDI_API AnyDataWrapper final : public AnyDataWrapperBase {
-public:
-  AnyDataWrapper( T&& data ) : m_data( std::move( data ) ){};
+template <typename T>
+class GAUDI_API AnyDataWrapper : public AnyDataWrapperBase {
+protected:
+  T m_data;
 
-  AnyDataWrapper( AnyDataWrapper&& other )
-      : AnyDataWrapperBase( std::move( other ) ), m_data( std::move( other.m_data ) ){};
+public:
+  AnyDataWrapper( T&& data ) : m_data{std::move( data )} {};
+  AnyDataWrapper( AnyDataWrapper&& )      = delete;
+  AnyDataWrapper( AnyDataWrapper const& ) = delete;
+  AnyDataWrapper& operator=( AnyDataWrapper&& ) = delete;
+  AnyDataWrapper& operator=( AnyDataWrapper const& ) = delete;
 
   const T& getData() const { return m_data; }
   T&       getData() { return m_data; }
 
   std::optional<std::size_t> size() const override {
     using details::size;
-    return size( m_data );
+    return size( getData() );
   }
-
-private:
-  T m_data;
 };
 
-#endif
+template <typename ViewType, typename OwnedType>
+class GAUDI_API AnyDataWithViewWrapper : public AnyDataWrapper<ViewType> {
+  OwnedType m_owned;
+
+public:
+  AnyDataWithViewWrapper( OwnedType&& data ) : AnyDataWrapper<ViewType>{{}}, m_owned{std::move( data )} {
+    AnyDataWrapper<ViewType>::m_data = ViewType{std::as_const( m_owned )};
+  }
+  AnyDataWithViewWrapper( AnyDataWithViewWrapper&& )      = delete;
+  AnyDataWithViewWrapper( AnyDataWithViewWrapper const& ) = delete;
+  AnyDataWithViewWrapper& operator=( AnyDataWithViewWrapper&& ) = delete;
+  AnyDataWithViewWrapper& operator=( AnyDataWithViewWrapper const& ) = delete;
+};

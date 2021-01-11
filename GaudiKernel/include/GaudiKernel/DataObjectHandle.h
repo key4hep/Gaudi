@@ -69,21 +69,24 @@ namespace details {
     return ok;
   }
 
-  template <typename T>
+  template <typename T, typename U>
   struct Payload_helper {
-    using type = std::conditional_t<std::is_base_of_v<DataObject, T>, T, AnyDataWrapper<std::remove_const_t<T>>>;
+    using type =
+        std::conditional_t<std::is_base_of_v<DataObject, T> && std::is_same_v<T, U>, T,
+                           std::conditional_t<std::is_same_v<T, U>, AnyDataWrapper<std::remove_const_t<T>>,
+                                              AnyDataWithViewWrapper<std::remove_const_t<T>, std::remove_const_t<U>>>>;
   };
-  template <typename T>
-  struct Payload_helper<Gaudi::Range_<T>> {
+  template <typename T, typename U>
+  struct Payload_helper<Gaudi::Range_<T>, U> {
     using type = Gaudi::Range_<T>;
   };
-  template <typename T>
-  struct Payload_helper<Gaudi::NamedRange_<T>> {
+  template <typename T, typename U>
+  struct Payload_helper<Gaudi::NamedRange_<T>, U> {
     using type = Gaudi::NamedRange_<T>;
   };
 
-  template <typename T>
-  using Payload_t = typename Payload_helper<T>::type;
+  template <typename T, typename U = T>
+  using Payload_t = typename Payload_helper<T, U>::type;
 } // namespace details
 
 //---------------------------------------------------------------------------
@@ -173,10 +176,8 @@ T* DataObjectHandle<T>::get( bool mustExist ) const {
 template <typename T>
 T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp ) const {
   assert( m_init );
-  StatusCode rc = m_EDS->registerObject( objKey(), objectp.get() );
-  if ( !rc.isSuccess() ) {
-    throw GaudiException( "Error in put of " + objKey(), "DataObjectHandle<T>::put", StatusCode::FAILURE );
-  }
+  StatusCode sc = m_EDS->registerObject( objKey(), objectp.get() );
+  if ( !sc.isSuccess() ) { throw GaudiException( "Error in put of " + objKey(), "DataObjectHandle<T>::put", sc ); }
   return objectp.release();
 }
 
@@ -296,7 +297,14 @@ public:
   /**
    * Register object in transient store
    */
-  const T* put( T&& object ) const;
+  const T* put( T&& obj ) const {
+    assert( m_init );
+    auto objectp = std::make_unique<AnyDataWrapper<T>>( std::move( obj ) );
+    if ( auto sc = m_EDS->registerObject( objKey(), objectp.get() ); sc.isFailure() ) {
+      throw GaudiException( "Error in put of " + objKey(), "DataObjectHandle<AnyDataWrapper<T>>::put", sc );
+    }
+    return &objectp.release()->getData();
+  }
 
   /**
    * Size of boxed item, if boxed item has a 'size' method
@@ -310,40 +318,81 @@ public:
   }
 
 private:
-  AnyDataWrapper<T>* _get( bool mustExist ) const;
-  mutable bool       m_goodType = false;
+  AnyDataWrapper<T>* _get( bool mustExist ) const {
+    auto obj = fetch();
+    if ( UNLIKELY( !obj ) ) {
+      if ( mustExist ) {
+        throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+                              m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
+
+      } else {
+        return nullptr;
+      }
+    }
+    if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<AnyDataWrapper<T>>( obj );
+    return static_cast<AnyDataWrapper<T>*>( obj );
+  }
+  mutable bool m_goodType = false;
 };
 
 //---------------------------------------------------------------------------
+/// specialization for AnyDataWithViewWrapper
+template <typename View, typename Owned>
+class DataObjectHandle<AnyDataWithViewWrapper<View, Owned>> : public DataObjectHandleBase {
+public:
+  using DataObjectHandleBase::DataObjectHandleBase;
 
-template <typename T>
-AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get( bool mustExist ) const {
-  auto obj = fetch();
-  if ( UNLIKELY( !obj ) ) {
-    if ( mustExist ) {
-      throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
-                            m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
+  /**
+   * Retrieve object from transient data store
+   */
+  View* get() const { return &_get( true )->getData(); }
+  View* getIfExists() const {
+    auto data = _get( false );
+    return data ? &data->getData() : nullptr;
+  }
 
-    } else {
-      return nullptr;
+  /**
+   * Register object in transient store
+   */
+  const View* put( std::unique_ptr<AnyDataWithViewWrapper<View, Owned>> objectp ) const {
+    assert( m_init );
+    if ( auto sc = m_EDS->registerObject( objKey(), objectp.get() ); sc.isFailure() ) {
+      throw GaudiException( "Error in put of " + objKey(), "DataObjectHandle<AnyDataWithViewWrapper<T>::put", sc );
     }
+    return &objectp.release()->getData();
   }
-  if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<AnyDataWrapper<T>>( obj );
-  return static_cast<AnyDataWrapper<T>*>( obj );
-}
-
-//---------------------------------------------------------------------------
-
-template <typename T>
-const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj ) const {
-  assert( m_init );
-  auto       objectp = std::make_unique<AnyDataWrapper<T>>( std::move( obj ) );
-  StatusCode rc      = m_EDS->registerObject( objKey(), objectp.get() );
-  if ( rc.isFailure() ) {
-    throw GaudiException( "Error in put of " + objKey(), "DataObjectHandle<T>::put", StatusCode::FAILURE );
+  const View* put( Owned&& obj ) const {
+    return put( std::make_unique<AnyDataWithViewWrapper<View, Owned>>( std::move( obj ) ) );
   }
-  return &objectp.release()->getData();
-}
+
+  /**
+   * Size of boxed item, if boxed item has a 'size' method
+   */
+  std::optional<std::size_t> size() const { return _get()->size(); }
+
+  std::string pythonRepr() const override {
+    auto repr = DataObjectHandleBase::pythonRepr();
+    boost::replace_all( repr, default_type, System::typeinfoName( typeid( View ) ) );
+    return repr;
+  }
+
+private:
+  AnyDataWithViewWrapper<View, Owned>* _get( bool mustExist ) const {
+    auto obj = fetch();
+    if ( UNLIKELY( !obj ) ) {
+      if ( mustExist ) {
+        throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+                              m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
+
+      } else {
+        return nullptr;
+      }
+    }
+    if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<AnyDataWithViewWrapper<View, Owned>>( obj );
+    return static_cast<AnyDataWithViewWrapper<View, Owned>*>( obj );
+  }
+  mutable bool m_goodType = false;
+};
 
 //---------------------------- user-facing interface ----------
 
@@ -369,22 +418,22 @@ public:
       : DataObjectReadHandle( args, std::index_sequence_for<Args...>{} ) {}
 };
 
-template <typename T>
-class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<T>> {
+template <typename T, typename U = T>
+class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<T, U>> {
   template <typename... Args, std::size_t... Is>
   DataObjectWriteHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> )
       : DataObjectWriteHandle( std::get<Is>( args )... ) {}
 
 public:
   DataObjectWriteHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Writer, owner} {}
+      : DataObjectHandle<::details::Payload_t<T, U>>{k, Gaudi::DataHandle::Writer, owner} {}
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
-      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
-                                                   std::move( doc ) ) {}
+      : DataObjectHandle<::details::Payload_t<T, U>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
+                                                      std::move( doc ) ) {}
 
   template <typename... Args>
   DataObjectWriteHandle( const std::tuple<Args...>& args )

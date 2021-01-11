@@ -85,6 +85,12 @@ namespace Gaudi::Functional {
       using OutputHandle = Handle<T>;
     };
 
+    template <typename Data, typename View>
+    struct writeViewFor {
+      template <typename T>
+      using OutputHandle = std::enable_if_t<std::is_same_v<T, Data>, DataObjectWriteHandle<View, Data>>;
+    };
+
     // this uses the defaults -- and it itself is the default ;-)
     using useDefaults = use_<>;
 
