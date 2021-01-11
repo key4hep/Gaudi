@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -44,6 +44,7 @@ alg = PropertyAlg(
     UInt64Array=[long(1 << 32)],  # 'long' is used for testing
     DoubleArray=[-11.0, 2., 3.3, 0.4e-03, 1.e-20, 1.e20],
     StringArray=["one", "two", "four"],
+    StringMap={"one": "une"},
     BoolArray=[False, True, False],
     EmptyArray=[],
 

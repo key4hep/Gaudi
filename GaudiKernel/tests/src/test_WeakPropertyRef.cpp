@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "COPYING".                                            *
@@ -125,13 +125,13 @@ BOOST_AUTO_TEST_CASE( exceptions ) {
   {
     Gaudi::Property<int> p{42};
     WPR                  r{p};
-    BOOST_CHECK_THROW( r = "'abc'", std::invalid_argument );
+    BOOST_CHECK_THROW( r = "'abc'", GaudiException );
     BOOST_CHECK_EQUAL( p.value(), 42 );
   }
   {
     WPR                  r{"'abc'"};
     Gaudi::Property<int> p{42};
-    BOOST_CHECK_THROW( r = p, std::invalid_argument );
+    BOOST_CHECK_THROW( r = p, GaudiException );
     BOOST_CHECK_EQUAL( p.value(), 42 );
   }
   Gaudi::Details::Property::setParsingErrorPolicy( orig_policy );

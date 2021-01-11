@@ -47,6 +47,8 @@ PropertyAlg.DoubleArray = { -11.0 , 2., 3.3, 0.4e-03 };
 PropertyAlg.StringArray = {"one", "two", "four" };
 PropertyAlg.BoolArray   = {false, true, false };
 PropertyAlg.EmptyArray  = { };
+PropertyAlg.StringMap  = { "one" : "une" };
+
 
 // Units testing
 PropertyAlg.DoubleArrayWithUnits    = { 1.1 * m2 , -2.*cm, 3.3*cm, 0.4e-03 * m };
