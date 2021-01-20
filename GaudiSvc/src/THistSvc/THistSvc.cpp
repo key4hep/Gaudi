@@ -1411,13 +1411,13 @@ StatusCode THistSvc::io_reinit() {
         // migrate the objects to the new file.
         // thanks to the object model of ROOT, it is super easy.
         if ( cl->InheritsFrom( "TTree" ) ) {
-          dynamic_cast<TTree*>( hid.obj )->SetDirectory( newdir );
-          dynamic_cast<TTree*>( hid.obj )->Reset();
+          dynamic_cast<TTree&>( *hid.obj ).SetDirectory( newdir );
+          dynamic_cast<TTree&>( *hid.obj ).Reset();
         } else if ( cl->InheritsFrom( "TH1" ) ) {
-          dynamic_cast<TH1*>( hid.obj )->SetDirectory( newdir );
-          dynamic_cast<TH1*>( hid.obj )->Reset();
+          dynamic_cast<TH1&>( *hid.obj ).SetDirectory( newdir );
+          dynamic_cast<TH1&>( *hid.obj ).Reset();
         } else if ( cl->InheritsFrom( "TEfficiency" ) ) {
-          dynamic_cast<TEfficiency*>( hid.obj )->SetDirectory( newdir );
+          dynamic_cast<TEfficiency&>( *hid.obj ).SetDirectory( newdir );
         } else if ( cl->InheritsFrom( "TGraph" ) ) {
           olddir->Remove( hid.obj );
           newdir->Append( hid.obj );
