@@ -106,7 +106,6 @@ foreach(component IN ITEMS system filesystem regex thread python unit_test_frame
   mark_as_advanced(boost_${component}_DIR)
 endforeach()
 
-set(Python_FIND_STRATEGY VERSION) # Find latest version available
 if(GAUDI_USE_PYTHON_MAJOR STREQUAL "2")
   set(_gaudi_Python_MIN_VERSION 2.7.15)
 elseif(GAUDI_USE_PYTHON_MAJOR STREQUAL "3")
