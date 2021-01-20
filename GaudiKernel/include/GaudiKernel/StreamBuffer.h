@@ -127,6 +127,7 @@ public:
     long             third  = INVALID;
     ContainedLink()         = default;
     ContainedLink( ContainedObject* pObj, long hint, long link ) : first( pObj ), second( hint ), third( link ) {}
+    ContainedLink& operator=( const ContainedLink& copy ) = default;
   };
   /// Definition of the contained link set
   class IdentifiedLink {
