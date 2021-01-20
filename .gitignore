@@ -8,6 +8,7 @@ InstallArea/
 # Centrally managed files and helpers
 cache_preload.cmake
 toolchain.cmake
+Makefile
 
 # CMake temporary files
 build*/
