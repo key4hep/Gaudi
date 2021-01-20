@@ -280,7 +280,7 @@ int main( int argc, char** argv )
       "input-cfg,c", po::value<string>(),
       "path to the cfg file holding the description of the Configurable base "
       "classes, the python module holding the Configurable definitions, etc..." )(
-      "output-dir,o", po::value<string>()->default_value( "../genConf" ),
+      "output-dir,o", po::value<string>()->default_value( "../genConfDir" ),
       "output directory for genconf files." )( "debug-level,d", po::value<int>()->default_value( 0 ), "debug level" )(
       "load-library,l", po::value<Strings_t>()->composing(), "preloading library" )(
       "user-module,m", po::value<string>(), "user-defined module to be imported by the genConf-generated one" )(
