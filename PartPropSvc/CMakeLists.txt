@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -26,10 +26,10 @@ gaudi_add_module(PartPropSvc
                       Boost::regex
                       HepPDT::heppdt)
 
-# # Install shared files TODO: if it is not used, drop the whole directory
-# install(FILES share/PartPropSvc.py
-#         DESTINATION jobOptions/PartPropSvc)
-# install(FILES share/PDGTABLE.MeV
-#               share/PDGTABLE.2002.MeV
-#               share/PDGTABLE.2014.MeV
-#         DESTINATION share)
+# Install shared files
+install(FILES share/PartPropSvc.py
+        DESTINATION jobOptions/PartPropSvc)
+install(FILES share/PDGTABLE.MeV
+              share/PDGTABLE.2002.MeV
+              share/PDGTABLE.2014.MeV
+        DESTINATION share)
