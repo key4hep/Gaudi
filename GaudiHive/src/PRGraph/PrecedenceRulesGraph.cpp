@@ -319,12 +319,10 @@ namespace concurrency {
     StatusCode global_sc( StatusCode::SUCCESS, true );
 
     // Production of DataNodes by AlgorithmNodes (DataNodes are created here)
-    std::vector<decltype(m_algoNameToAlgoNodeMap)::value_type*> sortedAlgs;
-    for ( auto& algo : m_algoNameToAlgoNodeMap ) {
-      sortedAlgs.push_back (&algo);
-    }
-    std::sort (sortedAlgs.begin(), sortedAlgs.end(),
-               [] (const auto* a, const auto* b) { return a->first < b->first; });
+    std::vector<decltype( m_algoNameToAlgoNodeMap )::value_type*> sortedAlgs;
+    for ( auto& algo : m_algoNameToAlgoNodeMap ) { sortedAlgs.push_back( &algo ); }
+    std::sort( sortedAlgs.begin(), sortedAlgs.end(),
+               []( const auto* a, const auto* b ) { return a->first < b->first; } );
     for ( auto* algo : sortedAlgs ) {
 
       auto& outputs = m_algoNameToAlgoOutputsMap[algo->first];
@@ -346,11 +344,9 @@ namespace concurrency {
 
     // Consumption of DataNodes by AlgorithmNodes
     sortedAlgs.clear();
-    for ( auto& algo : m_algoNameToAlgoNodeMap ) {
-      sortedAlgs.push_back (&algo);
-    }
-    std::sort (sortedAlgs.begin(), sortedAlgs.end(),
-               [] (const auto* a, const auto* b) { return a->first < b->first; });
+    for ( auto& algo : m_algoNameToAlgoNodeMap ) { sortedAlgs.push_back( &algo ); }
+    std::sort( sortedAlgs.begin(), sortedAlgs.end(),
+               []( const auto* a, const auto* b ) { return a->first < b->first; } );
     for ( auto* algo : sortedAlgs ) {
 
       for ( auto input : m_algoNameToAlgoInputsMap[algo->first] ) {
@@ -607,15 +603,13 @@ namespace concurrency {
     ost << idt << "====================================\n";
 
     std::vector<const DataObjID*> vec;
-    vec.reserve (m_dataPathToDataNodeMap.size());
-    for ( auto& pair : m_dataPathToDataNodeMap ) {
-      vec.push_back (&pair.first);
-    }
-    std::sort (vec.begin(), vec.end(),
+    vec.reserve( m_dataPathToDataNodeMap.size() );
+    for ( auto& pair : m_dataPathToDataNodeMap ) { vec.push_back( &pair.first ); }
+    std::sort( vec.begin(), vec.end(),
                []( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); } );
 
-    for (const DataObjID* id : vec) {
-      const DataNode& node = *m_dataPathToDataNodeMap.find(*id)->second;
+    for ( const DataObjID* id : vec ) {
+      const DataNode& node = *m_dataPathToDataNodeMap.find( *id )->second;
 
       for ( auto algoNode : node.getProducers() ) ost << idt << "  " << algoNode->name() << "\n";
 
