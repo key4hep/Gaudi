@@ -297,6 +297,9 @@ namespace concurrency {
           bool result = child->accept( *this );
           if ( !node.m_modeConcurrent )
             if ( result ) break; // stop on first unresolved child if its decision hub is sequential
+
+          // Check that this node may stil be evaluated
+          if ( node.m_modePromptDecision && m_slot->controlFlowState[node.getNodeIndex()] > -1 ) break;
         }
 
         // Leave sub-slot
@@ -307,6 +310,9 @@ namespace concurrency {
         bool result = child->accept( *this );
         if ( !node.m_modeConcurrent )
           if ( result ) break; // stop on first unresolved child if its decision hub is sequential
+
+        // Check that this node may stil be evaluated
+        if ( node.m_modePromptDecision && m_slot->controlFlowState[node.getNodeIndex()] > -1 ) break;
       }
     }
 
