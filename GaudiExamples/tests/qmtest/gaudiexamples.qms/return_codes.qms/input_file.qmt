@@ -24,8 +24,14 @@ EventSelector(Input = ["DATAFILE='PFN:none.dst'  SVC='Gaudi::RootEvtSelector' OP
 app = ApplicationMgr(TopAlg = [sla(EventCount = 3, Mode = "failure")],
                      EvtMax = 5)
 </text></argument>
-<argument name="stderr">
-<text>Error in &lt;TFile::TFile&gt;: file none.dst does not exist
+<argument name="validator"><text>
+preprocessor = normalizeExamples + \
+    RegexpReplacer(when = "TFile::TFile",
+        orig = r"file (.*)none.dst does not exist",
+        repl = r"file .../none.dst does not exist")
+
+validateWithReference(preproc = preprocessor)
 </text></argument>
+<argument name="error_reference"><text>refs/return_codes/input_file.err.ref</text></argument>
 <argument name="exit_code"><integer>2</integer></argument>
 </extension>
