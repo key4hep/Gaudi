@@ -33,7 +33,6 @@ See the comments in the code for the details.
 #include <Gaudi/Property.h>
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/IAppMgrUI.h>
-#include <GaudiKernel/IJobOptionsSvc.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/IStateful.h>

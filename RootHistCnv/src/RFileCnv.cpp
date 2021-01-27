@@ -10,7 +10,6 @@
 \***********************************************************************************/
 // Include files
 #include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/ISvcLocator.h"

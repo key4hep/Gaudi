@@ -14,7 +14,6 @@
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IDataHandleHolder.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"

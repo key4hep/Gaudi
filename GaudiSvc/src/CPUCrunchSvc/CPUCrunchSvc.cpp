@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #include "CPUCrunchSvc.h"
 
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
 #include <sys/times.h>

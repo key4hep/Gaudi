@@ -17,7 +17,6 @@
 #include "GaudiAlg/GaudiSequencer.h"
 #include "GaudiAlg/ISequencerTimerTool.h"
 #include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 
 #include "GaudiCommon.icpp"

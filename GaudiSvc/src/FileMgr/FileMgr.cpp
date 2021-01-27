@@ -12,7 +12,6 @@
 
 #include <fstream>
 
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )

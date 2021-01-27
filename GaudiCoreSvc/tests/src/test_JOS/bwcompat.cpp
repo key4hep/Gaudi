@@ -12,6 +12,9 @@
 #define BOOST_TEST_MODULE test_JOS
 #include <boost/test/unit_test.hpp>
 
+// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
+#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1
+
 #include "fixture.h"
 
 #include <Gaudi/Property.h>

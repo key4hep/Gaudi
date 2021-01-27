@@ -67,7 +67,8 @@ public: // functions
   static const CLID& classID();
 
   // add a global property
-  void addProperty( const std::string&, const Gaudi::Details::PropertyBase* );
+  [[deprecated( "will be removed in v36r0, use addProperty( string, string ) instead" )]] void
+       addProperty( const std::string&, const Gaudi::Details::PropertyBase* );
   void addProperty( const std::string& key, const std::string& value );
 
   // Return the job history data.

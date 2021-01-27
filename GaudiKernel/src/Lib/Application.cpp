@@ -15,7 +15,6 @@
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/IAppMgrUI.h>
 #include <GaudiKernel/IEventProcessor.h>
-#include <GaudiKernel/IJobOptionsSvc.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/IProperty.h>

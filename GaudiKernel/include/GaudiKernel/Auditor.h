@@ -122,7 +122,7 @@ public:
     return serviceLocator()->service<T>( name, createIf );
   }
 
-  StatusCode setProperties() {
+  [[deprecated( "not to be called explicitly, will be removed in v36r0" )]] StatusCode setProperties() {
     if ( !serviceLocator() ) return StatusCode::FAILURE;
     bindPropertiesTo( serviceLocator()->getOptsSvc() );
     return StatusCode::SUCCESS;

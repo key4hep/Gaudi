@@ -8,6 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
+#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1q
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <iostream>
 
 #include "GaudiKernel/Bootstrap.h"

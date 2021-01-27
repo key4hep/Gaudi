@@ -23,7 +23,6 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IExceptionSvc.h"
 #include "GaudiKernel/IHistogramSvc.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/IRndmGenSvc.h"
