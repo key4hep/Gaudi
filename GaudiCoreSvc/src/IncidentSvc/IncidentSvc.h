@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -107,8 +107,11 @@ private:
   // ==========================================================================
   // When TBB supports unique_ptrs in concurrent queue typedef should be changed
   // typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
-  typedef tbb::concurrent_queue<Incident*>                                                    IncQueue_t;
-  tbb::concurrent_unordered_map<EventContext, IncQueue_t, EventContextHash, EventContextHash> m_firedIncidents;
+  typedef tbb::concurrent_queue<Incident*>                             IncQueue_t;
+  tbb::concurrent_unordered_map<EventContext::ContextID_t, IncQueue_t> m_firedIncidents;
+
+  /// Event ID for each slot
+  tbb::concurrent_unordered_map<EventContext::ContextID_t, EventContext::ContextEvt_t> m_slotEvent;
 };
 // ============================================================================
 // The END

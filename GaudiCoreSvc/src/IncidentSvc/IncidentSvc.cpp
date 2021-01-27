@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -66,7 +66,6 @@ StatusCode IncidentSvc::finalize() {
 
   {
     // clear the local storage of allocated Incident objects.
-    auto lock = std::scoped_lock{m_listenerMapMutex};
     for ( auto& fi : m_firedIncidents ) {
       std::for_each( fi.second.unsafe_begin(), fi.second.unsafe_end(), []( auto i ) { delete i; } );
       fi.second.clear();
@@ -234,10 +233,27 @@ void IncidentSvc::fireIncident( const Incident& incident ) {
 // ============================================================================
 void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
 
-  DEBMSG << "Async incident '" << incident->type() << "' fired on context " << incident->context() << endmsg;
-  auto ctx = incident->context();
-  auto res = m_firedIncidents.insert( std::make_pair( ctx, IncQueue_t() ) );
-  res.first->second.push( incident.release() );
+  const EventContext& ctx = incident->context();
+  DEBMSG << "Async incident '" << incident->type() << "' fired on context " << ctx << endmsg;
+
+  // create or get incident queue for slot
+  auto [incItr, inserted1] = m_firedIncidents.insert( {ctx.slot(), IncQueue_t()} );
+  // save or get current event for slot
+  auto [slotItr, inserted2] = m_slotEvent.insert( {ctx.slot(), ctx.evt()} );
+
+  // if new event in slot, clear all remaining old incidents
+  if ( slotItr->second != ctx.evt() ) {
+    slotItr->second = ctx.evt();
+
+    if ( msgLevel( MSG::DEBUG ) and !incItr->second.empty() ) {
+      debug() << "Clearing remaining obsolete incidents from slot " << ctx.slot() << ":";
+      Incident* inc( nullptr );
+      while ( incItr->second.try_pop( inc ) ) { debug() << " " << inc->type() << "(" << inc->context() << ")"; }
+      debug() << endmsg;
+    }
+    incItr->second.clear();
+  }
+  incItr->second.push( incident.release() );
 }
 // ============================================================================
 
@@ -261,16 +277,19 @@ void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::s
 IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx ) {
   IIncidentSvc::IncidentPack p;
   if ( ctx ) {
-    auto incs = m_firedIncidents.find( *ctx );
+    auto incs = m_firedIncidents.find( ctx->slot() );
     if ( incs != m_firedIncidents.end() ) {
-      Incident* inc( 0 );
+      Incident* inc( nullptr );
 
       DEBMSG << "Collecting listeners fired on context " << *ctx << endmsg;
       while ( incs->second.try_pop( inc ) ) {
-        std::vector<IIncidentListener*> ls;
-        getListeners( ls, inc->type() );
-        p.incidents.emplace_back( std::move( inc ) );
-        p.listeners.emplace_back( std::move( ls ) );
+        // ensure incident is for this event (should not be necessary)
+        if ( inc->context().evt() == ctx->evt() ) {
+          std::vector<IIncidentListener*> ls;
+          getListeners( ls, inc->type() );
+          p.incidents.emplace_back( std::move( inc ) );
+          p.listeners.emplace_back( std::move( ls ) );
+        }
       }
     }
   }

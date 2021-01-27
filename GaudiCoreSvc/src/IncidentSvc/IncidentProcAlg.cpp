@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,12 +14,6 @@
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 DECLARE_COMPONENT( IncidentProcAlg )
-
-#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
-#define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
-
-#define DEBMSG ON_DEBUG debug()
-#define VERMSG ON_VERBOSE verbose()
 
 namespace {
   // ==========================================================================
@@ -43,15 +37,14 @@ StatusCode IncidentProcAlg::initialize() {
 }
 
 //=============================================================================
-StatusCode IncidentProcAlg::execute() {
-  const EventContext& context = Gaudi::Hive::currentContext();
-  auto                incPack = m_incSvc->getIncidents( &context );
-  MsgStream           log( msgSvc(), name() );
+StatusCode IncidentProcAlg::execute( const EventContext& ctx ) const {
+  auto      incPack = m_incSvc->getIncidents( &ctx );
+  MsgStream log( msgSvc(), name() );
   if ( msgLevel( MSG::DEBUG ) ) {
-    log << MSG::DEBUG << " Number of Incidents to process = " << incPack.incidents.size()
-        << " Context= " << Gaudi::Hive::currentContext() << endmsg;
+    log << MSG::DEBUG << " Number of Incidents to process = " << incPack.incidents.size() << " Context= " << ctx
+        << endmsg;
   }
-  while ( incPack.incidents.size() ) {
+  while ( !incPack.incidents.empty() ) {
     if ( incPack.incidents.size() != incPack.listeners.size() ) {
       log << MSG::WARNING << " Size of fired incidents and listeners do not match!" << endmsg;
     }
@@ -82,14 +75,8 @@ StatusCode IncidentProcAlg::execute() {
         // check wheter one of the listeners is singleShot
       }
     }
-    incPack = m_incSvc->getIncidents( &context );
+    incPack = m_incSvc->getIncidents( &ctx );
   }
 
   return StatusCode::SUCCESS;
-}
-
-//=============================================================================
-StatusCode IncidentProcAlg::finalize() {
-  info() << "Finalize" << endmsg;
-  return Algorithm::finalize();
 }
