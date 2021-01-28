@@ -154,6 +154,7 @@ gaudi_add_library(GaudiKernel
            cppgsl::cppgsl
            fmt::fmt
            nlohmann_json::nlohmann_json
+           ${GAUDI_ATOMIC_LIBS}
 )
 gaudi_generate_version_header_file(GaudiKernel)
 target_include_directories(GaudiKernel

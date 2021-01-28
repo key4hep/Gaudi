@@ -1,7 +1,7 @@
 /****************************  instrset.h   **********************************
  * Author:        Agner Fog
  * Date created:  2012-05-30
- * Last modified: 2020-04-01
+ * Last modified: 2020-11-11
  * Version:       2.01.02
  * Project:       vector class library
  * Description:
@@ -229,7 +229,8 @@ namespace VCL_NAMESPACE {
   // input:  functionnumber = leaf (eax), ecxleaf = subleaf(ecx)
   // output: output[0] = eax, output[1] = ebx, output[2] = ecx, output[3] = edx
   static inline void cpuid( int output[4], int functionnumber, int ecxleaf = 0 ) {
-#if defined( __GNUC__ ) || defined( __clang__ ) // use inline assembly, Gnu/AT&T syntax
+#ifdef __x86_64__
+#  if defined( __GNUC__ ) || defined( __clang__ ) // use inline assembly, Gnu/AT&T syntax
     int a, b, c, d;
     __asm( "cpuid" : "=a"( a ), "=b"( b ), "=c"( c ), "=d"( d ) : "a"( functionnumber ), "c"( ecxleaf ) : );
     output[0] = a;
@@ -237,11 +238,11 @@ namespace VCL_NAMESPACE {
     output[2] = c;
     output[3] = d;
 
-#elif defined( _MSC_VER ) // Microsoft compiler, intrin.h included
-  __cpuidex( output, functionnumber, ecxleaf ); // intrinsic function for CPUID
+#  elif defined( _MSC_VER ) // Microsoft compiler, intrin.h included
+    __cpuidex( output, functionnumber, ecxleaf ); // intrinsic function for CPUID
 
-#else // unknown platform. try inline assembly with masm/intel syntax
-  __asm {
+#  else  // unknown platform. try inline assembly with masm/intel syntax
+    __asm {
         mov eax, functionnumber
         mov ecx, ecxleaf
         cpuid;
@@ -250,8 +251,9 @@ namespace VCL_NAMESPACE {
         mov[esi + 4], ebx
         mov[esi + 8], ecx
         mov[esi + 12], edx
-  }
-#endif
+    }
+#  endif // compiler/platform
+#endif   // __x86_64__
   }
 
 // Define popcount function. Gives sum of bits

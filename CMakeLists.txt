@@ -89,6 +89,9 @@ project(Gaudi VERSION 35.0
 # Add the "Developer" build type
 include(cmake/DeveloperBuildType.cmake)
 
+# Set up the GAUDI_ATOMIC_LIBS variable
+include(cmake/GaudiAtomicLibs.cmake)
+
 # Import Gaudi functions (gaudi_*) ==> for documentation look in the file
 include(cmake/GaudiToolbox.cmake)
 

@@ -107,7 +107,8 @@ gaudi_add_module(GaudiExamples
                       ROOT::Tree
                       ROOT::RIO
                       ROOT::Hist
-                      ROOT::Net)
+                      ROOT::Net
+                      ${GAUDI_ATOMIC_LIBS})
 
 if(NOT ROOT_VERSION VERSION_LESS "6.20")
   find_package(ROOT REQUIRED COMPONENTS ROOTHist)

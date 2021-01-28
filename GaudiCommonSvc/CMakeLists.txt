@@ -62,7 +62,8 @@ gaudi_add_module(GaudiCommonSvc
                       Boost::system
                       Boost::filesystem
                       ROOT::Hist
-                      ROOT::RIO)
+                      ROOT::RIO
+                      ${GAUDI_ATOMIC_LIBS})
 if(GAUDI_USE_AIDA)
   target_sources(GaudiCommonSvc PRIVATE src/HistogramSvc/Factory.cpp
                                         src/HistogramPersistencySvc/HistogramPersistencySvc.cpp)
