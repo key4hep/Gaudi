@@ -54,28 +54,6 @@ def test_str_from_datahandle():
     assert a.getProp('Text') == 'value'
 
 
-def test_repr_from_datahandle():
-    """Check handle can be constructued from its option value"""
-    h1 = DataHandle('value')
-    ns = {'DataHandle': DataHandle}
-    exec('h2 = ' + repr(h1), ns)
-    h2 = ns['h2']
-    assert h1 == h2
-    assert h2 == 'value'
-    assert h2.mode() == 'R'
-    assert h2.type() == 'unknown_t'
-    assert h2.isCondition() is False
-
-    h1 = DataHandle('value', 'W', 'int', True)
-    exec('h2 = ' + repr(h1), ns)
-    h2 = ns['h2']
-    assert h1 == h2
-    assert h2 == 'value'
-    assert h2.mode() == 'W'
-    assert h2.type() == 'int'
-    assert h2.isCondition() is True
-
-
 def test_invalid_value():
     a = MyAlg()
     try:

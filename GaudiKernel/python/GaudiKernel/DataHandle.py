@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,7 +15,7 @@ class DataHandle(object):
 
     __slots__ = ('Path', 'Mode', 'Type', 'IsCondition')
 
-    # define accessTypes
+    __hash__ = None  # Make class non-hashable for Python2 (default in Python3)
 
     def __init__(self, path, mode='R', _type="unknown_t", isCond=False):
         object.__init__(self)
@@ -36,7 +36,7 @@ class DataHandle(object):
         Need especially Configurable.isPropertySet when checked against default.
         """
         if isinstance(other, DataHandle):
-            return self.Path == other.Path
+            return self.__getstate__() == other.__getstate__()
         if isinstance(other, str):
             return self.Path == other
         if other is None:
@@ -61,6 +61,9 @@ class DataHandle(object):
 
     def toStringProperty(self):
         return self.__str__()
+
+    def path(self):
+        return self.Path
 
     def mode(self):
         return self.Mode
