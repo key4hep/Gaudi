@@ -52,6 +52,14 @@ esel = EventSelector()
 esel.Input = ["DATAFILE='LFN:input.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
 
 </text></argument>
+<argument name="validator"><text>
+preprocessor = normalizeExamples + \
+    RegexpReplacer(when = "TFile::TFile",
+        orig = r"file (.*)dummy.dst does not exist",
+        repl = r"file .../dummy.dst does not exist")
+
+validateWithReference(preproc = preprocessor)
+</text></argument>
 <argument name="reference"><text>refs/jira/gaudi_971.ref</text></argument>
 <argument name="error_reference"><text>refs/jira/gaudi_971.err.ref</text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
