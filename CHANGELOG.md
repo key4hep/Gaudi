@@ -7,12 +7,47 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+## [v35r1][] - 2021-01-28
+This is mostly a bugfix release, with a couple of backward incompatible changes in
+Python `DataHandle` class (gaudi/Gaudi!1144, gaudi/Gaudi!1159) and deprecation warnings
+from `IJobOptionsSvc`, which will be dropped in v36r0 (gaudi/Gaudi#140).
 
+Here is a summary of the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r0...v35r1).
+
+### Changed
+- DataHandle: use all members for `==` and improve unit test (gaudi/Gaudi!1159)
+- Deprecate use of `IJobOptionsSvc` (gaudi/Gaudi#139, gaudi/Gaudi!1156)
+- DataHandle: Remove `__add__` operators (gaudi/Gaudi#146, gaudi/Gaudi!1144)
+
+### Added
+- Add support to `DataWriteHandle` for writing (partially type erased) 'views' into the TES (gaudi/Gaudi!1151)
+
+### Fixed
+- Adapt tests to a change in TFile "file not found" error message (gaudi/Gaudi!1174)
+- ARM Fixes (gaudi/Gaudi!1153)
+- IncidentSvc: fix ever-growing incident map (gaudi/Gaudi!1164)
+- Fix CF bug arising from empty sequence (gaudi/Gaudi#135, gaudi/Gaudi!1106)
+- Re-enabled the installation of the `PartPropSvc` auxiliary files (gaudi/Gaudi!1172)
+- Make iteration ordering predictable (gaudi/Gaudi!1169)
+- StatusCode tweaks (gaudi/Gaudi!1171)
+- GaudiToolbox: Fix generated `__init__` files to handle symlinks (gaudi/Gaudi!1170)
+- Check result of `dynamic_cast<>` for null before dereferencing (gaudi/Gaudi!1168)
+- Fix build instructions (gaudi/Gaudi#159, gaudi/Gaudi#161, gaudi/Gaudi!1162)
+- Resolve "GAUDI_GENCONF_NO_FAIL option not working" (gaudi/Gaudi#160, gaudi/Gaudi!1161)
+- Fix clang 10 warnings (gaudi/Gaudi!1166)
+- Fix MacOS compilation (gaudi/Gaudi!1158)
+- Do not set `Python_FIND_STRATEGY` (gaudi/Gaudi#157, gaudi/Gaudi!1157)
+- Property: Catch all parsing errors (gaudi/Gaudi!1165)
+- simplify `iid_cast` implementation (gaudi/Gaudi!1154)
+- Monitor Algorithm instance misses (gaudi/Gaudi!1148)
+- Fix GaudiPython classes (follows up gaudi/Gaudi!1116) (gaudi/Gaudi!1155)
+- Fix py-formatting of exec (gaudi/Gaudi!1160)
+- Fix Algorithm destructor invocation in multithreading applications (gaudi/Gaudi#150, gaudi/Gaudi!1149)
 
 ## [v35r0][] - 2020-11-10
 This version features a complete rewrite of the CMake configuration. See gaudi/Gaudi!986 and gaudi/Gaudi!922 for details.
 
-Here is a summary of the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r1...master).
+Here is a summary of the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v34r1...v35r0).
 
 ### Changed
 - Complete rewrite of CMake configuration in *modern* CMake (gaudi/Gaudi!986, gaudi/Gaudi!922)
@@ -600,7 +635,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r0...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r1...master
+[v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r1
 [v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r0
 [v34r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r1
 [v34r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r0
