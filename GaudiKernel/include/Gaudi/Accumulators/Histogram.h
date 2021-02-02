@@ -169,8 +169,8 @@ namespace Gaudi::Accumulators {
         int localIndex = std::floor( ( ( *this )[dim] - axis[dim].minValue ) * axis[dim].ratio ) + 1;
         localIndex     = ( localIndex < 0 )
                          ? 0
-                         : ( ( (unsigned int)localIndex >= axis[dim].nBins ) ? axis[dim].nBins + 1
-                                                                             : (unsigned int)( localIndex + 1 ) );
+                         : ( ( (unsigned int)localIndex > axis[dim].nBins ) ? axis[dim].nBins + 1
+                                                                            : (unsigned int)( localIndex ) );
         // compute global index. Bins are stored in a row first manner
         index = ( dim > 0 ? ( axis[dim - 1].nBins + 2 ) : 0 ) * index + localIndex;
       }

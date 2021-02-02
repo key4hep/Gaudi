@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_PropertyHolder
+#define BOOST_TEST_MODULE test_Counters
 #include <boost/test/unit_test.hpp>
 
 #include "Gaudi/Accumulators.h"
