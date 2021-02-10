@@ -129,6 +129,7 @@ function(gaudi_add_library lib_name)
         "SOURCES;LINK"
         ${ARGN}
     )
+    _update_headers_db(${lib_name})
     add_library(${lib_name} SHARED "${ARG_SOURCES}")
     # Public headers
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -194,6 +195,7 @@ function(gaudi_add_header_only_library lib_name)
         "LINK"
         ${ARGN}
     )
+    _update_headers_db(${lib_name})
     add_library(${lib_name} INTERFACE)
     # Public headers
     if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -1027,6 +1029,19 @@ function(_import_pytest)
     _import_runtime(pytest)
 endfunction()
 
+
+# Function to generate a CSV file mapping public headers to target providing them to directory
+# where it is defined.
+file(WRITE ${CMAKE_BINARY_DIR}/headers_db.csv "header,target,directory\n")
+macro(_update_headers_db target)
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        file(GLOB_RECURSE _headers RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
+        file(GLOB directory RELATIVE "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+        foreach(header IN LISTS _headers)
+            file(APPEND ${CMAKE_BINARY_DIR}/headers_db.csv "${header},${PROJECT_NAME}::${target},${directory}\n")
+        endforeach()
+    endif()
+endmacro()
 
 
 ################################################################################
