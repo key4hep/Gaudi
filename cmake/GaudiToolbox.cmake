@@ -834,13 +834,14 @@ function(gaudi_generate_confuserdb)
     list(TRANSFORM modules_path_list APPEND ".py")
     add_custom_command(OUTPUT "${output_file}"
         COMMAND run genconfuser.py
-                -r ${CMAKE_CURRENT_SOURCE_DIR}/python
-                -o "${output_file}"
+                --build-dir ${CMAKE_BINARY_DIR}
+                --root ${CMAKE_CURRENT_SOURCE_DIR}/python
+                --output "${output_file}"
                 ${package_name}
                 ${modules}
                 ${_gaudi_no_fail}
         DEPENDS "${modules_path_list}"
-        COMMENT "Generating ConfigurableUser of ${package_name}"
+        COMMENT "Generating ConfigurableUser DB for ${package_name}"
         COMMAND_EXPAND_LISTS)
     add_custom_target(${package_name}_confuserdb ALL DEPENDS "${output_file}")
     # Merge ${package_name}_user.confdb with the others in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb
