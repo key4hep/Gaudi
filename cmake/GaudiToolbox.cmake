@@ -1076,6 +1076,7 @@ export ENV_CMAKE_BUILD_TYPE=\"$<CONFIG>\"
 $<IF:$<NOT:$<STREQUAL:${BINARY_TAG},>>,export BINARY_TAG=\"${BINARY_TAG}\",$<$<NOT:$<STREQUAL:$ENV{BINARY_TAG},>>:export BINARY_TAG=\"$ENV{BINARY_TAG}\">>
 
 # Other user defined commands
+$<TARGET_PROPERTY:target_runtime_paths,extra_commands>
 ${RUN_SCRIPT_EXTRA_COMMANDS}
 ")
     # Since we cannot tell file(GENERATE) to create an executable file (at generation time)
