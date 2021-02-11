@@ -263,5 +263,5 @@ check-copyright:
   image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
   script:
     - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
-    - python lb-check-copyright origin/${TARGET_BRANCH}
+    - python lb-check-copyright --exclude lhcbproject.yml origin/${TARGET_BRANCH}
   allow_failure: true
