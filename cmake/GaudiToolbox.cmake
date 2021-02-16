@@ -929,7 +929,7 @@ function(gaudi_generate_version_header_file)
         set(PROJECT_VERSION_PATCH 0)
     endif()
     # Generate the configure file only once
-    file(GENERATE OUTPUT include/${output_file_name} CONTENT
+    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/include/${output_file_name} CONTENT
 "#ifndef ${NAME}_VERSION_H
 #define ${NAME}_VERSION_H
 
