@@ -451,7 +451,7 @@ function(gaudi_add_executable exe_name)
     if(ARG_TEST)
         get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
         add_test(NAME ${package_name}.${exe_name} COMMAND run $<TARGET_FILE:${exe_name}>)
-        set_tests_properties(${package_name}.${exe_name} PROPERTIES LABELS ${package_name})
+        set_tests_properties(${package_name}.${exe_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     endif()
     # install
     set(_export)
@@ -533,7 +533,7 @@ function(gaudi_add_tests type)
                         --workdir ${qmtest_root_dir}
                         ${qmtest_root_dir}/${qmt_file}
                      WORKING_DIRECTORY "${qmtest_root_dir}")
-            set_tests_properties(${package_name}.${qmt_name} PROPERTIES LABELS "QMTest;${package_name}"
+            set_tests_properties(${package_name}.${qmt_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name};QMTest"
                                                                         SKIP_RETURN_CODE 77)
         endforeach()
         # Extract dependencies to a cmake file
@@ -565,7 +565,7 @@ function(gaudi_add_tests type)
         get_filename_component(name "${test_directory}" NAME)
         add_test(NAME ${package_name}.${name}
                  COMMAND run $<TARGET_FILE:nosetests> -v --with-doctest ${test_directory})
-        set_tests_properties(${package_name}.${name} PROPERTIES LABELS ${package_name})
+        set_tests_properties(${package_name}.${name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     elseif(type STREQUAL "pytest")
         _import_pytest() # creates the imported target pytest for the
                          # generator expression $<TARGET_FILE:pytest>
@@ -575,7 +575,7 @@ function(gaudi_add_tests type)
         get_filename_component(name "${test_directory}" NAME)
         add_test(NAME ${package_name}.${name}
                 COMMAND run $<TARGET_FILE:pytest> -v --doctest-modules ${test_directory})
-        set_tests_properties(${package_name}.${name} PROPERTIES LABELS ${package_name})
+        set_tests_properties(${package_name}.${name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     else()
         message(FATAL_ERROR "${type} is not a valid test framework.")
     endif()
