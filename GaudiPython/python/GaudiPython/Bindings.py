@@ -586,7 +586,7 @@ class iDataSvc(iService):
         return self.unregisterObject(path)
 
     def leaves(self, node=cppyy.nullptr):
-        if not node:
+        if node == cppyy.nullptr:
             node = self.retrieveObject('')
         ll = gbl.std.vector('IRegistry*')()
         if type(node) is str:
@@ -597,7 +597,7 @@ class iDataSvc(iService):
             return ll
 
     def dump(self, node=cppyy.nullptr):
-        if not node:
+        if node == cppyy.nullptr:
             root = self.retrieveObject('')
             if root:
                 node = root.registry()
@@ -609,7 +609,7 @@ class iDataSvc(iService):
                 self.dump(l)
 
     def getList(self, node=cppyy.nullptr, lst=[], rootFID=None):
-        if not node:
+        if node == cppyy.nullptr:
             root = self.retrieveObject('')
             if root:
                 node = root.registry()
@@ -628,7 +628,7 @@ class iDataSvc(iService):
         return lst
 
     def getHistoNames(self, node=cppyy.nullptr, lst=[]):
-        if not node:
+        if node == cppyy.nullptr:
             root = self.retrieveObject('')
             if root:
                 node = root.registry()
