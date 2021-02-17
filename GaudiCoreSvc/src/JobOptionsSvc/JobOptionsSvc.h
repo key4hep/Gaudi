@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,50 +38,27 @@ private:
 
   StorageType m_options;
 
-  /// Helper to handle of the case mismatches in property names
-  std::unordered_map<std::string, std::string> m_lower_to_correct_case;
-
   mutable std::map<std::string, std::unique_ptr<Gaudi::Details::PropertyBase>> m_old_iface_compat;
   mutable std::map<std::string, PropertiesT>                                   m_old_iface_compat_2;
 
-  /// Find an option key in the options storage using case insensitive comparison.
-  /// If the found key does not match the case of the requested one, a warning is printed.
-  StorageType::const_iterator i_find( const std::string& key, bool warn ) const;
-
-  void i_update_case_insensitive_map( const std::string& key );
-
 protected:
   /// @{
-  void set( const std::string& key, const std::string& value ) override {
-    auto item = i_find( key, true );
-    if ( item != m_options.end() && key != item->first ) {
-      if ( !item->second.isBound() ) { // do not remove references to properties
-        m_options.erase( item );       // Storage is case insensitive, and I want to use the latest version of the case
-        item = m_options.end();
-      }
-    }
-    if ( item == m_options.end() ) {
-      m_options.emplace( key, value );
-      i_update_case_insensitive_map( key );
-    } else {
-      m_options.find( item->first )->second = value;
-    }
-  }
+  void        set( const std::string& key, const std::string& value ) override { m_options[key] = value; }
   std::string get( const std::string& key, const std::string& default_ = {} ) const override {
-    auto item = i_find( key, true );
+    auto item = m_options.find( key );
     return item != m_options.end() ? std::string{item->second} : default_;
   }
   std::string pop( const std::string& key, const std::string& default_ = {} ) override {
     std::string result = default_;
 
-    auto item = i_find( key, true );
+    auto item = m_options.find( key );
     if ( item != m_options.end() ) {
       result = std::move( item->second );
       m_options.erase( item );
     }
     return result;
   }
-  bool has( const std::string& key ) const override { return i_find( key, false ) != m_options.end(); }
+  bool has( const std::string& key ) const override { return m_options.find( key ) != m_options.end(); }
   std::vector<std::tuple<std::string, std::string>> items() const override {
     std::vector<std::tuple<std::string, std::string>> v;
     v.reserve( m_options.size() );
@@ -90,7 +67,7 @@ protected:
     return v;
   }
   bool isSet( const std::string& key ) const override {
-    const auto& item = i_find( key, false );
+    auto item = m_options.find( key );
     return item != m_options.end() && item->second.isSet();
   }
 
