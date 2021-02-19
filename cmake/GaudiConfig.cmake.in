@@ -78,16 +78,28 @@ set(GAUDI_CXX_STANDARD @GAUDI_CXX_STANDARD@ CACHE INTERNAL "Version of C++ used 
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/modules) # Find*.cmake
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}) # other modules
 
-if(NOT GAUDI_NO_TOOLBOX)
-    # Set environment variables (so that we only need the CMAKE_PREFIX_PATH to use Gaudi)
-    set(ENV{PATH} "@PACKAGE_CMAKE_INSTALL_BINDIR@:$ENV{PATH}")
-    set(ENV{LD_LIBRARY_PATH} "@PACKAGE_CMAKE_INSTALL_LIBDIR@:@PACKAGE_GAUDI_INSTALL_PLUGINDIR@:$ENV{LD_LIBRARY_PATH}")
-    set(ENV{ROOT_INCLUDE_PATH} "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@:$ENV{ROOT_INCLUDE_PATH}")
-    set(ENV{PYTHONPATH} "@PACKAGE_GAUDI_INSTALL_PYTHONDIR@:$ENV{PYTHONPATH}")
-    # NB: it needs to be done before including GaudiToolbox
+set_and_check(Gaudi_BINARY_DIR @PACKAGE_CMAKE_INSTALL_BINDIR@)
+set_and_check(Gaudi_INCLUDE_DIR @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@)
+set_and_check(Gaudi_LIBRARY_DIR @PACKAGE_CMAKE_INSTALL_LIBDIR@)
+set_and_check(Gaudi_PLUGINS_DIR @PACKAGE_GAUDI_INSTALL_PLUGINDIR@)
+set_and_check(Gaudi_PYTHON_DIR @PACKAGE_GAUDI_INSTALL_PYTHONDIR@)
 
+if(NOT GAUDI_NO_TOOLBOX)
     # Import the functions
     include(GaudiToolbox)
+
+    set_property(TARGET target_runtime_paths APPEND
+        PROPERTY runtime_path $<SHELL_PATH:${Gaudi_BINARY_DIR}>)
+    set_property(TARGET target_runtime_paths APPEND
+        PROPERTY runtime_ld_library_path $<SHELL_PATH:${Gaudi_LIBRARY_DIR}>)
+    if(NOT Gaudi_LIBRARY_DIR STREQUAL Gaudi_PLUGINS_DIR)
+        set_property(TARGET target_runtime_paths APPEND
+            PROPERTY runtime_ld_library_path $<SHELL_PATH:${Gaudi_PLUGINS_DIR}>)
+    endif()
+    set_property(TARGET target_runtime_paths APPEND
+        PROPERTY runtime_root_include_path $<SHELL_PATH:${Gaudi_INCLUDE_DIR}>)
+    set_property(TARGET target_runtime_paths APPEND
+        PROPERTY runtime_pythonpath $<SHELL_PATH:${Gaudi_PYTHON_DIR}>)
 endif()
 
 # Enable optional dependencies
