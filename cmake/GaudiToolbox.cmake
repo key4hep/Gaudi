@@ -1031,26 +1031,25 @@ function(_import_pytest)
 endfunction()
 
 
-# Function to generate a CSV file mapping public headers to target providing them to directory
-# where it is defined.
-file(WRITE ${CMAKE_BINARY_DIR}/headers_db.csv "header,target,directory\n")
-macro(_update_headers_db target)
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
-        file(GLOB_RECURSE _headers RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
-        file(RELATIVE_PATH directory "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
-        foreach(header IN LISTS _headers)
-            file(APPEND ${CMAKE_BINARY_DIR}/headers_db.csv "${header},${PROJECT_NAME}::${target},${directory}\n")
-        endforeach()
-    endif()
-endmacro()
-
-
 ################################################################################
 #                                                                              #
 #                            PRIVATE internal magic                            #
 #                                                                              #
 ################################################################################
 
+# Function to generate a CSV file mapping public headers to target providing them to directory
+# where it is defined.
+file(WRITE "${CMAKE_BINARY_DIR}/headers_db.csv" "header,target,directory\n")
+install(FILES "${CMAKE_BINARY_DIR}/headers_db.csv" DESTINATION "${GAUDI_INSTALL_CONFIGDIR}")
+macro(_update_headers_db target)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        file(GLOB_RECURSE _headers RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
+        file(RELATIVE_PATH directory "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+        foreach(header IN LISTS _headers)
+            file(APPEND "${CMAKE_BINARY_DIR}/headers_db.csv" "${header},${PROJECT_NAME}::${target},${directory}\n")
+        endforeach()
+    endif()
+endmacro()
 
 # To generate the script run and make it executable
 if(NOT CMAKE_SCRIPT_MODE_FILE AND NOT TARGET target_runtime_paths)
