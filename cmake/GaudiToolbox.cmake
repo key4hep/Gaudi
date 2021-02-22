@@ -661,7 +661,7 @@ function(gaudi_add_dictionary dictionary)
                     ${ARG_OPTIONS}
             COMMAND run $<TARGET_FILE:Python::Interpreter>
                 ${scan_dict_deps_command}
-                    "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>" -M
+                    "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>"
                     ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.d
                     ${dep_target}
                     ${ARG_HEADERFILES}

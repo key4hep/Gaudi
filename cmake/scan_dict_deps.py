@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,10 +11,10 @@
 #####################################################################################
 from __future__ import print_function
 import re
-
-import six
 import io
 from os.path import join, exists, isabs
+
+INCLUDE_RE = re.compile(r'^\s*#\s*include\s*["<]([^">]*)[">]')
 
 
 def find_file(filename, searchpath):
@@ -27,13 +27,12 @@ def find_file(filename, searchpath):
     '''
     if isabs(filename):
         return filename if exists(filename) else None
-    try:
-        return six.next(
-            six.moves.filter(
-                exists, six.moves.map(lambda x: join(x, filename),
-                                      searchpath)))
-    except StopIteration:
-        return None
+
+    for f in (join(d, filename) for d in searchpath):
+        if exists(f):
+            return f
+
+    return None
 
 
 def find_deps(filename, searchpath, deps=None):
@@ -51,13 +50,14 @@ def find_deps(filename, searchpath, deps=None):
 
     # Look for all "#include" lines in the file, then consider each of the
     # included files, ignoring those already included in the recursion
-    for included in six.moves.filter(
-            lambda f: f and f not in deps,
-            six.moves.map(
-                lambda m: m and find_file(m.group(1), searchpath),
-                six.moves.map(
-                    re.compile(r'^\s*#\s*include\s*["<]([^">]*)[">]').match,
-                    io.open(filename, encoding="utf-8")))):
+    for included in [
+            f for f in
+        [
+            find_file(m.group(1), searchpath) for m in
+            [INCLUDE_RE.match(l) for l in io.open(filename, encoding="utf-8")]
+            if m
+        ] if f and f not in deps
+    ]:
         deps.add(included)
         find_deps(included, searchpath, deps)
 
@@ -65,48 +65,44 @@ def find_deps(filename, searchpath, deps=None):
 
 
 def main():
-    from optparse import OptionParser
+    from argparse import ArgumentParser
 
-    parser = OptionParser(
-        usage='%prog [options] output_file variable_name headers...')
-    parser.add_option('-I', action='append', dest='include_dirs')
-    parser.add_option(
-        '-M',
-        '--for-make',
-        action='store_true',
-        help='generate Makefile like dependencies (as with gcc '
-        '-MD) in which case "variable_name" is the name of the '
-        'target')
+    parser = ArgumentParser()
+    parser.add_argument(
+        '-I',
+        action='append',
+        dest='include_dirs',
+        help="directories where to look for header files")
+    parser.add_argument(
+        'output_file',
+        help=
+        "name of the files to write (will be updated only if there's a change)"
+    )
+    parser.add_argument(
+        'target', help="build target to be rebuilt if the dependencies change")
+    parser.add_argument('headers', help="header files to process", nargs="+")
 
-    opts, args = parser.parse_args()
-    if len(args) < 2:
-        parser.error('you must specify output file and variable name')
+    args = parser.parse_args()
 
-    output, variable = args[:2]
-    headers = args[2:]
-
-    old_deps = open(output).read() if exists(output) else None
+    if exists(args.output_file):
+        with open(args.output_file) as f:
+            old_deps = f.read()
+    else:
+        old_deps = None
 
     # scan for dependencies
     deps = set()
-    for filename in headers:
-        find_deps(filename, opts.include_dirs, deps)
+    for filename in args.headers:
+        find_deps(filename, args.include_dirs, deps)
     deps = sorted(deps)
 
     # prepare content of output file
-    if opts.for_make:
-        new_deps = '{target}: {deps}\n'.format(
-            target=variable, deps=' '.join(deps))
-    else:
-        new_deps = 'set({deps_var}\n    {deps})\n' \
-            .format(deps='\n    '.join(deps), deps_var=variable)
+    new_deps = '{target}: {deps}\n'.format(
+        target=args.target, deps=' '.join(deps))
 
     if new_deps != old_deps:  # write it only if it has changed
-        open(output, 'w').write(new_deps)
-        if old_deps and not opts.for_make:
-            print(
-                'info: dependencies changed: next build will trigger a reconfigure'
-            )
+        with open(args.output_file, 'w') as f:
+            f.write(new_deps)
 
 
 if __name__ == '__main__':
