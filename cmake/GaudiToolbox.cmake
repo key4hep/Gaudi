@@ -672,14 +672,10 @@ function(gaudi_add_dictionary dictionary)
             COMMAND_EXPAND_LISTS
             ${job_pool})
     else()
-        if(NOT CMAKE_GENERATOR MATCHES "Makefile" AND NOT _root_dicts_deps_warning)
-            message(WARNING "the dependencies of the dictionary will be incomplete")
+        if(NOT _root_dicts_deps_warning)
+            message(WARNING "dependencies of ROOT dictionaries are not complete, this feature needs a Ninja generator of CMake >= 3.20")
             set(_root_dicts_deps_warning 1 CACHE INTERNAL "")
         endif()
-        set(impl_deps)
-        foreach(hf IN LISTS ARG_HEADERFILES)
-            list(APPEND impl_deps CXX ${hf})
-        endforeach()
         add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
             COMMAND run
                 ${ROOT_genreflex_CMD} # comes from ROOTConfig.cmake
@@ -692,7 +688,6 @@ function(gaudi_add_dictionary dictionary)
                     "-D$<JOIN:$<TARGET_PROPERTY:${dictionary},COMPILE_DEFINITIONS>,;-D>"
                     ${ARG_OPTIONS}
             DEPENDS ${ARG_HEADERFILES} ${ARG_SELECTION}
-            IMPLICIT_DEPENDS ${impl_deps}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             COMMENT "Generating ${dictionary}.cxx and ${dictionary}.rootmap and ${dictionary}_rdict.pcm"
             COMMAND_EXPAND_LISTS
