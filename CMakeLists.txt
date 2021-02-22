@@ -45,7 +45,6 @@ after the configuration or use ccmake or cmake-gui.
   * GAUDI_USE_JEMALLOC
 * Install options
   * GAUDI_INSTALL_OPTIONAL
-  * GAUDI_BUILD_TREE_AS_INSTALL_AREA
 * Install layout variables
   * CMAKE_INSTALL_BINDIR
   * CMAKE_INSTALL_LIBDIR
@@ -81,7 +80,7 @@ Maintainer's guide: `<https://twiki.cern.ch/twiki/bin/view/LHCb/MaintainGaudiCMa
 
 cmake_minimum_required(VERSION 3.15)
 
-project(Gaudi VERSION 35.1
+project(Gaudi VERSION 35.2
               LANGUAGES CXX
               DESCRIPTION "Gaudi Software Framework"
               HOMEPAGE_URL "https://cern.ch/gaudi")
@@ -136,14 +135,6 @@ set(CMAKE_CXX_STANDARD ${GAUDI_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE) # do not fall back on older version
 set(CMAKE_CXX_EXTENSIONS OFF) # strict c++.. instead of gnu++..
 
-# Prevent the installation if exporting to the build tree
-option(GAUDI_BUILD_TREE_AS_INSTALL_AREA "Set this to ON to disable \
-installation of Gaudi but be able to use the build tree as an installed Gaudi" OFF)
-if(GAUDI_BUILD_TREE_AS_INSTALL_AREA)
-  install(CODE "message(FATAL_ERROR \"The option GAUDI_BUILD_TREE_AS_INSTALL_AREA \
-was set to TRUE at configure time, it is impossible to install ${PROJECT_NAME}.\")")
-endif()
-
 # Enable testing with CTest/CDash
 include(CTest)
 
@@ -196,12 +187,6 @@ include(cmake/tests/testGaudiDownstream.cmake)
 # Installation of Gaudi
 include(CMakePackageConfigHelpers)
 # Generate the config files
-if(GAUDI_BUILD_TREE_AS_INSTALL_AREA)
-  set(_gaudi_config_files_location ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-  set(_set_extract_qmtest_metadata "set(extract_qmtest_metadata ${extract_qmtest_metadata} CACHE INTERNAL \"\" FORCE)")
-else() # used in GaudiConfig.cmake.in
-  set(_gaudi_config_files_location "\${CMAKE_CURRENT_LIST_DIR}")
-endif()
 configure_package_config_file(cmake/GaudiConfig.cmake.in ${PROJECT_NAME}Config.cmake
   INSTALL_DESTINATION "${GAUDI_INSTALL_CONFIGDIR}"
   PATH_VARS CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR
@@ -209,35 +194,27 @@ configure_package_config_file(cmake/GaudiConfig.cmake.in ${PROJECT_NAME}Config.c
   NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
   COMPATIBILITY AnyNewerVersion)
-# Install or export Gaudi
-if(GAUDI_BUILD_TREE_AS_INSTALL_AREA) # no installation, use build tree
-  # Generate the file to import the exported targets in downstream projects
-  export(EXPORT ${PROJECT_NAME} NAMESPACE ${PROJECT_NAME}::
-         FILE "${PROJECT_NAME}Targets.cmake")
-  message(STATUS "Using the build tree instead of the install area. ${PROJECT_NAME} cannot be installed.")
-else() # regular installation
-  # Install the set of exported targets
-  install(EXPORT ${PROJECT_NAME} NAMESPACE ${PROJECT_NAME}::
-              DESTINATION "${CMAKE_INSTALL_PREFIX}"
-          FILE "${PROJECT_NAME}Targets.cmake"
-              DESTINATION "${GAUDI_INSTALL_CONFIGDIR}")
-  # Install cmake files for downstream project to be able to use Gaudi
-  gaudi_install(CMAKE cmake/GaudiToolbox.cmake
-                      cmake/GaudiDependencies.cmake
-                      cmake/extract_qmtest_metadata.py # used in gaudi_add_tests(QMTest)
-                      cmake/DeveloperBuildType.cmake
-                      "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-                      "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-                      cmake/modules) # Find*.cmake
-  # Add an uninstall target
-  add_custom_target(uninstall
-    COMMAND test -f ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt &&
-            xargs rm < ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt &&
-            rm ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt &&
-            echo ${PROJECT_NAME} uninstalled successfully. ||
-            echo ${PROJECT_NAME} has not been installed yet or you need to be root to uninstall.
-    COMMENT "Uninstalling ${PROJECT_NAME}")
-endif()
+# Install the set of exported targets
+install(EXPORT ${PROJECT_NAME} NAMESPACE ${PROJECT_NAME}::
+            DESTINATION "${CMAKE_INSTALL_PREFIX}"
+        FILE "${PROJECT_NAME}Targets.cmake"
+            DESTINATION "${GAUDI_INSTALL_CONFIGDIR}")
+# Install cmake files for downstream project to be able to use Gaudi
+gaudi_install(CMAKE cmake/GaudiToolbox.cmake
+                    cmake/GaudiDependencies.cmake
+                    cmake/extract_qmtest_metadata.py # used in gaudi_add_tests(QMTest)
+                    cmake/DeveloperBuildType.cmake
+                    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+                    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+                    cmake/modules) # Find*.cmake
+# Add an uninstall target
+add_custom_target(uninstall
+  COMMAND test -f ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt &&
+          xargs rm < ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt &&
+          rm ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt &&
+          echo ${PROJECT_NAME} uninstalled successfully. ||
+          echo ${PROJECT_NAME} has not been installed yet or you need to be root to uninstall.
+  COMMENT "Uninstalling ${PROJECT_NAME}")
 
 # CPack configuration
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})

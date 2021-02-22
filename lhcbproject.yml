@@ -1,0 +1,5 @@
+---
+name: Gaudi
+license: Apache-2.0
+dependencies:
+  - LCG

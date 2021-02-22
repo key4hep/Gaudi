@@ -49,7 +49,7 @@ def _inheritsfrom(derived, basenames):
     return False
 
 
-def loadConfigurableDb():
+def loadConfigurableDb(build_dir=None):
     '''
     Equivalent to GaudiKernel.ConfigurableDb.loadConfigurableDb(), but does a
     deep search and executes the '*.confdb' files instead of importing them.
@@ -64,6 +64,12 @@ def loadConfigurableDb():
             f for f in glob(path_join(path, '*', '*.confdb'))
             if os.path.isfile(f)
         ]
+    #  - new-style CMake builds (look for all .confdb in the build tree)
+    if build_dir:
+        for root, _, files in os.walk(build_dir):
+            confDbFiles += [
+                os.path.join(root, f) for f in files if f.endswith('.confdb')
+            ]
     #  - used projects and local merged file
     pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
     for path in filter(os.path.isdir, pathlist):
@@ -74,7 +80,7 @@ def loadConfigurableDb():
             ]
         ]
     #  - load the confdb files
-    for confDb in confDbFiles:
+    for confDb in set(confDbFiles):
         log.debug("\t-loading [%s]..." % confDb)
         try:
             cfgDb._loadModule(confDb)
@@ -175,6 +181,12 @@ def main():
         "--debug",
         action="store_true",
         help="print more debugging information")
+    parser.add_option(
+        "--build-dir",
+        action="store",
+        help=
+        "build directory where to look for .confdb files (search all subdirectories)"
+    )
     parser.set_defaults(root=os.path.join("..", "python"))
 
     opts, args = parser.parse_args()
@@ -220,7 +232,7 @@ def main():
     except:
         pass
     # load configurables database to avoid fake duplicates
-    loadConfigurableDb()
+    loadConfigurableDb(opts.build_dir)
     # ensure that local configurables are in the database
     try:
         # Add the local python directories to the python path to be able to import the local

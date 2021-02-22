@@ -42,5 +42,4 @@ endforeach()
 # Add the build types to the possible ones
 if(CMAKE_CONFIGURATION_TYPES)
   list(APPEND CMAKE_CONFIGURATION_TYPES ${_config})
-  set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} PARENT_SCOPE) # if build full stack
 endif()

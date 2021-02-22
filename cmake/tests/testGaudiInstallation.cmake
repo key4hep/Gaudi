@@ -297,12 +297,6 @@ else()
     # set_tests_properties(cmake.test_gaudi_install_package PROPERTIES
     #     FIXTURES_SETUP cmake.test_gaudi_install_package
     #     LABELS CMake)
-    # # Disable the tests if we cannot install with current configuration
-    # if(GAUDI_BUILD_TREE_AS_INSTALL_AREA)
-    #     set_tests_properties(cmake.test_gaudi_install
-    #         cmake.test_gaudi_install_check cmake.test_gaudi_install_package
-    #         PROPERTIES DISABLED TRUE)
-    # endif()
 endif()
 
 cmake_policy(POP)

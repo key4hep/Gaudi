@@ -169,23 +169,18 @@ else()
         FIXTURES_REQUIRED cmake.test_gaudi_install
         FIXTURES_SETUP cmake.test_dummyGaudiDownstreamProject
         LABELS CMake)
-    # Disable this test if did not install Gaudi
-    if(GAUDI_BUILD_TREE_AS_INSTALL_AREA)
-        set_tests_properties(cmake.test_dummyGaudiDownstreamProject
-            PROPERTIES DISABLED TRUE)
-    endif()
     # Test usability from the build tree
-    add_test(NAME cmake.test_dummyGaudiDownstreamProject_from_build_tree
-             COMMAND ${CMAKE_COMMAND} -D TEST_GAUDI_DOWNSTREAM_FROM_BUILD:BOOL=TRUE
-                                      -D SRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-                                      -D BIN_DIR=${CMAKE_CURRENT_BINARY_DIR}
-                                      -D CMAKE_GENERATOR=${CMAKE_GENERATOR}
-                                      $<$<BOOL:CMAKE_TOOLCHAIN_FILE>:-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}>
-                                      -P ${CMAKE_CURRENT_LIST_FILE})
-    set_tests_properties(cmake.test_dummyGaudiDownstreamProject_from_build_tree PROPERTIES
-        DEPENDS "cmake.test_gaudi_install;cmake.test_gaudi_install_package" # not to mess up the cache
-        FIXTURES_SETUP cmake.test_dummyGaudiDownstreamProject_from_build_tree
-        LABELS CMake)
+    # add_test(NAME cmake.test_dummyGaudiDownstreamProject_from_build_tree
+    #          COMMAND ${CMAKE_COMMAND} -D TEST_GAUDI_DOWNSTREAM_FROM_BUILD:BOOL=TRUE
+    #                                   -D SRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+    #                                   -D BIN_DIR=${CMAKE_CURRENT_BINARY_DIR}
+    #                                   -D CMAKE_GENERATOR=${CMAKE_GENERATOR}
+    #                                   $<$<BOOL:CMAKE_TOOLCHAIN_FILE>:-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}>
+    #                                   -P ${CMAKE_CURRENT_LIST_FILE})
+    # set_tests_properties(cmake.test_dummyGaudiDownstreamProject_from_build_tree PROPERTIES
+    #     DEPENDS "cmake.test_gaudi_install;cmake.test_gaudi_install_package" # not to mess up the cache
+    #     FIXTURES_SETUP cmake.test_dummyGaudiDownstreamProject_from_build_tree
+    #     LABELS CMake)
     # Test usability as part of a stack
     # add_test(NAME cmake.test_dummyGaudiDownstreamProject_full_stack
     #          COMMAND ${CMAKE_COMMAND} -D TEST_GAUDI_DOWNSTREAM_FULL_STACK:BOOL=TRUE

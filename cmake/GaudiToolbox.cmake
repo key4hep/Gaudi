@@ -129,6 +129,7 @@ function(gaudi_add_library lib_name)
         "SOURCES;LINK"
         ${ARGN}
     )
+    _update_headers_db(${lib_name})
     add_library(${lib_name} SHARED "${ARG_SOURCES}")
     # Public headers
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -194,6 +195,7 @@ function(gaudi_add_header_only_library lib_name)
         "LINK"
         ${ARGN}
     )
+    _update_headers_db(${lib_name})
     add_library(${lib_name} INTERFACE)
     # Public headers
     if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -449,6 +451,7 @@ function(gaudi_add_executable exe_name)
     if(ARG_TEST)
         get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
         add_test(NAME ${package_name}.${exe_name} COMMAND run $<TARGET_FILE:${exe_name}>)
+        set_tests_properties(${package_name}.${exe_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     endif()
     # install
     set(_export)
@@ -530,7 +533,7 @@ function(gaudi_add_tests type)
                         --workdir ${qmtest_root_dir}
                         ${qmtest_root_dir}/${qmt_file}
                      WORKING_DIRECTORY "${qmtest_root_dir}")
-            set_tests_properties(${package_name}.${qmt_name} PROPERTIES LABELS QMTest
+            set_tests_properties(${package_name}.${qmt_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name};QMTest"
                                                                         SKIP_RETURN_CODE 77)
         endforeach()
         # Extract dependencies to a cmake file
@@ -562,7 +565,7 @@ function(gaudi_add_tests type)
         get_filename_component(name "${test_directory}" NAME)
         add_test(NAME ${package_name}.${name}
                  COMMAND run $<TARGET_FILE:nosetests> -v --with-doctest ${test_directory})
-
+        set_tests_properties(${package_name}.${name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     elseif(type STREQUAL "pytest")
         _import_pytest() # creates the imported target pytest for the
                          # generator expression $<TARGET_FILE:pytest>
@@ -572,7 +575,7 @@ function(gaudi_add_tests type)
         get_filename_component(name "${test_directory}" NAME)
         add_test(NAME ${package_name}.${name}
                 COMMAND run $<TARGET_FILE:pytest> -v --doctest-modules ${test_directory})
-
+        set_tests_properties(${package_name}.${name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     else()
         message(FATAL_ERROR "${type} is not a valid test framework.")
     endif()
@@ -669,6 +672,9 @@ function(gaudi_add_dictionary dictionary)
     _merge_files(MergeRootmaps "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Dict.rootmap" # see private functions at the end
         ${dictionary}-gen "${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.rootmap"
         "Merging .rootmap files")
+    # To append the path to the generated library to LD_LIBRARY_PATH with run
+    set_property(TARGET target_runtime_paths APPEND
+        PROPERTY runtime_ld_library_path $<SHELL_PATH:$<TARGET_FILE_DIR:${dictionary}>>)
 endfunction()
 
 
@@ -828,13 +834,14 @@ function(gaudi_generate_confuserdb)
     list(TRANSFORM modules_path_list APPEND ".py")
     add_custom_command(OUTPUT "${output_file}"
         COMMAND run genconfuser.py
-                -r ${CMAKE_CURRENT_SOURCE_DIR}/python
-                -o "${output_file}"
+                --build-dir ${CMAKE_BINARY_DIR}
+                --root ${CMAKE_CURRENT_SOURCE_DIR}/python
+                --output "${output_file}"
                 ${package_name}
                 ${modules}
                 ${_gaudi_no_fail}
         DEPENDS "${modules_path_list}"
-        COMMENT "Generating ConfigurableUser of ${package_name}"
+        COMMENT "Generating ConfigurableUser DB for ${package_name}"
         COMMAND_EXPAND_LISTS)
     add_custom_target(${package_name}_confuserdb ALL DEPENDS "${output_file}")
     # Merge ${package_name}_user.confdb with the others in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb
@@ -922,7 +929,7 @@ function(gaudi_generate_version_header_file)
         set(PROJECT_VERSION_PATCH 0)
     endif()
     # Generate the configure file only once
-    file(GENERATE OUTPUT include/${output_file_name} CONTENT
+    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/include/${output_file_name} CONTENT
 "#ifndef ${NAME}_VERSION_H
 #define ${NAME}_VERSION_H
 
@@ -1024,13 +1031,25 @@ function(_import_pytest)
 endfunction()
 
 
-
 ################################################################################
 #                                                                              #
 #                            PRIVATE internal magic                            #
 #                                                                              #
 ################################################################################
 
+# Function to generate a CSV file mapping public headers to target providing them to directory
+# where it is defined.
+file(WRITE "${CMAKE_BINARY_DIR}/headers_db.csv" "header,target,directory\n")
+install(FILES "${CMAKE_BINARY_DIR}/headers_db.csv" DESTINATION "${GAUDI_INSTALL_CONFIGDIR}")
+macro(_update_headers_db target)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        file(GLOB_RECURSE _headers RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
+        file(RELATIVE_PATH directory "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+        foreach(header IN LISTS _headers)
+            file(APPEND "${CMAKE_BINARY_DIR}/headers_db.csv" "${header},${PROJECT_NAME}::${target},${directory}\n")
+        endforeach()
+    endif()
+endmacro()
 
 # To generate the script run and make it executable
 if(NOT CMAKE_SCRIPT_MODE_FILE AND NOT TARGET target_runtime_paths)
@@ -1056,6 +1075,7 @@ export ENV_CMAKE_BUILD_TYPE=\"$<CONFIG>\"
 $<IF:$<NOT:$<STREQUAL:${BINARY_TAG},>>,export BINARY_TAG=\"${BINARY_TAG}\",$<$<NOT:$<STREQUAL:$ENV{BINARY_TAG},>>:export BINARY_TAG=\"$ENV{BINARY_TAG}\">>
 
 # Other user defined commands
+$<TARGET_PROPERTY:target_runtime_paths,extra_commands>
 ${RUN_SCRIPT_EXTRA_COMMANDS}
 ")
     # Since we cannot tell file(GENERATE) to create an executable file (at generation time)
