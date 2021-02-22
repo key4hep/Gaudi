@@ -1348,7 +1348,8 @@ def GetPlatform(self):
         arch = os.environ["CMTCONFIG"]
     elif "SCRAM_ARCH" in os.environ:
         arch = os.environ["SCRAM_ARCH"]
-    elif os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in ("Debug", "Developer"):
+    elif os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in ("Debug", "FastDebug",
+                                                        "Developer"):
         arch = "dummy-dbg"
     elif os.environ.get("ENV_CMAKE_BUILD_TYPE",
                         "") in ("Release", "MinSizeRel", "RelWithDebInfo",
