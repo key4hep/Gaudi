@@ -203,6 +203,7 @@ install(EXPORT ${PROJECT_NAME} NAMESPACE ${PROJECT_NAME}::
 gaudi_install(CMAKE cmake/GaudiToolbox.cmake
                     cmake/GaudiDependencies.cmake
                     cmake/extract_qmtest_metadata.py # used in gaudi_add_tests(QMTest)
+                    cmake/scan_dict_deps.py # used in gaudi_add_dictionary(...)
                     cmake/DeveloperBuildType.cmake
                     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
                     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
