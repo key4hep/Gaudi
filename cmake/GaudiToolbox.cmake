@@ -636,6 +636,12 @@ function(gaudi_add_dictionary dictionary)
     if(DEFINED GENREFLEX_JOB_POOL)
         set(job_pool JOB_POOL ${GENREFLEX_JOB_POOL})
     endif()
+
+    # Workaround for rootcling not knowing what nodiscard is
+    if(ROOT_VERSION MATCHES "^6\.22.*")
+      set( ARG_OPTIONS ${ARG_OPTIONS} -Wno-unknown-attributes)
+    endif()
+
     add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
         COMMAND run
                 ${ROOT_genreflex_CMD} # comes from ROOTConfig.cmake
