@@ -355,7 +355,6 @@ macro(gaudi_project project version)
   set(binary_paths ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
   find_program(env_cmd xenv HINTS ${binary_paths})
-  set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
   find_program(default_merge_cmd quick-merge HINTS ${binary_paths})
   set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd})
