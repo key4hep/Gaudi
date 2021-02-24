@@ -37,7 +37,8 @@ namespace Gaudi::Monitoring {
      * to decide if they have to handle a given entity or not.
      * It can also be used to know which fields to expect in the json dictionnary
      */
-    struct Entity {
+    class Entity {
+    public:
       template <typename T>
       Entity( std::string component, std::string name, std::string type, const T& ent )
           : component{std::move( component )}
@@ -51,11 +52,17 @@ namespace Gaudi::Monitoring {
       std::string name;
       /// type of the entity, see comment above concerning its format and usage
       std::string type;
+      /// function giving access to internal data in json format
+      json toJSON() const { return ( *getJSON )( ptr ); }
+
+    private:
       /// pointer to the actual data inside this Entity
       const void* ptr{nullptr};
-      /// function converting the internal data to json. Due to type erasure, it needs to be a member of this struct
+      /// function converting the internal data to json.
+      /// Due to type erasure, it needs to be a member of this struct as it's
+      /// implementation is different for different types (see Constructor
+      /// above and the usage of T in the reinterpret_cast)
       json ( *getJSON )( const void* );
-      json toJSON() const { return ( *getJSON )( ptr ); }
     };
 
     /// Interface reporting services must implement.
