@@ -800,10 +800,6 @@ namespace Gaudi::Accumulators {
    */
   struct PrintableCounter {
     PrintableCounter() = default;
-    template <class OWNER>
-    PrintableCounter( OWNER* o, std::string tag, std::string type ) {
-      o->serviceLocator()->monitoringHub().registerEntity( o->name(), std::move( tag ), std::move( type ), *this );
-    }
     /// destructor
     virtual ~PrintableCounter() = default;
     // add tag to printout
@@ -1088,8 +1084,9 @@ namespace Gaudi::Accumulators {
   public:
     inline static const std::string typeString{"counter:MsgCounter"};
     template <typename OWNER>
-    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 )
-        : PrintableCounter( o, ms, typeString ), logger( o ), msg( ms ), max( nMax ) {}
+    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 ) : logger( o ), msg( ms ), max( nMax ) {
+      o->serviceLocator()->monitoringHub().registerEntity( o->name(), std::move( ms ), typeString, *this );
+    }
     MsgCounter& operator++() {
       ( *this ) += true;
       return *this;
