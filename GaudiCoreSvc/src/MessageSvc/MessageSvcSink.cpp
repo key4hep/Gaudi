@@ -35,9 +35,9 @@ namespace {
    * and that 'p' means 'percentage', that is it's the same as 'g' where the value displayed is
    * first multiplies by 100.
    */
-  static const auto registry = std::map<std::string, std::string>{
-      {"counter:", "{0:nEntries|10d}"},   // all unknown counters, and default
-      {"histogram:", "{0:nEntries|10d}"}, // all histograms
+  static const auto registry = std::map<std::string_view, std::string_view>{
+      {"counter", "{0:nEntries|10d}"},   // all unknown counters, and default
+      {"histogram", "{0:nEntries|10d}"}, // all histograms
       {"counter:AveragingCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g}"},
       {"counter:SigmaCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g}"},
       {"counter:StatCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g} "
@@ -79,14 +79,23 @@ public:
     if ( currentFormat.size() == 0 ) {
       // dealing with {} format, let's find entry for our type in registry
       const auto type = j.at( "type" ).get<std::string>();
-      // first looking for the entry, then for its category, finally taking "counter:" as default
-      auto entry = registry.find( type );
-      if ( entry == registry.end() ) {
-        auto c = type.find( ":" );
-        if ( c != std::string::npos ) entry = registry.find( type.substr( 0, c + 1 ) );
-        if ( entry == registry.end() ) entry = registry.find( "counter:" );
-        assert( entry != registry.end() );
+      // first looking for the entry, then we drop on ":abc" suffix at a time and try again
+      std::string_view type_key{type};
+      // look for the full entry
+      auto entry = registry.find( type_key );
+      // we check if we have type separators before entering the loop
+      auto sep = type_key.rfind( ':' );
+      while ( sep != type_key.npos && entry == registry.end() ) {
+        // not found, remove the trailing ":abc" section
+        type_key.remove_suffix( type_key.size() - sep );
+        // check if we have another chunk to strip
+        sep = type_key.rfind( ':' );
+        // see if the shorter key works
+        entry = registry.find( type_key );
       }
+      // if still not found, we use the basic "counter"
+      if ( entry == registry.end() ) entry = registry.find( "counter" );
+      assert( entry != registry.end() );
       // print the json string according to format found
       // This actually will call this formatter again a number of times
       return fmt::format_to( ctx.out(), entry->second, j );
@@ -128,7 +137,8 @@ namespace {
       return printCounter( log, id, nj );
     }
     // binomial counters are slightly different ('*' character)
-    return log << fmt::format( " |{}{:48}|{} |", ( type == "counter:BinomialCounter" ? '*' : ' ' ),
+    return log << fmt::format( " |{}{:48}|{} |",
+                               ( std::string_view{type}.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
                                fmt::format( "\"{}\"", id ), j );
   }
 
