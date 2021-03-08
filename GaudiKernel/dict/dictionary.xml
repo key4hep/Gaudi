@@ -134,6 +134,7 @@
 
   <!-- SmartRef classes              -->
   <class pattern="SmartData*"/>
+  <class name="SmartRefVectorImpl::SmartRefVectorPythonizer"/>
 
   <class name="SmartRefBase">
     <field name="m_data"  transient="true"/>
