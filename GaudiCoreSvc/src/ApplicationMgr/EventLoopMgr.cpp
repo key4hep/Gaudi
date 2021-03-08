@@ -309,8 +309,6 @@ StatusCode EventLoopMgr::nextEvent( int maxevt ) {
         m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndEvent ) );
         m_endEventFired = true;
       }
-      sc = m_evtDataMgrSvc->clearStore();
-      if ( !sc.isSuccess() ) { DEBMSG << "Clear of Event data store failed" << endmsg; }
     }
 
     // Setup event in the event store
