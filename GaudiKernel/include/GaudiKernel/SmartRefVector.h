@@ -26,6 +26,20 @@
 // Include files
 #include "GaudiKernel/SmartRef.h"
 
+// forward declare _object and PyObject to avoid including Python.h here
+struct _object;
+namespace SmartRefVectorImpl {
+  using PyObject = _object;
+  // Avoid leaking the below into global namespace
+  struct SmartRefVectorPythonizer {
+    // newer PyROOT will map SmartRefVector<TYPE>& operator()( ContainedObject* pObj )
+    // to "__getitem__" deleting it via this callback will make `__getitem__` call
+    //  the operator [] from the base class
+    //  see e.g. https://github.com/root-project/root/issues/7179
+    static void __cppyy_pythonize__( PyObject* klass, const std::string& name );
+  };
+} // namespace SmartRefVectorImpl
+
 /** Kernel objects: SmartRefVector
 
     Description:
@@ -62,7 +76,7 @@
     Version: 1.0
 */
 template <class TYPE>
-class SmartRefVector : public std::vector<SmartRef<TYPE>> {
+class SmartRefVector : public std::vector<SmartRef<TYPE>>, SmartRefVectorImpl::SmartRefVectorPythonizer {
 protected:
   /// That's the type of crap I am hosting
   typedef SmartRef<TYPE> _Entry;
@@ -84,6 +98,8 @@ protected:
   }
 
 public:
+  using SmartRefVectorPythonizer::__cppyy_pythonize__;
+
   /// Standard Constructor
   SmartRefVector() {
     m_contd = 0;

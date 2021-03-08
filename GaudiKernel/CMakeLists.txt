@@ -129,6 +129,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/Sleep.cpp
           src/Lib/SmartDataObjectPtr.cpp
           src/Lib/SmartRefBase.cpp
+          src/Lib/SmartRefVector.cpp
           src/Lib/Stat.cpp
           src/Lib/StateMachine.cpp
           src/Lib/StatusCode.cpp
@@ -155,6 +156,7 @@ gaudi_add_library(GaudiKernel
            fmt::fmt
            nlohmann_json::nlohmann_json
            ${GAUDI_ATOMIC_LIBS}
+    PRIVATE Python::Python
 )
 gaudi_generate_version_header_file(GaudiKernel)
 target_include_directories(GaudiKernel
