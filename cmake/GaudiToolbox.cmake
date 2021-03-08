@@ -26,6 +26,13 @@ The installation of targets is optional if TRUE. FALSE by default.
 
 Prevent genconf to fail if TRUE (for builds with a sanitizer). FALSE by default.
 
+.. variable:: GAUDI_PREFER_LOCAL_TARGETS
+
+When linking against an imported target (``Project::Target``), if there is a local
+target with the same name, use that instead of the imported one.
+This is useful in to LHCb satellite projects.
+
+
 Other Cached variables (added to the project)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -84,6 +91,9 @@ if(GAUDI_GENCONF_NO_FAIL)
     set(_gaudi_no_fail "||" "true")
 endif()
 
+# Option to prefer local targets to imported ones
+option(GAUDI_PREFER_LOCAL_TARGETS "Prefer local targets over imported ones" FALSE)
+
 # Default layout fo the installation (may be overridden in the cache)
 set(CMAKE_INSTALL_BINDIR "bin" CACHE STRING "Install executable in <prefix>/\${CMAKE_INSTALL_BINDIR}")
 set(CMAKE_INSTALL_LIBDIR "lib" CACHE STRING "Install libraries in <prefix>/\${CMAKE_INSTALL_LIBDIR}")
@@ -94,6 +104,25 @@ set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cm
 
 
 ################################## Functions  ##################################
+
+# Helper function that replaces imported targets in ``<var>>`` with local ones,
+# if GAUDI_PREFER_LOCAL_TARGETS is true and if the local target exists.
+macro(_resolve_local_targets var)
+    if(GAUDI_PREFER_LOCAL_TARGETS)
+        set(_links)
+        foreach(item IN LISTS ${var})
+            # if it looks like an imported target (proj::tgt) and the bare target
+            # exists, use the bare target
+            if(item MATCHES "^.*::([^:]+)\$")
+                if(TARGET "${CMAKE_MATCH_1}")
+                    set(item "${CMAKE_MATCH_1}")
+                endif()
+            endif()
+            list(APPEND links "${item}")
+        endforeach()
+        set(${var} ${_links})
+    endif()
+endmacro()
 
 #[========================================================================[.rst:
 .. command:: gaudi_add_library
@@ -119,7 +148,10 @@ set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cm
   
   ``LINK PUBLIC <lib>... PRIVATE <lib>... INTERFACE <lib>...``
     <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries()
+    with the same syntax as target_link_libraries().
+
+    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    local ones.
 #]========================================================================]
 function(gaudi_add_library lib_name)
     cmake_parse_arguments(
@@ -138,6 +170,7 @@ function(gaudi_add_library lib_name)
     endif()
     # Dependencies
     if(ARG_LINK)
+        _resolve_local_targets(ARG_LINK)
         target_link_libraries(${lib_name} ${ARG_LINK})
     endif()
     # Alias
@@ -185,7 +218,10 @@ endfunction()
 
   ``LINK <lib>...``
     <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (INTERFACE is implied)
+    with the same syntax as target_link_libraries() (INTERFACE is implied).
+
+    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    local ones.
 #]========================================================================]
 function(gaudi_add_header_only_library lib_name)
     cmake_parse_arguments(
@@ -205,6 +241,7 @@ function(gaudi_add_header_only_library lib_name)
         INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
     # Dependencies
     if(ARG_LINK)
+        _resolve_local_targets(ARG_LINK)
         target_link_libraries(${lib_name} INTERFACE ${ARG_LINK})
     endif()
     # Alias
@@ -250,7 +287,10 @@ endfunction()
 
   ``LINK <lib>...``
     <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (PRIVATE is implied)
+    with the same syntax as target_link_libraries() (PRIVATE is implied).
+
+    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    local ones.
 
   ``GENCONF_OPTIONS --opt=val...``
     a list of additional arguments to pass to genconf
@@ -267,6 +307,7 @@ function(gaudi_add_module plugin_name)
     add_library(${plugin_name} MODULE "${ARG_SOURCES}")
     # dependencies
     if(ARG_LINK)
+        _resolve_local_targets(ARG_LINK)
         target_link_libraries(${plugin_name} PRIVATE ${ARG_LINK})
     endif()
     # install
@@ -351,7 +392,10 @@ endfunction()
   ``LINK <lib>...``
     <lib> can be Package::Lib, MyTarget, SomeLib
     with the same syntax as target_link_libraries() (PRIVATE is implied)
-    LINK Python::Module is implied
+    LINK Python::Module is implied.
+
+    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    local ones.
 
   ``PACKAGE <path>``
     The path to the python package the compiled module should be part of
@@ -380,6 +424,7 @@ function(gaudi_add_python_module module_name)
     endif()
     # dependencies
     if(ARG_LINK)
+        _resolve_local_targets(ARG_LINK)
         target_link_libraries(${module_name} PRIVATE ${ARG_LINK})
     endif()
     # Add it to the runtime PYTHONPATH
@@ -425,7 +470,10 @@ endfunction()
 
   ``LINK <lib>...``
     <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (PRIVATE is implied)
+    with the same syntax as target_link_libraries() (PRIVATE is implied).
+
+    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    local ones.
 
   ``TEST``
     This option specify that the executable must be added to the test set
@@ -445,6 +493,7 @@ function(gaudi_add_executable exe_name)
     add_executable(${exe_name} "${ARG_SOURCES}")
     # dependencies
     if(ARG_LINK)
+        _resolve_local_targets(ARG_LINK)
         target_link_libraries(${exe_name} PRIVATE ${ARG_LINK})
     endif()
     # test
@@ -619,7 +668,10 @@ endfunction()
   ``LINK <lib>...``
     Libraries to link against when building the dictionary.
     <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (PRIVATE is implied)
+    with the same syntax as target_link_libraries() (PRIVATE is implied).
+
+    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    local ones.
 #]========================================================================]
 function(gaudi_add_dictionary dictionary)
     cmake_parse_arguments(
@@ -662,6 +714,7 @@ function(gaudi_add_dictionary dictionary)
     # Build the dictionary as a plugin
     add_library(${dictionary} MODULE ${gensrcdict})
     if(ARG_LINK)
+        _resolve_local_targets(ARG_LINK)
         target_link_libraries(${dictionary} PRIVATE ${ARG_LINK})
     endif()
     target_include_directories(${dictionary} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
