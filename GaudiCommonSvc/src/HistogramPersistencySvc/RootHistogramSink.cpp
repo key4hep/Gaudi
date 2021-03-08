@@ -134,9 +134,12 @@ namespace Gaudi::Histograming::Sink {
       } );
       TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
       std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( auto& ent ) {
-        auto j     = ent.toJSON();
-        auto dim   = j.at( "dimension" ).template get<unsigned int>();
-        auto type  = j.at( "type" ).template get<std::string>();
+        auto j    = ent.toJSON();
+        auto dim  = j.at( "dimension" ).template get<unsigned int>();
+        auto type = j.at( "type" ).template get<std::string>();
+        // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
+        // as ROOT anyway treats everything as doubles in histograms
+        type       = type.substr( 0, type.find_last_of( ':' ) );
         auto saver = registry.find( {type, dim} );
         if ( saver == registry.end() )
           throw GaudiException( "Unknown type : " + type + " dim : " + std::to_string( dim ), "Histogram::Sink::Root",

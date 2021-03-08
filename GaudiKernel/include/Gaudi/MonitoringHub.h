@@ -37,25 +37,37 @@ namespace Gaudi::Monitoring {
      * to decide if they have to handle a given entity or not.
      * It can also be used to know which fields to expect in the json dictionnary
      */
-    struct Entity {
+    class Entity {
+    public:
       template <typename T>
-      Entity( std::string component, std::string name, std::string type, const T& ent )
+      Entity( std::string component, std::string name, std::string type, T& ent )
           : component{std::move( component )}
           , name{std::move( name )}
           , type{std::move( type )}
-          , ptr{&ent}
-          , getJSON{[]( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); }} {}
+          , m_ptr{&ent}
+          , m_reset{[]( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); }}
+          , m_getJSON{[]( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); }} {}
       /// name of the component owning the Entity
       std::string component;
       /// name of the entity
       std::string name;
       /// type of the entity, see comment above concerning its format and usage
       std::string type;
+      /// function giving access to internal data in json format
+      json toJSON() const { return ( *m_getJSON )( m_ptr ); }
+      /// function resetting internal data
+      void reset() { return ( *m_reset )( m_ptr ); }
+
+    private:
       /// pointer to the actual data inside this Entity
-      const void* ptr{nullptr};
-      /// function converting the internal data to json. Due to type erasure, it needs to be a member of this struct
-      json ( *getJSON )( const void* );
-      json toJSON() const { return ( *getJSON )( ptr ); }
+      void* m_ptr{nullptr};
+      // The next 2 members are needed for type erasure
+      // indeed, their implementation is internal type dependant
+      // (see Constructor above and the usage of T in the reinterpret_cast)
+      /// function reseting internal data.
+      void ( *m_reset )( void* );
+      /// function converting the internal data to json.
+      json ( *m_getJSON )( const void* );
     };
 
     /// Interface reporting services must implement.
@@ -65,7 +77,7 @@ namespace Gaudi::Monitoring {
     };
 
     template <typename T>
-    void registerEntity( std::string c, std::string n, std::string t, const T& ent ) {
+    void registerEntity( std::string c, std::string n, std::string t, T& ent ) {
       registerEntity( {std::move( c ), std::move( n ), std::move( t ), ent} );
     }
     void registerEntity( Entity ent ) {

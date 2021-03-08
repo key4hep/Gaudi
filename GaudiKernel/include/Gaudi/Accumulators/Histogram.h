@@ -370,8 +370,9 @@ namespace Gaudi::Accumulators {
    * wcounter += {{val1, val2}, w};  // original syntax inherited from counters
    * \endcode
    *
-   * When serialized to json, this counter uses new types histogram:Histogram, histogram:ProfileHistogram,
-   * histogram:WeightedHistogram and histrogram:WeightedProfileHistogram
+   * When serialized to json, this counter uses new types histogram:Histogram:<prec>, histogram:ProfileHistogram:<prec>,
+   * histogram:WeightedHistogram:<prec> and histrogram:WeightedProfileHistogram:<prec>
+   * <prec> id described in Accumulators.h and decribes here the precision of the bin data.
    * All these types have the same fields, namely :
    *   dimension(integer), title(string), empty(bool), nEntries(integer), axis(array), bins(array)
    * where :
@@ -392,7 +393,9 @@ namespace Gaudi::Accumulators {
     template <typename OWNER>
     HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title,
                              std::initializer_list<Axis<Arithmetic>> axis )
-        : Parent( owner, name, Type, axis, std::make_index_sequence<ND>{} ), m_title( title ) {}
+        : Parent( owner, name, std::string( Type ) + ":" + typeid( Arithmetic ).name(), axis,
+                  std::make_index_sequence<ND>{} )
+        , m_title( title ) {}
     template <typename OWNER>
     HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title, Axis<Arithmetic> axis )
         : HistogramingCounterBase( owner, name, title, {axis} ) {}
@@ -420,7 +423,7 @@ namespace Gaudi::Accumulators {
         totNEntries += this->nEntries( i );
       }
       // build json
-      return {{"type", Type},
+      return {{"type", std::string( Type ) + ":" + typeid( Arithmetic ).name()},
               {"title", m_title},
               {"dimension", ND},
               {"empty", totNEntries == Arithmetic{}},

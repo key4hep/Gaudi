@@ -133,19 +133,29 @@ namespace Gaudi::Accumulators {
  *
  * Here is a list of types defined in this header and their corresponding fields.
  * Note that there are 2 kinds of fields : raw ones and derived ones, built on top of raw ones.
+ * Note also that <prec> when present is a string defining the precision of the data when numerical. It
+ * is described at the end of the list
  * for each dependent field, the computation formula is given
- *   - counter:Counter : empty(bool), nEntries(integer)
- *   - counter:AveragingCounter : same as counter:Counter, sum(number), mean(number) = sum/nEntries
- *   - counter:SigmaCounter : same as counter:AveragingCounter, sum2(number),
- *                            standard_deviation(number) = sqrt((sum2-sum*sum/nEntries)/(nEntries-1))
- *   - counter:StatCounter : same as counter:SigmaCounter, min(number), max(number)
- *   - counter:BinomialCounter : nTrueEntries(integer), nFalseEntries(integer),
- *                               nEntries(integer) = nTrueEntries+nFalseEntries
- *                               efficiency(number) = nTrueEntries/nEntries,
- *                               efficiencyErr(number) = (nTrueEntries*nFalseEntries)/(nEntries*nEntries)
+ *   - counter:Counter:<prec> : empty(bool), nEntries(integer)
+ *   - counter:AveragingCounter:<prec> : same as counter:Counter, sum(number), mean(number) = sum/nEntries
+ *   - counter:SigmaCounter:<prec> : same as counter:AveragingCounter, sum2(number),
+ *                                   standard_deviation(number) = sqrt((sum2-sum*sum/nEntries)/(nEntries-1))
+ *   - counter:StatCounter:<prec> : same as counter:SigmaCounter, min(number), max(number)
+ *   - counter:BinomialCounter:<prec> : nTrueEntries(integer), nFalseEntries(integer),
+ *                                      nEntries(integer) = nTrueEntries+nFalseEntries
+ *                                      efficiency(number) = nTrueEntries/nEntries,
+ *                                      efficiencyErr(number) = (nTrueEntries*nFalseEntries)/(nEntries*nEntries)
  *   - counter:MsgCounter : same as counter:Counter, level(number), max(number), msg(string)
  *   - statentity : union of fields of counter:StatCounter and counter:BinomialCounter. DEPRECATED
- *   - timer : same fields as counter:StatCounter
+ *   - timer:<prec> : same fields as counter:StatCounter
+ *   - <prec> is a string defining the type of data in the counter. It is the typeid representation
+ *     of the type that should be used by a customer to use the data and not lose precision.
+ *     In other terms, it's usually one char of chstijlmxyfde for respectively char, unsigned char,
+ *     short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long,
+ *     float, double, long double
+ *     Note that it does not have to match the original type, just to be the same precision.
+ *     E.g. an std::chrono::nanoseconds type can and should be mapped to its internal representation
+ *     that happens to be long so <prec> will be l.
  *
  * Notes
  * -----
@@ -790,10 +800,6 @@ namespace Gaudi::Accumulators {
    */
   struct PrintableCounter {
     PrintableCounter() = default;
-    template <class OWNER>
-    PrintableCounter( OWNER* o, std::string tag, std::string type ) {
-      o->serviceLocator()->monitoringHub().registerEntity( o->name(), std::move( tag ), std::move( type ), *this );
-    }
     /// destructor
     virtual ~PrintableCounter() = default;
     // add tag to printout
@@ -853,7 +859,7 @@ namespace Gaudi::Accumulators {
    */
   template <atomicity Atomicity = atomicity::full>
   struct Counter : BufferableCounter<Atomicity, CountAccumulator, int> {
-    inline static const std::string typeString{"counter:Counter"};
+    inline static const std::string typeString{std::string{"counter:Counter:"} + typeid( int ).name()};
     using BufferableCounter<Atomicity, CountAccumulator, int>::BufferableCounter;
     template <typename OWNER>
     Counter( OWNER* o, std::string const& name )
@@ -895,7 +901,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct AveragingCounter : BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic> {
-    inline static const std::string typeString{"counter:AveragingCounter"};
+    inline static const std::string typeString{std::string{"counter:AveragingCounter:"} + typeid( Arithmetic ).name()};
     using BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     AveragingCounter( OWNER* o, std::string const& name )
@@ -934,7 +940,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct SigmaCounter : BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic> {
-    inline static const std::string typeString{"counter:SigmaCounter"};
+    inline static const std::string typeString{std::string{"counter:SigmaCounter:"} + typeid( Arithmetic ).name()};
     using BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     SigmaCounter( OWNER* o, std::string const& name )
@@ -973,7 +979,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct StatCounter : BufferableCounter<Atomicity, StatAccumulator, Arithmetic> {
-    inline static const std::string typeString{"counter:StatCounter"};
+    inline static const std::string typeString{std::string{"counter:StatCounter:"} + typeid( Arithmetic ).name()};
     using BufferableCounter<Atomicity, StatAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     StatCounter( OWNER* o, std::string const& name )
@@ -1016,7 +1022,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct BinomialCounter : BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic> {
-    inline static const std::string typeString{"counter:BinomialCounter"};
+    inline static const std::string typeString{std::string{"counter:BinomialCounter:"} + typeid( Arithmetic ).name()};
     using BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     BinomialCounter( OWNER* o, std::string const& name )
@@ -1078,8 +1084,9 @@ namespace Gaudi::Accumulators {
   public:
     inline static const std::string typeString{"counter:MsgCounter"};
     template <typename OWNER>
-    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 )
-        : PrintableCounter( o, ms, typeString ), logger( o ), msg( ms ), max( nMax ) {}
+    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 ) : logger( o ), msg( ms ), max( nMax ) {
+      o->serviceLocator()->monitoringHub().registerEntity( o->name(), std::move( ms ), typeString, *this );
+    }
     MsgCounter& operator++() {
       ( *this ) += true;
       return *this;
