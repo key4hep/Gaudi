@@ -102,6 +102,8 @@ set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Install plug
 set(GAUDI_INSTALL_PYTHONDIR "python" CACHE STRING "Install python packages in <prefix>/\${GAUDI_INSTALL_PYTHONDIR}")
 set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
 
+set(scan_dict_deps_command ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py
+    CACHE INTERNAL "command to use to scan dependencies of dictionary headers")
 
 ################################## Functions  ##################################
 
@@ -691,25 +693,59 @@ function(gaudi_add_dictionary dictionary)
 
     # Workaround for rootcling not knowing what nodiscard is
     if(ROOT_VERSION MATCHES "^6\.22.*")
-      set( ARG_OPTIONS ${ARG_OPTIONS} -Wno-unknown-attributes)
+      list(APPEND ARG_OPTIONS -Wno-unknown-attributes)
     endif()
 
-    add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
-        COMMAND run
+    if(TARGET Python::Interpreter
+            AND (CMAKE_GENERATOR MATCHES "Ninja"
+                OR (CMAKE_GENERATOR MATCHES "Makefile" AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")))
+        file(RELATIVE_PATH dep_target "${PROJECT_BINARY_DIR}" "${gensrcdict}")
+        add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
+            COMMAND run
                 ${ROOT_genreflex_CMD} # comes from ROOTConfig.cmake
-                ${ARG_HEADERFILES}
-                -o ${gensrcdict}
-                --rootmap=${rootmapname}
-                --rootmap-lib=lib${dictionary}
-                --select=${ARG_SELECTION}
-                "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>"
-                "-D$<JOIN:$<TARGET_PROPERTY:${dictionary},COMPILE_DEFINITIONS>,;-D>"
-                ${ARG_OPTIONS}
-        DEPENDS "${ARG_HEADERFILES};${ARG_SELECTION}"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Generating ${dictionary}.cxx and ${dictionary}.rootmap and ${dictionary}_rdict.pcm"
-        COMMAND_EXPAND_LISTS
-        ${job_pool})
+                    ${ARG_HEADERFILES}
+                    -o ${gensrcdict}
+                    --rootmap=${rootmapname}
+                    --rootmap-lib=lib${dictionary}
+                    --select=${ARG_SELECTION}
+                    "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>"
+                    "-D$<JOIN:$<TARGET_PROPERTY:${dictionary},COMPILE_DEFINITIONS>,;-D>"
+                    ${ARG_OPTIONS}
+            COMMAND run $<TARGET_FILE:Python::Interpreter>
+                ${scan_dict_deps_command}
+                    "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>"
+                    ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.d
+                    ${dep_target}
+                    ${ARG_HEADERFILES}
+            DEPENDS ${ARG_HEADERFILES} ${ARG_SELECTION}
+            DEPFILE ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.d
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating ${dictionary}.cxx and ${dictionary}.rootmap and ${dictionary}_rdict.pcm"
+            COMMAND_EXPAND_LISTS
+            ${job_pool})
+    else()
+        if(NOT _root_dicts_deps_warning)
+            message(WARNING "dependencies of ROOT dictionaries are not complete, this feature needs a Ninja generator of CMake >= 3.20")
+            set(_root_dicts_deps_warning 1 CACHE INTERNAL "")
+        endif()
+        add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
+            COMMAND run
+                ${ROOT_genreflex_CMD} # comes from ROOTConfig.cmake
+                    ${ARG_HEADERFILES}
+                    -o ${gensrcdict}
+                    --rootmap=${rootmapname}
+                    --rootmap-lib=lib${dictionary}
+                    --select=${ARG_SELECTION}
+                    "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>"
+                    "-D$<JOIN:$<TARGET_PROPERTY:${dictionary},COMPILE_DEFINITIONS>,;-D>"
+                    ${ARG_OPTIONS}
+            DEPENDS ${ARG_HEADERFILES} ${ARG_SELECTION}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating ${dictionary}.cxx and ${dictionary}.rootmap and ${dictionary}_rdict.pcm"
+            COMMAND_EXPAND_LISTS
+            ${job_pool})
+    endif()
+
     add_custom_target(${dictionary}-gen ALL DEPENDS "${gensrcdict};${rootmapname};${pcmfile}")
     # Build the dictionary as a plugin
     add_library(${dictionary} MODULE ${gensrcdict})
