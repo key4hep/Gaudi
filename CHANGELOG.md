@@ -7,6 +7,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+## [v35r2][] - 2021-03-10
+Just a minor bugfix release with changes required for
+- ROOT 6.22 (updated PyROOT/cppyy)
+- modernization of CMake configuration of LHCb projects
+- use of new monitoring interfaces in LHCb Online system
+
+Here is a summary of the changes (see the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r1...v35r2)).
+
+### Changed
+- Allow use of local targets instead of imported ones (gaudi/Gaudi!1186)
+- Improvements on `Monitoring::Hub::Entity` and accumulators (gaudi/Gaudi!1185)
+- Improve support for new style `CMake` downstream projects (gaudi/Gaudi!1177)
+
+### Fixed
+- Add dynamic dependencies scan for `genreflex` dictionaries (gaudi/Gaudi#152, gaudi/Gaudi!1183)
+- Supress warnings about `__nodiscard__` attribute in dictionary generation with ROOT 6.22 (gaudi/Gaudi!1182)
+- Add custom pythonization callback to `SmartRefVector` (gaudi/Gaudi!1180)
+- Fixed bug in Histogram filling (gaudi/Gaudi!1176)
+
+
 ## [v35r1][] - 2021-01-28
 This is mostly a bugfix release, with a couple of backward incompatible changes in
 Python `DataHandle` class (gaudi/Gaudi!1144, gaudi/Gaudi!1159) and deprecation warnings
@@ -635,8 +655,9 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r1...master
-[v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r1
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r2...master
+[v35r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r2
+[v35r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r1
 [v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r0
 [v34r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r1
 [v34r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v34r0
