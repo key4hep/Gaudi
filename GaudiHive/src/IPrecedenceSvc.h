@@ -57,9 +57,9 @@ public:
   virtual const std::string printState( EventSlot& ) const = 0;
 
   /// Dump precedence rules
-  virtual void dumpPrecedenceRules( EventSlot& ) = 0;
+  virtual void dumpPrecedenceRules( const EventSlot& ) = 0;
   /// Dump precedence trace
-  virtual void dumpPrecedenceTrace( EventSlot& ) = 0;
+  virtual void dumpPrecedenceTrace( const EventSlot& ) = 0;
 };
 
 #endif /* GAUDIHIVE_IPRECEDENCESVC_H_ */

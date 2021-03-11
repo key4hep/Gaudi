@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "PrecedenceSvc.h"
 #include "EventSlot.h"
 #include "PRGraph/Visitors/Promoters.h"
 #include "PRGraph/Visitors/Rankers.h"
 #include "PRGraph/Visitors/Validators.h"
+#include "PrecedenceSvc.h"
 
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Sequence.h>
@@ -307,7 +307,7 @@ const std::string PrecedenceSvc::printState( EventSlot& slot ) const {
 }
 
 // ============================================================================
-void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot ) {
+void PrecedenceSvc::dumpPrecedenceRules( const EventSlot& slot ) {
 
   if ( !m_dumpPrecRules ) {
     warning() << "To trace temporal and topological aspects of execution flow, "
@@ -333,7 +333,7 @@ void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot ) {
 }
 
 // ============================================================================
-void PrecedenceSvc::dumpPrecedenceTrace( EventSlot& slot ) {
+void PrecedenceSvc::dumpPrecedenceTrace( const EventSlot& slot ) {
 
   if ( !m_dumpPrecTrace ) {
     warning() << "To trace task precedence patterns, set DumpPrecedenceTrace "
