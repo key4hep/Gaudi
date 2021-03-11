@@ -48,7 +48,8 @@ namespace precedence {
   // Precedence trace utilities ==============================================
   struct AlgoTraceProps {
     AlgoTraceProps() {}
-    AlgoTraceProps( const std::string& name, int index, int rank, long int runtime, long long int start )
+    AlgoTraceProps( const std::string& name, int index = -1, int rank = -1, long int runtime = -1,
+                    long long int start = -1 )
         : m_name( name ), m_index( index ), m_rank( rank ), m_runtime( runtime ), m_start( start ) {}
     std::string   m_name;
     int           m_index{-1};

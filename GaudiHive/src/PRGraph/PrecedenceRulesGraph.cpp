@@ -730,7 +730,7 @@ namespace concurrency {
       if ( itT != m_prec_trace_map.end() ) {
         source = itT->second;
       } else {
-        source = boost::add_vertex( precedence::AlgoTraceProps( "ENTRY", -1, -1, -1, -1 ), m_precTrace );
+        source                    = boost::add_vertex( precedence::AlgoTraceProps( "ENTRY" ), m_precTrace );
         m_prec_trace_map["ENTRY"] = source;
       }
     } else {
@@ -739,8 +739,8 @@ namespace concurrency {
         source = itS->second;
       } else {
 
-        source = boost::add_vertex( precedence::AlgoTraceProps( u_name, u->getAlgoIndex(), u->getRank(), -1, -1 ),
-                                    m_precTrace );
+        source =
+            boost::add_vertex( precedence::AlgoTraceProps( u_name, u->getAlgoIndex(), u->getRank() ), m_precTrace );
         m_prec_trace_map[u_name] = source;
       }
     }
@@ -752,8 +752,7 @@ namespace concurrency {
       target = itP->second;
     } else {
 
-      target = boost::add_vertex( precedence::AlgoTraceProps( v_name, v->getAlgoIndex(), v->getRank(), -1, -1 ),
-                                  m_precTrace );
+      target = boost::add_vertex( precedence::AlgoTraceProps( v_name, v->getAlgoIndex(), v->getRank() ), m_precTrace );
       m_prec_trace_map[v_name] = target;
     }
 
