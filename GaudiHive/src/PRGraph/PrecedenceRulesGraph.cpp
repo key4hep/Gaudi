@@ -685,9 +685,13 @@ namespace concurrency {
       for ( auto vp = vertices( m_precTrace ); vp.first != vp.second; ++vp.first ) {
         TimelineEvent te{};
         te.algorithm = m_precTrace[*vp.first].m_name;
+        te.slot      = slot.eventContext->slot();
+        te.event     = slot.eventContext->evt();
         timelineSvc->getTimelineEvent( te );
+
         long int runtime{std::chrono::duration_cast<std::chrono::microseconds>( te.end - te.start ).count()};
         m_precTrace[*vp.first].m_runtime = runtime;
+
         long long int start{
             std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count()};
         m_precTrace[*vp.first].m_start = start;
