@@ -320,8 +320,9 @@ void PrecedenceSvc::dumpPrecedenceRules( const EventSlot& slot ) {
   std::string fileName;
   if ( m_dumpPrecRulesFile.empty() ) {
     const auto& eventID = slot.eventContext->eventID();
-    fileName            = "rules.evt-" + std::to_string( eventID.event_number() ) + "." + "run-" +
-               std::to_string( eventID.run_number() ) + ".graphml";
+    fileName            = "rules_evt-" + std::to_string( eventID.event_number() ) + "_slot-" +
+               std::to_string( slot.eventContext->slot() ) + "_run-" + std::to_string( eventID.run_number() ) +
+               ".graphml";
   } else {
     fileName = m_dumpPrecRulesFile;
   }
@@ -346,8 +347,9 @@ void PrecedenceSvc::dumpPrecedenceTrace( const EventSlot& slot ) {
   std::string fileName;
   if ( m_dumpPrecTraceFile.empty() ) {
     const auto& eventID = slot.eventContext->eventID();
-    fileName            = "trace.evt-" + std::to_string( eventID.event_number() ) + "." + "run-" +
-               std::to_string( eventID.run_number() ) + ".graphml";
+    fileName            = "trace_evt-" + std::to_string( eventID.event_number() ) + "_slot-" +
+               std::to_string( slot.eventContext->slot() ) + "_run-" + std::to_string( eventID.run_number() ) +
+               ".graphml";
   } else {
     fileName = m_dumpPrecTraceFile;
   }
