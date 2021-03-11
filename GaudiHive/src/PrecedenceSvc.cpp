@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include "PrecedenceSvc.h"
 #include "EventSlot.h"
 #include "PRGraph/Visitors/Promoters.h"
 #include "PRGraph/Visitors/Rankers.h"
 #include "PRGraph/Visitors/Validators.h"
-#include "PrecedenceSvc.h"
 
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Sequence.h>
