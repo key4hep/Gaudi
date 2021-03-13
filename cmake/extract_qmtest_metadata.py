@@ -88,6 +88,7 @@ def analyze_deps(pkg, rootdir):
     @param rootdir: directory containing the QMTest tests (usually tests/qmtest)
     '''
     prereq_xpath = 'argument[@name="prerequisites"]/set/tuple/text'
+    fixtures_setup = set()
     for path in find_files(rootdir, '.qmt'):
         name = qmt_filename_to_name(os.path.relpath(path, rootdir))
         name = fix_test_name(name, pkg)
@@ -98,8 +99,15 @@ def analyze_deps(pkg, rootdir):
             fix_test_name(el.text, pkg) for el in tree.findall(prereq_xpath)
         ]
         if prereqs:
-            print('set_property(TEST {0} APPEND PROPERTY DEPENDS {1})'.format(
-                name, ' '.join(prereqs)))
+            print(
+                ('set_property(TEST {0} APPEND PROPERTY DEPENDS {1})\n'
+                 'set_property(TEST {0} APPEND PROPERTY FIXTURES_REQUIRED {1})'
+                 ).format(name, ' '.join(prereqs)))
+            fixtures_setup.update(prereqs)
+
+    for name in fixtures_setup:
+        print('set_property(TEST {0} APPEND PROPERTY FIXTURES_SETUP {0})'.
+              format(name))
 
 
 def analyze_suites(pkg, rootdir):
