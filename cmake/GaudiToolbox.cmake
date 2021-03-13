@@ -603,8 +603,8 @@ function(gaudi_add_tests type)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/qmtest_tmp")
         # Add a test for each qmt files
         foreach(qmt_file IN LISTS qmt_files)
-            string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
-            string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
+            string(REPLACE ".qmt" "" qmt_name "${qmt_file}")
+            string(REPLACE ".qms/" "." qmt_name "${qmt_name}")
             string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
             add_test(NAME ${package_name}.${qmt_name}
                      COMMAND run $<TARGET_FILE:Python::Interpreter> -m GaudiTesting.Run
