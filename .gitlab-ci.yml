@@ -8,8 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
-
 stages:
   - pre-build-checks
   - build
@@ -23,10 +21,12 @@ variables:
   TARGET_BRANCH: master
 
 # All the configuration
-before_script:
-  # Add Ninja and CMake to the PATH
-  - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH"
-  - export CCACHE_DIR=$PWD/.ccache
+default:
+  image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
+  before_script:
+    # Add Ninja and CMake to the PATH
+    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH"
+    - export CCACHE_DIR=$PWD/.ccache
 
 # Job templates
 .build: &template_build
