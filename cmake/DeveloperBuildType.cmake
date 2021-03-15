@@ -26,7 +26,8 @@ string(TOUPPER ${_config} _CONFIG)
 
 # Set compile flags
 set(_flags "-g -Wall -Wextra -pedantic -Wnon-virtual-dtor -Werror=return-type -Wwrite-strings -Wpointer-arith -Woverloaded-virtual")
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU") # only for gcc because this flag is not supported by clang yet
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+  (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 11) )
     set(_flags "${_flags} -Wsuggest-override")
 endif()
 # WARNING: The default value of a cached variable cannot be modified after it has been set
