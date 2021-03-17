@@ -90,17 +90,27 @@ def analyze_deps(pkg, rootdir):
                 the CMake ones
     @param rootdir: directory containing the QMTest tests (usually tests/qmtest)
     '''
-    prereq_xpath = 'argument[@name="prerequisites"]/set/tuple/text'
-    fixtures_setup = set()
+    tests = {}
     for path in find_files(rootdir, '.qmt'):
         name = qmt_filename_to_name(os.path.relpath(path, rootdir))
         name = fix_test_name(name, pkg)
+        assert name not in tests
+        tests[name] = path
 
+    prereq_xpath = 'argument[@name="prerequisites"]/set/tuple/text'
+    fixtures_setup = set()
+    for name, path in tests.items():
         tree = parse_xml(path)
-
         prereqs = [
             fix_test_name(el.text, pkg) for el in tree.findall(prereq_xpath)
         ]
+        for prereq in prereqs:
+            if prereq not in tests:
+                sys.stderr.write(
+                    'ERROR: prerequisite {0} from {1} not found.\n'.format(
+                        prereq, path))
+                sys.stderr.flush()
+                exit(1)
         if prereqs:
             print(
                 ('set_property(TEST {0} APPEND PROPERTY DEPENDS {1})\n'
