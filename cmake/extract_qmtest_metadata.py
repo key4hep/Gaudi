@@ -50,10 +50,13 @@ def fix_test_name(name, pkg):
     >>> fix_test_name('package.bug.123', 'Package')
     'Package.bug.123'
 
+    >>> fix_test_name('Package.Bug.123', 'Package')
+    'Package.Bug.123'
+
     >>> fix_test_name('simple', 'Package')
     'Package.simple'
     '''
-    return re.sub(r'^(%s\.)?' % pkg.lower(), '%s.' % pkg, name)
+    return re.sub(r'^((%s|%s)\.)?' % (pkg.lower(), pkg), '%s.' % pkg, name)
 
 
 def find_files(rootdir, ext):
