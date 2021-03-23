@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2020-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -87,7 +87,8 @@ if(GAUDI_DEPENDENCIES_FIND_QUIETLY)
 endif()
 
 include(FeatureSummary)
-set_property(GLOBAL PROPERTY FeatureSummary_REQUIRED_PKG_TYPES RECOMMENDED REQUIRED)
+get_property(SAVED_FeatureSummary_REQUIRED_PKG_TYPES GLOBAL PROPERTY FeatureSummary_REQUIRED_PKG_TYPES)
+set_property(GLOBAL PROPERTY FeatureSummary_DEFAULT_PKG_TYPE REQUIRED)
 
 # Note: this must be set before the first `find_package`
 set(THREADS_PREFER_PTHREAD_FLAG YES)
@@ -97,7 +98,6 @@ set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cma
 set(BUILD_SHARED_LIBS ON)
 find_package(Boost 1.70 ${__quiet} CONFIG COMPONENTS system filesystem regex
   thread python unit_test_framework program_options log log_setup graph)
-set_package_properties(Boost PROPERTIES TYPE REQUIRED)
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables
 foreach(component IN ITEMS system filesystem regex thread python unit_test_framework
@@ -114,12 +114,10 @@ else()
   message(FATAL_ERROR "Invalid value for GAUDI_USE_PYTHON_MAJOR (${GAUDI_USE_PYTHON_MAJOR}), only 2 and 3 are supported")
 endif()
 find_package(Python ${_gaudi_Python_MIN_VERSION} ${__quiet} COMPONENTS Interpreter Development)
-set_package_properties(Python PROPERTIES TYPE REQUIRED)
 
 find_package(ROOT 6.18 ${__quiet} CONFIG COMPONENTS Core RIO Hist Thread Matrix
   MathCore Net XMLIO Tree TreePlayer Graf3d Graf Gpad)
 mark_as_advanced(ROOT_DIR ROOT_genmap_CMD ROOT_rootdraw_CMD)
-set_package_properties(ROOT PROPERTIES TYPE REQUIRED)
 # FIXME: the day ROOTConfig.cmake displays at least that it was found remove these lines
 if(NOT GAUDI_DEPENDENCIES_FIND_QUIETLY)
   message(STATUS "Found ROOT: ${ROOT_DIR} (found version ${ROOT_VERSION})")
@@ -128,28 +126,46 @@ endif()
 # FIXME: if you are using the normal version of TBB, it has a config file so
 #   remove cmake/FindTBB.cmake and add CONFIG to the next line.
 find_package(TBB 2019.0.11007.2 ${__quiet})
-set_package_properties(TBB PROPERTIES TYPE REQUIRED)
 
 set(_gaudi_ZLIB_MIN_VERSION 1.2.11)
 foreach(dep IN ITEMS UUID Threads ZLIB Rangev3 cppgsl fmt nlohmann_json)
   find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} ${__quiet})
-  set_package_properties(${dep} PROPERTIES TYPE REQUIRED)
 endforeach()
 
 set(_gaudi_CLHEP_MIN_VERSION 2.4.0.1)
 set(_gaudi_gperftools_MIN_VERSION 2.7.0)
 set(_gaudi_Doxygen_MIN_VERSION 1.8.15)
 set(CLHEP_FORCE_MODE CONFIG)
-foreach(dep IN ITEMS AIDA XercesC CLHEP HepPDT CppUnit unwind gperftools
-                     Doxygen IntelAmplifier jemalloc)
+
+set(deps AIDA HepPDT CLHEP gperftools IntelAmplifier jemalloc unwind XercesC)
+if(NOT CMAKE_FIND_PACKAGE_NAME)
+  # these build-time only dependencies are not needed downstream
+  list(APPEND deps CppUnit Doxygen)
+endif()
+
+foreach(dep IN LISTS deps)
   string(TOUPPER ${dep} DEP)
+
+  if(NOT CMAKE_FIND_PACKAGE_NAME)
+    # if we are not in GaudiConfig.cmake, we define the options
+    if(dep STREQUAL "IntelAmplifier")
+      set(default NO)
+    else()
+      set(default YES)
+    endif()
+    option(GAUDI_USE_${DEP} "Enable the dependency ${dep}" ${default})
+    # this is to record in GaudiConfig.cmake what was enabled at build time
+    string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_USE_${DEP} ${GAUDI_USE_${DEP}})\n")
+  endif()
+
   if(GAUDI_USE_${DEP})
     find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} ${${dep}_FORCE_MODE} ${__quiet})
     if(CMAKE_FIND_PACKAGE_NAME) # if the lookup is performed from GaudiConfig.cmake
-      # then, all optional dependencies become required
-      set_package_properties(${dep} PROPERTIES TYPE REQUIRED)
-    else()
-      set_package_properties(${dep} PROPERTIES TYPE RECOMMENDED)
+      # then, all enabled "optional" dependencies become RECOMMENDED
+      # (except AIDA that is required downstream if used at build time)
+      if(NOT dep STREQUAL "AIDA")
+        set_package_properties(${dep} PROPERTIES TYPE RECOMMENDED)
+      endif()
     endif()
   endif()
 endforeach()
@@ -173,13 +189,7 @@ endif()
 
 # Print a summary of the lookup
 feature_summary(FATAL_ON_MISSING_REQUIRED_PACKAGES
-  DESCRIPTION "Missing Gaudi's required dependencies:"
-  QUIET_ON_EMPTY
-  WHAT REQUIRED_PACKAGES_NOT_FOUND)
-feature_summary(DESCRIPTION "Gaudi's required optional dependencies found:"
-  QUIET_ON_EMPTY
-  WHAT RECOMMENDED_PACKAGES_FOUND)
-feature_summary(FATAL_ON_MISSING_REQUIRED_PACKAGES
-  DESCRIPTION "Missing Gaudi's required optional dependencies:"
-  QUIET_ON_EMPTY
-  WHAT RECOMMENDED_PACKAGES_NOT_FOUND)
+  WHAT ALL)
+
+set_property(GLOBAL PROPERTY FeatureSummary_DEFAULT_PKG_TYPE ${SAVED_FeatureSummary_REQUIRED_PKG_TYPES})
+unset(SAVED_FeatureSummary_REQUIRED_PKG_TYPES)
