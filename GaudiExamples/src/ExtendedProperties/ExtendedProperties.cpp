@@ -93,6 +93,7 @@ private:
   Gaudi::Property<std::vector<int>>                   m_21{this, "EmptyVector"};
 
   Gaudi::Property<std::tuple<std::string, int, double>> m_22{this, "TupleStringIntDouble"};
+  Gaudi::Property<std::tuple<std::string>>              m_25{this, "TupleString"};
   // std::array must be explicitly initialized
   Gaudi::Property<std::array<double, 3>> m_23{this, "StdArrayDouble3", {0}};
 
