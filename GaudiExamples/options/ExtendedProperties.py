@@ -87,7 +87,7 @@ xProps.EmptyMap = {}
 xProps.EmptyVector = []
 
 xProps.TupleStringIntDouble = ("hello", 10, 0.001)
-xProps.TupleString = ("hello",)
+xProps.TupleString = ("hello", )
 xProps.StdArrayDouble3 = (3.3, 2.2, 1.1)
 
 xProps.GaudiMapSS = {'a': '1', 'b': '2'}

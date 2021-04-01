@@ -70,6 +70,7 @@ def validate(stdout, stderr, result, causes):
         'EmptyMap': {},
         'EmptyVector': [],
         'TupleStringIntDouble': ("hello", 10, 0.001),
+        'TupleString': ("hello", ),
         'StdArrayDouble3': (3.3, 2.2, 1.1),
         'GaudiMapSS': {
             'a': '1',

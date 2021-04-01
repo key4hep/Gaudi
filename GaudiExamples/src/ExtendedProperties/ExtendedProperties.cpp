@@ -189,6 +189,7 @@ StatusCode ExtendedProperties::execute() {
   always() << " \t" << m_21 << endmsg;
 
   always() << " \t" << m_22 << endmsg;
+  always() << " \t" << m_25 << endmsg;
   always() << " \t" << m_23 << endmsg;
 
   always() << " \t" << m_24 << endmsg;
