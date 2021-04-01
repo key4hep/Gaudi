@@ -373,7 +373,8 @@ namespace Gaudi {
         pair = key[op( qi::_val, qi::_1, tag_key() )] > ( qi::lit( ':' ) | '=' ) >
                value[op( qi::_val, qi::_1, tag_mapped() )];
         list = -( pair % enc::char_( ',' ) );
-        map  = ( ( '[' >> list >> ']' ) | ( '{' >> list >> '}' ) )[op( qi::_val, qi::_1 )];
+        map  = ( ( '[' >> list >> ']' ) | ( '{' >> list >> '}' ) | ( '[' >> list >> ',' >> ']' ) |
+                ( '{' >> list >> ',' >> '}' ) )[op( qi::_val, qi::_1 )];
       }
       // ----------------------------------------------------------------------------
       typename Grammar_<Iterator, typename MapT::key_type, Skipper>::Grammar    key;

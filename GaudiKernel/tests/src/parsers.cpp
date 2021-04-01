@@ -160,6 +160,20 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
   }
 
   {
+    // trailing comma and new-lines
+    std::map<std::string, int> result;
+    BOOST_CHECK( parse( result, R"(
+      {
+        'key':10,
+        'key1':20,
+      }
+    )" ) );
+    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK( result["key"] == 10 );
+    BOOST_CHECK( result["key1"] == 20 );
+  }
+
+  {
     std::map<std::string, std::vector<double>> result;
     BOOST_CHECK( parse( result, "{'key':[10.0,20.0]}" ) );
     BOOST_CHECK( result.size() == 1 );
