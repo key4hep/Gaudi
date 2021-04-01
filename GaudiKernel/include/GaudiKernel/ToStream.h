@@ -319,14 +319,18 @@ namespace Gaudi {
     };
 
     /** the helper function to print the tuple
-     *  @param tulpe (INPUT)  tuple
+     *  @param tuple (INPUT)  tuple
      *  @return the stream
      *  @author Aleander Mazurov alexander.mazurov@cern.ch
      *  @date 2015-03-21
      */
     template <typename... Args>
     inline std::ostream& toStream( const std::tuple<Args...>& tuple, std::ostream& s ) {
-      return TuplePrinter<decltype( tuple ), sizeof...( Args )>::toStream( tuple, s << " ( " ) << " ) ";
+      auto& out = TuplePrinter<decltype( tuple ), sizeof...( Args )>::toStream( tuple, s << " ( " );
+      if constexpr ( std::tuple_size_v<std::tuple<Args...>> == 1 ) { // this is a special case in Python
+        out << " ,";
+      }
+      return out << " ) ";
     }
 
     // ========================================================================
