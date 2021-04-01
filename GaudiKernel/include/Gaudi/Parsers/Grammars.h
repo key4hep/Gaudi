@@ -241,7 +241,7 @@ namespace Gaudi {
       typedef TupleT ResultT;
       TupleGrammar() : TupleGrammar::base_type( tup ) {
         begin = enc::char_( '[' )[qi::_val = ']'] | enc::char_( '(' )[qi::_val = ')'];
-        end   = enc::char_( qi::_r1 );
+        end   = *( enc::char_( ',' ) ) >> enc::char_( qi::_r1 );
 
         tup = begin[qi::_a = qi::_1] >> grTuple[qi::_val = qi::_1] >> end( qi::_a );
       }
@@ -268,7 +268,7 @@ namespace Gaudi {
       VectorGrammar() : VectorGrammar::base_type( vec ) {
         begin =
             enc::char_( '[' )[qi::_val = ']'] | enc::char_( '{' )[qi::_val = '}'] | enc::char_( '(' )[qi::_val = ')'];
-        end  = enc::char_( qi::_r1 );
+        end  = *( enc::char_( ',' ) ) >> enc::char_( qi::_r1 );
         list = elementGrammar % ',';
         vec  = begin[qi::_a = qi::_1] >> -list[qi::_val = qi::_1] >> end( qi::_a );
       }
