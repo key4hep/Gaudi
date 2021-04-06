@@ -19,9 +19,9 @@ from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
 from GaudiHive import precedence
 
 # metaconfig
-evtslots = 1
-evtMax = 1
-algosInFlight = 1
+evtslots = 2
+evtMax = 4
+algosInFlight = 2
 enableTimeline = True
 
 InertMessageSvc(OutputLevel=INFO)
@@ -44,15 +44,15 @@ scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
 
 timeValue = precedence.RealTimeValue(
-    path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json", defaultTime=0.0)
+    path="atlas/q431/time.r2a.json", defaultTime=0.1)
 ifIObound = precedence.UniformBooleanValue(False)
 
 sequencer = precedence.CruncherSequence(
     timeValue,
     ifIObound,
     sleepFraction=0.0,
-    cfgPath="atlas/mcreco/cf.mcreco.TriggerOff.graphml",
-    dfgPath="atlas/mcreco/df.mcreco.TriggerOff.3rdEvent.graphml",
+    cfgPath="atlas/q431/cf.r2a.graphml",
+    dfgPath="atlas/q431/df.r2a.graphml",
     topSequencer='AthSequencer/AthMasterSeq',
     timeline=enableTimeline).get()
 
