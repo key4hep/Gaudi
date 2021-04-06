@@ -48,13 +48,15 @@ namespace precedence {
   // Precedence trace utilities ==============================================
   struct AlgoTraceProps {
     AlgoTraceProps() {}
-    AlgoTraceProps( const std::string& name, int index, int rank, double runtime )
-        : m_name( name ), m_index( index ), m_rank( rank ), m_runtime( runtime ) {}
-    std::string m_name;
-    int         m_index{-1};
-    int         m_rank{-1};
-    int         m_runtime{-1}; // ns
-    int         m_eccentricity{-1};
+    AlgoTraceProps( const std::string& name, int index = -1, int rank = -1, long int runtime = -1,
+                    long long int start = -1 )
+        : m_name( name ), m_index( index ), m_rank( rank ), m_runtime( runtime ), m_start( start ) {}
+    std::string   m_name;
+    int           m_index{-1};
+    int           m_rank{-1};
+    long int      m_runtime{-1}; // us
+    long long int m_start{-1};   // ns
+    int           m_eccentricity{-1};
   };
 
   using PrecTrace       = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoTraceProps>;
@@ -693,7 +695,7 @@ namespace concurrency {
     /// dump to file the precedence rules
     void dumpPrecRules( const boost::filesystem::path&, const EventSlot& slot );
     /// dump to file the precedence trace
-    void dumpPrecTrace( const boost::filesystem::path& );
+    void dumpPrecTrace( const boost::filesystem::path&, const EventSlot& slot );
     /// set cause-effect connection between two algorithms in the precedence trace
     void addEdgeToPrecTrace( const AlgorithmNode* u, const AlgorithmNode* v );
     ///

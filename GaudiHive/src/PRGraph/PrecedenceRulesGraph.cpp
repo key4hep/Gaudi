@@ -13,6 +13,7 @@
 
 #include "GaudiKernel/DataHandleFinder.h"
 
+#include <algorithm>
 #include <boost/property_map/transform_value_property_map.hpp>
 #include <fstream>
 
@@ -668,7 +669,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::dumpPrecTrace( const boost::filesystem::path& fileName ) {
+  void PrecedenceRulesGraph::dumpPrecTrace( const boost::filesystem::path& fileName, const EventSlot& slot ) {
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
@@ -679,12 +680,31 @@ namespace concurrency {
                 << "the task precedence trace dump" << endmsg;
     } else {
 
+      std::vector<long long int> start_times;
+
       for ( auto vp = vertices( m_precTrace ); vp.first != vp.second; ++vp.first ) {
         TimelineEvent te{};
         te.algorithm = m_precTrace[*vp.first].m_name;
+        te.slot      = slot.eventContext->slot();
+        te.event     = slot.eventContext->evt();
         timelineSvc->getTimelineEvent( te );
-        int runtime = std::chrono::duration_cast<std::chrono::microseconds>( te.end - te.start ).count();
+
+        long int runtime{std::chrono::duration_cast<std::chrono::microseconds>( te.end - te.start ).count()};
         m_precTrace[*vp.first].m_runtime = runtime;
+
+        long long int start{
+            std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count()};
+        m_precTrace[*vp.first].m_start = start;
+        if ( start != 0 ) start_times.push_back( start );
+      }
+
+      auto min = std::min_element( start_times.begin(), start_times.end() );
+
+      for ( auto vp = vertices( m_precTrace ); vp.first != vp.second; ++vp.first ) {
+
+        auto& oldValue = m_precTrace[*vp.first].m_start;
+
+        if ( oldValue != 0 ) oldValue = oldValue - *min;
       }
     }
 
@@ -694,7 +714,8 @@ namespace concurrency {
     using precedence::AlgoTraceProps;
     dp.property( "Name", get( &AlgoTraceProps::m_name, m_precTrace ) );
     dp.property( "Rank", get( &AlgoTraceProps::m_rank, m_precTrace ) );
-    dp.property( "Runtime", get( &AlgoTraceProps::m_runtime, m_precTrace ) );
+    dp.property( "Run Time (us)", get( &AlgoTraceProps::m_runtime, m_precTrace ) );
+    dp.property( "Start Time (ns)", get( &AlgoTraceProps::m_start, m_precTrace ) );
 
     boost::write_graphml( myfile, m_precTrace, dp );
 
@@ -713,7 +734,7 @@ namespace concurrency {
       if ( itT != m_prec_trace_map.end() ) {
         source = itT->second;
       } else {
-        source = boost::add_vertex( precedence::AlgoTraceProps( "ENTRY", -1, -1, -1.0 ), m_precTrace );
+        source                    = boost::add_vertex( precedence::AlgoTraceProps( "ENTRY" ), m_precTrace );
         m_prec_trace_map["ENTRY"] = source;
       }
     } else {
@@ -723,7 +744,7 @@ namespace concurrency {
       } else {
 
         source =
-            boost::add_vertex( precedence::AlgoTraceProps( u_name, u->getAlgoIndex(), u->getRank(), -1 ), m_precTrace );
+            boost::add_vertex( precedence::AlgoTraceProps( u_name, u->getAlgoIndex(), u->getRank() ), m_precTrace );
         m_prec_trace_map[u_name] = source;
       }
     }
@@ -735,8 +756,7 @@ namespace concurrency {
       target = itP->second;
     } else {
 
-      target =
-          boost::add_vertex( precedence::AlgoTraceProps( v_name, v->getAlgoIndex(), v->getRank(), -1 ), m_precTrace );
+      target = boost::add_vertex( precedence::AlgoTraceProps( v_name, v->getAlgoIndex(), v->getRank() ), m_precTrace );
       m_prec_trace_map[v_name] = target;
     }
 

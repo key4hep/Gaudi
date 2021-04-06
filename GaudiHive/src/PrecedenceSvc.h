@@ -64,10 +64,10 @@ public:
 
   /// Dump precedence rules (available only in DEBUG mode, and must be enabled
   /// with the corresponding service property)
-  void dumpPrecedenceRules( EventSlot& ) override;
+  void dumpPrecedenceRules( const EventSlot& ) override;
   /// Dump precedence trace (available only in DEBUG mode, and must be enabled
   /// with the corresponding service property)
-  void dumpPrecedenceTrace( EventSlot& ) override;
+  void dumpPrecedenceTrace( const EventSlot& ) override;
 
   /// Precedence rules accessor
   const concurrency::PrecedenceRulesGraph* getRules() const { return &m_PRGraph; };
