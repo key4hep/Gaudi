@@ -101,6 +101,16 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
   }
 
   {
+    // trailing comma
+    std::vector<int> result;
+    BOOST_CHECK( parse( result, "[1, 2, 3,]" ) );
+    BOOST_CHECK( result.size() == 3 );
+    BOOST_CHECK( result[0] == 1 );
+    BOOST_CHECK( result[1] == 2 );
+    BOOST_CHECK( result[2] == 3 );
+  }
+
+  {
     std::vector<std::vector<double>> result;
     BOOST_CHECK( parse( result, "[[1, 2]/* Test comments */,[3]]" ) );
     BOOST_CHECK( result.size() == 2 );
@@ -144,6 +154,20 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
   {
     std::map<std::string, int> result;
     BOOST_CHECK( parse( result, "{'key':10, 'key1'=20}" ) );
+    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK( result["key"] == 10 );
+    BOOST_CHECK( result["key1"] == 20 );
+  }
+
+  {
+    // trailing comma and new-lines
+    std::map<std::string, int> result;
+    BOOST_CHECK( parse( result, R"(
+      {
+        'key':10,
+        'key1':20,
+      }
+    )" ) );
     BOOST_CHECK( result.size() == 2 );
     BOOST_CHECK( result["key"] == 10 );
     BOOST_CHECK( result["key1"] == 20 );
@@ -209,6 +233,12 @@ BOOST_AUTO_TEST_CASE( test_Tuples ) {
   {
     std::tuple<int> result;
     BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(2)" ) );
+    BOOST_CHECK( std::get<0>( result ) == 2 );
+  }
+  {
+    // see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/21
+    std::tuple<int> result;
+    BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(2,)" ) );
     BOOST_CHECK( std::get<0>( result ) == 2 );
   }
   {

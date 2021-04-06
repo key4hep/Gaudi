@@ -93,8 +93,10 @@ private:
   Gaudi::Property<std::vector<int>>                   m_21{this, "EmptyVector"};
 
   Gaudi::Property<std::tuple<std::string, int, double>> m_22{this, "TupleStringIntDouble"};
+  Gaudi::Property<std::tuple<std::string>>              m_25{this, "TupleString"};
   // std::array must be explicitly initialized
   Gaudi::Property<std::array<double, 3>> m_23{this, "StdArrayDouble3", {0}};
+  Gaudi::Property<std::array<int, 1>>    m_26{this, "StdArrayInt1", {0}};
 
   Gaudi::Property<GaudiUtils::Map<std::string, std::string>> m_24{this, "GaudiMapSS"};
 };
@@ -188,7 +190,9 @@ StatusCode ExtendedProperties::execute() {
   always() << " \t" << m_21 << endmsg;
 
   always() << " \t" << m_22 << endmsg;
+  always() << " \t" << m_25 << endmsg;
   always() << " \t" << m_23 << endmsg;
+  always() << " \t" << m_26 << endmsg;
 
   always() << " \t" << m_24 << endmsg;
 

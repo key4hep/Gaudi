@@ -239,7 +239,11 @@ namespace Gaudi {
      */
     template <class TYPE, unsigned int N>
     std::ostream& toStream( const TYPE ( &obj )[N], std::ostream& s ) {
-      return toStream( obj, obj + N, s, "( ", " )", " , " );
+      if constexpr ( N == 1 ) {
+        return toStream( obj[0], s << "( " ) << " , )";
+      } else {
+        return toStream( obj, obj + N, s, "( ", " )", " , " );
+      }
     }
     // ========================================================================
     /** the specialization for std::array, a'la python tuple
@@ -248,7 +252,11 @@ namespace Gaudi {
      */
     template <class TYPE, std::size_t N>
     std::ostream& toStream( const std::array<TYPE, N>& obj, std::ostream& s ) {
-      return toStream( begin( obj ), end( obj ), s, "( ", " )", " , " );
+      if constexpr ( N == 1 ) {
+        return toStream( obj[0], s << "( " ) << " , )";
+      } else {
+        return toStream( begin( obj ), end( obj ), s, "( ", " )", " , " );
+      }
     }
     // ========================================================================
     /** the specialization for C-string, a'la python tuple
@@ -319,14 +327,18 @@ namespace Gaudi {
     };
 
     /** the helper function to print the tuple
-     *  @param tulpe (INPUT)  tuple
+     *  @param tuple (INPUT)  tuple
      *  @return the stream
      *  @author Aleander Mazurov alexander.mazurov@cern.ch
      *  @date 2015-03-21
      */
     template <typename... Args>
     inline std::ostream& toStream( const std::tuple<Args...>& tuple, std::ostream& s ) {
-      return TuplePrinter<decltype( tuple ), sizeof...( Args )>::toStream( tuple, s << " ( " ) << " ) ";
+      auto& out = TuplePrinter<decltype( tuple ), sizeof...( Args )>::toStream( tuple, s << " ( " );
+      if constexpr ( std::tuple_size_v<std::tuple<Args...>> == 1 ) { // this is a special case in Python
+        out << " ,";
+      }
+      return out << " ) ";
     }
 
     // ========================================================================
