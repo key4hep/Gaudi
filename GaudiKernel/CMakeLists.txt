@@ -122,7 +122,6 @@ gaudi_add_library(GaudiKernel
           src/Lib/RndmTypeInfos.cpp
           src/Lib/Selector.cpp
           src/Lib/Sequence.cpp
-          src/Lib/SerialTaskQueue.cpp
           src/Lib/Service.cpp
           src/Lib/ServiceHistory.cpp
           src/Lib/ServiceLocatorHelper.cpp
@@ -276,9 +275,6 @@ if(GAUDI_USE_CPPUNIT)
 
   gaudi_add_executable(test_GaudiTiming SOURCES tests/src/test_GaudiTiming.cpp
     LINK GaudiKernel CppUnit::cppunit TEST)
-
-  gaudi_add_executable(SerialTaskQueue_test SOURCES tests/src/SerialTaskQueue_test.cpp
-    LINK GaudiKernel TBB::tbb CppUnit::cppunit TEST)
 
   gaudi_add_executable(test_LockedHandle SOURCES tests/src/test_LockedHandle.cpp
     LINK GaudiKernel CppUnit::cppunit Boost::thread ${CMAKE_DL_LIBS} TEST)
