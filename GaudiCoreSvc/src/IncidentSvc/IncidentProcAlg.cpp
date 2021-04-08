@@ -41,38 +41,36 @@ StatusCode IncidentProcAlg::execute( const EventContext& ctx ) const {
   auto      incPack = m_incSvc->getIncidents( &ctx );
   MsgStream log( msgSvc(), name() );
   if ( msgLevel( MSG::DEBUG ) ) {
-    log << MSG::DEBUG << " Number of Incidents to process = " << incPack.incidents.size() << " Context= " << ctx
-        << endmsg;
+    log << MSG::DEBUG << " Number of Incidents to process = " << incPack.size() << " Context= " << ctx << endmsg;
   }
-  while ( !incPack.incidents.empty() ) {
-    if ( incPack.incidents.size() != incPack.listeners.size() ) {
-      log << MSG::WARNING << " Size of fired incidents and listeners do not match!" << endmsg;
-    }
-    for ( size_t t = 0; t < incPack.incidents.size(); t++ ) {
-      auto& inc = incPack.incidents.at( t );
-      auto& lis = incPack.listeners.at( t );
-      for ( auto& l : lis ) {
+  while ( !incPack.empty() ) {
+    for ( const auto& [inc, listeners] : incPack ) {
+      for ( const auto& l : listeners ) {
         if ( msgLevel( MSG::DEBUG ) ) {
-          log << MSG::DEBUG << "Calling '" << getListenerName( l ) << "' for incident [" << inc->type() << "]"
+          log << MSG::DEBUG << "Calling '" << getListenerName( l.iListener ) << "' for incident [" << inc->type() << "]"
               << endmsg;
         }
 
         // handle exceptions if they occur
         try {
-          l->handle( *inc );
+          l.iListener->handle( *inc );
         } catch ( const GaudiException& exc ) {
           error() << "Exception with tag=" << exc.tag()
                   << " is caught"
                      " handling incident"
                   << inc->type() << endmsg;
           error() << exc << endmsg;
+          if ( l.rethrow ) { throw exc; }
         } catch ( const std::exception& exc ) {
           error() << "Standard std::exception is caught"
                      " handling incident"
                   << inc->type() << endmsg;
           error() << exc.what() << endmsg;
-        } catch ( ... ) { error() << "UNKNOWN Exception is caught handling incident" << inc->type() << endmsg; }
-        // check wheter one of the listeners is singleShot
+          if ( l.rethrow ) { throw exc; }
+        } catch ( ... ) {
+          error() << "UNKNOWN Exception is caught handling incident" << inc->type() << endmsg;
+          if ( l.rethrow ) { throw; }
+        }
       }
     }
     incPack = m_incSvc->getIncidents( &ctx );

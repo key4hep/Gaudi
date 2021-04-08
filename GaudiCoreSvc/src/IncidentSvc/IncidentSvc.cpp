@@ -103,7 +103,7 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
                                  [&]( const Listener& j ) { return j.priority >= prio; } );
   // We insert before the current position
   DEBMSG << "Adding [" << type << "] listener '" << getListenerName( lis ) << "' with priority " << prio << endmsg;
-  llist.emplace( i, lis, prio, rethrow, singleShot );
+  llist.emplace( i, std::move( IIncidentSvc::Listener{lis, prio, rethrow, singleShot} ) );
 }
 // ============================================================================
 IncidentSvc::ListenerMap::iterator
@@ -210,7 +210,7 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
     firedSingleShot |= listener.singleShot;
   }
   if ( firedSingleShot ) {
-    // remove all the singleshot listeners that got there shot...
+    // remove all the singleshot listeners that got their shot...
     listeners.erase( std::remove_if( std::begin( listeners ), std::end( listeners ), isSingleShot ),
                      std::end( listeners ) );
     if ( listeners.empty() ) m_listenerMap.erase( ilisteners );
@@ -285,10 +285,11 @@ IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx ) 
       while ( incs->second.try_pop( inc ) ) {
         // ensure incident is for this event (should not be necessary)
         if ( inc->context().evt() == ctx->evt() ) {
-          std::vector<IIncidentListener*> ls;
-          getListeners( ls, inc->type() );
-          p.incidents.emplace_back( std::move( inc ) );
-          p.listeners.emplace_back( std::move( ls ) );
+          std::scoped_lock lock( m_listenerMapMutex );
+          auto             i = m_listenerMap.find( inc->type() );
+          if ( i != m_listenerMap.end() ) {
+            p.emplace_back( std::move( inc ), std::vector<Listener>{i->second->begin(), i->second->end()} );
+          }
         }
       }
     }
