@@ -26,6 +26,13 @@ namespace Gaudi::Functional {
 
   namespace details {
 
+    template <typename Sig>
+    struct is_void_fun : std::false_type {};
+    template <typename... Args>
+    struct is_void_fun<void( Args... )> : std::true_type {};
+    template <typename Sig>
+    inline constexpr bool is_void_fun_v = is_void_fun<Sig>::value;
+
     template <typename Signature, typename Traits_, bool isLegacy>
     struct MergingTransformer;
 
@@ -171,6 +178,11 @@ namespace Gaudi::Functional {
 
   template <typename Signature, typename Traits_ = Traits::useDefaults>
   using MergingTransformer = details::MergingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
+
+  // more meaningful alias for cases where the return type in Signature is void
+  template <typename Signature, typename Traits_ = Traits::useDefaults,
+            typename = std::enable_if_t<details::is_void_fun_v<Signature>>>
+  using MergingConsumer = details::MergingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
 
   // Many of the same -> N
   template <typename Signature, typename Traits_ = Traits::BaseClass_t<Gaudi::Algorithm>>

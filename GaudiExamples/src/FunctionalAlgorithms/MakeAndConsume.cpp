@@ -388,27 +388,45 @@ namespace Gaudi::Examples {
   };
   DECLARE_COMPONENT( SRangesToIntVector )
 
-
-  struct IntVectorsMerger  final
+  struct IntVectorsMerger final
       : public Gaudi::Functional::MergingTransformer<
             void( const Gaudi::Functional::vector_of_const_<std::vector<int>>& ), BaseClass_t> {
 
     IntVectorsMerger( const std::string& name, ISvcLocator* svcLoc )
-        : MergingTransformer( name, svcLoc, {"InputLocations", {}}) {}
+        : MergingTransformer( name, svcLoc, {"InputLocations", {}} ) {}
 
-    void
-    operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors ) const override {
+    void operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors ) const override {
       // Create a vector and pre-allocate enough space for the number of integers we have
-      auto             nelements = std::accumulate( intVectors.begin(), intVectors.end(), 0,
+      auto nelements = std::accumulate( intVectors.begin(), intVectors.end(), 0,
                                         []( const auto a, const auto b ) { return a + b.size(); } );
       info() << "sum of input sizes: " << nelements << endmsg;
       // Concatenate the input vectors to form the output
-      for ( const auto& intVector : intVectors ) {
-        info() << "Consuming vector " << intVector << endmsg;
-      }
+      for ( const auto& intVector : intVectors ) { info() << "Consuming vector " << intVector << endmsg; }
     }
   };
 
   DECLARE_COMPONENT( IntVectorsMerger )
+
+  struct IntVectorsMergingConsumer final
+      : public Gaudi::Functional::MergingConsumer<void( Gaudi::Functional::vector_of_const_<std::vector<int>> const& ),
+                                                  BaseClass_t> {
+    using Base =
+        Gaudi::Functional::MergingConsumer<void( Gaudi::Functional::vector_of_const_<std::vector<int>> const& ),
+                                           BaseClass_t>;
+
+    IntVectorsMergingConsumer( const std::string& name, ISvcLocator* svcLoc )
+        : Base( name, svcLoc, {"InputLocations", {}} ) {}
+
+    void operator()( Gaudi::Functional::vector_of_const_<std::vector<int>> const& intVectors ) const override {
+      // Create a vector and pre-allocate enough space for the number of integers we have
+      auto nelements = std::accumulate( intVectors.begin(), intVectors.end(), 0,
+                                        []( const auto a, const auto b ) { return a + b.size(); } );
+      info() << "sum of input sizes: " << nelements << endmsg;
+      // Concatenate the input vectors to form the output
+      for ( const auto& intVector : intVectors ) { info() << "Consuming vector " << intVector << endmsg; }
+    }
+  };
+
+  DECLARE_COMPONENT( IntVectorsMergingConsumer )
 
 } // namespace Gaudi::Examples

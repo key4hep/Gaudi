@@ -21,6 +21,8 @@ from Configurables import Gaudi__Examples__IntToFloatData as IntToFloatData
 from Configurables import Gaudi__Examples__IntIntToFloatFloatData as IntIntToFloatFloatData
 from Configurables import Gaudi__Examples__IntVectorsToIntVector as IntVectorsToIntVector
 from Configurables import Gaudi__Examples__SRangesToIntVector as SRangesToIntVector
+from Configurables import Gaudi__Examples__IntVectorsMerger as IntVectorsMerger
+from Configurables import Gaudi__Examples__IntVectorsMergingConsumer as IntVectorsMergingConsumer
 from Configurables import Gaudi__Examples__ContextConsumer as ContextConsumer
 from Configurables import Gaudi__Examples__ContextIntConsumer as ContextIntConsumer
 from Configurables import Gaudi__Examples__VectorDoubleProducer as VectorDoubleProducer
@@ -97,6 +99,18 @@ app.TopAlg = [
         InputRanges=[
             str(SDataProducer1.OutputLocation),
             str(SDataProducer2.OutputLocation)
+        ]),
+    IntVectorsMerger(
+        "IntVectorsMerger",
+        InputLocations=[
+            str(VectorDataProducer1.OutputLocation),
+            str(VectorDataProducer2.OutputLocation)
+        ]),
+    IntVectorsMergingConsumer(
+        "IntVectorsMergingConsumer",
+        InputLocations=[
+            str(VectorDataProducer1.OutputLocation),
+            str(VectorDataProducer2.OutputLocation)
         ]),
 ]
 # - Events
