@@ -386,7 +386,29 @@ namespace Gaudi::Examples {
       return out;
     }
   };
-
   DECLARE_COMPONENT( SRangesToIntVector )
+
+
+  struct IntVectorsMerger  final
+      : public Gaudi::Functional::MergingTransformer<
+            void( const Gaudi::Functional::vector_of_const_<std::vector<int>>& ), BaseClass_t> {
+
+    IntVectorsMerger( const std::string& name, ISvcLocator* svcLoc )
+        : MergingTransformer( name, svcLoc, {"InputLocations", {}}) {}
+
+    void
+    operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors ) const override {
+      // Create a vector and pre-allocate enough space for the number of integers we have
+      auto             nelements = std::accumulate( intVectors.begin(), intVectors.end(), 0,
+                                        []( const auto a, const auto b ) { return a + b.size(); } );
+      info() << "sum of input sizes: " << nelements << endmsg;
+      // Concatenate the input vectors to form the output
+      for ( const auto& intVector : intVectors ) {
+        info() << "Consuming vector " << intVector << endmsg;
+      }
+    }
+  };
+
+  DECLARE_COMPONENT( IntVectorsMerger )
 
 } // namespace Gaudi::Examples
