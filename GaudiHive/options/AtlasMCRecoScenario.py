@@ -20,6 +20,7 @@ from GaudiHive import precedence
 evtslots = 1
 evtMax = 1
 algosInFlight = 4
+threads = 4
 
 InertMessageSvc(OutputLevel=INFO)
 
@@ -29,8 +30,7 @@ whiteboard = HiveWhiteBoard(
 slimeventloopmgr = HiveSlimEventLoopMgr(
     SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
 
-scheduler = AvalancheSchedulerSvc(
-    ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
 
@@ -47,7 +47,8 @@ sequencer = precedence.CruncherSequence(
     sleepFraction=0.0,
     cfgPath="atlas/mcreco/cf.mcreco.TriggerOff.graphml",
     dfgPath="atlas/mcreco/df.mcreco.TriggerOff.3rdEvent.graphml",
-    topSequencer='AthSequencer/AthMasterSeq').get()
+    topSequencer='AthSequencer/AthMasterSeq',
+    cardinality=algosInFlight).get()
 
 ApplicationMgr(
     EvtMax=evtMax,

@@ -174,7 +174,8 @@ class CruncherSequence(object):
                  topSequencer,
                  showStat=False,
                  timeline=False,
-                 outputLevel=INFO):
+                 outputLevel=INFO,
+                 cardinality=1):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
@@ -184,6 +185,7 @@ class CruncherSequence(object):
         showStat -- print out statistics on precedence graph
         """
 
+        self.cardinality = cardinality
         self.timeValue = timeValue
         self.BlockingBoolValue = BlockingBoolValue
         self.sleepFraction = sleepFraction
@@ -311,6 +313,7 @@ class CruncherSequence(object):
 
                 algo_daughter = CPUCruncher(
                     algo_name,
+                    Cardinality=self.cardinality,
                     OutputLevel=self.outputLevel,
                     varRuntime=varRuntime,
                     avgRuntime=avgRuntime,
