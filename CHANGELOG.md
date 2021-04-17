@@ -7,6 +7,36 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+
+## [v35r3][] - 2021-04-20
+Another minor bugfix release with more fixes for ROOT 6.22 and improvements to the CMake configuration.
+
+Here is a summary of the changes (see the [full list of changes](https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r2...v35r3)).
+
+### Changed
+- Change how optional dependencies are handled in downstream projects (gaudi/Gaudi!1194)
+- Remove serial task queue (gaudi/Gaudi!1195)
+- Switch to latest ATLAS task precedence scenario in a test (gaudi/Gaudi!1190)
+- Change `DevBuildType` to also enable `-Wsuggest-override` on clang if version >= 11 (gaudi/Gaudi!1191)
+
+### Added
+- Test algorithm with internal multithreading (gaudi/Gaudi!1196)
+- Added a cardinality setting for `AtlasMCRecoScenario` (gaudi/Gaudi!1201)
+- Extend the task precedence tracer for dumping dynamic graphs (gaudi/Gaudi!1189)
+- Allow use of local targets instead of imported ones (gaudi/Gaudi!1186)
+
+### Fixed
+- Allow returning void in a `MergingTransformer` (gaudi/Gaudi!1199)
+- Add small test and fix for GaudiPython.Bindings.iDataSvc traversal (gaudi/Gaudi!1178)
+- Fix handling of properties for tuples and arrays of size 1 (gaudi/Gaudi#21, gaudi/Gaudi!1197)
+- Add dynamic dependencies scan for `genreflex` dictionaries (gaudi/Gaudi#152  gaudi/Gaudi!1183)
+- Improvements on Monitoring::Hub::Entity and accumulators (gaudi/Gaudi!1185)
+- Suppress warnings about `nodiscard` in dictionary generation with ROOT 6.22 (gaudi/Gaudi!1182)
+- Add custom pythonization callback to SmartRefVector (gaudi/Gaudi!1180)
+- Fixed bug in Histogram filling (gaudi/Gaudi!1176)
+- Improve support for new style CMake projects (gaudi/Gaudi!1177)
+
+
 ## [v35r2][] - 2021-03-10
 Just a minor bugfix release with changes required for
 - ROOT 6.22 (updated PyROOT/cppyy)
@@ -655,7 +685,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r2...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r3...master
+[v35r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r3
 [v35r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r2
 [v35r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r1
 [v35r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r0
