@@ -74,6 +74,7 @@ private:
       "Fraction of time, between 0 and 1, when an algorithm is actually sleeping instead of crunching"};
   Gaudi::Property<bool>         m_invertCFD{this, "InvertDecision", false, "Invert control flow decision."};
   Gaudi::Property<unsigned int> m_failNEvents{this, "FailNEvents", 0, "Return FAILURE on every Nth event"};
+  Gaudi::Property<int>          m_nParallel{this, "NParallel", -1, "Run N parallel crunching tasks"};
 
   // For the concurrency
   const uint MAX_INPUTS  = 40;
