@@ -15,6 +15,8 @@
 #include <sys/resource.h>
 #include <sys/times.h>
 
+#include <tbb/blocked_range.h>
+#include <tbb/parallel_for.h>
 #include <tbb/tick_count.h>
 #include <thread>
 
@@ -198,7 +200,14 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
     if ( obj == nullptr ) error() << "A read object was a null pointer." << endmsg;
   }
 
-  m_crunchSvc->crunch_for( std::chrono::milliseconds( crunchtime_ms ) );
+  if ( m_nParallel > 1 ) {
+    tbb::parallel_for( tbb::blocked_range<size_t>( 0, m_nParallel ), [&]( tbb::blocked_range<size_t> r ) {
+      m_crunchSvc->crunch_for( std::chrono::milliseconds( crunchtime_ms ) );
+      debug() << "CPUCrunch complete in TBB parallel for block " << r.begin() << " to " << r.end() << endmsg;
+    } );
+  } else {
+    m_crunchSvc->crunch_for( std::chrono::milliseconds( crunchtime_ms ) );
+  }
 
   // Return error on fraction of events if configured
   if ( m_failNEvents > 0 && context.evt() > 0 && ( context.evt() % m_failNEvents ) == 0 ) {
