@@ -536,6 +536,8 @@ namespace Gaudi::Functional::details {
     static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
   public:
+    using KeyValue  = std::pair<std::string, std::string>;
+    using KeyValues = std::pair<std::string, std::vector<std::string>>;
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator )
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator ) {
       // make sure this algorithm is seen as reentrant by Gaudi
@@ -588,6 +590,13 @@ namespace Gaudi::Functional::details {
     bool isReEntrant() const override { return true; }
 
     std::tuple<details::InputHandle_t<Traits_, In>...> m_inputs;
+  };
+
+  template <typename Traits_>
+  class DataHandleMixin<std::tuple<void>, std::tuple<>, Traits_>
+      : public DataHandleMixin<std::tuple<>, std::tuple<>, Traits_> {
+  public:
+    using DataHandleMixin<std::tuple<>, std::tuple<>, Traits_>::DataHandleMixin;
   };
 
   template <typename... Out, typename Traits_>

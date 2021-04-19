@@ -26,10 +26,17 @@ namespace Gaudi::Functional {
 
   namespace details {
 
+    template <typename Sig>
+    struct is_void_fun : std::false_type {};
+    template <typename... Args>
+    struct is_void_fun<void( Args... )> : std::true_type {};
+    template <typename Sig>
+    inline constexpr bool is_void_fun_v = is_void_fun<Sig>::value;
+
     template <typename Signature, typename Traits_, bool isLegacy>
     struct MergingTransformer;
 
-    ////// Many of the same -> 1
+    ////// Many of the same -> 1 or 0
     template <typename Out, typename In, typename Traits_>
     struct MergingTransformer<Out( const vector_of_const_<In>& ), Traits_, true>
         : DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_> {
@@ -39,6 +46,23 @@ namespace Gaudi::Functional {
     public:
       using KeyValue  = typename base_class::KeyValue;
       using KeyValues = typename base_class::KeyValues;
+
+      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs )
+          : base_class( std::move( name ), locator )
+          , m_inputLocations{this, inputs.first, inputs.second,
+                             [=]( Gaudi::Details::PropertyBase& ) {
+                               this->m_inputs =
+                                   make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
+                               if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
+                                                              // optional flag... so do it
+                                                              // explicitly here...
+                                 std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
+                                                []( auto& h ) { h.setOptional( true ); } );
+                               }
+                             },
+                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {
+        static_assert( std::is_void_v<Out> );
+      }
 
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs, const KeyValue& output )
           : base_class( std::move( name ), locator, output )
@@ -53,7 +77,9 @@ namespace Gaudi::Functional {
                                                 []( auto& h ) { h.setOptional( true ); } );
                                }
                              },
-                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {}
+                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {
+        static_assert( !std::is_void_v<Out> );
+      }
 
       // accessor to input Locations
       const std::string& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
@@ -65,7 +91,11 @@ namespace Gaudi::Functional {
         ins.reserve( m_inputs.size() );
         std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
         try {
-          put( std::get<0>( this->m_outputs ), std::as_const( *this )( std::as_const( ins ) ) );
+          if constexpr ( std::is_void_v<Out> ) {
+            std::as_const ( *this )( std::as_const( ins ) );
+          } else {
+            put( std::get<0>( this->m_outputs ), std::as_const( *this )( std::as_const( ins ) ) );
+          }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -95,6 +125,23 @@ namespace Gaudi::Functional {
       using KeyValue  = typename base_class::KeyValue;
       using KeyValues = typename base_class::KeyValues;
 
+      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs )
+          : base_class( std::move( name ), locator )
+          , m_inputLocations{this, inputs.first, inputs.second,
+                             [=]( Gaudi::Details::PropertyBase& ) {
+                               this->m_inputs =
+                                   make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
+                               if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
+                                                              // optional flag... so do it
+                                                              // explicitly here...
+                                 std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
+                                                []( auto& h ) { h.setOptional( true ); } );
+                               }
+                             },
+                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {
+        static_assert( std::is_void_v<Out> );
+      }
+
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs, const KeyValue& output )
           : base_class( std::move( name ), locator, output )
           , m_inputLocations{this, inputs.first, inputs.second,
@@ -108,7 +155,9 @@ namespace Gaudi::Functional {
                                                 []( auto& h ) { h.setOptional( true ); } );
                                }
                              },
-                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {}
+                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {
+        static_assert( !std::is_void_v<Out> );
+      }
 
       // accessor to input Locations
       const std::string& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
@@ -120,7 +169,11 @@ namespace Gaudi::Functional {
         ins.reserve( m_inputs.size() );
         std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
         try {
-          put( std::get<0>( this->m_outputs ), ( *this )( std::as_const( ins ) ) );
+          if constexpr ( std::is_void_v<Out> ) {
+            ( *this )( std::as_const( ins ) );
+          } else {
+            put( std::get<0>( this->m_outputs ), ( *this )( std::as_const( ins ) ) );
+          }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -144,6 +197,11 @@ namespace Gaudi::Functional {
 
   template <typename Signature, typename Traits_ = Traits::useDefaults>
   using MergingTransformer = details::MergingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
+
+  // more meaningful alias for cases where the return type in Signature is void
+  template <typename Signature, typename Traits_ = Traits::useDefaults,
+            typename = std::enable_if_t<details::is_void_fun_v<Signature>>>
+  using MergingConsumer = details::MergingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
 
   // Many of the same -> N
   template <typename Signature, typename Traits_ = Traits::BaseClass_t<Gaudi::Algorithm>>

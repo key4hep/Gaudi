@@ -1,4 +1,5 @@
-# --> Including file '/home/nnolte/lb-stack-setup/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# setting LC_ALL to "C"
+# --> Including file '/home/sponce/dev4/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ---
 # List of input and output types by class
 "Gaudi::Examples::ContextConsumer":
@@ -42,11 +43,11 @@
 "Gaudi::Examples::VectorDoubleProducer":
   OutputLocation: "std::vector<double,std::allocator<double> >"
 ---
-# <-- End of file '/home/nnolte/lb-stack-setup/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# <-- End of file '/home/sponce/dev4/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v33r0)
-                                          running on lbquantaperf01 on Thu Mar 19 13:47:12 2020
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v35r2)
+                                          running on lblhcbpr11.cern.ch on Thu Apr 15 10:03:11 2021
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -102,6 +103,12 @@ SDataProducer2       INFO storing KeyedContainer of size 10 into /Event/S2
 SRangesToIntVector   INFO Concatening range of size 3
 SRangesToIntVector   INFO Concatening range of size 10
 SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
+IntVectorsMerger     INFO sum of input sizes: 8
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO sum of input sizes: 8
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -147,6 +154,12 @@ SDataProducer2       INFO storing KeyedContainer of size 10 into /Event/S2
 SRangesToIntVector   INFO Concatening range of size 3
 SRangesToIntVector   INFO Concatening range of size 10
 SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
+IntVectorsMerger     INFO sum of input sizes: 8
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO sum of input sizes: 8
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 CountingConsumer     INFO Number of counters : 3
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "This is not a warning..."                      |         4 |
