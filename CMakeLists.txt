@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -97,24 +97,11 @@ include(cmake/GaudiToolbox.cmake)
 # Export the list of compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Enable/Disable output of compile_commands.json" FORCE)
 
-# Options to choose dependencies that are not required to build Gaudi
-foreach(optional_dependency IN ITEMS AIDA XERCESC CLHEP HEPPDT CPPUNIT UNWIND
-                                     GPERFTOOLS DOXYGEN JEMALLOC)
-  option(GAUDI_USE_${optional_dependency} "Enable the dependency ${optional_dependency}" ON)
-  set(GAUDI_OPTIONAL_DEPENDENCIES "${GAUDI_OPTIONAL_DEPENDENCIES}set(GAUDI_USE_${optional_dependency} ${GAUDI_USE_${optional_dependency}})\n")
-endforeach()
-# By default VTune is OFF
-option(GAUDI_USE_INTELAMPLIFIER "Enable the dependency INTELAMPLIFIER" OFF)
-set(GAUDI_OPTIONAL_DEPENDENCIES "${GAUDI_OPTIONAL_DEPENDENCIES}set(GAUDI_USE_INTELAMPLIFIER ${GAUDI_USE_INTELAMPLIFIER})\n")
-
 set(GAUDI_USE_PYTHON_MAJOR 3 CACHE STRING "Major version of Python to use")
 set(GAUDI_OPTIONAL_DEPENDENCIES "${GAUDI_OPTIONAL_DEPENDENCIES}set(GAUDI_USE_PYTHON_MAJOR ${GAUDI_USE_PYTHON_MAJOR})\n")
 
 # Find all the dependencies of the project
 list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules") # (Find*.cmake)
-if(DEFINED CACHE{ROOT_DIR}) # Not to have the output displayed each time
-  set(GAUDI_DEPENDENCIES_FIND_QUIETLY TRUE)
-endif()
 include(cmake/GaudiDependencies.cmake)
 
 # The C++ standard used must be the same as ROOT's
