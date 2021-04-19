@@ -18,6 +18,9 @@
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="timeout"><integer>60</integer></argument>
 <argument name="validator"><text>
+# a line with "Popped slot 0 (event 0)" might appear in the middle of our block
+stdout = "\n".join(l for l in stdout.splitlines() if "Popped slot" not in l)
+
 ref1="""
 AvalancheSchedu...  DEBUG Event 0 finished (slot 0).
 AvalancheSchedu...  DEBUG RootDecisionHub (0), w/ decision: TRUE(1)
@@ -26,6 +29,7 @@ AvalancheSchedu...  DEBUG RootDecisionHub (0), w/ decision: TRUE(1)
     emptySeq (3), w/ decision: FALSE(0)
     A2 (4), w/ decision: UNDEFINED(-1), in state: INITIAL
 """
-findReferenceBlock(ref1, id="ref1")
+findReferenceBlock(ref1, id="ref1", stdout=stdout)
 </text></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 </extension>
