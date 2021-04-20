@@ -257,7 +257,8 @@ add_executable(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx)
 target_link_libraries(test_StatusCodeFail PRIVATE GaudiKernel)
 set_target_properties(test_StatusCodeFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 add_test(NAME ${package_name}.test_StatusCodeFail
-        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_StatusCodeFail)
+        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
+          --target ${package_name}/CMakeFiles/test_StatusCodeFail.dir/tests/src/test_StatusCode_fail.cxx.o)
 set_property(TEST ${package_name}.test_StatusCodeFail PROPERTY PASS_REGULAR_EXPRESSION "FAIL01;FAIL02;FAIL03;FAIL04")
 
 if(GAUDI_USE_CPPUNIT)
