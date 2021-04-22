@@ -11,7 +11,7 @@
 #include <Gaudi/Accumulators/Histogram.h>
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/RndmGenerators.h>
-#include <vector>
+#include <deque>
 
 namespace Gaudi {
   namespace Examples {
@@ -34,7 +34,6 @@ namespace Gaudi {
             return StatusCode::FAILURE;
           }
 
-          m_histos.reserve( m_nHistos );
           Gaudi::Accumulators::Axis<Arithmetic> axis{100, 0, 1};
           for ( unsigned int iH = 0; iH < m_nHistos; ++iH ) {
             std::ostringstream title;
@@ -55,7 +54,7 @@ namespace Gaudi {
       private:
         mutable Rndm::Numbers m_rand;
 
-        mutable std::vector<Gaudi::Accumulators::Histogram<1, Atomicity, Arithmetic>> m_histos;
+        mutable std::deque<Gaudi::Accumulators::Histogram<1, Atomicity, Arithmetic>> m_histos;
 
         Gaudi::Property<unsigned int> m_nHistos{this, "NumHistos", 20, ""};
         Gaudi::Property<unsigned int> m_nTracks{this, "NumTracks", 30, ""};

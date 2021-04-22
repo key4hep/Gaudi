@@ -149,10 +149,15 @@ namespace Gaudi::Histograming::Sink {
       return ok;
     }
 
-    void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override {
+    void registerEntity( Monitoring::Hub::Entity ent ) override {
       if ( std::string_view( ent.type ).substr( 0, 10 ) == "histogram:" ) {
         m_monitoringEntities.emplace_back( std::move( ent ) );
       }
+    }
+
+    void removeEntity( Monitoring::Hub::Entity const& ent ) override {
+      auto it = std::find( begin( m_monitoringEntities ), end( m_monitoringEntities ), ent );
+      if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
     }
 
   private:

@@ -19,7 +19,8 @@
 // Mock code for the test
 struct MonitoringHub : Gaudi::Monitoring::Hub {};
 struct ServiceLocator {
-  MonitoringHub monitoringHub() { return {}; }
+  MonitoringHub& monitoringHub() { return m_monitHub; }
+  MonitoringHub  m_monitHub{};
 };
 struct Algo {
   ServiceLocator* serviceLocator() { return new ServiceLocator; }
