@@ -18,7 +18,7 @@
 #include "GaudiUtils/ISignalMonitor.h"
 
 #include <csignal>
-
+#include <cstring>
 #include <iostream>
 
 namespace Gaudi {
@@ -202,7 +202,7 @@ namespace {
       return 0;
     }
 #else
-    return sys_siglist[signum];
+    return strsignal( signum );
 #endif
   }
 
