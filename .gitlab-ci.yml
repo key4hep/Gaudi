@@ -73,6 +73,7 @@ before_script:
     - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
     - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
   artifacts:
     paths:
@@ -173,6 +174,7 @@ view-gcc8:test:
     - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
     - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
 
 lhcb-gcc9:test:
@@ -190,6 +192,7 @@ lhcb-gcc9:test:
     - cp build.${BINARY_TAG}/Testing/$(head -1 build.${BINARY_TAG}/Testing/TAG)/Test.xml .
     - mv build.${BINARY_TAG}/html .
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
   artifacts:
     paths:
