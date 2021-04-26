@@ -119,8 +119,12 @@ endfunction()
 # Do the final processing for the package find.
 #===============================================
 macro(findpkg_finish PREFIX TARGET_NAME)
+  if (${PREFIX}_FOUND)
+    if (${PREFIX}_LIBRARY AND NOT ${PREFIX}_LIBRARIES)
+      set (${PREFIX}_LIBRARIES ${${PREFIX}_LIBRARY})
+    endif ()
+  else()
   # skip if already processed during this run
-  if (NOT ${PREFIX}_FOUND)
     if (${PREFIX}_INCLUDE_DIR AND ${PREFIX}_LIBRARY)
       set(${PREFIX}_FOUND TRUE)
       set (${PREFIX}_INCLUDE_DIRS ${${PREFIX}_INCLUDE_DIR})
