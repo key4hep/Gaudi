@@ -279,6 +279,87 @@ namespace Gaudi::Functional {
             },
             Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {}
 
+  // Many of the same -> N with filter functionality
+  template <typename Signature, typename Traits_ = Traits::BaseClass_t<Gaudi::Algorithm>>
+  struct MergingMultiTransformerFilter;
+
+  template <typename... Outs, typename In, typename Traits_>
+  struct MergingMultiTransformerFilter<std::tuple<Outs...>( vector_of_const_<In> const& ), Traits_>
+      : details::DataHandleMixin<std::tuple<Outs...>, std::tuple<>, Traits_> {
+
+  private:
+    using base_class = details::DataHandleMixin<std::tuple<Outs...>, std::tuple<>, Traits_>;
+
+  public:
+    using KeyValue  = typename base_class::KeyValue;
+    using KeyValues = typename base_class::KeyValues;
+    using OutKeys   = std::array<KeyValue, sizeof...( Outs )>;
+
+    MergingMultiTransformerFilter( std::string const& name, ISvcLocator* locator, KeyValues const& inputs,
+                                   OutKeys const& outputs );
+
+    // accessor to input Locations
+    std::string const& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
+    unsigned int       inputLocationSize() const { return m_inputLocations.value().size(); }
+
+    // derived classes can NOT implement execute
+    StatusCode execute( EventContext const& ) const override final {
+      vector_of_const_<In> ins;
+      ins.reserve( m_inputs.size() );
+      std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ),
+                      details::details2::get_from_handle<In>{} );
+      try {
+        return std::apply(
+                   [&]( auto&... outhandle ) {
+                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
+                     return std::apply(
+                         [&outhandle...]( bool passed, auto&&... data ) {
+                           ( details::put( outhandle, std::forward<decltype( data )>( data ) ), ... );
+                           return passed;
+                         },
+                         ( *this )( std::as_const( ins ) ) );
+                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
+                   },
+                   this->m_outputs )
+                   ? FilterDecision::PASSED
+                   : FilterDecision::FAILED;
+      } catch ( GaudiException& e ) {
+        ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+        return e.code();
+      }
+    }
+
+    virtual std::tuple<bool, Outs...> operator()( const vector_of_const_<In>& inputs ) const = 0;
+
+  private:
+    // if In is a pointer, it signals optional (as opposed to mandatory) input
+    template <typename T>
+    using InputHandle_t = details::InputHandle_t<Traits_, typename std::remove_pointer<T>::type>;
+    std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
+    Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
+    // TODO/FIXME: replace vector of string property + call-back with a
+    //             vector<handle> property ... as soon as declareProperty can deal with that.
+  };
+
+  template <typename... Outs, typename In, typename Traits_>
+  MergingMultiTransformerFilter<std::tuple<Outs...>( const vector_of_const_<In>& ),
+                                Traits_>::MergingMultiTransformerFilter( std::string const& name,
+                                                                         ISvcLocator*       pSvcLocator,
+                                                                         KeyValues const&   inputs,
+                                                                         OutKeys const&     outputs )
+      : base_class( name, pSvcLocator, outputs )
+      , m_inputLocations{
+            this, inputs.first, inputs.second,
+            [=]( Gaudi::Details::PropertyBase& ) {
+              this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
+              if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
+                                             // optional flag... so do it
+                                             // explicitly here...
+                std::for_each( this->m_inputs.begin(), this->m_inputs.end(), []( auto& h ) { h.setOptional( true ); } );
+              }
+            },
+            Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {}
+
 } // namespace Gaudi::Functional
 
 #endif
