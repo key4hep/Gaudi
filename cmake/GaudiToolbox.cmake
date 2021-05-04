@@ -699,7 +699,13 @@ function(gaudi_add_dictionary dictionary)
     if(TARGET Python::Interpreter
             AND (CMAKE_GENERATOR MATCHES "Ninja"
                 OR (CMAKE_GENERATOR MATCHES "Makefile" AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")))
-        file(RELATIVE_PATH dep_target "${PROJECT_BINARY_DIR}" "${gensrcdict}")
+        if(POLICY CMP0116)
+            cmake_policy(PUSH)
+            cmake_policy(SET CMP0116 NEW)
+            file(RELATIVE_PATH dep_target "${CMAKE_CURRENT_BINARY_DIR}" "${gensrcdict}")
+        else()
+            file(RELATIVE_PATH dep_target "${PROJECT_BINARY_DIR}" "${gensrcdict}")
+        endif()
         add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
             COMMAND run
                 ${ROOT_genreflex_CMD} # comes from ROOTConfig.cmake
@@ -723,6 +729,9 @@ function(gaudi_add_dictionary dictionary)
             COMMENT "Generating ${dictionary}.cxx and ${dictionary}.rootmap and ${dictionary}_rdict.pcm"
             COMMAND_EXPAND_LISTS
             ${job_pool})
+        if(POLICY CMP0116)
+            cmake_policy(POP)
+        endif()
     else()
         if(NOT _root_dicts_deps_warning)
             message(WARNING "dependencies of ROOT dictionaries are not complete, this feature needs a Ninja generator of CMake >= 3.20")
