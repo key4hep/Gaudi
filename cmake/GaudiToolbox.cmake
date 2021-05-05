@@ -552,9 +552,10 @@ function(gaudi_add_tests type)
     if(NOT BUILD_TESTING)
         return()
     endif()
+
     # Naming convention for tests: PackageName.TestName
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-    _get_python_interpreter(python) # see private functions at the end
+
     # Custom test_directory
     set(test_directory)
     if(ARGV1)
@@ -563,6 +564,11 @@ function(gaudi_add_tests type)
 
     # Test framework used
     if(type STREQUAL "QMTest")
+
+        if(NOT TARGET Python::Interpreter)
+            message(FATAL_ERROR "No python interpreter was found, call find_package(Python COMPONENT Interpreter) first.")
+        endif()
+
         if(test_directory)
             set(qmtest_root_dir "${test_directory}")
         else()
@@ -577,7 +583,7 @@ function(gaudi_add_tests type)
             string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
             string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
             add_test(NAME ${package_name}.${qmt_name}
-                     COMMAND run ${python} -m GaudiTesting.Run
+                     COMMAND run $<TARGET_FILE:Python::Interpreter> -m GaudiTesting.Run
                         --skip-return-code 77
                         --report ctest
                         --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/qmtest_tmp
@@ -596,7 +602,8 @@ function(gaudi_add_tests type)
             message(FATAL_ERROR "Cannot find extract_qmtest_metadata.py")
         endif()
         mark_as_advanced(extract_qmtest_metadata)
-        execute_process(COMMAND ${python} ${extract_qmtest_metadata}
+        # Note: we rely on the Python instalation available a configure time
+        execute_process(COMMAND python ${extract_qmtest_metadata}
                                 ${package_name} ${qmtest_root_dir}
                         OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
                         RESULT_VARIABLE qmt_deps_retcode)
@@ -968,11 +975,14 @@ endfunction()
     a list of python modules or packages that could be imported with ``import``.
     If one of them cannot be imported by python, an error occurs.
 #]========================================================================]
-function(gaudi_check_python_module)  
-    _get_python_interpreter(python) # see private functions at the end
+function(gaudi_check_python_module)
+    if(NOT TARGET Python::Interpreter)
+        message(FATAL_ERROR "No python interpreter was found, call find_package(Python COMPONENT Interpreter) first.")
+    endif()
+
     set(not_found)
     foreach(module IN LISTS ARGV)
-        execute_process(COMMAND ${python} -c "import ${module}"
+        execute_process(COMMAND run $<TARGET_FILE:Python::Interpreter> -c "import ${module}"
                         RESULT_VARIABLE returned_value
                         OUTPUT_QUIET ERROR_QUIET)
         if(NOT returned_value EQUAL "0")
@@ -1055,27 +1065,6 @@ endfunction()
 ################################################################################
 #                              Private functions                               #
 ################################################################################
-
-# Get the python interpreter
-#   return_python_var: name of the returned value
-function(_get_python_interpreter return_python_var)
-    # Check which python is available
-    set(python)
-    foreach(package IN ITEMS Python Python3 Python2)
-        if(${package}_Interpreter_FOUND)
-            set(python ${${package}_EXECUTABLE})
-            break()
-        endif()
-    endforeach()
-    # Display a warning if none was found
-    if(NOT python)
-        message(WARNING "No python interpreter was found, "
-            "call find_package(Python) first.")
-    endif()
-    # return
-    set(${return_python_var} ${python} PARENT_SCOPE)
-endfunction()
-
 
 # This functions merge files generated during the build
 # (.components, .rootmap, .confdb) in a single one.
