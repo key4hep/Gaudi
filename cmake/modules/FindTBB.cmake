@@ -95,6 +95,8 @@ unset(_tbb_find_quiet)
 unset(_tbb_find_components)
 unset(_tbb_find_optional_components)
 if (TBB_FOUND)
+  # Ensure TBB_LIBRARIES is set (for backward compatibility)
+  set(TBB_LIBRARIES TBB::tbb)
   return ()
 endif ()
 
