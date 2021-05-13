@@ -52,9 +52,11 @@ namespace Gaudi::Examples {
         : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyInt" ) ) {}
 
     int operator()() const override {
-      info() << "executing IntDataProducer, storing 7 into " << outputLocation() << endmsg;
-      return 7;
+      info() << "executing IntDataProducer, storing " << m_value.value() << " into " << outputLocation() << endmsg;
+      return m_value;
     }
+
+    Gaudi::Property<int> m_value{this, "Value", 7, "The integer value to produce."};
   };
 
   DECLARE_COMPONENT( IntDataProducer )
