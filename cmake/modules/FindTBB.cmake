@@ -1,14 +1,6 @@
 # This find module file was originally found at
 # https://github.com/Kitware/VTK/blob/master/CMake/FindTBB.cmake
-# on Friday May 10th, 2019
-# Verbosity was added (see at the beginning and at the end).
-
-# Find quietly if already found before
-if(DEFINED CACHE{TBB_INCLUDE_DIR} AND TBB_INCLUDE_DIR)
-  set(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY YES)
-endif()
-
-############## Begin of the orignal file ##############
+# on Friday April 27th, 2021
 
 # - Find ThreadingBuildingBlocks include dirs and libraries
 # Use this module by invoking find_package with the form:
@@ -80,6 +72,34 @@ endif()
 #  FindTBB helper functions and macros
 #
 
+# Use TBBConfig.cmake if possible.
+
+set(_tbb_find_quiet)
+if (TBB_FIND_QUIETLY)
+  set(_tbb_find_quiet QUIET)
+endif ()
+set(_tbb_find_components)
+set(_tbb_find_optional_components)
+foreach (_tbb_find_component IN LISTS TBB_FIND_COMPONENTS)
+  if (TBB_FIND_REQUIRED_${_tbb_find_component})
+    list(APPEND _tbb_find_components "${_tbb_find_component}")
+  else ()
+    list(APPEND _tbb_find_optional_components "${_tbb_find_component}")
+  endif ()
+endforeach ()
+unset(_tbb_find_component)
+find_package(TBB CONFIG ${_tbb_find_quiet}
+  COMPONENTS ${_tbb_find_components}
+  OPTIONAL_COMPONENTS ${_tbb_find_optional_components})
+unset(_tbb_find_quiet)
+unset(_tbb_find_components)
+unset(_tbb_find_optional_components)
+if (TBB_FOUND)
+  # Ensure TBB_LIBRARIES is set (for backward compatibility)
+  set(TBB_LIBRARIES TBB::tbb)
+  return ()
+endif ()
+
 #====================================================
 # Fix the library path in case it is a linker script
 #====================================================
@@ -119,48 +139,45 @@ endfunction()
 # Do the final processing for the package find.
 #===============================================
 macro(findpkg_finish PREFIX TARGET_NAME)
-  # skip if already processed during this run
-  if (NOT ${PREFIX}_FOUND)
-    if (${PREFIX}_INCLUDE_DIR AND ${PREFIX}_LIBRARY)
-      set(${PREFIX}_FOUND TRUE)
-      set (${PREFIX}_INCLUDE_DIRS ${${PREFIX}_INCLUDE_DIR})
-      set (${PREFIX}_LIBRARIES ${${PREFIX}_LIBRARY})
-    else ()
-      if (${PREFIX}_FIND_REQUIRED AND NOT ${PREFIX}_FIND_QUIETLY)
-        message(FATAL_ERROR "Required library ${PREFIX} not found.")
-      endif ()
+  if (${PREFIX}_INCLUDE_DIR AND ${PREFIX}_LIBRARY)
+    set(${PREFIX}_FOUND TRUE)
+    set (${PREFIX}_INCLUDE_DIRS ${${PREFIX}_INCLUDE_DIR})
+    set (${PREFIX}_LIBRARIES ${${PREFIX}_LIBRARY})
+  else ()
+    if (${PREFIX}_FIND_REQUIRED AND NOT ${PREFIX}_FIND_QUIETLY)
+      message(FATAL_ERROR "Required library ${PREFIX} not found.")
     endif ()
-
-    if (NOT TARGET "TBB::${TARGET_NAME}")
-      if (${PREFIX}_LIBRARY_RELEASE)
-        tbb_extract_real_library(${${PREFIX}_LIBRARY_RELEASE} real_release)
-      endif ()
-      if (${PREFIX}_LIBRARY_DEBUG)
-        tbb_extract_real_library(${${PREFIX}_LIBRARY_DEBUG} real_debug)
-      endif ()
-      add_library(TBB::${TARGET_NAME} UNKNOWN IMPORTED)
-      set_target_properties(TBB::${TARGET_NAME} PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${${PREFIX}_INCLUDE_DIR}")
-      if (${PREFIX}_LIBRARY_DEBUG AND ${PREFIX}_LIBRARY_RELEASE)
-        set_target_properties(TBB::${TARGET_NAME} PROPERTIES
-          IMPORTED_LOCATION "${real_release}"
-          IMPORTED_LOCATION_DEBUG "${real_debug}"
-          IMPORTED_LOCATION_RELEASE "${real_release}")
-      elseif (${PREFIX}_LIBRARY_RELEASE)
-        set_target_properties(TBB::${TARGET_NAME} PROPERTIES
-          IMPORTED_LOCATION "${real_release}")
-      elseif (${PREFIX}_LIBRARY_DEBUG)
-        set_target_properties(TBB::${TARGET_NAME} PROPERTIES
-          IMPORTED_LOCATION "${real_debug}")
-      endif ()
-    endif ()
-
-   #mark the following variables as internal variables
-   mark_as_advanced(${PREFIX}_INCLUDE_DIR
-                    ${PREFIX}_LIBRARY
-                    ${PREFIX}_LIBRARY_DEBUG
-                    ${PREFIX}_LIBRARY_RELEASE)
   endif ()
+
+  if (NOT TARGET "TBB::${TARGET_NAME}")
+    if (${PREFIX}_LIBRARY_RELEASE)
+      tbb_extract_real_library(${${PREFIX}_LIBRARY_RELEASE} real_release)
+    endif ()
+    if (${PREFIX}_LIBRARY_DEBUG)
+      tbb_extract_real_library(${${PREFIX}_LIBRARY_DEBUG} real_debug)
+    endif ()
+    add_library(TBB::${TARGET_NAME} UNKNOWN IMPORTED)
+    set_target_properties(TBB::${TARGET_NAME} PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${${PREFIX}_INCLUDE_DIR}")
+    if (${PREFIX}_LIBRARY_DEBUG AND ${PREFIX}_LIBRARY_RELEASE)
+      set_target_properties(TBB::${TARGET_NAME} PROPERTIES
+        IMPORTED_LOCATION "${real_release}"
+        IMPORTED_LOCATION_DEBUG "${real_debug}"
+        IMPORTED_LOCATION_RELEASE "${real_release}")
+    elseif (${PREFIX}_LIBRARY_RELEASE)
+      set_target_properties(TBB::${TARGET_NAME} PROPERTIES
+        IMPORTED_LOCATION "${real_release}")
+    elseif (${PREFIX}_LIBRARY_DEBUG)
+      set_target_properties(TBB::${TARGET_NAME} PROPERTIES
+        IMPORTED_LOCATION "${real_debug}")
+    endif ()
+  endif ()
+
+  #mark the following variables as internal variables
+  mark_as_advanced(${PREFIX}_INCLUDE_DIR
+                   ${PREFIX}_LIBRARY
+                   ${PREFIX}_LIBRARY_DEBUG
+                   ${PREFIX}_LIBRARY_RELEASE)
 endmacro()
 
 #===============================================
@@ -247,7 +264,7 @@ if (WIN32 AND MSVC)
     set(COMPILER_PREFIX "vc11")
   elseif(MSVC_VERSION EQUAL 1800)
     set(COMPILER_PREFIX "vc12")
-  elseif(MSVC_VERSION EQUAL 1900)
+  elseif(MSVC_VERSION GREATER_EQUAL 1900)
     set(COMPILER_PREFIX "vc14")
   endif ()
 
@@ -292,6 +309,9 @@ endif ()
 # check compiler ABI
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(COMPILER_PREFIX)
+  if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+    list(APPEND COMPILER_PREFIX "gcc4.8")
+  endif()
   if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7)
     list(APPEND COMPILER_PREFIX "gcc4.7")
   endif()
@@ -301,6 +321,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND COMPILER_PREFIX "gcc4.1")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(COMPILER_PREFIX)
+  if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.0) # Complete guess
+    list(APPEND COMPILER_PREFIX "gcc4.8")
+  endif()
   if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.6)
     list(APPEND COMPILER_PREFIX "gcc4.7")
   endif()
@@ -430,18 +453,4 @@ if(NOT TBB_VERSION)
         ".*#define TBB_COMPATIBLE_INTERFACE_VERSION ([0-9]+).*" "\\1"
         TBB_COMPATIBLE_INTERFACE_VERSION "${TBB_VERSION_CONTENTS}")
 
-endif()
-
-######################## Addition to the original file ########################
-
-# Display the imported target for the user to know
-if(NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
-  if(TBB_FOUND)
-    message(STATUS "Found TBB: ${TBB_INCLUDE_DIRS} (found version "
-      "\"${TBB_VERSION_MAJOR}.${TBB_VERSION_MINOR}.${TBB_INTERFACE_VERSION}"
-      ".${TBB_COMPATIBLE_INTERFACE_VERSION}\") found components: tbb "
-      "malloc malloc_proxy")
-  else()
-    message(STATUS "TBB not found")
-  endif()
 endif()
