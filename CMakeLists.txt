@@ -189,12 +189,17 @@ install(EXPORT ${PROJECT_NAME} NAMESPACE ${PROJECT_NAME}::
 # Install cmake files for downstream project to be able to use Gaudi
 gaudi_install(CMAKE cmake/GaudiToolbox.cmake
                     cmake/GaudiDependencies.cmake
-                    cmake/extract_qmtest_metadata.py # used in gaudi_add_tests(QMTest)
-                    cmake/scan_dict_deps.py # used in gaudi_add_dictionary(...)
                     cmake/DeveloperBuildType.cmake
                     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
                     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
                     cmake/modules) # Find*.cmake
+
+install(PROGRAMS
+        cmake/extract_qmtest_metadata.py # used in gaudi_add_tests(QMTest)
+        cmake/scan_dict_deps.py # used in gaudi_add_dictionary(...)
+    DESTINATION "${GAUDI_INSTALL_CONFIGDIR}"
+)
+
 # Add an uninstall target
 add_custom_target(uninstall
   COMMAND test -f ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt &&

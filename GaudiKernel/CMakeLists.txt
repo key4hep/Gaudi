@@ -262,6 +262,7 @@ foreach(test_case IN ITEMS 01 02 03 04)
           COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
             --target ${package_name}/CMakeFiles/test_StatusCodeFail_case${test_case}.dir/tests/src/test_StatusCode_fail.cxx.o)
   set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY PASS_REGULAR_EXPRESSION "FAIL${test_case}")
+  set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY RESOURCE_LOCK build-system)
 endforeach()
 
 if(GAUDI_USE_CPPUNIT)
