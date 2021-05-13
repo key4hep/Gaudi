@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -36,6 +36,7 @@
 #include "TTree.h"
 
 class IIncidentSvc;
+class TClass;
 
 class THistSvc : public extends<Service, ITHistSvc, IIncidentListener, IIoComponent> {
 public:
@@ -401,6 +402,9 @@ private:
   bool m_signaledStop = false;
   bool m_delayConnect = false;
   bool m_okToConnect  = false;
+
+  /// Cached pointer to the @c TTree dictionary
+  const TClass* m_ttreeClass = nullptr;
 
   mutable std::string m_curstream;
 

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // system headers
+#include <cassert>
 #include <cstdio>
 #include <sstream>
 #include <streambuf>
@@ -17,6 +18,7 @@
 #include "boost/algorithm/string/case_conv.hpp"
 
 // ROOT headers
+#include "TClass.h"
 #include "TDirectory.h"
 #include "TError.h"
 #include "TFile.h"
@@ -172,6 +174,13 @@ StatusCode THistSvc::initialize() {
         st = StatusCode::FAILURE;
       }
     }
+  }
+
+  // Cache a pointer to the TTree dictionary.
+  m_ttreeClass = TClass::GetClass( "TTree" );
+  if ( ( m_ttreeClass == nullptr ) || ( m_ttreeClass->IsLoaded() == false ) ) {
+    error() << "Could not access/load the dictionary for TTree!" << endmsg;
+    st = StatusCode::FAILURE;
   }
 
   if ( st.isFailure() ) { fatal() << "Unable to initialize THistSvc" << endmsg; }
@@ -1478,6 +1487,8 @@ void THistSvc::updateFiles() {
 #endif
       TObject* to      = hid.obj;
       TFile*   oldFile = hid.file;
+      // A little sanity check.
+      assert( m_ttreeClass != nullptr );
       if ( !to ) {
         warning() << uitr->first << ": TObject == 0" << endmsg;
       } else if ( hid.temp || hid.mode == READ ) {
@@ -1486,7 +1497,7 @@ void THistSvc::updateFiles() {
 #ifndef NDEBUG
         if ( msgLevel( MSG::VERBOSE ) ) verbose() << "     skipping" << endmsg;
 #endif
-      } else if ( to->IsA()->InheritsFrom( "TTree" ) ) {
+      } else if ( to->IsA()->InheritsFrom( m_ttreeClass ) ) {
         TTree* tr      = dynamic_cast<TTree*>( to );
         TFile* newFile = tr->GetCurrentFile();
 
