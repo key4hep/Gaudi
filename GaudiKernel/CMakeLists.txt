@@ -255,12 +255,12 @@ gaudi_add_executable(test_GaudiTimer SOURCES tests/src/test_GaudiTimer.cpp
 
 foreach(test_case IN ITEMS 01 02 03 04)
   add_executable(test_StatusCodeFail_case${test_case} tests/src/test_StatusCode_fail.cxx)
-  target_link_libraries(test_StatusCodeFail_case${test_case} PRIVATE GaudiKernel)
+  target_include_directories(test_StatusCodeFail_case${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  target_link_libraries(test_StatusCodeFail_case${test_case} PRIVATE Boost::headers)
   set_target_properties(test_StatusCodeFail_case${test_case} PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
   target_compile_definitions(test_StatusCodeFail_case${test_case} PRIVATE CASE${test_case})
   add_test(NAME ${package_name}.test_StatusCodeFail.case${test_case}
-          COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
-            --target ${package_name}/CMakeFiles/test_StatusCodeFail_case${test_case}.dir/tests/src/test_StatusCode_fail.cxx.o)
+           COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_StatusCodeFail_case${test_case})
   set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY PASS_REGULAR_EXPRESSION "FAIL${test_case}")
   set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY RESOURCE_LOCK build-system)
 endforeach()
