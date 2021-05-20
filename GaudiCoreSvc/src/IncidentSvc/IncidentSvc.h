@@ -46,22 +46,11 @@
 struct isSingleShot_t;
 
 class IncidentSvc : public extends<Service, IIncidentSvc> {
-public:
-  struct Listener final {
-    IIncidentListener* iListener{nullptr};
-    long               priority{0};
-    bool               rethrow{false};
-    bool               singleShot{false};
-
-    Listener( IIncidentListener* il, long pri, bool thr = false, bool single = false )
-        : iListener( il ), priority( pri ), rethrow( thr ), singleShot( single ) {}
-  };
-
 private:
   // Typedefs
   // ListenerList should be a list rather than a vector because handing
   // a fired incident may result in a call to addListener.
-  typedef std::list<Listener>                                                  ListenerList;
+  typedef std::list<IIncidentSvc::Listener>                                    ListenerList;
   typedef GaudiUtils::HashMap<Gaudi::StringKey, std::unique_ptr<ListenerList>> ListenerMap;
 
 public:

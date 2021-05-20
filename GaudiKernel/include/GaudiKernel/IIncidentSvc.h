@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -56,20 +56,20 @@ public:
   */
   virtual void fireIncident( const Incident& incident ) = 0;
 
-  class IncidentPack {
-  public:
-    std::vector<std::unique_ptr<Incident>>       incidents;
-    std::vector<std::vector<IIncidentListener*>> listeners;
-    IncidentPack( IncidentPack&& o ) : incidents( std::move( o.incidents ) ), listeners( std::move( o.listeners ) ){};
-    IncidentPack& operator=( IncidentPack&& o ) {
-      incidents = std::move( o.incidents );
-      listeners = std::move( o.listeners );
-      return *this;
-    };
-    IncidentPack(){};
+  /** Listener properties */
+  struct Listener final {
+    IIncidentListener* iListener{nullptr};
+    long               priority{0};
+    bool               rethrow{false};
+    bool               singleShot{false};
   };
 
+  /** List of incidents and their listeners */
+  typedef std::vector<std::pair<std::unique_ptr<Incident>, std::vector<Listener>>> IncidentPack;
+
+  /** Get List of asynchronous incidents and their listeners */
   virtual IIncidentSvc::IncidentPack getIncidents( const EventContext* ctx ) = 0;
+
   /** Fire an Incident, Incident ownership has to be passed to the
       service since it is going to be accessed asynchronously
       @param Incident being fired
