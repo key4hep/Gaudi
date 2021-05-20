@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,29 +8,25 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// dear emacs, this is -*- C++ -*-
 #ifndef GAUDIKERNEL_ICLASSIDSVC_H
 #define GAUDIKERNEL_ICLASSIDSVC_H
 
-//<<<<<< INCLUDES                                                       >>>>>>
 #include <string>
 
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/StatusCode.h"
 
-//<<<<<< FORWARD DECLARATIONS                                           >>>>>>
-namespace Athena {
-  class PackageInfo;
-}
-//<<<<<< CLASS DECLARATIONS                                             >>>>>>
 /** @class IClassIDSvc
- * @brief  interface to the CLID database
- * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
+ *  @brief  interface to the CLID database
+ *  @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
  */
 
 class IClassIDSvc : virtual public IService {
 public:
+  /// InterfaceID
+  DeclareInterfaceID( IClassIDSvc, 1, 0 );
+
   /// get next available CLID
   /// @throws std::runtime_error if no CLID can be allocated
   virtual CLID nextAvailableID() const = 0;
@@ -46,19 +42,8 @@ public:
   virtual StatusCode getIDOfTypeName( const std::string& typeName, CLID& id ) const = 0;
   /// get id associated with type-info name (if any)
   virtual StatusCode getIDOfTypeInfoName( const std::string& typeInfoName, CLID& id ) const = 0;
-  /// get type name associated with clID (if any)
-  virtual StatusCode getPackageInfoForID( const CLID& id, Athena::PackageInfo& info ) const = 0;
-  /// associate type name, package info and type-info name with clID
-  virtual StatusCode setTypePackageForID( const CLID&, const std::string& typeName, const Athena::PackageInfo&,
-                                          const std::string& typeInfoName = "" ) = 0;
-  /// Gaudi boilerplate
-  static const InterfaceID& interfaceID();
+  /// associate type name and type-info name with clID
+  virtual StatusCode setTypeForID( const CLID&, const std::string& typeName, const std::string& typeInfoName = "" ) = 0;
 };
-
-//<<<<<< INLINE MEMBER FUNCTIONS                                        >>>>>>
-inline const InterfaceID& IClassIDSvc::interfaceID() {
-  static const InterfaceID _IID( "IClassIDSvc", 1, 0 );
-  return _IID;
-}
 
 #endif // GAUDIKERNEL_ICLASSIDSVC_H
