@@ -57,6 +57,10 @@ namespace Gaudi::Monitoring {
       json toJSON() const { return ( *m_getJSON )( m_ptr ); }
       /// function resetting internal data
       void reset() { return ( *m_reset )( m_ptr ); }
+      /// operator== for comparison with raw pointer
+      bool operator==( void* ent ) { return m_ptr == ent; }
+      /// operator== for comparison with an entity
+      bool operator==( Entity const& ent ) { return m_ptr == ent.m_ptr; }
 
     private:
       /// pointer to the actual data inside this Entity
@@ -72,8 +76,9 @@ namespace Gaudi::Monitoring {
 
     /// Interface reporting services must implement.
     struct Sink {
-      virtual void registerEntity( Entity ent ) = 0;
-      virtual ~Sink()                           = default;
+      virtual void registerEntity( Entity ent )      = 0;
+      virtual void removeEntity( Entity const& ent ) = 0;
+      virtual ~Sink()                                = default;
     };
 
     template <typename T>
@@ -84,6 +89,14 @@ namespace Gaudi::Monitoring {
       std::for_each( begin( m_sinks ), end( m_sinks ),
                      [ent]( auto sink ) { sink->registerEntity( std::move( ent ) ); } );
       m_entities.emplace_back( std::move( ent ) );
+    }
+    template <typename T>
+    void removeEntity( T& ent ) {
+      auto it = std::find( begin( m_entities ), end( m_entities ), &ent );
+      if ( it != m_entities.end() ) {
+        std::for_each( begin( m_sinks ), end( m_sinks ), [&it]( auto sink ) { sink->removeEntity( *it ); } );
+        m_entities.erase( it );
+      }
     }
 
     void addSink( Sink* sink ) {

@@ -838,16 +838,25 @@ namespace Gaudi::Accumulators {
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, template <atomicity Ato, typename... Int> class Accumulator, typename... Args>
-  struct BufferableCounter : PrintableCounter, Accumulator<Atomicity, Args...> {
+  class BufferableCounter : public PrintableCounter, public Accumulator<Atomicity, Args...> {
+  public:
     BufferableCounter() = default;
     template <typename OWNER, typename... CARGS>
     BufferableCounter( OWNER* o, std::string const& name, const std::string counterType, CARGS... args )
-        : Accumulator<Atomicity, Args...>( args... ) {
-      o->serviceLocator()->monitoringHub().registerEntity( o->name(), name, counterType, *this );
+        : Accumulator<Atomicity, Args...>( args... ), m_monitoringHub( &o->serviceLocator()->monitoringHub() ) {
+      m_monitoringHub->registerEntity( o->name(), name, counterType, *this );
     }
     template <typename OWNER>
     BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, "counter" ) {}
     Buffer<Accumulator, Atomicity, Args...> buffer() { return {*this}; }
+    BufferableCounter( BufferableCounter const& ) = default;
+    BufferableCounter& operator=( BufferableCounter const& ) = default;
+    ~BufferableCounter() {
+      if ( m_monitoringHub ) { m_monitoringHub->removeEntity( *this ); }
+    }
+
+  private:
+    Monitoring::Hub* m_monitoringHub{nullptr};
   };
 
   /**
@@ -1084,8 +1093,9 @@ namespace Gaudi::Accumulators {
   public:
     inline static const std::string typeString{"counter:MsgCounter"};
     template <typename OWNER>
-    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 ) : logger( o ), msg( ms ), max( nMax ) {
-      o->serviceLocator()->monitoringHub().registerEntity( o->name(), std::move( ms ), typeString, *this );
+    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 )
+        : m_monitoringHub{o->serviceLocator()->monitoringHub()}, logger( o ), msg( ms ), max( nMax ) {
+      m_monitoringHub.registerEntity( o->name(), std::move( ms ), typeString, *this );
     }
     MsgCounter& operator++() {
       ( *this ) += true;
@@ -1096,6 +1106,7 @@ namespace Gaudi::Accumulators {
       if ( by ) log();
       return *this;
     }
+    ~MsgCounter() { m_monitoringHub.removeEntity( *this ); }
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
       return o << boost::format{tableFormat ? "|%|10d| |" : "#=%|-7lu|"} % this->value();
@@ -1119,6 +1130,7 @@ namespace Gaudi::Accumulators {
     }
 
   private:
+    Monitoring::Hub&           m_monitoringHub;
     const CommonMessagingBase* logger{nullptr};
     std::string                msg;
     unsigned long              max;
