@@ -89,7 +89,7 @@ class RealTimeValue(object):
             else:
                 time = self.defaultTime
                 print(
-                    "WARNING: TimiNg for %s (or %s) not found in the provided library, using default one: %s"
+                    "WARNING: Timing for %s (or %s) not found in the provided library, using default one: %s"
                     % (algoName, capAlgoName, time))
 
         time = time * self.factor
