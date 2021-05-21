@@ -152,8 +152,9 @@ public:
   [[deprecated( "will be removed" )]] const StatusCode& setChecked( bool = true ) const { return *this; }
   [[deprecated( "will be removed" )]] StatusCode&       setChecked( bool = true ) { return *this; }
 
-  /// Ignore StatusCode
-  void ignore() const {}
+  /// Allow discarding a StatusCode without warning
+  const StatusCode& ignore() const { return *this; }
+  StatusCode&       ignore() { return *this; }
 
   /// Chain code blocks making the execution conditional a success result.
   ///
