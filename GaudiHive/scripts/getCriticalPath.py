@@ -16,6 +16,12 @@ __author__ = "Illya Shapoval"
 
 import sys
 import argparse
+
+# FIXME: workaround for the old version of networkx in LCG 100
+import warnings
+warnings.filterwarnings(
+    "ignore", message='"is" with a literal', category=SyntaxWarning)
+
 import networkx as nx
 
 

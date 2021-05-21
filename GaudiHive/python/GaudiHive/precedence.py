@@ -14,6 +14,12 @@ import sys
 import random
 import string
 import json
+
+# FIXME: workaround for the old version of networkx in LCG 100
+import warnings
+warnings.filterwarnings(
+    "ignore", message='"is" with a literal', category=SyntaxWarning)
+
 import networkx as nx
 
 from Gaudi.Configuration import INFO
