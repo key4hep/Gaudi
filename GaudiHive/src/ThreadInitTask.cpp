@@ -25,7 +25,7 @@ namespace Gaudi {
 
 std::atomic<bool> ThreadInitTask::m_execFailed( false );
 
-tbb::task* ThreadInitTask::execute() {
+void ThreadInitTask::operator()() const {
 
   SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
   MsgStream            log( messageSvc, "ThreadInitTask" );
@@ -41,12 +41,15 @@ tbb::task* ThreadInitTask::execute() {
         << endmsg;
   }
 
-  if ( m_tools.retrieve().isFailure() ) {
-    log << MSG::ERROR << "unable to retrieve ToolHandleArray " << m_tools << endmsg;
+  // copy the tools array not to violate the const contract of the method
+  ToolHandleArray<IThreadInitTool> tools( m_tools );
+
+  if ( tools.retrieve().isFailure() ) {
+    log << MSG::ERROR << "unable to retrieve ToolHandleArray " << tools << endmsg;
     m_execFailed = true;
   } else {
 
-    if ( m_tools.empty() ) {
+    if ( tools.empty() ) {
       log << MSG::DEBUG << "no entries in Tool Array" << endmsg;
       if ( !m_terminate ) { Gaudi::Concurrency::ThreadInitDone = true; }
     } else {
@@ -58,7 +61,7 @@ tbb::task* ThreadInitTask::execute() {
             << " as it has not been initialized" << endmsg;
       } else {
 
-        for ( auto& t : m_tools ) {
+        for ( auto& t : tools ) {
           try {
 
             if ( debug ) log << MSG::DEBUG << "calling IThreadInitTool " << t << endmsg;
@@ -86,7 +89,7 @@ tbb::task* ThreadInitTask::execute() {
         }
       }
 
-      m_tools.release().ignore();
+      tools.release().ignore();
     }
   }
 
@@ -94,6 +97,4 @@ tbb::task* ThreadInitTask::execute() {
     log << MSG::DEBUG << "waiting at barrier in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
     m_barrier->wait();
   }
-
-  return nullptr;
 }
