@@ -16,7 +16,7 @@ stages:
   - test
 
 variables:
-  LCG_VERSION: "97a"
+  LCG_VERSION: "100"
   CMAKE_GENERATOR: 'Ninja' # default build system
   NO_LBLOGIN: "1" # prevent lbdocker containers to start LbLogin/LbEnv
   TARGET_BRANCH: master
@@ -87,13 +87,10 @@ before_script:
 
 
 ### Build
-x86_64-centos7-gcc9-opt:
+x86_64-centos7-gcc10-opt:
   <<: *template_build
 
-x86_64-centos7-gcc9+py3-opt:
-  <<: *template_build
-
-x86_64-centos7-gcc9-dbg:
+x86_64-centos7-gcc10-dbg:
   <<: *template_build
 
 view-gcc8:
@@ -116,10 +113,10 @@ view-gcc8:
     - cmake --build build 2>&1 | tee build/build.log
     - ccache -s
 
-lhcb-gcc9:
+lhcb-gcc10:
   <<: *template_build
   variables:
-    BINARY_TAG: x86_64-centos7-gcc9-opt
+    BINARY_TAG: x86_64_v2-centos7-gcc10-opt
   script:
     - . /cvmfs/lhcb.cern.ch/lib/LbEnv
     - lb-project-init --overwrite
@@ -141,22 +138,16 @@ lhcb-gcc9:
     expire_in: 1 week
 
 ### Tests
-x86_64-centos7-gcc9-opt:test:
+x86_64-centos7-gcc10-opt:test:
   <<: *template_test
   needs:
-    - job: "x86_64-centos7-gcc9-opt"
+    - job: "x86_64-centos7-gcc10-opt"
       artifacts: true
 
-x86_64-centos7-gcc9+py3-opt:test:
+x86_64-centos7-gcc10-dbg:test:
   <<: *template_test
   needs:
-    - job: "x86_64-centos7-gcc9+py3-opt"
-      artifacts: true
-
-x86_64-centos7-gcc9-dbg:test:
-  <<: *template_test
-  needs:
-    - job: "x86_64-centos7-gcc9-dbg"
+    - job: "x86_64-centos7-gcc10-dbg"
       artifacts: true
 
 view-gcc8:test:
@@ -177,13 +168,13 @@ view-gcc8:test:
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
 
-lhcb-gcc9:test:
+lhcb-gcc10:test:
   <<: *template_test
   needs:
-    - job: "lhcb-gcc9"
+    - job: "lhcb-gcc10"
       artifacts: true
   variables:
-    BINARY_TAG: x86_64-centos7-gcc9-opt
+    BINARY_TAG: x86_64_v2-centos7-gcc10-opt
   script:
     - . /cvmfs/lhcb.cern.ch/lib/LbEnv
     - lb-project-init --overwrite
@@ -205,22 +196,16 @@ lhcb-gcc9:test:
     expire_in: 1 day
 
 ### Check build outputs
-x86_64-centos7-gcc9-opt:build-check:
+x86_64-centos7-gcc10-opt:build-check:
   <<: *template_build_check
   needs:
-    - job: "x86_64-centos7-gcc9-opt"
+    - job: "x86_64-centos7-gcc10-opt"
       artifacts: true
 
-x86_64-centos7-gcc9+py3-opt:build-check:
+x86_64-centos7-gcc10-dbg:build-check:
   <<: *template_build_check
   needs:
-    - job: "x86_64-centos7-gcc9+py3-opt"
-      artifacts: true
-
-x86_64-centos7-gcc9-dbg:build-check:
-  <<: *template_build_check
-  needs:
-    - job: "x86_64-centos7-gcc9-dbg"
+    - job: "x86_64-centos7-gcc10-dbg"
       artifacts: true
 
 view-gcc8:build-check:
@@ -229,21 +214,21 @@ view-gcc8:build-check:
     - job: "view-gcc8"
       artifacts: true
 
-lhcb-gcc9:build-check:
+lhcb-gcc10:build-check:
   <<: *template_build_check
   needs:
-    - job: "lhcb-gcc9"
+    - job: "lhcb-gcc10"
       artifacts: true
   variables:
-    BINARY_TAG: x86_64-centos7-gcc9-opt
+    BINARY_TAG: x86_64_v2-centos7-gcc10-opt
   script:
     - ci-utils/build-check build.${BINARY_TAG}/build.log
 
 ### Misc checks
-x86_64-centos7-gcc9-opt:check-unused:
+x86_64-centos7-gcc10-opt:check-unused:
   stage: test
   needs:
-    - job: "x86_64-centos7-gcc9-opt"
+    - job: "x86_64-centos7-gcc10-opt"
       artifacts: true
   script:
     - ci-utils/check-sources build/build.ninja
