@@ -19,7 +19,7 @@ variables:
   LCG_VERSION: "97a"
   CMAKE_GENERATOR: 'Ninja' # default build system
   NO_LBLOGIN: "1" # prevent lbdocker containers to start LbLogin/LbEnv
-  TARGET_BRANCH: master
+  TARGET_BRANCH: v35-patches
 
 # All the configuration
 before_script:
