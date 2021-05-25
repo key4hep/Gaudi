@@ -8,6 +8,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased][]
 
 
+## [v35r4][] - 2021-05-25
+Minor release including gaudi/Gaudi!1210, needed for an LHCb release.
+
+### Added
+- Add a `MultiMergingTransformerFilter` (gaudi/Gaudi!1210)
+
+### Fixed
+- Fix CMake 3.20 warnigns (gaudi/Gaudi!1211)
+- Replace `sys_siglist` (deprecated) with `strsignal` to allow build with newer glibc (> 2.32) (gaudi/Gaudi!1207)
+- Always set TBB_LIBRARIES when TBB_FOUND (gaudi/Gaudi!1209)
+- Simplify `StatusCode` compilation failure test (gaudi/Gaudi!1206, gaudi/Gaudi!1211)
+
+
 ## [v35r3][] - 2021-04-20
 Another minor bugfix release with more fixes for ROOT 6.22 and improvements to the CMake configuration.
 
@@ -685,7 +698,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r3...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r4...master
+[v35r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r4
 [v35r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r3
 [v35r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r2
 [v35r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r1
