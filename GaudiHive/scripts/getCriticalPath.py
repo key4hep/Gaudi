@@ -10,20 +10,26 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 """Determine critical path for a given precedence trace."""
+from __future__ import print_function
 
 __author__ = "Illya Shapoval"
 
 import sys
 import argparse
+
+# FIXME: workaround for the old version of networkx in LCG 100
+import warnings
+warnings.filterwarnings(
+    "ignore", message='"is" with a literal', category=SyntaxWarning)
+
 import networkx as nx
 
 
 def get_critical_path(path_to_trace_file):
     """Find critical path, print algorithms on it and its length."""
 
-    assert float(
-        nx.__version__
-    ) >= 2.0, "This script requires Networkx version 2.0 or higher"
+    assert (tuple(map(int, nx.__version__.split("."))) >=
+            (2, 0)), "This script requires Networkx version 2.0 or higher"
 
     trace = nx.read_graphml(path_to_trace_file)
 
@@ -33,16 +39,17 @@ def get_critical_path(path_to_trace_file):
 
     cpath = nx.algorithms.dag.dag_longest_path(trace, weight='Runtime')
 
-    print "Algorithms on the critical path (%i): " % len(cpath)
+    print("Algorithms on the critical path (%i): " % len(cpath))
 
-    print "  {:<40} Runtime (ns)".format("Name")
-    print "  -----------------------------------------------------"
+    print("  {:<40} Runtime (ns)".format("Name"))
+    print("  -----------------------------------------------------")
     for node_id in cpath:
-        print "  {:<40}: {}".format(trace.node[node_id].get('Name'),
-                                    trace.node[node_id].get('Runtime'))
+        print("  {:<40}: {}".format(trace.node[node_id].get('Name'),
+                                    trace.node[node_id].get('Runtime')))
 
-    print "\nTotal critical path time: ", nx.algorithms.dag.dag_longest_path_length(
-        trace, weight='Runtime'), "ns"
+    print("\nTotal critical path time: ",
+          nx.algorithms.dag.dag_longest_path_length(trace, weight='Runtime'),
+          "ns")
 
 
 def main():
