@@ -154,16 +154,26 @@ class IntSemantics(PropertySemantics):
         return v
 
 
+_IDENTIFIER_RE = r'[a-zA-Z_][a-zA-Z0-9_]*'
+_NS_IDENT_RE = r'{ident}(::{ident})*'.format(ident=_IDENTIFIER_RE)
+_COMMA_SEPARATION_RE = r'{exp}(,{exp})*'
+
+
 class ComponentSemantics(PropertySemantics):
     __handled_types__ = ('Algorithm', 'Auditor',
-                         re.compile(r'AlgTool(:I[a-zA-Z0-9_]*)*$'),
-                         re.compile(r'Service(:I[a-zA-Z0-9_]*)*$'))
+                         re.compile(r'AlgTool(:{})?$'.format(
+                             _COMMA_SEPARATION_RE.format(exp=_NS_IDENT_RE))),
+                         re.compile(r'Service(:{})?$'.format(
+                             _COMMA_SEPARATION_RE.format(exp=_NS_IDENT_RE))))
 
     def __init__(self, cpp_type, name=None):
         super(ComponentSemantics, self).__init__(cpp_type, name)
-        self.interfaces = cpp_type.split(':')
-        self.cpp_type = self.interfaces.pop(0)
-        self.interfaces = set(self.interfaces)
+        if ':' in cpp_type:
+            self.cpp_type, self.interfaces = cpp_type.split(':', 1)
+            self.interfaces = set(self.interfaces.split(","))
+        else:
+            self.cpp_type = cpp_type
+            self.interfaces = set()
 
     def store(self, value):
         from . import Configurable, Configurables

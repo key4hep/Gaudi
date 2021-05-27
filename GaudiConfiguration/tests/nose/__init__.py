@@ -31,9 +31,12 @@ _DB = {
         },
     },
     'TestConf::SimpleOptsAlgTool': {
-        '__component_type__': 'AlgTool',
-        '__interfaces__': ('IToolType1', 'IToolType2'),
-        '__doc__': 'configurable for testing options strings',
+        '__component_type__':
+        'AlgTool',
+        '__interfaces__': ('IToolType1', 'IToolType2',
+                           'Gaudi::Interfaces::INSTool'),
+        '__doc__':
+        'configurable for testing options strings',
         'properties': {
             'Bool': ('bool', False),
         },

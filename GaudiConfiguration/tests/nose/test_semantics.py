@@ -10,7 +10,7 @@
 #####################################################################################
 from GaudiConfig2.Configurables.TestConf import MyAlg
 from GaudiConfig2.semantics import (StringSemantics, getSemanticsFor,
-                                    DefaultSemantics)
+                                    DefaultSemantics, ComponentSemantics)
 from GaudiConfig2 import Configurable, useGlobalInstances
 from nose.tools import raises, with_setup
 
@@ -164,15 +164,23 @@ def test_alg_semantics_bad_unnamed_comp():
 @with_setup(setup_func, teardown_func)
 def test_interfaces_check():
     s = getSemanticsFor('AlgTool')
+    assert isinstance(s, ComponentSemantics)
     assert s.store('TestConf::SimpleOptsAlgTool')
 
     s = getSemanticsFor('AlgTool:IToolType1')
+    assert isinstance(s, ComponentSemantics)
     assert s.store('TestConf::SimpleOptsAlgTool')
 
     s = getSemanticsFor('AlgTool:IToolType2')
+    assert isinstance(s, ComponentSemantics)
     assert s.store('TestConf::SimpleOptsAlgTool')
 
-    s = getSemanticsFor('AlgTool:IToolType2:IToolType1')
+    s = getSemanticsFor('AlgTool:IToolType2,IToolType1')
+    assert isinstance(s, ComponentSemantics)
+    assert s.store('TestConf::SimpleOptsAlgTool')
+
+    s = getSemanticsFor('AlgTool:Gaudi::Interfaces::INSTool,IToolType1')
+    assert isinstance(s, ComponentSemantics)
     assert s.store('TestConf::SimpleOptsAlgTool')
 
 
@@ -180,20 +188,22 @@ def test_interfaces_check():
 @raises(TypeError)
 def test_interfaces_check_bad1():
     s = getSemanticsFor('AlgTool:IToolTypeA')
+    assert isinstance(s, ComponentSemantics)
     assert s.store('TestConf::SimpleOptsAlgTool')
 
 
 @with_setup(setup_func, teardown_func)
 @raises(TypeError)
 def test_interfaces_check_bad2():
-    s = getSemanticsFor('AlgTool:IToolType1:IToolTypeA')
+    s = getSemanticsFor('AlgTool:IToolType1,IToolTypeA')
+    assert isinstance(s, ComponentSemantics)
     assert s.store('TestConf::SimpleOptsAlgTool')
 
 
 @with_setup(setup_func, teardown_func)
 @raises(TypeError)
 def test_interfaces_check_bad3():
-    s = getSemanticsFor('AlgTool:IToolType1:IToolType2:IToolTypeA')
+    s = getSemanticsFor('AlgTool:IToolType1,IToolType2,IToolTypeA')
     assert s.store('TestConf::SimpleOptsAlgTool')
 
 
