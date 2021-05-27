@@ -18,12 +18,9 @@
 
 #include "boost/thread/barrier.hpp"
 
-#include "tbb/spin_mutex.h"
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-#  include "tbb/task_scheduler_init.h"
-#  define TBB_PREVIEW_GLOBAL_CONTROL 1
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 #include "tbb/global_control.h"
+#include "tbb/spin_mutex.h"
+#include "tbb/task_arena.h"
 
 #include <memory>
 #include <vector>
@@ -61,6 +58,8 @@ public:
 
   virtual void initThisThread() override;
 
+  tbb::task_arena* getArena() { return &m_arena; }
+
 private:
   /// Launch tasks to execute the ThreadInitTools
   StatusCode launchTasks( bool finalize = false );
@@ -77,16 +76,17 @@ private:
   /// Mutex used to protect the initPool and terminatePool methods.
   tbb::spin_mutex m_initMutex;
 
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-  /// TBB task scheduler initializer
-  std::unique_ptr<tbb::task_scheduler_init> m_tbbSchedInit;
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
-
   /// Barrier used to synchronization thread init tasks
   std::unique_ptr<boost::barrier> m_barrier;
 
   /// TBB global control parameter
   std::unique_ptr<tbb::global_control> m_tbbgc;
+
+  /// TBB task arena to run all algorithms
+  tbb::task_arena m_arena;
+
+  /// Counter for all threads that are initialised
+  std::atomic<int> m_threadInitCount = 0;
 };
 
 #endif

@@ -103,10 +103,6 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
       return StatusCode::FAILURE;
     }
 
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-    m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( m_threadPoolSize + 1 );
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
-
     ON_VERBOSE verbose() << "Maximum allowed parallelism before adjusting: "
                          << tbb::global_control::active_value( tbb::global_control::max_allowed_parallelism ) << endmsg;
 
@@ -116,6 +112,9 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
         std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism, m_threadPoolSize + 1 );
 
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( m_threadPoolSize );
+
+    // Create the task arena to run all algorithms
+    m_arena = tbb::task_arena( m_threadPoolSize + 1 );
 
     // Create the barrier for task synchronization at termination
     // (here we increase the number of threads by one to account for calling thread)
@@ -166,24 +165,25 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
   // the tasks in TBB to execute on each thread.
   if ( tbb::global_control::active_value( tbb::global_control::max_allowed_parallelism ) > 0 ) {
 
-    tbb::task_group taskGroup;
+    // Make a warning message if not all threads can be finalised
+    if ( terminate and m_threadInitCount.load() != m_threadPoolSize and not m_threadInitTools.empty() ) {
+      warning() << "Finalising " << m_threadPoolSize << " threads, but " << m_threadInitCount.load()
+                << " threads were initialised" << endmsg;
+    }
 
     // Create one task for each worker thread in the pool
     for ( int i = 0; i < m_threadPoolSize; ++i ) {
       ON_DEBUG debug() << "creating ThreadInitTask " << i << endmsg;
 
       // Queue the task
-      taskGroup.run( ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate ) );
+      if ( !terminate ) m_threadInitCount++;
+      m_arena.enqueue( ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate ) );
       std::this_thread::sleep_for( std::chrono::milliseconds( 20 ) );
     }
 
     // Now wait for all the workers to reach the barrier
     ON_DEBUG debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
     m_barrier->wait();
-
-    // task group's wait() must come after the barrier's wait()
-    ON_DEBUG debug() << "waiting for all ThreadInitTask's in the group to complete" << endmsg;
-    taskGroup.wait();
 
     // Check to make sure all Tools were invoked.
     // I'm not sure this mechanism is worthwhile.
@@ -241,6 +241,7 @@ void ThreadPoolSvc::initThisThread() {
     throw GaudiException( "initThisThread triggered, but thread already initialized", name(), StatusCode::FAILURE );
   }
 
+  m_threadInitCount++;
   boost::barrier* noBarrier = nullptr;
   ThreadInitTask( m_threadInitTools, noBarrier, serviceLocator(), false )();
 }

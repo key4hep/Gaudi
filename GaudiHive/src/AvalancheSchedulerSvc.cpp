@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #include "AvalancheSchedulerSvc.h"
 #include "AlgTask.h"
+#include "ThreadPoolSvc.h"
 
 // Framework includes
 #include "GaudiKernel/ConcurrencyFlags.h"
@@ -34,9 +35,6 @@
 #include "boost/tokenizer.hpp"
 // DP waiting for the TBB service
 #include "tbb/tbb_stddef.h"
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-#  include "tbb/task_scheduler_init.h"
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )
@@ -83,6 +81,16 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   m_threadPoolSvc = serviceLocator()->service( "ThreadPoolSvc" );
   if ( !m_threadPoolSvc.isValid() ) {
     fatal() << "Error retrieving ThreadPoolSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  auto castTPS = dynamic_cast<ThreadPoolSvc*>( m_threadPoolSvc.get() );
+  if ( !castTPS ) {
+    fatal() << "Cannot cast ThreadPoolSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  m_arena = castTPS->getArena();
+  if ( !m_arena ) {
+    fatal() << "Cannot find valid TBB task_arena" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -441,9 +449,6 @@ StatusCode AvalancheSchedulerSvc::deactivate() {
     action thisAction;
     while ( m_actionsQueue.try_pop( thisAction ) ) {};
 
-    // Ensure there are no scheduled tasks
-    m_taskGroup.wait();
-
     // This would be the last action
     m_actionsQueue.push( [this]() -> StatusCode {
       ON_VERBOSE verbose() << "Deactivating scheduler" << endmsg;
@@ -666,11 +671,7 @@ StatusCode AvalancheSchedulerSvc::iterate() {
         << thisAlgsStates.sizeOfSubset( AState::DATAREADY ) << ", " << thisAlgsStates.sizeOfSubset( AState::SCHEDULED )
         << ", " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << "\n";
       auto threads = ( m_threadPoolSize != -1 ) ? std::to_string( m_threadPoolSize )
-#if TBB_INTERFACE_VERSION_MAJOR < 12
-                                                : std::to_string( tbb::task_scheduler_init::default_num_threads() );
-#else
                                                 : std::to_string( std::thread::hardware_concurrency() );
-#endif // TBB_INTERFACE_VERSION_MAJOR < 12
       std::ofstream myfile;
       myfile.open( "IntraEventFSMOccupancy_" + threads + "T.csv", std::ios::app );
       myfile << s.str();
@@ -938,8 +939,8 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
         // Add the algorithm to the scheduled queue
         m_scheduledQueue.push( std::move( ts ) );
 
-        // schedule the task
-        m_taskGroup.run( AlgTask( this, serviceLocator(), m_algExecStateSvc ) );
+        // Prepare a TBB task that will execute the Algorithm according to the above queued specs
+        m_arena->enqueue( AlgTask( this, serviceLocator(), m_algExecStateSvc, false ) );
         ++m_algosInFlight;
 
       } else { // schedule blocking algorithm in independent thread
@@ -963,10 +964,9 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
                        << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
-      AlgTask theTask( this, serviceLocator(), m_algExecStateSvc, false );
       ++m_algosInFlight;
       sc = revise( ts.algIndex, ts.contextPtr, AState::SCHEDULED );
-      theTask();
+      AlgTask( this, serviceLocator(), m_algExecStateSvc, false )();
       --m_algosInFlight;
     }
   } else { // if no Algorithm instance available, retry later

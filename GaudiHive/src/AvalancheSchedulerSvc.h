@@ -38,7 +38,7 @@
 // External libs
 #include "tbb/concurrent_priority_queue.h"
 #include "tbb/concurrent_queue.h"
-#include "tbb/task_group.h"
+#include "tbb/task_arena.h"
 
 class IAlgorithm;
 
@@ -330,12 +330,9 @@ private:
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
+  tbb::task_arena*        m_arena{nullptr};
   size_t                  m_maxEventsInFlight{0};
   size_t                  m_maxAlgosInFlight{1};
-
-  // Task management --------------------------------------------------------
-
-  tbb::task_group m_taskGroup;
 
 public:
   // get next schedule-able TaskSpec
