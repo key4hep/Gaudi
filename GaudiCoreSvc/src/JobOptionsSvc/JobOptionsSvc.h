@@ -82,15 +82,15 @@ public:
   StatusCode start() override;
   StatusCode stop() override;
 
-private:
   /** look for file 'file' into search path 'path'
    *  and read it to update existing JobOptionsCatalogue
    *  @param file file   name
    *  @param path search path
    *  @return status code
    */
-  StatusCode readOptions( const std::string& file, const std::string& path = "" );
+  StatusCode readOptions( const std::string& file, const std::string& path = "" ) override;
 
+private:
   void fillServiceCatalog( const Gaudi::Parsers::Catalog& catalog );
 
   /// dump properties catalog to file

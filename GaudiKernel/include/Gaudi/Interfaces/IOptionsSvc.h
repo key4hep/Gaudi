@@ -101,6 +101,10 @@ namespace Gaudi {
       virtual void broadcast( const std::regex& filter, const std::string& value,
                               OnlyDefaults defaults = OnlyDefaults{true} ) = 0;
 
+      /// look for file 'file' into search path 'path'
+      /// and read it to update the options
+      virtual StatusCode readOptions( const std::string& file, const std::string& path = "" ) = 0;
+
     protected:
       virtual ~IOptionsSvc() = default;
     };
