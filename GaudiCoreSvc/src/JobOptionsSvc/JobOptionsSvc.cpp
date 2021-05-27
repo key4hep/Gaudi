@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -52,9 +52,6 @@ namespace {
   }
 #endif
 
-  void make_lower( std::string& s ) {
-    std::transform( s.begin(), s.end(), s.begin(), []( unsigned char c ) { return std::tolower( c ); } );
-  }
 } // namespace
 
 // ============================================================================
@@ -180,28 +177,6 @@ StatusCode JobOptionsSvc::setMyProperties( const std::string& client, IProperty*
   return fail ? StatusCode::FAILURE : StatusCode::SUCCESS;
 }
 
-JobOptionsSvc::StorageType::const_iterator JobOptionsSvc::i_find( const std::string& key, bool warn ) const {
-  StorageType::const_iterator iter = m_options.find( key );
-  if ( iter == m_options.end() ) { // try case insensitive lookup
-    std::string l_key = key;
-    make_lower( l_key );
-
-    auto l_iter = m_lower_to_correct_case.find( l_key );
-    if ( l_iter != m_lower_to_correct_case.end() ) iter = m_options.find( l_iter->second );
-    if ( warn && iter != m_options.end() ) {
-      warning() << "mismatching case for property name: actual name is " << key << " but " << iter->first
-                << " is in the option files" << endmsg;
-    }
-  }
-  return iter;
-}
-
-void JobOptionsSvc::i_update_case_insensitive_map( const std::string& key ) {
-  std::string l_key = key;
-  make_lower( l_key );
-  m_lower_to_correct_case[l_key] = key;
-}
-
 /// Get the list of clients
 std::vector<std::string> JobOptionsSvc::getClients() const {
   std::set<std::string> clients;
@@ -271,7 +246,7 @@ StatusCode JobOptionsSvc::readOptions( const std::string& file, const std::strin
 }
 
 void JobOptionsSvc::bind( const std::string& prefix, Gaudi::Details::PropertyBase* property ) {
-  const auto key = prefix + '.' + property->name();
+  const std::string key = prefix + '.' + property->name();
 
   std::tuple<bool, std::string_view> defaultValue{false, ""};
   if ( !has( key ) && !m_globalDefaults.empty() ) { // look for a global default only if it was not set
@@ -281,18 +256,7 @@ void JobOptionsSvc::bind( const std::string& prefix, Gaudi::Details::PropertyBas
     }
   }
 
-  auto item = i_find( key, true );
-  if ( item != m_options.end() && key != item->first ) {
-    // Storage is case insensitive, and I want to use the what the property dictates
-    auto new_item = m_options.emplace( key, std::move( m_options.find( item->first )->second ) );
-    m_options.erase( item );
-    item = new_item.first;
-  }
-  if ( item == m_options.end() ) {
-    m_options.emplace( key, *property );
-  } else {
-    m_options.find( key )->second = *property;
-  }
+  m_options[key] = *property;
 
   // at this point the property is bound, so we can set the default if needed
   if ( std::get<0>( defaultValue ) ) set( key, std::string{std::get<1>( defaultValue )} );
