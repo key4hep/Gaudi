@@ -233,13 +233,14 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
     if ( unmetDep.size() > 0 ) {
 
-      std::ostringstream ost;
-      for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
-        ost << "\n   o " << *o << "    required by Algorithm: ";
+      auto printUnmet = [&]( auto msg ) {
+        for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
+          msg << "   o " << *o << "    required by Algorithm: " << endmsg;
 
-        for ( const auto& p : algosDependenciesMap )
-          if ( p.second.find( *o ) != p.second.end() ) ost << "\n       * " << p.first;
-      }
+          for ( const auto& p : algosDependenciesMap )
+            if ( p.second.find( *o ) != p.second.end() ) msg << "       * " << p.first << endmsg;
+        }
+      };
 
       if ( !m_useDataLoader.empty() ) {
 
@@ -254,13 +255,14 @@ StatusCode AvalancheSchedulerSvc::initialize() {
         if ( dataLoaderAlg == nullptr ) {
           fatal() << "No DataLoader Algorithm \"" << m_useDataLoader.value()
                   << "\" found, and unmet INPUT dependencies "
-                  << "detected:\n"
-                  << ost.str() << endmsg;
+                  << "detected:" << endmsg;
+          printUnmet( fatal() );
           return StatusCode::FAILURE;
         }
 
         info() << "Will attribute the following unmet INPUT dependencies to \"" << dataLoaderAlg->type() << "/"
-               << dataLoaderAlg->name() << "\" Algorithm" << ost.str() << endmsg;
+               << dataLoaderAlg->name() << "\" Algorithm" << endmsg;
+        printUnmet( info() );
 
         // Set the property Load of DataLoader Alg
         Gaudi::Algorithm* dataAlg = dynamic_cast<Gaudi::Algorithm*>( dataLoaderAlg );
@@ -278,7 +280,8 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
       } else {
         fatal() << "Auto DataLoading not requested, "
-                << "and the following unmet INPUT dependencies were found:" << ost.str() << endmsg;
+                << "and the following unmet INPUT dependencies were found:" << endmsg;
+        printUnmet( fatal() );
         return StatusCode::FAILURE;
       }
 
