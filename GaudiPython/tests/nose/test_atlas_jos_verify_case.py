@@ -11,5 +11,5 @@
 def test():
     from GaudiPython import AppMgr
     app = AppMgr(selfoptions={'MessageSvcType': 'MessageSvc'})
-    prop = app._optsvc.getClientProperty(app.name(), 'MessageSvcType')
-    assert prop.value() == 'MessageSvc'
+    prop = app.opts.get(app.name() + '.MessageSvcType')
+    assert eval(prop) == 'MessageSvc'
