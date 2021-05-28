@@ -303,7 +303,7 @@ namespace Gaudi::Accumulators {
    */
   template <atomicity Atomicity, typename Arithmetic, typename ND>
   using HistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value>,
-                                                                  unsigned long, ND, CountAccumulator>;
+                                                                  unsigned long, ND, IntegralAccumulator>;
 
   /**
    * Class implementing a weighted histogram accumulator
