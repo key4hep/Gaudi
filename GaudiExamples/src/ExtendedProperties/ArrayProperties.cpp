@@ -73,7 +73,6 @@ namespace Gaudi {
 // execute it!
 // ============================================================================
 StatusCode Gaudi::Examples::ArrayProperties::execute() {
-  propsPrint();
   //
   info() << " Doubles : " << Gaudi::Utils::toString( m_doubles ) << endmsg;
   info() << " Strings : " << Gaudi::Utils::toString( m_strings ) << endmsg;
