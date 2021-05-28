@@ -161,7 +161,8 @@ namespace Gaudi::Accumulators {
     template <class... ARGS>
     HistoInputType( ARGS... args ) : std::array<Arithmetic, ND>{static_cast<Arithmetic>( args )...} {}
     // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
-    using ValueType = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
+    using ValueType          = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
+    using AxisArithmeticType = Arithmetic;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       unsigned int index = 0;
       for ( unsigned int dim = 0; dim < NIndex; dim++ ) {
@@ -184,7 +185,8 @@ namespace Gaudi::Accumulators {
   template <typename Arithmetic>
   class HistoInputType<Arithmetic, 1> {
   public:
-    using ValueType = HistoInputType;
+    using ValueType          = HistoInputType;
+    using AxisArithmeticType = Arithmetic;
     HistoInputType( Arithmetic a ) : value( a ) {}
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const {
       int index = std::floor( ( value - axis[0].minValue ) * axis[0].ratio ) + 1;
@@ -202,7 +204,8 @@ namespace Gaudi::Accumulators {
   template <typename Arithmetic, unsigned int ND, unsigned int NIndex = ND>
   struct WeightedHistoInputType : std::pair<HistoInputType<Arithmetic, ND, NIndex>, Arithmetic> {
     // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
-    using ValueType = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
+    using ValueType          = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
+    using AxisArithmeticType = Arithmetic;
     using std::pair<HistoInputType<Arithmetic, ND, NIndex>, Arithmetic>::pair;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       return this->first.computeIndex( axis );
@@ -231,9 +234,10 @@ namespace Gaudi::Accumulators {
     friend class HistogramingAccumulatorInternal;
 
   public:
-    using BaseAccumulator = BaseAccumulatorT<Atomicity, Arithmetic>;
+    using BaseAccumulator    = BaseAccumulatorT<Atomicity, Arithmetic>;
+    using AxisArithmeticType = typename InputType::AxisArithmeticType;
     template <std::size_t... Is>
-    HistogramingAccumulatorInternal( std::initializer_list<Axis<Arithmetic>> axis, std::index_sequence<Is...> )
+    HistogramingAccumulatorInternal( std::initializer_list<Axis<AxisArithmeticType>> axis, std::index_sequence<Is...> )
         : m_axis{{*( axis.begin() + Is )...}}
         , m_totNBins{computeTotNBins()}
         , m_value( new BaseAccumulator[m_totNBins] ) {
@@ -285,7 +289,7 @@ namespace Gaudi::Accumulators {
       return nTotBins;
     }
     /// set of Axis of this Histogram
-    std::array<Axis<Arithmetic>, ND::value> m_axis;
+    std::array<Axis<AxisArithmeticType>, ND::value> m_axis;
     /// total number of bins in this histogram, under and overflow included
     unsigned int m_totNBins;
     /// Histogram content
@@ -299,7 +303,7 @@ namespace Gaudi::Accumulators {
    */
   template <atomicity Atomicity, typename Arithmetic, typename ND>
   using HistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value>,
-                                                                  Arithmetic, ND, CountAccumulator>;
+                                                                  unsigned long, ND, CountAccumulator>;
 
   /**
    * Class implementing a weighted histogram accumulator
