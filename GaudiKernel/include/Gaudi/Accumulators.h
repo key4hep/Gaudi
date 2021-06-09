@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -80,6 +80,8 @@ namespace Gaudi::Accumulators {
  *     + MinAccumulator : keeps the min, has a min() method
  *     + CountAccumulator : keeps count of number of values, has a nEntries() method
  *     + SumAccumulator : keeps the sum of all values, has a sum() method
+ *     + IntegralAccumulator : similar to CountAccumulator and SumAccumulator for integers, has a nEntries() and a sum()
+ * method
  *     + SquareAccumulator : keeps the sum of all values squared, has a sum2() method
  *     + TrueAccumulator : keeps a count of the number of true values, has a nTrueEntries() method
  *     + FalseAccumulator : keeps a count of the number of false values, has a nFalseEntries() method
@@ -588,6 +590,30 @@ namespace Gaudi::Accumulators {
   };
 
   /**
+   * IntegralAccumulator. An IntegralAccumulator is an Accumulator with an integral storage
+   * (unsigned long, int, ...) that can be incremented via operator++ and operator+=.
+   * @see Gaudi::Accumulators for detailed documentation
+   */
+  template <atomicity Atomicity, typename Arithmetic = unsigned long>
+  struct IntegralAccumulator : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity> {
+    static_assert( std::is_integral_v<Arithmetic>,
+                   "Invalid Arithmetic type for IntegralAccumulator. It must be an integral type" );
+
+    using GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity>::GenericAccumulator;
+    IntegralAccumulator& operator++() {
+      ( *this ) += 1;
+      return *this;
+    }
+    IntegralAccumulator operator++( int ) {
+      auto copy = *this;
+      ++( *this );
+      return copy;
+    }
+    Arithmetic nEntries() const { return this->value(); }
+    Arithmetic sum() const { return this->value(); }
+  };
+
+  /**
    * SquareAccumulator. A SquareAccumulator is an Accumulator storing the sum of squares of the provided values
    * @see Gaudi::Accumulators for detailed documentation
    */
@@ -860,29 +886,27 @@ namespace Gaudi::Accumulators {
   };
 
   /**
-   * A basic counter counting input values
+   * A basic integral counter;
    * @see Gaudi::Accumulators for detailed documentation
-   * Note that the Arithmetic type given to the underlying CountAccumulator is not used
-   * (see doc for CountAccumulator), thus it's hardcoded to int with no restriction
-   * of genericity
    */
-  template <atomicity Atomicity = atomicity::full>
-  struct Counter : BufferableCounter<Atomicity, CountAccumulator, int> {
-    inline static const std::string typeString{std::string{"counter:Counter:"} + typeid( int ).name()};
-    using BufferableCounter<Atomicity, CountAccumulator, int>::BufferableCounter;
+  template <atomicity Atomicity = atomicity::full, typename Arithmetic = unsigned long>
+  struct Counter : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic> {
+    inline static const std::string typeString{std::string{"counter:Counter:"} + typeid( unsigned long ).name()};
+    using BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     Counter( OWNER* o, std::string const& name )
-        : BufferableCounter<Atomicity, CountAccumulator, int>( o, name, typeString ) {}
-    Counter& operator++() {
-      ( *this ) += 0; // note that this '0' value is actually not used
-      return *this;
-    }
-    Counter operator++( int ) {
+        : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>( o, name, typeString ) {}
+    Counter& operator++() { return ( *this ) += 1; }
+    Counter  operator++( int ) {
       auto copy = *this;
       ++( *this );
       return copy;
     }
-    using BufferableCounter<Atomicity, CountAccumulator, int>::print;
+    Counter& operator+=( const Arithmetic v ) {
+      BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::operator+=( v );
+      return *this;
+    }
+    using BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::print;
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
