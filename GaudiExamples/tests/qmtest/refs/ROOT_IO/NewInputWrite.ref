@@ -532,7 +532,7 @@ ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Looping over all active services...
 ServiceManager      DEBUG ---- MessageSvc (refCount = 27)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)

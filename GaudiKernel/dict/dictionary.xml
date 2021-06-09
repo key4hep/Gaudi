@@ -80,7 +80,6 @@
   <class name="IInspector"/>
   <class name="IInterface"/>
   <class name="InterfaceID"/>
-  <class name="IJobOptionsSvc"/>
   <class name="IMagneticFieldSvc"/>
   <class name="IMessageSvc"/>
   <class name="IMonitorSvc"/>

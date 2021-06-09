@@ -39,7 +39,6 @@ class IIncidentSvc;
 class IRunable;
 class IDataManagerSvc;
 class IConversionSvc;
-class IJobOptionsSvc;
 
 /** @class ApplicationMgr
 
@@ -220,7 +219,7 @@ protected:
   Gaudi::Property<std::string> m_messageSvcType{this, "MessageSvcType", "MessageSvc", "MessageSvc type",
                                                 "Service:IMessageSvc"};
   Gaudi::Property<std::string> m_jobOptionsSvcType{this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type",
-                                                   "Service:IJobOptionsSvc"};
+                                                   "Service:Gaudi::Interfaces::IOptionsSvc"};
 
   std::string                m_name        = "ApplicationMgr";             ///< Name
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::OFFLINE; ///< Internal State
@@ -233,7 +232,6 @@ protected:
   SmartIF<IMessageSvc>     m_messageSvc;    ///< Reference to the message service
   SmartIF<IRunable>        m_runable;       ///< Reference to the runable object
   SmartIF<IEventProcessor> m_processingMgr; ///< Reference to processing manager object
-  SmartIF<IJobOptionsSvc>  m_jobOptionsSvc; ///< Reference to JobOption service
 
   SmartIF<IQueueingEventProcessor> m_queueingProcessor; ///< Reference to a queueing processing manager object
 

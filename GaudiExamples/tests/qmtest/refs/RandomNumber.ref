@@ -149,7 +149,7 @@ IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.0005(+-0.02235
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Looping over all active services...
 ServiceManager      DEBUG ---- MessageSvc (refCount = 21)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)

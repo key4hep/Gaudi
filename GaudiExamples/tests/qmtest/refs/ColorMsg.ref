@@ -120,7 +120,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Finalizing service AppMgrRunable[m
 [92;1mServiceManager      DEBUG Looping over all active services...[m
 [92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 17)[m
-[92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)[m
+[92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)[m

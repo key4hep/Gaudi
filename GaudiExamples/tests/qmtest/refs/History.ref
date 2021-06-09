@@ -163,7 +163,7 @@ HistorySvc        VERBOSE HistorySvc::finalize()[m
 HistorySvc           INFO Service finalised successfully[m
 ServiceManager      DEBUG Looping over all active services...[m
 ServiceManager      DEBUG ---- MessageSvc (refCount = 21)[m
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistorySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)[m

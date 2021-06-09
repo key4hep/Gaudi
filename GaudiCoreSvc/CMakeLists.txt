@@ -59,7 +59,7 @@ gaudi_add_module(GaudiCoreSvc
                    ${rt_LIBRARY} # UNIX only
                    ${GAUDI_ATOMIC_LIBS})
 
-foreach(name IN ITEMS base binding bwcompat custom)
+foreach(name IN ITEMS base binding)
     gaudi_add_executable(test_JOS_${name} SOURCES tests/src/test_JOS/${name}.cpp
                          LINK GaudiKernel Boost::unit_test_framework TEST)
 endforeach()

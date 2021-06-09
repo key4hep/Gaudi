@@ -9,10 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
-#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 // Include files
 #include "ServiceManager.h"
 #include "GaudiKernel/IIncidentListener.h"
@@ -26,8 +22,6 @@
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/reverse.h"
-
-#include "JOSAdapter.h"
 
 #include <algorithm>
 #include <cassert>
@@ -108,8 +102,8 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
 
   if ( name == "JobOptionsSvc" ) {
     if ( !dynamic_cast<Gaudi::Interfaces::IOptionsSvc*>( service ) ) {
-      warning() << typeName << " does not implement Gaudi::Interfaces::IOptionsSvc, using interface adapter" << endmsg;
-      service = new Gaudi::Details::JOSAdapter{service, this};
+      fatal() << typeName << " does not implement Gaudi::Interfaces::IOptionsSvc" << endmsg;
+      return no_service;
     }
   }
 

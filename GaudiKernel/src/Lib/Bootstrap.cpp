@@ -8,10 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
-#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1q
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 #include <iostream>
 
 #include "GaudiKernel/Bootstrap.h"
@@ -29,7 +25,6 @@
 #include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/IEventProcessor.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 
 #include "RVersion.h"
 
@@ -258,10 +253,6 @@ const char* PyHelper( getProperty )( IInterface* p, char* name ) {
 bool PyHelper( configureApp )( IInterface* app ) {
   auto ui = SmartIF<IAppMgrUI>( app );
   return ui && ui->configure().isSuccess();
-}
-bool PyHelper( addPropertyToCatalogue )( IInterface* p, char* comp, char* name, char* value ) {
-  auto jos = SmartIF<IJobOptionsSvc>( p );
-  return jos && jos->addPropertyToCatalogue( comp, Gaudi::Property<std::string>( name, value ) ).isSuccess();
 }
 int PyHelper( ROOT_VERSION_CODE )() { return ROOT_VERSION_CODE; }
 

@@ -8,8 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
-#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1
 
 // Include files
 #include "ApplicationMgr.h"
@@ -18,7 +16,6 @@
 #include "DLLClassManager.h"
 #include "ServiceManager.h"
 
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IRunable.h"
 #include "GaudiKernel/IService.h"
@@ -155,12 +152,7 @@ StatusCode ApplicationMgr::i_startup() {
     log << MSG::FATAL << "Error creating JobOptionsSvc" << endmsg;
     return StatusCode::FAILURE;
   }
-  // Get the useful interface from JobOptionsSvc services
-  m_jobOptionsSvc = m_svcLocator->service( "JobOptionsSvc" );
-  if ( !m_jobOptionsSvc ) {
-    log << MSG::FATAL << "Error retrieving JobOptionsSvc." << endmsg;
-    return StatusCode::FAILURE;
-  }
+
   auto jobOptsIProp = jobsvc.as<IProperty>();
   if ( !jobOptsIProp ) {
     log << MSG::FATAL << "Error locating JobOptionsSvc" << endmsg;
@@ -467,8 +459,7 @@ StatusCode ApplicationMgr::initialize() {
 //============================================================================
 StatusCode ApplicationMgr::start() {
 
-  MsgStream  log( m_messageSvc, name() );
-  StatusCode sc;
+  MsgStream log( m_messageSvc, name() );
 
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
     log << MSG::INFO << "Already Initialized!" << endmsg;
@@ -483,25 +474,18 @@ StatusCode ApplicationMgr::start() {
   //--------------------------------------------------------------------------
   // Initialize the list of top Services
   //--------------------------------------------------------------------------
-  sc = m_jobOptionsSvc.as<IService>()->sysStart();
-  if ( !sc.isSuccess() ) return sc;
-
-  sc = m_messageSvc.as<IService>()->sysStart();
-  if ( !sc.isSuccess() ) return sc;
-
-  sc = svcManager()->start();
-  if ( !sc.isSuccess() ) return sc;
-
-  sc = algManager()->start();
-  if ( !sc.isSuccess() ) return sc;
-
-  //--------------------------------------------------------------------------
-  // Final steps: Inform user and change internal state
-  //--------------------------------------------------------------------------
-  log << MSG::INFO << "Application Manager Started successfully" << endmsg;
-  m_state = m_targetState;
-
-  return sc;
+  return m_svcLocator->service( "JobOptionsSvc" )
+      ->sysStart()
+      .andThen( [&]() { return m_messageSvc.as<IService>()->sysStart(); } )
+      .andThen( [&]() { return svcManager()->start(); } )
+      .andThen( [&]() { return algManager()->start(); } )
+      .andThen( [&]() {
+        //--------------------------------------------------------------------------
+        // Final steps: Inform user and change internal state
+        //--------------------------------------------------------------------------
+        log << MSG::INFO << "Application Manager Started successfully" << endmsg;
+        m_state = m_targetState;
+      } );
 }
 
 //============================================================================
@@ -526,8 +510,7 @@ StatusCode ApplicationMgr::nextEvent( int maxevt ) {
 //============================================================================
 StatusCode ApplicationMgr::stop() {
 
-  MsgStream  log( m_messageSvc, name() );
-  StatusCode sc;
+  MsgStream log( m_messageSvc, name() );
 
   if ( m_state == Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::INFO << "Already Initialized!" << endmsg;
@@ -540,28 +523,21 @@ StatusCode ApplicationMgr::stop() {
   m_targetState = Gaudi::StateMachine::INITIALIZED;
 
   // Stop independently managed Algorithms
-  sc = algManager()->stop();
-  if ( !sc.isSuccess() ) return sc;
-
-  //--------------------------------------------------------------------------
-  // Stop the list of top Services
-  //--------------------------------------------------------------------------
-  sc = svcManager()->stop();
-  if ( !sc.isSuccess() ) return sc;
-
-  sc = m_messageSvc.as<IService>()->sysStop();
-  if ( !sc.isSuccess() ) return sc;
-
-  sc = m_jobOptionsSvc.as<IService>()->sysStop();
-  if ( !sc.isSuccess() ) return sc;
-
-  //--------------------------------------------------------------------------
-  // Final steps: Inform user and change internal state
-  //--------------------------------------------------------------------------
-  log << MSG::INFO << "Application Manager Stopped successfully" << endmsg;
-  m_state = m_targetState;
-
-  return sc;
+  return algManager()
+      ->stop()
+      //--------------------------------------------------------------------------
+      // Stop the list of top Services
+      //--------------------------------------------------------------------------
+      .andThen( [&]() { return svcManager()->stop(); } )
+      .andThen( [&]() { return m_messageSvc.as<IService>()->sysStop(); } )
+      .andThen( [&]() { return m_svcLocator->service( "JobOptionsSvc" )->sysStop(); } )
+      //--------------------------------------------------------------------------
+      // Final steps: Inform user and change internal state
+      //--------------------------------------------------------------------------
+      .andThen( [&]() {
+        log << MSG::INFO << "Application Manager Stopped successfully" << endmsg;
+        m_state = m_targetState;
+      } );
 }
 
 //============================================================================
@@ -636,13 +612,12 @@ StatusCode ApplicationMgr::terminate() {
     log << MSG::ERROR << "Application Manager Terminated with error code " << m_returnCode.value() << endmsg;
   }
 
-  { // Force a disable the auditing of finalize for MessageSvc
-    auto prop = m_messageSvc.as<IProperty>();
-    if ( prop ) { prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore(); }
-  }
-  { // Force a disable the auditing of finalize for JobOptionsSvc
-    auto prop = m_jobOptionsSvc.as<IProperty>();
-    if ( prop ) { prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore(); }
+  {
+    auto& opts = m_svcLocator->getOptsSvc();
+    // Force a disable the auditing of finalize for MessageSvc
+    opts.set( "MessageSvc.AuditFinalize", "false" );
+    // Force a disable the auditing of finalize for JobOptionsSvc
+    opts.set( "JobOptionsSvc.AuditFinalize", "false" );
   }
 
   // finalize MessageSvc
@@ -654,7 +629,7 @@ StatusCode ApplicationMgr::terminate() {
   }
 
   // finalize JobOptionsSvc
-  svc = m_jobOptionsSvc.as<IService>();
+  svc = m_svcLocator->service( "JobOptionsSvc" );
   if ( !svc ) {
     log << MSG::ERROR << "Could not get the IService interface of the JobOptionsSvc" << endmsg;
   } else {
@@ -864,7 +839,7 @@ StatusCode ApplicationMgr::reinitialize() {
 
   sc = m_messageSvc.as<IService>()->sysReinitialize();
   if ( sc.isFailure() ) retval = sc;
-  sc = m_jobOptionsSvc.as<IService>()->sysReinitialize();
+  sc = m_svcLocator->service( "JobOptionsSvc" )->sysReinitialize();
   if ( sc.isFailure() ) retval = sc;
 
   log << MSG::INFO << "Application Manager Reinitialized successfully" << endmsg;
@@ -889,7 +864,7 @@ StatusCode ApplicationMgr::restart() {
 
   sc = m_messageSvc.as<IService>()->sysRestart();
   if ( sc.isFailure() ) retval = sc;
-  sc = m_jobOptionsSvc.as<IService>()->sysRestart();
+  sc = m_svcLocator->service( "JobOptionsSvc" )->sysRestart();
   if ( sc.isFailure() ) retval = sc;
 
   return retval;

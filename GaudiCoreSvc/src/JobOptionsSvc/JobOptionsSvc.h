@@ -11,14 +11,12 @@
 #ifndef JOBOPTIONSSVC_H_
 #define JOBOPTIONSSVC_H_
 
-#include "GaudiKernel/IJobOptionsSvc.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/PropertyHolder.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/StatusCode.h"
+#include <Gaudi/Interfaces/IOptionsSvc.h>
 #include <Gaudi/Property.h>
-
-#include "Gaudi/Interfaces/IOptionsSvc.h"
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/PropertyHolder.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/StatusCode.h>
 
 #include <map>
 #include <vector>
@@ -29,7 +27,7 @@ namespace Gaudi {
   }
 } // namespace Gaudi
 
-class JobOptionsSvc : public extends<Service, IJobOptionsSvc, Gaudi::Interfaces::IOptionsSvc> {
+class JobOptionsSvc : public extends<Service, Gaudi::Interfaces::IOptionsSvc> {
 public:
   typedef std::vector<const Gaudi::Details::PropertyBase*> PropertiesT;
 
@@ -84,44 +82,15 @@ public:
   StatusCode start() override;
   StatusCode stop() override;
 
-  /** Override default properties of the calling client
-         @param client Name of the client algorithm or service
-         @param me Address of the interface IProperty of the client
-   */
-  StatusCode setMyProperties( const std::string& client, IProperty* me ) override;
-
-  /// Add a property into the JobOptions catalog
-  StatusCode addPropertyToCatalogue( const std::string& client, const Gaudi::Details::PropertyBase& property ) override;
-
-  /// Remove a property from the JobOptions catalog
-  StatusCode removePropertyFromCatalogue( const std::string& client, const std::string& name ) override;
-
-  using Service::getProperties;
-  /// Get the properties associated to a given client
-  const std::vector<const Gaudi::Details::PropertyBase*>* getProperties( const std::string& client ) const override;
-
-  using Service::getProperty;
-  /// Get a property for a client
-  const Gaudi::Details::PropertyBase* getClientProperty( const std::string& client,
-                                                         const std::string& name ) const override {
-    const std::string key = client + '.' + name;
-
-    auto p = std::make_unique<Gaudi::Property<std::string>>( name, "" );
-    p->fromString( get( key ) ).ignore();
-    return ( m_old_iface_compat[key] = std::move( p ) ).get();
-  }
-  /// Get the list of clients
-  std::vector<std::string> getClients() const override;
-
+private:
   /** look for file 'file' into search path 'path'
    *  and read it to update existing JobOptionsCatalogue
    *  @param file file   name
    *  @param path search path
    *  @return status code
    */
-  StatusCode readOptions( const std::string& file, const std::string& path = "" ) override;
+  StatusCode readOptions( const std::string& file, const std::string& path = "" );
 
-private:
   void fillServiceCatalog( const Gaudi::Parsers::Catalog& catalog );
 
   /// dump properties catalog to file
