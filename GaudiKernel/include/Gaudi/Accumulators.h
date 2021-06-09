@@ -272,10 +272,10 @@ namespace Gaudi::Accumulators {
   };
 
   /**
-   * type_traits for checking the presence of fetch_add in std::atomic<T>
+   * type_traits for checking the presence of fetch_add
    */
   template <typename T, typename = int>
-  using has_fetch_add_ = decltype( std::atomic<T>{}.fetch_add( 0 ) );
+  using has_fetch_add_ = decltype( std::declval<T&>().fetch_add( 0 ) );
   template <typename T>
   inline constexpr bool has_fetch_add_v = Gaudi::cpp17::is_detected_v<has_fetch_add_, T>;
 
