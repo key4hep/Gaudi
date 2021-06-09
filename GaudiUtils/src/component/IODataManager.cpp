@@ -231,7 +231,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
   MsgStream   log( msgSvc(), name() );
   std::string dsn = dataset;
   try {
-    StatusCode sc( StatusCode::SUCCESS, true );
+    StatusCode sc = StatusCode::SUCCESS;
     if ( ::strncasecmp( dsn.c_str(), "FID:", 4 ) == 0 )
       dsn = dataset.substr( 4 ), typ = FID;
     else if ( ::strncasecmp( dsn.c_str(), "LFN:", 4 ) == 0 )

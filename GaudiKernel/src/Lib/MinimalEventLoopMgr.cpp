@@ -167,7 +167,7 @@ StatusCode MinimalEventLoopMgr::start() {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::stop() {
 
-  StatusCode sc( StatusCode::SUCCESS, true );
+  StatusCode sc{StatusCode::SUCCESS};
 
   // Stop all the TopAlgs. In fact Algorithms are protected against getting
   // stopped twice.
@@ -390,10 +390,10 @@ StatusCode MinimalEventLoopMgr::executeEvent( EventContext&& context ) {
     std::ostringstream ost;
     m_aess->dump( ost, context );
     debug() << "Dumping AlgExecStateSvc status:\n" << ost.str() << endmsg;
-    return StatusCode( StatusCode::FAILURE, true );
+    return StatusCode::FAILURE;
   }
 
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 //--------------------------------------------------------------------------------------------
 // Implementation of IEventProcessor::stopRun()

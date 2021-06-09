@@ -171,7 +171,7 @@ protected:
   /// Pointer to the data registry containing the object
   mutable IRegistry* m_pRegistry = nullptr;
   /// Keep track of the last error
-  mutable StatusCode m_status = {StatusCode::SUCCESS, true};
+  mutable StatusCode m_status = StatusCode::SUCCESS;
   /// Path to object
   std::string m_path;
   /// Data access function

@@ -1027,9 +1027,8 @@ lineSkipper = LineSkipper(
         r"INFO Disconnected from dataset",
         r"INFO Disconnected data IO:",
         r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
-        # I want to ignore the header of the unchecked StatusCode report
-        r"^StatusCodeSvc.*listing all unchecked return codes:",
-        r"^StatusCodeSvc\s*INFO\s*$",
+        # Ignore StatusCodeSvc related messages
+        r".*StatusCodeSvc.*",
         r"Num\s*\|\s*Function\s*\|\s*Source Library",
         r"^[-+]*\s*$",
         # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
@@ -1037,8 +1036,6 @@ lineSkipper = LineSkipper(
         # Hide unchecked StatusCodes from dictionaries
         r"^ +[0-9]+ \|.*ROOT",
         r"^ +[0-9]+ \|.*\|.*Dict",
-        # Hide success StatusCodeSvc message
-        r"StatusCodeSvc.*all StatusCode instances where checked",
         # Hide EventLoopMgr total timing report
         r"EventLoopMgr.*---> Loop Finished",
         r"HiveSlimEventLo.*---> Loop Finished",

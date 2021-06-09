@@ -192,8 +192,8 @@ namespace Gaudi {
     }
     /// Read reference tables
     StatusCode readRefs() override {
-      TTree*     t = (TTree*)c->file()->Get( "Sections" );
-      StatusCode sc( StatusCode::SUCCESS, true );
+      TTree*     t  = (TTree*)c->file()->Get( "Sections" );
+      StatusCode sc = StatusCode::SUCCESS;
       StringVec  tmp;
       if ( t && !( sc = readBranch( t, "Sections", tmp, &RootTool::addEntry ) ).isSuccess() )
         return sc;

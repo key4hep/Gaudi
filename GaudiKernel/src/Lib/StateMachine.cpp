@@ -41,7 +41,7 @@ namespace Gaudi {
       }
       std::stringstream msg;
       msg << "Invalid transition '" << transition << "' from state '" << state << "'";
-      throw GaudiException( msg.str(), "Gaudi::StateMachine::ChangeState", StatusCode( StatusCode::FAILURE, true ) );
+      throw GaudiException( msg.str(), "Gaudi::StateMachine::ChangeState", StatusCode::FAILURE );
       return OFFLINE; // never reached, but maked the compiler happy
     }
   } // namespace StateMachine

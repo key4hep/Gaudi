@@ -70,7 +70,7 @@ StatusCode RootDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pOb
 StatusCode RootDirectoryCnv::updateObjRefs( IOpaqueAddress* pAddr, DataObject* pObject ) {
   typedef vector<RootNTupleDescriptor*> REFS;
   REFS                                  refs;
-  StatusCode                            status = StatusCode( StatusCode::FAILURE, true );
+  StatusCode                            status = StatusCode::FAILURE;
   if ( pAddr ) {
     IRegistry* pReg = pAddr->registry();
     if ( pReg ) {

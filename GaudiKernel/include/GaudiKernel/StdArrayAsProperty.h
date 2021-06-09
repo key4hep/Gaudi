@@ -48,8 +48,8 @@ namespace Gaudi {
     StatusCode parse( std::array<TYPE, N>& result, const std::string& input ) {
       std::vector<TYPE> tmp;
       StatusCode        sc = parse( tmp, input );
-      if ( sc.isFailure() ) return sc; // RETURN
-      if ( N != tmp.size() ) return StatusCode( StatusCode::FAILURE, true );
+      if ( sc.isFailure() ) return sc;
+      if ( N != tmp.size() ) return StatusCode::FAILURE;
       std::copy( tmp.begin(), tmp.end(), result.begin() );
       return StatusCode::SUCCESS;
     }

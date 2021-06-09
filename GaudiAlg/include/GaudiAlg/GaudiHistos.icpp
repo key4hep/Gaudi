@@ -111,9 +111,7 @@ StatusCode GaudiHistos<PBASE>::
   }
 
   // Finally, print the location histogram will be written to
-  this->Print( "The histogram path is set to be '" + histoPath() + "'", StatusCode( StatusCode::SUCCESS, true ),
-               MSG::DEBUG )
-      .ignore();
+  this->Print( "The histogram path is set to be '" + histoPath() + "'", StatusCode::SUCCESS, MSG::DEBUG ).ignore();
 
   return sc;
 }

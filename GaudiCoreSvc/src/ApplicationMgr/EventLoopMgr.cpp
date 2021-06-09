@@ -279,7 +279,7 @@ StatusCode EventLoopMgr::nextEvent( int maxevt ) {
   const float oneOver1024 = 1.f / 1024.f;
 
   DataObject* pObject = nullptr;
-  StatusCode  sc( StatusCode::SUCCESS, true );
+  StatusCode  sc      = StatusCode::SUCCESS;
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop

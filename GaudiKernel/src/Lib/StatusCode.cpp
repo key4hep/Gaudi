@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,14 +14,10 @@
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/IStatusCodeSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 #include <exception>
-
-// statics
-bool StatusCode::s_checking( false );
 
 constexpr const StatusCode::ErrorCode StatusCode::SUCCESS;
 constexpr const StatusCode::ErrorCode StatusCode::FAILURE;
@@ -50,44 +46,11 @@ namespace {
 
 STATUSCODE_ENUM_IMPL( StatusCode::ErrorCode, DefaultCategory )
 
-void StatusCode::enableChecking() { s_checking = true; }
+void StatusCode::enableChecking() {}
 
-void StatusCode::disableChecking() { s_checking = false; }
+void StatusCode::disableChecking() {}
 
-bool StatusCode::checkingEnabled() { return s_checking; }
-
-void StatusCode::check() {
-
-  if ( !m_checked && !GaudiException::s_proc && !std::uncaught_exceptions() ) {
-
-    auto msg = Gaudi::svcLocator()->as<IMessageSvc>();
-    auto scs = Gaudi::svcLocator()->service<IStatusCodeSvc>( "StatusCodeSvc" );
-
-    const size_t depth = 21;
-    void*        addresses[depth];
-
-    std::string lib, fnc;
-    void*       addr = nullptr;
-    /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
-    if ( System::backTrace( addresses, depth ) ) {
-
-      for ( size_t idx : {2, 3} ) {
-        // When running address sanitizer builds with -fno-omit-frame-pointer
-        // StatusCode::check() might appear as the function name, so skip.
-        if ( System::getStackLevel( addresses[idx], addr, fnc, lib ) && fnc != "StatusCode::~StatusCode()" &&
-             fnc != "StatusCode::check()" ) {
-          if ( scs ) {
-            scs->regFnc( fnc, lib );
-          } else {
-            MsgStream log( msg, "StatusCode" );
-            log << MSG::WARNING << "Unchecked in " << fnc << " (" << lib << ")" << endmsg;
-          }
-          break;
-        }
-      }
-    }
-  }
-}
+bool StatusCode::checkingEnabled() { return false; }
 
 void StatusCode::i_doThrow( std::string_view message, std::string_view tag ) const {
   throw GaudiException{std::string{message}, std::string{tag}, *this};

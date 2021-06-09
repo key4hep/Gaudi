@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -67,7 +67,7 @@ NTupleSvc::NTupleSvc( const std::string& name, ISvcLocator* svc ) : base_class( 
 StatusCode NTupleSvc::initialize() {
   StatusCode status = DataSvc::initialize();
   if ( status.isSuccess() ) {
-    StatusCode  iret( StatusCode::SUCCESS, true );
+    StatusCode  iret = StatusCode::SUCCESS;
     DataObject* root = new NTuple::Directory();
     status           = setRoot( m_rootName, root );
     for ( auto& i : m_output ) {

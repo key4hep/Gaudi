@@ -495,7 +495,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   if ( mytool ) mytool->bindPropertiesTo( serviceLocator()->getOptsSvc() );
 
   // Initialize the Tool
-  StatusCode sc( StatusCode::FAILURE, true );
+  StatusCode sc = StatusCode::FAILURE;
   try {
     sc = toolguard->sysInitialize();
   }

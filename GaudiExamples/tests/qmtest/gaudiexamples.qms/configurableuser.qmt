@@ -16,7 +16,6 @@
                            <text>ConfigurableUser.py</text></set></argument>
 <argument name="validator"><text>
 countErrorLines()
-findReferenceBlock("ServiceManager      DEBUG Initializing service StatusCodeSvc")
 findReferenceBlock("""
 ==== Configuration completed ====
 /***** Service ApplicationMgr/ApplicationMgr *******************************************************

@@ -21,11 +21,9 @@ FileMgr.LogFile = "filemgr.log";
 //FileMgr.TSSL_CertDir = "NONE";
 ApplicationMgr.OutputLevel = 1;
 ServiceManager.OutputLevel = 2;
-StatusCodeSvc.OutputLevel = 1;
 
 //--------------------------------------------------------------
 // Event related parameters
 //--------------------------------------------------------------
 ApplicationMgr.EvtMax   = 3;
 ApplicationMgr.EvtSel  = "NONE";
-

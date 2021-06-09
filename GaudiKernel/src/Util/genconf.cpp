@@ -431,9 +431,6 @@ int main( int argc, char** argv )
 int configGenerator::genConfig( const Strings_t& libs, const string& userModule )
 //-----------------------------------------------------------------------------
 {
-  //--- Disable checking StatusCode -------------------------------------------
-  StatusCode::disableChecking();
-
   const auto endLib = libs.end();
 
   static const std::string gaudiSvc = "GaudiCoreSvc";

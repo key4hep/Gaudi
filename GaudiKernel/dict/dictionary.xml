@@ -107,7 +107,6 @@
   <class name="IService"/>
   <class name="IStagerSvc"/>
   <class name="IStateful"/>
-  <class name="IStatusCodeSvc"/>
   <!--class name="ISvcFactory"/-->
   <class name="ISvcLocator"/>
   <class name="ISvcManager"/>

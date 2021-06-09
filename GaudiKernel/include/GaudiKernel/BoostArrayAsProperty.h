@@ -86,8 +86,8 @@ namespace Gaudi {
       _Vct tmp;
       // parse the string
       StatusCode sc = parse( tmp, input );
-      if ( sc.isFailure() ) { return sc; }                                       // RETURN
-      if ( N != tmp.size() ) { return StatusCode( StatusCode::FAILURE, true ); } // RETURN
+      if ( sc.isFailure() ) { return sc; }
+      if ( N != tmp.size() ) { return StatusCode::FAILURE; }
       // copy vector into array
       std::copy( tmp.begin(), tmp.end(), result.begin() );
       //

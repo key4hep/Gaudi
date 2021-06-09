@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -178,8 +178,7 @@ public:
     try {
       Gaudi::Details::PropertyBase* p = property( n );
       /// @fixme SUCCESS is not required to be checked for compatibility with Gaudi::Utils::setProperty
-      return ( p && p->fromString( r ) ) ? StatusCode{StatusCode::SUCCESS, true}
-                                         : StatusCode{StatusCode::FAILURE, true};
+      return ( p && p->fromString( r ) ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
     } catch ( const std::invalid_argument& err ) {
       throw GaudiException{"error setting property " + n, this->name(), StatusCode::FAILURE, err};
     }

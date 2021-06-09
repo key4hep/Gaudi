@@ -98,7 +98,6 @@
 #include "GaudiKernel/ISerialize.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/IStagerSvc.h"
-#include "GaudiKernel/IStatusCodeSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/ITHistSvc.h"

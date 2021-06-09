@@ -613,7 +613,7 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     // Cache the states of the algorithms to improve readability and performance
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
-    StatusCode partial_sc( StatusCode::FAILURE, true );
+    StatusCode partial_sc = StatusCode::FAILURE;
 
     // Make an occupancy snapshot
     if ( m_snapshotInterval != std::chrono::duration<int64_t, std::milli>::min() &&

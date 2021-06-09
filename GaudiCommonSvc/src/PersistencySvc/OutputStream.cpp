@@ -348,7 +348,7 @@ void OutputStream::addItem( Items& itms, const std::string& descriptor ) {
 
 // Connect to proper conversion service
 StatusCode OutputStream::connectConversionSvc() {
-  StatusCode status = StatusCode( StatusCode::FAILURE, true );
+  StatusCode status = StatusCode::FAILURE;
   // Get output file from input
   std::string dbType, svc, shr;
   for ( auto attrib : Gaudi::Utils::AttribStringParser( m_output ) ) {
