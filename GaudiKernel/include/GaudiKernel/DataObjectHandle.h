@@ -17,8 +17,7 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/NamedRange.h"
-
-#include "boost/algorithm/string.hpp"
+#include "boost/algorithm/string/replace.hpp"
 #include <type_traits>
 
 //---------------------------------------------------------------------------
