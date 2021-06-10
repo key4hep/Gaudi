@@ -35,6 +35,12 @@
 class DataObjectHandleBase : public Gaudi::DataHandle {
 
 public:
+  [[deprecated( "This constructor should not be used as it works around the handler "
+                "registration" )]] DataObjectHandleBase( const DataObjID& k, IDataHandleHolder* owner )
+      : Gaudi::DataHandle( k, DataHandle::Updater, owner ) {}
+  [[deprecated( "This constructor should not be used as it works around the handler "
+                "registration" )]] DataObjectHandleBase( const std::string& k, IDataHandleHolder* owner )
+      : Gaudi::DataHandle( DataObjID( k ), DataHandle::Updater, owner ) {}
   DataObjectHandleBase( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner );
   DataObjectHandleBase( const std::string& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner );
 
