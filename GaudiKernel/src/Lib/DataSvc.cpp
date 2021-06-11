@@ -540,7 +540,7 @@ StatusCode DataSvc::retrieveEntry( RegEntry* parentObj, std::string_view path, R
 
 StatusCode DataSvc::i_retrieveEntry( RegEntry* parentObj, std::string_view path, RegEntry*& pEntry ) {
   // A.Valassi 16.08.2001 avoid core dump if store is empty
-  if ( !checkRoot() ) return StatusCode( Status::INVALID_ROOT, true );
+  if ( !checkRoot() ) return Status::INVALID_ROOT;
 
   static constexpr auto empty = std::string_view{};
   auto                  sep   = find( path, SEPARATOR, 1 );
@@ -566,7 +566,7 @@ StatusCode DataSvc::i_retrieveEntry( RegEntry* parentObj, std::string_view path,
     sep = find( path, SEPARATOR, 1 );
   }
 
-  StatusCode status = StatusCode( Status::INVALID_ROOT, true );
+  StatusCode status{Status::INVALID_ROOT};
   if ( sep != std::string_view::npos ) { // the string contains a separator (after pos 0)
     if ( !parentObj->object() ) {        // if the parent object has not been loaded yet, load it now
       status = loadObject( parentObj );

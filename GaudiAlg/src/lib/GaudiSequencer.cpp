@@ -77,7 +77,7 @@ StatusCode GaudiSequencer::execute( const EventContext& ctx ) const {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
-  StatusCode result = StatusCode( StatusCode::SUCCESS, true );
+  StatusCode result = StatusCode::SUCCESS;
 
   bool seqPass = !m_modeOR; //  for OR, result will be false, unless (at least) one is true
                             //  for AND, result will be true, unless (at least) one is false

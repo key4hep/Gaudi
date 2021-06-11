@@ -198,10 +198,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Python modules not installed correctly,"
             " ExtraModules.py not found in python/GaudiSvc/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiExamples/StatusCodeSvcTestConf.py)
-        message(FATAL_ERROR "Python modules not installed correctly,"
-            " StatusCodeSvcTestConf.py not found in python/GaudiExamples/")
-    endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiTesting/Run.py)
         message(FATAL_ERROR "Python modules not installed correctly,"
             " Run.py not found in python/GaudiTesting/")

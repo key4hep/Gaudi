@@ -103,7 +103,6 @@ StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& 
   }
 
   iter.set( this, -1, 0, 0 );
-  status.setChecked();
   // m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::FailInputFile));
   return StatusCode::FAILURE;
 }

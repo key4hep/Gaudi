@@ -544,7 +544,7 @@ StatusCode TsDataSvc::loadObject( IConversionSvc* pLoader, IRegistry* pRegistry 
 /// Retrieve registry entry from store
 StatusCode TsDataSvc::retrieveEntry( RegEntry* parentObj, std::string_view path, RegEntry*& pEntry ) {
   auto       sep    = find( path, SEPARATOR, 1 );
-  StatusCode status = StatusCode( Status::INVALID_ROOT, true );
+  StatusCode status = Status::INVALID_ROOT;
   pEntry            = nullptr;
   STD_LOCK_GUARD_MACRO
   // A.Valassi 16.08.2001 avoid core dump if store is empty

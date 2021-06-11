@@ -26,9 +26,6 @@ ApplicationMgr    SUCCESS
                                           running on pcphlbc16 on Sat Oct  7 10:18:11 2017
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
-ServiceManager      DEBUG Initializing service StatusCodeSvc[m
-StatusCodeSvc       DEBUG Service base class initialized successfully[m
-StatusCodeSvc        INFO initialize[m
 ServiceManager      DEBUG Initializing service AppMgrRunable[m
 AppMgrRunable       DEBUG Service base class initialized successfully[m
 ServiceManager      DEBUG Initializing service EventLoopMgr[m
@@ -71,7 +68,6 @@ HistorySvc        VERBOSE ServiceLocatorHelper::service: found service IncidentS
 ToolSvc             DEBUG Service base class initialized successfully[m
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'HistorySvc' with priority -9223372036854775808[m
 ApplicationMgr       INFO Application Manager Initialized successfully[m
-ServiceManager      DEBUG Starting service StatusCodeSvc[m
 ServiceManager      DEBUG Starting service AppMgrRunable[m
 ServiceManager      DEBUG Starting service IncidentSvc[m
 ServiceManager      DEBUG Starting service EventPersistencySvc[m
@@ -89,8 +85,7 @@ ApplicationMgr       INFO Application Manager Started successfully[m
 HistorySvc          DEBUG Registering algorithm: [96;1mHistory[m
 HistorySvc           INFO [mRegistered 1 Algorithms[m
 HistorySvc           INFO Registered 0 AlgTools[m
-HistorySvc          DEBUG Registering Service: [96;1mStatusCodeSvc[m
-HistorySvc          DEBUG [mRegistering Service: [96;1mMessageSvc[m
+HistorySvc          DEBUG Registering Service: [96;1mMessageSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mJobOptionsSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mAppMgrRunable[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mIncidentSvc[m
@@ -104,7 +99,7 @@ HistorySvc          DEBUG [mRegistering Service: [96;1mAlgContextSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
-HistorySvc           INFO [mRegistered 15 Services[m
+HistorySvc           INFO [mRegistered 14 Services[m
 AlgExecStateSvc   VERBOSE reset(0)[m
 AlgExecStateSvc     DEBUG resizing state containers to : 1[m
 AlgExecStateSvc     DEBUG adding alg History to 1 slots[m
@@ -128,7 +123,6 @@ HistorySvc        VERBOSE HistorySvc is Service[m
 HistorySvc        VERBOSE IncidentSvc is Service[m
 HistorySvc        VERBOSE JobOptionsSvc is Service[m
 HistorySvc        VERBOSE MessageSvc is Service[m
-HistorySvc        VERBOSE StatusCodeSvc is Service[m
 HistorySvc        VERBOSE TimelineSvc is Service[m
 HistorySvc        VERBOSE ToolSvc is Service[m
 HistorySvc        VERBOSE History is Alg[m
@@ -144,7 +138,6 @@ ServiceManager      DEBUG Stopping service EventDataSvc[m
 ServiceManager      DEBUG Stopping service EventPersistencySvc[m
 ServiceManager      DEBUG Stopping service IncidentSvc[m
 ServiceManager      DEBUG Stopping service AppMgrRunable[m
-ServiceManager      DEBUG Stopping service StatusCodeSvc[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 ServiceManager      DEBUG Finalizing service EventLoopMgr[m
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'[m
@@ -168,11 +161,8 @@ ServiceManager      DEBUG Finalizing service HistogramPersistencySvc[m
 ServiceManager      DEBUG Finalizing service HistorySvc[m
 HistorySvc        VERBOSE HistorySvc::finalize()[m
 HistorySvc           INFO Service finalised successfully[m
-ServiceManager      DEBUG Finalizing service StatusCodeSvc[m
-StatusCodeSvc       DEBUG all StatusCode instances where checked[m
 ServiceManager      DEBUG Looping over all active services...[m
-ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)[m
-ServiceManager      DEBUG ---- MessageSvc (refCount = 22)[m
+ServiceManager      DEBUG ---- MessageSvc (refCount = 21)[m
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- HistorySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m

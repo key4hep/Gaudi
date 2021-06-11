@@ -24,9 +24,6 @@ ApplicationMgr    SUCCESS
                                           running on pcphlbc16 on Tue Mar  7 13:08:55 2017
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-[92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
-[92;1mStatusCodeSvc       DEBUG Service base class initialized successfully[m
-[96;1mStatusCodeSvc        INFO initialize[m
 [92;1mServiceManager      DEBUG Initializing service AppMgrRunable[m
 [92;1mAppMgrRunable       DEBUG Service base class initialized successfully[m
 [92;1mServiceManager      DEBUG Initializing service EventLoopMgr[m
@@ -56,7 +53,6 @@ ApplicationMgr       INFO Application Manager Configured successfully
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
 [96;1mApplicationMgr       INFO Application Manager Initialized successfully[m
-[92;1mServiceManager      DEBUG Starting service StatusCodeSvc[m
 [92;1mServiceManager      DEBUG Starting service AppMgrRunable[m
 [92;1mServiceManager      DEBUG Starting service IncidentSvc[m
 [92;1mServiceManager      DEBUG Starting service EventPersistencySvc[m
@@ -110,7 +106,6 @@ ApplicationMgr       INFO Application Manager Configured successfully
 [92;1mServiceManager      DEBUG Stopping service EventPersistencySvc[m
 [92;1mServiceManager      DEBUG Stopping service IncidentSvc[m
 [92;1mServiceManager      DEBUG Stopping service AppMgrRunable[m
-[92;1mServiceManager      DEBUG Stopping service StatusCodeSvc[m
 [96;1mApplicationMgr       INFO Application Manager Stopped successfully[m
 [92;1mServiceManager      DEBUG Finalizing service EventLoopMgr[m
 [92;1mIncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'[m
@@ -124,11 +119,8 @@ ApplicationMgr       INFO Application Manager Configured successfully
 [92;1mServiceManager      DEBUG Finalizing service IncidentSvc[m
 [92;1mIncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s][m
 [92;1mServiceManager      DEBUG Finalizing service AppMgrRunable[m
-[92;1mServiceManager      DEBUG Finalizing service StatusCodeSvc[m
-[92;1mStatusCodeSvc       DEBUG all StatusCode instances where checked[m
 [92;1mServiceManager      DEBUG Looping over all active services...[m
-[92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
-[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 18)[m
+[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 17)[m
 [92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -434,8 +434,7 @@ public:
    *  @param ok           Condition which should be "true"
    *  @param message      Message to be associated with the exception
    */
-  void Assert( const bool ok, std::string_view message = "",
-               const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
+  void Assert( const bool ok, std::string_view message = "", const StatusCode sc = StatusCode::FAILURE ) const;
   /** Create and (re)-throw a given GaudiException
    *
    *  @see GaudiException
@@ -444,8 +443,7 @@ public:
    *  @param msg    Exception message
    *  @param exc    (previous) exception of type GaudiException
    */
-  void Exception( std::string_view msg, const GaudiException& exc,
-                  const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
+  void Exception( std::string_view msg, const GaudiException& exc, const StatusCode sc = StatusCode::FAILURE ) const;
   /** Create and (re)-throw a given exception
    *
    *  @see GaudiException
@@ -455,8 +453,7 @@ public:
    *  @param exc    (previous) exception of type std::exception
    *  @param sc     StatusCode
    */
-  void Exception( std::string_view msg, const std::exception& exc,
-                  const StatusCode sc = StatusCode( StatusCode::FAILURE, true ) ) const;
+  void Exception( std::string_view msg, const std::exception& exc, const StatusCode sc = StatusCode::FAILURE ) const;
   /** Create and throw an exception with the given message
    *
    *  @see GaudiException
@@ -465,8 +462,7 @@ public:
    *  @param msg    Exception message
    *  @param sc     StatusCode
    */
-  void Exception( std::string_view msg = "no message",
-                  const StatusCode sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
+  void Exception( std::string_view msg = "no message", const StatusCode sc = StatusCode::FAILURE ) const;
 
 private:
   /// accessor to all owned counters

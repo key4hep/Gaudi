@@ -297,7 +297,7 @@ StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg ) {
     log.resetColor();
   }
 
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -311,7 +311,7 @@ StatusCode HistorySvc::listProperties( const Gaudi::Algorithm& alg ) const {
 
   info() << alg.name() << " --> " << endl << *hist << endmsg;
 
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -339,7 +339,7 @@ AlgorithmHistory* HistorySvc::getAlgHistory( const Gaudi::Algorithm& alg ) const
 void HistorySvc::getAlgHistory( std::set<AlgorithmHistory*>& algs ) const { map_to_set( m_algmap, algs ); }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-StatusCode HistorySvc::registerJob() { return StatusCode( StatusCode::SUCCESS, true ); }
+StatusCode HistorySvc::registerJob() { return StatusCode::SUCCESS; }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode HistorySvc::listProperties() const {
@@ -374,7 +374,7 @@ StatusCode HistorySvc::listProperties() const {
 
   log << std::endl << *m_jobHistory << endmsg;
 
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -498,7 +498,7 @@ int HistorySvc::getDataHistory( const CLID& id, const std::string& key, const st
 
 StatusCode HistorySvc::registerSvc( const IService& svc ) {
 
-  if ( svc.name() == "HistoryStore" ) { return StatusCode( StatusCode::SUCCESS, true ); }
+  if ( svc.name() == "HistoryStore" ) { return StatusCode::SUCCESS; }
 
   JobHistory*     job  = getJobHistory();
   const IService* psvc = &svc;
@@ -518,7 +518,7 @@ StatusCode HistorySvc::registerSvc( const IService& svc ) {
     ( const_cast<IService*>( psvc ) )->addRef();
   }
 
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -548,7 +548,7 @@ StatusCode HistorySvc::listProperties( const IService& svc ) const {
 
   info() << svc.name() << " --> " << endl << *hist << endmsg;
 
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -17,7 +17,6 @@ MessageSvc.useColors = true;
 THistSvc.OutputLevel = 2;
 ApplicationMgr.OutputLevel = 1;
 ServiceManager.OutputLevel = 2;
-StatusCodeSvc.OutputLevel = 1;
 
 
 
@@ -32,5 +31,3 @@ THistSvc.PrintAll = true;
 //--------------------------------------------------------------
 ApplicationMgr.EvtMax   = 20;
 ApplicationMgr.EvtSel  = "NONE";
-
-

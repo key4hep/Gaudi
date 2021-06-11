@@ -54,7 +54,7 @@ public:
 private:
   bool       m_filterPassed{true};
   State      m_state{State::None};
-  StatusCode m_execStatus{StatusCode( StatusCode::FAILURE, true )};
+  StatusCode m_execStatus{StatusCode::FAILURE};
 };
 
 inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {

@@ -18,8 +18,7 @@ Test the correct handling on errors during the event processing:
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
                            AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
-                           InertMessageSvc, ApplicationMgr, StatusCodeSvc,
-                           CPUCrunchSvc)
+                           InertMessageSvc, ApplicationMgr, CPUCrunchSvc)
 
 evtslots = 8
 evtMax = 50
@@ -37,8 +36,6 @@ scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
 CPUCrunchSvc(shortCalib=True)
-
-scs = StatusCodeSvc("StatusCodeSvc", OutputLevel=DEBUG)
 
 #
 # - A3 returns an ERROR once in a while
@@ -80,7 +77,7 @@ ApplicationMgr().SvcMapping.append(msgSvc)
 ApplicationMgr(
     EvtMax=evtMax,
     EvtSel='NONE',
-    ExtSvc=[whiteboard, scs],
+    ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[a1, a2, a3, a4, a5],
     MessageSvcType="InertMessageSvc")

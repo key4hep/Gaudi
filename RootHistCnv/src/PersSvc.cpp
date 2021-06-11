@@ -57,7 +57,7 @@ StatusCode RootHistCnv::PersSvc::initialize()
   } else {
     info() << "Writing ROOT histograms disabled." << endmsg;
   }
-  return StatusCode( StatusCode::SUCCESS, true );
+  return StatusCode::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------

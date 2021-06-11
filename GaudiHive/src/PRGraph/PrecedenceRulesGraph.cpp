@@ -317,7 +317,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::buildDataDependenciesRealm() {
 
-    StatusCode global_sc( StatusCode::SUCCESS, true );
+    StatusCode global_sc = StatusCode::SUCCESS;
 
     // Production of DataNodes by AlgorithmNodes (DataNodes are created here)
     std::vector<decltype( m_algoNameToAlgoNodeMap )::value_type*> sortedAlgs;
