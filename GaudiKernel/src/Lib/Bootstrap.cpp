@@ -250,11 +250,19 @@ const char* PyHelper( getProperty )( IInterface* p, char* name ) {
   value = prop->getProperty( name ).toString();
   return value.c_str();
 }
+void PyHelper( setOption )( IInterface* app, char* key, char* value ) {
+  if ( auto svcloc = SmartIF<ISvcLocator>( app ) ) { svcloc->getOptsSvc().set( key, value ); }
+}
 bool PyHelper( configureApp )( IInterface* app ) {
   auto ui = SmartIF<IAppMgrUI>( app );
   return ui && ui->configure().isSuccess();
 }
 int PyHelper( ROOT_VERSION_CODE )() { return ROOT_VERSION_CODE; }
+
+bool py_bootstrap_app_run( IInterface* i, int maxevt ) {
+  auto ep = SmartIF<IEventProcessor>( i );
+  return ep && ep->executeRun( maxevt ).isSuccess();
+}
 
 #define PyFSMHelper( s )                                                                                               \
   bool py_bootstrap_fsm_##s( IInterface* i ) {                                                                         \
@@ -262,13 +270,14 @@ int PyHelper( ROOT_VERSION_CODE )() { return ROOT_VERSION_CODE; }
     return fsm && fsm->s().isSuccess();                                                                                \
   }
 
-PyFSMHelper( configure ) PyFSMHelper( initialize ) PyFSMHelper( start ) PyFSMHelper( stop ) PyFSMHelper( finalize )
-    PyFSMHelper( terminate )
-
-        bool py_bootstrap_app_run( IInterface* i, int maxevt ) {
-  auto ep = SmartIF<IEventProcessor>( i );
-  return ep && ep->executeRun( maxevt ).isSuccess();
-}
+// clang-format off
+PyFSMHelper( configure )
+PyFSMHelper( initialize )
+PyFSMHelper( start )
+PyFSMHelper( stop )
+PyFSMHelper( finalize )
+PyFSMHelper( terminate )
+// clang-format on
 }
 #ifdef GAUDI_HASCLASSVISIBILITY
 #  pragma GCC visibility pop

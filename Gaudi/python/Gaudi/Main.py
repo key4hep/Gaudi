@@ -101,6 +101,10 @@ class BootstrapHelper(object):
         def printAlgsSequences(self):
             return self.lib.py_helper_printAlgsSequences(self.ptr)
 
+        def setOption(self, key, value):
+            self.lib.py_bootstrap_setOption(self.ptr, key.encode('ascii'),
+                                            value.encode('ascii'))
+
     def __init__(self):
         from ctypes import (PyDLL, util, c_void_p, c_bool, c_char_p, c_int,
                             RTLD_GLOBAL)
@@ -126,8 +130,7 @@ class BootstrapHelper(object):
             ('getService', IInterface_p, [IInterface_p, c_char_p]),
             ('setProperty', c_bool, [IInterface_p, c_char_p, c_char_p]),
             ('getProperty', c_char_p, [IInterface_p, c_char_p]),
-            ('addPropertyToCatalogue', c_bool,
-             [IInterface_p, c_char_p, c_char_p, c_char_p]),
+            ('setOption', None, [IInterface_p, c_char_p, c_char_p]),
             ('ROOT_VERSION_CODE', c_int, []),
         ]
 
