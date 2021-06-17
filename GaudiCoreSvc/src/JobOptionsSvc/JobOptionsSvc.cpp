@@ -12,9 +12,6 @@
 // Local:
 // ============================================================================
 
-// here we have to include the IJobOptionsSvc deprecated header, so we silence the warning
-#define GAUDI_INTERNAL_NO_IJOBOPTIONSSVC_H_DEPRECATION 1
-
 #include "JobOptionsSvc.h"
 
 #include "Analyzer.h"
@@ -111,80 +108,6 @@ StatusCode JobOptionsSvc::stop() {
 StatusCode JobOptionsSvc::start() {
   if ( !m_dump.empty() ) { dump( m_dump ); }
   return StatusCode::SUCCESS;
-}
-
-// ============================================================================
-StatusCode JobOptionsSvc::addPropertyToCatalogue( const std::string&                  client,
-                                                  const Gaudi::Details::PropertyBase& property ) {
-  if ( property.type_info() == &typeid( std::string ) ) {
-    // relatively convoluted way to strip unneeded quotes.
-    Gaudi::Property<std::string> tmp;
-    tmp.assign( property );
-    set( client + '.' + property.name(), tmp.value() );
-  } else {
-    set( client + '.' + property.name(), property.toString() );
-  }
-  return StatusCode::SUCCESS;
-}
-// ============================================================================
-StatusCode JobOptionsSvc::removePropertyFromCatalogue( const std::string& client, const std::string& name ) {
-  pop( client + '.' + name );
-  return StatusCode::SUCCESS;
-}
-// ============================================================================
-const JobOptionsSvc::PropertiesT* JobOptionsSvc::getProperties( const std::string& client ) const {
-  PropertiesT props;
-
-  const std::string key_base      = client + '.';
-  const auto        key_base_size = key_base.size();
-  for ( const auto& elem : m_options ) {
-    std::string_view key = elem.first;
-    // for keys that are 'client.name' (and name does not contain '.')
-    // we add an entry to the vector
-    if ( starts_with( key, key_base ) ) {
-      std::string_view name = key.substr( key_base_size );
-      if ( name.find( '.' ) == std::string::npos ) {
-        props.push_back( getClientProperty( client, static_cast<std::string>( name ) ) );
-      }
-    }
-  }
-  // we are supposed to be the owner of the vector, so we need to keep it safe
-  return &( m_old_iface_compat_2[client] = std::move( props ) );
-}
-// ============================================================================
-StatusCode JobOptionsSvc::setMyProperties( const std::string& client, IProperty* myInt ) {
-  const std::string key_base      = client + '.';
-  const auto        key_base_size = key_base.size();
-
-  bool fail = false;
-  for ( const auto& elem : m_options ) {
-    std::string_view key = elem.first;
-    if ( starts_with( key, key_base ) ) {
-      const auto name = static_cast<std::string>( key.substr( key_base_size ) );
-      // \fixme this has to change if we want nested properties
-      // if ( myInt->hasProperty( name ) ) {
-      if ( name.find( '.' ) == std::string::npos ) {
-        if ( !myInt->setPropertyRepr( name, elem.second ) ) {
-          error() << "Unable to set the property '" << name << "'"
-                  << " of '" << client << "'. "
-                  << "Check option and algorithm names, type and bounds." << endmsg;
-          fail = true;
-          // throw std::invalid_argument( "cannot set " + name + " of " + client + " to " + elem.second );
-        }
-      }
-    }
-  }
-  return fail ? StatusCode::FAILURE : StatusCode::SUCCESS;
-}
-
-/// Get the list of clients
-std::vector<std::string> JobOptionsSvc::getClients() const {
-  std::set<std::string> clients;
-  for ( const auto& elem : m_options ) {
-    const auto pos = elem.first.rfind( '.' );
-    if ( pos != std::string::npos ) clients.emplace( elem.first, 0, pos );
-  }
-  return {begin( clients ), end( clients )};
 }
 
 void JobOptionsSvc::dump( const std::string& file, const gp::Catalog& catalog ) const {

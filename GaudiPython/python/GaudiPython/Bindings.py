@@ -263,8 +263,6 @@ class iProperty(object):
     def __init__(self, name, ip=cppyy.nullptr):
         self.__dict__['_ip'] = InterfaceCast(gbl.IProperty)(ip)
         self.__dict__['_svcloc'] = gbl.Gaudi.svcLocator()
-        optsvc = Helper.service(self._svcloc, 'JobOptionsSvc')
-        self.__dict__['_optsvc'] = InterfaceCast(gbl.IJobOptionsSvc)(optsvc)
         self.__dict__['_name'] = name
 
     def getInterface(self):
@@ -325,15 +323,10 @@ class iProperty(object):
             except:
                 return prop.value()
         else:
-            props = self._optsvc.getProperties(self._name)
-            for p in props:
-                if not p.name() == name:
-                    continue
+            opts = self._svcloc.getOptsSvc()
+            if opts.has("{}.{}".format(self._name, name)):
                 # from JobOptionsSvc we always have only strings
-                try:
-                    return eval(p.value(), {}, {})
-                except:
-                    return p.value()
+                return eval(opts.get("{}.{}".format(self._name, name)), {}, {})
             raise AttributeError('property %s does not exist' % name)
 
     def properties(self):
@@ -344,6 +337,7 @@ class iProperty(object):
             props = ip.getProperties()
             propsFrom = self._name  # "interface"
         else:
+            raise NotImplementedError("rely on IJobOptionsSvc")
             props = self._optsvc.getProperties(self._name)
             propsFrom = "jobOptionsSvc"
         if props:
@@ -820,54 +814,6 @@ class iToolSvc(iService):
             self._its.releaseTool(itool._itool)
 
 
-# ----iJopOptSvc class---------------------------------------------------------
-
-
-class iJobOptSvc(iService):
-    """
-    Python-image of C++ class IJobOptionsSvc
-    """
-
-    # constructor
-
-    def __init__(self, name, svc):
-        """ constructor """
-        self.__dict__['_optsvc'] = InterfaceCast(gbl.IJobOptionsSvc)(svc)
-        return iService.__init__(self, name, svc)
-
-    def getProperties(self, component):
-        """
-        Extract *ALL* properties of the given component
-        Usage :
-        >>> jos   = gaudi.optSvc()
-        >>> props = jos.getProperties( 'Name' )
-        """
-        props = self._optsvc.getProperties(component)
-        prps = {}
-        if not props:
-            return prps  # RETURN
-        for p in props:
-            prop = p.name().upper()
-            try:
-                value = eval(p.value(), {}, {})
-            except:
-                value = p.value()
-            prps[prop] = value
-
-        return prps  # RETURN
-
-    def getProperty(self, component, name):
-        """
-        Get a certain property of the certain component
-        Usage:
-        >>> jos  = ...
-        >>> extServices = jos.getProperty( 'ApplicationMgr', 'ExtSvc' )
-        """
-        # get all properties of the component
-        all = self.getProperties(component)
-        return all.get(name.upper(), None)  # RETURN
-
-
 # ----iEventSelector class-----------------------------------------------------
 
 
@@ -990,9 +936,6 @@ class AppMgr(iService):
                 setattr(ms, p, v)
         if outputlevel != -1:
             ms.OutputLevel = outputlevel
-        # ---JobOptions------------------------------------------------------------
-        self.__dict__['_optsvc'] = InterfaceCast(gbl.IJobOptionsSvc)(
-            Helper.service(self._svcloc, 'JobOptionsSvc'))
         # ------Configurables initialization (part2)-------------------------------
         for n in getNeededConfigurables():
             c = Configurable.allConfigurables[n]
@@ -1036,6 +979,12 @@ class AppMgr(iService):
                             "\nNote: version hacked by GaudiPython to work " +
                             "around a problem with the ROOT exit handler")
         atexit.register = register
+
+    @property
+    def opts(self):
+        if "_svcloc" in self.__dict__:
+            return self._svcloc.getOptsSvc()
+        return None
 
     def state(self):
         return self._isvc.FSMState()
@@ -1128,12 +1077,8 @@ class AppMgr(iService):
         svc = Helper.service(self._svcloc, name, True)
         return iToolSvc(name, svc)
 
-    def optSvc(self, name='JobOptionsSvc'):
-        svc = Helper.service(self._svcloc, name, True)
-        return iJobOptSvc(name, svc)
-
     def readOptions(self, file):
-        return self._optsvc.readOptions(file)
+        return self.opts.readOptions(file)
 
     def addAlgorithm(self, alg):
         """ Add an Algorithm to the list of Top algorithms. It can be either a instance of
