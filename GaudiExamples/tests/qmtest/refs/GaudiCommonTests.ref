@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /builds/clemenci/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /builds/clemenci/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /builds/clemenci/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
 JobOptionsSvc        INFO # (9,1): EventDataSvc.ForceLeaves = 1
 JobOptionsSvc        INFO # (10,1): EventDataSvc.RootCLID = 1
 JobOptionsSvc        INFO # (17,1): MessageSvc.OutputLevel = 3
@@ -23,29 +23,23 @@ JobOptionsSvc        INFO # (35,1): Seq2.RootInTES = "microDST"
 JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtMax = 1
 JobOptionsSvc        INFO # (41,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (42,1): ApplicationMgr.HistogramPersistency = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /builds/clemenci/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
+JobOptionsSvc        INFO Job options successfully read in from /builds/gaudi/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to Gaudi version v31r0
-                                          running on marco-XPS-13 on Fri Oct 18 16:21:28 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
+                                          running on runner-7f-zqs17-project-38-concurrent-0 on Mon Oct 19 16:16:42 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 35
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 28
 Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 Test1               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-Test1               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Test1               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-Test1               DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-Test1               DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Test1               DEBUG Property ['Name': Value] =  'Context':''
 Test1               DEBUG Property ['Name': Value] =  'TypePrint':True
-Test1               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test1               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test1               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 Test1               DEBUG Property ['Name': Value] =  'RootInTES':''
@@ -75,18 +69,12 @@ Test1               DEBUG Data Deps for Test1
 Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 35
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 28
 Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 Test2               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-Test2               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Test2               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-Test2               DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-Test2               DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Test2               DEBUG Property ['Name': Value] =  'Context':''
 Test2               DEBUG Property ['Name': Value] =  'TypePrint':True
-Test2               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test2               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test2               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 Test2               DEBUG Property ['Name': Value] =  'RootInTES':'microDST/'
@@ -117,22 +105,16 @@ Seq1                 INFO Member list: GaudiCommonTests/Test3
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   3.45 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   3.03 times the speed of a 2.8 GHz Xeon.
 Test3               DEBUG Property update for OutputLevel : new value = 2
 Test3               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test3               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test3               DEBUG List of ALL properties of GaudiCommonTests/Test3  #properties = 35
+Test3               DEBUG List of ALL properties of GaudiCommonTests/Test3  #properties = 28
 Test3               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test3               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-Test3               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 Test3               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-Test3               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Test3               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-Test3               DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-Test3               DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Test3               DEBUG Property ['Name': Value] =  'Context':''
 Test3               DEBUG Property ['Name': Value] =  'TypePrint':True
-Test3               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test3               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test3               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 Test3               DEBUG Property ['Name': Value] =  'RootInTES':''
@@ -163,18 +145,12 @@ Seq2                 INFO Member list: GaudiCommonTests/Test4, with rootInTES 'm
 Test4               DEBUG Property update for OutputLevel : new value = 2
 Test4               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test4               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test4               DEBUG List of ALL properties of GaudiCommonTests/Test4  #properties = 35
+Test4               DEBUG List of ALL properties of GaudiCommonTests/Test4  #properties = 28
 Test4               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test4               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-Test4               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 Test4               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-Test4               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-Test4               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-Test4               DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-Test4               DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Test4               DEBUG Property ['Name': Value] =  'Context':''
 Test4               DEBUG Property ['Name': Value] =  'TypePrint':True
-Test4               DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 Test4               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test4               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 Test4               DEBUG Property ['Name': Value] =  'RootInTES':'microDST/'

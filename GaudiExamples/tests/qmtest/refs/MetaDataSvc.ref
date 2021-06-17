@@ -1,10 +1,10 @@
 # setting LC_ALL to "C"
-# --> Including file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/TupleEx.py'
-# <-- End of file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/TupleEx.py'
-ApplicationMgr    SUCCESS 
+# --> Including file '/builds/gaudi/Gaudi/GaudiExamples/options/TupleEx.py'
+# <-- End of file '/builds/gaudi/Gaudi/GaudiExamples/options/TupleEx.py'
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r0)
-                                          running on zeus on Thu Sep 24 13:29:48 2020
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
+                                          running on runner-7f-zqs17-project-38-concurrent-0 on Mon Oct 19 16:17:14 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
@@ -15,7 +15,7 @@ Gaudi::MetaDataSvc  DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 NTupleSvc            INFO Added stream file:TupleEx_with_metadata.root as MYLUN
-EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 Gaudi::MetaDataSvc  DEBUG started
@@ -221,7 +221,7 @@ JobOptionsSvc.PATH:'../options/job.opts'
 JobOptionsSvc.PYTHONACTION:''
 JobOptionsSvc.PYTHONPARAMS:''
 JobOptionsSvc.ReportUnused:False
-JobOptionsSvc.SEARCHPATH:'/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/tests/qmtest:/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options'
+JobOptionsSvc.SEARCHPATH:'/builds/gaudi/Gaudi/GaudiExamples/tests/qmtest:/builds/gaudi/Gaudi/GaudiExamples/options'
 JobOptionsSvc.TYPE:'NONE'
 MessageSvc.AuditFinalize:False
 MessageSvc.AuditInitialize:False
@@ -362,7 +362,6 @@ Tuple.Blocking:False
 Tuple.Cardinality:1
 Tuple.Context:''
 Tuple.CounterList:[ '.*' ]
-Tuple.EfficiencyRowFormat:' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
 Tuple.Enable:True
 Tuple.ErrorMax:1
 Tuple.ErrorsPrint:True
@@ -398,18 +397,13 @@ Tuple.NTupleSplitDir:False
 Tuple.NTupleTopDir:''
 Tuple.NeededResources:[  ]
 Tuple.OutputLevel:3
-Tuple.PrintEmptyCounters:False
 Tuple.PropertiesPrint:False
 Tuple.RegisterForContextService:True
-Tuple.RegularRowFormat:' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
 Tuple.RequireObjects:[  ]
 Tuple.RootInTES:''
 Tuple.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
-Tuple.StatEntityList:[  ]
-Tuple.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Tuple.Timeline:False
 Tuple.TypePrint:True
-Tuple.UseEfficiencyRowFormat:True
 Tuple.UseSequencialNumericAutoIDs:False
 Tuple.VetoObjects:[  ]
 Tuple2.AuditAlgorithms:False
@@ -425,7 +419,6 @@ Tuple2.Blocking:False
 Tuple2.Cardinality:1
 Tuple2.Context:''
 Tuple2.CounterList:[ '.*' ]
-Tuple2.EfficiencyRowFormat:' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
 Tuple2.Enable:True
 Tuple2.ErrorMax:1
 Tuple2.ErrorsPrint:True
@@ -461,18 +454,13 @@ Tuple2.NTupleSplitDir:False
 Tuple2.NTupleTopDir:''
 Tuple2.NeededResources:[  ]
 Tuple2.OutputLevel:3
-Tuple2.PrintEmptyCounters:False
 Tuple2.PropertiesPrint:False
 Tuple2.RegisterForContextService:True
-Tuple2.RegularRowFormat:' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
 Tuple2.RequireObjects:[  ]
 Tuple2.RootInTES:''
 Tuple2.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
-Tuple2.StatEntityList:[  ]
-Tuple2.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Tuple2.Timeline:False
 Tuple2.TypePrint:True
-Tuple2.UseEfficiencyRowFormat:True
 Tuple2.UseSequencialNumericAutoIDs:False
 Tuple2.VetoObjects:[  ]
 Tuple3.AuditAlgorithms:False
@@ -488,7 +476,6 @@ Tuple3.Blocking:False
 Tuple3.Cardinality:1
 Tuple3.Context:''
 Tuple3.CounterList:[ '.*' ]
-Tuple3.EfficiencyRowFormat:' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
 Tuple3.Enable:True
 Tuple3.ErrorMax:1
 Tuple3.ErrorsPrint:True
@@ -524,18 +511,13 @@ Tuple3.NTupleSplitDir:False
 Tuple3.NTupleTopDir:''
 Tuple3.NeededResources:[  ]
 Tuple3.OutputLevel:3
-Tuple3.PrintEmptyCounters:False
 Tuple3.PropertiesPrint:False
 Tuple3.RegisterForContextService:True
-Tuple3.RegularRowFormat:' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
 Tuple3.RequireObjects:[  ]
 Tuple3.RootInTES:''
 Tuple3.ShortFormatFor1DHistoTable:' | %1$-25.25s %2%'
-Tuple3.StatEntityList:[  ]
-Tuple3.StatTableHeader:' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 Tuple3.Timeline:False
 Tuple3.TypePrint:True
-Tuple3.UseEfficiencyRowFormat:True
 Tuple3.UseSequencialNumericAutoIDs:False
 Tuple3.VetoObjects:[  ]
 

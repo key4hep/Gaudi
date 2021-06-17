@@ -1,6 +1,6 @@
 # setting LC_ALL to "C"
-# --> Including file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/AlgTools.py'
-# <-- End of file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/AlgTools.py'
+# --> Including file '/builds/gaudi/Gaudi/GaudiExamples/options/AlgTools.py'
+# <-- End of file '/builds/gaudi/Gaudi/GaudiExamples/options/AlgTools.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
@@ -8,8 +8,8 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r1)
-                                          running on stbc-i1.nikhef.nl on Thu Aug 22 00:54:58 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
+                                          running on runner-7f-zqs17-project-38-concurrent-0 on Mon Oct 19 16:15:59 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -101,18 +101,12 @@ ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 26
+ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 19
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':'AlgContextSvc'
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':''
@@ -132,18 +126,12 @@ ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 26
+ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 19
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':'AlgContextSvc'
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat':' |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |'
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat':' | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |'
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader':' |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |'
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':''
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':''
