@@ -707,6 +707,8 @@ private:
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
+
+protected:
   // ==========================================================================
   // Properties
   Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true,
