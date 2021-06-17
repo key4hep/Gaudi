@@ -325,7 +325,10 @@ StatusCode THistSvc::finalize() {
 
   for ( auto& obj : m_tobjs ) {
     // TObject*'s are already dealt with through root file i/o
-    delete obj.second.first; // delete vhid*
+    // only delete vector if this object is index 0
+    if ( obj.second.second == 0 ) {
+      delete obj.second.first; // delete vhid*
+    }
   }
   m_tobjs.clear();
 
