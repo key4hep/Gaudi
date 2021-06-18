@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+#####################################################################################
+# (c) Copyright 2021 CERN for the benefit of the LHCb and ATLAS collaborations      #
+#                                                                                   #
+# This software is distributed under the terms of the Apache version 2 licence,     #
+# copied verbatim in the file "LICENSE".                                            #
+#                                                                                   #
+# In applying this licence, CERN does not waive the privileges and immunities       #
+# granted to it by virtue of its status as an Intergovernmental Organization        #
+# or submit itself to any jurisdiction.                                             #
+#####################################################################################
+import os
+
+from difflib import get_close_matches
+
+import click
+
+
+@click.command()
+@click.argument(
+    "opts_dump",
+    default=os.environ.get("JOBOPTSDUMPFILE"),
+    type=click.File(),
+)
+def main(opts_dump):
+    """
+    Find possible typos in job configuration dump
+
+    OPTS_DUMP is the file containing the full dump of the options
+    (by default taken from the environment variable JOBOPTSDUMPFILE)
+    """
+    known = set()
+    unused = set()
+    for line in opts_dump:
+        name = line.split("=", 1)[0].strip()
+        if line.rstrip().endswith("// unused"):
+            unused.add(name)
+        else:
+            known.add(name)
+
+    typos_found = False
+    for prop in unused:
+        prefix, name = prop.rsplit(".", 1)
+        prefix += "."
+        candidates = get_close_matches(
+            name,
+            [
+                w[len(prefix):].split(".", 1)[0]
+                for w in known if w.startswith(prefix)
+            ],
+        )
+        if candidates:
+            click.echo(f"{prop} -> {candidates}")
+            typos_found = True
+
+    if typos_found:
+        exit(1)
+
+
+if __name__ == "__main__":
+    main()
