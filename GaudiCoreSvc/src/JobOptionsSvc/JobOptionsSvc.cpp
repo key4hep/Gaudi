@@ -128,7 +128,11 @@ void JobOptionsSvc::dump( const std::string& file ) const {
     error() << "Unable to open dump-file \"" + file + "\"" << endmsg;
   } else {
     info() << "Properties are dumped into \"" + file + "\"" << endmsg;
-    for ( const auto& [key, value] : items() ) { out << key << " = " << value << ";\n"; }
+    for ( const auto& [key, value] : items() ) {
+      out << key << " = " << value << ';';
+      if ( !m_options.find( key )->second.isBound() ) out << " // unused";
+      out << '\n';
+    }
   }
 }
 
