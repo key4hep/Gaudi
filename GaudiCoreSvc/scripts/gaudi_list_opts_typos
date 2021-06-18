@@ -10,28 +10,29 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import os
+import argparse
 
 from difflib import get_close_matches
 
-import click
 
+def main():
+    parser = argparse.ArgumentParser(
+        description="Find possible typos in job configuration dump")
+    parser.add_argument(
+        "opts_dump",
+        nargs="?" if "JOBOPTSDUMPFILE" in os.environ else 1,
+        type=argparse.FileType("r"),
+        help="the file containing the full dump of the options "
+        "(by default taken from the environment variable JOBOPTSDUMPFILE)")
 
-@click.command()
-@click.argument(
-    "opts_dump",
-    default=os.environ.get("JOBOPTSDUMPFILE"),
-    type=click.File(),
-)
-def main(opts_dump):
-    """
-    Find possible typos in job configuration dump
+    args = parser.parse_args()
 
-    OPTS_DUMP is the file containing the full dump of the options
-    (by default taken from the environment variable JOBOPTSDUMPFILE)
-    """
+    if not args.opts_dump:
+        args.opts_dump = open(os.environ["JOBOPTSDUMPFILE"], "r")
+
     known = set()
     unused = set()
-    for line in opts_dump:
+    for line in args.opts_dump:
         name = line.split("=", 1)[0].strip()
         if line.rstrip().endswith("// unused"):
             unused.add(name)
@@ -50,7 +51,7 @@ def main(opts_dump):
             ],
         )
         if candidates:
-            click.echo(f"{prop} -> {candidates}")
+            print(f"{prop} -> {candidates}")
             typos_found = True
 
     if typos_found:
