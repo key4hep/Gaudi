@@ -25,7 +25,7 @@ the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.htm
 </table>
 
 
-See also: \ref externaldocs (from [LCG version @heptools_version@][lcg-details])
+See also: \ref externaldocs (from [LCG version @LCG_VERSION@][lcg-details])
 
 [sources]: https://gitlab.cern.ch/gaudi/Gaudi/tags
 
@@ -33,4 +33,4 @@ See also: \ref externaldocs (from [LCG version @heptools_version@][lcg-details])
 [gug-pdf]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG.pdf
 [gug-2up-pdf]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG-2up.pdf
 
-[lcg-details]: http://lcginfo.cern.ch/release/@heptools_version@/
+[lcg-details]: http://lcginfo.cern.ch/release/@LCG_VERSION@/

@@ -1,0 +1,6 @@
+# These dependencies should be installed using pip in order
+# to build the documentation.
+
+sphinx
+sphinx-rtd-theme
+recommonmark

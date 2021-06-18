@@ -1,0 +1,2 @@
+# Never commit compiled documentation files
+build/*

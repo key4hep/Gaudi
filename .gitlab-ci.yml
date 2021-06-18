@@ -14,6 +14,7 @@ stages:
   - pre-build-checks
   - build
   - test
+  - deploy
 
 variables:
   LCG_VERSION: "100"
@@ -253,3 +254,68 @@ check-copyright:
     - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
     - python lb-check-copyright --exclude lhcbproject.yml origin/${TARGET_BRANCH}
   allow_failure: true
+
+website:
+  stage: build
+  image: python
+  script:
+    - rm -rf public
+    - mkdir -p public
+    - cd docs
+    - pip install -r source/requirements.txt
+    - make html
+    - cp -a build/html/. ../public/.
+  allow_failure: true
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 day
+
+doxygen:
+  stage: test
+  tags:
+    - cvmfs
+  needs:
+    - job: "view-gcc8"
+      artifacts: true
+  script:
+    - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
+    # Override CMake from the view (too old in LCG 97a)
+    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH"
+    - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
+    - cmake --build build --target doc
+    - rm -rf public
+    - mkdir -p public/doxygen
+    - cp -r GaudiRelease/web_helpers/. public/doxygen/.
+    - mv build/doxygen/html ${CI_COMMIT_REF_SLUG}
+    - zip -r -q public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
+
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 day
+
+
+# see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
+# of the configuration
+deploy-website:
+  stage: deploy
+  needs:
+    - job: "website"
+      artifacts: true
+    - job: "doxygen"
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_TAG
+  image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+  script:
+    - test -z "$EOS_ACCOUNT_USERNAME" -o -z "$EOS_ACCOUNT_PASSWORD" -o -z "$EOS_PATH" && exit 0 || true
+    # Script that performs the deploy to EOS. Makes use of the variables defined in the project
+    # It will copy the generated content to the folder in EOS
+    - export CI_OUTPUT_DIR=public/
+    - deploy-eos
+  # do not run any globally defined before_script or after_script for this step
+  before_script: []
+  after_script: []
+
