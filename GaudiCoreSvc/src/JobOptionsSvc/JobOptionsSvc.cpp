@@ -95,6 +95,7 @@ StatusCode JobOptionsSvc::stop() {
     }
 
     if ( !unused.empty() ) {
+      std::sort( unused.begin(), unused.end() );
       auto& log = warning();
       log << unused.size() << " unused properties:";
       for ( const auto& k : unused ) log << "\n - " << k;
