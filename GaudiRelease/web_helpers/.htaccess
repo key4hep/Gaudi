@@ -1,0 +1,13 @@
+Options +Indexes
+DirectoryIndex index.php index.html index.htm index.php
+RewriteEngine On
+# this is a clever trick for avoiding RewriteBase
+# see http://stackoverflow.com/a/21063276
+RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+RewriteRule ^(.*)$        -                        [E=BASE:%1]
+# add /index.html to the top entry
+RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_URI} !-f
+RewriteRule ^([^/]+)/?$   %{ENV:BASE}$1/index.html [L,R]
+# extract the requested file from zip, unless it exists
+RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_URI} !-f
+RewriteRule ^([^/]+)/(.+) %{ENV:BASE}/extract.php?zip=%{DOCUMENT_ROOT}%{ENV:BASE}$1.zip&path=$1/$2 [L]

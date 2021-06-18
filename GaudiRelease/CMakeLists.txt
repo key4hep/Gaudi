@@ -40,14 +40,15 @@ file(GLOB project_rel_notes ${CMAKE_CURRENT_SOURCE_DIR}/doc/release.notes*.html)
 set(DOXYGEN_HTML_EXTRA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen/issue_tracker_links.js;${project_rel_notes}")
 string(REPLACE ";" " " DOXYGEN_HTML_EXTRA_FILES "${DOXYGEN_HTML_EXTRA_FILES}")
 
-# run Doxygen to generate the documentation
-add_custom_target(run-doxygen
-                  COMMAND run
-                          Doxygen::doxygen ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-                  COMMENT "Running Doxygen...")
+if(TARGET Doxygen::doxygen)
+  # run Doxygen to generate the documentation
+  add_custom_target(run-doxygen
+                    COMMAND run $<TARGET_FILE:Doxygen::doxygen> ${CMAKE_CURRENT_BINARY_DIR}/doc/doxygen/Doxyfile
+                    COMMENT "Running Doxygen...")
 
-# 'doc' target
-add_custom_target(doc DEPENDS run-doxygen)
+  # 'doc' target
+  add_custom_target(doc DEPENDS run-doxygen)
+endif()
 
 option(DOXYGEN_WITH_LOCAL_MATHJAX
         "Use a local copy of MathJax instead of taking it from cdn.mathjax.org"

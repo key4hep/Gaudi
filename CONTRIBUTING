@@ -1,0 +1,21 @@
+Gaudi Contribution Guide
+========================
+
+The Gaudi project is open source (see the LICENSE) and welcomes
+contributions from experiments and users.
+
+To contribute to Gaudi development you can *fork* the project from
+CERN GitLab, where the Gaudi source is held.
+
+Bug fixes and features should be developed in your own branch, then
+a *merge request* made back to the upstream Gaudi repository.
+
+By submitting a merge request to the Gaudi repository you agree that
+your contribution will be copyrighted to CERN and covered by the Apache 2
+licence, as per the LICENSE.
+
+Coding Style Guidelines
+-----------------------
+
+Code contributions to Gaudi should adhere to the ``clang-format`` rules
+(an automatic check is part of the Continuous Integration system).

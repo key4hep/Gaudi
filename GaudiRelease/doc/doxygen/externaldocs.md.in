@@ -1,11 +1,9 @@
 Related external libraries    {#externaldocs}
 ==========================
 
-From [LCG version @heptools_version@][lcg-details]:
+From [LCG version @LCG_VERSION@][lcg-details]:
 
 - LCG Application Area:
-  - [CORAL @CORAL_config_version@][coral] (relational access)
-  - [COOL @COOL_config_version@][cool] (conditions database)
   - [ROOT @ROOT_config_version@][root] (persistency)
   - [@RELAX_config_version@][relax] (common dictionaries for I/O and interactivity)
 
@@ -13,20 +11,19 @@ From [LCG version @heptools_version@][lcg-details]:
   - [Boost @Boost_version@](http://www.boost.org/doc/libs/@Boost_url_version@/)
   - [AIDA @AIDA_config_version@](http://aida.freehep.org/doc/v@AIDA_config_version@/api/) (histogramming)
   - [Xerces-C @XercesC_config_version@](http://xml.apache.org/xerces-c/api-@XercesC_major_version@)
-  - [GNU Scientific Library (GSL) @GSL_config_version@](http://www.gnu.org/software/gsl/manual/html_node/index.html)
   - [Python @Python_config_version@](http://www.python.org/doc/@Python_config_version@/) (scripting and interactivity)
   - [HepMC @HepMC_config_version@](http://lcgapp.cern.ch/project/simu/HepMC/)
 
 
 See also:
   - GNU Standard Template Library
-    - [gcc 4.8.1](http://gcc.gnu.org/onlinedocs/gcc-4.8.1/libstdc++/api/)
+    - [gcc 10.3.0](https://gcc.gnu.org/onlinedocs/gcc-10.3.0/libstdc++/api/)
   - C++ Reference
     - <http://en.cppreference.com/w/cpp>
     - <http://www.cplusplus.com/reference/>
 
 
-[lcg-details]: http://lcginfo.cern.ch/release/@heptools_version@/
+[lcg-details]: http://lcginfo.cern.ch/release/@LCG_VERSION@/
 [coral]: https://twiki.cern.ch/twiki/bin/view/Persistency/Coral
 [cool]: https://twiki.cern.ch/twiki/bin/view/Persistency/Cool
 [root]: http://root.cern.ch/
