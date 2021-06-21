@@ -53,26 +53,20 @@ namespace {
     return erase_if( c, std::move( range.first ), std::move( range.second ), std::forward<Predicate>( pred ) );
   }
 
-  std::string colTrans( const std::string& col, int offset ) {
-    int icol = 0;
-    if ( col == "black" )
-      icol = MSG::BLACK;
-    else if ( col == "red" )
-      icol = MSG::RED;
-    else if ( col == "green" )
-      icol = MSG::GREEN;
-    else if ( col == "yellow" )
-      icol = MSG::YELLOW;
-    else if ( col == "blue" )
-      icol = MSG::BLUE;
-    else if ( col == "purple" )
-      icol = MSG::PURPLE;
-    else if ( col == "cyan" )
-      icol = MSG::CYAN;
-    else if ( col == "white" )
-      icol = MSG::WHITE;
-    else
-      icol = 8;
+  std::string colTrans( std::string_view col, int offset ) {
+    int icol =
+        ( col == "black"
+              ? MSG::BLACK
+              : col == "red"
+                    ? MSG::RED
+                    : col == "green"
+                          ? MSG::GREEN
+                          : col == "yellow"
+                                ? MSG::YELLOW
+                                : col == "blue"
+                                      ? MSG::BLUE
+                                      : col == "purple" ? MSG::PURPLE
+                                                        : col == "cyan" ? MSG::CYAN : col == "white" ? MSG::WHITE : 8 );
     return std::to_string( icol + offset );
   }
 } // namespace
@@ -141,25 +135,25 @@ StatusCode MessageSvc::reinitialize() {
 //#############################################################################
 
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop ) {
-  const std::string& pname = prop.name();
-  int                level;
-  if ( pname == "fatalColorCode" )
-    level = MSG::FATAL;
-  else if ( pname == "errorColorCode" )
-    level = MSG::ERROR;
-  else if ( pname == "warningColorCode" )
-    level = MSG::WARNING;
-  else if ( pname == "infoColorCode" )
-    level = MSG::INFO;
-  else if ( pname == "debugColorCode" )
-    level = MSG::DEBUG;
-  else if ( pname == "verboseColorCode" )
-    level = MSG::VERBOSE;
-  else if ( pname == "alwaysColorCode" )
-    level = MSG::ALWAYS;
-  else {
-    throw GaudiException( "ERROR: Unknown message color parameter: " + pname, name(), StatusCode::FAILURE );
-  }
+  const auto& pname = prop.name();
+  int         level = ( pname == "fatalColorCode"
+                    ? MSG::FATAL
+                    : pname == "errorColorCode"
+                          ? MSG::ERROR
+                          : pname == "warningColorCode"
+                                ? MSG::WARNING
+                                : pname == "infoColorCode"
+                                      ? MSG::INFO
+                                      : pname == "debugColorCode"
+                                            ? MSG::DEBUG
+                                            : pname == "verboseColorCode"
+                                                  ? MSG::VERBOSE
+                                                  : pname == "alwaysColorCode"
+                                                        ? MSG::ALWAYS
+                                                        : ( throw GaudiException(
+                                                                "ERROR: Unknown message color parameter: " + pname,
+                                                                name(), StatusCode::FAILURE ),
+                                                            -1 ) );
 
   auto& code = m_logColorCodes[level];
 
@@ -424,18 +418,8 @@ void MessageSvc::reportMessage( const Message& msg ) { reportMessage( msg, outpu
 // Purpose: dispatches a message to the relevant streams.
 // ---------------------------------------------------------------------------
 //
-void MessageSvc::reportMessage( const char* source, int type, const char* message ) {
-  reportMessage( Message{source, type, message} );
-}
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: reportMessage
-// Purpose: dispatches a message to the relevant streams.
-// ---------------------------------------------------------------------------
-//
-void MessageSvc::reportMessage( const std::string& source, int type, const std::string& message ) {
-  reportMessage( Message{source, type, message} );
+void MessageSvc::reportMessage( std::string source, int type, std::string message ) {
+  reportMessage( Message{std::move( source ), type, std::move( message )} );
 }
 
 //#############################################################################
@@ -444,16 +428,16 @@ void MessageSvc::reportMessage( const std::string& source, int type, const std::
 // Purpose: finds a message for a given status code and dispatches it.
 // ---------------------------------------------------------------------------
 //
-void MessageSvc::reportMessage( const StatusCode& code, const std::string& source ) {
+void MessageSvc::reportMessage( const StatusCode& code, std::string_view source ) {
   auto lock = std::scoped_lock{m_messageMapMutex};
   i_reportMessage( code, source );
 }
 
-void MessageSvc::i_reportMessage( const StatusCode& code, const std::string& source ) {
+void MessageSvc::i_reportMessage( const StatusCode& code, std::string_view source ) {
   int  level  = outputLevel( source );
   auto report = [&]( Message mesg ) {
     mesg.setSource( source );
-    Message stat_code( source, mesg.getType(), "Status Code " + std::to_string( code.getCode() ) );
+    Message stat_code( std::string{source}, mesg.getType(), "Status Code " + std::to_string( code.getCode() ) );
     i_reportMessage( std::move( stat_code ), level );
     i_reportMessage( std::move( mesg ), level );
   };
@@ -529,9 +513,9 @@ void MessageSvc::eraseStream( std::ostream* stream ) {
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::insertMessage( const StatusCode& key, const Message& msg ) {
+void MessageSvc::insertMessage( const StatusCode& key, Message msg ) {
   auto lock = std::scoped_lock{m_messageMapMutex};
-  m_messageMap.emplace( key, msg );
+  m_messageMap.emplace( key, std::move( msg ) );
 }
 
 //#############################################################################
@@ -616,12 +600,14 @@ std::string MessageSvc::getLogColor( int logLevel ) const {
 int MessageSvc::messageCount( MSG::Level level ) const { return m_msgCount[level]; }
 
 // ---------------------------------------------------------------------------
-void MessageSvc::incrInactiveCount( MSG::Level level, const std::string& source ) {
-  ++( m_inactiveMap[source].msg[level] );
+void MessageSvc::incrInactiveCount( MSG::Level level, std::string_view source ) {
+  auto entry = m_inactiveMap.find( source );
+  if ( entry == m_inactiveMap.end() ) { entry = m_inactiveMap.emplace( source, MsgAry{} ).first; }
+  ++entry->second.msg[level];
 
   if ( std::find( begin( m_tracedInactiveSources ), end( m_tracedInactiveSources ), source ) !=
        end( m_tracedInactiveSources ) ) {
-    std::cout << "== inactive message detected from " << source << " ==" << std::endl;
+    std::cout << "== inactive message detected from " << source << " ==\n";
     std::string t;
     System::backTrace( t, 25, 0 );
     std::cout << t << std::endl;
@@ -629,38 +615,28 @@ void MessageSvc::incrInactiveCount( MSG::Level level, const std::string& source 
 }
 
 // ---------------------------------------------------------------------------
+
 void MessageSvc::setupLogStreams() {
   // reset state
   m_loggedStreams.clear();
 
+  // make the unique set of output filenames
+  std::set<std::string_view> outFileNames;
+  std::transform( m_loggedStreamsName.begin(), m_loggedStreamsName.end(),
+                  std::inserter( outFileNames, outFileNames.end() ),
+                  []( const auto& p ) -> std::string_view { return p.second; } );
+  // map each unique filename to an ofstream
+  std::map<std::string_view, std::shared_ptr<std::ofstream>> outStreams;
+  std::transform( outFileNames.begin(), outFileNames.end(), std::inserter( outStreams, outStreams.end() ),
+                  [this]( std::string_view fname ) {
+                    return std::pair{fname, std::make_shared<std::ofstream>(
+                                                std::string{fname}, std::ios_base::out | std::ios_base::trunc )};
+                  } );
+  // associate the stream to ofstream...
   for ( auto& iProp : m_loggedStreamsName ) {
-
-    std::set<std::string> outFileNames;
-    for ( auto& jProp : m_loggedStreamsName ) {
-      if ( jProp.first != iProp.first ) { outFileNames.insert( jProp.second ); }
-    }
-    tee( iProp.first, iProp.second, outFileNames );
-
-  } //> loop over property entries
+    auto& stream = outStreams.at( iProp.second );
+    if ( stream->good() ) m_loggedStreams.emplace( iProp.first, stream );
+  }
 }
 
 // ---------------------------------------------------------------------------
-void MessageSvc::tee( const std::string& sourceName, const std::string& outFileName,
-                      const std::set<std::string>& outFileNames ) {
-  const std::ios_base::openmode openMode = std::ios_base::out | std::ios_base::trunc;
-
-  auto iStream = m_loggedStreams.find( sourceName );
-  if ( iStream != std::end( m_loggedStreams ) ) { m_loggedStreams.erase( iStream ); }
-
-  // before creating a new ofstream, make sure there is no already existing
-  // one with the same file name...
-  for ( auto& iStream : m_loggedStreams ) {
-    if ( outFileNames.find( outFileName ) != outFileNames.end() ) {
-      m_loggedStreams[sourceName] = m_loggedStreams[iStream.first];
-      return;
-    }
-  }
-
-  auto out = std::make_shared<std::ofstream>( outFileName, openMode );
-  if ( out->good() ) m_loggedStreams[sourceName] = std::move( out );
-}

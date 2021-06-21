@@ -76,7 +76,7 @@ namespace {
 
   // ============================================================================
   template <typename Grammar>
-  bool ParseFile( const gp::Position& from, const std::string& filename, const std::string& search_path,
+  bool ParseFile( const gp::Position& from, std::string_view filename, std::string_view search_path,
                   gp::IncludedFiles* included, gp::Messages* messages, gp::Node* root ) {
     std::string search_path_with_current_dir = gpu::replaceEnvironments( search_path );
     if ( !from.filename().empty() ) { // Add current file directory to search_path
@@ -89,7 +89,7 @@ namespace {
         System::PathResolver::find_file_from_list( gpu::replaceEnvironments( filename ), search_path_with_current_dir );
 
     if ( absolute_path.empty() ) {
-      messages->AddError( from, "Couldn't find a file " + filename + " in search path '" +
+      messages->AddError( from, "Couldn't find a file " + std::string{filename} + " in search path '" +
                                     search_path_with_current_dir + "'" );
       return false;
     }
@@ -98,12 +98,12 @@ namespace {
       included->AddFile( absolute_path, from );
       std::ifstream file{absolute_path};
       if ( !file.is_open() ) {
-        messages->AddError( from, "Couldn't open a file " + filename );
+        messages->AddError( from, std::string{"Couldn't open a file "}.append( filename ) );
         return false;
       }
       return ParseStream<Grammar>( file, absolute_path, messages, root );
     } else {
-      assert( included_from != NULL );
+      assert( included_from != nullptr );
       messages->AddWarning(
           from, fmt::format( "File {} already included from {}", absolute_path, included_from->ToString() ) );
       return true;
@@ -112,19 +112,19 @@ namespace {
   // ============================================================================
 } // namespace
 // ============================================================================
-bool gp::Parse( const std::string& filename, const std::string& search_path, IncludedFiles* included,
-                Messages* messages, Node* root ) {
+bool gp::Parse( std::string_view filename, std::string_view search_path, IncludedFiles* included, Messages* messages,
+                Node* root ) {
   return Parse( Position(), filename, search_path, included, messages, root );
 }
 // ============================================================================
-bool gp::Parse( const Position& from, const std::string& filename, const std::string& search_path,
-                IncludedFiles* included, Messages* messages, Node* root ) {
+bool gp::Parse( const Position& from, std::string_view filename, std::string_view search_path, IncludedFiles* included,
+                Messages* messages, Node* root ) {
   using Grammar = FileGrammar<Iterator, SkipperGrammar<Iterator>>;
   return ParseFile<Grammar>( from, filename, search_path, included, messages, root );
 }
 
 // ============================================================================
-bool gp::ParseUnits( const Position& from, const std::string& filename, const std::string& search_path,
+bool gp::ParseUnits( const Position& from, std::string_view filename, std::string_view search_path,
                      IncludedFiles* included, Messages* messages, Node* root ) {
   using Grammar = UnitsGrammar<Iterator, SkipperGrammar<Iterator>>;
   return ParseFile<Grammar>( from, filename, search_path, included, messages, root );

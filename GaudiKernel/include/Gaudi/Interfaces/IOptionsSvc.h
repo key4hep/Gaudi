@@ -103,7 +103,7 @@ namespace Gaudi {
 
       /// look for file 'file' into search path 'path'
       /// and read it to update the options
-      virtual StatusCode readOptions( const std::string& file, const std::string& path = "" ) = 0;
+      virtual StatusCode readOptions( std::string_view file, std::string_view path = "" ) = 0;
 
     protected:
       virtual ~IOptionsSvc() = default;

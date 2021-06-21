@@ -26,23 +26,20 @@ namespace gp = Gaudi::Parsers;
 // ============================================================================
 bool gp::PropertyValue::IsSimple() const { return std::holds_alternative<std::string>( value_ ); }
 // ============================================================================
-bool gp::PropertyValue::IsVector() const { return std::holds_alternative<std::vector<std::string>>( value_ ); }
+bool gp::PropertyValue::IsVector() const { return std::holds_alternative<VectorOfStrings>( value_ ); }
 // ============================================================================
-bool gp::PropertyValue::IsMap() const { return std::holds_alternative<std::map<std::string, std::string>>( value_ ); }
+bool gp::PropertyValue::IsMap() const { return std::holds_alternative<MapOfStrings>( value_ ); }
 // ============================================================================
 gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right ) {
 
   if ( IsReference() ) { throw PropertyValueException::WrongLValue(); }
   std::visit(
-      Gaudi::overload( []( std::string&, const auto& ) { throw PropertyValueException::WrongLValue(); },
-                       []( std::vector<std::string>& lhs, const std::string& rhs ) { lhs.push_back( rhs ); },
-                       []( std::vector<std::string>& lhs, const std::vector<std::string>& rhs ) {
-                         lhs.insert( lhs.end(), rhs.begin(), rhs.end() );
-                       },
-                       []( std::map<std::string, std::string>& lhs, const std::map<std::string, std::string>& rhs ) {
-                         lhs.insert( rhs.begin(), rhs.end() );
-                       },
-                       []( auto&, const auto& ) { throw PropertyValueException::WrongRValue(); } ),
+      Gaudi::overload(
+          []( std::string&, const auto& ) { throw PropertyValueException::WrongLValue(); },
+          []( VectorOfStrings& lhs, const std::string& rhs ) { lhs.push_back( rhs ); },
+          []( VectorOfStrings& lhs, const VectorOfStrings& rhs ) { lhs.insert( lhs.end(), rhs.begin(), rhs.end() ); },
+          []( MapOfStrings& lhs, const MapOfStrings& rhs ) { lhs.insert( rhs.begin(), rhs.end() ); },
+          []( auto&, const auto& ) { throw PropertyValueException::WrongRValue(); } ),
       value_, right.value_ );
   return *this;
 }
@@ -75,25 +72,24 @@ const gp::PropertyValue gp::PropertyValue::operator-( const PropertyValue& right
 // ============================================================================
 std::string gp::PropertyValue::ToString() const {
   if ( IsReference() ) {
-    const auto& value = std::get<std::vector<std::string>>( value_ );
+    const auto& value = std::get<VectorOfStrings>( value_ );
     if ( value.at( 0 ) != "" ) {
       return "@" + value.at( 0 ) + "." + value.at( 1 );
     } else {
       return "@" + value.at( 0 );
     }
   }
-  return std::visit( Gaudi::overload( []( const std::string& v ) { return v; },
-                                      []( const std::vector<std::string>& v ) {
-                                        return '[' + boost::algorithm::join( v, ", " ) + ']';
-                                      },
-                                      []( const std::map<std::string, std::string>& v ) {
-                                        std::string result = "{";
-                                        std::string delim  = "";
-                                        for ( const auto& in : v ) {
-                                          result += delim + in.first + ":" + in.second;
-                                          delim = ", ";
-                                        }
-                                        return result + "}";
-                                      } ),
-                     value_ );
+  return std::visit(
+      Gaudi::overload( []( const std::string& v ) { return v; },
+                       []( const VectorOfStrings& v ) { return '[' + boost::algorithm::join( v, ", " ) + ']'; },
+                       []( const MapOfStrings& v ) {
+                         std::string result = "{";
+                         std::string delim  = "";
+                         for ( const auto& in : v ) {
+                           result += delim + in.first + ":" + in.second;
+                           delim = ", ";
+                         }
+                         return result + "}";
+                       } ),
+      value_ );
 }

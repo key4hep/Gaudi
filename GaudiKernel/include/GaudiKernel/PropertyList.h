@@ -55,7 +55,7 @@ public:
   bool load( const std::string& name, Property& p ) const;
 
   /// Get the property with a given name
-  const Property& getProperty( const std::string& name ) const;
+  const Property& getProperty( std::string_view name ) const;
   /// Get the complete list of properties
   const std::vector<Property*>& getProperties() const;
 

@@ -25,12 +25,12 @@ namespace Gaudi {
     // ============================================================================
     class IncludedFiles {
     public:
-      typedef std::map<std::string, Position> Container;
+      typedef std::map<std::string, Position, std::less<>> Container;
 
     public:
       bool AddFile( std::string filename, Position from );
-      bool IsIncluded( const std::string& filename ) const;
-      bool GetPosition( const std::string& filename, const Position** pos ) const;
+      bool IsIncluded( std::string_view filename ) const;
+      bool GetPosition( std::string_view filename, const Position** pos ) const;
 
     private:
       Container container_;

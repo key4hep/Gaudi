@@ -65,28 +65,20 @@ public:
       @param code Error code number
       @param source Message source. Typically the alg/svc name
   */
-  virtual void reportMessage( const StatusCode& code, const std::string& source = "" ) = 0;
+  virtual void reportMessage( const StatusCode& code, std::string_view source = "" ) = 0;
 
   /** Report a message by specifying the source, severity level and text.
       @param source Message source. Typically the alg/svc name
       @param type Severity level
       @param message Text message
   */
-  virtual void reportMessage( const std::string& source, int type, const std::string& message ) = 0;
-
-  /** Report a message by specifying the source, severity level and text. The text is
-      passed as C like character string to avoid extra copying.
-      @param source Message source. Typically the alg/svc name
-      @param type Severity level
-      @param message Text message
-  */
-  virtual void reportMessage( const char* source, int type, const char* message = "" ) = 0;
+  virtual void reportMessage( std::string source, int type, std::string message ) = 0;
 
   /** Insert a message to be sent for a given status code into the error code repository.
       @param code Status error code
       @param message Message associated
   */
-  virtual void insertMessage( const StatusCode& code, const Message& message ) = 0;
+  virtual void insertMessage( const StatusCode& code, Message message ) = 0;
 
   /// Erase all messages associated to all status codes.
   virtual void eraseMessage() = 0;
@@ -166,13 +158,13 @@ public:
 class GAUDI_API IInactiveMessageCounter : virtual public IInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID( IInactiveMessageCounter, 1, 0 );
+  DeclareInterfaceID( IInactiveMessageCounter, 2, 0 );
 
   /** Increment deactivated message count.
    *  Used by MsgStream to record the sources of messages that are prepared, but
    *  not printed (because if insufficient level).
    */
-  virtual void incrInactiveCount( MSG::Level level, const std::string& src ) = 0;
+  virtual void incrInactiveCount( MSG::Level level, std::string_view src ) = 0;
 };
 
 #endif // GAUDIKERNEL_IMESSAGESVC_H

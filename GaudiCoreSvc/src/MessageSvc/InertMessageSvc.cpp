@@ -82,9 +82,9 @@ void InertMessageSvc::reportMessage( const Message& msg ) {
 
 //---------------------------------------------------------------------------
 
-void InertMessageSvc::reportMessage( const StatusCode& code, const std::string& source ) {
+void InertMessageSvc::reportMessage( const StatusCode& code, std::string_view source ) {
   // msg has to be copied as the source may become invalid by the time it's used
-  m_messageActionsQueue.emplace( [this, code, s = std::string( source )]() { this->i_reportMessage( code, s ); } );
+  m_messageActionsQueue.emplace( [this, code, s = std::string{source}]() { this->i_reportMessage( code, s ); } );
 }
 
 //---------------------------------------------------------------------------

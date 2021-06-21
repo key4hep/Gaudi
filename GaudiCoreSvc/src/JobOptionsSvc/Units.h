@@ -27,15 +27,14 @@ namespace Gaudi {
     // ============================================================================
     class Units final {
     public:
-      typedef std::map<std::string, std::pair<double, Position>> Container;
-      typedef Container::mapped_type                             ValueWithPosition;
+      typedef std::map<std::string, std::pair<double, Position>, std::less<>> Container;
+      typedef Container::mapped_type                                          ValueWithPosition;
 
       bool Add( std::string name, double value );
       bool Add( std::string name, double value, const Position& pos );
 
-      bool        Find( const std::string& name, ValueWithPosition& result ) const;
-      bool        Find( const std::string& name, double& result ) const;
-      std::string ToString() const;
+      bool Find( std::string_view name, ValueWithPosition& result ) const;
+      bool Find( std::string_view name, double& result ) const;
 
     private:
       Container units_;

@@ -52,9 +52,9 @@ namespace Gaudi {
   } // namespace Details
   namespace Utils {
     /// Helper for case insensitive string comparison.
-    inline bool iequal( const std::string& v1, const std::string& v2 ) {
-      return v1.size() == v2.size() && std::equal( std::begin( v1 ), std::end( v1 ), std::begin( v2 ),
-                                                   []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
+    inline bool iequal( std::string_view v1, std::string_view v2 ) {
+      return std::equal( begin( v1 ), end( v1 ), begin( v2 ), end( v2 ),
+                         []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
     }
   } // namespace Utils
 } // namespace Gaudi
@@ -198,16 +198,16 @@ public:
   /** get the property by name
    *  @see IProperty
    */
-  const Gaudi::Details::PropertyBase& getProperty( const std::string& name ) const override {
+  const Gaudi::Details::PropertyBase& getProperty( std::string_view name ) const override {
     const Gaudi::Details::PropertyBase* p = property( name );
-    if ( !p ) throw std::out_of_range( "Property " + name + " not found." );
+    if ( !p ) throw std::out_of_range( "Property " + std::string{name} + " not found." );
     return *p;
   }
   // ==========================================================================
   /** convert the property to the string
    *  @see IProperty
    */
-  StatusCode getProperty( const std::string& n, std::string& v ) const override {
+  StatusCode getProperty( std::string_view n, std::string& v ) const override {
     // get the property
     const Gaudi::Details::PropertyBase* p = property( n );
     if ( !p ) return StatusCode::FAILURE;
@@ -224,7 +224,7 @@ public:
   /** Return true if we have a property with the given name.
    *  @see IProperty
    */
-  bool hasProperty( const std::string& name ) const override {
+  bool hasProperty( std::string_view name ) const override {
     return any_of( begin( m_properties ), end( m_properties ),
                    [&name]( const Gaudi::Details::PropertyBase* prop ) {
                      return Gaudi::Utils::iequal( prop->name(), name );
@@ -235,7 +235,7 @@ public:
   // ==========================================================================
   /// \fixme property and bindPropertiesTo should be protected
   // get local or remote property by name
-  Gaudi::Details::PropertyBase* property( const std::string& name ) const {
+  Gaudi::Details::PropertyBase* property( std::string_view name ) const {
     // local property ?
     Gaudi::Details::PropertyBase* lp = property( name, m_properties );
     if ( lp ) return lp;
@@ -259,9 +259,9 @@ public:
 
 private:
   /// get the property by name form the proposed list
-  Gaudi::Details::PropertyBase* property( const std::string&                                name,
+  Gaudi::Details::PropertyBase* property( std::string_view                                  name,
                                           const std::vector<Gaudi::Details::PropertyBase*>& props ) const {
-    auto it = std::find_if( props.begin(), props.end(), [&name]( Gaudi::Details::PropertyBase* p ) {
+    auto it = std::find_if( props.begin(), props.end(), [name]( Gaudi::Details::PropertyBase* p ) {
       return p && Gaudi::Utils::iequal( p->name(), name );
     } );
     return ( it != props.end() ) ? *it : nullptr; // RETURN
@@ -269,7 +269,7 @@ private:
 
   /// Issue a runtime warning if the name is already present in the
   /// list of properties (see <a href="https://its.cern.ch/jira/browse/GAUDI-1023">GAUDI-1023</a>).
-  void assertUniqueName( const std::string& name ) const {
+  void assertUniqueName( std::string_view name ) const {
     if ( UNLIKELY( hasProperty( name ) ) ) {
       auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
       if ( !msgSvc ) std::cerr << "error: cannot get MessageSvc!" << std::endl;

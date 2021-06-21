@@ -105,12 +105,12 @@ public:
   /** get the property by name
    *  @see IProperty
    */
-  const Gaudi::Details::PropertyBase& getProperty( const std::string& name ) const override;
+  const Gaudi::Details::PropertyBase& getProperty( std::string_view name ) const override;
   // ==========================================================================
   /** convert the property to the string
    *  @see IProperty
    */
-  StatusCode getProperty( const std::string& n, std::string& v ) const override;
+  StatusCode getProperty( std::string_view n, std::string & v ) const override;
   // ==========================================================================
   /** get all properties
    *  @see IProperty
@@ -120,18 +120,18 @@ public:
   /** Return true if we have a property with the given name.
    *  @see IProperty
    */
-  bool hasProperty( const std::string& name ) const override;
+  bool hasProperty( std::string_view name ) const override;
   // ==========================================================================
   // IInterface implementation
   StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
   // ==========================================================================
 protected:
   // get local or remote property by name
-  Gaudi::Details::PropertyBase* property( const std::string& name ) const;
+  Gaudi::Details::PropertyBase* property( std::string_view name ) const;
 
 private:
   /// get the property by name form the proposed list
-  Gaudi::Details::PropertyBase* property( const std::string&                                name,
+  Gaudi::Details::PropertyBase* property( std::string_view                                  name,
                                           const std::vector<Gaudi::Details::PropertyBase*>& props ) const;
 
   /// Throw an exception if the name is already present in the

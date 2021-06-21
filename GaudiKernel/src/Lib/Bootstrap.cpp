@@ -246,6 +246,7 @@ bool PyHelper( setProperty )( IInterface* p, char* name, char* value ) {
 const char* PyHelper( getProperty )( IInterface* p, char* name ) {
   auto prop = SmartIF<IProperty>( p );
   if ( !prop ) return nullptr;
+  // this is needed to guarantee that Python can access the returned char*
   static std::string value;
   value = prop->getProperty( name ).toString();
   return value.c_str();

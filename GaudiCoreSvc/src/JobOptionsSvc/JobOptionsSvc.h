@@ -88,7 +88,7 @@ public:
    *  @param path search path
    *  @return status code
    */
-  StatusCode readOptions( const std::string& file, const std::string& path = "" ) override;
+  StatusCode readOptions( std::string_view file, std::string_view path = "" ) override;
 
 private:
   void fillServiceCatalog( const Gaudi::Parsers::Catalog& catalog );
