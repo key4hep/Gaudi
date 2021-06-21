@@ -9,6 +9,10 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+if(NOT TARGET Doxygen::doxygen)
+  return()
+endif()
+
 # add the release notes of each package
 set(rel_notes_main ${CMAKE_CURRENT_BINARY_DIR}/release_notes_main.md)
 file(WRITE ${rel_notes_main} "Release Notes {#release_notes_main}
@@ -40,15 +44,13 @@ file(GLOB project_rel_notes ${CMAKE_CURRENT_SOURCE_DIR}/doc/release.notes*.html)
 set(DOXYGEN_HTML_EXTRA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen/issue_tracker_links.js;${project_rel_notes}")
 string(REPLACE ";" " " DOXYGEN_HTML_EXTRA_FILES "${DOXYGEN_HTML_EXTRA_FILES}")
 
-if(TARGET Doxygen::doxygen)
-  # run Doxygen to generate the documentation
-  add_custom_target(run-doxygen
-                    COMMAND run $<TARGET_FILE:Doxygen::doxygen> ${CMAKE_CURRENT_BINARY_DIR}/doc/doxygen/Doxyfile
-                    COMMENT "Running Doxygen...")
+# run Doxygen to generate the documentation
+add_custom_target(run-doxygen
+                  COMMAND run $<TARGET_FILE:Doxygen::doxygen> ${CMAKE_CURRENT_BINARY_DIR}/doc/doxygen/Doxyfile
+                  COMMENT "Running Doxygen...")
 
-  # 'doc' target
-  add_custom_target(doc DEPENDS run-doxygen)
-endif()
+# 'doc' target
+add_custom_target(doc DEPENDS run-doxygen)
 
 option(DOXYGEN_WITH_LOCAL_MATHJAX
         "Use a local copy of MathJax instead of taking it from cdn.mathjax.org"
