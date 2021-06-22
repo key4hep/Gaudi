@@ -5,7 +5,50 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Stefa
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased][]
+
+## [v36r0][] - 2021-06-21
+This is a major release of Gaudi that introduces some backward incompatible changes (mostly clean up).
+
+### Changed
+- More use of `std::string_view` (gaudi/Gaudi!1039)
+- Removed unused properties in `GaudiCommon` (gaudi/Gaudi#143, gaudi/Gaudi!1138)
+- Remove obsolete `IJobOptionsSvc` (gaudi/Gaudi#140, gaudi/Gaudi!1217)
+- Drop `StatusCode` checking via `StatusCodeSvc` (gaudi/Gaudi!989)
+- Remove unused public interface methods from `GaudiCommon` (gaudi/Gaudi!1140, gaudi/Gaudi#186, gaudi/Gaudi!1220)
+- `JobOptionSvc`: remove case insensitivity (gaudi/Gaudi#155, gaudi/Gaudi!1179)
+- Use TBB task_arena to replace deprecated components (gaudi/Gaudi!1067, gaudi/Gaudi!1193)
+- `IClassIDSvc`: remove set/get package information (gaudi/Gaudi!1200)
+
+### Added
+- Improve unused options report from `JobOptionsSvc` (gaudi/Gaudi!1222)
+- Introduced `DeprecatedDynamicDataObjectHandle` (gaudi/Gaudi!1202)
+- Added `removeEntity` interface to `MonitoringHub` (gaudi/Gaudi!1208)
+
+### Fixed
+- `gaudirun.py`: Correctly handle `--all-opts` when mixing `GaudiConfig2` with old Configurables (gaudi/Gaudi#188, gaudi/Gaudi!1224)
+- Doc: Add Sphinx-based Documentation (gaudi/Gaudi!1152, gaudi/Gaudi#190, gaudi/Gaudi!1223)
+- Avoid double delete in `THistSvc::finalize` (gaudi/Gaudi!1221)
+- Fix spurious clang warning (gaudi/Gaudi!1219)
+- `has_fetch_add_v` should take a value type, not an `atomic<>`. (gaudi/Gaudi!1167)
+- Fix semantics of `Gaudi::Accumulators::Counter` (gaudi/Gaudi#144, gaudi/Gaudi!1136)
+- Remove newlines within fatal message for easier log grepping (gaudi/Gaudi!1215)
+- Fixes for LCG 100 (gaudi/Gaudi!1214)
+- `THistSvc` threading improvement (gaudi/Gaudi#179, gaudi/Gaudi!1212)
+- `IncidentSvc`: handle rethrow for asychronous incidents (gaudi/Gaudi!1198)
+- Fix StatusCodeFail tests when using GNU Make instead of Ninja (gaudi/Gaudi!1213)
+
+
+## [v35r4][] - 2021-05-25
+Minor release including gaudi/Gaudi!1210, needed for an LHCb release.
+
+### Added
+- Add a `MultiMergingTransformerFilter` (gaudi/Gaudi!1210)
+
+### Fixed
+- Fix CMake 3.20 warnigns (gaudi/Gaudi!1211)
+- Replace `sys_siglist` (deprecated) with `strsignal` to allow build with newer glibc (> 2.32) (gaudi/Gaudi!1207)
+- Always set TBB_LIBRARIES when TBB_FOUND (gaudi/Gaudi!1209)
+- Simplify `StatusCode` compilation failure test (gaudi/Gaudi!1206, gaudi/Gaudi!1211)
 
 
 ## [v35r3][] - 2021-04-20
@@ -685,7 +728,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v35r3...master
+[v36r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r0
+[v35r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r4
 [v35r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r3
 [v35r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r2
 [v35r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r1
