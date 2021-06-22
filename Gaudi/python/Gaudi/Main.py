@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -169,10 +169,15 @@ class BootstrapHelper(object):
         return (a, b, c)
 
 
-def getAllOpts(explicit_defaults=False):
+def _getAllOpts_old(explicit_defaults=False):
+    """
+    Return all options from the old configuration system as a dictionary.
+
+    If explicit_defaults is true, include default values of unset properties in the dictionary.
+    """
     from itertools import chain
-    # old conf
     from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
+
     old_opts = {}
 
     # some algorithms may be generater when we call "getValuedProperties"
@@ -211,8 +216,20 @@ def getAllOpts(explicit_defaults=False):
                 v = v.__opt_value__()
             old_opts['.'.join((n, p))] = str(v)
 
+    return old_opts
+
+
+def getAllOpts(explicit_defaults=False):
+    """
+    Return all options from the old and configuration system as a dictionary.
+
+    If explicit_defaults is true, include default values of unset properties in the dictionary.
+    """
     import GaudiConfig2
-    opts = GaudiConfig2.all_options(explicit_defaults)
+    # We need to run normal (without defaults) collection first (regardless of explicit_defaults)
+    # as the conflicts detection makes sense only for explicitly set options
+    old_opts = _getAllOpts_old(False)
+    opts = GaudiConfig2.all_options(False)
 
     conflicts = [
         n for n in set(opts).intersection(old_opts) if opts[n] != old_opts[n]
@@ -226,6 +243,18 @@ def getAllOpts(explicit_defaults=False):
             sys.exit(10)
 
     opts.update(old_opts)
+
+    if explicit_defaults:
+        # If we are asked to print also the defaults, we collect everything
+        # and blindly merge to make sure we have the full set of configurables
+        all_opts = _getAllOpts_old(True)
+        all_opts.update(GaudiConfig2.all_options(True))
+        # the we override the dictionary with the explicitly set options
+        # (that leaves the defaults untouched and the set options with the
+        # correct value)
+        all_opts.update(opts)
+        opts = all_opts
+
     return opts
 
 
