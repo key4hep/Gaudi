@@ -46,8 +46,6 @@ namespace Tuples {
   template <class VALUE>
   class ItemStore final {
     friend class TupleObj;
-
-  private:
     typedef GaudiUtils::HashMap<std::string, std::unique_ptr<NTuple::Item<VALUE>>> Store;
 
   public:
@@ -120,7 +118,7 @@ namespace Tuples {
  */
 // =============================================================================
 template <class TYPE>
-inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* obj ) {
+inline StatusCode Tuples::TupleObj::put( std::string_view name, const TYPE* obj ) {
   if ( invalid() ) { return ErrorCodes::InvalidTuple; }         // RETURN
   if ( !evtColType() ) { return ErrorCodes::InvalidOperation; } // RETURN
 
@@ -135,15 +133,15 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
     s_type = TClass::GetClass( typeid( TYPE ) );
     if ( !s_type ) {
       s_fail = true;
-      return Error( " put('" + name + "'," + System::typeinfoName( typeid( TYPE ) ) + ") :Invalid ROOT Type",
+      return Error( fmt::format( " put('{}',{}) :Invalid ROOT Type", name, System::typeinfoName( typeid( TYPE ) ) ),
                     ErrorCodes::InvalidItem ); // RETURN
     }
   }
   // the local storage of items
   static Tuples::ItemStore<TYPE*> s_map;
   // get the variable by name:
-  auto item = s_map.getItem( name, this );
-  if ( !item ) { return Error( " put('" + name + "'): invalid item detected", ErrorCodes::InvalidItem ); }
+  auto item = s_map.getItem( std::string{name}, this );
+  if ( !item ) { return Error( fmt::format( " put('{}'): invalid item detected", name ), ErrorCodes::InvalidItem ); }
   // assign the item!
   ( *item ) = const_cast<TYPE*>( obj ); // THATS ALL!!
   //

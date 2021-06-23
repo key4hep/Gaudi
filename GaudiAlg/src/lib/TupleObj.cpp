@@ -117,41 +117,30 @@ namespace {
 
   // helper functions to simplify things...
   template <typename C, typename AddItem>
-  typename C::mapped_type::pointer create_( Tuples::TupleObj* parent, C& container, const std::string& name,
-                                            AddItem addItem ) {
-    using element_t = typename C::mapped_type::element_type;
-    using map_t     = struct tuple_type_<element_t>;
-    auto item       = container.emplace( name, std::make_unique<element_t>() );
-    if ( !item.second ) {
-      parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not inserted" )
-          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-    }
-    StatusCode sc = addItem( name, *( item.first->second ) );
+  auto create_( Tuples::TupleObj* parent, C& container, std::string_view name, AddItem addItem ) {
+    using map_t     = struct tuple_type_<typename C::element_type>;
+    auto [iter, ok] = container.emplace( name );
+    if ( !ok ) { parent->Error( fmt::format( "{} ('{}'): item is not inserted", map_t::typ, name ) ).ignore(); }
+    StatusCode sc = addItem( std::string{name}, *iter );
     if ( sc.isFailure() ) {
-      parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not added", sc )
-          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      parent->Error( fmt::format( "{} ('{}'): item is not added", map_t::typ, name ), sc ).ignore();
     }
-    if ( !parent->addItem( name, map_t::fmt ) ) {
-      parent->Error( std::string{map_t::typ} + " ('" + name + "'): item is not unique" )
-          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+    if ( !parent->addItem( std::string{name}, map_t::fmt ) ) {
+      parent->Error( fmt::format( "{} ('{}'): item is not unique", map_t::typ, name ) ).ignore();
     }
-    return item.first->second.get();
+    return &*iter;
   }
 
   template <typename C, typename... ExtraArgs>
-  typename C::mapped_type::pointer find_or_create( Tuples::TupleObj* parent, const std::string& name, C& map,
-                                                   ExtraArgs&&... ea ) {
-    using pointer   = typename C::mapped_type::pointer;
-    using reference = std::add_lvalue_reference_t<std::remove_pointer_t<pointer>>;
-    auto found      = map.find( name );
-    return found != map.end() ? found->second.get()
-                              : create_( parent, map, name, [&]( const std::string& n, reference i ) {
-                                  return parent->tuple()->addItem( n, i, std::forward<ExtraArgs>( ea )... );
-                                } );
+  auto find_or_create( Tuples::TupleObj* parent, std::string_view name, C& map, ExtraArgs&&... ea ) {
+    auto found = map.find( name );
+    return found != map.end() ? &*found : create_( parent, map, name, [&]( std::string_view n, auto& i ) {
+      return parent->tuple()->addItem( std::string{n}, i, std::forward<ExtraArgs>( ea )... );
+    } );
   }
 
   template <typename Container, typename UT, typename... ExtraArgs>
-  StatusCode column_( Tuples::TupleObj* parent, Container& container, const std::string& name, UT&& value,
+  StatusCode column_( Tuples::TupleObj* parent, Container& container, std::string_view name, UT&& value,
                       ExtraArgs&&... ea ) {
     if ( parent->invalid() ) return Tuples::ErrorCodes::InvalidTuple;
     auto item = find_or_create( parent, name, container, std::forward<ExtraArgs>( ea )... );
@@ -197,11 +186,11 @@ namespace Tuples {
       // destructor
       ~Counter() { report(); }
       // make the increment
-      long increment( const std::string& object ) { return ++m_map[object]; }
+      long increment( std::string_view object ) { return ++get( object ); }
       // make the decrement
-      long decrement( const std::string& object ) { return --m_map[object]; }
+      long decrement( std::string_view object ) { return --get( object ); }
       // current count
-      long counts( const std::string& object ) const { return m_map.at( object ); }
+      long counts( std::string_view object ) const { return get( object ); }
       // make a report
       void report() const {
         for ( auto& entry : m_map ) {
@@ -212,8 +201,18 @@ namespace Tuples {
       };
 
     private:
-      std::map<std::string, long> m_map;
-      std::string                 m_message;
+      long& get( std::string_view sv ) {
+        auto i = m_map.find( sv );
+        if ( UNLIKELY( i == m_map.end() ) ) { i = m_map.emplace( std::pair{std::string{sv}, 0} ).first; }
+        return i->second;
+      }
+      long get( std::string_view sv ) const {
+        auto i = m_map.find( sv );
+        if ( UNLIKELY( i == m_map.end() ) ) throw;
+        return i->second;
+      }
+      std::map<std::string, long, std::less<>> m_map;
+      std::string                              m_message;
     };
 
     /** @var s_InstanceCounter
@@ -295,9 +294,10 @@ StatusCode Tuples::TupleObj::fill( const char* format... ) {
 // ============================================================================
 // put IOpaqueAddress in NTuple (has sense only for Event tag collection Ntuples)
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, IOpaqueAddress* address ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, IOpaqueAddress* address ) {
   if ( !evtColType() ) return ErrorCodes::InvalidOperation;
-  if ( !address ) return Error( "column('" + name + "') IOpaqueAddress* is NULL!", ErrorCodes::InvalidObject );
+  if ( !address )
+    return Error( fmt::format( "column('{}') IOpaqueAddress* is NULL!", name ), ErrorCodes::InvalidObject );
   return column_( this, m_addresses, name, address );
 }
 
@@ -307,162 +307,163 @@ StatusCode Tuples::TupleObj::column( const std::string& name, IOpaqueAddress* ad
 StatusCode Tuples::TupleObj::column( IOpaqueAddress* address ) { return column( "Address", address ); }
 
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, float value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, float value ) {
   return column_( this, m_floats, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, double value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, double value ) {
   return column_( this, m_doubles, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, char value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, char value ) {
   return column_( this, m_chars, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, char value, char minv, char maxv ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, char value, char minv, char maxv ) {
   return column_( this, m_chars, name, value, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, unsigned char value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, unsigned char value ) {
   return column_( this, m_uchars, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, unsigned char value, unsigned char minv,
+StatusCode Tuples::TupleObj::column( std::string_view name, unsigned char value, unsigned char minv,
                                      unsigned char maxv ) {
   return column_( this, m_uchars, name, value, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, short value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, short value ) {
   return column_( this, m_shorts, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, const short value, const short minv, const short maxv ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, const short value, const short minv, const short maxv ) {
   return column_( this, m_shorts, name, value, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, const unsigned short value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, const unsigned short value ) {
   return column_( this, m_ushorts, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, unsigned short value, unsigned short minv,
+StatusCode Tuples::TupleObj::column( std::string_view name, unsigned short value, unsigned short minv,
                                      unsigned short maxv ) {
   return column_( this, m_ushorts, name, value, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, int value ) {
-  return column_( this, m_ints, name, value );
-}
+StatusCode Tuples::TupleObj::column( std::string_view name, int value ) { return column_( this, m_ints, name, value ); }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, int value, int minv, int maxv ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, int value, int minv, int maxv ) {
   return column_( this, m_ints, name, value, minv, maxv );
 }
 // ============================================================================
-Tuples::TupleObj::Int* Tuples::TupleObj::ints( const std::string& name, int minv, int maxv ) {
+Tuples::TupleObj::Int* Tuples::TupleObj::ints( std::string_view name, int minv, int maxv ) {
   return find_or_create( this, name, m_ints, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, unsigned int value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, unsigned int value ) {
   return column_( this, m_uints, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, unsigned int value, unsigned int minv,
-                                     unsigned int maxv ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, unsigned int value, unsigned int minv, unsigned int maxv ) {
   return column_( this, m_uints, name, value, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, const long value ) {
-  Warning( "'long' has different sizes on 32/64 bit systems. Casting '" + name + "' to 'long long'",
+StatusCode Tuples::TupleObj::column( std::string_view name, const long value ) {
+  Warning( fmt::format( "'long' has different sizes on 32/64 bit systems. Casting '{}' to 'long long'", name ),
            StatusCode::SUCCESS )
       .ignore();
   return column( name, static_cast<long long>( value ) );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, const long value, const long minv, const long maxv ) {
-  Warning( "'long' has different sizes on 32/64 bit systems. Casting '" + name + "' to 'long long'",
+StatusCode Tuples::TupleObj::column( std::string_view name, const long value, const long minv, const long maxv ) {
+  Warning( fmt::format( "'long' has different sizes on 32/64 bit systems. Casting '{}' to 'long long'", name ),
            StatusCode::SUCCESS )
       .ignore();
   return column( name, static_cast<long long>( value ), static_cast<long long>( minv ),
                  static_cast<long long>( maxv ) );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, const unsigned long value ) {
-  Warning( "'unsigned long' has different sizes on 32/64 bit systems. Casting '" + name + "' to 'unsigned long long'",
+StatusCode Tuples::TupleObj::column( std::string_view name, const unsigned long value ) {
+  Warning( fmt::format(
+               "'unsigned long' has different sizes on 32/64 bit systems. Casting '{}' to 'unsigned long long'", name ),
            StatusCode::SUCCESS )
       .ignore();
   return column( name, static_cast<unsigned long long>( value ) );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, const unsigned long value, const unsigned long minv,
+StatusCode Tuples::TupleObj::column( std::string_view name, const unsigned long value, const unsigned long minv,
                                      const unsigned long maxv ) {
-  Warning( "'unsigned long' has different sizes on 32/64 bit systems. Casting '" + name + "' to 'unsigned long long'",
+  Warning( fmt::format(
+               "'unsigned long' has different sizes on 32/64 bit systems. Casting '{}' to 'unsigned long long'", name ),
            StatusCode::SUCCESS )
       .ignore();
   return column( name, static_cast<unsigned long long>( value ), static_cast<unsigned long long>( minv ),
                  static_cast<unsigned long long>( maxv ) );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, const long long value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, const long long value ) {
   return column_( this, m_longlongs, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, long long value, long long minv, long long maxv ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, long long value, long long minv, long long maxv ) {
   return column_( this, m_longlongs, name, value, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, unsigned long long value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, unsigned long long value ) {
   return column_( this, m_ulonglongs, name, value );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, unsigned long long value, unsigned long long minv,
+StatusCode Tuples::TupleObj::column( std::string_view name, unsigned long long value, unsigned long long minv,
                                      unsigned long long maxv ) {
   return column_( this, m_ulonglongs, name, value, minv, maxv );
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column( const std::string& name, bool value ) {
+StatusCode Tuples::TupleObj::column( std::string_view name, bool value ) {
   return column_( this, m_bools, name, value );
 }
 // ============================================================================
 // retrieve (book on demand) array-items for ntuple
 // ============================================================================
-Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( const std::string& name, Tuples::TupleObj::Int* length ) {
+Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( std::string_view name, Tuples::TupleObj::Int* length ) {
   // existing array ?
   auto found = m_farrays.find( name );
-  if ( m_farrays.end() != found ) return found->second.get();
-  return create_( this, m_farrays, name,
-                  [&]( const std::string& n, FArray& i ) { return this->tuple()->addIndexedItem( n, *length, i ); } );
+  if ( m_farrays.end() != found ) return &*found;
+  return create_( this, m_farrays, name, [&]( std::string_view n, FArray& i ) {
+    return this->tuple()->addIndexedItem( std::string{n}, *length, i );
+  } );
 }
 // ============================================================================
 // retrieve (book on demand) array-items for ntuple (fixed)
 // ============================================================================
-Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( const std::string& name, const Tuples::TupleObj::MIndex& rows ) {
+Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( std::string_view name, const Tuples::TupleObj::MIndex& rows ) {
   // existing array ?
   auto found = m_arraysf.find( name );
-  if ( m_arraysf.end() != found ) return found->second.get();
+  if ( m_arraysf.end() != found ) return &*found;
   return create_( this, m_arraysf, name,
-                  [&]( const std::string& n, FArray& i ) { return this->tuple()->addItem( n, rows, i ); } );
+                  [&]( std::string_view n, FArray& i ) { return this->tuple()->addItem( std::string{n}, rows, i ); } );
 }
 // ============================================================================
 // retrieve (book on demand) matrix-items for ntuple
 // ============================================================================
-Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( const std::string& name, Tuples::TupleObj::Int* length,
+Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( std::string_view name, Tuples::TupleObj::Int* length,
                                                       const Tuples::TupleObj::MIndex& cols ) {
   // existing array ?
   auto found = m_fmatrices.find( name );
-  if ( m_fmatrices.end() != found ) return found->second.get();
-  return create_( this, m_fmatrices, name, [&]( const std::string& n, FMatrix& i ) {
-    return this->tuple()->addIndexedItem( n, *length, cols, i );
+  if ( m_fmatrices.end() != found ) return &*found;
+  return create_( this, m_fmatrices, name, [&]( std::string_view n, FMatrix& i ) {
+    return this->tuple()->addIndexedItem( std::string{n}, *length, cols, i );
   } );
 }
 // ============================================================================
 // retrieve (book on demand) matrix-items for ntuple (fixed)
 // ============================================================================
-Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( const std::string& name, const Tuples::TupleObj::MIndex& rows,
+Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( std::string_view name, const Tuples::TupleObj::MIndex& rows,
                                                       const Tuples::TupleObj::MIndex& cols ) {
   // existing array ?
   auto found = m_matricesf.find( name );
-  if ( m_matricesf.end() != found ) return found->second.get();
-  return create_( this, m_matricesf, name,
-                  [&]( const std::string& n, FMatrix& i ) { return this->tuple()->addItem( n, rows, cols, i ); } );
+  if ( m_matricesf.end() != found ) return &*found;
+  return create_( this, m_matricesf, name, [&]( std::string_view n, FMatrix& i ) {
+    return this->tuple()->addItem( std::string{n}, rows, cols, i );
+  } );
 }
 // ============================================================================
 // The END

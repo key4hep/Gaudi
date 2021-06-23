@@ -11,14 +11,6 @@
 #ifndef GAUDIKERNEL_NTUPLE_H
 #define GAUDIKERNEL_NTUPLE_H
 // ============================================================================
-// STL include files
-// ============================================================================
-#include <algorithm>
-#include <cfloat>
-#include <limits>
-#include <stdexcept>
-#include <string>
-// ============================================================================
 // Framework include files
 // ============================================================================
 #include "GaudiKernel/DataObject.h"
@@ -26,6 +18,14 @@
 #include "GaudiKernel/INTuple.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/SmartDataPtr.h"
+// ============================================================================
+// STL include files
+// ============================================================================
+#include <algorithm>
+#include <cfloat>
+#include <limits>
+#include <stdexcept>
+#include <string>
 // ============================================================================
 // Forward declarations
 // ============================================================================
