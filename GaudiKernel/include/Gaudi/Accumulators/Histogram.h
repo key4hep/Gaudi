@@ -364,12 +364,12 @@ namespace Gaudi::Accumulators {
    * Typical usage :
    * \code
    * Histogram<2, double, atomicity::full>
-   *   counter{owner, "CounterName", {nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}};
+   *   counter{owner, "CounterName", "HistoTitle", {{nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}}};
    * ++counter[{val1, val2}];    // prefered syntax
    * counter += {val1, val2};    // original syntax inherited from counters
    *
    * WeightedHistogram<2, double, atomicity::full>
-   *   wcounter{owner, "CounterName", {nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}};
+   *   wcounter{owner, "CounterName", "HistoTitle", {{nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}}};
    * wcounter[{val1, val2}] += w;    // prefered syntax
    * wcounter += {{val1, val2}, w};  // original syntax inherited from counters
    * \endcode
