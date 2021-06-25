@@ -211,47 +211,21 @@ namespace Tuples {
   class GAUDI_API TupleObj {
   public:
     // ========================================================================
-    /// basic type for int items
-    typedef NTuple::Item<bool> Bool;
-    // ========================================================================
-    /// basic type for int items
-    typedef NTuple::Item<char> Char;
-    // ========================================================================
-    /// basic type for unsigned int items
-    typedef NTuple::Item<unsigned char> UChar;
-    // ========================================================================
-    /// basic type for int items
-    typedef NTuple::Item<short> Short;
-    // ========================================================================
-    /// basic type for unsigned int items
-    typedef NTuple::Item<unsigned short> UShort;
-    // ========================================================================
-    /// basic type for int items
-    typedef NTuple::Item<int> Int;
-    // ========================================================================
-    /// basic type for unsigned int items
-    typedef NTuple::Item<unsigned int> UInt;
-    // ========================================================================
-    /// basic type for unsigned long long items
-    typedef NTuple::Item<long long> LongLong;
-    // ========================================================================
-    /// basic type for unsigned long long items
-    typedef NTuple::Item<unsigned long long> ULongLong;
-    // ========================================================================
-    /// basic type for float items
-    typedef NTuple::Item<float> Float;
-    // ========================================================================
-    /// basic type for double items
-    typedef NTuple::Item<double> Double;
-    // ========================================================================
-    /// basic type for address items
-    typedef NTuple::Item<IOpaqueAddress*> Address;
-    // ========================================================================
-    /// basic type for array of floats
-    typedef NTuple::Array<float> FArray;
-    // ========================================================================
-    /// basic type for matrix of floats
-    typedef NTuple::Matrix<float> FMatrix;
+    /// basics type for various items
+    using Bool      = NTuple::Item<bool>;
+    using Char      = NTuple::Item<char>;
+    using UChar     = NTuple::Item<unsigned char>;
+    using Short     = NTuple::Item<short>;
+    using UShort    = NTuple::Item<unsigned short>;
+    using Int       = NTuple::Item<int>;
+    using UInt      = NTuple::Item<unsigned int>;
+    using LongLong  = NTuple::Item<long long>;
+    using ULongLong = NTuple::Item<unsigned long long>;
+    using Float     = NTuple::Item<float>;
+    using Double    = NTuple::Item<double>;
+    using Address   = NTuple::Item<IOpaqueAddress*>;
+    using FArray    = NTuple::Array<float>;
+    using FMatrix   = NTuple::Matrix<float>;
     // ========================================================================
     // the actual type for variable size matrix indices
     typedef unsigned short MIndex;
