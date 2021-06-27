@@ -247,49 +247,6 @@ StatusCode Tuples::TupleObj::write() {
   return tuple()->write();
 }
 // ============================================================================
-namespace {
-  /** Very simple tokenizer for TupleObj
-   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
-   *  @date   2002-07-14
-   */
-  std::vector<std::string> tokenize( std::string_view value, std::string_view separators = " " ) {
-    std::vector<std::string> tokens;
-    auto                     it1 = value.begin();
-    auto                     it2 = value.begin();
-    while ( value.end() != it1 && value.end() != it2 ) {
-      it2 = std::find_first_of( it1, value.end(), separators.begin(), separators.end() );
-      if ( it2 != it1 ) {
-        tokens.emplace_back( value, it1 - value.begin(), it2 - it1 );
-        it1 = it2;
-      } else {
-        ++it1;
-      }
-    }
-    return tokens;
-  }
-} // namespace
-// ============================================================================
-StatusCode Tuples::TupleObj::fill( const char* format... ) {
-  // check the underlying tuple
-  if ( invalid() ) return ErrorCodes::InvalidTuple;
-  // decode format string into tokens
-  auto tokens = tokenize( format, " ,;" );
-  /// decode arguments
-  va_list valist;
-  va_start( valist, format );
-  // loop over all tokens
-  StatusCode status = StatusCode::SUCCESS;
-  for ( auto token = tokens.cbegin(); tokens.cend() != token && status.isSuccess(); ++token ) {
-    double val = va_arg( valist, double );
-    status     = column( *token, val );
-    if ( status.isFailure() )
-      Error( "fill(): Can not add column '" + *token + "' " ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  }
-  // mandatory !!!
-  va_end( valist );
-  //
-  return status;
-}
 
 // ============================================================================
 // put IOpaqueAddress in NTuple (has sense only for Event tag collection Ntuples)

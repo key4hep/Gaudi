@@ -798,15 +798,30 @@ namespace Tuples {
      *
      *  @endcode
      *
-     *  @warning *ALL* columns are assumed to be of type <tt>double</tt>
+     *  @warning *ALL* columns must be of the <tt>same<tt> type
      *
      *  @param format blank-separated list of variables,
      *          followed by variable number of arguments.
-     *  @attention  All variables are assumed to be <c>double</c> numbers
+     *  @attention  All variables must be of the same <c>type</c>
      *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
      *  @date 2002-10-30
      */
-    StatusCode fill( const char* format... );
+    template <typename Arg, typename... Args,
+              typename = std::enable_if_t<std::conjunction_v<std::is_same<Arg, Args>...>>>
+    StatusCode fill( std::string_view fmt, Arg arg, Args... args ) {
+      // check the underlying tuple
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      auto       vals   = std::array{arg, args...};
+      auto       val    = begin( vals );
+      StatusCode status = StatusCode::SUCCESS;
+      while ( !fmt.empty() && status.isSuccess() ) {
+        auto token = fmt.substr( 0, fmt.find_first_of( " ,;" ) );
+        if ( !token.empty() ) status = column( token, *val++ );
+        fmt.remove_prefix( std::min( token.size() + 1, fmt.size() ) );
+      }
+      if ( status.isSuccess() && val != end( vals ) ) throw std::runtime_error{"TupleObj::fill: bad format"};
+      return status;
+    }
     // =======================================================================
   public:
     // =======================================================================

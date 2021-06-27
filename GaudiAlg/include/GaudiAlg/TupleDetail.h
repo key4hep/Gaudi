@@ -161,7 +161,6 @@ namespace Tuples {
       /// constructor
       ErrorHandler( const OBJECT* obj, FUNCTION fun ) : m_obj( obj ), m_fun( fun ) {}
 
-    public:
       /// the only one 'useful' method
       StatusCode operator()( const std::string& msg, const StatusCode sc, const size_t mp = 10 ) const {
         return ( m_obj->*m_fun )( msg, sc, mp );
@@ -196,8 +195,8 @@ namespace Tuples {
      * @date   2004-1-24
      */
     template <class OBJECT, class FUNCTION>
-    inline ErrorHandler<OBJECT, FUNCTION> make_handler( const OBJECT* object, FUNCTION function ) {
-      return ErrorHandler<OBJECT, FUNCTION>( object, function );
+    ErrorHandler<OBJECT, FUNCTION> make_handler( const OBJECT* object, FUNCTION function ) {
+      return ErrorHandler( object, function );
     }
   } // namespace detail
 
