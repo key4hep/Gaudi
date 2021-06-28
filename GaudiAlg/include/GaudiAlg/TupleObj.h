@@ -784,8 +784,8 @@ namespace Tuples {
   public:
     // ========================================================================
     /** Set the values for several columns simultaneously.
-     *  Number of columns is arbitrary, but it should not
-     *  be less than number of blank or comma separated tags
+     *  Number of columns is arbitrary, but it should match
+     *  the number of blank, or comma, or semi-column separated tags
      *  in <tt>format</tt> string.
      *  Non-existing columns will be automatically created
      *  and appended to the ntuple.
@@ -798,30 +798,39 @@ namespace Tuples {
      *
      *  @endcode
      *
-     *  @warning *ALL* columns must be of the <tt>same<tt> type
-     *
      *  @param format blank-separated list of variables,
      *          followed by variable number of arguments.
-     *  @attention  All variables must be of the same <c>type</c>
      *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
      *  @date 2002-10-30
      */
-    template <typename Arg, typename... Args,
-              typename = std::enable_if_t<std::conjunction_v<std::is_same<Arg, Args>...>>>
+    template <typename Arg, typename... Args>
     StatusCode fill( std::string_view fmt, Arg arg, Args... args ) {
-      // check the underlying tuple
-      if ( invalid() ) return ErrorCodes::InvalidTuple;
-      auto       vals   = std::array{arg, args...};
-      auto       val    = begin( vals );
-      StatusCode status = StatusCode::SUCCESS;
-      while ( !fmt.empty() && status.isSuccess() ) {
-        auto token = fmt.substr( 0, fmt.find_first_of( " ,;" ) );
-        if ( !token.empty() ) status = column( token, *val++ );
-        fmt.remove_prefix( std::min( token.size() + 1, fmt.size() ) );
+      constexpr auto separators = " ,;";
+      // split into token, and remainder
+      auto token = fmt.substr( 0, fmt.find_first_of( separators ) );
+      fmt.remove_prefix( std::min( token.size() + 1, fmt.size() ) );
+
+      if ( !token.empty() ) {
+        // check the underlying tuple
+        if ( invalid() ) return ErrorCodes::InvalidTuple;
+        return column( token, arg ).andThen( [&] {
+          if constexpr ( sizeof...( Args ) != 0 ) { return fill( fmt, args... ); }
+          // no more args to deal with -- so check that there is nothing usefull left in fmt, and if so, call it a
+          // success...
+          if ( fmt.find_first_not_of( separators ) != std::string_view::npos )
+            throw std::runtime_error{"TupleObj::fill: bad format -- too few arguments for specified format"};
+          return StatusCode{StatusCode::SUCCESS};
+        } );
+      } else if ( !fmt.empty() ) {
+        // got a separator at the front of fmt -- try again now that it is removed from fmt...
+        return fill( fmt, arg, args... );
+      } else {
+        // empty token, and nothing left in fmt -- but we still where called with (at least) one argument...
+        throw std::runtime_error{"TupleObj::fill: bad format -- too many arguments for specified format"};
+        return StatusCode::SUCCESS;
       }
-      if ( status.isSuccess() && val != end( vals ) ) throw std::runtime_error{"TupleObj::fill: bad format"};
-      return status;
     }
+
     // =======================================================================
   public:
     // =======================================================================
