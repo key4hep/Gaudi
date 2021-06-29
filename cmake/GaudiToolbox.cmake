@@ -9,11 +9,16 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 #[========================================================================[.rst:
-Gaudi toolbox
--------------
+GaudiToolbox
+============
+
+.. default-domain:: cmake
 
 This file contains all global variables and functions used inside Gaudi's
 CMake files.
+
+.. contents:: Contents
+    :local:
 
 Global options (added to the project)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -38,33 +43,44 @@ Other Cached variables (added to the project)
 
 .. variable:: CMAKE_INSTALL_BINDIR
 
-CMake will install executable in <prefix>/${CMAKE_INSTALL_BINDIR}
-Default value: bin
+CMake will install executable in ``<prefix>/${CMAKE_INSTALL_BINDIR}``
+
+Default value: ``bin``
+
 
 .. variable:: CMAKE_INSTALL_LIBDIR
 
-CMake will install libraries in <prefix>/${CMAKE_INSTALL_LIBDIR}
-Default value: lib
+CMake will install libraries in ``<prefix>/${CMAKE_INSTALL_LIBDIR}``
+
+Default value: ``lib``
+
 
 .. variable:: CMAKE_INSTALL_INCLUDEDIR
 
-CMake will install public headers in <prefix>/${CMAKE_INSTALL_INCLUDEDIR}
-Default value: include
+CMake will install public headers in ``<prefix>/${CMAKE_INSTALL_INCLUDEDIR}``
+
+Default value: ``include``
+
 
 .. variable:: GAUDI_INSTALL_PLUGINDIR
 
-CMake will install plugins in <prefix>/${GAUDI_INSTALL_PLUGINDIR}
-Default value: ${CMAKE_INSTALL_LIBDIR}
+CMake will install plugins in ``<prefix>/${GAUDI_INSTALL_PLUGINDIR}``
+
+Default value: ``${CMAKE_INSTALL_LIBDIR}``
+
 
 .. variable:: GAUDI_INSTALL_PYTHONDIR
 
-CMake will install python packages in <prefix>/${GAUDI_INSTALL_PYTHONDIR}
-Default value: python
+CMake will install python packages in ``<prefix>/${GAUDI_INSTALL_PYTHONDIR}``
+
+Default value: ``python``
+
 
 .. variable:: GAUDI_INSTALL_CONFIGDIR
 
-CMake will install cmake files in <prefix>/${GAUDI_INSTALL_CONFIGDIR}
-Default value: lib/cmake/${PROJECT_NAME}
+CMake will install cmake files in ``<prefix>/${GAUDI_INSTALL_CONFIGDIR}``
+
+Default value: ``lib/cmake/${PROJECT_NAME}``
 
 
 Functions
@@ -107,8 +123,8 @@ set(scan_dict_deps_command ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py
 
 ################################## Functions  ##################################
 
-# Helper function that replaces imported targets in ``<var>>`` with local ones,
-# if GAUDI_PREFER_LOCAL_TARGETS is true and if the local target exists.
+# Helper function that replaces imported targets in ``<var>`` with local ones,
+# if :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true and if the local target exists.
 macro(_resolve_local_targets var)
     if(GAUDI_PREFER_LOCAL_TARGETS)
         set(_links)
@@ -129,18 +145,19 @@ endmacro()
 #[========================================================================[.rst:
 .. command:: gaudi_add_library
 
-  ::
+  .. code-block:: cmake
 
     gaudi_add_library(lib_name
                       SOURCES file.cpp...
                       [LINK PUBLIC <lib>... PRIVATE <lib>... INTERFACE <lib>...])
 
   This function builds a shared library with the given parameters.
-  It also provides the alias ${PROJECT_NAME}::${lib_name}
+  It also provides the alias ``${PROJECT_NAME}::${lib_name}``
   and configure the installation of the library and its public headers.
 
-  WARNING: Public headers must be under "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  (e.g. ${CMAKE_CURRENT_SOURCE_DIR}/include/GaudiAlg/file.hpp)
+  .. warning::
+    Public headers must be under ``${CMAKE_CURRENT_SOURCE_DIR}/include``
+    (e.g. ``${CMAKE_CURRENT_SOURCE_DIR}/include/Gaudi/file.hpp``)
   
   ``lib_name``
     the name of the target to build
@@ -149,10 +166,10 @@ endmacro()
     the list of file to compile
   
   ``LINK PUBLIC <lib>... PRIVATE <lib>... INTERFACE <lib>...``
-    <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries().
+    ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
+    with the same syntax as `target_link_libraries()`_.
 
-    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
 #]========================================================================]
 function(gaudi_add_library lib_name)
@@ -199,7 +216,7 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_add_header_only_library
 
-  ::
+  .. code-block:: cmake
 
     gaudi_add_header_only_library(lib_name
                                   [LINK <lib>... ])
@@ -208,21 +225,22 @@ endfunction()
   header files (.h or .hpp)).
   This function does not produce any object files at build time but
   it creates an interface target that one can link against at configure time.
-  It also provides the alias ${PROJECT_NAME}::${lib_name}
+  It also provides the alias ``${PROJECT_NAME}::${lib_name}``
   and configure the installation of the public headers.
   The target is exported and usable in downstream projects.
 
-  WARNING: Public headers must be under "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  (e.g. ${CMAKE_CURRENT_SOURCE_DIR}/include/GaudiHive/file.hpp)
+  .. warning::
+    Public headers must be under ``${CMAKE_CURRENT_SOURCE_DIR}/include``
+    (e.g. ``${CMAKE_CURRENT_SOURCE_DIR}/include/Gaudi/file.hpp``)
 
   ``lib_name``
     the name of the target to build
 
   ``LINK <lib>...``
-    <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (INTERFACE is implied).
+    ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
+    with the same syntax as `target_link_libraries()`_ (``INTERFACE`` is implied).
 
-    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
 #]========================================================================]
 function(gaudi_add_header_only_library lib_name)
@@ -269,7 +287,7 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_add_module
 
-  ::
+  .. code-block:: cmake
 
     gaudi_add_module(plugin_name
                      SOURCES file.cpp...
@@ -277,7 +295,7 @@ endfunction()
                      [GENCONF_OPTIONS --opt=val...])
 
   This function builds a plugin library with the given parameters.
-  It generates .components files with listcomponents and .confdb
+  It generates ``.components`` files with listcomponents and ``.confdb``
   and python modules with genconf.
   It also configure the installation.
 
@@ -288,15 +306,15 @@ endfunction()
     the list of file to compile
 
   ``LINK <lib>...``
-    <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (PRIVATE is implied).
+    ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
+    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied).
 
-    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
 
   ``GENCONF_OPTIONS --opt=val...``
     a list of additional arguments to pass to genconf
-    e.g. --user-module=package.module --load-library=library
+    e.g. ``--user-module=package.module --load-library=library``
 #]========================================================================]
 function(gaudi_add_module plugin_name)
     cmake_parse_arguments(
@@ -378,7 +396,7 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_add_python_module
 
-  ::
+  .. code-block:: cmake
 
     gaudi_add_python_module(module_name
                             SOURCES file.cpp...
@@ -392,18 +410,20 @@ endfunction()
     the list of file to compile
 
   ``LINK <lib>...``
-    <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (PRIVATE is implied)
-    LINK Python::Module is implied.
+    ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
+    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied)
 
-    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    ``LINK Python::Module`` is implied.
+
+    If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
 
   ``PACKAGE <path>``
     The path to the python package the compiled module should be part of
     and installed with.
-    Default value: ${CMAKE_CURRENT_SOURCE_DIR}/python/${package_name}
-    (${package_name} is the name of the subdirectory we are in)
+
+    Default value: ``${CMAKE_CURRENT_SOURCE_DIR}/python/${package_name}``
+    (``${package_name}`` is the name of the subdirectory we are in)
 #]========================================================================]
 function(gaudi_add_python_module module_name)
     cmake_parse_arguments(
@@ -454,7 +474,7 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_add_executable
 
-  ::
+  .. code-block:: cmake
 
     gaudi_add_executable(exe_name
                          SOURCES file.cpp...
@@ -471,14 +491,14 @@ endfunction()
     the list of file to compile
 
   ``LINK <lib>...``
-    <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (PRIVATE is implied).
+    ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
+    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied).
 
-    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
 
   ``TEST``
-    This option specify that the executable must be added to the test set
+    This flag specify that the executable must be added to the test set
     to be run by ctest.
 #]========================================================================]
 function(gaudi_add_executable exe_name)
@@ -523,7 +543,7 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_add_tests
 
-  ::
+  .. code-block:: cmake
 
     gaudi_add_tests(QMTest|nosetests|pytest [test_directory])
 
@@ -532,21 +552,25 @@ endfunction()
 
   ``QMTest``
     Adds QMTest tests.
-    Default test_directory is ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-    WARNING: Each time a new .qmt file is added, reconfiguring the project with cmake is mandatory
+    Default test_directory is ``${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest``
+
+    .. warning:
+      Each time a new .qmt file is added, it is mandatory to reconfigure the project
 
   ``nosetests``
     Adds nosetests tests.
-    Default test_directory is ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose
+
+    Default test_directory is ``${CMAKE_CURRENT_SOURCE_DIR}/tests/nose``
 
   ``pytest``
     Adds pytest tests.
-    Default test_directory is ${CMAKE_CURRENT_SOURCE_DIR}/tests/pytest
+
+    Default test_directory is ``${CMAKE_CURRENT_SOURCE_DIR}/tests/pytest``
 
   ``test_directory``
     The directory containing the test files.
     Providing a value for this argument overrides the default one.
-    Do not put a "/" at the end.
+    Do not put a ``/`` at the end.
 #]========================================================================]
 function(gaudi_add_tests type)
     if(NOT BUILD_TESTING)
@@ -643,7 +667,7 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_add_dictionary
 
-  ::
+  .. code-block:: cmake
 
     gaudi_add_dictionary(dictionary
                          HEADERFILES header.h...
@@ -652,17 +676,17 @@ endfunction()
                          [LINK <lib>...])
 
   This function generates the sources of a ROOT reflex dictionary. (build
-  target: ${dictionary}-gen).
-  Then it builds the dictionary as a plugin. (build target: ${dictionary})
-  Finally it installs the compiled dictionary and the _rdict.pcm files alongside
+  target: ``${dictionary}-gen``).
+  Then it builds the dictionary as a plugin. (build target: ``${dictionary}``)
+  Finally it installs the compiled dictionary and the ``_rdict.pcm`` files alongside
   the other plugins of the project.
-  Futhermore, all the .rootmap files generated are merged in
-  ${PROJECT_NAME}.rootmap and this file is installed with the shared
+  Futhermore, all the ``.rootmap`` files generated are merged in
+  ``${PROJECT_NAME}.rootmap`` and this file is installed with the shared
   libraries of the project.
 
   ``dictionary``
     The name of the target to compile the dictionary.
-    By convention, call it <GaudiSubDir>Dict
+    By convention, call it ``<GaudiSubDir>Dict``
 
   ``HEADERFILES header.h...``
     One or more C++ headers
@@ -672,14 +696,14 @@ endfunction()
 
   ``OPTIONS opt...``
     options to pass verbatim to genreflex when generating the sources
-    e.g. --debug
+    e.g. ``--debug``
 
   ``LINK <lib>...``
     Libraries to link against when building the dictionary.
-    <lib> can be Package::Lib, MyTarget, SomeLib
-    with the same syntax as target_link_libraries() (PRIVATE is implied).
+    ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
+    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied).
 
-    If GAUDI_PREFER_LOCAL_TARGETS is true, override imported targets with
+    If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
 #]========================================================================]
 function(gaudi_add_dictionary dictionary)
@@ -792,46 +816,34 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_install
 
-  ::
+  .. code-block:: cmake
 
     gaudi_install(PYTHON [directory])
     gaudi_install(SCRIPTS [directory])
     gaudi_install(CMAKE files|directories...)
 
-  First signature: PYTHON
-  """""""""""""""""""""""
+  ``PYTHON [directory]``
+    This function installs a Python package (and adds it to the temporary
+    ``PYTHONPATH`` used at runtime locally).
 
-  This function installs a python package (and adds it to the temporary
-  PYTHONPATH used at runtime locally).
+    ``directory`` is the he path to the directory to install (absolute or relative
+    to ``${CMAKE_CURRENT_SOURCE_DIR}``).  Default value: ``python/``
 
-  ``directory``
-    The path to the directory to install (absolute or relative
-    to ${CMAKE_CURRENT_SOURCE_DIR}).
-    Default value: python/
+  ``SCRIPTS [directory]``
+    This function installs a directory containing executable scripts (and adds
+    it to the temporary ``PATH`` used at runtime locally).
 
-  Second signature: SCRIPTS
-  """""""""""""""""""""""""
+    ``directory`` is the path to the directory to install (absolute or relative
+    to ``${CMAKE_CURRENT_SOURCE_DIR}``).  Default value: ``scripts/``
 
-  This function installs a directory containing executable scripts (and adds
-  it to the temporary PATH used at runtime locally).
+  ``CMAKE files|directories...``
+    This function installs cmake files and directories.
 
-  ``directory``
-    The path to the directory to install (absolute or relative
-    to ${CMAKE_CURRENT_SOURCE_DIR}).
-    Default value: scripts/
-
-  Third signature: CMAKE
-  """"""""""""""""""""""
-
-  This function installs cmake files and directories.
-
-  ``files|directories...``
+    ``files|directories...``
     Paths to files or directories to install (absolute or relative
-    to ${CMAKE_CURRENT_SOURCE_DIR}).
+    to ``${CMAKE_CURRENT_SOURCE_DIR}``).
 
-  Caveat
-  """"""
-
+.. note::
   If directory is specified without a trailing slash (e.g. mydir), the 
   directory itself will be installed.
   If directory is specified with a trailing slash (e.g. mydir/), the content
@@ -914,18 +926,19 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_generate_confuserdb
 
-  ::
+  .. code-block:: cmake
 
     gaudi_generate_confuserdb([modules])
 
-  This function adds ConfigurableUser specializations
-  to ${PROJECT_NAME}.confdb.
+  This function adds ``ConfigurableUser`` specializations
+  to ``${PROJECT_NAME}.confdb``.
 
   ``modules``
     the list of modules that contain the configuration
-    they must be inside ${CMAKE_CURRENT_SOURCE_DIR}/python/
-    Default value: ${package_name}.Configuration
-    (${package_name} is the name of the subdirectory we are in)
+    they must be inside ``${CMAKE_CURRENT_SOURCE_DIR}/python/``
+
+    Default value: ``${package_name}.Configuration``
+    (``${package_name}`` is the name of the subdirectory we are in)
 #]========================================================================]
 function(gaudi_generate_confuserdb)
     # Get package_name
@@ -963,7 +976,7 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_check_python_module
 
-  ::
+  .. code-block:: cmake
 
     gaudi_check_python_module(modules...)
 
@@ -998,13 +1011,14 @@ endfunction()
 #[========================================================================[.rst:
 .. command:: gaudi_generate_version_header_file
 
-  ::
+  .. code-block:: cmake
 
     gaudi_generate_version_header_file([name])
 
-  This function generates a file ${name}Version.h in ${CMAKE_CURRENT_BINARY_DIR}/include
-  with the following content (${NAME} is ${name} uppercased):
-  .. code-block:: c
+  This function generates a file ``${name}Version.h`` in ``${CMAKE_CURRENT_BINARY_DIR}/include``
+  with the following content (``${NAME}`` is ``${name}`` uppercased):
+
+  .. code-block:: cpp
 
       #ifndef ${NAME}_VERSION_H
       #define ${NAME}_VERSION_H
@@ -1023,8 +1037,9 @@ endfunction()
 
   ``name``
     The name of the (sub-)project.
+
     If no name is provided, the same file is generated but its name is
-    toupper(${PROJECT_NAME})_VERSION.h and it is installed with the
+    ``toupper(${PROJECT_NAME})_VERSION.h`` and it is installed with the
     other headers.
 #]========================================================================]
 function(gaudi_generate_version_header_file)
@@ -1201,3 +1216,8 @@ endfunction()
 # variable_watch(var_name __deprecate_var_for_target)
 # for each variable that is deprecated
 # => use it in every Find*.cmake
+
+
+#[========================================================================[.rst:
+.. _target_link_libraries(): https://cmake.org/cmake/help/latest/command/target_link_libraries.html
+#]========================================================================]
