@@ -16,7 +16,7 @@ import multiprocessing
 from multiprocessing import Process, Queue, JoinableQueue, Event
 from multiprocessing import cpu_count, current_process
 from multiprocessing.queues import Empty
-from pTools import *
+from GaudiMP.pTools import *
 import time
 import sys
 import os

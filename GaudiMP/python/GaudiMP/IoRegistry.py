@@ -12,7 +12,7 @@
 # @purpose hold I/O registration informations
 # @author Sebastien Binet <binet@cern.ch>
 
-from FdsRegistry import FdsDict
+from GaudiMP.FdsRegistry import FdsDict
 
 
 class IoRegistry(object):
