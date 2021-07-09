@@ -928,7 +928,8 @@ endfunction()
 
   .. code-block:: cmake
 
-    gaudi_generate_confuserdb([modules])
+    gaudi_generate_confuserdb([modules]
+                              [OPTIONS ...])
 
   This function adds ``ConfigurableUser`` specializations
   to ``${PROJECT_NAME}.confdb``.
@@ -939,15 +940,21 @@ endfunction()
 
     Default value: ``${package_name}.Configuration``
     (``${package_name}`` is the name of the subdirectory we are in)
+
+  ``OPTIONS``
+    extra options to pass to ``genconfuser.py``
 #]========================================================================]
 function(gaudi_generate_confuserdb)
+    cmake_parse_arguments(PARSE_ARGV 0
+        ARG "" "" "OPTIONS"
+    )
     # Get package_name
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     # Handle default value
-    if(NOT ARGV)
+    if(NOT ARG_UNPARSED_ARGUMENTS)
         set(modules "${package_name}.Configuration")
     else()
-        set(modules "${ARGV}")
+        set(modules "${ARG_UNPARSED_ARGUMENTS}")
     endif()
     # Handle options
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name})
@@ -961,6 +968,7 @@ function(gaudi_generate_confuserdb)
                 --build-dir ${CMAKE_BINARY_DIR}
                 --root ${CMAKE_CURRENT_SOURCE_DIR}/python
                 --output "${output_file}"
+                ${ARG_OPTIONS}
                 ${package_name}
                 ${modules}
                 ${_gaudi_no_fail}
