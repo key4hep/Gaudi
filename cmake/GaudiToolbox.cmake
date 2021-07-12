@@ -615,7 +615,8 @@ function(gaudi_add_tests type)
                         ${qmtest_root_dir}/${qmt_file}
                      WORKING_DIRECTORY "${qmtest_root_dir}")
             set_tests_properties(${package_name}.${qmt_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name};QMTest"
-                                                                        SKIP_RETURN_CODE 77)
+                                                                        SKIP_RETURN_CODE 77
+                                                                        TIMEOUT 0)
         endforeach()
         # Extract dependencies to a cmake file
         find_file(extract_qmtest_metadata extract_qmtest_metadata.py
