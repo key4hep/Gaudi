@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,6 +13,7 @@
 
 #include <Gaudi/MonitoringHub.h>
 
+#include <TDirectory.h>
 #include <TFile.h>
 #include <TH1D.h>
 #include <TH2D.h>
@@ -20,8 +21,6 @@
 #include <TProfile.h>
 #include <TProfile2D.h>
 #include <TProfile3D.h>
-
-#include <fmt/format.h>
 
 #include <algorithm>
 #include <deque>
@@ -42,9 +41,7 @@ namespace {
   }
 
   template <typename Traits, std::size_t... index>
-  void saveRootHistoInternal( const std::string& component, const std::string& name, nlohmann::json& j,
-                              std::index_sequence<index...> ) {
-    auto id = fmt::format( "{}/{}", component, name );
+  void saveRootHistoInternal( const std::string& name, nlohmann::json& j, std::index_sequence<index...> ) {
     // extract data from json
     auto jsonAxis = j.at( "axis" );
     auto axis     = std::array{toAxis( jsonAxis[index] )...};
@@ -57,7 +54,7 @@ namespace {
     assert( weights.size() == totNBins );
     // Create Root histogram calling constructors with the args tuple
     auto histo = std::make_from_tuple<typename Traits::Histo>(
-        std::tuple_cat( std::tuple{id.c_str(), title.c_str()},
+        std::tuple_cat( std::tuple{name.c_str(), title.c_str()},
                         std::tuple{axis[index].nBins, axis[index].minValue, axis[index].maxValue}... ) );
     // fill Histo
     for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
@@ -95,8 +92,8 @@ namespace {
   };
 
   template <unsigned int N, bool isProfile, typename ROOTHisto>
-  void saveRootHisto( const std::string& component, const std::string& name, nlohmann::json& j ) {
-    saveRootHistoInternal<Traits<isProfile, ROOTHisto>>( component, name, j, std::make_index_sequence<N>() );
+  void saveRootHisto( const std::string& name, nlohmann::json& j ) {
+    saveRootHistoInternal<Traits<isProfile, ROOTHisto>>( name, j, std::make_index_sequence<N>() );
   }
 
   using namespace std::string_literals;
@@ -133,7 +130,7 @@ namespace Gaudi::Histograming::Sink {
         return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
       } );
       TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
-      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( auto& ent ) {
+      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [&histoFile]( auto& ent ) {
         auto j    = ent.toJSON();
         auto dim  = j.at( "dimension" ).template get<unsigned int>();
         auto type = j.at( "type" ).template get<std::string>();
@@ -144,7 +141,15 @@ namespace Gaudi::Histograming::Sink {
         if ( saver == registry.end() )
           throw GaudiException( "Unknown type : " + type + " dim : " + std::to_string( dim ), "Histogram::Sink::Root",
                                 StatusCode::FAILURE );
-        ( *saver->second )( ent.component, ent.name, j );
+        // use TDirectory ent.component to store the histogram
+        const bool returnExistingDirectory = true;
+        if ( auto dir = histoFile.mkdir( ent.component.c_str(), "", returnExistingDirectory ) ) {
+          dir->cd();
+        } else {
+          throw GaudiException( "Could not create directory " + ent.component, "Histogram::Sink::Root",
+                                StatusCode::FAILURE );
+        }
+        ( *saver->second )( ent.name, j );
       } );
       return ok;
     }
