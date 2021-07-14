@@ -151,6 +151,12 @@ namespace Gaudi::Accumulators {
      * equal to nBins/(maxValue-minValue)
      */
     Arithmetic ratio;
+
+    /// returns the bin number for a given value, ranging from 0 (underflow) to nBins+1 (overflow)
+    unsigned int index( Arithmetic value ) const {
+      int idx = std::floor( ( value - minValue ) * ratio ) + 1;
+      return idx < 0 ? 0 : ( (unsigned int)idx > nBins ? nBins + 1 : (unsigned int)idx );
+    }
   };
 
   /// automatic conversion of the Axis type to json
@@ -174,11 +180,7 @@ namespace Gaudi::Accumulators {
       unsigned int index = 0;
       for ( unsigned int dim = 0; dim < NIndex; dim++ ) {
         // compute local index for a given dimension
-        int localIndex = std::floor( ( ( *this )[dim] - axis[dim].minValue ) * axis[dim].ratio ) + 1;
-        localIndex     = ( localIndex < 0 )
-                         ? 0
-                         : ( ( (unsigned int)localIndex > axis[dim].nBins ) ? axis[dim].nBins + 1
-                                                                            : (unsigned int)( localIndex ) );
+        int localIndex = axis[dim].index( ( *this )[dim] );
         // compute global index. Bins are stored in a row first manner
         index = ( dim > 0 ? ( axis[dim - 1].nBins + 2 ) : 0 ) * index + localIndex;
       }
@@ -195,13 +197,10 @@ namespace Gaudi::Accumulators {
     using ValueType          = HistoInputType;
     using AxisArithmeticType = Arithmetic;
     HistoInputType( Arithmetic a ) : value( a ) {}
-    unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const {
-      int index = std::floor( ( value - axis[0].minValue ) * axis[0].ratio ) + 1;
-      return index < 0 ? 0 : ( (unsigned int)index > axis[0].nBins ? axis[0].nBins + 1 : (unsigned int)index );
-    }
-    Arithmetic& operator[]( int ) { return value; }
-                operator Arithmetic() const { return value; }
-    auto        forInternalCounter() { return value; }
+    unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const { return axis[0].index( value ); }
+    Arithmetic&  operator[]( int ) { return value; }
+                 operator Arithmetic() const { return value; }
+    auto         forInternalCounter() { return value; }
 
   private:
     Arithmetic value;
