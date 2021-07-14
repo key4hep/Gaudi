@@ -27,6 +27,8 @@
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/split_when.hpp>
 #include <range/v3/view/transform.hpp>
+#include <string>
+#include <vector>
 
 namespace {
 
@@ -61,6 +63,31 @@ namespace {
                         std::tuple{axis[index].nBins, axis[index].minValue, axis[index].maxValue}... ) );
     // fill Histo
     for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
+    auto try_set_bin_labels = [&histo, &jsonAxis]( auto idx ) {
+      if ( jsonAxis[idx].contains( "labels" ) ) {
+        TAxis* axis = nullptr;
+        switch ( idx ) {
+        case 0:
+          axis = histo.GetXaxis();
+          break;
+        case 1:
+          axis = histo.GetYaxis();
+          break;
+        case 2:
+          axis = histo.GetZaxis();
+          break;
+        default:
+          break;
+        }
+        if ( axis ) {
+          const auto labels = jsonAxis[idx].at( "labels" );
+          for ( unsigned int i = 0; i < labels.size(); i++ ) {
+            axis->SetBinLabel( i + 1, labels[i].template get<std::string>().c_str() );
+          }
+        }
+      }
+    };
+    ( try_set_bin_labels( index ), ... );
     // write to file
     histo.Write();
   }
