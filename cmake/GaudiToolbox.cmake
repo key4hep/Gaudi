@@ -632,7 +632,7 @@ function(gaudi_add_tests type)
                         OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
                         RESULT_VARIABLE qmt_deps_retcode)
         if(NOT qmt_deps_retcode EQUAL "0")
-            message(WARNING "Failed to compute dependencies of QMTest tests.")
+            message(FATAL_ERROR "Failed to compute dependencies of QMTest tests.")
             return()
         endif()
         # Include the generated file with the QMTest dependencies
