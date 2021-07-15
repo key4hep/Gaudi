@@ -10,22 +10,10 @@
 \***********************************************************************************/
 #ifndef GAUDIALG_TUPLEPUT_H
 #define GAUDIALG_TUPLEPUT_H 1
-// =============================================================================
-// Include files
-// =============================================================================
-#include <memory>
-// =============================================================================
-// GaudiKernel
-// =============================================================================
-#include "GaudiKernel/System.h"
-// =============================================================================
-// GaudiAlg
-// =============================================================================
 #include "GaudiAlg/TupleObj.h"
-// ============================================================================
-// ROOT TClass
-// ============================================================================
+#include "GaudiKernel/System.h"
 #include "TClass.h"
+#include <memory>
 // =============================================================================
 /** @file
  *  Implementation file for Tuple::TupleObj::put method
@@ -38,7 +26,7 @@ namespace Tuples {
    *
    *  Simple class, which represents the local storage of N-tuple items
    *  of the given type. Essentially it is a restricted
-   *  GaudiUtils::HashMap with the ownership of the newly created entries
+   *  std::unordered_map with ownership of the newly created entries
    *
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2007-04-08
@@ -47,56 +35,63 @@ namespace Tuples {
   class ItemStore final {
     friend class TupleObj;
 
-  private:
-    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<NTuple::Item<VALUE>>> Store;
-
   public:
     /// constructor : create empty map
     ItemStore() = default;
 
   private:
     /// the only one method:
-    inline NTuple::Item<VALUE>* getItem( const std::string& key, Tuples::TupleObj* tuple ) {
+    NTuple::Item<VALUE>* getItem( std::string_view key, Tuples::TupleObj* tuple ) {
       // find the item by name
       auto ifound = m_map.find( key );
       // existing item?
-      if ( m_map.end() != ifound ) return ifound->second.get(); // RETURN
+      if ( m_map.end() != ifound ) return &ifound->second.first; // RETURN
+
       // check the tuple for booking:
       if ( !tuple ) return nullptr;
       // check the existence of the name
       if ( !tuple->goodItem( key ) ) {
-        tuple->Error( "ItemStore::getItem('" + key + "') item name is not unique" ).ignore();
+        tuple->Error( fmt::format( "ItemStore::getItem('{}') item name is not unique", key ) ).ignore();
         return nullptr; // RETURN
       }
       // get the underlying object
       NTuple::Tuple* tup = tuple->tuple();
       if ( !tup ) {
-        tuple->Error( "ItemStore::getItem('" + key + "') invalid NTuple::Tuple*" ).ignore();
+        tuple->Error( fmt::format( "ItemStore::getItem('{}') invalid NTuple::Tuple*", key ) ).ignore();
         return nullptr; // RETURN
       }
       // create new item:
-      // add the newly created item into the store:
-      auto stored = m_map.emplace( key, std::make_unique<NTuple::Item<VALUE>>() );
-      if ( !stored.second ) {
-        tuple->Warning( "ItemStore::getItem('" + key + "') item already exists, new one not inserted!" ).ignore();
+      // add the newly created item into the store -- and point the key view into the mapped value...
+      auto [iter, ok] = m_map.try_emplace( key, NTuple::Item<VALUE>{}, std::string{key} );
+      if ( ok ) {
+        auto nh  = m_map.extract( iter );
+        nh.key() = nh.mapped().second; // "re-point" key to the string contained value_type
+        // std::tie( iter,ok,std::ignore)  = m_map.insert( std::move( nh ) );
+        auto r = m_map.insert( std::move( nh ) );
+        iter   = r.position;
+        ok     = r.inserted;
+      }
+      if ( !ok ) {
+        tuple->Warning( fmt::format( "ItemStore::getItem('{}') item already exists, new one not inserted!", key ) )
+            .ignore();
         return nullptr;
       }
-      auto& item = stored.first->second;
+      auto& item = iter->second.first;
       // add it into N-tuple
-      StatusCode sc = tup->addItem( key, *item ); // ATTENTION!
+      StatusCode sc = tup->addItem( iter->second.second, item ); // ATTENTION!
       if ( sc.isFailure() ) {
-        tuple->Error( "ItemStore::getItem('" + key + "') cannot addItem", sc ).ignore();
-        m_map.erase( stored.first );
+        tuple->Error( fmt::format( "ItemStore::getItem('{}') cannot addItem", key ), sc ).ignore();
+        m_map.erase( iter );
         return nullptr; // RETURN
       }
       // check the name again
-      if ( !tuple->addItem( key, System::typeinfoName( typeid( VALUE ) ) ) ) {
-        tuple->Warning( "ItemStore::getItem('" + key + "') the item not unique " ).ignore();
-        m_map.erase( stored.first );
+      if ( !tuple->addItem( iter->second.second, System::typeinfoName( typeid( VALUE ) ) ) ) {
+        tuple->Warning( fmt::format( "ItemStore::getItem('{}') the item not unique ", key ) ).ignore();
+        m_map.erase( iter );
         return nullptr;
       }
       //
-      return item.get(); // RETURN
+      return &item; // RETURN
     }
 
     // delete copy constructor and assignment
@@ -104,8 +99,7 @@ namespace Tuples {
     ItemStore& operator=( const ItemStore& ) = delete;
 
   private:
-    /// the underlying map
-    Store m_map; ///< the underlying map
+    std::unordered_map<std::string_view, std::pair<NTuple::Item<VALUE>, std::string>> m_map; ///< the underlying map
   };
 } // end of namespace Tuples
 // =============================================================================
@@ -120,7 +114,7 @@ namespace Tuples {
  */
 // =============================================================================
 template <class TYPE>
-inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* obj ) {
+StatusCode Tuples::TupleObj::put( std::string_view name, const TYPE* obj ) {
   if ( invalid() ) { return ErrorCodes::InvalidTuple; }         // RETURN
   if ( !evtColType() ) { return ErrorCodes::InvalidOperation; } // RETURN
 
@@ -135,7 +129,7 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
     s_type = TClass::GetClass( typeid( TYPE ) );
     if ( !s_type ) {
       s_fail = true;
-      return Error( " put('" + name + "'," + System::typeinfoName( typeid( TYPE ) ) + ") :Invalid ROOT Type",
+      return Error( fmt::format( " put('{}',{}) :Invalid ROOT Type", name, System::typeinfoName( typeid( TYPE ) ) ),
                     ErrorCodes::InvalidItem ); // RETURN
     }
   }
@@ -143,9 +137,9 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
   static Tuples::ItemStore<TYPE*> s_map;
   // get the variable by name:
   auto item = s_map.getItem( name, this );
-  if ( !item ) { return Error( " put('" + name + "'): invalid item detected", ErrorCodes::InvalidItem ); }
+  if ( !item ) { return Error( fmt::format( " put('{}'): invalid item detected", name ), ErrorCodes::InvalidItem ); }
   // assign the item!
-  ( *item ) = const_cast<TYPE*>( obj ); // THATS ALL!!
+  *item = const_cast<TYPE*>( obj ); // THATS ALL!!
   //
   return StatusCode::SUCCESS; // RETURN
 }
