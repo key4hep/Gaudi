@@ -161,6 +161,42 @@ namespace Gaudi {
     };
     REGISTER_GRAMMAR( H2, H2Grammar );
     // ========================================================================
+    template <typename Iterator, typename Skipper>
+    class H3Grammar : public qi::grammar<Iterator, H3(), qi::locals<char>, Skipper> {
+      // ======================================================================
+    public:
+      // ======================================================================
+      typedef H3 ResultT;
+      // ======================================================================
+    public:
+      // ======================================================================
+      H3Grammar() : H3Grammar::base_type( result ) {
+        inner = ( ( ( qi::lit( "name" ) | "'name'" | "\"name\"" ) >> ":" >> name[qi::_val *= qi::_1] ) |
+                  ( ( qi::lit( "title" ) | "'title'" | "\"title\"" ) >> ":" >> title[qi::_val /= qi::_1] ) |
+                  ( ( qi::lit( "X" ) | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':' >> edges[qi::_val &= qi::_1] ) |
+                  ( ( qi::lit( "Y" ) | "'Y'" | "\"Y\"" | "y" | "'y'" | "\"y\"" ) >> ':' >> edges[qi::_val |= qi::_1] ) |
+                  ( ( qi::lit( "Z" ) | "'Z'" | "\"Z\"" | "z" | "'z'" | "\"z\"" ) >> ':' >> edges[qi::_val -= qi::_1] ) |
+                  ( ( qi::lit( "bins" ) | "'bins'" | "\"bins\"" ) >> ':' >> bins[qi::_val += qi::_1] ) ) %
+                ',';
+
+        begin =
+            enc::char_( '[' )[qi::_val = ']'] | enc::char_( '{' )[qi::_val = '}'] | enc::char_( '(' )[qi::_val = ')'];
+        end    = enc::char_( qi::_r1 );
+        result = ( begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a ) ) | inner[qi::_val = qi::_1];
+      }
+
+      StringGrammar<Iterator, Skipper>                                         name, title;
+      EdgeGrammar<Iterator, Skipper>                                           edges;
+      VectorGrammar<Iterator, std::vector<std::pair<double, double>>, Skipper> bins;
+      qi::rule<Iterator, H3(), qi::locals<char>, Skipper>                      result;
+      qi::rule<Iterator, H3(), Skipper>                                        inner;
+      qi::rule<Iterator, char()>                                               begin;
+      qi::rule<Iterator, void( char )>                                         end;
+
+      // ======================================================================
+    };
+    REGISTER_GRAMMAR( H3, H3Grammar );
+    // ========================================================================
   } // namespace Parsers
   // ==========================================================================
 } //                                                     end of namespace Gaudi
@@ -181,6 +217,14 @@ namespace {
     StatusCode sc = Gaudi::Parsers::parse_( h2, input );
     if ( sc.isFailure() ) { return sc; } // RETURN
     return h2.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+  }
+  // ==========================================================================
+  /// parse the histogram
+  StatusCode _parse( H3& h3, const std::string& input ) {
+    // check the parsing
+    StatusCode sc = Gaudi::Parsers::parse_( h3, input );
+    if ( sc.isFailure() ) { return sc; } // RETURN
+    return h3.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
   // ==========================================================================
   template <class HISTO1>
@@ -279,6 +323,59 @@ namespace {
     }
     //
     name = h2.m_name;
+    //
+    return histo;
+  }
+  // ==========================================================================
+  template <class HISTO3>
+  std::unique_ptr<HISTO3> _parse_3D( const std::string& input, std::string& name ) {
+    //
+    typedef std::unique_ptr<HISTO3> H3P;
+    // 1) parse the custom format
+    //
+    H3         h3;
+    StatusCode sc = _parse( h3, input );
+    if ( sc.isFailure() || !h3.ok() ) { return H3P(); } // RETURN
+    //
+    // 2) create the histogram
+    //
+    H3P histo( h3.m_xedges.edges.empty() || h3.m_yedges.edges.empty() || h3.m_zedges.edges.empty() ? // FIXED binning?
+                   new HISTO3( "",                 // h3.m_name.c_str   ()         ,           // NAME
+                               h3.m_title.c_str(), // TITLE
+                               h3.m_xedges.nbins,  // #bins
+                               h3.m_xedges.low,    // low edge
+                               h3.m_xedges.high,   // high edge
+                               h3.m_yedges.nbins,  // #bins
+                               h3.m_yedges.low,    // low edge
+                               h3.m_yedges.high,   // high edge
+                               h3.m_zedges.nbins,  // #bins
+                               h3.m_zedges.low,    // low edge
+                               h3.m_zedges.high )
+                                                                                                   : // high edge
+                   new HISTO3( "",                         // h3.m_name.c_str   ()         ,           // NAME
+                               h3.m_title.c_str(),         // TITLE
+                               h3.m_xedges.nBins(),        // #bins
+                               &h3.m_xedges.edges.front(), // vector of edges
+                               h3.m_yedges.nBins(),        // #bins
+                               &h3.m_yedges.edges.front(), h3.m_zedges.nBins(),
+                               &h3.m_zedges.edges.front() ) ); // vector of edges
+
+    int       ibin  = 0;
+    const int xBins = h3.m_xedges.nBins();
+    const int yBins = h3.m_yedges.nBins();
+    const int zBins = h3.m_yedges.nBins();
+
+    for ( int kBin = 0; kBin <= zBins + 1; ++kBin ) {
+      for ( int jBin = yBins + 1; jBin >= 0; --jBin ) {
+        for ( int iBin = 0; iBin <= xBins + 1; ++iBin ) {
+          histo->SetBinContent( iBin, jBin, kBin, h3.m_bins[ibin].first );
+          histo->SetBinError( iBin, jBin, kBin, h3.m_bins[ibin].second );
+          ++ibin;
+        }
+      }
+    }
+    //
+    name = h3.m_name;
     //
     return histo;
   }
@@ -382,6 +479,51 @@ StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
+StatusCode Gaudi::Parsers::parse( TH3D& result, const std::string& input ) {
+  // 1) check the parsing
+  std::string name;
+  auto        h3 = _parse_3D<TH3D>( input, name );
+  if ( h3 ) {
+    result.Reset();
+    h3->Copy( result ); // ASSIGN
+    result.SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
+  }
+  //
+  // XML-like text?
+  return ( std::string::npos != input.find( '<' ) ) ? Gaudi::Utils::Histos::fromXml( result, input )
+                                                    : StatusCode::FAILURE;
+}
+// ============================================================================
+/*  parse ROOT histogram from text representation
+ *  @param result (OUTPUT) the histogram
+ *  @param input  (INPUT)  the input to be parsed
+ *  @return status code
+ */
+// ============================================================================
+StatusCode Gaudi::Parsers::parse( TH3F& result, const std::string& input ) {
+  // 1) check the parsing
+  std::string name;
+  auto        h3 = _parse_3D<TH3F>( input, name );
+  if ( h3 ) {
+    result.Reset();
+    h3->Copy( result ); // ASSIGN
+    result.SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
+  }
+  //
+  // XML-like text?
+  if ( std::string::npos != input.find( '<' ) ) { return Gaudi::Utils::Histos::fromXml( result, input ); }
+  //
+  return StatusCode::FAILURE;
+}
+// ============================================================================
+/*  parse ROOT histogram from text representation
+ *  @param result (OUTPUT) the histogram
+ *  @param input  (INPUT)  the input to be parsed
+ *  @return status code
+ */
+// ============================================================================
 StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input ) {
   if ( result ) { return parse( *result, input ); } // RETURN
 
@@ -422,6 +564,29 @@ StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input ) {
                                                     : StatusCode::FAILURE;
 }
 // ============================================================================
+/*  parse ROOT histogram from text representation
+ *  @param result (OUTPUT) the histogram
+ *  @param input  (INPUT)  the input to be parsed
+ *  @return status code
+ */
+// ============================================================================
+StatusCode Gaudi::Parsers::parse( TH3D*& result, const std::string& input ) {
+  if ( result ) { return parse( *result, input ); } // RETURN
+
+  // 1) check the parsing
+  std::string name;
+  auto        h3 = _parse_3D<TH3D>( input, name );
+  if ( h3 ) {
+    result = h3.release();
+    result->SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
+  }
+  //
+  // XML-like text?
+  return ( std::string::npos != input.find( '<' ) ) ? Gaudi::Utils::Histos::fromXml( result, input )
+                                                    : StatusCode::FAILURE;
+}
+// ============================================================================
 /*  parse AIDA histogram from text representation
  *  @param result (OUTPUT) the histogram
  *  @param input  (INPUT)  the input to be parsed
@@ -442,6 +607,19 @@ StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, const std::string&
  */
 // ============================================================================
 StatusCode Gaudi::Parsers::parse( AIDA::IHistogram2D& result, const std::string& input ) {
+  // 1) convert to ROOT
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
+  // 2) read ROOT histogram
+  return root ? parse( *root, input ) : StatusCode::FAILURE;
+}
+// ============================================================================
+/*  parse AIDA histogram from text representation
+ *  @param result (OUTPUT) the histogram
+ *  @param input  (INPUT)  the input to be parsed
+ *  @return status code
+ */
+// ============================================================================
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram3D& result, const std::string& input ) {
   // 1) convert to ROOT
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram
