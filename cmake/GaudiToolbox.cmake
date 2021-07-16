@@ -142,6 +142,16 @@ macro(_resolve_local_targets var)
     endif()
 endmacro()
 
+# Helper function to prepend a value to the special runtime properties
+macro(_gaudi_runtime_prepend runtime value)
+    get_property(_orig_value TARGET target_runtime_paths PROPERTY runtime_${runtime})
+    set_property(TARGET target_runtime_paths PROPERTY runtime_${runtime} ${value} ${_orig_value})
+endmacro()
+# Helper function to append a value to the special runtime properties
+macro(_gaudi_runtime_append runtime value)
+    set_property(TARGET target_runtime_paths APPEND PROPERTY runtime_${runtime} ${value})
+endmacro()
+
 #[========================================================================[.rst:
 .. command:: gaudi_add_library
 
@@ -208,8 +218,8 @@ function(gaudi_add_library lib_name)
         set_property(DIRECTORY PROPERTY include_installed TRUE)
     endif()
     # Runtime ROOT_INCLUDE_PATH
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_root_include_path $<TARGET_PROPERTY:${lib_name},INTERFACE_INCLUDE_DIRECTORIES>)
+    _gaudi_runtime_append(root_include_path $<TARGET_PROPERTY:${lib_name},INTERFACE_INCLUDE_DIRECTORIES>)
+    _gaudi_runtime_prepend(root_include_path ${CMAKE_CURRENT_SOURCE_DIR}/include)
 endfunction()
 
 
@@ -279,8 +289,8 @@ function(gaudi_add_header_only_library lib_name)
         set_property(DIRECTORY PROPERTY include_installed TRUE)
     endif()
     # Runtime ROOT_INCLUDE_PATH
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_root_include_path $<TARGET_PROPERTY:${lib_name},INTERFACE_INCLUDE_DIRECTORIES>)
+    _gaudi_runtime_append(root_include_path $<TARGET_PROPERTY:${lib_name},INTERFACE_INCLUDE_DIRECTORIES>)
+    _gaudi_runtime_prepend(root_include_path ${CMAKE_CURRENT_SOURCE_DIR}/include)
 endfunction()
 
 
@@ -385,11 +395,11 @@ function(gaudi_add_module plugin_name)
     set_property(TARGET MergeConfDB2 PROPERTY command run merge_confdb2_parts)
     set_property(TARGET MergeConfDB2 PROPERTY output_option --output)
     # To append the path to the generated library to LD_LIBRARY_PATH with run
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_ld_library_path $<SHELL_PATH:$<TARGET_FILE_DIR:${plugin_name}>>)
+    _gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:${plugin_name}>)
     # To append the path to the generated Conf.py file to PYTHONPATH
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_pythonpath $<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}/genConfDir>)
+    _gaudi_runtime_prepend(pythonpath ${CMAKE_CURRENT_BINARY_DIR}/genConfDir)
+    # Add the path to the merged confdb and components files to LD_LIBRARY_PATH
+    _gaudi_runtime_prepend(ld_library_path ${CMAKE_BINARY_DIR})
 endfunction()
 
 
@@ -450,8 +460,7 @@ function(gaudi_add_python_module module_name)
         target_link_libraries(${module_name} PRIVATE ${ARG_LINK})
     endif()
     # Add it to the runtime PYTHONPATH
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_pythonpath $<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}>)
+    _gaudi_runtime_prepend(pythonpath ${CMAKE_CURRENT_BINARY_DIR})
     # install
     if(ARG_PACKAGE)
         set(package_path "${ARG_PACKAGE}")
@@ -535,8 +544,7 @@ function(gaudi_add_executable exe_name)
         ${_export}
         ${_gaudi_install_optional})
     # Runtime PATH with run
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_path $<SHELL_PATH:$<TARGET_FILE_DIR:${exe_name}>>)
+    _gaudi_runtime_prepend(path $<TARGET_FILE_DIR:${exe_name}>)
 endfunction()
 
 
@@ -809,8 +817,9 @@ function(gaudi_add_dictionary dictionary)
         ${dictionary}-gen "${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.rootmap"
         "Merging .rootmap files")
     # To append the path to the generated library to LD_LIBRARY_PATH with run
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_ld_library_path $<SHELL_PATH:$<TARGET_FILE_DIR:${dictionary}>>)
+    _gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:${dictionary}>)
+    # Add the path to the merged rootmap file to LD_LIBRARY_PATH
+    _gaudi_runtime_prepend(ld_library_path ${CMAKE_BINARY_DIR})
 endfunction()
 
 
@@ -885,8 +894,9 @@ if os.path.exists(fname):
 ")
         endforeach()
         # Runtime PYTHONPATH with run
-        set_property(TARGET target_runtime_paths APPEND
-            PROPERTY runtime_pythonpath $<SHELL_PATH:${directory}>)
+        _gaudi_runtime_prepend(pythonpath ${directory})
+        # make sure the shallow copies in ${CMAKE_BINARY_DIR}/python are first in the PYTHONPATH
+        _gaudi_runtime_prepend(pythonpath ${CMAKE_BINARY_DIR}/python)
     elseif(type STREQUAL "SCRIPTS")
         if(ARGV1)
             set(directory ${ARGV1})
@@ -903,8 +913,7 @@ if os.path.exists(fname):
         if(NOT IS_ABSOLUTE ${directory})
             set(directory ${CMAKE_CURRENT_SOURCE_DIR}/${directory})
         endif()
-        set_property(TARGET target_runtime_paths APPEND
-            PROPERTY runtime_path $<SHELL_PATH:${directory}>)
+        _gaudi_runtime_prepend(path ${directory})
     elseif(type STREQUAL "CMAKE")
         foreach(entity IN LISTS ARGN)
             if(NOT IS_ABSOLUTE ${entity})
@@ -979,6 +988,8 @@ function(gaudi_generate_confuserdb)
     add_custom_target(${package_name}_confuserdb ALL DEPENDS "${output_file}")
     # Merge ${package_name}_user.confdb with the others in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb
     _merge_files_confdb(${package_name}_confuserdb "${output_file}") # see private functions at the end
+    # Add the path to the merged confdb file to LD_LIBRARY_PATH
+    _gaudi_runtime_prepend(ld_library_path ${CMAKE_BINARY_DIR})
 endfunction()
 
 
@@ -1192,7 +1203,7 @@ export ENV_CMAKE_BUILD_TYPE=\"$<CONFIG>\"
 $<IF:$<NOT:$<STREQUAL:${BINARY_TAG},>>,export BINARY_TAG=\"${BINARY_TAG}\",$<$<NOT:$<STREQUAL:$ENV{BINARY_TAG},>>:export BINARY_TAG=\"$ENV{BINARY_TAG}\">>
 
 # Other user defined commands
-$<TARGET_PROPERTY:target_runtime_paths,extra_commands>
+$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,extra_commands>>
 ${RUN_SCRIPT_EXTRA_COMMANDS}
 ")
     # Since we cannot tell file(GENERATE) to create an executable file (at generation time)
@@ -1202,12 +1213,6 @@ ${RUN_SCRIPT_EXTRA_COMMANDS}
     # Add a executable target for convenience
     add_executable(run IMPORTED GLOBAL)
     set_target_properties(run PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/run)
-    # Add the path to the merged confdb file to LD_LIBRARY_PATH
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_ld_library_path $<SHELL_PATH:${CMAKE_BINARY_DIR}>)
-    # Path to python at the top level of the build tree where the __init__.py files are
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_pythonpath $<SHELL_PATH:${CMAKE_BINARY_DIR}/python>)
     # Prepend the rpath of every target with the folder containing the symlinks to the plugins
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/.plugins)
     link_directories(BEFORE ${CMAKE_BINARY_DIR}/.plugins)
