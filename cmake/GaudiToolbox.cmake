@@ -167,7 +167,7 @@ endmacro()
   
   ``LINK PUBLIC <lib>... PRIVATE <lib>... INTERFACE <lib>...``
     ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
-    with the same syntax as `target_link_libraries()`_.
+    with the same syntax as :cmake:command:`target_link_libraries`.
 
     If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
@@ -238,7 +238,7 @@ endfunction()
 
   ``LINK <lib>...``
     ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
-    with the same syntax as `target_link_libraries()`_ (``INTERFACE`` is implied).
+    with the same syntax as :cmake:command:`target_link_libraries` (``INTERFACE`` is implied).
 
     If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
@@ -307,7 +307,7 @@ endfunction()
 
   ``LINK <lib>...``
     ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
-    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied).
+    with the same syntax as :cmake:command:`target_link_libraries` (``PRIVATE`` is implied).
 
     If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
@@ -411,7 +411,7 @@ endfunction()
 
   ``LINK <lib>...``
     ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
-    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied)
+    with the same syntax as :cmake:command:`target_link_libraries` (``PRIVATE`` is implied)
 
     ``LINK Python::Module`` is implied.
 
@@ -492,7 +492,7 @@ endfunction()
 
   ``LINK <lib>...``
     ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
-    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied).
+    with the same syntax as :cmake:command:`target_link_libraries` (``PRIVATE`` is implied).
 
     If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
@@ -702,7 +702,7 @@ endfunction()
   ``LINK <lib>...``
     Libraries to link against when building the dictionary.
     ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
-    with the same syntax as `target_link_libraries()`_ (``PRIVATE`` is implied).
+    with the same syntax as :cmake:command:`target_link_libraries` (``PRIVATE`` is implied).
 
     If :variable:`GAUDI_PREFER_LOCAL_TARGETS` is true, override imported targets with
     local ones.
@@ -1225,8 +1225,3 @@ endfunction()
 # variable_watch(var_name __deprecate_var_for_target)
 # for each variable that is deprecated
 # => use it in every Find*.cmake
-
-
-#[========================================================================[.rst:
-.. _target_link_libraries(): https://cmake.org/cmake/help/latest/command/target_link_libraries.html
-#]========================================================================]
