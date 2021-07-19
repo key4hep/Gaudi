@@ -61,6 +61,7 @@ gaudi_add_module(GaudiCommonSvc
                  LINK GaudiKernel
                       Boost::system
                       Boost::filesystem
+                      Rangev3::rangev3
                       ROOT::Hist
                       ROOT::RIO
                       ${GAUDI_ATOMIC_LIBS})

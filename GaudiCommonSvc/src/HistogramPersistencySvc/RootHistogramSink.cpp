@@ -24,6 +24,9 @@
 
 #include <algorithm>
 #include <deque>
+#include <range/v3/range/conversion.hpp>
+#include <range/v3/view/split.hpp>
+#include <range/v3/view/transform.hpp>
 
 namespace {
 
@@ -141,15 +144,28 @@ namespace Gaudi::Histograming::Sink {
         if ( saver == registry.end() )
           throw GaudiException( "Unknown type : " + type + " dim : " + std::to_string( dim ), "Histogram::Sink::Root",
                                 StatusCode::FAILURE );
-        // use TDirectory ent.component to store the histogram
-        const bool returnExistingDirectory = true;
-        if ( auto dir = histoFile.mkdir( ent.component.c_str(), "", returnExistingDirectory ) ) {
-          dir->cd();
-        } else {
-          throw GaudiException( "Could not create directory " + ent.component, "Histogram::Sink::Root",
-                                StatusCode::FAILURE );
+        // convert (owner + name) to (dir, name) splitting the name on "/" if needed
+        std::string dir  = ent.component;
+        std::string name = ent.name;
+        if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
+          dir += '/' + name.substr( 0, pos );
+          name = name.substr( pos + 1 );
         }
-        ( *saver->second )( ent.name, j );
+        // find or create the directory for the histogram
+        auto currentDir = histoFile.GetDirectory( "" );
+        for ( const auto& dir_level : dir | ranges::view::split( '/' ) | ranges::view::transform( []( auto&& rng ) {
+                                        return rng | ranges::to<std::string>;
+                                      } ) ) {
+          auto nextDir = currentDir->GetDirectory( dir_level.c_str() );
+          if ( !nextDir ) nextDir = currentDir->mkdir( dir_level.c_str() );
+          if ( !nextDir )
+            throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
+          currentDir = nextDir;
+        }
+        // switch to the directory and save the histogram
+        currentDir->cd();
+        ( *saver->second )( name, j );
+        histoFile.cd();
       } );
       return ok;
     }
