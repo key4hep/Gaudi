@@ -25,7 +25,7 @@
 #include <algorithm>
 #include <deque>
 #include <range/v3/range/conversion.hpp>
-#include <range/v3/view/split.hpp>
+#include <range/v3/view/split_when.hpp>
 #include <range/v3/view/transform.hpp>
 
 namespace {
@@ -153,9 +153,9 @@ namespace Gaudi::Histograming::Sink {
         }
         // find or create the directory for the histogram
         auto currentDir = histoFile.GetDirectory( "" );
-        for ( const auto& dir_level : dir | ranges::view::split( '/' ) | ranges::view::transform( []( auto&& rng ) {
-                                        return rng | ranges::to<std::string>;
-                                      } ) ) {
+        for ( const auto& dir_level :
+              dir | ranges::view::split_when( []( auto c ) { return c == '/' || c == '.'; } ) |
+                  ranges::view::transform( []( auto&& rng ) { return rng | ranges::to<std::string>; } ) ) {
           auto nextDir = currentDir->GetDirectory( dir_level.c_str() );
           if ( !nextDir ) nextDir = currentDir->mkdir( dir_level.c_str() );
           if ( !nextDir )
