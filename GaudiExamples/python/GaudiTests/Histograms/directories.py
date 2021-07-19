@@ -55,8 +55,8 @@ def check(causes, result):
         import ROOT
         f = ROOT.TFile.Open(FILENAME)
         for name in [
-                f"{component}/{histogram}" for component in ["Alg"]
-                for histogram in
+                f"{component}/{histogram}"
+                for component in ["Alg", "Alg.Tool"] for histogram in
             ["Top", "Group/First", "Group/Second", "Group/SubGroup/Third"]
         ]:
             h = f.Get(name)

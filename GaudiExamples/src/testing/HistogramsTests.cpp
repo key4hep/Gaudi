@@ -13,10 +13,27 @@
 
 namespace Gaudi::Tests::Histograms {
   namespace Directories {
-    struct HistoGroupsAlg : Gaudi::Functional::Consumer<void()> {
-      using Base     = Gaudi::Functional::Consumer<void()>;
-      using MyHist_t = Gaudi::Accumulators::Histogram<1>;
+    using MyHist_t = Gaudi::Accumulators::Histogram<1>;
 
+    struct HistoGroupsTool : AlgTool {
+      using AlgTool::AlgTool;
+
+      mutable MyHist_t m_hist0{this, "Top", "Top title", {1, 0, 1}};
+      mutable MyHist_t m_hist1{this, "Group/First", "First title", {1, 0, 1}};
+      mutable MyHist_t m_hist2{this, "Group/Second", "Second title", {1, 0, 1}};
+      mutable MyHist_t m_hist3{this, "Group/SubGroup/Third", "Third title", {1, 0, 1}};
+
+      void fillHistos() const {
+        ++m_hist0[0.5];
+        ++m_hist1[0.5];
+        ++m_hist2[0.5];
+        ++m_hist3[0.5];
+      }
+    };
+    DECLARE_COMPONENT( HistoGroupsTool )
+
+    struct HistoGroupsAlg : Gaudi::Functional::Consumer<void()> {
+      using Base = Gaudi::Functional::Consumer<void()>;
       using Base::Base;
 
       mutable MyHist_t m_hist0{this, "Top", "Top title", {1, 0, 1}};
@@ -24,11 +41,14 @@ namespace Gaudi::Tests::Histograms {
       mutable MyHist_t m_hist2{this, "Group/Second", "Second title", {1, 0, 1}};
       mutable MyHist_t m_hist3{this, "Group/SubGroup/Third", "Third title", {1, 0, 1}};
 
+      ToolHandle<HistoGroupsTool> m_tool{this, "Tool", "Gaudi::Tests::Histograms::Directories::HistoGroupsTool/Tool"};
+
       void operator()() const override {
         ++m_hist0[0.5];
         ++m_hist1[0.5];
         ++m_hist2[0.5];
         ++m_hist3[0.5];
+        m_tool->fillHistos();
       }
     };
     DECLARE_COMPONENT( HistoGroupsAlg )
