@@ -279,7 +279,6 @@ namespace Gaudi::Accumulators {
     auto  nBins( unsigned int i ) const { return m_axis[i].nBins; }
     auto  minValue( unsigned int i ) const { return m_axis[i].minValue; }
     auto  maxValue( unsigned int i ) const { return m_axis[i].maxValue; }
-    auto  ratio( unsigned int i ) const { return m_axis[i].ratio; }
     auto  binValue( unsigned int i ) const { return accumulator( i ).value(); }
     auto  nEntries( unsigned int i ) const { return accumulator( i ).nEntries(); }
     auto  totNBins() const { return m_totNBins; }
@@ -436,7 +435,7 @@ namespace Gaudi::Accumulators {
       return {{"type", std::string( Type ) + ":" + typeid( Arithmetic ).name()},
               {"title", m_title},
               {"dimension", ND},
-              {"empty", totNEntries == Arithmetic{}},
+              {"empty", totNEntries == 0},
               {"nEntries", totNEntries},
               {"axis", this->axis()},
               {"bins", bins}};
