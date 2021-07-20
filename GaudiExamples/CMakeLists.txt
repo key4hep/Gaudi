@@ -91,6 +91,7 @@ gaudi_add_module(GaudiExamples
                          src/SvcInitLoop/ServiceA.cpp
                          src/SvcInitLoop/ServiceB.cpp
                          src/testing/GAUDI-1185.cpp
+                         src/testing/HistogramsTests.cpp
                          src/testing/TestingAlgs.cpp
                          src/testing/TestingSvcs.cpp
                          src/testing/HistogramsTests.cpp

@@ -10,6 +10,30 @@
 \***********************************************************************************/
 #include <Gaudi/Accumulators/Histogram.h>
 #include <GaudiAlg/Consumer.h>
+#include <type_traits>
+
+namespace Gaudi::Tests::Histograms::CustomAxis {
+  enum class Category { Simple, Complex, Bad, Wrong };
+}
+
+namespace Gaudi::Accumulators {
+  template <>
+  struct Axis<Gaudi::Tests::Histograms::CustomAxis::Category> {
+    using Category = Gaudi::Tests::Histograms::CustomAxis::Category;
+
+    Axis() = default;
+    /// number of bins for this Axis
+    unsigned int nBins = 4;
+    /// min and max values on this axis
+    std::underlying_type_t<Category> minValue = 0, maxValue = 4;
+    /// title of this axis
+    std::string title{"Category"};
+    /// labels for the bins
+    std::vector<std::string> labels{"Simple", "Complex", "Bad", "Wrong"};
+
+    unsigned int index( Category value ) const { return static_cast<unsigned int>( value ) + 1; }
+  };
+} // namespace Gaudi::Accumulators
 
 namespace Gaudi::Tests::Histograms {
   namespace Directories {
@@ -68,4 +92,21 @@ namespace Gaudi::Tests::Histograms {
     };
     DECLARE_COMPONENT( HistWithLabelsAlg )
   } // namespace AxesLabels
+  namespace CustomAxis {
+    struct EnumAxisAlg : Gaudi::Functional::Consumer<void()> {
+      using Base = Gaudi::Functional::Consumer<void()>;
+      using Base::Base;
+
+      mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, Category> m_hist{
+          this, "Categories", "", {{}}};
+
+      void operator()() const override {
+        ++m_hist[Category::Simple];
+        m_hist[Category::Complex] += 2;
+        m_hist[Category::Bad] += 3;
+        m_hist[Category::Wrong] += 4;
+      }
+    };
+    DECLARE_COMPONENT( EnumAxisAlg )
+  } // namespace CustomAxis
 } // namespace Gaudi::Tests::Histograms
