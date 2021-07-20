@@ -59,3 +59,51 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
     }
   }
 }
+
+enum class TestEnum { A, B, C, D };
+
+namespace Gaudi::Accumulators {
+  template <>
+  struct Axis<TestEnum> {
+    // helper to make the code less verbose
+    using storage_t = std::underlying_type_t<TestEnum>;
+    // nothing to specify in the constructor as everything is fixed in the enum
+    Axis() = default;
+
+    unsigned int nBins    = 4;
+    storage_t    minValue = static_cast<storage_t>( TestEnum::A ), maxValue = static_cast<storage_t>( TestEnum::D );
+    std::string  title              = "TestEnum";
+    std::vector<std::string> labels = {"A", "B", "C", "D"};
+    // convert the enum value to the index in the bins, taking into account the underflow bin
+    unsigned int index( TestEnum val ) const { return static_cast<storage_t>( val ) + 1; }
+  };
+} // namespace Gaudi::Accumulators
+
+BOOST_AUTO_TEST_CASE( test_custom_axis ) {
+  using namespace Gaudi::Accumulators;
+  Algo algo;
+
+  // note that for default constructible axis, we have to specify {{}} otherwise
+  // it is inerpreted as an empty array of axes (instead of using the constructor for a single axis)
+  Histogram<1, atomicity::full, TestEnum> hist{&algo, "TestEnumHist", "TestEnum histogram", {{}}};
+
+  hist[TestEnum::A] += 1;
+  ++hist[TestEnum::B];
+  hist[TestEnum::C] += 2;
+
+  auto j = hist.toJSON();
+
+  auto bins = j["bins"];
+  BOOST_TEST( bins[0] == 0 );
+  BOOST_TEST( bins[1] == 1 );
+  BOOST_TEST( bins[2] == 1 );
+  BOOST_TEST( bins[3] == 2 );
+  BOOST_TEST( bins[4] == 0 );
+  BOOST_TEST( bins[5] == 0 );
+
+  BOOST_TEST( j["axis"][0]["nBins"] == 4 );
+  BOOST_TEST( j["axis"][0]["title"] == "TestEnum" );
+
+  nlohmann::json expected_labels = {"A", "B", "C", "D"};
+  BOOST_TEST( j["axis"][0]["labels"] == expected_labels );
+}
