@@ -237,8 +237,13 @@ class Configurable(ConfigMetaHelper):
     def is_property_set(self, propname):
         return self._descriptors[propname].__is_set__(self, type(self))
 
-    def getGaudiType(self):
-        return self.__component_type__
+    @classmethod
+    def getGaudiType(cls):
+        return cls.__component_type__
+
+    @classmethod
+    def getType(cls):
+        return cls.__cpp_type__
 
     def getName(self):
         return self.name
@@ -248,6 +253,14 @@ class Configurable(ConfigMetaHelper):
 
     def toStringProperty(self):
         return "{}/{}".format(self.__cpp_type__, self.name)
+
+    @classmethod
+    def getDefaultProperties(cls):
+        return {k: v.default for k, v in cls._descriptors.items()}
+
+    @classmethod
+    def getDefaultProperty(cls, name):
+        return cls._descriptors[name].default
 
     def merge(self, other):
         '''

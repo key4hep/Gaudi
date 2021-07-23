@@ -75,6 +75,14 @@ def test_configurable():
 
     assert a.toStringProperty() == MyAlg.__cpp_type__ + '/abc'
 
+    assert MyAlg.getGaudiType() == 'Algorithm'
+
+    assert MyAlg.getType() == 'TestConf::MyAlg'
+
+    assert MyAlg.getDefaultProperty("AStringProp") == 'text'
+
+    assert MyAlg.getDefaultProperties()['ABoolProp'] == False
+
 
 def test_properties():
     p = MyAlg()
