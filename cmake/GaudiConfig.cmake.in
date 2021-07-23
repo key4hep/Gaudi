@@ -88,18 +88,13 @@ if(NOT GAUDI_NO_TOOLBOX)
     # Import the functions
     include(GaudiToolbox)
 
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_path $<SHELL_PATH:${Gaudi_BINARY_DIR}>)
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_ld_library_path $<SHELL_PATH:${Gaudi_LIBRARY_DIR}>)
+    _gaudi_runtime_prepend(path ${Gaudi_BINARY_DIR})
+    _gaudi_runtime_prepend(ld_library_path ${Gaudi_LIBRARY_DIR})
     if(NOT Gaudi_LIBRARY_DIR STREQUAL Gaudi_PLUGINS_DIR)
-        set_property(TARGET target_runtime_paths APPEND
-            PROPERTY runtime_ld_library_path $<SHELL_PATH:${Gaudi_PLUGINS_DIR}>)
+        _gaudi_runtime_prepend(ld_library_path ${Gaudi_PLUGINS_DIR})
     endif()
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_root_include_path $<SHELL_PATH:${Gaudi_INCLUDE_DIR}>)
-    set_property(TARGET target_runtime_paths APPEND
-        PROPERTY runtime_pythonpath $<SHELL_PATH:${Gaudi_PYTHON_DIR}>)
+    _gaudi_runtime_prepend(root_include_path ${Gaudi_INCLUDE_DIR})
+    _gaudi_runtime_prepend(pythonpath ${Gaudi_PYTHON_DIR})
 endif()
 
 # Enable optional dependencies
