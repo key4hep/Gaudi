@@ -23,8 +23,10 @@
 
 #include <array>
 #include <cmath>
+#include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 namespace Gaudi::Accumulators {
 
@@ -128,11 +130,13 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic>
   struct Axis {
-    Axis( unsigned int _nBins, Arithmetic _minValue, Arithmetic _maxValue, const std::string& _title = "" )
+    Axis( unsigned int _nBins, Arithmetic _minValue, Arithmetic _maxValue, std::string _title = {},
+          std::vector<std::string> _labels = {} )
         : nBins( _nBins )
         , minValue( _minValue )
         , maxValue( _maxValue )
-        , title( _title )
+        , title( std::move( _title ) )
+        , labels( std::move( _labels ) )
         , ratio( _nBins / ( _maxValue - _minValue ) ){};
     /// number of bins for this Axis
     unsigned int nBins;
@@ -140,6 +144,8 @@ namespace Gaudi::Accumulators {
     Arithmetic minValue, maxValue;
     /// title of this axis
     std::string title;
+    /// labels for the bins
+    std::vector<std::string> labels;
     /**
      * precomputed ratio to convert a value into bin number
      * equal to nBins/(maxValue-minValue)
@@ -152,6 +158,7 @@ namespace Gaudi::Accumulators {
   void to_json( nlohmann::json& j, const Axis<Arithmetic>& axis ) {
     j = nlohmann::json{
         {"nBins", axis.nBins}, {"minValue", axis.minValue}, {"maxValue", axis.maxValue}, {"title", axis.title}};
+    if ( !axis.labels.empty() ) { j["labels"] = axis.labels; }
   }
 
   /// small class used as InputType for regular Histograms

@@ -53,4 +53,19 @@ namespace Gaudi::Tests::Histograms {
     };
     DECLARE_COMPONENT( HistoGroupsAlg )
   } // namespace Directories
+  namespace AxesLabels {
+    struct HistWithLabelsAlg : Gaudi::Functional::Consumer<void()> {
+      using Base     = Gaudi::Functional::Consumer<void()>;
+      using MyHist_t = Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, int>;
+
+      using Base::Base;
+
+      mutable MyHist_t m_hist{this, "hist", "Histogram title", {5, 0, 5, "axis title", {"a", "b", "c", "d", "e"}}};
+
+      void operator()() const override {
+        for ( int i : {1, 2, 3, 4, 5} ) m_hist[i - 1] += i;
+      }
+    };
+    DECLARE_COMPONENT( HistWithLabelsAlg )
+  } // namespace AxesLabels
 } // namespace Gaudi::Tests::Histograms
