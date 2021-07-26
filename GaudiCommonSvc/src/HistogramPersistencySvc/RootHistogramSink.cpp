@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/split_when.hpp>
 #include <range/v3/view/transform.hpp>
@@ -68,18 +69,29 @@ namespace {
     auto previousDir = gDirectory;
 
     // find or create the directory for the histogram
-    auto currentDir = file.GetDirectory( "" );
-    for ( const auto& dir_level :
-          dir | ranges::view::split_when( []( auto c ) { return c == '/' || c == '.'; } ) |
-              ranges::view::transform( []( auto&& rng ) { return rng | ranges::to<std::string>; } ) ) {
-      auto nextDir = currentDir->GetDirectory( dir_level.c_str() );
-      if ( !nextDir ) nextDir = currentDir->mkdir( dir_level.c_str() );
-      if ( !nextDir )
+    {
+      using namespace ranges;
+      auto is_delimiter        = []( auto c ) { return c == '/' || c == '.'; };
+      auto transform_to_string = view::transform( []( auto&& rng ) { return rng | to<std::string>; } );
+
+      auto currentDir = accumulate( dir | view::split_when( is_delimiter ) | transform_to_string,
+                                    file.GetDirectory( "" ), []( auto current, auto&& dir_level ) {
+                                      if ( current ) {
+                                        // try to get next level
+                                        auto nextDir = current->GetDirectory( dir_level.c_str() );
+                                        // if it does not exist, create it
+                                        if ( !nextDir ) nextDir = current->mkdir( dir_level.c_str() );
+                                        // move to next level
+                                        current = nextDir;
+                                      }
+                                      return current;
+                                    } );
+
+      if ( !currentDir )
         throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
-      currentDir = nextDir;
+      // switch to the directory
+      currentDir->cd();
     }
-    // switch to the directory
-    currentDir->cd();
 
     // Create Root histogram calling constructors with the args tuple
     auto histo = std::make_from_tuple<typename Traits::Histo>(
