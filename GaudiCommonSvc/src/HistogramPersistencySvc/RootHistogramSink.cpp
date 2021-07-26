@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,6 +13,7 @@
 
 #include <Gaudi/MonitoringHub.h>
 
+#include <TDirectory.h>
 #include <TFile.h>
 #include <TH1D.h>
 #include <TH2D.h>
@@ -21,10 +22,12 @@
 #include <TProfile2D.h>
 #include <TProfile3D.h>
 
-#include <fmt/format.h>
-
 #include <algorithm>
 #include <deque>
+#include <range/v3/numeric/accumulate.hpp>
+#include <range/v3/range/conversion.hpp>
+#include <range/v3/view/split_when.hpp>
+#include <range/v3/view/transform.hpp>
 
 namespace {
 
@@ -42,9 +45,8 @@ namespace {
   }
 
   template <typename Traits, std::size_t... index>
-  void saveRootHistoInternal( const std::string& component, const std::string& name, nlohmann::json& j,
+  void saveRootHistoInternal( TFile& file, std::string dir, std::string name, const nlohmann::json& j,
                               std::index_sequence<index...> ) {
-    auto id = fmt::format( "{}/{}", component, name );
     // extract data from json
     auto jsonAxis = j.at( "axis" );
     auto axis     = std::array{toAxis( jsonAxis[index] )...};
@@ -55,14 +57,53 @@ namespace {
     // compute total number of bins, multiplying bins per axis
     auto totNBins = ( ( axis[index].nBins + 2 ) * ... );
     assert( weights.size() == totNBins );
+
+    // take into account the case where name contains '/'s (e.g. "Group/Name") by
+    // moving the prefix into dir
+    if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
+      dir += '/' + name.substr( 0, pos );
+      name = name.substr( pos + 1 );
+    }
+
+    // remember the current directory
+    auto previousDir = gDirectory;
+
+    // find or create the directory for the histogram
+    {
+      using namespace ranges;
+      auto is_delimiter        = []( auto c ) { return c == '/' || c == '.'; };
+      auto transform_to_string = view::transform( []( auto&& rng ) { return rng | to<std::string>; } );
+
+      auto currentDir = accumulate( dir | view::split_when( is_delimiter ) | transform_to_string,
+                                    file.GetDirectory( "" ), []( auto current, auto&& dir_level ) {
+                                      if ( current ) {
+                                        // try to get next level
+                                        auto nextDir = current->GetDirectory( dir_level.c_str() );
+                                        // if it does not exist, create it
+                                        if ( !nextDir ) nextDir = current->mkdir( dir_level.c_str() );
+                                        // move to next level
+                                        current = nextDir;
+                                      }
+                                      return current;
+                                    } );
+
+      if ( !currentDir )
+        throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
+      // switch to the directory
+      currentDir->cd();
+    }
+
     // Create Root histogram calling constructors with the args tuple
     auto histo = std::make_from_tuple<typename Traits::Histo>(
-        std::tuple_cat( std::tuple{id.c_str(), title.c_str()},
+        std::tuple_cat( std::tuple{name.c_str(), title.c_str()},
                         std::tuple{axis[index].nBins, axis[index].minValue, axis[index].maxValue}... ) );
     // fill Histo
     for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
     // write to file
     histo.Write();
+
+    // switch back to the previous directory
+    previousDir->cd();
   }
 
   template <bool isProfile, typename RootHisto>
@@ -95,8 +136,9 @@ namespace {
   };
 
   template <unsigned int N, bool isProfile, typename ROOTHisto>
-  void saveRootHisto( const std::string& component, const std::string& name, nlohmann::json& j ) {
-    saveRootHistoInternal<Traits<isProfile, ROOTHisto>>( component, name, j, std::make_index_sequence<N>() );
+  void saveRootHisto( TFile& file, std::string dir, std::string name, nlohmann::json& j ) {
+    saveRootHistoInternal<Traits<isProfile, ROOTHisto>>( file, std::move( dir ), std::move( name ), j,
+                                                         std::make_index_sequence<N>() );
   }
 
   using namespace std::string_literals;
@@ -133,7 +175,7 @@ namespace Gaudi::Histograming::Sink {
         return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
       } );
       TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
-      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( auto& ent ) {
+      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [&histoFile]( auto& ent ) {
         auto j    = ent.toJSON();
         auto dim  = j.at( "dimension" ).template get<unsigned int>();
         auto type = j.at( "type" ).template get<std::string>();
@@ -144,7 +186,7 @@ namespace Gaudi::Histograming::Sink {
         if ( saver == registry.end() )
           throw GaudiException( "Unknown type : " + type + " dim : " + std::to_string( dim ), "Histogram::Sink::Root",
                                 StatusCode::FAILURE );
-        ( *saver->second )( ent.component, ent.name, j );
+        ( *saver->second )( histoFile, ent.component, ent.name, j );
       } );
       return ok;
     }

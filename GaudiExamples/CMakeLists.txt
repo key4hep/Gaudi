@@ -93,6 +93,7 @@ gaudi_add_module(GaudiExamples
                          src/testing/GAUDI-1185.cpp
                          src/testing/TestingAlgs.cpp
                          src/testing/TestingSvcs.cpp
+                         src/testing/HistogramsTests.cpp
                          src/THist/THistRead.cpp
                          src/THist/THistWrite.cpp
                          src/Timing/TimingAlg.cpp
