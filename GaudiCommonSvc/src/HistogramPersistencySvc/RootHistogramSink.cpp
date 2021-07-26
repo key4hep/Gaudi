@@ -44,7 +44,8 @@ namespace {
   }
 
   template <typename Traits, std::size_t... index>
-  void saveRootHistoInternal( const std::string& name, nlohmann::json& j, std::index_sequence<index...> ) {
+  void saveRootHistoInternal( TFile& file, std::string dir, std::string name, const nlohmann::json& j,
+                              std::index_sequence<index...> ) {
     // extract data from json
     auto jsonAxis = j.at( "axis" );
     auto axis     = std::array{toAxis( jsonAxis[index] )...};
@@ -55,6 +56,31 @@ namespace {
     // compute total number of bins, multiplying bins per axis
     auto totNBins = ( ( axis[index].nBins + 2 ) * ... );
     assert( weights.size() == totNBins );
+
+    // take into account the case where name contains '/'s (e.g. "Group/Name") by
+    // moving the prefix into dir
+    if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
+      dir += '/' + name.substr( 0, pos );
+      name = name.substr( pos + 1 );
+    }
+
+    // remember the current directory
+    auto previousDir = gDirectory;
+
+    // find or create the directory for the histogram
+    auto currentDir = file.GetDirectory( "" );
+    for ( const auto& dir_level :
+          dir | ranges::view::split_when( []( auto c ) { return c == '/' || c == '.'; } ) |
+              ranges::view::transform( []( auto&& rng ) { return rng | ranges::to<std::string>; } ) ) {
+      auto nextDir = currentDir->GetDirectory( dir_level.c_str() );
+      if ( !nextDir ) nextDir = currentDir->mkdir( dir_level.c_str() );
+      if ( !nextDir )
+        throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
+      currentDir = nextDir;
+    }
+    // switch to the directory
+    currentDir->cd();
+
     // Create Root histogram calling constructors with the args tuple
     auto histo = std::make_from_tuple<typename Traits::Histo>(
         std::tuple_cat( std::tuple{name.c_str(), title.c_str()},
@@ -63,6 +89,9 @@ namespace {
     for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
     // write to file
     histo.Write();
+
+    // switch back to the previous directory
+    previousDir->cd();
   }
 
   template <bool isProfile, typename RootHisto>
@@ -95,8 +124,9 @@ namespace {
   };
 
   template <unsigned int N, bool isProfile, typename ROOTHisto>
-  void saveRootHisto( const std::string& name, nlohmann::json& j ) {
-    saveRootHistoInternal<Traits<isProfile, ROOTHisto>>( name, j, std::make_index_sequence<N>() );
+  void saveRootHisto( TFile& file, std::string dir, std::string name, nlohmann::json& j ) {
+    saveRootHistoInternal<Traits<isProfile, ROOTHisto>>( file, std::move( dir ), std::move( name ), j,
+                                                         std::make_index_sequence<N>() );
   }
 
   using namespace std::string_literals;
@@ -144,28 +174,7 @@ namespace Gaudi::Histograming::Sink {
         if ( saver == registry.end() )
           throw GaudiException( "Unknown type : " + type + " dim : " + std::to_string( dim ), "Histogram::Sink::Root",
                                 StatusCode::FAILURE );
-        // convert (owner + name) to (dir, name) splitting the name on "/" if needed
-        std::string dir  = ent.component;
-        std::string name = ent.name;
-        if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
-          dir += '/' + name.substr( 0, pos );
-          name = name.substr( pos + 1 );
-        }
-        // find or create the directory for the histogram
-        auto currentDir = histoFile.GetDirectory( "" );
-        for ( const auto& dir_level :
-              dir | ranges::view::split_when( []( auto c ) { return c == '/' || c == '.'; } ) |
-                  ranges::view::transform( []( auto&& rng ) { return rng | ranges::to<std::string>; } ) ) {
-          auto nextDir = currentDir->GetDirectory( dir_level.c_str() );
-          if ( !nextDir ) nextDir = currentDir->mkdir( dir_level.c_str() );
-          if ( !nextDir )
-            throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
-          currentDir = nextDir;
-        }
-        // switch to the directory and save the histogram
-        currentDir->cd();
-        ( *saver->second )( name, j );
-        histoFile.cd();
+        ( *saver->second )( histoFile, ent.component, ent.name, j );
       } );
       return ok;
     }
