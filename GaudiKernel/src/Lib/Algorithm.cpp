@@ -135,15 +135,23 @@ namespace Gaudi {
     }
 
     // check for explicit circular data dependencies in declared handles
-    DataObjIDColl out;
-    for ( auto& h : outputHandles() ) {
-      if ( !h->objKey().empty() ) out.emplace( h->fullKey() );
-    }
-    for ( auto& h : inputHandles() ) {
-      if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
-        // TODO: this case leads to a segfault as the SC, seemingly, is not propagated up properly
-        error() << "Explicit circular data dependency detected for id " << h->fullKey() << endmsg;
-        sc = StatusCode::FAILURE;
+    {
+      DataObjIDColl out;
+      for ( auto& h : outputHandles() ) {
+        if ( !h->objKey().empty() ) {
+          if ( h->mode() != DataHandle::Updater ) {
+            out.emplace( h->fullKey() );
+          } else {
+            warning() << "Usage of Updater DataHandle : should be removed" << endmsg;
+          }
+        }
+      }
+      for ( auto& h : inputHandles() ) {
+        if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
+          // TODO: this case leads to a segfault as the SC, seemingly, is not propagated up properly
+          error() << "Explicit circular data dependency detected for id " << h->fullKey() << endmsg;
+          sc = StatusCode::FAILURE;
+        }
       }
     }
 
