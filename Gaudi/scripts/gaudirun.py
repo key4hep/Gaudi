@@ -350,16 +350,26 @@ if __name__ == "__main__":
     root_logger = logging.getLogger()
 
     # Sanitizer support
-    sanitizer = os.environ.get("PRELOAD_SANITIZER_LIB", "")
-    if sanitizer:
-        if sanitizer not in os.environ.get("LD_PRELOAD", ""):
-            opts.preload.insert(0, sanitizer)
+    sanitizers = os.environ.get("PRELOAD_SANITIZER_LIB", "")
+    preload = os.environ.get("LD_PRELOAD", "")
+    if sanitizers:
         os.environ["PRELOAD_SANITIZER_LIB"] = ""
+        if preload and sanitizers != preload:
+            logging.warning(
+                "Ignoring PRELOAD_SANITIZER_LIB (={}) as LD_PRELOAD (={}) is "
+                "different and takes precedence.".format(sanitizers, preload))
+        else:
+            for sanitizer in reversed(sanitizers.split(":")):
+                if sanitizer not in preload:
+                    opts.preload.insert(0, sanitizer)
+            if opts.profilerName == 'jemalloc':
+                logging.warning("jemalloc disabled when using a sanitizer")
+                opts.profilerName = None
 
     # tcmalloc support
     if opts.tcmalloc:
         # Disable tcmalloc if sanitizer is selected
-        if sanitizer:
+        if sanitizers:
             logging.warning("tcmalloc preload disabled when using a sanitizer")
         else:
             opts.preload.insert(
