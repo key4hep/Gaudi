@@ -64,14 +64,7 @@ StatusCode IncidentSvc::finalize() {
   DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] ", System::milliSec )
          << m_timer.outputUserTime( "Total:%2%[s]", System::Sec ) << endmsg;
 
-  {
-    // clear the local storage of allocated Incident objects.
-    for ( auto& fi : m_firedIncidents ) {
-      std::for_each( fi.second.unsafe_begin(), fi.second.unsafe_end(), []( auto i ) { delete i; } );
-      fi.second.clear();
-    }
-    m_firedIncidents.clear();
-  }
+  m_firedIncidents.clear();
 
   // Finalize this specific service
   return Service::finalize();
@@ -247,13 +240,13 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
 
     if ( msgLevel( MSG::DEBUG ) and !incItr->second.empty() ) {
       debug() << "Clearing remaining obsolete incidents from slot " << ctx.slot() << ":";
-      Incident* inc( nullptr );
+      std::unique_ptr<Incident> inc;
       while ( incItr->second.try_pop( inc ) ) { debug() << " " << inc->type() << "(" << inc->context() << ")"; }
       debug() << endmsg;
     }
     incItr->second.clear();
   }
-  incItr->second.push( incident.release() );
+  incItr->second.push( std::move( incident ) );
 }
 // ============================================================================
 
@@ -279,7 +272,7 @@ IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx ) 
   if ( ctx ) {
     auto incs = m_firedIncidents.find( ctx->slot() );
     if ( incs != m_firedIncidents.end() ) {
-      Incident* inc( nullptr );
+      std::unique_ptr<Incident> inc;
 
       DEBMSG << "Collecting listeners fired on context " << *ctx << endmsg;
       while ( incs->second.try_pop( inc ) ) {
