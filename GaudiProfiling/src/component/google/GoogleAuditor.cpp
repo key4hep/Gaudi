@@ -129,7 +129,7 @@ namespace Google {
       if ( IncidentType::BeginEvent == incident.type() ) {
         ++m_nEvts;
         m_audit = ( m_nEvts > m_eventsToSkip && ( m_freq < 0 || m_nEvts == 1 || m_nEvts % m_freq == 0 ) );
-        if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "Event " << m_nEvts << " Audit=" << m_audit << endmsg;
+        if ( msgLevel( MSG::DEBUG ) ) debug() << "Event " << m_nEvts << " Audit=" << m_audit << endmsg;
         if ( m_fullEventAudit ) {
           if ( m_inFullAudit ) {
             if ( m_sampleEventCount >= m_nSampleEvents && alreadyRunning() ) {

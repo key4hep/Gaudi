@@ -728,14 +728,14 @@ StatusCode AvalancheSchedulerSvc::revise( unsigned int iAlgo, EventContext* cont
   EventSlot& slot      = m_eventSlots[slotIndex];
   Cause      cs        = { Cause::source::Task, index2algname( iAlgo ) };
 
-  if ( UNLIKELY( contextPtr->usesSubSlot() ) ) {
+  if ( contextPtr->usesSubSlot() ) {
     // Sub-slot
     auto       subSlotIndex = contextPtr->subSlot();
     EventSlot& subSlot      = slot.allSubSlots[subSlotIndex];
 
     sc = subSlot.algsStates.set( iAlgo, state );
 
-    if ( LIKELY( sc.isSuccess() ) ) {
+    if ( sc.isSuccess() ) {
       ON_VERBOSE verbose() << "Promoted " << index2algname( iAlgo ) << " to " << state << " [slot:" << slotIndex
                            << ", subslot:" << subSlotIndex << ", event:" << contextPtr->evt() << "]" << endmsg;
       // Revise states of algorithms downstream the precedence graph
@@ -745,7 +745,7 @@ StatusCode AvalancheSchedulerSvc::revise( unsigned int iAlgo, EventContext* cont
     // Event level (standard behaviour)
     sc = slot.algsStates.set( iAlgo, state );
 
-    if ( LIKELY( sc.isSuccess() ) ) {
+    if ( sc.isSuccess() ) {
       ON_VERBOSE verbose() << "Promoted " << index2algname( iAlgo ) << " to " << state << " [slot:" << slotIndex
                            << ", event:" << contextPtr->evt() << "]" << endmsg;
       // Revise states of algorithms downstream the precedence graph
@@ -944,7 +944,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
 StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
 
-  if ( UNLIKELY( ts.blocking && m_blockingAlgosInFlight == m_maxBlockingAlgosInFlight ) ) {
+  if ( ts.blocking && m_blockingAlgosInFlight == m_maxBlockingAlgosInFlight ) {
     m_retryQueue.push( std::move( ts ) );
     return StatusCode::SUCCESS;
   }
@@ -954,10 +954,10 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
 
   // If an instance is available, proceed to scheduling
   StatusCode sc;
-  if ( LIKELY( getAlgSC.isSuccess() ) ) {
+  if ( getAlgSC.isSuccess() ) {
 
     // Decide how to schedule the task and schedule it
-    if ( LIKELY( -100 != m_threadPoolSize ) ) {
+    if ( -100 != m_threadPoolSize ) {
 
       // Cache values before moving the TaskSpec further
       unsigned int     algIndex{ ts.algIndex };
@@ -967,7 +967,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
       int              slotIndex{ ts.slotIndex };
       EventContext*    contextPtr{ ts.contextPtr };
 
-      if ( LIKELY( !blocking ) ) {
+      if ( !blocking ) {
         // Add the algorithm to the scheduled queue
         m_scheduledQueue.push( std::move( ts ) );
 
@@ -1022,7 +1022,7 @@ StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
 
   Gaudi::Hive::setCurrentContext( ts.contextPtr );
 
-  if ( LIKELY( !ts.blocking ) )
+  if ( !ts.blocking )
     --m_algosInFlight;
   else
     --m_blockingAlgosInFlight;

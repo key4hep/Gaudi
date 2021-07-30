@@ -97,7 +97,7 @@ namespace Gaudi::Arena {
       // Figure out how many bytes we need to allocate
       std::size_t const aligned_n = details::align_up<Alignment>( n );
       // Check that we have a current block and this request fits inside it
-      if ( UNLIKELY( !m_current || m_current + aligned_n > m_current_end ) ) {
+      if ( !m_current || m_current + aligned_n > m_current_end ) {
         // Calculate our next block size
         auto next_block_size = std::max( m_next_block_size, aligned_n );
         // And update the estimate of what comes after that, following a geometric series
@@ -127,7 +127,7 @@ namespace Gaudi::Arena {
       m_allocations = 0;
       if ( !m_all_blocks.empty() ) {
         // Only re-use the first block, deallocate any others
-        if ( UNLIKELY( m_all_blocks.size() > 1 ) ) {
+        if ( m_all_blocks.size() > 1 ) {
           for ( std::size_t i = 1; i < m_all_blocks.size(); ++i ) {
             UpstreamAllocator{}.deallocate( m_all_blocks[i].data(), m_all_blocks[i].size() );
           }

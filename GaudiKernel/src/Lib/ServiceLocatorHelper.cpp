@@ -52,7 +52,7 @@ SmartIF<IService> ServiceLocatorHelper::service( std::string_view name, const bo
 
   if ( theSvc ) {
     if ( !quiet ) {
-      if ( UNLIKELY( log().level() <= MSG::VERBOSE ) )
+      if ( log().level() <= MSG::VERBOSE )
         log() << MSG::VERBOSE << "ServiceLocatorHelper::service: found service " << name << endmsg;
     }
   } else {

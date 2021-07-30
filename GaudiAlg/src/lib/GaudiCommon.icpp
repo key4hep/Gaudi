@@ -259,7 +259,7 @@ StatusCode GaudiCommon<PBASE>::Error( std::string_view msg, const StatusCode st,
   // If suppressed, just return
   if ( num > mx ) {
     return st;
-  } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
+  } else if ( num == mx ) // issue one-time suppression message
   {
     return Print( std::string{ "The   ERROR message is suppressed : '" }.append( msg ).append( "'" ), st, MSG::ERROR );
   }
@@ -278,7 +278,7 @@ StatusCode GaudiCommon<PBASE>::Warning( std::string_view msg, const StatusCode s
   // If suppressed, just return
   if ( num > mx ) {
     return st;
-  } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
+  } else if ( num == mx ) // issue one-time suppression message
   {
     return Print( std::string{ "The WARNING message is suppressed : '" }.append( msg ).append( "'" ), st,
                   MSG::WARNING );
@@ -298,7 +298,7 @@ StatusCode GaudiCommon<PBASE>::Info( std::string_view msg, const StatusCode st, 
   // If suppressed, just return
   if ( num > mx ) {
     return st;
-  } else if ( UNLIKELY( num == mx ) ) // issue one-time suppression message
+  } else if ( num == mx ) // issue one-time suppression message
   {
     return Print( std::string{ "The INFO message is suppressed : '" }.append( msg ).append( "'" ), st, MSG::INFO );
   }

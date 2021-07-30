@@ -500,7 +500,7 @@ StatusCode PersistencySvc::initialize() {
   m_addrCreator = this; // initialize internal pointer to IAddressCreator interface
   // Initialize basic service
   StatusCode status = Service::initialize();
-  if ( UNLIKELY( !status.isSuccess() ) ) { error() << "Error initializing Service base class." << endmsg; }
+  if ( !status.isSuccess() ) { error() << "Error initializing Service base class." << endmsg; }
   return status;
 }
 

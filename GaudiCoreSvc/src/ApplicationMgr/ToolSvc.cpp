@@ -280,7 +280,7 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
   if ( !itool ) {
     // Instances of this tool do not exist, create an instance if desired
     // otherwise return failure
-    if ( UNLIKELY( !createIf ) ) {
+    if ( !createIf ) {
       warning() << "Tool " << toolname << " not found and creation not requested" << endmsg;
       return sc;
     }
@@ -290,7 +290,7 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
 
   // Get the right interface of it
   sc = itool->queryInterface( iid, pp_cast<void>( &tool ) );
-  if ( UNLIKELY( sc.isFailure() ) ) {
+  if ( sc.isFailure() ) {
     error() << "Tool " << toolname << " either does not implement the correct interface, or its version is incompatible"
             << endmsg;
     return sc;
@@ -429,7 +429,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
 
   auto lock = std::scoped_lock{ m_mut };
   // protect against empty type
-  if ( UNLIKELY( tooltype.empty() ) ) {
+  if ( tooltype.empty() ) {
     error() << "create(): No Tool Type given" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -444,7 +444,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
 
   // Check if the tool already exist : this could happen with clones
   std::string fullname = nameTool( toolname, parent );
-  if ( UNLIKELY( existsTool( fullname ) ) ) {
+  if ( existsTool( fullname ) ) {
     // Now check if the parent is the same. This allows for clones
     for ( IAlgTool* iAlgTool : m_instancesTools ) {
       if ( iAlgTool->name() == toolname && iAlgTool->parent() == parent ) {
@@ -462,7 +462,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   // instantiate the tool using the factory
   try {
     toolguard.create( tooltype, fullname, parent );
-    if ( UNLIKELY( !toolguard.get() ) ) {
+    if ( !toolguard.get() ) {
       error() << "Cannot create tool " << tooltype << " (No factory found)" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -514,7 +514,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   }
 
   // Status of tool initialization
-  if ( UNLIKELY( sc.isFailure() ) ) {
+  if ( sc.isFailure() ) {
     error() << "Error initializing tool '" << fullname << "'" << endmsg;
     return sc;
   }
@@ -523,7 +523,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
     sc = toolguard->sysStart();
 
-    if ( UNLIKELY( sc.isFailure() ) ) {
+    if ( sc.isFailure() ) {
       error() << "Error starting tool '" << fullname << "'" << endmsg;
       return sc;
     }
@@ -645,13 +645,13 @@ StatusCode ToolSvc::start()
   for ( auto& iTool : m_instancesTools ) {
     ON_VERBOSE verbose() << iTool->name() << "::start()" << endmsg;
 
-    if ( UNLIKELY( !iTool->sysStart().isSuccess() ) ) {
+    if ( !iTool->sysStart().isSuccess() ) {
       fail = true;
       error() << iTool->name() << " failed to start()" << endmsg;
     }
   }
 
-  if ( UNLIKELY( fail ) ) {
+  if ( fail ) {
     error() << "One or more AlgTools failed to start()" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -669,13 +669,13 @@ StatusCode ToolSvc::stop()
   for ( auto& iTool : m_instancesTools ) {
     ON_VERBOSE verbose() << iTool->name() << "::stop()" << endmsg;
 
-    if ( UNLIKELY( !iTool->sysStop().isSuccess() ) ) {
+    if ( !iTool->sysStop().isSuccess() ) {
       fail = true;
       error() << iTool->name() << " failed to stop()" << endmsg;
     }
   }
 
-  if ( UNLIKELY( fail ) ) {
+  if ( fail ) {
     error() << "One or more AlgTools failed to stop()" << endmsg;
     return StatusCode::FAILURE;
   }

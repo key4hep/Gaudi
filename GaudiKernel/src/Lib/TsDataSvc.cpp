@@ -815,7 +815,7 @@ StatusCode TsDataSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() ) return sc;
   sc = service( "IncidentSvc", m_incidentSvc, true );
-  if ( UNLIKELY( !sc.isSuccess() ) ) { error() << "Failed to access incident service." << endmsg; }
+  if ( !sc.isSuccess() ) { error() << "Failed to access incident service." << endmsg; }
   return sc;
 }
 
@@ -832,13 +832,13 @@ StatusCode TsDataSvc::reinitialize() {
   }
   // re-initialize the base class
   sc = Service::reinitialize();
-  if ( UNLIKELY( !sc.isSuccess() ) ) {
+  if ( !sc.isSuccess() ) {
     error() << "Unable to reinitialize base class" << endmsg;
     return sc;
   }
   // the initialize part is copied here
   sc = service( "IncidentSvc", m_incidentSvc, true );
-  if ( UNLIKELY( !sc.isSuccess() ) ) {
+  if ( !sc.isSuccess() ) {
     error() << "Failed to access incident service." << endmsg;
     return sc;
   }

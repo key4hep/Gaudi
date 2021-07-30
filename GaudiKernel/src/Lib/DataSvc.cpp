@@ -821,9 +821,9 @@ StatusCode DataSvc::preLoad() {
 StatusCode DataSvc::initialize() {
   // Nothing to do: just call base class initialisation
   StatusCode sc = Service::initialize();
-  if ( UNLIKELY( !sc.isSuccess() ) ) return sc;
+  if ( !sc.isSuccess() ) return sc;
   m_incidentSvc = service( "IncidentSvc", true );
-  if ( UNLIKELY( !m_incidentSvc ) ) { error() << "Failed to access incident service." << endmsg; }
+  if ( !m_incidentSvc ) { error() << "Failed to access incident service." << endmsg; }
   return sc;
 }
 
@@ -836,13 +836,13 @@ StatusCode DataSvc::reinitialize() {
   m_incidentSvc.reset();
   // re-initialize the base class
   StatusCode sc = Service::reinitialize();
-  if ( UNLIKELY( !sc.isSuccess() ) ) {
+  if ( !sc.isSuccess() ) {
     error() << "Unable to reinitialize base class" << endmsg;
     return sc;
   }
   // the initialize part is copied here
   m_incidentSvc = service( "IncidentSvc", true );
-  if ( UNLIKELY( !m_incidentSvc ) ) {
+  if ( !m_incidentSvc ) {
     error() << "Failed to access incident service." << endmsg;
     return StatusCode::FAILURE;
   }

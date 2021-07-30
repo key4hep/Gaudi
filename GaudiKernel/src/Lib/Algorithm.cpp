@@ -129,7 +129,7 @@ namespace Gaudi {
     // ignore this step if we're a Sequence
     if ( this->isSequence() ) { return sc; }
 
-    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+    if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "input handles: " << inputHandles().size() << endmsg;
       debug() << "output handles: " << outputHandles().size() << endmsg;
     }
@@ -177,7 +177,7 @@ namespace Gaudi {
 
     if ( !sc ) return sc;
 
-    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+    if ( msgLevel( MSG::DEBUG ) ) {
       // sort out DataObjects by path so that logging is reproducable
       // we define a little helper creating an ordered set from a non ordered one
       auto sort     = []( const DataObjID a, const DataObjID b ) -> bool { return a.fullKey() < b.fullKey(); };
@@ -361,7 +361,7 @@ namespace Gaudi {
 
     try {
       ITimelineSvc::TimelineRecorder timelineRecoder;
-      if ( UNLIKELY( m_doTimeline ) ) { timelineRecoder = timelineSvc()->getRecorder( name(), ctx ); }
+      if ( m_doTimeline ) { timelineRecoder = timelineSvc()->getRecorder( name(), ctx ); }
 
       status = execute( ctx );
 
@@ -557,7 +557,7 @@ namespace Gaudi {
 
   template <typename IFace>
   SmartIF<IFace>& Algorithm::get_svc_( SmartIF<IFace>& p, const char* service_name ) const {
-    if ( UNLIKELY( !p ) ) {
+    if ( !p ) {
       p = this->service( service_name );
       if ( !p ) {
         throw GaudiException( "Service [" + std::string{ service_name } + "] not found", this->name(),
@@ -591,25 +591,25 @@ namespace Gaudi {
 
     auto init_one = [&]( BaseToolHandle* th ) {
       if ( !th->isEnabled() ) {
-        if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) && !th->typeAndName().empty() )
+        if ( msgLevel( MSG::DEBUG ) && !th->typeAndName().empty() )
           debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
         return;
       }
       if ( !th->get() ) {
         auto sc = th->retrieve();
-        if ( UNLIKELY( sc.isFailure() ) ) {
+        if ( sc.isFailure() ) {
           throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
         }
       }
       auto tool = th->get();
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+      if ( msgLevel( MSG::DEBUG ) )
         debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
                 << tool->type() << ")" << endmsg;
       m_tools.push_back( tool );
     };
 
     for ( auto thArr : m_toolHandleArrays ) {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+      if ( msgLevel( MSG::DEBUG ) )
         debug() << "Registering all Tools in ToolHandleArray " << thArr->propertyName() << endmsg;
       // Iterate over its tools:
       for ( auto toolHandle : thArr->getBaseArray() ) {
@@ -629,12 +629,12 @@ namespace Gaudi {
   }
 
   const std::vector<IAlgTool*>& Algorithm::tools() const {
-    if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
+    if ( !m_toolHandlesInit ) initToolHandles();
     return m_tools;
   }
 
   std::vector<IAlgTool*>& Algorithm::tools() {
-    if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
+    if ( !m_toolHandlesInit ) initToolHandles();
     return m_tools;
   }
 

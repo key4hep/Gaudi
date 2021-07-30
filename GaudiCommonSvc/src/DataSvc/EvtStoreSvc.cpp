@@ -252,7 +252,7 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
   std::size_t poolSize() const { return m_poolSize * 1024; }
 
   void fillStats( Partition& p ) const {
-    if ( LIKELY( !m_printPoolStats ) ) return;
+    if ( !m_printPoolStats ) return;
     auto n_allocs = p.store->num_allocations();
     if ( n_allocs ) {
       m_storeEntries += p.store->size();
@@ -459,7 +459,7 @@ StatusCode EvtStoreSvc::selectStore( size_t partition ) {
 StatusCode EvtStoreSvc::freeStore( size_t partition ) {
   assert( partition < m_partitions.size() );
   auto prev = m_partitions[partition].with_lock( []( Partition& p ) { return std::exchange( p.eventNumber, -1 ); } );
-  if ( UNLIKELY( prev == -1 ) ) return StatusCode::FAILURE; // double free -- should never happen!
+  if ( prev == -1 ) return StatusCode::FAILURE; // double free -- should never happen!
   m_freeSlots.push( partition );
   return StatusCode::SUCCESS;
 }
@@ -512,9 +512,9 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, DataObject* pObject ) {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "setRoot( " << root_path << ", (DataObject*)" << (void*)pObject << " )" << endmsg;
   }
-  if ( UNLIKELY( !fwd( []( Partition& p ) {
-                    return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
-                  } ).isSuccess() ) ) {
+  if ( !fwd( []( Partition& p ) {
+          return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+        } ).isSuccess() ) {
     throw GaudiException{ "setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE };
   }
   return registerObject( nullptr, root_path, pObject );
@@ -526,9 +526,9 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
     if ( rootAddr ) debug() << "[ " << rootAddr->par()[0] << ", " << rootAddr->par()[1] << " ]";
     debug() << " )" << endmsg;
   }
-  if ( UNLIKELY( !fwd( []( Partition& p ) {
-                    return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
-                  } ).isSuccess() ) ) {
+  if ( !fwd( []( Partition& p ) {
+          return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+        } ).isSuccess() ) {
     throw GaudiException{ "setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE };
   }
   if ( !rootAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid

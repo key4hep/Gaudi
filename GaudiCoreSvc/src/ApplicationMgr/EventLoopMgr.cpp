@@ -19,8 +19,8 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( EventLoopMgr )
 
-#define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
-#define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
+#define ON_DEBUG if ( outputLevel() <= MSG::DEBUG )
+#define ON_VERBOSE if ( outputLevel() <= MSG::VERBOSE )
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
@@ -260,7 +260,7 @@ StatusCode EventLoopMgr::executeEvent( EventContext&& ctx ) {
   m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndProcessing ) );
 
   // Check if there was an error processing current event
-  if ( UNLIKELY( !sc.isSuccess() ) ) { error() << "Terminating event processing loop due to errors" << endmsg; }
+  if ( !sc.isSuccess() ) { error() << "Terminating event processing loop due to errors" << endmsg; }
   return sc;
 }
 
@@ -347,7 +347,7 @@ StatusCode EventLoopMgr::nextEvent( int maxevt ) {
     }
   }
 
-  if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
+  if ( outputLevel() <= MSG::DEBUG )
     debug() << "---> Loop Finished - "
             << " WSS " << System::mappedMemory( System::MemoryUnit::kByte ) * oneOver1024
             << " | total time (skipping 1st evt) "

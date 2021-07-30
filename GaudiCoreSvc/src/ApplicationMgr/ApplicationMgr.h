@@ -321,8 +321,8 @@ private:
   template <typename SELF, typename PIMPL, typename METHOD, typename... ARGS>
   static auto i_delegateToEvtProc( SELF* self, PIMPL& member, std::string_view method_name, METHOD&& method,
                                    ARGS&&... args ) {
-    if ( LIKELY( self->m_state == Gaudi::StateMachine::RUNNING ) ) {
-      if ( LIKELY( bool( member ) ) ) {
+    if ( self->m_state == Gaudi::StateMachine::RUNNING ) {
+      if ( bool( member ) ) {
         return std::invoke( method, *member.get(), std::forward<ARGS>( args )... );
       } else {
         std::stringstream s;

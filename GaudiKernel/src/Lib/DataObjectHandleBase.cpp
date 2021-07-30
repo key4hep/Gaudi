@@ -68,7 +68,7 @@ DataObjectHandleBase::~DataObjectHandleBase() { owner()->renounce( *this ); }
 //---------------------------------------------------------------------------
 DataObject* DataObjectHandleBase::fetch() const {
   DataObject* p = nullptr;
-  if ( LIKELY( m_searchDone ) ) { // fast path: searchDone, objKey is in its final state
+  if ( m_searchDone ) { // fast path: searchDone, objKey is in its final state
     m_EDS->retrieveObject( objKey(), p ).ignore();
     return p;
   }

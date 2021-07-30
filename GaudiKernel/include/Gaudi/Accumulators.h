@@ -1160,7 +1160,7 @@ namespace Gaudi::Accumulators {
     std::string                msg;
     unsigned long              max;
     void                       log() {
-      if ( UNLIKELY( this->value() <= max ) && logger ) {
+      if ( this->value() <= max && logger ) {
         if ( this->value() == max ) {
           logger->msgStream( level ) << "Suppressing message: " << std::quoted( msg, '\'' ) << endmsg;
         } else {

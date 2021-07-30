@@ -29,8 +29,8 @@
 #include <algorithm>
 #include <array>
 
-#define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
-#define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
+#define ON_DEBUG if ( outputLevel() <= MSG::DEBUG )
+#define ON_VERBOSE if ( outputLevel() <= MSG::VERBOSE )
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()

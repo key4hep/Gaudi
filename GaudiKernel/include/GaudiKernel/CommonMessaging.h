@@ -79,7 +79,7 @@ public:
 
   /// Return an uninitialized MsgStream.
   MsgStream& msgStream() const {
-    if ( UNLIKELY( ( !m_msgStream.get() ) ) ) create_msgStream();
+    if ( !m_msgStream.get() ) create_msgStream();
     return *m_msgStream;
   }
 
@@ -146,12 +146,12 @@ public:
 
   /// get the cached level (originally extracted from the embedded MsgStream)
   MSG::Level msgLevel() const {
-    if ( LIKELY( m_commonMessagingReady ) ) return m_level;
+    if ( m_commonMessagingReady ) return m_level;
     return setUpMessaging();
   }
 
   /// get the output level from the embedded MsgStream
-  bool msgLevel( MSG::Level lvl ) const { return UNLIKELY( msgLevel() <= lvl ); }
+  bool msgLevel( MSG::Level lvl ) const { return msgLevel() <= lvl; }
 
 private:
   // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
@@ -172,7 +172,7 @@ private:
 protected:
   /// Set up local caches
   MSG::Level setUpMessaging() const {
-    if ( UNLIKELY( !m_commonMessagingReady ) ) { initMessaging(); }
+    if ( !m_commonMessagingReady ) { initMessaging(); }
     return m_level;
   }
   /// Reinitialize internal states.
@@ -187,7 +187,7 @@ protected:
     if ( level != MSG::NIL && level != m_level ) {
       if ( msgSvc() ) msgSvc()->setOutputLevel( this->name(), level );
       if ( m_msgStream.get() ) m_msgStream->setLevel( level );
-      if ( UNLIKELY( MSG::Level( level ) <= MSG::DEBUG ) )
+      if ( MSG::Level( level ) <= MSG::DEBUG )
         debug() << "Property update for OutputLevel : new value = " << level << endmsg;
       m_level = MSG::Level( level );
     }
