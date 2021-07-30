@@ -54,6 +54,7 @@ namespace {
     auto axis     = std::array{toAxis( jsonAxis[index] )...};
     auto weights  = j.at( "bins" ).get<std::vector<typename Traits::WeightType>>();
     auto title    = j.at( "title" ).get<std::string>();
+    auto nentries = j.at( "nEntries" ).get<unsigned int>();
     // weird way ROOT has to give titles to axis
     title += ( axis[index].title + ... );
     // compute total number of bins, multiplying bins per axis
@@ -126,6 +127,8 @@ namespace {
       }
     };
     ( try_set_bin_labels( index ), ... );
+    // Fix the number of entries, wrongly computed by ROOT from the numer of calls to fill
+    histo.SetEntries( nentries );
     // write to file
     histo.Write();
 
