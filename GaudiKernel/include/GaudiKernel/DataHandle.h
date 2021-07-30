@@ -37,7 +37,7 @@ namespace Gaudi {
 
   class DataHandle {
   public:
-    enum Mode { Reader = 1 << 2, Writer = 1 << 4, Updater = Reader | Writer };
+    enum Mode { Reader = 1 << 2, Writer = 1 << 4 };
 
     DataHandle( const DataObjID& k, Mode a = Reader, IDataHandleHolder* owner = nullptr )
         : m_key( k ), m_owner( owner ), m_mode( a ){};
