@@ -33,7 +33,6 @@
 // Boost
 // ============================================================================
 #include <boost/algorithm/string/compare.hpp>
-#include <boost/utility/string_ref.hpp>
 // ============================================================================
 namespace {
   /// helper class to compare pointers to string using the strings
@@ -133,12 +132,9 @@ void GaudiHandleProperty::toStream( std::ostream& out ) const {
 }
 
 StatusCode GaudiHandleProperty::fromString( const std::string& s ) {
-  boost::string_ref tn = s;
   /// \fixme strip optional quotes around the string
-  if ( ( tn.starts_with( '"' ) && tn.ends_with( '"' ) ) || ( tn.starts_with( '\'' ) && tn.ends_with( '\'' ) ) ) {
-    tn.remove_prefix( 1 );
-    tn.remove_suffix( 1 );
-    m_pValue->setTypeAndName( static_cast<std::string>( tn ) );
+  if ( s.size() > 1 && ( s.front() == '\'' || s.front() == '\"' ) && s.front() == s.back() ) {
+    m_pValue->setTypeAndName( s.substr( 1, s.size() - 2 ) );
   } else {
     m_pValue->setTypeAndName( s );
   }
