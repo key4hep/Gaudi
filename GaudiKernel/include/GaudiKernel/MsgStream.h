@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -161,20 +161,21 @@ public:
   }
 
   /// IOS emulation
+  std::streamsize width() const { return isActive() ? m_stream.width() : 0; }
+  std::streamsize width( std::streamsize v ) { return isActive() ? m_stream.width( v ) : 0; }
+  std::streamsize precision() const { return isActive() ? m_stream.precision() : 0; }
+  std::streamsize precision( int v ) { return isActive() ? m_stream.precision( v ) : 0; }
+
   long flags() const { return isActive() ? m_stream.flags() : 0; }
   long flags( FLAG_TYPE v ) { return isActive() ? m_stream.flags( v ) : 0; }
   long setf( FLAG_TYPE v ) { return isActive() ? m_stream.setf( v ) : 0; }
-  int  width() const { return isActive() ? m_stream.width() : 0; }
-  int  width( int v ) { return isActive() ? m_stream.width( v ) : 0; }
   char fill() const { return isActive() ? m_stream.fill() : (char)-1; }
   char fill( char v ) { return isActive() ? m_stream.fill( v ) : (char)-1; }
-  int  precision() const { return isActive() ? m_stream.precision() : 0; }
-  int  precision( int v ) { return isActive() ? m_stream.precision( v ) : 0; }
   int  rdstate() const { return isActive() ? m_stream.rdstate() : std::ios_base::failbit; }
-  int  good() const { return isActive() ? m_stream.good() : 0; }
-  int  eof() const { return isActive() ? m_stream.eof() : 0; }
-  int  bad() const { return isActive() ? m_stream.bad() : 0; }
-  long setf( FLAG_TYPE _f, FLAG_TYPE _m ) { return isActive() ? m_stream.setf( _f, _m ) : 0; }
+  bool good() const { return isActive() && m_stream.good(); }
+  bool eof() const { return isActive() && m_stream.eof(); }
+  bool bad() const { return isActive() && m_stream.bad(); }
+  int  setf( FLAG_TYPE _f, FLAG_TYPE _m ) { return isActive() ? m_stream.setf( _f, _m ) : 0; }
   void unsetf( FLAG_TYPE _l ) {
     if ( isActive() ) m_stream.unsetf( _l );
   }

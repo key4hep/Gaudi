@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -428,7 +428,7 @@ namespace Gaudi::Accumulators {
       using Acc = Accumulator<Atomicity, Arithmetic, std::integral_constant<int, ND>>;
       std::vector<typename Acc::BaseAccumulator::OutputType> bins;
       bins.reserve( this->totNBins() );
-      unsigned int totNEntries{0};
+      unsigned long totNEntries{0};
       for ( unsigned int i = 0; i < this->totNBins(); i++ ) {
         bins.push_back( this->binValue( i ) );
         totNEntries += this->nEntries( i );

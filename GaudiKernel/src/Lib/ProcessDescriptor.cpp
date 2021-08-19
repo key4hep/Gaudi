@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -310,8 +310,9 @@ static long pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
 #  endif
 void readProcStat( long pid, linux_proc& pinfo ) {
 
-  int  cnt, fd;
-  char buf[512];
+  ssize_t cnt;
+  int     fd;
+  char    buf[512];
 
   std::ostringstream ost;
 

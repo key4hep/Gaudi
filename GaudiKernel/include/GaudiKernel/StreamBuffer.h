@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -458,7 +458,7 @@ public:
   /// Streamer to write strings in (char*) format
   StreamBuffer& operator<<( const char* data ) {
     const char* ptr = 0 == data ? "" : data;
-    int         len = strlen( ptr ) + 1;
+    size_t      len = strlen( ptr ) + 1;
     if ( 0 == m_analyzer )
       writeBytes( ptr, len );
     else {

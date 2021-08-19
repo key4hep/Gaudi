@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -331,7 +331,7 @@ namespace Containers {
   void KeyedObjectManager<__A>::onDirty() const {
     m_direct = 1;
     m_setup.s->m_idx.reserve( m_setup.s->v.size() + 1 );
-    for ( int i = 0, stop = m_setup.s->v.size(); i < stop; ++i ) {
+    for ( size_t i = 0, stop = m_setup.s->v.size(); i < stop; ++i ) {
       if ( !m_setup.s->v[i] ) { containerIsInconsistent(); }
       m_setup.s->m_idx.push_back( i );
     }
