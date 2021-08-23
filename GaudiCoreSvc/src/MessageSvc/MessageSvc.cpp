@@ -628,7 +628,7 @@ void MessageSvc::setupLogStreams() {
   // map each unique filename to an ofstream
   std::map<std::string_view, std::shared_ptr<std::ofstream>> outStreams;
   std::transform( outFileNames.begin(), outFileNames.end(), std::inserter( outStreams, outStreams.end() ),
-                  [this]( std::string_view fname ) {
+                  []( std::string_view fname ) {
                     return std::pair{fname, std::make_shared<std::ofstream>(
                                                 std::string{fname}, std::ios_base::out | std::ios_base::trunc )};
                   } );
