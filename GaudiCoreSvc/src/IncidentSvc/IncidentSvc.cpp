@@ -103,7 +103,7 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
                                  [&]( const Listener& j ) { return j.priority >= prio; } );
   // We insert before the current position
   DEBMSG << "Adding [" << type << "] listener '" << getListenerName( lis ) << "' with priority " << prio << endmsg;
-  llist.emplace( i, std::move( IIncidentSvc::Listener{lis, prio, rethrow, singleShot} ) );
+  llist.emplace( i, IIncidentSvc::Listener{lis, prio, rethrow, singleShot} );
 }
 // ============================================================================
 IncidentSvc::ListenerMap::iterator
