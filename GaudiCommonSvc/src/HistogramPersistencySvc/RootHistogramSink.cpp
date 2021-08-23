@@ -28,6 +28,12 @@
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/split_when.hpp>
 #include <range/v3/view/transform.hpp>
+// upstream has renamed namespace ranges::view -> ranges::views
+#if RANGE_V3_VERSION < 900
+namespace ranges::views {
+  using namespace ranges::view;
+}
+#endif
 #include <string>
 #include <vector>
 
@@ -74,9 +80,9 @@ namespace {
     {
       using namespace ranges;
       auto is_delimiter        = []( auto c ) { return c == '/' || c == '.'; };
-      auto transform_to_string = view::transform( []( auto&& rng ) { return rng | to<std::string>; } );
+      auto transform_to_string = views::transform( []( auto&& rng ) { return rng | to<std::string>; } );
 
-      auto currentDir = accumulate( dir | view::split_when( is_delimiter ) | transform_to_string,
+      auto currentDir = accumulate( dir | views::split_when( is_delimiter ) | transform_to_string,
                                     file.GetDirectory( "" ), []( auto current, auto&& dir_level ) {
                                       if ( current ) {
                                         // try to get next level
