@@ -43,7 +43,7 @@ namespace Gaudi::Functional {
       using KeyValue                 = typename base_class::KeyValue;
       using KeyValues                = typename base_class::KeyValues;
 
-      SplittingTransformer( std::string name, ISvcLocator* locator, const std::array<KeyValue, N>& inputs,
+      SplittingTransformer( std::string name, ISvcLocator* locator, const RepeatValues_<KeyValue, N>& inputs,
                             const KeyValues& outputs )
           : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
@@ -61,7 +61,7 @@ namespace Gaudi::Functional {
                 Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
-          : SplittingTransformer( std::move( name ), locator, std::array<KeyValue, 1>{input}, output ) {
+          : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {
         static_assert( N == 1, "single input argument requires single input signature" );
       }
 
@@ -110,7 +110,7 @@ namespace Gaudi::Functional {
       using KeyValue                 = typename base_class::KeyValue;
       using KeyValues                = typename base_class::KeyValues;
 
-      SplittingTransformer( std::string name, ISvcLocator* locator, const std::array<KeyValue, N>& inputs,
+      SplittingTransformer( std::string name, ISvcLocator* locator, const RepeatValues_<KeyValue, N>& inputs,
                             const KeyValues& outputs )
           : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
@@ -128,7 +128,7 @@ namespace Gaudi::Functional {
                 Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
-          : SplittingTransformer( std::move( name ), locator, std::array<KeyValue, 1>{input}, output ) {
+          : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {
         static_assert( N == 1, "single input argument requires single input signature" );
       }
 

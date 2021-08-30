@@ -44,6 +44,10 @@ namespace ranges::views {
 #  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
 #endif
 
+// temporary hack to help in transition to updated constructor
+// allows to write code which is forward and backwards compatible
+#define GAUDI_FUNCTIONAL_CONSTRUCTOR_USES_TUPLE
+
 namespace Gaudi::Functional::details {
 
   // CRJ : Stuff for zipping
@@ -140,6 +144,16 @@ namespace Gaudi::Functional::details {
       if ( arg ) std::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
     }
   } invoke_optionally{};
+  /////////////////////////////////////////
+
+  template <typename Value, std::size_t... I>
+  auto get_values_helper( std::index_sequence<I...> ) {
+    return std::make_tuple( ( (void)I, Value{} )... );
+  }
+
+  template <typename Value, auto N>
+  using RepeatValues_ = decltype( get_values_helper<Value>( std::make_index_sequence<N>() ) );
+
   /////////////////////////////////////////
 
   template <typename Out1, typename Out2,
@@ -485,24 +499,24 @@ namespace Gaudi::Functional::details {
     using KeyValues = std::pair<std::string, std::vector<std::string>>;
 
     // generic constructor:  N -> M
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs,
-                     const std::array<KeyValue, N_out>& outputs )
+    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, RepeatValues_<KeyValue, N_in> const& inputs,
+                     RepeatValues_<KeyValue, N_out> const& outputs )
         : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{}, outputs,
                            std::index_sequence_for<Out...>{} ) {}
 
     // special cases: forward to the generic case...
     // 1 -> 1
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValue& output )
-        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{input},
-                           std::array<KeyValue, 1>{output} ) {}
+        : DataHandleMixin( std::move( name ), locator, std::forward_as_tuple( input ),
+                           std::forward_as_tuple( output ) ) {}
     // 1 -> N
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& input,
-                     const std::array<KeyValue, N_out>& outputs )
-        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{input}, outputs ) {}
+                     RepeatValues_<KeyValue, N_out> const& outputs )
+        : DataHandleMixin( std::move( name ), locator, std::forward_as_tuple( input ), outputs ) {}
     // N -> 1
-    DataHandleMixin( std::string name, ISvcLocator* locator, const std::array<KeyValue, N_in>& inputs,
+    DataHandleMixin( std::string name, ISvcLocator* locator, RepeatValues_<KeyValue, N_in> const& inputs,
                      const KeyValue& output )
-        : DataHandleMixin( std::move( name ), locator, inputs, std::array<KeyValue, 1>{output} ) {}
+        : DataHandleMixin( std::move( name ), locator, inputs, std::forward_as_tuple( output ) ) {}
 
     template <std::size_t N = 0>
     decltype( auto ) inputLocation() const {
@@ -538,7 +552,7 @@ namespace Gaudi::Functional::details {
   public:
     using KeyValue  = std::pair<std::string, std::string>;
     using KeyValues = std::pair<std::string, std::vector<std::string>>;
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator )
+    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, std::tuple<> = {}, std::tuple<> = {} )
         : BaseClass_t<Traits_>( std::move( name ), pSvcLocator ) {
       // make sure this algorithm is seen as reentrant by Gaudi
       this->setProperty( "Cardinality", 0 ).ignore();
@@ -568,13 +582,13 @@ namespace Gaudi::Functional::details {
     constexpr static std::size_t N_in = sizeof...( In );
 
     // generic constructor:  N -> 0
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs )
+    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, RepeatValues_<KeyValue, N_in> const& inputs )
         : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{} ) {}
 
     // special cases: forward to the generic case...
     // 1 -> 0
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& input )
-        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{input} ) {}
+        : DataHandleMixin( std::move( name ), locator, std::forward_as_tuple( input ) ) {}
 
     template <std::size_t N = 0>
     decltype( auto ) inputLocation() const {
@@ -617,12 +631,12 @@ namespace Gaudi::Functional::details {
     using KeyValues                    = std::pair<std::string, std::vector<std::string>>;
 
     // generic constructor:  0 -> N
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_out>& outputs )
+    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, RepeatValues_<KeyValue, N_out> const& outputs )
         : DataHandleMixin( std::move( name ), pSvcLocator, outputs, std::index_sequence_for<Out...>{} ) {}
 
     // 0 -> 1
     DataHandleMixin( std::string name, ISvcLocator* locator, const KeyValue& output )
-        : DataHandleMixin( std::move( name ), locator, std::array<KeyValue, 1>{output} ) {}
+        : DataHandleMixin( std::move( name ), locator, std::forward_as_tuple( output ) ) {}
 
     template <std::size_t N = 0>
     decltype( auto ) outputLocation() const {
