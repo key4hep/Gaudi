@@ -96,7 +96,7 @@ private:
   // ==========================================================================
   // When TBB supports unique_ptrs in concurrent queue typedef should be changed
   // typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
-  typedef tbb::concurrent_queue<Incident*>                             IncQueue_t;
+  typedef tbb::concurrent_queue<std::unique_ptr<Incident>>             IncQueue_t;
   tbb::concurrent_unordered_map<EventContext::ContextID_t, IncQueue_t> m_firedIncidents;
 
   /// Event ID for each slot
