@@ -23,6 +23,7 @@
 // warning: 'XYZ' overrides a member function but is not marked 'override'
 #ifdef __clang__
 #  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wsuggest-override"
 #  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
 #  pragma GCC diagnostic push

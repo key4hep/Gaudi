@@ -40,17 +40,6 @@ namespace std {
 }
 #endif
 
-namespace {
-#if __cplusplus >= 202000
-  inline bool starts_with( std::string_view s, std::string_view prefix ) { return s.starts_with( prefix ); }
-#else
-  inline bool starts_with( const std::string_view s, const std::string& prefix ) {
-    return s.substr( 0, prefix.size() ) == prefix;
-  }
-#endif
-
-} // namespace
-
 // ============================================================================
 DECLARE_COMPONENT( JobOptionsSvc )
 // ============================================================================
