@@ -88,7 +88,7 @@ namespace Gaudi::Functional {
       }
 
       // TODO/FIXME: how does the callee know in which order to produce the outputs?
-      //             (note: 'missing' items can be specified by making Out an boost::optional<Out>,
+      //             (note: 'missing' items can be specified by making Out an std::optional<Out>,
       //              and only those entries which contain an Out are stored)
       virtual vector_of_<Out> operator()( const In&... ) const = 0;
 
@@ -155,7 +155,7 @@ namespace Gaudi::Functional {
       }
 
       // TODO/FIXME: how does the callee know in which order to produce the outputs?
-      //             (note: 'missing' items can be specified by making Out an boost::optional<Out>,
+      //             (note: 'missing' items can be specified by making Out an std::optional<Out>,
       //              and only those entries which contain an Out are stored)
       virtual vector_of_<Out> operator()( const In&... ) const = 0;
 

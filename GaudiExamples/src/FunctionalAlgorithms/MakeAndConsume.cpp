@@ -17,6 +17,7 @@
 #include "GaudiKernel/SharedObjectsContainer.h"
 #include <cmath>
 #include <numeric>
+#include <optional>
 
 namespace Gaudi::Examples {
 
@@ -278,7 +279,7 @@ namespace Gaudi::Examples {
 
     using MultiScalarTransformer::operator();
 
-    boost::optional<std::tuple<double, int>> operator()( const double& d ) const {
+    std::optional<std::tuple<double, int>> operator()( const double& d ) const {
       if ( d < 30. ) {
         info() << "Skipping " << d << endmsg;
         return {};
@@ -322,7 +323,7 @@ namespace Gaudi::Examples {
 
     using ScalarTransformer::operator();
 
-    boost::optional<double> operator()( const double& frac, const int& i ) const {
+    std::optional<double> operator()( const double& frac, const int& i ) const {
       double d = std::ldexp( frac, i );
       if ( i > 6 ) {
         info() << "Skipping " << d << endmsg;
