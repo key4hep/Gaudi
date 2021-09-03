@@ -184,7 +184,7 @@ class BaseTest(object):
             else:
                 prog = "Gaudi.exe"
 
-            dummy, prog_ext = os.path.splitext(prog)
+            prog_ext = os.path.splitext(prog)[1]
             if prog_ext not in [".exe", ".py", ".bat"]:
                 prog += ".exe"
                 prog_ext = ".exe"
@@ -683,7 +683,7 @@ def which(executable):
                 if os.path.exists(executable[:-4]):
                     return executable[:-4]
             else:
-                head, executable = os.path.split(executable)
+                executable = os.path.split(executable)[1]
         else:
             return executable
     for d in os.environ.get("PATH").split(os.pathsep):
