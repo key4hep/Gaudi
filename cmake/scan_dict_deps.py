@@ -12,7 +12,7 @@
 from __future__ import print_function
 import re
 import io
-from os.path import join, exists, isabs
+from os.path import join, exists, isabs, isdir
 
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s*["<]([^">]*)[">]')
 
@@ -56,7 +56,7 @@ def find_deps(filename, searchpath, deps=None):
             find_file(m.group(1), searchpath) for m in
             [INCLUDE_RE.match(l) for l in io.open(filename, encoding="utf-8")]
             if m
-        ] if f and f not in deps
+        ] if f and f not in deps and not isdir(f)
     ]:
         deps.add(included)
         find_deps(included, searchpath, deps)
