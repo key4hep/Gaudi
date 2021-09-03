@@ -1249,7 +1249,8 @@ class ConfigurableAlgTool(Configurable):
         return self.isInToolSvc()
 
     def isInToolSvc(self):
-        return self._jobOptName.startswith('ToolSvc.')
+        (parent, child) = self._jobOptName.rsplit('.', 1)
+        return parent == 'ToolSvc'
 
     def toStringProperty(self):
         # called on conversion to a string property for the jocat
