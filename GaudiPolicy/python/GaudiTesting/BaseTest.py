@@ -579,7 +579,7 @@ class BaseTest(object):
                     "Error Diff",
                     preproc=preproc)(stderr, result)
             else:
-                newcauses += ["missing error reference file"]
+                newcauses = ["missing error reference file"]
             causes += newcauses
             if newcauses and lreference:  # Write a new reference file for stdedd
                 cnt = 0
