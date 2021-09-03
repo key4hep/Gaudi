@@ -678,9 +678,9 @@ def which(executable):
     If the executable cannot be found, None is returned
     """
     if os.path.isabs(executable):
-        if not os.path.exists(executable):
+        if not os.path.isfile(executable):
             if executable.endswith('.exe'):
-                if os.path.exists(executable[:-4]):
+                if os.path.isfile(executable[:-4]):
                     return executable[:-4]
             else:
                 executable = os.path.split(executable)[1]
@@ -688,9 +688,9 @@ def which(executable):
             return executable
     for d in os.environ.get("PATH").split(os.pathsep):
         fullpath = os.path.join(d, executable)
-        if os.path.exists(fullpath):
+        if os.path.isfile(fullpath):
             return fullpath
-        elif executable.endswith('.exe') and os.path.exists(fullpath[:-4]):
+        elif executable.endswith('.exe') and os.path.isfile(fullpath[:-4]):
             return fullpath[:-4]
     return None
 
