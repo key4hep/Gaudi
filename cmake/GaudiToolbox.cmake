@@ -774,7 +774,7 @@ function(gaudi_add_dictionary dictionary)
         endif()
     else()
         if(NOT _root_dicts_deps_warning)
-            message(WARNING "dependencies of ROOT dictionaries are not complete, this feature needs a Ninja generator of CMake >= 3.20")
+            message(WARNING "dependencies of ROOT dictionaries are not complete, this feature needs Python::Interpreter and a Ninja generator or CMake >= 3.20")
             set(_root_dicts_deps_warning 1 CACHE INTERNAL "")
         endif()
         add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
