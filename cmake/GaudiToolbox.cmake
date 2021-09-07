@@ -739,12 +739,15 @@ function(gaudi_add_dictionary dictionary)
     if(TARGET Python::Interpreter
             AND (CMAKE_GENERATOR MATCHES "Ninja"
                 OR (CMAKE_GENERATOR MATCHES "Makefile" AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")))
+        # Ninja requires the DEPFILE to mention the relative path to the target file
+        # (but the relative to what depends on the version of CMake) otherwise the dictionary
+        # is always rebuilt.
         if(POLICY CMP0116)
             cmake_policy(PUSH)
             cmake_policy(SET CMP0116 NEW)
             file(RELATIVE_PATH dep_target "${CMAKE_CURRENT_BINARY_DIR}" "${gensrcdict}")
         else()
-            file(RELATIVE_PATH dep_target "${PROJECT_BINARY_DIR}" "${gensrcdict}")
+            file(RELATIVE_PATH dep_target "${CMAKE_BINARY_DIR}" "${gensrcdict}")
         endif()
         add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
             COMMAND run
