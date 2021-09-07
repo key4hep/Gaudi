@@ -64,6 +64,7 @@ inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
     return ost << "n";
   case AlgExecState::State::Executing:
     return ost << "e";
+  case AlgExecState::State::Done:
   default:
     return ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
   }

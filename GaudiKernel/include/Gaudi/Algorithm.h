@@ -203,7 +203,7 @@ namespace Gaudi {
     /// Access a service by name, creating it if it doesn't already exist.
     template <class T>
     StatusCode service( std::string_view name, T*& psvc, bool createIf = true ) const {
-      return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
+      return service_i( name, createIf, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
     }
 
     /// Access a service by name and type, creating it if it doesn't already exist.

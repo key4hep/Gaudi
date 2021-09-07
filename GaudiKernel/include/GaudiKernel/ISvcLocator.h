@@ -69,10 +69,10 @@ public:
       @param iid Interface ID
       @param pinterface Returned pointer to the requested interface
   */
-  virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
+  virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid_,
                                  IInterface*& pinterface ) {
     auto svc = service( typeName, false );
-    return svc ? svc->queryInterface( iid, (void**)&pinterface ) : StatusCode::FAILURE;
+    return svc ? svc->queryInterface( iid_, reinterpret_cast<void**>( &pinterface ) ) : StatusCode::FAILURE;
   }
 
 /** Get a reference to a service and create it if it does not exists
@@ -100,7 +100,7 @@ public:
       StatusCode sc = getService( name, s, true );
       if ( !sc.isSuccess() ) return sc; // Must check if initialization was OK!
     }
-    return getService( name, T::interfaceID(), (IInterface*&)svc );
+    return getService( name, T::interfaceID(), reinterpret_cast<IInterface*&>( svc ) );
   }
 
   /// Templated method to access a service by type and name.

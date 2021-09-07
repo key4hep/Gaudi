@@ -82,7 +82,7 @@ public:
 
   /// Comparison between two BaseObjectMemberFunction instances.
   bool match( BaseObjectMemberFunction* bmf ) const override {
-    if ( bmf == (BaseObjectMemberFunction*)this ) return true;
+    if ( bmf == static_cast<const BaseObjectMemberFunction*>( this ) ) return true;
     if ( type() == bmf->type() ) {
       ObjectMemberFunction* mf = dynamic_cast<ObjectMemberFunction*>( bmf );
       return m_instance == mf->m_instance && m_memberFunction == mf->m_memberFunction;

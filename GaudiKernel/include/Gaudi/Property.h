@@ -238,7 +238,7 @@ namespace Gaudi {
     /// Backward compatibility (\deprecated will be removed)
     /// @{
     const ValueType& value() const { return *this; }
-    ValueType&       value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
+    ValueType&       value() { return const_cast<ValueType&>( static_cast<const ValueType&>( *this ) ); }
     bool             setValue( const ValueType& v ) {
       *this = v;
       return true;

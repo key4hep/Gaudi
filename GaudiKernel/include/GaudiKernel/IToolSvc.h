@@ -146,7 +146,7 @@ public:
    */
   template <class T>
   StatusCode retrieveTool( std::string_view type, T*& tool, const IInterface* parent = nullptr, bool createIf = true ) {
-    return retrieve( type, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
+    return retrieve( type, T::interfaceID(), reinterpret_cast<IAlgTool*&>( tool ), parent, createIf );
   }
 
   /** Retrieve specified tool sub-type with tool dependent part of the name

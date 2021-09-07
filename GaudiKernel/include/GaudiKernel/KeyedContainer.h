@@ -148,7 +148,8 @@ private:
     if ( p ) {
       if ( p->parent() == this ) { p->setParent( 0 ); }
     }
-    return traits::release( p ) <= 0 ? (long)Containers::OBJ_ERASED : (long)Containers::OBJ_DELETED;
+    return traits::release( p ) <= 0 ? static_cast<long>( Containers::OBJ_ERASED )
+                                     : static_cast<long>( Containers::OBJ_DELETED );
   }
 
   /// Internal functor for insertion of objects

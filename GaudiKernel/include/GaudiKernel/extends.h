@@ -29,16 +29,16 @@ public:
 
   /// Implementation of IInterface::i_cast.
   void* i_cast( const InterfaceID& tid ) const override {
-    using iids = typename extend_interfaces_base::ext_iids;
-    void* ptr  = Gaudi::iid_cast( tid, iids{}, this );
+    using iids_ = typename extend_interfaces_base::ext_iids;
+    void* ptr   = Gaudi::iid_cast( tid, iids_{}, this );
     return ptr ? ptr : BASE::i_cast( tid );
   }
 
   /// Implementation of IInterface::queryInterface.
   StatusCode queryInterface( const InterfaceID& ti, void** pp ) override {
     if ( !pp ) return StatusCode::FAILURE;
-    using iids = typename extend_interfaces_base::ext_iids;
-    *pp        = Gaudi::iid_cast( ti, iids{}, this );
+    using iids_ = typename extend_interfaces_base::ext_iids;
+    *pp         = Gaudi::iid_cast( ti, iids_{}, this );
     // if cast failed, try the base class
     if ( !*pp ) return BASE::queryInterface( ti, pp );
     this->addRef();
@@ -47,9 +47,9 @@ public:
 
   /// Implementation of IInterface::getInterfaceNames.
   std::vector<std::string> getInterfaceNames() const override {
-    using iids = typename extend_interfaces_base::ext_iids;
-    auto vb    = BASE::getInterfaceNames();
-    auto vi    = Gaudi::getInterfaceNames( iids{} );
+    using iids_ = typename extend_interfaces_base::ext_iids;
+    auto vb     = BASE::getInterfaceNames();
+    auto vi     = Gaudi::getInterfaceNames( iids_{} );
     // start with base, and move the rest...
     vb.insert( vb.end(), std::make_move_iterator( vi.begin() ), std::make_move_iterator( vi.end() ) );
     return vb;

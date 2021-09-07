@@ -40,11 +40,11 @@ namespace Gaudi::Monitoring {
     class Entity {
     public:
       template <typename T>
-      Entity( std::string component, std::string name, std::string type, T& ent )
-          : component{std::move( component )}
-          , name{std::move( name )}
-          , type{std::move( type )}
-          , m_ptr{&ent}
+      Entity( std::string component_, std::string name_, std::string type_, T& ent_ )
+          : component{std::move( component_ )}
+          , name{std::move( name_ )}
+          , type{std::move( type_ )}
+          , m_ptr{&ent_}
           , m_reset{[]( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); }}
           , m_getJSON{[]( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); }} {}
       /// name of the component owning the Entity
