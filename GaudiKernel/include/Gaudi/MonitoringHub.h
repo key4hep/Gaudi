@@ -46,6 +46,7 @@ namespace Gaudi::Monitoring {
           , type{std::move( type )}
           , m_ptr{&ent}
           , m_reset{[]( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); }}
+          , m_mergeAndReset{[]( void* ptr, void* other ) { reinterpret_cast<T*>( ptr )->mergeAndReset(std::move(*reinterpret_cast<T*>( other ))); }}
           , m_getJSON{[]( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); }} {}
       /// name of the component owning the Entity
       std::string component;
@@ -57,6 +58,10 @@ namespace Gaudi::Monitoring {
       json toJSON() const { return ( *m_getJSON )( m_ptr ); }
       /// function resetting internal data
       void reset() { return ( *m_reset )( m_ptr ); }
+      // The following function does not protect against usage with entities with different internal types
+      // The user should ensure that entities are compatible before calling this function
+      /// function calling merge and reset on internal data with the internal data of another entity
+      void mergeAndReset( Entity const& ent ) { return ( *m_mergeAndReset )( m_ptr, ent.m_ptr ); }
       /// operator== for comparison with raw pointer
       bool operator==( void* ent ) { return m_ptr == ent; }
       /// operator== for comparison with an entity
@@ -65,11 +70,13 @@ namespace Gaudi::Monitoring {
     private:
       /// pointer to the actual data inside this Entity
       void* m_ptr{nullptr};
-      // The next 2 members are needed for type erasure
+      // The next 3 members are needed for type erasure
       // indeed, their implementation is internal type dependant
       // (see Constructor above and the usage of T in the reinterpret_cast)
       /// function reseting internal data.
       void ( *m_reset )( void* );
+      /// function calling merge and reset on internal data with the internal data of another entity
+      void ( *m_mergeAndReset )( void*, void* );
       /// function converting the internal data to json.
       json ( *m_getJSON )( const void* );
     };
