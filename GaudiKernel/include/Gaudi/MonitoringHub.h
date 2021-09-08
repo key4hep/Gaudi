@@ -46,7 +46,9 @@ namespace Gaudi::Monitoring {
           , type{std::move( type )}
           , m_ptr{&ent}
           , m_reset{[]( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); }}
-          , m_mergeAndReset{[]( void* ptr, void* other ) { reinterpret_cast<T*>( ptr )->mergeAndReset(std::move(*reinterpret_cast<T*>( other ))); }}
+          , m_mergeAndReset{[]( void* ptr, void* other ) {
+            reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
+          }}
           , m_getJSON{[]( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); }} {}
       /// name of the component owning the Entity
       std::string component;
