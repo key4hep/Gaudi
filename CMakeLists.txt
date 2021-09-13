@@ -231,6 +231,10 @@ set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.git/;/\\\\.git
 set(CPACK_SOURCE_GENERATOR "ZIP;RPM")
 include(CPack)
 
+# Set the version of the project as a cache variable to be seen by other
+# projects in the same super-project.
+set(${PROJECT_NAME}_VERSION "${PROJECT_VERSION}" CACHE STRING "Version of ${PROJECT_NAME}" FORCE)
+
 # Optionally enable compatibility with old-style CMake configurations, via helper module
 option(GAUDI_LEGACY_CMAKE_SUPPORT "Enable compatibility with old-style CMake builds" "$ENV{GAUDI_LEGACY_CMAKE_SUPPORT}")
 if(GAUDI_LEGACY_CMAKE_SUPPORT)
