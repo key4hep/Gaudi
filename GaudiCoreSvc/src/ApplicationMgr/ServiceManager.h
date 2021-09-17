@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -46,9 +46,9 @@ class IMessageSvc;
 class ServiceManager : public extends<ComponentManager, ISvcManager, ISvcLocator> {
 public:
   struct ServiceItem final {
-    ServiceItem( IService* s, long p = 0, bool act = false ) : service( s ), priority( p ), active( act ) {}
+    ServiceItem( IService* s, int p = 0, bool act = false ) : service( s ), priority( p ), active( act ) {}
     SmartIF<IService> service;
-    long              priority;
+    int               priority;
     bool              active;
     bool              operator==( std::string_view name ) const { return service->name() == name; }
     bool              operator==( const IService* ptr ) const { return service.get() == ptr; }

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -93,7 +93,7 @@ namespace Gaudi {
      *  @date 2006-09-09
      */
     inline std::ostream& toStream( const float obj, std::ostream& s, const int prec = 6 ) {
-      const int p = s.precision();
+      const int p = static_cast<int>( s.precision() );
       return s << std::setprecision( prec ) << obj << std::setprecision( p );
     }
     /** the printout of double values with the reasonable precision
@@ -101,7 +101,7 @@ namespace Gaudi {
      *  @date 2006-09-09
      */
     inline std::ostream& toStream( const double obj, std::ostream& s, const int prec = 8 ) {
-      const int p = s.precision();
+      const int p = static_cast<int>( s.precision() );
       return s << std::setprecision( prec ) << obj << std::setprecision( p );
     }
     /** the printout of long double values with the reasonable precision
@@ -109,7 +109,7 @@ namespace Gaudi {
      *  @date 2006-09-09
      */
     inline std::ostream& toStream( const long double obj, std::ostream& s, const int prec = 10 ) {
-      const int p = s.precision();
+      const int p = static_cast<int>( s.precision() );
       return s << std::setprecision( prec ) << obj << std::setprecision( p );
     }
     // ========================================================================

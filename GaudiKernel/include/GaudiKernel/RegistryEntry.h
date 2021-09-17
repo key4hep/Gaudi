@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -138,7 +138,7 @@ namespace DataSvcHelpers {
     /// Access the leaves of the object
     const Store& leaves() const { return m_store; }
     /// Return the size of the container(=number of objects)
-    int size() const { return m_store.size(); }
+    size_t size() const { return m_store.size(); }
     /// Simple check if the Container is empty
     bool isEmpty() const { return m_store.size() == 0; }
     /// Return starting point for container iteration

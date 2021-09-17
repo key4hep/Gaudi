@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -102,8 +102,8 @@ namespace NTuple {
     void reset() override { std::fill_n( this->m_buffer, m_length, m_def ); }
     /// Number of items filled
     long filled() const override {
-      int len = 1;
-      int nd  = ndim();
+      long len = 1;
+      long nd  = ndim();
       if ( m_length > 1 ) {
         for ( int l = 0; l < nd - 1; l++ ) { len *= dim( l ); }
         if ( indexItem() ) {

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -69,7 +69,7 @@ public:
   unsigned long addRef() override { return ++m_refCount; }
   /// release reference to object
   unsigned long release() override {
-    int cnt = --m_refCount;
+    unsigned long cnt = --m_refCount;
     if ( 0 == cnt ) delete this;
     return cnt;
   }
