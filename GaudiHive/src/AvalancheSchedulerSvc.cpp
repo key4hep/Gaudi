@@ -865,7 +865,11 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
   outputMS << "\n---------------------------- Task/CF/FSM Mapping "
            << ( 0 > iSlot ? "[all slots] --" : "[target slot] " ) << "--------------------------\n\n";
 
-  int slotCount = -1;
+  int  slotCount   = -1;
+  bool wasAlgError = ( iSlot >= 0 ) ? m_eventSlots[iSlot].algsStates.containsAny( {AState::ERROR} ) ||
+                                          subSlotAlgsInStates( m_eventSlots[iSlot], {AState::ERROR} )
+                                    : false;
+
   for ( auto& slot : m_eventSlots ) {
     ++slotCount;
     if ( slot.complete ) continue;
@@ -878,8 +882,20 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
     if ( 0 > iSlot || iSlot == slotCount ) {
 
-      // Snapshot of the Control Flow and FSM states
-      outputMS << m_precSvc->printState( slot ) << "\n";
+      // If an alg has thrown an error then it's not a failure of the CF/DF graph
+      if ( wasAlgError ) {
+        outputMS << "ERROR alg(s):";
+        int errorCount = 0;
+        for ( auto it = slot.algsStates.begin( AState::ERROR ); it != slot.algsStates.end( AState::ERROR ); ++it ) {
+          outputMS << " " << index2algname( *it );
+          ++errorCount;
+        }
+        if ( errorCount == 0 ) outputMS << " in subslot(s)";
+        outputMS << "\n\n";
+      } else {
+        // Snapshot of the Control Flow and FSM states
+        outputMS << m_precSvc->printState( slot ) << "\n";
+      }
 
       // Mention sub slots (this is expensive if the number of sub-slots is high)
       if ( m_verboseSubSlots && !slot.allSubSlots.empty() ) {
@@ -891,7 +907,15 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
                    << ", entry: " << ss.entryPoint << ", event: "
                    << ( ss.eventContext->valid() ? std::to_string( ss.eventContext->evt() ) : "[ctx invalid]" )
                    << " ]:\n\n";
-          outputMS << m_precSvc->printState( ss ) << "\n";
+          if ( wasAlgError ) {
+            outputMS << "ERROR alg(s):";
+            for ( auto it = ss.algsStates.begin( AState::ERROR ); it != ss.algsStates.end( AState::ERROR ); ++it ) {
+              outputMS << " " << index2algname( *it );
+            }
+            outputMS << "\n\n";
+          } else {
+            outputMS << m_precSvc->printState( ss ) << "\n";
+          }
         }
       }
     }
@@ -899,7 +923,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
   //===========================================================================
 
-  if ( 0 <= iSlot ) {
+  if ( 0 <= iSlot && !wasAlgError ) {
     outputMS << "\n------------------------------ Algorithm Execution States -----------------------------\n\n";
     m_algExecStateSvc->dump( outputMS, *( m_eventSlots[iSlot].eventContext ) );
   }
