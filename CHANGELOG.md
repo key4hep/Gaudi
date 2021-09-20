@@ -1,9 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Stefan Roiser @roiser
+Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+
+
+
+## [v36r1][] - 2021-09-20
+This is a minor release with a bunch of bugfixes and improvements.
+
+### Changed
+- Dropped *Updater* mode for `DataHandles` (gaudi/Gaudi!1239)
+- Truncate stall output on alg error (gaudi/Gaudi!1245)
+- Replaced last instances of `boost::string_ref` and `boost::optional` with `std` counterparts (gaudi/Gaudi#4, gaudi/Gaudi!1244)
+
+### Added
+- Add optional bin labels to Histogram accumulators axes (gaudi/Gaudi!1235)
+- Define some additional matrix types (gaudi/Gaudi!1232)
+- Added TH3 support to histo to/from string conversion (gaudi/Gaudi!1226)
+
+### Fixed
+- Fix: private tool used by public tool thinks it is public (gaudi/Gaudi!1251)
+- Type fixes related to `-Wconversion` (gaudi/Gaudi!1246)
+- Fixes number of entries in ROOT histograms created by RootSink (gaudi/Gaudi!1240)
+- Move computation of bin id from HistoInputType to Axis (gaudi/Gaudi!1236)
+- Fix `scan_dict_deps.py` to not use directories (gaudi/Gaudi!1241)
+- Fix clang11 warnings (gaudi/Gaudi!1247)
+- Fix memory leak in `IncidentSvc` and more (gaudi/Gaudi!1238)
+- Correctly group histograms in ROOT files (gaudi/Gaudi!1234)
+- Extend `GaudiConfig2` configurable to match Configurables API (gaudi/Gaudi!1230)
+- Optimize `TupleObj` (gaudi/Gaudi!1228)
+- Use `CTest` fixtures and `--repeat` (gaudi/Gaudi!1192)
+- Fixed out of date documentation of the new Histograms (gaudi/Gaudi!1229)
+- Misc fixes and improvement (gaudi/Gaudi!1252, gaudi/Gaudi!1233, gaudi/Gaudi!1231)
 
 
 ## [v36r0][] - 2021-06-21
@@ -728,6 +758,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r1
 [v36r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r0
 [v35r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r4
 [v35r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r3
