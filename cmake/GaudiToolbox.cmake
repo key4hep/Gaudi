@@ -739,12 +739,15 @@ function(gaudi_add_dictionary dictionary)
     if(TARGET Python::Interpreter
             AND (CMAKE_GENERATOR MATCHES "Ninja"
                 OR (CMAKE_GENERATOR MATCHES "Makefile" AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")))
+        # Ninja requires the DEPFILE to mention the relative path to the target file
+        # (but the relative to what depends on the version of CMake) otherwise the dictionary
+        # is always rebuilt.
         if(POLICY CMP0116)
             cmake_policy(PUSH)
             cmake_policy(SET CMP0116 NEW)
             file(RELATIVE_PATH dep_target "${CMAKE_CURRENT_BINARY_DIR}" "${gensrcdict}")
         else()
-            file(RELATIVE_PATH dep_target "${PROJECT_BINARY_DIR}" "${gensrcdict}")
+            file(RELATIVE_PATH dep_target "${CMAKE_BINARY_DIR}" "${gensrcdict}")
         endif()
         add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
             COMMAND run
@@ -774,7 +777,7 @@ function(gaudi_add_dictionary dictionary)
         endif()
     else()
         if(NOT _root_dicts_deps_warning)
-            message(WARNING "dependencies of ROOT dictionaries are not complete, this feature needs a Ninja generator of CMake >= 3.20")
+            message(WARNING "dependencies of ROOT dictionaries are not complete, this feature needs Python::Interpreter and a Ninja generator or CMake >= 3.20")
             set(_root_dicts_deps_warning 1 CACHE INTERNAL "")
         endif()
         add_custom_command(OUTPUT ${gensrcdict} ${rootmapname} ${pcmfile}
@@ -868,12 +871,15 @@ function(gaudi_install type)
         else()
             set(directory python/)
         endif()
-        install(DIRECTORY ${directory}
-            DESTINATION "${GAUDI_INSTALL_PYTHONDIR}"
-            REGEX "(~|\\.py[co]|\\.in)$" EXCLUDE)
         if(NOT IS_ABSOLUTE ${directory})
             set(directory ${CMAKE_CURRENT_SOURCE_DIR}/${directory})
         endif()
+        if(NOT EXISTS ${directory})
+            message(FATAL_ERROR "Directory ${directory} does not exist")
+        endif()
+        install(DIRECTORY ${directory}
+            DESTINATION "${GAUDI_INSTALL_PYTHONDIR}"
+            REGEX "(~|\\.py[co]|\\.in)$" EXCLUDE)
         # Generate a special __init__.py in the build tree that gather every other pieces
         file(GLOB python_packages LIST_DIRECTORIES true "${directory}/*")
         list(FILTER python_packages EXCLUDE REGEX "\\.(py[co]?|in)$")
@@ -903,6 +909,12 @@ if os.path.exists(fname):
         else()
             set(directory scripts/)
         endif()
+        if(NOT IS_ABSOLUTE ${directory})
+            set(directory ${CMAKE_CURRENT_SOURCE_DIR}/${directory})
+        endif()
+        if(NOT EXISTS ${directory})
+            message(FATAL_ERROR "Directory ${directory} does not exist")
+        endif()
         install(DIRECTORY ${directory}
             TYPE BIN
             FILE_PERMISSIONS OWNER_READ GROUP_READ WORLD_READ # same as PROGRAMS
@@ -910,14 +922,14 @@ if os.path.exists(fname):
                              OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE
             REGEX "(~|\\.py[co]|\\.in)$" EXCLUDE)
         # Runtime PATH with run
-        if(NOT IS_ABSOLUTE ${directory})
-            set(directory ${CMAKE_CURRENT_SOURCE_DIR}/${directory})
-        endif()
         _gaudi_runtime_prepend(path ${directory})
     elseif(type STREQUAL "CMAKE")
         foreach(entity IN LISTS ARGN)
             if(NOT IS_ABSOLUTE ${entity})
                 set(entity "${CMAKE_CURRENT_SOURCE_DIR}/${entity}")
+            endif()
+            if(NOT EXISTS ${entity})
+                message(FATAL_ERROR "Path ${entity} does not exist")
             endif()
             if(IS_DIRECTORY ${entity})
                 install(DIRECTORY "${entity}"

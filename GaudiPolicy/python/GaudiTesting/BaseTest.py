@@ -184,7 +184,7 @@ class BaseTest(object):
             else:
                 prog = "Gaudi.exe"
 
-            dummy, prog_ext = os.path.splitext(prog)
+            prog_ext = os.path.splitext(prog)[1]
             if prog_ext not in [".exe", ".py", ".bat"]:
                 prog += ".exe"
                 prog_ext = ".exe"
@@ -579,7 +579,7 @@ class BaseTest(object):
                     "Error Diff",
                     preproc=preproc)(stderr, result)
             else:
-                newcauses += ["missing error reference file"]
+                newcauses = ["missing error reference file"]
             causes += newcauses
             if newcauses and lreference:  # Write a new reference file for stdedd
                 cnt = 0
@@ -678,19 +678,19 @@ def which(executable):
     If the executable cannot be found, None is returned
     """
     if os.path.isabs(executable):
-        if not os.path.exists(executable):
+        if not os.path.isfile(executable):
             if executable.endswith('.exe'):
-                if os.path.exists(executable[:-4]):
+                if os.path.isfile(executable[:-4]):
                     return executable[:-4]
             else:
-                head, executable = os.path.split(executable)
+                executable = os.path.split(executable)[1]
         else:
             return executable
     for d in os.environ.get("PATH").split(os.pathsep):
         fullpath = os.path.join(d, executable)
-        if os.path.exists(fullpath):
+        if os.path.isfile(fullpath):
             return fullpath
-        elif executable.endswith('.exe') and os.path.exists(fullpath[:-4]):
+        elif executable.endswith('.exe') and os.path.isfile(fullpath[:-4]):
             return fullpath[:-4]
     return None
 
