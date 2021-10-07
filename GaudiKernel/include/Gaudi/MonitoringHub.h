@@ -14,6 +14,7 @@
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <typeindex>
 #include <typeinfo>
 
 namespace Gaudi::Monitoring {
@@ -45,6 +46,7 @@ namespace Gaudi::Monitoring {
           , name{std::move( name )}
           , type{std::move( type )}
           , m_ptr{&ent}
+	  , m_inner_type{typeid(ent)}
           , m_reset{[]( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); }}
           , m_mergeAndReset{[]( void* ptr, void* other ) {
             reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
@@ -60,10 +62,12 @@ namespace Gaudi::Monitoring {
       json toJSON() const { return ( *m_getJSON )( m_ptr ); }
       /// function resetting internal data
       void reset() { return ( *m_reset )( m_ptr ); }
-      // The following function does not protect against usage with entities with different internal types
-      // The user should ensure that entities are compatible before calling this function
-      /// function calling merge and reset on internal data with the internal data of another entity
-      void mergeAndReset( Entity const& ent ) { return ( *m_mergeAndReset )( m_ptr, ent.m_ptr ); }
+      void mergeAndReset( Entity const& ent ) {
+        if ( m_inner_type!=ent.m_inner_type ) {
+          throw std::runtime_error( std::string("Entity: mergeAndReset called on different types: ") + m_inner_type.name() + " and " + ent.m_inner_type.name());
+        }
+        return ( *m_mergeAndReset )( m_ptr, ent.m_ptr );
+      }
       /// operator== for comparison with raw pointer
       bool operator==( void* ent ) { return m_ptr == ent; }
       /// operator== for comparison with an entity
@@ -72,6 +76,7 @@ namespace Gaudi::Monitoring {
     private:
       /// pointer to the actual data inside this Entity
       void* m_ptr{nullptr};
+      std::type_index m_inner_type;
       // The next 3 members are needed for type erasure
       // indeed, their implementation is internal type dependant
       // (see Constructor above and the usage of T in the reinterpret_cast)
