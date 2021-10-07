@@ -47,6 +47,8 @@ if sys.version_info < (3, 5):
     del backslashreplace_errors
     del _new_backslashreplace_errors
 
+SKIP_RETURN_CODE = 77
+
 
 def sanitize_for_xml(data):
     '''
@@ -236,15 +238,17 @@ class BaseTest(object):
                     kill_tree(self.proc.pid, signal.SIGKILL)
                 self.causes.append('timeout')
             else:
-                logging.debug('completed test %s', self.name)
-
-                # Getting the error code
-                logging.debug('returnedCode = %s', self.proc.returncode)
                 self.returnedCode = self.proc.returncode
-
-                logging.debug('validating test...')
-                self.result, self.causes = self.ValidateOutput(
-                    stdout=self.out, stderr=self.err, result=self.result)
+                if self.returnedCode != SKIP_RETURN_CODE:
+                    logging.debug(
+                        f'completed test {self.name} with returncode = {self.returnedCode}'
+                    )
+                    logging.debug('validating test...')
+                    self.result, self.causes = self.ValidateOutput(
+                        stdout=self.out, stderr=self.err, result=self.result)
+                else:
+                    logging.debug(f'skipped test {self.name}')
+                    self.status = "skipped"
 
             # remove the temporary directory if we created it
             if self.use_temp_dir and not self._common_tmpdir:
@@ -252,22 +256,23 @@ class BaseTest(object):
 
             os.chdir(self.basedir)
 
-            # handle application exit code
-            if self.signal is not None:
-                if int(self.returnedCode) != -int(self.signal):
-                    self.causes.append('exit code')
+            if self.status != "skipped":
+                # handle application exit code
+                if self.signal is not None:
+                    if int(self.returnedCode) != -int(self.signal):
+                        self.causes.append('exit code')
 
-            elif self.exit_code is not None:
-                if int(self.returnedCode) != int(self.exit_code):
-                    self.causes.append('exit code')
+                elif self.exit_code is not None:
+                    if int(self.returnedCode) != int(self.exit_code):
+                        self.causes.append('exit code')
 
-            elif self.returnedCode != 0:
-                self.causes.append("exit code")
+                elif self.returnedCode != 0:
+                    self.causes.append("exit code")
 
-            if self.causes:
-                self.status = "failed"
-            else:
-                self.status = "passed"
+                if self.causes:
+                    self.status = "failed"
+                else:
+                    self.status = "passed"
 
         else:
             self.status = "skipped"

@@ -12,6 +12,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool, CPUCrunchSvc
+from GaudiTesting import SKIP_RETURN_CODE
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 try:
@@ -19,7 +20,7 @@ try:
 except ImportError:
     # of versions of LCG/heptools do not provide the required package networkx
     import sys
-    sys.exit(77)  # consider the test skipped
+    sys.exit(SKIP_RETURN_CODE)  # consider the test skipped
 
 # metaconfig
 evtslots = 1

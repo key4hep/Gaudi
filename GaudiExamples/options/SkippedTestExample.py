@@ -1,3 +1,4 @@
+#!/usr/bin/env gaudirun.py
 #####################################################################################
 # (c) Copyright 2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
@@ -8,5 +9,21 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-# allow from GaudiTesting import SKIP_RETURN_CODE
-from .BaseTest import SKIP_RETURN_CODE
+
+# import special return code to indicate that the test is skipped
+from GaudiTesting import SKIP_RETURN_CODE
+import sys
+
+# NOTE: returning SKIP_RETURN_CODE is meant for tests which should be skipped
+#       based on runtime information.
+#       If you know at configuration time that a tests should be skipped
+#       perfer disabling the test from CMake by setting the DISABLED propertey:
+#       set_property(
+#         TEST
+#             the_name_of_your_test
+#         APPEND PROPERTY
+#         DISABLED TRUE
+#        )
+
+# exit and return the code indicating that this test was skipped
+sys.exit(SKIP_RETURN_CODE)

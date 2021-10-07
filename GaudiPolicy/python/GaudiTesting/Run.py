@@ -67,7 +67,7 @@ def ctest_report(results):
             continue
         hndlr = handler.get(key, id_handler)
         data = XSS.escape(GT.sanitize_for_xml(hndlr(results[key])))
-        sys.stdout.write(template.format(key, data))
+        print(template.format(key, data))
 
 
 def pprint_report(results):
