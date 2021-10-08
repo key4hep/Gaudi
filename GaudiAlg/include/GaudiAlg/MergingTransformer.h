@@ -217,7 +217,7 @@ namespace Gaudi::Functional {
   public:
     using KeyValue  = typename base_class::KeyValue;
     using KeyValues = typename base_class::KeyValues;
-    using OutKeys   = std::array<KeyValue, sizeof...( Outs )>;
+    using OutKeys   = details::RepeatValues_<KeyValue, sizeof...( Outs )>;
 
     MergingMultiTransformer( std::string const& name, ISvcLocator* locator, KeyValues const& inputs,
                              OutKeys const& outputs );
@@ -293,7 +293,7 @@ namespace Gaudi::Functional {
   public:
     using KeyValue  = typename base_class::KeyValue;
     using KeyValues = typename base_class::KeyValues;
-    using OutKeys   = std::array<KeyValue, sizeof...( Outs )>;
+    using OutKeys   = details::RepeatValues_<KeyValue, sizeof...( Outs )>;
 
     MergingMultiTransformerFilter( std::string const& name, ISvcLocator* locator, KeyValues const& inputs,
                                    OutKeys const& outputs );
