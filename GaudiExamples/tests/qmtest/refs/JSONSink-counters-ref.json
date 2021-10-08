@@ -1,0 +1,57 @@
+{
+  "CounterAlg": {
+    "Average": {
+      "mean": 1.5,
+      "nEntries": 500,
+      "sum": 750.0,
+      "type": "counter:AveragingCounter:d"
+    },
+    "AverageInteger": {
+      "mean": 1.0,
+      "nEntries": 500,
+      "sum": 500,
+      "type": "counter:AveragingCounter:j"
+    },
+    "AverageNonAtomic": {
+      "mean": 1.5,
+      "nEntries": 500,
+      "sum": 750.0,
+      "type": "counter:AveragingCounter:d"
+    },
+    "Basic": {
+      "nEntries": 500,
+      "type": "counter:Counter:m"
+    },
+    "Binomial": {
+      "efficiency": 1.0,
+      "efficiencyErr": 0.0,
+      "nEntries": 500,
+      "nFalseEntries": 0,
+      "nTrueEntries": 500,
+      "type": "counter:BinomialCounter:d"
+    },
+    "Sigma": {
+      "mean": 2.5,
+      "nEntries": 500,
+      "standard_deviation": 0.0,
+      "sum": 1250.0,
+      "type": "counter:SigmaCounter:d"
+    },
+    "Stat": {
+      "max": 3.5,
+      "mean": 3.5,
+      "min": 3.5,
+      "nEntries": 500,
+      "standard_deviation": 0.0,
+      "sum": 1750.0,
+      "type": "counter:StatCounter:d"
+    },
+    "Super nice message, max 5 times": {
+      "level": 3,
+      "max": 5,
+      "msg": "Super nice message, max 5 times",
+      "nEntries": 500,
+      "type": "counter:MsgCounter"
+    }
+  }
+}
