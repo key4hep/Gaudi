@@ -26,10 +26,12 @@ StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState ) {
     return StatusCode::FAILURE;
   }
 
-  // Allow cycling of a single state
-  if ( m_states[iAlgo] == newState ) return StatusCode::SUCCESS;
+  State oldState = m_states[iAlgo];
 
-  switch ( transition( m_states[iAlgo], newState ) ) {
+  // Allow cycling of a single state
+  if ( oldState == newState ) return StatusCode::SUCCESS;
+
+  switch ( transition( oldState, newState ) ) {
   case transition( INITIAL, CONTROLREADY ):
     [[fallthrough]];
   case transition( CONTROLREADY, DATAREADY ):
@@ -46,11 +48,15 @@ StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState ) {
     [[fallthrough]];
   case transition( SCHEDULED, EVTREJECTED ):
     m_states[iAlgo] = newState;
+    m_algsInState[oldState].erase( iAlgo );
+    m_algsInState[newState].insert( iAlgo );
     return StatusCode::SUCCESS;
   default:
     log() << MSG::ERROR << "[AlgIndex " << iAlgo << "] Transition from " << m_states[iAlgo] << " to " << newState
           << " is not allowed" << endmsg;
     m_states[iAlgo] = ERROR;
+    m_algsInState[oldState].erase( iAlgo );
+    m_algsInState[ERROR].insert( iAlgo );
     return StatusCode::FAILURE;
   }
 }
