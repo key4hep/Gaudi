@@ -1,0 +1,64 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<!--
+    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set><text>../../options/CounterAlg.py</text></set></argument>
+<argument name="options"><text>
+from Configurables import Gaudi__Monitoring__JSONSink as JSONSink
+from Configurables import ApplicationMgr
+ApplicationMgr().ExtSvc += [ JSONSink() ]
+</text></argument>
+<argument name="validator"><text>
+import os
+import json
+from pprint import pformat
+from unittest import TestCase
+from pathlib import Path
+
+# first we run a regular check on stdout
+validateWithReference()
+
+# then we see if the JSON dump is what we expect
+
+json_ref = Path(reference).parent / 'JSONSink-counters-ref.json'
+
+try:
+    expected = json.load(open(json_ref))
+except Exception:
+    # ignore issues on reference JSON file
+    expected = {}
+
+try:
+    assert os.path.isfile('counters.json'), 'missing output file'
+
+    try:
+        with open('counters.json') as f:
+            data = json.load(f)
+    except Exception:
+        assert False, 'failed to load json'
+
+    try:
+        TestCase().assertEqual(data, expected)
+    except AssertionError as err:
+        result['counters'] = result.Quote(pformat(data))
+        result['expected'] = result.Quote(pformat(expected))
+        result['error'] = result.Quote(str(err))
+        with open(str(json_ref) + '.new', 'w') as f:
+            json.dump(data, f, indent=2)
+        assert False, 'counters content'
+
+except AssertionError as err:
+    causes.append(str(err))
+</text></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="reference"><text>refs/JSONSink.ref</text></argument>
+</extension>

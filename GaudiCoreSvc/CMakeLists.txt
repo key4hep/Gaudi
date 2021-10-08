@@ -46,6 +46,7 @@ gaudi_add_module(GaudiCoreSvc
                    src/MessageSvc/InertMessageSvc.cpp
                    src/MessageSvc/MessageSvc.cpp
                    src/MessageSvc/MessageSvcSink.cpp
+                   src/MessageSvc/JSONSink.cpp
                  LINK
                    GaudiKernel
                    Python::Python
