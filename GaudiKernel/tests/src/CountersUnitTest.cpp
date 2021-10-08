@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( test_basic_counter, *utf::tolerance( 1e-14 ) ) {
   Counter<atomicity::full> c;
   BOOST_TEST( c.nEntries() == 0 );
   BOOST_TEST( ( ++c ).nEntries() == 1 );
-  BOOST_TEST( ( c++ ).nEntries() == 1 );
+  ++c;
   BOOST_TEST( c.nEntries() == 2 );
 
   c += 10;

@@ -30,6 +30,46 @@
       "nTrueEntries": 500,
       "type": "counter:BinomialCounter:d"
     },
+    "DQCounter10": {
+      "nEntries": 490,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter11": {
+      "nEntries": 489,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter12": {
+      "nEntries": 488,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter13": {
+      "nEntries": 487,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter14": {
+      "nEntries": 486,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter15": {
+      "nEntries": 485,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter16": {
+      "nEntries": 484,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter17": {
+      "nEntries": 483,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter18": {
+      "nEntries": 482,
+      "type": "counter:Counter:m"
+    },
+    "DQCounter19": {
+      "nEntries": 481,
+      "type": "counter:Counter:m"
+    },
     "Sigma": {
       "mean": 2.5,
       "nEntries": 500,

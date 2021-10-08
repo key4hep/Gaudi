@@ -861,6 +861,7 @@ namespace Gaudi::Accumulators {
   /**
    * An empty ancester of all counters that provides a buffer method that returns a buffer on itself
    * Also registers the counter to its owner, with default type "counter"
+   * Due to this registration, move semantic is disabled. But copy semantic remains.
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, template <atomicity Ato, typename... Int> class Accumulator, typename... Args>
@@ -875,8 +876,8 @@ namespace Gaudi::Accumulators {
     template <typename OWNER>
     BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, "counter" ) {}
     Buffer<Accumulator, Atomicity, Args...> buffer() { return {*this}; }
-    BufferableCounter( BufferableCounter const& ) = default;
-    BufferableCounter& operator=( BufferableCounter const& ) = default;
+    BufferableCounter( BufferableCounter const& ) = delete;
+    BufferableCounter& operator=( BufferableCounter const& ) = delete;
     ~BufferableCounter() {
       if ( m_monitoringHub ) { m_monitoringHub->removeEntity( *this ); }
     }
@@ -897,11 +898,6 @@ namespace Gaudi::Accumulators {
     Counter( OWNER* o, std::string const& name )
         : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>( o, name, typeString ) {}
     Counter& operator++() { return ( *this ) += 1; }
-    Counter  operator++( int ) {
-      auto copy = *this;
-      ++( *this );
-      return copy;
-    }
     Counter& operator+=( const Arithmetic v ) {
       BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::operator+=( v );
       return *this;
@@ -1130,6 +1126,8 @@ namespace Gaudi::Accumulators {
       if ( by ) log();
       return *this;
     }
+    MsgCounter( MsgCounter const& ) = delete;
+    MsgCounter& operator=( MsgCounter const& ) = delete;
     ~MsgCounter() { m_monitoringHub.removeEntity( *this ); }
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
