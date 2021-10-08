@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -481,11 +481,42 @@ def _import_opts(file):
     _parser.parse(file)
 
 
+def _import_dict(data):
+    from GaudiKernel.Proxy.Configurable import ConfigurableGeneric, Configurable
+    for property, value_repr in data.items():
+        component, property = property.rsplit('.', 1)
+        if component in Configurable.allConfigurables:
+            cfg = Configurable.allConfigurables[component]
+        else:
+            cfg = ConfigurableGeneric(component)
+        value = eval(value_repr)
+        setattr(cfg, property, value)
+
+
+def _import_json(filename):
+    import json
+    with open(filename) as f:
+        _import_dict(json.load(f))
+
+
 _import_function_mapping = {
     ".py": _import_python,
     ".pkl": _import_pickle,
     ".opts": _import_opts,
+    ".json": _import_json,
 }
+
+try:
+    import yaml
+
+    def _import_yaml(filename):
+        with open(filename) as f:
+            _import_dict(yaml.safe_load(f))
+
+    _import_function_mapping[".yaml"] = _import_yaml
+    _import_function_mapping[".yml"] = _import_function_mapping[".yaml"]
+except ImportError:
+    pass  # yaml support is optional
 
 
 def importOptions(optsfile):
