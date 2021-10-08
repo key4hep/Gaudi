@@ -103,9 +103,6 @@ set(GAUDI_OPTIONAL_DEPENDENCIES "${GAUDI_OPTIONAL_DEPENDENCIES}set(GAUDI_USE_PYT
 # Find all the dependencies of the project
 list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules") # (Find*.cmake)
 include(cmake/GaudiDependencies.cmake)
-# Print a summary of the lookup
-feature_summary(FATAL_ON_MISSING_REQUIRED_PACKAGES
-  WHAT ALL)
 
 # The C++ standard used must be the same as ROOT's
 if(NOT GAUDI_CXX_STANDARD)
