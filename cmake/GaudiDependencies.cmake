@@ -191,7 +191,3 @@ if(APPLE)
     message(FATAL_ERROR "Foundation framework was not found")
   endif()
 endif()
-
-# Print a summary of the lookup
-feature_summary(FATAL_ON_MISSING_REQUIRED_PACKAGES
-  WHAT ALL)
