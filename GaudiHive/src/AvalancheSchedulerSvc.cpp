@@ -641,8 +641,8 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     }
 
     // Perform DR->SCHEDULED
-    for ( auto it = thisAlgsStates.begin( AState::DATAREADY ); it != thisAlgsStates.end( AState::DATAREADY ); ++it ) {
-      uint               algIndex{*it};
+    auto& drAlgs = thisAlgsStates.algsInState( AState::DATAREADY );
+    for ( uint algIndex : drAlgs ) {
       const std::string& algName{index2algname( algIndex )};
       unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
       bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
@@ -657,9 +657,8 @@ StatusCode AvalancheSchedulerSvc::iterate() {
 
     // Check for algorithms ready in sub-slots
     for ( auto& subslot : thisSlot.allSubSlots ) {
-      auto& subslotStates = subslot.algsStates;
-      for ( auto it = subslotStates.begin( AState::DATAREADY ); it != subslotStates.end( AState::DATAREADY ); ++it ) {
-        uint               algIndex{*it};
+      auto& drAlgsSubSlot = subslot.algsStates.algsInState( AState::DATAREADY );
+      for ( uint algIndex : drAlgsSubSlot ) {
         const std::string& algName{index2algname( algIndex )};
         unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
         bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
@@ -826,16 +825,21 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
     // Figure optimal printout layout
     size_t indt( 0 );
-    for ( auto& slot : m_eventSlots )
-      for ( auto it = slot.algsStates.begin( AState::SCHEDULED ); it != slot.algsStates.end( AState::SCHEDULED ); ++it )
-        if ( index2algname( *it ).length() > indt ) indt = index2algname( *it ).length();
+    for ( auto& slot : m_eventSlots ) {
+
+      auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
+      for ( uint algIndex : schedAlgs ) {
+        if ( index2algname( algIndex ).length() > indt ) indt = index2algname( algIndex ).length();
+      }
+    }
 
     // Figure the last running schedule across all slots
     for ( auto& slot : m_eventSlots ) {
-      for ( auto it = slot.algsStates.begin( AState::SCHEDULED ); it != slot.algsStates.end( AState::SCHEDULED );
-            ++it ) {
 
-        const std::string& algoName{index2algname( *it )};
+      auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
+      for ( uint algIndex : schedAlgs ) {
+
+        const std::string& algoName{index2algname( algIndex )};
 
         outputMS << "  task: " << std::setw( indt ) << algoName << " evt/slot: " << slot.eventContext->evt() << "/"
                  << slot.eventContext->slot();
@@ -885,9 +889,10 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
       // If an alg has thrown an error then it's not a failure of the CF/DF graph
       if ( wasAlgError ) {
         outputMS << "ERROR alg(s):";
-        int errorCount = 0;
-        for ( auto it = slot.algsStates.begin( AState::ERROR ); it != slot.algsStates.end( AState::ERROR ); ++it ) {
-          outputMS << " " << index2algname( *it );
+        int   errorCount = 0;
+        auto& errorAlgs  = slot.algsStates.algsInState( AState::ERROR );
+        for ( uint algIndex : errorAlgs ) {
+          outputMS << " " << index2algname( algIndex );
           ++errorCount;
         }
         if ( errorCount == 0 ) outputMS << " in subslot(s)";
@@ -909,11 +914,11 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
                    << " ]:\n\n";
           if ( wasAlgError ) {
             outputMS << "ERROR alg(s):";
-            for ( auto it = ss.algsStates.begin( AState::ERROR ); it != ss.algsStates.end( AState::ERROR ); ++it ) {
-              outputMS << " " << index2algname( *it );
-            }
+            auto& errorAlgs = ss.algsStates.algsInState( AState::ERROR );
+            for ( uint algIndex : errorAlgs ) { outputMS << " " << index2algname( algIndex ); }
             outputMS << "\n\n";
           } else {
+            // Snapshot of the Control Flow and FSM states in sub slot
             outputMS << m_precSvc->printState( ss ) << "\n";
           }
         }
