@@ -86,17 +86,14 @@ if(GAUDI_DEPENDENCIES_FIND_QUIETLY)
   set(__quiet QUIET)
 endif()
 
-include(FeatureSummary)
-
 # Note: this must be set before the first `find_package`
 set(THREADS_PREFER_PTHREAD_FLAG YES)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cmake handles Boost_USE_STATIC_LIBS correctly
 set(BUILD_SHARED_LIBS ON)
-find_package(Boost 1.70 ${__quiet} CONFIG COMPONENTS system filesystem regex
+find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex
   thread python unit_test_framework program_options log log_setup graph)
-set_package_properties(Boost PROPERTIES TYPE REQUIRED)
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables
 foreach(component IN ITEMS system filesystem regex thread python unit_test_framework
@@ -112,12 +109,10 @@ elseif(GAUDI_USE_PYTHON_MAJOR STREQUAL "3")
 else()
   message(FATAL_ERROR "Invalid value for GAUDI_USE_PYTHON_MAJOR (${GAUDI_USE_PYTHON_MAJOR}), only 2 and 3 are supported")
 endif()
-find_package(Python ${_gaudi_Python_MIN_VERSION} ${__quiet} COMPONENTS Interpreter Development)
-set_package_properties(Python PROPERTIES TYPE REQUIRED)
+find_package(Python ${_gaudi_Python_MIN_VERSION} ${__quiet} REQUIRED Interpreter Development)
 
-find_package(ROOT 6.18 ${__quiet} CONFIG COMPONENTS Core RIO Hist Thread Matrix
+find_package(ROOT 6.18 ${__quiet} CONFIG REQUIRED Core RIO Hist Thread Matrix
   MathCore Net XMLIO Tree TreePlayer Graf3d Graf Gpad)
-set_package_properties(ROOT PROPERTIES TYPE REQUIRED)
 mark_as_advanced(ROOT_DIR ROOT_genmap_CMD ROOT_rootdraw_CMD)
 # FIXME: the day ROOTConfig.cmake displays at least that it was found remove these lines
 if(NOT GAUDI_DEPENDENCIES_FIND_QUIETLY)
@@ -126,13 +121,11 @@ endif()
 
 # FIXME: if you are using the normal version of TBB, it has a config file so
 #   remove cmake/FindTBB.cmake and add CONFIG to the next line.
-find_package(TBB 2019.0.11007.2 ${__quiet})
-set_package_properties(TBB PROPERTIES TYPE REQUIRED)
+find_package(TBB 2019.0.11007.2 REQUIRED ${__quiet})
 
 set(_gaudi_ZLIB_MIN_VERSION 1.2.11)
 foreach(dep IN ITEMS UUID Threads ZLIB Rangev3 cppgsl fmt nlohmann_json)
-  find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} ${__quiet})
-  set_package_properties(${dep} PROPERTIES TYPE REQUIRED)
+  find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} REQUIRED ${__quiet})
 endforeach()
 
 set(_gaudi_CLHEP_MIN_VERSION 2.4.0.1)
@@ -162,16 +155,15 @@ foreach(dep IN LISTS deps)
   endif()
 
   if(GAUDI_USE_${DEP})
-    find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} ${${dep}_FORCE_MODE} ${__quiet})
-    if(CMAKE_FIND_PACKAGE_NAME) # if the lookup is performed from GaudiConfig.cmake
-      # then, all enabled "optional" dependencies become RECOMMENDED
-      # (except AIDA that is required downstream if used at build time)
-      if(dep STREQUAL "AIDA")
-        set_package_properties(${dep} PROPERTIES TYPE REQUIRED)
-      else()
-        set_package_properties(${dep} PROPERTIES TYPE RECOMMENDED)
-      endif()
+    # if the lookup is performed from GaudiConfig.cmake
+    # then, all enabled "optional" dependencies become RECOMMENDED
+    # (except AIDA that is required downstream if used at build time)
+    if(NOT CMAKE_FIND_PACKAGE_NAME OR dep STREQUAL "AIDA")
+      set(is_required REQUIRED)
+    else()
+      set(is_required)
     endif()
+    find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} ${${dep}_FORCE_MODE} ${is_required} ${__quiet})
   endif()
 endforeach()
 
@@ -191,7 +183,3 @@ if(APPLE)
     message(FATAL_ERROR "Foundation framework was not found")
   endif()
 endif()
-
-# Print a summary of the lookup
-feature_summary(FATAL_ON_MISSING_REQUIRED_PACKAGES
-  WHAT ALL)
