@@ -184,7 +184,7 @@ gaudi_add_tests(QMTest)
 if(TEST "GaudiExamples.jira.gaudi_1174" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
   set_property(TEST GaudiExamples.jira.gaudi_1174 PROPERTY DISABLED TRUE)
 endif()
-gaudi_add_tests(nosetests)
+gaudi_add_tests(pytest)
 
 # Compiled python module
 gaudi_add_python_module(PyExample
