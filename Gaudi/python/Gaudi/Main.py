@@ -221,7 +221,7 @@ def _getAllOpts_old(explicit_defaults=False):
 
 def getAllOpts(explicit_defaults=False):
     """
-    Return all options from the old and configuration system as a dictionary.
+    Return all options from the old and new configuration system as a dictionary.
 
     If explicit_defaults is true, include default values of unset properties in the dictionary.
     """
@@ -405,17 +405,26 @@ class gaudimain(object):
         sys.stdout.flush()
 
     def writeconfig(self, filename, all=False):
+        import json
         write = {".pkl": lambda filename, all: self._writepickle(filename),
                  ".py": lambda filename, all: open(filename, "w").write(self.generatePyOutput(all) + "\n"),
                  ".opts": lambda filename, all: open(filename, "w").write(self.generateOptsOutput(all) + "\n"),
+                 ".json": lambda filename, all: json.dump(getAllOpts(all), open(filename, "w"), indent=2, sort_keys=True),
                  }
+        try:
+            import yaml
+            write[".yaml"] = lambda filename, all: yaml.safe_dump(getAllOpts(all), open(filename, "w"))
+            write[".yml"] = write[".yaml"]
+        except ImportError:
+            pass  # yaml support is optional
+
         from os.path import splitext
         ext = splitext(filename)[1]
         if ext in write:
             write[ext](filename, all)
         else:
             log.error("Unknown file type '%s'. Must be any of %r.", ext,
-                      write.keys())
+                      sorted(write.keys()))
             sys.exit(1)
 
     # Instantiate and run the application.
