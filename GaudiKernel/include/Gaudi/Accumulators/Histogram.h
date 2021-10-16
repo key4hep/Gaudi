@@ -182,7 +182,7 @@ namespace Gaudi::Accumulators {
         // compute local index for a given dimension
         int localIndex = axis[dim].index( ( *this )[dim] );
         // compute global index. Bins are stored in a row first manner
-        index = ( dim > 0 ? ( axis[dim - 1].nBins + 2 ) : 0 ) * index + localIndex;
+        index = ( dim > 0 ? ( axis[dim].nBins + 2 ) : 0 ) * index + localIndex;
       }
       return index;
     }
