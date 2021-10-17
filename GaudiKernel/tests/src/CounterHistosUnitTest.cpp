@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
   Histogram<2, atomicity::full, float> hist{&algo, "Test2DHist", "Test 2D histogram", {{64, 0., 64.},{52, 0., 52.}}};
 
   for ( int i=0; i<64; ++i) {
-    for ( int j=0; i<52; ++i) {
+    for ( int j=0; j<52; ++j) {
       ++hist[{i, j}];
     }
   }
