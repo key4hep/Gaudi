@@ -107,3 +107,21 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
   nlohmann::json expected_labels = {"A", "B", "C", "D"};
   BOOST_TEST( j["axis"][0]["labels"] == expected_labels );
 }
+
+BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
+  using namespace Gaudi::Accumulators;
+  Algo algo;
+  // test filling a 2D histogram with more bins in x than y
+  // Buffer will overflow if the wrong axis' nBins is used to calculate the bin index, resulting in a double free
+  Histogram<2, atomicity::full, float> hist{&algo, "Test2DHist", "Test 2D histogram", {{64, 0., 64.},{52, 0., 52.}}};
+
+  for ( int i=0; i<64; ++i) {
+    for ( int j=0; i<52; ++i) {
+      ++hist[{i, j}];
+    }
+  }
+
+  auto j = hist.toJSON();
+  auto nEntries = j.at( "nEntries" ).get<unsigned long>();
+  BOOST_TEST( nEntries == 64*52 );
+}
