@@ -5,7 +5,23 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r2][] - 2021-10-18
+This is a minor release with a bunch of bugfixes and improvements, mostly needed for LHCb test beam.
 
+### Changed
+- Use `pre-commit` to check C++ and Python formatting (gaudi/Gaudi!1261)
+- Faster alg states search (gaudi/Gaudi!1250)
+- Make `Gaudi::Functional` constructors more paranoid about # of inputs/outputs (gaudi/Gaudi!1249)
+
+### Added
+- Add support dumping and loading from JSON/YAML in `gaudirun.py` (gaudi/Gaudi#200  gaudi/Gaudi!1264)
+- Update `Entity` to expose `mergeAndReset` method of internal object (gaudi/Gaudi!1253)
+- Add sink service to dump counter info into a JSON file (gaudi/Gaudi!1248)
+
+### Fixed
+- Fix bug in bin indexing for &gt;1D Histograms (gaudi/Gaudi!1266)
+- Do not use `FeatureSummary` to report found packages (gaudi/Gaudi#181  gaudi/Gaudi!1263)
+- Make `BaseTest` properly handle tests which return skipped return code (gaudi/Gaudi!1262)
 
 ## [v36r1][] - 2021-09-20
 This is a minor release with a bunch of bugfixes and improvements.
@@ -758,6 +774,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r2
 [v36r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r1
 [v36r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r0
 [v35r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v35r4
