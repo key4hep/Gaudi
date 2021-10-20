@@ -17,6 +17,26 @@
 #include <typeinfo>
 
 namespace Gaudi::Monitoring {
+
+  namespace details {
+
+    struct MergeAndResetBase {
+      virtual void operator()( void*, void* ) const = 0;
+      virtual ~MergeAndResetBase() {}
+    };
+    template <typename T, typename = void>
+    struct MergeAndReset : MergeAndResetBase {
+      void operator()( void*, void* ) const override {}
+    };
+    template <typename T>
+    struct MergeAndReset<T, decltype( std::declval<T>().mergeAndReset( nullptr ) )> : MergeAndResetBase {
+      void operator()( void* ptr, void* other ) const override {
+        reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
+      }
+    };
+
+  } // namespace details
+
   /// Central entity in a Gaudi application that manages monitoring objects (i.e. counters, histograms, etc.).
   ///
   /// The Gaudi::Monitoring::Hub delegates the actual reports to services implementing the Gaudi::Monitoring::Hub::Sink
@@ -41,15 +61,13 @@ namespace Gaudi::Monitoring {
     public:
       template <typename T>
       Entity( std::string component, std::string name, std::string type, T& ent )
-          : component{std::move( component )}
-          , name{std::move( name )}
-          , type{std::move( type )}
-          , m_ptr{&ent}
-          , m_reset{[]( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); }}
-          , m_mergeAndReset{[]( void* ptr, void* other ) {
-            reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
-          }}
-          , m_getJSON{[]( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); }} {}
+          : component{ std::move( component ) }
+          , name{ std::move( name ) }
+          , type{ std::move( type ) }
+          , m_ptr{ &ent }
+          , m_reset{ []( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); } }
+          , m_mergeAndReset{ std::make_shared<details::MergeAndReset<T>>() }
+          , m_getJSON{ []( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); } } {}
       /// name of the component owning the Entity
       std::string component;
       /// name of the entity
@@ -71,14 +89,14 @@ namespace Gaudi::Monitoring {
 
     private:
       /// pointer to the actual data inside this Entity
-      void* m_ptr{nullptr};
+      void* m_ptr{ nullptr };
       // The next 3 members are needed for type erasure
       // indeed, their implementation is internal type dependant
       // (see Constructor above and the usage of T in the reinterpret_cast)
       /// function reseting internal data.
       void ( *m_reset )( void* );
       /// function calling merge and reset on internal data with the internal data of another entity
-      void ( *m_mergeAndReset )( void*, void* );
+      std::shared_ptr<details::MergeAndResetBase> m_mergeAndReset;
       /// function converting the internal data to json.
       json ( *m_getJSON )( const void* );
     };
@@ -92,11 +110,10 @@ namespace Gaudi::Monitoring {
 
     template <typename T>
     void registerEntity( std::string c, std::string n, std::string t, T& ent ) {
-      registerEntity( {std::move( c ), std::move( n ), std::move( t ), ent} );
+      registerEntity( { std::move( c ), std::move( n ), std::move( t ), ent } );
     }
     void registerEntity( Entity ent ) {
-      std::for_each( begin( m_sinks ), end( m_sinks ),
-                     [ent]( auto sink ) { sink->registerEntity( std::move( ent ) ); } );
+      std::for_each( begin( m_sinks ), end( m_sinks ), [ent]( auto sink ) { sink->registerEntity( ent ); } );
       m_entities.emplace_back( std::move( ent ) );
     }
     template <typename T>
