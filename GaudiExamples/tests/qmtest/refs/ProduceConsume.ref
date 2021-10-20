@@ -1,5 +1,4 @@
-# setting LC_ALL to "C"
-# --> Including file '/home/sponce/dev4/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# --> Including file '/project/bfys/graven/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ---
 # List of input and output types by class
 "Gaudi::Examples::ContextConsumer":
@@ -43,17 +42,18 @@
 "Gaudi::Examples::VectorDoubleProducer":
   OutputLocation: "std::vector<double,std::allocator<double> >"
 ---
-# <-- End of file '/home/sponce/dev4/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# <-- End of file '/project/bfys/graven/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v35r2)
-                                          running on lblhcbpr11.cern.ch on Thu Apr 15 10:03:11 2021
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r2)
+                                          running on stbc-i1.nikhef.nl on Wed Oct 20 13:59:17 2021
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
+MyToolConsumer....SUCCESS Hello World!!!
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -109,6 +109,7 @@ IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO sum of input sizes: 8
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+MyToolConsumer....SUCCESS Hello World!!!
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -167,5 +168,6 @@ CountingConsumer     INFO Number of counters : 3
  | "This is not info..."                           |         4 |
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
+ToolSvc              INFO Removing all tools created by ToolSvc
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

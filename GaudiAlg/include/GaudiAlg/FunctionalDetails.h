@@ -120,7 +120,7 @@ namespace Gaudi::Functional::details {
     // note: boost::optional in boost 1.66 does not have 'has_value()'...
     // that requires boost 1.68 or later... so for now, use operator bool() instead ;-(
     template <typename T>
-    using is_optional_ = decltype( bool{std::declval<T>()}, std::declval<T>().value() );
+    using is_optional_ = decltype( bool{ std::declval<T>() }, std::declval<T>().value() );
   } // namespace details2
   template <typename Arg>
   constexpr bool is_optional_v = Gaudi::cpp17::is_detected_v<details2::is_optional_, Arg>;
@@ -197,7 +197,7 @@ namespace Gaudi::Functional::details {
               typename = std::enable_if_t<std::is_pointer_v<typename Container::value_type>>,
               typename = std::enable_if_t<std::is_convertible_v<Value, c_remove_ptr_t<Container>>>>
     auto operator()( Container& c, Value&& v ) const {
-      return operator()( c, new c_remove_ptr_t<Container>{std::forward<Value>( v )} );
+      return operator()( c, new c_remove_ptr_t<Container>{ std::forward<Value>( v ) } );
     }
 
   } insert{};
@@ -367,6 +367,10 @@ namespace Gaudi::Functional::details {
     using OutputHandle_t = typename Tr::template OutputHandle<T>;
     template <typename Tr, typename T>
     using InputHandle_t = typename Tr::template InputHandle<T>;
+
+    template <typename T>
+    using DefaultInputHandle =
+        std::conditional_t<std::is_base_of_v<IAlgTool, T>, ToolHandle<T>, DataObjectReadHandle<T>>;
   } // namespace detail2
 
   // check whether Traits::BaseClass is a valid type,
@@ -378,10 +382,11 @@ namespace Gaudi::Functional::details {
   // check whether Traits::{Input,Output}Handle<T> is a valid type,
   // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
   // else   define                                  as being DataObject{Read,,Write}Handle<T>
+
   template <typename Tr, typename T>
   using OutputHandle_t = Gaudi::cpp17::detected_or_t<DataObjectWriteHandle<T>, detail2::OutputHandle_t, Tr, T>;
   template <typename Tr, typename T>
-  using InputHandle_t = Gaudi::cpp17::detected_or_t<DataObjectReadHandle<T>, detail2::InputHandle_t, Tr, T>;
+  using InputHandle_t = Gaudi::cpp17::detected_or_t<detail2::DefaultInputHandle<T>, detail2::InputHandle_t, Tr, T>;
 
   template <typename Traits>
   inline constexpr bool isLegacy =
@@ -393,11 +398,10 @@ namespace Gaudi::Functional::details {
   Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<std::string>& init ) {
     Handles handles;
     handles.reserve( init.size() );
-    std::transform(
-        init.begin(), init.end(),
-        std::back_inserter( handles ), [&]( const std::string& loc ) -> typename Handles::value_type {
-          return {loc, owner};
-        } );
+    std::transform( init.begin(), init.end(), std::back_inserter( handles ),
+                    [&]( const std::string& loc ) -> typename Handles::value_type {
+                      return { loc, owner };
+                    } );
     return handles;
   }
 

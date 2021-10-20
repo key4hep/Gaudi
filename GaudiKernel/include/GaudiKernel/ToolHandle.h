@@ -66,7 +66,7 @@ public:
 
 protected:
   const IInterface* m_parent = nullptr;
-  bool              m_createIf{true};
+  bool              m_createIf{ true };
 };
 
 /** @class BaseToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
@@ -138,6 +138,9 @@ class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
   friend class AlgTool;
   friend class Service;
 
+  template <typename... Args, std::size_t... Is>
+  ToolHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> ) : ToolHandle( std::get<Is>( args )... ) {}
+
 public:
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
@@ -195,8 +198,7 @@ public:
   /// Autodeclaring constructor with property propName, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
-  inline ToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
-      : ToolHandle( owner ) {
+  ToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" ) : ToolHandle( owner ) {
     // convert name and type to a valid type/name string
     // - if type does not contain '/' use type/type
     // - otherwise type is already a type/name string
@@ -205,6 +207,9 @@ public:
     auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( propName ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
+
+  template <typename... Args>
+  ToolHandle( const std::tuple<Args...>& args ) : ToolHandle( args, std::index_sequence_for<Args...>{} ) {}
 
 public:
   StatusCode initialize( const std::string& toolTypeAndName, const IInterface* parent = nullptr,
@@ -227,7 +232,7 @@ public:
   }
 
   StatusCode retrieve( DisableTool sd ) override {
-    if ( isEnabled() && sd == DisableTool{false} ) {
+    if ( isEnabled() && sd == DisableTool{ false } ) {
       return GaudiHandle<T>::retrieve();
     } else {
       disable();
@@ -236,7 +241,7 @@ public:
   }
 
   StatusCode retrieve( EnableTool sd ) override {
-    if ( isEnabled() && sd == EnableTool{true} ) {
+    if ( isEnabled() && sd == EnableTool{ true } ) {
       return GaudiHandle<T>::retrieve();
     } else {
       disable();
@@ -304,7 +309,7 @@ class PublicToolHandle : public ToolHandle<T> {
 public:
   PublicToolHandle( bool createIf = true ) : ToolHandle<T>( nullptr, createIf ) {}
   PublicToolHandle( const char* toolTypeAndName, bool createIf = true )
-      : PublicToolHandle{std::string{toolTypeAndName}, createIf} {}
+      : PublicToolHandle{ std::string{ toolTypeAndName }, createIf } {}
   PublicToolHandle( const std::string& toolTypeAndName, bool createIf = true )
       : ToolHandle<T>( toolTypeAndName, nullptr, createIf ) {}
 

@@ -13,6 +13,8 @@
 #include "GaudiAlg/Producer.h"
 #include "GaudiAlg/ScalarTransformer.h"
 #include "GaudiAlg/Transformer.h"
+#include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/KeyedContainer.h"
 #include "GaudiKernel/SharedObjectsContainer.h"
 #include <cmath>
@@ -21,14 +23,34 @@
 
 namespace Gaudi::Examples {
 
-  // using LegacyBaseClass_t = Gaudi::Functional::Traits::BaseClass_t<::Algorithm>;
+  struct IMyTool : extend_interfaces<IAlgTool> {
+    DeclareInterfaceID( IMyTool, 1, 0 );
+    virtual void operator()() const = 0;
+  };
+
+  struct MyExampleTool : extends<AlgTool, IMyTool> {
+    using extends::extends;
+    void                         operator()() const override { always() << m_message.value() << endmsg; }
+    Gaudi::Property<std::string> m_message{ this, "Message", "Boring Default Message" };
+  };
+
+  DECLARE_COMPONENT( MyExampleTool )
+
   using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>;
+
+  struct ToolConsumer final : Gaudi::Functional::Consumer<void( IMyTool const& ), BaseClass_t> {
+    ToolConsumer( const std::string& name, ISvcLocator* svcLoc )
+        : Consumer( name, svcLoc, KeyValue{ "MyTool", "MyExampleTool" } ) {}
+
+    void operator()( IMyTool const& tool ) const override { tool(); }
+  };
+  DECLARE_COMPONENT( ToolConsumer )
 
   struct CountingConsumer final : Gaudi::Functional::Consumer<void(), BaseClass_t> {
     using Gaudi::Functional::Consumer<void(), BaseClass_t>::Consumer;
-    mutable Gaudi::Accumulators::MsgCounter<MSG::ERROR>   m_err{this, "This is not an error...", 3};
-    mutable Gaudi::Accumulators::MsgCounter<MSG::WARNING> m_warn{this, "This is not a warning...", 2};
-    mutable Gaudi::Accumulators::MsgCounter<MSG::INFO>    m_info{this, "This is not info...", 1};
+    mutable Gaudi::Accumulators::MsgCounter<MSG::ERROR>   m_err{ this, "This is not an error...", 3 };
+    mutable Gaudi::Accumulators::MsgCounter<MSG::WARNING> m_warn{ this, "This is not a warning...", 2 };
+    mutable Gaudi::Accumulators::MsgCounter<MSG::INFO>    m_info{ this, "This is not info...", 1 };
 
     void operator()() const override {
       always() << "CountingConsumer: incrementing \"This is not an error\" twice" << endmsg;
@@ -57,7 +79,7 @@ namespace Gaudi::Examples {
       return m_value;
     }
 
-    Gaudi::Property<int> m_value{this, "Value", 7, "The integer value to produce."};
+    Gaudi::Property<int> m_value{ this, "Value", 7, "The integer value to produce." };
   };
 
   DECLARE_COMPONENT( IntDataProducer )
@@ -69,7 +91,7 @@ namespace Gaudi::Examples {
 
     std::vector<int> operator()() const override {
       info() << "executing VectorDataProducer, storing [3,3,3,3] into " << outputLocation() << endmsg;
-      return {3, 3, 3, 3};
+      return { 3, 3, 3, 3 };
     }
   };
 
@@ -83,9 +105,9 @@ namespace Gaudi::Examples {
 
     int_container operator()() const override {
       int_container container;
-      auto          a = new KeyedObject<int>{4};
+      auto          a = new KeyedObject<int>{ 4 };
       container.add( a );
-      auto b = new KeyedObject<int>{5};
+      auto b = new KeyedObject<int>{ 5 };
       container.add( b );
       info() << "executing KeyedDataProducer, storing [4,5] into " << outputLocation() << endmsg;
       return container;
@@ -125,7 +147,7 @@ namespace Gaudi::Examples {
 
     IntFloatToFloatData( const std::string& name, ISvcLocator* svcLoc )
         : Transformer( name, svcLoc,
-                       {KeyValue( "InputLocation", "/Event/MyInt" ), KeyValue{"OtherInput", "/Event/MyOtherFloat"}},
+                       { KeyValue( "InputLocation", "/Event/MyInt" ), KeyValue{ "OtherInput", "/Event/MyOtherFloat" } },
                        KeyValue( "OutputLocation", "/Event/OtherFloat" ) ) {}
 
     float operator()( const int& in1, const float& in2 ) const override {
@@ -140,11 +162,11 @@ namespace Gaudi::Examples {
   struct IntIntToFloatFloatData final
       : Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), BaseClass_t> {
     IntIntToFloatFloatData( const std::string& name, ISvcLocator* svcLoc )
-        : MultiTransformer(
-              name, svcLoc,
-              {KeyValue( "InputLocation1", {"/Event/MyInt"} ), KeyValue( "InputLocation2", {"/Event/MyOtherInt"} )},
-              {KeyValue( "OutputLocation1", {"/Event/MyMultiFloat1"} ),
-               KeyValue( "OutputLocation2", {"/Event/MyMultiFloat2"} )} ) {}
+        : MultiTransformer( name, svcLoc,
+                            { KeyValue( "InputLocation1", { "/Event/MyInt" } ),
+                              KeyValue( "InputLocation2", { "/Event/MyOtherInt" } ) },
+                            { KeyValue( "OutputLocation1", { "/Event/MyMultiFloat1" } ),
+                              KeyValue( "OutputLocation2", { "/Event/MyMultiFloat2" } ) } ) {}
 
     std::tuple<float, float> operator()( const int& input1, const int& input2 ) const override {
       info() << "Number of inputs : " << inputLocationSize() << ", number of outputs : " << outputLocationSize()
@@ -152,7 +174,7 @@ namespace Gaudi::Examples {
       info() << "Converting " << input1 << " from " << inputLocation<0>() << " and " << input2 << " from "
              << inputLocation<1>() << endmsg;
       info() << "Storing results into " << outputLocation<0>() << " and " << outputLocation<1>() << endmsg;
-      return std::tuple<float, float>{input1, input2};
+      return std::tuple<float, float>{ input1, input2 };
     }
   };
 
@@ -165,14 +187,14 @@ namespace Gaudi::Examples {
             std::vector<int>( const Gaudi::Functional::vector_of_const_<std::vector<int>>& ), BaseClass_t> {
 
     IntVectorsToIntVector( const std::string& name, ISvcLocator* svcLoc )
-        : MergingTransformer( name, svcLoc, {"InputLocations", {}},
-                              {"OutputLocation", "/Event/MyConcatenatedIntVector"} ) {}
+        : MergingTransformer( name, svcLoc, { "InputLocations", {} },
+                              { "OutputLocation", "/Event/MyConcatenatedIntVector" } ) {}
 
     std::vector<int>
     operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors ) const override {
       // Create a vector and pre-allocate enough space for the number of integers we have
       auto             nelements = std::accumulate( intVectors.begin(), intVectors.end(), 0,
-                                        []( const auto a, const auto b ) { return a + b.size(); } );
+                                                    []( const auto a, const auto b ) { return a + b.size(); } );
       std::vector<int> out;
       out.reserve( nelements );
       // Concatenate the input vectors to form the output
@@ -213,7 +235,7 @@ namespace Gaudi::Examples {
   struct ContextTransformer final : Gaudi::Functional::Transformer<int( const EventContext& ), BaseClass_t> {
 
     ContextTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : Transformer( name, svcLoc, KeyValue{"OutputLoc", "/Event/SomeOtherInt"} ) {}
+        : Transformer( name, svcLoc, KeyValue{ "OutputLoc", "/Event/SomeOtherInt" } ) {}
 
     int operator()( const EventContext& ctx ) const override {
       info() << "executing ContextConsumer, got " << ctx << endmsg;
@@ -242,7 +264,7 @@ namespace Gaudi::Examples {
 
     std::vector<double> operator()() const override {
       info() << "storing vector<double> into " << outputLocation() << endmsg;
-      return {12.34, 56.78, 90.12, 34.56, 78.90};
+      return { 12.34, 56.78, 90.12, 34.56, 78.90 };
     }
   };
 
@@ -253,9 +275,9 @@ namespace Gaudi::Examples {
             FrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>( const std::vector<double>& ),
             BaseClass_t> {
     FrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : MultiScalarTransformer( name, svcLoc, KeyValue{"InputDoubles", {"/Event/MyVectorOfDoubles"}},
-                                  {KeyValue{"OutputFractions", {"/Event/MyVectorOfFractions"}},
-                                   KeyValue{"OutputIntegers", {"/Event/MyVectorOfIntegers"}}} ) {}
+        : MultiScalarTransformer( name, svcLoc, KeyValue{ "InputDoubles", { "/Event/MyVectorOfDoubles" } },
+                                  { KeyValue{ "OutputFractions", { "/Event/MyVectorOfFractions" } },
+                                    KeyValue{ "OutputIntegers", { "/Event/MyVectorOfIntegers" } } } ) {}
 
     using MultiScalarTransformer::operator();
 
@@ -263,7 +285,7 @@ namespace Gaudi::Examples {
       int    i;
       double frac = std::frexp( d, &i );
       info() << "Converting " << d << " -> " << frac << ", " << i << endmsg;
-      return {frac, i};
+      return { frac, i };
     }
   };
   DECLARE_COMPONENT( FrExpTransformer )
@@ -273,9 +295,9 @@ namespace Gaudi::Examples {
             OptFrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>( const std::vector<double>& ),
             BaseClass_t> {
     OptFrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : MultiScalarTransformer( name, svcLoc, KeyValue{"InputDoubles", {"/Event/MyVectorOfDoubles"}},
-                                  {KeyValue{"OutputFractions", {"/Event/OptMyVectorOfFractions"}},
-                                   KeyValue{"OutputIntegers", {"/Event/OptMyVectorOfIntegers"}}} ) {}
+        : MultiScalarTransformer( name, svcLoc, KeyValue{ "InputDoubles", { "/Event/MyVectorOfDoubles" } },
+                                  { KeyValue{ "OutputFractions", { "/Event/OptMyVectorOfFractions" } },
+                                    KeyValue{ "OutputIntegers", { "/Event/OptMyVectorOfIntegers" } } } ) {}
 
     using MultiScalarTransformer::operator();
 
@@ -297,9 +319,9 @@ namespace Gaudi::Examples {
             LdExpTransformer, std::vector<double>( const std::vector<double>&, const std::vector<int>& ), BaseClass_t> {
     LdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
         : ScalarTransformer( name, svcLoc,
-                             {KeyValue{"InputFractions", {"/Event/MyVectorOfFractions"}},
-                              KeyValue{"InputIntegers", {"/Event/MyVectorOfIntegers"}}},
-                             {KeyValue{"OutputDoubles", {"/Event/MyNewVectorOfDoubles"}}} ) {}
+                             { KeyValue{ "InputFractions", { "/Event/MyVectorOfFractions" } },
+                               KeyValue{ "InputIntegers", { "/Event/MyVectorOfIntegers" } } },
+                             { KeyValue{ "OutputDoubles", { "/Event/MyNewVectorOfDoubles" } } } ) {}
 
     using ScalarTransformer::operator();
 
@@ -317,9 +339,9 @@ namespace Gaudi::Examples {
                                              BaseClass_t> {
     OptLdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
         : ScalarTransformer( name, svcLoc,
-                             {KeyValue{"InputFractions", {"/Event/MyVectorOfFractions"}},
-                              KeyValue{"InputIntegers", {"/Event/MyVectorOfIntegers"}}},
-                             {KeyValue{"OutputDoubles", {"/Event/MyOptVectorOfDoubles"}}} ) {}
+                             { KeyValue{ "InputFractions", { "/Event/MyVectorOfFractions" } },
+                               KeyValue{ "InputIntegers", { "/Event/MyVectorOfIntegers" } } },
+                             { KeyValue{ "OutputDoubles", { "/Event/MyOptVectorOfDoubles" } } } ) {}
 
     using ScalarTransformer::operator();
 
@@ -363,7 +385,7 @@ namespace Gaudi::Examples {
       info() << "storing KeyedContainer of size " << out.size() << " into " << outputLocation() << endmsg;
       return out;
     }
-    Gaudi::Property<int> j{this, "j", 5};
+    Gaudi::Property<int> j{ this, "j", 5 };
   };
 
   DECLARE_COMPONENT( SDataProducer )
@@ -374,8 +396,8 @@ namespace Gaudi::Examples {
             BaseClass_t> {
 
     SRangesToIntVector( const std::string& name, ISvcLocator* svcLoc )
-        : MergingTransformer( name, svcLoc, {"InputRanges", {}},
-                              {"OutputLocation", "/Event/MyConcatenatedIntFromSVector"} ) {}
+        : MergingTransformer( name, svcLoc, { "InputRanges", {} },
+                              { "OutputLocation", "/Event/MyConcatenatedIntFromSVector" } ) {}
 
     std::vector<int> operator()(
         const Gaudi::Functional::vector_of_const_<Gaudi::Range_<std::vector<S const*>>>& SVectors ) const override {
@@ -396,7 +418,7 @@ namespace Gaudi::Examples {
             void( const Gaudi::Functional::vector_of_const_<std::vector<int>>& ), BaseClass_t> {
 
     IntVectorsMerger( const std::string& name, ISvcLocator* svcLoc )
-        : MergingTransformer( name, svcLoc, {"InputLocations", {}} ) {}
+        : MergingTransformer( name, svcLoc, { "InputLocations", {} } ) {}
 
     void operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors ) const override {
       // Create a vector and pre-allocate enough space for the number of integers we have
@@ -418,7 +440,7 @@ namespace Gaudi::Examples {
                                            BaseClass_t>;
 
     IntVectorsMergingConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Base( name, svcLoc, {"InputLocations", {}} ) {}
+        : Base( name, svcLoc, { "InputLocations", {} } ) {}
 
     void operator()( Gaudi::Functional::vector_of_const_<std::vector<int>> const& intVectors ) const override {
       // Create a vector and pre-allocate enough space for the number of integers we have
