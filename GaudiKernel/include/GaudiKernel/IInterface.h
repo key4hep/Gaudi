@@ -23,7 +23,7 @@
 #define DeclareInterfaceID( iface, major, minor )                                                                      \
   static const InterfaceID& interfaceID() { return iid::interfaceID(); }                                               \
   using iid      = Gaudi::InterfaceId<iface, major, minor>;                                                            \
-  using ext_iids = iid::iids
+  using ext_iids = typename iid::iids
 
 /**
  * @class InterfaceID Kernel.h GaudiKernel/Kernel.h
@@ -160,7 +160,7 @@ namespace Gaudi {
 
   template <typename... Is>
   std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
-    return {Is::name()...};
+    return { Is::name()... };
   }
 
   // gcc9 has a false positive warning -- see  https://godbolt.org/z/cyjtrr -- gcc10,clang are happy...
