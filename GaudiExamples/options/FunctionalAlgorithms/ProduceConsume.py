@@ -15,10 +15,12 @@ from GaudiKernel.DataHandle import DataHandle
 from Gaudi.Configuration import *
 from Configurables import Gaudi__Examples__ToolConsumer as ToolConsumer
 from Configurables import Gaudi__Examples__MyExampleTool as MyExampleTool
+from Configurables import Gaudi__Examples__MyConsumerTool as MyConsumerTool
 from Configurables import Gaudi__Examples__IntDataProducer as IntDataProducer
 from Configurables import Gaudi__Examples__VectorDataProducer as VectorDataProducer
 from Configurables import Gaudi__Examples__FloatDataConsumer as FloatDataConsumer
 from Configurables import Gaudi__Examples__IntDataConsumer as IntDataConsumer
+from Configurables import Gaudi__Examples__BoundToolConsumer as BoundToolConsumer
 from Configurables import Gaudi__Examples__IntToFloatData as IntToFloatData
 from Configurables import Gaudi__Examples__IntIntToFloatFloatData as IntIntToFloatFloatData
 from Configurables import Gaudi__Examples__IntVectorsToIntVector as IntVectorsToIntVector
@@ -45,11 +47,12 @@ types = []
 # this printout is useful to check that the type information is passed to python correctly
 print("---\n# List of input and output types by class")
 for configurable in sorted([
-        IntDataProducer, VectorDataProducer, FloatDataConsumer,
-        IntDataConsumer, IntToFloatData, IntIntToFloatFloatData,
-        IntVectorsToIntVector, ContextConsumer, ContextIntConsumer,
-        VectorDoubleProducer, FrExpTransformer, LdExpTransformer,
-        OptFrExpTransformer, OptLdExpTransformer, CountingConsumer
+        BoundToolConsumer, IntDataProducer, VectorDataProducer,
+        FloatDataConsumer, IntDataConsumer, IntToFloatData,
+        IntIntToFloatFloatData, IntVectorsToIntVector, ContextConsumer,
+        ContextIntConsumer, VectorDoubleProducer, FrExpTransformer,
+        LdExpTransformer, OptFrExpTransformer, OptLdExpTransformer,
+        CountingConsumer
 ],
                            key=lambda c: c.getType()):
     print("\"{}\":".format(configurable.getType()))
@@ -78,6 +81,8 @@ app.TopAlg = [
     IntDataProducer("IntDataProducer"),
     OtherIntDataProducer,
     IntDataConsumer("IntDataConsumer"),
+    BoundToolConsumer(
+        "BoundConsumer", MyTool=MyConsumerTool(MyInt="/Event/MyOtherInt")),
     IntToFloatData("IntToFloatData"),
     IntIntToFloatFloatData("IntIntToFloatFloatData"),
     FloatDataConsumer("FloatDataConsumer"),

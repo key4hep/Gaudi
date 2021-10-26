@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "GaudiAlg/Consumer.h"
+#include "GaudiAlg/FunctionalTool.h"
 #include "GaudiAlg/MergingTransformer.h"
 #include "GaudiAlg/Producer.h"
 #include "GaudiAlg/ScalarTransformer.h"
@@ -36,6 +37,28 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( MyExampleTool )
 
+  struct MyConsumerTool final : Gaudi::Functional::ToolBinder<Gaudi::Interface::BoxedInterface<IMyTool>( const int& )> {
+    MyConsumerTool( std::string type, std::string name, const IInterface* parent )
+        : ToolBinder{ std::move( type ), std::move( name ), parent, KeyValue{ "MyInt", "/Event/MyInt" } } {}
+
+    class BoundInstance final : public Gaudi::Interface::Stub<IMyTool> {
+      MyConsumerTool const* parent;
+      int                   i;
+
+    public:
+      BoundInstance( MyConsumerTool const* parent, const int& i ) : parent{ parent }, i{ i } {}
+      void operator()() const override {
+        parent->always() << "BoundInstance - got: " << i << " from " << parent->inputLocation() << endmsg;
+      }
+    };
+
+    Gaudi::Interface::BoxedInterface<IMyTool> bind( const int& i ) const override {
+      return { std::in_place_type<BoundInstance>, this, i };
+    };
+  };
+
+  DECLARE_COMPONENT( MyConsumerTool )
+
   using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>;
 
   struct ToolConsumer final : Gaudi::Functional::Consumer<void( IMyTool const& ), BaseClass_t> {
@@ -45,6 +68,21 @@ namespace Gaudi::Examples {
     void operator()( IMyTool const& tool ) const override { tool(); }
   };
   DECLARE_COMPONENT( ToolConsumer )
+
+  struct BoundToolConsumer final
+      : Gaudi::Functional::Consumer<void( EventContext const&, Gaudi::Interface::IBinder<IMyTool> const& ),
+                                    BaseClass_t> {
+
+    BoundToolConsumer( const std::string& name, ISvcLocator* svcLoc )
+        : Consumer( name, svcLoc, KeyValue{ "MyTool", "MyConsumerTool" } ) {}
+
+    void operator()( EventContext const& ctx, Gaudi::Interface::IBinder<IMyTool> const& tool ) const override {
+      auto           box = tool( ctx );
+      IMyTool const& t   = box;
+      t();
+    }
+  };
+  DECLARE_COMPONENT( BoundToolConsumer )
 
   struct CountingConsumer final : Gaudi::Functional::Consumer<void(), BaseClass_t> {
     using Gaudi::Functional::Consumer<void(), BaseClass_t>::Consumer;

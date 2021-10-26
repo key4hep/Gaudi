@@ -261,7 +261,7 @@ public:
     if ( i_retrieve( iface ).isFailure() ) { return StatusCode::FAILURE; }
 
     algTool = dynamic_cast<T*>( iface );
-    if ( algTool == nullptr ) {
+    if ( !algTool ) {
       throw GaudiException( "unable to dcast AlgTool " + typeAndName() + " to interface " +
                                 System::typeinfoName( typeid( T ) ),
                             typeAndName() + " retrieve", StatusCode::FAILURE );
@@ -277,6 +277,10 @@ public:
   std::add_const_t<T>* get() const { return GaudiHandle<T>::get(); }
 
   T* get() { return GaudiHandle<T>::get(); }
+
+  friend std::ostream& operator<<( std::ostream& os, const ToolHandle<T>& handle ) {
+    return os << static_cast<const GaudiHandleInfo&>( handle );
+  }
 
 protected:
   const IAlgTool* getAsIAlgTool() const override {
@@ -397,6 +401,10 @@ public:
     auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( name ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
+
+  friend std::ostream& operator<<( std::ostream& os, const ToolHandleArray<T>& handle ) {
+    return os << static_cast<const GaudiHandleInfo&>( handle );
+  }
 };
 
 /** Helper class to construct ToolHandle instances for public tools via the
@@ -421,15 +429,5 @@ public:
     p->template setOwnerType<OWNER>();
   }
 };
-
-template <class T>
-inline std::ostream& operator<<( std::ostream& os, const ToolHandle<T>& handle ) {
-  return operator<<( os, static_cast<const GaudiHandleInfo&>( handle ) );
-}
-
-template <class T>
-inline std::ostream& operator<<( std::ostream& os, const ToolHandleArray<T>& handle ) {
-  return operator<<( os, static_cast<const GaudiHandleInfo&>( handle ) );
-}
 
 #endif // ! GAUDIKERNEL_TOOLHANDLE_H
