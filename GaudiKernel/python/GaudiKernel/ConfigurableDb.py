@@ -127,6 +127,8 @@ def loadConfigurableDb():
     log.debug("loading confDb files...")
     nFiles = 0  # counter of imported files
     pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
+    ignored_files = set(
+        os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
     for path in pathlist:
         if not os.path.isdir(path):
             continue
@@ -135,7 +137,7 @@ def loadConfigurableDb():
             f for f in [
                 path_join(path, f) for f in os.listdir(path)
                 if f.endswith('.confdb')
-            ] if os.path.isfile(f)
+            ] if os.path.isfile(f) and f not in ignored_files
         ]
         # check if we use "*_merged.confdb"
         mergedConfDbFiles = [
