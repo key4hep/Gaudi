@@ -376,8 +376,8 @@ namespace Gaudi::Functional::details {
   // check whether Traits::BaseClass is a valid type,
   // if so, define BaseClass_t<Traits> as being Traits::BaseClass
   // else   define                     as being GaudiAlgorithm
-  template <typename Tr>
-  using BaseClass_t = Gaudi::cpp17::detected_or_t<GaudiAlgorithm, detail2::BaseClass_t, Tr>;
+  template <typename Tr, typename Base = GaudiAlgorithm>
+  using BaseClass_t = Gaudi::cpp17::detected_or_t<Base, detail2::BaseClass_t, Tr>;
 
   // check whether Traits::{Input,Output}Handle<T> is a valid type,
   // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>

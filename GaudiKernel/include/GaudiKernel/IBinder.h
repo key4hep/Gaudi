@@ -8,24 +8,49 @@
 * granted to it by virtue of its status as an Intergovernmental Organization  *
 * or submit itself to any jurisdiction.                                       *
 \*****************************************************************************/
-#include "GaudiKernel/EventContext.h"
+#pragma once
+#include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/extend_interfaces.h"
+#include "GaudiKernel/bind.h"
 #include <type_traits>
 #include <utility>
 
-namespace Gaudi::Interface {
+namespace Gaudi::Interface::Bind {
   template <typename IFace>
-  struct InterfaceStub : IFace {
-    long unsigned int addRef() override { return 0; }
-    long unsigned int release() override { return 0; }
-    StatusCode        queryInterface( const InterfaceID&, void** ) override { return StatusCode::FAILURE; }
+  struct IBinder : extend_interfaces<IAlgTool> {
+    DeclareInterfaceID( IBinder, 1, 0 );
+    virtual Box i_bind( const EventContext& ctx ) const = 0;
   };
 
+  /// Support binding of tools (FIXME: this could be moved into a ToolHandle (at which point some of the logic could be
+  /// cached...)
   template <typename IFace>
-  struct AlgToolStub : InterfaceStub<IFace> {
+  Box makeBox( IAlgTool const* tool, const EventContext& ctx ) {
+    void* ptr = nullptr;
+    if ( auto sc = const_cast<IAlgTool*>( tool )->queryInterface( IFace::interfaceID(), &ptr ); sc.isSuccess() ) {
+      // TODO: what happens to the refCount?
+      return Gaudi::Interface::Bind::Box( std::in_place_type<IFace>, static_cast<IFace const*>( ptr ) );
+    } else if ( auto sc = const_cast<IAlgTool*>( tool )->queryInterface(
+                    Gaudi::Interface::Bind::IBinder<IFace>::interfaceID(), &ptr );
+                sc.isSuccess() ) {
+      // TODO: what happens to the refCount?
+      return static_cast<Gaudi::Interface::Bind::IBinder<IFace> const*>( ptr )->i_bind( ctx );
+    } else {
+      return Gaudi::Interface::Bind::Box{};
+    }
+  }
+
+  template <typename IFace>
+  struct AlgToolStub : IFace {
+
+    using IFace::IFace;
+    AlgToolStub( const AlgToolStub& ) = delete;
+    AlgToolStub& operator=( const AlgToolStub& ) = delete;
+    AlgToolStub( AlgToolStub&& )                 = delete;
+    AlgToolStub& operator=( AlgToolStub&& ) = delete;
+
     const std::string& name() const override {
-      static std::string s{ "GoAway" };
+      static std::string s{ "<STUB>" };
       return s;
     }
     const std::string& type() const override { return name(); }
@@ -49,42 +74,6 @@ namespace Gaudi::Interface {
   };
 
   template <typename IFace>
-  struct Stub
-      : std::conditional_t<std::is_base_of_v<IAlgTool, IFace>, AlgToolStub<IFace>,
-                           std::conditional_t<std::is_base_of_v<IInterface, IFace>, InterfaceStub<IFace>, IFace>> {};
+  struct Stub : implements<AlgToolStub<IFace>> {};
 
-  // see https://godbolt.org/z/KPMYd1sbr
-  template <typename IFace>
-  class BoxedInterface final {
-    IFace const*               m_ptr = nullptr;
-    std::aligned_storage_t<48> m_storage;
-    void ( *m_destruct )( void* ) = nullptr;
-    // static_assert( std::is_base_of_v<IAlgTool, IFace>  );
-  public:
-    // in case no binding is required...
-    BoxedInterface( IFace const* ptr ) : m_ptr{ ptr } {}
-    // bind the arguments...
-    template <typename Ret, typename... Args, typename = std::enable_if_t<std::is_base_of_v<IFace, Ret>>>
-    BoxedInterface( std::in_place_type_t<Ret>, Args&&... args )
-        : m_ptr{ new ( &m_storage ) Ret{ std::forward<Args>( args )... } }
-        , m_destruct{ []( void* ptr ) { static_cast<Ret*>( ptr )->~Ret(); } } {
-      static_assert( sizeof( Ret ) <= sizeof( m_storage ) ); // TODO: add heap storage for large bindings...
-    }
-    ~BoxedInterface() {
-      if ( m_destruct ) ( *m_destruct )( &m_storage );
-    }
-    BoxedInterface( const BoxedInterface& ) = delete;
-    BoxedInterface& operator=( const BoxedInterface& ) = delete;
-    BoxedInterface( BoxedInterface&& )                 = delete;
-    BoxedInterface& operator=( BoxedInterface&& ) = delete;
-                    operator const IFace&() const { return *m_ptr; }
-    // operator IFace& () && = delete;
-  };
-
-  template <typename IFace>
-  struct IBinder : extend_interfaces<IAlgTool> {
-    DeclareInterfaceID( IBinder<IFace>, 1, 0 );
-    virtual BoxedInterface<IFace> operator()( EventContext const& ) const = 0;
-  };
-
-} // namespace Gaudi::Interface
+} // namespace Gaudi::Interface::Bind

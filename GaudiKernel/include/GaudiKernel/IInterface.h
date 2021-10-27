@@ -330,12 +330,10 @@ namespace Gaudi {
 
     @author Pere Mato
 */
-template <class I>
-bool isValidInterface( I* i ) {
+template <class IFace>
+bool isValidInterface( IFace* i ) {
   void* ii = nullptr;
-  ;
-  StatusCode sc = i->queryInterface( I::interfaceID(), &ii );
-  return sc.isSuccess();
+  return i->queryInterface( IFace::interfaceID(), &ii ).isSuccess();
 }
 
 //#ifdef GAUDI_V20_COMPAT

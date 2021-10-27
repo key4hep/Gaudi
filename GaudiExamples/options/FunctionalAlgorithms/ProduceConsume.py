@@ -14,6 +14,7 @@
 from GaudiKernel.DataHandle import DataHandle
 from Gaudi.Configuration import *
 from Configurables import Gaudi__Examples__ToolConsumer as ToolConsumer
+from Configurables import Gaudi__Examples__AlgToolConsumer as AlgToolConsumer
 from Configurables import Gaudi__Examples__MyExampleTool as MyExampleTool
 from Configurables import Gaudi__Examples__MyConsumerTool as MyConsumerTool
 from Configurables import Gaudi__Examples__IntDataProducer as IntDataProducer
@@ -83,6 +84,11 @@ app.TopAlg = [
     IntDataConsumer("IntDataConsumer"),
     BoundToolConsumer(
         "BoundConsumer", MyTool=MyConsumerTool(MyInt="/Event/MyOtherInt")),
+    AlgToolConsumer(
+        "AlgBoundConsumer", MyTool=MyConsumerTool(MyInt="/Event/MyOtherInt")),
+    AlgToolConsumer(
+        "AlgUnBoundConsumer",
+        MyTool=MyExampleTool(Message="No binding required")),
     IntToFloatData("IntToFloatData"),
     IntIntToFloatFloatData("IntIntToFloatFloatData"),
     FloatDataConsumer("FloatDataConsumer"),
