@@ -14,6 +14,7 @@
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <typeindex>
 #include <typeinfo>
 
 namespace Gaudi::Monitoring {
@@ -65,6 +66,7 @@ namespace Gaudi::Monitoring {
           , name{ std::move( name ) }
           , type{ std::move( type ) }
           , m_ptr{ &ent }
+	  , m_typeIndex{[]( const void* ptr ) { return std::type_index( typeid( *reinterpret_cast<const T*>( ptr ) ) ); }}
           , m_reset{ []( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); } }
           , m_mergeAndReset{ std::make_shared<details::MergeAndReset<T>>() }
           , m_getJSON{ []( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); } } {}
@@ -76,12 +78,19 @@ namespace Gaudi::Monitoring {
       std::string type;
       /// function giving access to internal data in json format
       json toJSON() const { return ( *m_getJSON )( m_ptr ); }
+      /// function to get internal type
+      std::type_index typeIndex() const { return ( *m_typeIndex )( m_ptr ); }
       /// function resetting internal data
       void reset() { return ( *m_reset )( m_ptr ); }
       // The following function does not protect against usage with entities with different internal types
       // The user should ensure that entities are compatible before calling this function
       /// function calling merge and reset on internal data with the internal data of another entity
-      void mergeAndReset( Entity const& ent ) { return ( *m_mergeAndReset )( m_ptr, ent.m_ptr ); }
+      void mergeAndReset( Entity const& ent ) {
+        if ( typeIndex()!=ent.typeIndex() ) {
+          throw std::runtime_error( std::string("Entity: mergeAndReset called on different types: ") + typeIndex().name() + " and " + ent.typeIndex().name());
+        }
+        return ( *m_mergeAndReset )( m_ptr, ent.m_ptr );
+      }
       /// operator== for comparison with raw pointer
       bool operator==( void* ent ) { return m_ptr == ent; }
       /// operator== for comparison with an entity
@@ -90,9 +99,11 @@ namespace Gaudi::Monitoring {
     private:
       /// pointer to the actual data inside this Entity
       void* m_ptr{ nullptr };
-      // The next 3 members are needed for type erasure
+      // The next 4 members are needed for type erasure
       // indeed, their implementation is internal type dependant
       // (see Constructor above and the usage of T in the reinterpret_cast)
+      /// function to get internal type.
+      std::type_index ( *m_typeIndex )( const void* );
       /// function reseting internal data.
       void ( *m_reset )( void* );
       /// function calling merge and reset on internal data with the internal data of another entity
