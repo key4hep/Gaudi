@@ -52,15 +52,15 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
-    : Gaudi::DataHandle( k, a, owner ) {
+DataObjectHandleBase::DataObjectHandleBase( DataObjID k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
+    : Gaudi::DataHandle( std::move(k), a, owner ) {
   m_owner->declare( *this );
 }
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleBase::DataObjectHandleBase( const std::string& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
-    : DataObjectHandleBase( DataObjID( k ), a, owner ) {}
+DataObjectHandleBase::DataObjectHandleBase( std::string k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
+    : DataObjectHandleBase( DataObjID{ std::move(k) }, a, owner ) {}
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::~DataObjectHandleBase() { owner()->renounce( *this ); }

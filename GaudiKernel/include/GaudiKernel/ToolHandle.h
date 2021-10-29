@@ -139,7 +139,7 @@ class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
   friend class Service;
 
   template <typename... Args, std::size_t... Is>
-  ToolHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> ) : ToolHandle( std::get<Is>( args )... ) {}
+  ToolHandle( std::tuple<Args...>&& args, std::index_sequence<Is...> ) : ToolHandle( std::get<Is>( std::move(args) )... ) {}
 
 public:
   /** Constructor for a tool with default tool type and name.
@@ -209,7 +209,7 @@ public:
   }
 
   template <typename... Args>
-  ToolHandle( const std::tuple<Args...>& args ) : ToolHandle( args, std::index_sequence_for<Args...>{} ) {}
+  ToolHandle( std::tuple<Args...>&& args ) : ToolHandle( std::move(args), std::index_sequence_for<Args...>{} ) {}
 
 public:
   StatusCode initialize( const std::string& toolTypeAndName, const IInterface* parent = nullptr,

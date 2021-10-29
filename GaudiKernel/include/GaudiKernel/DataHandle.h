@@ -39,11 +39,11 @@ namespace Gaudi {
   public:
     enum Mode { Reader = 1 << 2, Writer = 1 << 4 };
 
-    DataHandle( const DataObjID& k, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key( k ), m_owner( owner ), m_mode( a ){};
+    DataHandle( DataObjID k, Mode a = Reader, IDataHandleHolder* owner = nullptr )
+        : m_key(std::move( k) ), m_owner( owner ), m_mode( a ){};
 
-    DataHandle( const DataObjID& k, const bool& isCond, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key( k ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
+    DataHandle( DataObjID k, bool isCond, Mode a = Reader, IDataHandleHolder* owner = nullptr )
+        : m_key( std::move(k) ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
 
     using PropertyType = DataHandleProperty;
 
