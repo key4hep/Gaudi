@@ -18,11 +18,11 @@ namespace Gaudi::Functional {
     using add_base_t = std::conditional_t<Gaudi::cpp17::is_detected_v<detail2::BaseClass_t, Tr>, Tr,
                                           Traits::use_<Tr, BaseClass_t<Base>>>;
 
-    template <typename IFace, typename Signature, typename Traits>
+    template <typename Signature, typename Traits>
     struct ToolBinder;
 
     template <typename IFace, typename... Args, typename Traits>
-    class ToolBinder<IFace, Gaudi::Interface::Bind::Box( Args const&... ), Traits>
+    class ToolBinder<Gaudi::Interface::Bind::Box<IFace>( Args const&... ), Traits>
         : public extends<details::BaseClass_t<Traits, AlgTool>, Gaudi::Interface::Bind::IBinder<IFace>> {
 
       constexpr static std::size_t N = sizeof...( Args );
@@ -42,9 +42,9 @@ namespace Gaudi::Functional {
                   Gaudi::Functional::details::RepeatValues_<KeyValue, N> const& inputs )
           : ToolBinder{ std::move( type ), std::move( name ), parent, inputs, std::make_index_sequence<N>{} } {}
 
-      virtual Gaudi::Interface::Bind::Box operator()( const Args&... args ) const = 0;
+      virtual Gaudi::Interface::Bind::Box<IFace> operator()( const Args&... args ) const = 0;
 
-      Gaudi::Interface::Bind::Box i_bind( EventContext const& ctx ) const final {
+      Gaudi::Interface::Bind::Box<IFace> bind( EventContext const& ctx ) const final {
         return std::apply(
             [&]( auto const&... arg ) {
               using namespace details;
@@ -66,7 +66,7 @@ namespace Gaudi::Functional {
     };
   } // namespace details
 
-  template <typename IFace, typename Signature, typename Traits_ = Traits::use_<Traits::BaseClass_t<AlgTool>>>
-  using ToolBinder = details::ToolBinder<IFace, Signature, Traits_>;
+  template <typename Signature, typename Traits_ = Traits::use_<Traits::BaseClass_t<AlgTool>>>
+  using ToolBinder = details::ToolBinder<Signature, Traits_>;
 
 } // namespace Gaudi::Functional

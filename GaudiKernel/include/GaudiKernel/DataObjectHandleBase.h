@@ -48,7 +48,7 @@ public:
   template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline DataObjectHandleBase( OWNER* owner, Gaudi::DataHandle::Mode m, std::string name, K key = {},
                                std::string doc = "" )
-      : DataObjectHandleBase( std::move(key), m, owner ) {
+      : DataObjectHandleBase( std::move( key ), m, owner ) {
     auto p = owner->declareProperty( std::move( name ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }

@@ -37,7 +37,7 @@ namespace Gaudi::Examples {
   };
   DECLARE_COMPONENT( MyExampleTool )
 
-  struct MyConsumerTool final : Gaudi::Functional::ToolBinder<IMyTool, Gaudi::Interface::Bind::Box( const int& )> {
+  struct MyConsumerTool final : Gaudi::Functional::ToolBinder<Gaudi::Interface::Bind::Box<IMyTool>( const int& )> {
     MyConsumerTool( std::string type, std::string name, const IInterface* parent )
         : ToolBinder{ std::move( type ), std::move( name ), parent, KeyValue{ "MyInt", "/Event/MyInt" } } {}
 
@@ -52,64 +52,21 @@ namespace Gaudi::Examples {
       }
     };
 
-    Gaudi::Interface::Bind::Box operator()( const int& i ) const override {
-      return { std::in_place_type<IMyTool>, std::in_place_type<BoundInstance>, this, i };
+    Gaudi::Interface::Bind::Box<IMyTool> operator()( const int& i ) const override {
+      return { std::in_place_type<BoundInstance>, this, i };
     };
   };
   DECLARE_COMPONENT( MyConsumerTool )
 
   using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>;
 
-  struct ToolConsumer final : Gaudi::Functional::Consumer<void( EventContext const&, IMyTool const& ), BaseClass_t> {
+  struct ToolConsumer final : Gaudi::Functional::Consumer<void( IMyTool const& ), BaseClass_t> {
     ToolConsumer( const std::string& name, ISvcLocator* svcLoc )
         : Consumer( name, svcLoc, KeyValue{ "MyTool", "MyExampleTool" } ) {}
 
-    void operator()( EventContext const& ctx, IMyTool const& tool ) const override {
-      always() << "calling tool directly:" << endmsg;
-      tool();
-      always() << "calling boxed tool:" << endmsg;
-      auto           box = Gaudi::Interface::Bind::makeBox<IMyTool>( &tool, ctx );
-      IMyTool const* ptr = box.get<IMyTool>();
-      if ( !ptr ) fatal() << "oops..." << endmsg;
-      ( *ptr )();
-    }
+    void operator()( IMyTool const& tool ) const override { tool(); }
   };
   DECLARE_COMPONENT( ToolConsumer )
-
-  struct BoundToolConsumer final
-      : Gaudi::Functional::Consumer<void( EventContext const&, Gaudi::Interface::Bind::IBinder<IMyTool> const& ),
-                                    BaseClass_t> {
-
-    BoundToolConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue{ "MyTool", "MyConsumerTool" } ) {}
-
-    void operator()( EventContext const& ctx, Gaudi::Interface::Bind::IBinder<IMyTool> const& tool ) const override {
-      auto           box = Gaudi::Interface::Bind::makeBox<IMyTool>( &tool, ctx );
-      IMyTool const* ptr = box.get<IMyTool>();
-      if ( !ptr ) fatal() << "oops..." << endmsg;
-      ( *ptr )();
-    }
-  };
-  DECLARE_COMPONENT( BoundToolConsumer )
-
-  struct AlgToolConsumer final
-      : Gaudi::Functional::Consumer<void( EventContext const&, IAlgTool const& ), BaseClass_t> {
-
-    AlgToolConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue{ "MyTool", "MyConsumerTool" } ) {}
-
-    void operator()( EventContext const& ctx, IAlgTool const& tool ) const override {
-      always() << "got generic IAlgTool, try to box it and get IMyTool" << endmsg;
-      auto box = Gaudi::Interface::Bind::makeBox<IMyTool>( &tool, ctx );
-      if ( IMyTool const* ptr = box.get<IMyTool>(); ptr != nullptr ) {
-        always() << "got IMyTool -- calling it" << endmsg;
-        ( *ptr )();
-      } else {
-        always() << "could not get IMyTool interface... sorry" << endmsg;
-      }
-    }
-  };
-  DECLARE_COMPONENT( AlgToolConsumer )
 
   struct CountingConsumer final : Gaudi::Functional::Consumer<void(), BaseClass_t> {
     using Gaudi::Functional::Consumer<void(), BaseClass_t>::Consumer;

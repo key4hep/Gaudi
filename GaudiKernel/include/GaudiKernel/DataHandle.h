@@ -40,10 +40,10 @@ namespace Gaudi {
     enum Mode { Reader = 1 << 2, Writer = 1 << 4 };
 
     DataHandle( DataObjID k, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key(std::move( k) ), m_owner( owner ), m_mode( a ){};
+        : m_key( std::move( k ) ), m_owner( owner ), m_mode( a ){};
 
     DataHandle( DataObjID k, bool isCond, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key( std::move(k) ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
+        : m_key( std::move( k ) ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
 
     using PropertyType = DataHandleProperty;
 
@@ -77,7 +77,7 @@ namespace Gaudi {
      * change in case the object had alternative names, and it should not
      * be visible to the end user, for which the Handle is still the same
      */
-    mutable DataObjID  m_key   = {"NONE"};
+    mutable DataObjID  m_key   = { "NONE" };
     IDataHandleHolder* m_owner = nullptr;
 
     static const std::string default_type;

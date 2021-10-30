@@ -21,6 +21,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/IBinder.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/detected.h"
 
@@ -172,6 +173,7 @@ namespace Gaudi::Functional::details {
   void put( const OutHandle& out_handle, OptOut&& out ) {
     if ( out ) put( out_handle, *std::forward<OptOut>( out ) );
   }
+
   /////////////////////////////////////////
   // adapt to differences between eg. std::vector (which has push_back) and KeyedContainer (which has insert)
   // adapt to getting a T, and a container wanting T* by doing new T{ std::move(out) }
@@ -370,7 +372,8 @@ namespace Gaudi::Functional::details {
 
     template <typename T>
     using DefaultInputHandle =
-        std::conditional_t<std::is_base_of_v<IAlgTool, T>, ToolHandle<T>, DataObjectReadHandle<T>>;
+        std::conditional_t<std::is_base_of_v<IAlgTool, T>, ToolHandle<Gaudi::Interface::Bind::IBinder<T>>,
+                           DataObjectReadHandle<T>>;
   } // namespace detail2
 
   // check whether Traits::BaseClass is a valid type,
@@ -410,6 +413,11 @@ namespace Gaudi::Functional::details {
       -> decltype( details::deref( handle.get() ) ) // make it SFINAE friendly...
   {
     return details::deref( handle.get() );
+  }
+
+  template <typename IFace, typename Algo>
+  auto get( const ToolHandle<Gaudi::Interface::Bind::IBinder<IFace>>& handle, const Algo&, const EventContext& ctx ) {
+    return handle.bind( ctx );
   }
 
   template <typename Handle>

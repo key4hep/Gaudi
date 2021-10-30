@@ -1,7 +1,6 @@
 # --> Including file '/project/bfys/graven/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ---
 # List of input and output types by class
-"Gaudi::Examples::BoundToolConsumer":
 "Gaudi::Examples::ContextConsumer":
 "Gaudi::Examples::ContextIntConsumer":
   InputLocation: "int"
@@ -38,6 +37,7 @@
   InputFractions: "std::vector<double,std::allocator<double> >"
   InputIntegers: "std::vector<int,std::allocator<int> >"
   OutputDoubles: "std::vector<double,std::allocator<double> >"
+"Gaudi::Examples::ToolConsumer":
 "Gaudi::Examples::VectorDataProducer":
   OutputLocation: "std::vector<int,std::allocator<int> >"
 "Gaudi::Examples::VectorDoubleProducer":
@@ -47,27 +47,18 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v36r2)
-                                          running on stbc-i1.nikhef.nl on Thu Oct 28 11:07:42 2021
+                                          running on stbc-i1.nikhef.nl on Sat Oct 30 20:39:05 2021
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-MyToolConsumer    SUCCESS calling tool directly:
-MyToolConsumer....SUCCESS Hello World!!!
-MyToolConsumer    SUCCESS calling boxed tool:
-MyToolConsumer....SUCCESS Hello World!!!
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
-BoundConsumer.G...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
-AlgBoundConsumer  SUCCESS got generic IAlgTool, try to box it and get IMyTool
-AlgBoundConsumer  SUCCESS got IMyTool -- calling it
-AlgBoundConsume...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
-AlgUnBoundConsumerSUCCESS got generic IAlgTool, try to box it and get IMyTool
-AlgUnBoundConsumerSUCCESS got IMyTool -- calling it
-AlgUnBoundConsu...SUCCESS No binding required
+MyToolConsumer....SUCCESS Hello World!!!
+MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
 IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat
 IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
@@ -120,20 +111,11 @@ IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO sum of input sizes: 8
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
-MyToolConsumer    SUCCESS calling tool directly:
-MyToolConsumer....SUCCESS Hello World!!!
-MyToolConsumer    SUCCESS calling boxed tool:
-MyToolConsumer....SUCCESS Hello World!!!
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
-BoundConsumer.G...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
-AlgBoundConsumer  SUCCESS got generic IAlgTool, try to box it and get IMyTool
-AlgBoundConsumer  SUCCESS got IMyTool -- calling it
-AlgBoundConsume...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
-AlgUnBoundConsumerSUCCESS got generic IAlgTool, try to box it and get IMyTool
-AlgUnBoundConsumerSUCCESS got IMyTool -- calling it
-AlgUnBoundConsu...SUCCESS No binding required
+MyToolConsumer....SUCCESS Hello World!!!
+MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
 IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat
 IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt

@@ -11,34 +11,52 @@
 #pragma once
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/bind.h"
 #include <type_traits>
 #include <utility>
 
+class EventContext;
+
 namespace Gaudi::Interface::Bind {
+
+  // see https://godbolt.org/z/KPMYd1sbr
+  template <typename IFace>
+  class Box final {
+    const IFace* m_ptr            = nullptr;
+    void ( *m_destruct )( void* ) = nullptr;
+    std::aligned_storage_t<64 - 2 * sizeof( void* )> m_storage; // local storage for bound arguments... fit into a
+                                                                // cacheline
+  public:
+    // identity binding: no actual binding is required...
+    Box( IFace const* ptr ) : m_ptr{ ptr } { assert( m_ptr != nullptr ); }
+    // bind the arguments...
+    template <typename Ret, typename... Args, typename = std::enable_if_t<std::is_base_of_v<IFace, Ret>>>
+    Box( std::in_place_type_t<Ret>, Args&&... args ) {
+      if constexpr ( sizeof( Ret ) <= sizeof( m_storage ) ) {
+        m_ptr      = new ( &m_storage ) Ret{ std::forward<Args>( args )... };
+        m_destruct = []( void* ptr ) { static_cast<Ret*>( ptr )->~Ret(); };
+      } else {
+        m_ptr      = new Ret{ std::forward<Args>( args )... };
+        m_destruct = []( void* ptr ) { delete static_cast<Ret*>( ptr ); };
+      }
+    }
+
+    ~Box() {
+      if ( m_destruct ) ( *m_destruct )( &m_storage );
+    }
+    Box( const Box& ) = delete;
+    Box& operator=( const Box& ) = delete;
+    Box( Box&& rhs )             = delete;
+    Box& operator=( Box&& ) = delete;
+
+    operator IFace const&() const { return *m_ptr; }
+    // operator IFace&() && = delete;
+  };
+
   template <typename IFace>
   struct IBinder : extend_interfaces<IAlgTool> {
     DeclareInterfaceID( IBinder, 1, 0 );
-    virtual Box i_bind( const EventContext& ctx ) const = 0;
+    virtual Box<IFace> bind( const EventContext& ctx ) const = 0;
   };
-
-  /// Support binding of tools (FIXME: this could be moved into a ToolHandle (at which point some of the logic could be
-  /// cached...)
-  template <typename IFace>
-  Box makeBox( IAlgTool const* tool, const EventContext& ctx ) {
-    void* ptr = nullptr;
-    if ( auto sc = const_cast<IAlgTool*>( tool )->queryInterface( IFace::interfaceID(), &ptr ); sc.isSuccess() ) {
-      // TODO: what happens to the refCount?
-      return Gaudi::Interface::Bind::Box( std::in_place_type<IFace>, static_cast<IFace const*>( ptr ) );
-    } else if ( auto sc = const_cast<IAlgTool*>( tool )->queryInterface(
-                    Gaudi::Interface::Bind::IBinder<IFace>::interfaceID(), &ptr );
-                sc.isSuccess() ) {
-      // TODO: what happens to the refCount?
-      return static_cast<Gaudi::Interface::Bind::IBinder<IFace> const*>( ptr )->i_bind( ctx );
-    } else {
-      return Gaudi::Interface::Bind::Box{};
-    }
-  }
 
   template <typename IFace>
   struct AlgToolStub : IFace {

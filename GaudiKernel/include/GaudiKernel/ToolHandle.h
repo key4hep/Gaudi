@@ -14,6 +14,7 @@
 // Includes
 #include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IAlgTool.h"
+#include "GaudiKernel/IBinder.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/ServiceHandle.h"
@@ -97,17 +98,17 @@ public:
   virtual std::string typeAndName() const = 0;
 
   /// Helper to check if the ToolHandle should be retrieved.
-  inline bool isEnabled() const {
+  bool isEnabled() const {
     // the handle is considered enabled if the type/name is valid and the
     // enabled flag was set to true, or it was already retrieved
     return ( m_enabled && !typeAndName().empty() ) || get();
   }
 
-  inline void enable() { m_enabled = true; }
+  void enable() { m_enabled = true; }
 
-  inline void disable() { m_enabled = false; }
+  void disable() { m_enabled = false; }
 
-  inline bool setEnabled( const bool flag ) {
+  bool setEnabled( const bool flag ) {
     auto old  = m_enabled;
     m_enabled = flag;
     return old;
@@ -139,7 +140,8 @@ class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
   friend class Service;
 
   template <typename... Args, std::size_t... Is>
-  ToolHandle( std::tuple<Args...>&& args, std::index_sequence<Is...> ) : ToolHandle( std::get<Is>( std::move(args) )... ) {}
+  ToolHandle( std::tuple<Args...>&& args, std::index_sequence<Is...> )
+      : ToolHandle( std::get<Is>( std::move( args ) )... ) {}
 
 public:
   /** Constructor for a tool with default tool type and name.
@@ -209,7 +211,7 @@ public:
   }
 
   template <typename... Args>
-  ToolHandle( std::tuple<Args...>&& args ) : ToolHandle( std::move(args), std::index_sequence_for<Args...>{} ) {}
+  ToolHandle( std::tuple<Args...>&& args ) : ToolHandle( std::move( args ), std::index_sequence_for<Args...>{} ) {}
 
 public:
   StatusCode initialize( const std::string& toolTypeAndName, const IInterface* parent = nullptr,
@@ -303,6 +305,46 @@ private:
   // Private data members
   //
   mutable ServiceHandle<IToolSvc> m_pToolSvc;
+};
+
+// explicit specialization for IBinder<IFace>
+template <typename IFace>
+class ToolHandle<Gaudi::Interface::Bind::IBinder<IFace>> : public ToolHandle<IAlgTool> {
+
+  void* m_ptr                                                                        = nullptr;
+  Gaudi::Interface::Bind::Box<IFace> ( *m_bind )( void const*, const EventContext& ) = nullptr;
+
+public:
+  using ToolHandle<IAlgTool>::ToolHandle;
+  using ToolHandle<IAlgTool>::retrieve;
+  StatusCode retrieve() const override {
+    // FIXME: why is `retrieve` const????
+    auto self = const_cast<ToolHandle<Gaudi::Interface::Bind::IBinder<IFace>>*>( this );
+
+    return ToolHandle<IAlgTool>::retrieve().andThen( [&] {
+      const IAlgTool* tool = get();
+      return const_cast<IAlgTool*>( tool )
+          ->queryInterface( IFace::interfaceID(), &( self->m_ptr ) )
+          .andThen( [&] {
+            // TODO: what happens to the refCount?
+            self->m_bind = []( const void* ptr, const EventContext& ) {
+              return Gaudi::Interface::Bind::Box<IFace>( static_cast<IFace const*>( ptr ) );
+            };
+          } )
+          .orElse( [&]() {
+            return const_cast<IAlgTool*>( tool )
+                ->queryInterface( Gaudi::Interface::Bind::IBinder<IFace>::interfaceID(), &( self->m_ptr ) )
+                .andThen( [&] {
+                  // TODO: what happens to the refCount?
+                  self->m_bind = []( const void* ptr, const EventContext& ctx ) {
+                    return static_cast<Gaudi::Interface::Bind::IBinder<IFace> const*>( ptr )->bind( ctx );
+                  };
+                } );
+          } );
+    } );
+  }
+
+  auto bind( const EventContext& ctx ) const { return ( *m_bind )( m_ptr, ctx ); }
 };
 
 /** Helper class to construct ToolHandle instances for public tools via the
