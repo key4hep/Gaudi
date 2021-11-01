@@ -27,9 +27,9 @@ namespace Gaudi::Accumulators {
     /// min and max values on this axis
     std::underlying_type_t<Category> minValue = 0, maxValue = 4;
     /// title of this axis
-    std::string title{"Category"};
+    std::string title{ "Category" };
     /// labels for the bins
-    std::vector<std::string> labels{"Simple", "Complex", "Bad", "Wrong"};
+    std::vector<std::string> labels{ "Simple", "Complex", "Bad", "Wrong" };
 
     unsigned int index( Category value ) const { return static_cast<unsigned int>( value ) + 1; }
   };
@@ -42,10 +42,10 @@ namespace Gaudi::Tests::Histograms {
     struct HistoGroupsTool : AlgTool {
       using AlgTool::AlgTool;
 
-      mutable MyHist_t m_hist0{this, "Top", "Top title", {1, 0, 1}};
-      mutable MyHist_t m_hist1{this, "Group/First", "First title", {1, 0, 1}};
-      mutable MyHist_t m_hist2{this, "Group/Second", "Second title", {1, 0, 1}};
-      mutable MyHist_t m_hist3{this, "Group/SubGroup/Third", "Third title", {1, 0, 1}};
+      mutable MyHist_t m_hist0{ this, "Top", "Top title", { 1, 0, 1 } };
+      mutable MyHist_t m_hist1{ this, "Group/First", "First title", { 1, 0, 1 } };
+      mutable MyHist_t m_hist2{ this, "Group/Second", "Second title", { 1, 0, 1 } };
+      mutable MyHist_t m_hist3{ this, "Group/SubGroup/Third", "Third title", { 1, 0, 1 } };
 
       void fillHistos() const {
         ++m_hist0[0.5];
@@ -60,12 +60,12 @@ namespace Gaudi::Tests::Histograms {
       using Base = Gaudi::Functional::Consumer<void()>;
       using Base::Base;
 
-      mutable MyHist_t m_hist0{this, "Top", "Top title", {1, 0, 1}};
-      mutable MyHist_t m_hist1{this, "Group/First", "First title", {1, 0, 1}};
-      mutable MyHist_t m_hist2{this, "Group/Second", "Second title", {1, 0, 1}};
-      mutable MyHist_t m_hist3{this, "Group/SubGroup/Third", "Third title", {1, 0, 1}};
+      mutable MyHist_t m_hist0{ this, "Top", "Top title", { 1, 0, 1 } };
+      mutable MyHist_t m_hist1{ this, "Group/First", "First title", { 1, 0, 1 } };
+      mutable MyHist_t m_hist2{ this, "Group/Second", "Second title", { 1, 0, 1 } };
+      mutable MyHist_t m_hist3{ this, "Group/SubGroup/Third", "Third title", { 1, 0, 1 } };
 
-      ToolHandle<HistoGroupsTool> m_tool{this, "Tool", "Gaudi::Tests::Histograms::Directories::HistoGroupsTool/Tool"};
+      ToolHandle<HistoGroupsTool> m_tool{ this, "Tool", "Gaudi::Tests::Histograms::Directories::HistoGroupsTool/Tool" };
 
       void operator()() const override {
         ++m_hist0[0.5];
@@ -84,10 +84,11 @@ namespace Gaudi::Tests::Histograms {
 
       using Base::Base;
 
-      mutable MyHist_t m_hist{this, "hist", "Histogram title", {5, 0, 5, "axis title", {"a", "b", "c", "d", "e"}}};
+      mutable MyHist_t m_hist{
+          this, "hist", "Histogram title", { 5, 0, 5, "axis title", { "a", "b", "c", "d", "e" } } };
 
       void operator()() const override {
-        for ( int i : {1, 2, 3, 4, 5} ) m_hist[i - 1] += i;
+        for ( int i : { 1, 2, 3, 4, 5 } ) m_hist[i - 1] += i;
       }
     };
     DECLARE_COMPONENT( HistWithLabelsAlg )
@@ -98,7 +99,7 @@ namespace Gaudi::Tests::Histograms {
       using Base::Base;
 
       mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, Category> m_hist{
-          this, "Categories", "", Gaudi::Accumulators::Axis<Category>{{}}};
+          this, "Categories", "", Gaudi::Accumulators::Axis<Category>{ {} } };
 
       void operator()() const override {
         ++m_hist[Category::Simple];
