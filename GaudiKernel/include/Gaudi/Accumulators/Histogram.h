@@ -28,6 +28,20 @@
 #include <utility>
 #include <vector>
 
+namespace {
+  template <std::size_t, typename T> using alwaysT = T;
+  // get a tuple of n types the given Type, or directly the type for n = 1
+  template<typename Type, unsigned int ND> struct GetTuple;
+  template<typename Type, unsigned int ND> using GetTuple_t = typename GetTuple<Type, ND>::type;
+  template<typename Type, unsigned int ND> struct GetTuple {
+    using type = decltype(std::tuple_cat(std::declval<std::tuple<Type>>(),
+                                         std::declval<GetTuple_t<Type, ND-1>>()));
+  };
+  template<typename Type> struct GetTuple<Type, 1> {
+    using type = std::tuple<Type>;
+  };
+}
+
 namespace Gaudi::Accumulators {
 
   /**
@@ -243,8 +257,8 @@ namespace Gaudi::Accumulators {
     using BaseAccumulator    = BaseAccumulatorT<Atomicity, Arithmetic>;
     using AxisArithmeticType = typename InputType::AxisArithmeticType;
     template <std::size_t... Is>
-    HistogramingAccumulatorInternal( std::initializer_list<Axis<AxisArithmeticType>> axis, std::index_sequence<Is...> )
-        : m_axis{{*( axis.begin() + Is )...}}
+    HistogramingAccumulatorInternal( GetTuple_t<Axis<AxisArithmeticType>, ND::value> axis, std::index_sequence<Is...> )
+      : m_axis{std::get<Is>(axis)...}
         , m_totNBins{computeTotNBins()}
         , m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
@@ -394,20 +408,24 @@ namespace Gaudi::Accumulators {
    * sum(number), sum2(number))
    */
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
-            template <atomicity, typename, typename> typename Accumulator>
-  class HistogramingCounterBase
+            template <atomicity, typename, typename> typename Accumulator, typename Seq>
+  class HistogramingCounterBaseInternal;
+  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
+            template <atomicity, typename, typename> typename Accumulator, std::size_t... NDs>
+  class HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::index_sequence<NDs...>>
       : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
   public:
     using Parent = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
     template <typename OWNER>
-    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title,
-                             std::initializer_list<Axis<Arithmetic>> axis )
+    HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
+                                     GetTuple_t<Axis<Arithmetic>, ND> axis )
         : Parent( owner, name, std::string( Type ) + ":" + typeid( Arithmetic ).name(), axis,
                   std::make_index_sequence<ND>{} )
         , m_title( title ) {}
     template <typename OWNER>
-    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title, Axis<Arithmetic> axis )
-        : HistogramingCounterBase( owner, name, title, {axis} ) {}
+    HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
+                                     alwaysT<NDs, Axis<Arithmetic>>... allAxis )
+      : HistogramingCounterBaseInternal( owner, name, title, std::make_tuple(allAxis... ) ) {}
     using Parent::print;
     template <typename stream>
     stream& printImpl( stream& o, bool /*tableFormat*/ ) const {
@@ -444,6 +462,10 @@ namespace Gaudi::Accumulators {
   private:
     std::string const m_title;
   };
+  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
+            template <atomicity, typename, typename> typename Accumulator>
+  using HistogramingCounterBase = HistogramingCounterBaseInternal
+    <ND, Atomicity, Arithmetic, Type, Accumulator, std::make_index_sequence<ND>>;
 
   namespace {
     static const char histogramString[]                = "histogram:Histogram";

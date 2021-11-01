@@ -98,7 +98,7 @@ namespace Gaudi::Tests::Histograms {
       using Base::Base;
 
       mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, Category> m_hist{
-          this, "Categories", "", {{}}};
+          this, "Categories", "", Gaudi::Accumulators::Axis<Category>{{}}};
 
       void operator()() const override {
         ++m_hist[Category::Simple];

@@ -15,6 +15,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
+#include <deque>
 
 // Mock code for the test
 struct MonitoringHub : Gaudi::Monitoring::Hub {};
@@ -85,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
 
   // note that for default constructible axis, we have to specify {{}} otherwise
   // it is inerpreted as an empty array of axes (instead of using the constructor for a single axis)
-  Histogram<1, atomicity::full, TestEnum> hist{&algo, "TestEnumHist", "TestEnum histogram", {{}}};
+  Histogram<1, atomicity::full, TestEnum> hist{&algo, "TestEnumHist", "TestEnum histogram", Axis<TestEnum>{}};
 
   hist[TestEnum::A] += 1;
   ++hist[TestEnum::B];
@@ -113,7 +114,7 @@ BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
   Algo algo;
   // test filling a 2D histogram with more bins in x than y
   // Buffer will overflow if the wrong axis' nBins is used to calculate the bin index, resulting in a double free
-  Histogram<2, atomicity::full, float> hist{&algo, "Test2DHist", "Test 2D histogram", {{64, 0., 64.},{52, 0., 52.}}};
+  Histogram<2, atomicity::full, float> hist{&algo, "Test2DHist", "Test 2D histogram", {64, 0., 64.}, {52, 0., 52.}};
 
   for ( int i=0; i<64; ++i) {
     for ( int j=0; j<52; ++j) {
@@ -124,4 +125,24 @@ BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
   auto j = hist.toJSON();
   auto nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 64*52 );
+}
+
+BOOST_AUTO_TEST_CASE( test_2d_histos_unique_ptr, *boost::unit_test::tolerance( 1e-14 ) ) {
+  using namespace Gaudi::Accumulators;
+  Algo algo;
+  // test constructing a 2D histogram inside a deque via emplace_back
+  std::deque<Histogram<2, atomicity::full, float>> histos;
+  histos.emplace_back(&algo, "Test2DHist", "Test 2D histogram", Axis<float>{10, 0., 10.}, Axis<float>{10, 0., 10.});
+  {
+    auto buf = histos[0].buffer();
+    for ( int i=0; i<10; ++i) {
+      for ( int j=0; j<10; ++j) {
+        ++buf[{i, j}];
+      }
+    }
+  }
+
+  auto j = histos[0].toJSON();
+  auto nEntries = j.at( "nEntries" ).get<unsigned long>();
+  BOOST_TEST( nEntries == 100 );
 }
