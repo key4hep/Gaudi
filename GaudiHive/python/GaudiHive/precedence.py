@@ -273,9 +273,9 @@ class CruncherSequence(object):
             # extract entity name and type
             algo_name = n.split('/')[1] if '/' in n else n
 
-            if 'type' in self.cfg.node[n]:
+            if 'type' in self.cfg.nodes[n]:
                 # first rely on explicit type, if given
-                algo_type = self.cfg.node[n].get('type')
+                algo_type = self.cfg.nodes[n].get('type')
             else:
                 # if the type is not given explicitly, try to extract it from entity name,
                 # and, if unsuccessful, assume it is an algorithm
@@ -294,10 +294,10 @@ class CruncherSequence(object):
                         self.dupl_seqs[n] += 1
 
                 seq_daughter = GaudiSequencer(algo_name, OutputLevel=INFO)
-                if self.cfg.node[n].get('ModeOR') == 'True':
+                if self.cfg.nodes[n].get('ModeOR') == 'True':
                     self.OR_sequencers.append(n)
                     seq_daughter.ModeOR = True
-                # if self.cfg.node[n].get('Lazy') == 'False':
+                # if self.cfg.nodes[n].get('Lazy') == 'False':
                 #    print "Non-Lazy - ", n
                 seq_daughter.ShortCircuit = False
                 if seq_daughter not in seq.Members:
