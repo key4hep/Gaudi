@@ -11,6 +11,8 @@
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiKernel/IBinder.h"
 
+#define GAUDI_FUNCTIONAL_TOOL_BINDER_USES_CREATE
+
 namespace Gaudi::Functional {
   namespace details {
     // add a baseclass in case it isn't defined yet...
@@ -29,26 +31,29 @@ namespace Gaudi::Functional {
 
       template <typename IArgs, std::size_t... I>
       ToolBinder( std::string type, std::string name, const IInterface* parent, IArgs&& args,
+                  Gaudi::Interface::Bind::Box<IFace> ( *creator )( void const*, Args const&... ),
                   std::index_sequence<I...> )
           : extends<details::BaseClass_t<Traits>, Gaudi::Interface::Bind::IBinder<IFace>>{ std::move( type ),
                                                                                            std::move( name ), parent }
-          , m_handles{ std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( args ) )... } {}
+          , m_handles{ std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( args ) )... }
+          , m_creator{ creator } {}
 
       std::tuple<details::InputHandle_t<Traits, Args>...> m_handles;
+      Gaudi::Interface::Bind::Box<IFace> ( *m_creator )( void const*, Args const&... );
 
     public:
       using KeyValue = std::pair<std::string, std::string>;
       ToolBinder( std::string type, std::string name, const IInterface* parent,
-                  Gaudi::Functional::details::RepeatValues_<KeyValue, N> const& inputs )
-          : ToolBinder{ std::move( type ), std::move( name ), parent, inputs, std::make_index_sequence<N>{} } {}
-
-      virtual Gaudi::Interface::Bind::Box<IFace> operator()( const Args&... args ) const = 0;
+                  Gaudi::Functional::details::RepeatValues_<KeyValue, N> const& inputs,
+                  Gaudi::Interface::Bind::Box<IFace> ( *creator )( void const*, Args const&... ) )
+          : ToolBinder{ std::move( type ), std::move( name ), parent, inputs, creator, std::make_index_sequence<N>{} } {
+      }
 
       Gaudi::Interface::Bind::Box<IFace> bind( EventContext const& ctx ) const final {
         return std::apply(
             [&]( auto const&... arg ) {
               using namespace details;
-              return std::invoke( *this, get( arg, *this, ctx )... );
+              return std::invoke( m_creator, this, get( arg, *this, ctx )... );
             },
             m_handles );
       }
@@ -62,6 +67,16 @@ namespace Gaudi::Functional {
       decltype( auto ) inputLocation() const {
         using namespace details;
         return getKey( std::get<InputHandle_t<Traits, std::decay_t<T>>>( m_handles ) );
+      }
+
+      // TODO: make this a callable instance?
+      template <typename BoundInstance, typename Self>
+      static auto construct( Self* ) {
+        static_assert( std::is_base_of_v<ToolBinder, Self> );
+        return +[]( void const* ptr, const Args&... args ) {
+          return Gaudi::Interface::Bind::Box<IFace>{ std::in_place_type<BoundInstance>,
+                                                     static_cast<std::add_const_t<Self>*>( ptr ), args... };
+        };
       }
     };
   } // namespace details
