@@ -48,20 +48,20 @@ struct CounterAlg : Gaudi::Functional::Consumer<void()> {
   }
 
   // declare all sorts of counters with default options (double values, atomicity full)
-  mutable Gaudi::Accumulators::Counter<>             basic{this, "Basic"};
-  mutable Gaudi::Accumulators::AveragingCounter<>    avg{this, "Average"};
-  mutable Gaudi::Accumulators::SigmaCounter<>        sig{this, "Sigma"};
-  mutable Gaudi::Accumulators::StatCounter<>         stat{this, "Stat"};
-  mutable Gaudi::Accumulators::BinomialCounter<>     binomial{this, "Binomial"};
-  mutable Gaudi::Accumulators::MsgCounter<MSG::INFO> msg{this, "Super nice message, max 5 times", 5};
+  mutable Gaudi::Accumulators::Counter<>             basic{ this, "Basic" };
+  mutable Gaudi::Accumulators::AveragingCounter<>    avg{ this, "Average" };
+  mutable Gaudi::Accumulators::SigmaCounter<>        sig{ this, "Sigma" };
+  mutable Gaudi::Accumulators::StatCounter<>         stat{ this, "Stat" };
+  mutable Gaudi::Accumulators::BinomialCounter<>     binomial{ this, "Binomial" };
+  mutable Gaudi::Accumulators::MsgCounter<MSG::INFO> msg{ this, "Super nice message, max 5 times", 5 };
 
   // test change of some template parameters
-  mutable Gaudi::Accumulators::AveragingCounter<unsigned int> avg_int{this, "AverageInteger"};
+  mutable Gaudi::Accumulators::AveragingCounter<unsigned int> avg_int{ this, "AverageInteger" };
   mutable Gaudi::Accumulators::AveragingCounter<double, Gaudi::Accumulators::atomicity::none> avg_noAto{
-      this, "AverageNonAtomic"};
+      this, "AverageNonAtomic" };
 
   // test set of counters stored in a deque
-  mutable int                                        counterCount{0};
+  mutable int                                        counterCount{ 0 };
   mutable std::deque<Gaudi::Accumulators::Counter<>> counterDeque;
   mutable std::mutex                                 counterDequeMutex;
 };

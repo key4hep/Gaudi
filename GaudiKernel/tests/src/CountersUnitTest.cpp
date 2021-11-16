@@ -166,9 +166,9 @@ BOOST_AUTO_TEST_CASE( test_bulk_increment_with_Binomialcounter, *utf::tolerance(
 
   BinomialCounter<> bin;
   // bin += { .nPass = 4, .nTotal = 10 }; // C++20 only...
-  bin += {4, 10};
-  bin += {1, 9};
-  bin += {0, 1};
+  bin += { 4, 10 };
+  bin += { 1, 9 };
+  bin += { 0, 1 };
 
   BOOST_TEST( bin.nEntries() == 20 );
   BOOST_TEST( bin.nTrueEntries() == 5 );
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE( test_StatEntity_binomial,
 }
 
 BOOST_AUTO_TEST_CASE( test_StatEntity_direct_set, *utf::tolerance( 1e-14 ) ) {
-  StatEntity sb{3, 14, 70, 3, 6};
+  StatEntity sb{ 3, 14, 70, 3, 6 };
 
   BOOST_TEST( sb.nEntries() == 3 );
   BOOST_TEST( sb.sum() == 14 );
