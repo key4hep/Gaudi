@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -120,33 +120,3 @@ def getConfigurable(name, defaultType=None):
                 import Configurables
                 defaultType = getattr(Configurables, defaultType)
         return defaultType(name)
-
-
-class GaudiPersistency(ConfigurableUser):
-    """Configurable to enable ROOT-based persistency.
-
-    Note: it requires Gaudi::RootCnvSvc (package RootCnv).
-    """
-    __slots__ = {}
-
-    def __apply_configuration__(self):
-        """Apply low-level configuration"""
-        from Configurables import (
-            ApplicationMgr,
-            PersistencySvc,
-            FileRecordDataSvc,
-            EventPersistencySvc,
-        )
-        # aliased names
-        from Configurables import (
-            RootCnvSvc,
-            RootEvtSelector,
-            IODataManager,
-            FileCatalog,
-        )
-        cnvSvcs = [RootCnvSvc()]
-        EventPersistencySvc().CnvServices += cnvSvcs
-        PersistencySvc("FileRecordPersistencySvc").CnvServices += cnvSvcs
-        app = ApplicationMgr()
-        app.SvcOptMapping += [FileCatalog(), IODataManager(), RootCnvSvc()]
-        app.ExtSvc += [FileRecordDataSvc()]

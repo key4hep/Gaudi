@@ -80,7 +80,8 @@ def loadConfigurableDb(build_dir=None):
             ]
         ]
     #  - load the confdb files
-    for confDb in set(confDbFiles):
+    for confDb in (set(confDbFiles) - set(
+            os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))):
         log.debug("\t-loading [%s]..." % confDb)
         try:
             cfgDb._loadModule(confDb)
