@@ -13,6 +13,8 @@
 ####################################################################
 from GaudiKernel.DataHandle import DataHandle
 from Gaudi.Configuration import *
+from Configurables import Gaudi__Examples__ToolConsumer as ToolConsumer
+from Configurables import Gaudi__Examples__MyExampleTool as MyExampleTool
 from Configurables import Gaudi__Examples__IntDataProducer as IntDataProducer
 from Configurables import Gaudi__Examples__VectorDataProducer as VectorDataProducer
 from Configurables import Gaudi__Examples__FloatDataConsumer as FloatDataConsumer
@@ -59,6 +61,7 @@ for configurable in sorted([
 print("---")
 
 # - Algorithms
+
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
 OtherIntDataProducer.OutputLocation = "/Event/MyOtherInt"
 VectorDataProducer1 = VectorDataProducer(
@@ -70,6 +73,8 @@ SDataProducer1 = SDataProducer(
 SDataProducer2 = SDataProducer(
     "SDataProducer2", OutputLocation="/Event/S2", j=10)
 app.TopAlg = [
+    ToolConsumer(
+        "MyToolConsumer", MyTool=MyExampleTool(Message="Hello World!!!")),
     IntDataProducer("IntDataProducer"),
     OtherIntDataProducer,
     IntDataConsumer("IntDataConsumer"),
