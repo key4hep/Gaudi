@@ -37,6 +37,7 @@
   InputFractions: "std::vector<double,std::allocator<double> >"
   InputIntegers: "std::vector<int,std::allocator<int> >"
   OutputDoubles: "std::vector<double,std::allocator<double> >"
+"Gaudi::Examples::ToolConsumer":
 "Gaudi::Examples::VectorDataProducer":
   OutputLocation: "std::vector<int,std::allocator<int> >"
 "Gaudi::Examples::VectorDoubleProducer":
@@ -46,17 +47,18 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v36r2)
-                                          running on stbc-i1.nikhef.nl on Wed Oct 20 13:59:17 2021
+                                          running on stbc-i1.nikhef.nl on Sat Oct 30 20:39:05 2021
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-MyToolConsumer....SUCCESS Hello World!!!
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
+MyToolConsumer....SUCCESS Hello World!!!
+MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
 IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat
 IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
@@ -109,10 +111,11 @@ IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO sum of input sizes: 8
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
-MyToolConsumer....SUCCESS Hello World!!!
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
+MyToolConsumer....SUCCESS Hello World!!!
+MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
 IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat
 IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt

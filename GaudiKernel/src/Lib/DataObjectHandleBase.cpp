@@ -38,7 +38,7 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
 //---------------------------------------------------------------------------
 DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBase& other ) {
   // avoid modification of searchDone in other while we are copying
-  auto guard = std::scoped_lock{other.m_searchMutex};
+  auto guard = std::scoped_lock{ other.m_searchMutex };
   // FIXME: operator= should not change our owner, only our 'value'
   Gaudi::DataHandle::operator=( other );
   m_EDS                      = other.m_EDS;
@@ -52,15 +52,15 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
-    : Gaudi::DataHandle( k, a, owner ) {
+DataObjectHandleBase::DataObjectHandleBase( DataObjID k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
+    : Gaudi::DataHandle( std::move( k ), a, owner ) {
   m_owner->declare( *this );
 }
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleBase::DataObjectHandleBase( const std::string& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
-    : DataObjectHandleBase( DataObjID( k ), a, owner ) {}
+DataObjectHandleBase::DataObjectHandleBase( std::string k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
+    : DataObjectHandleBase( DataObjID{ std::move( k ) }, a, owner ) {}
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::~DataObjectHandleBase() { owner()->renounce( *this ); }
@@ -86,7 +86,7 @@ DataObject* DataObjectHandleBase::fetch() const {
   // branch we _first_ grab the mutex, to avoid objKey changing while we use it
 
   // take a lock to be sure we only execute this once at a time
-  auto guard = std::scoped_lock{m_searchMutex};
+  auto guard = std::scoped_lock{ m_searchMutex };
 
   StatusCode sc = m_EDS->retrieveObject( objKey(), p );
   if ( m_searchDone ) { // another thread has done the search while we were blocked
@@ -96,7 +96,7 @@ DataObject* DataObjectHandleBase::fetch() const {
   }
 
   if ( !sc.isSuccess() ) {
-    auto tokens = boost::tokenizer<boost::char_separator<char>>{objKey(), boost::char_separator<char>{":"}};
+    auto tokens = boost::tokenizer<boost::char_separator<char>>{ objKey(), boost::char_separator<char>{ ":" } };
     // let's try our alternatives (if any)
     auto alt = std::find_if( tokens.begin(), tokens.end(),
                              [&]( const std::string& n ) { return m_EDS->retrieveObject( n, p ).isSuccess(); } );

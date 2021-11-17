@@ -21,6 +21,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/IBinder.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/detected.h"
 
@@ -172,6 +173,7 @@ namespace Gaudi::Functional::details {
   void put( const OutHandle& out_handle, OptOut&& out ) {
     if ( out ) put( out_handle, *std::forward<OptOut>( out ) );
   }
+
   /////////////////////////////////////////
   // adapt to differences between eg. std::vector (which has push_back) and KeyedContainer (which has insert)
   // adapt to getting a T, and a container wanting T* by doing new T{ std::move(out) }
@@ -370,14 +372,15 @@ namespace Gaudi::Functional::details {
 
     template <typename T>
     using DefaultInputHandle =
-        std::conditional_t<std::is_base_of_v<IAlgTool, T>, ToolHandle<T>, DataObjectReadHandle<T>>;
+        std::conditional_t<std::is_base_of_v<IAlgTool, T>, ToolHandle<Gaudi::Interface::Bind::IBinder<T>>,
+                           DataObjectReadHandle<T>>;
   } // namespace detail2
 
   // check whether Traits::BaseClass is a valid type,
   // if so, define BaseClass_t<Traits> as being Traits::BaseClass
   // else   define                     as being GaudiAlgorithm
-  template <typename Tr>
-  using BaseClass_t = Gaudi::cpp17::detected_or_t<GaudiAlgorithm, detail2::BaseClass_t, Tr>;
+  template <typename Tr, typename Base = GaudiAlgorithm>
+  using BaseClass_t = Gaudi::cpp17::detected_or_t<Base, detail2::BaseClass_t, Tr>;
 
   // check whether Traits::{Input,Output}Handle<T> is a valid type,
   // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
@@ -410,6 +413,11 @@ namespace Gaudi::Functional::details {
       -> decltype( details::deref( handle.get() ) ) // make it SFINAE friendly...
   {
     return details::deref( handle.get() );
+  }
+
+  template <typename IFace, typename Algo>
+  auto get( const ToolHandle<Gaudi::Interface::Bind::IBinder<IFace>>& handle, const Algo&, const EventContext& ctx ) {
+    return handle.bind( ctx );
   }
 
   template <typename Handle>

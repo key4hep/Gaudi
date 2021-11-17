@@ -9,12 +9,14 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "GaudiAlg/Consumer.h"
+#include "GaudiAlg/FunctionalTool.h"
 #include "GaudiAlg/MergingTransformer.h"
 #include "GaudiAlg/Producer.h"
 #include "GaudiAlg/ScalarTransformer.h"
 #include "GaudiAlg/Transformer.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/IAlgTool.h"
+#include "GaudiKernel/IBinder.h"
 #include "GaudiKernel/KeyedContainer.h"
 #include "GaudiKernel/SharedObjectsContainer.h"
 #include <cmath>
@@ -33,8 +35,28 @@ namespace Gaudi::Examples {
     void                         operator()() const override { always() << m_message.value() << endmsg; }
     Gaudi::Property<std::string> m_message{ this, "Message", "Boring Default Message" };
   };
-
   DECLARE_COMPONENT( MyExampleTool )
+
+  struct MyConsumerTool final : Gaudi::Functional::ToolBinder<Gaudi::Interface::Bind::Box<IMyTool>( const int& )> {
+    MyConsumerTool( std::string type, std::string name, const IInterface* parent )
+        : ToolBinder{ std::move( type ), std::move( name ), parent, KeyValue{ "MyInt", "/Event/MyInt" } } {}
+
+    class BoundInstance final : public Gaudi::Interface::Bind::Stub<IMyTool> {
+      MyConsumerTool const* parent;
+      int                   i;
+
+    public:
+      BoundInstance( MyConsumerTool const* parent, const int& i ) : parent{ parent }, i{ i } {}
+      void operator()() const override {
+        parent->always() << "BoundInstance - got: " << i << " from " << parent->inputLocation<int>() << endmsg;
+      }
+    };
+
+    Gaudi::Interface::Bind::Box<IMyTool> operator()( const int& i ) const override {
+      return { std::in_place_type<BoundInstance>, this, i };
+    };
+  };
+  DECLARE_COMPONENT( MyConsumerTool )
 
   using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>;
 
