@@ -28,6 +28,25 @@
 #include <utility>
 #include <vector>
 
+namespace {
+  template <std::size_t, typename T>
+  using alwaysT = T;
+  // get a tuple of n types the given Type, or directly the type for n = 1
+  template <typename Type, unsigned int ND>
+  struct GetTuple;
+  template <typename Type, unsigned int ND>
+  using GetTuple_t = typename GetTuple<Type, ND>::type;
+  template <typename Type, unsigned int ND>
+  struct GetTuple {
+    using type =
+        decltype( std::tuple_cat( std::declval<std::tuple<Type>>(), std::declval<GetTuple_t<Type, ND - 1>>() ) );
+  };
+  template <typename Type>
+  struct GetTuple<Type, 1> {
+    using type = std::tuple<Type>;
+  };
+} // namespace
+
 namespace Gaudi::Accumulators {
 
   /**
@@ -74,7 +93,7 @@ namespace Gaudi::Accumulators {
     using Base::operator+=;
     //// overload of operator+= to be able to only give weight and no value
     WeightedCountAccumulator operator+=( const Arithmetic weight ) {
-      *this += {Arithmetic{}, weight};
+      *this += { Arithmetic{}, weight };
       return *this;
     }
     Arithmetic nEntries() const { return this->value(); }
@@ -162,8 +181,10 @@ namespace Gaudi::Accumulators {
   /// automatic conversion of the Axis type to json
   template <typename Arithmetic>
   void to_json( nlohmann::json& j, const Axis<Arithmetic>& axis ) {
-    j = nlohmann::json{
-        {"nBins", axis.nBins}, {"minValue", axis.minValue}, {"maxValue", axis.maxValue}, {"title", axis.title}};
+    j = nlohmann::json{ { "nBins", axis.nBins },
+                        { "minValue", axis.minValue },
+                        { "maxValue", axis.maxValue },
+                        { "title", axis.title } };
     if ( !axis.labels.empty() ) { j["labels"] = axis.labels; }
   }
 
@@ -172,7 +193,7 @@ namespace Gaudi::Accumulators {
   struct HistoInputType : std::array<Arithmetic, ND> {
     // allow construction from set of values
     template <class... ARGS>
-    HistoInputType( ARGS... args ) : std::array<Arithmetic, ND>{static_cast<Arithmetic>( args )...} {}
+    HistoInputType( ARGS... args ) : std::array<Arithmetic, ND>{ static_cast<Arithmetic>( args )... } {}
     // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
     using ValueType          = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
     using AxisArithmeticType = Arithmetic;
@@ -243,9 +264,9 @@ namespace Gaudi::Accumulators {
     using BaseAccumulator    = BaseAccumulatorT<Atomicity, Arithmetic>;
     using AxisArithmeticType = typename InputType::AxisArithmeticType;
     template <std::size_t... Is>
-    HistogramingAccumulatorInternal( std::initializer_list<Axis<AxisArithmeticType>> axis, std::index_sequence<Is...> )
-        : m_axis{{*( axis.begin() + Is )...}}
-        , m_totNBins{computeTotNBins()}
+    HistogramingAccumulatorInternal( GetTuple_t<Axis<AxisArithmeticType>, ND::value> axis, std::index_sequence<Is...> )
+        : m_axis{ std::get<Is>( axis )... }
+        , m_totNBins{ computeTotNBins() }
         , m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
@@ -253,7 +274,7 @@ namespace Gaudi::Accumulators {
     HistogramingAccumulatorInternal(
         construct_empty_t,
         const HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other )
-        : m_axis( other.m_axis ), m_totNBins{computeTotNBins()}, m_value( new BaseAccumulator[m_totNBins] ) {
+        : m_axis( other.m_axis ), m_totNBins{ computeTotNBins() }, m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
     HistogramingAccumulatorInternal& operator+=( InputType v ) {
@@ -271,7 +292,7 @@ namespace Gaudi::Accumulators {
       }
     }
     auto operator[]( typename InputType::ValueType v ) {
-      return Buffer<BaseAccumulatorT, Atomicity, Arithmetic>{accumulator( v.computeIndex( m_axis ) )};
+      return Buffer<BaseAccumulatorT, Atomicity, Arithmetic>{ accumulator( v.computeIndex( m_axis ) ) };
     }
 
   protected:
@@ -394,20 +415,24 @@ namespace Gaudi::Accumulators {
    * sum(number), sum2(number))
    */
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
-            template <atomicity, typename, typename> typename Accumulator>
-  class HistogramingCounterBase
+            template <atomicity, typename, typename> typename Accumulator, typename Seq>
+  class HistogramingCounterBaseInternal;
+  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
+            template <atomicity, typename, typename> typename Accumulator, std::size_t... NDs>
+  class HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::index_sequence<NDs...>>
       : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
   public:
     using Parent = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
     template <typename OWNER>
-    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title,
-                             std::initializer_list<Axis<Arithmetic>> axis )
+    HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
+                                     GetTuple_t<Axis<Arithmetic>, ND> axis )
         : Parent( owner, name, std::string( Type ) + ":" + typeid( Arithmetic ).name(), axis,
                   std::make_index_sequence<ND>{} )
         , m_title( title ) {}
     template <typename OWNER>
-    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title, Axis<Arithmetic> axis )
-        : HistogramingCounterBase( owner, name, title, {axis} ) {}
+    HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
+                                     alwaysT<NDs, Axis<Arithmetic>>... allAxis )
+        : HistogramingCounterBaseInternal( owner, name, title, std::make_tuple( allAxis... ) ) {}
     using Parent::print;
     template <typename stream>
     stream& printImpl( stream& o, bool /*tableFormat*/ ) const {
@@ -426,24 +451,28 @@ namespace Gaudi::Accumulators {
       using Acc = Accumulator<Atomicity, Arithmetic, std::integral_constant<int, ND>>;
       std::vector<typename Acc::BaseAccumulator::OutputType> bins;
       bins.reserve( this->totNBins() );
-      unsigned long totNEntries{0};
+      unsigned long totNEntries{ 0 };
       for ( unsigned int i = 0; i < this->totNBins(); i++ ) {
         bins.push_back( this->binValue( i ) );
         totNEntries += this->nEntries( i );
       }
       // build json
-      return {{"type", std::string( Type ) + ":" + typeid( Arithmetic ).name()},
-              {"title", m_title},
-              {"dimension", ND},
-              {"empty", totNEntries == 0},
-              {"nEntries", totNEntries},
-              {"axis", this->axis()},
-              {"bins", bins}};
+      return { { "type", std::string( Type ) + ":" + typeid( Arithmetic ).name() },
+               { "title", m_title },
+               { "dimension", ND },
+               { "empty", totNEntries == 0 },
+               { "nEntries", totNEntries },
+               { "axis", this->axis() },
+               { "bins", bins } };
     }
 
   private:
     std::string const m_title;
   };
+  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
+            template <atomicity, typename, typename> typename Accumulator>
+  using HistogramingCounterBase =
+      HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::make_index_sequence<ND>>;
 
   namespace {
     static const char histogramString[]                = "histogram:Histogram";
