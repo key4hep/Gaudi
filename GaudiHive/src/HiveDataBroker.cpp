@@ -16,6 +16,7 @@
 #include "boost/tokenizer.hpp"
 #include <Gaudi/Algorithm.h>
 #include <algorithm>
+#include <iomanip>
 #ifdef __cpp_lib_ranges
 #  include <ranges>
 namespace ranges = std::ranges;
@@ -62,38 +63,36 @@ namespace {
 
   SmartIF<IAlgorithm> createAlgorithm( IAlgManager& am, const std::string& type, const std::string& name ) {
     // Maybe modify the AppMgr interface to return Algorithm* ??
-    IAlgorithm* tmp;
+    IAlgorithm* tmp = nullptr;
     StatusCode  sc = am.createAlgorithm( type, name, tmp );
-    return {sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr};
+    return sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr;
   }
 } // namespace
 
 StatusCode HiveDataBrokerSvc::initialize() {
-  auto sc = Service::initialize();
-  if ( sc.isFailure() ) return sc;
-  // populate m_algorithms
-  m_algorithms = instantiateAndInitializeAlgorithms( m_producers );
-  if ( sc.isFailure() ) return sc;
+  return Service::initialize().andThen( [&]{
+    // populate m_algorithms
+    m_algorithms = instantiateAndInitializeAlgorithms( m_producers );
 
-  // warn about non-reentrant algorithms
-  ranges::for_each( m_algorithms | ranges::views::transform( []( const auto& entry ) { return entry.alg; } ) |
-                        ranges::views::filter( []( const auto* alg ) { return alg->cardinality() > 0; } ),
-                    [&]( const Gaudi::Algorithm* alg ) {
-                      this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{*alg} << endmsg;
-                    } );
-  //== Print the list of the created algorithms
-  if ( msgLevel( MSG::DEBUG ) ) {
-    MsgStream& msg = debug();
-    msg << "Available DataProducers: ";
-    GaudiUtils::details::ostream_joiner(
-        msg, m_algorithms, ", ",
-        []( auto& os, const AlgEntry& e ) -> decltype( auto ) { return os << AlgorithmRepr{*e.alg}; } );
-    msg << endmsg;
-  }
+    // warn about non-reentrant algorithms
+    ranges::for_each( m_algorithms | ranges::views::transform( []( const auto& entry ) { return entry.alg; } ) |
+                          ranges::views::filter( []( const auto* alg ) { return alg->cardinality() > 0; } ),
+                      [&]( const Gaudi::Algorithm* alg ) {
+                        this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{ *alg } << endmsg;
+                      } );
+    //== Print the list of the created algorithms
+    if ( msgLevel( MSG::DEBUG ) ) {
+      MsgStream& msg = debug();
+      msg << "Available DataProducers: ";
+      GaudiUtils::details::ostream_joiner(
+          msg, m_algorithms, ", ",
+          []( auto& os, const AlgEntry& e ) -> decltype( auto ) { return os << AlgorithmRepr{ *e.alg }; } );
+      msg << endmsg;
+    }
 
-  // populate m_dependencies
-  m_dependencies = mapProducers( m_algorithms );
-  return sc;
+    // populate m_dependencies
+    m_dependencies = mapProducers( m_algorithms );
+  });
 }
 
 StatusCode HiveDataBrokerSvc::start() {
@@ -173,15 +172,15 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
     }
 
     if ( !myIAlg ) {
-      throw GaudiException{"Failed to create " + boost::lexical_cast<std::string>( item ), __func__,
-                           StatusCode::FAILURE};
+      throw GaudiException{ "Failed to create " + boost::lexical_cast<std::string>( item ), __func__,
+                            StatusCode::FAILURE };
     }
 
     // propagate the sub-algorithm into own state.
     StatusCode sc = myIAlg->sysInitialize();
     if ( sc.isFailure() ) {
-      throw GaudiException{"Failed to initialize " + boost::lexical_cast<std::string>( item ), __func__,
-                           StatusCode::FAILURE};
+      throw GaudiException{ "Failed to initialize " + boost::lexical_cast<std::string>( item ), __func__,
+                            StatusCode::FAILURE };
     }
 
     algorithms.emplace_back( std::move( myIAlg ) );
@@ -213,7 +212,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
     if ( output.empty() ) { continue; }
     for ( auto id : output ) {
       if ( id.key().find( ":" ) != std::string::npos ) {
-        error() << " in Alg " << AlgorithmRepr{*alg.alg} << " alternatives are NOT allowed for outputs! id: " << id
+        error() << " in Alg " << AlgorithmRepr{ *alg.alg } << " alternatives are NOT allowed for outputs! id: " << id
                 << endmsg;
       }
 
@@ -232,10 +231,10 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
     for ( const DataObjID* idp : input ) {
       DataObjID id = *idp;
       if ( id.key().find( ":" ) != std::string::npos ) {
-        warning() << AlgorithmRepr{*( algEntry.alg )} << " contains alternatives which require resolution...\n";
-        auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
+        warning() << AlgorithmRepr{ *( algEntry.alg ) } << " contains alternatives which require resolution...\n";
+        auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
         auto itok   = std::find_if( tokens.begin(), tokens.end(),
-                                  [&]( DataObjID t ) { return producers.find( t ) != producers.end(); } );
+                                    [&]( DataObjID t ) { return producers.find( t ) != producers.end(); } );
         if ( itok != tokens.end() ) {
           warning() << "found matching output for " << *itok << " -- updating info\n";
           id.updateKey( *itok );
@@ -252,10 +251,10 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
         algEntry.dependsOn.insert( iproducer->second );
       } else {
         std::ostringstream error_message;
-        error_message << "\nUnknown requested input by " << AlgorithmRepr{*( algEntry.alg )} << " : " << id.key()
-                      << " .\n";
+        error_message << "\nUnknown requested input by " << AlgorithmRepr{ *( algEntry.alg ) } << " : " << std::quoted(id.key(),'\'')
+                      << ".\n";
         error_message << "You can set the OutputLevel of HiveDataBrokerSvc to DEBUG to get a list of inputs and "
-                         "outputs of every algorithm.\n";
+                         "outputs of every registered algorithm.\n";
         throw GaudiException( error_message.str(), __func__, StatusCode::FAILURE );
         // TODO: assign to dataloader!
         // algEntry.dependsOn.insert(dataloader.alg);
@@ -280,9 +279,9 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
     DataObjID id = req;
     if ( id.key().find( ":" ) != std::string::npos ) {
       warning() << req.key() << " contains alternatives which require resolution...\n";
-      auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
+      auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
       auto itok   = std::find_if( tokens.begin(), tokens.end(),
-                                [&]( DataObjID t ) { return m_dependencies.find( t ) != m_dependencies.end(); } );
+                                  [&]( DataObjID t ) { return m_dependencies.find( t ) != m_dependencies.end(); } );
       if ( itok != tokens.end() ) {
         warning() << "found matching output for " << *itok << " -- updating info\n";
         id.updateKey( *itok );
@@ -317,7 +316,7 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
     }
   }
   auto range = ( deps | ranges::views::transform( []( auto& i ) { return i->alg; } ) | ranges::views::reverse );
-  return {begin( range ), end( range )};
+  return { begin( range ), end( range ) };
 }
 
 std::vector<Gaudi::Algorithm*>
@@ -333,7 +332,7 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
             << endmsg;
   }
   if ( alg == end( m_cfnodes ) ) {
-    auto av = instantiateAndInitializeAlgorithms( {requested.type() + '/' + requested.name()} );
+    auto av = instantiateAndInitializeAlgorithms( { requested.type() + '/' + requested.name() } );
     assert( av.size() == 1 );
     m_cfnodes.push_back( std::move( av.front() ) );
     alg = std::next( m_cfnodes.rbegin() ).base();
@@ -349,7 +348,7 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
     debug() << std::endl << "requested " << requested << " returning " << std::endl << "  ";
     GaudiUtils::details::ostream_joiner(
         debug(), result, ",\n  ",
-        []( auto& os, const Gaudi::Algorithm* a ) -> decltype( auto ) { return os << AlgorithmRepr{*a}; } );
+        []( auto& os, const Gaudi::Algorithm* a ) -> decltype( auto ) { return os << AlgorithmRepr{ *a }; } );
     debug() << std::endl << endmsg;
   }
   return result;
