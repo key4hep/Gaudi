@@ -67,7 +67,7 @@ namespace details {
     return ok;
   }
 
-  template <typename T, typename U>
+  template <Gaudi::DataHandle::Mode, typename T, typename U>
   struct Payload_helper {
     using type =
         std::conditional_t<std::is_base_of_v<DataObject, T> && std::is_same_v<T, U>, T,
@@ -75,16 +75,16 @@ namespace details {
                                               AnyDataWithViewWrapper<std::remove_const_t<T>, std::remove_const_t<U>>>>;
   };
   template <typename T, typename U>
-  struct Payload_helper<Gaudi::Range_<T>, U> {
+  struct Payload_helper<Gaudi::DataHandle::Reader, Gaudi::Range_<T>, U> {
     using type = Gaudi::Range_<T>;
   };
   template <typename T, typename U>
-  struct Payload_helper<Gaudi::NamedRange_<T>, U> {
+  struct Payload_helper<Gaudi::DataHandle::Reader, Gaudi::NamedRange_<T>, U> {
     using type = Gaudi::NamedRange_<T>;
   };
 
-  template <typename T, typename U = T>
-  using Payload_t = typename Payload_helper<T, U>::type;
+  template <Gaudi::DataHandle::Mode mode, typename T, typename U = T>
+  using Payload_t = typename Payload_helper<mode, T, U>::type;
 } // namespace details
 
 //---------------------------------------------------------------------------
@@ -395,21 +395,21 @@ private:
 //---------------------------- user-facing interface ----------
 
 template <typename T>
-class DataObjectReadHandle : public DataObjectHandle<::details::Payload_t<T>> {
+class DataObjectReadHandle : public DataObjectHandle<::details::Payload_t<Gaudi::DataHandle::Reader, T>> {
   template <typename... Args, std::size_t... Is>
   DataObjectReadHandle( std::tuple<Args...>&& args, std::index_sequence<Is...> )
       : DataObjectReadHandle( std::get<Is>( std::move( args ) )... ) {}
 
 public:
   DataObjectReadHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<::details::Payload_t<T>>{ k, Gaudi::DataHandle::Reader, owner } {}
+      : DataObjectHandle<::details::Payload_t<Gaudi::DataHandle::Reader, T>>{ k, Gaudi::DataHandle::Reader, owner } {}
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
-      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key,
-                                                   std::move( doc ) ) {}
+      : DataObjectHandle<::details::Payload_t<Gaudi::DataHandle::Reader, T>>(
+            owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key, std::move( doc ) ) {}
 
   template <typename... Args>
   DataObjectReadHandle( std::tuple<Args...>&& args )
@@ -417,21 +417,22 @@ public:
 };
 
 template <typename T, typename U = T>
-class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<T, U>> {
+class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<Gaudi::DataHandle::Writer, T, U>> {
   template <typename... Args, std::size_t... Is>
   DataObjectWriteHandle( std::tuple<Args...>&& args, std::index_sequence<Is...> )
       : DataObjectWriteHandle( std::get<Is>( std::move( args ) )... ) {}
 
 public:
   DataObjectWriteHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<::details::Payload_t<T, U>>{ k, Gaudi::DataHandle::Writer, owner } {}
+      : DataObjectHandle<::details::Payload_t<Gaudi::DataHandle::Writer, T, U>>{ k, Gaudi::DataHandle::Writer, owner } {
+  }
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
-      : DataObjectHandle<::details::Payload_t<T, U>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
-                                                      std::move( doc ) ) {}
+      : DataObjectHandle<::details::Payload_t<Gaudi::DataHandle::Writer, T, U>>(
+            owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key, std::move( doc ) ) {}
 
   template <typename... Args>
   DataObjectWriteHandle( std::tuple<Args...>&& args )

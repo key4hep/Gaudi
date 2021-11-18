@@ -476,4 +476,18 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( IntVectorsMergingConsumer )
 
+  struct MyData {
+    using ConstVector = std::vector<const MyData*>;
+  };
+  using MyDataRange = Gaudi::Range_<MyData::ConstVector>;
+
+  struct RangeProducer : Gaudi::Functional::Producer<MyDataRange()> {
+
+    RangeProducer( const std::string& name, ISvcLocator* pSvcLocator )
+        : Producer( name, pSvcLocator, KeyValue{ "TrackLocation", "" } ){};
+
+    MyDataRange operator()() const override { return {}; }
+  };
+  DECLARE_COMPONENT( RangeProducer )
+
 } // namespace Gaudi::Examples
