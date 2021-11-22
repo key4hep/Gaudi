@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -1161,7 +1161,11 @@ class ConfigurableService(Configurable):
         return self  # services are always shared
 
     def copyChild(self, child):
-        return child  # full sharing
+        # Copy private tools but all else is shared
+        if isinstance(child, ConfigurableAlgTool) and not child.isPublic():
+            return copy.deepcopy(child)
+        else:
+            return child
 
     def getHandle(self):
         return iService(self._name)
