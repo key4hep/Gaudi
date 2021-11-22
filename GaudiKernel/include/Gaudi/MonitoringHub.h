@@ -10,6 +10,8 @@
 \*****************************************************************************/
 #pragma once
 
+#include "GaudiKernel/detected.h"
+
 #include <deque>
 #include <functional>
 #include <nlohmann/json.hpp>
@@ -20,21 +22,29 @@ namespace Gaudi::Monitoring {
 
   namespace details {
 
-    struct MergeAndResetBase {
-      virtual void operator()( void*, void* ) const = 0;
-      virtual ~MergeAndResetBase() {}
-    };
-    template <typename T, typename = void>
-    struct MergeAndReset : MergeAndResetBase {
-      void operator()( void*, void* ) const override {}
-    };
     template <typename T>
-    struct MergeAndReset<T, decltype( std::declval<T>().mergeAndReset( nullptr ) )> : MergeAndResetBase {
-      void operator()( void* ptr, void* other ) const override {
-        reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
-      }
+    using has_merge_and_reset_ = decltype( std::declval<T>().mergeAndReset( std::declval<T&&>() ) );
+    template <typename T>
+    inline constexpr bool has_merge_and_reset_v = Gaudi::cpp17::is_detected_v<has_merge_and_reset_, T>;
+
+    struct MergeAndResetBase {
+      virtual ~MergeAndResetBase() = default;
+      virtual void operator()( void*, void* ) const = 0;
     };
 
+    using MergeAndReset_t = void (*)(void*, void*);
+
+    template <typename T>
+    MergeAndReset_t makeMergeAndResetFor() {
+      if constexpr ( has_merge_and_reset_v<T> ) { 
+        return [](void *ptr, void* other) { 
+          reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
+        };
+      } else {
+        return [](void*,void*) { };
+      }
+    }
+    
   } // namespace details
 
   /// Central entity in a Gaudi application that manages monitoring objects (i.e. counters, histograms, etc.).
@@ -47,7 +57,7 @@ namespace Gaudi::Monitoring {
     /** Wrapper class for arbitrary monitoring objects.
      *
      * Mainly contains a pointer to the actual data with component, name and type metadata
-     * Any object having a toJSON method can be used as internal data and wrapped into an Entity
+     * Any object having a toJSON and a reset method can be used as internal data and wrapped into an Entity
      *
      * This toJSON method should generate a json dictionnary with a "type" entry of type string
      * and as many others as entries as needed. Entity producers are thus free to add their own entries
@@ -66,7 +76,7 @@ namespace Gaudi::Monitoring {
           , type{ std::move( type ) }
           , m_ptr{ &ent }
           , m_reset{ []( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); } }
-          , m_mergeAndReset{ std::make_shared<details::MergeAndReset<T>>() }
+          , m_mergeAndReset{ details::makeMergeAndResetFor<T>() }
           , m_getJSON{ []( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); } } {}
       /// name of the component owning the Entity
       std::string component;
@@ -96,7 +106,7 @@ namespace Gaudi::Monitoring {
       /// function reseting internal data.
       void ( *m_reset )( void* );
       /// function calling merge and reset on internal data with the internal data of another entity
-      std::shared_ptr<details::MergeAndResetBase> m_mergeAndReset;
+      details::MergeAndReset_t m_mergeAndReset{nullptr};
       /// function converting the internal data to json.
       json ( *m_getJSON )( const void* );
     };

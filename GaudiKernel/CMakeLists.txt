@@ -244,6 +244,9 @@ gaudi_add_executable(test_Counters SOURCES tests/src/CountersUnitTest.cpp
 gaudi_add_executable(test_CounterHistos SOURCES tests/src/CounterHistosUnitTest.cpp
   LINK GaudiKernel Boost::unit_test_framework TEST)
 
+gaudi_add_executable(test_GenericSink SOURCES tests/src/GenericSinkUnitTest.cpp
+  LINK GaudiKernel Boost::unit_test_framework TEST)
+
 gaudi_add_executable(AttribStringParser_test SOURCES tests/src/test_AttribStringParser.cpp
   LINK GaudiKernel Boost::unit_test_framework TEST)
 
