@@ -26,13 +26,13 @@ struct ServiceLocator {
 struct Algo {
   ServiceLocator* serviceLocator() { return &m_serviceLocator; }
   std::string     name() { return ""; }
-  ServiceLocator m_serviceLocator{};
+  ServiceLocator  m_serviceLocator{};
 };
 struct HistSink : public Gaudi::Monitoring::Hub::Sink {
-  virtual void registerEntity(Gaudi::Monitoring::Hub::Entity ent) override { m_entities.push_back(ent); }
-  virtual void removeEntity(Gaudi::Monitoring::Hub::Entity const& ent) override {
-    auto it = std::find(begin(m_entities), end(m_entities), ent);
-    if (it != m_entities.end()) m_entities.erase(it);
+  virtual void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { m_entities.push_back( ent ); }
+  virtual void removeEntity( Gaudi::Monitoring::Hub::Entity const& ent ) override {
+    auto it = std::find( begin( m_entities ), end( m_entities ), ent );
+    if ( it != m_entities.end() ) m_entities.erase( it );
   }
   std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
 };
@@ -120,37 +120,39 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
 
 BOOST_AUTO_TEST_CASE( test_histos_merge_reset, *boost::unit_test::tolerance( 1e-14 ) ) {
   using namespace Gaudi::Accumulators;
-  Algo algo;
+  Algo     algo;
   HistSink histSink;
-  algo.serviceLocator()->monitoringHub().addSink(&histSink);
+  algo.serviceLocator()->monitoringHub().addSink( &histSink );
 
-  Histogram<1, atomicity::full, float> hist1(&algo, "TestHist1", "Test histogram 1", Axis<float>{10, 0., 10.});
-  Histogram<1, atomicity::full, float> hist2(&algo, "TestHist2", "Test histogram 2", Axis<float>{10, 0., 10.});
+  Histogram<1, atomicity::full, float> hist1( &algo, "TestHist1", "Test histogram 1", Axis<float>{ 10, 0., 10. } );
+  Histogram<1, atomicity::full, float> hist2( &algo, "TestHist2", "Test histogram 2", Axis<float>{ 10, 0., 10. } );
 
   // test all combinations of entities made (a) as part of the Histogram's constructor and (b) separately
   auto ent1a = histSink.m_entities[0];
   auto ent2a = histSink.m_entities[1];
 
-  Gaudi::Monitoring::Hub::Entity ent1b("","TestHist1",std::string("histogram:Histogram:")+typeid(float).name(),hist1);
-  Gaudi::Monitoring::Hub::Entity ent2b("","TestHist2",std::string("histogram:Histogram:")+typeid(float).name(),hist2);
+  Gaudi::Monitoring::Hub::Entity ent1b( "", "TestHist1", std::string( "histogram:Histogram:" ) + typeid( float ).name(),
+                                        hist1 );
+  Gaudi::Monitoring::Hub::Entity ent2b( "", "TestHist2", std::string( "histogram:Histogram:" ) + typeid( float ).name(),
+                                        hist2 );
 
-  for ( int i=0; i<10; ++i) {
+  for ( int i = 0; i < 10; ++i ) {
     hist1[i] += i;
-    hist2[i] += 2*i;
+    hist2[i] += 2 * i;
   }
 
-  ent1a.mergeAndReset(ent2a);
-  BOOST_TEST(hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 135);
-  BOOST_TEST(hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 0);
-  ent2b.mergeAndReset(ent1b);
-  BOOST_TEST(hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 0);
-  BOOST_TEST(hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 135);
-  ent1a.mergeAndReset(ent2b);
-  BOOST_TEST(hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 135);
-  BOOST_TEST(hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 0);
-  ent2b.mergeAndReset(ent1a);
-  BOOST_TEST(hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 0);
-  BOOST_TEST(hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 135);
+  ent1a.mergeAndReset( ent2a );
+  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
+  ent2b.mergeAndReset( ent1b );
+  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
+  ent1a.mergeAndReset( ent2b );
+  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
+  ent2b.mergeAndReset( ent1a );
+  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
 }
 
 BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {

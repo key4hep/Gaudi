@@ -28,23 +28,23 @@ namespace Gaudi::Monitoring {
     inline constexpr bool has_merge_and_reset_v = Gaudi::cpp17::is_detected_v<has_merge_and_reset_, T>;
 
     struct MergeAndResetBase {
-      virtual ~MergeAndResetBase() = default;
+      virtual ~MergeAndResetBase()                  = default;
       virtual void operator()( void*, void* ) const = 0;
     };
 
-    using MergeAndReset_t = void (*)(void*, void*);
+    using MergeAndReset_t = void ( * )( void*, void* );
 
     template <typename T>
     MergeAndReset_t makeMergeAndResetFor() {
-      if constexpr ( has_merge_and_reset_v<T> ) { 
-        return [](void *ptr, void* other) { 
+      if constexpr ( has_merge_and_reset_v<T> ) {
+        return []( void* ptr, void* other ) {
           reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
         };
       } else {
-        return [](void*,void*) { };
+        return []( void*, void* ) {};
       }
     }
-    
+
   } // namespace details
 
   /// Central entity in a Gaudi application that manages monitoring objects (i.e. counters, histograms, etc.).
@@ -106,7 +106,7 @@ namespace Gaudi::Monitoring {
       /// function reseting internal data.
       void ( *m_reset )( void* );
       /// function calling merge and reset on internal data with the internal data of another entity
-      details::MergeAndReset_t m_mergeAndReset{nullptr};
+      details::MergeAndReset_t m_mergeAndReset{ nullptr };
       /// function converting the internal data to json.
       json ( *m_getJSON )( const void* );
     };
