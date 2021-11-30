@@ -166,6 +166,8 @@ class WorkManager(object):
     def __del__(self):
         if hasattr(self, 'server'):
             self.server.destroy()
+        if hasattr(self, "pool"):
+            self.pool.close()
 
     def process(self, task, items, timeout=90000):
         if not isinstance(task, Task):
