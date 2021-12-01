@@ -214,7 +214,7 @@ JobOptionsSvc.AuditStart:False
 JobOptionsSvc.AuditStop:False
 JobOptionsSvc.AutoRetrieveTools:True
 JobOptionsSvc.CheckToolDeps:True
-JobOptionsSvc.DUMPFILE:''
+JobOptionsSvc.DUMPFILE:'gaudiexamples.metadatasvc.joboptsdump'
 JobOptionsSvc.GlobalDefaults:[  ]
 JobOptionsSvc.OutputLevel:3
 JobOptionsSvc.PATH:'../options/job.opts'
