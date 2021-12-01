@@ -97,10 +97,7 @@ view-gcc8:
   <<: *template_build
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-    # Override CMake from the view (too old in LCG 97a)
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH"
-    - PYTHON_MAJOR_VERSION=$(python -c "import sys; print(sys.version_info[0])")
-    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=${PYTHON_MAJOR_VERSION} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
     # pre-heat ccache cache for GaudiKernel
     - jobs=$(nproc)
@@ -157,8 +154,6 @@ view-gcc8:test:
       artifacts: true
   before_script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-    # Override CMake from the view (too old in LCG 97a)
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH"
 
 lhcb-gcc10:test:
   <<: *template_test
@@ -301,8 +296,6 @@ doxygen:
       artifacts: true
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-    # Override CMake from the view (too old in LCG 97a)
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH"
     - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
     - cmake --build build --target doc
     - rm -rf public
