@@ -15,7 +15,7 @@ stages:
   - deploy
 
 variables:
-  LCG_VERSION: "100"
+  LCG_VERSION: "101"
   CMAKE_GENERATOR: 'Ninja' # default build system
   NO_LBLOGIN: "1" # prevent lbdocker containers to start LbLogin/LbEnv
   TARGET_BRANCH: master
