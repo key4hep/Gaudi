@@ -988,6 +988,7 @@ function(gaudi_generate_confuserdb)
     add_custom_command(OUTPUT "${output_file}"
         COMMAND run genconfuser.py
                 --build-dir ${CMAKE_BINARY_DIR}
+                --project-name ${PROJECT_NAME}
                 --root ${CMAKE_CURRENT_SOURCE_DIR}/python
                 --output "${output_file}"
                 ${ARG_OPTIONS}

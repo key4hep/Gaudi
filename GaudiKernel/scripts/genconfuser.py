@@ -49,7 +49,7 @@ def _inheritsfrom(derived, basenames):
     return False
 
 
-def loadConfigurableDb(build_dir=None):
+def loadConfigurableDb(build_dir=None, project_name=None):
     '''
     Equivalent to GaudiKernel.ConfigurableDb.loadConfigurableDb(), but does a
     deep search and executes the '*.confdb' files instead of importing them.
@@ -79,10 +79,20 @@ def loadConfigurableDb(build_dir=None):
                 if f.endswith('.confdb')
             ]
         ]
+    #  - get the list of ignored files
+    ignored_files = set(
+        os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
     #  - load the confdb files
-    for confDb in (set(confDbFiles) - set(
-            os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))):
-        log.debug("\t-loading [%s]..." % confDb)
+    for confDb in set(confDbFiles):
+        if confDb in ignored_files or (project_name
+                                       and os.path.basename(confDb) ==
+                                       ("{}.confdb".format(project_name))):
+            # skip ignored files and the project's own confdb
+            log.debug("\t-ignoring [%s]", confDb)
+            # make sure we count also <project_name>.confdb for GaudiKernel
+            ignored_files.add(confDb)
+            continue
+        log.debug("\t-loading [%s]...", confDb)
         try:
             cfgDb._loadModule(confDb)
         except Exception as err:
@@ -91,6 +101,8 @@ def loadConfigurableDb(build_dir=None):
             log.warning("Could not load file [%s] !", confDb)
             log.warning("Reason: %s", err)
     # top up with the regular merged confDb (for the used projects)
+    # (make sure GaudiKernel gets the right exclusions)
+    os.environ["CONFIGURABLE_DB_IGNORE"] = ",".join(ignored_files)
     GaudiKernel.ConfigurableDb.loadConfigurableDb()
 
 
@@ -188,6 +200,12 @@ def main():
         help=
         "build directory where to look for .confdb files (search all subdirectories)"
     )
+    parser.add_option(
+        "--project-name",
+        action="store",
+        help=
+        "name of the current project (used to exclude spurious versions of the .confdb file for the current project)"
+    )
     parser.set_defaults(root=os.path.join("..", "python"))
 
     opts, args = parser.parse_args()
@@ -233,7 +251,7 @@ def main():
     except:
         pass
     # load configurables database to avoid fake duplicates
-    loadConfigurableDb(opts.build_dir)
+    loadConfigurableDb(opts.build_dir, opts.project_name)
     # ensure that local configurables are in the database
     try:
         # Add the local python directories to the python path to be able to import the local
