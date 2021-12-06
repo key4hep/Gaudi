@@ -780,7 +780,6 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     pvalue = boost::to_lower_copy( cvalue );
     if ( std::string::npos != pvalue.find( "nan" ) ) {
       pvalue = "float('nan')";
-      std::cout << "WARNING: default value for [" << p->name() << "] is NaN !!" << std::endl;
     } else if ( std::string::npos == pvalue.find( "." ) && std::string::npos == pvalue.find( "e" ) ) {
       pvalue = cvalue + ".0";
     }
