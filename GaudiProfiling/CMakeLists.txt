@@ -48,12 +48,15 @@ endif()
 # Google PerfTools profiler
 #-----------------------------------
 if(GAUDI_USE_GPERFTOOLS)
+  # Note we do not link against libtcmalloc.so or libprofiler.so as they have to be
+  # preloaded (see next comment)
   gaudi_add_module(GaudiGoogleProfiling
                    SOURCES src/component/google/GoogleAuditor.cpp
                    LINK GaudiKernel
                         GaudiAlgLib
-                        ZLIB::ZLIB
-                        gperftools::gperftools)
+                        ZLIB::ZLIB)
+  # but we still need to add the include directories to the search path
+  target_include_directories(GaudiGoogleProfiling PRIVATE ${GPERFTOOLS_INCLUDE_DIRS})
 
   # Special handling of unresolved symbols in GaudiGoogleProfiling.
   # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
