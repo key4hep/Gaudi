@@ -121,7 +121,9 @@ StatusCode THistSvc::initialize() {
     error() << "unable to get the FileMgr" << endmsg;
     st = StatusCode::FAILURE;
   } else {
-    debug() << "got the FileMgr" << endmsg;
+    if ( msgLevel( MSG::DEBUG) ) {
+      debug() << "got the FileMgr" << endmsg;
+    }
   }
 
   // Register open/close callback actions
@@ -582,7 +584,10 @@ StatusCode THistSvc::deReg( const std::string& id ) {
   }
 
   vhid_t* vh = itr->second;
-  debug() << "will deregister " << vh->size() << " elements of id \"" << id << "\"" << endmsg;
+
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "will deregister " << vh->size() << " elements of id \"" << id << "\"" << endmsg;
+  }
   StatusCode sc( StatusCode::SUCCESS );
   // vh will get deleted in deReg once empty, so we cannot query the list size in the loop
   size_t vh_size = vh->size();
@@ -612,7 +617,9 @@ StatusCode THistSvc::deReg( TObject* obj ) {
 
     if ( vhid->size() == 1 ) {
       // We are the last object, so we have to delete vhid properly
-      debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg;
+      if ( msgLevel( MSG::DEBUG ) ) {
+        debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg;
+      }
 
       std::string root, rem;
       parseString( hid.id, root, rem );

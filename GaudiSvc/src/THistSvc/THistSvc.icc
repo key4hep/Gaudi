@@ -37,7 +37,9 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   // It is sad that we lose propper memory management here
   T* hist = nullptr;
   if ( hist_unique.get() != nullptr ) { hist = hist_unique.release(); }
-  debug() << "regHist_i obj: " << hist << "  id: " << id << "  s: " << shared << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "regHist_i obj: " << hist << "  id: " << id << "  s: " << shared << endmsg;
+  }
 
   std::string idr( id );
   removeDoubleSlash( idr );
@@ -70,7 +72,9 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
       delete hist;
       return StatusCode::FAILURE;
     } else {
-      debug() << "previously registered id \"" << uid << "\": num " << uitr->second->size() << endmsg;
+      if ( msgLevel( MSG::DEBUG ) ) {
+        debug() << "previously registered id \"" << uid << "\": num " << uitr->second->size() << endmsg;
+      }
     }
   }
 
@@ -142,11 +146,13 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     fname = f->GetName();
   }
 
-  debug() << "Registering" << ( shared ? " shared " : " " ) << System::typeinfoName( typeid( *hist ) ) << " title: \""
-          << hist->GetTitle() << "\"  id: \"" << uid
-          << "\"  dir: "
-          //          << hist->GetDirectory()->GetPath() << "  "
-          << changeDir( hid )->GetPath() << "  file: " << fname << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "Registering" << ( shared ? " shared " : " " ) << System::typeinfoName( typeid( *hist ) ) << " title: \""
+            << hist->GetTitle() << "\"  id: \"" << uid
+            << "\"  dir: "
+            //          << hist->GetDirectory()->GetPath() << "  "
+            << changeDir( hid )->GetPath() << "  file: " << fname << endmsg;
+  }
 
   // create a mutex for all shared histograms
   if ( shared ) { hid.mutex = new histMut_t; }
@@ -168,7 +174,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     m_tobjs.emplace( to, std::pair<vhid_t*, size_t>( vi, 0 ) );
   }
 
-  debug() << "regHist_i  THistID: " << hid << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) { debug() << "regHist_i  THistID: " << hid << endmsg;}
 
   return StatusCode::SUCCESS;
 }
@@ -207,7 +213,9 @@ T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) c
       error() << "dcast failed, Hist id: \"" << id << "\"" << endmsg;
       return nullptr;
     }
-    verbose() << "found unique Hist title: \"" << hist->GetTitle() << "\"  id: \"" << id << "\"" << endmsg;
+    if ( msgLevel( MSG::VERBOSE) ) {
+      verbose() << "found unique Hist title: \"" << hist->GetTitle() << "\"  id: \"" << id << "\"" << endmsg;
+    }
   }
 
   return hist;
@@ -318,7 +326,9 @@ LockedHandle<T> THistSvc::getShared_i( const std::string& name ) const {
     T* h1 = dynamic_cast<T*>( hid->obj );
     hist  = LockedHandle<T>( h1, hid->mutex );
 
-    debug() << "getSharedHist: found THistID: " << *hid << endmsg;
+    if ( msgLevel( MSG::DEBUG ) ) {
+      debug() << "getSharedHist: found THistID: " << *hid << endmsg;
+    }
   } else if ( i == 0 ) {
     error() << "no histograms matching id \"" << name << "\" found" << endmsg;
   } else {
