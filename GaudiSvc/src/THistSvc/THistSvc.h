@@ -221,6 +221,9 @@ private:
   /// Enumerating all possible file access modes
   enum Mode { READ, WRITE, UPDATE, APPEND, SHARE, INVALID };
 
+  /// Possible TObject types
+  enum class ObjectType { UNKNOWN, TH1, TTREE, TGRAPH, TEFFICIENCY };
+
   /// Convert a char to a Mode enum
   static Mode charToMode( const char typ ) {
     switch ( typ ) {
@@ -239,35 +242,26 @@ private:
 
   /// Helper struct that bundles the histogram ID with a mutex, TFile and TObject*
   struct THistID {
-    std::string id{""};
-    bool        temp{true};
-    TObject*    obj{nullptr};
-    TFile*      file{nullptr};
-    Mode        mode{INVALID};
-    histMut_t*  mutex{nullptr};
-    bool        shared{false};
+    std::string id{};
+    TObject*    obj{ nullptr };
+    TFile*      file{ nullptr };
+    histMut_t*  mutex{ nullptr };
+    Mode        mode{ INVALID };
+    ObjectType  type{ ObjectType::UNKNOWN };
+    bool        temp{ true };
+    bool        shared{ false };
 
     THistID()                     = default;
     THistID( const THistID& rhs ) = default;
-    THistID( std::string& i, bool& t, TObject* o, TFile* f ) : id( i ), temp( t ), obj( o ), file( f ) {}
+    THistID( std::string& i, bool& t, TObject* o, TFile* f ) : id( i ), obj( o ), file( f ), temp( t ) {}
     THistID( std::string& i, bool& t, TObject* o, TFile* f, Mode m )
-        : id( i ), temp( t ), obj( o ), file( f ), mode( m ) {}
-
-    void reset() {
-      id     = "";
-      temp   = true;
-      obj    = nullptr;
-      file   = nullptr;
-      mode   = INVALID;
-      mutex  = nullptr;
-      shared = false;
-    }
+        : id( i ), obj( o ), file( f ), mode( m ), temp( t ) {}
 
     bool operator<( THistID const& rhs ) const { return ( obj < rhs.obj ); }
 
     friend std::ostream& operator<<( std::ostream& ost, const THistID& hid ) {
       ost << "id: " << hid.id << " t: " << hid.temp << " s: " << hid.shared << " M: " << hid.mode << " m: " << hid.mutex
-          << " o: " << hid.obj << " " << hid.obj->IsA()->GetName();
+          << " o: " << hid.obj << " T: " << static_cast<int>( hid.type ) << " " << hid.obj->IsA()->GetName();
       return ost;
     }
   };
@@ -377,22 +371,22 @@ private:
   /// @name Gaudi properties
   /// @{
 
-  Gaudi::Property<int>                      m_autoSave{this, "AutoSave", 0};
-  Gaudi::Property<int>                      m_autoFlush{this, "AutoFlush", 0};
-  Gaudi::Property<bool>                     m_print{this, "PrintAll", false};
-  Gaudi::Property<int>                      m_maxFileSize{this, "MaxFileSize", 10240,
-                                     "maximum file size in MB. if exceeded,"
-                                     " will cause an abort. -1 to never check."};
-  Gaudi::Property<int>                      m_compressionLevel{this, "CompressionLevel", 1, [this]( auto& ) {
+  Gaudi::Property<int>                      m_autoSave{ this, "AutoSave", 0 };
+  Gaudi::Property<int>                      m_autoFlush{ this, "AutoFlush", 0 };
+  Gaudi::Property<bool>                     m_print{ this, "PrintAll", false };
+  Gaudi::Property<int>                      m_maxFileSize{ this, "MaxFileSize", 10240,
+                                      "maximum file size in MB. if exceeded,"
+                                      " will cause an abort. -1 to never check." };
+  Gaudi::Property<int>                      m_compressionLevel{ this, "CompressionLevel", 1, [this]( auto& ) {
                                             this->warning()
                                                 << "\"CompressionLevel\" Property has been deprecated. "
                                                 << "Set it via the \"CL=\" parameter in the \"Output\" Property"
                                                 << endmsg;
-                                          }};
+                                          } };
   Gaudi::Property<std::vector<std::string>> m_outputfile{
-      this, "Output", {}, &THistSvc::setupOutputFile, "", "OrderedSet<std::string>"};
+      this, "Output", {}, &THistSvc::setupOutputFile, "", "OrderedSet<std::string>" };
   Gaudi::Property<std::vector<std::string>> m_inputfile{
-      this, "Input", {}, &THistSvc::setupInputFile, "", "OrderedSet<std::string>"};
+      this, "Input", {}, &THistSvc::setupInputFile, "", "OrderedSet<std::string>" };
 
   /// @}
 
@@ -402,9 +396,7 @@ private:
   bool m_signaledStop = false;
   bool m_delayConnect = false;
   bool m_okToConnect  = false;
-
-  /// Cached pointer to the @c TTree dictionary
-  const TClass* m_ttreeClass = nullptr;
+  bool m_hasTTrees    = false;
 
   mutable std::string m_curstream;
 
