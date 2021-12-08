@@ -226,7 +226,7 @@ namespace nlohmann {
   struct adl_serializer<std::chrono::duration<Rep, Period>> {
     static void to_json( json& j, const std::chrono::duration<Rep, Period>& d ) { j = d.count(); }
     static void from_json( const json& j, std::chrono::duration<Rep, Period>& d ) {
-      d = std::chrono::duration<Rep, Period>{j.get<Rep>()};
+      d = std::chrono::duration<Rep, Period>{ j.get<Rep>() };
     }
   };
 } // namespace nlohmann
@@ -477,7 +477,7 @@ namespace Gaudi::Accumulators {
     }
 
   private:
-    typename ValueHandler::InternalType m_value{ValueHandler::DefaultValue()};
+    typename ValueHandler::InternalType m_value{ ValueHandler::DefaultValue() };
   };
 
   /**
@@ -530,7 +530,7 @@ namespace Gaudi::Accumulators {
     static InternalType
     extractJSONDataHelper( const nlohmann::json& j,
                            typename Bases<Atomicity, Arithmetic>::JSONStringEntriesType... entries ) {
-      return {Bases<Atomicity, Arithmetic>::extractJSONData( j, entries )...};
+      return { Bases<Atomicity, Arithmetic>::extractJSONData( j, entries )... };
     }
   };
 
@@ -668,7 +668,7 @@ namespace Gaudi::Accumulators {
     template <typename Result = fp_result_type<Arithmetic>>
     auto efficiency() const {
       auto nbEntries = nEntries();
-      if ( 1 > nbEntries ) return Result{-1};
+      if ( 1 > nbEntries ) return Result{ -1 };
       return static_cast<Result>( this->nTrueEntries() ) / nbEntries;
     }
     auto eff() const { return efficiency(); }
@@ -680,7 +680,7 @@ namespace Gaudi::Accumulators {
       using Gaudi::Accumulators::sqrt;
       using std::sqrt;
       auto nbEntries = nEntries();
-      if ( 1 > nbEntries ) return Result{-1};
+      if ( 1 > nbEntries ) return Result{ -1 };
       return sqrt( static_cast<Result>( this->nTrueEntries() * this->nFalseEntries() ) / nbEntries ) / nbEntries;
     }
     auto effErr() const { return efficiencyErr(); }
@@ -691,9 +691,10 @@ namespace Gaudi::Accumulators {
     };
     BinomialAccumulator& operator+=( binomial_t b ) {
       assert( b.nPass <= b.nTotal );
-      TrueAccumulator<Atomicity, bool>::mergeAndReset( TrueAccumulator<atomicity::none, bool>{std::in_place, b.nPass} );
+      TrueAccumulator<Atomicity, bool>::mergeAndReset(
+          TrueAccumulator<atomicity::none, bool>{ std::in_place, b.nPass } );
       FalseAccumulator<Atomicity, bool>::mergeAndReset(
-          FalseAccumulator<atomicity::none, bool>{std::in_place, b.nTotal - b.nPass} );
+          FalseAccumulator<atomicity::none, bool>{ std::in_place, b.nTotal - b.nPass } );
       return *this;
     }
   };
@@ -762,7 +763,7 @@ namespace Gaudi::Accumulators {
       using Gaudi::Accumulators::sqrt;
       using std::sqrt;
       Result v = biased_sample_variance();
-      return ( Result{0} > v ) ? Result{} : static_cast<Result>( sqrt( v ) );
+      return ( Result{ 0 } > v ) ? Result{} : static_cast<Result>( sqrt( v ) );
     }
     [[deprecated( "The name 'rms' has changed to standard_deviation" )]] Arithmetic rms() const {
       return standard_deviation();
@@ -777,7 +778,7 @@ namespace Gaudi::Accumulators {
       using Gaudi::Accumulators::sqrt;
       using std::sqrt;
       Result v = biased_sample_variance();
-      return ( Result{0} > v ) ? Result{} : static_cast<Result>( sqrt( v / n ) );
+      return ( Result{ 0 } > v ) ? Result{} : static_cast<Result>( sqrt( v / n ) );
     }
   };
 
@@ -831,7 +832,7 @@ namespace Gaudi::Accumulators {
     // add tag to printout
     template <typename stream>
     stream& printImpl( stream& s, std::string_view tag ) const {
-      s << boost::format{" | %|-48.48s|%|50t|"} % ( std::string{'\"'}.append( tag ).append( "\"" ) );
+      s << boost::format{ " | %|-48.48s|%|50t|" } % ( std::string{ '\"' }.append( tag ).append( "\"" ) );
       return print( s, true );
     }
     /// prints the counter to a stream
@@ -861,6 +862,7 @@ namespace Gaudi::Accumulators {
   /**
    * An empty ancester of all counters that provides a buffer method that returns a buffer on itself
    * Also registers the counter to its owner, with default type "counter"
+   * Due to this registration, move semantic is disabled. But copy semantic remains.
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, template <atomicity Ato, typename... Int> class Accumulator, typename... Args>
@@ -874,15 +876,15 @@ namespace Gaudi::Accumulators {
     }
     template <typename OWNER>
     BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, "counter" ) {}
-    Buffer<Accumulator, Atomicity, Args...> buffer() { return {*this}; }
-    BufferableCounter( BufferableCounter const& ) = default;
-    BufferableCounter& operator=( BufferableCounter const& ) = default;
+    Buffer<Accumulator, Atomicity, Args...> buffer() { return { *this }; }
+    BufferableCounter( BufferableCounter const& ) = delete;
+    BufferableCounter& operator=( BufferableCounter const& ) = delete;
     ~BufferableCounter() {
       if ( m_monitoringHub ) { m_monitoringHub->removeEntity( *this ); }
     }
 
   private:
-    Monitoring::Hub* m_monitoringHub{nullptr};
+    Monitoring::Hub* m_monitoringHub{ nullptr };
   };
 
   /**
@@ -891,17 +893,12 @@ namespace Gaudi::Accumulators {
    */
   template <atomicity Atomicity = atomicity::full, typename Arithmetic = unsigned long>
   struct Counter : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic> {
-    inline static const std::string typeString{std::string{"counter:Counter:"} + typeid( unsigned long ).name()};
+    inline static const std::string typeString{ std::string{ "counter:Counter:" } + typeid( unsigned long ).name() };
     using BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     Counter( OWNER* o, std::string const& name )
         : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>( o, name, typeString ) {}
     Counter& operator++() { return ( *this ) += 1; }
-    Counter  operator++( int ) {
-      auto copy = *this;
-      ++( *this );
-      return copy;
-    }
     Counter& operator+=( const Arithmetic v ) {
       BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::operator+=( v );
       return *this;
@@ -912,7 +909,7 @@ namespace Gaudi::Accumulators {
     stream& printImpl( stream& o, bool tableFormat ) const {
       // Avoid printing empty counters in non DEBUG mode
       auto fmt = ( tableFormat ? "|%|10d| |" : "#=%|-7lu|" );
-      return o << boost::format{fmt} % this->nEntries();
+      return o << boost::format{ fmt } % this->nEntries();
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -921,10 +918,10 @@ namespace Gaudi::Accumulators {
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool       toBePrinted() const override { return this->nEntries() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"type", typeString}, {"empty", this->nEntries() == 0}, {"nEntries", this->nEntries()}};
+      return { { "type", typeString }, { "empty", this->nEntries() == 0 }, { "nEntries", this->nEntries() } };
     }
     static Counter fromJSON( const nlohmann::json& j ) {
-      return CountAccumulator<Atomicity, int>::extractJSONData( j, {"nEntries"} );
+      return CountAccumulator<Atomicity, int>::extractJSONData( j, { "nEntries" } );
     }
   };
 
@@ -934,7 +931,8 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct AveragingCounter : BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic> {
-    inline static const std::string typeString{std::string{"counter:AveragingCounter:"} + typeid( Arithmetic ).name()};
+    inline static const std::string typeString{ std::string{ "counter:AveragingCounter:" } +
+                                                typeid( Arithmetic ).name() };
     using BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     AveragingCounter( OWNER* o, std::string const& name )
@@ -944,7 +942,7 @@ namespace Gaudi::Accumulators {
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
       auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |" : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g|" );
-      return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean();
+      return o << boost::format{ fmt } % this->nEntries() % this->sum() % this->mean();
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -954,14 +952,14 @@ namespace Gaudi::Accumulators {
 
     bool                   toBePrinted() const override { return this->nEntries() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"type", typeString},
-              {"empty", this->nEntries() == 0},
-              {"nEntries", this->nEntries()},
-              {"sum", this->sum()},
-              {"mean", this->mean()}};
+      return { { "type", typeString },
+               { "empty", this->nEntries() == 0 },
+               { "nEntries", this->nEntries() },
+               { "sum", this->sum() },
+               { "mean", this->mean() } };
     }
     static AveragingCounter fromJSON( const nlohmann::json& j ) {
-      return AveragingAccumulator<Atomicity, Arithmetic>::extractJSONData( j, {"nEntries", "sum"} );
+      return AveragingAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { "nEntries", "sum" } );
     }
   };
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
@@ -973,7 +971,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct SigmaCounter : BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic> {
-    inline static const std::string typeString{std::string{"counter:SigmaCounter:"} + typeid( Arithmetic ).name()};
+    inline static const std::string typeString{ std::string{ "counter:SigmaCounter:" } + typeid( Arithmetic ).name() };
     using BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     SigmaCounter( OWNER* o, std::string const& name )
@@ -984,7 +982,7 @@ namespace Gaudi::Accumulators {
     stream& printImpl( stream& o, bool tableFormat ) const {
       auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |"
                                : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g|" );
-      return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation();
+      return o << boost::format{ fmt } % this->nEntries() % this->sum() % this->mean() % this->standard_deviation();
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -993,16 +991,16 @@ namespace Gaudi::Accumulators {
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool       toBePrinted() const override { return this->nEntries() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"type", typeString},
-              {"empty", this->nEntries() == 0},
-              {"nEntries", this->nEntries()},
-              {"sum", this->sum()},
-              {"mean", this->mean()},
-              {"sum2", this->sum2()},
-              {"standard_deviation", this->standard_deviation()}};
+      return { { "type", typeString },
+               { "empty", this->nEntries() == 0 },
+               { "nEntries", this->nEntries() },
+               { "sum", this->sum() },
+               { "mean", this->mean() },
+               { "sum2", this->sum2() },
+               { "standard_deviation", this->standard_deviation() } };
     }
     static SigmaCounter fromJSON( const nlohmann::json& j ) {
-      return SigmaAccumulator<Atomicity, Arithmetic>::extractJSONData( j, {{"nEntries", "sum"}, "sum2"} );
+      return SigmaAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { { "nEntries", "sum" }, "sum2" } );
     }
   };
 
@@ -1012,7 +1010,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct StatCounter : BufferableCounter<Atomicity, StatAccumulator, Arithmetic> {
-    inline static const std::string typeString{std::string{"counter:StatCounter:"} + typeid( Arithmetic ).name()};
+    inline static const std::string typeString{ std::string{ "counter:StatCounter:" } + typeid( Arithmetic ).name() };
     using BufferableCounter<Atomicity, StatAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     StatCounter( OWNER* o, std::string const& name )
@@ -1023,7 +1021,7 @@ namespace Gaudi::Accumulators {
     stream& printImpl( stream& o, bool tableFormat ) const {
       auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |"
                                : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|" );
-      return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation() %
+      return o << boost::format{ fmt } % this->nEntries() % this->sum() % this->mean() % this->standard_deviation() %
                       this->min() % this->max();
     }
 
@@ -1033,19 +1031,19 @@ namespace Gaudi::Accumulators {
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool       toBePrinted() const override { return this->nEntries() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"type", typeString},
-              {"empty", this->nEntries() == 0},
-              {"nEntries", this->nEntries()},
-              {"sum", this->sum()},
-              {"mean", this->mean()},
-              {"sum2", this->sum2()},
-              {"standard_deviation", this->standard_deviation()},
-              {"min", this->min()},
-              {"max", this->max()}};
+      return { { "type", typeString },
+               { "empty", this->nEntries() == 0 },
+               { "nEntries", this->nEntries() },
+               { "sum", this->sum() },
+               { "mean", this->mean() },
+               { "sum2", this->sum2() },
+               { "standard_deviation", this->standard_deviation() },
+               { "min", this->min() },
+               { "max", this->max() } };
     }
     static StatCounter fromJSON( const nlohmann::json& j ) {
-      return StatAccumulator<Atomicity, Arithmetic>::extractJSONData( j,
-                                                                      {{{"nEntries", "sum"}, "sum2"}, "min", "max"} );
+      return StatAccumulator<Atomicity, Arithmetic>::extractJSONData(
+          j, { { { "nEntries", "sum" }, "sum2" }, "min", "max" } );
     }
   };
 
@@ -1055,7 +1053,8 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
   struct BinomialCounter : BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic> {
-    inline static const std::string typeString{std::string{"counter:BinomialCounter:"} + typeid( Arithmetic ).name()};
+    inline static const std::string typeString{ std::string{ "counter:BinomialCounter:" } +
+                                                typeid( Arithmetic ).name() };
     using BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     BinomialCounter( OWNER* o, std::string const& name )
@@ -1065,7 +1064,7 @@ namespace Gaudi::Accumulators {
     stream& printImpl( stream& o, bool tableFormat ) const {
       auto fmt = ( tableFormat ? "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%% |"
                                : "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|" );
-      return o << boost::format{fmt} % this->nEntries() % this->nTrueEntries() % ( this->efficiency() * 100 ) %
+      return o << boost::format{ fmt } % this->nEntries() % this->nTrueEntries() % ( this->efficiency() * 100 ) %
                       ( this->efficiencyErr() * 100 );
     }
 
@@ -1077,7 +1076,7 @@ namespace Gaudi::Accumulators {
     template <typename stream>
     stream& printImpl( stream& o, std::string_view tag ) const {
       // override default print to add a '*' in from of the name
-      o << boost::format{" |*%|-48.48s|%|50t|"} % ( std::string{"\""}.append( tag ).append( "\"" ) );
+      o << boost::format{ " |*%|-48.48s|%|50t|" } % ( std::string{ "\"" }.append( tag ).append( "\"" ) );
       return print( o, true );
     }
     /// prints the counter to a stream in table format, with the given tag
@@ -1085,16 +1084,16 @@ namespace Gaudi::Accumulators {
     MsgStream&             print( MsgStream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
     bool                   toBePrinted() const override { return this->nEntries() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"type", typeString},
-              {"empty", this->nEntries() == 0},
-              {"nEntries", this->nTrueEntries() + this->nFalseEntries()},
-              {"nTrueEntries", this->nTrueEntries()},
-              {"nFalseEntries", this->nFalseEntries()},
-              {"efficiency", this->efficiency()},
-              {"efficiencyErr", this->efficiencyErr()}};
+      return { { "type", typeString },
+               { "empty", this->nEntries() == 0 },
+               { "nEntries", this->nTrueEntries() + this->nFalseEntries() },
+               { "nTrueEntries", this->nTrueEntries() },
+               { "nFalseEntries", this->nFalseEntries() },
+               { "efficiency", this->efficiency() },
+               { "efficiencyErr", this->efficiencyErr() } };
     }
     static BinomialCounter fromJSON( const nlohmann::json& j ) {
-      return BinomialAccumulator<Atomicity, Arithmetic>::extractJSONData( j, {"nTrueEntries", "nFalseEntries"} );
+      return BinomialAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { "nTrueEntries", "nFalseEntries" } );
     }
   };
 
@@ -1115,10 +1114,10 @@ namespace Gaudi::Accumulators {
   template <MSG::Level level, atomicity Atomicity = atomicity::full>
   class MsgCounter : public PrintableCounter, public details::MsgCounter::MsgAccumulator<Atomicity> {
   public:
-    inline static const std::string typeString{"counter:MsgCounter"};
+    inline static const std::string typeString{ "counter:MsgCounter" };
     template <typename OWNER>
     MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 )
-        : m_monitoringHub{o->serviceLocator()->monitoringHub()}, logger( o ), msg( ms ), max( nMax ) {
+        : m_monitoringHub{ o->serviceLocator()->monitoringHub() }, logger( o ), msg( ms ), max( nMax ) {
       m_monitoringHub.registerEntity( o->name(), std::move( ms ), typeString, *this );
     }
     MsgCounter& operator++() {
@@ -1130,32 +1129,34 @@ namespace Gaudi::Accumulators {
       if ( by ) log();
       return *this;
     }
+    MsgCounter( MsgCounter const& ) = delete;
+    MsgCounter& operator=( MsgCounter const& ) = delete;
     ~MsgCounter() { m_monitoringHub.removeEntity( *this ); }
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
-      return o << boost::format{tableFormat ? "|%|10d| |" : "#=%|-7lu|"} % this->value();
+      return o << boost::format{ tableFormat ? "|%|10d| |" : "#=%|-7lu|" } % this->value();
     }
     using PrintableCounter::print;
     std::ostream& print( std::ostream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     bool          toBePrinted() const override { return this->value() > 0; }
     virtual nlohmann::json toJSON() const override {
-      return {{"type", typeString},
-              {"empty", this->value() == 0},
-              {"nEntries", this->value()},
-              {"level", level},
-              {"max", max},
-              {"msg", msg}};
+      return { { "type", typeString },
+               { "empty", this->value() == 0 },
+               { "nEntries", this->value() },
+               { "level", level },
+               { "max", max },
+               { "msg", msg } };
     }
     static MsgCounter fromJSON( const nlohmann::json& j ) {
-      MsgCounter c = MsgCounter::extractJSONData( j, {"nEntries"} );
+      MsgCounter c = MsgCounter::extractJSONData( j, { "nEntries" } );
       c.msg        = j.at( "msg" ).get<std::string>();
       c.max        = j.at( "max" ).get<unsigned long>();
     }
 
   private:
     Monitoring::Hub&           m_monitoringHub;
-    const CommonMessagingBase* logger{nullptr};
+    const CommonMessagingBase* logger{ nullptr };
     std::string                msg;
     unsigned long              max;
     void                       log() {
