@@ -15,7 +15,7 @@ stages:
   - deploy
 
 variables:
-  LCG_VERSION: "100"
+  LCG_VERSION: "101"
   CMAKE_GENERATOR: 'Ninja' # default build system
   NO_LBLOGIN: "1" # prevent lbdocker containers to start LbLogin/LbEnv
   TARGET_BRANCH: master
@@ -87,22 +87,17 @@ default:
 
 
 ### Build
-x86_64-centos7-gcc10-opt:
+x86_64-centos7-gcc11-opt:
   <<: *template_build
 
-x86_64-centos7-gcc10-dbg:
+x86_64-centos7-gcc11-dbg:
   <<: *template_build
 
 view-gcc8:
   <<: *template_build
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-    # Override CMake from the view (too old in LCG 97a)
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH"
-    - PYTHON_MAJOR_VERSION=$(python -c "import sys; print(sys.version_info[0])")
-    # Ignore .confdb file from Gaudi installation in LCG view
-    - export CONFIGURABLE_DB_IGNORE=/cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/lib/Gaudi.confdb
-    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=${PYTHON_MAJOR_VERSION} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
     # pre-heat ccache cache for GaudiKernel
     - jobs=$(nproc)
@@ -115,10 +110,10 @@ view-gcc8:
     - cmake --build build 2>&1 | tee build/build.log
     - ccache -s
 
-lhcb-gcc10:
+lhcb-gcc11:
   <<: *template_build
   variables:
-    BINARY_TAG: x86_64_v2-centos7-gcc10-opt
+    BINARY_TAG: x86_64_v2-centos7-gcc11-opt
   script:
     - . /cvmfs/lhcb.cern.ch/lib/LbEnv
     - lb-project-init --overwrite
@@ -140,16 +135,16 @@ lhcb-gcc10:
     expire_in: 1 week
 
 ### Tests
-x86_64-centos7-gcc10-opt:test:
+x86_64-centos7-gcc11-opt:test:
   <<: *template_test
   needs:
-    - job: "x86_64-centos7-gcc10-opt"
+    - job: "x86_64-centos7-gcc11-opt"
       artifacts: true
 
-x86_64-centos7-gcc10-dbg:test:
+x86_64-centos7-gcc11-dbg:test:
   <<: *template_test
   needs:
-    - job: "x86_64-centos7-gcc10-dbg"
+    - job: "x86_64-centos7-gcc11-dbg"
       artifacts: true
 
 view-gcc8:test:
@@ -159,16 +154,14 @@ view-gcc8:test:
       artifacts: true
   before_script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-    # Override CMake from the view (too old in LCG 97a)
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH"
 
-lhcb-gcc10:test:
+lhcb-gcc11:test:
   <<: *template_test
   needs:
-    - job: "lhcb-gcc10"
+    - job: "lhcb-gcc11"
       artifacts: true
   variables:
-    BINARY_TAG: x86_64_v2-centos7-gcc10-opt
+    BINARY_TAG: x86_64_v2-centos7-gcc11-opt
   script:
     - . /cvmfs/lhcb.cern.ch/lib/LbEnv
     - lb-project-init --overwrite
@@ -190,16 +183,16 @@ lhcb-gcc10:test:
     expire_in: 1 day
 
 ### Check build outputs
-x86_64-centos7-gcc10-opt:build-check:
+x86_64-centos7-gcc11-opt:build-check:
   <<: *template_build_check
   needs:
-    - job: "x86_64-centos7-gcc10-opt"
+    - job: "x86_64-centos7-gcc11-opt"
       artifacts: true
 
-x86_64-centos7-gcc10-dbg:build-check:
+x86_64-centos7-gcc11-dbg:build-check:
   <<: *template_build_check
   needs:
-    - job: "x86_64-centos7-gcc10-dbg"
+    - job: "x86_64-centos7-gcc11-dbg"
       artifacts: true
 
 view-gcc8:build-check:
@@ -208,21 +201,21 @@ view-gcc8:build-check:
     - job: "view-gcc8"
       artifacts: true
 
-lhcb-gcc10:build-check:
+lhcb-gcc11:build-check:
   <<: *template_build_check
   needs:
-    - job: "lhcb-gcc10"
+    - job: "lhcb-gcc11"
       artifacts: true
   variables:
-    BINARY_TAG: x86_64_v2-centos7-gcc10-opt
+    BINARY_TAG: x86_64_v2-centos7-gcc11-opt
   script:
     - ci-utils/build-check build.${BINARY_TAG}/build.log
 
 ### Misc checks
-x86_64-centos7-gcc10-opt:check-unused:
+x86_64-centos7-gcc11-opt:check-unused:
   stage: test
   needs:
-    - job: "x86_64-centos7-gcc10-opt"
+    - job: "x86_64-centos7-gcc11-opt"
       artifacts: true
   script:
     - ci-utils/check-sources build/build.ninja
@@ -303,8 +296,6 @@ doxygen:
       artifacts: true
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-    # Override CMake from the view (too old in LCG 97a)
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH"
     - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
     - cmake --build build --target doc
     - rm -rf public

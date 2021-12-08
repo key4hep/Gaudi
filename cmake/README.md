@@ -15,20 +15,13 @@ Gaudi requires some uncommon external libraries, so the quickest way to build
 it is to use the CERN SFT provided LCG views, for example:
 
 ```sh
-. /cvmfs/sft.cern.ch/lcg/views/LCG_97a/x86_64-centos7-gcc9-opt/setup.sh
-```
-
-Note that the version of CMake in LCG_97a view is too old, so one had to add:
-
-```sh
-export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH
+. /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc11-opt/setup.sh
 ```
 
 We suggest the use of [Ninja](https://ninja-build.org/) to build, if you wish
 to do so, you can use these settings:
 
 ```sh
-export PATH=/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH
 export CMAKE_GENERATOR=Ninja
 ```
 
@@ -36,12 +29,24 @@ At this point the environment is good enough to use a standard CMake procedure:
 
 ```sh
 cd Gaudi
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=$(python -c "import sys; print(sys.version_info[0])")
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ```
 
-The special option `-DGAUDI_USE_PYTHON_MAJOR` is needed with LCG versions less
-than 99, where the default version of Python is 2, while Gaudi looks for 3 by
-default.
+### Older versions of CERN SFT LCG views
+Prior to LCG 99, the versions of CMake and Ninja in the CERN SFT LCG views were
+not good enough and Python was still 2.x, so the recipe to build Gaudi is
+slightly different in that case:
+
+```sh
+. /cvmfs/sft.cern.ch/lcg/views/LCG_97a/x86_64-centos7-gcc9-opt/setup.sh
+export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH
+export PATH=/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH
+export CMAKE_GENERATOR=Ninja
+cd Gaudi
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=$(python -c "import sys; print(sys.version_info[0])")
+cmake --build build
+```
 
 ## Run from the build directory
 
