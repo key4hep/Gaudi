@@ -322,7 +322,7 @@ const PropertyBase* Gaudi::Utils::getProperty( const std::vector<const PropertyB
 // ============================================================================
 StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const char* value,
                                       const std::string& doc ) {
-  return Gaudi::Utils::setProperty( component, name, std::string{value}, doc );
+  return Gaudi::Utils::setProperty( component, name, std::string{ value }, doc );
 }
 // ============================================================================
 /* the full specialization of the
@@ -444,7 +444,7 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
 // ============================================================================
 StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const char* value,
                                       const std::string& doc ) {
-  return setProperty( component, name, std::string{value}, doc );
+  return setProperty( component, name, std::string{ value }, doc );
 }
 // ============================================================================
 /*  simple function to set the property of the given object from another
@@ -515,7 +515,7 @@ Gaudi::Details::WeakPropertyRef::operator std::string() const {
 namespace Gaudi::Details::Property {
   namespace {
 #ifndef GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY
-#  define GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY Ignore
+#  define GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY Exception
 #endif
     ParsingErrorPolicy g_parsingErrorPolicy = ParsingErrorPolicy::GAUDI_PROPERTY_PARSING_ERROR_DEFAULT_POLICY;
   } // namespace
