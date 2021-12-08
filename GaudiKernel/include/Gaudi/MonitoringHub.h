@@ -66,7 +66,9 @@ namespace Gaudi::Monitoring {
           , name{ std::move( name ) }
           , type{ std::move( type ) }
           , m_ptr{ &ent }
-	  , m_typeIndex{[]( const void* ptr ) { return std::type_index( typeid( *reinterpret_cast<const T*>( ptr ) ) ); }}
+          , m_typeIndex{ []( const void* ptr ) {
+            return std::type_index( typeid( *reinterpret_cast<const T*>( ptr ) ) );
+          } }
           , m_reset{ []( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); } }
           , m_mergeAndReset{ std::make_shared<details::MergeAndReset<T>>() }
           , m_getJSON{ []( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); } } {}
@@ -86,8 +88,9 @@ namespace Gaudi::Monitoring {
       // The user should ensure that entities are compatible before calling this function
       /// function calling merge and reset on internal data with the internal data of another entity
       void mergeAndReset( Entity const& ent ) {
-        if ( typeIndex()!=ent.typeIndex() ) {
-          throw std::runtime_error( std::string("Entity: mergeAndReset called on different types: ") + typeIndex().name() + " and " + ent.typeIndex().name());
+        if ( typeIndex() != ent.typeIndex() ) {
+          throw std::runtime_error( std::string( "Entity: mergeAndReset called on different types: " ) +
+                                    typeIndex().name() + " and " + ent.typeIndex().name() );
         }
         return ( *m_mergeAndReset )( m_ptr, ent.m_ptr );
       }
