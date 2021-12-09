@@ -8,46 +8,48 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2 import Configurables as C, useGlobalInstances
+from GaudiConfig2 import Configurables as C
+from GaudiConfig2 import useGlobalInstances
+
 useGlobalInstances(True)
 
-C.AuditorSvc('AuditorSvc', Auditors=['ChronoAuditor'])
+C.AuditorSvc("AuditorSvc", Auditors=["ChronoAuditor"])
 
 # algorithms
 algorithms = [
-    C.GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=3),
-    C.Gaudi.Examples.Counter.GaudiHistoAlgorithm(
-        'SimpleCounterHistos', OutputLevel=2),
+    C.GaudiHistoAlgorithm("SimpleHistos", HistoPrint=True, OutputLevel=3),
+    C.Gaudi.Examples.Counter.GaudiHistoAlgorithm("SimpleCounterHistos", OutputLevel=2),
 ]
 
 app = C.ApplicationMgr(
-    'ApplicationMgr',
-    TopAlg=['SimpleHistos', 'SimpleCounterHistos'],
+    "ApplicationMgr",
+    TopAlg=["SimpleHistos", "SimpleCounterHistos"],
     EvtMax=50000,
-    EvtSel='NONE',
+    EvtSel="NONE",
 )
 try:
-    app.TopAlg.append('MessageSvc')
+    app.TopAlg.append("MessageSvc")
     assert False, "this is not expected"
 except TypeError:
     pass  # this is expected
 
 app.TopAlg[0].OutputLevel = 2
 
-app.MessageSvcType = 'MessageSvc'
+app.MessageSvcType = "MessageSvc"
 app.MessageSvcType.OutputLevel = 3
 app.ExtSvc = ["Gaudi::Monitoring::MessageSvcSink"]
 
 try:
-    app.JobOptionsSvcType = 'MessageSvc'
+    app.JobOptionsSvcType = "MessageSvc"
     assert False, "this is not expected"
 except TypeError:
     pass  # this is expected
 
-app.HistogramPersistency = 'ROOT'
-C.RootHistCnv.PersSvc('RootHistSvc', OutputFile='histo-c2g.root')
+app.HistogramPersistency = "ROOT"
+C.RootHistCnv.PersSvc("RootHistSvc", OutputFile="histo-c2g.root")
 
 C.HistogramSvc(
-    'HistogramDataSvc',
+    "HistogramDataSvc",
     OutputLevel=2,
-    Input=["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"])
+    Input=["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"],
+)

@@ -10,8 +10,13 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+from Configurables import (
+    AvalancheSchedulerSvc,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCrunchSvc
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
@@ -23,30 +28,28 @@ algosInFlight = 4
 
 InertMessageSvc(OutputLevel=INFO)
 
-whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
     OutputLevel=INFO,
     PreemptiveBlockingTasks=True,
     MaxBlockingAlgosInFlight=50,
-    DumpIntraEventDynamics=True)
+    DumpIntraEventDynamics=True,
+)
 
 CPUCrunchSvc(shortCalib=True)
 
-#timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
+# timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
 timeValue = precedence.RealTimeValue(
-    path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json", defaultTime=0.0)
-#ifBlocking = precedence.UniformBooleanValue(False)
-ifBlocking = precedence.RndBiasedBooleanValue(
-    pattern={
-        True: 17,
-        False: 152
-    }, seed=1)
+    path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json", defaultTime=0.0
+)
+# ifBlocking = precedence.UniformBooleanValue(False)
+ifBlocking = precedence.RndBiasedBooleanValue(pattern={True: 17, False: 152}, seed=1)
 
 sequencer = precedence.CruncherSequence(
     timeValue,
@@ -54,13 +57,15 @@ sequencer = precedence.CruncherSequence(
     sleepFraction=0.9,
     cfgPath="atlas/mcreco/cf.mcreco.TriggerOff.graphml",
     dfgPath="atlas/mcreco/df.mcreco.TriggerOff.3rdEvent.graphml",
-    topSequencer='AthSequencer/AthMasterSeq').get()
+    topSequencer="AthSequencer/AthMasterSeq",
+).get()
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[sequencer],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

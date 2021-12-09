@@ -8,11 +8,11 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import ctypes
 import os
 import sys
-import ctypes
 
-__configurables_module_fullname__ = __name__ + '.Configurables'
+__configurables_module_fullname__ = __name__ + ".Configurables"
 __ignore_missing_configurables__ = False
 
 # Small class that allows to access all the configurables as attributes of the
@@ -34,8 +34,9 @@ class _ConfigurablesModule(object):
 
     def __getattr__(self, name):
         # trigger the load of the configurables database
-        from Gaudi.Configuration import confDbGetConfigurable, cfgDb
         from Gaudi.CommonGaudiConfigurables import aliases
+        from Gaudi.Configuration import cfgDb, confDbGetConfigurable
+
         # return value
         retval = None
         # handle the special cases (needed for modules): __all__, __path__
@@ -43,6 +44,7 @@ class _ConfigurablesModule(object):
             retval = cfgDb.keys()
         elif name == "__spec__":
             import importlib
+
             retval = importlib.machinery.ModuleSpec(
                 name=__configurables_module_fullname__,
                 loader=self.__loader__,
@@ -57,13 +59,17 @@ class _ConfigurablesModule(object):
             retval = aliases[name]
         elif self.ignoreMissingConfigurables:
             import logging
+
             logging.getLogger(__configurables_module_fullname__).warning(
-                'Configurable class %s not in database', name)
+                "Configurable class %s not in database", name
+            )
         else:
             # We raise an AttributeError exception if the configurable could not be found
             # to respect the Python semantic.
-            raise AttributeError("module '%s' does not have attribute '%s'" %
-                                 (__configurables_module_fullname__, name))
+            raise AttributeError(
+                "module '%s' does not have attribute '%s'"
+                % (__configurables_module_fullname__, name)
+            )
         return retval
 
 
@@ -75,7 +81,7 @@ _GaudiKernelLib = None
 
 
 class c_opt_t(ctypes.Structure):
-    _fields_ = [('key', ctypes.c_char_p), ('value', ctypes.c_char_p)]
+    _fields_ = [("key", ctypes.c_char_p), ("value", ctypes.c_char_p)]
 
 
 class Application(object):
@@ -85,9 +91,9 @@ class Application(object):
             # FIXME: note that we need PyDLL instead of CDLL if the calls to
             #        Python functions are not protected with the GIL.
             gkl = _GaudiKernelLib = ctypes.PyDLL(
-                'libGaudiKernel' +
-                ('.dylib' if sys.platform == 'darwin' else '.so'),
-                mode=ctypes.RTLD_GLOBAL)
+                "libGaudiKernel" + (".dylib" if sys.platform == "darwin" else ".so"),
+                mode=ctypes.RTLD_GLOBAL,
+            )
             gkl._py_Gaudi__Application__create.restype = ctypes.c_void_p
             gkl._py_Gaudi__Application__run.argtypes = [ctypes.c_void_p]
             gkl._py_Gaudi__Application__run.restype = ctypes.c_int
@@ -95,11 +101,12 @@ class Application(object):
 
         c_opts = (c_opt_t * len(opts))()
         for idx, item in enumerate(opts.items()):
-            c_opts[idx].key = item[0].encode('ascii')
-            c_opts[idx].value = item[1].encode('ascii')
+            c_opts[idx].key = item[0].encode("ascii")
+            c_opts[idx].value = item[1].encode("ascii")
 
         self._impl = _GaudiKernelLib._py_Gaudi__Application__create(
-            appType.encode('ascii'), c_opts, ctypes.c_ulong(len(c_opts)))
+            appType.encode("ascii"), c_opts, ctypes.c_ulong(len(c_opts))
+        )
 
     @classmethod
     def create(cls, appType, opts):

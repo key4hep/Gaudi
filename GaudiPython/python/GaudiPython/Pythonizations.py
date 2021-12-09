@@ -14,6 +14,7 @@
     of adaptation of some classes.
 """
 from __future__ import print_function
+
 import six
 
 __all__ = []
@@ -25,9 +26,9 @@ except ImportError:
     print("# WARNING: using PyCintex as cppyy implementation")
     from PyCintex import gbl
 
-if not hasattr(gbl, 'ostream'):
+if not hasattr(gbl, "ostream"):
     gbl.gROOT.ProcessLine("#include <ostream>")
-if not hasattr(gbl, 'stringstream'):
+if not hasattr(gbl, "stringstream"):
     gbl.gROOT.ProcessLine("#include <sstream>")
 
 # --- Adding extra functionality to C++ raw classes------------------------------------
@@ -35,8 +36,12 @@ if not hasattr(gbl, 'stringstream'):
 
 def _printHisto1D(h):
     x = h.axis()
-    return 'Histogram 1D "%s" %d bins [%f,%f]' % (h.title(), x.bins(),
-                                                  x.lowerEdge(), x.upperEdge())
+    return 'Histogram 1D "%s" %d bins [%f,%f]' % (
+        h.title(),
+        x.bins(),
+        x.lowerEdge(),
+        x.upperEdge(),
+    )
 
 
 def _contentsHisto1D(h):
@@ -46,16 +51,22 @@ def _contentsHisto1D(h):
 
 def _printHisto2D(h):
     x, y = h.xAxis(), h.yAxis()
-    return 'Histogram 2D "%s" %d xbins [%f,%f], %d ybins [%f,%f]' % \
-        (h.title(), x.bins(), x.lowerEdge(), x.upperEdge(),
-         y.bins(), y.lowerEdge(), y.upperEdge())
+    return 'Histogram 2D "%s" %d xbins [%f,%f], %d ybins [%f,%f]' % (
+        h.title(),
+        x.bins(),
+        x.lowerEdge(),
+        x.upperEdge(),
+        y.bins(),
+        y.lowerEdge(),
+        y.upperEdge(),
+    )
 
 
 def _printStatusCode(s):
     if s.isSuccess():
-        return 'SUCCESS'
+        return "SUCCESS"
     else:
-        return 'FAILURE'
+        return "FAILURE"
 
 
 def _printBitReference(b):
@@ -67,12 +78,12 @@ def _printFillStream(o):
         s = gbl.stringstream()
         o.fillStream(s)
         out = str(s.str())
-        if out == '':
-            out = o.__class__.__name__ + ' object'
-            if hasattr(o, 'hasKey') and o.hasKey():
-                out += ' key = ' + str(o.key())
+        if out == "":
+            out = o.__class__.__name__ + " object"
+            if hasattr(o, "hasKey") and o.hasKey():
+                out += " key = " + str(o.key())
     else:
-        out = o.__class__.__name__ + ' NULL object'
+        out = o.__class__.__name__ + " NULL object"
     return out
 
 
@@ -85,7 +96,7 @@ def _container__len__(self):
 
 
 def _container__iter__(self):
-    if hasattr(self, 'containedObjects'):
+    if hasattr(self, "containedObjects"):
         sequential = self.containedObjects()
     else:
         sequential = self
@@ -112,8 +123,14 @@ def _draw_aida_(self, *args):
 gbl.AIDA.IHistogram1D.__str__ = _printHisto1D
 gbl.AIDA.IHistogram1D.contents = _contentsHisto1D
 gbl.AIDA.IHistogram2D.__str__ = _printHisto2D
-for h in (gbl.AIDA.IHistogram, gbl.AIDA.IHistogram1D, gbl.AIDA.IHistogram2D,
-          gbl.AIDA.IHistogram3D, gbl.AIDA.IProfile1D, gbl.AIDA.IProfile2D):
+for h in (
+    gbl.AIDA.IHistogram,
+    gbl.AIDA.IHistogram1D,
+    gbl.AIDA.IHistogram2D,
+    gbl.AIDA.IHistogram3D,
+    gbl.AIDA.IProfile1D,
+    gbl.AIDA.IProfile2D,
+):
     h.Draw = _draw_aida_
     h.plot = _draw_aida_
 
@@ -128,30 +145,33 @@ gbl.ObjectContainerBase.__getitem__ = _container__getitem__
 gbl.ObjectContainerBase.__len__ = _container__len__
 gbl.ObjectContainerBase.__iter__ = _container__iter__
 
-gbl.IUpdateManagerSvc.update = lambda self, obj: gbl.IUpdateManagerSvc.PythonHelper.update(
-    self, obj)
-gbl.IUpdateManagerSvc.invalidate = lambda self, obj: gbl.IUpdateManagerSvc.PythonHelper.invalidate(
-    self, obj)
+gbl.IUpdateManagerSvc.update = (
+    lambda self, obj: gbl.IUpdateManagerSvc.PythonHelper.update(self, obj)
+)
+gbl.IUpdateManagerSvc.invalidate = (
+    lambda self, obj: gbl.IUpdateManagerSvc.PythonHelper.invalidate(self, obj)
+)
 
 # ---Globals--------------------------------------------------------------------
-if not hasattr(gbl.StatusCode, 'SUCCESS'):
+if not hasattr(gbl.StatusCode, "SUCCESS"):
     # emulate enums
     gbl.StatusCode.SUCCESS = 1
     gbl.StatusCode.FAILURE = 0
 
 # - string key, equality
-if hasattr(gbl.Gaudi.StringKey, '__cpp_eq__'):
+if hasattr(gbl.Gaudi.StringKey, "__cpp_eq__"):
     _eq = gbl.Gaudi.StringKey.__cpp_eq__
-    setattr(gbl.Gaudi.StringKey, '__eq__', _eq)
+    setattr(gbl.Gaudi.StringKey, "__eq__", _eq)
 
 # - string key, non-equality
-if hasattr(gbl.Gaudi.StringKey, '__cpp_ne__'):
+if hasattr(gbl.Gaudi.StringKey, "__cpp_ne__"):
     _ne = gbl.Gaudi.StringKey.__cpp_ne__
-    setattr(gbl.Gaudi.StringKey, '__ne__', _ne)
+    setattr(gbl.Gaudi.StringKey, "__ne__", _ne)
 
 # ---Enabling Pickle support----------------------------------------------------
 if gbl.gROOT.GetVersionInt() <= 51800:
     import libPyROOT
+
     gbl.GaudiPython.PyROOTPickle.Initialize(libPyROOT, libPyROOT.ObjectProxy)
 
 # =============================================================================
@@ -429,15 +449,15 @@ def __mapbase_str__(self):
     >>> print(map)
 
     """
-    _result = ' { '
+    _result = " { "
     _size = len(self)
     for i in range(0, _size):
         _key = self.key_at(i)
         _val = self.at(_key)
         if 0 != i:
-            _result += ' , '
+            _result += " , "
         _result += " %s : %s " % (str(_key), str(_val))
-    _result += ' } '
+    _result += " } "
     return _result
 
 
@@ -535,7 +555,8 @@ else:
 # GaudiPython is inherently single threaded and it's unpractical to use the
 # new re-entrant interfaces. Moreover a lot of existing code (like GaudiMP)
 # expects the old signatures.
-gbl.gInterpreter.Declare("""
+gbl.gInterpreter.Declare(
+    """
 #ifndef REENTINTERFACES_PYTHON_HELPERS
 #define REENTINTERFACES_PYTHON_HELPERS
 #include <GaudiKernel/IAlgorithm.h>
@@ -558,9 +579,14 @@ namespace GaudiPython::Helpers {
 }
 
 #endif
-""")
+"""
+)
 gbl.IEventProcessor.executeEvent = gbl.GaudiPython.Helpers.executeEvent
 gbl.IAlgorithm.isExecuted = gbl.GaudiPython.Helpers.isExecuted
 gbl.IAlgorithm.filterPassed = gbl.GaudiPython.Helpers.filterPassed
 gbl.IAlgorithm._execute_orig = gbl.IAlgorithm.execute
-gbl.IAlgorithm.execute = lambda self, ctx=None: (gbl.GaudiPython.Helpers.ialg_execute(self) if ctx is None else self._execute_orig(ctx))
+gbl.IAlgorithm.execute = lambda self, ctx=None: (
+    gbl.GaudiPython.Helpers.ialg_execute(self)
+    if ctx is None
+    else self._execute_orig(ctx)
+)

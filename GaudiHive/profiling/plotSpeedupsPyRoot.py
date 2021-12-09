@@ -9,8 +9,10 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
 from ROOT import *
-'''
+
+"""
 Script to parse all the logs and produce the speedup plot.
 Usage:
 plotSpeedupsPyRoot.py --> vanilla plot
@@ -20,10 +22,12 @@ opened and parsed and is FIXED for all the logs.
 The word "seconds" is looked for in the log and then the total runtime of the
 event loop is extracted. This allows to discard the time spent in calibration
 and so on.
-'''
+"""
 
 # Configuration ----------------------------------------------------------------
-fname_template = "measurement_BrunelScenario_n100_eif%s_aif100_nthreads%s_c%s_dqFalse_v5.log"
+fname_template = (
+    "measurement_BrunelScenario_n100_eif%s_aif100_nthreads%s_c%s_dqFalse_v5.log"
+)
 # Number of events in flight
 neif_l = [1, 2, 3, 5, 20, 30]
 # Number of Threads
@@ -37,8 +41,12 @@ ScalarTime = 1640.87
 LegendDrawOpts = "lp"
 LineColours = [kRed, kBlue, kGreen + 2, kOrange, kPink + 10, kViolet + 10]
 MarkerStyles = [
-    kFullCircle, kOpenCross, kFullTriangleUp, kOpenStar, kFullCross,
-    kOpenCircle
+    kFullCircle,
+    kOpenCross,
+    kFullTriangleUp,
+    kOpenStar,
+    kFullCross,
+    kOpenCircle,
 ]
 MarkerSize = 4
 LineWidth = 6
@@ -50,7 +58,7 @@ TotalCores = 24
 HtCoreWeight = 0.4
 
 LabelsFont = 12
-LabelsSize = .6
+LabelsSize = 0.6
 
 # --------------------
 
@@ -68,9 +76,9 @@ def scaleCores(n_threads):
 
 def getText(x, y, text, scale, angle, colour, font):
     lat = TLatex(
-        x, y,
-        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
-    if angle != 0.:
+        x, y, "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text)
+    )
+    if angle != 0.0:
         lat.SetTextAngle(angle)
     return lat
 
@@ -119,6 +127,7 @@ def xtractTiming(neif, nt, cFlag):
 # --------------------
 
 import sys
+
 scaleThreads = False
 if len(sys.argv) > 1:
     scaleThreads = True
@@ -127,8 +136,10 @@ if len(sys.argv) > 1:
 for neif in neif_l:
     print("Events in flight: %s" % neif)
     for tn in nts:
-        print("%s %s %s" % (tn, xtractTiming(neif, tn, False),
-                            xtractTiming(neif, tn, True)))
+        print(
+            "%s %s %s"
+            % (tn, xtractTiming(neif, tn, False), xtractTiming(neif, tn, True))
+        )
 
 len_nt = len(nts) + 1
 # Prepare ideal speedup graph
@@ -140,7 +151,8 @@ if scaleThreads:
     scaled_s = " (scaled for HT)"
 idealSpeedup.SetTitle(
     "GaudiHive Speedup (Brunel, 100 evts);Thread Pool Size%s;Speedup wrt Serial Case"
-    % scaled_s)
+    % scaled_s
+)
 idealSpeedup.SetLineWidth(4)
 idealSpeedup.SetLineColor(kGray - 2)
 idealSpeedup.SetLineStyle(2)
@@ -189,7 +201,7 @@ for neif, graph, graphc in neif_graphs:
     graphc.Draw("SamePL")
 
 # Prepare Legend
-legend = TLegend(.1, .45, .38, .9)
+legend = TLegend(0.1, 0.45, 0.38, 0.9)
 legend.SetFillColor(kWhite)
 legend.SetHeader("# Simultaneous Evts")
 for neif, graph, graphc in neif_graphs:
@@ -200,18 +212,21 @@ legend.Draw()
 # Labels
 ph_cores = getText(10.5, 15, "Physical Cores", LabelsSize, 90, 2, LabelsFont)
 ph_cores.Draw()
-ht_cores = getText(12., 15, "Hardware Threaded Regime", LabelsSize, 90, 2,
-                   LabelsFont)
+ht_cores = getText(12.0, 15, "Hardware Threaded Regime", LabelsSize, 90, 2, LabelsFont)
 ht_cores.Draw()
-is_text = getText(16, 16.5, "Ideal (linear) Speedup", LabelsSize, 45, 918,
-                  LabelsFont)
+is_text = getText(16, 16.5, "Ideal (linear) Speedup", LabelsSize, 45, 918, LabelsFont)
 is_text.Draw()
 ht_weight = 0
 if scaleThreads:
     ht_weight = getText(
-        18.5, 8,
+        18.5,
+        8,
         "#splitline{Hardware threaded}{cores weight: %s}" % HtCoreWeight,
-        LabelsSize, 0, 600, LabelsFont)
+        LabelsSize,
+        0,
+        600,
+        LabelsFont,
+    )
     ht_weight.Draw()
 
 if scaleThreads:

@@ -11,6 +11,7 @@
 """Load the GaudiPython::Helper struct to check for Cling warnings."""
 # Workaround for ROOT-10769
 import warnings
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import cppyy

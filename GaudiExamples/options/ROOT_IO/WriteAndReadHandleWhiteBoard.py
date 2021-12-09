@@ -12,22 +12,32 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
-from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr
 from Configurables import AvalancheSchedulerSvc
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import (
+    GaudiPersistency,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    ReadHandleAlg,
+    WriteHandleAlg,
+)
+from Gaudi.Configuration import *
 
 # Output setup
 # - DST
 dst = OutputStream("RootDst")
 
 dst.ItemList = ["/Event#999"]
-dst.Output = "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+dst.Output = (
+    "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+)
 
 # - MiniDST
 mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+mini.Output = (
+    "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+)
 mini.OutputLevel = VERBOSE
 
 # - File Summary Record
@@ -61,8 +71,7 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 slimeventloopmgr = HiveSlimEventLoopMgr()
 
-scheduler = AvalancheSchedulerSvc(
-    ThreadPoolSize=algoparallel, OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel, OutputLevel=WARNING)
 
 # Application setup
 app = ApplicationMgr()
@@ -72,7 +81,7 @@ app = ApplicationMgr()
 # algo is allowed to be in flight: at some point they will write to disk
 # simultaneously, with catastrophic effects.
 
-#app.OutStream += [ mini ]
+# app.OutStream += [ mini ]
 # - Algorithms
 app.TopAlg = [writer, reader, mini]
 # - Events

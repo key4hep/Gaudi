@@ -21,10 +21,11 @@ from __future__ import absolute_import, print_function
 
 # ensure that we (and the subprocesses) use the C standard localization
 import os
-if os.environ.get('LC_ALL') != 'C':
+
+if os.environ.get("LC_ALL") != "C":
     print('# setting LC_ALL to "C"')
     # !!!
-    os.environ['LC_ALL'] = 'C'
+    os.environ["LC_ALL"] = "C"
 
 from .Bindings import *
 from .Pythonizations import *

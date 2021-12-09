@@ -18,6 +18,7 @@ class PersistencyError(RuntimeError):
     """
     Base class for exceptions in PersistencyHelper.
     """
+
     pass
 
 
@@ -27,8 +28,7 @@ class UnknownPersistency(PersistencyError):
     """
 
     def __init__(self, type_):
-        super(UnknownPersistency,
-              self).__init__("Unknown persistency type %r" % type_)
+        super(UnknownPersistency, self).__init__("Unknown persistency type %r" % type_)
         self.type = type_
 
 
@@ -56,9 +56,8 @@ def add(instance):
 
 
 class FileDescription(object):
-    def __init__(self, filename, opt, svc, sel=None, collection=None,
-                 fun=None):
-        '''
+    def __init__(self, filename, opt, svc, sel=None, collection=None, fun=None):
+        """
         Class to hold/manipulate the file description.
 
         @param filename: name of the file
@@ -67,7 +66,7 @@ class FileDescription(object):
         @param sel: selection expression
         @param collection: collection
         @param fun: selection class
-        '''
+        """
         self.filename = filename
         self.opt = opt
         self.svc = svc
@@ -76,12 +75,17 @@ class FileDescription(object):
         self.fun = fun
 
     def __data__(self):
-        '''
+        """
         Return a list of pairs describing the instance.
-        '''
-        return [("DATAFILE", self.filename), ("OPT", self.opt),
-                ("SVC", self.svc), ("SEL", self.sel),
-                ("COLLECTION", self.collection), ("FUN", self.fun)]
+        """
+        return [
+            ("DATAFILE", self.filename),
+            ("OPT", self.opt),
+            ("SVC", self.svc),
+            ("SEL", self.sel),
+            ("COLLECTION", self.collection),
+            ("FUN", self.fun),
+        ]
 
     def __str__(self):
         """
@@ -122,7 +126,8 @@ class RootPersistency(PersistencyHelper):
         Declare the type of supported persistencies to the base class.
         """
         super(RootPersistency, self).__init__(
-            ["ROOT", "POOL_ROOT", "RootCnvSvc", "Gaudi::RootCnvSvc"])
+            ["ROOT", "POOL_ROOT", "RootCnvSvc", "Gaudi::RootCnvSvc"]
+        )
         self.configured = False
 
     def configure(self, appMgr):
@@ -131,50 +136,48 @@ class RootPersistency(PersistencyHelper):
         """
         if not self.configured:
             # instantiate the required services
-            appMgr.service('Gaudi::RootCnvSvc/RootCnvSvc')
-            eps = appMgr.service('EventPersistencySvc')
-            eps.CnvServices += ['RootCnvSvc']
+            appMgr.service("Gaudi::RootCnvSvc/RootCnvSvc")
+            eps = appMgr.service("EventPersistencySvc")
+            eps.CnvServices += ["RootCnvSvc"]
             self.configured = True
 
     def formatInput(self, filenames, **kwargs):
-        '''
+        """
         Translate a list of file names in a list of input descriptions.
 
         The optional parameters 'collection', 'sel' and 'fun' should be used to
         configure Event Tag Collection inputs.
 
         @param filenames: the list of files
-        '''
+        """
         if not self.configured:
             raise PersistencyError("Persistency not configured")
         if type(filenames) is str:
             filenames = [filenames]
         fileargs = {}
         # check if we are accessing a collection
-        fileargs = dict([(k, kwargs[k]) for k in ["collection", "sel", "fun"]
-                         if k in kwargs])
+        fileargs = dict(
+            [(k, kwargs[k]) for k in ["collection", "sel", "fun"] if k in kwargs]
+        )
         if fileargs:
             # is a collection
-            svc = 'Gaudi::RootCnvSvc'
+            svc = "Gaudi::RootCnvSvc"
         else:
-            svc = 'Gaudi::RootEvtSelector'
-        return [
-            str(FileDescription(f, 'READ', svc, **fileargs)) for f in filenames
-        ]
+            svc = "Gaudi::RootEvtSelector"
+        return [str(FileDescription(f, "READ", svc, **fileargs)) for f in filenames]
 
     def formatOutput(self, filename, **kwargs):
-        '''
+        """
         Translate a filename in an output description.
 
         @param filenames: the list of files
         @param lun: Logical Unit for Event Tag Collection outputs (optional)
-        '''
+        """
         if not self.configured:
             raise PersistencyError("Persistency not configured")
-        retval = str(
-            FileDescription(filename, 'RECREATE', 'Gaudi::RootCnvSvc'))
-        if 'lun' in kwargs:
-            retval = "%s %s" % (kwargs['lun'], retval)
+        retval = str(FileDescription(filename, "RECREATE", "Gaudi::RootCnvSvc"))
+        if "lun" in kwargs:
+            retval = "%s %s" % (kwargs["lun"], retval)
         return retval
 
 

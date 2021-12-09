@@ -13,8 +13,15 @@
 """Useful/conventional constants."""
 
 __all__ = [
-    'ALL', 'VERBOSE', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'TRUE',
-    'FALSE'
+    "ALL",
+    "VERBOSE",
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "ERROR",
+    "FATAL",
+    "TRUE",
+    "FALSE",
 ]
 
 # message levels -----------------------------------------------------------

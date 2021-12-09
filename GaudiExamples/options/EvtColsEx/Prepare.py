@@ -11,8 +11,8 @@
 """
 Prepare DST file to be used by EvtColsEx examples.
 """
-from Gaudi.Configuration import *
 from Configurables import GaudiPersistency
+from Gaudi.Configuration import *
 
 GaudiPersistency()
 FileCatalog(Catalogs=["xmlcatalog_file:EvtColsEx.xml"])

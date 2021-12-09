@@ -8,9 +8,10 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import GaudiPython as GP
 import cppyy
 import ROOT
+
+import GaudiPython as GP
 
 DO = cppyy.gbl.DataObject
 
@@ -31,7 +32,7 @@ path = "/Event"
 for i in range(5):
     path = path + "/{}".format(i)
     for j in range(1, 10):
-        p = path + '/' + str(j)
+        p = path + "/" + str(j)
         print("Registering Object at : " + p)
 
         if i % 2 == 0:
@@ -43,6 +44,7 @@ for i in range(5):
         print("Access of {} yields {}".format(p, ret))
         if not ret:
             raise Exception(
-                "Access of path: {}, should not result in nullptr".format(p))
+                "Access of path: {}, should not result in nullptr".format(p)
+            )
 
 tes.dump()

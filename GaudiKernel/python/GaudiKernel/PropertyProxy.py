@@ -13,18 +13,17 @@
 # Author: Martin Woudstra (Martin.Woudstra@cern.ch)
 
 # data ---------------------------------------------------------------------
-__all__ = [
-    'PropertyProxy', 'GaudiHandlePropertyProxy',
-    'GaudiHandleArrayPropertyProxy'
-]
-
-import os
-from GaudiKernel.GaudiHandles import *
-from GaudiKernel import ConfigurableDb
-from GaudiKernel.DataHandle import DataHandle
+__all__ = ["PropertyProxy", "GaudiHandlePropertyProxy", "GaudiHandleArrayPropertyProxy"]
 
 import logging
-log = logging.getLogger('PropertyProxy')
+import os
+
+from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.GaudiHandles import *
+
+from GaudiKernel import ConfigurableDb
+
+log = logging.getLogger("PropertyProxy")
 
 
 def derives_from(derived, base):
@@ -45,11 +44,11 @@ def derives_from(derived, base):
 def _isCompatible(tp, value):
     errmsg = "received an instance of %s, but %s expected" % (type(value), tp)
 
-    if derives_from(value, 'PropertyReference'):
+    if derives_from(value, "PropertyReference"):
         # TODO: implement type checking for references
         return value  # references are valid
-    if (tp is str):
-        if (type(value) is str) or derives_from(value, 'Configurable'):
+    if tp is str:
+        if (type(value) is str) or derives_from(value, "Configurable"):
             # we can set string properties only from strings or configurables
             return value
         elif isinstance(value, DataHandle):
@@ -58,14 +57,14 @@ def _isCompatible(tp, value):
             return str(value)
         else:
             raise ValueError(errmsg)
-    elif (tp in [list, tuple, dict]):
-        if (type(value) is tp):
+    elif tp in [list, tuple, dict]:
+        if type(value) is tp:
             # We need to check that the types match for lists, tuples and
             # dictionaries (bug #34769).
             return value
         else:
             raise ValueError(errmsg)
-    elif derives_from(tp, 'Configurable'):
+    elif derives_from(tp, "Configurable"):
         return value
     else:
         # all other types: accept if conversion allowed
@@ -84,7 +83,7 @@ class PropertyProxy(object):
         self.deprecated = False
         if docString:
             self.__doc__ = docString
-            if '[[deprecated]]' in docString:
+            if "[[deprecated]]" in docString:
                 self.deprecated = True
         if default is not None:
             self.default = default
@@ -98,8 +97,7 @@ class PropertyProxy(object):
     default = property(getDefault, setDefault)
 
     def fullPropertyName(self, obj):
-        return (obj.getJobOptName()
-                or obj.getName()) + '.' + self.descr.__name__
+        return (obj.getJobOptName() or obj.getName()) + "." + self.descr.__name__
 
     def __get__(self, obj, type=None):
         try:
@@ -108,8 +106,7 @@ class PropertyProxy(object):
             # special case for lists and dictionaries:
             # allow default to work with on += and []
             if self.__default.__class__ in [list, dict]:
-                self.descr.__set__(obj,
-                                   self.__default.__class__(self.__default))
+                self.descr.__set__(obj, self.__default.__class__(self.__default))
                 return self.descr.__get__(obj, type)
             else:
                 # for non lists (or dicts) return a reference to the default
@@ -119,24 +116,30 @@ class PropertyProxy(object):
     def __set__(self, obj, value):
         # check if deprecated
         if self.deprecated and not obj._unpickling:
-            log.warning('Property %s is deprecated: %s',
-                        self.fullPropertyName(obj), self.__doc__)
+            log.warning(
+                "Property %s is deprecated: %s",
+                self.fullPropertyName(obj),
+                self.__doc__,
+            )
 
-    # check value/property compatibility if possible
+        # check value/property compatibility if possible
         proptype, allowcompat = None, False
-        if hasattr(self, 'default'):
+        if hasattr(self, "default"):
             proptype = type(self.default)
-            if self.descr.__name__ == 'OutputLevel':  # old-style compat for Btag
+            if self.descr.__name__ == "OutputLevel":  # old-style compat for Btag
                 allowcompat = True
         elif obj in self.history:
             proptype = type(self.history[obj][0])
             allowcompat = True
 
-    # check if type known; allow special initializer for typed instances
-    # Do not perform the check for PropertyReference, should be delayed until
-    # binding (if ever done)
-        if proptype and proptype != type(None) and \
-                not derives_from(value, 'PropertyReference'):
+        # check if type known; allow special initializer for typed instances
+        # Do not perform the check for PropertyReference, should be delayed until
+        # binding (if ever done)
+        if (
+            proptype
+            and proptype != type(None)
+            and not derives_from(value, "PropertyReference")
+        ):
             try:
                 # check value itself
                 value = _isCompatible(proptype, value)
@@ -154,16 +157,18 @@ class PropertyProxy(object):
                         pass
             except ValueError as e:
                 if allowcompat:
-                    log.error('inconsistent value types for %s.%s (%s)' %
-                              (obj.getName(), self.descr.__name__, str(e)))
+                    log.error(
+                        "inconsistent value types for %s.%s (%s)"
+                        % (obj.getName(), self.descr.__name__, str(e))
+                    )
                 else:
                     raise
 
-    # allow a property to be set if we're in non-default mode, or if it
-    # simply hasn't been set before
+        # allow a property to be set if we're in non-default mode, or if it
+        # simply hasn't been set before
         if not obj._isInSetDefaults() or not obj in self.history:
             # by convention, 'None' for default is used to designate objects setting
-            if hasattr(self, 'default') and self.default == None:
+            if hasattr(self, "default") and self.default == None:
                 obj.__iadd__(value, self.descr)  # to establish hierarchy
             else:
                 self.descr.__set__(obj, value)
@@ -187,13 +192,20 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
         """
         # check that default is of allowed type for this proxy
         if not isinstance(default, allowedType):
-            raise TypeError("%s: %s default: %r is not a %s" %
-                            (descr.__name__, self.__class__.__name__, default,
-                             allowedType.__name__))
+            raise TypeError(
+                "%s: %s default: %r is not a %s"
+                % (
+                    descr.__name__,
+                    self.__class__.__name__,
+                    default,
+                    allowedType.__name__,
+                )
+            )
         PropertyProxy.__init__(self, descr, docString, default)
         self._handleType = handleType
-        self._confTypeName = 'Configurable' + handleType.componentType
-#      print "%s: %r (%s)" % (self.__class__.__name__,self._handleType,self._confTypeName)
+        self._confTypeName = "Configurable" + handleType.componentType
+
+    #      print "%s: %r (%s)" % (self.__class__.__name__,self._handleType,self._confTypeName)
 
     def __get__(self, obj, type=None):
         try:
@@ -234,13 +246,17 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
         Otherwise return None"""
         global log
         # find the module
-        typeAndNameTuple = typeAndName.split('/')
+        typeAndNameTuple = typeAndName.split("/")
         confType = typeAndNameTuple[0]
         confClass = ConfigurableDb.getConfigurable(confType)
         # check the type of the configurable
         if not derives_from(confClass, self._confTypeName):
-            log.error("%s: Configurable %s is not a %s", requester, confType,
-                      self._confTypeName)
+            log.error(
+                "%s: Configurable %s is not a %s",
+                requester,
+                confType,
+                self._confTypeName,
+            )
             return None
         try:
             confName = typeAndNameTuple[1]
@@ -268,35 +284,41 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                 # Find corresponding default configurable of private handles
                 # (make sure the name used to instantiate the private tool
                 # includes the name of the owner, see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/141)
-                if '/' in typeAndName:
-                    typeAndName = typeAndName.replace(
-                        '/', '/{}.'.format(obj.name()), 1)
+                if "/" in typeAndName:
+                    typeAndName = typeAndName.replace("/", "/{}.".format(obj.name()), 1)
                 else:
                     typeAndName = "{0}/{1}.{0}".format(typeAndName, obj.name())
                 try:
                     conf = self.getDefaultConfigurable(
-                        typeAndName, self.fullPropertyName(obj))
+                        typeAndName, self.fullPropertyName(obj)
+                    )
 
-
-#               print self.fullPropertyName(obj) + ": Setting default private configurable (from default handle): %r" % conf
+                #               print self.fullPropertyName(obj) + ": Setting default private configurable (from default handle): %r" % conf
                 except AttributeError as e:
                     # change type of exception to avoid false error message
                     raise RuntimeError(*e.args)
                 if conf is None:
                     raise RuntimeError(
                         "%s: Default configurable for class %s not found in ConfigurableDb.CfgDb"
-                        % (self.fullPropertyName(obj), default.getType()))
+                        % (self.fullPropertyName(obj), default.getType())
+                    )
                 return conf
         else:  # not a config, not a handle, not a string
-            raise TypeError("%s: default value %r is not of type %s or %s" %
-                            (self.fullPropertyName(obj), default,
-                             self._confTypeName, self._handleType.__name__))
+            raise TypeError(
+                "%s: default value %r is not of type %s or %s"
+                % (
+                    self.fullPropertyName(obj),
+                    default,
+                    self._confTypeName,
+                    self._handleType.__name__,
+                )
+            )
 
         return default
 
     def convertValueToBeSet(self, obj, value):
         if value is None:
-            value = ''
+            value = ""
         isString = type(value) == str
         if isString:
             # create an new handle
@@ -307,22 +329,28 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
         elif self.isConfig(value):
             if self._handleType.isPublic:
                 # A public tool must be registered to ToolSvc before assigning it
-                if derives_from(value, 'ConfigurableAlgTool'):
+                if derives_from(value, "ConfigurableAlgTool"):
                     if not value.isInToolSvc():
-                        suggestion = 'You may need to add jobOptions lines something like:' + os.linesep + \
-                                     'from AthenaCommon.AppMgr import ToolSvc' + os.linesep + \
-                                     'ToolSvc += '
-                        if value.getName() == value.getType(
-                        ):  # using default name
-                            suggestion += '%s()' % value.__class__.__name__
+                        suggestion = (
+                            "You may need to add jobOptions lines something like:"
+                            + os.linesep
+                            + "from AthenaCommon.AppMgr import ToolSvc"
+                            + os.linesep
+                            + "ToolSvc += "
+                        )
+                        if value.getName() == value.getType():  # using default name
+                            suggestion += "%s()" % value.__class__.__name__
                         else:  # using user-defined name
-                            suggestion += '%s(%r)' % (value.__class__.__name__,
-                                                      value.getName())
+                            suggestion += "%s(%r)" % (
+                                value.__class__.__name__,
+                                value.getName(),
+                            )
                         raise RuntimeError(
-                            self.fullPropertyName(obj) +
-                            ': Public tool %s is not yet in ToolSvc. %s' %
-                            (value.getJobOptName(), suggestion))
-            # make it read-only
+                            self.fullPropertyName(obj)
+                            + ": Public tool %s is not yet in ToolSvc. %s"
+                            % (value.getJobOptName(), suggestion)
+                        )
+                # make it read-only
                 return self._handleType(value.toStringProperty())
             elif value.hasParent(obj.getJobOptName()):
                 # is already a child, keep as-is
@@ -335,17 +363,23 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                 return value
         else:
             raise TypeError(
-                "Property %s value %r is not a %s nor a %s nor a string" %
-                (self.fullPropertyName(obj), value, self._confTypeName,
-                 self._handleType.__name__))
+                "Property %s value %r is not a %s nor a %s nor a string"
+                % (
+                    self.fullPropertyName(obj),
+                    value,
+                    self._confTypeName,
+                    self._handleType.__name__,
+                )
+            )
 
         return value
 
 
 class GaudiHandlePropertyProxy(GaudiHandlePropertyProxyBase):
     def __init__(self, descr, docString, default):
-        GaudiHandlePropertyProxyBase.__init__(self, descr, docString, default,
-                                              type(default), GaudiHandle)
+        GaudiHandlePropertyProxyBase.__init__(
+            self, descr, docString, default, type(default), GaudiHandle
+        )
 
 
 class GaudiHandleArrayPropertyProxy(GaudiHandlePropertyProxyBase):
@@ -354,24 +388,23 @@ class GaudiHandleArrayPropertyProxy(GaudiHandlePropertyProxyBase):
         <confTypeName>: string indicating the (base) class of allowed Configurables to be assigned.
         <handleType>: real python handle type (e.g. PublicToolHandle, PrivateToolHandle, ...)
         """
-        GaudiHandlePropertyProxyBase.__init__(self, descr, docString, default,
-                                              type(default).handleType,
-                                              GaudiHandleArray)
+        GaudiHandlePropertyProxyBase.__init__(
+            self, descr, docString, default, type(default).handleType, GaudiHandleArray
+        )
         self.arrayType = type(default)
 
     def checkType(self, obj, value):
-        if not isinstance(value, list) and not isinstance(
-                value, self.arrayType):
+        if not isinstance(value, list) and not isinstance(value, self.arrayType):
             raise TypeError(
-                "%s: Value %r is not a list nor a %s" %
-                (self.fullPropertyName(obj), value, self.arrayType.__name__))
+                "%s: Value %r is not a list nor a %s"
+                % (self.fullPropertyName(obj), value, self.arrayType.__name__)
+            )
 
     def convertDefaultToBeSet(self, obj, default):
         self.checkType(obj, default)
         newDefault = self.arrayType()
         for d in default:
-            cd = GaudiHandlePropertyProxyBase.convertDefaultToBeSet(
-                self, obj, d)
+            cd = GaudiHandlePropertyProxyBase.convertDefaultToBeSet(self, obj, d)
             if cd:
                 newDefault.append(cd)
 
@@ -418,7 +451,7 @@ class DataHandlePropertyProxy(PropertyProxy):
 
     def convertValueToBeSet(self, obj, value):
         if value is None:
-            value = ''
+            value = ""
 
         mode = obj.__class__.getDefaultProperty(self.descr.__name__).mode()
         _type = obj.__class__.getDefaultProperty(self.descr.__name__).type()
@@ -427,8 +460,10 @@ class DataHandlePropertyProxy(PropertyProxy):
         elif isinstance(value, DataHandle):
             return DataHandle(value.__str__(), mode, _type)
         else:
-            raise ValueError("received an instance of %s, but %s expected" %
-                             (type(value), 'str or DataHandle'))
+            raise ValueError(
+                "received an instance of %s, but %s expected"
+                % (type(value), "str or DataHandle")
+            )
 
 
 def PropertyProxyFactory(descr, doc, default):

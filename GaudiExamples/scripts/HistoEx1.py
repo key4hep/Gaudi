@@ -21,11 +21,12 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
+__author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
 # =============================================================================
 
-from GaudiPython.GaudiAlgs import HistoAlgo, SUCCESS
+from GaudiPython.GaudiAlgs import SUCCESS, HistoAlgo
 
 # =============================================================================
 # Simple algorithm which book&fill 3 histograms
@@ -33,26 +34,26 @@ from GaudiPython.GaudiAlgs import HistoAlgo, SUCCESS
 
 
 class HistoEx1(HistoAlgo):
-    """ Simple algorithm which explicitely book&fill three histograms """
+    """Simple algorithm which explicitely book&fill three histograms"""
 
     def __init__(self, name):
-        """ Constructor """
+        """Constructor"""
         HistoAlgo.__init__(self, name)
 
     def initialize(self):
-        """ Initialization, initialize the base class and book histograms """
+        """Initialization, initialize the base class and book histograms"""
         status = HistoAlgo.initialize(self)
         if status.isFailure():
             return status
 
-        self.h1 = self.book1D(' 1D histo ', 0, 20, 20)
-        self.h2 = self.book2D(' 2D histo ', 0, 20, 20, 0, 20, 20)
-        self.h3 = self.book3D(' 3D histo ', 0, 20, 20, 0, 20, 20, 0, 20, 20)
+        self.h1 = self.book1D(" 1D histo ", 0, 20, 20)
+        self.h2 = self.book2D(" 2D histo ", 0, 20, 20, 0, 20, 20)
+        self.h3 = self.book3D(" 3D histo ", 0, 20, 20, 0, 20, 20, 0, 20, 20)
 
         return SUCCESS
 
     def execute(self):
-        """ The major method 'execute', it is invoked for each event """
+        """The major method 'execute', it is invoked for each event"""
 
         for i in range(0, 10):
             self.h1.fill(i, 0.166)
@@ -68,17 +69,18 @@ class HistoEx1(HistoAlgo):
 # job configuration
 # =============================================================================
 def configure(gaudi=None):
-    """ Configuration of the job """
+    """Configuration of the job"""
 
     import HistoEx
 
     if not gaudi:
         from GaudiPython.Bindings import AppMgr
+
         gaudi = AppMgr()
 
     HistoEx.configure(gaudi)
 
-    alg = HistoEx1('HistoEx1')
+    alg = HistoEx1("HistoEx1")
     gaudi.addAlgorithm(alg)
 
     alg.HistoPrint = True
@@ -89,10 +91,11 @@ def configure(gaudi=None):
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
     print(__doc__ + __author__)
 
     from GaudiPython.Bindings import AppMgr
+
     gaudi = AppMgr()
 
     configure(gaudi)
@@ -100,11 +103,11 @@ if '__main__' == __name__:
     gaudi.run(20)
     import GaudiPython.HistoUtils
 
-    alg = gaudi.algorithm('HistoEx1')
+    alg = gaudi.algorithm("HistoEx1")
     histos = alg.Histos()
     for key in sorted(histos):
         histo = histos[key]
-        if hasattr(histo, 'dump'):
+        if hasattr(histo, "dump"):
             print(histo.dump(80, 20, True))
 
 # =============================================================================

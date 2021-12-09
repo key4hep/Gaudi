@@ -9,20 +9,23 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
 import os
 import sys
 import time
 from xml.etree import ElementTree
 
 
-def generateOptions(counter, cmask, invmask, sampling_period, startatevent,
-                    storeresultsat, family):
+def generateOptions(
+    counter, cmask, invmask, sampling_period, startatevent, storeresultsat, family
+):
     cmask = map(int, cmask)
     invmask = map(int, invmask)
     sampling_period = map(int, sampling_period)
     startatevent = int(startatevent)
 
     from Configurables import ApplicationMgr, AuditorSvc, PerfMonAuditor
+
     app = ApplicationMgr()
     app.AuditAlgorithms = 1
     pfaud = PerfMonAuditor()
@@ -47,11 +50,10 @@ def generateOptions(counter, cmask, invmask, sampling_period, startatevent,
         pass
     pfaud.FAMILY = family
     # for <2.5 Python use: test and true_value or false_value
-    pfaud.PREFIX = "%s_%s" % (storeresultsat,
-                              "S" if sampling_period[0] > 0 else "C")
+    pfaud.PREFIX = "%s_%s" % (storeresultsat, "S" if sampling_period[0] > 0 else "C")
     pfaud.SAMPLE = int(sampling_period[0] > 0)
     pfaud.START_AT_EVENT = startatevent
-    #pfaud.LEVEL = 5
+    # pfaud.LEVEL = 5
     AuditorSvc().Auditors.append(pfaud)
     print(pfaud)
 
@@ -73,10 +75,10 @@ class XmlDictObject(dict):
         self.__setitem__(item, value)
 
     def __str__(self):
-        if '_text' in self:
-            return self.__getitem__('_text')
+        if "_text" in self:
+            return self.__getitem__("_text")
         else:
-            return ''
+            return ""
 
     @staticmethod
     def Wrap(x):
@@ -85,8 +87,7 @@ class XmlDictObject(dict):
         """
 
         if isinstance(x, dict):
-            return XmlDictObject(
-                (k, XmlDictObject.Wrap(v)) for (k, v) in x.iteritems())
+            return XmlDictObject((k, XmlDictObject.Wrap(v)) for (k, v) in x.iteritems())
         elif isinstance(x, list):
             return [XmlDictObject.Wrap(v) for v in x]
         else:
@@ -95,8 +96,7 @@ class XmlDictObject(dict):
     @staticmethod
     def _UnWrap(x):
         if isinstance(x, dict):
-            return dict(
-                (k, XmlDictObject._UnWrap(v)) for (k, v) in x.iteritems())
+            return dict((k, XmlDictObject._UnWrap(v)) for (k, v) in x.iteritems())
         elif isinstance(x, list):
             return [XmlDictObject._UnWrap(v) for v in x]
         else:
@@ -115,7 +115,7 @@ def _ConvertDictToXmlRecurse(parent, dictitem):
 
     if isinstance(dictitem, dict):
         for (tag, child) in dictitem.iteritems():
-            if str(tag) == '_text':
+            if str(tag) == "_text":
                 parent.text = str(child)
             elif type(child) is type([]):
                 # iterate through the array and convert
@@ -165,14 +165,14 @@ def _ConvertXmlToDictRecurse(node, dictclass):
             nodedict[child.tag] = newitem
 
     if node.text is None:
-        text = ''
+        text = ""
     else:
         text = node.text.strip()
 
     if len(nodedict) > 0:
         # if we have a dictionary add the text as a dictionary value (if there is any)
         if len(text) > 0:
-            nodedict['_text'] = text
+            nodedict["_text"] = text
     else:
         # if we don't have child nodes or attributes, just set the text
         nodedict = text
@@ -186,9 +186,9 @@ def ConvertXmlToDict(root, dictclass=XmlDictObject):
     """
 
     # If a string is passed in, try to open it as a file
-    if type(root) == type(''):
+    if type(root) == type(""):
         root = ElementTree.parse(root).getroot()
     elif not isinstance(root, ElementTree.Element):
-        raise TypeError('Expected ElementTree.Element or file path string')
+        raise TypeError("Expected ElementTree.Element or file path string")
 
     return dictclass({root.tag: _ConvertXmlToDictRecurse(root, dictclass)})

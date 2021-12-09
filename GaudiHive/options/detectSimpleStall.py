@@ -16,9 +16,15 @@ an inverted CF decision sot that A2 is not run. This results in an unmet DF depe
 for a downstream algorithm A3, leading to the stall.
 """
 
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    CPUCruncher,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr, CPUCrunchSvc,
-                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher)
 
 evtslots = 1
 evtMax = 1
@@ -28,7 +34,8 @@ threads = 1
 whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG
+)
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=VERBOSE)
 
@@ -45,27 +52,29 @@ a1.InvertDecision = True
 
 # this algorithm is not run due to early exit from the group it belongs to
 a2 = CPUCruncher("A2")
-a2.outKeys = ['/Event/a2']
+a2.outKeys = ["/Event/a2"]
 
 a3 = CPUCruncher("A3")
-a3.inpKeys = ['/Event/a2']
+a3.inpKeys = ["/Event/a2"]
 
 # Assemble control flow graph
 branch = GaudiSequencer(
-    "EarlyExitBranch", ModeOR=False, ShortCircuit=True, Sequential=True)
+    "EarlyExitBranch", ModeOR=False, ShortCircuit=True, Sequential=True
+)
 branch.Members = [a1, a2]
 
 for algo in [a1, a2, a3]:
     algo.Cardinality = cardinality
-    algo.avgRuntime = .1
+    algo.avgRuntime = 0.1
 
 # Application Manager ----------------------------------------------------------
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[branch, a3],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

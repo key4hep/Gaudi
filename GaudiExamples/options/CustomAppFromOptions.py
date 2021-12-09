@@ -14,6 +14,7 @@
 
 # Workaround for ROOT-10769
 import warnings
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import cppyy
@@ -22,7 +23,8 @@ with warnings.catch_warnings():
 cppyy.gbl.gSystem.Load("libGaudiKernel.so")
 
 # - pass to ROOT interpreter our code
-cppyy.gbl.gInterpreter.Declare(r'''
+cppyy.gbl.gInterpreter.Declare(
+    r"""
 #include <Gaudi/Application.h>
 #include <iostream>
 
@@ -36,6 +38,7 @@ namespace Test {
   };
 }
 DECLARE_COMPONENT(Test::CustomApp)
-''')
+"""
+)
 
 # IMPORTANT: gaudirun.py must be invoked passing "--application=Test::CustomApp"

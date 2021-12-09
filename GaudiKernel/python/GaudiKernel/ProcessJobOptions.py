@@ -8,12 +8,12 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import logging
 import os
-import sys
 import re
+import sys
 import time
 
-import logging
 _log = logging.getLogger(__name__)
 
 
@@ -27,7 +27,7 @@ class LogFormatter(logging.Formatter):
         fmsg = logging.Formatter.format(self, record)
         prefix = self.prefix
         if self.with_time:
-            prefix += '%f ' % time.time()
+            prefix += "%f " % time.time()
         if record.levelno >= logging.WARNING:
             prefix += record.levelname + ": "
         s = "\n".join([prefix + line for line in fmsg.splitlines()])
@@ -42,8 +42,9 @@ class LogFilter(logging.Filter):
         self.threshold = logging.WARNING
 
     def filter(self, record):
-        return record.levelno >= self.threshold or (self.enabled and
-                                                    self.printing_level <= 0)
+        return record.levelno >= self.threshold or (
+            self.enabled and self.printing_level <= 0
+        )
 
     def printOn(self, step=1, force=False):
         """
@@ -117,16 +118,14 @@ def GetConsoleHandler(prefix=None, stream=None, with_time=False):
     global _consoleHandler
     if _consoleHandler is None:
         _consoleHandler = ConsoleHandler(
-            prefix=prefix, stream=stream, with_time=with_time)
+            prefix=prefix, stream=stream, with_time=with_time
+        )
     elif prefix is not None:
         _consoleHandler.setPrefix(prefix)
     return _consoleHandler
 
 
-def InstallRootLoggingHandler(prefix=None,
-                              level=None,
-                              stream=None,
-                              with_time=False):
+def InstallRootLoggingHandler(prefix=None, level=None, stream=None, with_time=False):
     root_logger = logging.getLogger()
     if not root_logger.handlers:
         root_logger.addHandler(GetConsoleHandler(prefix, stream, with_time))
@@ -153,7 +152,7 @@ def _find_file(f):
     if os.path.isfile(f):
         return os.path.realpath(f)
 
-    path = os.environ.get('JOBOPTSEARCHPATH', '').split(os.pathsep)
+    path = os.environ.get("JOBOPTSEARCHPATH", "").split(os.pathsep)
     # find the full path to the option file
     candidates = [d for d in path if os.path.isfile(os.path.join(d, f))]
     if not candidates:
@@ -173,20 +172,20 @@ def _to_be_included(f):
 
 
 class JobOptsParser:
-    comment = re.compile(r'(//.*)$')
+    comment = re.compile(r"(//.*)$")
     # non-perfect R-E to check if '//' is inside a string
     # (a tokenizer would be better)
     comment_in_string = re.compile(r'(["\']).*//.*\1')
-    directive = re.compile(r'^\s*#\s*([\w!]+)\s*(.*)\s*$')
-    comment_ml = (re.compile(r'/\*'), re.compile(r'\*/'))
+    directive = re.compile(r"^\s*#\s*([\w!]+)\s*(.*)\s*$")
+    comment_ml = (re.compile(r"/\*"), re.compile(r"\*/"))
     statement_sep = ";"
-    reference = re.compile(r'^@([\w.]*)$')
+    reference = re.compile(r"^@([\w.]*)$")
 
     def __init__(self):
         # parser level states
         self.units = {}
         self.defines = {}
-        if sys.platform != 'win32':
+        if sys.platform != "win32":
             self.defines["WIN32"] = True
 
     def _include(self, file, function):
@@ -214,8 +213,9 @@ class JobOptsParser:
             l = f.readline()
 
         while l:
-            l = l.rstrip(
-            ) + '\n'  # normalize EOL chars (to avoid problems with DOS new-line on Unix)
+            l = (
+                l.rstrip() + "\n"
+            )  # normalize EOL chars (to avoid problems with DOS new-line on Unix)
 
             # single line comment
             m = self.comment.search(l)
@@ -227,7 +227,7 @@ class JobOptsParser:
                 if not (m2 and m2.start() < m.start()):
                     # if it is not the case, we can remove the comment from the
                     # statement
-                    l = l[:m.start()] + l[m.end():]
+                    l = l[: m.start()] + l[m.end() :]
             # process directives
             m = self.directive.search(l)
             if m:
@@ -275,7 +275,7 @@ class JobOptsParser:
             # multi-line comment
             m = self.comment_ml[0].search(l)
             if m:
-                l, l1 = l[:m.start()], l[m.end():]
+                l, l1 = l[: m.start()], l[m.end() :]
                 m = self.comment_ml[1].search(l1)
                 while not m:
                     l1 = f.readline()
@@ -284,28 +284,29 @@ class JobOptsParser:
                     m = self.comment_ml[1].search(l1)
                 if not l1 and not m:
                     raise ParserError(
-                        "End Of File reached before end of multi-line comment")
-                l += l1[m.end():]
+                        "End Of File reached before end of multi-line comment"
+                    )
+                l += l1[m.end() :]
 
             # if we are in a multiline string, we add to the statement
             # everything until the next '"'
             if in_string:
                 string_end = l.find('"')
                 if string_end >= 0:
-                    statement += l[:string_end + 1]
-                    l = l[string_end + 1:]
+                    statement += l[: string_end + 1]
+                    l = l[string_end + 1 :]
                     in_string = False  # the string ends here
                 else:
                     statement += l
-                    l = ''
+                    l = ""
             else:  # check if we have a string
                 string_start = l.find('"')
                 if string_start >= 0:
                     string_end = l.find('"', string_start + 1)
                     if string_end >= 0:
                         # the string is opened and closed
-                        statement += l[:string_end + 1]
-                        l = l[string_end + 1:]
+                        statement += l[: string_end + 1]
+                        l = l[string_end + 1 :]
                     else:
                         # the string is only opened
                         statement += l
@@ -317,7 +318,7 @@ class JobOptsParser:
                 i = l.index(self.statement_sep)
                 statement += l[:i]
                 self._eval_statement(statement.strip().replace("\n", "\\n"))
-                statement = l[i + 1:]
+                statement = l[i + 1 :]
                 # it may happen (bug #37479) that the rest of the statement
                 # contains a comment.
                 if statement.lstrip().startswith("//"):
@@ -329,20 +330,24 @@ class JobOptsParser:
 
     def _parse_units(self, file):
         for line in open(file):
-            if '//' in line:
-                line = line[:line.index('//')]
+            if "//" in line:
+                line = line[: line.index("//")]
             line = line.strip()
             if not line:
                 continue
-            nunit, value = line.split('=')
+            nunit, value = line.split("=")
             factor, unit = nunit.split()
             value = eval(value) / eval(factor)
             self.units[unit] = value
 
     def _eval_statement(self, statement):
         from GaudiKernel.Proxy.Configurable import (
-            ConfigurableGeneric, Configurable, PropertyReference)
-        #statement = statement.replace("\n","").strip()
+            Configurable,
+            ConfigurableGeneric,
+            PropertyReference,
+        )
+
+        # statement = statement.replace("\n","").strip()
         _log.info("%s%s", statement, self.statement_sep)
 
         property, value = statement.split("=", 1)
@@ -356,7 +361,7 @@ class JobOptsParser:
         value = value.strip()
 
         # find the configurable to apply the property to
-        #parent_cfg = None
+        # parent_cfg = None
         # while '.' in property:
         #    component, property = property.split('.',1)
         #    if parent_cfg:
@@ -370,33 +375,39 @@ class JobOptsParser:
         #    parent_cfg = cfg
 
         # remove spaces around dots
-        property = '.'.join([w.strip() for w in property.split('.')])
-        component, property = property.rsplit('.', 1)
+        property = ".".join([w.strip() for w in property.split(".")])
+        component, property = property.rsplit(".", 1)
         if component in Configurable.allConfigurables:
             cfg = Configurable.allConfigurables[component]
         else:
             cfg = ConfigurableGeneric(component)
 
-        #value = os.path.expandvars(value)
-        value = value.replace('true', 'True').replace('false', 'False')
-        if value[0] == '{':
+        # value = os.path.expandvars(value)
+        value = value.replace("true", "True").replace("false", "False")
+        if value[0] == "{":
             # Try to guess if the values looks like a dictionary
-            if ':' in value and not (value[:value.index(':')].count('"') % 2 or
-                                     value[:value.index(':')].count("'") % 2):
+            if ":" in value and not (
+                value[: value.index(":")].count('"') % 2
+                or value[: value.index(":")].count("'") % 2
+            ):
                 # for dictionaries, keep the surrounding {}
-                value = '{' + \
-                    value[1:-1].replace('{', '[').replace('}', ']') + '}'
+                value = "{" + value[1:-1].replace("{", "[").replace("}", "]") + "}"
             else:  # otherwise replace all {} with []
-                value = value.replace('{', '[').replace('}', ']')
+                value = value.replace("{", "[").replace("}", "]")
 
         # We must escape '\' because eval tends to interpret them
-        value = value.replace('\\', '\\\\')
+        value = value.replace("\\", "\\\\")
         # Restore special cases ('\n', '\t' and '\"') (see GAUDI-1001)
-        value = (value.replace(r"\\n", r"\n").replace(r"\\t", r"\t").replace(
-            r'\\"', r'\"'))
+        value = (
+            value.replace(r"\\n", r"\n").replace(r"\\t", r"\t").replace(r'\\"', r"\"")
+        )
         # replace r'\n' and r'\t' that are outside double quoted strings
-        value = '"'.join([(v if i % 2 else re.sub(r'\\[nt]', ' ', v))
-                          for i, v in enumerate(value.split('"'))])
+        value = '"'.join(
+            [
+                (v if i % 2 else re.sub(r"\\[nt]", " ", v))
+                for i, v in enumerate(value.split('"'))
+            ]
+        )
 
         # interprete the @ operator
         m = self.reference.match(value)
@@ -406,7 +417,7 @@ class JobOptsParser:
         else:
             value = eval(value, self.units)
 
-        #if type(value) is str    : value = os.path.expandvars(value)
+        # if type(value) is str    : value = os.path.expandvars(value)
         # elif type(value) is list : value = [ type(item) is str and os.path.expandvars(item) or item for item in value ]
 
         if property not in cfg.__slots__ and not hasattr(cfg, property):
@@ -416,7 +427,10 @@ class JobOptsParser:
                 if lprop == p.lower():
                     _log.warning(
                         "property '%s' was requested for %s, but the correct spelling is '%s'",
-                        property, cfg.name(), p)
+                        property,
+                        cfg.name(),
+                        p,
+                    )
                     property = p
                     break
 
@@ -439,15 +453,17 @@ class JobOptsParser:
                         if k in prop:
                             del prop[k]
                         else:
-                            _log.warning("key '%s' not in %s.%s", k,
-                                         cfg.name(), property)
+                            _log.warning(
+                                "key '%s' not in %s.%s", k, cfg.name(), property
+                            )
                 else:
                     for k in value:
                         if k in prop:
                             prop.remove(k)
                         else:
-                            _log.warning("value '%s' not in %s.%s", k,
-                                         cfg.name(), property)
+                            _log.warning(
+                                "value '%s' not in %s.%s", k, cfg.name(), property
+                            )
         else:
             setattr(cfg, property, value)
 
@@ -466,15 +482,16 @@ _parser = JobOptsParser()
 
 def _import_python(file):
     with open(file) as f:
-        code = compile(f.read(), file, 'exec')
+        code = compile(f.read(), file, "exec")
         exec(code, {})
 
 
 def _import_pickle(file):
     import pickle
-    input = open(file, 'rb')
+
+    input = open(file, "rb")
     catalog = pickle.load(input)
-    _log.info('Unpickled %d configurables', len(catalog))
+    _log.info("Unpickled %d configurables", len(catalog))
 
 
 def _import_opts(file):
@@ -482,9 +499,10 @@ def _import_opts(file):
 
 
 def _import_dict(data):
-    from GaudiKernel.Proxy.Configurable import ConfigurableGeneric, Configurable
+    from GaudiKernel.Proxy.Configurable import Configurable, ConfigurableGeneric
+
     for property, value_repr in data.items():
-        component, property = property.rsplit('.', 1)
+        component, property = property.rsplit(".", 1)
         if component in Configurable.allConfigurables:
             cfg = Configurable.allConfigurables[component]
         else:
@@ -495,6 +513,7 @@ def _import_dict(data):
 
 def _import_json(filename):
     import json
+
     with open(filename) as f:
         _import_dict(json.load(f))
 

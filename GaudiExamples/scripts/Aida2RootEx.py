@@ -18,24 +18,36 @@
 # =============================================================================
 " Simple example to illustrate the usage of aida2root converter "
 from __future__ import print_function
+
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@phys.syr.edu"
 # =============================================================================
 import os
 import sys
+
 import ROOT
+
 if "-b" in sys.argv:
     # Force batch mode
     ROOT.gROOT.SetBatch(True)
 
-from GaudiPython.GaudiAlgs import HistoAlgo, aida2root, SUCCESS
+from GaudiPython.GaudiAlgs import SUCCESS, HistoAlgo, aida2root
 
 # list of booked histograms
-paths = ('HistoEx/ 1D histo ', 'HistoEx/ 2D histo ', 'HistoEx/ 3D histo ',
-         'HistoEx1/ 1D histo ', 'HistoEx1/ 2D histo ', 'HistoEx1/ 3D histo ',
-         'HistoEx2/ x vs y    ', 'HistoEx2/ x vs y+3x ',
-         'HistoEx2/ x vs y-3x ', 'HistoEx2/ x vs y    (profile)',
-         'HistoEx2/ x vs y+3x (profile)', 'HistoEx2/ x vs y-3x (profile)')
+paths = (
+    "HistoEx/ 1D histo ",
+    "HistoEx/ 2D histo ",
+    "HistoEx/ 3D histo ",
+    "HistoEx1/ 1D histo ",
+    "HistoEx1/ 2D histo ",
+    "HistoEx1/ 3D histo ",
+    "HistoEx2/ x vs y    ",
+    "HistoEx2/ x vs y+3x ",
+    "HistoEx2/ x vs y-3x ",
+    "HistoEx2/ x vs y    (profile)",
+    "HistoEx2/ x vs y+3x (profile)",
+    "HistoEx2/ x vs y-3x (profile)",
+)
 
 # =============================================================================
 # @class Aida2RootEx1
@@ -47,12 +59,12 @@ paths = ('HistoEx/ 1D histo ', 'HistoEx/ 2D histo ', 'HistoEx/ 3D histo ',
 class Aida2RootEx1(HistoAlgo):
     # Standard Constructor
     def __init__(self, name="Aida2RootEx1"):
-        """ Standard Constructor """
+        """Standard Constructor"""
         HistoAlgo.__init__(self, name)
 
     # the main execution method
     def execute(self):
-        " The main execution method "
+        "The main execution method"
 
         # list of booked histograms
         for path in paths:
@@ -83,12 +95,12 @@ class Aida2RootEx1(HistoAlgo):
 class Aida2RootEx2(HistoAlgo):
     # Standard Constructor
     def __init__(self, name="Aida2RootEx2"):
-        """ Standard Constructor """
+        """Standard Constructor"""
         HistoAlgo.__init__(self, name)
 
     # the main execution method
     def execute(self):
-        " The main execution method "
+        "The main execution method"
 
         # get the service itself
         s = self.histoSvc()
@@ -112,14 +124,16 @@ class Aida2RootEx2(HistoAlgo):
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2007-01-24
 def configure(gaudi=None):
-    """ the main configuration method """
+    """the main configuration method"""
 
     if not gaudi:
         from GaudiPython.Bindings import AppMgr
+
         gaudi = AppMgr()
 
     # reuse the previous example
     import HistoEx2
+
     HistoEx2.configure(gaudi)
 
     # create the algorithms
@@ -137,9 +151,10 @@ def configure(gaudi=None):
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2007-01-24
 def useScript(histos):
-    "  the third way to convert AIDA histograms into ROOT "
+    "the third way to convert AIDA histograms into ROOT"
 
     from GaudiPython.Bindings import AppMgr
+
     g = AppMgr()
 
     hsvc = g.histsvc()
@@ -150,15 +165,15 @@ def useScript(histos):
         if not root:
             print("ERROR in access the histogram '%s' " % histo)
             continue
-        canvas = ROOT.TCanvas('canvas_%d' % i, histo, 250, 250)
+        canvas = ROOT.TCanvas("canvas_%d" % i, histo, 250, 250)
         root.Draw()
-        name = histo.replace('/', '_')
-        name = name.replace('\\', '_')
-        name = name.replace('"', '_')
-        name = name.replace("'", '_')
-        name = name.replace("'", '_')
-        name = name.replace(" ", '_')
-        name = name.replace(os.sep, '_') + '.png'
+        name = histo.replace("/", "_")
+        name = name.replace("\\", "_")
+        name = name.replace('"', "_")
+        name = name.replace("'", "_")
+        name = name.replace("'", "_")
+        name = name.replace(" ", "_")
+        name = name.replace(os.sep, "_") + ".png"
         if os.path.exists(name):
             # strictly speaking, it is not needed, but avoids a message on the stderr
             os.remove(name)
@@ -172,7 +187,7 @@ def useScript(histos):
 # =============================================================================
 # The actual job execution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
     print(__doc__, __author__)
 
     from GaudiPython.Bindings import AppMgr

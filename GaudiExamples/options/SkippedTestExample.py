@@ -10,9 +10,10 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+import sys
+
 # import special return code to indicate that the test is skipped
 from GaudiTesting import SKIP_RETURN_CODE
-import sys
 
 # NOTE: returning SKIP_RETURN_CODE is meant for tests which should be skipped
 #       based on runtime information.

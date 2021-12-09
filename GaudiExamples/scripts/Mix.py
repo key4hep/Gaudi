@@ -20,18 +20,19 @@ Simple example to illustrate the problem for task #13911
 https://savannah.cern.ch/task/?13911
 """
 from __future__ import print_function
+
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
 __date__ = "2010-04-24"
 # =============================================================================
 import sys
 
+from Configurables import GaudiSequencer, HelloWorld, Sequencer
 from Gaudi.Configuration import *
-from Configurables import HelloWorld, GaudiSequencer, Sequencer
-
-from GaudiPython.Bindings import AppMgr, setOwnership
+from GaudiPython.Bindings import AppMgr
 from GaudiPython.Bindings import gbl as cpp
-from GaudiPython.GaudiAlgs import GaudiAlgo, SUCCESS
+from GaudiPython.Bindings import setOwnership
+from GaudiPython.GaudiAlgs import SUCCESS, GaudiAlgo
 
 # =============================================================================
 # @class SimpleAlgo
@@ -43,7 +44,7 @@ from GaudiPython.GaudiAlgs import GaudiAlgo, SUCCESS
 class SimpleAlgo(GaudiAlgo):
     def execute(self):
 
-        print('I am SimpleAlgo.execute!  ', self.name())
+        print("I am SimpleAlgo.execute!  ", self.name())
         sys.stdout.flush()
 
         return SUCCESS
@@ -55,47 +56,48 @@ class SimpleAlgo(GaudiAlgo):
 
 def configure():
 
-    importOptions('Common.opts')
+    importOptions("Common.opts")
 
     ApplicationMgr(
         TopAlg=[
             HelloWorld(),
             GaudiSequencer(
-                'MySequencer',
+                "MySequencer",
                 MeasureTime=True,
-                Members=[HelloWorld('Hello1'),
-                         HelloWorld('Hello2')])
+                Members=[HelloWorld("Hello1"), HelloWorld("Hello2")],
+            ),
         ],
         # do not use any event input
-        EvtSel='NONE')
+        EvtSel="NONE",
+    )
 
     gaudi = AppMgr()
 
     # create two "identical" algorithms:
 
-    myAlg1 = SimpleAlgo('Simple1')
-    myAlg2 = SimpleAlgo('Simple2')
+    myAlg1 = SimpleAlgo("Simple1")
+    myAlg2 = SimpleAlgo("Simple2")
 
     # Adding something into TopAlg-sequence is OK:
     gaudi.setAlgorithms([myAlg1] + gaudi.TopAlg)
 
     # Extending of "other"-sequences causes failures:
-    seq = gaudi.algorithm('MySequencer')
+    seq = gaudi.algorithm("MySequencer")
 
-    seq.Members += ['HelloWorld/Hello3']  # it is ok
+    seq.Members += ["HelloWorld/Hello3"]  # it is ok
     seq.Members += [myAlg2.name()]  # it fails
 
     cpp.StatusCode.enableChecking()
 
 
-if '__main__' == __name__:
+if "__main__" == __name__:
 
     # make printout of the own documentations
-    print('*' * 120)
+    print("*" * 120)
     print(__doc__)
-    print(' Author  : %s ' % __author__)
-    print(' Date    : %s ' % __date__)
-    print('*' * 120)
+    print(" Author  : %s " % __author__)
+    print(" Date    : %s " % __date__)
+    print("*" * 120)
     sys.stdout.flush()
 
     configure()
@@ -106,10 +108,10 @@ if '__main__' == __name__:
 
     # add 'late' algorithms
 
-    myAlg3 = SimpleAlgo('Simple3')
+    myAlg3 = SimpleAlgo("Simple3")
 
-    seq = gaudi.algorithm('MySequencer')
-    seq.Members += ['HelloWorld/Hello4']
+    seq = gaudi.algorithm("MySequencer")
+    seq.Members += ["HelloWorld/Hello4"]
 
     gaudi.run(8)
 

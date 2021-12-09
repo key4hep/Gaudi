@@ -19,14 +19,14 @@
 """
 from __future__ import print_function
 
-__all__ = ['Task', 'WorkManager']
-excluded_varnames = ['HOSTNAME', 'SSH_CLIENT', 'SSH_CONNECTION', 'DISPLAY']
+__all__ = ["Task", "WorkManager"]
+excluded_varnames = ["HOSTNAME", "SSH_CLIENT", "SSH_CONNECTION", "DISPLAY"]
 
-import sys
-import os
-import time
 import copy
 import multiprocessing
+import os
+import sys
+import time
 
 
 def _prefunction(f, task, item):
@@ -55,7 +55,7 @@ def _ppfunction(args):
 
 class Statistics(object):
     def __init__(self):
-        self.name = os.getenv('HOSTNAME')
+        self.name = os.getenv("HOSTNAME")
         self.start = time.time()
         self.time = 0.0
         self.njob = 0
@@ -65,9 +65,10 @@ class Statistics(object):
 
 
 class Task(object):
-    """ Basic base class to encapsulate any processing that is going to be porcessed in parallel.
-        User class much inherit from it and implement the methods initializeLocal,
-        initializeRemote, process and finalize.   """
+    """Basic base class to encapsulate any processing that is going to be porcessed in parallel.
+    User class much inherit from it and implement the methods initializeLocal,
+    initializeRemote, process and finalize."""
+
     _initializeDone = False
 
     def __new__(cls, *args, **kwargs):
@@ -95,15 +96,15 @@ class Task(object):
         if type(result) is not type(self.output):
             raise TypeError("output type is not same as obtained result")
         # --No iteratable---
-        if not hasattr(result, '__iter__'):
-            if hasattr(self.output, 'Add'):
+        if not hasattr(result, "__iter__"):
+            if hasattr(self.output, "Add"):
                 self.output.Add(result)
-            elif hasattr(self.output, '__iadd__'):
+            elif hasattr(self.output, "__iadd__"):
                 self.output += result
-            elif hasattr(self.output, '__add__'):
+            elif hasattr(self.output, "__add__"):
                 self.output = self.output + result
             else:
-                raise TypeError('result cannot be added')
+                raise TypeError("result cannot be added")
         # --Dictionary---
         elif type(result) is dict:
             if self.output.keys() <= result.keys():
@@ -112,59 +113,59 @@ class Task(object):
                 minkeys = result.keys()
             for key in result.keys():
                 if key in self.output:
-                    if hasattr(self.output[key], 'Add'):
+                    if hasattr(self.output[key], "Add"):
                         self.output[key].Add(result[key])
-                    elif hasattr(self.output[key], '__iadd__'):
+                    elif hasattr(self.output[key], "__iadd__"):
                         self.output[key] += result[key]
-                    elif hasattr(self.output[key], '__add__'):
+                    elif hasattr(self.output[key], "__add__"):
                         self.output[key] = self.output[key] + result[key]
                     else:
-                        raise TypeError('result cannot be added')
+                        raise TypeError("result cannot be added")
                 else:
                     self.output[key] = result[key]
         # --Anything else (list)
         else:
             for i in range(min(len(self.output), len(result))):
-                if hasattr(self.output[i], 'Add'):
+                if hasattr(self.output[i], "Add"):
                     self.output[i].Add(result[i])
-                elif hasattr(self.output[i], '__iadd__'):
+                elif hasattr(self.output[i], "__iadd__"):
                     self.output[i] += result[i]
-                elif hasattr(self.output[i], '__add__'):
+                elif hasattr(self.output[i], "__add__"):
                     self.output[i] = self.output[i] + result[i]
                 else:
-                    raise TypeError('result cannot be added')
+                    raise TypeError("result cannot be added")
 
     def _resetOutput(self):
-        output = (type(self.output) is
-                  dict) and self.output.values() or self.output
+        output = (type(self.output) is dict) and self.output.values() or self.output
         for o in output:
-            if hasattr(o, 'Reset'):
+            if hasattr(o, "Reset"):
                 o.Reset()
 
 
 class WorkManager(object):
-    """ Class to in charge of managing the tasks and distributing them to
-        the workers. They can be local (using other cores) or remote
-        using other nodes in the local cluster """
+    """Class to in charge of managing the tasks and distributing them to
+    the workers. They can be local (using other cores) or remote
+    using other nodes in the local cluster"""
 
-    def __init__(self, ncpus='autodetect', ppservers=None):
-        if ncpus == 'autodetect':
+    def __init__(self, ncpus="autodetect", ppservers=None):
+        if ncpus == "autodetect":
             self.ncpus = multiprocessing.cpu_count()
         else:
             self.ncpus = ncpus
         if ppservers:
             import pp
+
             self.ppservers = ppservers
             self.sessions = [SshSession(srv) for srv in ppservers]
             self.server = pp.Server(ncpus=self.ncpus, ppservers=self.ppservers)
-            self.mode = 'cluster'
+            self.mode = "cluster"
         else:
             self.pool = multiprocessing.Pool(self.ncpus)
-            self.mode = 'multicore'
+            self.mode = "multicore"
         self.stats = {}
 
     def __del__(self):
-        if hasattr(self, 'server'):
+        if hasattr(self, "server"):
             self.server.destroy()
         if hasattr(self, "pool"):
             self.pool.close()
@@ -175,10 +176,14 @@ class WorkManager(object):
         # --- Call the Local initialialization
         task.initializeLocal()
         # --- Schedule all the jobs ....
-        if self.mode == 'cluster':
+        if self.mode == "cluster":
             jobs = [
-                self.server.submit(_prefunction, (_ppfunction, task, item), (),
-                                   ('GaudiMP.Parallel', 'time'))
+                self.server.submit(
+                    _prefunction,
+                    (_ppfunction, task, item),
+                    (),
+                    ("GaudiMP.Parallel", "time"),
+                )
                 for item in items
             ]
             for job in jobs:
@@ -187,16 +192,15 @@ class WorkManager(object):
                 self._mergeStatistics(stat)
             self._printStatistics()
             self.server.print_stats()
-        elif self.mode == 'multicore':
+        elif self.mode == "multicore":
             start = time.time()
-            jobs = self.pool.map_async(_ppfunction,
-                                       zip([task for i in items], items))
+            jobs = self.pool.map_async(_ppfunction, zip([task for i in items], items))
             for result, stat in jobs.get(timeout):
                 task._mergeResults(result)
                 self._mergeStatistics(stat)
             end = time.time()
             self._printStatistics()
-            print('Time elapsed since server creation %f' % (end - start))
+            print("Time elapsed since server creation %f" % (end - start))
         # --- Call the Local Finalize
         task.finalize()
 
@@ -204,14 +208,19 @@ class WorkManager(object):
         njobs = 0
         for stat in self.stats.values():
             njobs += stat.njob
-        print('Job execution statistics:')
-        print(
-            'job count | % of all jobs | job time sum | time per job | job server'
-        )
+        print("Job execution statistics:")
+        print("job count | % of all jobs | job time sum | time per job | job server")
         for name, stat in self.stats.items():
-            print('       %d |        %6.2f |     %8.3f |    %8.3f | %s' %
-                  (stat.njob, 100. * stat.njob / njobs, stat.time,
-                   stat.time / stat.njob, name))
+            print(
+                "       %d |        %6.2f |     %8.3f |    %8.3f | %s"
+                % (
+                    stat.njob,
+                    100.0 * stat.njob / njobs,
+                    stat.time,
+                    stat.time / stat.njob,
+                    name,
+                )
+            )
 
     def _mergeStatistics(self, stat):
         if stat.name not in self.stats:
@@ -223,28 +232,32 @@ class WorkManager(object):
 
 class SshSession(object):
     def __init__(self, hostname):
-        import pyssh
         import pp
+        import pyssh
+
         self.host = hostname
         ppprefix = os.path.dirname(os.path.dirname(pp.__file__))
         self.session = pyssh.Ssh(host=hostname)
         self.session.open()
         self.session.read_lazy()
-        self.session.write('cd %s\n' % os.getcwd())
+        self.session.write("cd %s\n" % os.getcwd())
         self.session.read_lazy()
-        self.session.write('setenv PYTHONPATH %s\n' % os.environ['PYTHONPATH'])
+        self.session.write("setenv PYTHONPATH %s\n" % os.environ["PYTHONPATH"])
         self.session.read_lazy()
         self.session.write(
-            'setenv LD_LIBRARY_PATH %s\n' % os.environ['LD_LIBRARY_PATH'])
+            "setenv LD_LIBRARY_PATH %s\n" % os.environ["LD_LIBRARY_PATH"]
+        )
         self.session.read_lazy()
-        self.session.write('setenv ROOTSYS %s\n' % os.environ['ROOTSYS'])
+        self.session.write("setenv ROOTSYS %s\n" % os.environ["ROOTSYS"])
         self.session.read_lazy()
-        self.session.write('%s %s/scripts-%s/ppserver.py \n' %
-                           (sys.executable, ppprefix, sys.version.split()[0]))
+        self.session.write(
+            "%s %s/scripts-%s/ppserver.py \n"
+            % (sys.executable, ppprefix, sys.version.split()[0])
+        )
         self.session.read_lazy()
         self.session.read_lazy()
-        print('started ppserver in ', hostname)
+        print("started ppserver in ", hostname)
 
     def __del__(self):
         self.session.close()
-        print('killed ppserver in ', self.host)
+        print("killed ppserver in ", self.host)

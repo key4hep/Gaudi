@@ -13,8 +13,14 @@
 The simplest possible configuration for preemptive scheduling of single blocking algorithm.
 """
 
+from Configurables import (
+    AvalancheSchedulerSvc,
+    CPUCruncher,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, CPUCrunchSvc
 
 # metaconfig
 evtMax = 7
@@ -24,31 +30,34 @@ blockingAlgosInFlight = 3
 
 CPUCrunchSvc(shortCalib=True)
 
-whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
     PreemptiveBlockingTasks=True,
     MaxBlockingAlgosInFlight=blockingAlgosInFlight,
-    OutputLevel=VERBOSE)
+    OutputLevel=VERBOSE,
+)
 
 blockingAlg = CPUCruncher(
     name="BlockingAlg",
-    avgRuntime=2.,
+    avgRuntime=2.0,
     Cardinality=3,
     Blocking=True,  # tag algorithm as blocking
     SleepFraction=0.7,  # simulate blocking nature
-    OutputLevel=DEBUG)
+    OutputLevel=DEBUG,
+)
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[blockingAlg],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

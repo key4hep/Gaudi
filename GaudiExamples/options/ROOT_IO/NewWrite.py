@@ -12,8 +12,9 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import GaudiPersistency
 from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
 
 # Output setup
 # - DST

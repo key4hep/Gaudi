@@ -13,8 +13,15 @@
 A test modeling a cycle in the DF realm.
 """
 
+from Configurables import (
+    AvalancheSchedulerSvc,
+    CPUCruncher,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    PrecedenceSvc,
+)
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, CPUCrunchSvc, PrecedenceSvc
 
 # metaconfig
 evtMax = 1
@@ -25,11 +32,11 @@ CPUCrunchSvc(shortCalib=True)
 
 PrecedenceSvc(OutputLevel=DEBUG)
 
-whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight)
 
@@ -55,9 +62,10 @@ Alg5.outKeys = ["/Event/E"]
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[Alg1, Alg2, Alg3, Alg4, Alg5],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

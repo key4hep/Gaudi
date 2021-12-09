@@ -14,4 +14,5 @@
     Python extension module.
 """
 from GaudiPython import *
+
 deprecation("Use 'GaudiPython' module instead of deprecated 'gaudimodule'")

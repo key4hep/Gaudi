@@ -8,32 +8,33 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Configurables import (
-    ApplicationMgr, EventDataSvc, RecordOutputStream, ReplayOutputStream,
-    GaudiSequencer, GaudiTesting__OddEventsFilter as OddEvents,
-    GaudiTesting__EvenEventsFilter as EvenEvents, SubAlg as EmptyAlg)
+from Configurables import ApplicationMgr, EventDataSvc, GaudiSequencer
+from Configurables import GaudiTesting__EvenEventsFilter as EvenEvents
+from Configurables import GaudiTesting__OddEventsFilter as OddEvents
+from Configurables import RecordOutputStream, ReplayOutputStream
+from Configurables import SubAlg as EmptyAlg
 
 outDelegate = ReplayOutputStream()
-outDelegate.OutputStreams = [EmptyAlg('Stream1'), EmptyAlg('Stream2')]
+outDelegate.OutputStreams = [EmptyAlg("Stream1"), EmptyAlg("Stream2")]
 
-oddEvtSelect = GaudiSequencer('OddEventsSelection')
+oddEvtSelect = GaudiSequencer("OddEventsSelection")
 oddEvtSelect.Members = [
-    OddEvents('OddEvents'),
-    RecordOutputStream('Rec1', OutputStreamName='Stream1')
+    OddEvents("OddEvents"),
+    RecordOutputStream("Rec1", OutputStreamName="Stream1"),
 ]
 
-evenEvtSelect = GaudiSequencer('EvenEventsSelection')
+evenEvtSelect = GaudiSequencer("EvenEventsSelection")
 evenEvtSelect.Members = [
-    EvenEvents('EvenEvents'),
-    RecordOutputStream('Rec2', OutputStreamName='Stream2')
+    EvenEvents("EvenEvents"),
+    RecordOutputStream("Rec2", OutputStreamName="Stream2"),
 ]
 
-app = ApplicationMgr(EvtSel='NONE', EvtMax=4)
+app = ApplicationMgr(EvtSel="NONE", EvtMax=4)
 app.TopAlg = [EmptyAlg("EventInit"), evenEvtSelect, oddEvtSelect]
 app.OutStream = [outDelegate]
 
 EventDataSvc(ForceLeaves=True)
 
-#from Gaudi.Configuration import VERBOSE
-#from Configurables import MessageSvc
+# from Gaudi.Configuration import VERBOSE
+# from Configurables import MessageSvc
 # MessageSvc(OutputLevel=VERBOSE)

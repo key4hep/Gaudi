@@ -13,9 +13,15 @@
 A test for a single algorithm with internal multithreading
 """
 
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    CPUCruncher,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr, CPUCrunchSvc,
-                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher)
 
 evtslots = 1
 evtMax = 1
@@ -25,7 +31,8 @@ threads = 5  # Threading within alg is still limited by total thread pool
 whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG
+)
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=VERBOSE)
 
@@ -45,9 +52,10 @@ a1.OutputLevel = DEBUG
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[a1],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

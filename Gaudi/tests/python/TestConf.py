@@ -12,9 +12,9 @@
 Bunch of fake configurables used for testing.
 """
 
+from GaudiKernel.DataHandle import DataHandle
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel.Proxy.Configurable import *
-from GaudiKernel.DataHandle import DataHandle
 
 
 class APublicTool(ConfigurableAlgTool):
@@ -26,10 +26,10 @@ class APublicTool(ConfigurableAlgTool):
             setattr(self, n, v)
 
     def getDlls(self):
-        return 'None'
+        return "None"
 
     def getType(self):
-        return 'APublicTool'
+        return "APublicTool"
 
 
 class APrivateTool(ConfigurableAlgTool):
@@ -41,20 +41,20 @@ class APrivateTool(ConfigurableAlgTool):
             setattr(self, n, v)
 
     def getDlls(self):
-        return 'None'
+        return "None"
 
     def getType(self):
-        return 'APrivateTool'
+        return "APrivateTool"
 
 
 class MyTestTool(ConfigurableAlgTool):
     __slots__ = {
-        'PubToolHndl': PublicToolHandle('APublicTool'),
-        'PrivToolHndl': PrivateToolHandle('APrivateTool'),
-        'PrivEmptyToolHndl': PrivateToolHandle(''),
-        'Text': 'some text',
-        'Int': 23,
-        'DataHandle': DataHandle('Location', 'R'),
+        "PubToolHndl": PublicToolHandle("APublicTool"),
+        "PrivToolHndl": PrivateToolHandle("APrivateTool"),
+        "PrivEmptyToolHndl": PrivateToolHandle(""),
+        "Text": "some text",
+        "Int": 23,
+        "DataHandle": DataHandle("Location", "R"),
     }
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
@@ -63,7 +63,7 @@ class MyTestTool(ConfigurableAlgTool):
             setattr(self, n, v)
 
     def getDlls(self):
-        return 'None'
+        return "None"
 
     def getType(self):
-        return 'MyTestTool'
+        return "MyTestTool"

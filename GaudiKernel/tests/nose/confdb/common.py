@@ -9,12 +9,12 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from os.path import dirname, join
 import logging
+from os.path import dirname, join
 
-__all__ = ('data_root', 'MockLoggingHandler')
+__all__ = ("data_root", "MockLoggingHandler")
 
-data_root = join(dirname(dirname(dirname(__file__))), 'data', 'confdb')
+data_root = join(dirname(dirname(dirname(__file__))), "data", "confdb")
 
 # Code taken from http://stackoverflow.com/a/1049375/576333
 
@@ -31,9 +31,9 @@ class MockLoggingHandler(logging.Handler):
 
     def reset(self):
         self.messages = {
-            'debug': [],
-            'info': [],
-            'warning': [],
-            'error': [],
-            'critical': [],
+            "debug": [],
+            "info": [],
+            "warning": [],
+            "error": [],
+            "critical": [],
         }

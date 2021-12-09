@@ -19,12 +19,14 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
+__author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
 
-import GaudiPython
 import math
+
+import GaudiPython
 
 Rndm = GaudiPython.gbl.Rndm
 Numbers = Rndm.Numbers
@@ -38,16 +40,16 @@ from GaudiPython.GaudiAlgs import TupleAlgo
 
 
 class EvtColEx(TupleAlgo):
-    """ Simple algorithm which implicitely book&Fill Event Tag collection"""
+    """Simple algorithm which implicitely book&Fill Event Tag collection"""
 
-    def __init__(self, name='EvtColEx'):
-        """ Constructor """
+    def __init__(self, name="EvtColEx"):
+        """Constructor"""
         TupleAlgo.__init__(self, name)
         self.s_nEvt = 0
         self.s_nRun = 0
 
     def execute(self):
-        """ The major method 'execute', it is invoked for each event """
+        """The major method 'execute', it is invoked for each event"""
 
         self.s_nEvt += 1
         if 1 == self.s_nEvt % 50:
@@ -62,28 +64,28 @@ class EvtColEx(TupleAlgo):
         poisson = Numbers(rSvc, Rndm.Poisson(2.0))
         binom = Numbers(rSvc, Rndm.Binomial(8, 0.25))
 
-        address = self.get('/Event')
+        address = self.get("/Event")
         address = address.registry().address()
 
         # get the event tag collection itself
-        tup = self.evtCol('COL1', 'My trivial N-tuple')
+        tup = self.evtCol("COL1", "My trivial N-tuple")
 
-        tup.column('Address', address)
+        tup.column("Address", address)
 
-        tup.column('evtNum', self.s_nEvt)
-        tup.column('runNum', self.s_nRun)
+        tup.column("evtNum", self.s_nEvt)
+        tup.column("runNum", self.s_nRun)
 
-        tup.column('gauss', gauss())
-        tup.column('flat', flat())
-        tup.column('expo', expo())
-        tup.column('poisson', int(poisson()))
-        tup.column('binom', int(binom()))
-        tup.column('flag', 0 > gauss())
+        tup.column("gauss", gauss())
+        tup.column("flat", flat())
+        tup.column("expo", expo())
+        tup.column("poisson", int(poisson()))
+        tup.column("binom", int(binom()))
+        tup.column("flag", 0 > gauss())
 
         return SUCCESS
 
 
-def _evtcolsvc_(self, name='EvtTupleSvc'):
+def _evtcolsvc_(self, name="EvtTupleSvc"):
     svc = GaudiPython.Helper.service(self._svcloc, name, False)
     return GaudiPython.iNTupleSvc(name, svc)
 
@@ -96,39 +98,36 @@ GaudiPython.AppMgr.evtcolsvc = _evtcolsvc_
 
 
 def configure(gaudi=None):
-    """ Configuration of the job """
+    """Configuration of the job"""
 
     if not gaudi:
         gaudi = GaudiPython.AppMgr()
 
     gaudi.HistogramPersistency = "ROOT"
-    gaudi.DLLs += ['GaudiAlg', 'RootHistCnv']
-    gaudi.ExtSvc += ['RndmGenSvc', 'NTupleSvc', 'TagCollectionSvc/EvtTupleSvc']
+    gaudi.DLLs += ["GaudiAlg", "RootHistCnv"]
+    gaudi.ExtSvc += ["RndmGenSvc", "NTupleSvc", "TagCollectionSvc/EvtTupleSvc"]
 
-    alg = EvtColEx('Fill')
+    alg = EvtColEx("Fill")
     gaudi.setAlgorithms([alg])
 
-    alg.EvtColLUN = 'EVTTAGS'
+    alg.EvtColLUN = "EVTTAGS"
     alg.EvtColsProduce = True
     alg.EvtColsPrint = True
     alg.NTupleProduce = False
     alg.HistoProduce = False
 
-    gaudi.OutStream = ['EvtCollectionStream/TagsWriter']
-    tagsWriter = gaudi.algorithm('TagsWriter')
-    tagsWriter.ItemList = ['/NTUPLES/EVTTAGS/Fill/COL1']
+    gaudi.OutStream = ["EvtCollectionStream/TagsWriter"]
+    tagsWriter = gaudi.algorithm("TagsWriter")
+    tagsWriter.ItemList = ["/NTUPLES/EVTTAGS/Fill/COL1"]
     tagsWriter.EvtDataSvc = "EvtTupleSvc"
 
     evtColSvc = gaudi.evtcolsvc()
-    evtColSvc.defineOutput({
-        'EVTTAGS': 'PFN:EvtTags1.root'
-    },
-                           typ='Gaudi::RootCnvSvc')
+    evtColSvc.defineOutput({"EVTTAGS": "PFN:EvtTags1.root"}, typ="Gaudi::RootCnvSvc")
     evtColSvc.OutputLevel = 2
 
     evtSel = gaudi.evtSel()
     evtSel.PrintFreq = 1000
-    evtSel.open(['EvtColsEx.dst'])
+    evtSel.open(["EvtColsEx.dst"])
 
     return SUCCESS
 
@@ -136,13 +135,15 @@ def configure(gaudi=None):
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
     print(__doc__)
     # configuration (options)
-    from Configurables import GaudiPersistency, FileCatalog, ApplicationMgr
+    from Configurables import ApplicationMgr, FileCatalog, GaudiPersistency
+
     GaudiPersistency()
     ApplicationMgr().ExtSvc.append(
-        FileCatalog(Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
+        FileCatalog(Catalogs=["xmlcatalog_file:EvtColsEx.xml"])
+    )
     # execution
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)

@@ -10,9 +10,9 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # ====================================================================
+from Configurables import bug_34121__MyAlgorithm as MyAlgorithm
+from Configurables import bug_34121__Tool as Tool
 from Gaudi.Configuration import *
-from Configurables import bug_34121__Tool as Tool, \
-    bug_34121__MyAlgorithm as MyAlgorithm
 
 tool = Tool(Double=-1)
 

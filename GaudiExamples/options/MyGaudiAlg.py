@@ -9,36 +9,39 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
+from Configurables import GaudiExamplesCommonConf, MyGaudiAlgorithm
+
 ###############################################################
 # Job options file
 # ==============================================================
 from Gaudi.Configuration import *
-from Configurables import MyGaudiAlgorithm
 
-from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
-mygalg = MyGaudiAlgorithm('MyGaudiAlg', OutputLevel=DEBUG)
+mygalg = MyGaudiAlgorithm("MyGaudiAlg", OutputLevel=DEBUG)
 mygalg.PrivToolHandle.String = "Is a private tool"
 
 print(mygalg)
 
-mygalg.tracks.Path = 'BestTracks/Tracks'
-mygalg.hits.Path = 'Rec/Hits'
+mygalg.tracks.Path = "BestTracks/Tracks"
+mygalg.hits.Path = "Rec/Hits"
 
-mygalg.RootInTES = '/Skim'
+mygalg.RootInTES = "/Skim"
 
 from Configurables import MyTool
+
 mygalg.MyPublicToolHandleArrayProperty = [
     MyTool("FirstInstance"),
-    MyTool("AnotherInstance")
+    MyTool("AnotherInstance"),
 ]
 
 print(mygalg)
 
 ApplicationMgr(
     EvtMax=10,
-    EvtSel='NONE',
-    HistogramPersistency='NONE',
+    EvtSel="NONE",
+    HistogramPersistency="NONE",
     TopAlg=[mygalg],
-    OutputLevel=DEBUG)
+    OutputLevel=DEBUG,
+)

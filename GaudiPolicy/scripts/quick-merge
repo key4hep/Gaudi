@@ -10,25 +10,27 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-import sys
 import os
+import sys
 from optparse import OptionParser
 
 parser = OptionParser(  # desc='simple script to merge files',
-    usage="%prog [options] input1 input2 ... output")
+    usage="%prog [options] input1 input2 ... output"
+)
 parser.add_option(
-    '--ignore-missing',
-    action='store_true',
-    help='do not fail if an input file is missing, '
-    'just ignore it')
+    "--ignore-missing",
+    action="store_true",
+    help="do not fail if an input file is missing, " "just ignore it",
+)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     opts, args = parser.parse_args()
     if len(args) < 1:
         parser.print_usage()
         sys.exit(0)
 
     import logging
+
     logging.basicConfig()
 
     output = args.pop()
@@ -39,18 +41,18 @@ if __name__ == '__main__':
         if opts.ignore_missing:
             inputs = [i for i in inputs if i not in missing]
             for i in missing:
-                logging.warning('file %s not found', i)
+                logging.warning("file %s not found", i)
         else:
             for i in missing:
-                logging.error('file %s not found', i)
+                logging.error("file %s not found", i)
             sys.exit(1)
     try:
         # create the destination directory if missing
         if not os.path.isdir(os.path.dirname(output)):
             os.makedirs(os.path.dirname(output))
-        with open(output, 'wb') as out:
+        with open(output, "wb") as out:
             for input in inputs:
-                out.writelines(open(input, 'rb'))
+                out.writelines(open(input, "rb"))
     except:
         if os.path.exists(output):
             os.remove(output)

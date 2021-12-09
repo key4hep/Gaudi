@@ -44,36 +44,35 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV  Ivan.Belyaev@lapp.in2p3.fr'
+__author__ = "Vanya BELYAEV  Ivan.Belyaev@lapp.in2p3.fr"
 # =============================================================================
 # list of "public" symbols
 # =============================================================================
 __all__ = (
-    'GaudiAlgo',  # base class for algorithms
-    'HistoAlgo',  # base class for histo-related algorithms
-    'TupleAlgo',  # base class for tuple-related algorithms
-    'Tuple',  # N-Tuple
-    'HistoID',  # ID for N-tuples
-    'TupleID',  # ID for Histograms
-    'aida2root',  # AIDA -> ROOT converter
-    'SUCCESS'  # status code
+    "GaudiAlgo",  # base class for algorithms
+    "HistoAlgo",  # base class for histo-related algorithms
+    "TupleAlgo",  # base class for tuple-related algorithms
+    "Tuple",  # N-Tuple
+    "HistoID",  # ID for N-tuples
+    "TupleID",  # ID for Histograms
+    "aida2root",  # AIDA -> ROOT converter
+    "SUCCESS",  # status code
 )
 # =============================================================================
 # import core of Gaudi
 import GaudiPython.Bindings  # The basic module
+
 iAlgorithm = GaudiPython.Bindings.iAlgorithm  # Algorithm interface
 iAlgTool = GaudiPython.Bindings.iAlgTool  # Tool interface
 
-from GaudiPython.Bindings import (
-    SUCCESS,  # status code
-    InterfaceCast,  # "queryInterface"
-    iDataSvc,  # Data Service
-    iHistogramSvc,  # Histogram Service
-    iNTupleSvc,  # N-Tuple service
-    AppMgr  # Application Manager
-)
-
+from GaudiPython.Bindings import SUCCESS  # status code
+from GaudiPython.Bindings import AppMgr  # Application Manager
+from GaudiPython.Bindings import InterfaceCast  # "queryInterface"
+from GaudiPython.Bindings import iDataSvc  # Data Service
+from GaudiPython.Bindings import iHistogramSvc  # Histogram Service
+from GaudiPython.Bindings import iNTupleSvc  # N-Tuple service
 from GaudiPython.Bindings import gbl as cpp  # global C++ namepspace
 from GaudiPython.HistoUtils import aida2root  # AIDA -> ROTO converter
 
@@ -84,9 +83,9 @@ from GaudiKernel import ROOT6WorkAroundEnabled
 std = cpp.std  # std C++ namespace
 
 # "typedef" for GaudiPython::Vector
-Vector = std.vector('double')
+Vector = std.vector("double")
 # "typedef" for GaudiPython::Matrix
-Matrix = std.vector('std::vector<double>')
+Matrix = std.vector("std::vector<double>")
 
 # histogram and N-Tuple universal identifier
 HID = cpp.GaudiAlg.ID
@@ -151,13 +150,13 @@ def _tool_(self, interface, typename, name=None, parent=None, create=True):
     if not parent:
         parent = self
     if name:
-        typename += '/' + name
+        typename += "/" + name
     _tool = AlgDecorator.tool_(self, typename, parent, create)
     if not _tool:
         return None
     _tool = InterfaceCast(interface)(_tool)
     if not _tool:
-        self.Warning('Invalid cast to interface %s' % interface)
+        self.Warning("Invalid cast to interface %s" % interface)
         return None
     return _tool
 
@@ -193,7 +192,7 @@ def _service_(self, interface, name, create=True):
         return None
     _svc = InterfaceCast(interface)(_svc)
     if not _svc:
-        self.Warning('Invalid cast to interface %s' % interface)
+        self.Warning("Invalid cast to interface %s" % interface)
         return None
     return _svc
 
@@ -219,9 +218,9 @@ def _init_(self, name, **args):
     for key in args:
         setattr(self, key, args[key])
     # take some care about the ownership of the algorithms
-    if 'GaudiPythonAlgos' not in appMgr.__dict__:
-        appMgr.__dict__['GaudiPythonAlgos'] = []
-    appMgr.__dict__['GaudiPythonAlgos'].append(self)
+    if "GaudiPythonAlgos" not in appMgr.__dict__:
+        appMgr.__dict__["GaudiPythonAlgos"] = []
+    appMgr.__dict__["GaudiPythonAlgos"].append(self)
 
 
 # =============================================================================
@@ -514,7 +513,7 @@ def _getProperty_(self, pname):
     Get the property by name
     """
     if not self.hasProperty(pname):
-        raise AttributeError('property %s does not exist' % pname)
+        raise AttributeError("property %s does not exist" % pname)
     return self._ialg.__getattr__(pname)
 
 
@@ -527,7 +526,7 @@ def _setProperty_(self, pname, pvalue):
     Set the property from the value
     """
     if not self.hasProperty(pname):
-        raise AttributeError('property %s does not exist' % pname)
+        raise AttributeError("property %s does not exist" % pname)
     return self._ialg.__setattr__(pname, pvalue)
 
 
@@ -549,7 +548,7 @@ def _get_attr_(self, pname):
             return getattr(self._ialg, pname)
         except AttributeError:
             pass
-    raise AttributeError('attribute/property %s does not exist' % pname)
+    raise AttributeError("attribute/property %s does not exist" % pname)
 
 
 # =============================================================================
@@ -567,9 +566,9 @@ def _set_attr_(self, pname, pvalue):
         self._ialg.__setattr__(pname, pvalue)
 
 
-_GaudiAlgorithm = cpp.GaudiPython.PyAlg('GaudiAlgorithm')
-_GaudiHistoAlg = cpp.GaudiPython.PyAlg('GaudiHistoAlg')
-_GaudiTupleAlg = cpp.GaudiPython.PyAlg('GaudiTupleAlg')
+_GaudiAlgorithm = cpp.GaudiPython.PyAlg("GaudiAlgorithm")
+_GaudiHistoAlg = cpp.GaudiPython.PyAlg("GaudiHistoAlg")
+_GaudiTupleAlg = cpp.GaudiPython.PyAlg("GaudiTupleAlg")
 
 # =============================================================================
 # @class GaudiAlgo
@@ -638,59 +637,60 @@ _GaudiTupleAlg = cpp.GaudiPython.PyAlg('GaudiTupleAlg')
 
 class GaudiAlgo(_GaudiAlgorithm):
     """
-*******************************************************************************
-*                                                * 'Physisics do not like it, *
-*                                                *  physisics do not need it, *
-*                                                *  physisics do not use  it' *
-*                                                * ****************************
-*  Usage:                                                                     *
-*                                                                             *
-*  from GaudiPython.GaudiAlgs   import GaudiAlgo, SUCCESS                     *
-*                                                                             *
-*  class MyClass(GaudiAlgo) :                                                 *
-*       ' My specific Algorithm, derived from GaudiAlgo base class '          *
-*       def __init__( self , name , **args ) :                                *
-*            'Constructor from algorithm instance name & parameters'          *
-*             #invoke the constructor of base class                           *
-*             GaudiAlgo.__init__(self , name , **args )                       *
-*                                                                             *
-*       def initialize ( self ) :                                             *
-*           'Algorithm initialization'                                        *
-*           # initialize the base class                                       *
-*           status = GaudiAlgo.initialize( self )                             *
-*           if status.isFailure() : return status                             *
-*                                                                             *
-*           # locate the services and tools                                   *
-*                                                                             *
-*           # locate some tool:                                               *
-*           extrapolator = self.tool(ITrExtrapolator,'TrExtrapolator')        *
-*                                                                             *
-*           # locate the service                                              *
-*           rndmSvc = self.svc(IRndmGenSvc, 'RndmGenSvc')                     *
-*                                                                             *
-*           return SUCCESS                                                    *
-*                                                                             *
-*                                                                             *
-*       def execute ( self ) :                                                *
-*            'Major method (from IAlgorithm interface)'                       *
-*                                                                             *
-*           # get some data from Transient Event Store                        *
-*           tracks = self.get('/Event/Rec/Tracks')                            *
-*                                                                             *
-*           # use counters                                                    *
-*           c1 = self.counter('#Tracks')                                      *
-*           c2 = self.counter('No Tracks')                                    *
-*           if tracks.empty :                                                 *
-*              c2+=1                                                          *
-*           c1 += tracks->size()                                              *
-*                                                                             *
-*           if 1000 < tracks.size() :                                         *
-*                return self.Error('The event is *VERY* busy')                *
-*                                                                             *
-*           return SUCCESS                                                    *
-*                                                                             *
-*******************************************************************************
+    *******************************************************************************
+    *                                                * 'Physisics do not like it, *
+    *                                                *  physisics do not need it, *
+    *                                                *  physisics do not use  it' *
+    *                                                * ****************************
+    *  Usage:                                                                     *
+    *                                                                             *
+    *  from GaudiPython.GaudiAlgs   import GaudiAlgo, SUCCESS                     *
+    *                                                                             *
+    *  class MyClass(GaudiAlgo) :                                                 *
+    *       ' My specific Algorithm, derived from GaudiAlgo base class '          *
+    *       def __init__( self , name , **args ) :                                *
+    *            'Constructor from algorithm instance name & parameters'          *
+    *             #invoke the constructor of base class                           *
+    *             GaudiAlgo.__init__(self , name , **args )                       *
+    *                                                                             *
+    *       def initialize ( self ) :                                             *
+    *           'Algorithm initialization'                                        *
+    *           # initialize the base class                                       *
+    *           status = GaudiAlgo.initialize( self )                             *
+    *           if status.isFailure() : return status                             *
+    *                                                                             *
+    *           # locate the services and tools                                   *
+    *                                                                             *
+    *           # locate some tool:                                               *
+    *           extrapolator = self.tool(ITrExtrapolator,'TrExtrapolator')        *
+    *                                                                             *
+    *           # locate the service                                              *
+    *           rndmSvc = self.svc(IRndmGenSvc, 'RndmGenSvc')                     *
+    *                                                                             *
+    *           return SUCCESS                                                    *
+    *                                                                             *
+    *                                                                             *
+    *       def execute ( self ) :                                                *
+    *            'Major method (from IAlgorithm interface)'                       *
+    *                                                                             *
+    *           # get some data from Transient Event Store                        *
+    *           tracks = self.get('/Event/Rec/Tracks')                            *
+    *                                                                             *
+    *           # use counters                                                    *
+    *           c1 = self.counter('#Tracks')                                      *
+    *           c2 = self.counter('No Tracks')                                    *
+    *           if tracks.empty :                                                 *
+    *              c2+=1                                                          *
+    *           c1 += tracks->size()                                              *
+    *                                                                             *
+    *           if 1000 < tracks.size() :                                         *
+    *                return self.Error('The event is *VERY* busy')                *
+    *                                                                             *
+    *           return SUCCESS                                                    *
+    *                                                                             *
+    *******************************************************************************
     """
+
     pass
 
 
@@ -767,66 +767,67 @@ class GaudiAlgo(_GaudiAlgorithm):
 
 class HistoAlgo(_GaudiHistoAlg):
     """
-*******************************************************************************
-*                                                * 'Physisics do not like it, *
-*                                                *  physisics do not need it, *
-*                                                *  physisics do not use  it' *
-*                                                * ****************************
-*  Usage:                                                                     *
-*                                                                             *
-*  from GaudiPython.GaudiAlgs import HistoAlgo, SUCCESS                       *
-*                                                                             *
-*  class MyClass(HistoAlgo) :                                                 *
-*       ' My specific Algorithm, derived from GaudiAlgo base class '          *
-*       def __init__( self , name , **args ) :                                *
-*            'Constructor from algorithm instance name'                       *
-*             #invoke the constructor of base class                           *
-*             HistoAlgo.__init__(self , name , **args )                       *
-*                                                                             *
-*       def execute ( self ) :                                                *
-*            'Major method (from IAlgorithm interface)'                       *
-*                                                                             *
-*           # get some data from Transient Event Store                        *
-*           tracks = self.get('/Event/Rec/Tracks')                            *
-*                                                                             *
-*           self.plot1D ( tracks->size() , '#tracks' , 0 , 100 )              *
-*                                                                             *
-*           return SUCCESS                                                    *
-*                                                                             *
-* Alternatively the histogram  could be booked in advance:                    *
-*                                                                             *
-*  class MyClass(HistoAlgo) :                                                 *
-*       ' My specific Algorithm, derived from GaudiAlgo base class '          *
-*       def __init__( self , name ) :                                         *
-*            'Constructor from algorithm instance name'                       *
-*             #invoke the constructor of base class                           *
-*             HistoAlgo.__init__(self , name )                                *
-*                                                                             *
-*       def initialize ( self ) :                                             *
-*           'Algorithm initialization'                                        *
-*           # initialize the base class                                       *
-*           status = HistoAlgo.initialize( self )                             *
-*           if status.isFailure() : return status                             *
-*                                                                             *
-*           # book the histogram                                              *
-*           self.h1 = selff.book1D ( '#tracks' , 0 , 100 )                    *
-*                                                                             *
-*           return SUCCESS                                                    *
-*                                                                             *
-*                                                                             *
-*       def execute ( self ) :                                                *
-*            'Major method (from IAlgorithm interface)'                       *
-*                                                                             *
-*           # get some data from Transient Event Store                        *
-*           tracks = self.get('/Event/Rec/Tracks')                            *
-*                                                                             *
-*           # fill the histogram                                              *
-*           self.h1.fill ( tracks->size() )                                   *
-*                                                                             *
-*           return SUCCESS                                                    *
-*                                                                             *
-*******************************************************************************
+    *******************************************************************************
+    *                                                * 'Physisics do not like it, *
+    *                                                *  physisics do not need it, *
+    *                                                *  physisics do not use  it' *
+    *                                                * ****************************
+    *  Usage:                                                                     *
+    *                                                                             *
+    *  from GaudiPython.GaudiAlgs import HistoAlgo, SUCCESS                       *
+    *                                                                             *
+    *  class MyClass(HistoAlgo) :                                                 *
+    *       ' My specific Algorithm, derived from GaudiAlgo base class '          *
+    *       def __init__( self , name , **args ) :                                *
+    *            'Constructor from algorithm instance name'                       *
+    *             #invoke the constructor of base class                           *
+    *             HistoAlgo.__init__(self , name , **args )                       *
+    *                                                                             *
+    *       def execute ( self ) :                                                *
+    *            'Major method (from IAlgorithm interface)'                       *
+    *                                                                             *
+    *           # get some data from Transient Event Store                        *
+    *           tracks = self.get('/Event/Rec/Tracks')                            *
+    *                                                                             *
+    *           self.plot1D ( tracks->size() , '#tracks' , 0 , 100 )              *
+    *                                                                             *
+    *           return SUCCESS                                                    *
+    *                                                                             *
+    * Alternatively the histogram  could be booked in advance:                    *
+    *                                                                             *
+    *  class MyClass(HistoAlgo) :                                                 *
+    *       ' My specific Algorithm, derived from GaudiAlgo base class '          *
+    *       def __init__( self , name ) :                                         *
+    *            'Constructor from algorithm instance name'                       *
+    *             #invoke the constructor of base class                           *
+    *             HistoAlgo.__init__(self , name )                                *
+    *                                                                             *
+    *       def initialize ( self ) :                                             *
+    *           'Algorithm initialization'                                        *
+    *           # initialize the base class                                       *
+    *           status = HistoAlgo.initialize( self )                             *
+    *           if status.isFailure() : return status                             *
+    *                                                                             *
+    *           # book the histogram                                              *
+    *           self.h1 = selff.book1D ( '#tracks' , 0 , 100 )                    *
+    *                                                                             *
+    *           return SUCCESS                                                    *
+    *                                                                             *
+    *                                                                             *
+    *       def execute ( self ) :                                                *
+    *            'Major method (from IAlgorithm interface)'                       *
+    *                                                                             *
+    *           # get some data from Transient Event Store                        *
+    *           tracks = self.get('/Event/Rec/Tracks')                            *
+    *                                                                             *
+    *           # fill the histogram                                              *
+    *           self.h1.fill ( tracks->size() )                                   *
+    *                                                                             *
+    *           return SUCCESS                                                    *
+    *                                                                             *
+    *******************************************************************************
     """
+
     pass
 
 
@@ -880,47 +881,48 @@ class HistoAlgo(_GaudiHistoAlg):
 
 class TupleAlgo(_GaudiTupleAlg):
     """
-*******************************************************************************
-*                                                * 'Physisics do not like it, *
-*                                                *  physisics do not need it, *
-*                                                *  physisics do not use  it' *
-*                                                * ****************************
-*  Usage:                                                                     *
-*                                                                             *
-*  from GaudiPython.GaudiAlgs import TupleAlgo, SUCCESS                       *
-*                                                                             *
-*  class MyClass(TupleAlgo) :                                                 *
-*       ' My specific Algorithm, derived from TupleAlgo base class '          *
-*       def __init__( self , name , **args ) :                                *
-*            'Constructor from algorithm instance name & parameters'          *
-*             #invoke the constructor of base class                           *
-*             TupleAlgo.__init__(self , name , **args )                       *
-*                                                                             *
-*       def execute ( self ) :                                                *
-*            'Major method (from IAlgorithm interface)'                       *
-*                                                                             *
-*           # get some data from Transient Event Store                        *
-*           tracks = self.get('/Event/Rec/Tracks')                            *
-*                                                                             *
-*           tup = self.nTuple('My N-Tuple')                                   *
-*                                                                             *
-*           for track in tracks :                                             *
-*                                                                             *
-*                 pt   = track.pt   ()                                        *
-*                 p    = track.p    ()                                        *
-*                 chi2 = track.chi2 ()                                        *
-*                                                                             *
-*                 #fill N-tuple:                                              *
-*                 tup.column ( 'pt'   ,  pt   )                               *
-*                 tup.column ( 'p'    ,  p    )                               *
-*                 tup.column ( 'chi2' ,  chi2 )                               *
-*                 #commit the row                                             *
-*                 tup.write  ()                                               *
-*                                                                             *
-*           return SUCCESS                                                    *
-*                                                                             *
-*******************************************************************************
+    *******************************************************************************
+    *                                                * 'Physisics do not like it, *
+    *                                                *  physisics do not need it, *
+    *                                                *  physisics do not use  it' *
+    *                                                * ****************************
+    *  Usage:                                                                     *
+    *                                                                             *
+    *  from GaudiPython.GaudiAlgs import TupleAlgo, SUCCESS                       *
+    *                                                                             *
+    *  class MyClass(TupleAlgo) :                                                 *
+    *       ' My specific Algorithm, derived from TupleAlgo base class '          *
+    *       def __init__( self , name , **args ) :                                *
+    *            'Constructor from algorithm instance name & parameters'          *
+    *             #invoke the constructor of base class                           *
+    *             TupleAlgo.__init__(self , name , **args )                       *
+    *                                                                             *
+    *       def execute ( self ) :                                                *
+    *            'Major method (from IAlgorithm interface)'                       *
+    *                                                                             *
+    *           # get some data from Transient Event Store                        *
+    *           tracks = self.get('/Event/Rec/Tracks')                            *
+    *                                                                             *
+    *           tup = self.nTuple('My N-Tuple')                                   *
+    *                                                                             *
+    *           for track in tracks :                                             *
+    *                                                                             *
+    *                 pt   = track.pt   ()                                        *
+    *                 p    = track.p    ()                                        *
+    *                 chi2 = track.chi2 ()                                        *
+    *                                                                             *
+    *                 #fill N-tuple:                                              *
+    *                 tup.column ( 'pt'   ,  pt   )                               *
+    *                 tup.column ( 'p'    ,  p    )                               *
+    *                 tup.column ( 'chi2' ,  chi2 )                               *
+    *                 #commit the row                                             *
+    *                 tup.write  ()                                               *
+    *                                                                             *
+    *           return SUCCESS                                                    *
+    *                                                                             *
+    *******************************************************************************
     """
+
     pass
 
 
@@ -960,8 +962,7 @@ def _execute_(self):
     """
     The fictive 'execute' method, which MUST be overwitten by user
     """
-    raise RuntimeError(
-        'Execute method is not implemented for %s' % self.name())
+    raise RuntimeError("Execute method is not implemented for %s" % self.name())
 
 
 GaudiAlgo.execute = _execute_
@@ -1105,17 +1106,16 @@ def _profile2D_(s, *a):
 
 # =============================================================================
 
-_plot1D_.__doc__ += '\n' + HistoDecorator.plot1D.__doc__
-_plot2D_.__doc__ += '\n' + HistoDecorator.plot2D.__doc__
-_plot3D_.__doc__ += '\n' + HistoDecorator.plot3D.__doc__
-_profile1D_.__doc__ += '\n' + HistoDecorator.profile1D.__doc__
-_profile2D_.__doc__ += '\n' + HistoDecorator.profile2D.__doc__
+_plot1D_.__doc__ += "\n" + HistoDecorator.plot1D.__doc__
+_plot2D_.__doc__ += "\n" + HistoDecorator.plot2D.__doc__
+_plot3D_.__doc__ += "\n" + HistoDecorator.plot3D.__doc__
+_profile1D_.__doc__ += "\n" + HistoDecorator.profile1D.__doc__
+_profile2D_.__doc__ += "\n" + HistoDecorator.profile2D.__doc__
 
 
 def _decorate_plots_(klasses):
     t = type(klasses)
-    if not issubclass(t, list) and  \
-       not issubclass(t, tuple):
+    if not issubclass(t, list) and not issubclass(t, tuple):
         klasses = [klasses]
     for klass in klasses:
         klass.plot = _plot1D_
@@ -1148,14 +1148,13 @@ def _evtCol_(s, *a):
     return TupleAlgDecorator.evtCol(s, *a)
 
 
-_nTuple_.__doc__ += '\n' + TupleAlgDecorator.nTuple.__doc__
-_evtCol_.__doc__ += '\n' + TupleAlgDecorator.evtCol.__doc__
+_nTuple_.__doc__ += "\n" + TupleAlgDecorator.nTuple.__doc__
+_evtCol_.__doc__ += "\n" + TupleAlgDecorator.evtCol.__doc__
 
 
 def _decorate_tuples_(klasses):
     t = type(klasses)
-    if not issubclass(t, list) and  \
-       not issubclass(t, tuple):
+    if not issubclass(t, list) and not issubclass(t, tuple):
         klasses = [klasses]
     for klass in klasses:
         klass.nTuple = _nTuple_
@@ -1177,26 +1176,28 @@ _Dec = TupleDecorator
 
 
 class TupleDecColumnDispatcher(object):
-    '''Helper decorator class to workaround ROOT-6697'''
+    """Helper decorator class to workaround ROOT-6697"""
 
     def __init__(self, func):
         self.func = func
         self.__doc__ = func.__doc__
-        dispatcher = func.disp if hasattr(func, 'disp') else func.__overload__
+        dispatcher = func.disp if hasattr(func, "disp") else func.__overload__
 
-        mapping = {int: 'int', bool: 'bool', float: 'double'}
+        mapping = {int: "int", bool: "bool", float: "double"}
         for k in mapping:
-            signature = 'const Tuples::Tuple& tuple, const string& name, const %s value' % (
-                mapping[k])
+            signature = (
+                "const Tuples::Tuple& tuple, const string& name, const %s value"
+                % (mapping[k])
+            )
             mapping[k] = dispatcher(signature)
         self.mapping = mapping
 
     def __call__(self, *a):
-        '''
+        """
         Explicitly call the explicit signature for the case with 3 arguments and
         the last one is 'int', 'bool' or 'float', for the other cases fall back
         on the default dispatcher.
-        '''
+        """
         if len(a) == 3:
             t = type(a[-1])
             try:
@@ -1206,8 +1207,9 @@ class TupleDecColumnDispatcher(object):
         return self.func(*a)
 
 
-if ROOT6WorkAroundEnabled('ROOT-6697') and (hasattr(
-        _Dec.column, "disp") or hasattr(_Dec.column, "__overload__")):
+if ROOT6WorkAroundEnabled("ROOT-6697") and (
+    hasattr(_Dec.column, "disp") or hasattr(_Dec.column, "__overload__")
+):
     _Dec.column = TupleDecColumnDispatcher(_Dec.column)
 
 
@@ -1288,17 +1290,17 @@ def _t_fmatrix_(s, *a):
     return _Dec.fmatrix(s, *a)
 
 
-_t_nTuple_.__doc__ += '\n' + _Dec.nTuple.__doc__
-_t_ntuple_.__doc__ += '\n' + _Dec.ntuple.__doc__
-_t_valid_.__doc__ += '\n' + _Dec.valid.__doc__
-_t_write_.__doc__ += '\n' + _Dec.write.__doc__
-_t_column_.__doc__ += '\n' + _Dec.column.__doc__
-_t_column_ll_.__doc__ += '\n' + _Dec.column_ll.__doc__
-_t_column_ull_.__doc__ += '\n' + _Dec.column_ull.__doc__
-_t_array_.__doc__ += '\n' + _Dec.array.__doc__
-_t_matrix_.__doc__ += '\n' + _Dec.matrix.__doc__
-_t_farray_.__doc__ += '\n' + _Dec.farray.__doc__
-_t_fmatrix_.__doc__ += '\n' + _Dec.fmatrix.__doc__
+_t_nTuple_.__doc__ += "\n" + _Dec.nTuple.__doc__
+_t_ntuple_.__doc__ += "\n" + _Dec.ntuple.__doc__
+_t_valid_.__doc__ += "\n" + _Dec.valid.__doc__
+_t_write_.__doc__ += "\n" + _Dec.write.__doc__
+_t_column_.__doc__ += "\n" + _Dec.column.__doc__
+_t_column_ll_.__doc__ += "\n" + _Dec.column_ll.__doc__
+_t_column_ull_.__doc__ += "\n" + _Dec.column_ull.__doc__
+_t_array_.__doc__ += "\n" + _Dec.array.__doc__
+_t_matrix_.__doc__ += "\n" + _Dec.matrix.__doc__
+_t_farray_.__doc__ += "\n" + _Dec.farray.__doc__
+_t_fmatrix_.__doc__ += "\n" + _Dec.fmatrix.__doc__
 
 Tuple.nTuple = _t_nTuple_
 Tuple.ntuple = _t_ntuple_
@@ -1313,34 +1315,32 @@ Tuple.farray = _t_farray_
 Tuple.fmatrix = _t_fmatrix_
 
 _alg_map_ = {
-    '__init__': _init_,  # constructor
-    'tool': _tool_,  # service locator
-    'svc': _service_,  # tool locator
-    'evtSvc': _evtSvc,  # event data service
-    'eventSvc': _evtSvc,  # event data service
-    'detSvc': _detSvc,  # detector data service
-    'histoSvc': _histoSvc,  # histogram data service
-    'histSvc': _histoSvc,  # histogram data service
-    'get': _get,  # access to  event data
-    'get_': _get_,  # access to  event data
-    'exist_': _exist_,  # check  the event data
-    'getDet': _getDet,  # access to detector data
-    'finalize': _finalize_,  # algorithm finalization
+    "__init__": _init_,  # constructor
+    "tool": _tool_,  # service locator
+    "svc": _service_,  # tool locator
+    "evtSvc": _evtSvc,  # event data service
+    "eventSvc": _evtSvc,  # event data service
+    "detSvc": _detSvc,  # detector data service
+    "histoSvc": _histoSvc,  # histogram data service
+    "histSvc": _histoSvc,  # histogram data service
+    "get": _get,  # access to  event data
+    "get_": _get_,  # access to  event data
+    "exist_": _exist_,  # check  the event data
+    "getDet": _getDet,  # access to detector data
+    "finalize": _finalize_,  # algorithm finalization
     #
-    'hasProperty':
-    _hasProperty_,  # check the existence of property with given name
-    'getProperty': _getProperty_,  # get the property value with given name
-    'setProperty': _setProperty_,  # set the property with given name
-    '__setattr__': _set_attr_,  # set the attribute/property with given name
-    '__getattr__': _get_attr_  # set the attribute/property with given name
+    "hasProperty": _hasProperty_,  # check the existence of property with given name
+    "getProperty": _getProperty_,  # get the property value with given name
+    "setProperty": _setProperty_,  # set the property with given name
+    "__setattr__": _set_attr_,  # set the attribute/property with given name
+    "__getattr__": _get_attr_,  # set the attribute/property with given name
 }
 
 
 # decorate the classes with the useful methods
 def _decorate_algs_(klasses):
     t = type(klasses)
-    if not issubclass(t, list) and  \
-       not issubclass(t, tuple):
+    if not issubclass(t, list) and not issubclass(t, tuple):
         klasses = [klasses]
     for _alg in klasses:
         for key in _alg_map_:
@@ -1358,14 +1358,14 @@ _decorate_algs_(TupleAlgo)
 
 
 def mapvct(func, sequence, ovct=None):
-    """ Helper function to fill histogram/ntuple using 'map'-operation """
+    """Helper function to fill histogram/ntuple using 'map'-operation"""
     if not ovct:
         vct = GaudiPython.Vector
     else:
         vct = ovct
-    if hasattr(sequence, 'size'):
+    if hasattr(sequence, "size"):
         vct.reserve(vct.size() + sequence.size())
-    elif hasattr(sequence, '__len__'):
+    elif hasattr(sequence, "__len__"):
         vct.reserve(vct.size() + len(sequence))
     for object in sequence:
         vct.push_back(func(object))
@@ -1383,11 +1383,11 @@ def _get_all_tools_(self, method):
     """
     Get all tools
     """
-    _tools = std.vector('IAlgTool*')()
+    _tools = std.vector("IAlgTool*")()
     _func = getattr(AlgDecorator, method)
     _num = _func(self, _tools)
     if _tools.size() != _num:
-        raise RuntimeError('Unable to extract Tools')
+        raise RuntimeError("Unable to extract Tools")
     _res = []
     for _tool in _tools:
         _res += [iAlgTool(_tool.name(), _tool)]
@@ -1408,11 +1408,11 @@ def _Tools_a_(self):
     ...        print(tool)
 
     """
-    _cmp = getattr(self, '_ialg')
+    _cmp = getattr(self, "_ialg")
     if not _cmp:
         self.retrieveInterface()
-    _cmp = getattr(self, '_ialg')
-    return _get_all_tools_(_cmp, '_tools_a_')
+    _cmp = getattr(self, "_ialg")
+    return _get_all_tools_(_cmp, "_tools_a_")
 
 
 # =============================================================================
@@ -1429,11 +1429,11 @@ def _Tools_t_(self):
     ...        print(t)
 
     """
-    _cmp = getattr(self, '_itool')
+    _cmp = getattr(self, "_itool")
     if not _cmp:
         self.retrieveInterface()
-    _cmp = getattr(self, '_itool')
-    return _get_all_tools_(_cmp, '_tools_t_')
+    _cmp = getattr(self, "_itool")
+    return _get_all_tools_(_cmp, "_tools_t_")
 
 
 # =============================================================================
@@ -1461,11 +1461,11 @@ def _Counter_a_(self, name):
     >>> print(cnt)
 
     """
-    _cmp = getattr(self, '_ialg')
+    _cmp = getattr(self, "_ialg")
     if not _cmp:
         self.retrieveInterface()
-    _cmp = getattr(self, '_ialg')
-    return _get_counter_(_cmp, '_counter_a_', name)
+    _cmp = getattr(self, "_ialg")
+    return _get_counter_(_cmp, "_counter_a_", name)
 
 
 # ==============================================================================
@@ -1480,11 +1480,11 @@ def _Counter_t_(self, name):
     >>> print(cnt)
 
     """
-    _cmp = getattr(self, '_itool')
+    _cmp = getattr(self, "_itool")
     if not _cmp:
         self.retrieveInterface()
-    _cmp = getattr(self, '_itool')
-    return _get_counter_(_cmp, '_counter_t_', name)
+    _cmp = getattr(self, "_itool")
+    return _get_counter_(_cmp, "_counter_t_", name)
 
 
 # =============================================================================
@@ -1503,17 +1503,19 @@ def _get_all_histos_(component, method, name):
     Get All histogram form the component
     """
     _res = {}
-    for _his in (std.vector('AIDA::IProfile2D*'),
-                 std.vector('AIDA::IProfile1D*'),
-                 std.vector('AIDA::IHistogram3D*'),
-                 std.vector('AIDA::IHistogram2D*'),
-                 std.vector('AIDA::IHistogram1D*')):
+    for _his in (
+        std.vector("AIDA::IProfile2D*"),
+        std.vector("AIDA::IProfile1D*"),
+        std.vector("AIDA::IHistogram3D*"),
+        std.vector("AIDA::IHistogram2D*"),
+        std.vector("AIDA::IHistogram1D*"),
+    ):
         _his = _his()
-        _ids = std.vector('GaudiAlg::ID')()
+        _ids = std.vector("GaudiAlg::ID")()
         _fun = getattr(HistoDecorator, method)
         _num = _fun(component, _ids, _his)
         if _ids.size() != _num or _his.size() != _num:
-            raise RuntimeError('Unable to extract Histos!')
+            raise RuntimeError("Unable to extract Histos!")
         for _i in range(0, _num):
             _id = _ids[_i]
             if _id.numeric():
@@ -1555,11 +1557,11 @@ def _Histos_a_(self, name=None):
     >>> print(histo)
 
     """
-    _cmp = getattr(self, '_ialg')
+    _cmp = getattr(self, "_ialg")
     if not _cmp:
         self.retrieveInterface()
-    _cmp = getattr(self, '_ialg')
-    return _get_all_histos_(_cmp, '_histos_a_', name)
+    _cmp = getattr(self, "_ialg")
+    return _get_all_histos_(_cmp, "_histos_a_", name)
 
 
 # =============================================================================
@@ -1581,21 +1583,21 @@ def _Histos_t_(self, name=None):
     >>> print(histo)
 
     """
-    _cmp = getattr(self, '_itool')
+    _cmp = getattr(self, "_itool")
     if not _cmp:
         self.retrieveInterface()
-    _cmp = getattr(self, '_itool')
-    return _get_all_histos_(_cmp, '_histos_t_', name)
+    _cmp = getattr(self, "_itool")
+    return _get_all_histos_(_cmp, "_histos_t_", name)
 
 
 # =============================================================================
 
-_Tools_a_.__doc__ += '\n' + AlgDecorator._tools_a_.__doc__
-_Tools_t_.__doc__ += '\n' + AlgDecorator._tools_t_.__doc__
-_Counter_a_.__doc__ += '\n' + AlgDecorator._counter_a_.__doc__
-_Counter_t_.__doc__ += '\n' + AlgDecorator._counter_t_.__doc__
-_Histos_a_.__doc__ += '\n' + HistoDecorator._histos_a_.__doc__
-_Histos_t_.__doc__ += '\n' + HistoDecorator._histos_t_.__doc__
+_Tools_a_.__doc__ += "\n" + AlgDecorator._tools_a_.__doc__
+_Tools_t_.__doc__ += "\n" + AlgDecorator._tools_t_.__doc__
+_Counter_a_.__doc__ += "\n" + AlgDecorator._counter_a_.__doc__
+_Counter_t_.__doc__ += "\n" + AlgDecorator._counter_t_.__doc__
+_Histos_a_.__doc__ += "\n" + HistoDecorator._histos_a_.__doc__
+_Histos_t_.__doc__ += "\n" + HistoDecorator._histos_t_.__doc__
 
 iAlgorithm.Tools = _Tools_a_
 iAlgTool.Tools = _Tools_t_
@@ -1614,15 +1616,15 @@ import GaudiPython.HistoUtils
 
 def _help_():
     print(__doc__, __author__)
-    print('\t\t\tDoc-string for class GaudiAlgo \n', GaudiAlgo.__doc__)
-    print('\t\t\tDoc-string for class HistoAlgo \n', HistoAlgo.__doc__)
-    print('\t\t\tDoc-string for class TupleAlgo \n', TupleAlgo.__doc__)
+    print("\t\t\tDoc-string for class GaudiAlgo \n", GaudiAlgo.__doc__)
+    print("\t\t\tDoc-string for class HistoAlgo \n", HistoAlgo.__doc__)
+    print("\t\t\tDoc-string for class TupleAlgo \n", TupleAlgo.__doc__)
 
 
 # =============================================================================
 # pseudo-test suite
 # =============================================================================
-if __name__ == '__main__':
+if __name__ == "__main__":
     _help_()
 
 # =============================================================================

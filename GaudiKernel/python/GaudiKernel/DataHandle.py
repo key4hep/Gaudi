@@ -13,11 +13,11 @@ __doc__ = """The python module holding python bindings to DataHandle"""
 
 class DataHandle(object):
 
-    __slots__ = ('Path', 'Mode', 'Type', 'IsCondition')
+    __slots__ = ("Path", "Mode", "Type", "IsCondition")
 
     __hash__ = None  # Make class non-hashable for Python2 (default in Python3)
 
-    def __init__(self, path, mode='R', _type="unknown_t", isCond=False):
+    def __init__(self, path, mode="R", _type="unknown_t", isCond=False):
         object.__init__(self)
         self.Path = path
         self.Mode = mode
@@ -42,7 +42,8 @@ class DataHandle(object):
         if other is None:
             return False
         raise ValueError(
-            'Unknown equality check: type=%r, repr=%r' % (type(other), other))
+            "Unknown equality check: type=%r, repr=%r" % (type(other), other)
+        )
 
     def __ne__(self, other):
         """

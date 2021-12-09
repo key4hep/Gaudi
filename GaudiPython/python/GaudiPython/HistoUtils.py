@@ -34,27 +34,29 @@ The module contains following public symbols:
 
 """
 from __future__ import print_function
+
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
 __all__ = (
-    'book',  # book AIDA histogram using Histogram Service
-    'bookProf',  # book AIDA profile histogram using Histogram Service
-    'getAsAIDA',  # get the histogram form Histogram Service as AIDA histogram
-    'getAsROOT',  # get the histogram form Histogram Service as AIDA histogram
-    'fill',  # "power-fill" method for filling of histograms
-    'aida2root',  # AIDA -> ROOT converter
-    'HistoStats',  # statistical information for 1D-histograms
-    'HistoFile',  # class for storing histograms to a file
-    'histoDump',  # dump histogramintext format a'la HBOOK
-    'dumpHisto'  # dump histogramintext format a'la HBOOK
+    "book",  # book AIDA histogram using Histogram Service
+    "bookProf",  # book AIDA profile histogram using Histogram Service
+    "getAsAIDA",  # get the histogram form Histogram Service as AIDA histogram
+    "getAsROOT",  # get the histogram form Histogram Service as AIDA histogram
+    "fill",  # "power-fill" method for filling of histograms
+    "aida2root",  # AIDA -> ROOT converter
+    "HistoStats",  # statistical information for 1D-histograms
+    "HistoFile",  # class for storing histograms to a file
+    "histoDump",  # dump histogramintext format a'la HBOOK
+    "dumpHisto",  # dump histogramintext format a'la HBOOK
 )
 # =============================================================================
 # import core of Gaudi
 import ROOT
 from GaudiPython.Bindings import AppMgr
-from GaudiPython.Bindings import iHistogramSvc
 from GaudiPython.Bindings import gbl as cpp
+from GaudiPython.Bindings import iHistogramSvc
+
 HID = cpp.GaudiAlg.ID
 
 ## global flag
@@ -68,11 +70,11 @@ def _getAppMgr(**kwargs):
     """
     Helper private auxiliary function to get Application Manager
     """
-    gaudi = kwargs.get('gaudi', None)
+    gaudi = kwargs.get("gaudi", None)
     if not gaudi:
         gaudi = AppMgr()
     if not gaudi:
-        raise RuntimeError('Unable to get valid ApplicationMgr')
+        raise RuntimeError("Unable to get valid ApplicationMgr")
 
     state = gaudi._isvc.FSMState()
     if state < cpp.Gaudi.StateMachine.CONFIGURED:
@@ -92,9 +94,9 @@ def _getHistoSvc(**kwargs):
     """
     Helper private auxiliary function to get iHistogramSvs
     """
-    svc = kwargs.get('service', None)
+    svc = kwargs.get("service", None)
     if not svc:
-        svc = kwargs.get('svc', None)
+        svc = kwargs.get("svc", None)
     else:
         return svc  # RETURN
     gaudi = _getAppMgr(**kwargs)
@@ -109,9 +111,9 @@ def _getEvtSvc(**kwargs):
     """
     Helper private auxiliary function to get iDataSvs
     """
-    svc = kwargs.get('service', None)
+    svc = kwargs.get("service", None)
     if not svc:
-        svc = kwargs.get('svc', None)
+        svc = kwargs.get("svc", None)
     else:
         return svc  # RETURN
     gaudi = _getAppMgr(**kwargs)
@@ -235,14 +237,14 @@ def book(*args, **kwargs):
     e.g. for the histograms with non-equidistant bins, see IHistogamSvc::book
 
     """
-    if useROOT or kwargs.get('useROOT',
-                             False) or not kwargs.get('useAIDA', True):
+    if useROOT or kwargs.get("useROOT", False) or not kwargs.get("useAIDA", True):
         from ROOT import TH1D
+
         a0 = args[0]
         a1 = args[1]
         a2 = args[2]
         if not str is type(a1):
-            a1 = 'h' + str(a1)
+            a1 = "h" + str(a1)
         if str is type(a2):
             return TH1D(a0 + a1, a2, *args[3:])
         else:
@@ -250,15 +252,17 @@ def book(*args, **kwargs):
 
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError('Unable to get valid HistogramService ')
+        raise RuntimeError("Unable to get valid HistogramService ")
     # book the histogram using the service
     return svc.book(*args)  # RETURN
 
 
-book.__doc__ += '\n\n' + '\thelp(iHistogramSvc.book) : \n\n' \
-                + iHistogramSvc.book       . __doc__
-book.__doc__ += '\n\n' + '\thelp(IHistogramSvc::book) : \n\n'            \
-                + cpp.IHistogramSvc.book . __doc__
+book.__doc__ += (
+    "\n\n" + "\thelp(iHistogramSvc.book) : \n\n" + iHistogramSvc.book.__doc__
+)
+book.__doc__ += (
+    "\n\n" + "\thelp(IHistogramSvc::book) : \n\n" + cpp.IHistogramSvc.book.__doc__
+)
 
 # =============================================================================
 # The trivial function to book 1D&2D profile histograms:
@@ -330,15 +334,19 @@ def bookProf(*args, **kwargs):
     """
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError('Unable to get valid HistogramService ')
+        raise RuntimeError("Unable to get valid HistogramService ")
     # book the histogram using the service
     return svc.bookProf(*args)  # RETURN
 
 
-bookProf.__doc__ += '\n\n' + '\thelp(iHistogramSvc.bookProf) : \n\n' \
-                    + iHistogramSvc.bookProf . __doc__
-bookProf.__doc__ += '\n\n' + '\thelp(IHistogramSvc::bookProf) : \n\n'             \
-                    + cpp.IHistogramSvc.bookProf . __doc__
+bookProf.__doc__ += (
+    "\n\n" + "\thelp(iHistogramSvc.bookProf) : \n\n" + iHistogramSvc.bookProf.__doc__
+)
+bookProf.__doc__ += (
+    "\n\n"
+    + "\thelp(IHistogramSvc::bookProf) : \n\n"
+    + cpp.IHistogramSvc.bookProf.__doc__
+)
 
 # =============================================================================
 # The most trivial function to retrieve the histogram from Histogram Transient Store
@@ -355,15 +363,17 @@ def getAsAIDA(path, **kwargs):
     """
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError('Unable to get valid HistogramService ')
+        raise RuntimeError("Unable to get valid HistogramService ")
     # return the histogram
     return svc.getAsAIDA(path)  # RETURN
 
 
-getAsAIDA.__doc__ += '\n\n' + '\thelp(iHistogramSvc.getAsAIDA) : \n\n' \
-                     + iHistogramSvc.getAsAIDA . __doc__
-getAsAIDA.__doc__ += '\n\n' + '\thelp(iHistogramSvc.retrieve)  : \n\n' \
-                     + iHistogramSvc.retrieve  . __doc__
+getAsAIDA.__doc__ += (
+    "\n\n" + "\thelp(iHistogramSvc.getAsAIDA) : \n\n" + iHistogramSvc.getAsAIDA.__doc__
+)
+getAsAIDA.__doc__ += (
+    "\n\n" + "\thelp(iHistogramSvc.retrieve)  : \n\n" + iHistogramSvc.retrieve.__doc__
+)
 
 # =============================================================================
 # The most trivial function to retrieve the histogram from Histogram Transient Store
@@ -380,23 +390,25 @@ def getAsROOT(path, **kwargs):
     """
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError('Unable to get valid HistogramService ')
+        raise RuntimeError("Unable to get valid HistogramService ")
     # return the histogram
     return svc.getAsROOT(path)  # RETURN
 
 
-getAsROOT.__doc__ += '\n\n' + '\thelp(iHistogramSvc.getAsROOT) : \n\n' \
-                     + iHistogramSvc.getAsROOT . __doc__
+getAsROOT.__doc__ += (
+    "\n\n" + "\thelp(iHistogramSvc.getAsROOT) : \n\n" + iHistogramSvc.getAsROOT.__doc__
+)
 
 
 # =============================================================================
 # The function which allows 'the smart fill' of 1D-histogram
 def fill(
-        histo,  # histogram
-        data,  # input data
-        fun=lambda x: x,  # function to be used
-        cut=lambda x: True,  # cut to be applied
-        **kwargs):  # optional extra arguments
+    histo,  # histogram
+    data,  # input data
+    fun=lambda x: x,  # function to be used
+    cut=lambda x: True,  # cut to be applied
+    **kwargs
+):  # optional extra arguments
     """
 
     The function which allows 'the smart fill' of 1D-histogram
@@ -473,11 +485,11 @@ def fill(
     if type(cut) == str:
         cut = eval(cut, globals())
 
-    if not hasattr(data, '__iter__'):
+    if not hasattr(data, "__iter__"):
         data = [data]
 
-    if not hasattr(histo, 'fill') and hasattr(histo, 'Fill'):
-        setattr(histo, 'fill', getattr(histo, 'Fill'))
+    if not hasattr(histo, "fill") and hasattr(histo, "Fill"):
+        setattr(histo, "fill", getattr(histo, "Fill"))
 
     for item in data:
         if not cut(item):
@@ -508,16 +520,22 @@ def _to_root_(self):
 
 _to_root_.__doc__ += aida2root.__doc__
 
-for t in (cpp.AIDA.IHistogram3D, cpp.AIDA.IHistogram2D, cpp.AIDA.IHistogram1D,
-          cpp.AIDA.IProfile2D, cpp.AIDA.IProfile1D):
-    if not hasattr(t, 'Fill') and hasattr(t, 'fill'):
-        setattr(t, 'Fill', getattr(t, 'fill'))
-    for attr in ('toROOT', 'toRoot', 'asROOT', 'asRoot', 'AsROOT', 'AsRoot'):
+for t in (
+    cpp.AIDA.IHistogram3D,
+    cpp.AIDA.IHistogram2D,
+    cpp.AIDA.IHistogram1D,
+    cpp.AIDA.IProfile2D,
+    cpp.AIDA.IProfile1D,
+):
+    if not hasattr(t, "Fill") and hasattr(t, "fill"):
+        setattr(t, "Fill", getattr(t, "fill"))
+    for attr in ("toROOT", "toRoot", "asROOT", "asRoot", "AsROOT", "AsRoot"):
         if not hasattr(t, attr):
             setattr(t, attr, _to_root_)
 
-cpp.AIDA.IHistogram3D. __repr__ = lambda s: cpp.GaudiAlg.Print3D.toString(
-    s, HID(s.title()))
+cpp.AIDA.IHistogram3D.__repr__ = lambda s: cpp.GaudiAlg.Print3D.toString(
+    s, HID(s.title())
+)
 cpp.AIDA.IHistogram3D.__str__ = cpp.AIDA.IHistogram3D.__repr__
 
 HistoStats = cpp.Gaudi.Utils.HistoStats
@@ -710,7 +728,7 @@ def _sumBinHeightErr_(self):
 
 
 def _sumAllBinHeightErr_(self):
-    """ Get an error in the sum bin height ('in-range integral') """
+    """Get an error in the sum bin height ('in-range integral')"""
     return HistoStats.sumAllBinHeightErr(self)
 
 
@@ -872,56 +890,56 @@ def _nEntriesFracErr_(self, i1, i2=-10000000):
 # =============================================================================
 i1DH = cpp.AIDA.IHistogram1D
 
-if not hasattr(i1DH, 'moment'):
+if not hasattr(i1DH, "moment"):
     i1DH.moment = _moment_
-if not hasattr(i1DH, 'momentErr'):
+if not hasattr(i1DH, "momentErr"):
     i1DH.momentErr = _momentErr_
-if not hasattr(i1DH, 'centralMoment'):
+if not hasattr(i1DH, "centralMoment"):
     i1DH.centralMoment = _centralMoment_
-if not hasattr(i1DH, 'momentMomentErr'):
+if not hasattr(i1DH, "momentMomentErr"):
     i1DH.centralMomentErr = _centralMomentErr_
-if not hasattr(i1DH, 'nEff'):
+if not hasattr(i1DH, "nEff"):
     i1DH.nEff = _nEff_
-if not hasattr(i1DH, 'mean'):
+if not hasattr(i1DH, "mean"):
     i1DH.mean = _mean_
-if not hasattr(i1DH, 'meanErr'):
+if not hasattr(i1DH, "meanErr"):
     i1DH.meanErr = _meanErr_
-if not hasattr(i1DH, 'rms'):
+if not hasattr(i1DH, "rms"):
     i1DH.rms = _rms_
-if not hasattr(i1DH, 'rmsErr'):
+if not hasattr(i1DH, "rmsErr"):
     i1DH.rmsErr = _rmsErr_
-if not hasattr(i1DH, 'skewness'):
+if not hasattr(i1DH, "skewness"):
     i1DH.skewness = _skewness_
-if not hasattr(i1DH, 'skewnessErr'):
+if not hasattr(i1DH, "skewnessErr"):
     i1DH.skewnessErr = _skewnessErr_
-if not hasattr(i1DH, 'kurtosis'):
+if not hasattr(i1DH, "kurtosis"):
     i1DH.kurtosis = _kurtosis_
-if not hasattr(i1DH, 'kurtosisErr'):
+if not hasattr(i1DH, "kurtosisErr"):
     i1DH.kurtosisErr = _kurtosisErr_
 
-if not hasattr(i1DH, 'overflowEntriesFrac'):
+if not hasattr(i1DH, "overflowEntriesFrac"):
     i1DH.overflowEntriesFrac = _overflowEntriesFrac_
-if not hasattr(i1DH, 'overflowEntriesFracErr'):
+if not hasattr(i1DH, "overflowEntriesFracErr"):
     i1DH.overflowEntriesFracErr = _overflowEntriesFracErr_
-if not hasattr(i1DH, 'underflowEntriesFrac'):
+if not hasattr(i1DH, "underflowEntriesFrac"):
     i1DH.underflowEntriesFrac = _underflowEntriesFrac_
-if not hasattr(i1DH, 'underflowEntriesFracErr'):
+if not hasattr(i1DH, "underflowEntriesFracErr"):
     i1DH.underflowEntriesFracErr = _underflowEntriesFracErr_
 
-if not hasattr(i1DH, 'overflowIntegralFrac'):
+if not hasattr(i1DH, "overflowIntegralFrac"):
     i1DH.overflowIntegralFrac = _overflowIntegralFrac_
-if not hasattr(i1DH, 'overflowIntegralFracErr'):
+if not hasattr(i1DH, "overflowIntegralFracErr"):
     i1DH.overflowIntegralFracErr = _overflowIntegralFracErr_
-if not hasattr(i1DH, 'underflowIntegralFrac'):
+if not hasattr(i1DH, "underflowIntegralFrac"):
     i1DH.underflowIntegralFrac = _underflowIntegralFrac_
-if not hasattr(i1DH, 'underflowIntegralFracErr'):
+if not hasattr(i1DH, "underflowIntegralFracErr"):
     i1DH.underflowIntegralFracErr = _underflowIntegralFracErr_
 
-if not hasattr(i1DH, 'nEntries'):
+if not hasattr(i1DH, "nEntries"):
     i1DH.nEntries = _nEntries_
-if not hasattr(i1DH, 'nEntriesFrac'):
+if not hasattr(i1DH, "nEntriesFrac"):
     i1DH.nEntriesFrac = _nEntriesFrac_
-if not hasattr(i1DH, 'nEntriesFracErr'):
+if not hasattr(i1DH, "nEntriesFracErr"):
     i1DH.nEntriesFracErr = _nEntriesFracErr_
 
 # ============================================================================
@@ -939,11 +957,11 @@ def _path_(self):
 
 
 iBH = cpp.AIDA.IBaseHistogram
-if not hasattr(iBH, 'path'):
+if not hasattr(iBH, "path"):
     iBH.path = _path_
-if not hasattr(iBH, 'TESpath'):
+if not hasattr(iBH, "TESpath"):
     iBH.TESpath = _path_
-if not hasattr(iBH, 'location'):
+if not hasattr(iBH, "location"):
     iBH.location = _path_
 
 
@@ -966,16 +984,22 @@ def __dumpHisto__(histo, *args):
     return cpp.Gaudi.Utils.Histos.histoDump(histo, *args)
 
 
-__dumpHisto__.__doc__ = '\n' + cpp.Gaudi.Utils.Histos.histoDump.__doc__
+__dumpHisto__.__doc__ = "\n" + cpp.Gaudi.Utils.Histos.histoDump.__doc__
 
 # =============================================================================
 # the actual function for text dump of the histogram
 histoDump = __dumpHisto__
 dumpHisto = __dumpHisto__
 
-for t in (cpp.AIDA.IHistogram1D, cpp.AIDA.IProfile1D, ROOT.TH1D, ROOT.TH1F,
-          ROOT.TH1, ROOT.TProfile):
-    for method in ('dump', 'dumpHisto', 'dumpAsText'):
+for t in (
+    cpp.AIDA.IHistogram1D,
+    cpp.AIDA.IProfile1D,
+    ROOT.TH1D,
+    ROOT.TH1F,
+    ROOT.TH1,
+    ROOT.TProfile,
+):
+    for method in ("dump", "dumpHisto", "dumpAsText"):
         if not hasattr(t, method):
             setattr(t, method, __dumpHisto__)
 
@@ -997,16 +1021,21 @@ class HistoFile:
     ...
     hWriter.close()
     """
+
     __author__ = "Juan Palacios juan.palacios@nikhef.nl"
 
     def __init__(self, fileName):
         self.file = ROOT.TFile(fileName, "RECREATE")
         from GaudiPython import gbl
+
         self.aida2root = gbl.Gaudi.Utils.Aida2ROOT.aida2root
         self.aidaTypes = [
-            gbl.AIDA.IHistogram1D, gbl.AIDA.IHistogram2D,
-            gbl.AIDA.IHistogram3D, gbl.AIDA.IProfile1D, gbl.AIDA.IProfile2D,
-            gbl.AIDA.IHistogram
+            gbl.AIDA.IHistogram1D,
+            gbl.AIDA.IHistogram2D,
+            gbl.AIDA.IHistogram3D,
+            gbl.AIDA.IProfile1D,
+            gbl.AIDA.IProfile2D,
+            gbl.AIDA.IHistogram,
         ]
 
     def __convertibleType(self, histo):
@@ -1038,8 +1067,9 @@ class HistoFile:
 
 
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
     import sys
+
     print(__doc__)
     for o in __all__:
         print(o)

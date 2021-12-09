@@ -15,7 +15,8 @@
 _O_ACCMODE = 3  # access-mode check for file flags.
 
 import logging
-msg = logging.getLogger('FdsRegistry')
+
+msg = logging.getLogger("FdsRegistry")
 
 
 class FdsDict(dict):
@@ -38,7 +39,7 @@ class FdsDict(dict):
 
     def has_name(self, fname):
         for v in self.values():
-            if (v[0] == fname):
+            if v[0] == fname:
                 return True
         return False
 
@@ -55,19 +56,19 @@ class FdsDict(dict):
             return ""
 
     def get_output_fds(self):
-        return [i for i in self.keys() if self[i][1] == '<OUTPUT>']
+        return [i for i in self.keys() if self[i][1] == "<OUTPUT>"]
 
     def get_input_fds(self):
-        return [i for i in self.keys() if self[i][1] == '<INPUT>']
+        return [i for i in self.keys() if self[i][1] == "<INPUT>"]
 
     def get_fds_in_dir(self, dir=""):
         import os
+
         if dir == "" and self.curdir is not None:
             dir = self.curdir
         msg.debug("get_fds_in_dir(%s)" % dir)
         return [
-            i for i in self.keys()
-            if os.path.samefile(os.path.dirname(self[i][0]), dir)
+            i for i in self.keys() if os.path.samefile(os.path.dirname(self[i][0]), dir)
         ]
 
     def create_symlinks(self, wkdir=""):
@@ -77,6 +78,7 @@ class FdsDict(dict):
         """
         import os
         import shutil
+
         msg.info("create_symlinks: %s" % self.get_fds_in_dir())
         # some files expected to be in curdir
         for fd in self.get_fds_in_dir():
@@ -88,38 +90,38 @@ class FdsDict(dict):
                     # update_io_registry took care of this
                     msg.debug(
                         "fds_dict.create_symlink:update_io_registry took care of src=%s"
-                        % src)
+                        % src
+                    )
                     pass
                 else:
                     msg.debug(
-                        "fds_dict.create_symlink:(symlink) src=%s, iomode=%s" %
-                        (src, iomode))
+                        "fds_dict.create_symlink:(symlink) src=%s, iomode=%s"
+                        % (src, iomode)
+                    )
                     os.symlink(src, dst)
             else:
-                msg.debug("fds_dict.create_symlink: (copy) src=%s, dst=%s" %
-                          (src, dst))
+                msg.debug("fds_dict.create_symlink: (copy) src=%s, dst=%s" % (src, dst))
                 shutil.copy(src, dst)
                 pass
         return
 
     def extract_fds(self, dir=""):
-        """parse the fds of the processs -> build fds_dict
-        """
-        import os
+        """parse the fds of the processs -> build fds_dict"""
         import fcntl
-        msg.info(
-            "extract_fds: making snapshot of parent process file descriptors")
-        self.curdir = os.path.abspath(os.curdir)
-        iomode = '<INPUT>'
+        import os
 
-        procfd = '/proc/self/fd'
+        msg.info("extract_fds: making snapshot of parent process file descriptors")
+        self.curdir = os.path.abspath(os.curdir)
+        iomode = "<INPUT>"
+
+        procfd = "/proc/self/fd"
         fds = os.listdir(procfd)
         for i in fds:
             fd = int(i)  # spurious entries should raise at this point
-            if (fd == 1 or fd == 2):
+            if fd == 1 or fd == 2:
                 # leave stdout and stderr to redirect_log
                 continue
-            elif (fd == 0):
+            elif fd == 0:
                 # with only a single controlling terminal, leave stdin alone
                 continue
 
@@ -128,8 +130,7 @@ class FdsDict(dict):
             except (OSError, IOError, TypeError):
                 # can fail because the symlink resolution (why is that needed
                 # anyway?) may follow while a temp file disappears
-                msg.debug("failed to resolve: %s ... skipping",
-                          os.path.join(procfd, i))
+                msg.debug("failed to resolve: %s ... skipping", os.path.join(procfd, i))
                 continue
 
             if os.path.exists(realname):

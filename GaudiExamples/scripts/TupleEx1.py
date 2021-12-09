@@ -27,12 +27,14 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
+__author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
 # =============================================================================
 
-import GaudiPython
 import math
+
+import GaudiPython
 
 SUCCESS = GaudiPython.SUCCESS
 
@@ -55,9 +57,9 @@ def vct(sequence):
     GaudiPython.Vector ( std::vector<double> )
     """
     result = GaudiPython.gbl.GaudiPython.Vector()
-    if hasattr(sequence, '__len__'):
+    if hasattr(sequence, "__len__"):
         result.reserve(len(sequence))
-    elif hasattr(sequence, 'size'):
+    elif hasattr(sequence, "size"):
         result.reserve(sequence.size())
 
     for item in sequence:
@@ -98,26 +100,26 @@ class TupleEx1(TupleAlgo):
         tuple1 = self.nTuple(1, "Trivial Row-Wise Tuple", 42)
 
         # fill N-Tuple with double/float numbers:
-        tuple1.column('gauss', gauss())
-        tuple1.column('flat', flat())
-        tuple1.column('expo', expo())
-        tuple1.column('breit', breit())
+        tuple1.column("gauss", gauss())
+        tuple1.column("flat", flat())
+        tuple1.column("expo", expo())
+        tuple1.column("breit", breit())
 
         # fill N-Tuple with integer numbers:
-        tuple1.column('poiss1', int(poisson()))
-        tuple1.column('binom1', int(binom()))
+        tuple1.column("poiss1", int(poisson()))
+        tuple1.column("binom1", int(binom()))
 
         # fill N-Tuple with long long numbers:
-        tuple1.column_ll('poiss2', int(poisson()))
-        tuple1.column_ll('binom2', int(binom()))
+        tuple1.column_ll("poiss2", int(poisson()))
+        tuple1.column_ll("binom2", int(binom()))
 
         # fill N-Tuple with unsigned long long numbers:
-        tuple1.column_ull('poiss3', int(poisson()))
-        tuple1.column_ull('binom3', int(binom()))
+        tuple1.column_ull("poiss3", int(poisson()))
+        tuple1.column_ull("binom3", int(binom()))
 
         # fill N-Tuple with "reduced" integer numbers:
-        tuple1.column('poiss4', int(poisson()), 0, 14)
-        tuple1.column('binom4', int(binom()), 0, 14)
+        tuple1.column("poiss4", int(poisson()), 0, 14)
+        tuple1.column("binom4", int(binom()), 0, 14)
 
         # fill N-Tuple with "boolean" numbers:
         tuple1.column("poisb", poisson() > 1.0)
@@ -131,17 +133,17 @@ class TupleEx1(TupleAlgo):
         tuple2 = self.nTuple(2, "Trivial Column-Wise Tuple")
 
         # fill N-Tuple with double/float numbers:
-        tuple2.column('gauss', gauss())
-        tuple2.column('flat', flat())
-        tuple2.column('expo', expo())
-        tuple2.column('breit', breit())
+        tuple2.column("gauss", gauss())
+        tuple2.column("flat", flat())
+        tuple2.column("expo", expo())
+        tuple2.column("breit", breit())
 
         # fill N-Tuple with integer numbers:
-        tuple2.column('poiss', int(poisson()))
-        tuple2.column('binom', int(binom()))
+        tuple2.column("poiss", int(poisson()))
+        tuple2.column("binom", int(binom()))
         # fill N-Tuple with "reduced" integer numbers:
-        tuple2.column('poiss', int(poisson()), 0, 14)
-        tuple2.column('binom', int(binom()), 0, 14)
+        tuple2.column("poiss", int(poisson()), 0, 14)
+        tuple2.column("binom", int(binom()), 0, 14)
 
         # fill N-Tuple with "boolean" numbers:
         tuple2.column("poisb", poisson() > 1.0)
@@ -154,11 +156,11 @@ class TupleEx1(TupleAlgo):
         # =====================================================================
         tuple3 = self.nTuple(3, "Fixed-size arrays/vectors")
 
-        tuple3.array('arflat', vct([flat() for i in range(0, 50)]))
-        tuple3.array('arexpo', vct([expo() for i in range(0, 62)]))
-        tuple3.array('argau', vct([gauss() for i in range(0, 42)]))
+        tuple3.array("arflat", vct([flat() for i in range(0, 50)]))
+        tuple3.array("arexpo", vct([expo() for i in range(0, 62)]))
+        tuple3.array("argau", vct([gauss() for i in range(0, 42)]))
         t = tuple([gauss() for i in range(0, 42)])
-        tuple3.array('argau2', vct(t))
+        tuple3.array("argau2", vct(t))
 
         tuple3.write()
 
@@ -170,32 +172,32 @@ class TupleEx1(TupleAlgo):
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2006-11-26
 def configure(gaudi=None):
-    """ Configuration of the job """
+    """Configuration of the job"""
 
     if not gaudi:
         gaudi = GaudiPython.AppMgr()
 
-    gaudi.JobOptionsType = 'NONE'
-    gaudi.EvtSel = 'NONE'
-    gaudi.HistogramPersistency = 'ROOT'
+    gaudi.JobOptionsType = "NONE"
+    gaudi.EvtSel = "NONE"
+    gaudi.HistogramPersistency = "ROOT"
 
     gaudi.ExtSvc += ["NTupleSvc"]
 
-    ntSvc = gaudi.service('NTupleSvc')
+    ntSvc = gaudi.service("NTupleSvc")
     ntSvc.Output = ["MYLUN DATAFILE='TupleEx1.root' OPT='NEW' TYP='ROOT'"]
 
     gaudi.config()
 
     gaudi.DLLs = [
-        'GaudiAlg',
-        'RootHistCnv',
+        "GaudiAlg",
+        "RootHistCnv",
     ]
 
-    alg = TupleEx1('TupleEx1')
+    alg = TupleEx1("TupleEx1")
     gaudi.setAlgorithms([alg])
 
     # configure the properties
-    alg.NTupleLUN = 'MYLUN'
+    alg.NTupleLUN = "MYLUN"
 
     return SUCCESS
 
@@ -204,7 +206,7 @@ def configure(gaudi=None):
 # The actual job excution
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2006-11-26
-if '__main__' == __name__:
+if "__main__" == __name__:
     print(__doc__)
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)

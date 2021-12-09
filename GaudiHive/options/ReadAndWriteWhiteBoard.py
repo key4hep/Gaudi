@@ -12,9 +12,17 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
+from Configurables import AlgResourcePool, AvalancheSchedulerSvc
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import (
+    GaudiPersistency,
+    HiveReadAlgorithm,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    ReadHandleAlg,
+    WriteHandleAlg,
+)
 from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, HiveReadAlgorithm, AvalancheSchedulerSvc, AlgResourcePool
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
@@ -26,8 +34,10 @@ SequencerTimerTool(OutputLevel=WARNING)
 # - DST
 dst = OutputStream("RootDst")
 dst.ItemList = ["/Event#999"]
-dst.Output = "DATAFILE='PFN:HandleWB_ROOTOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
-dst.NeededResources = ['ROOTIO']
+dst.Output = (
+    "DATAFILE='PFN:HandleWB_ROOTOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+)
+dst.NeededResources = ["ROOTIO"]
 
 GaudiPersistency()
 
@@ -37,14 +47,14 @@ EventSelector(
     FirstEvent=1,
     Input=[
         "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"
-    ])
+    ],
+)
 FileCatalog(Catalogs=["xmlcatalog_file:HandleWB_ROOTIO.xml"])
 
 product_name = "MyCollision"
 product_name_full_path = "/Event/" + product_name
 
-loader = HiveReadAlgorithm(
-    "Loader", OutputLevel=INFO, NeededResources=['ROOTIO'])
+loader = HiveReadAlgorithm("Loader", OutputLevel=INFO, NeededResources=["ROOTIO"])
 
 reader = ReadHandleAlg("Reader", OutputLevel=INFO, NeededResources=["ROOTIO"])
 reader.Input.Path = product_name
@@ -62,11 +72,13 @@ scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algoparallel,
     OutputLevel=WARNING,
     CheckDependencies=True,
-    DataLoaderAlg=loader.name())
+    DataLoaderAlg=loader.name(),
+)
 
 ApplicationMgr(
     TopAlg=[loader, reader, dst],
     EvtMax=44,
     HistogramPersistency="NONE",
     ExtSvc=[whiteboard],
-    EventLoop=eventloopmgr)
+    EventLoop=eventloopmgr,
+)

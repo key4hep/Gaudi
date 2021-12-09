@@ -10,16 +10,16 @@
 #####################################################################################
 from Gaudi.Configuration import *
 
-AuditorSvc().Auditors = ['ChronoAuditor']
+AuditorSvc().Auditors = ["ChronoAuditor"]
 MessageSvc().OutputLevel = INFO
-RootHistSvc('RootHistSvc').OutputFile = 'histo.root'
+RootHistSvc("RootHistSvc").OutputFile = "histo.root"
 
-#HistogramSvc('HistogramDataSvc').Input = [ "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'" ]
+# HistogramSvc('HistogramDataSvc').Input = [ "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'" ]
 
-from Configurables import (HistoTimingAlgDA as CounterHistoTimingDA,
-                           HistoTimingAlgIA as CounterHistoTimingIA,
-                           HistoTimingAlgD as CounterHistoTimingD,
-                           HistoTimingAlgI as CounterHistoTimingI)
+from Configurables import HistoTimingAlgD as CounterHistoTimingD
+from Configurables import HistoTimingAlgDA as CounterHistoTimingDA
+from Configurables import HistoTimingAlgI as CounterHistoTimingI
+from Configurables import HistoTimingAlgIA as CounterHistoTimingIA
 
 seq = GaudiSequencer("TimingSeq", MeasureTime=True)
 seq.Members = [
@@ -35,5 +35,4 @@ for alg in seq.Members:
     alg.NumHistos = 30
     alg.OutputLevel = DEBUG
 
-ApplicationMgr(
-    EvtMax=50000, EvtSel='NONE', HistogramPersistency='ROOT', TopAlg=[seq])
+ApplicationMgr(EvtMax=50000, EvtSel="NONE", HistogramPersistency="ROOT", TopAlg=[seq])

@@ -17,7 +17,7 @@ class MyAlg(ConfigurableUser):
     __slots__ = {
         "OutputLevel": INFO,
         "Service": "DefaultService",
-        "Members": ["HelloWorld"]
+        "Members": ["HelloWorld"],
     }
 
     def getGaudiType(self):

@@ -9,7 +9,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 A test for control flow scheduling within sub-event contexts.
 The sub-event control flow node has a child node attached.
 
@@ -23,11 +23,17 @@ Six instances of ViewTester are used as follows:
        on a child control flow node
  - Algorithm A4 runs in the whole event context, after the sub-events
 
-'''
+"""
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    CPUCruncher,
+    GaudiSequencer,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    Test__ViewTester,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
-                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -51,7 +57,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 # event loop manager. Here we just set its outputlevel to DEBUG.
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG
+)
 
 # -------------------------------------------------------------------------------
 
@@ -73,53 +80,51 @@ AlgResourcePool(OutputLevel=DEBUG)
 # Set up of the crunchers, daily business --------------------------------------
 
 a1 = Test__ViewTester("A1")
-a1.baseViewName = 'view'
+a1.baseViewName = "view"
 a1.viewNumber = viewsPerEvt
-a1.viewNodeName = 'viewNode'
+a1.viewNodeName = "viewNode"
 
 a2 = Test__ViewTester("A2")
-a2.viewNodeName = ''
+a2.viewNodeName = ""
 
 a3 = Test__ViewTester("A3")
-a3.viewNodeName = ''
+a3.viewNodeName = ""
 
 a4 = Test__ViewTester("A4")
-a4.viewNodeName = ''
+a4.viewNodeName = ""
 
 b1 = Test__ViewTester("B1")
-b1.viewNodeName = ''
+b1.viewNodeName = ""
 
 b2 = Test__ViewTester("B2")
-b2.viewNodeName = ''
+b2.viewNodeName = ""
 
 for algo in [a1, a2, a3, a4, b1, b2]:
     algo.Cardinality = cardinality
     algo.OutputLevel = DEBUG
 
 nodeInView = GaudiSequencer(
-    "nodeInView", Members=[b1, b2], Sequential=False, OutputLevel=VERBOSE)
+    "nodeInView", Members=[b1, b2], Sequential=False, OutputLevel=VERBOSE
+)
 
 viewNode = GaudiSequencer(
-    "viewNode",
-    Members=[a2, nodeInView, a3],
-    Sequential=False,
-    OutputLevel=VERBOSE)
+    "viewNode", Members=[a2, nodeInView, a3], Sequential=False, OutputLevel=VERBOSE
+)
 
 createViewSeq = GaudiSequencer(
-    "createViewSeq",
-    Members=[a1, viewNode, a4],
-    Sequential=True,
-    OutputLevel=VERBOSE)
+    "createViewSeq", Members=[a1, viewNode, a4], Sequential=True, OutputLevel=VERBOSE
+)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[createViewSeq],
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)
 
 # -------------------------------------------------------------------------------

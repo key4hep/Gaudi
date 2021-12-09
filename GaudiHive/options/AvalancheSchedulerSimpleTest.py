@@ -9,7 +9,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 Reference optionfile which shows in a simple way how to take advantage of the
 Gaudi components desicated to concurrency.
 The components are:
@@ -34,12 +34,18 @@ The components are:
 The CPUCruncher is not a component dealing with concurrency, but a useful
 entity to test it. It's an algorithm that simply wastes cpu.
 
-'''
+"""
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    ContextEventCounterData,
+    ContextEventCounterPtr,
+    CPUCruncher,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
-                           ContextEventCounterPtr, ContextEventCounterData,
-                           CPUCrunchSvc)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -62,7 +68,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 # event loop manager. Here we just set its outputlevel to DEBUG.
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG
+)
 
 # -------------------------------------------------------------------------------
 
@@ -86,25 +93,25 @@ CPUCrunchSvc(shortCalib=True)
 # Set up of the crunchers, daily business --------------------------------------
 
 a1 = CPUCruncher("A1")
-a1.outKeys = ['/Event/a1']
+a1.outKeys = ["/Event/a1"]
 
 a2 = CPUCruncher("A2")
-a2.inpKeys = ['/Event/a1']
-a2.outKeys = ['/Event/a2']
+a2.inpKeys = ["/Event/a1"]
+a2.outKeys = ["/Event/a2"]
 
 a3 = CPUCruncher("A3")
-a3.inpKeys = ['/Event/a1']
-a3.outKeys = ['/Event/a3']
+a3.inpKeys = ["/Event/a1"]
+a3.outKeys = ["/Event/a3"]
 
 a4 = CPUCruncher("A4")
-a4.inpKeys = ['/Event/a2', '/Event/a3']
-a4.outKeys = ['/Event/a4']
+a4.inpKeys = ["/Event/a2", "/Event/a3"]
+a4.outKeys = ["/Event/a4"]
 
 for algo in [a1, a2, a3, a4]:
     algo.Cardinality = cardinality
     algo.OutputLevel = WARNING
-    algo.varRuntime = .3
-    algo.avgRuntime = .5
+    algo.varRuntime = 0.3
+    algo.avgRuntime = 0.5
 
 ctrp = ContextEventCounterPtr("CNT*", Cardinality=0, OutputLevel=INFO)
 ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
@@ -114,10 +121,11 @@ ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[a1, a2, a3, a4, ctrp, ctrd],
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)
 
 # -------------------------------------------------------------------------------

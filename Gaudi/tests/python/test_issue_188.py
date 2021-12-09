@@ -9,8 +9,9 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 def config():
-    from GaudiConfig2 import Configurables as C
     from Configurables import ApplicationMgr
+    from GaudiConfig2 import Configurables as C
+
     ApplicationMgr(AppName="Test")
     app = C.ApplicationMgr(AppVersion="v100r100")
     return [app]

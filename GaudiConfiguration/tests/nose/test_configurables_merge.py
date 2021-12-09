@@ -8,8 +8,8 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+from GaudiConfig2 import Configurable, mergeConfigs, useGlobalInstances
 from GaudiConfig2.Configurables.TestConf import MyAlg, SimpleOptsAlgTool
-from GaudiConfig2 import Configurable, useGlobalInstances, mergeConfigs
 from nose.tools import raises, with_setup
 
 
@@ -24,16 +24,16 @@ def teardown_func():
 
 
 def test_merge():
-    a = MyAlg('ThisAlg', AnIntProp=42)
-    b = MyAlg('ThisAlg', AStringProp='42')
+    a = MyAlg("ThisAlg", AnIntProp=42)
+    b = MyAlg("ThisAlg", AStringProp="42")
     a.merge(b)
     assert a.AnIntProp == 42
-    assert a.AStringProp == '42'
+    assert a.AStringProp == "42"
 
 
 def test_merge_same_value():
-    a = MyAlg('ThisAlg', AnIntProp=42)
-    b = MyAlg('ThisAlg', AnIntProp=42)
+    a = MyAlg("ThisAlg", AnIntProp=42)
+    b = MyAlg("ThisAlg", AnIntProp=42)
     a.merge(b)
     assert a.AnIntProp == 42
 
@@ -41,13 +41,13 @@ def test_merge_same_value():
 @with_setup(setup_func, teardown_func)
 def test_merge_unnamed():
     a = MyAlg(AnIntProp=42)
-    assert not hasattr(a, 'name')
-    b = MyAlg(AStringProp='42')
-    assert not hasattr(b, 'name')
+    assert not hasattr(a, "name")
+    b = MyAlg(AStringProp="42")
+    assert not hasattr(b, "name")
 
     a.merge(b)
     assert a.AnIntProp == 42
-    assert a.AStringProp == '42'
+    assert a.AStringProp == "42"
 
 
 @raises(TypeError)
@@ -59,32 +59,32 @@ def test_diff_type():
 
 @raises(ValueError)
 def test_diff_name():
-    a = MyAlg('a')
-    b = MyAlg('b')
+    a = MyAlg("a")
+    b = MyAlg("b")
     a.merge(b)
 
 
 @with_setup(setup_func, teardown_func)
 @raises(ValueError)
 def test_diff_unnamed():
-    a = MyAlg('MyAlg')
+    a = MyAlg("MyAlg")
     b = MyAlg()
-    assert not hasattr(b, 'name')
+    assert not hasattr(b, "name")
     a.merge(b)
 
 
 @raises(ValueError)
 def test_merge():
-    a = MyAlg('ThisAlg', AnIntProp=42)
-    b = MyAlg('ThisAlg', AnIntProp=50)
+    a = MyAlg("ThisAlg", AnIntProp=42)
+    b = MyAlg("ThisAlg", AnIntProp=50)
     a.merge(b)
 
 
 def test_merge_lists():
-    a = {'alg': MyAlg('alg', AnIntProp=42)}
-    b = [MyAlg('alg', AStringProp='42')]
+    a = {"alg": MyAlg("alg", AnIntProp=42)}
+    b = [MyAlg("alg", AStringProp="42")]
 
     c = mergeConfigs(a, b)
-    assert list(c) == ['alg']
-    assert c['alg'].AnIntProp == 42
-    assert c['alg'].AStringProp == '42'
+    assert list(c) == ["alg"]
+    assert c["alg"].AnIntProp == 42
+    assert c["alg"].AStringProp == "42"

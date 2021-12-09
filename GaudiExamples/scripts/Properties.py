@@ -19,8 +19,9 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
+__author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
 # @file
 #  Simple example (identical to C++ Properties.opts) which illustrated
@@ -38,18 +39,18 @@ SUCCESS = gaudimodule.SUCCESS
 
 
 def configure(gaudi=None):
-    """ the configurtaion of the job """
+    """the configurtaion of the job"""
 
     # create applictaion manager if not done yet
     if not gaudi:
         gaudi = gaudimodule.AppMgr()
 
     # read main configuration files
-    gaudi.config(files=['../options/Common.opts'])
+    gaudi.config(files=["../options/Common.opts"])
 
     # private algorithm configuration options
 
-    gaudi.TopAlg = ['PropertyAlg']
+    gaudi.TopAlg = ["PropertyAlg"]
 
     # test for the multiple inclusion of the same alg
     gaudi.TopAlg += ["PropertyAlg", "PropertyProxy"]
@@ -59,37 +60,37 @@ def configure(gaudi=None):
 
     # Set output level threshold
     #    (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
-    msgSvc = gaudi.service('MessageSvc')
+    msgSvc = gaudi.service("MessageSvc")
     msgSvc.OutputLevel = 3
 
     # event related parameters
-    gaudi.EvtSel = 'NONE'
-    gaudi.HistogramPersistency = 'NONE'
+    gaudi.EvtSel = "NONE"
+    gaudi.HistogramPersistency = "NONE"
 
     # Algorithms Private Options
 
-    alg = gaudi.algorithm('PropertyAlg')
+    alg = gaudi.algorithm("PropertyAlg")
 
     alg.OutputLevel = 3
 
     alg.Int = 101
-    alg.Double = 101.1e+10
+    alg.Double = 101.1e10
     alg.String = "hundred one"
     alg.Bool = False
 
     alg.IntArray = [1, 2, 3, 5]
-    alg.DoubleArray = [-11.0, 2., 3.3, 0.4e-03]
+    alg.DoubleArray = [-11.0, 2.0, 3.3, 0.4e-03]
     alg.StringArray = ["one", "two", "four"]
     alg.BoolArray = [False, True, False]
     alg.EmptyArray = []
 
     alg.PInt = 101
-    alg.PDouble = 101.E5
+    alg.PDouble = 101.0e5
     alg.PString = "hundred one"
     alg.PBool = True
 
     alg.PIntArray = [1, 2, 3, 5]
-    alg.PDoubleArray = [1.1, 2., 3.3]
+    alg.PDoubleArray = [1.1, 2.0, 3.3]
     alg.PStringArray = ["one", "two", "four"]
     alg.PBoolArray = [True, False, True, False]
 
@@ -107,7 +108,7 @@ def configure(gaudi=None):
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
 
     print(__doc__, __author__)
 
@@ -115,10 +116,10 @@ if '__main__' == __name__:
     configure(gaudi)
     gaudi.run(1)
 
-    alg = gaudi.algorithm('PropertyAlg')
+    alg = gaudi.algorithm("PropertyAlg")
 
     props = alg.properties()
-    print('Properties of %s ' % alg.name())
+    print("Properties of %s " % alg.name())
     for p in props:
         v = props[p].value()
         print("Python: Name/Value:  '%s' / '%s' " % (p, v))

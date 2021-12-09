@@ -10,33 +10,34 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-import sys
 import os
 import shelve
+import sys
 from optparse import OptionParser
 
-from GaudiKernel.GaudiHandles import *
 from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.GaudiHandles import *
 
 parser = OptionParser(  # desc='simple script to merge files',
-    usage="%prog [options] input1 input2 ... [output|--output output]")
+    usage="%prog [options] input1 input2 ... [output|--output output]"
+)
 parser.add_option(
-    '--ignore-missing',
-    action='store_true',
-    help='do not fail if an input file is missing, '
-    'just ignore it')
+    "--ignore-missing",
+    action="store_true",
+    help="do not fail if an input file is missing, " "just ignore it",
+)
 parser.add_option(
-    '-o',
-    '--output',
-    help='output filename (by default use the last argument)')
+    "-o", "--output", help="output filename (by default use the last argument)"
+)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     opts, args = parser.parse_args()
     if len(args) < 1:
         parser.print_usage()
         sys.exit(0)
 
     import logging
+
     logging.basicConfig()
 
     output = opts.output or args.pop()
@@ -47,22 +48,22 @@ if __name__ == '__main__':
         if opts.ignore_missing:
             inputs = [i for i in inputs if i not in missing]
             for i in missing:
-                logging.warning('file %s not found', i)
+                logging.warning("file %s not found", i)
         else:
             for i in missing:
-                logging.error('file %s not found', i)
+                logging.error("file %s not found", i)
             sys.exit(1)
     try:
         # create the destination directory if missing
         if not os.path.isdir(os.path.dirname(output)):
             os.makedirs(os.path.dirname(output))
-        logging.debug('opening %r for writing', output)
+        logging.debug("opening %r for writing", output)
         if os.path.exists(output):
             os.remove(output)
         out = shelve.open(output)
         for input in inputs:
-            logging.debug('adding %r', input)
-            out.update(eval(open(input, 'rb').read()))
+            logging.debug("adding %r", input)
+            out.update(eval(open(input, "rb").read()))
         out.close()
     except:
         if os.path.exists(output):

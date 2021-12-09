@@ -10,8 +10,14 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool, CPUCrunchSvc
 from GaudiTesting import SKIP_RETURN_CODE
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
@@ -20,6 +26,7 @@ try:
 except ImportError:
     # of versions of LCG/heptools do not provide the required package networkx
     import sys
+
     sys.exit(SKIP_RETURN_CODE)  # consider the test skipped
 
 # metaconfig
@@ -32,29 +39,32 @@ algoAvgTime = 0.02
 InertMessageSvc(OutputLevel=INFO)
 
 whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO, ForceLeaves=True)
+    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO, ForceLeaves=True
+)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
     OutputLevel=DEBUG,
     Optimizer="DRE",
     PreemptiveBlockingTasks=False,
-    DumpIntraEventDynamics=False)
+    DumpIntraEventDynamics=False,
+)
 
 AlgResourcePool(OutputLevel=DEBUG)
 
 CPUCrunchSvc(shortCalib=True)
 
 timeValue = precedence.UniformTimeValue(avgRuntime=algoAvgTime)
-#timeValue = precedence.RealTimeValue(
+# timeValue = precedence.RealTimeValue(
 #    path="lhcb/reco/timing.Brunel.1kE.json", defaultTime=0.0)
 ifIObound = precedence.UniformBooleanValue(False)
 # 296 values, biased approximately as 90% to 10% - corresponds to the .GRAPHML scenario used below
 # (295 precedence graph algorithms, plus one fake algorithm - FetchFromFile)
-#ifIObound = precedence.RndBiasedBoolenValue(pattern = {True: 29, False: 267}, seed=1)
+# ifIObound = precedence.RndBiasedBoolenValue(pattern = {True: 29, False: 267}, seed=1)
 
 sequencer = precedence.CruncherSequence(
     timeValue,
@@ -62,13 +72,15 @@ sequencer = precedence.CruncherSequence(
     sleepFraction=0.0,
     cfgPath="lhcb/reco/cf.Brunel.graphml",
     dfgPath="lhcb/reco/df.Brunel.graphml",
-    topSequencer='BrunelSequencer').get()
+    topSequencer="BrunelSequencer",
+).get()
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[sequencer],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

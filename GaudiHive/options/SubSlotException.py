@@ -9,7 +9,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 A test for an incorrect handling of exceptions from algorithms running in sub-slots
 
 Throwing an exception causes the event to be marked as failed.
@@ -21,12 +21,18 @@ in sub-slot 1 is retrieved.
 So, it is possible to have a failed event, without any algorihms in ERROR state.
 The scheduler does not have handling for this, and hangs.
 
-'''
+"""
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    CPUCruncher,
+    GaudiSequencer,
+    GaudiTesting__StopLoopAlg,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    Test__ViewTester,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
-                           GaudiSequencer, Test__ViewTester,
-                           GaudiTesting__StopLoopAlg)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -50,7 +56,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 # event loop manager. Here we just set its outputlevel to INFO.
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 # -------------------------------------------------------------------------------
 
@@ -60,7 +67,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 # to take over the whole machine.
 
 scheduler = AvalancheSchedulerSvc(
-    ThreadPoolSize=threads, OutputLevel=INFO, VerboseSubSlots=True)
+    ThreadPoolSize=threads, OutputLevel=INFO, VerboseSubSlots=True
+)
 
 # -------------------------------------------------------------------------------
 
@@ -73,12 +81,12 @@ AlgResourcePool(OutputLevel=INFO)
 # Set up of the crunchers, daily business --------------------------------------
 
 a1 = Test__ViewTester("A1")
-a1.baseViewName = 'view'
+a1.baseViewName = "view"
 a1.viewNumber = viewsPerEvt
-a1.viewNodeName = 'viewNode'
+a1.viewNodeName = "viewNode"
 
 a2 = Test__ViewTester("A2")
-a2.viewNodeName = ''
+a2.viewNodeName = ""
 
 # EventCount is tracked by a private member of the algorithm, so increments whenever it is run
 # EventCount = 2 corresponds to the 1st view of the 2nd event, giving a correctly-handled exception
@@ -86,34 +94,30 @@ a2.viewNodeName = ''
 a3 = GaudiTesting__StopLoopAlg("A3", EventCount=3, Mode="exception")
 
 a4 = Test__ViewTester("A4")
-a4.viewNodeName = ''
+a4.viewNodeName = ""
 
 for algo in [a1, a2, a3, a4]:
     algo.Cardinality = cardinality
     algo.OutputLevel = INFO
 
 viewNode = GaudiSequencer(
-    "viewNode",
-    Members=[a2, a3],
-    Sequential=False,
-    ShortCircuit=False,
-    OutputLevel=INFO)
+    "viewNode", Members=[a2, a3], Sequential=False, ShortCircuit=False, OutputLevel=INFO
+)
 
 createViewSeq = GaudiSequencer(
-    "createViewSeq",
-    Members=[a1, viewNode, a4],
-    Sequential=True,
-    OutputLevel=INFO)
+    "createViewSeq", Members=[a1, viewNode, a4], Sequential=True, OutputLevel=INFO
+)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[createViewSeq],
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)
 
 # -------------------------------------------------------------------------------

@@ -24,14 +24,16 @@
 *******************************************************************************
 """
 from __future__ import print_function
-import six
-# =============================================================================
-__author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
-# =============================================================================
 
-import GaudiPython
+import six
+
+# =============================================================================
+__author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
+# =============================================================================
 
 from GaudiPython.GaudiAlgs import GaudiAlgo
+
+import GaudiPython
 
 Rndm = GaudiPython.gbl.Rndm
 Numbers = Rndm.Numbers
@@ -45,17 +47,17 @@ Numbers.__call__ = Numbers.shoot
 
 
 class Counter(GaudiAlgo):
-    """ Simple algorithm which manipulates with counters """
+    """Simple algorithm which manipulates with counters"""
 
-    def __init__(self, name='Counter'):
-        """ Constructor """
+    def __init__(self, name="Counter"):
+        """Constructor"""
         GaudiAlgo.__init__(self, name)
 
     def execute(self):
-        """ The major method 'execute', it is invoked for each event """
+        """The major method 'execute', it is invoked for each event"""
 
-        executed = self.counter('executed')
-        executed += 1.
+        executed = self.counter("executed")
+        executed += 1.0
 
         gauss = Numbers(self.randSvc(), Rndm.Gauss(0.0, 1.0))
         poisson = Numbers(self.randSvc(), Rndm.Poisson(5.0))
@@ -63,38 +65,36 @@ class Counter(GaudiAlgo):
         # 'accuulate gauss'
         value = gauss.shoot()
 
-        g1 = self.counter('gauss')
-        g2 = self.counter('g2')
+        g1 = self.counter("gauss")
+        g2 = self.counter("g2")
 
         g1 += value
         g2 += value * value
 
         if 0 < value:
-            gp = self.counter('Gpos')
-            gp += 1.
+            gp = self.counter("Gpos")
+            gp += 1.0
         else:
-            gn = self.counter('Gneg')
-            gn += 1.
+            gn = self.counter("Gneg")
+            gn += 1.0
 
-        stat1 = self.counter('NG')
-        stat2 = self.counter('G')
+        stat1 = self.counter("NG")
+        stat2 = self.counter("G")
         for i in range(0, int(poisson())):
-            stat1 += 1.
+            stat1 += 1.0
             stat2 += gauss()
 
-        stat3 = self.counter('eff')
+        stat3 = self.counter("eff")
         stat3 += value > 0
 
         # print statistics every 1000 events
-        executed = self.counter('executed')
+        executed = self.counter("executed")
         prnt = int(executed.flag())
         if 0 == prnt % 1000:
             six.print_(" Event number %s " % prnt, flush=True)
-            bc = self.counter('eff')
-            line = "(%.12g += %.12g)%s" % (bc.eff() * 100, bc.effErr() * 100,
-                                           '%')
-            six.print_(
-                ' Efficiency (binomial counter "eff"): %s' % line, flush=True)
+            bc = self.counter("eff")
+            line = "(%.12g += %.12g)%s" % (bc.eff() * 100, bc.effErr() * 100, "%")
+            six.print_(' Efficiency (binomial counter "eff"): %s' % line, flush=True)
 
         return SUCCESS
 
@@ -103,19 +103,19 @@ class Counter(GaudiAlgo):
 # job configuration
 # =============================================================================
 def configure(gaudi=None):
-    """ Configuration of the job """
+    """Configuration of the job"""
 
     if not gaudi:
         gaudi = GaudiPython.AppMgr()
 
-    gaudi.JobOptionsType = 'NONE'
-    gaudi.EvtSel = 'NONE'
+    gaudi.JobOptionsType = "NONE"
+    gaudi.EvtSel = "NONE"
 
     gaudi.config()
 
     alg = Counter()
     gaudi.setAlgorithms([alg])
-    gaudi.ExtSvc += ['Gaudi::Monitoring::MessageSvcSink']
+    gaudi.ExtSvc += ["Gaudi::Monitoring::MessageSvcSink"]
 
     return SUCCESS
 
@@ -123,7 +123,7 @@ def configure(gaudi=None):
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
     print(__doc__ + __author__)
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)

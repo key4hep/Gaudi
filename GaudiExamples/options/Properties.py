@@ -14,10 +14,10 @@ try:
 except NameError:
     long = int
 
-from Gaudi.Configuration import *
-
 # common configuration plus output level threshold
 from Configurables import GaudiExamplesCommonConf
+from Gaudi.Configuration import *
+
 GaudiExamplesCommonConf(OutputLevel=INFO)
 
 from GaudiKernel import SystemOfUnits as units
@@ -36,36 +36,39 @@ alg = PropertyAlg(
     Int=101,
     Int64=1 << 32,
     UInt64=long(1 << 32),  # 'long' is used for testing
-    Double=101.1e+10,
+    Double=101.1e10,
     String='hundred "one"',
     Bool=False,
     IntArray=[1, 2, 3, 5],
     Int64Array=[1 << 32],
     UInt64Array=[long(1 << 32)],  # 'long' is used for testing
-    DoubleArray=[-11.0, 2., 3.3, 0.4e-03, 1.e-20, 1.e20],
+    DoubleArray=[-11.0, 2.0, 3.3, 0.4e-03, 1.0e-20, 1.0e20],
     StringArray=["one", "two", "four"],
     StringMap={"one": "une"},
     BoolArray=[False, True, False],
     EmptyArray=[],
-
     # Units testing
     DoubleArrayWithUnits=[
-        1.1 * units.m2, -2. * units.cm, 3.3 * units.cm, 0.4e-03 * units.m
+        1.1 * units.m2,
+        -2.0 * units.cm,
+        3.3 * units.cm,
+        0.4e-03 * units.m,
     ],
-    DoubleArrayWithoutUnits=[1100000.0, -20., 33.0, 0.4],
+    DoubleArrayWithoutUnits=[1100000.0, -20.0, 33.0, 0.4],
     PInt=101,
-    PDouble=101.e5,
+    PDouble=101.0e5,
     PString="hundred 'one'",
     PBool=True,
     PIntArray=[1, 2, 3, 5],
-    PDoubleArray=[1.1, 2., 3.3, 1.e-20, 1.e20],
+    PDoubleArray=[1.1, 2.0, 3.3, 1.0e-20, 1.0e20],
     PStringArray=["one", "two", "four"],
     PBoolArray=[True, False, True, False],
     IntPairArray=[(1, 2), (3, 4), (5, 6)],
-    DoublePairArray=[(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)])
+    DoublePairArray=[(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)],
+)
 
 # FIXME: remote properties not supported by configurables
-#proxy = PropertyProxy(String = "This is set by the proxy")
+# proxy = PropertyProxy(String = "This is set by the proxy")
 proxy = PropertyProxy()
 
 # --------------------------------------------------------------
@@ -91,9 +94,9 @@ app.HistogramPersistency = "NONE"
 msgSvc = MessageSvc()
 msgSvc.setDebug += ["EventLoopMgr"]
 msgSvc.setVerbose += ["MsgTest"]
-#msgSvc.setDebug  += ["MsgTest"]
-#msgSvc.setInfo  += ["MsgTest"]
-#msgSvc.setError  += ["MsgTest"]
+# msgSvc.setDebug  += ["MsgTest"]
+# msgSvc.setInfo  += ["MsgTest"]
+# msgSvc.setError  += ["MsgTest"]
 msgSvc.setWarning += ["MsgTest"]
-#msgSvc.setFatal  += ["MsgTest"]
-#msgSvc.setAlways  += ["MsgTest"]
+# msgSvc.setFatal  += ["MsgTest"]
+# msgSvc.setAlways  += ["MsgTest"]

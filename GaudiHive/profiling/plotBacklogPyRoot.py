@@ -9,9 +9,12 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
-from ROOT import *
-import sys
+
 import re
+import sys
+
+from ROOT import *
+
 """
 Produces the backlog plot, parsing the output of the EventLoopManager.
 Lines with the pattern "Event backlog" are looked for.
@@ -37,7 +40,7 @@ LegendDrawOpts = "lp"
 
 def parseLog(logfilename):
     # a line looks like
-    #"HiveSlimEventLoopMgr  SUCCESS Event backlog (max= 3, min= 0 ) = 3"
+    # "HiveSlimEventLoopMgr  SUCCESS Event backlog (max= 3, min= 0 ) = 3"
     global NEventsInFlight
     global NThreads
     ifile = open(logfilename, "r")
@@ -47,13 +50,15 @@ def parseLog(logfilename):
     for line in lines:
         if "Event backlog" in line:
             content.append(
-                re.match(".* \(max= ([0-9]*), min= ([0-9]*) \) = ([0-9]*).*",
-                         line).groups())
+                re.match(
+                    ".* \(max= ([0-9]*), min= ([0-9]*) \) = ([0-9]*).*", line
+                ).groups()
+            )
         elif "Running with" in line:
             NEventsInFlight, NThreads = map(
                 int,
-                re.match(".*Running with ([0-9]*).* ([0-9]*) threads",
-                         line).groups())
+                re.match(".*Running with ([0-9]*).* ([0-9]*) threads", line).groups(),
+            )
 
     return content
 
@@ -85,24 +90,25 @@ def createGraph(max_min_blog_vals):
 def createInFlightGraph(nevts):
     global NEventsInFlight
     graph = TGraph(2)
-    graph.SetPoint(0, 0., float(NEventsInFlight))
+    graph.SetPoint(0, 0.0, float(NEventsInFlight))
     graph.SetPoint(1, float(nevts) + 1, float(NEventsInFlight))
     graph.SetLineWidth(3)
     graph.SetLineColor(kRed)
     graph.SetLineStyle(2)
-    graph.SetTitle(
-        "GaudiHive Backlog (Brunel, 100 evts);Events Finished;Event Backlog")
+    graph.SetTitle("GaudiHive Backlog (Brunel, 100 evts);Events Finished;Event Backlog")
     print(NEventsInFlight)
     return graph
 
 
 def getText(x, y, text, scale, angle, colour, font, NDC=False):
     lat = TLatex(
-        float(x), float(y),
-        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
-    if (NDC):
+        float(x),
+        float(y),
+        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text),
+    )
+    if NDC:
         lat.SetNDC()
-    if angle != 0.:
+    if angle != 0.0:
         lat.SetTextAngle(angle)
     return lat
 
@@ -122,22 +128,27 @@ def doPlot(logfilename, logfilename_copy):
     canvas.cd()
     canvas.SetGrid()
     inFlightgraph.Draw("APL")
-    inFlightgraph.GetYaxis().SetRangeUser(0., maxY * 1.2)
-    inFlightgraph.GetXaxis().SetRangeUser(0., float(n_vals + 1))
+    inFlightgraph.GetYaxis().SetRangeUser(0.0, maxY * 1.2)
+    inFlightgraph.GetXaxis().SetRangeUser(0.0, float(n_vals + 1))
     graph.Draw("PLSame")
     graph_c.Draw("PLSame")
 
     # Labels
     eventInFlightLabel = getText(
-        float(n_vals + 1) * 1.03, NEventsInFlight,
-        "#splitline{# Simultaneous}{       Events}", .6, 270, 2, 12)
+        float(n_vals + 1) * 1.03,
+        NEventsInFlight,
+        "#splitline{# Simultaneous}{       Events}",
+        0.6,
+        270,
+        2,
+        12,
+    )
     eventInFlightLabel.Draw()
-    nThreadsLabel = getText(.15, .7, "%s Threads" % NThreads, .6, 0, 2, 12,
-                            True)
+    nThreadsLabel = getText(0.15, 0.7, "%s Threads" % NThreads, 0.6, 0, 2, 12, True)
     nThreadsLabel.Draw()
 
     # Build a Legend
-    legend = TLegend(.7, .75, .9, .9)
+    legend = TLegend(0.7, 0.75, 0.9, 0.9)
     legend.SetFillColor(kWhite)
     legend.SetHeader("Algo Management")
     legend.AddEntry(graph, "No Cloning", LegendDrawOpts)

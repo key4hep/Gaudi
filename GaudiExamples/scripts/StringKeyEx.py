@@ -18,8 +18,12 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
+__author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
+from Configurables import ApplicationMgr
+from Configurables import Gaudi__Examples__StringKeyEx as SKE
+
 # =============================================================================
 # @file
 #  Simple example which illustrates the usage of class StringKey
@@ -28,18 +32,14 @@ __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
 from Gaudi.Configuration import *
 
-from Configurables import ApplicationMgr
-
-from Configurables import Gaudi__Examples__StringKeyEx as SKE
-
-ske = SKE('StringKeys', Key='key', Keys=['a', 'b', 'key', 'c', 'd'])
+ske = SKE("StringKeys", Key="key", Keys=["a", "b", "key", "c", "d"])
 
 ApplicationMgr(EvtSel="NONE", TopAlg=[ske], EvtMax=10)
 
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
 
     print(__doc__)
     print(__author__)
@@ -50,7 +50,7 @@ if '__main__' == __name__:
 
     gaudi.run(1)
 
-    ske = gaudi.algorithm('StringKeys')
+    ske = gaudi.algorithm("StringKeys")
 
     ske.PropertiesPrint = True
 
@@ -58,15 +58,15 @@ if '__main__' == __name__:
 
     SK = cpp.Gaudi.StringKey
 
-    key = SK('new Key')
+    key = SK("new Key")
 
-    print('set new key: ', key)
+    print("set new key: ", key)
 
     ske.Key = key
 
-    keys = [key, 'rrr', SK('s')]
+    keys = [key, "rrr", SK("s")]
 
-    print('set new keys: ', keys)
+    print("set new keys: ", keys)
 
     ske.Keys = keys
 

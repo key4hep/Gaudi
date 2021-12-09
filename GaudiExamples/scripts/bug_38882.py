@@ -13,12 +13,13 @@
 
 # =============================================================================
 from __future__ import print_function
-__author__ = 'Marco Clemencic'
+
+__author__ = "Marco Clemencic"
 # =============================================================================
 
-import GaudiPython
-
 from GaudiPython.GaudiAlgs import GaudiAlgo
+
+import GaudiPython
 
 SUCCESS = GaudiPython.SUCCESS
 
@@ -28,14 +29,14 @@ SUCCESS = GaudiPython.SUCCESS
 
 
 class TestAlg(GaudiAlgo):
-    """ Simple algorithm that prints a message during execute """
+    """Simple algorithm that prints a message during execute"""
 
     def __init__(self, name):
-        """ Constructor """
+        """Constructor"""
         GaudiAlgo.__init__(self, name)
 
     def execute(self):
-        """ The main method 'execute', it is invoked for each event """
+        """The main method 'execute', it is invoked for each event"""
         print("=== %s Execute ===" % self.name())
         return SUCCESS
 
@@ -46,20 +47,20 @@ class TestAlg(GaudiAlgo):
 
 
 def configure(gaudi=None):
-    """ Configuration of the job """
+    """Configuration of the job"""
 
     if not gaudi:
         gaudi = GaudiPython.AppMgr()
 
-    gaudi.JobOptionsType = 'NONE'
-    gaudi.EvtSel = 'NONE'
-    gaudi.HistogramPersistency = 'NONE'
+    gaudi.JobOptionsType = "NONE"
+    gaudi.EvtSel = "NONE"
+    gaudi.HistogramPersistency = "NONE"
 
     gaudi.config()
 
     gaudi.initialize()
 
-    alg = TestAlg('bug_38882_test_alg')
+    alg = TestAlg("bug_38882_test_alg")
     gaudi.setAlgorithms([alg])
 
     return SUCCESS
@@ -68,7 +69,7 @@ def configure(gaudi=None):
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)
     gaudi.run(1)

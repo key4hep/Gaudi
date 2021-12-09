@@ -16,8 +16,15 @@ while '/Event/A' - an unconditional one:
  (U): '/Event/A' <---- | UpdaterAlg2 (U) | ProducerAlg1 (C) | UpdaterAlg4 (U) | UpdaterAlg1 (C) |
 """
 
+from Configurables import (
+    AvalancheSchedulerSvc,
+    CPUCruncher,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    PrecedenceSvc,
+)
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, CPUCrunchSvc, PrecedenceSvc
 
 # metaconfig
 evtMax = 1
@@ -28,11 +35,11 @@ CPUCrunchSvc(shortCalib=True)
 
 PrecedenceSvc(OutputLevel=DEBUG)
 
-whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight)
 
@@ -55,8 +62,7 @@ updaterAlg3.outKeys = ["/Event/B"]
 updaterAlg4 = CPUCruncher(name="UpdaterAlg4")
 updaterAlg4.outKeys = ["/Event/A"]
 
-branch2 = GaudiSequencer(
-    "ConditionalBranch", Sequential=True, ShortCircuit=True)
+branch2 = GaudiSequencer("ConditionalBranch", Sequential=True, ShortCircuit=True)
 branch2.Members = [producerAlg1, updaterAlg1, producerAlg2, updaterAlg3]
 
 branch = GaudiSequencer("UnConditionalBranch", ShortCircuit=False)
@@ -64,9 +70,10 @@ branch.Members = [branch2, updaterAlg2, updaterAlg4]
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[branch],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

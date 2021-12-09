@@ -17,8 +17,7 @@ implementation of Configurables.
 
 try:
     # Try to import AthenaCommon
-    from AthenaCommon import Configurable
-    from AthenaCommon import ConfigurableDb
+    from AthenaCommon import Configurable, ConfigurableDb
 
     def _getNeededConfigurables():
         """
@@ -31,14 +30,15 @@ try:
     Configurable.getNeededConfigurables = _getNeededConfigurables
 except ImportError:
     # Otherwise use GaudiKernel
-    from GaudiKernel import Configurable
-    from GaudiKernel import ConfigurableDb
+    from GaudiKernel import Configurable, ConfigurableDb
 
 # Hack to expose Configurable and ConfigurableDb as the modules
 # GaudiKernel.Proxy.Configurable and GaudiKernel.Proxy.ConfigurableDb
 import sys
+
 sys.modules["GaudiKernel.Proxy.Configurable"] = Configurable
 sys.modules["GaudiKernel.Proxy.ConfigurableDb"] = ConfigurableDb
 import GaudiKernel.Proxy.Configurable
 import GaudiKernel.Proxy.ConfigurableDb
+
 del sys

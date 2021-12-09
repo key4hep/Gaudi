@@ -11,6 +11,7 @@
 #####################################################################################
 
 from __future__ import print_function
+
 import os
 import sys
 
@@ -45,15 +46,16 @@ def _getBlock(line):
 
 def _procRootMap(rtmpfile, rtmapdict):
     block = ""
-    for line in open(rtmpfile, 'r'):
+    for line in open(rtmpfile, "r"):
         line = line[:-1]
         if line:
-            if line[0] != '#':
+            if line[0] != "#":
                 entry, lib = _getEntry(line)
                 if entry not in rtmapdict:
                     rtmapdict[entry] = []
-                rtmapdict[entry].append((os.path.join(
-                    os.path.dirname(rtmpfile), lib), block))
+                rtmapdict[entry].append(
+                    (os.path.join(os.path.dirname(rtmpfile), lib), block)
+                )
             else:
                 block = _getBlock(line)
 
@@ -62,15 +64,16 @@ def _procSysRootMap(rtmapdict):
     if "ROOTSYS" in os.environ:
         rtmpfile = os.path.join(os.environ["ROOTSYS"], "etc", "system.rootmap")
         block = ""
-        for line in open(rtmpfile, 'r'):
+        for line in open(rtmpfile, "r"):
             line = line[:-1]
             if line:
-                if line[0] != '#':
+                if line[0] != "#":
                     entry, lib = _getEntry(line)
                     if entry not in rtmapdict:
                         rtmapdict[entry] = []
-                    rtmapdict[entry].append((os.path.join(
-                        os.environ["ROOTSYS"], "lib", lib), block))
+                    rtmapdict[entry].append(
+                        (os.path.join(os.environ["ROOTSYS"], "lib", lib), block)
+                    )
                 else:
                     block = _getBlock(line)
     else:
@@ -79,7 +82,7 @@ def _procSysRootMap(rtmapdict):
 
 def _isRootMap(filename):
     # The file must begin with "rootmap"
-    if (filename.find("rootmap") == 0):
+    if filename.find("rootmap") == 0:
         return True
     return False
 
@@ -93,7 +96,7 @@ def getMaps(pathstring="", sysrtmap=False):
         try:
             for f in filter(_isRootMap, os.listdir(p)):
                 rtmpfile = os.path.join(p, f)
-                if (os.path.exists(rtmpfile)):
+                if os.path.exists(rtmpfile):
                     _procRootMap(rtmpfile, rtmapdict)
         except:
             pass
@@ -119,9 +122,9 @@ def printMaps(maps, recomp=None):
         if len(maps[k]) > 1:
             print("!!!!!!!!!!!! WARNING - More than one entry !!!!!!!!!!")
         for l in maps[k]:
-            print(frmat % k, end=' ')
+            print(frmat % k, end=" ")
             for m in l:
-                print(m, end=' ')
+                print(m, end=" ")
             print(" ")
     return
 
@@ -138,7 +141,7 @@ def shortPrintMaps(maps, recomp=None):
             print(k)
         for l in maps[k]:
             for m in l:
-                print("\t%s" % m, end=' ')
+                print("\t%s" % m, end=" ")
             print(" ")
     return
 
@@ -167,6 +170,6 @@ def checkDict(maps, recomp=None):
             print(k)
             for l in maps[k]:
                 for m in l:
-                    print("\t%s" % m, end=' ')
+                    print("\t%s" % m, end=" ")
                 print(" ")
     return

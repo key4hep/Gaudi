@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-print('ciao')
+print("ciao")
 from GaudiConfig2.Configurables.TestConf import MyAlg
 
 

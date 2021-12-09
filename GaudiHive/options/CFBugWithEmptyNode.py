@@ -9,7 +9,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 A test for a control flow bug arising from empty graph nodes
 
 An empty node with ModeOR=True will return a default decision of False, without any algs needing evaluation
@@ -17,11 +17,16 @@ This can have the effect of short-circuiting/early return from its parent node, 
 evaluation within that parent - see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/135
 
 In this test, A2 will run unless the bug has been fixed
-'''
+"""
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    GaudiSequencer,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    Test__ViewTester,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -44,7 +49,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 # event loop manager. Here we just set its outputlevel to DEBUG.
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 # -------------------------------------------------------------------------------
 
@@ -68,11 +74,11 @@ AlgResourcePool(OutputLevel=INFO)
 a1 = Test__ViewTester("A1")
 a1.Cardinality = cardinality
 a1.OutputLevel = INFO
-a1.viewNodeName = ''
+a1.viewNodeName = ""
 a2 = Test__ViewTester("A2")
 a2.Cardinality = cardinality
 a2.OutputLevel = INFO
-a2.viewNodeName = ''
+a2.viewNodeName = ""
 
 emptySeq = GaudiSequencer(
     "emptySeq",
@@ -80,26 +86,29 @@ emptySeq = GaudiSequencer(
     Sequential=False,
     ModeOR=True,
     ShortCircuit=False,
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)
 
 topSeq = GaudiSequencer(
     "topSeq",
-    #Members=[emptySeq, a1], #This finds a different bug/quirk
+    # Members=[emptySeq, a1], #This finds a different bug/quirk
     Members=[a1, emptySeq, a2],
     Sequential=True,
     ModeOR=False,
     ShortCircuit=True,
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[topSeq],
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)
 
 # -------------------------------------------------------------------------------

@@ -14,4 +14,5 @@
 from GaudiPython.HistoUtils import *
 
 from GaudiPython import deprecation
+
 deprecation("Use 'GaudiPython.HistoUtils' module instead of 'HistoUtils'")

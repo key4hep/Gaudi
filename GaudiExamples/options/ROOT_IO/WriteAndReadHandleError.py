@@ -12,21 +12,25 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import GaudiPersistency, ReadHandleAlg, WriteHandleAlg
 from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg
 
 # Output setup
 # - DST
 dst = OutputStream("RootDst")
 
 dst.ItemList = ["/Event#999"]
-dst.Output = "DATAFILE='PFN:Handle_ROOTIO_err.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+dst.Output = (
+    "DATAFILE='PFN:Handle_ROOTIO_err.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+)
 
 # - MiniDST
 mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output = "DATAFILE='PFN:Handle_ROOTIO_err.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+mini.Output = (
+    "DATAFILE='PFN:Handle_ROOTIO_err.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+)
 
 # - File Summary Record
 fsr = RecordStream("FileRecords")

@@ -9,18 +9,22 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 A test to demonstrate stalling for a conditions algorithm
 
  - Control flow requires that Alg C run after Alg B
  - Alg B requires conditions data produced by Alg A
  - However, Alg A requires the output from Alg C, and thus the job will stall
 
-'''
+"""
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    Test__ViewTester,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -42,7 +46,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 # event loop manager. Here we just set its outputlevel to DEBUG.
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 # -------------------------------------------------------------------------------
 
@@ -52,10 +57,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 # to take over the whole machine.
 
 scheduler = AvalancheSchedulerSvc(
-    ThreadPoolSize=threads,
-    OutputLevel=INFO,
-    CheckDependencies=True,
-    DataLoaderAlg="")
+    ThreadPoolSize=threads, OutputLevel=INFO, CheckDependencies=True, DataLoaderAlg=""
+)
 
 # -------------------------------------------------------------------------------
 
@@ -69,6 +72,7 @@ AlgResourcePool(OutputLevel=INFO)
 # This declares algorithms or data to be part of the "conditions realm"
 # They are detached from the regular CF graph
 from Configurables import Gaudi__Examples__Conditions__CondSvc as CS
+
 condSvc = CS(name="CondSvc", Algs=["AlgA"], Data=["/Event/A1"])
 
 # -------------------------------------------------------------------------------
@@ -76,27 +80,29 @@ condSvc = CS(name="CondSvc", Algs=["AlgA"], Data=["/Event/A1"])
 # Set up of the crunchers, daily business --------------------------------------
 
 a1 = Test__ViewTester("AlgA", OutputLevel=INFO)
-a1.outKeys = ['/Event/A1']
-a1.inpKeys = ['/Event/A2']
+a1.outKeys = ["/Event/A1"]
+a1.inpKeys = ["/Event/A2"]
 
 a2 = Test__ViewTester("AlgB", OutputLevel=INFO)
-a2.inpKeys = ['/Event/A1']
+a2.inpKeys = ["/Event/A1"]
 
 a3 = Test__ViewTester("AlgC", OutputLevel=INFO)
-a3.outKeys = ['/Event/A2']
+a3.outKeys = ["/Event/A2"]
 
 algSeq = GaudiSequencer(
-    "algSeq", Members=[a1, a2, a3], Sequential=True, OutputLevel=INFO)
+    "algSeq", Members=[a1, a2, a3], Sequential=True, OutputLevel=INFO
+)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard, condSvc],
     EventLoop=slimeventloopmgr,
     TopAlg=[algSeq],
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)
 
 # -------------------------------------------------------------------------------

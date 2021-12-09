@@ -8,29 +8,33 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Gaudi.Configuration import *
 from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
+from Gaudi.Configuration import *
 
-AuditorSvc().Auditors = ['ChronoAuditor']
+AuditorSvc().Auditors = ["ChronoAuditor"]
 MessageSvc().OutputLevel = INFO
-RootHistSvc('RootHistSvc').OutputFile = 'histo.root'
+RootHistSvc("RootHistSvc").OutputFile = "histo.root"
 
-HistogramSvc('HistogramDataSvc').Input = [
+HistogramSvc("HistogramDataSvc").Input = [
     "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"
 ]
 
-#from GaudiExamples.GaudiExamplesConf import GaudiHistoAlgorithm
+# from GaudiExamples.GaudiExamplesConf import GaudiHistoAlgorithm
+from Configurables import (
+    Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg,
+)
+from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 from Configurables import GaudiHistoAlgorithm
-from Configurables import Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg, Gaudi__Histograming__Sink__Root as RootHistoSink
 
 algs = [
-    GaudiHistoAlgorithm('SimpleHistos', HistoPrint=True, OutputLevel=DEBUG),
-    CounterHistoAlg('SimpleCounterHistos', OutputLevel=DEBUG),
+    GaudiHistoAlgorithm("SimpleHistos", HistoPrint=True, OutputLevel=DEBUG),
+    CounterHistoAlg("SimpleCounterHistos", OutputLevel=DEBUG),
 ]
 
 app = ApplicationMgr(
     EvtMax=50000,
-    EvtSel='NONE',
-    HistogramPersistency='ROOT',
+    EvtSel="NONE",
+    HistogramPersistency="ROOT",
     TopAlg=algs,
-    ExtSvc=[MessageSvcSink(), RootHistoSink()])
+    ExtSvc=[MessageSvcSink(), RootHistoSink()],
+)

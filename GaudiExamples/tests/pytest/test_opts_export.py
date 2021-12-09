@@ -8,11 +8,12 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import pytest
+from ast import literal_eval
 from pathlib import Path
 from subprocess import run
-from ast import literal_eval
 from tempfile import NamedTemporaryFile
+
+import pytest
 
 
 def gen_opts_dict(options):
@@ -21,10 +22,15 @@ def gen_opts_dict(options):
         return literal_eval(tmp.read())
 
 
-@pytest.mark.parametrize("options", [
-    Path(__file__).parent.parent.parent / "options" / "FunctionalAlgorithms" /
-    "ProduceConsume.py",
-])
+@pytest.mark.parametrize(
+    "options",
+    [
+        Path(__file__).parent.parent.parent
+        / "options"
+        / "FunctionalAlgorithms"
+        / "ProduceConsume.py",
+    ],
+)
 @pytest.mark.parametrize("filetype", ["opts", "pkl", "json", "yaml", "yml"])
 def test_opts_dump(options, filetype):
     expected = gen_opts_dict(options)

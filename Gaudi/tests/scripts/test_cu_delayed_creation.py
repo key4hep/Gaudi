@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
 from Gaudi.Configuration import *
 
 
@@ -38,6 +39,7 @@ Application()
 
 # apply all ConfigurableUser instances
 from GaudiKernel.Configurable import applyConfigurableUsers
+
 applyConfigurableUsers()
 
 assert Application().Applied

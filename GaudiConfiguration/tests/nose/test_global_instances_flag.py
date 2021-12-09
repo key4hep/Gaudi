@@ -8,9 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2.Configurables.TestConf import MyAlg, SimpleOptsAlgTool
-from GaudiConfig2 import Configurable, useGlobalInstances
 import GaudiConfig2._configurables
+from GaudiConfig2 import Configurable, useGlobalInstances
+from GaudiConfig2.Configurables.TestConf import MyAlg, SimpleOptsAlgTool
 from nose.tools import raises, with_setup
 
 
@@ -47,7 +47,7 @@ def test_enable_disable():
 @raises(AssertionError)
 def test_cannot_disable():
     useGlobalInstances(True)
-    MyAlg('a')
+    MyAlg("a")
     useGlobalInstances(False)
 
 
@@ -55,13 +55,13 @@ def test_cannot_disable():
 def test_no_globals():
     useGlobalInstances(True)
     anonymous = MyAlg()
-    assert not hasattr(anonymous, 'name')
+    assert not hasattr(anonymous, "name")
 
     useGlobalInstances(False)
     assert not Configurable.instances
     a = MyAlg()
     assert not Configurable.instances
-    assert hasattr(a, 'name')
+    assert hasattr(a, "name")
     assert a.name == MyAlg.__cpp_type__
 
 
@@ -86,4 +86,4 @@ def test_cannot_nullify_name_1():
 def test_cannot_nullify_name_2():
     useGlobalInstances(False)
     a = MyAlg()
-    a.name = ''
+    a.name = ""

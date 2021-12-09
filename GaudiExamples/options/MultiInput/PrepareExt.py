@@ -10,11 +10,10 @@
 #####################################################################################
 # Write a dummy DST-like file.
 
-from Gaudi.Configuration import *
-from Configurables import GaudiPersistency
 from Configurables import Gaudi__Examples__MultiInput__DumpAddress as DumpAddress
 from Configurables import Gaudi__Examples__MultiInput__WriteAlg as WriteAlg
-from Configurables import ReadTES
+from Configurables import GaudiPersistency, ReadTES
+from Gaudi.Configuration import *
 
 # Enable basic persistency-related settings
 GaudiPersistency()
@@ -27,9 +26,7 @@ FileCatalog(Catalogs=["xmlcatalog_file:MultiInput.xml"])
 
 app = ApplicationMgr()
 # - I/O
-app.OutStream += [
-    out, DumpAddress(OutputFile='addresses.txt', ObjectPath='Tracks')
-]
+app.OutStream += [out, DumpAddress(OutputFile="addresses.txt", ObjectPath="Tracks")]
 # - Algorithms
 app.TopAlg = [WriteAlg(RandomSeeds=[1, 2, 3, 4])]
 # - Events
