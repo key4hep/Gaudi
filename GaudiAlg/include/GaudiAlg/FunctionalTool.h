@@ -19,7 +19,7 @@ namespace Gaudi::Functional {
                                           Traits::use_<Tr, BaseClass_t<Base>>>;
 
     template <typename Signature, typename Traits>
-    struct ToolBinder;
+    class ToolBinder;
 
     template <typename IFace, typename... Args, typename Traits>
     class ToolBinder<Gaudi::Interface::Bind::Box<IFace>( Args const&... ), Traits>
