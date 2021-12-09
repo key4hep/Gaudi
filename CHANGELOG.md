@@ -822,6 +822,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r3
 [v36r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r2
 [v36r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r1
 [v36r0]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r0
