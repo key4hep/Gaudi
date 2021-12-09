@@ -8,19 +8,19 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import cppyy
-import ROOT
+import GaudiPython
 
-import GaudiPython as GP
-
-DO = cppyy.gbl.DataObject
+DO = GaudiPython.gbl.DataObject
 
 objects = [DO() for i in range(52)]
+
 # Once the object is registered the TES will clean it up
+import ROOT
+
 for i in objects:
     ROOT.SetOwnership(i, False)
 
-app = GP.AppMgr()
+app = GaudiPython.AppMgr()
 tes = app.evtsvc()
 
 app.start()
