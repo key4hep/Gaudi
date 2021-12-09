@@ -121,7 +121,7 @@ StatusCode THistSvc::initialize() {
     error() << "unable to get the FileMgr" << endmsg;
     st = StatusCode::FAILURE;
   } else {
-    debug() << "got the FileMgr" << endmsg;
+    if ( msgLevel( MSG::DEBUG ) ) { debug() << "got the FileMgr" << endmsg; }
   }
 
   // Register open/close callback actions
@@ -176,13 +176,6 @@ StatusCode THistSvc::initialize() {
     }
   }
 
-  // Cache a pointer to the TTree dictionary.
-  m_ttreeClass = TClass::GetClass( "TTree" );
-  if ( ( m_ttreeClass == nullptr ) || ( m_ttreeClass->IsLoaded() == false ) ) {
-    error() << "Could not access/load the dictionary for TTree!" << endmsg;
-    st = StatusCode::FAILURE;
-  }
-
   if ( st.isFailure() ) { fatal() << "Unable to initialize THistSvc" << endmsg; }
 
   return st;
@@ -204,16 +197,16 @@ StatusCode THistSvc::finalize() {
 
 #ifndef NDEBUG
   if ( msgLevel( MSG::DEBUG ) ) {
-    const std::map<uidMap_t::key_type, uidMap_t::mapped_type> sorted_uids{begin( m_uids ), end( m_uids )};
+    const std::map<uidMap_t::key_type, uidMap_t::mapped_type> sorted_uids{ begin( m_uids ), end( m_uids ) };
     for ( const auto& itr : sorted_uids ) {
       THistID& thid = itr.second->at( 0 );
       TObject* tobj = thid.obj;
 
       std::string dirname( "none" );
-      if ( tobj && tobj->IsA()->InheritsFrom( "TTree" ) ) {
+      if ( tobj && thid.type == ObjectType::TTREE ) {
         TTree* tree = dynamic_cast<TTree*>( tobj );
         if ( tree->GetDirectory() != 0 ) { dirname = tree->GetDirectory()->GetPath(); }
-      } else if ( tobj && tobj->IsA()->InheritsFrom( "TGraph" ) ) {
+      } else if ( tobj && thid.type == ObjectType::TGRAPH ) {
         if ( !thid.temp ) {
           dirname = thid.file->GetPath();
           std::string id2( thid.id );
@@ -224,7 +217,7 @@ StatusCode THistSvc::finalize() {
         } else {
           dirname = "/tmp";
         }
-      } else if ( tobj && tobj->IsA()->InheritsFrom( "TH1" ) ) {
+      } else if ( tobj && thid.type == ObjectType::TH1 ) {
         TH1* th = dynamic_cast<TH1*>( tobj );
         if ( th == nullptr ) {
           error() << "Couldn't dcast: " << itr.first << endmsg;
@@ -582,7 +575,10 @@ StatusCode THistSvc::deReg( const std::string& id ) {
   }
 
   vhid_t* vh = itr->second;
-  debug() << "will deregister " << vh->size() << " elements of id \"" << id << "\"" << endmsg;
+
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "will deregister " << vh->size() << " elements of id \"" << id << "\"" << endmsg;
+  }
   StatusCode sc( StatusCode::SUCCESS );
   // vh will get deleted in deReg once empty, so we cannot query the list size in the loop
   size_t vh_size = vh->size();
@@ -612,7 +608,7 @@ StatusCode THistSvc::deReg( TObject* obj ) {
 
     if ( vhid->size() == 1 ) {
       // We are the last object, so we have to delete vhid properly
-      debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg;
+      if ( msgLevel( MSG::DEBUG ) ) { debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg; }
 
       std::string root, rem;
       parseString( hid.id, root, rem );
@@ -695,7 +691,7 @@ std::vector<std::string> THistSvc::getHists() const {
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
   transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TH1" ); } );
+                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).type == ObjectType::TH1; } );
   return names;
 }
 
@@ -703,7 +699,7 @@ std::vector<std::string> THistSvc::getTrees() const {
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
   transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TTree" ); } );
+                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).type == ObjectType::TTREE; } );
   return names;
 }
 
@@ -711,16 +707,15 @@ std::vector<std::string> THistSvc::getGraphs() const {
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
   transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TGraph" ); } );
+                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).type == ObjectType::TGRAPH; } );
   return names;
 }
 
 std::vector<std::string> THistSvc::getEfficiencies() const {
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
-  transform_if(
-      std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-      []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TEfficiency" ); } );
+  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
+                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).type == ObjectType::TEFFICIENCY; } );
   return names;
 }
 
@@ -1421,15 +1416,17 @@ StatusCode THistSvc::io_reinit() {
 
         // migrate the objects to the new file.
         // thanks to the object model of ROOT, it is super easy.
-        if ( cl->InheritsFrom( "TTree" ) ) {
-          dynamic_cast<TTree&>( *hid.obj ).SetDirectory( newdir );
-          dynamic_cast<TTree&>( *hid.obj ).Reset();
-        } else if ( cl->InheritsFrom( "TH1" ) ) {
-          dynamic_cast<TH1&>( *hid.obj ).SetDirectory( newdir );
-          dynamic_cast<TH1&>( *hid.obj ).Reset();
-        } else if ( cl->InheritsFrom( "TEfficiency" ) ) {
+        if ( hid.type == ObjectType::TTREE ) {
+          TTree& tree = dynamic_cast<TTree&>( *hid.obj );
+          tree.SetDirectory( newdir );
+          tree.Reset();
+        } else if ( hid.type == ObjectType::TH1 ) {
+          TH1& hist = dynamic_cast<TH1&>( *hid.obj );
+          hist.SetDirectory( newdir );
+          hist.Reset();
+        } else if ( hid.type == ObjectType::TEFFICIENCY ) {
           dynamic_cast<TEfficiency&>( *hid.obj ).SetDirectory( newdir );
-        } else if ( cl->InheritsFrom( "TGraph" ) ) {
+        } else if ( hid.type == ObjectType::TGRAPH ) {
           olddir->Remove( hid.obj );
           newdir->Append( hid.obj );
         } else {
@@ -1475,78 +1472,69 @@ T* THistSvc::readHist( const std::string& id ) const {
 TTree* THistSvc::readTree( const std::string& id ) const { return dynamic_cast<TTree*>( readHist_i<TTree>( id ) ); }
 
 void THistSvc::updateFiles() {
+
+  if ( !m_hasTTrees ) return;
+
   // If TTrees grow beyond TTree::fgMaxTreeSize, a new file is
   // automatically created by root, and the old one closed. We
   // need to migrate all the UIDs over to show the correct file
   // pointer. This is ugly.
 
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "updateFiles()" << endmsg;
-
   for ( auto uitr = m_uids.begin(); uitr != m_uids.end(); ++uitr ) {
     for ( auto& hid : *( uitr->second ) ) {
-#ifndef NDEBUG
+
+      // Only relevant for TTrees and if not in read mode
+      if ( hid.type != ObjectType::TTREE || hid.temp || hid.mode == READ || hid.obj == nullptr ) continue;
+
       if ( msgLevel( MSG::VERBOSE ) )
         verbose() << " update: " << uitr->first << " " << hid.id << " " << hid.mode << endmsg;
-#endif
-      TObject* to      = hid.obj;
-      TFile*   oldFile = hid.file;
-      // A little sanity check.
-      assert( m_ttreeClass != nullptr );
-      if ( !to ) {
-        warning() << uitr->first << ": TObject == 0" << endmsg;
-      } else if ( hid.temp || hid.mode == READ ) {
-// do nothing - no need to check how big the file is since we
-// are just reading it.
-#ifndef NDEBUG
-        if ( msgLevel( MSG::VERBOSE ) ) verbose() << "     skipping" << endmsg;
-#endif
-      } else if ( to->IsA()->InheritsFrom( m_ttreeClass ) ) {
-        TTree* tr      = dynamic_cast<TTree*>( to );
-        TFile* newFile = tr->GetCurrentFile();
 
-        if ( oldFile != newFile ) {
-          std::string newFileName = newFile->GetName();
-          std::string oldFileName, streamName, rem;
-          TFile*      dummy = nullptr;
-          findStream( hid.id, streamName, rem, dummy );
+      TTree* tr      = dynamic_cast<TTree*>( hid.obj );
+      TFile* oldFile = hid.file;
+      TFile* newFile = tr->GetCurrentFile();
 
-          for ( auto& itr : m_files ) {
-            if ( itr.second.first == oldFile ) { itr.second.first = newFile; }
+      if ( oldFile != newFile ) {
+        std::string newFileName = newFile->GetName();
+        std::string oldFileName, streamName, rem;
+        TFile*      dummy = nullptr;
+        findStream( hid.id, streamName, rem, dummy );
+
+        for ( auto& itr : m_files ) {
+          if ( itr.second.first == oldFile ) { itr.second.first = newFile; }
+        }
+
+        for ( auto uitr2 = uitr; uitr2 != m_uids.end(); ++uitr2 ) {
+          for ( auto& hid2 : *( uitr2->second ) ) {
+            if ( hid2.file == oldFile ) { hid2.file = newFile; }
           }
+        }
 
-          for ( auto uitr2 = uitr; uitr2 != m_uids.end(); ++uitr2 ) {
-            for ( auto& hid2 : *( uitr2->second ) ) {
-              if ( hid2.file == oldFile ) { hid2.file = newFile; }
+        auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
+                                  [&]( streamMap::const_reference s ) { return s.second == streamName; } );
+        if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
+
+#ifndef NDEBUG
+        if ( msgLevel( MSG::DEBUG ) ) {
+          debug() << "migrating uid: " << hid.id << "   stream: " << streamName << "   oldFile: " << oldFileName
+                  << "   newFile: " << newFileName << endmsg;
+        }
+#endif
+
+        if ( !oldFileName.empty() ) {
+          auto i = m_fileStreams.lower_bound( oldFileName );
+          while ( i != std::end( m_fileStreams ) && i->first == oldFileName ) {
+#ifndef NDEBUG
+            if ( msgLevel( MSG::DEBUG ) ) {
+              debug() << "changing filename \"" << i->first << "\" to \"" << newFileName << "\" for stream \""
+                      << i->second << "\"" << endmsg;
             }
-          }
-
-          auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
-                                    [&]( streamMap::const_reference s ) { return s.second == streamName; } );
-          if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
-
-#ifndef NDEBUG
-          if ( msgLevel( MSG::DEBUG ) ) {
-            debug() << "migrating uid: " << hid.id << "   stream: " << streamName << "   oldFile: " << oldFileName
-                    << "   newFile: " << newFileName << endmsg;
-          }
 #endif
-
-          if ( !oldFileName.empty() ) {
-            auto i = m_fileStreams.lower_bound( oldFileName );
-            while ( i != std::end( m_fileStreams ) && i->first == oldFileName ) {
-#ifndef NDEBUG
-              if ( msgLevel( MSG::DEBUG ) ) {
-                debug() << "changing filename \"" << i->first << "\" to \"" << newFileName << "\" for stream \""
-                        << i->second << "\"" << endmsg;
-              }
-#endif
-              std::string nm = std::move( i->second );
-              i              = m_fileStreams.erase( i );
-              m_fileStreams.emplace( newFileName, std::move( nm ) );
-            }
-          } else {
-            error() << "Problems updating fileStreams with new file name" << endmsg;
+            std::string nm = std::move( i->second );
+            i              = m_fileStreams.erase( i );
+            m_fileStreams.emplace( newFileName, std::move( nm ) );
           }
+        } else {
+          error() << "Problems updating fileStreams with new file name" << endmsg;
         }
       }
     }
@@ -2060,7 +2048,7 @@ StatusCode THistSvc::merge( vhid_t* vh ) {
     return StatusCode::SUCCESS;
   }
 
-  if ( !vh->at( 0 ).obj->IsA()->InheritsFrom( "TH1" ) ) {
+  if ( vh->at( 0 ).type != ObjectType::TH1 ) {
     error() << "merge: id \"" << name << "\" is not a THn. Cannot merge" << endmsg;
     return StatusCode::FAILURE;
   }
