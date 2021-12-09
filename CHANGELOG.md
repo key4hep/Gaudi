@@ -5,6 +5,54 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r3][] - 2021-12-09
+This is a bugfix release with a couple of changes that technically backward incompatible
+because they fix issues that might have gone un noticed:
+
+- gaudi/Gaudi!1265 make the property parser throw an exception in case of problems,
+  instead of silently doing nothing (see gaudi/Gaudi#163)
+- `Gaudi::Accumulators` counters were copiable but not movable, which was not correct:
+  they should be neither and we fixed it, but this means you cannot use them in
+  vectors and the postfix `++` operator has been removed
+
+An interesting addition in this release is also the support for getting `AlgTool`s as
+arguments to the `operator()` of `Gaudi::Functional` algorithms. Although it might seem
+strange at first, it allows reducing boilerplate and opens the possibility of introducing
+tool wrappers that bind a tool with event or condition data, so that the fact that a tool
+needs some event data is both explicit (event data has to be passed to the tool methods)
+and hidden from the end user (as the wrapper takes care of the details of data passing).
+
+After the introduction of `pre-commit` support (gaudi/Gaudi!1261) the merge request
+review became more difficult as the reformatting of changed files add too much noise,
+so in this release we reformatted the code with clang-format-11 for C++ and
+[Black](https://github.com/psf/black)+[isort](https://pycqa.github.io/isort/) for Python
+(see gaudi/Gaudi!1286).
+
+### Changed
+- Change default parsing error policy to *Exception* (gaudi/Gaudi#163 gaudi/Gaudi!1265)
+- Disable move and copy semantic for the counters (gaudi/Gaudi!1258)
+
+### Added
+- Support for binding tools to event and/or conditions data (gaudi/Gaudi!1270 gaudi/Gaudi!1285)
+- Add support to retrieve Tools through `Gaudi::Functional`'s call operator (gaudi/Gaudi!1268)
+
+### Fixed
+- `THistSvc`: cache `TObject` types (gaudi/Gaudi!1284)
+- Re-organize `struct THistID` to avoid padding (gaudi/Gaudi!1284)
+- Do not link GaudiGoogleProfiling against tcmalloc and profiler (gaudi/Gaudi!1282)
+- Make sure `WorkManager.pool` is closed at exit (gaudi/Gaudi!1279)
+- Improve configurables db exclusion (gaudi/Gaudi#209  gaudi/Gaudi!1280)
+- Better (and working) implementation of non mergeable objects in Sinks (gaudi/Gaudi!1278)
+- `genconf`: remove NaN warning (gaudi/Gaudi!1281)
+- ConfigurableService: copy private tools of services (gaudi/Gaudi#208 gaudi/Gaudi!1277)
+- Fix confusing stray space in printout of HiveDataBroker (gaudi/Gaudi!1276)
+- Allow writing of Gaudi::Range and Gaudi::NamedRange in Gaudi::Functional (gaudi/Gaudi!1275)
+- More natural syntax for histogram constructor (gaudi/Gaudi!1273)
+- Fix tests for change in NetworkX 2.4 (gaudi/Gaudi!1274)
+- Avoid ConfigurableUser leak (gaudi/Gaudi!1269)
+- Allow entities with internal counters not implementing mergeAndRequest (gaudi/Gaudi!1267)
+
+
 ## [v36r2][] - 2021-10-18
 This is a minor release with a bunch of bugfixes and improvements, mostly needed for LHCb test beam.
 
