@@ -42,7 +42,7 @@ namespace Gaudi {
       typedef std::chrono::duration<rep, period>  duration;
       typedef std::chrono::time_point<RdtscClock> time_point;
 
-      static constexpr bool is_steady{true};
+      static constexpr bool is_steady{ true };
 
       // some sanity checks:
       static_assert( period::num == 1, "The Precision of RdtscClock must be reducible to 1/N" );
@@ -52,7 +52,7 @@ namespace Gaudi {
       /// Calibrate the RDTSC clock against wall time
       static rep calibrate() noexcept { return ticks_per_unit(); }
 
-      static time_point now() noexcept { return time_point{duration( __rdtsc() / ticks_per_unit() )}; }
+      static time_point now() noexcept { return time_point{ duration( __rdtsc() / ticks_per_unit() ) }; }
 
     private:
       static rep ticks_per_unit() noexcept {

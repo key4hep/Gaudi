@@ -23,7 +23,7 @@
 
 using namespace std;
 
-#define MakePtr( cast, ptr, addValue ) ( cast )( ( DWORD )( ptr ) + ( DWORD )( addValue ) )
+#define MakePtr( cast, ptr, addValue ) ( cast )( (DWORD)( ptr ) + (DWORD)( addValue ) )
 
 /////////////////////////////////////////////////////////////////////////////
 // CLibSymbolInfo
@@ -93,7 +93,7 @@ BOOL CLibSymbolInfo::Dump( LPTSTR lpszLibPathName, ostream& pFile ) {
   pMbrHdr = MakePtr( PIMAGE_ARCHIVE_MEMBER_HEADER, pArchiveStartString, IMAGE_ARCHIVE_START_SIZE );
 
   // First DWORD after this member header is a symbol count
-  PDWORD pcbSymbols = ( PDWORD )( pMbrHdr + 1 ); // Pointer math!
+  PDWORD pcbSymbols = (PDWORD)( pMbrHdr + 1 ); // Pointer math!
 
   // The symbol count is stored in big endian format, so adjust as
   // appropriate for the target architecture

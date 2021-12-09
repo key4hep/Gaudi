@@ -134,7 +134,7 @@ void JobOptionsSvc::fillServiceCatalog( const gp::Catalog& catalog ) {
 }
 
 StatusCode JobOptionsSvc::readOptions( std::string_view file, std::string_view path ) {
-  std::string search_path = std::string{path};
+  std::string search_path = std::string{ path };
   if ( search_path.empty() && !m_dir_search_path.empty() ) { search_path = m_dir_search_path; }
   //
   if ( msgLevel( MSG::DEBUG ) )
@@ -146,7 +146,7 @@ StatusCode JobOptionsSvc::readOptions( std::string_view file, std::string_view p
   gp::PragmaOptions pragma;
   gp::Node          ast;
   StatusCode        sc = gp::ReadOptions( file, path, &messages, &catalog, &units, &pragma, &ast ) ? StatusCode::SUCCESS
-                                                                                            : StatusCode::FAILURE;
+                                                                                                   : StatusCode::FAILURE;
 
   // --------------------------------------------------------------------------
   if ( sc.isSuccess() ) {
@@ -165,18 +165,18 @@ StatusCode JobOptionsSvc::readOptions( std::string_view file, std::string_view p
 void JobOptionsSvc::bind( const std::string& prefix, Gaudi::Details::PropertyBase* property ) {
   const std::string key = prefix + '.' + property->name();
 
-  std::tuple<bool, std::string_view> defaultValue{false, ""};
+  std::tuple<bool, std::string_view> defaultValue{ false, "" };
   if ( !has( key ) && !m_globalDefaults.empty() ) { // look for a global default only if it was not set
     std::smatch match;
     for ( const auto& p : m_globalDefaults ) {
-      if ( regex_match( key, match, p.first ) ) { defaultValue = {true, p.second}; }
+      if ( regex_match( key, match, p.first ) ) { defaultValue = { true, p.second }; }
     }
   }
 
   m_options[key] = *property;
 
   // at this point the property is bound, so we can set the default if needed
-  if ( std::get<0>( defaultValue ) ) set( key, std::string{std::get<1>( defaultValue )} );
+  if ( std::get<0>( defaultValue ) ) set( key, std::string{ std::get<1>( defaultValue ) } );
 }
 
 void JobOptionsSvc::broadcast( const std::regex& filter, const std::string& value, OnlyDefaults defaults_only ) {

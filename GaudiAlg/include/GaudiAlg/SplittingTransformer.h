@@ -58,7 +58,7 @@ namespace Gaudi::Functional {
                                    []( auto& h ) { h.setOptional( true ); } );
                   }
                 },
-                Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
+                Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } ) {}
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
           : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {
@@ -125,7 +125,7 @@ namespace Gaudi::Functional {
                                    []( auto& h ) { h.setOptional( true ); } );
                   }
                 },
-                Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
+                Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } ) {}
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
           : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {

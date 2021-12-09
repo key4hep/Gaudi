@@ -31,7 +31,7 @@ class Component1 : public Base {};
 
 #define DECLARE_COMPONENT_WITH_PROPS( type )                                                                           \
   namespace {                                                                                                          \
-    ::Gaudi::PluginService::DeclareFactory<type> _INTERNAL_FACTORY_REGISTER_CNAME{{{"name", #type}}};                  \
+    ::Gaudi::PluginService::DeclareFactory<type> _INTERNAL_FACTORY_REGISTER_CNAME{ { { "name", #type } } };            \
   }
 
 DECLARE_COMPONENT_WITH_PROPS( Component1 )
@@ -121,7 +121,7 @@ namespace {
     BaseSetupHelper::setName( p.get(), name );
     return p;
   }
-  Gaudi::PluginService::DeclareFactory<MyComponent> _{creator};
+  Gaudi::PluginService::DeclareFactory<MyComponent> _{ creator };
 } // namespace
 
 // -- use --
@@ -133,7 +133,7 @@ void useComponent() {
 // factory from lambda
 namespace SpecialId {
   struct MyComponent : Base {
-    MyComponent( std::string n ) : name{std::move( n )} {}
+    MyComponent( std::string n ) : name{ std::move( n ) } {}
 
     std::string name;
   };
@@ -142,7 +142,7 @@ namespace SpecialId {
                                                   []() -> MyComponent::Factory::ReturnType {
                                                     return std::make_unique<MyComponent>( "special-id" );
                                                   },
-                                                  {{"MyProperty", "special"}} );
+                                                  { { "MyProperty", "special" } } );
 } // namespace SpecialId
 
 // customized factory wrapper
@@ -195,7 +195,7 @@ namespace CustomFactoryWrapper {
     using Factory = Gaudi::PluginService::Factory<Base*( const std::string& name )>;
 
     Base() {}
-    Base( const std::string& name ) : m_name{name} {}
+    Base( const std::string& name ) : m_name{ name } {}
 
     const std::string& name() const { return m_name; }
   };
@@ -204,7 +204,7 @@ namespace CustomFactoryWrapper {
 
   struct ComponentNew : Base {};
   struct ComponentOld : Base {
-    ComponentOld( const std::string& name ) : Base{name} {}
+    ComponentOld( const std::string& name ) : Base{ name } {}
   };
   DECLARE_COMPONENT( ComponentNew )
   DECLARE_COMPONENT( ComponentOld )
@@ -241,8 +241,8 @@ struct ITPCnvBase {
           prefix = "_TRIG";                                                                                            \
         DeclareFactory<type> normal{};                                                                                 \
         if ( is_last_version == Athena::TPCnvVers::Current )                                                           \
-          DeclareFactory<type> transient{prefix + "_TRANS_" + #trans_type};                                            \
-        DeclareFactory<type> persistent{prefix + "_PERS_" + #pers_type};                                               \
+          DeclareFactory<type> transient{ prefix + "_TRANS_" + #trans_type };                                          \
+        DeclareFactory<type> persistent{ prefix + "_PERS_" + #pers_type };                                             \
       }                                                                                                                \
     } DO_ATHTPCNV_FACTORY_REGISTER_CNAME( s_##type, serial );                                                          \
   }

@@ -662,9 +662,9 @@ private:
   mutable SmartIF<INTupleSvc> m_evtColSvc; ///< Event Tag Collection Service
 
   Gaudi::Property<std::vector<std::string>> m_vetoObjs{
-      this, "VetoObjects", {}, "skip execute if one or more of these TES objects exist"};
+      this, "VetoObjects", {}, "skip execute if one or more of these TES objects exist" };
   Gaudi::Property<std::vector<std::string>> m_requireObjs{
-      this, "RequireObjects", {}, "execute only if one or more of these TES objects exist"};
+      this, "RequireObjects", {}, "execute only if one or more of these TES objects exist" };
   // ==========================================================================
 };
 // ============================================================================

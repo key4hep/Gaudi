@@ -106,25 +106,25 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
   const auto fmt      = "Tot={1:5.3g}{0:5} {3} #={2:3}";
   const auto stat_fmt = "Ave/Min/Max={1:8.3g}(+-{2:8.3g})/{3:8.3g}/{4:8.3g}{0:5}";
 
-  static const std::array<std::tuple<int, double, std::string_view>, 9> tbl{{{500, microsecond, " [us]"},
-                                                                             {500, millisecond, " [ms]"},
-                                                                             {500, second, "  [s]"},
-                                                                             {500, minute, "[min]"},
-                                                                             {500, hour, "  [h]"},
-                                                                             {10, day, "[day]"},
-                                                                             {5, week, "  [w]"},
-                                                                             {20, month, "[mon]"},
-                                                                             {-1, year, "  [y]"}}};
+  static const std::array<std::tuple<int, double, std::string_view>, 9> tbl{ { { 500, microsecond, " [us]" },
+                                                                               { 500, millisecond, " [ms]" },
+                                                                               { 500, second, "  [s]" },
+                                                                               { 500, minute, "[min]" },
+                                                                               { 500, hour, "  [h]" },
+                                                                               { 10, day, "[day]" },
+                                                                               { 5, week, "  [w]" },
+                                                                               { 20, month, "[mon]" },
+                                                                               { -1, year, "  [y]" } } };
 
   auto             i         = find_if( begin( tbl ), prev( end( tbl ) ),
-                    [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
+                                        [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
   long double      unit      = std::get<1>( *i );
   std::string_view unit_name = std::get<2>( *i );
 
   auto stats = [&]() -> std::string {
     if ( number > 1 ) {
       auto             i         = find_if( begin( tbl ), prev( end( tbl ) ),
-                        [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
+                                            [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
       auto             unit      = std::get<1>( *i );
       std::string_view unit_name = std::get<2>( *i );
       return fmt::format( stat_fmt, unit_name, (double)( mean / unit ), (double)( rms / unit ),
@@ -166,7 +166,7 @@ ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e ) {
  */
 // ============================================================================
 std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, std::string_view fmt, System::TimeType unit ) const {
-  boost::format _fmt( std::string{fmt} );
+  boost::format _fmt( std::string{ fmt } );
   // allow various number of arguments
   using namespace boost::io;
   _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );

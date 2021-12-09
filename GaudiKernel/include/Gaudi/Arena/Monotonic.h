@@ -51,13 +51,13 @@ namespace Gaudi::Arena {
     std::size_t m_next_block_size{};
 
     /// Number of allocation requests served by this arena.
-    std::size_t m_allocations{0};
+    std::size_t m_allocations{ 0 };
 
     /// Current position in the current block, or nullptr if there is no current block.
-    std::byte* m_current{nullptr};
+    std::byte* m_current{ nullptr };
 
     /// One byte past the end of the current block, or nullptr if it doesn't exist.
-    std::byte* m_current_end{nullptr};
+    std::byte* m_current_end{ nullptr };
 
     /// All memory blocks owned by this arena.
     boost::container::small_vector<gsl::span<std::byte>, 1> m_all_blocks;
@@ -72,7 +72,7 @@ namespace Gaudi::Arena {
      *  This constructor does not trigger any allocation.
      */
     Monotonic( std::size_t next_block_size ) noexcept
-        : m_next_block_size{details::align_up<Alignment>( next_block_size )} {}
+        : m_next_block_size{ details::align_up<Alignment>( next_block_size ) } {}
 
     ~Monotonic() noexcept {
       for ( auto block : m_all_blocks ) { UpstreamAllocator{}.deallocate( block.data(), block.size() ); }

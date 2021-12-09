@@ -58,7 +58,7 @@ public:
   /// Find an algorithm with given name in the list of known algorithms
   virtual StatusCode getAlgorithm( std::string_view name, // Algorithm name to be searched
                                    IAlgorithm*&     alg   // Returned algorithm
-                                   ) const {
+  ) const {
     SmartIF<IAlgorithm>& si = const_cast<IAlgManager*>( this )->algorithm( name, false );
     alg                     = si.get();
     return si ? StatusCode::SUCCESS : StatusCode::FAILURE;
@@ -66,7 +66,7 @@ public:
 #endif
   /// Check the existence of an algorithm with a given name in the list of known algorithms
   virtual bool existsAlgorithm( std::string_view name // Algorithm name to be searched
-                                ) const = 0;
+  ) const = 0;
   /// Return the list of Algorithms
   virtual const std::vector<IAlgorithm*>& getAlgorithms() const = 0;
 

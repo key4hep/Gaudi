@@ -50,7 +50,7 @@ std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string&
                                                               int nBinsZ, double zlow, double zup ) {
   auto p = new Histogram3D(
       new TH3D( title.c_str(), title.c_str(), nBinsX, xlow, xup, nBinsY, ylow, yup, nBinsZ, zlow, zup ) );
-  return {p, p};
+  return { p, p };
 }
 
 /// Create 3D histogram with variable bins
@@ -58,13 +58,13 @@ std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string&
                                                               const Edges& eY, const Edges& eZ ) {
   auto p = new Histogram3D( new TH3D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1,
                                       &eY.front(), eZ.size() - 1, &eZ.front() ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const AIDA::IHistogram3D& hist ) {
   TH3D*        h = getRepresentation<AIDA::IHistogram3D, TH3D>( hist );
   Histogram3D* n = h ? new Histogram3D( new TH3D( *h ) ) : nullptr;
-  return {n, n};
+  return { n, n };
 }
 
 Gaudi::Histogram3D::Histogram3D() : Base( new TH3D() ) {
@@ -110,7 +110,7 @@ bool Gaudi::Histogram3D::reset() {
 
 bool Gaudi::Histogram3D::fill( double x, double y, double z, double weight ) {
   // avoid race conditiosn when filling the histogram
-  auto guard = std::scoped_lock{m_fillSerialization};
+  auto guard = std::scoped_lock{ m_fillSerialization };
   m_rep->Fill( x, y, z, weight );
   return true;
 }

@@ -295,20 +295,20 @@ namespace {
                                        &h2.m_yedges.edges.front() )
                          : // vector of edges
                          !h2.m_xedges.edges.empty() && h2.m_xedges.edges.empty()
-                             ? new HISTO2( "",                  // h1.m_name.c_str   ()         ,           // NAME
-                                           h2.m_title.c_str(),  // TITLE
-                                           h2.m_xedges.nBins(), // #bins
-                                           &h2.m_xedges.edges.front(), // vector of edges
-                                           h2.m_yedges.nbins,          // #bins
-                                           h2.m_yedges.low,            // low edge
-                                           h2.m_yedges.high )
-                             :                                       // high edge
-                             new HISTO2( "",                         // h1.m_name.c_str   ()         ,           // NAME
-                                         h2.m_title.c_str(),         // TITLE
-                                         h2.m_xedges.nBins(),        // #bins
-                                         &h2.m_xedges.edges.front(), // vector of edges
-                                         h2.m_yedges.nBins(),        // #bins
-                                         &h2.m_yedges.edges.front() ) ); // vector of edges
+                         ? new HISTO2( "",                         // h1.m_name.c_str   ()         ,           // NAME
+                                       h2.m_title.c_str(),         // TITLE
+                                       h2.m_xedges.nBins(),        // #bins
+                                       &h2.m_xedges.edges.front(), // vector of edges
+                                       h2.m_yedges.nbins,          // #bins
+                                       h2.m_yedges.low,            // low edge
+                                       h2.m_yedges.high )
+                         :                                           // high edge
+                         new HISTO2( "",                             // h1.m_name.c_str   ()         ,           // NAME
+                                     h2.m_title.c_str(),             // TITLE
+                                     h2.m_xedges.nBins(),            // #bins
+                                     &h2.m_xedges.edges.front(),     // vector of edges
+                                     h2.m_yedges.nBins(),            // #bins
+                                     &h2.m_yedges.edges.front() ) ); // vector of edges
 
     int       ibin  = 0;
     const int xBins = h2.m_xedges.nBins();

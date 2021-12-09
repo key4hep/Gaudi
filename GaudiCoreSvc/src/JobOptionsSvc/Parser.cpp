@@ -89,16 +89,16 @@ namespace {
         System::PathResolver::find_file_from_list( gpu::replaceEnvironments( filename ), search_path_with_current_dir );
 
     if ( absolute_path.empty() ) {
-      messages->AddError( from, "Couldn't find a file " + std::string{filename} + " in search path '" +
+      messages->AddError( from, "Couldn't find a file " + std::string{ filename } + " in search path '" +
                                     search_path_with_current_dir + "'" );
       return false;
     }
     const gp::Position* included_from;
     if ( !included->GetPosition( absolute_path, &included_from ) ) {
       included->AddFile( absolute_path, from );
-      std::ifstream file{absolute_path};
+      std::ifstream file{ absolute_path };
       if ( !file.is_open() ) {
-        messages->AddError( from, std::string{"Couldn't open a file "}.append( filename ) );
+        messages->AddError( from, std::string{ "Couldn't open a file " }.append( filename ) );
         return false;
       }
       return ParseStream<Grammar>( file, absolute_path, messages, root );

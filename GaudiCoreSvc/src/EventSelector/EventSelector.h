@@ -86,11 +86,11 @@ protected:
   int m_streamCount = 0;
 
   // Properties
-  Gaudi::Property<StreamSpecs> m_streamSpecs{this, "Input", {}, "input stream specifiers (for job options)"};
-  Gaudi::Property<int>         m_firstEvent{this, "FirstEvent", 0, "first event to be processed"};
-  Gaudi::Property<int>         m_evtMax{this, "EvtMax", INT_MAX, "maximum number of events to be processed"};
-  Gaudi::Property<int>         m_evtPrintFrequency{this, "PrintFreq", 10, "printout frequency"};
-  Gaudi::Property<std::string> m_streamManager{this, "StreamManager", "DataStreamTool", ""};
+  Gaudi::Property<StreamSpecs> m_streamSpecs{ this, "Input", {}, "input stream specifiers (for job options)" };
+  Gaudi::Property<int>         m_firstEvent{ this, "FirstEvent", 0, "first event to be processed" };
+  Gaudi::Property<int>         m_evtMax{ this, "EvtMax", INT_MAX, "maximum number of events to be processed" };
+  Gaudi::Property<int>         m_evtPrintFrequency{ this, "PrintFreq", 10, "printout frequency" };
+  Gaudi::Property<std::string> m_streamManager{ this, "StreamManager", "DataStreamTool", "" };
 
   /// Progress report
   virtual void printEvtInfo( const EvtSelectorContext* iter ) const;

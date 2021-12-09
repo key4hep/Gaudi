@@ -65,7 +65,7 @@ private:
   StatusCode launchTasks( bool finalize = false );
 
   /// Handle array of thread init tools
-  ToolHandleArray<IThreadInitTool> m_threadInitTools = {this};
+  ToolHandleArray<IThreadInitTool> m_threadInitTools = { this };
 
   /// Was the thread pool initialized?
   bool m_init = false;

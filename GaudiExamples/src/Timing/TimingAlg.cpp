@@ -60,7 +60,7 @@ namespace GaudiExamples {
   private:
     // ========================================================================
     /// the length of the internal loops (property)
-    Gaudi::Property<unsigned long> m_cycles{this, "Cycles", 10000, "The number of cycles"};
+    Gaudi::Property<unsigned long> m_cycles{ this, "Cycles", 10000, "The number of cycles" };
     // ========================================================================
   private:
     // ========================================================================

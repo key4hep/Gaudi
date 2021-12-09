@@ -29,7 +29,7 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<std::string> m_data{this, "Data", "/Event/Unknown"};
+  Gaudi::Property<std::string> m_data{ this, "Data", "/Event/Unknown" };
 };
 
 #endif // GAUDIEXAMPLE_HELLOWORLD_H

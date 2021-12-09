@@ -44,7 +44,7 @@ protected:
   void        set( const std::string& key, const std::string& value ) override { m_options[key] = value; }
   std::string get( const std::string& key, const std::string& default_ = {} ) const override {
     auto item = m_options.find( key );
-    return item != m_options.end() ? std::string{item->second} : default_;
+    return item != m_options.end() ? std::string{ item->second } : default_;
   }
   std::string pop( const std::string& key, const std::string& default_ = {} ) override {
     std::string result = default_;
@@ -98,17 +98,20 @@ private:
   void dump( const std::string& file ) const;
 
 private:
-  Gaudi::Property<std::string> m_source_type{this, "TYPE"};
-  Gaudi::Property<std::string> m_source_path{this, "PATH"};
-  Gaudi::Property<std::string> m_dir_search_path{this, "SEARCHPATH"};
-  Gaudi::Property<std::string> m_dump{this, "DUMPFILE"};
-  Gaudi::Property<std::string> m_pythonAction{this, "PYTHONACTION"};
-  Gaudi::Property<std::string> m_pythonParams{this, "PYTHONPARAMS"};
+  Gaudi::Property<std::string> m_source_type{ this, "TYPE" };
+  Gaudi::Property<std::string> m_source_path{ this, "PATH" };
+  Gaudi::Property<std::string> m_dir_search_path{ this, "SEARCHPATH" };
+  Gaudi::Property<std::string> m_dump{ this, "DUMPFILE" };
+  Gaudi::Property<std::string> m_pythonAction{ this, "PYTHONACTION" };
+  Gaudi::Property<std::string> m_pythonParams{ this, "PYTHONPARAMS" };
 
   Gaudi::Property<std::vector<std::pair<std::string, std::string>>> m_globalDefaultsProp{
-      this, "GlobalDefaults", {}, "Allow definition of global defaults for properties as list of pairs (regex, value)"};
+      this,
+      "GlobalDefaults",
+      {},
+      "Allow definition of global defaults for properties as list of pairs (regex, value)" };
 
-  Gaudi::Property<bool> m_reportUnused{this, "ReportUnused", false, "Print report of properties set, but not used"};
+  Gaudi::Property<bool> m_reportUnused{ this, "ReportUnused", false, "Print report of properties set, but not used" };
 
   std::vector<std::pair<std::regex, std::string>> m_globalDefaults;
 };

@@ -26,6 +26,6 @@ std::unique_ptr<std::istream> FileReadTool::open( const std::string& url ) {
 
 const std::vector<std::string>& FileReadTool::protocols() const {
   /// Vector of supported protocols.
-  static const std::vector<std::string> s_protocols = {{"file"}};
+  static const std::vector<std::string> s_protocols = { { "file" } };
   return s_protocols;
 }

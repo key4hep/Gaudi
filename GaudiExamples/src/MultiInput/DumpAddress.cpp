@@ -63,8 +63,8 @@ namespace Gaudi {
         }
 
       private:
-        Gaudi::Property<std::string> m_output{this, "OutputFile", {}, "Name of the output file"};
-        Gaudi::Property<std::string> m_path{this, "ObjectPath", {}, "Path to the object in the transient store"};
+        Gaudi::Property<std::string> m_output{ this, "OutputFile", {}, "Name of the output file" };
+        Gaudi::Property<std::string> m_path{ this, "ObjectPath", {}, "Path to the object in the transient store" };
         std::ofstream                m_outputFile;
         long                         m_count = 0;
       };

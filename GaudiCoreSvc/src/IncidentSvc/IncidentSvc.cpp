@@ -58,7 +58,7 @@ namespace {
 // ============================================================================
 IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc ) {}
 // ============================================================================
-IncidentSvc::~IncidentSvc() { auto lock = std::scoped_lock{m_listenerMapMutex}; }
+IncidentSvc::~IncidentSvc() { auto lock = std::scoped_lock{ m_listenerMapMutex }; }
 // ============================================================================
 StatusCode IncidentSvc::finalize() {
   DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] ", System::milliSec )
@@ -74,8 +74,8 @@ StatusCode IncidentSvc::finalize() {
 // ============================================================================
 void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, long prio, bool rethrow,
                                bool singleShot ) {
-  static const std::string all{"ALL"};
-  auto                     lock = std::scoped_lock{m_listenerMapMutex};
+  static const std::string all{ "ALL" };
+  auto                     lock = std::scoped_lock{ m_listenerMapMutex };
 
   const std::string& ltype = ( !type.empty() ? type : all );
 
@@ -83,7 +83,7 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
   auto itMap = m_listenerMap.find( ltype );
   if ( itMap == m_listenerMap.end() ) {
     // if not found, create and insert now a list of listeners
-    auto p = m_listenerMap.insert( {ltype, std::make_unique<ListenerList>()} );
+    auto p = m_listenerMap.insert( { ltype, std::make_unique<ListenerList>() } );
     if ( !p.second ) { /* OOPS */
     }
     itMap = p.first;
@@ -96,7 +96,7 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
                                  [&]( const Listener& j ) { return j.priority >= prio; } );
   // We insert before the current position
   DEBMSG << "Adding [" << type << "] listener '" << getListenerName( lis ) << "' with priority " << prio << endmsg;
-  llist.emplace( i, IIncidentSvc::Listener{lis, prio, rethrow, singleShot} );
+  llist.emplace( i, IIncidentSvc::Listener{ lis, prio, rethrow, singleShot } );
 }
 // ============================================================================
 IncidentSvc::ListenerMap::iterator
@@ -119,7 +119,7 @@ IncidentSvc::removeListenerFromList( ListenerMap::iterator i, IIncidentListener*
 }
 // ============================================================================
 void IncidentSvc::removeListener( IIncidentListener* lis, const std::string& type ) {
-  auto lock = std::scoped_lock{m_listenerMapMutex};
+  auto lock = std::scoped_lock{ m_listenerMapMutex };
 
   bool scheduleForRemoval = ( m_currentIncidentType && type == *m_currentIncidentType );
   if ( type.empty() ) {
@@ -140,7 +140,7 @@ namespace {
 // ============================================================================
 void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& listenerType ) {
 
-  auto lock = std::scoped_lock{m_listenerMapMutex};
+  auto lock = std::scoped_lock{ m_listenerMapMutex };
 
   // Wouldn't it be better to write a small 'ReturnCode' service which
   // looks for these 'special' incidents and does whatever needs to
@@ -230,9 +230,9 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
   DEBMSG << "Async incident '" << incident->type() << "' fired on context " << ctx << endmsg;
 
   // create or get incident queue for slot
-  auto [incItr, inserted1] = m_firedIncidents.insert( {ctx.slot(), IncQueue_t()} );
+  auto [incItr, inserted1] = m_firedIncidents.insert( { ctx.slot(), IncQueue_t() } );
   // save or get current event for slot
-  auto [slotItr, inserted2] = m_slotEvent.insert( {ctx.slot(), ctx.evt()} );
+  auto [slotItr, inserted2] = m_slotEvent.insert( { ctx.slot(), ctx.evt() } );
 
   // if new event in slot, clear all remaining old incidents
   if ( slotItr->second != ctx.evt() ) {
@@ -251,8 +251,8 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
 // ============================================================================
 
 void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::string& type ) const {
-  static const std::string ALL{"ALL"};
-  auto                     lock = std::scoped_lock{m_listenerMapMutex};
+  static const std::string ALL{ "ALL" };
+  auto                     lock = std::scoped_lock{ m_listenerMapMutex };
 
   const std::string& ltype = ( !type.empty() ? type : ALL );
 
@@ -281,7 +281,7 @@ IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx ) 
           std::scoped_lock lock( m_listenerMapMutex );
           auto             i = m_listenerMap.find( inc->type() );
           if ( i != m_listenerMap.end() ) {
-            p.emplace_back( std::move( inc ), std::vector<Listener>{i->second->begin(), i->second->end()} );
+            p.emplace_back( std::move( inc ), std::vector<Listener>{ i->second->begin(), i->second->end() } );
           }
         }
       }

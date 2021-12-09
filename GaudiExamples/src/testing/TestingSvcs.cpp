@@ -48,8 +48,8 @@ namespace GaudiTesting {
 
   private:
     Gaudi::Property<std::string> m_transition{
-        this, "Transition", "", "In which transition to fail ['initialize', 'start', 'stop',  'finalize']"};
-    Gaudi::Property<std::string> m_mode{this, "Mode", "failure", "Type of failure ['failure',  'exception']"};
+        this, "Transition", "", "In which transition to fail ['initialize', 'start', 'stop',  'finalize']" };
+    Gaudi::Property<std::string> m_mode{ this, "Mode", "failure", "Type of failure ['failure',  'exception']" };
 
     inline StatusCode handle( const std::string& transition ) {
       if ( m_transition == transition ) {

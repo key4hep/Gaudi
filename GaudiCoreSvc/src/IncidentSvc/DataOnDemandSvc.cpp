@@ -441,7 +441,7 @@ namespace {
         auto result = getter( i );
         if ( isGood( result ) ) return result;
       }
-      return R{""};
+      return R{ "" };
     }
 
   public:
@@ -621,7 +621,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
       val = std::to_string( l.num );
     }
     //
-    _m[no_prefix( alg.first, m_prefix )] = {nam, val};
+    _m[no_prefix( alg.first, m_prefix )] = { nam, val };
   }
   // nodes:
   for ( const auto& node : m_nodes ) {
@@ -643,7 +643,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
       val = std::to_string( n.num );
     }
     //
-    _m[no_prefix( node.first, m_prefix )] = {nam, val};
+    _m[no_prefix( node.first, m_prefix )] = { nam, val };
   }
   //
   if ( _m.empty() ) { return; }
@@ -657,8 +657,8 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
     n2 = std::max( n2, i.second.first.size() );
     n3 = std::max( n3, i.second.second.size() );
   }
-  n1 = std::min( n1, size_t{60} ); // maximum width
-  n2 = std::min( n2, size_t{60} ); // maximum width
+  n1 = std::min( n1, size_t{ 60 } ); // maximum width
+  n2 = std::min( n2, size_t{ 60 } ); // maximum width
 
   auto& msg = msgStream( level );
 

@@ -171,8 +171,8 @@ StatusCode PropertyMgr::getProperty( PropertyBase* p ) const {
 // =====================================================================
 const PropertyBase& PropertyMgr::getProperty( std::string_view name ) const {
   const PropertyBase* p = property( name );
-  if ( !p ) throw std::out_of_range( "Property " + std::string{name} + " not found." ); // Not found
-  return *p;                                                                            // RETURN
+  if ( !p ) throw std::out_of_range( "Property " + std::string{ name } + " not found." ); // Not found
+  return *p;                                                                              // RETURN
 }
 // =====================================================================
 /* Get the property by name

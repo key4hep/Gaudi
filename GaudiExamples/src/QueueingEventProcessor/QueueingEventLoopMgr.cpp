@@ -62,12 +62,12 @@ namespace Gaudi::Examples {
   private:
     tbb::concurrent_bounded_queue<EventContext> m_incoming;
     tbb::concurrent_bounded_queue<ResultType>   m_done;
-    std::atomic<std::size_t>                    m_inFlight{0};
+    std::atomic<std::size_t>                    m_inFlight{ 0 };
 
     // our capacity is the input queue capacity + 1 (N events pending + 1 being processed)
     Gaudi::Property<std::size_t> m_queueCapacity{
         this, "Capacity", m_incoming.capacity() + 1,
-        [this]( Gaudi::Details::PropertyBase& ) { m_incoming.set_capacity( m_queueCapacity - 1 ); }};
+        [this]( Gaudi::Details::PropertyBase& ) { m_incoming.set_capacity( m_queueCapacity - 1 ); } };
 
     std::tuple<StatusCode, EventContext> processEvent( EventContext&& context );
 
@@ -196,7 +196,7 @@ std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventCo
     outcome = StatusCode::FAILURE;
   }
 
-  return {std::move( outcome ), std::move( context )};
+  return { std::move( outcome ), std::move( context ) };
 }
 
 StatusCode QueueingEventLoopMgr::stop() {

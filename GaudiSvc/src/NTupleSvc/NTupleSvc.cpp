@@ -242,7 +242,7 @@ StatusCode NTupleSvc::connect( const std::string& ident, std::string& logname ) 
       if ( status.isSuccess() ) {
         status = attachTuple( filename, logname, typ, pSvc->repSvcType() );
         if ( status.isSuccess() ) {
-          m_connections.insert( {m_rootName + '/' + logname, Connection( pSvc )} );
+          m_connections.insert( { m_rootName + '/' + logname, Connection( pSvc ) } );
           return StatusCode::SUCCESS;
         }
       }

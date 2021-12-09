@@ -43,7 +43,7 @@ std::ostream& operator<<( std::ostream& s, const EventSelectorDataStream& obj ) 
 
 // Standard Constructor
 EventSelectorDataStream::EventSelectorDataStream( std::string nam, std::string def, ISvcLocator* svcloc )
-    : m_name{std::move( nam )}, m_definition{std::move( def )}, m_pSvcLocator( svcloc ) {}
+    : m_name{ std::move( nam ) }, m_definition{ std::move( def ) }, m_pSvcLocator( svcloc ) {}
 
 // Set selector
 void EventSelectorDataStream::setSelector( IEvtSelector* pSelector ) { m_pSelector = pSelector; }
@@ -166,7 +166,7 @@ StatusCode EventSelectorDataStream::initialize() {
       IConversionSvc* icnvSvc = nullptr;
       status                  = ipers->getService( dbtyp, icnvSvc );
       if ( status.isSuccess() ) {
-        auto isvc = SmartIF<INamedInterface>{icnvSvc};
+        auto isvc = SmartIF<INamedInterface>{ icnvSvc };
         if ( isvc ) svc = isvc->name();
       }
     }

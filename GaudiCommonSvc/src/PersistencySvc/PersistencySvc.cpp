@@ -214,7 +214,7 @@ IConverter* PersistencySvc::converter( const CLID& /*clid*/ ) { return nullptr; 
 SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam ) {
   Gaudi::Utils::TypeNameString tn( nam );
   auto                         it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
-                          [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
+                                                  [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
 
   auto svc = Service::service<IConversionSvc>( nam, true );

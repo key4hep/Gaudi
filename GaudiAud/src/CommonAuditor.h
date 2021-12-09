@@ -74,9 +74,9 @@ private:
   };
 
   Gaudi::Property<std::vector<std::string>> m_types{
-      this, "EventTypes", {}, "list of event types to audit ([]=all, ['none']=none)"};
+      this, "EventTypes", {}, "list of event types to audit ([]=all, ['none']=none)" };
   Gaudi::Property<std::vector<std::string>> m_customTypes{
-      this, "CustomEventTypes", {}, &CommonAuditor::deprecated_property, "[[deprecated]] use EventTypes instead"};
+      this, "CustomEventTypes", {}, &CommonAuditor::deprecated_property, "[[deprecated]] use EventTypes instead" };
 };
 
 #endif // GAUDIAUD_COMMONAUDITOR_H

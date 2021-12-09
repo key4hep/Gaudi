@@ -95,7 +95,7 @@ int main( int argc, char* argv[] ) {
 
   // handle output option
   std::unique_ptr<std::ostream> output_file;
-  if ( output_opt != "-" ) { output_file.reset( new std::ofstream{output_opt} ); }
+  if ( output_opt != "-" ) { output_file.reset( new std::ofstream{ output_opt } ); }
   std::ostream& output = ( output_file ? *output_file : std::cout );
 
   auto dump_from = [&output, &loaded]( auto& reg, const char* lib, const char* prefix ) {

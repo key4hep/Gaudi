@@ -121,7 +121,7 @@ namespace Gaudi {
       sig_atomic_t m_caught[NSIG];
 /// Helper variable for default signal action.
 #ifdef _WIN32
-      handler_t m_defaultAction{nullptr};
+      handler_t m_defaultAction{ nullptr };
 #else
       handler_t m_defaultAction;
 #endif
@@ -433,10 +433,10 @@ namespace Gaudi {
       Gaudi::Property<std::vector<std::string>> m_usedSignals{
           this,
           "Signals",
-          {"SIGINT", "SIGXCPU"},
+          { "SIGINT", "SIGXCPU" },
           "List of signal names or numbers to use to schedule a stop. "
           "If the signal is followed by a '+' the signal is propagated the previously "
-          "registered handler (if any)."};
+          "registered handler (if any)." };
       /// Map of monitored signal numbers to the flag telling if they have to be propagated or not.
       std::map<int, bool> m_signals;
       /// Flag to remember if the stop has been requested because of a signal.
@@ -452,7 +452,7 @@ namespace Gaudi {
         debug() << "Decoding signal declaration '" << sig << "'" << endmsg;
         if ( sig.empty() || sig == "+" ) {
           debug() << "Empty signal, ignored" << endmsg;
-          return {-1, false}; // silently ignore empty strings
+          return { -1, false }; // silently ignore empty strings
         }
         const SigMap& sigmap( SigMap::instance() );
         std::string   signal    = sig;
@@ -480,7 +480,7 @@ namespace Gaudi {
           if ( !desc.empty() ) { verbose() << ", " << desc; }
           verbose() << ")" << endmsg;
         }
-        return {signum, propagate};
+        return { signum, propagate };
       }
     };
 

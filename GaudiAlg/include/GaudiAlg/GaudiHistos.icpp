@@ -59,7 +59,7 @@ namespace {
   constexpr struct ordered_t {
     template <typename C>
     std::map<typename C::key_type, typename C::mapped_type> operator()( const C& c ) const {
-      return {std::begin( c ), std::end( c )};
+      return { std::begin( c ), std::end( c ) };
     }
   } ordered{};
 

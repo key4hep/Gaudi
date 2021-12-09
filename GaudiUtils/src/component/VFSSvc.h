@@ -50,9 +50,9 @@ public:
 
 private:
   Gaudi::Property<std::vector<std::string>> m_urlHandlersNames{
-      this, "FileAccessTools", {{"FileReadTool"}}, "List of tools implementing the IFileAccess interface."};
-  Gaudi::Property<std::string> m_fallBackProtocol{this, "FallBackProtocol", "file",
-                                                  "URL prefix to use if the prefix is not present."};
+      this, "FileAccessTools", { { "FileReadTool" } }, "List of tools implementing the IFileAccess interface." };
+  Gaudi::Property<std::string> m_fallBackProtocol{ this, "FallBackProtocol", "file",
+                                                   "URL prefix to use if the prefix is not present." };
 
   /// Protocols registered
   std::vector<std::string> m_protocols;

@@ -70,14 +70,14 @@ class GenericAddress;
  */
 class TagCollectionStream : public OutputStream {
 protected:
-  Gaudi::Property<std::string> m_addrLeaf{this, "AddressLeaf", "/Event",
-                                          "name of the address leaf in the transient event store"};
-  Gaudi::Property<std::string> m_addrColName{this, "AddressColumn", "Address",
-                                             "name of the address column of the tag collection"};
-  Gaudi::Property<std::string> m_collSvcName{this, "TagCollectionSvc", "NTupleSvc", "name of the collection service"};
-  Gaudi::Property<bool>        m_objectsFirst{this, "ObjectsFirst", true,
-                                       "flag to indicate that the objects should be written first"};
-  Gaudi::Property<std::string> m_tagName{this, "Collection", "", "name of the tag collection in the transient store"};
+  Gaudi::Property<std::string> m_addrLeaf{ this, "AddressLeaf", "/Event",
+                                           "name of the address leaf in the transient event store" };
+  Gaudi::Property<std::string> m_addrColName{ this, "AddressColumn", "Address",
+                                              "name of the address column of the tag collection" };
+  Gaudi::Property<std::string> m_collSvcName{ this, "TagCollectionSvc", "NTupleSvc", "name of the collection service" };
+  Gaudi::Property<bool>        m_objectsFirst{ this, "ObjectsFirst", true,
+                                        "flag to indicate that the objects should be written first" };
+  Gaudi::Property<std::string> m_tagName{ this, "Collection", "", "name of the tag collection in the transient store" };
 
   /// NTuple column to hold the opaque address of the address leaf
   INTupleItem* m_addrColumn = nullptr;

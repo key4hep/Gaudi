@@ -38,8 +38,8 @@ private:
    **/
   int m_total = 0;
 
-  Gaudi::Property<std::vector<std::string>> m_inputs{this, "Input", {}, "List of required inputs"};
-  Gaudi::Property<std::vector<std::string>> m_outputs{this, "Output", {}, "List of provided outputs"};
+  Gaudi::Property<std::vector<std::string>> m_inputs{ this, "Input", {}, "List of required inputs" };
+  Gaudi::Property<std::vector<std::string>> m_outputs{ this, "Output", {}, "List of provided outputs" };
 
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputHandles;
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputHandles;

@@ -50,7 +50,7 @@
 
 namespace {
   std::string operator+( char c, std::string_view sr ) {
-    std::string s{c};
+    std::string s{ c };
     s.append( sr.data(), sr.size() );
     return s;
   }
@@ -61,7 +61,7 @@ namespace {
     return r == std::string_view::npos ? r : ( r + o );
   }
 
-  std::string to_string( std::string_view sr ) { return {sr.data(), sr.size()}; }
+  std::string to_string( std::string_view sr ) { return { sr.data(), sr.size() }; }
 } // namespace
 
 // If you absolutely need optimization: switch off dynamic_cast.
@@ -566,7 +566,7 @@ StatusCode DataSvc::i_retrieveEntry( RegEntry* parentObj, std::string_view path,
     sep = find( path, SEPARATOR, 1 );
   }
 
-  StatusCode status{Status::INVALID_ROOT};
+  StatusCode status{ Status::INVALID_ROOT };
   if ( sep != std::string_view::npos ) { // the string contains a separator (after pos 0)
     if ( !parentObj->object() ) {        // if the parent object has not been loaded yet, load it now
       status = loadObject( parentObj );

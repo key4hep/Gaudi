@@ -45,7 +45,7 @@ namespace Gaudi {
   namespace Details {
     bool getDefaultAuditorValue( ISvcLocator* loc ) {
       assert( loc != nullptr );
-      Gaudi::Property<bool> audit{false};
+      Gaudi::Property<bool> audit{ false };
       auto                  appMgr = loc->service<IProperty>( "ApplicationMgr" );
       if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
         audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );
@@ -182,7 +182,7 @@ namespace Gaudi {
       // we define a little helper creating an ordered set from a non ordered one
       auto sort     = []( const DataObjID a, const DataObjID b ) -> bool { return a.fullKey() < b.fullKey(); };
       auto orderset = [&sort]( const DataObjIDColl& in ) -> std::set<DataObjID, decltype( sort )> {
-        return {in.begin(), in.end(), sort};
+        return { in.begin(), in.end(), sort };
       };
       // Logging
       debug() << "Data Deps for " << name();
@@ -560,7 +560,7 @@ namespace Gaudi {
     if ( UNLIKELY( !p ) ) {
       p = this->service( service_name );
       if ( !p ) {
-        throw GaudiException( "Service [" + std::string{service_name} + "] not found", this->name(),
+        throw GaudiException( "Service [" + std::string{ service_name } + "] not found", this->name(),
                               StatusCode::FAILURE );
       }
     }

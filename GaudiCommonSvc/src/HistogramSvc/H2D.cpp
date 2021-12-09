@@ -38,24 +38,24 @@ namespace {
 std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const std::string& title, int binsX, double iminX, double imaxX,
                                                         int binsY, double iminY, double imaxY ) {
   auto p = new Histogram2D( new TH2D( title.c_str(), title.c_str(), binsX, iminX, imaxX, binsY, iminY, imaxY ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const std::string& title, const Edges& eX, const Edges& eY ) {
   auto p = new Histogram2D(
       new TH2D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front() ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( TH2D* rep ) {
   auto p = new Histogram2D( rep );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist ) {
   TH2D*        h = getRepresentation<AIDA::IHistogram2D, TH2D>( hist );
   Histogram2D* n = h ? new Histogram2D( new TH2D( *h ) ) : nullptr;
-  return {n, n};
+  return { n, n };
 }
 
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, const IHistogram2D& hist, int first,
@@ -64,7 +64,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, c
   TH1D* t = r ? r->ProjectionX( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, const IHistogram2D& hist, int first,
@@ -73,7 +73,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, c
   TH1D* t = r ? r->ProjectionY( "_py", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam, const IHistogram2D& hist, int first,
@@ -82,7 +82,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam,
   TH1D* t = r ? r->ProjectionY( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, const IHistogram2D& hist, int first,
@@ -91,7 +91,7 @@ std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, c
   TProfile* t = r ? r->ProfileX( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Profile1D* p = ( t ? new Profile1D( t ) : nullptr );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DY( const std::string& nam, const IHistogram2D& hist, int first,
@@ -100,7 +100,7 @@ std::pair<DataObject*, IProfile1D*> Gaudi::profile1DY( const std::string& nam, c
   TProfile* t = r ? r->ProfileY( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Profile1D* p = ( t ? new Profile1D( t ) : nullptr );
-  return {p, p};
+  return { p, p };
 }
 
 namespace Gaudi {
@@ -173,7 +173,7 @@ bool Gaudi::Histogram2D::reset() {
 #endif
 bool Gaudi::Histogram2D::fill( double x, double y, double weight ) {
   // avoid race conditiosn when filling the histogram
-  auto guard = std::scoped_lock{m_fillSerialization};
+  auto guard = std::scoped_lock{ m_fillSerialization };
   ( weight == 1. ) ? m_rep->Fill( x, y ) : m_rep->Fill( x, y, weight );
   return true;
 }
@@ -244,7 +244,7 @@ void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h ) {
   // taking into account how many time  SetBinContents() has been called
   m_rep->SetEntries( h.allEntries() );
   // fill stat vector
-  std::array<double, 11> stat = {{sumw, sumw2, sumwx, sumwx2, sumwy, sumwy2, sumwxy}};
+  std::array<double, 11> stat = { { sumw, sumw2, sumwx, sumwx2, sumwy, sumwy2, sumwxy } };
   m_rep->PutStats( stat.data() );
 }
 

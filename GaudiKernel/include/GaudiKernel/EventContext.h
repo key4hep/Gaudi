@@ -130,10 +130,10 @@ public:
 
 private:
   EventIDBase  m_eid{};
-  ContextEvt_t m_evt_num{INVALID_CONTEXT_EVT};
-  ContextID_t  m_evt_slot{INVALID_CONTEXT_ID};
-  ContextID_t  m_sub_slot{INVALID_CONTEXT_ID};
-  bool         m_valid{false};
+  ContextEvt_t m_evt_num{ INVALID_CONTEXT_EVT };
+  ContextID_t  m_evt_slot{ INVALID_CONTEXT_ID };
+  ContextID_t  m_sub_slot{ INVALID_CONTEXT_ID };
+  bool         m_valid{ false };
 
   std::any m_extension;
 };

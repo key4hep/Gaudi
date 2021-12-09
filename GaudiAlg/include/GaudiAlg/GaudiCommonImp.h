@@ -95,12 +95,12 @@ TOOL* GaudiCommon<PBASE>::tool( std::string_view type, std::string_view name, co
   const StatusCode sc   = this->toolSvc()->retrieveTool( type, name, Tool, parent, create );
   if ( sc.isFailure() ) {
     Exception(
-        std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'/'" ).append( name ).append( "'" ),
+        std::string{ "tool():: Could not retrieve Tool '" }.append( type ).append( "'/'" ).append( name ).append( "'" ),
         sc );
   }
   if ( !Tool ) {
-    Exception(
-        std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'/'" ).append( name ).append( "'" ) );
+    Exception( std::string{ "tool():: Could not retrieve Tool '" }.append( type ).append( "'/'" ).append( name ).append(
+        "'" ) );
   }
   // insert tool into list of tools
   PBASE::registerTool( Tool );
@@ -120,9 +120,9 @@ TOOL* GaudiCommon<PBASE>::tool( std::string_view type, const IInterface* parent,
   TOOL*            Tool = nullptr;
   const StatusCode sc   = this->toolSvc()->retrieveTool( type, Tool, parent, create );
   if ( sc.isFailure() ) {
-    Exception( std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'" ), sc );
+    Exception( std::string{ "tool():: Could not retrieve Tool '" }.append( type ).append( "'" ), sc );
   }
-  if ( !Tool ) { Exception( std::string{"tool():: Could not retrieve Tool '"}.append( type ).append( "'" ) ); }
+  if ( !Tool ) { Exception( std::string{ "tool():: Could not retrieve Tool '" }.append( type ).append( "'" ) ); }
   // add the tool into the list of known tools to be properly released
   PBASE::registerTool( Tool );
   m_managedTools.push_back( Tool );
@@ -144,7 +144,7 @@ SmartIF<SERVICE> GaudiCommon<PBASE>::svc( std::string_view name, const bool crea
     s = *it;
     // check the results
     if ( !s ) {
-      Exception( std::string{"svc():: Could not retrieve Svc '"}.append( name ).append( "'" ), StatusCode::FAILURE );
+      Exception( std::string{ "svc():: Could not retrieve Svc '" }.append( name ).append( "'" ), StatusCode::FAILURE );
     }
   } else {
     auto baseSvc = this->svcLoc()->service( name, create );
@@ -152,7 +152,7 @@ SmartIF<SERVICE> GaudiCommon<PBASE>::svc( std::string_view name, const bool crea
     s = baseSvc;
     // check the results
     if ( !baseSvc || !s ) {
-      Exception( std::string{"svc():: Could not retrieve Svc '"}.append( name ).append( "'" ), StatusCode::FAILURE );
+      Exception( std::string{ "svc():: Could not retrieve Svc '" }.append( name ).append( "'" ), StatusCode::FAILURE );
     }
     // add the tool into list of known tools, to be properly released
     addToServiceList( baseSvc );

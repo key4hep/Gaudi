@@ -182,7 +182,7 @@ public:
 private:
   enum Type { Invalid = 0, RunEvent = 1 << 1, TimeStamp = 1 << 2, LumiEvent = 1 << 3, RunLumi = 1 << 4 };
 
-  unsigned m_type{Invalid};
+  unsigned m_type{ Invalid };
 
   void setRE() { m_type |= RunEvent; }
   void setTS() { m_type |= TimeStamp; }
@@ -190,23 +190,23 @@ private:
   void setRL() { m_type |= RunLumi; }
 
   /// run number
-  number_type m_run_number{UNDEFNUM};
+  number_type m_run_number{ UNDEFNUM };
 
   /// event number
-  event_number_t m_event_number{UNDEFEVT};
+  event_number_t m_event_number{ UNDEFEVT };
 
   /// posix time in seconds since 1970/01/01
-  number_type m_time_stamp{UNDEFNUM};
+  number_type m_time_stamp{ UNDEFNUM };
 
   /// time stamp ns - ns time offset for time_stamp, 32 bit unsigned
-  number_type m_time_stamp_ns_offset{UNDEFNUM};
+  number_type m_time_stamp_ns_offset{ UNDEFNUM };
 
   /// luminosity block number:
   /// the number which uniquely tags a luminosity block within a run
-  number_type m_lumi_block{UNDEFNUM};
+  number_type m_lumi_block{ UNDEFNUM };
 
   /// bunch crossing ID,  32 bit unsigned
-  number_type m_bunch_crossing_id{UNDEFNUM};
+  number_type m_bunch_crossing_id{ UNDEFNUM };
 };
 
 inline EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs ) {

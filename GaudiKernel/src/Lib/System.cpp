@@ -58,7 +58,7 @@
 #  include "windows.h"
 #  undef NOMSG
 #  undef NOGDI
-static const std::array<const char*, 1> SHLIB_SUFFIXES = {".dll"};
+static const std::array<const char*, 1> SHLIB_SUFFIXES = { ".dll" };
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
 #  include "libgen.h"
 #  include "sys/times.h"
@@ -81,9 +81,9 @@ struct HMODULE {
 #  endif // HPUX or not...
 
 #  ifdef __APPLE__
-static const std::array<const char*, 2> SHLIB_SUFFIXES = {".dylib", ".so"};
+static const std::array<const char*, 2> SHLIB_SUFFIXES = { ".dylib", ".so" };
 #  else
-static const std::array<const char*, 1> SHLIB_SUFFIXES = {".so"};
+static const std::array<const char*, 1> SHLIB_SUFFIXES = { ".so" };
 #  endif // __APPLE__
 
 #endif // Windows or Unix...

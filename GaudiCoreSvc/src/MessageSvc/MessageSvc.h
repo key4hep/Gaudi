@@ -98,7 +98,7 @@ public:
 
   // Implementation of IMessageSvc::setDefaultStream()
   void setDefaultStream( std::ostream* stream ) override {
-    auto lock       = std::scoped_lock{m_reportMutex};
+    auto lock       = std::scoped_lock{ m_reportMutex };
     m_defaultStream = stream;
   }
 
@@ -134,51 +134,51 @@ protected:
   virtual void i_reportMessage( const StatusCode& code, std::string_view source );
 
 private:
-  Gaudi::Property<std::string>  m_defaultFormat{this, "Format", Message::getDefaultFormat(), ""};
-  Gaudi::Property<std::string>  m_defaultTimeFormat{this, "timeFormat", Message::getDefaultTimeFormat(), ""};
-  Gaudi::Property<bool>         m_stats{this, "showStats", false, ""};
-  Gaudi::Property<unsigned int> m_statLevel{this, "statLevel", 0, ""};
+  Gaudi::Property<std::string>  m_defaultFormat{ this, "Format", Message::getDefaultFormat(), "" };
+  Gaudi::Property<std::string>  m_defaultTimeFormat{ this, "timeFormat", Message::getDefaultTimeFormat(), "" };
+  Gaudi::Property<bool>         m_stats{ this, "showStats", false, "" };
+  Gaudi::Property<unsigned int> m_statLevel{ this, "statLevel", 0, "" };
 
-  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_thresholdProp{{{/*ignored*/},
-                                                                                          {this, "setVerbose"},
-                                                                                          {this, "setDebug"},
-                                                                                          {this, "setInfo"},
-                                                                                          {this, "setWarning"},
-                                                                                          {this, "setError"},
-                                                                                          {this, "setFatal"},
-                                                                                          {this, "setAlways"}}};
+  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_thresholdProp{ { { /*ignored*/ },
+                                                                                            { this, "setVerbose" },
+                                                                                            { this, "setDebug" },
+                                                                                            { this, "setInfo" },
+                                                                                            { this, "setWarning" },
+                                                                                            { this, "setError" },
+                                                                                            { this, "setFatal" },
+                                                                                            { this, "setAlways" } } };
 
-  Gaudi::Property<bool> m_color{this, "useColors", false, ""};
+  Gaudi::Property<bool> m_color{ this, "useColors", false, "" };
 
-  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_logColors{{{/*ignored*/},
-                                                                                      {this, "verboseColorCode"},
-                                                                                      {this, "debugColorCode"},
-                                                                                      {this, "infoColorCode"},
-                                                                                      {this, "warningColorCode"},
-                                                                                      {this, "errorColorCode"},
-                                                                                      {this, "fatalColorCode"},
-                                                                                      {this, "alwaysColorCode"}}};
+  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_logColors{ { { /*ignored*/ },
+                                                                                        { this, "verboseColorCode" },
+                                                                                        { this, "debugColorCode" },
+                                                                                        { this, "infoColorCode" },
+                                                                                        { this, "warningColorCode" },
+                                                                                        { this, "errorColorCode" },
+                                                                                        { this, "fatalColorCode" },
+                                                                                        { this, "alwaysColorCode" } } };
 
-  std::array<Gaudi::Property<int>, MSG::NUM_LEVELS> m_msgLimit{{{this, "defaultLimit", 500},
-                                                                {this, "verboseLimit", 500},
-                                                                {this, "debugLimit", 500},
-                                                                {this, "infoLimit", 500},
-                                                                {this, "warningLimit", 500},
-                                                                {this, "errorLimit", 500},
-                                                                {this, "fatalLimit", 500},
-                                                                {this, "alwaysLimit", 0}}};
+  std::array<Gaudi::Property<int>, MSG::NUM_LEVELS> m_msgLimit{ { { this, "defaultLimit", 500 },
+                                                                  { this, "verboseLimit", 500 },
+                                                                  { this, "debugLimit", 500 },
+                                                                  { this, "infoLimit", 500 },
+                                                                  { this, "warningLimit", 500 },
+                                                                  { this, "errorLimit", 500 },
+                                                                  { this, "fatalLimit", 500 },
+                                                                  { this, "alwaysLimit", 0 } } };
 
-  Gaudi::Property<bool> m_suppress{this, "enableSuppression", false, ""};
-  Gaudi::Property<bool> m_inactCount{this, "countInactive", false, &MessageSvc::setupInactCount, ""};
+  Gaudi::Property<bool> m_suppress{ this, "enableSuppression", false, "" };
+  Gaudi::Property<bool> m_inactCount{ this, "countInactive", false, &MessageSvc::setupInactCount, "" };
 
   Gaudi::Property<std::vector<std::string>> m_tracedInactiveSources{
       this,
       "tracedInactiveSources",
       {},
-      "for each message source specified,  print a stack trace for the unprotected and unseen messages"};
+      "for each message source specified,  print a stack trace for the unprotected and unseen messages" };
 
   Gaudi::Property<std::map<std::string, std::string, std::less<>>> m_loggedStreamsName{
-      this, "loggedStreams", {}, "MessageStream sources we want to dump into a logfile"};
+      this, "loggedStreams", {}, "MessageStream sources we want to dump into a logfile" };
 
   std::ostream* m_defaultStream = &std::cout; ///< Pointer to the output stream.
   Message       m_defaultMessage;             ///< Default Message
@@ -191,7 +191,7 @@ private:
   /// Private helper class to keep the count of messages of a type (MSG::LEVEL).
   struct MsgAry final {
     /// Internal array of counters.
-    std::array<int, MSG::NUM_LEVELS> msg = {{0}};
+    std::array<int, MSG::NUM_LEVELS> msg = { { 0 } };
     /// Default constructor.
     MsgAry() = default;
   };

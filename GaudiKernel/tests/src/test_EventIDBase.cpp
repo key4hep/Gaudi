@@ -19,9 +19,9 @@
 BOOST_AUTO_TEST_CASE( comparison ) {
   // comparison and sorting
   {
-    EventIDBase ei1{100, 1};
-    EventIDBase ei2{100, 2};
-    EventIDBase ei3{101, 1};
+    EventIDBase ei1{ 100, 1 };
+    EventIDBase ei2{ 100, 2 };
+    EventIDBase ei3{ 101, 1 };
 
     BOOST_CHECK( ei1.isRunEvent() );
     BOOST_CHECK( ei1.isValid() );
@@ -58,13 +58,13 @@ BOOST_AUTO_TEST_CASE( comparison ) {
     ei1a = ei2;
     BOOST_CHECK( ei1a == ei2 );
 
-    std::array<EventIDBase, 3> a = {ei2, ei1, ei3};
+    std::array<EventIDBase, 3> a = { ei2, ei1, ei3 };
     std::sort( begin( a ), end( a ), EventIDBase::SortByRunEvent() );
     BOOST_CHECK( a[0] == ei3 );
     BOOST_CHECK( a[1] == ei2 );
     BOOST_CHECK( a[2] == ei1 );
 
-    std::array<EventIDBase*, 3> ap = {&ei1, &ei3, &ei2};
+    std::array<EventIDBase*, 3> ap = { &ei1, &ei3, &ei2 };
     std::sort( begin( ap ), end( ap ), EventIDBase::SortByRunEvent() );
 
     BOOST_CHECK( ap[0] == &ei3 );

@@ -70,14 +70,14 @@ namespace GaudiKernelTest {
 
       // Test move of a vector
       {
-        auto  adw = AnyDataWrapper<V>( {1, 2, 3, 4} );
+        auto  adw = AnyDataWrapper<V>( { 1, 2, 3, 4 } );
         VSize s4( 4 );
         CPPUNIT_ASSERT_EQUAL( s4, ( adw.getData() ).size() );
       }
 
       // Making sure that the vector is copied
       {
-        V myvector{1, 2, 3, 4};
+        V myvector{ 1, 2, 3, 4 };
         CPPUNIT_ASSERT_EQUAL( static_cast<VSize>( 4 ), myvector.size() );
 
         auto adw = AnyDataWrapper<V>( std::move( myvector ) );
@@ -89,7 +89,7 @@ namespace GaudiKernelTest {
 
       // Trying with std::unique_ptr
       {
-        auto myvector = std::make_unique<V>( V{1, 2, 3, 4} );
+        auto myvector = std::make_unique<V>( V{ 1, 2, 3, 4 } );
         auto adw      = AnyDataWrapper<decltype( myvector )>( std::move( myvector ) );
         CPPUNIT_ASSERT_EQUAL( static_cast<VSize>( 4 ), ( adw.getData() )->size() );
       }

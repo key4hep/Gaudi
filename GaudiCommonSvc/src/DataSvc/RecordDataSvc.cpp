@@ -108,7 +108,7 @@ void RecordDataSvc::handle( const Incident& incident ) {
       if ( !m_incidentName.empty() ) {
         auto incidents = m_incidents;
         m_incidents.clear();
-        for ( const auto& i : incidents ) m_incidentSvc->fireIncident( Incident{i, m_incidentName} );
+        for ( const auto& i : incidents ) m_incidentSvc->fireIncident( Incident{ i, m_incidentName } );
       }
     }
   } else if ( incident.type() == m_saveIncidentName ) {

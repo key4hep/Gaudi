@@ -65,7 +65,7 @@ public:
     if ( !Gaudi::Concurrency::ThreadInitDone ) {
       log << MSG::DEBUG << "New thread detected: 0x" << std::hex << pthread_self() << std::dec
           << ". Doing thread local initialization." << endmsg;
-      if ( SmartIF<IThreadPoolSvc> tps{m_serviceLocator->service( "ThreadPoolSvc" )} ) {
+      if ( SmartIF<IThreadPoolSvc> tps{ m_serviceLocator->service( "ThreadPoolSvc" ) } ) {
         tps->initThisThread();
       } else {
         log << MSG::ERROR << "Unable to get the ThreadPoolSvc to trigger thread local initialization" << endmsg;
@@ -116,7 +116,7 @@ private:
   IAlgExecStateSvc*      m_aess;
   SmartIF<ISvcLocator>   m_serviceLocator;
   // Marks the task as CPU-blocking or not
-  bool m_blocking{false};
+  bool m_blocking{ false };
 };
 
 #endif

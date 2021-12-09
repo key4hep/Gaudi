@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( PropertyBinding ) {
   auto& jos = Gaudi::svcLocator()->getOptsSvc();
 
   TestPropertyHolder           ph;
-  Gaudi::Property<std::string> p1{&ph, "p1", "v1"};
+  Gaudi::Property<std::string> p1{ &ph, "p1", "v1" };
 
   ph.bindPropertiesTo( jos );
 

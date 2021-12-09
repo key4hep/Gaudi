@@ -33,7 +33,7 @@ SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, std::string_view name
   // locate the auditor factory, instantiate a new auditor, initialize it
   StatusCode                   sc;
   Gaudi::Utils::TypeNameString item( name );
-  SmartIF<IAuditor> aud{Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release()};
+  SmartIF<IAuditor> aud{ Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release() };
   if ( aud ) {
     if ( m_targetState >= Gaudi::StateMachine::INITIALIZED ) {
       sc = aud->sysInitialize();
@@ -54,7 +54,7 @@ SmartIF<IAuditor> AuditorSvc::findAuditor_( std::string_view name ) {
                           [item_name = Gaudi::Utils::TypeNameString( name ).name()]( const IAuditor* i ) {
                             return i->name() == item_name;
                           } );
-  return SmartIF<IAuditor>{it != std::end( m_pAudList ) ? *it : nullptr};
+  return SmartIF<IAuditor>{ it != std::end( m_pAudList ) ? *it : nullptr };
 }
 
 StatusCode AuditorSvc::syncAuditors_() {

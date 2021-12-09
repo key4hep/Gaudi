@@ -86,16 +86,16 @@ protected:
   mutable SmartIF<IAddressCreator> m_pAddrCreator;
 
   // Properties
-  Gaudi::Property<std::string> m_tupleSvcName{this, "CnvService", "EvtTupleSvc",
-                                              "name of the event collection service"};
-  Gaudi::Property<std::string> m_authentication{this, "Authentication", "", "authentication string (if needed)"};
-  Gaudi::Property<std::string> m_cntName{this, "Container", "B2PiPi", "container name"};
-  Gaudi::Property<std::string> m_itemName{this, "Item", "Address", "item name"};
-  Gaudi::Property<std::string> m_criteria{this, "Criteria", "", "criteria"};
-  Gaudi::Property<std::string> m_database{this, "DB", "", "datafile name"};
-  Gaudi::Property<std::string> m_dbType{this, "DbType", "", "database type identifier"};
-  Gaudi::Property<std::string> m_dbSvc{this, "DbService", "", "database service (exclusive property with db type)"};
-  Gaudi::Property<std::string> m_statement{this, "Function", "NTuple::Selector", "selector name"};
+  Gaudi::Property<std::string> m_tupleSvcName{ this, "CnvService", "EvtTupleSvc",
+                                               "name of the event collection service" };
+  Gaudi::Property<std::string> m_authentication{ this, "Authentication", "", "authentication string (if needed)" };
+  Gaudi::Property<std::string> m_cntName{ this, "Container", "B2PiPi", "container name" };
+  Gaudi::Property<std::string> m_itemName{ this, "Item", "Address", "item name" };
+  Gaudi::Property<std::string> m_criteria{ this, "Criteria", "", "criteria" };
+  Gaudi::Property<std::string> m_database{ this, "DB", "", "datafile name" };
+  Gaudi::Property<std::string> m_dbType{ this, "DbType", "", "database type identifier" };
+  Gaudi::Property<std::string> m_dbSvc{ this, "DbService", "", "database service (exclusive property with db type)" };
+  Gaudi::Property<std::string> m_statement{ this, "Function", "NTuple::Selector", "selector name" };
 
 public:
   /// Service override: Initialize service

@@ -99,22 +99,22 @@ private:
   /// Set the width of a stream.
   void setWidth( const std::string& formatArg ) const;
 
-  std::string         m_message;                          ///< The message text
-  std::string         m_source{"UNKNOWN"};                ///< The message source
-  int                 m_type{0};                          ///< The message type/level
-  mutable std::string m_format{DEFAULT_FORMAT};           ///< The format string
-  mutable std::string m_time_format{DEFAULT_TIME_FORMAT}; ///< Time format string
-  mutable std::string m_formatted_msg;                    ///< Formatted message
-  mutable char        m_fill{' '};                        ///< Current fill character
-  mutable int         m_width{0};                         ///< Current field width
-  mutable bool        m_left{true};                       ///< The message alignment
+  std::string         m_message;                            ///< The message text
+  std::string         m_source{ "UNKNOWN" };                ///< The message source
+  int                 m_type{ 0 };                          ///< The message type/level
+  mutable std::string m_format{ DEFAULT_FORMAT };           ///< The format string
+  mutable std::string m_time_format{ DEFAULT_TIME_FORMAT }; ///< Time format string
+  mutable std::string m_formatted_msg;                      ///< Formatted message
+  mutable char        m_fill{ ' ' };                        ///< Current fill character
+  mutable int         m_width{ 0 };                         ///< Current field width
+  mutable bool        m_left{ true };                       ///< The message alignment
 
   /** @name Event identifiers */
   //@{
-  EventContext::ContextID_t  m_ecSlot{Gaudi::Hive::currentContext().slot()};     ///< Event slot
-  EventContext::ContextEvt_t m_ecEvt{Gaudi::Hive::currentContext().evt()};       ///< Event number
-  EventIDBase                m_ecEvtId{Gaudi::Hive::currentContext().eventID()}; ///< Full event ID
-  pthread_t                  m_ecThrd{pthread_self()};                           ///< Thread ID
+  EventContext::ContextID_t  m_ecSlot{ Gaudi::Hive::currentContext().slot() };     ///< Event slot
+  EventContext::ContextEvt_t m_ecEvt{ Gaudi::Hive::currentContext().evt() };       ///< Event number
+  EventIDBase                m_ecEvtId{ Gaudi::Hive::currentContext().eventID() }; ///< Full event ID
+  pthread_t                  m_ecThrd{ pthread_self() };                           ///< Thread ID
   //@}
 
   /** @name Formatting characters */

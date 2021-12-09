@@ -151,7 +151,7 @@ Time Time::build( bool local, const tm& base, TimeSpan diff /* = 0 */ ) {
 tm Time::split( bool local, int* nsecpart /* = 0 */ ) const {
   if ( nsecpart ) *nsecpart = (int)( m_nsecs % SEC_NSECS );
 
-  time_t val = ( time_t )( m_nsecs / SEC_NSECS );
+  time_t val = (time_t)( m_nsecs / SEC_NSECS );
 
   tm retval;
   if ( local )
@@ -220,7 +220,7 @@ Time::ValueType Time::utcoffset( int* daylight /* = 0 */ ) const {
   if ( daylight ) *daylight = localtm.tm_isdst;
 #else
   // Adapted from WINE.
-  time_t utctime = ( time_t )( m_nsecs / SEC_NSECS );
+  time_t utctime = (time_t)( m_nsecs / SEC_NSECS );
   tm     localtm;
   localtime_s( &localtm, &utctime );
   int savedaylight = localtm.tm_isdst;

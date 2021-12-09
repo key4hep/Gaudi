@@ -57,14 +57,14 @@ public:
   void handle( const Incident& incident ) override;
 
 private:
-  Gaudi::Property<std::string> m_dataSvcName{this, "DataService", "EventDataSvc", "Name of the data service to use"};
-  Gaudi::Property<std::string> m_rootNode{this, "Root", "", "Path to the element from which to start the scan"};
+  Gaudi::Property<std::string> m_dataSvcName{ this, "DataService", "EventDataSvc", "Name of the data service to use" };
+  Gaudi::Property<std::string> m_rootNode{ this, "Root", "", "Path to the element from which to start the scan" };
   Gaudi::Property<bool>        m_scanOnBeginEvent{
       this, "ScanOnBeginEvent", false,
-      "If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)"};
+      "If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)" };
   Gaudi::Property<bool> m_ignoreOriginChange{
       this, "IgnoreOriginChange", false,
-      "Disable the detection of the change in the origin of object between the BeginEvent and the scan"};
+      "Disable the detection of the change in the origin of object between the BeginEvent and the scan" };
 
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;

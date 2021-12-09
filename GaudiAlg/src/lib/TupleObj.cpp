@@ -121,11 +121,11 @@ namespace {
     using map_t     = struct tuple_type_<typename C::element_type>;
     auto [iter, ok] = container.emplace( name );
     if ( !ok ) { parent->Error( fmt::format( "{} ('{}'): item is not inserted", map_t::typ, name ) ).ignore(); }
-    StatusCode sc = addItem( std::string{name}, *iter );
+    StatusCode sc = addItem( std::string{ name }, *iter );
     if ( sc.isFailure() ) {
       parent->Error( fmt::format( "{} ('{}'): item is not added", map_t::typ, name ), sc ).ignore();
     }
-    if ( !parent->addItem( std::string{name}, map_t::fmt ) ) {
+    if ( !parent->addItem( std::string{ name }, map_t::fmt ) ) {
       parent->Error( fmt::format( "{} ('{}'): item is not unique", map_t::typ, name ) ).ignore();
     }
     return &*iter;
@@ -135,7 +135,7 @@ namespace {
   auto find_or_create( Tuples::TupleObj* parent, std::string_view name, C& map, ExtraArgs&&... ea ) {
     auto found = map.find( name );
     return found != map.end() ? &*found : create_( parent, map, name, [&]( std::string_view n, auto& i ) {
-      return parent->tuple()->addItem( std::string{n}, i, std::forward<ExtraArgs>( ea )... );
+      return parent->tuple()->addItem( std::string{ n }, i, std::forward<ExtraArgs>( ea )... );
     } );
   }
 
@@ -203,7 +203,7 @@ namespace Tuples {
     private:
       long& get( std::string_view sv ) {
         auto i = m_map.find( sv );
-        if ( UNLIKELY( i == m_map.end() ) ) { i = m_map.emplace( std::pair{std::string{sv}, 0} ).first; }
+        if ( UNLIKELY( i == m_map.end() ) ) { i = m_map.emplace( std::pair{ std::string{ sv }, 0 } ).first; }
         return i->second;
       }
       long get( std::string_view sv ) const {
@@ -220,7 +220,7 @@ namespace Tuples {
      *  @author Vanya BELYAEV Ivan.Belyaev@Ivan.Belyaev@itep.ru
      *  @date   2004-01-19
      */
-    static Counter s_InstanceCounter{" Create/Destroy      (mis)balance "};
+    static Counter s_InstanceCounter{ " Create/Destroy      (mis)balance " };
   } // namespace Local
 } // namespace Tuples
 // ============================================================================
@@ -385,7 +385,7 @@ Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( std::string_view name, Tuple
   auto found = m_farrays.find( name );
   if ( m_farrays.end() != found ) return &*found;
   return create_( this, m_farrays, name, [&]( std::string_view n, FArray& i ) {
-    return this->tuple()->addIndexedItem( std::string{n}, *length, i );
+    return this->tuple()->addIndexedItem( std::string{ n }, *length, i );
   } );
 }
 // ============================================================================
@@ -395,8 +395,9 @@ Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( std::string_view name, const
   // existing array ?
   auto found = m_arraysf.find( name );
   if ( m_arraysf.end() != found ) return &*found;
-  return create_( this, m_arraysf, name,
-                  [&]( std::string_view n, FArray& i ) { return this->tuple()->addItem( std::string{n}, rows, i ); } );
+  return create_( this, m_arraysf, name, [&]( std::string_view n, FArray& i ) {
+    return this->tuple()->addItem( std::string{ n }, rows, i );
+  } );
 }
 // ============================================================================
 // retrieve (book on demand) matrix-items for ntuple
@@ -407,7 +408,7 @@ Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( std::string_view name, Tup
   auto found = m_fmatrices.find( name );
   if ( m_fmatrices.end() != found ) return &*found;
   return create_( this, m_fmatrices, name, [&]( std::string_view n, FMatrix& i ) {
-    return this->tuple()->addIndexedItem( std::string{n}, *length, cols, i );
+    return this->tuple()->addIndexedItem( std::string{ n }, *length, cols, i );
   } );
 }
 // ============================================================================
@@ -419,7 +420,7 @@ Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( std::string_view name, con
   auto found = m_matricesf.find( name );
   if ( m_matricesf.end() != found ) return &*found;
   return create_( this, m_matricesf, name, [&]( std::string_view n, FMatrix& i ) {
-    return this->tuple()->addItem( std::string{n}, rows, cols, i );
+    return this->tuple()->addItem( std::string{ n }, rows, cols, i );
   } );
 }
 // ============================================================================

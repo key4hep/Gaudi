@@ -94,7 +94,7 @@ namespace Gaudi {
 
           if ( props.find( "ClassName" ) == end( props ) ) props.emplace( "ClassName", Details::demangle<T>() );
 
-          Registry::instance().add( id, {libraryName(), std::move( f ), std::move( props )} );
+          Registry::instance().add( id, { libraryName(), std::move( f ), std::move( props ) } );
         }
 
         DeclareFactory( Details::Registry::Properties props )
@@ -116,7 +116,7 @@ namespace Gaudi {
 #define _PS_V2_DECLARE_COMPONENT_WITH_ID( type, id )                                                                   \
   namespace {                                                                                                          \
     ::Gaudi::PluginService::v2::DeclareFactory<type> _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME{                           \
-        ::Gaudi::PluginService::v2::Details::stringify_id( id )};                                                      \
+        ::Gaudi::PluginService::v2::Details::stringify_id( id ) };                                                     \
   }
 
 #define _PS_V2_DECLARE_FACTORY( type, factory )                                                                        \
@@ -127,7 +127,7 @@ namespace Gaudi {
 #define _PS_V2_DECLARE_FACTORY_WITH_ID( type, id, factory )                                                            \
   namespace {                                                                                                          \
     ::Gaudi::PluginService::v2::DeclareFactory<type, factory> _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME{                  \
-        ::Gaudi::PluginService::v2::Details::stringify_id( id )};                                                      \
+        ::Gaudi::PluginService::v2::Details::stringify_id( id ) };                                                     \
   }
 
 #if GAUDI_PLUGIN_SERVICE_USE_V2

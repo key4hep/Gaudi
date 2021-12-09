@@ -94,7 +94,7 @@ void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib ) {
   if ( itr != m_dat.end() ) {
     ++( itr->second.count );
   } else {
-    m_dat.emplace( key, StatCodeDat{fnc, rlib} );
+    m_dat.emplace( key, StatCodeDat{ fnc, rlib } );
   }
 }
 

@@ -144,8 +144,8 @@ namespace GaudiMP {
     Py_INCREF( libpyroot_pymodule );
     PyTypeObject* pytype = (PyTypeObject*)objectproxy_pytype;
 
-    static PyMethodDef s_pdefExp = {(char*)"_ObjectProxy__expand__", (PyCFunction)ObjectProxyExpand, METH_VARARGS,
-                                    (char*)"internal function"};
+    static PyMethodDef s_pdefExp = { (char*)"_ObjectProxy__expand__", (PyCFunction)ObjectProxyExpand, METH_VARARGS,
+                                     (char*)"internal function" };
 
     PyObject* pymname = PyString_FromString( PyModule_GetName( libpyroot_pymodule ) );
     gExpand           = PyCFunction_NewEx( &s_pdefExp, NULL, pymname );
@@ -159,8 +159,8 @@ namespace GaudiMP {
       return;
     }
 
-    static PyMethodDef s_pdefRed = {(char*)"__reduce__", (PyCFunction)ObjectProxyReduce, METH_NOARGS,
-                                    (char*)"internal function"};
+    static PyMethodDef s_pdefRed = { (char*)"__reduce__", (PyCFunction)ObjectProxyReduce, METH_NOARGS,
+                                     (char*)"internal function" };
 
     PyObject* descr = PyDescr_NewMethod( pytype, &s_pdefRed );
     isOk            = PyDict_SetItemString( pytype->tp_dict, s_pdefRed.ml_name, descr ) == 0;

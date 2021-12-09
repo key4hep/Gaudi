@@ -196,7 +196,7 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple( const TupleID& ID, const std::string& 
 
   // book new ntuple
   if ( !produceNTuples() ) {
-    auto r = m_nTupleMap.insert( nTupleMapItem{title, ID, createNTuple( title, nullptr, clid )} );
+    auto r = m_nTupleMap.insert( nTupleMapItem{ title, ID, createNTuple( title, nullptr, clid ) } );
     if ( !r.second ) this->Error( "Failure to createNTuple" ).ignore();
     return Tuple( r.first->tuple );
   }
@@ -218,7 +218,7 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple( const TupleID& ID, const std::string& 
                   << tup->registry()->identifier() << "'" << endmsg;
   }
 
-  auto r = m_nTupleMap.insert( nTupleMapItem{title, ID, createNTuple( title, tup, clid )} );
+  auto r = m_nTupleMap.insert( nTupleMapItem{ title, ID, createNTuple( title, tup, clid ) } );
   if ( !r.second ) this->Error( "Failure to createNTuple" ).ignore();
   return Tuple( r.first->tuple );
   //
@@ -245,7 +245,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol( const TupleID& ID, const std::string& 
 
   // book new ntuple
   if ( !produceEvtCols() ) {
-    auto r = m_evtColMap.insert( nTupleMapItem{title, ID, createEvtCol( title, nullptr, clid )} );
+    auto r = m_evtColMap.insert( nTupleMapItem{ title, ID, createEvtCol( title, nullptr, clid ) } );
     if ( !r.second ) this->Error( "Failure to createEvtCol" ).ignore();
     return Tuple( r.first->tuple );
   }
@@ -266,7 +266,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol( const TupleID& ID, const std::string& 
     this->debug() << "Booked EvtCol '" << title << "' ID=" << tID << "' Path='" << evtColPath() << "' TS='"
                   << tup->registry()->identifier() << "'" << endmsg;
   }
-  auto r = m_evtColMap.insert( nTupleMapItem{title, ID, createEvtCol( title, tup, clid )} );
+  auto r = m_evtColMap.insert( nTupleMapItem{ title, ID, createEvtCol( title, tup, clid ) } );
   if ( !r.second ) this->Error( "Failure to createEvtCol" ).ignore();
   return Tuple( r.first->tuple );
 }

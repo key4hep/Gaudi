@@ -52,9 +52,9 @@ public:
   void reset() { *this = AlgExecState{}; }
 
 private:
-  bool       m_filterPassed{true};
-  State      m_state{State::None};
-  StatusCode m_execStatus{StatusCode::FAILURE};
+  bool       m_filterPassed{ true };
+  State      m_state{ State::None };
+  StatusCode m_execStatus{ StatusCode::FAILURE };
 };
 
 inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
@@ -72,7 +72,7 @@ inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
 namespace EventStatus {
   enum Status { Invalid = 0, Success = 1, AlgFail = 2, AlgStall = 3, Other = 4 };
   inline std::ostream& operator<<( std::ostream& os, Status s ) {
-    static constexpr std::array<const char*, 5> label{"Invalid", "Success", "AlgFail", "AlgStall", "Other"};
+    static constexpr std::array<const char*, 5> label{ "Invalid", "Success", "AlgFail", "AlgStall", "Other" };
     return os << label.at( s );
   }
 } // namespace EventStatus

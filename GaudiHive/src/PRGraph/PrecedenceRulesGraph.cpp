@@ -219,7 +219,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::initialize() {
     if ( serviceLocator()->existsService( "CondSvc" ) ) {
-      SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc" )};
+      SmartIF<ICondSvc> condSvc{ serviceLocator()->service( "CondSvc" ) };
       if ( condSvc.isValid() ) {
         info() << "CondSvc found. DF precedence rules will be augmented with 'Conditions'" << endmsg;
         m_conditionsRealmEnabled = true;
@@ -228,7 +228,7 @@ namespace concurrency {
 
     // Detach condition algorithms from the CF realm
     if ( m_conditionsRealmEnabled ) {
-      SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
+      SmartIF<ICondSvc> condSvc{ serviceLocator()->service( "CondSvc", false ) };
       auto&             condAlgs = condSvc->condAlgs();
       for ( const auto algo : condAlgs ) {
         auto itA = m_algoNameToAlgoNodeMap.find( algo->name() );
@@ -270,7 +270,7 @@ namespace concurrency {
     // Find detached conditions algs in interesting states
     if ( m_conditionsRealmEnabled ) {
       bool              firstPrint = true;
-      SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
+      SmartIF<ICondSvc> condSvc{ serviceLocator()->service( "CondSvc", false ) };
       auto&             condAlgs = condSvc->condAlgs();
       for ( const auto algo : condAlgs ) {
         auto itA = m_algoNameToAlgoNodeMap.find( algo->name() );
@@ -434,7 +434,7 @@ namespace concurrency {
       // Mirror the action above in the BGL-based graph
       if ( m_enableAnalysis ) boost::add_vertex( DataProps( dataPath ), m_PRGraph );
     } else {
-      SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
+      SmartIF<ICondSvc> condSvc{ serviceLocator()->service( "CondSvc", false ) };
       if ( condSvc->isRegistered( dataPath ) ) {
         dataNode = std::make_unique<concurrency::ConditionNode>( *this, dataPath, condSvc );
         ON_VERBOSE verbose() << "  ConditionNode " << dataPath << " added @ " << dataNode.get() << endmsg;
@@ -534,7 +534,7 @@ namespace concurrency {
     auto vp = vertices( m_PRGraph );
     auto i  = std::find_if( vp.first, vp.second, [&]( const PRVertexDesc& v ) {
       return std::visit( precedence::VertexName(), m_PRGraph[v] ) == name;
-    } );
+     } );
     return i != vp.second ? *i : PRVertexDesc{};
   }
 
@@ -689,11 +689,11 @@ namespace concurrency {
         te.event     = slot.eventContext->evt();
         timelineSvc->getTimelineEvent( te );
 
-        long int runtime{std::chrono::duration_cast<std::chrono::microseconds>( te.end - te.start ).count()};
+        long int runtime{ std::chrono::duration_cast<std::chrono::microseconds>( te.end - te.start ).count() };
         m_precTrace[*vp.first].m_runtime = runtime;
 
         long long int start{
-            std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count()};
+            std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count() };
         m_precTrace[*vp.first].m_start = start;
         if ( start != 0 ) start_times.push_back( start );
       }

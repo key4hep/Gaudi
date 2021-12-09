@@ -120,13 +120,13 @@ public:
   void suppressAction( const std::string&, const Io::Action& ) override;
 
 private:
-  Gaudi::Property<std::string> m_logfile{this, "LogFile"};
-  Gaudi::Property<bool>        m_printSummary{this, "PrintSummary", false};
-  Gaudi::Property<bool>        m_loadRootHandler{this, "LoadROOTHandler", true};
-  Gaudi::Property<bool>        m_loadPosixHandler{this, "LoadPOSIXHandler", true};
+  Gaudi::Property<std::string> m_logfile{ this, "LogFile" };
+  Gaudi::Property<bool>        m_printSummary{ this, "PrintSummary", false };
+  Gaudi::Property<bool>        m_loadRootHandler{ this, "LoadROOTHandler", true };
+  Gaudi::Property<bool>        m_loadPosixHandler{ this, "LoadPOSIXHandler", true };
 
-  Gaudi::Property<std::string> m_ssl_proxy{this, "TSSL_UserProxy", "X509"};
-  Gaudi::Property<std::string> m_ssl_cert{this, "TSSL_CertDir", "X509"};
+  Gaudi::Property<std::string> m_ssl_proxy{ this, "TSSL_UserProxy", "X509" };
+  Gaudi::Property<std::string> m_ssl_cert{ this, "TSSL_CertDir", "X509" };
 
   virtual Io::open_t open( const IoTech&, const std::string& caller, const std::string& fname, const std::string& desc,
                            const IoFlags&, Fd&, void*&,

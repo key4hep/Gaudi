@@ -43,13 +43,13 @@ int main() {
   { // useless scope, just to get the same indentation as QueueingApplication.cpp (most of the code is identical)
 
     Gaudi::Application::Options opts{
-        {"ApplicationMgr.JobOptionsType", "\"NONE\""},
-        {"ApplicationMgr.EventLoop", "\"Gaudi::Examples::QueueingEventLoopMgr/QueueingEventLoopMgr\""},
-        {"ApplicationMgr.OutputLevel", "3"},
-        {"ApplicationMgr.TopAlg", "['GaudiTesting::SleepyAlg/Alg1']"},
-        {"Alg1.SleepTime", "1"},
-        {"QueueingEventLoopMgr.OutputLevel", "2"},
-        {"QueueingEventLoopMgr.Capacity", "3"}};
+        { "ApplicationMgr.JobOptionsType", "\"NONE\"" },
+        { "ApplicationMgr.EventLoop", "\"Gaudi::Examples::QueueingEventLoopMgr/QueueingEventLoopMgr\"" },
+        { "ApplicationMgr.OutputLevel", "3" },
+        { "ApplicationMgr.TopAlg", "['GaudiTesting::SleepyAlg/Alg1']" },
+        { "Alg1.SleepTime", "1" },
+        { "QueueingEventLoopMgr.OutputLevel", "2" },
+        { "QueueingEventLoopMgr.Capacity", "3" } };
 
     auto app = Gaudi::Application( std::move( opts ) );
 
@@ -73,7 +73,7 @@ int main() {
       // - main processing loop
       {
         // - get the IQueueingEventProcessor interface of the application
-        SmartIF<Gaudi::Interfaces::IQueueingEventProcessor> qep{app};
+        SmartIF<Gaudi::Interfaces::IQueueingEventProcessor> qep{ app };
 
         // - processing state informations
         //   - events ready to be processed

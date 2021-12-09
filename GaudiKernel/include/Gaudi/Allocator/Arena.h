@@ -34,7 +34,7 @@ namespace Gaudi::Allocator {
 
     /** Construct an allocator using the given memory resource, which must be valid.
      */
-    constexpr Arena( Resource* resource ) noexcept : m_resource{resource} {}
+    constexpr Arena( Resource* resource ) noexcept : m_resource{ resource } {}
 
     /** Construct an allocator using the resource provided by DefaultResource.
      *  This constructor is only enabled if an instance of DefaultResource can be invoked
@@ -46,7 +46,7 @@ namespace Gaudi::Allocator {
     /** Converting copy constructor, rebinding U -> T.
      */
     template <typename U>
-    constexpr Arena( Arena<Resource, U, DefaultResource> const& other ) noexcept : m_resource{other.m_resource} {}
+    constexpr Arena( Arena<Resource, U, DefaultResource> const& other ) noexcept : m_resource{ other.m_resource } {}
 
     /** Allocate storage for n objects.
      */
@@ -79,7 +79,7 @@ namespace Gaudi::Allocator {
     template <typename, typename, typename>
     friend struct Arena;
 
-    Resource* m_resource{nullptr};
+    Resource* m_resource{ nullptr };
   };
 
   template <typename Resource, typename T, typename U, typename DefaultResource>

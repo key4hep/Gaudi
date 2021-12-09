@@ -42,9 +42,9 @@ private:
   using MapProp = Gaudi::Property<GaudiUtils::HashMap<std::string, T>>;
 
   MapProp<std::string> m_nodeMap{
-      this, "Nodes", {}, "map of the type of nodes to be associated to paths (path -> data_type)."};
+      this, "Nodes", {}, "map of the type of nodes to be associated to paths (path -> data_type)." };
   MapProp<Gaudi::Utils::TypeNameString> m_algMap{
-      this, "Algorithms", {}, "map of algorithms to be used to produce entries (path -> alg_name)."};
+      this, "Algorithms", {}, "map of algorithms to be used to produce entries (path -> alg_name)." };
 };
 
 #endif // INCIDENTSVC_DODBASICMAPPER_H

@@ -34,7 +34,7 @@ namespace Gaudi {
 
     /// Convert TES object identifier to ROOT tree name
     string _treeName( std::string_view sr ) {
-      std::string t{sr};
+      std::string t{ sr };
       std::replace( begin( t ), end( t ), '/', '_' );
       return t;
     }
@@ -103,7 +103,7 @@ namespace Gaudi {
       if ( t ) {
         TBranch* b = (TBranch*)t->GetListOfBranches()->At( 0 );
         if ( b ) {
-          sections()[std::string{branch_name}] = t;
+          sections()[std::string{ branch_name }] = t;
           return b;
         }
         msgSvc() << MSG::ERROR << "Failed to access POOL branch:" << branch_name << " [" << tname << "]" << endmsg;
@@ -153,7 +153,7 @@ namespace Gaudi {
       for ( i = 0, b->SetAddress( text ); i < b->GetEntries(); ++i ) {
         b->GetEvent( i );
         std::string db, container;
-        int         clid = 1, technology = 0, ipar[2] = {-1, -1};
+        int         clid = 1, technology = 0, ipar[2] = { -1, -1 };
         for ( char* p1 = (char*)text; p1; p1 = ::strchr( ++p1, '[' ) ) {
           char* p2 = ::strchr( p1, '=' );
           char* p3 = ::strchr( p1, ']' );

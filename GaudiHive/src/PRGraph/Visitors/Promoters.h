@@ -104,7 +104,7 @@ namespace concurrency {
 
     EventSlot* m_slot;
     Cause      m_cause;
-    int        m_nodesSucceeded{0};
+    int        m_nodesSucceeded{ 0 };
   };
 } // namespace concurrency
 

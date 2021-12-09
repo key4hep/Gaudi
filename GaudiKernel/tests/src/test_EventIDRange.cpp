@@ -21,23 +21,23 @@ BOOST_AUTO_TEST_CASE( comparison ) {
     //           number_type time_stamp_ns_offset = 0, number_type lumi_block = UNDEFNUM,
     //           number_type bunch_crossing_id = 0 );
 
-    EventIDBase  ei_RunLB1{100, 0, EventIDBase::UNDEFNUM, 0, 20};
-    EventIDBase  ei_RunLB2{200, 0, EventIDBase::UNDEFNUM, 0, 10};
+    EventIDBase  ei_RunLB1{ 100, 0, EventIDBase::UNDEFNUM, 0, 20 };
+    EventIDBase  ei_RunLB2{ 200, 0, EventIDBase::UNDEFNUM, 0, 10 };
     EventIDRange rangeRLB1( ei_RunLB1, ei_RunLB2 );
 
-    EventIDBase  ei_RunLB3{100, 0, EventIDBase::UNDEFNUM, 0, 30};
-    EventIDBase  ei_RunLB4{150, 0, EventIDBase::UNDEFNUM, 0, 50};
+    EventIDBase  ei_RunLB3{ 100, 0, EventIDBase::UNDEFNUM, 0, 30 };
+    EventIDBase  ei_RunLB4{ 150, 0, EventIDBase::UNDEFNUM, 0, 50 };
     EventIDRange rangeRLB2( ei_RunLB3, ei_RunLB4 );
 
     BOOST_CHECK( !rangeRLB1.start().isTimeStamp() && rangeRLB1.start().isRunLumi() );
     BOOST_CHECK( !rangeRLB2.start().isTimeStamp() && rangeRLB2.start().isRunLumi() );
 
-    EventIDBase  ei_TS1{EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1000, 530, EventIDBase::UNDEFNUM};
-    EventIDBase  ei_TS2{EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1500, 550, EventIDBase::UNDEFNUM};
+    EventIDBase  ei_TS1{ EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1000, 530, EventIDBase::UNDEFNUM };
+    EventIDBase  ei_TS2{ EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1500, 550, EventIDBase::UNDEFNUM };
     EventIDRange rangeTS1( ei_TS1, ei_TS2 );
 
-    EventIDBase  ei_TS3{EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1200, 500, EventIDBase::UNDEFNUM};
-    EventIDBase  ei_TS4{EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1800, 800, EventIDBase::UNDEFNUM};
+    EventIDBase  ei_TS3{ EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1200, 500, EventIDBase::UNDEFNUM };
+    EventIDBase  ei_TS4{ EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, 1800, 800, EventIDBase::UNDEFNUM };
     EventIDRange rangeTS2( ei_TS3, ei_TS4 );
 
     BOOST_CHECK( rangeTS1.start().isTimeStamp() && !rangeTS1.start().isRunLumi() );

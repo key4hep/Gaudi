@@ -58,8 +58,8 @@ StatusCode PrecedenceSvc::initialize() {
 
   ON_DEBUG debug() << "Assembling CF precedence realm:" << endmsg;
   // create the root CF node
-  m_PRGraph.addHeadNode( "RootDecisionHub", Concurrent{true}, PromptDecision{false}, ModeOr{true}, AllPass{true},
-                         Inverted{false} );
+  m_PRGraph.addHeadNode( "RootDecisionHub", Concurrent{ true }, PromptDecision{ false }, ModeOr{ true },
+                         AllPass{ true }, Inverted{ false } );
   // assemble the CF rules
   for ( const auto& ialgoPtr : m_algResourcePool->getTopAlgList() ) {
     auto algorithm = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
@@ -195,8 +195,8 @@ StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::st
     promptDecision = ( algo->getProperty( "StopOverride" ).toString() == "False" );
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   }
-  sc = m_PRGraph.addDecisionHubNode( algo, parentName, Concurrent{!isSequential}, PromptDecision{promptDecision},
-                                     ModeOr{modeOr}, AllPass{allPass}, Inverted{isInverted} );
+  sc = m_PRGraph.addDecisionHubNode( algo, parentName, Concurrent{ !isSequential }, PromptDecision{ promptDecision },
+                                     ModeOr{ modeOr }, AllPass{ allPass }, Inverted{ isInverted } );
   if ( sc.isFailure() ) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
@@ -239,7 +239,7 @@ StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause ) {
 // ============================================================================
 StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const {
 
-  Cause cs      = {Cause::source::Root, "RootDecisionHub"};
+  Cause cs      = { Cause::source::Root, "RootDecisionHub" };
   auto  visitor = concurrency::RunSimulator( slot, cs );
 
   auto& nodeDecisions = slot.controlFlowState;
@@ -327,7 +327,7 @@ void PrecedenceSvc::dumpPrecedenceRules( const EventSlot& slot ) {
     fileName = m_dumpPrecRulesFile;
   }
 
-  boost::filesystem::path pth{m_dumpDirName};
+  boost::filesystem::path pth{ m_dumpDirName };
   pth.append( fileName );
 
   m_PRGraph.dumpPrecRules( pth, slot );
@@ -354,7 +354,7 @@ void PrecedenceSvc::dumpPrecedenceTrace( const EventSlot& slot ) {
     fileName = m_dumpPrecTraceFile;
   }
 
-  boost::filesystem::path pth{m_dumpDirName};
+  boost::filesystem::path pth{ m_dumpDirName };
   pth.append( fileName );
 
   m_PRGraph.dumpPrecTrace( pth, slot );

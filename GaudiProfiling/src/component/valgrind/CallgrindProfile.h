@@ -30,17 +30,17 @@ public:
   StatusCode finalize() override; ///< Algorithm finalization
 
 private:
-  Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling."};
+  Gaudi::Property<int> m_nStartFromEvent{ this, "StartFromEventN", 1, "After what event we start profiling." };
   Gaudi::Property<int> m_nStopAtEvent{
       this, "StopAtEventN", 0,
-      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0." };
   Gaudi::Property<int> m_nDumpAtEvent{
       this, "DumpAtEventN", 0,
-      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0." };
   Gaudi::Property<int> m_nZeroAtEvent{
       this, "ZeroAtEventN", 0,
-      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
-  Gaudi::Property<std::string> m_dumpName{this, "DumpName", "", "Label for the callgrind dump"};
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0." };
+  Gaudi::Property<std::string> m_dumpName{ this, "DumpName", "", "Label for the callgrind dump" };
 
   int  m_eventNumber = 0;     // Current event number
   bool m_profiling   = false; // Whether valgrind is profiling or not

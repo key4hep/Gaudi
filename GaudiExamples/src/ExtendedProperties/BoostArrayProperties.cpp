@@ -48,10 +48,10 @@ namespace Gaudi {
       // ======================================================================
       /// array  of doubles
       Gaudi::Property<boost::array<double, 5>> m_doubles{
-          this, "Doubles", {-1, -1, -1, -1, -1}, "Boost-array of doubles"};
+          this, "Doubles", { -1, -1, -1, -1, -1 }, "Boost-array of doubles" };
       /// array of strings
       Gaudi::Property<boost::array<std::string, 4>> m_strings{
-          this, "Strings", {"bla-bla", "bla-bla", "bla-bla", "bla-bla"}, "Boost-array of strings"};
+          this, "Strings", { "bla-bla", "bla-bla", "bla-bla", "bla-bla" }, "Boost-array of strings" };
       // ======================================================================
     };
     // ========================================================================

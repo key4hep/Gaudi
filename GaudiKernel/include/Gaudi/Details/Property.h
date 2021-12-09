@@ -61,7 +61,7 @@ namespace Gaudi::Details::Property {
   protected:
     void fromStringImpl( TYPE& buffer, const std::string& s ) {
       using Gaudi::Parsers::InputData;
-      if ( !parse( buffer, InputData{s} ).isSuccess() ) {
+      if ( !parse( buffer, InputData{ s } ).isSuccess() ) {
         throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
       }
     }
@@ -160,8 +160,8 @@ namespace Gaudi::Details::Property {
 
   private:
     /// Data members
-    bool m_hasLowerBound{false};
-    bool m_hasUpperBound{false};
+    bool m_hasLowerBound{ false };
+    bool m_hasUpperBound{ false };
     TYPE m_lowerBound{};
     TYPE m_upperBound{};
   };
@@ -190,7 +190,7 @@ namespace Gaudi::Details::Property {
   struct ReadHandler : NoHandler {
     mutable std::function<void( PropertyBase& )> m_readCallBack;
     void                                         useReadHandler( const PropertyBase& p ) const {
-      if ( m_readCallBack ) { SwapCall{m_readCallBack}( const_cast<PropertyBase&>( p ) ); }
+      if ( m_readCallBack ) { SwapCall{ m_readCallBack }( const_cast<PropertyBase&>( p ) ); }
     }
     void setReadHandler( std::function<void( PropertyBase& )> fun ) { m_readCallBack = std::move( fun ); }
     std::function<void( PropertyBase& )> getReadHandler() const { return m_readCallBack; }
@@ -200,7 +200,7 @@ namespace Gaudi::Details::Property {
     void                                 useUpdateHandler( PropertyBase& p ) {
       if ( m_updateCallBack ) {
         try {
-          SwapCall{m_updateCallBack}( p );
+          SwapCall{ m_updateCallBack }( p );
         } catch ( const std::exception& x ) {
           throw std::invalid_argument( "failure in update handler of '" + p.name() + "': " + x.what() );
         }

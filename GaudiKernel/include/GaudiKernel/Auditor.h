@@ -136,8 +136,8 @@ private:
   Gaudi::Property<int> m_outputLevel{
       this, "OutputLevel", MSG::NIL,
       [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
-      "output level"};
-  Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the auditor be used or not"};
+      "output level" };
+  Gaudi::Property<bool> m_isEnabled{ this, "Enable", true, "should the auditor be used or not" };
 
   bool m_isInitialized = false; ///< Auditor has been initialized flag
   bool m_isFinalized   = false; ///< Auditor has been finalized flag

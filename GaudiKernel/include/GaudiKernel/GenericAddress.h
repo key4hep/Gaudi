@@ -38,7 +38,7 @@ protected:
   /// String parameters to be accessed
   std::string m_par[3];
   /// Integer parameters to be accessed
-  unsigned long m_ipar[2] = {0xFFFFFFFF, 0xFFFFFFFF};
+  unsigned long m_ipar[2] = { 0xFFFFFFFF, 0xFFFFFFFF };
   /// Pointer to corresponding directory
   IRegistry* m_pRegistry = nullptr;
 

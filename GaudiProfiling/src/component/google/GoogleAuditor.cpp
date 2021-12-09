@@ -220,24 +220,24 @@ namespace Google {
     virtual bool alreadyRunning() = 0;
 
   private:
-    Gaudi::Property<std::vector<std::string>> m_when{this,
-                                                     "ActivateAt",
-                                                     {"Initialize", "ReInitialize", "Execute", "Finalize"},
-                                                     "List of phases to activate the Auditoring during"};
+    Gaudi::Property<std::vector<std::string>> m_when{ this,
+                                                      "ActivateAt",
+                                                      { "Initialize", "ReInitialize", "Execute", "Finalize" },
+                                                      "List of phases to activate the Auditoring during" };
     Gaudi::Property<std::vector<std::string>> m_veto{
-        this, "DisableFor", {}, "List of component names to disable the auditing for"};
+        this, "DisableFor", {}, "List of component names to disable the auditing for" };
     Gaudi::Property<std::vector<std::string>> m_list{
-        this, "EnableFor", {}, "Any component in this list will be audited. If empty,  all will be done."};
-    Gaudi::Property<int>  m_freq{this, "ProfileFreq", -1, "The frequence to audit events. -1 means all events"};
+        this, "EnableFor", {}, "Any component in this list will be audited. If empty,  all will be done." };
+    Gaudi::Property<int>  m_freq{ this, "ProfileFreq", -1, "The frequence to audit events. -1 means all events" };
     Gaudi::Property<bool> m_fullEventAudit{
         this, "DoFullEventProfile", false,
-        "If true, instead of individually auditing components,  the full event (or events) will be audited in one go"};
+        "If true, instead of individually auditing components,  the full event (or events) will be audited in one go" };
     Gaudi::Property<unsigned long long> m_nSampleEvents{
-        this, "FullEventNSampleEvents", 1, "The number of events to include in a full event audit,  if enabled"};
-    Gaudi::Property<unsigned long long> m_eventsToSkip{this, "SkipEvents", 0,
-                                                       "Number of events to skip before activating the auditing"};
-    Gaudi::Property<bool>               m_skipSequencers{this, "SkipSequencers", true,
-                                           "If true,  auditing will be skipped for Sequencer objects."};
+        this, "FullEventNSampleEvents", 1, "The number of events to include in a full event audit,  if enabled" };
+    Gaudi::Property<unsigned long long> m_eventsToSkip{ this, "SkipEvents", 0,
+                                                        "Number of events to skip before activating the auditing" };
+    Gaudi::Property<bool>               m_skipSequencers{ this, "SkipSequencers", true,
+                                            "If true,  auditing will be skipped for Sequencer objects." };
 
     bool               m_audit = true; ///< Internal flag to say if auditing is enabled or not for the current event
     unsigned long long m_nEvts = 0;    ///< Number of events processed.
@@ -282,8 +282,8 @@ namespace Google {
     bool alreadyRunning() override { return IsHeapProfilerRunning(); }
 
   private:
-    Gaudi::Property<bool> m_dumpProfileHeaps{this, "DumpHeapProfiles", true, ""};
-    Gaudi::Property<bool> m_printProfilesToLog{this, "PrintProfilesToLog", false, ""};
+    Gaudi::Property<bool> m_dumpProfileHeaps{ this, "DumpHeapProfiles", true, "" };
+    Gaudi::Property<bool> m_printProfilesToLog{ this, "PrintProfilesToLog", false, "" };
   };
 
   /** @class HeapChecker GoogleAuditor.cpp

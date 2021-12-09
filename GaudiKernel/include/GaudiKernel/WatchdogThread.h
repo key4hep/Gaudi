@@ -54,7 +54,7 @@ public:
 
   /// Function to call to notify the watchdog thread that we are still alive.
   inline void ping() {
-    auto lock  = std::scoped_lock{m_lastPingMutex};
+    auto lock  = std::scoped_lock{ m_lastPingMutex };
     m_lastPing = boost::get_system_time();
     onPing();
   }
@@ -67,7 +67,7 @@ public:
 
   /// Get the time of latest ping.
   inline boost::system_time getLastPing() const {
-    auto lock = std::scoped_lock{m_lastPingMutex};
+    auto lock = std::scoped_lock{ m_lastPingMutex };
     return m_lastPing;
   }
 

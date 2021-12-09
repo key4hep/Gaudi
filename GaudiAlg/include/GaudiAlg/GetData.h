@@ -134,7 +134,7 @@ namespace Gaudi {
         // use Data Provider Service
         return_type obj = getFromTS<Type>( service, location );
         if ( checkData ) { // check the data
-          common.Assert( obj, std::string{"get():: No valid data at '"}.append( location ).append( "'" ) );
+          common.Assert( obj, std::string{ "get():: No valid data at '" }.append( location ).append( "'" ) );
         }
         // debug printout
         if ( common.msgLevel( MSG::DEBUG ) ) {
@@ -171,7 +171,7 @@ namespace Gaudi {
                               const bool checkData = true ) const {
         /// try to be efficient:
         /// 1. load object only once:
-        DataObject* object = this->getData( service, std::string{location} );
+        DataObject* object = this->getData( service, std::string{ location } );
         if ( object ) {
           /// 2. try to get the selection
           typedef typename TYPE::Selection Selection_;
@@ -195,10 +195,10 @@ namespace Gaudi {
           }
           // no valid data
           if ( checkData )
-            common.Assert( false, std::string{"get():: No valid data at '"}.append( location ).append( "'" ) );
+            common.Assert( false, std::string{ "get():: No valid data at '" }.append( location ).append( "'" ) );
         }
         // no valid data
-        if ( checkData ) common.Assert( false, std::string{"get():: No data at '"}.append( location ).append( "'" ) );
+        if ( checkData ) common.Assert( false, std::string{ "get():: No data at '" }.append( location ).append( "'" ) );
         // the fictive return
         return return_type();
       }
@@ -258,7 +258,7 @@ namespace Gaudi {
       template <class COMMON>
       return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
                               const bool checkData = true ) const {
-        return return_type( m_range( common, service, location, checkData ), std::string{location} );
+        return return_type( m_range( common, service, location, checkData ), std::string{ location } );
       }
       // ======================================================================
     public:
@@ -413,7 +413,7 @@ namespace Gaudi {
       template <class COMMON>
       return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
                               std::string_view location2 ) const {
-        SmartDataPtr<TYPE> obj( service, std::string{location} );
+        SmartDataPtr<TYPE> obj( service, std::string{ location } );
         if ( !obj ) {
           auto o = std::make_unique<TYPE2>();
           auto r = o.get();
@@ -426,7 +426,7 @@ namespace Gaudi {
         }
         auto ret = obj.ptr();
         /// check the data
-        common.Assert( !( !ret ), std::string{"get():: No valid data at '"}.append( location ).append( "\'" ) );
+        common.Assert( !( !ret ), std::string{ "get():: No valid data at '" }.append( location ).append( "\'" ) );
         if ( common.msgLevel( MSG::DEBUG ) ) {
           common.debug() << "The object of type '" << System::typeinfoName( typeid( *ret ) )
                          << "' has been retrieved from TS at address '" << location << "'" << endmsg;
@@ -464,7 +464,7 @@ namespace Gaudi {
       template <class COMMON>
       return_type operator()( const COMMON& common, IDataProviderSvc* service, std::string_view location,
                               std::string_view location2 ) const {
-        DataObject* obj = m_getter.getData( service, std::string{location} );
+        DataObject* obj = m_getter.getData( service, std::string{ location } );
         if ( !obj ) {
           common.put( service, std::make_unique<TYPE2>(), location2 );
           if ( common.msgLevel( MSG::DEBUG ) ) {

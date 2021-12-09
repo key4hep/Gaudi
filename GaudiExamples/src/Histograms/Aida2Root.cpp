@@ -54,24 +54,24 @@ private:
   Gaudi::Property<std::vector<std::string>> m_1Ds{
       this,
       "Histos1D",
-      {"SimpleHistos/Gaussian mean=0, sigma=1", "SimpleHistos/101", "SimpleHistos/102", "SimpleHistos/1111",
-       "SimpleHistos/test1", "SimpleHistos/subdir2/bino", "SimpleHistos/subdir1/bino", "SimpleHistos/poisson"},
-      "list of 1D-histograms"};
+      { "SimpleHistos/Gaussian mean=0, sigma=1", "SimpleHistos/101", "SimpleHistos/102", "SimpleHistos/1111",
+        "SimpleHistos/test1", "SimpleHistos/subdir2/bino", "SimpleHistos/subdir1/bino", "SimpleHistos/poisson" },
+      "list of 1D-histograms" };
 
-  Gaudi::Property<std::vector<std::string>> m_2Ds{this,
-                                                  "Histos2D",
-                                                  {"SimpleHistos/Gaussian V Flat", "SimpleHistos/Exponential V Flat",
-                                                   "SimpleHistos/binVpois", "SimpleHistos/expoVpois"},
-                                                  "list of 2D-histograms"};
+  Gaudi::Property<std::vector<std::string>> m_2Ds{ this,
+                                                   "Histos2D",
+                                                   { "SimpleHistos/Gaussian V Flat", "SimpleHistos/Exponential V Flat",
+                                                     "SimpleHistos/binVpois", "SimpleHistos/expoVpois" },
+                                                   "list of 2D-histograms" };
 
   Gaudi::Property<std::vector<std::string>> m_3Ds{
-      this, "Histos3D", {"SimpleHistos/3D plot AutoID", "SimpleHistos/3d"}, "list of 3D-histograms"};
+      this, "Histos3D", { "SimpleHistos/3D plot AutoID", "SimpleHistos/3d" }, "list of 3D-histograms" };
 
   Gaudi::Property<std::vector<std::string>> m_1Ps{
-      this, "Profs1D", {"SimpleHistos/Expo V Gauss 1DProf"}, "list of 1D-profiles"};
+      this, "Profs1D", { "SimpleHistos/Expo V Gauss 1DProf" }, "list of 1D-profiles" };
 
   Gaudi::Property<std::vector<std::string>> m_2Ps{
-      this, "Profs2D", {"SimpleHistos/321", "SimpleHistos/2dprof"}, "list of 2D-profiles"};
+      this, "Profs2D", { "SimpleHistos/321", "SimpleHistos/2dprof" }, "list of 2D-profiles" };
 };
 // ============================================================================
 /// Declaration of the Algorithm Factory

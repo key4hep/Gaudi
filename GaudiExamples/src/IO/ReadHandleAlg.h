@@ -30,7 +30,7 @@ using namespace Gaudi::Examples;
 
 class ReadHandleAlg : public GaudiAlgorithm {
 
-  DataObjectReadHandle<Collision> m_inputHandle{this, "Input", "/Event/MyCollision"};
+  DataObjectReadHandle<Collision> m_inputHandle{ this, "Input", "/Event/MyCollision" };
 
 public:
   ReadHandleAlg( const std::string& n, ISvcLocator* l ) : GaudiAlgorithm( n, l ) {}

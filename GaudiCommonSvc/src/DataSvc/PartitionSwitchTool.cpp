@@ -25,7 +25,7 @@ class PartitionSwitchTool : public extends<AlgTool, IPartitionControl> {
   using STATUS = StatusCode;
 
 private:
-  Gaudi::Property<std::string> m_actorName{this, "Actor", "EventDataService", "option to set the multi-service name"};
+  Gaudi::Property<std::string> m_actorName{ this, "Actor", "EventDataService", "option to set the multi-service name" };
   /// reference to Partition Controller
   SmartIF<IPartitionControl> m_actor;
 

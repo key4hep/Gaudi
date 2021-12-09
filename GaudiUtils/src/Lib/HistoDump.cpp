@@ -256,30 +256,30 @@ namespace {
    */
   std::pair<double, int> decompose( double v ) {
     if ( 0 == v ) {
-      return {0.0, 0};
+      return { 0.0, 0 };
     } // RETURN
     else if ( 1 == v ) {
-      return {1.0, 0};
+      return { 1.0, 0 };
     } // RETURN
     else if ( 0 > v ) {
       auto r = decompose( -v );
-      return {-r.first, r.second}; // RETURN
+      return { -r.first, r.second }; // RETURN
     } else if ( 0.1 > v ) {
       int i = 0;
       while ( 0.1 > v ) {
         ++i;
         v *= 10;
       } // STUPID
-      return {v, -i};
+      return { v, -i };
     } else if ( 1 < v ) {
       int i = 0;
       while ( 1 <= v ) {
         ++i;
         v /= 10;
       } // STUPID
-      return {v, i};
+      return { v, i };
     }
-    return {v, 1};
+    return { v, 1 };
   }
   // ==========================================================================
   /** "efficient" pow-function
@@ -404,20 +404,23 @@ namespace {
     const double yScale = ( yMax - yMin ) / yBins;
 
     //
-    const int ySkip =
-        0 == yBins % 13
-            ? 13
-            : 0 == yBins % 11
-                  ? 11
-                  : 0 == yBins % 9
-                        ? 9
-                        : 0 == yBins % 8
-                              ? 8
-                              : 0 == yBins % 7 ? 7 : 0 == yBins % 6 ? 6 : 0 == yBins % 5 ? 5 : 0 == yBins % 4 ? 4 : 10;
+    const int ySkip = 0 == yBins % 13   ? 13
+                      : 0 == yBins % 11 ? 11
+                      : 0 == yBins % 9  ? 9
+                      : 0 == yBins % 8  ? 8
+                      : 0 == yBins % 7  ? 7
+                      : 0 == yBins % 6  ? 6
+                      : 0 == yBins % 5  ? 5
+                      : 0 == yBins % 4  ? 4
+                                        : 10;
 
     const int xSkip =
         // 0 == nBins % 8 ? 8 :
-        0 == nBins % 7 ? 7 : 0 == nBins % 6 ? 6 : 0 == nBins % 5 ? 5 : 0 == nBins % 4 ? 4 : 10;
+        0 == nBins % 7   ? 7
+        : 0 == nBins % 6 ? 6
+        : 0 == nBins % 5 ? 5
+        : 0 == nBins % 4 ? 4
+                         : 10;
 
     int iNull = histo.nullBin();
 

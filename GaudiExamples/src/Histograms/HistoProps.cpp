@@ -51,10 +51,10 @@ namespace Gaudi {
       }
       // ======================================================================
     private:
-      Gaudi::Property<Gaudi::Histo1DDef> m_hist1{this, "Histo1", Gaudi::Histo1DDef( "Histogram1", -3, 3, 200 ),
-                                                 "The parameters for the first  histogram"};
+      Gaudi::Property<Gaudi::Histo1DDef> m_hist1{ this, "Histo1", Gaudi::Histo1DDef( "Histogram1", -3, 3, 200 ),
+                                                  "The parameters for the first  histogram" };
       Gaudi::Property<Gaudi::Histo1DDef> m_hist2{
-          this, "Histo2", {"Histogram2", -5, 5, 200}, "The parameters for the second histogram"};
+          this, "Histo2", { "Histogram2", -5, 5, 200 }, "The parameters for the second histogram" };
     };
   } // namespace Examples
 } // end of namespace Gaudi

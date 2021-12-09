@@ -61,7 +61,7 @@ public:
     IRndmGen* gen = nullptr;
     ;
     generator( par, gen ).ignore();
-    auto r = SmartIF<IRndmGen>{gen};
+    auto r = SmartIF<IRndmGen>{ gen };
     if ( gen ) { gen->release(); }
     return r;
   }

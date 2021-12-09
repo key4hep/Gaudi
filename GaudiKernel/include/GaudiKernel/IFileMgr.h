@@ -92,34 +92,34 @@ namespace Io {
   };
 
   static std::string IoFlagName( IoFlags f ) {
-    static const std::map<IoFlag, std::string> s_names = {{{READ, "READ"},
-                                                           {WRITE, "WRITE"},
-                                                           {RDWR, "RDWR"},
-                                                           {CREATE, "CREATE"},
-                                                           {EXCL, "EXCL"},
-                                                           {TRUNC, "TRUNC"},
-                                                           {APPEND, "APPEND"},
-                                                           {INVALID, "INVALID"}}};
+    static const std::map<IoFlag, std::string> s_names = { { { READ, "READ" },
+                                                             { WRITE, "WRITE" },
+                                                             { RDWR, "RDWR" },
+                                                             { CREATE, "CREATE" },
+                                                             { EXCL, "EXCL" },
+                                                             { TRUNC, "TRUNC" },
+                                                             { APPEND, "APPEND" },
+                                                             { INVALID, "INVALID" } } };
     if ( f.isRead() ) return s_names.at( READ );
 
     std::string ff;
     for ( int i = 0; i < 32; ++i ) {
       auto b = ( 1 << i );
-      if ( b & f ) ff += s_names.at( ( IoFlag )( b ) ) + "|";
+      if ( b & f ) ff += s_names.at( (IoFlag)( b ) ) + "|";
     }
     ff.erase( ff.length() - 1 );
     return ff;
   }
 
   inline IoFlags IoFlagFromName( const std::string& f ) {
-    static const std::map<std::string, IoFlag> s_n = {{{"READ", Io::READ},
-                                                       {"WRITE", Io::WRITE},
-                                                       {"RDWR", Io::RDWR},
-                                                       {"CREATE", Io::CREATE},
-                                                       {"EXCL", Io::EXCL},
-                                                       {"TRUNC", Io::TRUNC},
-                                                       {"APPEND", Io::APPEND},
-                                                       {"INVALID", Io::INVALID}}};
+    static const std::map<std::string, IoFlag> s_n = { { { "READ", Io::READ },
+                                                         { "WRITE", Io::WRITE },
+                                                         { "RDWR", Io::RDWR },
+                                                         { "CREATE", Io::CREATE },
+                                                         { "EXCL", Io::EXCL },
+                                                         { "TRUNC", Io::TRUNC },
+                                                         { "APPEND", Io::APPEND },
+                                                         { "INVALID", Io::INVALID } } };
 
     IoFlags     fl( Io::INVALID );
     size_t      j( 0 ), k( 0 );
@@ -156,7 +156,7 @@ namespace Io {
   enum IoTech { UNKNOWN, POSIX, ROOT, BS, HDF5, SQLITE };
 
   inline std::ostream& operator<<( std::ostream& s, const IoTech& t ) {
-    static const std::array<const char*, SQLITE + 1> tbl = {{"UNKNOWN", "POSIX", "ROOT", "BS", "HDF5", "SQLITE"}};
+    static const std::array<const char*, SQLITE + 1> tbl = { { "UNKNOWN", "POSIX", "ROOT", "BS", "HDF5", "SQLITE" } };
     return t < tbl.size() ? s << tbl[t] : s;
   }
 
@@ -280,7 +280,7 @@ namespace Io {
 
   inline std::ostream& operator<<( std::ostream& s, const Action& t ) {
     static const std::array<const char*, INVALID_ACTION + 1> tbl = {
-        {"OPEN", "CLOSE", "REOPEN", "OPEN_ERR", "CLOSE_ERR", "REOPEN_ERR", "INVALID_ACTION"}};
+        { "OPEN", "CLOSE", "REOPEN", "OPEN_ERR", "CLOSE_ERR", "REOPEN_ERR", "INVALID_ACTION" } };
     return t < tbl.size() ? s << tbl[t] : s;
   }
 

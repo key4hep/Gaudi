@@ -34,7 +34,7 @@ namespace Gaudi {
       StatusCode execute() override;    ///< Algorithm execution
       StatusCode finalize() override;   ///< Algorithm finalization
     private:
-      Gaudi::Property<std::unordered_map<std::string, std::string>> m_unorderedMap{this, "UnorderedMap"};
+      Gaudi::Property<std::unordered_map<std::string, std::string>> m_unorderedMap{ this, "UnorderedMap" };
     };
   } // namespace Examples
 } // namespace Gaudi

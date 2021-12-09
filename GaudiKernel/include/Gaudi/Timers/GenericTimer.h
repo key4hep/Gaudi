@@ -80,7 +80,7 @@ namespace Gaudi {
       /// Constructor attaching the statistics counter to an owner
       template <class OWNER>
       GenericTimer( OWNER* o, const std::string& name ) {
-        o->declareCounter( name, std::string{"timer:"} + typeid( Unit::rep ).name(), m_stats );
+        o->declareCounter( name, std::string{ "timer:" } + typeid( Unit::rep ).name(), m_stats );
       }
 
       /// No copy

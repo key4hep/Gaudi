@@ -100,8 +100,8 @@ protected:
 private:
   std::unordered_set<Gaudi::DataHandle*> m_handles;
 
-  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}};
-  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}};
+  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{ this, "ExtraInputs", DataObjIDColl{} };
+  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{ this, "ExtraOutputs", DataObjIDColl{} };
 };
 
 #endif // !GAUDIKERNEL_DATAHANDLEHOLDERBASE

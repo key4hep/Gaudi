@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( value_props_constructors ) {
 
 BOOST_AUTO_TEST_CASE( string_conversion ) {
   {
-    Gaudi::Property<std::string> p1{"p1", ""};
+    Gaudi::Property<std::string> p1{ "p1", "" };
     BOOST_CHECK_EQUAL( p1.value(), "" );
     p1 = "abc";
     BOOST_CHECK_EQUAL( p1.value(), "abc" );
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( string_conversion ) {
     BOOST_CHECK_EQUAL( p1.value(), "with \"quotes\" inside" );
     BOOST_CHECK_EQUAL( p1.toString(), "with \"quotes\" inside" );
 
-    Gaudi::Property<std::string> tgt{"p1", ""};
+    Gaudi::Property<std::string> tgt{ "p1", "" };
 
     auto sc = tgt.assign( p1 );
     BOOST_CHECK( sc );
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE( string_conversion ) {
     BOOST_CHECK_EQUAL( tgt.value(), "with \"quotes\" inside" );
   }
   {
-    Gaudi::Property<int> p2{"p2", 10};
+    Gaudi::Property<int> p2{ "p2", 10 };
     BOOST_CHECK_EQUAL( p2.value(), 10 );
     p2 = 20;
     BOOST_CHECK_EQUAL( p2.value(), 20 );
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE( string_conversion ) {
     BOOST_CHECK_EQUAL( p2.toString(), "123" );
   }
   {
-    Gaudi::Property<bool> p3{"p3", true};
+    Gaudi::Property<bool> p3{ "p3", true };
     BOOST_CHECK_EQUAL( p3.value(), true );
     p3 = false;
     BOOST_CHECK_EQUAL( p3.value(), false );
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE( implicit_conversion ) {
 
 BOOST_AUTO_TEST_CASE( copy_constructor ) {
   {
-    Gaudi::Property<std::string> orig{"name", "value", "doc"};
+    Gaudi::Property<std::string> orig{ "name", "value", "doc" };
     Gaudi::Property<std::string> dest( orig );
     BOOST_CHECK_EQUAL( dest.name(), "name" );
     BOOST_CHECK_EQUAL( dest.value(), "value" );
@@ -165,8 +165,8 @@ BOOST_AUTO_TEST_CASE( copy_constructor ) {
     BOOST_CHECK_EQUAL( dest.ownerTypeName(), "unknown owner type" );
   }
   {
-    std::string                   data{"value"};
-    Gaudi::Property<std::string&> orig{"name", data, "doc"};
+    std::string                   data{ "value" };
+    Gaudi::Property<std::string&> orig{ "name", data, "doc" };
     Gaudi::Property<std::string&> dest( orig );
     BOOST_CHECK_EQUAL( dest.name(), "name" );
     BOOST_CHECK_EQUAL( dest.documentation(), "doc" );
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE( copy_constructor ) {
   }
 }
 BOOST_AUTO_TEST_CASE( move_constructor ) {
-  Gaudi::Property<std::string> orig{"name", "value", "doc"};
+  Gaudi::Property<std::string> orig{ "name", "value", "doc" };
   Gaudi::Property<std::string> dest( std::move( orig ) );
   BOOST_CHECK_EQUAL( dest.name(), "name" );
   BOOST_CHECK_EQUAL( dest.value(), "value" );
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( move_constructor ) {
   BOOST_CHECK_EQUAL( dest.ownerTypeName(), "unknown owner type" );
 }
 BOOST_AUTO_TEST_CASE( copy_assignment ) {
-  Gaudi::Property<std::string> orig{"name", "value", "doc"};
+  Gaudi::Property<std::string> orig{ "name", "value", "doc" };
   Gaudi::Property<std::string> dest = orig;
   BOOST_CHECK_EQUAL( dest.name(), "name" );
   BOOST_CHECK_EQUAL( dest.value(), "value" );
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE( copy_assignment ) {
   BOOST_CHECK_EQUAL( dest.ownerTypeName(), "unknown owner type" );
 }
 BOOST_AUTO_TEST_CASE( move_assignment ) {
-  Gaudi::Property<std::string> orig{"name", "value", "doc"};
+  Gaudi::Property<std::string> orig{ "name", "value", "doc" };
   Gaudi::Property<std::string> dest = std::move( orig );
   BOOST_CHECK_EQUAL( dest.name(), "name" );
   BOOST_CHECK_EQUAL( dest.value(), "value" );
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE( move_assignment ) {
 
 BOOST_AUTO_TEST_CASE( backward_compatibility ) {
   {
-    Gaudi::Property<int> ip{"name", 42};
+    Gaudi::Property<int> ip{ "name", 42 };
     BOOST_CHECK( !ip.readCallBack() );
     BOOST_CHECK( !ip.updateCallBack() );
 
@@ -218,19 +218,19 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
   }
 
   {
-    Gaudi::Property<std::string> p{"OutputLevel", "6"};
+    Gaudi::Property<std::string> p{ "OutputLevel", "6" };
     Gaudi::Property<int>         i;
     i.assign( p );
     BOOST_CHECK_EQUAL( i.value(), 6 );
   }
   {
-    Gaudi::Property<int> p{"OutputLevel", 6};
+    Gaudi::Property<int> p{ "OutputLevel", 6 };
     Gaudi::Property<int> i;
     i.assign( p );
     BOOST_CHECK_EQUAL( i.value(), 6 );
   }
   {
-    Gaudi::Property<std::string> p{"OutputLevel", "6"};
+    Gaudi::Property<std::string> p{ "OutputLevel", "6" };
     Gaudi::Property<std::string> i;
     i.assign( p );
     BOOST_CHECK_EQUAL( i.value(), "6" );
@@ -240,8 +240,8 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
 BOOST_AUTO_TEST_CASE( backward_compatibility_2 ) {
   // string conversion compatibility
   {
-    Gaudi::Property<int>         dst{0};
-    Gaudi::Property<std::string> src{"321"};
+    Gaudi::Property<int>         dst{ 0 };
+    Gaudi::Property<std::string> src{ "321" };
     BOOST_CHECK_EQUAL( dst.value(), 0 );
     BOOST_CHECK( dst.assign( src ) );
     BOOST_CHECK_EQUAL( dst.value(), 321 );
@@ -252,22 +252,22 @@ BOOST_AUTO_TEST_CASE( backward_compatibility_2 ) {
   }
   {
     // string property as from options (old JobOptionsSvc)
-    Gaudi::Property<std::string> opt{"\"NONE\""};
+    Gaudi::Property<std::string> opt{ "\"NONE\"" };
     Gaudi::Property<std::string> p{};
     BOOST_CHECK( opt.load( p ) );
     BOOST_CHECK_EQUAL( p.value(), "NONE" );
   }
   {
     // string property as from options (old JobOptionsSvc)
-    Gaudi::Property<std::string>  opt{"\"NONE\""};
+    Gaudi::Property<std::string>  opt{ "\"NONE\"" };
     std::string                   dst;
-    Gaudi::Property<std::string&> p{"test", dst};
+    Gaudi::Property<std::string&> p{ "test", dst };
     BOOST_CHECK( opt.load( p ) );
     BOOST_CHECK_EQUAL( p.value(), "NONE" );
     BOOST_CHECK_EQUAL( dst, "NONE" );
   }
   {
-    Gaudi::Property<std::string> p1{"p1", ""};
+    Gaudi::Property<std::string> p1{ "p1", "" };
     BOOST_CHECK_EQUAL( p1.value(), "" );
     p1 = "abc";
     BOOST_CHECK_EQUAL( p1.value(), "abc" );
@@ -276,9 +276,9 @@ BOOST_AUTO_TEST_CASE( backward_compatibility_2 ) {
     BOOST_CHECK_EQUAL( p1.toString(), "xyz" );
   }
   { // this covers the fix to a segfault observed in a few cases
-    Gaudi::Property<std::string, Gaudi::Details::Property::NullVerifier, Gaudi::Details::Property::NoHandler> src{"src",
-                                                                                                                  "42"};
-    Gaudi::Property<int> dst{"dst", 0};
+    Gaudi::Property<std::string, Gaudi::Details::Property::NullVerifier, Gaudi::Details::Property::NoHandler> src{
+        "src", "42" };
+    Gaudi::Property<int> dst{ "dst", 0 };
 
     BOOST_CHECK( dst.assign( src ) );
     BOOST_CHECK_EQUAL( dst.value(), 42 );

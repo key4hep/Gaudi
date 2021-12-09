@@ -30,10 +30,10 @@ public:
   StatusCode collectObjects() override;
 
 private:
-  Gaudi::Property<std::vector<std::string>> m_tesVetoList{this, "TESVetoList", {}, "names of TES locations to Veto"};
+  Gaudi::Property<std::vector<std::string>> m_tesVetoList{ this, "TESVetoList", {}, "names of TES locations to Veto" };
 
-  DataObjectReadHandle<IDataStoreLeaves::LeavesList> m_inputFileLeaves{this, "InputFileLeavesLocation",
-                                                                       "/Event/InputFileLeaves"};
+  DataObjectReadHandle<IDataStoreLeaves::LeavesList> m_inputFileLeaves{ this, "InputFileLeavesLocation",
+                                                                        "/Event/InputFileLeaves" };
 
 protected:
   /// Overridden from the base class (CopyInputStream has always input).

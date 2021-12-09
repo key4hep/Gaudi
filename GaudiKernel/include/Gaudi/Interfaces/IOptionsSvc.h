@@ -99,7 +99,7 @@ namespace Gaudi {
       /// regular expression.  By default, only default values are overridden, but explicitly assigned values
       /// can also be overridden passing `OnlyDefaults{false}` as third argument to the method.
       virtual void broadcast( const std::regex& filter, const std::string& value,
-                              OnlyDefaults defaults = OnlyDefaults{true} ) = 0;
+                              OnlyDefaults defaults = OnlyDefaults{ true } ) = 0;
 
       /// look for file 'file' into search path 'path'
       /// and read it to update the options

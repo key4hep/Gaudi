@@ -28,18 +28,18 @@
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string& title, int nBins, double xlow,
                                                               double xup ) {
   auto p = new Histogram1D( new TH1D( title.c_str(), title.c_str(), nBins, xlow, xup ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string& title, const Edges& e ) {
   auto p = new Histogram1D( new TH1D( title.c_str(), title.c_str(), e.size() - 1, &e.front() ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const AIDA::IHistogram1D& hist ) {
   TH1D* h = getRepresentation<AIDA::IHistogram1D, TH1D>( hist );
   auto  n = ( h ? new Histogram1D( new TH1D( *h ) ) : nullptr );
-  return {n, n};
+  return { n, n };
 }
 namespace Gaudi {
 
@@ -158,7 +158,7 @@ bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, dou
 
 bool Gaudi::Histogram1D::fill( double x, double weight ) {
   // avoid race conditions when filling the histogram
-  auto guard = std::scoped_lock{m_fillSerialization};
+  auto guard = std::scoped_lock{ m_fillSerialization };
   ( weight == 1. ) ? m_rep->Fill( x ) : m_rep->Fill( x, weight );
   return true;
 }

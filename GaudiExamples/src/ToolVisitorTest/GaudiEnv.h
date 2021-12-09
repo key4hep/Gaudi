@@ -37,7 +37,7 @@ namespace GaudiTesting {
   class GaudiEnv {
   public:
     GaudiEnv()
-        : m_iface{Gaudi::createApplicationMgr()}
+        : m_iface{ Gaudi::createApplicationMgr() }
         , m_svcMgr( m_iface )
         , m_appMgr( m_iface )
         , m_propMgr( m_iface )

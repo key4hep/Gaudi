@@ -43,5 +43,5 @@ BOOST_AUTO_TEST_CASE( JobOptionsSvc ) {
 
   BOOST_CHECK_EQUAL( jos.items().size(), 99 );
   BOOST_CHECK_EQUAL( jos.items( [&jos]( const auto& p ) { return jos.isSet( std::get<0>( p ) ); } ).size(), 2 );
-  BOOST_CHECK_EQUAL( jos.items( std::regex{".*Level"} ).size(), 5 );
+  BOOST_CHECK_EQUAL( jos.items( std::regex{ ".*Level" } ).size(), 5 );
 }

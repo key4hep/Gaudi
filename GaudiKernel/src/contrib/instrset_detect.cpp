@@ -67,7 +67,7 @@ namespace VCL_NAMESPACE {
       return iset; // called before
     }
     iset        = 0;                                   // default value
-    int abcd[4] = {0, 0, 0, 0};                        // cpuid results
+    int abcd[4] = { 0, 0, 0, 0 };                      // cpuid results
     cpuid( abcd, 0 );                                  // call cpuid function 0
     if ( abcd[0] == 0 ) return iset;                   // no further cpuid function supported
     cpuid( abcd, 1 );                                  // call cpuid function 1 for feature flags

@@ -88,10 +88,10 @@ namespace Gaudi::Monitoring {
 
   private:
     std::deque<Hub::Entity>      m_monitoringEntities;
-    Gaudi::Property<std::string> m_jsonOutputFileName{this, "FileName", "counters.json",
-                                                      "Name of JSON file for counters dump"};
-    Gaudi::Property<bool>        m_jsonOutputFullInfo{this, "DumpFullInfo", false,
-                                               "Dump full Counter info in the JSON output file"};
+    Gaudi::Property<std::string> m_jsonOutputFileName{ this, "FileName", "counters.json",
+                                                       "Name of JSON file for counters dump" };
+    Gaudi::Property<bool>        m_jsonOutputFullInfo{ this, "DumpFullInfo", false,
+                                                "Dump full Counter info in the JSON output file" };
   };
 
   DECLARE_COMPONENT( JSONSink )

@@ -148,7 +148,7 @@ private:
   bool isMT() const;
 
   ChronoEntity& getEntity( const ChronoTag& chronoTag ) {
-    auto lock = std::scoped_lock{m_mutex};
+    auto lock = std::scoped_lock{ m_mutex };
     return m_chronoEntities[chronoTag];
   }
 
@@ -171,40 +171,40 @@ private:
   /// level of info printing
   MSG::Level m_statPrintLevel = MSG::INFO;
 
-  Gaudi::Property<bool> m_chronoTableFlag{this, "ChronoPrintOutTable", true,
-                                          "decide if the final printout should be performed"};
-  Gaudi::Property<bool> m_chronoCoutFlag{this, "ChronoDestinationCout", false,
-                                         "define the destination of the table to be printed"};
+  Gaudi::Property<bool> m_chronoTableFlag{ this, "ChronoPrintOutTable", true,
+                                           "decide if the final printout should be performed" };
+  Gaudi::Property<bool> m_chronoCoutFlag{ this, "ChronoDestinationCout", false,
+                                          "define the destination of the table to be printed" };
   Gaudi::Property<int>  m_intChronoPrintLevel{
       this, "ChronoPrintLevel", MSG::INFO, [this]( auto& ) { m_chronoPrintLevel = int2level( m_intChronoPrintLevel ); },
-      "print level"};
-  Gaudi::Property<bool> m_chronoOrderFlag{this, "ChronoTableToBeOrdered", true, "should the printout be ordered"};
-  Gaudi::Property<bool> m_printUserTime{this, "PrintUserTime", true};
-  Gaudi::Property<bool> m_printSystemTime{this, "PrintSystemTime", false};
-  Gaudi::Property<bool> m_printEllapsedTime{this, "PrintEllapsedTime", false};
-  Gaudi::Property<bool> m_statTableFlag{this, "StatPrintOutTable", true,
-                                        "decide if the final printout should be performed"};
-  Gaudi::Property<bool> m_statCoutFlag{this, "StatDestinationCout", false,
-                                       "define the destination of the table to be printed"};
-  Gaudi::Property<int>  m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO,
-                                           [this]( auto& ) { m_statPrintLevel = int2level( m_intStatPrintLevel ); },
-                                           "print level"};
-  Gaudi::Property<bool> m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
+      "print level" };
+  Gaudi::Property<bool> m_chronoOrderFlag{ this, "ChronoTableToBeOrdered", true, "should the printout be ordered" };
+  Gaudi::Property<bool> m_printUserTime{ this, "PrintUserTime", true };
+  Gaudi::Property<bool> m_printSystemTime{ this, "PrintSystemTime", false };
+  Gaudi::Property<bool> m_printEllapsedTime{ this, "PrintEllapsedTime", false };
+  Gaudi::Property<bool> m_statTableFlag{ this, "StatPrintOutTable", true,
+                                         "decide if the final printout should be performed" };
+  Gaudi::Property<bool> m_statCoutFlag{ this, "StatDestinationCout", false,
+                                        "define the destination of the table to be printed" };
+  Gaudi::Property<int>  m_intStatPrintLevel{ this, "StatPrintLevel", MSG::INFO,
+                                            [this]( auto& ) { m_statPrintLevel = int2level( m_intStatPrintLevel ); },
+                                            "print level" };
+  Gaudi::Property<bool> m_statOrderFlag{ this, "StatTableToBeOrdered", true, "should the printout be ordered" };
 
   Gaudi::Property<std::string> m_statsOutFileName{
       this, "AsciiStatsOutputFile", "",
-      "Name of the output file storing the stats. If empty, no statistics will be saved (default)"};
+      "Name of the output file storing the stats. If empty, no statistics will be saved (default)" };
 
   Gaudi::Property<std::string> m_header{
       this, "StatTableHeader",
       " |    Counter     |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
-      "The header row for the output Stat-table"};
-  Gaudi::Property<bool> m_useEffFormat{this, "UseEfficiencyRowFormat", true,
-                                       "Use the special format for printout of efficiency counters"};
+      "The header row for the output Stat-table" };
+  Gaudi::Property<bool> m_useEffFormat{ this, "UseEfficiencyRowFormat", true,
+                                        "Use the special format for printout of efficiency counters" };
 
-  Gaudi::Property<std::string> m_perEventFile{this, "PerEventFile", "", "File name for per-event deltas"};
+  Gaudi::Property<std::string> m_perEventFile{ this, "PerEventFile", "", "File name for per-event deltas" };
 
-  ServiceHandle<IInterface> m_hiveWhiteBoardSvc{this, "HiveWhiteBoardSvc", "EventDataSvc"};
+  ServiceHandle<IInterface> m_hiveWhiteBoardSvc{ this, "HiveWhiteBoardSvc", "EventDataSvc" };
 
   using TimeMap = std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>>;
   TimeMap       m_perEvtTime;

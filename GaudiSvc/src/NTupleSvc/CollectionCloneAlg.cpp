@@ -121,9 +121,9 @@ namespace {
  */
 class CollectionCloneAlg : public Algorithm {
 
-  Gaudi::Property<std::string> m_tupleSvc{this, "EvtTupleSvc", "EvtTupleSvc", "name of the data provider service"};
-  Gaudi::Property<std::vector<std::string>> m_inputs{this, "Input", {}, "input specifications"};
-  Gaudi::Property<std::string>              m_output{this, "Output", {}, "output specification"};
+  Gaudi::Property<std::string> m_tupleSvc{ this, "EvtTupleSvc", "EvtTupleSvc", "name of the data provider service" };
+  Gaudi::Property<std::vector<std::string>> m_inputs{ this, "Input", {}, "input specifications" };
+  Gaudi::Property<std::string>              m_output{ this, "Output", {}, "output specification" };
 
   /// Reference to data provider service
   SmartIF<INTupleSvc> m_dataSvc;

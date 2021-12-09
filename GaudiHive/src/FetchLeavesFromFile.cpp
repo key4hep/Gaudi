@@ -46,10 +46,10 @@ namespace Gaudi {
       const IRegistry& i_getRootNode() const;
 
     private:
-      Gaudi::Property<std::string> m_dataSvcName{this, "DataService", "EventDataSvc",
-                                                 "Name of the data service to use"};
+      Gaudi::Property<std::string> m_dataSvcName{ this, "DataService", "EventDataSvc",
+                                                  "Name of the data service to use" };
 
-      Gaudi::Property<std::string> m_rootNode{this, "Root", "", "Path to the element from which to start the scan"};
+      Gaudi::Property<std::string> m_rootNode{ this, "Root", "", "Path to the element from which to start the scan" };
 
       // Pointer to the IDataManagerSvc interface of the data service.
       SmartIF<IDataManagerSvc> m_dataMgrSvc;

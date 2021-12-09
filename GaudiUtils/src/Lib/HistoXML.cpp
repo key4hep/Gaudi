@@ -54,13 +54,13 @@ namespace {
   template <typename TYPE>
   std::unique_ptr<TYPE> _Xml( const std::string& input ) {
     // 1) use XML-parser
-    std::unique_ptr<TObject> obj{TBufferXML::ConvertFromXML( input.c_str() )};
+    std::unique_ptr<TObject> obj{ TBufferXML::ConvertFromXML( input.c_str() ) };
     TYPE*                    histo = ( obj ? dynamic_cast<TYPE*>( obj.get() ) : nullptr );
     // slightly tricky: in case the dynamic cast succeeds, transfer owership
     // by invoking 'release' on obj, and 'at the same time' pass 'histo' into
     // the constructor of unique_ptr -- but if the cast fails, do NOT transfer
     // ownership... the , operator is the closest I can think of
-    return std::unique_ptr<TYPE>{histo ? ( obj.release(), histo ) : nullptr};
+    return std::unique_ptr<TYPE>{ histo ? ( obj.release(), histo ) : nullptr };
   }
   //
   // ==========================================================================

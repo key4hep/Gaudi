@@ -139,9 +139,9 @@ namespace Gaudi {
     /// Class id of root node to create opaque address
     CLID m_rootCLID = CLID_NULL;
 
-    Gaudi::Property<std::string> m_persName{this, "EvtPersistencySvc", "EventPersistencySvc",
-                                            "Name of the persistency service to search for conversion service"};
-    Gaudi::Property<std::string> m_dummy{this, "DbType", "", "dummy property to fake backwards compatibility"};
+    Gaudi::Property<std::string> m_persName{ this, "EvtPersistencySvc", "EventPersistencySvc",
+                                             "Name of the persistency service to search for conversion service" };
+    Gaudi::Property<std::string> m_dummy{ this, "DbType", "", "dummy property to fake backwards compatibility" };
 
     /// Property; Name of the concversion service used to create opaque addresses
     std::string m_cnvSvcName = "Gaudi::RootCnvSvc/RootCnvSvc";

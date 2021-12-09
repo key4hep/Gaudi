@@ -252,7 +252,7 @@ protected:
         if ( this->msgLevel( MSG::DEBUG ) ) this->debug() << p << endmsg;
       },
       "Names of services to be requested from the service locator and added by default",
-      "OrderedSet<std::string>"};
+      "OrderedSet<std::string>" };
 
   /// Flag to indicate that the service is enabled
   bool m_enable = true;

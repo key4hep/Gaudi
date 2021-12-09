@@ -212,7 +212,7 @@ StatusCode HistogramPersistencySvc::createRep( DataObject* pObj, IOpaqueAddress*
 HistogramPersistencySvc::HistogramPersistencySvc( const std::string& name, ISvcLocator* svc )
     : PersistencySvc( name, svc ) {
   // bypass update handler
-  m_svcNames.value() = std::vector<std::string>{{"RootHistSvc"}};
+  m_svcNames.value() = std::vector<std::string>{ { "RootHistSvc" } };
 }
 
 // ============================================================================

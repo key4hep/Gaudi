@@ -60,7 +60,7 @@ namespace GaudiKernelTest {
     M& mut() { return m_mut; }
 
   private:
-    int         m_i{0};
+    int         m_i{ 0 };
     std::string m_id;
     M           m_mut;
   };
@@ -109,10 +109,10 @@ namespace GaudiKernelTest {
 
       // do a lot to see if we can get a race
       std::vector<std::thread> threads;
-      size_t                   nthreads{10};
-      size_t                   nIter{10000};
+      size_t                   nthreads{ 10 };
+      size_t                   nIter{ 10000 };
       for ( size_t i = 0; i < nthreads; ++i ) {
-        threads.push_back( std::thread{Task<LockedHandle<Hist<>>>, &lh1, i, nIter} );
+        threads.push_back( std::thread{ Task<LockedHandle<Hist<>>>, &lh1, i, nIter } );
       }
 
       for ( auto& t : threads ) { t.join(); }

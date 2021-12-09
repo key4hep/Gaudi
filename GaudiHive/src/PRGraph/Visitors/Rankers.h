@@ -34,7 +34,7 @@ namespace concurrency {
 
     void runThroughAdjacents( boost::graph_traits<precedence::PrecTrace>::vertex_descriptor, precedence::PrecTrace );
 
-    int m_nodesSucceeded{0};
+    int m_nodesSucceeded{ 0 };
   };
 
   //--------------------------------------------------------------------------
@@ -69,8 +69,8 @@ namespace concurrency {
     /// (only within the data realm of the precedence rules graph)
     void recursiveVisit( AlgorithmNode& );
 
-    uint m_currentDepth{0};
-    uint m_maxKnownDepth{0};
+    uint m_currentDepth{ 0 };
+    uint m_maxKnownDepth{ 0 };
   };
 
 } // namespace concurrency

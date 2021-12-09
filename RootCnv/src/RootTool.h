@@ -29,19 +29,19 @@ namespace Gaudi {
     RootTool( RootDataConnection* con ) { c = con; }
     /// Access data branch by name: Get existing branch in read only mode
     TBranch* getBranch( std::string_view section, std::string_view branch_name ) override {
-      std::string n{branch_name};
+      std::string n{ branch_name };
       n += '.';
       for ( int i = 0, m = n.length() - 1; i < m; ++i )
         if ( !isalnum( n[i] ) ) n[i] = '_';
       TTree*   t = c->getSection( section );
       TBranch* b = t ? t->GetBranch( n.c_str() ) : nullptr;
-      if ( !b ) b = t ? t->GetBranch( std::string{branch_name}.c_str() ) : nullptr;
+      if ( !b ) b = t ? t->GetBranch( std::string{ branch_name }.c_str() ) : nullptr;
       if ( b ) b->SetAutoDelete( kFALSE );
       return b;
     }
     /// Load references object from file
     int loadRefs( std::string_view section, std::string_view cnt, unsigned long entry, RootObjectRefs& refs ) override {
-      TBranch*        b     = getBranch( section, std::string{cnt} + "#R" );
+      TBranch*        b     = getBranch( section, std::string{ cnt } + "#R" );
       RootObjectRefs* prefs = &refs;
       if ( b ) {
         b->SetAddress( &prefs );
@@ -73,8 +73,8 @@ namespace Gaudi {
                       if ( k != ms.end() ) {
                         const auto& cs = ( *k ).second;
                         r.entry        = ( ls.first->entry >= 0 && ls.first->entry < (int)cs.size() )
-                                      ? cs[ls.first->entry].start + r.entry
-                                      : -1;
+                                             ? cs[ls.first->entry].start + r.entry
+                                             : -1;
                         if ( msg.isActive() ) {
                           msg << "Add link [" << r.entry << "," << ls.first->entry << "," << ls.first->container << ","
                               << r.container << "," << r.entry << "] to -> " << rc << endmsg;

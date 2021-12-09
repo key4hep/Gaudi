@@ -281,7 +281,7 @@ namespace Tuples {
    */
   template <class ITEM>
   inline TupleColumn<ITEM> make_column( std::string name, const ITEM& item ) {
-    return {std::move( name ), item};
+    return { std::move( name ), item };
   }
 
   /** helper function to create 'on-the-fly' the
@@ -289,7 +289,7 @@ namespace Tuples {
    */
   template <class ITEM>
   inline TupleColumn<const ITEM*> make_column( std::string name, const ITEM* item ) {
-    return {std::move( name ), item};
+    return { std::move( name ), item };
   }
 
   /** helper function to create 'on-the-fly' the
@@ -297,7 +297,7 @@ namespace Tuples {
    */
   template <class ITEM>
   inline TupleColumn<ITEM*> make_column( std::string name, ITEM* item ) {
-    return {std::move( name ), item};
+    return { std::move( name ), item };
   }
 
   template <class ITEM>

@@ -301,7 +301,7 @@ StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*
 StatusCode EventSelector::releaseContext( Context*& refCtxt ) const {
   StatusCode                          sc   = StatusCode::SUCCESS;
   auto                                cpIt = dynamic_cast<const EvtSelectorContext*>( refCtxt );
-  std::unique_ptr<EvtSelectorContext> pIt{const_cast<EvtSelectorContext*>( cpIt )};
+  std::unique_ptr<EvtSelectorContext> pIt{ const_cast<EvtSelectorContext*>( cpIt ) };
   if ( pIt && pIt->ID() >= 0 && pIt->ID() < (long)m_streamtool->size() ) {
     const auto s   = m_streamtool->getStream( pIt->ID() );
     auto       it  = pIt->context();

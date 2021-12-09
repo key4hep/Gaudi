@@ -88,7 +88,7 @@ private:
   T randomRange() {
     const T min = std::numeric_limits<T>::min();
     const T max = std::numeric_limits<T>::max();
-    return min + ( T )( ( max - min ) * (double)( Rndm::Numbers( randSvc(), Rndm::Flat( 0, 1 ) )() ) );
+    return min + (T)( ( max - min ) * (double)( Rndm::Numbers( randSvc(), Rndm::Flat( 0, 1 ) )() ) );
   }
 };
 
@@ -271,7 +271,8 @@ StatusCode TupleAlg::execute() {
     std::vector<double> array;
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with functions of vector
-    tuple5->farray( {{"sinar", sinf}, {"cosar", cosf}, {"tanar", tanf}}, array.begin(), array.end(), "Len2", 100 )
+    tuple5
+        ->farray( { { "sinar", sinf }, { "cosar", cosf }, { "tanar", tanf } }, array.begin(), array.end(), "Len2", 100 )
         .ignore();
   }
 
@@ -327,7 +328,7 @@ StatusCode TupleAlg::execute() {
 
     typedef double ( *fun )( double );
     typedef std::vector<fun> Funs;
-    Funs                     funs{sin, cos, tan, sinh, cosh, tanh};
+    Funs                     funs{ sin, cos, tan, sinh, cosh, tanh };
 
     tuple6
         ->fmatrix( "m3flat", // N-tuple entry name

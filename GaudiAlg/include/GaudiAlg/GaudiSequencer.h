@@ -73,19 +73,19 @@ private:
   void membershipHandler();
 
   Gaudi::Property<std::vector<std::string>> m_vetoObjs{
-      this, "VetoObjects", {}, "skip execute if one or more of these TES objects exist"};
+      this, "VetoObjects", {}, "skip execute if one or more of these TES objects exist" };
   Gaudi::Property<std::vector<std::string>> m_requireObjs{
-      this, "RequireObjects", {}, "execute only if one or more of these TES objects exist"};
+      this, "RequireObjects", {}, "execute only if one or more of these TES objects exist" };
 
   Gaudi::Property<std::vector<std::string>> m_names = {
-      this, "Members", {}, &GaudiSequencer::membershipHandler, "list of algorithms"};
-  Gaudi::Property<bool> m_sequential   = {this, "Sequential", false, "execute members one at a time"};
-  Gaudi::Property<bool> m_modeOR       = {this, "ModeOR", false, "use OR logic instead of AND"};
-  Gaudi::Property<bool> m_ignoreFilter = {this, "IgnoreFilterPassed", false, "always continue"};
-  Gaudi::Property<bool> m_measureTime  = {this, "MeasureTime", false, "measure time"};
-  Gaudi::Property<bool> m_returnOK     = {this, "ReturnOK", false, "forces the sequencer to return a good status"};
-  Gaudi::Property<bool> m_shortCircuit = {this, "ShortCircuit", true, "stop processing as soon as possible"};
-  Gaudi::Property<bool> m_invert       = {this, "Invert", false, "invert the logic result of the sequencer"};
+      this, "Members", {}, &GaudiSequencer::membershipHandler, "list of algorithms" };
+  Gaudi::Property<bool> m_sequential   = { this, "Sequential", false, "execute members one at a time" };
+  Gaudi::Property<bool> m_modeOR       = { this, "ModeOR", false, "use OR logic instead of AND" };
+  Gaudi::Property<bool> m_ignoreFilter = { this, "IgnoreFilterPassed", false, "always continue" };
+  Gaudi::Property<bool> m_measureTime  = { this, "MeasureTime", false, "measure time" };
+  Gaudi::Property<bool> m_returnOK     = { this, "ReturnOK", false, "forces the sequencer to return a good status" };
+  Gaudi::Property<bool> m_shortCircuit = { this, "ShortCircuit", true, "stop processing as soon as possible" };
+  Gaudi::Property<bool> m_invert       = { this, "Invert", false, "invert the logic result of the sequencer" };
 
   std::vector<AlgorithmEntry> m_entries;             ///< List of algorithms to process.
   ISequencerTimerTool*        m_timerTool = nullptr; ///< Pointer to the timer tool

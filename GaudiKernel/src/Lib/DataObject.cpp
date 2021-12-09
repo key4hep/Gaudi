@@ -20,10 +20,11 @@
 static std::string _sDataObjectCppNotRegistered( "NotRegistered" );
 
 /// Standard Constructor
-DataObject::DataObject() : m_pLinkMgr{LinkManager::newInstance()} {}
+DataObject::DataObject() : m_pLinkMgr{ LinkManager::newInstance() } {}
 
 /// Copy Constructor
-DataObject::DataObject( const DataObject& rhs ) : m_version{rhs.m_version}, m_pLinkMgr{LinkManager::newInstance()} {}
+DataObject::DataObject( const DataObject& rhs )
+    : m_version{ rhs.m_version }, m_pLinkMgr{ LinkManager::newInstance() } {}
 
 /// Assignment Operator
 DataObject& DataObject::operator=( const DataObject& rhs ) {
@@ -34,7 +35,7 @@ DataObject& DataObject::operator=( const DataObject& rhs ) {
 
 /// Move Constructor
 DataObject::DataObject( DataObject&& rhs )
-    : m_version{std::move( rhs.m_version )}, m_pLinkMgr{std::move( rhs.m_pLinkMgr )} {}
+    : m_version{ std::move( rhs.m_version ) }, m_pLinkMgr{ std::move( rhs.m_pLinkMgr ) } {}
 
 /// Assignment Operator
 DataObject& DataObject::operator=( DataObject&& rhs ) {
@@ -78,7 +79,7 @@ static DataObject*  s_objPtr  = nullptr;
 static DataObject** s_currObj = &s_objPtr;
 
 static std::vector<DataObject**>& objectStack() {
-  static std::unique_ptr<std::vector<DataObject**>> s_current{new std::vector<DataObject**>()};
+  static std::unique_ptr<std::vector<DataObject**>> s_current{ new std::vector<DataObject**>() };
   return *s_current;
 }
 

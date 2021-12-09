@@ -29,8 +29,8 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Algorithm* m_subalg1{nullptr};
-  Gaudi::Algorithm* m_subalg2{nullptr};
+  Gaudi::Algorithm* m_subalg1{ nullptr };
+  Gaudi::Algorithm* m_subalg2{ nullptr };
 };
 
 #endif // GAUDIEXAMPLE_PARENTALG_H

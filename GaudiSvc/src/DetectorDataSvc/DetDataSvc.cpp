@@ -90,8 +90,8 @@ StatusCode DetDataSvc::setupDetectorDescription() {
       return StatusCode::FAILURE;
     } else {
       // Create address
-      unsigned long     iargs[] = {0, 0};
-      const std::string args[]  = {m_detDbLocation, m_detDbRootName};
+      unsigned long     iargs[] = { 0, 0 };
+      const std::string args[]  = { m_detDbLocation, m_detDbRootName };
       StatusCode        sc      = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
       if ( sc.isSuccess() ) {
         sc = i_setRoot( rootAddr );
@@ -156,8 +156,8 @@ StatusCode DetDataSvc::clearStore() {
 
   if ( m_usePersistency ) {
     // Create root address
-    unsigned long     iargs[] = {0, 0};
-    const std::string args[]  = {m_detDbLocation, m_detDbRootName};
+    unsigned long     iargs[] = { 0, 0 };
+    const std::string args[]  = { m_detDbLocation, m_detDbRootName };
     IOpaqueAddress*   rootAddr;
     StatusCode        sc = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
     // Set detector data store root

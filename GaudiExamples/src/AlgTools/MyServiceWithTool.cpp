@@ -21,8 +21,8 @@ namespace GaudiTesting {
     using Service::Service;
 
   private:
-    PublicToolHandle<IMyTool> m_tool{this, "MyTool", "MyTool"};
-    ToolHandle<IMyTool> m_privTool{this, "MyPrivateTool", ""};
+    PublicToolHandle<IMyTool> m_tool{ this, "MyTool", "MyTool" };
+    ToolHandle<IMyTool>       m_privTool{ this, "MyPrivateTool", "" };
   };
 
   DECLARE_COMPONENT( SvcWithTool )

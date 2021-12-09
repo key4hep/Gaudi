@@ -79,14 +79,14 @@ ApplicationMgr::ApplicationMgr( IInterface* ) {
   // ServiceMgr Initialization loop checking
   svcManager()->setLoopCheckEnabled( m_loopCheck );
 
-  m_svcMapping = {"EvtDataSvc/EventDataSvc",
-                  "DetDataSvc/DetectorDataSvc",
-                  "HistogramSvc/HistogramDataSvc",
-                  "HbookCnv::PersSvc/HbookHistSvc",
-                  "RootHistCnv::PersSvc/RootHistSvc",
-                  "EvtPersistencySvc/EventPersistencySvc",
-                  "DetPersistencySvc/DetectorPersistencySvc",
-                  "HistogramPersistencySvc/HistogramPersistencySvc"};
+  m_svcMapping = { "EvtDataSvc/EventDataSvc",
+                   "DetDataSvc/DetectorDataSvc",
+                   "HistogramSvc/HistogramDataSvc",
+                   "HbookCnv::PersSvc/HbookHistSvc",
+                   "RootHistCnv::PersSvc/RootHistSvc",
+                   "EvtPersistencySvc/EventPersistencySvc",
+                   "DetPersistencySvc/DetectorPersistencySvc",
+                   "HistogramPersistencySvc/HistogramPersistencySvc" };
 }
 
 //============================================================================

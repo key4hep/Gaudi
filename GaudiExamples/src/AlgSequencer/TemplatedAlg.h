@@ -33,8 +33,8 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<T> m_t{this, "TProperty", {}};
-  Gaudi::Property<R> m_r{this, "RProperty", {}};
+  Gaudi::Property<T> m_t{ this, "TProperty", {} };
+  Gaudi::Property<R> m_r{ this, "RProperty", {} };
 };
 
 #endif // GAUDIEXAMPLE_TEMPLATEDALG_H

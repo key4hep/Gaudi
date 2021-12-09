@@ -119,9 +119,9 @@ StatusCode GaudiHistoAlgorithm::execute() {
   profile2D( gauss, expo, poisson, 321, "2D profile2", -5, 5, 0, 5 );
 
   // variable binning
-  const GaudiAlg::HistoBinEdges edgesX = {-5, -4, -2.5, 0, 1, 2.25, 4, 5};
-  const GaudiAlg::HistoBinEdges edgesY = {-5, -3.7, -2, 0.5, 1, 2, 4.5, 5};
-  const GaudiAlg::HistoBinEdges edgesZ = {-5, -3, 0, 5};
+  const GaudiAlg::HistoBinEdges edgesX = { -5, -4, -2.5, 0, 1, 2.25, 4, 5 };
+  const GaudiAlg::HistoBinEdges edgesY = { -5, -3.7, -2, 0.5, 1, 2, 4.5, 5 };
+  const GaudiAlg::HistoBinEdges edgesZ = { -5, -3, 0, 5 };
 
   // 1D
   plot1D( flat, "varBinning/x", "1D Variable Binning", edgesX );

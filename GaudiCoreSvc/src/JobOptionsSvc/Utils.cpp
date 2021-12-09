@@ -28,17 +28,17 @@ namespace gpu = Gaudi::Parsers::Utils;
 std::string gpu::replaceEnvironments( std::string_view input ) {
   static const std::regex expression( "\\$(([A-Za-z0-9_]+)|\\(([A-Za-z0-9_]+)\\))" );
 
-  std::string                                          result = std::string{input};
+  std::string                                          result = std::string{ input };
   auto                                                 start  = input.begin();
   auto                                                 end    = input.end();
   std::match_results<std::string_view::const_iterator> what;
   auto                                                 flags = std::regex_constants::match_default;
   while ( std::regex_search( start, end, what, expression, flags ) ) {
-    std::string var{what[2].first, what[2].second};
-    if ( var.empty() ) var = std::string{what[3].first, what[3].second};
+    std::string var{ what[2].first, what[2].second };
+    if ( var.empty() ) var = std::string{ what[3].first, what[3].second };
     std::string env;
     if ( System::getEnv( var, env ) ) {
-      boost::algorithm::replace_first( result, std::string{what[0].first, what[0].second}, env );
+      boost::algorithm::replace_first( result, std::string{ what[0].first, what[0].second }, env );
     }
     start = what[0].second;
     // update flags:

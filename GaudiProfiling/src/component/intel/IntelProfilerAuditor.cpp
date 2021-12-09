@@ -68,32 +68,34 @@ private:
   };
 
 private:
-  Gaudi::Property<std::vector<std::string>> m_included{this, "IncludeAlgorithms", {}, "Names of included algorithms."};
-  Gaudi::Property<std::vector<std::string>> m_excluded{this, "ExcludeAlgorithms", {}, "Names of excluded algorithms."};
-  Gaudi::Property<int>                      m_nStartFromEvent{
-      this, "StartFromEventN", 1, "After what event we stop profiling. If 0 than we also profile finalization stage."};
+  Gaudi::Property<std::vector<std::string>> m_included{
+      this, "IncludeAlgorithms", {}, "Names of included algorithms." };
+  Gaudi::Property<std::vector<std::string>> m_excluded{
+      this, "ExcludeAlgorithms", {}, "Names of excluded algorithms." };
+  Gaudi::Property<int> m_nStartFromEvent{
+      this, "StartFromEventN", 1, "After what event we stop profiling. If 0 than we also profile finalization stage." };
   Gaudi::Property<int> m_nStopAtEvent{
       this, "StopAtEventN", 0,
-      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0." };
   Gaudi::Property<std::vector<std::string>> m_algs_for_tasktypes{
       this,
       "ComponentsForTaskTypes",
       {},
       "Algorithm name,  for which intel amplifier task type will be created."
-      "By default all algorithms have a corresponding task type."};
-  Gaudi::Property<std::string> m_alg_delim{this, "TaskTypeNameDelimeter", " ",
-                                           "The String delimiter between sequences/algorithms names in "
-                                           "\"Task Type\" grouping at Amplifier. Default=\" \"."};
-  Gaudi::Property<bool>        m_enable_frames{this, "EnableFrames", false,
-                                        "Enable frames (needed for detecting slow events). Default=false."};
-  Gaudi::Property<int>         m_frames_rate{this, "FramesRate", 100,
-                                     "Frames rate. The recommended maximum rate for calling the Frame API is "
-                                     "1000 frames (events) per second. A higher rate may result in large product"
-                                     " memory consumption and slow finalization. "
-                                     "You need update \"slow-frames-threshold\" and \"fast-frames-threshold\" "
-                                     "parameters of amplxe-cl tool to separate slow,  medium and fast events. "
-                                     "For use frames you need to switch on \"EnableFrames\". "
-                                     "Default=100"};
+      "By default all algorithms have a corresponding task type." };
+  Gaudi::Property<std::string> m_alg_delim{ this, "TaskTypeNameDelimeter", " ",
+                                            "The String delimiter between sequences/algorithms names in "
+                                            "\"Task Type\" grouping at Amplifier. Default=\" \"." };
+  Gaudi::Property<bool>        m_enable_frames{ this, "EnableFrames", false,
+                                         "Enable frames (needed for detecting slow events). Default=false." };
+  Gaudi::Property<int>         m_frames_rate{ this, "FramesRate", 100,
+                                      "Frames rate. The recommended maximum rate for calling the Frame API is "
+                                              "1000 frames (events) per second. A higher rate may result in large product"
+                                              " memory consumption and slow finalization. "
+                                              "You need update \"slow-frames-threshold\" and \"fast-frames-threshold\" "
+                                              "parameters of amplxe-cl tool to separate slow,  medium and fast events. "
+                                              "For use frames you need to switch on \"EnableFrames\". "
+                                              "Default=100" };
 
 private:
   // Events counter.

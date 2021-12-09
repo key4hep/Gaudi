@@ -38,16 +38,16 @@ private:
     StatCodeDat( const StatCodeDat& o ) : fnc( o.fnc ), lib( o.lib ), count( o.count.load() ) {}
     std::string               fnc;
     std::string               lib;
-    std::atomic<unsigned int> count{1};
+    std::atomic<unsigned int> count{ 1 };
   };
 
   void parseFilter( const std::string& str, std::string& fnc, std::string& lib ) const;
   bool failsFilter( const std::string& fnc, const std::string& lib ) const;
 
-  Gaudi::Property<std::vector<std::string>> m_pFilter{this, "Filter"};
-  Gaudi::Property<bool>                     m_abort{this, "AbortOnError", false};
-  Gaudi::Property<bool>                     m_suppress{this, "SuppressCheck", false};
-  Gaudi::Property<bool>                     m_dict{this, "IgnoreDicts", true};
+  Gaudi::Property<std::vector<std::string>> m_pFilter{ this, "Filter" };
+  Gaudi::Property<bool>                     m_abort{ this, "AbortOnError", false };
+  Gaudi::Property<bool>                     m_suppress{ this, "SuppressCheck", false };
+  Gaudi::Property<bool>                     m_dict{ this, "IgnoreDicts", true };
 
   tbb::concurrent_unordered_map<std::string, StatCodeDat> m_dat;
   std::set<std::string>                                   m_filterfnc, m_filterlib;

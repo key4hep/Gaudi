@@ -108,11 +108,11 @@ protected:
   typedef std::vector<std::string>         PartitionDefs;
   typedef std::map<std::string, Partition> Partitions;
 
-  Gaudi::Property<CLID>          m_rootCLID{this, "RootCLID", 110, "CLID of root entry"};
-  Gaudi::Property<std::string>   m_rootName{this, "RootName", "/Event", "name of root entry"};
-  Gaudi::Property<PartitionDefs> m_partitionDefs{this, "Partitions", {}, "datastore partition definitions"};
-  Gaudi::Property<std::string>   m_loader{this, "DataLoader", "EventPersistencySvc", "data loader name"};
-  Gaudi::Property<std::string>   m_defaultPartition{this, "DefaultPartition", "Default", "default partition name"};
+  Gaudi::Property<CLID>          m_rootCLID{ this, "RootCLID", 110, "CLID of root entry" };
+  Gaudi::Property<std::string>   m_rootName{ this, "RootName", "/Event", "name of root entry" };
+  Gaudi::Property<PartitionDefs> m_partitionDefs{ this, "Partitions", {}, "datastore partition definitions" };
+  Gaudi::Property<std::string>   m_loader{ this, "DataLoader", "EventPersistencySvc", "data loader name" };
+  Gaudi::Property<std::string>   m_defaultPartition{ this, "DefaultPartition", "Default", "default partition name" };
 
   /// Pointer to data loader service
   SmartIF<IConversionSvc> m_dataLoader;
@@ -337,7 +337,7 @@ public:
     auto dataMgr  = isvc.as<IDataManagerSvc>();
     auto dataProv = isvc.as<IDataProviderSvc>();
     if ( !dataMgr || !dataProv ) return IInterface::Status::NO_INTERFACE;
-    m_partitions.emplace( nam, Partition{dataProv, dataMgr, nam} );
+    m_partitions.emplace( nam, Partition{ dataProv, dataMgr, nam } );
     return StatusCode::SUCCESS;
   }
 

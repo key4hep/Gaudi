@@ -128,7 +128,7 @@ public:
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
   inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) {
-    return SmartIF<T>{service( typeName, createIf )};
+    return SmartIF<T>{ service( typeName, createIf ) };
   }
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
@@ -141,19 +141,19 @@ public:
 
 private:
   ListSvc::iterator find( std::string_view name ) {
-    auto lck = std::scoped_lock{m_gLock};
+    auto lck = std::scoped_lock{ m_gLock };
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
   ListSvc::const_iterator find( std::string_view name ) const {
-    auto lck = std::scoped_lock{m_gLock};
+    auto lck = std::scoped_lock{ m_gLock };
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
   ListSvc::iterator find( const IService* ptr ) {
-    auto lck = std::scoped_lock{m_gLock};
+    auto lck = std::scoped_lock{ m_gLock };
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
   ListSvc::const_iterator find( const IService* ptr ) const {
-    auto lck = std::scoped_lock{m_gLock};
+    auto lck = std::scoped_lock{ m_gLock };
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
 

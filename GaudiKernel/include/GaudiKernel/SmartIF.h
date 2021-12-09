@@ -115,7 +115,7 @@ public:
   /// return a new SmartIF instance to another interface
   template <typename IFace>
   SmartIF<IFace> as() const {
-    return SmartIF<IFace>{*this};
+    return SmartIF<IFace>{ *this };
   }
 
   // ---------- Special hacks ----------
@@ -148,7 +148,7 @@ public:
 // the typename twice, and thus insures consistency
 template <typename IFace>
 SmartIF<IFace> make_SmartIF( IFace* iface ) {
-  return SmartIF<IFace>{iface};
+  return SmartIF<IFace>{ iface };
 }
 
 #endif // GAUDI_SMARTIF_H

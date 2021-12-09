@@ -37,9 +37,9 @@ public:
   bool isClonable() const override { return true; }
 
 private:
-  Gaudi::Property<std::string> m_privateToolType{this, "ToolWithName", "MyTool",
-                                                 "Type of the tool to use (internal name is ToolWithName)"};
-  Gaudi::Property<bool>        m_privateToolsOnly{this, "PrivateToolsOnly", false, "Do not look for public tools."};
+  Gaudi::Property<std::string> m_privateToolType{ this, "ToolWithName", "MyTool",
+                                                  "Type of the tool to use (internal name is ToolWithName)" };
+  Gaudi::Property<bool>        m_privateToolsOnly{ this, "PrivateToolsOnly", false, "Do not look for public tools." };
 
   IMyTool* m_privateTool  = nullptr;
   IMyTool* m_publicTool   = nullptr;

@@ -77,9 +77,9 @@ private:
   // pointer to Incident Service
   SmartIF<IIncidentSvc> m_inc = nullptr; ///< pointer to Incident Service
 
-  Gaudi::Property<bool> m_check{this, "Check", true, "Flag to perform more checks"};
-  Gaudi::Property<bool> m_bypassInc{this, "BypassIncidents", false,
-                                    "Flag to bypass begin/endevent incident requirement"};
+  Gaudi::Property<bool> m_check{ this, "Check", true, "Flag to perform more checks" };
+  Gaudi::Property<bool> m_bypassInc{ this, "BypassIncidents", false,
+                                     "Flag to bypass begin/endevent incident requirement" };
   std::vector<int>      m_inEvtLoop;
 };
 

@@ -50,9 +50,9 @@ The relation is a sqrt for times greater than 10^-4 seconds.
 */
 void CPUCrunchSvc::calibrate() {
   if ( m_niters_vect.value().size() == 0 ) {
-    m_niters_vect = {0,     500,   600,   700,   800,   1000,  1300,  1600,  2000,  2300,
-                     2600,  3000,  3300,  3500,  3900,  4200,  5000,  6000,  8000,  10000,
-                     12000, 15000, 17000, 20000, 25000, 30000, 35000, 40000, 50000, 60000};
+    m_niters_vect = { 0,     500,   600,   700,   800,   1000,  1300,  1600,  2000,  2300,
+                      2600,  3000,  3300,  3500,  3900,  4200,  5000,  6000,  8000,  10000,
+                      12000, 15000, 17000, 20000, 25000, 30000, 35000, 40000, 50000, 60000 };
     if ( !m_shortCalib ) {
       m_niters_vect.value().push_back( 80000 );
       m_niters_vect.value().push_back( 100000 );

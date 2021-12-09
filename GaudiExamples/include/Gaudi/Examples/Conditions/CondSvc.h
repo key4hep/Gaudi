@@ -63,10 +63,10 @@ namespace Gaudi::Examples::Conditions {
 
   private:
     std::set<IAlgorithm*>                     m_condAlgs;
-    Gaudi::Property<std::vector<std::string>> m_algNames{this, "Algs", {}, "Names of conditions algorithms"};
+    Gaudi::Property<std::vector<std::string>> m_algNames{ this, "Algs", {}, "Names of conditions algorithms" };
 
     DataObjIDColl                             m_condData;
-    Gaudi::Property<std::vector<std::string>> m_dataNames{this, "Data", {}, "Names of conditions data"};
+    Gaudi::Property<std::vector<std::string>> m_dataNames{ this, "Data", {}, "Names of conditions data" };
 
     SmartIF<IAlgResourcePool> m_algResourcePool;
   };

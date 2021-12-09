@@ -192,10 +192,10 @@ StatusCode AvalancheSchedulerSvc::initialize() {
         ostdd << "\n    o INPUT  " << id;
         if ( id.key().find( ":" ) != std::string::npos ) {
           ostdd << " contains alternatives which require resolution...\n";
-          auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
+          auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
           auto itok   = std::find_if( tokens.begin(), tokens.end(), [&]( const std::string& t ) {
-            return globalOutp.find( DataObjID{t} ) != globalOutp.end();
-          } );
+            return globalOutp.find( DataObjID{ t } ) != globalOutp.end();
+            } );
           if ( itok != tokens.end() ) {
             ostdd << "found matching output for " << *itok << " -- updating scheduler info\n";
             id.updateKey( *itok );
@@ -503,7 +503,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
     StatusCode result = StatusCode::SUCCESS;
 
     // promote to CR and DR the initial set of algorithms
-    Cause cs = {Cause::source::Root, "RootDecisionHub"};
+    Cause cs = { Cause::source::Root, "RootDecisionHub" };
     if ( m_precSvc->iterate( thisSlot, cs ).isFailure() ) {
       error() << "Failed to call IPrecedenceSvc::iterate for slot " << thisSlotNum << endmsg;
       result = StatusCode::FAILURE;
@@ -643,9 +643,9 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     // Perform DR->SCHEDULED
     auto& drAlgs = thisAlgsStates.algsInState( AState::DATAREADY );
     for ( uint algIndex : drAlgs ) {
-      const std::string& algName{index2algname( algIndex )};
-      unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
-      bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
+      const std::string& algName{ index2algname( algIndex ) };
+      unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
+      bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
 
       partial_sc =
           schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, thisSlot.eventContext.get() ) );
@@ -659,9 +659,9 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     for ( auto& subslot : thisSlot.allSubSlots ) {
       auto& drAlgsSubSlot = subslot.algsStates.algsInState( AState::DATAREADY );
       for ( uint algIndex : drAlgsSubSlot ) {
-        const std::string& algName{index2algname( algIndex )};
-        unsigned int       rank{m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName )};
-        bool               blocking{m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false};
+        const std::string& algName{ index2algname( algIndex ) };
+        unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
+        bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
         partial_sc =
             schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, subslot.eventContext.get() ) );
       }
@@ -672,8 +672,8 @@ StatusCode AvalancheSchedulerSvc::iterate() {
       s << "START, " << thisAlgsStates.sizeOfSubset( AState::CONTROLREADY ) << ", "
         << thisAlgsStates.sizeOfSubset( AState::DATAREADY ) << ", " << thisAlgsStates.sizeOfSubset( AState::SCHEDULED )
         << ", " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << "\n";
-      auto threads = ( m_threadPoolSize != -1 ) ? std::to_string( m_threadPoolSize )
-                                                : std::to_string( std::thread::hardware_concurrency() );
+      auto          threads = ( m_threadPoolSize != -1 ) ? std::to_string( m_threadPoolSize )
+                                                         : std::to_string( std::thread::hardware_concurrency() );
       std::ofstream myfile;
       myfile.open( "IntraEventFSMOccupancy_" + threads + "T.csv", std::ios::app );
       myfile << s.str();
@@ -683,9 +683,9 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     // Not complete because this would mean that the slot is already free!
     if ( m_precSvc->CFRulesResolved( thisSlot ) &&
          !thisSlot.algsStates.containsAny(
-             {AState::CONTROLREADY, AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS} ) &&
+             { AState::CONTROLREADY, AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS } ) &&
          !subSlotAlgsInStates( thisSlot,
-                               {AState::CONTROLREADY, AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS} ) &&
+                               { AState::CONTROLREADY, AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS } ) &&
          !thisSlot.complete ) {
 
       thisSlot.complete = true;
@@ -726,7 +726,7 @@ StatusCode AvalancheSchedulerSvc::revise( unsigned int iAlgo, EventContext* cont
   StatusCode sc;
   auto       slotIndex = contextPtr->slot();
   EventSlot& slot      = m_eventSlots[slotIndex];
-  Cause      cs        = {Cause::source::Task, index2algname( iAlgo )};
+  Cause      cs        = { Cause::source::Task, index2algname( iAlgo ) };
 
   if ( UNLIKELY( contextPtr->usesSubSlot() ) ) {
     // Sub-slot
@@ -765,8 +765,8 @@ StatusCode AvalancheSchedulerSvc::revise( unsigned int iAlgo, EventContext* cont
  */
 bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const {
 
-  if ( !slot.algsStates.containsAny( {AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS} ) &&
-       !subSlotAlgsInStates( slot, {AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS} ) ) {
+  if ( !slot.algsStates.containsAny( { AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS } ) &&
+       !subSlotAlgsInStates( slot, { AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS } ) ) {
 
     error() << "*** Stall detected in slot " << slot.eventContext->slot() << "! ***" << endmsg;
 
@@ -839,7 +839,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
       auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
       for ( uint algIndex : schedAlgs ) {
 
-        const std::string& algoName{index2algname( algIndex )};
+        const std::string& algoName{ index2algname( algIndex ) };
 
         outputMS << "  task: " << std::setw( indt ) << algoName << " evt/slot: " << slot.eventContext->evt() << "/"
                  << slot.eventContext->slot();
@@ -870,8 +870,8 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
            << ( 0 > iSlot ? "[all slots] --" : "[target slot] " ) << "--------------------------\n\n";
 
   int  slotCount   = -1;
-  bool wasAlgError = ( iSlot >= 0 ) ? m_eventSlots[iSlot].algsStates.containsAny( {AState::ERROR} ) ||
-                                          subSlotAlgsInStates( m_eventSlots[iSlot], {AState::ERROR} )
+  bool wasAlgError = ( iSlot >= 0 ) ? m_eventSlots[iSlot].algsStates.containsAny( { AState::ERROR } ) ||
+                                          subSlotAlgsInStates( m_eventSlots[iSlot], { AState::ERROR } )
                                     : false;
 
   for ( auto& slot : m_eventSlots ) {
@@ -960,12 +960,12 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
     if ( LIKELY( -100 != m_threadPoolSize ) ) {
 
       // Cache values before moving the TaskSpec further
-      unsigned int     algIndex{ts.algIndex};
+      unsigned int     algIndex{ ts.algIndex };
       std::string_view algName( ts.algName );
-      unsigned int     algRank{ts.algRank};
-      bool             blocking{ts.blocking};
-      int              slotIndex{ts.slotIndex};
-      EventContext*    contextPtr{ts.contextPtr};
+      unsigned int     algRank{ ts.algRank };
+      bool             blocking{ ts.blocking };
+      int              slotIndex{ ts.slotIndex };
+      EventContext*    contextPtr{ ts.contextPtr };
 
       if ( LIKELY( !blocking ) ) {
         // Add the algorithm to the scheduled queue
@@ -1029,8 +1029,8 @@ StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
 
   const AlgExecState& algstate = m_algExecStateSvc->algExecState( ts.algPtr, *( ts.contextPtr ) );
   AState              state    = algstate.execStatus().isSuccess()
-                     ? ( algstate.filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED )
-                     : AState::ERROR;
+                                     ? ( algstate.filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED )
+                                     : AState::ERROR;
 
   // Update algorithm state and revise the downstream states
   auto sc = revise( ts.algIndex, ts.contextPtr, state, true );
@@ -1094,7 +1094,7 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( const EventContext* sourceC
 
 void AvalancheSchedulerSvc::recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) {
 
-  auto action = [this, samplePeriod, callback{std::move( callback )}]() -> StatusCode {
+  auto action = [this, samplePeriod, callback{ std::move( callback ) }]() -> StatusCode {
     if ( samplePeriod < 0 ) {
       this->m_snapshotInterval = std::chrono::duration<int64_t, std::milli>::min();
     } else {

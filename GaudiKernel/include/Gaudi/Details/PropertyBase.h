@@ -36,11 +36,11 @@ namespace Gaudi::Details {
 
   public:
     /// property name
-    const std::string name() const { return std::string{m_name}; }
+    const std::string name() const { return std::string{ m_name }; }
     /// property documentation
-    std::string documentation() const { return std::string{m_documentation}; }
+    std::string documentation() const { return std::string{ m_documentation }; }
     /// property semantics
-    std::string semantics() const { return std::string{m_semantics}; }
+    std::string semantics() const { return std::string{ m_semantics }; }
     /// property type-info
     const std::type_info* type_info() const { return m_typeinfo; }
     /// property type
@@ -157,11 +157,11 @@ namespace Gaudi::Details {
 
   public:
     WeakPropertyRef() = default;
-    WeakPropertyRef( std::string value ) : m_value{std::move( value )}, m_unset{false} {}
-    WeakPropertyRef( PropertyBase& property ) : m_property{&property} { property.add( this ); }
+    WeakPropertyRef( std::string value ) : m_value{ std::move( value ) }, m_unset{ false } {}
+    WeakPropertyRef( PropertyBase& property ) : m_property{ &property } { property.add( this ); }
     WeakPropertyRef( const WeakPropertyRef& other ) = delete;
     WeakPropertyRef( WeakPropertyRef&& other )
-        : m_property{other.m_property}, m_value{std::move( other.m_value )}, m_unset{other.m_unset} {
+        : m_property{ other.m_property }, m_value{ std::move( other.m_value ) }, m_unset{ other.m_unset } {
       if ( m_property ) {
         other.m_property = nullptr;
         m_property->remove( &other );

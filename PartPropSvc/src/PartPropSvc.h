@@ -53,7 +53,7 @@ private:
   StatusCode                                       createTable();
   std::vector<std::pair<std::string, inputFunPtr>> m_inputs;
 
-  Gaudi::Property<std::string> m_pdtFiles{this, "InputFile", "PDGTABLE.MeV"};
+  Gaudi::Property<std::string> m_pdtFiles{ this, "InputFile", "PDGTABLE.MeV" };
 
   HepPDT::ProcessUnknownID* m_upid = nullptr;
   std::string               m_upid_name;

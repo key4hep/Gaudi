@@ -22,10 +22,10 @@
 extern "C" GAUDI_API int GaudiMain( int argc, char** argv ) {
   Gaudi::Application::Options opts;
 
-  std::string_view appType{"Gaudi::Application"};
+  std::string_view appType{ "Gaudi::Application" };
   std::string_view optsFile;
 
-  gsl::span args{argv, static_cast<std::remove_cv_t<decltype( gsl::dynamic_extent )>>( argc )};
+  gsl::span args{ argv, static_cast<std::remove_cv_t<decltype( gsl::dynamic_extent )>>( argc ) };
 
   auto usage = [name = args[0]]( std::ostream& out ) -> std::ostream& {
     return out << "usage: " << name << " [options] option_file\n";
@@ -34,7 +34,7 @@ extern "C" GAUDI_API int GaudiMain( int argc, char** argv ) {
   auto arg = args.begin();
   ++arg; // ignore application name
   while ( arg != args.end() ) {
-    std::string_view opt{*arg};
+    std::string_view opt{ *arg };
     if ( opt == "--application" )
       appType = *++arg;
     else if ( opt == "-h" || opt == "--help" ) {

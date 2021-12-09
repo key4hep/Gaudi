@@ -57,7 +57,7 @@ int main( int argc, char* argv[] ) {
   std::vector<std::pair<std::string, std::string>> m_input_data;
   m_input_data.reserve( n_entries );
   std::generate_n( back_inserter( m_input_data ), n_entries, []() {
-    return std::pair{random_string( 20 + std::rand() % 80 ), random_string( std::rand() % 20 )};
+    return std::pair{ random_string( 20 + std::rand() % 80 ), random_string( std::rand() % 20 ) };
   } );
 
   std::cout << "adding " << n_entries << " properties" << std::endl;

@@ -38,8 +38,8 @@ public:
   bool isClonable() const override { return true; }
 
 private:
-  Gaudi::Property<std::string> m_privateToolType{this, "ToolWithName", "MyTool",
-                                                 "Type of the tool to use (internal name is ToolWithName)"};
+  Gaudi::Property<std::string> m_privateToolType{ this, "ToolWithName", "MyTool",
+                                                  "Type of the tool to use (internal name is ToolWithName)" };
 
   IMyTool* m_privateTool  = nullptr;
   IMyTool* m_publicTool   = nullptr;
@@ -50,36 +50,36 @@ private:
 
   IMyOtherTool* m_privateOtherInterface = nullptr;
 
-  ToolHandle<IMyTool> m_legacyToolHandle{"MyTool/LegacyToolHandle", this};
+  ToolHandle<IMyTool> m_legacyToolHandle{ "MyTool/LegacyToolHandle", this };
 
-  ToolHandle<IMyTool>       m_myPrivToolHandle{this, "PrivToolHandle", "MyTool/PrivToolHandle"};
-  PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool/PubToolHandle"};
+  ToolHandle<IMyTool>       m_myPrivToolHandle{ this, "PrivToolHandle", "MyTool/PrivToolHandle" };
+  PublicToolHandle<IMyTool> m_myPubToolHandle{ this, "PubToolHandle", "MyTool/PubToolHandle" };
 
-  PublicToolHandle<IAlgTool> m_myGenericToolHandle{this, "GenericToolHandle", "MyTool/GenericToolHandle"};
+  PublicToolHandle<IAlgTool> m_myGenericToolHandle{ this, "GenericToolHandle", "MyTool/GenericToolHandle" };
 
-  ToolHandle<IAlgTool> m_myUnusedToolHandle{this, "UnusedToolHandle", "TestToolFailing/UnusedToolHandle"};
+  ToolHandle<IAlgTool> m_myUnusedToolHandle{ this, "UnusedToolHandle", "TestToolFailing/UnusedToolHandle" };
 
-  ToolHandle<IMyTool> m_undefinedToolHandle{this};
-  ToolHandle<IMyTool> m_invalidToolHandle{this, "InvalidToolHandle", "TestToolFailing"};
+  ToolHandle<IMyTool> m_undefinedToolHandle{ this };
+  ToolHandle<IMyTool> m_invalidToolHandle{ this, "InvalidToolHandle", "TestToolFailing" };
 
-  ToolHandle<IMyOtherTool> m_wrongIfaceTool{this, "WrongIfaceTool", "MyTool/WrongIfaceTool"};
+  ToolHandle<IMyOtherTool> m_wrongIfaceTool{ this, "WrongIfaceTool", "MyTool/WrongIfaceTool" };
 
-  PublicToolHandle<const IMyTool> m_myConstToolHandle{"MyTool/ConstGenericToolHandle"};
+  PublicToolHandle<const IMyTool> m_myConstToolHandle{ "MyTool/ConstGenericToolHandle" };
 
   PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle;
   PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
   PublicToolHandle<IMyTool>       m_myCopiedToolHandle;
 
-  PublicToolHandleArray<IMyTool> m_tha{this,
-                                       "MyPublicToolHandleArrayProperty",
-                                       {"MyTool/AnotherConstGenericToolHandle", "MyTool/AnotherInstanceOfMyTool"}};
+  PublicToolHandleArray<IMyTool> m_tha{ this,
+                                        "MyPublicToolHandleArrayProperty",
+                                        { "MyTool/AnotherConstGenericToolHandle", "MyTool/AnotherInstanceOfMyTool" } };
 
-  DataObjectReadHandle<DataObject> m_tracks{this, "tracks", "/Event/Rec/Tracks", "the tracks"};
-  DataObjectReadHandle<DataObject> m_hits{this, "hits", "/Event/Rec/Hits", "the hits"};
-  DataObjectReadHandle<DataObject> m_raw{this, "raw", "/Rec/RAW", "the raw stuff"};
+  DataObjectReadHandle<DataObject> m_tracks{ this, "tracks", "/Event/Rec/Tracks", "the tracks" };
+  DataObjectReadHandle<DataObject> m_hits{ this, "hits", "/Event/Rec/Hits", "the hits" };
+  DataObjectReadHandle<DataObject> m_raw{ this, "raw", "/Rec/RAW", "the raw stuff" };
 
-  DataObjectWriteHandle<DataObject> m_selectedTracks{this, "trackSelection", "/Event/MyAnalysis/Tracks",
-                                                     "the selected tracks"};
+  DataObjectWriteHandle<DataObject> m_selectedTracks{ this, "trackSelection", "/Event/MyAnalysis/Tracks",
+                                                      "the selected tracks" };
 };
 
 #endif // GAUDIEXAMPLE_MYALGORITHM_H

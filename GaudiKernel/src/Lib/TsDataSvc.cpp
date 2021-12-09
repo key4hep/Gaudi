@@ -51,11 +51,11 @@
 #include <vector>
 
 // Macro to lock a scope
-#define STD_LOCK_GUARD_MACRO std::scoped_lock lock{m_accessMutex};
+#define STD_LOCK_GUARD_MACRO std::scoped_lock lock{ m_accessMutex };
 
 namespace {
   std::string operator+( char c, std::string_view sr ) {
-    std::string s{c};
+    std::string s{ c };
     s.append( sr.data(), sr.size() );
     return s;
   }
@@ -270,7 +270,7 @@ StatusCode TsDataSvc::registerAddress( IRegistry* parentObj, std::string_view ob
     if ( !p_entry ) return Status::INVALID_PARENT;
     return registerAddress( p_entry, o_path, pAddress );
   }
-  StatusCode status = par_entry->add( std::string{objPath}, pAddress );
+  StatusCode status = par_entry->add( std::string{ objPath }, pAddress );
   return status.isSuccess() ? status : Status::DOUBL_OBJ_PATH;
 }
 
@@ -366,7 +366,7 @@ StatusCode TsDataSvc::registerObject( DataObject* parentObj, std::string_view ob
     } else {
       RegEntry* leaf = node_entry->findLeaf( objPath );
       if ( !leaf ) {
-        status = node_entry->add( std::string{objPath}, pObject );
+        status = node_entry->add( std::string{ objPath }, pObject );
       } else {
         DataObject* obj = leaf->object();
         if ( !obj ) {
@@ -710,7 +710,7 @@ StatusCode TsDataSvc::linkObject( IRegistry* from, std::string_view objPath, Dat
         return sc.isSuccess() ? linkObject( pO->registry(), objPath.substr( sep ), to ) : sc;
       }
       // Now register the soft link
-      StatusCode status = from_entry->add( std::string{objPath}, to, true );
+      StatusCode status = from_entry->add( std::string{ objPath }, to, true );
       return status.isSuccess() ? Status::IDataProviderSvc_NO_ERROR : Status::DOUBL_OBJ_PATH;
     }
   } catch ( ... ) {}

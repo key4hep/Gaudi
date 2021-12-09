@@ -1075,9 +1075,9 @@ private:
   /// handler to be invoked for updating property m_defs1D
   void update1Ddefs();
 
-  Gaudi::Property<DBaseEntries> m_input{this, "Input", {}, "input streams"};
+  Gaudi::Property<DBaseEntries> m_input{ this, "Input", {}, "input streams" };
   Gaudi::Property<Histo1DMap>   m_defs1D{
-      this, "Predefined1DHistos", {}, &HistogramSvc::update1Ddefs, "histograms with predefined parameters"};
+      this, "Predefined1DHistos", {}, &HistogramSvc::update1Ddefs, "histograms with predefined parameters" };
 
   // modified histograms:
   std::set<std::string> m_mods1D;

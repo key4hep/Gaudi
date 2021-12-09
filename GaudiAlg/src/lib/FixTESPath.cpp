@@ -64,20 +64,17 @@ namespace FixTESPathDetails {
     //  "/Event"       -> R.I.T.[:-1]      ("rit")
     //  "/Event/MyObj" -> R.I.T. + "MyObj" ("rit/MyObj")
     //  "MyObj"        -> R.I.T. + "MyObj" ("rit/MyObj")
-    return rit.empty()
-               ? std::string{location}
-               : location.empty() || ( location == "/Event" )
-                     ? std::string{rit.substr( 0, rit.size() - 1 )}
-                     : location.compare( 0, 7, "/Event/" ) == 0
-                           ? std::string{rit}.append( location.substr( 7 ) )
-                           : location.compare( 0, 1, "/" ) == 0 ? std::string{rit}.append( location.substr( 1 ) )
-                                                                : std::string{rit}.append( location );
+    return rit.empty()                                    ? std::string{ location }
+           : location.empty() || ( location == "/Event" ) ? std::string{ rit.substr( 0, rit.size() - 1 ) }
+           : location.compare( 0, 7, "/Event/" ) == 0     ? std::string{ rit }.append( location.substr( 7 ) )
+           : location.compare( 0, 1, "/" ) == 0           ? std::string{ rit }.append( location.substr( 1 ) )
+                                                          : std::string{ rit }.append( location );
   }
 
   std::unique_ptr<IDataHandleVisitor> fixDataHandlePath( std::string_view rit, std::string rootName, MsgStream* dbg ) {
     if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
     return make_unique_DHHFixer( [rit, rootName = std::move( rootName ), dbg]( std::string const& location ) {
-      auto tokens = boost::tokenizer{location, boost::char_separator{":"}};
+      auto tokens = boost::tokenizer{ location, boost::char_separator{ ":" } };
       auto result =
           std::accumulate( tokens.begin(), tokens.end(), std::string{}, [&]( std::string s, std::string_view tok ) {
             std::string r = fullTESLocation( tok, rit );

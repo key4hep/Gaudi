@@ -38,7 +38,7 @@ StatusCode ReadAlg::initialize() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "Reading " << m_addressfile.value() << endmsg;
   m_addresses.clear();
-  std::ifstream input{m_addressfile};
+  std::ifstream input{ m_addressfile };
   while ( input.good() ) {
     RootAddressArgs addr;
     input >> addr;

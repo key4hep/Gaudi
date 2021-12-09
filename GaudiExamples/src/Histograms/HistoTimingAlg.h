@@ -45,9 +45,9 @@ private:
 
   HistoMap m_histos;
 
-  Gaudi::Property<bool>         m_useGaudiAlg{this, "UseLookup", false, ""};
-  Gaudi::Property<unsigned int> m_nHistos{this, "NumHistos", 20, ""};
-  Gaudi::Property<unsigned int> m_nTracks{this, "NumTracks", 30, ""};
+  Gaudi::Property<bool>         m_useGaudiAlg{ this, "UseLookup", false, "" };
+  Gaudi::Property<unsigned int> m_nHistos{ this, "NumHistos", 20, "" };
+  Gaudi::Property<unsigned int> m_nTracks{ this, "NumTracks", 30, "" };
 };
 
 #endif // HISTOGRAMS_HistoTimingAlg_H

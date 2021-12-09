@@ -72,12 +72,12 @@ namespace {
   public:
     template <typename F>
     decltype( auto ) with_lock( F&& f ) {
-      WriteLock lock{m_mtx};
+      WriteLock lock{ m_mtx };
       return f( m_obj );
     }
     template <typename F>
     decltype( auto ) with_lock( F&& f ) const {
-      ReadLock lock{m_mtx};
+      ReadLock lock{ m_mtx };
       return f( m_obj );
     }
   };
@@ -127,13 +127,14 @@ namespace {
  */
 class HiveWhiteBoard : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard> {
 protected:
-  Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
-  Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
-  Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc", ""};
-  Gaudi::Property<size_t>      m_slots{this, "EventSlots", 1, "number of event slots"};
-  Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
-  Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
-                                          "enable incidents on data creation requests"};
+  Gaudi::Property<CLID>        m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
+  Gaudi::Property<std::string> m_rootName{ this, "RootName", "/Event", "name of root entry" };
+  Gaudi::Property<std::string> m_loader{ this, "DataLoader", "EventPersistencySvc", "" };
+  Gaudi::Property<size_t>      m_slots{ this, "EventSlots", 1, "number of event slots" };
+  Gaudi::Property<bool>        m_forceLeaves{ this, "ForceLeaves", false,
+                                       "force creation of default leaves on registerObject" };
+  Gaudi::Property<bool>        m_enableFaultHdlr{ this, "EnableFaultHandler", false,
+                                           "enable incidents on data creation requests" };
 
   /// Pointer to data loader service
   IConversionSvc* m_dataLoader = nullptr;
@@ -369,7 +370,7 @@ public:
 
   /// check if a data object exists in the current store
   bool exists( const DataObjID& id ) override {
-    DataObject* pObject{nullptr};
+    DataObject* pObject{ nullptr };
     return findObject( id.fullKey(), pObject ).isSuccess();
   }
 

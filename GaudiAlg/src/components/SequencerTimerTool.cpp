@@ -99,7 +99,7 @@ int SequencerTimerTool::indexByName( const std::string& name ) {
     beg = timer.name().find_first_not_of( " \t" );
     end = timer.name().find_last_not_of( " \t" );
     return timer.name().compare( beg, end - beg + 1, temp ) == 0;
-  } );
+     } );
   return i != std::end( m_timerList ) ? std::distance( std::begin( m_timerList ), i ) : -1;
 }
 

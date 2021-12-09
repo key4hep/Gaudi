@@ -64,7 +64,7 @@ private:
   void           init();
   void           checkInit() const;
   std::once_flag m_initFlag;
-  bool           m_isInit{false};
+  bool           m_isInit{ false };
 
   std::mutex m_mut;
 };

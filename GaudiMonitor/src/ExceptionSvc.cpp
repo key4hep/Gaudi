@@ -67,7 +67,7 @@ StatusCode ExceptionSvc::initialize() {
 
   std::string VAL, TAG;
 
-  static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*([^[:space:]]+)"};
+  static const boost::regex exp{ "[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*([^[:space:]]+)" };
   static const auto         tok_end = boost::sregex_iterator();
   for ( auto tok_iter = boost::sregex_iterator( begin( key ), end( key ), exp ); tok_iter != tok_end; ++tok_iter ) {
     TAG = ( *tok_iter )[1];

@@ -16,7 +16,7 @@ namespace Gaudi {
   namespace Parsers {
     /// Helper class to enable ADL for parsers
     struct InputData : std::string {
-      InputData( const std::string& s ) : std::string{s} {}
+      InputData( const std::string& s ) : std::string{ s } {}
       using std::string::string;
       using std::string::operator=;
     };

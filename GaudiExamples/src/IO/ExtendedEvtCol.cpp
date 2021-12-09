@@ -64,7 +64,7 @@ namespace Gaudi {
       }
 
     private:
-      Gaudi::Property<std::string> m_tracks{this, "Tracks", "MyTracks"};
+      Gaudi::Property<std::string> m_tracks{ this, "Tracks", "MyTracks" };
     };
   } // end of namespace Examples
 } // end of namespace Gaudi
