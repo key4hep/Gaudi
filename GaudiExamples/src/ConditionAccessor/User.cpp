@@ -19,7 +19,7 @@ namespace Gaudi::Examples::Conditions {
     using base_class::base_class;
 
     /// Data member to access condition values for the current event.
-    ConditionAccessor<int> m_cond{this, "MyCondition", "condition/key"};
+    ConditionAccessor<int> m_cond{ this, "MyCondition", "condition/key" };
 
     StatusCode initialize() override {
       auto status = base_class::initialize();

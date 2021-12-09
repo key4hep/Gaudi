@@ -89,11 +89,10 @@ namespace GaudiAlg {
      *  @return boolean indicating if the IDs are equal
      */
     inline bool operator==( const ID& id ) const noexcept {
-      return hash() != id.hash()
-                 ? false
-                 : numeric() && id.numeric()
-                       ? id.numericID() == numericID()
-                       : literal() && id.literal() ? id.literalID() == literalID() : idAsString() == id.idAsString();
+      return hash() != id.hash()         ? false
+             : numeric() && id.numeric() ? id.numericID() == numericID()
+             : literal() && id.literal() ? id.literalID() == literalID()
+                                         : idAsString() == id.idAsString();
     }
     /// Implement the != operator, using the == operator
     inline bool operator!=( const ID& id ) const { return !( *this == id ); }
@@ -105,9 +104,9 @@ namespace GaudiAlg {
       return
           // hash () < id.hash () ? true  :
           // hash () > id.hash () ? false :
-          numeric() && id.numeric()
-              ? numericID() < id.numericID()
-              : literal() && id.literal() ? literalID() < id.literalID() : idAsString() < id.idAsString();
+          numeric() && id.numeric()   ? numericID() < id.numericID()
+          : literal() && id.literal() ? literalID() < id.literalID()
+                                      : idAsString() < id.idAsString();
     }
     // ========================================================================
     GAUDI_API std::ostream& fillStream( std::ostream& s ) const;
@@ -127,14 +126,14 @@ namespace GaudiAlg {
   private:
     // ========================================================================
     /// Internal numeric ID
-    NumericID m_nID{-1}; //       Internal numeric ID
+    NumericID m_nID{ -1 }; //       Internal numeric ID
     /// Internal alpha-numeric ID
     LiteralID m_aID; // Internal alpha-numeric ID
     // ========================================================================
   private:
     // ========================================================================
     /// the hash value of ID
-    size_t m_hash{0}; // the hash value of ID
+    size_t m_hash{ 0 }; // the hash value of ID
     // ========================================================================
   };
   // ==========================================================================

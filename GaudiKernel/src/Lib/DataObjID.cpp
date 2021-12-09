@@ -20,7 +20,7 @@
 namespace {
   std::string quote( std::string_view in ) {
     if ( !in.empty() && in.front() == in.back() && ( in.front() == '\'' || in.front() == '\"' ) )
-      return std::string{in};
+      return std::string{ in };
     std::stringstream s;
     s << std::quoted( in );
     return s.str();
@@ -36,9 +36,9 @@ namespace Gaudi {
       struct Operations {
         template <typename ClassID>
         void operator()( DataObjID& dest, const std::pair<ClassID, std::string>& arg ) const {
-          dest = {arg.first, arg.second};
+          dest = { arg.first, arg.second };
         }
-        void operator()( DataObjID& dest, const std::string& arg ) const { dest = {arg}; }
+        void operator()( DataObjID& dest, const std::string& arg ) const { dest = { arg }; }
       };
       DataObjIDGrammar() : DataObjIDGrammar::base_type( result ) {
         result = atlas1_style[op( qi::_val, qi::_1 )] | atlas2_style[op( qi::_val, qi::_1 )] |

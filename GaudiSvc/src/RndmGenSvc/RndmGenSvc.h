@@ -63,7 +63,7 @@ private:
   /// Serialization interface of random number engine
   mutable SmartIF<ISerialize> m_serialize;
 
-  Gaudi::Property<std::string> m_engineName{this, "Engine", "HepRndm::Engine<CLHEP::RanluxEngine>", "engine name"};
+  Gaudi::Property<std::string> m_engineName{ this, "Engine", "HepRndm::Engine<CLHEP::RanluxEngine>", "engine name" };
 
 public:
   // inherits constructor from base class

@@ -47,45 +47,45 @@ public:
   using Algorithm::Algorithm;
 
 protected:
-  Gaudi::Property<ItemNames> m_itemNames{this, "ItemList", {}, "vector of item names to be saved to this stream"};
+  Gaudi::Property<ItemNames> m_itemNames{ this, "ItemList", {}, "vector of item names to be saved to this stream" };
   Gaudi::Property<ItemNames> m_optItemNames{
-      this, "OptItemList", {}, "vector of optional item names to be saved to this stream"};
+      this, "OptItemList", {}, "vector of optional item names to be saved to this stream" };
   Gaudi::Property<AlgDependentItemNames> m_algDependentItemList{
       this,
       "AlgDependentItemList",
       {},
       "mapping between algorithm names, and a list of items for which, if the "
-      "algorithm in question accepted the event, they should be also stored"};
-  Gaudi::Property<bool>                     m_doPreLoad{this, "Preload", true,
-                                    "flag indicating whether data pre-loading should be performed"};
-  Gaudi::Property<bool>                     m_doPreLoadOpt{this, "PreloadOptItems", false,
-                                       "flag indicating whether optional items should be preloaded"};
-  Gaudi::Property<std::string>              m_output{this, "Output", {}, "name of the output file specification"};
-  Gaudi::Property<std::string>              m_outputName{this, "OutputFile", {}, "name of the output file"};
-  Gaudi::Property<std::string>              m_storeName{this, "EvtDataSvc", "EventDataSvc",
-                                           "name of the service managing the data store"};
-  Gaudi::Property<std::string>              m_persName{this, "EvtConversionSvc", "EventPersistencySvc",
-                                          "name of the persistency service capable to write data from the store"};
+      "algorithm in question accepted the event, they should be also stored" };
+  Gaudi::Property<bool>                     m_doPreLoad{ this, "Preload", true,
+                                     "flag indicating whether data pre-loading should be performed" };
+  Gaudi::Property<bool>                     m_doPreLoadOpt{ this, "PreloadOptItems", false,
+                                        "flag indicating whether optional items should be preloaded" };
+  Gaudi::Property<std::string>              m_output{ this, "Output", {}, "name of the output file specification" };
+  Gaudi::Property<std::string>              m_outputName{ this, "OutputFile", {}, "name of the output file" };
+  Gaudi::Property<std::string>              m_storeName{ this, "EvtDataSvc", "EventDataSvc",
+                                            "name of the service managing the data store" };
+  Gaudi::Property<std::string>              m_persName{ this, "EvtConversionSvc", "EventPersistencySvc",
+                                           "name of the persistency service capable to write data from the store" };
   Gaudi::Property<std::vector<std::string>> m_acceptNames{
       this,
       "AcceptAlgs",
       {},
       [this]( auto& ) { this->decodeAlgorithms( this->m_acceptNames, this->m_acceptAlgs ); },
-      "names of Algorithms that this stream accepts"};
+      "names of Algorithms that this stream accepts" };
   Gaudi::Property<std::vector<std::string>> m_requireNames{
       this,
       "RequireAlgs",
       {},
       [this]( auto& ) { this->decodeAlgorithms( this->m_requireNames, this->m_requireAlgs ); },
-      "names of Algorithms that this stream requires"};
+      "names of Algorithms that this stream requires" };
   Gaudi::Property<std::vector<std::string>> m_vetoNames{
       this,
       "VetoAlgs",
       {},
       [this]( auto& ) { this->decodeAlgorithms( this->m_vetoNames, this->m_vetoAlgs ); },
-      "names of Algorithms that this stream is vetoed by"};
-  Gaudi::Property<bool> m_verifyItems{this, "VerifyItems", true,
-                                      "flag to indicate that item consistency should be checked"};
+      "names of Algorithms that this stream is vetoed by" };
+  Gaudi::Property<bool> m_verifyItems{ this, "VerifyItems", true,
+                                       "flag to indicate that item consistency should be checked" };
 
   /// should I fire incidents for writing opening/closing etc?
   /// in the baseclass, always fire the incidents by default

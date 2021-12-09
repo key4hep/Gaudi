@@ -36,11 +36,11 @@ public:
   StatusCode finalize() override;   ///< Algorithm finalization
 
 private:
-  Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling. "};
+  Gaudi::Property<int> m_nStartFromEvent{ this, "StartFromEventN", 1, "After what event we start profiling. " };
   Gaudi::Property<int> m_nStopAtEvent{
       this, "StopAtEventN", 0,
-      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
-  Gaudi::Property<int> m_dumpPeriod{this, "DumpPeriod", 100, "Period for dumping head to a file. Default=100"};
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0." };
+  Gaudi::Property<int> m_dumpPeriod{ this, "DumpPeriod", 100, "Period for dumping head to a file. Default=100" };
 
   bool m_profiling   = false; // whether we are profiling...
   int  m_eventNumber = 0;     // Current event number

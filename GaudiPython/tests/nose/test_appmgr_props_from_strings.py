@@ -10,4 +10,5 @@
 #####################################################################################
 def test():
     from GaudiPython import AppMgr
-    app = AppMgr(selfoptions={'AlgTypeAliases': '{}'})
+
+    app = AppMgr(selfoptions={"AlgTypeAliases": "{}"})

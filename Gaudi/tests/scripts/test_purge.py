@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
 from Gaudi.Configuration import *
 from GaudiKernel.Configurable import purge
 
@@ -24,13 +25,14 @@ importOptions(option_file)
 second = configurationDict()
 
 from pprint import PrettyPrinter
+
 pp = PrettyPrinter()
 
-print("first =", end=' ')
+print("first =", end=" ")
 pp.pprint(first)
 
-print("purged =", end=' ')
+print("purged =", end=" ")
 pp.pprint(purged)
 
-print("second =", end=' ')
+print("second =", end=" ")
 pp.pprint(second)

@@ -9,9 +9,12 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
-from ROOT import *
-import sys
+
 import re
+import sys
+
+from ROOT import *
+
 """
 Prepare the clones plot.
 Parses the end of the output file, printed by the destructors of the CPUCruncher.
@@ -40,14 +43,18 @@ def parseLog(logfilename):
                 float,
                 re.match(
                     ".* avg_runtime= ([0-9]*.[0-9]*|[0-9]*.[0-9]*e-[0-9]*) n_clones= ([0-9]).*",
-                    line).groups())
+                    line,
+                ).groups(),
+            )
             vals.append(runtime_nclones)
         elif "Running with" in line:
             NEventsInFlight, NThreads = map(
                 int,
                 re.match(
                     ".* Running with ([0-9]*) parallel events.*algorithms, ([0-9]*) threads",
-                    line).groups())
+                    line,
+                ).groups(),
+            )
 
     return vals
 
@@ -70,11 +77,13 @@ def createGraph(vals):
 
 def getText(x, y, text, scale, angle, colour, font, NDC=False):
     lat = TLatex(
-        float(x), float(y),
-        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
+        float(x),
+        float(y),
+        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text),
+    )
 
     lat.SetNDC(NDC)
-    if angle != 0.:
+    if angle != 0.0:
         lat.SetTextAngle(angle)
     return lat
 
@@ -88,11 +97,10 @@ def getCountLatexes(vals, xmax):
 
     latexes = []
     for i in range(1, max_nclones + 1):
-        n_algos = len(
-            filter(lambda runtime_nclones: runtime_nclones[1] == i, vals))
-        latexes.append(getText(xmax * 1.01, i, n_algos, .7, 0, 600, 12))
+        n_algos = len(filter(lambda runtime_nclones: runtime_nclones[1] == i, vals))
+        latexes.append(getText(xmax * 1.01, i, n_algos, 0.7, 0, 600, 12))
 
-    label = getText(.95, .55, "Total", .8, 270, 600, 12, True)
+    label = getText(0.95, 0.55, "Total", 0.8, 270, 600, 12, True)
 
     latexes.append(label)
 
@@ -116,9 +124,16 @@ def doPlot(logfilename):
     countLatexes = getCountLatexes(vals, graph.GetXaxis().GetXmax())
     map(lambda latex: latex.Draw(), countLatexes)
     evtsIf = getText(
-        .6, .365,
+        0.6,
+        0.365,
         "#splitline{#splitline{%s Simultaneous Events}{%s Threads}}{%s Algorithms}"
-        % (NEventsInFlight, NThreads, nalgorithms), .8, 0, 2, 12, True)
+        % (NEventsInFlight, NThreads, nalgorithms),
+        0.8,
+        0,
+        2,
+        12,
+        True,
+    )
     evtsIf.Draw()
 
     a = raw_input("press enter to continue")

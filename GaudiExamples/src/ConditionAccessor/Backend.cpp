@@ -31,7 +31,7 @@ namespace Gaudi::Examples::Conditions::details {
   }
 
   const std::any* ConditionsStore::getConditionAny( const ConditionKey& key, const ConditionContext& ctx ) const {
-    auto lg = std::scoped_lock{m_storageMtx};
+    auto lg = std::scoped_lock{ m_storageMtx };
     if ( m_storage.find( ctx ) == end( m_storage ) ) {
       std::cout << "ConditionsStore: first access to store " << ctx << '\n';
       auto& store = m_storage[ctx];

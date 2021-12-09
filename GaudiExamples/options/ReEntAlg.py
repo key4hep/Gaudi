@@ -11,10 +11,15 @@
 ###############################################################
 # Job options file
 # ==============================================================
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    ReEntAlg,
+)
 from Gaudi.Configuration import *
-from Configurables import ReEntAlg
 
-from Configurables import AlgResourcePool, HiveSlimEventLoopMgr, HiveWhiteBoard, AvalancheSchedulerSvc
 # from Configurables import GaudiExamplesCommonConf
 # GaudiExamplesCommonConf()
 
@@ -32,15 +37,15 @@ algResourcePool = AlgResourcePool()
 slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName=scheduler)
 whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=nSlots)
 
-myralg = ReEntAlg(
-    'ReEntAlg', OutputLevel=INFO, Cardinality=algCard, SleepFor=2000)
+myralg = ReEntAlg("ReEntAlg", OutputLevel=INFO, Cardinality=algCard, SleepFor=2000)
 
 ApplicationMgr(
     EvtMax=10,
-    EvtSel='NONE',
-    HistogramPersistency='NONE',
+    EvtSel="NONE",
+    HistogramPersistency="NONE",
     EventLoop=slimeventloopmgr,
     ExtSvc=[algResourcePool, whiteboard],
     TopAlg=[myralg],
     OutputLevel=INFO,
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)

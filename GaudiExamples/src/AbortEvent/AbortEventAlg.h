@@ -33,7 +33,7 @@ public:
   StatusCode finalize() override;   ///< Algorithm finalization
 
 private:
-  Gaudi::Property<long> m_count{this, "AbortedEventNumber", 3, "At which event to trigger an abort"};
+  Gaudi::Property<long> m_count{ this, "AbortedEventNumber", 3, "At which event to trigger an abort" };
 
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;

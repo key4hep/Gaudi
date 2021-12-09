@@ -79,7 +79,7 @@ bool DirSearchPath::find( const string& fileName, string& fullFileName ) const {
 bool DirSearchPath::find( const path& file, path& fileFound ) const {
   bool rc( false );
   for ( const auto& iDir : m_dirs ) {
-    path full{iDir / file};
+    path full{ iDir / file };
     if ( exists( full ) ) {
       fileFound = full;
       rc        = true;
@@ -93,7 +93,7 @@ bool DirSearchPath::find( const path& file, path& fileFound ) const {
 std::list<DirSearchPath::path> DirSearchPath::find_all( const path& file ) const {
   std::list<path> found;
   for ( const auto& iDir : m_dirs ) {
-    path full{iDir / file};
+    path full{ iDir / file };
     if ( exists( full ) ) found.push_back( full );
   }
   return found;

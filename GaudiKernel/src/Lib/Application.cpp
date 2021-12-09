@@ -23,10 +23,10 @@
 #include <type_traits>
 
 #define GAUDI_ASSERT_THROW_NAME( cond, msg, name )                                                                     \
-  if ( !cond ) throw GaudiException{msg, name, StatusCode::FAILURE};
+  if ( !cond ) throw GaudiException{ msg, name, StatusCode::FAILURE };
 
 #define GAUDI_ASSERT_THROW( cond, msg )                                                                                \
-  if ( !cond ) throw GaudiException{msg, this->name(), StatusCode::FAILURE};
+  if ( !cond ) throw GaudiException{ msg, this->name(), StatusCode::FAILURE };
 
 namespace {
   void consumeOptions( SmartIF<IProperty> prop, Gaudi::Application::Options& options ) {
@@ -60,7 +60,7 @@ Gaudi::Application::Application( Gaudi::Application::Options options ) {
   // - start minimal services
   GAUDI_ASSERT_THROW_NAME( app->configure(), "failure creating basic services", "Gaudi::Application" );
 
-  consumeOptions( SmartIF<IMessageSvc>{app}.as<IProperty>(), options );
+  consumeOptions( SmartIF<IMessageSvc>{ app }.as<IProperty>(), options );
 
   // - prepare job configuration
   {
@@ -109,7 +109,7 @@ extern "C" {
 // helper to invoke the factory from Python
 Gaudi::Application* _py_Gaudi__Application__create( const char* name, const c_opt_t* options, unsigned long n ) {
   Gaudi::Application::Options opts;
-  gsl::span                   py_opts{options, static_cast<std::remove_cv_t<decltype( gsl::dynamic_extent )>>( n )};
+  gsl::span                   py_opts{ options, static_cast<std::remove_cv_t<decltype( gsl::dynamic_extent )>>( n ) };
   for ( auto& opt : py_opts ) { opts[opt.key] = opt.value; }
   return Gaudi::Application::create( name, std::move( opts ) ).release();
 }

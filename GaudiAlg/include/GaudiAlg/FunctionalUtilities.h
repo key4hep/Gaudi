@@ -30,7 +30,7 @@ namespace Gaudi::Functional {
 
   template <typename... Strings>
   std::string concat_alternatives( const Strings&... s ) {
-    return concat_alternatives( std::initializer_list<std::string>{s...} );
+    return concat_alternatives( std::initializer_list<std::string>{ s... } );
   }
 
   [[deprecated( "please use `updateHandleLocation` instead of `Gaudi::Functional::updateHandleLocation`" )]] inline void

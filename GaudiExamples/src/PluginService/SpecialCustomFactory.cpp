@@ -39,5 +39,5 @@ namespace {
     return p;
   }
 
-  Gaudi::PluginService::DeclareFactory<CustomFactoryAlgorithm> _{creator};
+  Gaudi::PluginService::DeclareFactory<CustomFactoryAlgorithm> _{ creator };
 } // namespace

@@ -45,12 +45,12 @@ namespace Gaudi {
     public:
       /// Return the pointer for the current context (null for a new context).
       T* get() const {
-        auto lock = std::scoped_lock{m_ptrs_lock};
+        auto lock = std::scoped_lock{ m_ptrs_lock };
         return m_ptrs[currentContextId()];
       }
       /// Set the pointer for the current context.
       T*& set( T* ptr ) {
-        auto lock                         = std::scoped_lock{m_ptrs_lock};
+        auto lock                         = std::scoped_lock{ m_ptrs_lock };
         return m_ptrs[currentContextId()] = ptr;
       }
 
@@ -92,7 +92,7 @@ namespace Gaudi {
       template <class Mapper, class BinaryOperation>
       auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init, BinaryOperation op ) const
           -> decltype( init ) {
-        auto lock = std::scoped_lock{m_ptrs_lock};
+        auto lock = std::scoped_lock{ m_ptrs_lock };
         return std::accumulate( m_ptrs.begin(), m_ptrs.end(), init, [&f, &op]( const auto& partial, const auto& p ) {
           return op( partial, f( p.second ) );
         } );
@@ -101,26 +101,26 @@ namespace Gaudi {
       /// Call a function on each contained pointer.
       template <class F>
       void for_each( F f ) const {
-        auto lock = std::scoped_lock{m_ptrs_lock};
+        auto lock = std::scoped_lock{ m_ptrs_lock };
         for ( auto& i : m_ptrs ) f( i.second );
       }
 
       /// Call a function on each contained pointer. (non-const version)
       template <class F>
       void for_each( F f ) {
-        auto lock = std::scoped_lock{m_ptrs_lock};
+        auto lock = std::scoped_lock{ m_ptrs_lock };
         for ( auto& i : m_ptrs ) f( i.second );
       }
 
       /// Call a function on each element, passing slot# as well
       template <class F>
       void for_all( F f ) const {
-        auto lock = std::scoped_lock{m_ptrs_lock};
+        auto lock = std::scoped_lock{ m_ptrs_lock };
         for ( auto& i : m_ptrs ) f( i.first, i.second );
       }
       template <class F>
       void for_all( F f ) {
-        auto lock = std::scoped_lock{m_ptrs_lock};
+        auto lock = std::scoped_lock{ m_ptrs_lock };
         for ( auto& i : m_ptrs ) f( i.first, i.second );
       }
 

@@ -230,7 +230,7 @@ namespace Gaudi {
     template <class KTYPE, class VTYPE, class HASH, class MAP>
     inline std::ostream& toStream( const GaudiUtils::HashMap<KTYPE, VTYPE, HASH, MAP>& obj, std::ostream& s ) {
       // Copy the hash map into a map to have it ordered by key.
-      return toStream( GaudiUtils::Map<KTYPE, VTYPE>{obj.begin(), obj.end()}, s );
+      return toStream( GaudiUtils::Map<KTYPE, VTYPE>{ obj.begin(), obj.end() }, s );
     }
     // ========================================================================
     /** the specialization for C-arrays, a'la python tuple

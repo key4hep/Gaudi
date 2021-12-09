@@ -39,7 +39,7 @@ namespace Gaudi {
         matchList( const C& c ) {
           m_regs.reserve( c.size() );
           std::transform( std::begin( c ), std::end( c ), std::back_inserter( m_regs ),
-                          []( typename C::const_reference i ) { return boost::regex{i}; } );
+                          []( typename C::const_reference i ) { return boost::regex{ i }; } );
         }
 
         bool Or( const std::string& test ) const {
@@ -65,7 +65,7 @@ namespace Gaudi {
         // compares the string in test, to the regexps in a container
         //
         return std::any_of( std::begin( regexps ), std::end( regexps ), [&]( typename T::const_reference i ) {
-          return boost::regex_match( test, boost::regex{i} );
+          return boost::regex_match( test, boost::regex{ i } );
         } );
       }
 
@@ -82,7 +82,7 @@ namespace Gaudi {
         // compares the string in test, to the regexps in a container
         //
         return std::all_of( std::begin( regexps ), std::end( regexps ), [&]( typename T::const_reference i ) {
-          return boost::regex_match( test, boost::regex{i} );
+          return boost::regex_match( test, boost::regex{ i } );
         } );
       }
     } // namespace RegEx

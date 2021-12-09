@@ -36,14 +36,14 @@ namespace {
    * first multiplies by 100.
    */
   static const auto registry = std::map<std::string_view, std::string_view>{
-      {"counter", "{0:nEntries|10d}"},   // all unknown counters, and default
-      {"histogram", "{0:nEntries|10d}"}, // all histograms
-      {"counter:AveragingCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g}"},
-      {"counter:SigmaCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g}"},
-      {"counter:StatCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g} "
-                              "|{0:min|#12.5g} |{0:max|#12.5g}"},
-      {"counter:BinomialCounter",
-       "{0:nEntries|10d} |{0:nTrueEntries|11d} |({0:efficiency|#9.7p} +- {0:efficiencyErr|-#8.7p})%"},
+      { "counter", "{0:nEntries|10d}" },   // all unknown counters, and default
+      { "histogram", "{0:nEntries|10d}" }, // all histograms
+      { "counter:AveragingCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g}" },
+      { "counter:SigmaCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g}" },
+      { "counter:StatCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g} "
+                               "|{0:min|#12.5g} |{0:max|#12.5g}" },
+      { "counter:BinomialCounter",
+        "{0:nEntries|10d} |{0:nTrueEntries|11d} |({0:efficiency|#9.7p} +- {0:efficiencyErr|-#8.7p})%" },
   };
 } // namespace
 
@@ -80,7 +80,7 @@ public:
       // dealing with {} format, let's find entry for our type in registry
       const auto type = j.at( "type" ).get<std::string>();
       // first looking for the entry, then we drop on ":abc" suffix at a time and try again
-      std::string_view type_key{type};
+      std::string_view type_key{ type };
       // look for the full entry
       auto entry = registry.find( type_key );
       // we check if we have type separators before entering the loop
@@ -138,7 +138,7 @@ namespace {
     }
     // binomial counters are slightly different ('*' character)
     return log << fmt::format( " |{}{:48}|{} |",
-                               ( std::string_view{type}.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
+                               ( std::string_view{ type }.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
                                fmt::format( "\"{}\"", id ), j );
   }
 
@@ -200,7 +200,7 @@ StatusCode Gaudi::Monitoring::MessageSvcSink::stop() {
           return a + ( j.second.at( "empty" ).template get<bool>() ? 0 : 1 );
         } );
     if ( 0 == nbCounters ) continue;
-    MsgStream log{msgSvc(), algoName};
+    MsgStream log{ msgSvc(), algoName };
     log << MSG::INFO << "Number of counters : " << nbCounters << "\n"
         << " |    Counter                                      |     #     |   "
         << " sum     | mean/eff^* | rms/err^*  |     min     |     max     |";

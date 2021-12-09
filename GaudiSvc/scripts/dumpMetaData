@@ -9,26 +9,28 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 Print metadata recorded by MetaDataSvc from a ROOT file.
-'''
+"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import os
-    from pprint import pprint
-    from GaudiSvc import getMetaData
     from optparse import OptionParser
-    parser = OptionParser(usage='%prog filename', description=__doc__)
+    from pprint import pprint
+
+    from GaudiSvc import getMetaData
+
+    parser = OptionParser(usage="%prog filename", description=__doc__)
 
     opts, args = parser.parse_args()
 
     if len(args) != 1:
-        parser.error('wrong number of arguments')
+        parser.error("wrong number of arguments")
 
     filename = args[0]
 
     if not os.path.exists(filename):
-        parser.error('invalid filename {0}'.format(filename))
+        parser.error("invalid filename {0}".format(filename))
 
     try:
         pprint(getMetaData(filename))

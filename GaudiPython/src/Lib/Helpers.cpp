@@ -99,7 +99,7 @@ namespace {
     // ========================================================================
     /// the property interface
     SmartIF<IProperty>    m_svc; // the property interface
-    Gaudi::Property<bool> m_old = {s_NAME, true};
+    Gaudi::Property<bool> m_old = { s_NAME, true };
     bool                  m_enable;
     StatusCode            m_code = StatusCode::SUCCESS; // status code
     // ========================================================================

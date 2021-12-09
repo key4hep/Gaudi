@@ -69,9 +69,9 @@ namespace Gaudi {
     /// RootCnvSvc Property: Root data cache size
     std::string loadSection;
     /// RootCnvSvc Property: Root data cache size
-    int cacheSize{0};
+    int cacheSize{ 0 };
     /// RootCnvSvc Property: ROOT cache learn entries
-    int learnEntries{0};
+    int learnEntries{ 0 };
 
     /// Standard constructor
     RootConnectionSetup() = default;

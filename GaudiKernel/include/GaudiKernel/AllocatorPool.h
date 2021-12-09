@@ -96,7 +96,7 @@ namespace GaudiUtils {
     };
     class PoolChunk final {
     public:
-      explicit PoolChunk( unsigned int sz ) : size( sz ), mem{new char[size]} {}
+      explicit PoolChunk( unsigned int sz ) : size( sz ), mem{ new char[size] } {}
       const unsigned int      size;
       std::unique_ptr<char[]> mem;
       PoolChunk*              next = nullptr;

@@ -46,9 +46,9 @@ public:
 protected:
   // Properties
 
-  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", {}, "name of the Hist Pers type"};
-  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", {}, "event selector"};
-  Gaudi::Property<bool>        m_warnings{this, "Warnings", true, "set to false to suppress warning messages"};
+  Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", {}, "name of the Hist Pers type" };
+  Gaudi::Property<std::string> m_evtsel{ this, "EvtSel", {}, "event selector" };
+  Gaudi::Property<bool>        m_warnings{ this, "Warnings", true, "set to false to suppress warning messages" };
 
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc> m_evtDataMgrSvc = nullptr;

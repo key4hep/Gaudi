@@ -29,10 +29,10 @@ namespace {
     return m.end();
   }
   // ==========================================================================
-  const std::string s_X[] = {"x", "X", "px", "pX", "Px", "PX"};
-  const std::string s_Y[] = {"y", "Y", "py", "pY", "Py", "PY"};
-  const std::string s_Z[] = {"z", "Z", "pz", "pZ", "Pz", "PZ"};
-  const std::string s_E[] = {"t", "T", "e", "E"};
+  const std::string s_X[] = { "x", "X", "px", "pX", "Px", "PX" };
+  const std::string s_Y[] = { "y", "Y", "py", "pY", "Py", "PY" };
+  const std::string s_Z[] = { "z", "Z", "pz", "pZ", "Pz", "PZ" };
+  const std::string s_E[] = { "t", "T", "e", "E" };
   // ==========================================================================
 } // namespace
 // ============================================================================

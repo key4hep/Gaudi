@@ -148,12 +148,12 @@ StatusCode Sequencer::stop() {
 }
 
 bool Sequencer::branchFilterPassed( const EventContext& ctx ) const {
-  auto lock = std::scoped_lock{m_branchFilterMutex};
+  auto lock = std::scoped_lock{ m_branchFilterMutex };
   return m_branchFilterPassed[ctx.slot()];
 }
 
 void Sequencer::setBranchFilterPassed( const EventContext& ctx, bool state ) const {
-  auto lock                        = std::scoped_lock{m_branchFilterMutex};
+  auto lock                        = std::scoped_lock{ m_branchFilterMutex };
   m_branchFilterPassed[ctx.slot()] = state;
 }
 

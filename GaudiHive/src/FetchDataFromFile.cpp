@@ -40,7 +40,7 @@ namespace Gaudi {
 
     private:
       Gaudi::Property<std::vector<std::string>> m_dataKeys{
-          this, "DataKeys", {}, "list of objects to be read from file"};
+          this, "DataKeys", {}, "list of objects to be read from file" };
     };
   } // namespace Hive
 } // namespace Gaudi

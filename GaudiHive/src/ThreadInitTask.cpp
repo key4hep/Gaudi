@@ -19,7 +19,7 @@
 
 namespace Gaudi {
   namespace Concurrency {
-    thread_local bool ThreadInitDone{false};
+    thread_local bool ThreadInitDone{ false };
   }
 } // namespace Gaudi
 

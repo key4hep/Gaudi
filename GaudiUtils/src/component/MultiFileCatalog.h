@@ -177,7 +177,7 @@ namespace Gaudi {
     Catalogs m_catalogs;
 
     Gaudi::Property<CatalogNames> m_catalogNames{
-        this, "Catalogs", {{"xmlcatalog_file:test_catalog.xml"}}, &MultiFileCatalog::propHandler, "catalog names"};
+        this, "Catalogs", { { "xmlcatalog_file:test_catalog.xml" } }, &MultiFileCatalog::propHandler, "catalog names" };
 
     /// Flag to indicate if catalog is started
     bool m_started = false;

@@ -191,7 +191,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   std::string ProductionAmbiguityFinder::reply() const {
 
-    std::ostringstream status{"  No topology violations found in the DF realm"};
+    std::ostringstream status{ "  No topology violations found in the DF realm" };
 
     if ( m_foundViolations ) {
       status << "  Conditional (C) and/or unconditional (U) topology violations found in the DF realm:\n\n";
@@ -241,9 +241,9 @@ namespace concurrency {
 
     // initialize and cache the low-link value of this node
     m_nodes_count += 1;
-    unsigned int lowlink_init{m_nodes_count};
+    unsigned int lowlink_init{ m_nodes_count };
     // record initial low-link value of this node
-    m_lowlinks.insert( {&nodeAt, {lowlink_init, lowlink_init}} );
+    m_lowlinks.insert( { &nodeAt, { lowlink_init, lowlink_init } } );
     auto& lowlink = m_lowlinks[&nodeAt].second;
 
     for ( const auto& output : nodeAt.getOutputDataNodes() ) {
@@ -255,18 +255,18 @@ namespace concurrency {
           if ( lowlink > m_lowlinks[consumer].second ) lowlink = m_lowlinks[consumer].second;
           // this allows to detect loops (i.e., a cycle consisting of a single algorithm node: A->d->A),
           // but there is a protection against this case at Algorithm::initialize()
-          if ( consumer == &nodeAt ) m_scc.insert( {lowlink, {&nodeAt}} );
+          if ( consumer == &nodeAt ) m_scc.insert( { lowlink, { &nodeAt } } );
         }
       }
     }
 
     // If an SCC is found, book-keep it and take it off the stack
     if ( lowlink_init == lowlink ) {
-      if ( m_scc.find( lowlink ) == m_scc.end() ) m_scc.insert( {lowlink, {}} );
+      if ( m_scc.find( lowlink ) == m_scc.end() ) m_scc.insert( { lowlink, {} } );
 
       for ( auto stackNodeRIter = m_stack.rbegin(); stackNodeRIter != m_stack.rend(); ++stackNodeRIter ) {
 
-        bool lastSCCNodeOnStack{*stackNodeRIter == &nodeAt};
+        bool lastSCCNodeOnStack{ *stackNodeRIter == &nodeAt };
         if ( lowlink == m_lowlinks[*stackNodeRIter].second ) m_scc[lowlink].push_back( *stackNodeRIter );
 
         m_stack.pop_back();

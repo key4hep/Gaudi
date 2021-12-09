@@ -70,7 +70,7 @@ namespace Gaudi::Examples {
       // - main processing loop
       {
         // - get the IQueueingEventProcessor interface of the application
-        SmartIF<Gaudi::Interfaces::IQueueingEventProcessor> qep{app};
+        SmartIF<Gaudi::Interfaces::IQueueingEventProcessor> qep{ app };
 
         // - processing state informations
         //   - events ready to be processed

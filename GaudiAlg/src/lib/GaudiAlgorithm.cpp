@@ -92,7 +92,7 @@ SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const {
  */
 // ============================================================================
 StatusCode GaudiAlgorithm::sysExecute( const EventContext& ctx ) {
-  StatusCode sc{StatusCode::SUCCESS};
+  StatusCode sc{ StatusCode::SUCCESS };
 
   IAlgContextSvc* algCtx = nullptr;
   if ( registerContext() ) { algCtx = contextSvc(); }

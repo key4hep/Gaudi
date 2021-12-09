@@ -58,20 +58,21 @@ protected:
   /// Pointer to incident service
   SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
-  Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
-  Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
+  Gaudi::Property<CLID>        m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
+  Gaudi::Property<std::string> m_rootName{ this, "RootName", "/Event", "name of root entry" };
 
 private:
-  Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
-  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
+  Gaudi::Property<bool>                     m_forceLeaves{ this, "ForceLeaves", false,
+                                       "force creation of default leaves on registerObject" };
+  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{ this, "InhibitPathes", {}, "inhibited leaves" };
 
-  Gaudi::Property<bool>        m_enableFaultHdlr{this, "EnableFaultHandler", false,
-                                          "enable incidents on data creation requests"};
-  Gaudi::Property<std::string> m_faultName{this, "DataFaultName", "DataFault", "Name of the data fault incident"};
+  Gaudi::Property<bool>        m_enableFaultHdlr{ this, "EnableFaultHandler", false,
+                                           "enable incidents on data creation requests" };
+  Gaudi::Property<std::string> m_faultName{ this, "DataFaultName", "DataFault", "Name of the data fault incident" };
 
-  Gaudi::Property<bool>        m_enableAccessHdlr{this, "EnableAccessHandler", false,
-                                           "enable incidents on data access requests"};
-  Gaudi::Property<std::string> m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
+  Gaudi::Property<bool>        m_enableAccessHdlr{ this, "EnableAccessHandler", false,
+                                            "enable incidents on data access requests" };
+  Gaudi::Property<std::string> m_accessName{ this, "DataAccessName", "DataAccess", "Name of the data access incident" };
 
   /// Items to be pre-loaded
   std::vector<DataStoreItem> m_preLoads;

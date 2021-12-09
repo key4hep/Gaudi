@@ -23,7 +23,7 @@ namespace Gaudi {
       using lambda_ts::operator()...;
     };
     template <typename... lambda_ts>
-    overloaded_t( lambda_ts... )->overloaded_t<lambda_ts...>;
+    overloaded_t( lambda_ts... ) -> overloaded_t<lambda_ts...>;
 
   } // namespace details
 
@@ -36,7 +36,7 @@ namespace Gaudi {
   //
   template <typename... lambda_ts>
   auto overload( lambda_ts&&... lambdas ) {
-    return details::overloaded_t{std::forward<lambda_ts>( lambdas )...};
+    return details::overloaded_t{ std::forward<lambda_ts>( lambdas )... };
   }
 } // namespace Gaudi
 

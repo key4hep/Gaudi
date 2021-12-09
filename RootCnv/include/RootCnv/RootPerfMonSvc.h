@@ -48,13 +48,13 @@ namespace Gaudi {
    */
   class GAUDI_API RootPerfMonSvc : public extends<Service, IIncidentListener> {
   protected:
-    Gaudi::Property<std::string> m_ioPerfStats{this, "IOPerfStats", "",
-                                               "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
+    Gaudi::Property<std::string> m_ioPerfStats{
+        this, "IOPerfStats", "", "Enable TTree IOperfStats if not empty; otherwise perf stat file name" };
     // Passed parameters
-    Gaudi::Property<std::string> m_setStreams{this, "Streams", "", ""};
-    Gaudi::Property<std::string> m_basketSize{this, "BasketSize", "", ""};
-    Gaudi::Property<std::string> m_bufferSize{this, "BufferSize", "", ""};
-    Gaudi::Property<std::string> m_splitLevel{this, "SplitLevel", "", ""};
+    Gaudi::Property<std::string> m_setStreams{ this, "Streams", "", "" };
+    Gaudi::Property<std::string> m_basketSize{ this, "BasketSize", "", "" };
+    Gaudi::Property<std::string> m_bufferSize{ this, "BufferSize", "", "" };
+    Gaudi::Property<std::string> m_splitLevel{ this, "SplitLevel", "", "" };
 
     /// Reference to incident service
     SmartIF<IIncidentSvc> m_incidentSvc;

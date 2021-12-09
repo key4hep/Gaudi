@@ -19,8 +19,12 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
+__author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
+from Configurables import ApplicationMgr
+from Configurables import Gaudi__Examples__BoostArrayProperties as BAP
+
 # =============================================================================
 # @file
 #  Simple which illustrates
@@ -30,21 +34,16 @@ __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
 from Gaudi.Configuration import *
 
-from Configurables import ApplicationMgr
-
-from Configurables import Gaudi__Examples__BoostArrayProperties as BAP
-
 bap = BAP(
-    'BoostArrayProps',
-    Strings=('a', 'bb', 'ccc', 'dddd'),
-    Doubles=(1, 2, 3, 4, 5))
+    "BoostArrayProps", Strings=("a", "bb", "ccc", "dddd"), Doubles=(1, 2, 3, 4, 5)
+)
 
 ApplicationMgr(EvtSel="NONE", TopAlg=[bap], EvtMax=10)
 
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
 
     print(__doc__, __author__)
 
@@ -54,17 +53,19 @@ if '__main__' == __name__:
 
     gaudi.run(5)
 
-    bap = gaudi.algorithm('BoostArrayProps')
+    bap = gaudi.algorithm("BoostArrayProps")
 
     bap.PropertiesPrint = True
 
-    from GaudiKernel import ROOT6WorkAroundEnabled
     import warnings
+
+    from GaudiKernel import ROOT6WorkAroundEnabled
+
     with warnings.catch_warnings():
-        if ROOT6WorkAroundEnabled('ROOT-7142'):
+        if ROOT6WorkAroundEnabled("ROOT-7142"):
             warnings.simplefilter("ignore")
         bap.Doubles = [-1, -2, -3, -4, -5]
-        bap.Strings = ['a1', 'a2', 'a3', 'a4']
+        bap.Strings = ["a1", "a2", "a3", "a4"]
 
     bap.PropertiesPrint = True
 

@@ -38,7 +38,7 @@ StatusCode ReEntAlg::execute( const EventContext& ctx ) const {
 
   info() << "execute(): context: (" << ctx << ") index: " << index() << " cardinality: " << cardinality() << endmsg;
 
-  std::chrono::milliseconds dt{m_sleep + ctx.slot() * 500};
+  std::chrono::milliseconds dt{ m_sleep + ctx.slot() * 500 };
   std::this_thread::sleep_for( dt );
 
   info() << "... done in " << dt.count() << " ms for " << ctx << endmsg;

@@ -54,7 +54,7 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress, DataObjec
 {
   MsgStream      log( msgSvc(), "RFileCnv" );
   unsigned long* ipar    = (unsigned long*)pAddress->ipar();
-  char           mode[2] = {char( ipar[1] ), 0};
+  char           mode[2] = { char( ipar[1] ), 0 };
 
   std::string fname  = pAddress->par()[0]; // Container name
   std::string ooname = pAddress->par()[1]; // Object name

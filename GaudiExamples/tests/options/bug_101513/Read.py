@@ -14,12 +14,14 @@
 # https://savannah.cern.ch/bugs/?101513
 ####################################################################
 
-from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import ReadAlg, ReadTES, FileRecordDataSvc
-
 import shutil
-shutil.copy('bug_101513.dst', 'B0101513-0000-0000-0000-000000000000')
+
+from Configurables import FileRecordDataSvc
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import GaudiPersistency, ReadAlg, ReadTES
+from Gaudi.Configuration import *
+
+shutil.copy("bug_101513.dst", "B0101513-0000-0000-0000-000000000000")
 
 # I/O
 GaudiPersistency()

@@ -166,37 +166,37 @@ private:
       this, "ThreadPoolSize", -1,
       "Size of the global thread pool initialised by TBB; a value of -1 requests to use"
       "all available hardware threads; -100 requests to bypass TBB executing "
-      "all algorithms in the scheduler's thread."};
-  Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+      "all algorithms in the scheduler's thread." };
+  Gaudi::Property<std::string>  m_whiteboardSvcName{ this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name" };
   Gaudi::Property<unsigned int> m_maxBlockingAlgosInFlight{
-      this, "MaxBlockingAlgosInFlight", 0, "Maximum allowed number of simultaneously running CPU-blocking algorithms"};
+      this, "MaxBlockingAlgosInFlight", 0, "Maximum allowed number of simultaneously running CPU-blocking algorithms" };
   Gaudi::Property<bool> m_simulateExecution{
       this, "SimulateExecution", false,
-      "Flag to perform single-pass simulation of execution flow before the actual execution"};
-  Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
-                                                  "The following modes are currently available: PCE, COD, DRE,  E"};
-  Gaudi::Property<bool>        m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
-                                                 "Dump intra-event concurrency dynamics to csv file"};
+      "Flag to perform single-pass simulation of execution flow before the actual execution" };
+  Gaudi::Property<std::string> m_optimizationMode{ this, "Optimizer", "",
+                                                   "The following modes are currently available: PCE, COD, DRE,  E" };
+  Gaudi::Property<bool>        m_dumpIntraEventDynamics{ this, "DumpIntraEventDynamics", false,
+                                                  "Dump intra-event concurrency dynamics to csv file" };
   Gaudi::Property<bool>        m_enablePreemptiveBlockingTasks{
       this, "PreemptiveBlockingTasks", false,
-      "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly."};
-  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};
+      "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly." };
+  Gaudi::Property<bool> m_checkDeps{ this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies" };
 
-  Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
-                                               "Attribute unmet input dependencies to this DataLoader Algorithm"};
+  Gaudi::Property<std::string> m_useDataLoader{ this, "DataLoaderAlg", "",
+                                                "Attribute unmet input dependencies to this DataLoader Algorithm" };
 
-  Gaudi::Property<bool> m_enableCondSvc{this, "EnableConditions", false, "Enable ConditionsSvc"};
+  Gaudi::Property<bool> m_enableCondSvc{ this, "EnableConditions", false, "Enable ConditionsSvc" };
 
-  Gaudi::Property<bool> m_showDataDeps{this, "ShowDataDependencies", true,
-                                       "Show the INPUT and OUTPUT data dependencies of Algorithms"};
+  Gaudi::Property<bool> m_showDataDeps{ this, "ShowDataDependencies", true,
+                                        "Show the INPUT and OUTPUT data dependencies of Algorithms" };
 
-  Gaudi::Property<bool> m_showDataFlow{this, "ShowDataFlow", false,
-                                       "Show the configuration of DataFlow between Algorithms"};
+  Gaudi::Property<bool> m_showDataFlow{ this, "ShowDataFlow", false,
+                                        "Show the configuration of DataFlow between Algorithms" };
 
-  Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
-                                          "Show the configuration of all Algorithms and Sequences"};
+  Gaudi::Property<bool> m_showControlFlow{ this, "ShowControlFlow", false,
+                                           "Show the configuration of all Algorithms and Sequences" };
 
-  Gaudi::Property<bool> m_verboseSubSlots{this, "VerboseSubSlots", false, "Dump algorithm states for all sub-slots"};
+  Gaudi::Property<bool> m_verboseSubSlots{ this, "VerboseSubSlots", false, "Dump algorithm states for all sub-slots" };
 
   // Utils and shortcuts ----------------------------------------------------
 
@@ -207,7 +207,7 @@ private:
   StatusCode deactivate();
 
   /// Flag to track if the scheduler is active or not
-  std::atomic<ActivationState> m_isActive{INACTIVE};
+  std::atomic<ActivationState> m_isActive{ INACTIVE };
 
   /// The thread in which the activate function runs
   std::thread m_thread;
@@ -304,13 +304,13 @@ private:
     /// Move assignment
     TaskSpec& operator=( TaskSpec&& ) = default;
 
-    IAlgorithm*      algPtr{nullptr};
-    unsigned int     algIndex{0};
+    IAlgorithm*      algPtr{ nullptr };
+    unsigned int     algIndex{ 0 };
     std::string_view algName;
-    unsigned int     algRank{0};
-    bool             blocking{false};
-    int              slotIndex{0};
-    EventContext*    contextPtr{nullptr};
+    unsigned int     algRank{ 0 };
+    bool             blocking{ false };
+    int              slotIndex{ 0 };
+    EventContext*    contextPtr{ nullptr };
   };
 
   /// Comparison operator to sort the queues
@@ -324,15 +324,15 @@ private:
   std::queue<TaskSpec>                                   m_retryQueue;
 
   // Prompt the scheduler to call updateStates
-  std::atomic<bool> m_needsUpdate{true};
+  std::atomic<bool> m_needsUpdate{ true };
 
   // ------------------------------------------------------------------------
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  tbb::task_arena*        m_arena{nullptr};
-  size_t                  m_maxEventsInFlight{0};
-  size_t                  m_maxAlgosInFlight{1};
+  tbb::task_arena*        m_arena{ nullptr };
+  size_t                  m_maxEventsInFlight{ 0 };
+  size_t                  m_maxAlgosInFlight{ 1 };
 
 public:
   // get next schedule-able TaskSpec

@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_arena ) {
   std::size_t           first_block_size = 100;
   constexpr std::size_t alignment        = 2;
   // default upstream allocator
-  Gaudi::Arena::Monotonic<alignment> arena{first_block_size};
+  Gaudi::Arena::Monotonic<alignment> arena{ first_block_size };
   // no requests served yet, everything should be zero
   BOOST_CHECK( alloc == 0 );
   BOOST_CHECK( memory == 0 );
@@ -93,8 +93,8 @@ BOOST_AUTO_TEST_CASE( test_allocator ) {
   memory = alloc = dealloc                                           = 0; // reset counters just in case
   auto                                                    N          = 100;
   auto                                                    block_size = N * sizeof( int );
-  Gaudi::Arena::Monotonic<>                               arena{block_size};
-  std::vector<int, Gaudi::Allocator::MonotonicArena<int>> vec{&arena};
+  Gaudi::Arena::Monotonic<>                               arena{ block_size };
+  std::vector<int, Gaudi::Allocator::MonotonicArena<int>> vec{ &arena };
   vec.resize( N );
   BOOST_CHECK( alloc == 1 );
   BOOST_CHECK( arena.size() == block_size );

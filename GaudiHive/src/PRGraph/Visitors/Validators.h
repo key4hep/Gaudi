@@ -44,8 +44,8 @@ namespace concurrency {
     }
 
   private:
-    std::ostringstream m_status{"  No 'Concurrent'/'Prompt' contradictions found"};
-    bool               m_foundViolations{false};
+    std::ostringstream m_status{ "  No 'Concurrent'/'Prompt' contradictions found" };
+    bool               m_foundViolations{ false };
   };
 
   //--------------------------------------------------------------------------
@@ -76,7 +76,7 @@ namespace concurrency {
   protected:
     const EventSlot*       m_slot;
     const ControlFlowNode& m_startNode;
-    bool                   m_active{true};
+    bool                   m_active{ true };
     std::string            m_previousNodeName;
   };
 
@@ -100,7 +100,7 @@ namespace concurrency {
     void visitParents( DecisionNode& ) override;
 
   private:
-    bool m_foundEntryPoint{true};
+    bool m_foundEntryPoint{ true };
   };
 
   //--------------------------------------------------------------------------
@@ -124,8 +124,8 @@ namespace concurrency {
     };
 
   private:
-    bool m_positive{false};
-    bool m_negative{false};
+    bool m_positive{ false };
+    bool m_negative{ false };
   };
 
   //--------------------------------------------------------------------------
@@ -143,7 +143,7 @@ namespace concurrency {
     std::string reply() const;
     bool        passed() const {
       return std::all_of( m_unconditionalProducers.begin(), m_unconditionalProducers.end(),
-                          []( const auto& pr ) { return pr.second.size() == 1; } );
+                                 []( const auto& pr ) { return pr.second.size() == 1; } );
     };
     void reset() override {
       m_foundViolations = false;
@@ -152,7 +152,7 @@ namespace concurrency {
     };
 
   private:
-    bool m_foundViolations{false};
+    bool m_foundViolations{ false };
 
     using visitor_book =
         std::map<DataNode*, std::set<AlgorithmNode*, CompareNodes<AlgorithmNode*>>, CompareNodes<DataNode*>>;
@@ -192,7 +192,7 @@ namespace concurrency {
       m_stack.clear();
       m_lowlinks.clear();
       m_scc.clear();
-      m_status = std::ostringstream{"  No strongly connected components found in DF realm"};
+      m_status = std::ostringstream{ "  No strongly connected components found in DF realm" };
     };
 
   private:
@@ -200,13 +200,13 @@ namespace concurrency {
       return std::find( m_stack.begin(), m_stack.end(), &node ) != m_stack.end() ? true : false;
     }
 
-    unsigned int m_nodes_count{0};
+    unsigned int m_nodes_count{ 0 };
 
     std::unordered_map<AlgorithmNode*, std::pair<unsigned int, unsigned int>> m_lowlinks;
     std::map<unsigned int, std::vector<AlgorithmNode*>>                       m_scc;
     std::vector<AlgorithmNode*>                                               m_stack;
 
-    std::ostringstream m_status{"  No strongly connected components found in DF realm"};
+    std::ostringstream m_status{ "  No strongly connected components found in DF realm" };
   };
 
 } // namespace concurrency

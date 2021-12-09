@@ -167,7 +167,7 @@ StatusCode MinimalEventLoopMgr::start() {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::stop() {
 
-  StatusCode sc{StatusCode::SUCCESS};
+  StatusCode sc{ StatusCode::SUCCESS };
 
   // Stop all the TopAlgs. In fact Algorithms are protected against getting
   // stopped twice.
@@ -289,7 +289,7 @@ StatusCode MinimalEventLoopMgr::finalize() {
   return scRet;
 }
 
-EventContext MinimalEventLoopMgr::createEventContext() { return EventContext{m_nevt++, 0}; }
+EventContext MinimalEventLoopMgr::createEventContext() { return EventContext{ m_nevt++, 0 }; }
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
@@ -430,7 +430,7 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs() {
       m_topAlgList.clear();
       m_topAlgList.reserve( m_topAlgNames.value().size() );
       for ( const auto& it : m_topAlgNames.value() ) {
-        Gaudi::Utils::TypeNameString item{it};
+        Gaudi::Utils::TypeNameString item{ it };
         // Got the type and name. Now creating the algorithm, avoiding duplicate creation.
         std::string         item_name = item.name();
         const bool          CREATE    = false;

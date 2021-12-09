@@ -59,7 +59,7 @@ StatusCode TimelineSvc::finalize() {
 
 ITimelineSvc::TimelineRecorder TimelineSvc::getRecorder( std::string alg, const EventContext& ctx ) {
   auto&            newTimelineEvent = *m_events.emplace_back();
-  TimelineRecorder recorder{newTimelineEvent, std::move( alg ), ctx};
+  TimelineRecorder recorder{ newTimelineEvent, std::move( alg ), ctx };
   if ( m_partial ) {
     std::ofstream out( m_timelineFile + ".part", std::ofstream::app | std::ofstream::out );
     out << std::chrono::duration_cast<std::chrono::nanoseconds>( newTimelineEvent.start.time_since_epoch() ).count()

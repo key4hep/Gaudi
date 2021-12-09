@@ -64,13 +64,13 @@ namespace {
   SmartIF<IAlgorithm> createAlgorithm( IAlgManager& am, const std::string& type, const std::string& name ) {
     // Maybe modify the AppMgr interface to return Algorithm* ??
     IAlgorithm* tmp = nullptr;
-    StatusCode  sc = am.createAlgorithm( type, name, tmp );
+    StatusCode  sc  = am.createAlgorithm( type, name, tmp );
     return sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr;
   }
 } // namespace
 
 StatusCode HiveDataBrokerSvc::initialize() {
-  return Service::initialize().andThen( [&]{
+  return Service::initialize().andThen( [&] {
     // populate m_algorithms
     m_algorithms = instantiateAndInitializeAlgorithms( m_producers );
 
@@ -92,7 +92,7 @@ StatusCode HiveDataBrokerSvc::initialize() {
 
     // populate m_dependencies
     m_dependencies = mapProducers( m_algorithms );
-  });
+  } );
 }
 
 StatusCode HiveDataBrokerSvc::start() {
@@ -251,8 +251,8 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
         algEntry.dependsOn.insert( iproducer->second );
       } else {
         std::ostringstream error_message;
-        error_message << "\nUnknown requested input by " << AlgorithmRepr{ *( algEntry.alg ) } << " : " << std::quoted(id.key(),'\'')
-                      << ".\n";
+        error_message << "\nUnknown requested input by " << AlgorithmRepr{ *( algEntry.alg ) } << " : "
+                      << std::quoted( id.key(), '\'' ) << ".\n";
         error_message << "You can set the OutputLevel of HiveDataBrokerSvc to DEBUG to get a list of inputs and "
                          "outputs of every registered algorithm.\n";
         throw GaudiException( error_message.str(), __func__, StatusCode::FAILURE );

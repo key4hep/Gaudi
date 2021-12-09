@@ -302,7 +302,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( EventContext&& ctx ) {
 
   m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginProcessing, ctx ) );
 
-  StatusCode addEventStatus = m_schedulerSvc->pushNewEvent( new EventContext{std::move( ctx )} );
+  StatusCode addEventStatus = m_schedulerSvc->pushNewEvent( new EventContext{ std::move( ctx ) } );
 
   // If this fails, we need to wait for something to complete
   if ( !addEventStatus.isSuccess() ) {
@@ -483,7 +483,7 @@ StatusCode HiveSlimEventLoopMgr::declareEventRootAddress() {
 //---------------------------------------------------------------------------
 
 EventContext HiveSlimEventLoopMgr::createEventContext() {
-  EventContext ctx{m_nevt, m_whiteboard->allocateStore( m_nevt )};
+  EventContext ctx{ m_nevt, m_whiteboard->allocateStore( m_nevt ) };
   ++m_nevt;
 
   StatusCode sc = m_whiteboard->selectStore( ctx.slot() );

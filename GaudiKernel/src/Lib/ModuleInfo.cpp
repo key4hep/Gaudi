@@ -66,7 +66,7 @@ const std::string& System::moduleName() {
   if ( module == "" ) {
     if ( processHandle() && moduleHandle() ) {
 #ifdef _WIN32
-      char moduleName[256] = {"Unknown.module"};
+      char moduleName[256] = { "Unknown.module" };
       moduleName[0]        = 0;
       if ( _psApi ) {
         _psApi.GetModuleBaseNameA( processHandle(), (HINSTANCE)moduleHandle(), moduleName, sizeof( moduleName ) );
@@ -88,7 +88,7 @@ const std::string& System::moduleNameFull() {
   static std::string module( "" );
   if ( module == "" ) {
     if ( processHandle() && moduleHandle() ) {
-      char name[PATH_MAX] = {"Unknown.module"};
+      char name[PATH_MAX] = { "Unknown.module" };
       name[0]             = 0;
 #ifdef _WIN32
       if ( _psApi ) {
@@ -203,7 +203,7 @@ System::ImageHandle System::exeHandle() {
 const std::string& System::exeName() {
   static std::string module( "" );
   if ( module.length() == 0 ) {
-    char name[PATH_MAX] = {"Unknown.module"};
+    char name[PATH_MAX] = { "Unknown.module" };
     name[0]             = 0;
 #ifdef _WIN32
     if ( _psApi && processHandle() ) {

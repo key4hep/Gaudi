@@ -48,15 +48,15 @@ protected:
   void dumpProfile();
 
 private:
-  Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 0, "After what event we start profiling."};
+  Gaudi::Property<int> m_nStartFromEvent{ this, "StartFromEventN", 0, "After what event we start profiling." };
   Gaudi::Property<std::vector<std::string>> m_startFromIncidents{
-      this, "StartFromIncidents", {}, "Incidents that trigger profiling start"};
+      this, "StartFromIncidents", {}, "Incidents that trigger profiling start" };
   Gaudi::Property<int> m_nStopAtEvent{
       this, "StopAtEventN", 0,
-      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0." };
   Gaudi::Property<std::vector<std::string>> m_stopAtIncidents{
-      this, "StopAtIncidents", {}, "Incidents that trigger profiling start"};
-  Gaudi::Property<int> m_dumpPeriod{this, "DumpPeriod", 100, "Period for dumping head to a file. Default=100"};
+      this, "StopAtIncidents", {}, "Incidents that trigger profiling start" };
+  Gaudi::Property<int> m_dumpPeriod{ this, "DumpPeriod", 100, "Period for dumping head to a file. Default=100" };
 
   /// Current event number
   int m_eventNumber = 0;

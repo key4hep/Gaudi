@@ -87,7 +87,7 @@ namespace {
     const auto& axis = histo->axis();
     // number of bins
     const auto nBins = axis.bins();
-    double     result{0}, weight{0};
+    double     result{ 0 }, weight{ 0 };
     // loop over all bins
     for ( int i = 0; i < nBins; ++i ) {
       const auto lE = axis.binLowerEdge( i );

@@ -12,9 +12,10 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
-from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import GaudiPersistency
 from Configurables import GaudiTesting__GetDataObjectAlg as DataReader
+from Gaudi.Configuration import *
 
 # Output Levels
 # MessageSvc(OutputLevel=VERBOSE)
@@ -34,9 +35,7 @@ esel.Input = [
 # Application setup
 app = ApplicationMgr()
 # - Algorithms
-app.TopAlg = [
-    DataReader('DataReader', Paths=['A', 'B', 'C', 'D'], IgnoreMissing=True)
-]
+app.TopAlg = [DataReader("DataReader", Paths=["A", "B", "C", "D"], IgnoreMissing=True)]
 # - Events
 app.EvtMax = -1
 app.EvtSel = esel

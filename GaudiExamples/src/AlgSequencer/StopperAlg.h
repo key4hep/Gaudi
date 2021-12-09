@@ -32,7 +32,7 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<int> m_stopcount{this, "StopCount", 3};
+  Gaudi::Property<int> m_stopcount{ this, "StopCount", 3 };
 };
 
 #endif // GAUDIEXAMPLE_STOPPERALG_H

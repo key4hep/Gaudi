@@ -21,23 +21,24 @@ manipulation with N-Tuples (in the spirit of GaudiTuples<TYPE>)
 
 """
 from __future__ import print_function
+
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
 __all__ = (
-    'nTuple',  # function to book/retrieve N-tuple
-    'getNTuple',  # ditto
-    'getNtuple',  # ditto
-    'getntuple',  # ditto
-    'gettuple',  # ditto
-    'activeTuples',  # get the list of all active n-tuples
-    'releaseTuples'  # release all actibe N-tuples
+    "nTuple",  # function to book/retrieve N-tuple
+    "getNTuple",  # ditto
+    "getNtuple",  # ditto
+    "getntuple",  # ditto
+    "gettuple",  # ditto
+    "activeTuples",  # get the list of all active n-tuples
+    "releaseTuples",  # release all actibe N-tuples
 )
 # =============================================================================
 
-from GaudiPython.Bindings import gbl as cpp
-from GaudiPython.Bindings import AppMgr
 import GaudiPython.GaudiAlgs
+from GaudiPython.Bindings import AppMgr
+from GaudiPython.Bindings import gbl as cpp
 
 _Tool = cpp.ITupleTool
 _Deco = cpp.GaudiPython.TupleToolDecorator
@@ -50,17 +51,17 @@ _TOOLS_ = []
 
 
 def _getToolSvc(**kwargs):
-    """ Helper private auxillary utility to get Tool Service """
-    svc = kwargs.get('toolSvc', None)
+    """Helper private auxillary utility to get Tool Service"""
+    svc = kwargs.get("toolSvc", None)
     if not svc:
-        svc = kwargs.get('toolsvc', None)
+        svc = kwargs.get("toolsvc", None)
     if not svc:
-        svc = kwargs.get('service', None)
+        svc = kwargs.get("service", None)
     if not svc:
-        svc = kwargs.get('svc', None)
+        svc = kwargs.get("svc", None)
     else:
         return svc  # RETURN
-    gaudi = kwargs.get('gaudi', None)
+    gaudi = kwargs.get("gaudi", None)
     if not gaudi:
         gaudi = AppMgr()
     return gaudi.toolsvc()  # RETURN
@@ -69,7 +70,7 @@ def _getToolSvc(**kwargs):
 # =============================================================================
 # Retrive N-Tuple ( book on demand )
 def _nTuple_(s, *args):
-    """ Retrive N-tuple ( book on demand )  """
+    """Retrive N-tuple ( book on demand )"""
     return _Deco.nTuple(s, *args)
 
 
@@ -81,7 +82,7 @@ _Tool.ntuple = _nTuple_
 
 # =============================================================================
 # Retrieve (book-on-demand) 'Smart'-N-tuple object.
-def nTuple(dirpath, ID, ID2=None, topdir=None, LUN='FILE1'):
+def nTuple(dirpath, ID, ID2=None, topdir=None, LUN="FILE1"):
     """
     Retrieve 'Smart'-N-tuple object.
     N-tuple is booked on-demand.
@@ -114,20 +115,20 @@ def nTuple(dirpath, ID, ID2=None, topdir=None, LUN='FILE1'):
     toolSvc = _getToolSvc()
 
     # construct the name of the intermediate TupleTool
-    name = 'Tuple' + LUN + "/"
+    name = "Tuple" + LUN + "/"
     if topdir:
         name += topdir
     name += dirpath
     name += "_%s" % ID
     if ID2:
         name += "_%s" % ID2
-    name = name.replace('.', '_')
-    name = name.replace('/', '_')
-    name = name.replace('\\', '_')
-    name = name.replace(' ', '_')
+    name = name.replace(".", "_")
+    name = name.replace("/", "_")
+    name = name.replace("\\", "_")
+    name = name.replace(" ", "_")
 
     # define tool properties
-    t0 = GaudiPython.iAlgTool('ToolSvc.' + name)
+    t0 = GaudiPython.iAlgTool("ToolSvc." + name)
     t0.OutputLevel = 1
     t0.NTupleLUN = LUN
     t0.NTupleDir = dirpath
@@ -137,7 +138,7 @@ def nTuple(dirpath, ID, ID2=None, topdir=None, LUN='FILE1'):
         t0.NTupleTopDir = topdir
 
     # get the tool from Tool service
-    tool = toolSvc.create('TupleTool', name, interface=_Tool)
+    tool = toolSvc.create("TupleTool", name, interface=_Tool)
 
     # check the properties and redefine them if needed
     t1 = GaudiPython.iAlgTool(tool.name(), tool)
@@ -155,8 +156,7 @@ def nTuple(dirpath, ID, ID2=None, topdir=None, LUN='FILE1'):
     return tool.nTuple(ID, ID2)  # RETURN
 
 
-nTuple . __doc__ += "\n\t help(ITupleTool.nTuple) : \n" \
-                    + _Tool.nTuple.__doc__
+nTuple.__doc__ += "\n\t help(ITupleTool.nTuple) : \n" + _Tool.nTuple.__doc__
 
 ntuple = nTuple
 getNTuple = nTuple
@@ -188,6 +188,7 @@ def releaseTuples():
     if not _TOOLS_:
         return
     from GaudiPython.Bindings import _gaudi
+
     if not _gaudi:
         return
 
@@ -209,18 +210,18 @@ def _TupleUtils_AtExit_():
     AtExit function for GaudiPython.TupleUtils module
     """
     if activeTuples():
-        print('WARNING: the list of local TupleTools is not empty!')
-        print(
-            'WARNING: please use GaudiPython.TupleUtils.releaseTuples() at the end'
-        )
+        print("WARNING: the list of local TupleTools is not empty!")
+        print("WARNING: please use GaudiPython.TupleUtils.releaseTuples() at the end")
 
 
 import atexit
+
 atexit.register(_TupleUtils_AtExit_)
 
 # =============================================================================
 if "__main__" == __name__:
     import sys
+
     print(__doc__, __all__)
     for o in __all__:
         print("\n\n\t", o, "\n")

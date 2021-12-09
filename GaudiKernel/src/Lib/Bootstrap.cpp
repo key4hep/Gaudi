@@ -237,7 +237,7 @@ extern "C" {
 IInterface* PyHelper( createApplicationMgr )() { return Gaudi::createApplicationMgr(); }
 IInterface* PyHelper( getService )( IInterface* app, char* name ) {
   auto svcloc = SmartIF<ISvcLocator>( app );
-  return svcloc ? svcloc->service<IInterface>( std::string_view{name} ).get() : nullptr;
+  return svcloc ? svcloc->service<IInterface>( std::string_view{ name } ).get() : nullptr;
 }
 bool PyHelper( setProperty )( IInterface* p, char* name, char* value ) {
   auto prop = SmartIF<IProperty>( p );

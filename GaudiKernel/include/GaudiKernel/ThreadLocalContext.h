@@ -25,8 +25,8 @@ namespace Gaudi {
     /// Return the current context id.
     /// The returned id is valid only within the (sys)Execute method of
     /// algorithms.
-    GAUDI_API ContextIdType currentContextId();
-    GAUDI_API ContextIdType currentContextEvt();
+    GAUDI_API ContextIdType       currentContextId();
+    GAUDI_API ContextIdType       currentContextEvt();
     GAUDI_API const EventContext& currentContext();
 
     /// Used by the framework to change the value of the current context id.

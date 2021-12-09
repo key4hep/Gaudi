@@ -39,7 +39,7 @@ public:
   /** Default constructor */
   implements() = default;
   /** Copy constructor (zero the reference count) */
-  implements( const implements& /*other*/ ) : m_refCount{0} {}
+  implements( const implements& /*other*/ ) : m_refCount{ 0 } {}
   /** Assignment operator (do not touch the reference count).*/
   implements& operator=( const implements& /*other*/ ) { return *this; }
 
@@ -58,7 +58,7 @@ public:
 
 protected:
   /** Reference counter                          */
-  std::atomic_ulong m_refCount = {0};
+  std::atomic_ulong m_refCount = { 0 };
 };
 
 template <typename I1>

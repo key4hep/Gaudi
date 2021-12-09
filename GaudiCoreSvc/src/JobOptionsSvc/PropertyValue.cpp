@@ -45,7 +45,7 @@ gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right ) {
 }
 
 const gp::PropertyValue gp::PropertyValue::operator+( const PropertyValue& right ) {
-  return PropertyValue{*this} += right;
+  return PropertyValue{ *this } += right;
 }
 
 gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right ) {
@@ -67,7 +67,7 @@ gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right ) {
 }
 
 const gp::PropertyValue gp::PropertyValue::operator-( const PropertyValue& right ) {
-  return PropertyValue{*this} -= right;
+  return PropertyValue{ *this } -= right;
 }
 // ============================================================================
 std::string gp::PropertyValue::ToString() const {

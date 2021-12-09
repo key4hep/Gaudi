@@ -37,9 +37,9 @@ class PartitionSwitchAlg : public extends<Algorithm, IPartitionControl> {
   using CSTR   = const std::string&;
 
 private:
-  Gaudi::Property<std::string> m_partName{this, "Partition", "", "option to set the requested partition name"};
-  Gaudi::Property<std::string> m_toolType{this, "Tool", "PartitionSwitchTool",
-                                          "option to set the tool manipulating the multi-service name"};
+  Gaudi::Property<std::string> m_partName{ this, "Partition", "", "option to set the requested partition name" };
+  Gaudi::Property<std::string> m_toolType{ this, "Tool", "PartitionSwitchTool",
+                                           "option to set the tool manipulating the multi-service name" };
 
   /// reference to Partition Controller
   IPartitionControl* m_actor = nullptr;

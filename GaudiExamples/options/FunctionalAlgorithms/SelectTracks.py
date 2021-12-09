@@ -12,11 +12,12 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
-from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import ReadAlg, ReadTES, FileRecordDataSvc
-from Configurables import Gaudi__Examples__SelectTracks as SelectTracks
+from Configurables import FileRecordDataSvc
 from Configurables import Gaudi__Examples__CountSelectedTracks as CountSelectedTracks
+from Configurables import Gaudi__Examples__SelectTracks as SelectTracks
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import GaudiPersistency, ReadAlg, ReadTES
+from Gaudi.Configuration import *
 
 # I/O
 GaudiPersistency()
@@ -25,22 +26,22 @@ FileCatalog(Catalogs=["xmlcatalog_file:ROOTIO.xml"])
 esel = EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1)
 esel.Input = [
     "DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'",
-    "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootEvtSelector' OPT='READ'"
+    "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootEvtSelector' OPT='READ'",
 ]
 
 # Algorithms
 evtAlgs = GaudiSequencer(
-    "EventAlgs",
-    Members=[SelectTracks(), CountSelectedTracks()],
-    VetoObjects=["FSR"])
+    "EventAlgs", Members=[SelectTracks(), CountSelectedTracks()], VetoObjects=["FSR"]
+)
 fsrAlgs = GaudiSequencer(
-    "FSRAlgs", Members=[ReadTES(Locations=["FSR"])], RequireObjects=["FSR"])
+    "FSRAlgs", Members=[ReadTES(Locations=["FSR"])], RequireObjects=["FSR"]
+)
 
 # Application setup
 app = ApplicationMgr()
-#app.ExtSvc = [ EvtStoreSvc("EventDataSvc",OutputLevel=DEBUG ) ]
+# app.ExtSvc = [ EvtStoreSvc("EventDataSvc",OutputLevel=DEBUG ) ]
 app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
-EvtStoreSvc("EventDataSvc").InhibitedPathPrefixes = ['/Event/Header']
+EvtStoreSvc("EventDataSvc").InhibitedPathPrefixes = ["/Event/Header"]
 EvtStoreSvc("EventDataSvc").FollowLinksToAncestors = True
 # - Algorithms
 app.TopAlg = [evtAlgs, fsrAlgs]

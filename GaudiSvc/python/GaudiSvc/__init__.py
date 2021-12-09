@@ -9,13 +9,14 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 def getMetaData(path):
-    '''
+    """
     Extract job metadata recorded by Gaudi::MetaDataSvc from a file.
-    '''
+    """
     from ROOT import TFile
+
     f = TFile.Open(path)
     if not f:
-        raise RuntimeError('cannot open {0}'.format(path))
+        raise RuntimeError("cannot open {0}".format(path))
     try:
         return dict(f.info)
     except AttributeError:

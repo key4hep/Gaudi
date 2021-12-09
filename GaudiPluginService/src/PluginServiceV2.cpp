@@ -100,16 +100,16 @@ namespace Gaudi {
 #if _GLIBCXX_USE_CXX11_ABI
           return std::regex_replace(
               realname.get(),
-              std::regex{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"},
+              std::regex{ "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?" },
               "std::string" );
 #else
-          return std::string{realname.get()};
+          return std::string{ realname.get() };
 #endif
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
         Registry& Registry::instance() {
-          auto            _guard = std::scoped_lock{::registrySingletonMutex};
+          auto            _guard = std::scoped_lock{ ::registrySingletonMutex };
           static Registry r;
           return r;
         }
@@ -135,7 +135,7 @@ namespace Gaudi {
         Registry::Registry() {}
 
         void Registry::initialize() {
-          auto _guard = std::scoped_lock{m_mutex};
+          auto _guard = std::scoped_lock{ m_mutex };
 #if defined( _WIN32 )
           const char* envVar = "PATH";
           const char  sep    = ';';
@@ -144,7 +144,7 @@ namespace Gaudi {
           const char  sep    = ':';
 #endif
 
-          std::regex  line_format{"^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$"};
+          std::regex  line_format{ "^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$" };
           std::smatch m;
 
           std::string_view search_path = std::getenv( envVar );
@@ -159,7 +159,7 @@ namespace Gaudi {
               end_pos = search_path.find( sep, start_pos );
               fs::path dirName =
 #ifdef USE_BOOST_FILESYSTEM
-                  std::string{search_path.substr( start_pos, end_pos - start_pos )};
+                  std::string{ search_path.substr( start_pos, end_pos - start_pos ) };
 #else
                   search_path.substr( start_pos, end_pos - start_pos );
 #endif
@@ -173,7 +173,7 @@ namespace Gaudi {
                     // read the file
                     const auto& fullPath = p.path().string();
                     logger().debug( "  reading " + p.path().filename().string() );
-                    std::ifstream factories{fullPath};
+                    std::ifstream factories{ fullPath };
                     std::string   line;
                     int           factoriesCount = 0;
                     int           lineCount      = 0;
@@ -182,15 +182,15 @@ namespace Gaudi {
                       std::getline( factories, line );
                       if ( regex_match( line, m, line_format ) ) {
                         if ( m[1] == "v2" ) { // ignore non "v2" and "empty" lines
-                          const std::string lib{m[2]};
-                          const std::string fact{m[3]};
-                          m_factories.emplace( fact, FactoryInfo{lib, {}, {{"ClassName", fact}}} );
+                          const std::string lib{ m[2] };
+                          const std::string fact{ m[3] };
+                          m_factories.emplace( fact, FactoryInfo{ lib, {}, { { "ClassName", fact } } } );
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
                           // add an alias for the factory using the Reflex convention
                           std::string old_name = old_style_name( fact );
                           if ( fact != old_name ) {
-                            m_factories.emplace( old_name,
-                                                 FactoryInfo{lib, {}, {{"ReflexName", "true"}, {"ClassName", fact}}} );
+                            m_factories.emplace(
+                                old_name, FactoryInfo{ lib, {}, { { "ReflexName", "true" }, { "ClassName", fact } } } );
                           }
 #endif
                           ++factoriesCount;
@@ -220,7 +220,7 @@ namespace Gaudi {
         }
 
         Registry::FactoryInfo& Registry::add( const KeyType& id, FactoryInfo info ) {
-          auto        _guard = std::scoped_lock{m_mutex};
+          auto        _guard = std::scoped_lock{ m_mutex };
           FactoryMap& facts  = factories();
 
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
@@ -247,8 +247,8 @@ namespace Gaudi {
         }
 
         const Registry::FactoryInfo& Registry::getInfo( const KeyType& id, const bool load ) const {
-          auto                     _guard  = std::scoped_lock{m_mutex};
-          static const FactoryInfo unknown = {"unknown"};
+          auto                     _guard  = std::scoped_lock{ m_mutex };
+          static const FactoryInfo unknown = { "unknown" };
           const FactoryMap&        facts   = factories();
           auto                     f       = facts.find( id );
 
@@ -270,7 +270,7 @@ namespace Gaudi {
         }
 
         Registry& Registry::addProperty( const KeyType& id, const KeyType& k, const std::string& v ) {
-          auto        _guard = std::scoped_lock{m_mutex};
+          auto        _guard = std::scoped_lock{ m_mutex };
           FactoryMap& facts  = factories();
           auto        f      = facts.find( id );
 
@@ -279,7 +279,7 @@ namespace Gaudi {
         }
 
         std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
-          auto              _guard = std::scoped_lock{m_mutex};
+          auto              _guard = std::scoped_lock{ m_mutex };
           std::set<KeyType> l;
           for ( const auto& f : factories() ) {
             if ( f.second.is_set() ) l.insert( f.first );
@@ -288,7 +288,7 @@ namespace Gaudi {
         }
 
         void Logger::report( Level lvl, const std::string& msg ) {
-          static const char* levels[] = {"DEBUG  : ", "INFO   : ", "WARNING: ", "ERROR  : "};
+          static const char* levels[] = { "DEBUG  : ", "INFO   : ", "WARNING: ", "ERROR  : " };
           if ( lvl >= level() ) { std::cerr << levels[lvl] << msg << std::endl; }
         }
 

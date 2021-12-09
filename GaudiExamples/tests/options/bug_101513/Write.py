@@ -14,8 +14,9 @@
 # https://savannah.cern.ch/bugs/?101513
 ####################################################################
 
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import GaudiPersistency
 from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
 
 # Output setup
 dst = OutputStream("RootDst")
@@ -24,7 +25,8 @@ dst.Output = "DATAFILE='PFN:bug_101513.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREA
 
 # Special hacked file catalog
 f = open("bug_101513.xml", "w")
-f.write("""<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+f.write(
+    """<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!DOCTYPE POOLFILECATALOG SYSTEM "InMemory">
 <POOLFILECATALOG>
   <File ID="B0101513-0000-0000-0000-000000000000">
@@ -34,7 +36,8 @@ f.write("""<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
     <logical/>
   </File>
 </POOLFILECATALOG>
-""")
+"""
+)
 f.close()
 
 FileCatalog(Catalogs=["xmlcatalog_file:bug_101513.xml"])

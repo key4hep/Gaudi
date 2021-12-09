@@ -39,16 +39,17 @@ StatusCode ConversionSvc::makeCall( int typ, bool ignore_add, bool ignore_obj, b
                                     DataObject*& pObject ) {
   if ( !pAddress && !ignore_add ) return Status::INVALID_ADDRESS;
   if ( !pObject && !ignore_obj ) return Status::INVALID_OBJECT;
-  const CLID& obj_class =
-      ( pObject && !ignore_obj ) ? pObject->clID() : ( pAddress && !ignore_add ) ? pAddress->clID() : CLID_NULL;
-  IConverter* cnv = converter( obj_class );
+  const CLID& obj_class = ( pObject && !ignore_obj )    ? pObject->clID()
+                          : ( pAddress && !ignore_add ) ? pAddress->clID()
+                                                        : CLID_NULL;
+  IConverter* cnv       = converter( obj_class );
   if ( !cnv && pObject ) {
     // Give it a try to autoload the class (dictionary) for which the converter is needed
     loadConverter( pObject );
     cnv = converter( obj_class );
   }
 
-  StatusCode status{StatusCode::FAILURE};
+  StatusCode status{ StatusCode::FAILURE };
   if ( cnv ) {
     switch ( typ ) {
     case CREATE_OBJ:

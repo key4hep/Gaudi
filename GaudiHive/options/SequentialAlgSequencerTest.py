@@ -8,11 +8,18 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    ContextEventCounterData,
+    ContextEventCounterPtr,
+    CPUCruncher,
+    CPUCrunchSvc,
+    GaudiSequencer,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
-                           ContextEventCounterPtr, ContextEventCounterData,
-                           CPUCrunchSvc, GaudiSequencer)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -43,8 +50,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = AvalancheSchedulerSvc(
-    ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
 
 # -------------------------------------------------------------------------------
 
@@ -59,41 +65,40 @@ CPUCrunchSvc(shortCalib=True)
 # Set up of the crunchers, daily business --------------------------------------
 
 a1 = CPUCruncher("A1")
-a1.outKeys = ['/Event/a1']
+a1.outKeys = ["/Event/a1"]
 
 a2 = CPUCruncher("A2")
-a2.inpKeys = ['/Event/a1']
-a2.outKeys = ['/Event/a2']
+a2.inpKeys = ["/Event/a1"]
+a2.outKeys = ["/Event/a2"]
 
 a3 = CPUCruncher("A3")
-a3.inpKeys = ['/Event/a1']
-a3.outKeys = ['/Event/a3']
+a3.inpKeys = ["/Event/a1"]
+a3.outKeys = ["/Event/a3"]
 
 a4 = CPUCruncher("A4")
-a4.inpKeys = ['/Event/a2']
-a4.outKeys = ['/Event/a4']
+a4.inpKeys = ["/Event/a2"]
+a4.outKeys = ["/Event/a4"]
 
 for algo in [a1, a2, a3, a4]:
     algo.OutputLevel = DEBUG
-    algo.varRuntime = .3
-    algo.avgRuntime = .5
+    algo.varRuntime = 0.3
+    algo.avgRuntime = 0.5
 
 for algo in [a3]:
     algo.Cardinality = cardinality
 
 seq = GaudiSequencer(
-    "CriticalSection",
-    Members=[a1, a2, a4],
-    Sequential=True,
-    OutputLevel=VERBOSE)
+    "CriticalSection", Members=[a1, a2, a4], Sequential=True, OutputLevel=VERBOSE
+)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[seq, a3],
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)

@@ -35,6 +35,6 @@ public:
 
 protected:
 private:
-  Gaudi::Property<std::vector<std::string>> m_locations{this, "Locations", {}, "Locations to read"};
+  Gaudi::Property<std::vector<std::string>> m_locations{ this, "Locations", {}, "Locations to read" };
 };
 #endif // POOLIO_READTES_H

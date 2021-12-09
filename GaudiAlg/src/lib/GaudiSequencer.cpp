@@ -275,7 +275,7 @@ std::ostream& GaudiSequencer::toControlFlowExpression( std::ostream& os ) const 
 
 // ============================================================================
 StatusCode GaudiSequencer::sysExecute( const EventContext& ctx ) {
-  StatusCode sc{StatusCode::SUCCESS};
+  StatusCode sc{ StatusCode::SUCCESS };
 
   IAlgContextSvc* algCtx = nullptr;
   if ( registerContext() ) { algCtx = contextSvc(); }

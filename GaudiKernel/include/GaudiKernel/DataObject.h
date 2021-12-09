@@ -100,8 +100,8 @@ public:
 // Additional functions to support the Serialization of objects in the transient store
 
 namespace Gaudi {
-  GAUDI_API void pushCurrentDataObject( DataObject** pobjAddr );
-  GAUDI_API void popCurrentDataObject();
+  GAUDI_API void        pushCurrentDataObject( DataObject** pobjAddr );
+  GAUDI_API void        popCurrentDataObject();
   GAUDI_API DataObject* getCurrentDataObject();
 } // namespace Gaudi
 

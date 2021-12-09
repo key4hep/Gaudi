@@ -358,7 +358,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
         log << MSG::DEBUG << "loading NTuple item " << itemName;
       }
 
-      int    arraySize{0};
+      int    arraySize{ 0 };
       TLeaf* indexLeaf = ( tl ? tl->GetLeafCounter( arraySize ) : nullptr );
 
       if ( arraySize == 0 ) { log << MSG::ERROR << "TLeaf counter size = 0. This should not happen!" << endmsg; }

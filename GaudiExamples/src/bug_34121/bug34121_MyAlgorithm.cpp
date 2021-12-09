@@ -30,7 +30,7 @@ namespace bug_34121 {
     StatusCode finalize() override;
 
   private:
-    Gaudi::Property<std::string> m_toolName{this, "Tool", "bug_34121::Tool", "Type of the tool to use"};
+    Gaudi::Property<std::string> m_toolName{ this, "Tool", "bug_34121::Tool", "Type of the tool to use" };
     IMyTool*                     m_tool = nullptr;
   };
 

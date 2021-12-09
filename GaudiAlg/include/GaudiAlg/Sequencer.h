@@ -214,22 +214,22 @@ private:
    ** Private Data Members **
    **************************/
 
-  Gaudi::Property<std::vector<std::string>> m_names{this,
-                                                    "Members",
-                                                    {},
-                                                    [this]( auto& ) {
-                                                      if ( this->isInitialized() ) this->decodeMemberNames().ignore();
-                                                    },
-                                                    "member names"};
-  Gaudi::Property<std::vector<std::string>> m_branchNames{this,
-                                                          "BranchMembers",
-                                                          {},
-                                                          [this]( auto& ) {
-                                                            if ( this->isInitialized() )
-                                                              this->decodeBranchMemberNames().ignore();
-                                                          },
-                                                          "branch member names"};
-  Gaudi::Property<bool> m_stopOverride{this, "StopOverride", false, "stop on filter failure override"};
+  Gaudi::Property<std::vector<std::string>> m_names{ this,
+                                                     "Members",
+                                                     {},
+                                                     [this]( auto& ) {
+                                                       if ( this->isInitialized() ) this->decodeMemberNames().ignore();
+                                                     },
+                                                     "member names" };
+  Gaudi::Property<std::vector<std::string>> m_branchNames{ this,
+                                                           "BranchMembers",
+                                                           {},
+                                                           [this]( auto& ) {
+                                                             if ( this->isInitialized() )
+                                                               this->decodeBranchMemberNames().ignore();
+                                                           },
+                                                           "branch member names" };
+  Gaudi::Property<bool> m_stopOverride{ this, "StopOverride", false, "stop on filter failure override" };
 
   std::vector<bool>              m_isInverted;       // Member logic inverted list
   std::vector<Gaudi::Algorithm*> m_branchAlgs;       // Branch algorithms

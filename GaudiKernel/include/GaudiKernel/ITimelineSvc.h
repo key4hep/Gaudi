@@ -49,7 +49,7 @@ public:
     TimelineRecorder( TimelineEvent& record, std::string alg, const EventContext& ctx );
 
     TimelineRecorder( const TimelineRecorder& ) = delete;
-    TimelineRecorder( TimelineRecorder&& other ) : m_record{other.m_record} { other.m_record = nullptr; }
+    TimelineRecorder( TimelineRecorder&& other ) : m_record{ other.m_record } { other.m_record = nullptr; }
 
     TimelineRecorder& operator=( TimelineRecorder&& other ) {
       std::swap( m_record, other.m_record );

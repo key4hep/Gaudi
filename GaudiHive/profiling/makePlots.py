@@ -9,8 +9,10 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import os
+
 import matplotlib
-matplotlib.use('PDF')
+
+matplotlib.use("PDF")
 import matplotlib.pyplot as plt
 
 

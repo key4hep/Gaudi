@@ -25,7 +25,7 @@ static const char SEPARATOR = IDataProviderSvc::SEPARATOR;
 
 // Standard Constructor
 TagCollectionStream::TagCollectionStream( const std::string& nam, ISvcLocator* pSvc )
-    : OutputStream( nam, pSvc ), m_addr{new GenericAddress()} {}
+    : OutputStream( nam, pSvc ), m_addr{ new GenericAddress() } {}
 
 // Connect address column, if not already connected
 StatusCode TagCollectionStream::connectAddress() {

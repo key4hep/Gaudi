@@ -106,7 +106,7 @@ public:
   /// Templated method to access a service by type and name.
   template <class T>
   StatusCode service( std::string_view type, std::string_view name, T*& svc, bool createIf = true ) {
-    return service( std::string{type}.append( "/" ).append( name ), svc, createIf );
+    return service( std::string{ type }.append( "/" ).append( name ), svc, createIf );
   }
 #endif
 
@@ -116,13 +116,13 @@ public:
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
   inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) {
-    return SmartIF<T>{service( typeName, createIf )};
+    return SmartIF<T>{ service( typeName, createIf ) };
   }
 
   // try to access a different interface of  the _current_ serviceLocator...
   template <typename IFace>
   SmartIF<IFace> as() {
-    return SmartIF<IFace>{this};
+    return SmartIF<IFace>{ this };
   }
 
   /// Direct access to Gaudi::Interfaces::IOptionsSvc implementation.

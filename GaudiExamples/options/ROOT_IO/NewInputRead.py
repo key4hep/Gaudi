@@ -12,9 +12,10 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
+from Configurables import FileRecordDataSvc
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+from Configurables import GaudiPersistency, ReadAlg, ReadTES
 from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import ReadAlg, ReadTES, FileRecordDataSvc
 
 # I/O
 GaudiPersistency()
@@ -29,12 +30,13 @@ esel.Input = [
 evtAlgs = GaudiSequencer(
     "EventAlgs",
     Members=[
-        ReadAlg(
-            OutputLevel=VERBOSE, IncidentName=FileRecordDataSvc().IncidentName)
+        ReadAlg(OutputLevel=VERBOSE, IncidentName=FileRecordDataSvc().IncidentName)
     ],
-    VetoObjects=["FSR"])
+    VetoObjects=["FSR"],
+)
 fsrAlgs = GaudiSequencer(
-    "FSRAlgs", Members=[ReadTES(Locations=["FSR"])], RequireObjects=["FSR"])
+    "FSRAlgs", Members=[ReadTES(Locations=["FSR"])], RequireObjects=["FSR"]
+)
 
 # Application setup
 app = ApplicationMgr()

@@ -80,5 +80,5 @@ void MemStatAuditor::i_printinfo( std::string_view msg, CustomEventTypeRef evt, 
   // only monitor the increment in VSize
   // Stat stv(m_stat, caller + ":VMemUsage", pInfo.vsize);
   // Stat str(m_stat, caller + ":RMemUsage", pInfo.rss);
-  Stat sts( m_stat, std::string{caller}.append( ":VMem" ), deltaVSize );
+  Stat sts( m_stat, std::string{ caller }.append( ":VMem" ), deltaVSize );
 }

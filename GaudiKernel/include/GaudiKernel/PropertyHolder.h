@@ -141,7 +141,7 @@ public:
     if ( !rsvc ) return nullptr;
     const std::string&            nam = rname.empty() ? name : rname;
     Gaudi::Details::PropertyBase* p   = property( nam, rsvc->getProperties() );
-    m_remoteProperties.emplace_back( RemProperty{name, rsvc, nam} );
+    m_remoteProperties.emplace_back( RemProperty{ name, rsvc, nam } );
     return p;
   }
 
@@ -180,7 +180,7 @@ public:
       /// @fixme SUCCESS is not required to be checked for compatibility with Gaudi::Utils::setProperty
       return ( p && p->fromString( r ) ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
     } catch ( const std::invalid_argument& err ) {
-      throw GaudiException{"error setting property " + n, this->name(), StatusCode::FAILURE, err};
+      throw GaudiException{ "error setting property " + n, this->name(), StatusCode::FAILURE, err };
     }
   }
   // ==========================================================================
@@ -200,7 +200,7 @@ public:
    */
   const Gaudi::Details::PropertyBase& getProperty( std::string_view name ) const override {
     const Gaudi::Details::PropertyBase* p = property( name );
-    if ( !p ) throw std::out_of_range( "Property " + std::string{name} + " not found." );
+    if ( !p ) throw std::out_of_range( "Property " + std::string{ name } + " not found." );
     return *p;
   }
   // ==========================================================================

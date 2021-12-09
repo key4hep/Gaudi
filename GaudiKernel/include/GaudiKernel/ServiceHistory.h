@@ -57,7 +57,7 @@ public:
 
 private:
   const IService*   m_pService;
-  const JobHistory* m_jobHistory{nullptr};
+  const JobHistory* m_jobHistory{ nullptr };
   std::string       m_name, m_type, m_version;
   PropertyList      m_properties;
 };

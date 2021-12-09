@@ -257,7 +257,7 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
     return retrieve( tooltype, toolname, iid, tool, this, createIf );
   }
 
-  auto lock = std::scoped_lock{m_mut};
+  auto lock = std::scoped_lock{ m_mut };
 
   IAlgTool*  itool = nullptr;
   StatusCode sc( StatusCode::FAILURE );
@@ -284,7 +284,7 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
       warning() << "Tool " << toolname << " not found and creation not requested" << endmsg;
       return sc;
     }
-    sc = create( std::string{tooltype}, std::string{toolname}, parent, itool );
+    sc = create( std::string{ tooltype }, std::string{ toolname }, parent, itool );
     if ( sc.isFailure() ) { return sc; }
   }
 
@@ -308,7 +308,7 @@ std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
 //------------------------------------------------------------------------------
 {
 
-  auto                     lock = std::scoped_lock{m_mut};
+  auto                     lock = std::scoped_lock{ m_mut };
   std::vector<std::string> tools;
   for ( const auto& tool : m_instancesTools ) {
     if ( tool->type() == toolType ) tools.push_back( tool->name() );
@@ -319,8 +319,8 @@ std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
 std::vector<std::string> ToolSvc::getInstances() const
 //------------------------------------------------------------------------------
 {
-  auto                     lock = std::scoped_lock{m_mut};
-  std::vector<std::string> tools{m_instancesTools.size()};
+  auto                     lock = std::scoped_lock{ m_mut };
+  std::vector<std::string> tools{ m_instancesTools.size() };
   std::transform( std::begin( m_instancesTools ), std::end( m_instancesTools ), std::begin( tools ),
                   []( const IAlgTool* t ) { return t->name(); } );
   return tools;
@@ -329,14 +329,14 @@ std::vector<std::string> ToolSvc::getInstances() const
 std::vector<IAlgTool*> ToolSvc::getTools() const
 //------------------------------------------------------------------------------
 {
-  auto lock = std::scoped_lock{m_mut};
-  return std::vector<IAlgTool*>{std::begin( m_instancesTools ), std::end( m_instancesTools )};
+  auto lock = std::scoped_lock{ m_mut };
+  return std::vector<IAlgTool*>{ std::begin( m_instancesTools ), std::end( m_instancesTools ) };
 }
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::releaseTool( IAlgTool* tool )
 //------------------------------------------------------------------------------
 {
-  auto       lock = std::scoped_lock{m_mut};
+  auto       lock = std::scoped_lock{ m_mut };
   StatusCode sc( StatusCode::SUCCESS );
   // test if tool is in known list (protect trying to access a previously deleted tool)
   if ( m_instancesTools.rend() != std::find( m_instancesTools.rbegin(), m_instancesTools.rend(), tool ) ) {
@@ -410,7 +410,7 @@ namespace {
 
   template <typename C>
   ToolCreateGuard<C> make_toolCreateGuard( C& c ) {
-    return ToolCreateGuard<C>{c};
+    return ToolCreateGuard<C>{ c };
   }
 } // namespace
 
@@ -427,7 +427,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
 //------------------------------------------------------------------------------
 {
 
-  auto lock = std::scoped_lock{m_mut};
+  auto lock = std::scoped_lock{ m_mut };
   // protect against empty type
   if ( UNLIKELY( tooltype.empty() ) ) {
     error() << "create(): No Tool Type given" << endmsg;
@@ -550,27 +550,27 @@ std::string ToolSvc::nameTool( std::string_view toolname, const IInterface* pare
 //------------------------------------------------------------------------------
 {
 
-  if ( !parent ) { return std::string{this->name()}.append( "." ).append( toolname ); } // RETURN
+  if ( !parent ) { return std::string{ this->name() }.append( "." ).append( toolname ); } // RETURN
 
   // check that parent has a name!
   auto named_parent = SmartIF<INamedInterface>( const_cast<IInterface*>( parent ) );
   if ( named_parent ) {
-    auto fullname = std::string{named_parent->name()}.append( "." ).append( toolname );
+    auto fullname = std::string{ named_parent->name() }.append( "." ).append( toolname );
     return fullname; // RETURN
   }
 
   error() << "Private Tools only allowed for components implementing INamedInterface" << endmsg;
   //
-  return std::string{"."}.append( toolname );
+  return std::string{ "." }.append( toolname );
 }
 
 //------------------------------------------------------------------------------
 bool ToolSvc::existsTool( std::string_view fullname ) const
 //------------------------------------------------------------------------------
 {
-  auto lock = std::scoped_lock{m_mut};
+  auto lock = std::scoped_lock{ m_mut };
   auto i    = std::find_if( std::begin( m_instancesTools ), std::end( m_instancesTools ),
-                         [&]( const IAlgTool* tool ) { return tool->name() == fullname; } );
+                            [&]( const IAlgTool* tool ) { return tool->name() == fullname; } );
   return i != std::end( m_instancesTools );
 }
 
@@ -625,9 +625,9 @@ void ToolSvc::registerObserver( IToolSvc::Observer* obs ) {
   //------------------------------------------------------------------------------
   if ( !obs ) throw GaudiException( "Received NULL pointer", this->name() + "::registerObserver", StatusCode::FAILURE );
 
-  auto lock = std::scoped_lock{m_mut};
+  auto lock = std::scoped_lock{ m_mut };
   obs->setUnregister( [this, obs]() {
-    auto lock = std::scoped_lock{m_mut};
+    auto lock = std::scoped_lock{ m_mut };
     auto i    = std::find( m_observers.begin(), m_observers.end(), obs );
     if ( i != m_observers.end() ) m_observers.erase( i );
   } );

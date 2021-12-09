@@ -58,7 +58,7 @@ namespace {
 #define kBYTE 1024
 // Standard constructor
 RootCnvSvc::RootCnvSvc( CSTR nam, ISvcLocator* svc )
-    : ConversionSvc( nam, svc, ROOT_StorageType ), m_setup{new RootConnectionSetup()} {
+    : ConversionSvc( nam, svc, ROOT_StorageType ), m_setup{ new RootConnectionSetup() } {
   m_setup->cacheBranches.push_back( "*" );
   declareProperty( "LoadSection", m_setup->loadSection = "Event" );
 
@@ -209,9 +209,9 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
     if ( !c ) {
       auto       connection = std::make_unique<RootDataConnection>( this, dataset, m_setup );
       StatusCode sc         = ( mode != IDataConnection::READ )
-                          ? m_ioMgr->connectWrite( connection.get(), IDataConnection::IoType( mode ), "ROOT" )
-                          : m_ioMgr->connectRead( false, connection.get() );
-      c = sc.isSuccess() ? m_ioMgr->connection( dataset ) : nullptr;
+                                  ? m_ioMgr->connectWrite( connection.get(), IDataConnection::IoType( mode ), "ROOT" )
+                                  : m_ioMgr->connectRead( false, connection.get() );
+      c                     = sc.isSuccess() ? m_ioMgr->connection( dataset ) : nullptr;
       if ( c ) {
         bool writable = 0 != ( mode & ( IDataConnection::UPDATE | IDataConnection::RECREATE ) );
         fire_incident = m_incidentEnabled && ( 0 != ( mode & ( IDataConnection::UPDATE | IDataConnection::READ ) ) );
@@ -245,8 +245,8 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
         string          section = m_recordName[0] == '/' ? m_recordName.value().substr( 1 ) : m_recordName.value();
         TBranch*        b       = pc->getBranch( section, m_recordName.value() );
         if ( b ) {
-          const string  par[2]  = {fid, m_recordName};
-          unsigned long ipar[2] = {(unsigned long)( *con ), (unsigned long)b->GetEntries() - 1};
+          const string  par[2]  = { fid, m_recordName };
+          unsigned long ipar[2] = { (unsigned long)( *con ), (unsigned long)b->GetEntries() - 1 };
           for ( int i = 0; i < b->GetEntries(); ++i ) {
             ipar[1] = i;
             if ( !pc->mergeFIDs().empty() ) fid = pc->mergeFIDs()[i];
@@ -387,13 +387,13 @@ StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr
   if ( !pObj ) return error( "createRep> Current Database is invalid!" );
   CLID                     clid = pObj->clID();
   IRegistry*               pR   = pObj->registry();
-  string                   p[2] = {m_current->fid(), pR->identifier()};
+  string                   p[2] = { m_current->fid(), pR->identifier() };
   TClass*                  cl   = ( clid == CLID_DataObject ) ? m_classDO : getClass( pObj );
   size_t                   len  = p[1].find( '/', 1 );
   string                   sect = p[1].substr( 1, len == string::npos ? string::npos : len - 1 );
   pair<int, unsigned long> ret  = m_current->saveObj( sect, p[1], cl, pObj, m_bufferSize, m_splitLevel, true );
   if ( ret.first > 1 || ( clid == CLID_DataObject && ret.first == 1 ) ) {
-    unsigned long ip[2] = {0, ret.second};
+    unsigned long ip[2] = { 0, ret.second };
     if ( m_currSection.empty() ) m_currSection = p[1];
     return createAddress( repSvcType(), clid, p, ip, refpAddr );
   }
@@ -407,7 +407,7 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
     Leaves                     leaves;
     RootObjectRefs             refs;
     IRegistry*                 pR      = pObj->registry();
-    auto                       dataMgr = SmartIF<IDataManagerSvc>{pR->dataSvc()};
+    auto                       dataMgr = SmartIF<IDataManagerSvc>{ pR->dataSvc() };
     if ( dataMgr ) {
       StatusCode status = dataMgr->objectLeaves( pObj, leaves );
       if ( status.isSuccess() ) {
@@ -487,7 +487,7 @@ StatusCode RootCnvSvc::i__fillObjRefs( IOpaqueAddress* pA, DataObject* pObj ) {
       string        npar[3];
       unsigned long nipar[2];
       IRegistry*    pR      = pObj->registry();
-      auto          dataMgr = SmartIF<IDataManagerSvc>{pR->dataSvc()};
+      auto          dataMgr = SmartIF<IDataManagerSvc>{ pR->dataSvc() };
       LinkManager*  mgr     = pObj->linkMgr();
       for ( const auto& i : refs.links ) mgr->addLink( con->getLink( i ), nullptr );
       for ( auto& r : refs.refs ) {

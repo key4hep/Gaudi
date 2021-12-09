@@ -12,15 +12,19 @@
 # Author: Pere Mato (pere.mato@cern.ch)
 from __future__ import absolute_import
 
-from GaudiKernel.Constants import *
-from GaudiKernel.Configurable import *
-from GaudiKernel.ConfigurableDb import loadConfigurableDb, cfgDb
-from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
-from Gaudi.CommonGaudiConfigurables import *
-from GaudiKernel.ProcessJobOptions import importOptions, importUnits
-from GaudiKernel.ProcessJobOptions import InstallRootLoggingHandler as _InstallRootLoggingHandler
-
 import logging
+
+from Gaudi.CommonGaudiConfigurables import *
+from GaudiKernel.Configurable import *
+from GaudiKernel.ConfigurableDb import cfgDb
+from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
+from GaudiKernel.ConfigurableDb import loadConfigurableDb
+from GaudiKernel.Constants import *
+from GaudiKernel.ProcessJobOptions import (
+    InstallRootLoggingHandler as _InstallRootLoggingHandler,
+)
+from GaudiKernel.ProcessJobOptions import importOptions, importUnits
+
 log = logging.getLogger(__name__)
 # Ensure that a root logging handler is always present.
 _InstallRootLoggingHandler()
@@ -30,20 +34,31 @@ allConfigurables = Configurable.allConfigurables
 
 def _fillConfDict():
     nFiles = loadConfigurableDb()
-    log = logging.getLogger('PropertyProxy')
-    log.debug("Read module info for %d configurables from %d genConfDb files",
-              len(cfgDb), nFiles)
+    log = logging.getLogger("PropertyProxy")
+    log.debug(
+        "Read module info for %d configurables from %d genConfDb files",
+        len(cfgDb),
+        nFiles,
+    )
     if len(cfgDb.duplicates()) > 0:
-        log.warning("Found %d duplicates among the %d genConfDb files :",
-                    len(cfgDb.duplicates()), nFiles)
+        log.warning(
+            "Found %d duplicates among the %d genConfDb files :",
+            len(cfgDb.duplicates()),
+            nFiles,
+        )
         log.warning("--------------------------------------------------")
-        log.warning("  -%s: %s - %s", "<component name>", "<module>",
-                    "[ <duplicates> ]")
+        log.warning(
+            "  -%s: %s - %s", "<component name>", "<module>", "[ <duplicates> ]"
+        )
         log.warning("--------------------------------------------------")
         dups = cfgDb.duplicates()
         for cfgName in dups.keys():
-            log.warning("  -%s: %s - %s", cfgName, cfgDb[cfgName]['module'],
-                        str([d['module'] for d in dups[cfgName]]))
+            log.warning(
+                "  -%s: %s - %s",
+                cfgName,
+                cfgDb[cfgName]["module"],
+                str([d["module"] for d in dups[cfgName]]),
+            )
             pass
         del dups
         log.warning("Fix your cmt/requirements file !!")
@@ -118,5 +133,6 @@ def getConfigurable(name, defaultType=None):
             else:
                 # otherwise we try to get it from the Configurables database
                 import Configurables
+
                 defaultType = getattr(Configurables, defaultType)
         return defaultType(name)

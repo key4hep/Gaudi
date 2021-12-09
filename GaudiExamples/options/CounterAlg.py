@@ -9,9 +9,9 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-from Gaudi.Configuration import *
 from Configurables import CounterAlg
 from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
+from Gaudi.Configuration import *
 
 app = ApplicationMgr()
 counterAlg = CounterAlg()

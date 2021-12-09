@@ -31,20 +31,20 @@ std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const std::string
                                                                const std::string& opt ) {
   auto _p = new TProfile( title.c_str(), title.c_str(), nBins, xlow, xup, ylow, yup, opt.c_str() );
   auto p  = new Profile1D( _p );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const std::string& title, const Edges& e, double ylow,
                                                                double yup, const std::string& opt ) {
   auto p =
       new Profile1D( new TProfile( title.c_str(), title.c_str(), e.size() - 1, &e.front(), ylow, yup, opt.c_str() ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const AIDA::IProfile1D& hist ) {
   TProfile* h = getRepresentation<AIDA::IProfile1D, TProfile>( hist );
   auto      n = ( h ? new Profile1D( new TProfile( *h ) ) : nullptr );
-  return {n, n};
+  return { n, n };
 }
 
 namespace Gaudi {
@@ -57,11 +57,10 @@ namespace Gaudi {
   void* Generic1D<AIDA::IProfile1D, TProfile>::cast( const std::string& className ) const {
     return className == "AIDA::IProfile1D"
                ? const_cast<AIDA::IProfile1D*>( static_cast<const AIDA::IProfile1D*>( this ) )
-               : className == "AIDA::IProfile"
-                     ? const_cast<AIDA::IProfile*>( static_cast<const AIDA::IProfile*>( this ) )
-                     : className == "AIDA::IBaseHistogram"
-                           ? const_cast<AIDA::IBaseHistogram*>( static_cast<const AIDA::IBaseHistogram*>( this ) )
-                           : nullptr;
+           : className == "AIDA::IProfile" ? const_cast<AIDA::IProfile*>( static_cast<const AIDA::IProfile*>( this ) )
+           : className == "AIDA::IBaseHistogram"
+               ? const_cast<AIDA::IBaseHistogram*>( static_cast<const AIDA::IBaseHistogram*>( this ) )
+               : nullptr;
   }
 
   template <>
@@ -111,7 +110,7 @@ bool Gaudi::Profile1D::setBinContents( int i, int entries, double height, double
 #endif
 bool Gaudi::Profile1D::fill( double x, double y, double weight ) {
   // avoid race conditions when filling the profile
-  auto guard = std::scoped_lock{m_fillSerialization};
+  auto guard = std::scoped_lock{ m_fillSerialization };
   ( weight == 1. ) ? m_rep->Fill( x, y ) : m_rep->Fill( x, y, weight );
   return true;
 }

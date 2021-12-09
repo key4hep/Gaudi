@@ -770,8 +770,8 @@ private:
   // Pointer to the Algorithm Context Service
   mutable SmartIF<IAlgContextSvc> m_contextSvc; ///< Algorithm Context Service
 
-  Gaudi::Property<std::string> m_contextSvcName{this, "ContextService", "AlgContextSvc",
-                                                "the name of Algorithm Context Service"};
+  Gaudi::Property<std::string> m_contextSvcName{ this, "ContextService", "AlgContextSvc",
+                                                 "the name of Algorithm Context Service" };
   // ==========================================================================
 private:
   // ==========================================================================

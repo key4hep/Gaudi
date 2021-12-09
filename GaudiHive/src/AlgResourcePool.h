@@ -70,7 +70,7 @@ private:
 
   std::mutex m_resource_mutex;
 
-  state_type                                m_available_resources{0};
+  state_type                                m_available_resources{ 0 };
   std::map<size_t, concurrentQueueIAlgPtr*> m_algqueue_map;
   std::map<size_t, state_type>              m_resource_requirements;
   std::map<size_t, size_t>                  m_n_of_allowed_instances;
@@ -88,14 +88,14 @@ private:
   /// Counters for Algorithm instance misses
   std::unordered_map<std::string_view, unsigned int> m_algInstanceMisses;
 
-  Gaudi::Property<bool>                     m_lazyCreation{this, "CreateLazily", false, ""};
+  Gaudi::Property<bool>                     m_lazyCreation{ this, "CreateLazily", false, "" };
   Gaudi::Property<std::vector<std::string>> m_topAlgNames{
-      this, "TopAlg", {}, "Names of the algorithms to be passed to the algorithm manager"};
-  Gaudi::Property<bool> m_overrideUnClonable{this, "OverrideUnClonable", false,
-                                             "Override the un-clonability of algorithms. Use with caution!"};
+      this, "TopAlg", {}, "Names of the algorithms to be passed to the algorithm manager" };
+  Gaudi::Property<bool> m_overrideUnClonable{ this, "OverrideUnClonable", false,
+                                              "Override the un-clonability of algorithms. Use with caution!" };
   Gaudi::Property<bool> m_countAlgInstMisses{
       this, "CountAlgorithmInstanceMisses", false,
-      "Count and print out algorithm instance misses. Useful for finding ways to improve throughput scalability."};
+      "Count and print out algorithm instance misses. Useful for finding ways to improve throughput scalability." };
 
   /// The list of all algorithms created within the Pool which are not top
   ListAlg m_algList;

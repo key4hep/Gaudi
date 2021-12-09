@@ -534,7 +534,7 @@ private:
   // Private data members
   //
   HandleVector m_handleArray;
-  bool         m_retrieved{false};
+  bool         m_retrieved{ false };
 };
 
 // Easy printing out of Handles and HandleArrays

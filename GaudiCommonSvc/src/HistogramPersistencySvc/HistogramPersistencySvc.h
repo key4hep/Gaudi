@@ -80,13 +80,13 @@ public:
   typedef std::set<std::string> Set; // unconverted histograms
   // ==========================================================================
 protected:
-  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "", "name of the Hist Pers type"};
-  Gaudi::Property<std::string> m_outputFile{this, "OutputFile", "", "name of the output file"};
+  Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", "", "name of the Hist Pers type" };
+  Gaudi::Property<std::string> m_outputFile{ this, "OutputFile", "", "name of the output file" };
   Gaudi::Property<std::vector<std::string>> m_convert{
-      this, "ConvertHistos", {}, "The list of patterns to be accepted for conversion"};
+      this, "ConvertHistos", {}, "The list of patterns to be accepted for conversion" };
   Gaudi::Property<std::vector<std::string>> m_exclude{
-      this, "ExcludeHistos", {}, "The list of patterns to be excluded from conversion"};
-  Gaudi::Property<bool> m_warnings{this, "Warnings", true, "Set this property to false to suppress warning messages"};
+      this, "ExcludeHistos", {}, "The list of patterns to be excluded from conversion" };
+  Gaudi::Property<bool> m_warnings{ this, "Warnings", true, "Set this property to false to suppress warning messages" };
 
   /// for the final report: the list of converted histograms
   Set m_converted;

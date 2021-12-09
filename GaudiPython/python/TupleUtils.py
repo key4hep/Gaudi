@@ -14,4 +14,5 @@
 from GaudiPython.TupleUtils import *
 
 from GaudiPython import deprecation
+
 deprecation("Use 'GaudiPython.TupleUtils' module instead of 'TupleUtils'")

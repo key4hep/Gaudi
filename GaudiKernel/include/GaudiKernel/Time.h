@@ -339,7 +339,7 @@ namespace Gaudi {
 
     // Taking string_view means there will never be any dynamic allocation if cond == true
     inline void TimeAssert( bool cond, std::string_view msg = "time assertion failed" ) const {
-      if ( !cond ) throw TimeException( std::string{msg} );
+      if ( !cond ) throw TimeException( std::string{ msg } );
     }
   };
 } // namespace Gaudi

@@ -67,7 +67,7 @@ class GAUDI_API ConversionSvc : public extends<Service, IConversionSvc, IAddress
     }
 
     WorkerEntry( WorkerEntry&& orig ) noexcept
-        : m_class{orig.m_class}, m_converter{std::exchange( orig.m_converter, nullptr )} {}
+        : m_class{ orig.m_class }, m_converter{ std::exchange( orig.m_converter, nullptr ) } {}
 
     WorkerEntry& operator=( WorkerEntry&& orig ) noexcept {
       m_class = orig.m_class;

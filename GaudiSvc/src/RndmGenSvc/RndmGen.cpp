@@ -30,7 +30,7 @@
 #include <cfloat>
 
 /// Standard Constructor
-RndmGen::RndmGen( IInterface* engine ) : m_engine{engine} {}
+RndmGen::RndmGen( IInterface* engine ) : m_engine{ engine } {}
 
 /// Initialize the generator
 StatusCode RndmGen::initialize( const IRndmGen::Param& par ) {

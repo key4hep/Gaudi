@@ -376,7 +376,7 @@ private:
   Gaudi::Property<bool>                     m_print{ this, "PrintAll", false };
   Gaudi::Property<int>                      m_maxFileSize{ this, "MaxFileSize", 10240,
                                       "maximum file size in MB. if exceeded,"
-                                      " will cause an abort. -1 to never check." };
+                                                           " will cause an abort. -1 to never check." };
   Gaudi::Property<int>                      m_compressionLevel{ this, "CompressionLevel", 1, [this]( auto& ) {
                                             this->warning()
                                                 << "\"CompressionLevel\" Property has been deprecated. "

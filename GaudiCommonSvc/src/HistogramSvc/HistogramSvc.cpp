@@ -136,7 +136,7 @@ std::pair<string, string> HistogramSvc::i_splitPath( const string& full ) {
   // Remove trailing "/" from newPath if it exists
   if ( tmp.rfind( SEPARATOR ) == tmp.length() - 1 ) { tmp.erase( tmp.length() - 1, 1 ); }
   int sep = tmp.rfind( SEPARATOR );
-  return {tmp.substr( 0, sep ), tmp.substr( sep )};
+  return { tmp.substr( 0, sep ), tmp.substr( sep ) };
 }
 
 //------------------------------------------------------------------------------

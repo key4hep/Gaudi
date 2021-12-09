@@ -54,19 +54,15 @@ namespace {
   }
 
   std::string colTrans( std::string_view col, int offset ) {
-    int icol =
-        ( col == "black"
-              ? MSG::BLACK
-              : col == "red"
-                    ? MSG::RED
-                    : col == "green"
-                          ? MSG::GREEN
-                          : col == "yellow"
-                                ? MSG::YELLOW
-                                : col == "blue"
-                                      ? MSG::BLUE
-                                      : col == "purple" ? MSG::PURPLE
-                                                        : col == "cyan" ? MSG::CYAN : col == "white" ? MSG::WHITE : 8 );
+    int icol = ( col == "black"    ? MSG::BLACK
+                 : col == "red"    ? MSG::RED
+                 : col == "green"  ? MSG::GREEN
+                 : col == "yellow" ? MSG::YELLOW
+                 : col == "blue"   ? MSG::BLUE
+                 : col == "purple" ? MSG::PURPLE
+                 : col == "cyan"   ? MSG::CYAN
+                 : col == "white"  ? MSG::WHITE
+                                   : 8 );
     return std::to_string( icol + offset );
   }
 } // namespace
@@ -75,8 +71,8 @@ namespace {
 // instances of this service
 DECLARE_COMPONENT( MessageSvc )
 
-static const std::string levelNames[MSG::NUM_LEVELS] = {"NIL",     "VERBOSE", "DEBUG", "INFO",
-                                                        "WARNING", "ERROR",   "FATAL", "ALWAYS"};
+static const std::string levelNames[MSG::NUM_LEVELS] = { "NIL",     "VERBOSE", "DEBUG", "INFO",
+                                                         "WARNING", "ERROR",   "FATAL", "ALWAYS" };
 
 // Constructor
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc ) {
@@ -97,9 +93,9 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
     m_thresholdProp[ic].declareUpdateHandler( &MessageSvc::setupThreshold, this );
   }
 
-  m_logColors[MSG::FATAL].set( {"blue", "red"} );
-  m_logColors[MSG::ERROR].set( {"white", "red"} );
-  m_logColors[MSG::WARNING].set( {"yellow"} );
+  m_logColors[MSG::FATAL].set( { "blue", "red" } );
+  m_logColors[MSG::ERROR].set( { "white", "red" } );
+  m_logColors[MSG::WARNING].set( { "yellow" } );
 
   std::fill( std::begin( m_msgCount ), std::end( m_msgCount ), 0 );
 }
@@ -136,24 +132,17 @@ StatusCode MessageSvc::reinitialize() {
 
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop ) {
   const auto& pname = prop.name();
-  int         level = ( pname == "fatalColorCode"
-                    ? MSG::FATAL
-                    : pname == "errorColorCode"
-                          ? MSG::ERROR
-                          : pname == "warningColorCode"
-                                ? MSG::WARNING
-                                : pname == "infoColorCode"
-                                      ? MSG::INFO
-                                      : pname == "debugColorCode"
-                                            ? MSG::DEBUG
-                                            : pname == "verboseColorCode"
-                                                  ? MSG::VERBOSE
-                                                  : pname == "alwaysColorCode"
-                                                        ? MSG::ALWAYS
-                                                        : ( throw GaudiException(
-                                                                "ERROR: Unknown message color parameter: " + pname,
-                                                                name(), StatusCode::FAILURE ),
-                                                            -1 ) );
+  int         level =
+      ( pname == "fatalColorCode"     ? MSG::FATAL
+        : pname == "errorColorCode"   ? MSG::ERROR
+        : pname == "warningColorCode" ? MSG::WARNING
+        : pname == "infoColorCode"    ? MSG::INFO
+        : pname == "debugColorCode"   ? MSG::DEBUG
+        : pname == "verboseColorCode" ? MSG::VERBOSE
+        : pname == "alwaysColorCode"
+            ? MSG::ALWAYS
+            : ( throw GaudiException( "ERROR: Unknown message color parameter: " + pname, name(), StatusCode::FAILURE ),
+                -1 ) );
 
   auto& code = m_logColorCodes[level];
 
@@ -198,13 +187,13 @@ void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop ) {
 
 void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop ) {
 
-  static const std::array<std::pair<const char*, MSG::Level>, 7> tbl{{{"setFatal", MSG::FATAL},
-                                                                      {"setError", MSG::ERROR},
-                                                                      {"setWarning", MSG::WARNING},
-                                                                      {"setInfo", MSG::INFO},
-                                                                      {"setDebug", MSG::DEBUG},
-                                                                      {"setVerbose", MSG::VERBOSE},
-                                                                      {"setAlways", MSG::ALWAYS}}};
+  static const std::array<std::pair<const char*, MSG::Level>, 7> tbl{ { { "setFatal", MSG::FATAL },
+                                                                        { "setError", MSG::ERROR },
+                                                                        { "setWarning", MSG::WARNING },
+                                                                        { "setInfo", MSG::INFO },
+                                                                        { "setDebug", MSG::DEBUG },
+                                                                        { "setVerbose", MSG::VERBOSE },
+                                                                        { "setAlways", MSG::ALWAYS } } };
 
   auto i = std::find_if( std::begin( tbl ), std::end( tbl ),
                          [&]( const std::pair<const char*, MSG::Level>& t ) { return prop.name() == t.first; } );
@@ -353,7 +342,7 @@ StatusCode MessageSvc::finalize() {
 // ---------------------------------------------------------------------------
 //
 void MessageSvc::reportMessage( const Message& msg, int outputLevel ) {
-  auto lock = std::scoped_lock{m_reportMutex};
+  auto lock = std::scoped_lock{ m_reportMutex };
   i_reportMessage( msg, outputLevel );
 }
 
@@ -419,7 +408,7 @@ void MessageSvc::reportMessage( const Message& msg ) { reportMessage( msg, outpu
 // ---------------------------------------------------------------------------
 //
 void MessageSvc::reportMessage( std::string source, int type, std::string message ) {
-  reportMessage( Message{std::move( source ), type, std::move( message )} );
+  reportMessage( Message{ std::move( source ), type, std::move( message ) } );
 }
 
 //#############################################################################
@@ -429,7 +418,7 @@ void MessageSvc::reportMessage( std::string source, int type, std::string messag
 // ---------------------------------------------------------------------------
 //
 void MessageSvc::reportMessage( const StatusCode& code, std::string_view source ) {
-  auto lock = std::scoped_lock{m_messageMapMutex};
+  auto lock = std::scoped_lock{ m_messageMapMutex };
   i_reportMessage( code, source );
 }
 
@@ -437,7 +426,7 @@ void MessageSvc::i_reportMessage( const StatusCode& code, std::string_view sourc
   int  level  = outputLevel( source );
   auto report = [&]( Message mesg ) {
     mesg.setSource( source );
-    Message stat_code( std::string{source}, mesg.getType(), "Status Code " + std::to_string( code.getCode() ) );
+    Message stat_code( std::string{ source }, mesg.getType(), "Status Code " + std::to_string( code.getCode() ) );
     i_reportMessage( std::move( stat_code ), level );
     i_reportMessage( std::move( mesg ), level );
   };
@@ -514,7 +503,7 @@ void MessageSvc::eraseStream( std::ostream* stream ) {
 //
 
 void MessageSvc::insertMessage( const StatusCode& key, Message msg ) {
-  auto lock = std::scoped_lock{m_messageMapMutex};
+  auto lock = std::scoped_lock{ m_messageMapMutex };
   m_messageMap.emplace( key, std::move( msg ) );
 }
 
@@ -526,7 +515,7 @@ void MessageSvc::insertMessage( const StatusCode& key, Message msg ) {
 //
 
 void MessageSvc::eraseMessage() {
-  auto lock = std::scoped_lock{m_messageMapMutex};
+  auto lock = std::scoped_lock{ m_messageMapMutex };
   m_messageMap.clear();
 }
 
@@ -538,7 +527,7 @@ void MessageSvc::eraseMessage() {
 //
 
 void MessageSvc::eraseMessage( const StatusCode& key ) {
-  auto lock = std::scoped_lock{m_messageMapMutex};
+  auto lock = std::scoped_lock{ m_messageMapMutex };
   m_messageMap.erase( key );
 }
 
@@ -550,7 +539,7 @@ void MessageSvc::eraseMessage( const StatusCode& key ) {
 //
 
 void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg ) {
-  auto lock = std::scoped_lock{m_messageMapMutex};
+  auto lock = std::scoped_lock{ m_messageMapMutex };
 
   erase_if( m_messageMap, m_messageMap.equal_range( key ),
             [&]( MessageMap::const_reference j ) { return j.second == msg; } );
@@ -565,7 +554,7 @@ int MessageSvc::outputLevel() const {
 // ---------------------------------------------------------------------------
 int MessageSvc::outputLevel( std::string_view source ) const {
   // ---------------------------------------------------------------------------
-  auto lock = std::scoped_lock{m_thresholdMapMutex};
+  auto lock = std::scoped_lock{ m_thresholdMapMutex };
   auto it   = m_thresholdMap.find( source );
   return it != m_thresholdMap.end() ? it->second : m_outputLevel.value();
 }
@@ -579,7 +568,7 @@ void MessageSvc::setOutputLevel( int new_level ) {
 // ---------------------------------------------------------------------------
 void MessageSvc::setOutputLevel( std::string_view source, int level ) {
   // ---------------------------------------------------------------------------
-  auto lock = std::scoped_lock{m_thresholdMapMutex};
+  auto lock = std::scoped_lock{ m_thresholdMapMutex };
 
   // only write if we really have to...
   auto i = m_thresholdMap.find( source );
@@ -629,8 +618,8 @@ void MessageSvc::setupLogStreams() {
   std::map<std::string_view, std::shared_ptr<std::ofstream>> outStreams;
   std::transform( outFileNames.begin(), outFileNames.end(), std::inserter( outStreams, outStreams.end() ),
                   []( std::string_view fname ) {
-                    return std::pair{fname, std::make_shared<std::ofstream>(
-                                                std::string{fname}, std::ios_base::out | std::ios_base::trunc )};
+                    return std::pair{ fname, std::make_shared<std::ofstream>(
+                                                 std::string{ fname }, std::ios_base::out | std::ios_base::trunc ) };
                   } );
   // associate the stream to ofstream...
   for ( auto& iProp : m_loggedStreamsName ) {

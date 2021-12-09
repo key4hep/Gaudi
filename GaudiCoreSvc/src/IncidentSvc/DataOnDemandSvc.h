@@ -251,36 +251,36 @@ private:
   std::vector<IDODAlgMapper*>  m_algMappers;
   // ==========================================================================
   // Properties
-  Gaudi::Property<std::string> m_trapType{this, "IncidentName", "DataFault", "the type of handled Incident"};
-  Gaudi::Property<std::string> m_dataSvcName{this, "DataSvc", "EventDataSvc", "DataSvc name"};
+  Gaudi::Property<std::string> m_trapType{ this, "IncidentName", "DataFault", "the type of handled Incident" };
+  Gaudi::Property<std::string> m_dataSvcName{ this, "DataSvc", "EventDataSvc", "DataSvc name" };
 
-  Gaudi::Property<bool> m_partialPath{this, "UsePreceedingPath", true, "allow creation of partial leaves"};
+  Gaudi::Property<bool> m_partialPath{ this, "UsePreceedingPath", true, "allow creation of partial leaves" };
   Gaudi::Property<bool> m_dump{
       this, "Dump", false,
       [this]( auto& ) {
         if ( m_dump && FSMState() >= Gaudi::StateMachine::INITIALIZED ) { dump( MSG::ALWAYS ); }
       },
-      "dump configuration and stastics, if set to True after initialize it triggers a dump immediately"};
-  Gaudi::Property<bool> m_init{this, "PreInitialize", false, "(pre)initialize all algorithms"};
+      "dump configuration and stastics, if set to True after initialize it triggers a dump immediately" };
+  Gaudi::Property<bool> m_init{ this, "PreInitialize", false, "(pre)initialize all algorithms" };
   Gaudi::Property<bool> m_allowInitFailure{
       this, "AllowPreInitializeFailure", false,
-      "allow (pre)initialization of algorithms to fail without stopping the application"};
+      "allow (pre)initialization of algorithms to fail without stopping the application" };
 
   Gaudi::Property<Setup> m_algMapping{
-      this, "Algorithms", {}, &DataOnDemandSvc::deprecated_property, "[[deprecated]] use AlgMap"};
+      this, "Algorithms", {}, &DataOnDemandSvc::deprecated_property, "[[deprecated]] use AlgMap" };
   Gaudi::Property<Setup> m_nodeMapping{
-      this, "Nodes", {}, &DataOnDemandSvc::deprecated_property, "[[deprecated]] use NodeMap"};
+      this, "Nodes", {}, &DataOnDemandSvc::deprecated_property, "[[deprecated]] use NodeMap" };
 
   typedef std::map<std::string, std::string> Map;
-  Gaudi::Property<Map> m_algMap{this, "AlgMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'algorithm'}"};
-  Gaudi::Property<Map> m_nodeMap{this, "NodeMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'type'}"};
+  Gaudi::Property<Map> m_algMap{ this, "AlgMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'algorithm'}" };
+  Gaudi::Property<Map> m_nodeMap{ this, "NodeMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'type'}" };
 
-  Gaudi::Property<std::string> m_prefix{this, "Prefix", "/Event/"};
+  Gaudi::Property<std::string> m_prefix{ this, "Prefix", "/Event/" };
 
   Gaudi::Property<std::vector<std::string>> m_nodeMapTools{
-      this, "NodeMappingTools", {}, "list of tools of type IDODNodeMapper"};
+      this, "NodeMappingTools", {}, "list of tools of type IDODNodeMapper" };
   Gaudi::Property<std::vector<std::string>> m_algMapTools{
-      this, "AlgMappingTools", {}, "list of tools of type IDODAlgMapper"};
+      this, "AlgMappingTools", {}, "list of tools of type IDODAlgMapper" };
 };
 // ============================================================================
 

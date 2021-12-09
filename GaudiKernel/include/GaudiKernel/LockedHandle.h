@@ -65,8 +65,8 @@ public:
     operator T&() { return *m_ptr; }
 
   private:
-    T*         m_ptr{nullptr};
-    MutexType* m_mutex{nullptr};
+    T*         m_ptr{ nullptr };
+    MutexType* m_mutex{ nullptr };
   };
 
   class ConstGuard {

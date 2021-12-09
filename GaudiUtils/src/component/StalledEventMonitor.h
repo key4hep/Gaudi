@@ -59,10 +59,10 @@ public:
 
 private:
   Gaudi::Property<unsigned int> m_eventTimeout{
-      this, "EventTimeout", 600, "Number of seconds allowed to process a single event (0 to disable the check)."};
-  Gaudi::Property<int>  m_maxTimeoutCount{this, "MaxTimeoutCount", 0,
-                                         "Number timeouts before aborting the execution (0 means never abort)."};
-  Gaudi::Property<bool> m_stackTrace{this, "StackTrace", false, "Whether to print the stack-trace on timeout."};
+      this, "EventTimeout", 600, "Number of seconds allowed to process a single event (0 to disable the check)." };
+  Gaudi::Property<int>  m_maxTimeoutCount{ this, "MaxTimeoutCount", 0,
+                                          "Number timeouts before aborting the execution (0 means never abort)." };
+  Gaudi::Property<bool> m_stackTrace{ this, "StackTrace", false, "Whether to print the stack-trace on timeout." };
 
   /// Pointer to the watchdog thread that checks for the event timeout.
   std::unique_ptr<WatchdogThread> m_watchdog;

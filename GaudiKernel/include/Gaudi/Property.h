@@ -1023,7 +1023,7 @@ namespace Gaudi {
     StatusCode setProperty( IInterface* component, const std::string& name, const TYPE& value,
                             const std::string& doc = "" ) {
       if ( !component ) { return StatusCode::FAILURE; }
-      auto property = SmartIF<IProperty>{component};
+      auto property = SmartIF<IProperty>{ component };
       return property ? setProperty( property, name, value, doc ) : StatusCode::FAILURE;
     }
     // ========================================================================
@@ -1074,7 +1074,7 @@ namespace Gaudi {
     StatusCode setProperty( IInterface* component, const std::string& name, const char ( &value )[N],
                             const std::string& doc = "" ) {
       if ( 0 == component ) { return StatusCode::FAILURE; }
-      return setProperty( component, name, std::string{value, value + N}, doc );
+      return setProperty( component, name, std::string{ value, value + N }, doc );
     }
     // ========================================================================
     /** simple function to set the property of the given object from another

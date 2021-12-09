@@ -8,18 +8,18 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 Classes for the implementation of the Control Flow Structure Syntax.
 
 @see: https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
-'''
+"""
 from __future__ import print_function
 
 
 class ControlFlowNode(object):
-    '''
+    """
     Basic entry in the control flow graph.
-    '''
+    """
 
     def __and__(self, rhs):
         if rhs is CFTrue:
@@ -50,7 +50,7 @@ class ControlFlowNode(object):
         pass
 
     def __eq__(self, other):
-        return (repr(self) == repr(other))
+        return repr(self) == repr(other)
 
     def __hash__(self):
         """Return a unique identifier for this object.
@@ -59,26 +59,28 @@ class ControlFlowNode(object):
         here to define uniqueness.
         """
         # The hash of the 1-tuple containing the repr of this object
-        return hash((repr(self), ))
+        return hash((repr(self),))
 
     def getFullName(self):
-        '''
+        """
         Allow use of an expression as an algorihtm/sequence in a Gaudi job
         configuration.
 
         Convert the expression in nested sequencers and return the full name of
         the top one.
-        '''
-        if not hasattr(self, '_fullname'):
+        """
+        if not hasattr(self, "_fullname"):
             from GaudiKernel.Configurable import makeSequences
+
             self._fullname = makeSequences(self).getFullName()
         return self._fullname
 
 
 class ControlFlowLeaf(ControlFlowNode):
-    '''
+    """
     Class used to identify a note without sub-nodes.
-    '''
+    """
+
     pass
 
 
@@ -96,7 +98,7 @@ class ControlFlowBool(ControlFlowLeaf):
         return CFFalse if self.value else CFTrue
 
     def __repr__(self):
-        return 'CFTrue' if self.value else 'CFFalse'
+        return "CFTrue" if self.value else "CFFalse"
 
 
 CFTrue = ControlFlowBool(True)
@@ -105,9 +107,9 @@ del ControlFlowBool
 
 
 class OrderedNode(ControlFlowNode):
-    '''
+    """
     Represent order of execution of nodes.
-    '''
+    """
 
     def __init__(self, lhs, rhs):
         self.lhs = lhs
@@ -122,9 +124,9 @@ class OrderedNode(ControlFlowNode):
 
 
 class AndNode(ControlFlowNode):
-    '''
+    """
     And operation between control flow nodes.
-    '''
+    """
 
     def __init__(self, lhs, rhs):
         self.lhs = lhs
@@ -139,9 +141,9 @@ class AndNode(ControlFlowNode):
 
 
 class OrNode(ControlFlowNode):
-    '''
+    """
     Or operation between control flow nodes.
-    '''
+    """
 
     def __init__(self, lhs, rhs):
         self.lhs = lhs
@@ -156,9 +158,9 @@ class OrNode(ControlFlowNode):
 
 
 class InvertNode(ControlFlowNode):
-    '''
+    """
     Invert logic (negation) of a control flow node.
-    '''
+    """
 
     def __init__(self, item):
         self.item = item
@@ -171,9 +173,9 @@ class InvertNode(ControlFlowNode):
 
 
 class ignore(ControlFlowNode):
-    '''
+    """
     Treat a control flow node as always successful, equivalent to (a | ~ a).
-    '''
+    """
 
     def __init__(self, item):
         self.item = item
@@ -256,7 +258,7 @@ class DotVisitor(object):
     def enter(self, visitee):
         if visitee not in self.ids:
             self.number += 1
-            dot_id = self.ids[visitee] = 'T%s' % self.number
+            dot_id = self.ids[visitee] = "T%s" % self.number
         dot_id = self.ids[visitee]
         mother = None
         if self.is_needed(visitee):
@@ -275,12 +277,10 @@ class DotVisitor(object):
             elif isinstance(visitee, seq):
                 entry = '%s [label="SEQ", shape=circle]' % dot_id
             else:
-                entry = '%s [label="%s", shape=circle]' % (dot_id,
-                                                           type(visitee))
+                entry = '%s [label="%s", shape=circle]' % (dot_id, type(visitee))
             self.nodes.append(entry)
             if len(self.stack) != 0:
-                mother = self.collapse_identical_ancestors(
-                    type(self.stack[-1][0]))
+                mother = self.collapse_identical_ancestors(type(self.stack[-1][0]))
                 if not mother:
                     mother = self.stack[-1][1]
                 edge = "%s->%s" % (dot_id, mother)
@@ -291,10 +291,10 @@ class DotVisitor(object):
         self.stack.pop()
 
     def collapse_identical_ancestors(self, thetype):
-        '''
+        """
         If AND nodes are inside AND nodes, the graph could be simplified
         to not contain those (same true for OR and ordered)
-        '''
+        """
         counter = 0
         if len(self.stack) != 0:
             mother = self.stack[-1][1]
@@ -306,9 +306,9 @@ class DotVisitor(object):
         return None
 
     def is_needed(self, visitee):
-        '''
+        """
         Check whether this node is actually needed
-        '''
+        """
         if len(self.stack) != 0:
             return not isinstance(visitee, type(self.stack[-1][0]))
         return True
@@ -323,7 +323,10 @@ rankdir=LR
 %s
 
 }
-""" % ("\n".join(self.nodes), "\n".join(self.edges))
+""" % (
+            "\n".join(self.nodes),
+            "\n".join(self.edges),
+        )
 
         with open(filename, "w") as outfile:
             outfile.write(output)
@@ -341,7 +344,7 @@ def test():
     g = Algorithm("g")
     sequence = seq(b >> a >> f)
     expression = sequence | ~c & par(d & e & g)
-    a = (expression == expression)
+    a = expression == expression
     aLine = line("MyTriggerPath", expression)
     visitor = _TestVisitor()
     visitor2 = DotVisitor()

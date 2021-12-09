@@ -8,11 +8,12 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc
+from Configurables import AvalancheSchedulerSvc
+from Configurables import Gaudi__Examples__THDataConsumer as THDataConsumer
 from Configurables import Gaudi__Examples__THDataProducer as THDataProducer
 from Configurables import Gaudi__Examples__THDataProducer2 as THDataProducer2
-from Configurables import Gaudi__Examples__THDataConsumer as THDataConsumer
+from Configurables import HiveSlimEventLoopMgr, HiveWhiteBoard
+from Gaudi.Configuration import *
 
 # Application setup
 whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=2)
@@ -23,9 +24,10 @@ scheduler = AvalancheSchedulerSvc(ThreadPoolSize=2)
 topalgs = [
     THDataProducer("THDataProducer"),
     THDataProducer2("THDataProducer2"),
-    THDataConsumer("THDataConsumer")
+    THDataConsumer("THDataConsumer"),
 ]
 
 # Application manager
 app = ApplicationMgr(
-    EvtMax=4, ExtSvc=[whiteboard], EventLoop=slimeventloopmgr, TopAlg=topalgs)
+    EvtMax=4, ExtSvc=[whiteboard], EventLoop=slimeventloopmgr, TopAlg=topalgs
+)

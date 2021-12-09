@@ -35,7 +35,7 @@ namespace Gaudi {
     std::map<std::string, std::string> getMetaDataMap() const override;
 
   private:
-    Gaudi::Property<bool> m_isEnabled{this, "Enabled", true};
+    Gaudi::Property<bool> m_isEnabled{ this, "Enabled", true };
 
     std::map<std::string, std::string> m_metadata;
   };

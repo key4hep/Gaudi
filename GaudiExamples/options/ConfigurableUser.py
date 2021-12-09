@@ -12,6 +12,7 @@
 Example of usage of ConfigurableUser classes (for high level configuration).
 """
 from __future__ import print_function
+
 from Gaudi.Configuration import *
 
 
@@ -28,15 +29,17 @@ class ExampleIO(ConfigurableUser):
         if read == "NONE":
             ApplicationMgr(EvtSel="NONE")
         else:
-            log.warning("%s: Cannot handle value %r of property Read",
-                        self.name(), read)
+            log.warning(
+                "%s: Cannot handle value %r of property Read", self.name(), read
+            )
 
         write = self.getProp("Write")
         if read == "NONE":
             ApplicationMgr(HistogramPersistency="NONE")
         else:
-            log.warning("%s: Cannot handle value %r of property Write",
-                        self.name(), write)
+            log.warning(
+                "%s: Cannot handle value %r of property Write", self.name(), write
+            )
 
 
 class ExampleCommon(ConfigurableUser):

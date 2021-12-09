@@ -12,21 +12,19 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
-from Gaudi.Configuration import *
-from Configurables import GaudiPersistency
 from Configurables import Gaudi__Examples__MultiInput__ReadAlg as ReadAlg
+from Configurables import GaudiPersistency
+from Gaudi.Configuration import *
 
 # I/O
 GaudiPersistency()
 esel = EventSelector()
-esel.Input = [
-    "DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"
-]
+esel.Input = ["DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
 FileCatalog(Catalogs=["xmlcatalog_file:MultiInput.xml"])
 # Algorithms
 evtAlgs = GaudiSequencer(
-    "EventAlgs",
-    Members=[ReadAlg(AddressesFile='addresses.txt', OutputLevel=DEBUG)])
+    "EventAlgs", Members=[ReadAlg(AddressesFile="addresses.txt", OutputLevel=DEBUG)]
+)
 
 # Application setup
 app = ApplicationMgr()

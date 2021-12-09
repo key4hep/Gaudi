@@ -88,7 +88,8 @@ private:
   // Whether the timing has been saved already
   bool m_histoSaved = false;
 
-  Gaudi::Property<bool> m_goodForDOD{this, "OptimizedForDOD", false, "enable optimization for Data-On-Demand Service"};
+  Gaudi::Property<bool> m_goodForDOD{ this, "OptimizedForDOD", false,
+                                      "enable optimization for Data-On-Demand Service" };
 };
 // ============================================================================
 /// factory:
@@ -253,7 +254,7 @@ void TimingAuditor::before( CustomEventTypeRef evt, const std::string& name ) {
 
   // look for the user timer in the map
   int         timer = 0;
-  std::string nick  = std::string{name}.append( ":" ).append( evt );
+  std::string nick  = std::string{ name }.append( ":" ).append( evt );
   auto        found = m_mapUser.find( nick );
 
   if ( m_mapUser.end() == found ) {
@@ -271,7 +272,7 @@ void TimingAuditor::after( CustomEventTypeRef evt, const std::string& name, cons
   if ( name.empty() && evt.empty() ) { return; }
 
   // look for the user timer in the map
-  std::string nick  = std::string{name}.append( ":" ).append( evt );
+  std::string nick  = std::string{ name }.append( ":" ).append( evt );
   auto        found = m_mapUser.find( nick );
 
   // We cannot do much if the timer is not available

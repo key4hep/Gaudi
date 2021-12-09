@@ -190,44 +190,44 @@ protected:
                                              /// any service!)
   SmartIF<DLLClassManager> m_classManager;   ///< Reference to the class manager
 
-  Gaudi::Property<int>                      m_SIGo{this, "Go", 0,
-                              [this]( auto& ) {
-                                // Re-initialize everything
-                                this->reinitialize().ignore();
-                                // Execute a number of events
-                                this->executeRun( m_evtMax ).ignore();
-                              },
-                              "For SI's \"Go\" command via callback"};
-  Gaudi::Property<int>                      m_SIExit{this, "Exit", 0,
-                                [this]( auto& ) {
-                                  finalize().ignore();
-                                  terminate().ignore();
-                                  ::exit( 0 );
-                                },
-                                "For SI's \"Exit\" command via callback"};
-  Gaudi::Property<std::vector<std::string>> m_topAlgNameList{this,
-                                                             "TopAlg",
-                                                             {},
-                                                             &ApplicationMgr::evtLoopPropertyHandler,
-                                                             "List of top level algorithms names",
-                                                             "vector<Algorithm>"};
+  Gaudi::Property<int>                      m_SIGo{ this, "Go", 0,
+                               [this]( auto& ) {
+                                 // Re-initialize everything
+                                 this->reinitialize().ignore();
+                                 // Execute a number of events
+                                 this->executeRun( m_evtMax ).ignore();
+                               },
+                               "For SI's \"Go\" command via callback" };
+  Gaudi::Property<int>                      m_SIExit{ this, "Exit", 0,
+                                 [this]( auto& ) {
+                                   finalize().ignore();
+                                   terminate().ignore();
+                                   ::exit( 0 );
+                                 },
+                                 "For SI's \"Exit\" command via callback" };
+  Gaudi::Property<std::vector<std::string>> m_topAlgNameList{ this,
+                                                              "TopAlg",
+                                                              {},
+                                                              &ApplicationMgr::evtLoopPropertyHandler,
+                                                              "List of top level algorithms names",
+                                                              "vector<Algorithm>" };
   Gaudi::Property<std::vector<std::string>> m_outStreamNameList{
-      this, "OutStream", {}, &ApplicationMgr::evtLoopPropertyHandler, "List of output stream names"};
-  Gaudi::Property<std::string> m_outStreamType{this, "OutStreamType", "OutputStream",
-                                               &ApplicationMgr::evtLoopPropertyHandler,
-                                               "[[deprecated]] Output stream type"};
-  Gaudi::Property<std::string> m_messageSvcType{this, "MessageSvcType", "MessageSvc", "MessageSvc type",
-                                                "Service:IMessageSvc"};
-  Gaudi::Property<std::string> m_jobOptionsSvcType{this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type",
-                                                   "Service:Gaudi::Interfaces::IOptionsSvc"};
+      this, "OutStream", {}, &ApplicationMgr::evtLoopPropertyHandler, "List of output stream names" };
+  Gaudi::Property<std::string> m_outStreamType{ this, "OutStreamType", "OutputStream",
+                                                &ApplicationMgr::evtLoopPropertyHandler,
+                                                "[[deprecated]] Output stream type" };
+  Gaudi::Property<std::string> m_messageSvcType{ this, "MessageSvcType", "MessageSvc", "MessageSvc type",
+                                                 "Service:IMessageSvc" };
+  Gaudi::Property<std::string> m_jobOptionsSvcType{ this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type",
+                                                    "Service:Gaudi::Interfaces::IOptionsSvc" };
 
   std::string                m_name        = "ApplicationMgr";             ///< Name
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::OFFLINE; ///< Internal State
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::OFFLINE; ///< Internal State
 
-  Gaudi::Property<std::vector<std::string>> m_svcMapping{this, "SvcMapping", {}, "Default mapping of services"};
+  Gaudi::Property<std::vector<std::string>> m_svcMapping{ this, "SvcMapping", {}, "Default mapping of services" };
   Gaudi::Property<std::vector<std::string>> m_svcOptMapping{
-      this, "SvcOptMapping", {}, "Default mapping of optional services"};
+      this, "SvcOptMapping", {}, "Default mapping of optional services" };
 
   SmartIF<IMessageSvc>     m_messageSvc;    ///< Reference to the message service
   SmartIF<IRunable>        m_runable;       ///< Reference to the runable object
@@ -241,75 +241,75 @@ protected:
   // The public ApplicationMgr properties
   //
 
-  Gaudi::Property<int> m_evtMax{this, "EvtMax", -1, "Number of events to be processed (-1 means all events)"};
+  Gaudi::Property<int> m_evtMax{ this, "EvtMax", -1, "Number of events to be processed (-1 means all events)" };
   Gaudi::Property<std::vector<std::string>> m_extSvcNameList{
-      this, "ExtSvc", {}, "List of external services names", "vector<Service>"};
-  Gaudi::Property<bool> m_extSvcCreates{this, "ExtSvcCreates", true,
-                                        "LHCb (default) or ATLAS definition of \"ExtSvc\""};
+      this, "ExtSvc", {}, "List of external services names", "vector<Service>" };
+  Gaudi::Property<bool> m_extSvcCreates{ this, "ExtSvcCreates", true,
+                                         "LHCb (default) or ATLAS definition of \"ExtSvc\"" };
 
-  Gaudi::Property<std::vector<std::string>> m_dllNameList{this, "Dlls", {}, "List of DDL's names"};
-  Gaudi::Property<std::string> m_jobOptionsType{this, "JobOptionsType", "FILE", "Source type (e.g. dbase, file...)"};
-  Gaudi::Property<std::string> m_jobOptionsPath{this, "JobOptionsPath", {}, "The \"file\" to look for properties"};
+  Gaudi::Property<std::vector<std::string>> m_dllNameList{ this, "Dlls", {}, "List of DDL's names" };
+  Gaudi::Property<std::string> m_jobOptionsType{ this, "JobOptionsType", "FILE", "Source type (e.g. dbase, file...)" };
+  Gaudi::Property<std::string> m_jobOptionsPath{ this, "JobOptionsPath", {}, "The \"file\" to look for properties" };
   Gaudi::Property<std::string> m_jobOptionsPreAction{
-      this, "JobOptionsPostAction", {}, "additional command to run on config"};
+      this, "JobOptionsPostAction", {}, "additional command to run on config" };
   Gaudi::Property<std::string> m_jobOptionsPostAction{
-      this, "JobOptionsPreAction", {}, "additional command to run on config"};
-  Gaudi::Property<std::string> m_runableType{this, "Runable", "AppMgrRunable", "Runable type"};
-  Gaudi::Property<std::string> m_eventLoopMgr{this, "EventLoop", "EventLoopMgr", "Processing manager type"};
-  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", {}, "Event selection"};
-  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "NONE", "Name of the Hist Pers Svc"};
-  Gaudi::Property<int>         m_outputLevel{this, "OutputLevel", MSG::INFO, "Message output level"};
-  Gaudi::Property<std::string> m_appName{this, "AppName", "ApplicationMgr", "The name of the application"};
-  Gaudi::Property<std::string> m_appVersion{this, "AppVersion", {}, "The version of the application"};
-  Gaudi::Property<bool>        m_actHistory{this, "ActivateHistory", false, "Activate HistorySvc"};
-  Gaudi::Property<bool>        m_codeCheck{this, "StatusCodeCheck", false, "[[deprecated]] will be removed"};
-  Gaudi::Property<int>         m_pluginDebugLevel{this, "PluginDebugLevel", 0,
-                                          [this]( auto& ) {
-                                            // Setup debug level for the plugin system
-                                            if ( m_pluginDebugLevel.value() ) {
-                                              MsgStream log( m_messageSvc, this->name() );
-                                              log << MSG::INFO
-                                                  << "Updating Gaudi::PluginService::SetDebug(level) to level="
-                                                  << m_pluginDebugLevel.value() << endmsg;
-                                            }
-                                            Gaudi::PluginService::SetDebug( m_pluginDebugLevel );
-                                          },
-                                          "Debug level for the plugin system"};
+      this, "JobOptionsPreAction", {}, "additional command to run on config" };
+  Gaudi::Property<std::string> m_runableType{ this, "Runable", "AppMgrRunable", "Runable type" };
+  Gaudi::Property<std::string> m_eventLoopMgr{ this, "EventLoop", "EventLoopMgr", "Processing manager type" };
+  Gaudi::Property<std::string> m_evtsel{ this, "EvtSel", {}, "Event selection" };
+  Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", "NONE", "Name of the Hist Pers Svc" };
+  Gaudi::Property<int>         m_outputLevel{ this, "OutputLevel", MSG::INFO, "Message output level" };
+  Gaudi::Property<std::string> m_appName{ this, "AppName", "ApplicationMgr", "The name of the application" };
+  Gaudi::Property<std::string> m_appVersion{ this, "AppVersion", {}, "The version of the application" };
+  Gaudi::Property<bool>        m_actHistory{ this, "ActivateHistory", false, "Activate HistorySvc" };
+  Gaudi::Property<bool>        m_codeCheck{ this, "StatusCodeCheck", false, "[[deprecated]] will be removed" };
+  Gaudi::Property<int>         m_pluginDebugLevel{ this, "PluginDebugLevel", 0,
+                                           [this]( auto& ) {
+                                             // Setup debug level for the plugin system
+                                             if ( m_pluginDebugLevel.value() ) {
+                                               MsgStream log( m_messageSvc, this->name() );
+                                               log << MSG::INFO
+                                                   << "Updating Gaudi::PluginService::SetDebug(level) to level="
+                                                   << m_pluginDebugLevel.value() << endmsg;
+                                             }
+                                             Gaudi::PluginService::SetDebug( m_pluginDebugLevel );
+                                           },
+                                           "Debug level for the plugin system" };
 
   Gaudi::Property<std::vector<std::string>> m_createSvcNameList{
-      this, "CreateSvc", {}, "List of extra services to be created"};
+      this, "CreateSvc", {}, "List of extra services to be created" };
 
   /// Defaults for auditors.
-  Gaudi::Property<bool> m_auditTools{this, "AuditTools", false};
-  Gaudi::Property<bool> m_auditSvcs{this, "AuditServices", false};
-  Gaudi::Property<bool> m_auditAlgs{this, "AuditAlgorithms", false};
+  Gaudi::Property<bool> m_auditTools{ this, "AuditTools", false };
+  Gaudi::Property<bool> m_auditSvcs{ this, "AuditServices", false };
+  Gaudi::Property<bool> m_auditAlgs{ this, "AuditAlgorithms", false };
 
   Gaudi::Property<std::map<std::string, std::string>> m_environment{
-      this, "Environment", {}, "Environment variables to set"};
+      this, "Environment", {}, "Environment variables to set" };
 
-  Gaudi::Property<bool> m_loopCheck{this, "InitializationLoopCheck", true,
-                                    [this]( auto& ) { this->svcManager()->setLoopCheckEnabled( m_loopCheck ); },
-                                    "For ServiceMgr initialization loop checking"};
+  Gaudi::Property<bool> m_loopCheck{ this, "InitializationLoopCheck", true,
+                                     [this]( auto& ) { this->svcManager()->setLoopCheckEnabled( m_loopCheck ); },
+                                     "For ServiceMgr initialization loop checking" };
 
   /// Property to enable/disable the "stop on signal" service.
   /// @see Gaudi::Utils::StopSignalHandler
   Gaudi::Property<bool> m_stopOnSignal{
-      this, "StopOnSignal", false, "Flag to enable/disable the signal handler that schedule a stop of the event loop"};
+      this, "StopOnSignal", false, "Flag to enable/disable the signal handler that schedule a stop of the event loop" };
 
   /// Property to enable/disable the monitoring and reporting of stalled events.
   /// @see StalledEventMonitor
   Gaudi::Property<bool> m_stalledEventMonitoring{
-      this, "StalledEventMonitoring", false, "Flag to enable/disable the monitoring and reporting of stalled events"};
+      this, "StalledEventMonitoring", false, "Flag to enable/disable the monitoring and reporting of stalled events" };
 
-  Gaudi::Property<bool> m_propertiesPrint{this, "PropertiesPrint", false,
-                                          "Flag to activate the printout of properties"};
+  Gaudi::Property<bool> m_propertiesPrint{ this, "PropertiesPrint", false,
+                                           "Flag to activate the printout of properties" };
 
   /// Property to record the error conditions occurring during the running.
-  Gaudi::Property<int> m_returnCode{this, "ReturnCode", Gaudi::ReturnCode::Success,
-                                    "Return code of the application. Set internally in case of error conditions."};
+  Gaudi::Property<int> m_returnCode{ this, "ReturnCode", Gaudi::ReturnCode::Success,
+                                     "Return code of the application. Set internally in case of error conditions." };
 
-  Gaudi::Property<bool> m_printAlgsSequence{this, "PrintAlgsSequence", false,
-                                            "Print the sequence of algorithms that have been loaded."};
+  Gaudi::Property<bool> m_printAlgsSequence{ this, "PrintAlgsSequence", false,
+                                             "Print the sequence of algorithms that have been loaded." };
 
   // For concurrency
   bool m_useHiveAlgorithmManager;
@@ -328,12 +328,12 @@ private:
         std::stringstream s;
         s << method_name << ": event processor is not a \""
           << System::typeinfoName( typeid( decltype( *member.get() ) ) ) << '"';
-        throw GaudiException{s.str(), self->name(), StatusCode::FAILURE};
+        throw GaudiException{ s.str(), self->name(), StatusCode::FAILURE };
       }
     }
     std::stringstream s;
     s << method_name << ": Invalid state \"" << self->FSMState() << '"';
-    throw GaudiException{s.str(), self->name(), StatusCode::FAILURE};
+    throw GaudiException{ s.str(), self->name(), StatusCode::FAILURE };
   }
 };
 #endif // GAUDI_APPLICATIONMGR_H

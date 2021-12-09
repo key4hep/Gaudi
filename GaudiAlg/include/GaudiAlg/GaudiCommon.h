@@ -490,11 +490,11 @@ public:
   //[[deprecated( "see LHCBPS-1758" )]], on top no garantee about thread safety
   StatEntity& counter( std::string_view tag ) const { return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag ); }
   StatEntity& counter( std::string_view tag ) {
-    auto lock = std::scoped_lock{m_countersOwnMutex};
+    auto lock = std::scoped_lock{ m_countersOwnMutex };
     // Return referenced StatEntity if it already exists, else create it
     auto p = m_countersOwn.find( tag );
     if ( UNLIKELY( p == m_countersOwn.end() ) ) {
-      auto [iter, b] = m_countersOwn.try_emplace( std::string{tag} );
+      auto [iter, b] = m_countersOwn.try_emplace( std::string{ tag } );
       assert( b );
       this->serviceLocator()->monitoringHub().registerEntity( this->name(), iter->first, StatEntity::typeString,
                                                               iter->second );
@@ -711,29 +711,29 @@ private:
 protected:
   // ==========================================================================
   // Properties
-  Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true,
+  Gaudi::Property<bool> m_errorsPrint{ this, "ErrorsPrint", true,
+                                       [this]( auto& ) {
+                                         // no action if not yet initialized
+                                         if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                              this->m_errorsPrint.value() ) {
+                                           this->printErrors();
+                                         }
+                                       },
+                                       "print the statistics of errors/warnings/exceptions" };
+  Gaudi::Property<bool> m_propsPrint{ this, "PropertiesPrint", false,
                                       [this]( auto& ) {
                                         // no action if not yet initialized
                                         if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
-                                             this->m_errorsPrint.value() ) {
-                                          this->printErrors();
+                                             this->m_propsPrint.value() ) {
+                                          this->printProps( MSG::ALWAYS );
                                         }
                                       },
-                                      "print the statistics of errors/warnings/exceptions"};
-  Gaudi::Property<bool> m_propsPrint{this, "PropertiesPrint", false,
-                                     [this]( auto& ) {
-                                       // no action if not yet initialized
-                                       if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
-                                            this->m_propsPrint.value() ) {
-                                         this->printProps( MSG::ALWAYS );
-                                       }
-                                     },
-                                     "print the properties of the component"};
-  Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
+                                      "print the properties of the component" };
+  Gaudi::Property<bool> m_typePrint{ this, "TypePrint", true, "add the actual C++ component type into the messages" };
 
-  Gaudi::Property<std::string>              m_context{this, "Context", {}, "note: overridden by parent settings"};
+  Gaudi::Property<std::string>              m_context{ this, "Context", {}, "note: overridden by parent settings" };
   Gaudi::Property<std::vector<std::string>> m_counterList{
-      this, "CounterList", {".*"}, "RegEx list, of simple integer counters for CounterSummary"};
+      this, "CounterList", { ".*" }, "RegEx list, of simple integer counters for CounterSummary" };
 };
 // ============================================================================
 #include "GaudiAlg/GaudiCommonImp.h"

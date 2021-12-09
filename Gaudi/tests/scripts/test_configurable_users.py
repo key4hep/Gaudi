@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
 from Gaudi.Configuration import *
 
 appliedConf = []
@@ -52,8 +53,11 @@ class MultiInstance(ConfigurableUserTest):
 class Application(ConfigurableUserTest):
     __slots__ = {"Property1": 10}
     __used_configurables__ = [
-        SubModule1, SubModule2, SubModule3, (MultiInstance, None),
-        (MultiInstance, "TestInstance")
+        SubModule1,
+        SubModule2,
+        SubModule3,
+        (MultiInstance, None),
+        (MultiInstance, "TestInstance"),
     ]
 
     def __apply_configuration__(self):
@@ -97,34 +101,34 @@ Application()
 
 # apply all ConfigurableUser instances
 from GaudiKernel.Configurable import applyConfigurableUsers
+
 applyConfigurableUsers()
 
 # check that everything has been applied
 expected = {
-    'Application': ('Property1', 10),
-    'TestInstance': ('Property', 1),
-    'Application_MultiInstance': ('Property', 0),
-    'SubModule1': ('Property1', 10),
-    'SubModule2': ('Property1', 10),
-    'TestInstance_SubModule1': ('Property1', 0),
-    'Application_MultiInstance_SubModule1': ('Property1', 0),
-    'NotActivelyUsed': ('Property', -5)
+    "Application": ("Property1", 10),
+    "TestInstance": ("Property", 1),
+    "Application_MultiInstance": ("Property", 0),
+    "SubModule1": ("Property1", 10),
+    "SubModule2": ("Property1", 10),
+    "TestInstance_SubModule1": ("Property1", 0),
+    "Application_MultiInstance_SubModule1": ("Property1", 0),
+    "NotActivelyUsed": ("Property", -5),
 }
 assert set(appliedConf) == set(expected)
 
 # check the order of application
-assert appliedConf.index('Application') < appliedConf.index('SubModule1')
-assert appliedConf.index('Application') < appliedConf.index('SubModule2')
-assert appliedConf.index('Application') < appliedConf.index(
-    'Application_MultiInstance')
-assert appliedConf.index('Application') < appliedConf.index('TestInstance')
-assert appliedConf.index('Application') < appliedConf.index('NotActivelyUsed')
+assert appliedConf.index("Application") < appliedConf.index("SubModule1")
+assert appliedConf.index("Application") < appliedConf.index("SubModule2")
+assert appliedConf.index("Application") < appliedConf.index("Application_MultiInstance")
+assert appliedConf.index("Application") < appliedConf.index("TestInstance")
+assert appliedConf.index("Application") < appliedConf.index("NotActivelyUsed")
 
-assert appliedConf.index('TestInstance') < appliedConf.index(
-    'TestInstance_SubModule1')
+assert appliedConf.index("TestInstance") < appliedConf.index("TestInstance_SubModule1")
 
-assert appliedConf.index('Application_MultiInstance') < appliedConf.index(
-    'Application_MultiInstance_SubModule1')
+assert appliedConf.index("Application_MultiInstance") < appliedConf.index(
+    "Application_MultiInstance_SubModule1"
+)
 
 # check that the actions has been called in the right order
 expectedActions = ["Action Object One", "Action Function", "Action Object Two"]
@@ -133,7 +137,6 @@ assert calledActions == expectedActions
 # check property values
 allConfs = Configurable.allConfigurables
 for name, (prop, value) in expected.items():
-    assert allConfs[name].getProp(prop) == value, "%s.%s != %s" % (name, prop,
-                                                                   value)
+    assert allConfs[name].getProp(prop) == value, "%s.%s != %s" % (name, prop, value)
 
 print("Success.")

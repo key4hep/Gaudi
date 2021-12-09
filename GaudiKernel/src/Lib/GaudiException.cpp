@@ -46,11 +46,11 @@ GaudiException::GaudiException( std::string Message, std::string Tag, StatusCode
 
 GaudiException::GaudiException( const GaudiException& Exception )
     : std::exception( Exception )
-    , m_message{Exception.message()}
-    , m_tag{Exception.tag()}
-    , m_code{Exception.code()}
-    , m_backTrace{Exception.backTrace()}
-    , m_previous{Exception.previous() ? Exception.previous()->clone() : nullptr} {
+    , m_message{ Exception.message() }
+    , m_tag{ Exception.tag() }
+    , m_code{ Exception.code() }
+    , m_backTrace{ Exception.backTrace() }
+    , m_previous{ Exception.previous() ? Exception.previous()->clone() : nullptr } {
   s_proc = true;
 }
 

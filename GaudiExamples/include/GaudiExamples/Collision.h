@@ -47,7 +47,7 @@ namespace Gaudi {
 
     private:
       /// Collision number
-      int m_collision{0};
+      int m_collision{ 0 };
       //  std::vector<double, CLHEP::HepGenMatrix::Alloc<double,25> >           m_matrix;
     };
 

@@ -35,7 +35,7 @@ struct Fixture {
     // Instantiate the application
     auto app = Gaudi::createApplicationMgr();
 
-    SmartIF<IProperty> appProp{app};
+    SmartIF<IProperty> appProp{ app };
     BOOST_REQUIRE( appProp );
 
     appProp->setProperty( "JobOptionsSvcType", jos_name ).ignore();
@@ -55,7 +55,7 @@ struct Fixture {
 /// Helper to allow instantiation of PropertyHolder.
 struct TestPropertyHolder : public PropertyHolder<implements<IProperty, INamedInterface>> {
   const std::string& name() const override { return m_name; }
-  std::string        m_name{"test"};
+  std::string        m_name{ "test" };
 };
 
 #ifdef NO_BOOST

@@ -9,18 +9,35 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
-from Gaudi.Configuration import *
-from GaudiPython import AppMgr, gbl, setOwnership, PyAlgorithm, SUCCESS, FAILURE, InterfaceCast
-from ROOT import TBufferFile, TBuffer
+
 import multiprocessing
-from multiprocessing import Process, Queue, JoinableQueue, Event
-from multiprocessing import cpu_count, current_process
-from multiprocessing.queues import Empty
-from GaudiMP.pTools import *
-import time
-import sys
 import os
-from ROOT import TParallelMergingFile
+import sys
+import time
+from multiprocessing import (
+    Event,
+    JoinableQueue,
+    Process,
+    Queue,
+    cpu_count,
+    current_process,
+)
+from multiprocessing.queues import Empty
+
+from Gaudi.Configuration import *
+from GaudiMP.pTools import *
+from ROOT import TBuffer, TBufferFile, TParallelMergingFile
+
+from GaudiPython import (
+    FAILURE,
+    SUCCESS,
+    AppMgr,
+    InterfaceCast,
+    PyAlgorithm,
+    gbl,
+    setOwnership,
+)
+
 # This script contains the bases for the Gaudi MultiProcessing (GMP)
 # classes
 
@@ -68,35 +85,41 @@ aida2root = gbl.Gaudi.Utils.Aida2ROOT.aida2root
 
 # used to check which type of histo we are dealing with
 # i.e. if currentHisto in aidatypes : pass
-aidatypes = (gbl.AIDA.IHistogram, gbl.AIDA.IHistogram1D, gbl.AIDA.IHistogram2D,
-             gbl.AIDA.IHistogram3D, gbl.AIDA.IProfile1D, gbl.AIDA.IProfile2D,
-             gbl.AIDA.IBaseHistogram)  # extra?
+aidatypes = (
+    gbl.AIDA.IHistogram,
+    gbl.AIDA.IHistogram1D,
+    gbl.AIDA.IHistogram2D,
+    gbl.AIDA.IHistogram3D,
+    gbl.AIDA.IProfile1D,
+    gbl.AIDA.IProfile2D,
+    gbl.AIDA.IBaseHistogram,
+)  # extra?
 
 # similar to aidatypes
 thtypes = (gbl.TH1D, gbl.TH2D, gbl.TH3D, gbl.TProfile, gbl.TProfile2D)
 
 # Types of OutputStream in Gaudi
 WRITERTYPES = {
-    'EvtCollectionStream': "tuples",
-    'InputCopyStream': "events",
-    'OutputStream': "events",
-    'RecordStream': "records",
-    'RunRecordStream': "records",
-    'SequentialOutputStream': "events",
-    'TagCollectionStream': "tuples"
+    "EvtCollectionStream": "tuples",
+    "InputCopyStream": "events",
+    "OutputStream": "events",
+    "RecordStream": "records",
+    "RunRecordStream": "records",
+    "SequentialOutputStream": "events",
+    "TagCollectionStream": "tuples",
 }
 
 # =============================================================================
 
 
 class MiniWriter(object):
-    '''
+    """
     A class to represent a writer in the GaudiPython configuration
     It can be non-trivial to access the name of the output file; it may be
     specified in the DataSvc, or just on the writer, may be a list, or string
     Also, there are three different types of writer (events, records, tuples)
     so this bootstrap class provides easy access to this info while configuring
-    '''
+    """
 
     def __init__(self, writer, wType, config):
         self.w = writer
@@ -129,18 +152,18 @@ class MiniWriter(object):
                 self.set(self.datasvcName, datasvc.Output)
                 return
 
-    def getNewName(self, replaceThis, withThis, extra=''):
+    def getNewName(self, replaceThis, withThis, extra=""):
         # replace one pattern in the output name string
         #  with another, and return the Output name
         # It *might* be in a list, so check for this
         #
         # @param extra : might need to add ROOT flags
         #                i.e.: OPT='RECREATE', or such
-        assert replaceThis.__class__.__name__ == 'str'
-        assert withThis.__class__.__name__ == 'str'
+        assert replaceThis.__class__.__name__ == "str"
+        assert withThis.__class__.__name__ == "str"
         old = self.output
         lst = False
-        if old.__class__.__name__ == 'list':
+        if old.__class__.__name__ == "list":
             old = self.output[0]
             lst = True
         new = old.replace(replaceThis, withThis)
@@ -174,19 +197,19 @@ class MiniWriter(object):
 
     def __repr__(self):
         s = ""
-        line = '-' * 80
-        s += (line + '\n')
+        line = "-" * 80
+        s += line + "\n"
         s += "Writer         : %s\n" % (self.wName)
         s += "Writer Type    : %s\n" % (self.wType)
         s += "Writer Output  : %s\n" % (self.output)
         s += "DataSvc        : %s\n" % (self.datasvcName)
         s += "DataSvc Output : %s\n" % (self.svcOutput)
-        s += '\n'
+        s += "\n"
         s += "Key for config : %s\n" % (self.key)
         s += "Output File    : %s\n" % (self.output)
         s += "ItemList       : %s\n" % (self.ItemList)
         s += "OptItemList    : %s\n" % (self.OptItemList)
-        s += (line + '\n')
+        s += line + "\n"
         return s
 
 
@@ -194,14 +217,14 @@ class MiniWriter(object):
 
 
 class CollectHistograms(PyAlgorithm):
-    '''
+    """
     GaudiPython algorithm used to clean up histos on the Reader and Workers
     Only has a finalize method()
     This retrieves a dictionary of path:histo objects and sends it to the
     writer.  It then waits for a None flag : THIS IS IMPORTANT, as if
     the algorithm returns before ALL histos have been COMPLETELY RECEIVED
     at the writer end, there will be an error.
-    '''
+    """
 
     def __init__(self, gmpcomponent):
         PyAlgorithm.__init__(self)
@@ -213,11 +236,10 @@ class CollectHistograms(PyAlgorithm):
         return SUCCESS
 
     def finalize(self):
-        self.log.info(
-            'CollectHistograms Finalise (%s)' % (self._gmpc.nodeType))
+        self.log.info("CollectHistograms Finalise (%s)" % (self._gmpc.nodeType))
         self._gmpc.hDict = self._gmpc.dumpHistograms()
         ks = self._gmpc.hDict.keys()
-        self.log.info('%i Objects in Histogram Store' % (len(ks)))
+        self.log.info("%i Objects in Histogram Store" % (len(ks)))
 
         # crashes occurred due to Memory Error during the sending of hundreds
         # histos on slc5 machines, so instead, break into chunks
@@ -225,19 +247,19 @@ class CollectHistograms(PyAlgorithm):
         chunk = 100
         reps = len(ks) / chunk + 1
         for i in range(reps):
-            someKeys = ks[i * chunk:(i + 1) * chunk]
+            someKeys = ks[i * chunk : (i + 1) * chunk]
             smalld = dict([(key, self._gmpc.hDict[key]) for key in someKeys])
             self._gmpc.hq.put((self._gmpc.nodeID, smalld))
         # "finished" Notification
-        self.log.debug('Signalling end of histos to Writer')
-        self._gmpc.hq.put('HISTOS_SENT')
-        self.log.debug('Waiting on Sync Event')
+        self.log.debug("Signalling end of histos to Writer")
+        self._gmpc.hq.put("HISTOS_SENT")
+        self.log.debug("Waiting on Sync Event")
         self._gmpc.sEvent.wait()
-        self.log.debug('Histo Sync Event set, clearing and returning')
+        self.log.debug("Histo Sync Event set, clearing and returning")
         self._gmpc.hvt.clearStore()
         root = gbl.DataObject()
         setOwnership(root, False)
-        self._gmpc.hvt.setRoot('/stat', root)
+        self._gmpc.hvt.setRoot("/stat", root)
         return SUCCESS
 
 
@@ -272,7 +294,7 @@ class EventCommunicator(object):
     def send(self, item):
         # This class manages the sending of a TBufferFile Event to a Queue
         # The actual item to be sent is a tuple : ( evtNumber, TBufferFile )
-        assert item.__class__.__name__ == 'tuple'
+        assert item.__class__.__name__ == "tuple"
         startTransmission = time.time()
         self.qout.put(item)
         # allow the background thread to feed the Queue; not 100% guaranteed to
@@ -293,7 +315,7 @@ class EventCommunicator(object):
             return None
         self.qinTime += time.time() - startWait
         self.nRecv += 1
-        if itemIn.__class__.__name__ == 'tuple':
+        if itemIn.__class__.__name__ == "tuple":
             self.sizeRecv += itemIn[1].Length()
         else:
             self.nRecv -= 1
@@ -301,38 +323,39 @@ class EventCommunicator(object):
             self.qin.task_done()
         except:
             self._gmpc.log.warning(
-                'TASK_DONE called too often by : %s' % (self._gmpc.nodeType))
+                "TASK_DONE called too often by : %s" % (self._gmpc.nodeType)
+            )
         return itemIn
 
     def finalize(self):
-        self.log.info('Finalize Event Communicator : %s %s' %
-                      (self._gmpc, self._gmpc.nodeType))
+        self.log.info(
+            "Finalize Event Communicator : %s %s" % (self._gmpc, self._gmpc.nodeType)
+        )
         # Reader sends one flag for each worker
         # Workers send one flag each
         # Writer sends nothing (it's at the end of the chain)
-        if self._gmpc.nodeType == 'Reader':
+        if self._gmpc.nodeType == "Reader":
             downstream = self._gmpc.nWorkers
-        elif self._gmpc.nodeType == 'Writer':
+        elif self._gmpc.nodeType == "Writer":
             downstream = 0
-        elif self._gmpc.nodeType == 'Worker':
+        elif self._gmpc.nodeType == "Worker":
             downstream = 1
 
         for i in range(downstream):
-            self.qout.put('FINISHED')
-        if self._gmpc.nodeType != 'Writer':
+            self.qout.put("FINISHED")
+        if self._gmpc.nodeType != "Writer":
             self.qout.join()
         # Now some reporting...
         self.statistics()
 
     def statistics(self):
-        self.log.name = '%s-%i Audit ' % (self._gmpc.nodeType,
-                                          self._gmpc.nodeID)
-        self.log.info('Items Sent     : %i' % (self.nSent))
-        self.log.info('Items Received : %i' % (self.nRecv))
-        self.log.info('Data  Sent     : %i' % (self.sizeSent))
-        self.log.info('Data  Received : %i' % (self.sizeRecv))
-        self.log.info('Q-out Time     : %5.2f' % (self.qoutTime))
-        self.log.info('Q-in  Time     : %5.2f' % (self.qinTime))
+        self.log.name = "%s-%i Audit " % (self._gmpc.nodeType, self._gmpc.nodeID)
+        self.log.info("Items Sent     : %i" % (self.nSent))
+        self.log.info("Items Received : %i" % (self.nRecv))
+        self.log.info("Data  Sent     : %i" % (self.sizeSent))
+        self.log.info("Data  Received : %i" % (self.sizeRecv))
+        self.log.info("Q-out Time     : %5.2f" % (self.qoutTime))
+        self.log.info("Q-in  Time     : %5.2f" % (self.qinTime))
 
 
 # =============================================================================
@@ -356,10 +379,10 @@ class TESSerializer(object):
     def Load(self, tbuf):
         root = gbl.DataObject()
         setOwnership(root, False)
-        self.evt.setRoot('/Event', root)
+        self.evt.setRoot("/Event", root)
         t = time.time()
         self.T.loadBuffer(tbuf)
-        self.tLoad += (time.time() - t)
+        self.tLoad += time.time() - t
         self.nIn += 1
         self.buffersIn.append(tbuf.Length())
 
@@ -367,7 +390,7 @@ class TESSerializer(object):
         t = time.time()
         tb = TBufferFile(TBuffer.kWrite)
         self.T.dumpBuffer(tb)
-        self.tDump += (time.time() - t)
+        self.tDump += time.time() - t
         self.nOut += 1
         self.buffersOut.append(tb.Length())
         return tb
@@ -379,10 +402,8 @@ class TESSerializer(object):
         dataIn = "Data Loaded      : %i" % (din)
         dataInMb = "Data Loaded (MB) : %5.2f Mb" % (din / MB)
         if self.nIn:
-            avgIn = "Avg Buf Loaded   : %5.2f Mb"\
-                % (din / (self.nIn * MB))
-            maxIn = "Max Buf Loaded   : %5.2f Mb"\
-                % (max(self.buffersIn) / MB)
+            avgIn = "Avg Buf Loaded   : %5.2f Mb" % (din / (self.nIn * MB))
+            maxIn = "Max Buf Loaded   : %5.2f Mb" % (max(self.buffersIn) / MB)
         else:
             avgIn = "Avg Buf Loaded   : N/A"
             maxIn = "Max Buf Loaded   : N/A"
@@ -390,28 +411,28 @@ class TESSerializer(object):
         dataOut = "Data Dumped      : %i" % (dout)
         dataOutMb = "Data Dumped (MB) : %5.2f Mb" % (dout / MB)
         if self.nOut:
-            avgOut = "Avg Buf Dumped   : %5.2f Mb"\
-                % (din / (self.nOut * MB))
-            maxOut = "Max Buf Dumped   : %5.2f Mb"\
-                % (max(self.buffersOut) / MB)
+            avgOut = "Avg Buf Dumped   : %5.2f Mb" % (din / (self.nOut * MB))
+            maxOut = "Max Buf Dumped   : %5.2f Mb" % (max(self.buffersOut) / MB)
         else:
             avgOut = "Avg Buf Dumped   : N/A"
             maxOut = "Max Buf Dumped   : N/A"
         dumpTime = "Total Dump Time  : %5.2f" % (self.tDump)
         loadTime = "Total Load Time  : %5.2f" % (self.tLoad)
 
-        lines = evIn,\
-            evOut,\
-            dataIn,\
-            dataInMb,\
-            avgIn,\
-            maxIn,\
-            dataOut,\
-            dataOutMb,\
-            avgOut,\
-            maxOut,\
-            dumpTime,\
-            loadTime
+        lines = (
+            evIn,
+            evOut,
+            dataIn,
+            dataInMb,
+            avgIn,
+            maxIn,
+            dataOut,
+            dataOutMb,
+            avgOut,
+            maxOut,
+            dumpTime,
+            loadTime,
+        )
         self.log.name = "%s-%i TESSerializer" % (self.nodeType, self.nodeID)
         for line in lines:
             self.log.info(line)
@@ -449,7 +470,7 @@ class GMPComponent(object):
         self.nWorkers, self.sEvent, self.config, self.log = params
         self.subworkers = subworkers
         self.nodeID = nodeID
-        self.msgFormat = self.config['MessageSvc'].Format
+        self.msgFormat = self.config["MessageSvc"].Format
 
         # describe the state of the node by the current Event Number
         self.currentEvent = None
@@ -470,13 +491,13 @@ class GMPComponent(object):
         qPair, histq, fq = self.queues
 
         # Set up the Queue Mechanisms ( Event Communicators )
-        if self.nodeType == 'Reader' or self.nodeType == 'Worker':
+        if self.nodeType == "Reader" or self.nodeType == "Worker":
             # Reader or Worker Node
             qin, qout = qPair
             self.evcom = EventCommunicator(self, qin, qout)
         else:
             # Writer : many queues in, no queue out
-            assert self.nodeType == 'Writer'
+            assert self.nodeType == "Writer"
             self.evcoms = []
             qsin = qPair[0]
             for q in qsin:
@@ -496,7 +517,7 @@ class GMPComponent(object):
         self.stat = SUCCESS
 
         # Set logger name
-        self.log.name = '%s-%i' % (self.nodeType, self.nodeID)
+        self.log.name = "%s-%i" % (self.nodeType, self.nodeID)
 
         # Heuristic variables
         # time for init, run, final, firstEventTime, totalTime
@@ -525,17 +546,17 @@ class GMPComponent(object):
         self.a = AppMgr()
         if SMAPS:
             from AlgSmapShot import SmapShot
-            smapsLog = self.nodeType + '-' + str(self.nodeID) + '.smp'
+
+            smapsLog = self.nodeType + "-" + str(self.nodeID) + ".smp"
             ss = SmapShot(logname=smapsLog)
             self.a.addAlgorithm(ss)
         self.evt = self.a.evtsvc()
         self.hvt = self.a.histsvc()
         self.fsr = self.a.filerecordsvc()
-        self.inc = self.a.service('IncidentSvc', 'IIncidentSvc')
-        self.pers = self.a.service('EventPersistencySvc', 'IAddressCreator')
+        self.inc = self.a.service("IncidentSvc", "IIncidentSvc")
+        self.pers = self.a.service("EventPersistencySvc", "IAddressCreator")
         self.ts = gbl.GaudiMP.TESSerializer(self.evt._idp, self.pers)
-        self.TS = TESSerializer(self.ts, self.evt, self.nodeType, self.nodeID,
-                                self.log)
+        self.TS = TESSerializer(self.ts, self.evt, self.nodeType, self.nodeID, self.log)
         return SUCCESS
 
     def StartGaudiPython(self):
@@ -546,17 +567,17 @@ class GMPComponent(object):
     def LoadTES(self, tbufferfile):
         root = gbl.DataObject()
         setOwnership(root, False)
-        self.evt.setRoot('/Event', root)
+        self.evt.setRoot("/Event", root)
         self.ts.loadBuffer(tbufferfile)
 
     def getEventNumber(self):
-        if self.app != 'Gauss':
+        if self.app != "Gauss":
             # Using getList or getHistoNames can result in the EventSelector
             # re-initialising connection to RootDBase, which costs a lot of
             # time... try to build a set of Header paths??
 
             # First Attempt : Unpacked Event Data
-            lst = ['/Event/Gen/Header', '/Event/Rec/Header']
+            lst = ["/Event/Gen/Header", "/Event/Rec/Header"]
             for l in lst:
                 path = l
                 try:
@@ -570,7 +591,7 @@ class GMPComponent(object):
             # second attepmt : try DAQ/RawEvent data
             # The Evt Number is in bank type 16, bank 0, data pt 4
             try:
-                n = self.evt['/Event/DAQ/RawEvent'].banks(16)[0].data()[4]
+                n = self.evt["/Event/DAQ/RawEvent"].banks(16)[0].data()[4]
 
                 return n
             except:
@@ -580,7 +601,7 @@ class GMPComponent(object):
             if self.nIn > 0 or self.nOut > 0:
                 pass
             else:
-                self.log.warning('Could not determine Event Number')
+                self.log.warning("Could not determine Event Number")
             return -1
         else:
             if self.nodeID == -1:
@@ -604,21 +625,20 @@ class GMPComponent(object):
                 writerType = WRITERTYPES[v.__class__.__name__]
                 d[writerType].append(MiniWriter(v, writerType, self.config))
                 if self.nodeID == 0:
-                    self.log.info('Writer Found : %s' % (v.name()))
+                    self.log.info("Writer Found : %s" % (v.name()))
 
         # Now Check for the Histogram Service
-        if 'HistogramPersistencySvc' in self.config.keys():
-            hfile = self.config['HistogramPersistencySvc'].getProp(
-                'OutputFile')
+        if "HistogramPersistencySvc" in self.config.keys():
+            hfile = self.config["HistogramPersistencySvc"].getProp("OutputFile")
             d["histos"].append(hfile)
         return d
 
     def dumpHistograms(self):
-        '''
+        """
         Method used by the GaudiPython algorithm CollectHistos
         to obtain a dictionary of form { path : object }
         representing the Histogram Store
-        '''
+        """
         nlist = self.hvt.getHistoNames()
         histDict = {}
         objects = 0
@@ -633,7 +653,7 @@ class GMPComponent(object):
                     objects += 1
                 histDict[n] = o
         else:
-            print('WARNING : no histograms to recover?')
+            print("WARNING : no histograms to recover?")
         return histDict
 
     def Initialize(self):
@@ -643,7 +663,7 @@ class GMPComponent(object):
         self.initEvent.set()
         self.StartGaudiPython()
 
-        if self.app == 'Gauss':
+        if self.app == "Gauss":
 
             tool = self.a.tool("ToolSvc.EvtCounter")
             self.cntr = InterfaceCast(gbl.IEventCounter)(tool.getInterface())
@@ -656,7 +676,7 @@ class GMPComponent(object):
         start = time.time()
         self.a.stop()
         self.a.finalize()
-        self.log.info('%s-%i Finalized' % (self.nodeType, self.nodeID))
+        self.log.info("%s-%i Finalized" % (self.nodeType, self.nodeID))
         self.finalEvent.set()
         self.fTime = time.time() - start
 
@@ -680,21 +700,19 @@ class GMPComponent(object):
 
 class Reader(GMPComponent):
     def __init__(self, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Reader', -1, queues, events, params,
-                              subworkers)
+        GMPComponent.__init__(self, "Reader", -1, queues, events, params, subworkers)
 
     def processConfiguration(self):
         # Reader :
         #   No algorithms
         #   No output
         #   No histos
-        self.config['ApplicationMgr'].TopAlg = []
-        self.config['ApplicationMgr'].OutStream = []
+        self.config["ApplicationMgr"].TopAlg = []
+        self.config["ApplicationMgr"].OutStream = []
         if "HistogramPersistencySvc" in self.config.keys():
-            self.config['HistogramPersistencySvc'].OutputFile = ''
-        self.config['MessageSvc'].Format = '%-13s ' % '[Reader]' + \
-            self.msgFormat
-        self.evtMax = self.config['ApplicationMgr'].EvtMax
+            self.config["HistogramPersistencySvc"].OutputFile = ""
+        self.config["MessageSvc"].Format = "%-13s " % "[Reader]" + self.msgFormat
+        self.evtMax = self.config["ApplicationMgr"].EvtMax
 
     def DumpEvent(self):
         tb = TBufferFile(TBuffer.kWrite)
@@ -707,16 +725,16 @@ class Reader(GMPComponent):
         # Do First Event ------------------------------------------------------
         # Check Termination Criteria
         startFirst = time.time()
-        self.log.info('Reader : First Event')
+        self.log.info("Reader : First Event")
         if self.nOut == self.evtMax:
-            self.log.info('evtMax( %i ) reached' % (self.evtMax))
+            self.log.info("evtMax( %i ) reached" % (self.evtMax))
             self.lastEvent.set()
             return SUCCESS
         else:
             # Continue to read, dump and send event
             self.a.run(1)
-            if not bool(self.evt['/Event']):
-                self.log.warning('No More Events! (So Far : %i)' % (self.nOut))
+            if not bool(self.evt["/Event"]):
+                self.log.warning("No More Events! (So Far : %i)" % (self.nOut))
                 self.lastEvent.set()
                 return SUCCESS
             else:
@@ -727,21 +745,19 @@ class Reader(GMPComponent):
                     try:
                         lst = self.evt.getList()
                         if self.app == "DaVinci":
-                            daqnode = self.evt.retrieveObject(
-                                '/Event/DAQ').registry()
+                            daqnode = self.evt.retrieveObject("/Event/DAQ").registry()
                             setOwnership(daqnode, False)
-                            self.evt.getList(daqnode, lst,
-                                             daqnode.address().par())
+                            self.evt.getList(daqnode, lst, daqnode.address().par())
                     except:
-                        self.log.critical('Reader could not acquire TES List!')
+                        self.log.critical("Reader could not acquire TES List!")
                         self.lastEvent.set()
                         return FAILURE
-                self.log.info('Reader : TES List : %i items' % (len(lst)))
+                self.log.info("Reader : TES List : %i items" % (len(lst)))
                 for l in lst:
                     self.ts.addItem(l)
                 self.currentEvent = self.getEventNumber()
                 tb = self.TS.Dump()
-                self.log.info('First Event Sent')
+                self.log.info("First Event Sent")
                 self.evcom.send((self.currentEvent, tb))
                 self.nOut += 1
                 self.eventLoopSyncer.set()
@@ -751,45 +767,46 @@ class Reader(GMPComponent):
 
     def Engine(self):
         # rename process
-        import os
         import ctypes
-        libc = ctypes.CDLL('libc.so.6')
-        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        import os
+
+        libc = ctypes.CDLL("libc.so.6")
+        name = str(self.nodeType) + str(self.nodeID) + "\0"
         libc.prctl(15, name, 0, 0, 0)
 
         startEngine = time.time()
-        self.log.name = 'Reader'
-        self.log.info('Reader Process starting')
+        self.log.name = "Reader"
+        self.log.info("Reader Process starting")
 
         self.Initialize()
 
         # add the Histogram Collection Algorithm
         self.a.addAlgorithm(CollectHistograms(self))
 
-        self.log.info('Reader Beginning Distribution')
+        self.log.info("Reader Beginning Distribution")
         sc = self.DoFirstEvent()
         if sc.isSuccess():
-            self.log.info('Reader First Event OK')
+            self.log.info("Reader First Event OK")
         else:
-            self.log.critical('Reader Failed on First Event')
+            self.log.critical("Reader Failed on First Event")
             self.stat = FAILURE
 
         # Do All Others -------------------------------------------------------
         while True:
             # Check Termination Criteria
             if self.nOut == self.evtMax:
-                self.log.info('evtMax( %i ) reached' % (self.evtMax))
+                self.log.info("evtMax( %i ) reached" % (self.evtMax))
                 break
             # Check Health
             if not self.stat.isSuccess():
-                self.log.critical('Reader is Damaged!')
+                self.log.critical("Reader is Damaged!")
                 break
             # Continue to read, dump and send event
             t = time.time()
             self.a.run(1)
-            self.rTime += (time.time() - t)
-            if not bool(self.evt['/Event']):
-                self.log.warning('No More Events! (So Far : %i)' % (self.nOut))
+            self.rTime += time.time() - t
+            if not bool(self.evt["/Event"]):
+                self.log.warning("No More Events! (So Far : %i)" % (self.nOut))
                 break
             self.currentEvent = self.getEventNumber()
             tb = self.TS.Dump()
@@ -798,11 +815,11 @@ class Reader(GMPComponent):
             self.nOut += 1
             self.eventLoopSyncer.set()
             self.evt.clearStore()
-        self.log.info('Setting <Last> Event')
+        self.log.info("Setting <Last> Event")
         self.lastEvent.set()
 
         # Finalize
-        self.log.info('Reader : Event Distribution complete.')
+        self.log.info("Reader : Event Distribution complete.")
         self.evcom.finalize()
         self.Finalize()
         self.tTime = time.time() - startEngine
@@ -814,8 +831,9 @@ class Reader(GMPComponent):
 
 class Subworker(GMPComponent):
     def __init__(self, workerID, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Worker', workerID, queues, events, params,
-                              subworkers)
+        GMPComponent.__init__(
+            self, "Worker", workerID, queues, events, params, subworkers
+        )
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters()
         # Identify the accept/veto checks for each event
@@ -825,24 +843,24 @@ class Subworker(GMPComponent):
 
     def Engine(self):
         # rename process
-        import os
         import ctypes
-        libc = ctypes.CDLL('libc.so.6')
-        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        import os
+
+        libc = ctypes.CDLL("libc.so.6")
+        name = str(self.nodeType) + str(self.nodeID) + "\0"
         libc.prctl(15, name, 0, 0, 0)
 
         self.initEvent.set()
         startEngine = time.time()
-        msg = self.a.service('MessageSvc')
-        msg.Format = '%-13s ' % ('[' + self.log.name + ']') + self.msgFormat
+        msg = self.a.service("MessageSvc")
+        msg.Format = "%-13s " % ("[" + self.log.name + "]") + self.msgFormat
 
         self.log.name = "Worker-%i" % (self.nodeID)
         self.log.info("Subworker %i starting Engine" % (self.nodeID))
         self.filerecordsAgent = FileRecordsAgent(self)
 
         # populate the TESSerializer itemlist
-        self.log.info(
-            'EVT WRITERS ON WORKER : %i' % (len(self.writerDict['events'])))
+        self.log.info("EVT WRITERS ON WORKER : %i" % (len(self.writerDict["events"])))
 
         nEventWriters = len(self.writerDict["events"])
         self.a.addAlgorithm(CollectHistograms(self))
@@ -855,7 +873,7 @@ class Subworker(GMPComponent):
                 pass
             else:
                 continue
-            if packet == 'FINISHED':
+            if packet == "FINISHED":
                 break
             evtNumber, tbin = packet  # unpack
             if self.cntr != None:
@@ -870,19 +888,19 @@ class Subworker(GMPComponent):
             if self.nIn == 1:
                 self.firstEvTime = time.time() - t
             else:
-                self.rTime += (time.time() - t)
+                self.rTime += time.time() - t
             if sc.isSuccess():
                 pass
             else:
                 self.log.name = "Worker-%i" % (self.nodeID)
-                self.log.warning('Did not Execute Event')
+                self.log.warning("Did not Execute Event")
                 self.evt.clearStore()
                 continue
             if self.isEventPassed():
                 pass
             else:
                 self.log.name = "Worker-%i" % (self.nodeID)
-                self.log.warning('Event did not pass : %i' % (evtNumber))
+                self.log.warning("Event did not pass : %i" % (evtNumber))
                 self.evt.clearStore()
                 continue
             if self.eventOutput:
@@ -892,11 +910,11 @@ class Subworker(GMPComponent):
                 tb = self.TS.Dump()
                 self.evcom.send((self.currentEvent, tb))
                 self.nOut += 1
-            self.inc.fireIncident(gbl.Incident('Subworker', 'EndEvent'))
+            self.inc.fireIncident(gbl.Incident("Subworker", "EndEvent"))
             self.eventLoopSyncer.set()
             self.evt.clearStore()
         self.log.name = "Worker-%i" % (self.nodeID)
-        self.log.info('Setting <Last> Event %s' % (self.nodeID))
+        self.log.info("Setting <Last> Event %s" % (self.nodeID))
         self.lastEvent.set()
 
         self.evcom.finalize()
@@ -912,49 +930,50 @@ class Subworker(GMPComponent):
         self.evt = evt
         self.hvt = hvt
         self.fsr = fsr
-        #self.inc = inc
-        self.inc = self.a.service('IncidentSvc', 'IIncidentSvc')
+        # self.inc = inc
+        self.inc = self.a.service("IncidentSvc", "IIncidentSvc")
         self.pers = pers
         self.ts = ts
         self.cntr = cntr
-        self.TS = TESSerializer(self.ts, self.evt, self.nodeType, self.nodeID,
-                                self.log)
+        self.TS = TESSerializer(self.ts, self.evt, self.nodeType, self.nodeID, self.log)
 
     def getCheckAlgs(self):
-        '''
+        """
         For some output writers, a check is performed to see if the event has
         executed certain algorithms.
         These reside in the AcceptAlgs property for those writers
-        '''
+        """
         acc = []
         req = []
         vet = []
         for m in self.writerDict["events"]:
-            if hasattr(m.w, 'AcceptAlgs'):
+            if hasattr(m.w, "AcceptAlgs"):
                 acc += m.w.AcceptAlgs
-            if hasattr(m.w, 'RequireAlgs'):
+            if hasattr(m.w, "RequireAlgs"):
                 req += m.w.RequireAlgs
-            if hasattr(m.w, 'VetoAlgs'):
+            if hasattr(m.w, "VetoAlgs"):
                 vet += m.w.VetoAlgs
         return (acc, req, vet)
 
     def checkExecutedPassed(self, algName):
-        if self.a.algorithm(algName)._ialg.isExecuted()\
-                and self.a.algorithm(algName)._ialg.filterPassed():
+        if (
+            self.a.algorithm(algName)._ialg.isExecuted()
+            and self.a.algorithm(algName)._ialg.filterPassed()
+        ):
             return True
         else:
             return False
 
     def isEventPassed(self):
-        '''
+        """
         Check the algorithm status for an event.
         Depending on output writer settings, the event
           may be declined based on various criteria.
         This is a transcript of the check that occurs in GaudiSvc::OutputStream
-        '''
+        """
         passed = False
 
-        self.log.debug('self.acceptAlgs is %s' % (str(self.acceptAlgs)))
+        self.log.debug("self.acceptAlgs is %s" % (str(self.acceptAlgs)))
         if self.acceptAlgs:
             for name in self.acceptAlgs:
                 if self.checkExecutedPassed(name):
@@ -963,20 +982,20 @@ class Subworker(GMPComponent):
         else:
             passed = True
 
-        self.log.debug('self.requireAlgs is %s' % (str(self.requireAlgs)))
+        self.log.debug("self.requireAlgs is %s" % (str(self.requireAlgs)))
         for name in self.requireAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info('Evt declined (requireAlgs) : %s' % (name))
+                self.log.info("Evt declined (requireAlgs) : %s" % (name))
                 passed = False
 
-        self.log.debug('self.vetoAlgs is %s' % (str(self.vetoAlgs)))
+        self.log.debug("self.vetoAlgs is %s" % (str(self.vetoAlgs)))
         for name in self.vetoAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info('Evt declined : (vetoAlgs) : %s' % (name))
+                self.log.info("Evt declined : (vetoAlgs) : %s" % (name))
                 passed = False
         return passed
 
@@ -986,8 +1005,9 @@ class Subworker(GMPComponent):
 
 class Worker(GMPComponent):
     def __init__(self, workerID, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Worker', workerID, queues, events, params,
-                              subworkers)
+        GMPComponent.__init__(
+            self, "Worker", workerID, queues, events, params, subworkers
+        )
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters()
         # Identify the accept/veto checks for each event
@@ -1002,21 +1022,20 @@ class Worker(GMPComponent):
         #   No input
         #   No output
         #   No Histos
-        self.config['EventSelector'].Input = []
-        self.config['ApplicationMgr'].OutStream = []
+        self.config["EventSelector"].Input = []
+        self.config["ApplicationMgr"].OutStream = []
         if "HistogramPersistencySvc" in self.config.keys():
-            self.config['HistogramPersistencySvc'].OutputFile = ''
-        formatHead = '[Worker-%i]' % (self.nodeID)
-        self.config['MessageSvc'].Format = '%-13s ' % formatHead + \
-            self.msgFormat
+            self.config["HistogramPersistencySvc"].OutputFile = ""
+        formatHead = "[Worker-%i]" % (self.nodeID)
+        self.config["MessageSvc"].Format = "%-13s " % formatHead + self.msgFormat
 
         for key, lst in self.writerDict.iteritems():
-            self.log.info('Writer Type : %s\t : %i' % (key, len(lst)))
+            self.log.info("Writer Type : %s\t : %i" % (key, len(lst)))
 
         for m in self.writerDict["tuples"]:
             # rename Tuple output file with an appendix
             # based on worker id, for merging later
-            newName = m.getNewName('.', '.w%i.' % (self.nodeID))
+            newName = m.getNewName(".", ".w%i." % (self.nodeID))
             self.config[m.key].Output = newName
 
         # Suppress INFO Output for all but Worker-0
@@ -1029,21 +1048,23 @@ class Worker(GMPComponent):
             try:
                 if "ToolSvc.EvtCounter" not in self.config:
                     from Configurables import EvtCounter
+
                     counter = EvtCounter()
                 else:
                     counter = self.config["ToolSvc.EvtCounter"]
                 counter.UseIncident = False
             except:
                 # ignore errors when trying to change the configuration of the EvtCounter
-                self.log.warning('Cannot configure EvtCounter')
+                self.log.warning("Cannot configure EvtCounter")
 
     def Engine(self):
 
         # rename process
-        import os
         import ctypes
-        libc = ctypes.CDLL('libc.so.6')
-        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        import os
+
+        libc = ctypes.CDLL("libc.so.6")
+        name = str(self.nodeType) + str(self.nodeID) + "\0"
         libc.prctl(15, name, 0, 0, 0)
 
         startEngine = time.time()
@@ -1052,8 +1073,7 @@ class Worker(GMPComponent):
         self.filerecordsAgent = FileRecordsAgent(self)
 
         # populate the TESSerializer itemlist
-        self.log.info(
-            'EVT WRITERS ON WORKER : %i' % (len(self.writerDict['events'])))
+        self.log.info("EVT WRITERS ON WORKER : %i" % (len(self.writerDict["events"])))
 
         nEventWriters = len(self.writerDict["events"])
         if nEventWriters:
@@ -1061,25 +1081,25 @@ class Worker(GMPComponent):
             optItemList = set()
             for m in self.writerDict["events"]:
                 for item in m.ItemList:
-                    hsh = item.find('#')
+                    hsh = item.find("#")
                     if hsh != -1:
                         item = item[:hsh]
                     itemList.add(item)
                 for item in m.OptItemList:
-                    hsh = item.find('#')
+                    hsh = item.find("#")
                     if hsh != -1:
                         item = item[:hsh]
                     optItemList.add(item)
             # If an item is mandatory and optional, keep it only in the optional list
             itemList -= optItemList
             for item in sorted(itemList):
-                self.log.info(' adding ItemList Item to ts : %s' % (item))
+                self.log.info(" adding ItemList Item to ts : %s" % (item))
                 self.ts.addItem(item)
             for item in sorted(optItemList):
-                self.log.info(' adding Optional Item to ts : %s' % (item))
+                self.log.info(" adding Optional Item to ts : %s" % (item))
                 self.ts.addOptItem(item)
         else:
-            self.log.info('There is no Event Output for this app')
+            self.log.info("There is no Event Output for this app")
             self.eventOutput = False
 
         # Begin processing
@@ -1090,7 +1110,7 @@ class Worker(GMPComponent):
                 pass
             else:
                 continue
-            if packet == 'FINISHED':
+            if packet == "FINISHED":
                 break
             evtNumber, tbin = packet  # unpack
             if self.cntr != None:
@@ -1102,8 +1122,16 @@ class Worker(GMPComponent):
 
                 # Fork subworkers and share services
                 for k in self.subworkers:
-                    k.SetServices(self.a, self.evt, self.hvt, self.fsr,
-                                  self.inc, self.pers, self.ts, self.cntr)
+                    k.SetServices(
+                        self.a,
+                        self.evt,
+                        self.hvt,
+                        self.fsr,
+                        self.inc,
+                        self.pers,
+                        self.ts,
+                        self.cntr,
+                    )
                     k.Start()
                     self.a.addAlgorithm(CollectHistograms(self))
             self.nIn += 1
@@ -1114,17 +1142,17 @@ class Worker(GMPComponent):
             if self.nIn == 1:
                 self.firstEvTime = time.time() - t
             else:
-                self.rTime += (time.time() - t)
+                self.rTime += time.time() - t
             if sc.isSuccess():
                 pass
             else:
-                self.log.warning('Did not Execute Event')
+                self.log.warning("Did not Execute Event")
                 self.evt.clearStore()
                 continue
             if self.isEventPassed():
                 pass
             else:
-                self.log.warning('Event did not pass : %i' % (evtNumber))
+                self.log.warning("Event did not pass : %i" % (evtNumber))
                 self.evt.clearStore()
                 continue
             if self.eventOutput:
@@ -1134,14 +1162,14 @@ class Worker(GMPComponent):
                 tb = self.TS.Dump()
                 self.evcom.send((self.currentEvent, tb))
                 self.nOut += 1
-            self.inc.fireIncident(gbl.Incident('Worker', 'EndEvent'))
+            self.inc.fireIncident(gbl.Incident("Worker", "EndEvent"))
             self.eventLoopSyncer.set()
             self.evt.clearStore()
-        self.log.info('Setting <Last> Event')
+        self.log.info("Setting <Last> Event")
         self.lastEvent.set()
 
         self.evcom.finalize()
-        self.log.info('Worker-%i Finished Processing Events' % (self.nodeID))
+        self.log.info("Worker-%i Finished Processing Events" % (self.nodeID))
         # Now send the FileRecords and stop/finalize the appMgr
         self.filerecordsAgent.SendFileRecords()
         self.Finalize()
@@ -1149,44 +1177,46 @@ class Worker(GMPComponent):
         self.Report()
 
         for k in self.subworkers:
-            self.log.info('Join subworkers')
+            self.log.info("Join subworkers")
             k.proc.join()
 
     def getCheckAlgs(self):
-        '''
+        """
         For some output writers, a check is performed to see if the event has
         executed certain algorithms.
         These reside in the AcceptAlgs property for those writers
-        '''
+        """
         acc = []
         req = []
         vet = []
         for m in self.writerDict["events"]:
-            if hasattr(m.w, 'AcceptAlgs'):
+            if hasattr(m.w, "AcceptAlgs"):
                 acc += m.w.AcceptAlgs
-            if hasattr(m.w, 'RequireAlgs'):
+            if hasattr(m.w, "RequireAlgs"):
                 req += m.w.RequireAlgs
-            if hasattr(m.w, 'VetoAlgs'):
+            if hasattr(m.w, "VetoAlgs"):
                 vet += m.w.VetoAlgs
         return (acc, req, vet)
 
     def checkExecutedPassed(self, algName):
-        if self.a.algorithm(algName)._ialg.isExecuted()\
-                and self.a.algorithm(algName)._ialg.filterPassed():
+        if (
+            self.a.algorithm(algName)._ialg.isExecuted()
+            and self.a.algorithm(algName)._ialg.filterPassed()
+        ):
             return True
         else:
             return False
 
     def isEventPassed(self):
-        '''
+        """
         Check the algorithm status for an event.
         Depending on output writer settings, the event
           may be declined based on various criteria.
         This is a transcript of the check that occurs in GaudiSvc::OutputStream
-        '''
+        """
         passed = False
 
-        self.log.debug('self.acceptAlgs is %s' % (str(self.acceptAlgs)))
+        self.log.debug("self.acceptAlgs is %s" % (str(self.acceptAlgs)))
         if self.acceptAlgs:
             for name in self.acceptAlgs:
                 if self.checkExecutedPassed(name):
@@ -1195,20 +1225,20 @@ class Worker(GMPComponent):
         else:
             passed = True
 
-        self.log.debug('self.requireAlgs is %s' % (str(self.requireAlgs)))
+        self.log.debug("self.requireAlgs is %s" % (str(self.requireAlgs)))
         for name in self.requireAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info('Evt declined (requireAlgs) : %s' % (name))
+                self.log.info("Evt declined (requireAlgs) : %s" % (name))
                 passed = False
 
-        self.log.debug('self.vetoAlgs is %s' % (str(self.vetoAlgs)))
+        self.log.debug("self.vetoAlgs is %s" % (str(self.vetoAlgs)))
         for name in self.vetoAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info('Evt declined : (vetoAlgs) : %s' % (name))
+                self.log.info("Evt declined : (vetoAlgs) : %s" % (name))
                 passed = False
         return passed
 
@@ -1218,8 +1248,7 @@ class Worker(GMPComponent):
 
 class Writer(GMPComponent):
     def __init__(self, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Writer', -2, queues, events, params,
-                              subworkers)
+        GMPComponent.__init__(self, "Writer", -2, queues, events, params, subworkers)
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters()
         # This keeps track of workers as they finish
@@ -1230,18 +1259,18 @@ class Writer(GMPComponent):
         # Writer :
         #   No input
         #   No Algs
-        self.config['ApplicationMgr'].TopAlg = []
-        self.config['EventSelector'].Input = []
+        self.config["ApplicationMgr"].TopAlg = []
+        self.config["EventSelector"].Input = []
 
-        self.config['MessageSvc'].Format = '%-13s ' % '[Writer]' + \
-            self.msgFormat
+        self.config["MessageSvc"].Format = "%-13s " % "[Writer]" + self.msgFormat
 
     def Engine(self):
         # rename process
-        import os
         import ctypes
-        libc = ctypes.CDLL('libc.so.6')
-        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        import os
+
+        libc = ctypes.CDLL("libc.so.6")
+        name = str(self.nodeType) + str(self.nodeID) + "\0"
         libc.prctl(15, name, 0, 0, 0)
 
         startEngine = time.time()
@@ -1258,13 +1287,12 @@ class Writer(GMPComponent):
             packet = self.evcoms[current].receive(timeout=0.01)
             if packet == None:
                 continue
-            if packet == 'FINISHED':
-                self.log.info(
-                    'Writer got FINISHED flag : Worker %i' % (current))
+            if packet == "FINISHED":
+                self.log.info("Writer got FINISHED flag : Worker %i" % (current))
 
                 self.status[current] = True
                 if all(self.status):
-                    self.log.info('FINISHED recd from all workers, break loop')
+                    self.log.info("FINISHED recd from all workers, break loop")
                     break
                 continue
             # otherwise, continue as normal
@@ -1273,12 +1301,12 @@ class Writer(GMPComponent):
             self.TS.Load(tbin)
             t = time.time()
             self.a.executeEvent()
-            self.rTime += (time.time() - t)
+            self.rTime += time.time() - t
             self.currentEvent = self.getEventNumber()
             self.evt.clearStore()
             self.eventLoopSyncer.set()
         self.log.name = "Writer--2"
-        self.log.info('Setting <Last> Event')
+        self.log.info("Setting <Last> Event")
         self.lastEvent.set()
 
         # finalisation steps
@@ -1287,15 +1315,15 @@ class Writer(GMPComponent):
         sc = self.histoAgent.Receive()
         sc = self.histoAgent.RebuildHistoStore()
         if sc.isSuccess():
-            self.log.info('Histo Store rebuilt ok')
+            self.log.info("Histo Store rebuilt ok")
         else:
-            self.log.warning('Histo Store Error in Rebuild')
+            self.log.warning("Histo Store Error in Rebuild")
 
         # Now do FileRecords
         sc = self.filerecordsAgent.Receive()
         self.filerecordsAgent.Rebuild()
         self.Finalize()
-        #self.rTime = time.time()-startEngine
+        # self.rTime = time.time()-startEngine
         self.Report()
 
 
@@ -1310,8 +1338,8 @@ class Coord(object):
         self.log = log
         self.config = config
         # set up Logging
-        self.log.name = 'GaudiPython-Parallel-Logger'
-        self.log.info('GaudiPython Parallel Process Co-ordinator beginning')
+        self.log.name = "GaudiPython-Parallel-Logger"
+        self.log.info("GaudiPython Parallel Process Co-ordinator beginning")
 
         if nWorkers == -1:
             # The user has requested all available cpus in the machine
@@ -1325,19 +1353,19 @@ class Coord(object):
 
         # Make a Syncer for Initalise, Run, and Finalise
         self.sInit = Syncer(
-            self.nWorkers,
-            self.log,
-            limit=WAIT_INITIALISE,
-            step=STEP_INITIALISE)
+            self.nWorkers, self.log, limit=WAIT_INITIALISE, step=STEP_INITIALISE
+        )
         self.sRun = Syncer(
             self.nWorkers,
             self.log,
             manyEvents=True,
             limit=WAIT_SINGLE_EVENT,
             step=STEP_EVENT,
-            firstEvent=WAIT_FIRST_EVENT)
+            firstEvent=WAIT_FIRST_EVENT,
+        )
         self.sFin = Syncer(
-            self.nWorkers, self.log, limit=WAIT_FINALISE, step=STEP_FINALISE)
+            self.nWorkers, self.log, limit=WAIT_FINALISE, step=STEP_FINALISE
+        )
         # and one final one for Histogram Transfer
         self.histSyncEvent = Event()
 
@@ -1347,18 +1375,20 @@ class Coord(object):
         self.subworkers = []
         # Declare SubProcesses!
         for i in range(1, self.nWorkers):
-            sub = Subworker(i, self.getQueues(i), self.getSyncEvents(i),
-                            params, self.subworkers)
+            sub = Subworker(
+                i, self.getQueues(i), self.getSyncEvents(i), params, self.subworkers
+            )
             self.subworkers.append(sub)
         self.reader = Reader(
-            self.getQueues(-1), self.getSyncEvents(-1), params,
-            self.subworkers)
+            self.getQueues(-1), self.getSyncEvents(-1), params, self.subworkers
+        )
         self.workers = []
-        wk = Worker(0, self.getQueues(0), self.getSyncEvents(0), params,
-                    self.subworkers)
+        wk = Worker(
+            0, self.getQueues(0), self.getSyncEvents(0), params, self.subworkers
+        )
         self.writer = Writer(
-            self.getQueues(-2), self.getSyncEvents(-2), params,
-            self.subworkers)
+            self.getQueues(-2), self.getSyncEvents(-2), params, self.subworkers
+        )
 
         self.system = []
         self.system.append(self.writer)
@@ -1380,8 +1410,8 @@ class Coord(object):
     def Go(self):
 
         # Initialise
-        self.log.name = 'GaudiPython-Parallel-Logger'
-        self.log.info('INITIALISING SYSTEM')
+        self.log.name = "GaudiPython-Parallel-Logger"
+        self.log.info("INITIALISING SYSTEM")
 
         # Start reader, writer and main worker
         for p in self.system:
@@ -1395,8 +1425,8 @@ class Coord(object):
             return FAILURE
 
         # Run
-        self.log.name = 'GaudiPython-Parallel-Logger'
-        self.log.info('RUNNING SYSTEM')
+        self.log.name = "GaudiPython-Parallel-Logger"
+        self.log.info("RUNNING SYSTEM")
         sc = self.sRun.syncAll(step="Run")
         if sc == SUCCESS:
             pass
@@ -1405,8 +1435,8 @@ class Coord(object):
             return FAILURE
 
         # Finalise
-        self.log.name = 'GaudiPython-Parallel-Logger'
-        self.log.info('FINALISING SYSTEM')
+        self.log.name = "GaudiPython-Parallel-Logger"
+        self.log.info("FINALISING SYSTEM")
         sc = self.sFin.syncAll(step="Finalise")
         if sc == SUCCESS:
             pass
@@ -1427,7 +1457,7 @@ class Coord(object):
             i.terminate()
 
         # self.writer.proc.terminate()
-        #[ w.proc.terminate() for w in self.workers]
+        # [ w.proc.terminate() for w in self.workers]
         # self.reader.proc.terminate()
 
     def Stop(self):

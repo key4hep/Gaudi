@@ -10,8 +10,8 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-import unittest
 import sys
+import unittest
 
 
 class TestCase(unittest.TestCase):
@@ -29,9 +29,9 @@ class TestCase(unittest.TestCase):
 
     def test_010_Function(self):
         import PyExample
+
         self.assertEqual(PyExample.greet(), "hello, world")
 
 
-if __name__ == '__main__':
-    unittest.main(
-        testRunner=unittest.TextTestRunner(stream=sys.stdout, verbosity=2))
+if __name__ == "__main__":
+    unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stdout, verbosity=2))

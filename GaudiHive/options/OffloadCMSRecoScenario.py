@@ -10,8 +10,8 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+from Configurables import AvalancheSchedulerSvc, HiveSlimEventLoopMgr, HiveWhiteBoard
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
@@ -21,29 +21,25 @@ evtslots = 1
 evtMax = 5
 algosInFlight = 4
 
-whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight,
     OutputLevel=DEBUG,
     PreemptiveBlockingTasks=True,
-    MaxBlockingAlgosInFlight=50)
+    MaxBlockingAlgosInFlight=50,
+)
 
-#timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
-timeValue = precedence.RealTimeValue(
-    path="cms/reco/algs-time.json", defaultTime=0.0)
+# timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
+timeValue = precedence.RealTimeValue(path="cms/reco/algs-time.json", defaultTime=0.0)
 
-#ifBlocking = precedence.UniformBooleanValue(False)
+# ifBlocking = precedence.UniformBooleanValue(False)
 # the CMS reco scenario has 707 algorithms in total
-ifBlocking = precedence.RndBiasedBooleanValue(
-    pattern={
-        True: 70,
-        False: 637
-    }, seed=1)
+ifBlocking = precedence.RndBiasedBooleanValue(pattern={True: 70, False: 637}, seed=1)
 
 sequencer = precedence.CruncherSequence(
     timeValue,
@@ -51,13 +47,15 @@ sequencer = precedence.CruncherSequence(
     sleepFraction=0.9,
     cfgPath="cms/reco/cf.graphml",
     dfgPath="cms/reco/df.graphml",
-    topSequencer='TopSequencer').get()
+    topSequencer="TopSequencer",
+).get()
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[sequencer],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)

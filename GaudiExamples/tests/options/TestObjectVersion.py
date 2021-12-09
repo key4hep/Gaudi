@@ -8,7 +8,8 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Gaudi.Configuration import ApplicationMgr
 from Configurables import Gaudi__Examples__TestObjectVersion__CreateObject as CO
 from Configurables import Gaudi__Examples__TestObjectVersion__UseObject as UO
+from Gaudi.Configuration import ApplicationMgr
+
 ApplicationMgr(TopAlg=[CO(), UO()], EvtSel="NONE", EvtMax=1)

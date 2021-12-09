@@ -47,9 +47,9 @@ namespace {
   };
 
   Axis toAxis( nlohmann::json& jAxis ) {
-    return {jAxis.at( "nBins" ).get<unsigned int>(), jAxis.at( "minValue" ).get<double>(),
-            jAxis.at( "maxValue" ).get<double>(),
-            ";" + jAxis.at( "title" ).get<std::string>()}; // ";" to prepare concatenations of titles
+    return { jAxis.at( "nBins" ).get<unsigned int>(), jAxis.at( "minValue" ).get<double>(),
+             jAxis.at( "maxValue" ).get<double>(),
+             ";" + jAxis.at( "title" ).get<std::string>() }; // ";" to prepare concatenations of titles
   }
 
   template <typename Traits, std::size_t... index>
@@ -57,7 +57,7 @@ namespace {
                               std::index_sequence<index...> ) {
     // extract data from json
     auto jsonAxis = j.at( "axis" );
-    auto axis     = std::array{toAxis( jsonAxis[index] )...};
+    auto axis     = std::array{ toAxis( jsonAxis[index] )... };
     auto weights  = j.at( "bins" ).get<std::vector<typename Traits::WeightType>>();
     auto title    = j.at( "title" ).get<std::string>();
     auto nentries = j.at( "nEntries" ).get<unsigned int>();
@@ -104,8 +104,8 @@ namespace {
 
     // Create Root histogram calling constructors with the args tuple
     auto histo = std::make_from_tuple<typename Traits::Histo>(
-        std::tuple_cat( std::tuple{name.c_str(), title.c_str()},
-                        std::tuple{axis[index].nBins, axis[index].minValue, axis[index].maxValue}... ) );
+        std::tuple_cat( std::tuple{ name.c_str(), title.c_str() },
+                        std::tuple{ axis[index].nBins, axis[index].minValue, axis[index].maxValue }... ) );
     // fill Histo
     for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
     auto try_set_bin_labels = [&histo, &jsonAxis]( auto idx ) {
@@ -178,19 +178,19 @@ namespace {
   }
 
   using namespace std::string_literals;
-  static const auto registry =
-      std::map{std::pair{std::pair{"histogram:Histogram"s, 1}, &saveRootHisto<1, false, TH1D>},
-               std::pair{std::pair{"histogram:WeightedHistogram"s, 1}, &saveRootHisto<1, false, TH1D>},
-               std::pair{std::pair{"histogram:Histogram"s, 2}, &saveRootHisto<2, false, TH2D>},
-               std::pair{std::pair{"histogram:WeightedHistogram"s, 2}, &saveRootHisto<2, false, TH2D>},
-               std::pair{std::pair{"histogram:Histogram"s, 3}, &saveRootHisto<3, false, TH3D>},
-               std::pair{std::pair{"histogram:WeightedHistogram"s, 3}, &saveRootHisto<3, false, TH3D>},
-               std::pair{std::pair{"histogram:ProfileHistogram"s, 1}, &saveRootHisto<1, true, TProfile>},
-               std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 1}, &saveRootHisto<1, true, TProfile>},
-               std::pair{std::pair{"histogram:ProfileHistogram"s, 2}, &saveRootHisto<2, true, TProfile2D>},
-               std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 2}, &saveRootHisto<2, true, TProfile2D>},
-               std::pair{std::pair{"histogram:ProfileHistogram"s, 3}, &saveRootHisto<3, true, TProfile3D>},
-               std::pair{std::pair{"histogram:WeightedProfileHistogram"s, 3}, &saveRootHisto<3, true, TProfile3D>}};
+  static const auto registry = std::map{
+      std::pair{ std::pair{ "histogram:Histogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
+      std::pair{ std::pair{ "histogram:WeightedHistogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
+      std::pair{ std::pair{ "histogram:Histogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
+      std::pair{ std::pair{ "histogram:WeightedHistogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
+      std::pair{ std::pair{ "histogram:Histogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
+      std::pair{ std::pair{ "histogram:WeightedHistogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
+      std::pair{ std::pair{ "histogram:ProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
+      std::pair{ std::pair{ "histogram:WeightedProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
+      std::pair{ std::pair{ "histogram:ProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
+      std::pair{ std::pair{ "histogram:WeightedProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
+      std::pair{ std::pair{ "histogram:ProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> },
+      std::pair{ std::pair{ "histogram:WeightedProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> } };
 } // namespace
 
 namespace Gaudi::Histograming::Sink {
@@ -218,7 +218,7 @@ namespace Gaudi::Histograming::Sink {
         // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
         // as ROOT anyway treats everything as doubles in histograms
         type       = type.substr( 0, type.find_last_of( ':' ) );
-        auto saver = registry.find( {type, dim} );
+        auto saver = registry.find( { type, dim } );
         if ( saver == registry.end() )
           throw GaudiException( "Unknown type : " + type + " dim : " + std::to_string( dim ), "Histogram::Sink::Root",
                                 StatusCode::FAILURE );
@@ -241,8 +241,8 @@ namespace Gaudi::Histograming::Sink {
   private:
     std::deque<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
 
-    Gaudi::Property<std::string> m_fileName{this, "FileName", "testHisto.root",
-                                            "Name of file where to save histograms"};
+    Gaudi::Property<std::string> m_fileName{ this, "FileName", "testHisto.root",
+                                             "Name of file where to save histograms" };
   };
 
   DECLARE_COMPONENT( Root )

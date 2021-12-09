@@ -505,7 +505,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
   constexpr auto zero_mask_broad( int const ( &A )[V::size()] ) {
     constexpr int                        N = V::size(); // number of vector elements
     typedef decltype( get_inttype<V>() ) Etype;         // element type
-    EList<Etype, N>                      u = {{0}};     // list for return
+    EList<Etype, N>                      u = { { 0 } }; // list for return
     int                                  i = 0;
     for ( i = 0; i < N; i++ ) { u.a[i] = A[i] >= 0 ? get_inttype<V>() : 0; }
     return u; // return encapsulated array
@@ -551,7 +551,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
   constexpr auto make_broad_mask( uint64_t const m ) {
     constexpr int                        N = V::size(); // number of vector elements
     typedef decltype( get_inttype<V>() ) Etype;         // element type
-    EList<Etype, N>                      u = {{0}};     // list for returning
+    EList<Etype, N>                      u = { { 0 } }; // list for returning
     int                                  i = 0;
     for ( i = 0; i < N; i++ ) { u.a[i] = ( ( m >> i ) & 1 ) != 0 ? get_inttype<V>() : 0; }
     return u; // return encapsulated array
@@ -563,7 +563,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
   constexpr auto perm_mask_broad( int const ( &A )[V::size()] ) {
     constexpr int                        N = V::size(); // number of vector elements
     typedef decltype( get_inttype<V>() ) Etype;         // vector element type
-    EList<Etype, N>                      u = {{0}};     // list for returning
+    EList<Etype, N>                      u = { { 0 } }; // list for returning
     int                                  i = 0;
     for ( i = 0; i < N; i++ ) { u.a[i] = Etype( A[i] ); }
     return u; // return encapsulated array
@@ -620,7 +620,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
     int32_t        expandlasti   = -1; // last index in perm_expand fit
     int32_t        expandlastp   = -1; // last position in perm_expand fit
 
-    int lanepattern[lanesize] = {0}; // pattern in each lane
+    int lanepattern[lanesize] = { 0 }; // pattern in each lane
 
     for ( i = 0; i < N; i++ ) { // loop through indexes
       ix = a[i];                // current index
@@ -877,13 +877,13 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
     // V is a vector class
     constexpr int N = V::size(); // number of elements
 
-    uint64_t       retval                = 0;            // return value
-    uint32_t       pat[4]                = {0, 0, 0, 0}; // permute patterns
-    uint32_t       i                     = 0;            // loop counter
-    int            ix                    = 0;            // index number i
-    const uint32_t lanesize              = 8;            // elements per lane
-    uint32_t       lane                  = 0;            // current lane
-    int            lanepattern[lanesize] = {0};          // pattern in each lane
+    uint64_t       retval                = 0;              // return value
+    uint32_t       pat[4]                = { 0, 0, 0, 0 }; // permute patterns
+    uint32_t       i                     = 0;              // loop counter
+    int            ix                    = 0;              // index number i
+    const uint32_t lanesize              = 8;              // elements per lane
+    uint32_t       lane                  = 0;              // current lane
+    int            lanepattern[lanesize] = { 0 };          // pattern in each lane
 
     for ( i = 0; i < N; i++ ) {
       ix   = a[i];
@@ -940,7 +940,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
     constexpr uint32_t nlanes            = sizeof( V ) / 16; // number of 128 bit lanes in vector
     constexpr uint32_t elements_per_lane = N / nlanes;       // number of vector elements per lane
 
-    EList<int8_t, sizeof( V )> u = {{0}}; // list for returning
+    EList<int8_t, sizeof( V )> u = { { 0 } }; // list for returning
 
     uint32_t i    = 0; // loop counters
     uint32_t j    = 0;
@@ -976,12 +976,12 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
   template <int N>
   constexpr EList<int, N / 2> largeblock_perm( int const ( &a )[N] ) {
     // Parameter a is a reference to a constexpr array of permutation indexes
-    EList<int, N / 2> list     = {{0}}; // result indexes
-    int               ix       = 0;     // even index
-    int               iy       = 0;     // odd index
-    int               iz       = 0;     // combined index
-    bool              fit_addz = false; // additional zeroing needed at the lower block level
-    int               i        = 0;     // loop counter
+    EList<int, N / 2> list     = { { 0 } }; // result indexes
+    int               ix       = 0;         // even index
+    int               iy       = 0;         // odd index
+    int               iz       = 0;         // combined index
+    bool              fit_addz = false;     // additional zeroing needed at the lower block level
+    int               i        = 0;         // loop counter
 
     // check if additional zeroing is needed at current block size
     for ( i = 0; i < N; i += 2 ) {
@@ -1045,7 +1045,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
     const uint32_t lanesize              = N / nlanes;       // elements per lane
     uint32_t       lane                  = 0;                // current lane
     uint32_t       rot                   = 999;              // rotate left count
-    int            lanepattern[lanesize] = {0};              // pattern in each lane
+    int            lanepattern[lanesize] = { 0 };            // pattern in each lane
     if ( lanesize == 2 && N <= 8 ) {
       r |= blend_shufab | blend_shufba; // check if it fits shufpd
     }
@@ -1212,7 +1212,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
   template <int N, int dozero>
   constexpr EList<int, 2 * N> blend_perm_indexes( int const ( &a )[N] ) {
     // a is a reference to a constexpr array of permutation indexes
-    EList<int, 2 * N> list = {{0}};              // list to return
+    EList<int, 2 * N> list = { { 0 } };          // list to return
     int               u    = dozero ? -1 : V_DC; // value to use for unused entries
     int               j    = 0;
 
@@ -1247,7 +1247,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
   template <int N>
   constexpr EList<int, N / 2> largeblock_indexes( int const ( &a )[N] ) {
     // Parameter a is a reference to a constexpr array of N permutation indexes
-    EList<int, N / 2> list = {{0}}; // list to return
+    EList<int, N / 2> list = { { 0 } }; // list to return
 
     bool fit_addz = false; // additional zeroing needed at the lower block level
     int  ix       = 0;     // even index
@@ -1307,7 +1307,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
   template <int N, int dozero, int src1, int src2>
   constexpr EList<int, N> blend_half_indexes( int const ( &a )[N] ) {
     // a is a reference to a constexpr array of permutation indexes
-    EList<int, N> list = {{0}};              // list to return
+    EList<int, N> list = { { 0 } };          // list to return
     int           u    = dozero ? -1 : V_DC; // value to use for unused entries
     int           j    = 0;                  // loop counter
 
@@ -1353,12 +1353,12 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
     typedef decltype( a.get_low() ) V;             // type for half-size vector
     constexpr int                   N = V::size(); // size of half-size vector
     static_assert( sizeof...( i0 ) == N, "wrong number of indexes in blend_half" );
-    constexpr int ind[N] = {i0...}; // array of indexes
+    constexpr int ind[N] = { i0... }; // array of indexes
 
     // lambda to find which of the four possible sources are used
     // return: EList<int, 5> containing a list of up to 4 sources. The last element is the number of sources used
     auto listsources = []( int const n, int const( &ind )[N] ) constexpr {
-      bool source_used[4] = {false, false, false, false}; // list of sources used
+      bool source_used[4] = { false, false, false, false }; // list of sources used
       int  i              = 0;
       for ( i = 0; i < n; i++ ) {
         int ix = ind[i]; // index
@@ -1368,7 +1368,7 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
         }
       }
       // return a list of sources used. The last element is the number of sources used
-      EList<int, 5> sources = {{0}};
+      EList<int, 5> sources = { { 0 } };
       int           nsrc    = 0; // number of sources
       for ( i = 0; i < 4; i++ ) {
         if ( source_used[i] ) { sources.a[nsrc++] = i; }

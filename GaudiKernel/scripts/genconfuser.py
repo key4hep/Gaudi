@@ -14,20 +14,22 @@
 Generate _confDb.py files for ConfigurableUser classes.
 """
 from __future__ import division
+
+import logging
 import os
 import sys
 import time
-import logging
-import GaudiKernel.ConfigurableDb
-
-from pprint import pformat
 from glob import glob
+from pprint import pformat
+
+import GaudiKernel.ConfigurableDb
 from GaudiKernel.ConfigurableDb import cfgDb
 
 logging.VERBOSE = (logging.INFO + logging.DEBUG) // 2
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
-logging.verbose = lambda msg, *args, **kwargs: \
-    logging.log(logging.VERBOSE, msg, *args, **kwargs)
+logging.verbose = lambda msg, *args, **kwargs: logging.log(
+    logging.VERBOSE, msg, *args, **kwargs
+)
 
 
 def _inheritsfrom(derived, basenames):
@@ -39,7 +41,7 @@ def _inheritsfrom(derived, basenames):
     'basenames' can be a string or an iterable (of strings).
     """
     if isinstance(basenames, str):
-        basenames = (basenames, )
+        basenames = (basenames,)
     for b in derived.__bases__:
         if b.__name__ in basenames:
             return True
@@ -50,43 +52,43 @@ def _inheritsfrom(derived, basenames):
 
 
 def loadConfigurableDb(build_dir=None, project_name=None):
-    '''
+    """
     Equivalent to GaudiKernel.ConfigurableDb.loadConfigurableDb(), but does a
     deep search and executes the '*.confdb' files instead of importing them.
-    '''
+    """
     log = GaudiKernel.ConfigurableDb.log
     from os.path import join as path_join
+
     # look for the confdb files in all the reasonable places
     #  - CMake builds
     confDbFiles = []
     for path in sys.path:
         confDbFiles += [
-            f for f in glob(path_join(path, '*', '*.confdb'))
-            if os.path.isfile(f)
+            f for f in glob(path_join(path, "*", "*.confdb")) if os.path.isfile(f)
         ]
     #  - new-style CMake builds (look for all .confdb in the build tree)
     if build_dir:
         for root, _, files in os.walk(build_dir):
             confDbFiles += [
-                os.path.join(root, f) for f in files if f.endswith('.confdb')
+                os.path.join(root, f) for f in files if f.endswith(".confdb")
             ]
     #  - used projects and local merged file
     pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
     for path in filter(os.path.isdir, pathlist):
         confDbFiles += [
-            f for f in [
-                path_join(path, f) for f in os.listdir(path)
-                if f.endswith('.confdb')
+            f
+            for f in [
+                path_join(path, f) for f in os.listdir(path) if f.endswith(".confdb")
             ]
         ]
     #  - get the list of ignored files
-    ignored_files = set(
-        os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
+    ignored_files = set(os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
     #  - load the confdb files
     for confDb in set(confDbFiles):
-        if confDb in ignored_files or (project_name
-                                       and os.path.basename(confDb) ==
-                                       ("{}.confdb".format(project_name))):
+        if confDb in ignored_files or (
+            project_name
+            and os.path.basename(confDb) == ("{}.confdb".format(project_name))
+        ):
             # skip ignored files and the project's own confdb
             log.debug("\t-ignoring [%s]", confDb)
             # make sure we count also <project_name>.confdb for GaudiKernel
@@ -116,7 +118,7 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
     # remember the old system path
     oldpath = list(sys.path)
     # we need to hack the sys.path to add the first part of the module name after root
-    moduleelements = modulename.split('.')
+    moduleelements = modulename.split(".")
     if len(moduleelements) > 1:
         moddir = os.sep.join([root] + moduleelements[:-1])
     else:
@@ -155,12 +157,12 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
         cfg = cfgDb.get(name)
         if cfg and cfg["module"] != modulename:
             # This name comes from another module
-            logging.verbose("Object %r already found in module %r", name,
-                            cfg["module"])
+            logging.verbose("Object %r already found in module %r", name, cfg["module"])
             continue
         t = getattr(mod, name)
         if isinstance(t, type) and _inheritsfrom(
-                t, ('ConfigurableUser', 'SuperAlgorithm')):
+            t, ("ConfigurableUser", "SuperAlgorithm")
+        ):
             result.append(name)
     logging.verbose("Found %r", result)
     return result
@@ -168,43 +170,40 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
 
 def main():
     from optparse import OptionParser
+
     parser = OptionParser(
         prog=os.path.basename(sys.argv[0]),
-        usage="%prog [options] <PackageName> [<Module1> ...]")
+        usage="%prog [options] <PackageName> [<Module1> ...]",
+    )
     parser.add_option(
         "-o",
         "--output",
         action="store",
         type="string",
-        help=
-        "output file for confDb data [default = '../genConfDir/<PackageName>_user_confDb.py']."
+        help="output file for confDb data [default = '../genConfDir/<PackageName>_user_confDb.py'].",
     )
     parser.add_option(
         "-r",
         "--root",
         action="store",
         type="string",
-        help="root directory of the python modules [default = '../python'].")
+        help="root directory of the python modules [default = '../python'].",
+    )
     parser.add_option(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="print some debugging information")
+        "-v", "--verbose", action="store_true", help="print some debugging information"
+    )
     parser.add_option(
-        "--debug",
-        action="store_true",
-        help="print more debugging information")
+        "--debug", action="store_true", help="print more debugging information"
+    )
     parser.add_option(
         "--build-dir",
         action="store",
-        help=
-        "build directory where to look for .confdb files (search all subdirectories)"
+        help="build directory where to look for .confdb files (search all subdirectories)",
     )
     parser.add_option(
         "--project-name",
         action="store",
-        help=
-        "name of the current project (used to exclude spurious versions of the .confdb file for the current project)"
+        help="name of the current project (used to exclude spurious versions of the .confdb file for the current project)",
     )
     parser.set_defaults(root=os.path.join("..", "python"))
 
@@ -215,12 +214,10 @@ def main():
     elif opts.verbose:
         log_level = logging.VERBOSE
     else:
-        log_level = logging.INFO if os.environ.get(
-            'VERBOSE') else logging.WARNING
+        log_level = logging.INFO if os.environ.get("VERBOSE") else logging.WARNING
     logging.basicConfig(
-        format="%(levelname)s: %(message)s",
-        stream=sys.stdout,
-        level=log_level)
+        format="%(levelname)s: %(message)s", stream=sys.stdout, level=log_level
+    )
 
     if len(args) < 1:
         parser.error("PackageName is required")
@@ -233,13 +230,12 @@ def main():
         args = [package_name + ".Configuration"]
         usingConvention = True
 
-    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""),
-                              "genConfDir")
+    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""), "genConfDir")
     if not os.path.exists(genConfDir):
         genConfDir = os.path.join("..", "genConfDir")
 
     if not opts.output:
-        outputfile = os.path.join(genConfDir, package_name + '_user.confdb')
+        outputfile = os.path.join(genConfDir, package_name + "_user.confdb")
     else:
         outputfile = opts.output
 
@@ -247,6 +243,7 @@ def main():
     # It must be done at this point because it may conflict with logging.basicConfig
     try:
         import Gaudi.Configurables
+
         Gaudi.Configurables.ignoreMissingConfigurables = True
     except:
         pass
@@ -258,14 +255,12 @@ def main():
         # configurables
         sys.path.insert(0, genConfDir)
         sys.path.insert(0, os.path.join("..", "python"))
-        localConfDb = os.path.join(genConfDir, package_name,
-                                   package_name + '.confdb')
+        localConfDb = os.path.join(genConfDir, package_name, package_name + ".confdb")
         if os.path.exists(localConfDb):
             cfgDb._loadModule(localConfDb)
             # Extend the search path of the package module to find the configurables
             package_module = __import__(package_name)
-            package_module.__path__.insert(
-                0, os.path.join(genConfDir, package_name))
+            package_module.__path__.insert(0, os.path.join(genConfDir, package_name))
     except:
         pass  # ignore failures (not important)
 
@@ -274,43 +269,47 @@ def main():
     for mod in args:
         lst = None
         try:
-            lst = getConfigurableUsers(
-                mod, root=opts.root, mayNotExist=usingConvention)
+            lst = getConfigurableUsers(mod, root=opts.root, mayNotExist=usingConvention)
         except ImportError:
             import traceback
+
             logging.error(
-                "Cannot import module %r:\n%s", mod,
-                traceback.format_exc().rstrip())  # I remove the trailing '\n'
+                "Cannot import module %r:\n%s", mod, traceback.format_exc().rstrip()
+            )  # I remove the trailing '\n'
             return 2
         if lst:
             cus[mod] = lst
             # Add the configurables to the database as fake entries to avoid duplicates
             for m in lst:
-                cfgDb.add(
-                    configurable=m, package='None', module='None', lib='None')
+                cfgDb.add(configurable=m, package="None", module="None", lib="None")
         elif not usingConvention:
             logging.warning(
                 "Specified module %r does not contain ConfigurableUser specializations",
-                mod)
+                mod,
+            )
 
     if cus:
         logging.info("ConfigurableUser found:\n%s", pformat(cus))
         # header
         output = """##  -*- ascii -*-
 # db file automatically generated by %s on: %s
-""" % (parser.prog, time.asctime())
+""" % (
+            parser.prog,
+            time.asctime(),
+        )
 
         for mod in cus:
             for cu in cus[mod]:
-                output += "%s %s %s\n" % (mod, 'None', cu)
+                output += "%s %s %s\n" % (mod, "None", cu)
 
         # trailer
         output += "## %s\n" % package_name
     elif usingConvention:
         logging.info("No ConfigurableUser found")
-        output = ("# db file automatically generated by %s on: %s\n"
-                  "# No ConfigurableUser specialization in %s\n") % (
-                      parser.prog, time.asctime(), package_name)
+        output = (
+            "# db file automatically generated by %s on: %s\n"
+            "# No ConfigurableUser specialization in %s\n"
+        ) % (parser.prog, time.asctime(), package_name)
     else:
         logging.error("No ConfigurableUser specialization found")
         return 1
@@ -322,6 +321,7 @@ def main():
         os.makedirs(output_dir, 0o755)
     except OSError as err:
         import errno
+
         if err.errno == errno.EEXIST:
             # somebody already - perhaps concurrently - created that dir.
             pass
@@ -334,6 +334,6 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     retcode = main()
     sys.exit(retcode)

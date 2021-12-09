@@ -50,15 +50,15 @@ namespace Gaudi {
     typedef std::map<std::string, Entry*>      ConnectionMap;
     typedef std::map<std::string, std::string> FidMap;
 
-    Gaudi::Property<std::string> m_catalogSvcName{this, "CatalogType", "Gaudi::MultiFileCatalog/FileCatalog",
-                                                  "name of the file catalog service"};
-    Gaudi::Property<bool>        m_useGFAL{this, "UseGFAL", true, "flag for auto gfal data access"};
-    Gaudi::Property<bool>        m_quarantine{this, "QuarantineFiles", true,
-                                       "if unaccessible files should be quarantines in job"};
-    Gaudi::Property<int>         m_ageLimit{this, "AgeLimit", 2, "age limit"};
+    Gaudi::Property<std::string> m_catalogSvcName{ this, "CatalogType", "Gaudi::MultiFileCatalog/FileCatalog",
+                                                   "name of the file catalog service" };
+    Gaudi::Property<bool>        m_useGFAL{ this, "UseGFAL", true, "flag for auto gfal data access" };
+    Gaudi::Property<bool>        m_quarantine{ this, "QuarantineFiles", true,
+                                        "if unaccessible files should be quarantines in job" };
+    Gaudi::Property<int>         m_ageLimit{ this, "AgeLimit", 2, "age limit" };
     Gaudi::Property<bool>        m_disablePFNWarning{
         this, "DisablePFNWarning", false,
-        "if set to True,  we will not report when a file is opened by its physical name"};
+        "if set to True,  we will not report when a file is opened by its physical name" };
 
     /// Map with I/O descriptors
     ConnectionMap m_connectionMap;

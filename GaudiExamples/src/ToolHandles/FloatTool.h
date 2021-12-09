@@ -23,7 +23,7 @@ namespace Gaudi {
 
       float getFloat() const;
 
-      DataObjectReadHandle<float> m_float{this, "Input", "/Event/MyFloat"};
+      DataObjectReadHandle<float> m_float{ this, "Input", "/Event/MyFloat" };
     };
   } // namespace Examples
 } // namespace Gaudi

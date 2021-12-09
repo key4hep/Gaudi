@@ -35,7 +35,7 @@ namespace bug_34121 { // see https://its.cern.ch/jira/browse/GAUDI-200
 
   private:
     /// Properties
-    Gaudi::Property<double> m_double{this, "Double", 100.};
+    Gaudi::Property<double> m_double{ this, "Double", 100. };
   };
 
   //------------------------------------------------------------------------------

@@ -773,7 +773,7 @@ namespace Tuples {
     StatusCode columns( Value&& value, Args&&... args ) {
       if ( sizeof...( Args ) == 0 ) return StatusCode::SUCCESS;
       std::initializer_list<StatusCode> scs{
-          this->column( std::get<0>( args ), std::invoke( std::get<1>( args ), value ) )...};
+          this->column( std::get<0>( args ), std::invoke( std::get<1>( args ), value ) )... };
       return std::accumulate( std::next( begin( scs ) ), end( scs ), *begin( scs ),
                               []( StatusCode sc, const StatusCode& i ) {
                                 i.ignore();                     // make sure there are no unchecked StatusCodes...
@@ -818,15 +818,15 @@ namespace Tuples {
           // no more args to deal with -- so check that there is nothing usefull left in fmt, and if so, call it a
           // success...
           if ( fmt.find_first_not_of( separators ) != std::string_view::npos )
-            throw std::runtime_error{"TupleObj::fill: bad format -- too few arguments for specified format"};
-          return StatusCode{StatusCode::SUCCESS};
+            throw std::runtime_error{ "TupleObj::fill: bad format -- too few arguments for specified format" };
+          return StatusCode{ StatusCode::SUCCESS };
         } );
       } else if ( !fmt.empty() ) {
         // got a separator at the front of fmt -- try again now that it is removed from fmt...
         return fill( fmt, arg, args... );
       } else {
         // empty token, and nothing left in fmt -- but we still where called with (at least) one argument...
-        throw std::runtime_error{"TupleObj::fill: bad format -- too many arguments for specified format"};
+        throw std::runtime_error{ "TupleObj::fill: bad format -- too many arguments for specified format" };
         return StatusCode::SUCCESS;
       }
     }
@@ -1149,7 +1149,7 @@ namespace Tuples {
     template <class FUNC1, class FUNC2, class Iterator>
     StatusCode farray( std::string_view name1, const FUNC1& func1, std::string_view name2, const FUNC2& func2,
                        Iterator&& first, Iterator&& last, std::string_view length, size_t maxv ) {
-      return farray( {{name1, std::cref( func1 )}, {name2, std::cref( func2 )}}, std::forward<Iterator>( first ),
+      return farray( { { name1, std::cref( func1 ) }, { name2, std::cref( func2 ) } }, std::forward<Iterator>( first ),
                      std::forward<Iterator>( last ), length, maxv );
     }
     // =======================================================================
@@ -1193,7 +1193,7 @@ namespace Tuples {
     StatusCode farray( std::string_view name1, const FUNC1& func1, std::string_view name2, const FUNC2& func2,
                        std::string_view name3, const FUNC3& func3, Iterator&& first, Iterator&& last,
                        std::string_view length, size_t maxv ) {
-      return farray( {{name1, std::cref( func1 )}, {name2, std::cref( func2 )}, {name3, std::cref( func3 )}},
+      return farray( { { name1, std::cref( func1 ) }, { name2, std::cref( func2 ) }, { name3, std::cref( func3 ) } },
                      std::forward<Iterator>( first ), std::forward<Iterator>( last ), length, maxv );
     }
     // =======================================================================
@@ -1240,10 +1240,10 @@ namespace Tuples {
     StatusCode farray( std::string_view name1, const FUNC1& func1, std::string_view name2, const FUNC2& func2,
                        std::string_view name3, const FUNC3& func3, std::string_view name4, const FUNC4& func4,
                        Iterator&& first, Iterator&& last, std::string_view length, size_t maxv ) {
-      return farray( {{name1, std::cref( func1 )},
-                      {name2, std::cref( func2 )},
-                      {name3, std::cref( func3 )},
-                      {name4, std::cref( func4 )}},
+      return farray( { { name1, std::cref( func1 ) },
+                       { name2, std::cref( func2 ) },
+                       { name3, std::cref( func3 ) },
+                       { name4, std::cref( func4 ) } },
                      std::forward<Iterator>( first ), std::forward<Iterator>( last ), length, maxv );
     }
     // =======================================================================
@@ -1731,10 +1731,10 @@ namespace Tuples {
      */
     template <class TYPE>
     StatusCode column( std::string_view name, const ROOT::Math::LorentzVector<TYPE>& v ) {
-      return columns( v, std::pair{fmt::format( "{}E", name ), &ROOT::Math::LorentzVector<TYPE>::E},
-                      std::pair{fmt::format( "{}X", name ), &ROOT::Math::LorentzVector<TYPE>::Px},
-                      std::pair{fmt::format( "{}Y", name ), &ROOT::Math::LorentzVector<TYPE>::Py},
-                      std::pair{fmt::format( "{}Z", name ), &ROOT::Math::LorentzVector<TYPE>::Pz} );
+      return columns( v, std::pair{ fmt::format( "{}E", name ), &ROOT::Math::LorentzVector<TYPE>::E },
+                      std::pair{ fmt::format( "{}X", name ), &ROOT::Math::LorentzVector<TYPE>::Px },
+                      std::pair{ fmt::format( "{}Y", name ), &ROOT::Math::LorentzVector<TYPE>::Py },
+                      std::pair{ fmt::format( "{}Z", name ), &ROOT::Math::LorentzVector<TYPE>::Pz } );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1755,9 +1755,9 @@ namespace Tuples {
      */
     template <class TYPE, class TAG>
     StatusCode column( std::string_view name, const ROOT::Math::DisplacementVector3D<TYPE, TAG>& v ) {
-      return this->columns( v, std::pair{fmt::format( "{}X", name ), &ROOT::Math::DisplacementVector3D<TYPE, TAG>::X},
-                            std::pair{fmt::format( "{}Y", name ), &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Y},
-                            std::pair{fmt::format( "{}Z", name ), &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Z} );
+      return this->columns( v, std::pair{ fmt::format( "{}X", name ), &ROOT::Math::DisplacementVector3D<TYPE, TAG>::X },
+                            std::pair{ fmt::format( "{}Y", name ), &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Y },
+                            std::pair{ fmt::format( "{}Z", name ), &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Z } );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1778,9 +1778,9 @@ namespace Tuples {
      */
     template <class TYPE, class TAG>
     StatusCode column( std::string_view name, const ROOT::Math::PositionVector3D<TYPE, TAG>& v ) {
-      return this->columns( v, std::pair{fmt::format( "{}X", name ), &ROOT::Math::PositionVector3D<TYPE, TAG>::X},
-                            std::pair{fmt::format( "{}Y", name ), &ROOT::Math::PositionVector3D<TYPE, TAG>::Y},
-                            std::pair{fmt::format( "{}Z", name ), &ROOT::Math::PositionVector3D<TYPE, TAG>::Z} );
+      return this->columns( v, std::pair{ fmt::format( "{}X", name ), &ROOT::Math::PositionVector3D<TYPE, TAG>::X },
+                            std::pair{ fmt::format( "{}Y", name ), &ROOT::Math::PositionVector3D<TYPE, TAG>::Y },
+                            std::pair{ fmt::format( "{}Z", name ), &ROOT::Math::PositionVector3D<TYPE, TAG>::Z } );
     }
     // =======================================================================
     /** shortcut to put Smatrix into N-tuple:
@@ -1830,7 +1830,7 @@ namespace Tuples {
                         const size_t maxv = 100 ) {
       using Info                                                 = std::pair<KEY, VALUE>;
       static const std::array<float ( * )( const Info& ), 2> fns = {
-          {[]( const Info& i ) -> float { return i.first; }, []( const Info& i ) -> float { return i.second; }}};
+          { []( const Info& i ) -> float { return i.first; }, []( const Info& i ) -> float { return i.second; } } };
       return fmatrix( name, begin( fns ), end( fns ), begin( info ), end( info ), length, maxv );
     }
     // =======================================================================
@@ -1969,12 +1969,12 @@ namespace Tuples {
       std::pair<T*, bool> emplace( std::string_view k, T v = T{} ) {
         // tricky way to insert a string_view key which points to the
         // string contained in the mapped type... all just to make find(string_view) work in C++17...
-        auto [i, b] = m_map.try_emplace( k, std::move( v ), std::string{k} );
-        if ( !b ) return {static_cast<T*>( nullptr ), false};
+        auto [i, b] = m_map.try_emplace( k, std::move( v ), std::string{ k } );
+        if ( !b ) return { static_cast<T*>( nullptr ), false };
         auto nh  = m_map.extract( i );
         nh.key() = nh.mapped().second; // "re-point" key to the string contained value_type
         auto r   = m_map.insert( std::move( nh ) );
-        return {&r.position->second.first, r.inserted};
+        return { &r.position->second.first, r.inserted };
       }
     };
 

@@ -40,6 +40,6 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};
+  Gaudi::Property<std::vector<std::string>> m_tools{ this, "Tools", {}, "list of tools to test" };
 };
 #endif // TESTTOOL_H

@@ -32,8 +32,8 @@ private:
   /**
    ** Percentage of events that should be passed
    **/
-  Gaudi::CheckedProperty<double> m_percentPass{this, "PercentPass", 100.0,
-                                               "percentage of events that should be passed"};
+  Gaudi::CheckedProperty<double> m_percentPass{ this, "PercentPass", 100.0,
+                                                "percentage of events that should be passed" };
 
   /**
    ** Number of events passed

@@ -2743,46 +2743,46 @@ protected:
   std::string convertTitleToID( std::string title ) const;
   // ==========================================================================
 private:
-  Gaudi::Property<bool> m_produceHistos{this, "HistoProduce", true, "Switch on/off the production of histograms"};
-  Gaudi::Property<bool> m_histosPrint{this, "HistoPrint", false,
-                                      [this]( const auto& ) {
-                                        // no action if not yet initialized
-                                        if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
-                                             this->histosPrint() )
-                                          this->printHistos( MSG::ALWAYS );
-                                      },
-                                      "Switch on/off the printout of histograms at finalization"};
-  Gaudi::Property<bool> m_histoCountersPrint{this, "HistoCountersPrint", true,
-                                             "Switch on/off the printout of histogram counters at finalization"};
-  Gaudi::Property<bool> m_checkForNaN{this, "HistoCheckForNaN", true,
-                                      "Switch on/off the checks for NaN and Infinity for histogram fill"};
-  Gaudi::Property<bool> m_splitHistoDir{this, "HistoSplitDir", false,
-                                        "Split long directory names into short pieces (suitable for HBOOK)"};
+  Gaudi::Property<bool> m_produceHistos{ this, "HistoProduce", true, "Switch on/off the production of histograms" };
+  Gaudi::Property<bool> m_histosPrint{ this, "HistoPrint", false,
+                                       [this]( const auto& ) {
+                                         // no action if not yet initialized
+                                         if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                              this->histosPrint() )
+                                           this->printHistos( MSG::ALWAYS );
+                                       },
+                                       "Switch on/off the printout of histograms at finalization" };
+  Gaudi::Property<bool> m_histoCountersPrint{ this, "HistoCountersPrint", true,
+                                              "Switch on/off the printout of histogram counters at finalization" };
+  Gaudi::Property<bool> m_checkForNaN{ this, "HistoCheckForNaN", true,
+                                       "Switch on/off the checks for NaN and Infinity for histogram fill" };
+  Gaudi::Property<bool> m_splitHistoDir{ this, "HistoSplitDir", false,
+                                         "Split long directory names into short pieces (suitable for HBOOK)" };
   Gaudi::Property<HistoID::NumericID> m_histoOffSet{
-      this, "HistoOffSet", 0, "OffSet for automatically assigned histogram numerical identifiers "};
-  Gaudi::Property<std::string> m_histoTopDir{this, "HistoTopDir", "",
-                                             "Top level histogram directory (take care that it ends with '/')"};
+      this, "HistoOffSet", 0, "OffSet for automatically assigned histogram numerical identifiers " };
+  Gaudi::Property<std::string> m_histoTopDir{ this, "HistoTopDir", "",
+                                              "Top level histogram directory (take care that it ends with '/')" };
   Gaudi::Property<std::string> m_histoDir{
-      this, "HistoDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ), "Histogram Directory"};
-  Gaudi::Property<bool>        m_fullDetail{this, "FullDetail", false};
-  Gaudi::Property<bool>        m_declareMoniHists{this, "MonitorHistograms", true};
-  Gaudi::Property<std::string> m_histo1DTableFormat{this, "FormatFor1DHistoTable",
-                                                    Gaudi::Utils::Histos::Formats::format(),
-                                                    "Format string for printout of 1D histograms"};
-  Gaudi::Property<std::string> m_histo1DTableFormatShort{this, "ShortFormatFor1DHistoTable", " | %1$-25.25s %2%",
-                                                         "Format string for printout of 1D histograms"};
-  Gaudi::Property<std::string> m_histo1DTableHeader{this, "HeaderFor1DHistoTable",
-                                                    Gaudi::Utils::Histos::Formats::header(),
-                                                    "The table header for printout of 1D histograms "};
+      this, "HistoDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ), "Histogram Directory" };
+  Gaudi::Property<bool>        m_fullDetail{ this, "FullDetail", false };
+  Gaudi::Property<bool>        m_declareMoniHists{ this, "MonitorHistograms", true };
+  Gaudi::Property<std::string> m_histo1DTableFormat{ this, "FormatFor1DHistoTable",
+                                                     Gaudi::Utils::Histos::Formats::format(),
+                                                     "Format string for printout of 1D histograms" };
+  Gaudi::Property<std::string> m_histo1DTableFormatShort{ this, "ShortFormatFor1DHistoTable", " | %1$-25.25s %2%",
+                                                          "Format string for printout of 1D histograms" };
+  Gaudi::Property<std::string> m_histo1DTableHeader{ this, "HeaderFor1DHistoTable",
+                                                     Gaudi::Utils::Histos::Formats::header(),
+                                                     "The table header for printout of 1D histograms " };
   Gaudi::Property<bool>        m_useNumericAutoIDs{
       this, "UseSequencialNumericAutoIDs", false,
-      "Flag to allow users to switch back to the old style of creating numerical automatic IDs"};
+      "Flag to allow users to switch back to the old style of creating numerical automatic IDs" };
   Gaudi::Property<std::map<std::string, std::string>> m_idReplaceInfo{
       this,
       "AutoStringIDPurgeMap",
-      {{"/", "=SLASH="}},
+      { { "/", "=SLASH=" } },
       "Map of strings to search and replace when using the title "
-      "as the basis of automatically generated literal IDs"};
+      "as the basis of automatically generated literal IDs" };
   // ==========================================================================
   /// the actual storage/access of 1D histograms by unique title
   mutable Histo1DMapTitle m_histo1DMapTitle;

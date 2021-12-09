@@ -34,9 +34,9 @@ public:
   StatusCode execute() override;
 
 private:
-  Gaudi::Property<bool> m_useHandle{this, "UseHandle", true, "Specify the usage of the handle to write"};
+  Gaudi::Property<bool> m_useHandle{ this, "UseHandle", true, "Specify the usage of the handle to write" };
 
-  DataObjectWriteHandle<Collision> m_output_handle{this, "Output", "/Event/MyCollision"};
+  DataObjectWriteHandle<Collision> m_output_handle{ this, "Output", "/Event/MyCollision" };
 };
 
 #endif

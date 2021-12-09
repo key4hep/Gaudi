@@ -11,6 +11,7 @@
 #####################################################################################
 
 from __future__ import print_function
+
 import os
 import sys
 from tempfile import mkstemp
@@ -37,8 +38,8 @@ def getArgsWithoutProfilerInfo(args):
     args = list(args)  # make a temp copy
     while args:
         o = args.pop(0)
-        if o.startswith('--profile'):
-            if '=' not in o:
+        if o.startswith("--profile"):
+            if "=" not in o:
                 args.pop(0)
         else:
             newargs.append(o)
@@ -46,7 +47,7 @@ def getArgsWithoutProfilerInfo(args):
 
 
 def setLibraryPreload(newpreload):
-    ''' Adds  a list of libraries to LD_PRELOAD '''
+    """Adds  a list of libraries to LD_PRELOAD"""
     preload = os.environ.get("LD_PRELOAD", "")
     if preload:
         preload = preload.replace(" ", ":").split(":")
@@ -55,12 +56,11 @@ def setLibraryPreload(newpreload):
 
     for libname in set(preload).intersection(newpreload):
         logging.warning(
-            "Ignoring preload of library %s because it is "
-            "already in LD_PRELOAD.", libname)
+            "Ignoring preload of library %s because it is " "already in LD_PRELOAD.",
+            libname,
+        )
 
-    to_load = [
-        libname for libname in newpreload if libname not in set(preload)
-    ]
+    to_load = [libname for libname in newpreload if libname not in set(preload)]
 
     if to_load:
         preload += to_load
@@ -72,10 +72,10 @@ def setLibraryPreload(newpreload):
 
 
 def rationalizepath(path):
-    '''
+    """
     Convert the given path to a real path if the pointed file exists, otherwise
     just normalize it.
-    '''
+    """
     path = os.path.normpath(os.path.expandvars(path))
     if os.path.exists(path):
         path = os.path.realpath(path)
@@ -88,11 +88,12 @@ _qmt_tmp_opt_files = []
 
 
 def getArgsFromQmt(qmtfile):
-    '''
+    """
     Given a .qmt file, return the command line arguments of the corresponding
     test.
-    '''
+    """
     from xml.etree import ElementTree as ET
+
     global _qmt_tmp_opt_files
     # parse the .qmt file and extract args and options
     qmt = ET.parse(qmtfile)
@@ -100,15 +101,18 @@ def getArgsFromQmt(qmtfile):
     options = qmt.find("argument[@name='options']/text")
 
     if options is not None:  # options need to be dumped in a temporary file
-        from tempfile import NamedTemporaryFile
         import re
+        from tempfile import NamedTemporaryFile
+
         if re.search(
-                r"from\s+Gaudi.Configuration\s+import\s+\*"
-                r"|from\s+Configurables\s+import", options.text):
-            tmp_opts = NamedTemporaryFile(suffix='.py')
+            r"from\s+Gaudi.Configuration\s+import\s+\*"
+            r"|from\s+Configurables\s+import",
+            options.text,
+        ):
+            tmp_opts = NamedTemporaryFile(suffix=".py")
         else:
-            tmp_opts = NamedTemporaryFile(suffix='.opts')
-        tmp_opts.write(options.text.encode('ascii'))
+            tmp_opts = NamedTemporaryFile(suffix=".opts")
+        tmp_opts.write(options.text.encode("ascii"))
         tmp_opts.flush()
         args.append(tmp_opts.name)
         _qmt_tmp_opt_files.append(tmp_opts)
@@ -116,13 +120,13 @@ def getArgsFromQmt(qmtfile):
     # relative paths in a .qmt are rooted in the qmtest directory, so
     # - find where the .qmt lives
     qmtfile = os.path.abspath(qmtfile)
-    if 'qmtest' in qmtfile.split(os.path.sep):
+    if "qmtest" in qmtfile.split(os.path.sep):
         # this return the path up to the 'qmtest' entry in qmtfile
         testdir = qmtfile
-        while os.path.basename(testdir) != 'qmtest':
+        while os.path.basename(testdir) != "qmtest":
             testdir = os.path.dirname(testdir)
     else:
-        testdir = '.'
+        testdir = "."
     # - temporarily switch to that directory and rationalize the paths
     old_cwd = os.getcwd()
     os.chdir(testdir)
@@ -135,18 +139,20 @@ def getArgsFromQmt(qmtfile):
 # ---------------------------------------------------------------------
 if __name__ == "__main__":
     # ensure that we (and the subprocesses) use the C standard localization
-    if os.environ.get('LC_ALL') != 'C':
+    if os.environ.get("LC_ALL") != "C":
         print('# setting LC_ALL to "C"')
         # !!!!
-        os.environ['LC_ALL'] = 'C'
+        os.environ["LC_ALL"] = "C"
 
     from optparse import OptionParser
+
     parser = OptionParser(usage="%prog [options] <opts_file|function_id> ...")
     parser.add_option(
         "-n",
         "--dry-run",
         action="store_true",
-        help="do not run the application, just parse option files")
+        help="do not run the application, just parse option files",
+    )
     parser.add_option(
         "-p",
         "--pickle-output",
@@ -155,20 +161,21 @@ if __name__ == "__main__":
         metavar="FILE",
         help="DEPRECATED: use '--output file.pkl' instead. Write "
         "the parsed options as a pickle file (static option "
-        "file)")
+        "file)",
+    )
     parser.add_option(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="print the parsed options")
+        "-v", "--verbose", action="store_true", help="print the parsed options"
+    )
     parser.add_option(
         "--old-opts",
         action="store_true",
-        help="format printed options in old option files style")
+        help="format printed options in old option files style",
+    )
     parser.add_option(
         "--all-opts",
         action="store_true",
-        help="print all the option (even if equal to default)")
+        help="print all the option (even if equal to default)",
+    )
     # GaudiPython Parallel Mode Option
     #   Argument must be an integer in range [ -1, sys_cpus ]
     #   -1   : All available cpus
@@ -180,7 +187,8 @@ if __name__ == "__main__":
         type="int",
         default=0,
         help="start the application in parallel mode using NCPUS processes. "
-        "0 => serial mode (default), -1 => use all CPUs")
+        "0 => serial mode (default), -1 => use all CPUs",
+    )
 
     def option_cb(option, opt, value, parser):
         """Add the option line to a list together with its position in the
@@ -196,17 +204,20 @@ if __name__ == "__main__":
         nargs=1,
         help="add a single line (Python) option to the configuration. "
         "All options lines are executed, one after the other, in "
-        "the same context.")
+        "the same context.",
+    )
     parser.add_option(
         "--no-conf-user-apply",
         action="store_true",
         help="disable the automatic application of configurable "
-        "users (for backward compatibility)")
+        "users (for backward compatibility)",
+    )
     parser.add_option(
         "--old-conf-user-apply",
         action="store_true",
         help="use the old logic when applying ConfigurableUsers "
-        "(with bug #103803) [default]")
+        "(with bug #103803) [default]",
+    )
     parser.add_option(
         "--new-conf-user-apply",
         action="store_false",
@@ -214,7 +225,8 @@ if __name__ == "__main__":
         help="use the new (correct) logic when applying "
         "ConfigurableUsers (fixed bug #103803), can be "
         "turned on also with the environment variable "
-        "GAUDI_FIXED_APPLY_CONF")
+        "GAUDI_FIXED_APPLY_CONF",
+    )
     parser.add_option(
         "-o",
         "--output",
@@ -225,7 +237,8 @@ if __name__ == "__main__":
         "file name: .pkl = pickle, .py = python, .opts = "
         "old style options. The python format cannot be "
         "used to run the application and it contains the "
-        "same dictionary printed with -v")
+        "same dictionary printed with -v",
+    )
     parser.add_option(
         "--post-option",
         action="append",
@@ -234,12 +247,13 @@ if __name__ == "__main__":
         help="Python options to be executed after the ConfigurableUser "
         "are applied. "
         "All options lines are executed, one after the other, in "
-        "the same context.")
+        "the same context.",
+    )
     parser.add_option(
-        "--debug", action="store_true", help="enable some debug print-out")
+        "--debug", action="store_true", help="enable some debug print-out"
+    )
     parser.add_option("--gdb", action="store_true", help="attach gdb")
-    parser.add_option(
-        "--printsequence", action="store_true", help="print the sequence")
+    parser.add_option("--printsequence", action="store_true", help="print the sequence")
     if not sys.platform.startswith("win"):
         # These options can be used only on unix platforms
         parser.add_option(
@@ -248,73 +262,76 @@ if __name__ == "__main__":
             action="store_true",
             help="Use the Google malloc replacement. The environment "
             "variable TCMALLOCLIB can be used to specify a different "
-            "name for the library (the default is libtcmalloc.so)")
+            "name for the library (the default is libtcmalloc.so)",
+        )
         parser.add_option(
             "--preload",
             action="append",
             help="Allow pre-loading of special libraries (e.g. Google "
-            "profiling libraries).")
+            "profiling libraries).",
+        )
         # Option to use a profiler
         parser.add_option(
             "--profilerName",
             type="string",
-            help=
-            "Select one profiler among: igprofPerf, igprofMem and valgrind<toolname>"
+            help="Select one profiler among: igprofPerf, igprofMem and valgrind<toolname>",
         )
 
         # Option to specify the filename where to collect the profiler's output
         parser.add_option(
             "--profilerOutput",
             type="string",
-            help="Specify the name of the output file for the profiler output")
+            help="Specify the name of the output file for the profiler output",
+        )
 
         # Option to specify the filename where to collect the profiler's output
         parser.add_option(
             "--profilerExtraOptions",
             type="string",
-            help=
-            "Specify additional options for the profiler. The '--' string should be expressed as '__' (--my-opt becomes __my-opt)"
+            help="Specify additional options for the profiler. The '--' string should be expressed as '__' (--my-opt becomes __my-opt)",
         )
 
     parser.add_option(
-        '--use-temp-opts',
-        action='store_true',
-        help='when this option is enabled, the options are parsed'
-        ' and stored in a temporary file, then the job is '
-        'restarted using that file as input (to save '
-        'memory)')
+        "--use-temp-opts",
+        action="store_true",
+        help="when this option is enabled, the options are parsed"
+        " and stored in a temporary file, then the job is "
+        "restarted using that file as input (to save "
+        "memory)",
+    )
     parser.add_option(
         "--run-info-file",
         type="string",
-        help=
-        "Save gaudi process information to the file specified (in JSON format)"
+        help="Save gaudi process information to the file specified (in JSON format)",
     )
     parser.add_option(
-        '--application',
-        help='name of the Gaudi::Application to use [default: %default]')
+        "--application",
+        help="name of the Gaudi::Application to use [default: %default]",
+    )
 
     parser.set_defaults(
         options=[],
         tcmalloc=False,
-        profilerName='',
-        profilerOutput='',
-        profilerExtraOptions='',
+        profilerName="",
+        profilerOutput="",
+        profilerExtraOptions="",
         preload=[],
         ncpus=None,
         # the old logic can be turned off with an env variable
-        old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ,
+        old_conf_user_apply="GAUDI_FIXED_APPLY_CONF" not in os.environ,
         run_info_file=None,
-        application='Gaudi::Application')
+        application="Gaudi::Application",
+    )
 
     # replace .qmt files in the command line with their contained args
     argv = []
     for a in sys.argv[1:]:
-        if a.endswith('.qmt') and os.path.exists(a):
+        if a.endswith(".qmt") and os.path.exists(a):
             argv.extend(getArgsFromQmt(a))
         else:
             argv.append(a)
     if argv != sys.argv[1:]:
-        print('# Running', sys.argv[0], 'with arguments', argv)
+        print("# Running", sys.argv[0], "with arguments", argv)
 
     opts, args = parser.parse_args(args=argv)
 
@@ -323,6 +340,7 @@ if __name__ == "__main__":
     # Parallel Option ---------------------------------------------------------
     if opts.ncpus:
         from multiprocessing import cpu_count
+
         sys_cpus = cpu_count()
         if opts.ncpus > sys_cpus:
             s = "Invalid value : --ncpus : only %i cpus available" % sys_cpus
@@ -336,8 +354,8 @@ if __name__ == "__main__":
 
     # configure the logging
     import logging
-    from GaudiKernel.ProcessJobOptions import (InstallRootLoggingHandler,
-                                               PrintOff)
+
+    from GaudiKernel.ProcessJobOptions import InstallRootLoggingHandler, PrintOff
 
     if opts.old_opts:
         prefix = "// "
@@ -357,12 +375,13 @@ if __name__ == "__main__":
         if preload and sanitizers != preload:
             logging.warning(
                 "Ignoring PRELOAD_SANITIZER_LIB (={}) as LD_PRELOAD (={}) is "
-                "different and takes precedence.".format(sanitizers, preload))
+                "different and takes precedence.".format(sanitizers, preload)
+            )
         else:
             for sanitizer in reversed(sanitizers.split(":")):
                 if sanitizer not in preload:
                     opts.preload.insert(0, sanitizer)
-            if opts.profilerName == 'jemalloc':
+            if opts.profilerName == "jemalloc":
                 logging.warning("jemalloc disabled when using a sanitizer")
                 opts.profilerName = None
 
@@ -372,8 +391,7 @@ if __name__ == "__main__":
         if sanitizers:
             logging.warning("tcmalloc preload disabled when using a sanitizer")
         else:
-            opts.preload.insert(
-                0, os.environ.get("TCMALLOCLIB", "libtcmalloc.so"))
+            opts.preload.insert(0, os.environ.get("TCMALLOCLIB", "libtcmalloc.so"))
 
     # allow preloading of libraries
     if opts.preload:
@@ -385,10 +403,10 @@ if __name__ == "__main__":
         for libname in set(preload).intersection(opts.preload):
             logging.warning(
                 "Ignoring preload of library %s because it is "
-                "already in LD_PRELOAD.", libname)
-        to_load = [
-            libname for libname in opts.preload if libname not in set(preload)
-        ]
+                "already in LD_PRELOAD.",
+                libname,
+            )
+        to_load = [libname for libname in opts.preload if libname not in set(preload)]
         if to_load:
             preload += to_load
             preload = ":".join(preload)
@@ -396,10 +414,7 @@ if __name__ == "__main__":
             logging.info("Restarting with LD_PRELOAD='%s'", preload)
             # remove the --tcmalloc option from the arguments
             # FIXME: the --preload arguments will issue a warning but it's tricky to remove them
-            args = [
-                a for a in sys.argv
-                if a != '-T' and not '--tcmalloc'.startswith(a)
-            ]
+            args = [a for a in sys.argv if a != "-T" and not "--tcmalloc".startswith(a)]
             os.execv(sys.executable, [sys.executable] + args)
 
     # Profiler Support ------
@@ -436,18 +451,16 @@ if __name__ == "__main__":
             # extract the tool
             if not opts.profilerOutput:
                 profilerOutput += ".log"
-            toolname = profilerName.replace('valgrind', '')
+            toolname = profilerName.replace("valgrind", "")
             outoption = "--log-file"
             if toolname in ("massif", "callgrind", "cachegrind"):
                 outoption = "--%s-out-file" % toolname
-            profilerOptions = "--tool=%s %s=%s" % (toolname, outoption,
-                                                   profilerOutput)
+            profilerOptions = "--tool=%s %s=%s" % (toolname, outoption, profilerOutput)
             profilerExecName = "valgrind"
 
         elif profilerName == "jemalloc":
-            opts.preload.insert(
-                0, os.environ.get("JEMALLOCLIB", "libjemalloc.so"))
-            os.environ['MALLOC_CONF'] = "prof:true,prof_leak:true"
+            opts.preload.insert(0, os.environ.get("JEMALLOCLIB", "libjemalloc.so"))
+            os.environ["MALLOC_CONF"] = "prof:true,prof_leak:true"
         else:
             root_logger.warning("Profiler %s not recognized!" % profilerName)
 
@@ -460,17 +473,19 @@ if __name__ == "__main__":
         # now we look for the full path of the profiler: is it really there?
         if profilerExecName:
             import distutils.spawn
+
             profilerPath = distutils.spawn.find_executable(profilerExecName)
             if not profilerPath:
-                root_logger.error(
-                    "Cannot locate profiler %s" % profilerExecName)
+                root_logger.error("Cannot locate profiler %s" % profilerExecName)
                 sys.exit(1)
 
-        root_logger.info("------ Profiling options are on ------ \n"
-                         " o Profiler: %s\n"
-                         " o Options: '%s'.\n"
-                         " o Output: %s" % (profilerExecName or profilerName,
-                                            profilerOptions, profilerOutput))
+        root_logger.info(
+            "------ Profiling options are on ------ \n"
+            " o Profiler: %s\n"
+            " o Options: '%s'.\n"
+            " o Output: %s"
+            % (profilerExecName or profilerName, profilerOptions, profilerOutput)
+        )
 
         # allow preloading of libraries
         # That code need to be acsracted from above
@@ -484,7 +499,7 @@ if __name__ == "__main__":
 
             # now we have all the ingredients to prepare our command
             arglist = [profilerPath] + profilerOptions.split() + args
-            arglist = [a for a in arglist if a != '']
+            arglist = [a for a in arglist if a != ""]
             # print profilerPath
             # for arg in arglist:
             # print arg
@@ -498,17 +513,18 @@ if __name__ == "__main__":
     if opts.pickle_output:
         if opts.output:
             root_logger.error(
-                "Conflicting options: use only --pickle-output or --output")
+                "Conflicting options: use only --pickle-output or --output"
+            )
             sys.exit(1)
         else:
-            root_logger.warning(
-                "--pickle-output is deprecated, use --output instead")
+            root_logger.warning("--pickle-output is deprecated, use --output instead")
             opts.output = opts.pickle_output
 
     from Gaudi.Main import gaudimain
+
     c = gaudimain()
 
-    from GaudiConfig2 import CALLABLE_FORMAT, mergeConfigs, invokeConfig, Configurable
+    from GaudiConfig2 import CALLABLE_FORMAT, Configurable, invokeConfig, mergeConfigs
 
     callables = []
     opt_files = []
@@ -539,12 +555,13 @@ if __name__ == "__main__":
             raise self.exception
 
     sys.modules["GaudiPython"] = FakeModule(
-        RuntimeError("GaudiPython cannot be used in option files"))
+        RuntimeError("GaudiPython cannot be used in option files")
+    )
 
     # when the special env GAUDI_TEMP_OPTS_FILE is set, it overrides any
     # option(file) on the command line
-    if 'GAUDI_TEMP_OPTS_FILE' in os.environ:
-        options = ['importOptions(%r)' % os.environ['GAUDI_TEMP_OPTS_FILE']]
+    if "GAUDI_TEMP_OPTS_FILE" in os.environ:
+        options = ["importOptions(%r)" % os.environ["GAUDI_TEMP_OPTS_FILE"]]
         PrintOff(100)
 
     # "execute" the configuration script generated (if any)
@@ -557,6 +574,7 @@ if __name__ == "__main__":
             exec(o, g, l)
 
     import GaudiKernel.Proxy.Configurable
+
     if opts.no_conf_user_apply:
         logging.info("Disabling automatic apply of ConfigurableUser")
         # pretend that they have been already applied
@@ -564,7 +582,9 @@ if __name__ == "__main__":
 
     # This need to be done before dumping
     if opts.old_conf_user_apply:
-        from GaudiKernel.Proxy.Configurable import applyConfigurableUsers_old as applyConfigurableUsers
+        from GaudiKernel.Proxy.Configurable import (
+            applyConfigurableUsers_old as applyConfigurableUsers,
+        )
     else:
         from GaudiKernel.Proxy.Configurable import applyConfigurableUsers
     applyConfigurableUsers()
@@ -578,8 +598,8 @@ if __name__ == "__main__":
             logging.debug(o)
             exec(o, g, l)
 
-    if 'GAUDI_TEMP_OPTS_FILE' in os.environ:
-        os.remove(os.environ['GAUDI_TEMP_OPTS_FILE'])
+    if "GAUDI_TEMP_OPTS_FILE" in os.environ:
+        os.remove(os.environ["GAUDI_TEMP_OPTS_FILE"])
         opts.use_temp_opts = False
 
     # Run callables
@@ -594,21 +614,19 @@ if __name__ == "__main__":
         c.writeconfig(opts.output, opts.all_opts)
 
     if opts.use_temp_opts:
-        fd, tmpfile = mkstemp('.opts')
+        fd, tmpfile = mkstemp(".opts")
         os.close(fd)
         c.writeconfig(tmpfile, opts.all_opts)
-        os.environ['GAUDI_TEMP_OPTS_FILE'] = tmpfile
-        logging.info('Restarting from pre-parsed options')
+        os.environ["GAUDI_TEMP_OPTS_FILE"] = tmpfile
+        logging.info("Restarting from pre-parsed options")
         os.execv(sys.executable, [sys.executable] + sys.argv)
 
     c.printsequence = opts.printsequence
     if opts.printsequence:
         if opts.ncpus:
-            logging.warning(
-                "--printsequence not supported with --ncpus: ignored")
+            logging.warning("--printsequence not supported with --ncpus: ignored")
         elif opts.dry_run:
-            logging.warning(
-                "--printsequence not supported with --dry-run: ignored")
+            logging.warning("--printsequence not supported with --dry-run: ignored")
 
     c.application = opts.application
 
@@ -622,14 +640,15 @@ if __name__ == "__main__":
         # Now saving the run information pid, retcode and executable path to
         # a file is requested
         if opts.run_info_file:
-            import os
             import json
+            import os
+
             run_info = {}
             run_info["pid"] = os.getpid()
             run_info["retcode"] = retcode
-            if os.path.exists('/proc/self/exe'):
+            if os.path.exists("/proc/self/exe"):
                 # These options can be used only on unix platforms
-                run_info["exe"] = os.readlink('/proc/self/exe')
+                run_info["exe"] = os.readlink("/proc/self/exe")
 
             logging.info("Saving run info to: %s" % opts.run_info_file)
             with open(opts.run_info_file, "w") as f:

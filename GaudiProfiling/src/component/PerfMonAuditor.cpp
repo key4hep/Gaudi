@@ -94,7 +94,7 @@ static std::vector<std::map<std::string, std::map<unsigned long, unsigned int>>>
     samples( MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules each containing numbers of samples of their
                                                     // addresses
 static std::vector<std::map<std::string, std::vector<unsigned long int>>>
-                results( MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules and their result values across multiple events
+    results( MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules and their result values across multiple events
 static uint64_t last_overflow;
 static uint64_t last_count;
 static int      sp[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
@@ -117,35 +117,35 @@ namespace {
   public:
     bool loaded;
     typedef void ( *pfm_stop_t )( int );
-    pfm_stop_t pfm_stop{nullptr};
+    pfm_stop_t pfm_stop{ nullptr };
     typedef void ( *pfm_self_stop_t )( int );
-    pfm_self_stop_t pfm_self_stop{nullptr};
+    pfm_self_stop_t pfm_self_stop{ nullptr };
     typedef os_err_t ( *pfm_restart_t )( int );
-    pfm_restart_t pfm_restart{nullptr};
+    pfm_restart_t pfm_restart{ nullptr };
     typedef int ( *pfm_read_pmds_t )( int, pfarg_pmd_t*, int );
-    pfm_read_pmds_t pfm_read_pmds{nullptr};
+    pfm_read_pmds_t pfm_read_pmds{ nullptr };
     typedef pfm_err_t ( *pfm_initialize_t )();
-    pfm_initialize_t pfm_initialize{nullptr};
+    pfm_initialize_t pfm_initialize{ nullptr };
     typedef pfm_err_t ( *pfm_find_full_event_t )( const char*, pfmlib_event_t* );
-    pfm_find_full_event_t pfm_find_full_event{nullptr};
+    pfm_find_full_event_t pfm_find_full_event{ nullptr };
     typedef pfm_err_t ( *pfm_dispatch_events_t )( pfmlib_input_param_t*, void*, pfmlib_output_param_t*, void* );
-    pfm_dispatch_events_t pfm_dispatch_events{nullptr};
+    pfm_dispatch_events_t pfm_dispatch_events{ nullptr };
     typedef os_err_t ( *pfm_create_context_t )( pfarg_ctx_t*, char*, void*, size_t );
-    pfm_create_context_t pfm_create_context{nullptr};
+    pfm_create_context_t pfm_create_context{ nullptr };
     typedef os_err_t ( *pfm_write_pmcs_t )( int, pfarg_pmc_t*, int );
-    pfm_write_pmcs_t pfm_write_pmcs{nullptr};
+    pfm_write_pmcs_t pfm_write_pmcs{ nullptr };
     typedef os_err_t ( *pfm_write_pmds_t )( int, pfarg_pmd_t*, int );
-    pfm_write_pmds_t pfm_write_pmds{nullptr};
+    pfm_write_pmds_t pfm_write_pmds{ nullptr };
     typedef os_err_t ( *pfm_load_context_t )( int, pfarg_load_t* );
-    pfm_load_context_t pfm_load_context{nullptr};
+    pfm_load_context_t pfm_load_context{ nullptr };
     typedef os_err_t ( *pfm_start_t )( int fd, pfarg_start_t* );
-    pfm_start_t pfm_start{nullptr};
+    pfm_start_t pfm_start{ nullptr };
     typedef char* ( *pfm_strerror_t )( int );
-    pfm_strerror_t pfm_strerror{nullptr};
+    pfm_strerror_t pfm_strerror{ nullptr };
     typedef pfm_err_t ( *pfm_set_options_t )( pfmlib_options_t* );
-    pfm_set_options_t pfm_set_options{nullptr};
+    pfm_set_options_t pfm_set_options{ nullptr };
     typedef pfm_err_t ( *pfm_get_num_counters_t )( unsigned int* );
-    pfm_get_num_counters_t pfm_get_num_counters{nullptr};
+    pfm_get_num_counters_t pfm_get_num_counters{ nullptr };
     static PFMon&          instance() { return s_instance; }
 
   private:
@@ -373,7 +373,7 @@ private:
   pfarg_load_t              load_arg;
   int                       fd;
   unsigned int              i;
-  int                       ret{0};
+  int                       ret{ 0 };
   void                      startpm();
   void                      pausepm();
   void                      stoppm();
@@ -383,7 +383,7 @@ private:
   std::string               family;
   char                      event_cstr[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS][MAX_EVENT_NAME_LENGTH];
   char                      prefix_cstr[MAX_PREFIX_NAME_LENGTH];
-  unsigned int              ph_ev_count{0};
+  unsigned int              ph_ev_count{ 0 };
   bool                      inv[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
   unsigned int              cmask[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
   unsigned int              start_at_event;
@@ -738,9 +738,9 @@ void PerfMonAuditor::start_smpl() {
   for ( int i = 0; i < used_counters_number; i++ ) {
     pd_smpl[i].reg_flags |= PFM_REGFL_OVFL_NOTIFY | PFM_REGFL_RANDOM;
     pfm_bv_copy( pd_smpl[i].reg_reset_pmds, pd_smpl[i].reg_smpl_pmds, max_pmd );
-    pd_smpl[i].reg_value       = ( uint64_t )( sp[i] * -1 );
-    pd_smpl[i].reg_short_reset = ( uint64_t )( sp[i] * -1 );
-    pd_smpl[i].reg_long_reset  = ( uint64_t )( sp[i] * -1 );
+    pd_smpl[i].reg_value       = (uint64_t)( sp[i] * -1 );
+    pd_smpl[i].reg_short_reset = (uint64_t)( sp[i] * -1 );
+    pd_smpl[i].reg_long_reset  = (uint64_t)( sp[i] * -1 );
     pd_smpl[i].reg_random_seed = 5;    // tocheck
     pd_smpl[i].reg_random_mask = 0xff; // tocheck
   }

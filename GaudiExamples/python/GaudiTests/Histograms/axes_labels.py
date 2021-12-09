@@ -51,6 +51,7 @@ def check(causes, result):
 
     try:
         import ROOT
+
         f = ROOT.TFile.Open(FILENAME)
         h = f.Get("HistoAlgo/hist")
         axis = h.GetXaxis()

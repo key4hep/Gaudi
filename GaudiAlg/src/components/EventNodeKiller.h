@@ -31,6 +31,6 @@ public:
   StatusCode execute() override;
 
 private:
-  Gaudi::Property<std::vector<std::string>> m_nodes{this, "Nodes"};
+  Gaudi::Property<std::vector<std::string>> m_nodes{ this, "Nodes" };
 };
 #endif // EVENTNODEKILLER_H

@@ -105,7 +105,7 @@ namespace Gaudi::Examples::Conditions {
       /// Constructor a ConditionAccessor instance registering it to the current holder.
       ConditionAccessor( base_class* owner, const std::string& keyName, const ConditionKey& keyDefault,
                          const std::string& keyDoc = "" )
-          : m_key{owner, keyName, keyDefault, keyDoc} {
+          : m_key{ owner, keyName, keyDefault, keyDoc } {
         owner->registerConditionAccessor( *this );
       }
 

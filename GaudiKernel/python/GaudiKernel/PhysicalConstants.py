@@ -63,13 +63,13 @@ pi2 = pi * pi
 #
 #
 #
-Avogadro = 6.0221367e+23 / mole
+Avogadro = 6.0221367e23 / mole
 
 #
 # c   = 299.792458 mm/ns
 # c^2 = 898.7404 (mm/ns)^2
 #
-c_light = 2.99792458e+8 * m / s
+c_light = 2.99792458e8 * m / s
 c_squared = c_light * c_light
 
 #
@@ -102,8 +102,8 @@ amu = amu_c2 / c_squared
 # permeability of free space mu0    = 2.01334e-16 Mev*(ns*eplus)^2/mm
 # permittivity of free space epsil0 = 5.52636e+10 eplus^2/(MeV*mm)
 #
-mu0 = 4 * pi * 1.e-7 * henry / m
-epsilon0 = 1. / (c_squared * mu0)
+mu0 = 4 * pi * 1.0e-7 * henry / m
+epsilon0 = 1.0 / (c_squared * mu0)
 
 #
 # electromagnetic coupling = 1.43996e-12 MeV*mm/(eplus^2)
@@ -116,8 +116,9 @@ Bohr_radius = electron_Compton_length / fine_structure_const
 
 alpha_rcl2 = fine_structure_const * classic_electr_radius * classic_electr_radius
 
-twopi_mc2_rcl2 = twopi * electron_mass_c2 * \
-    classic_electr_radius * classic_electr_radius
+twopi_mc2_rcl2 = (
+    twopi * electron_mass_c2 * classic_electr_radius * classic_electr_radius
+)
 #
 #
 #
@@ -127,10 +128,10 @@ k_Boltzmann = 8.617343e-11 * MeV / kelvin
 #
 #
 STP_Temperature = 273.15 * kelvin
-STP_Pressure = 1. * atmosphere
-kGasThreshold = 10. * mg / cm3
+STP_Pressure = 1.0 * atmosphere
+kGasThreshold = 10.0 * mg / cm3
 
 #
 #
 #
-universe_mean_density = 1.e-25 * g / cm3
+universe_mean_density = 1.0e-25 * g / cm3

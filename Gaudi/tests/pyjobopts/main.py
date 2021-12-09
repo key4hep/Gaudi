@@ -14,6 +14,7 @@ MessageSvc().OutputLevel = INFO
 
 # Hack needed for the test
 from GaudiKernel.Configurable import ConfigurableGeneric
+
 myAlg = ConfigurableGeneric("myAlg")
 myAlg.Dict = {
     "a": 1,

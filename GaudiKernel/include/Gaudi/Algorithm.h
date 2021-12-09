@@ -379,9 +379,9 @@ namespace Gaudi {
 
       StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
       if ( UNLIKELY( !sc ) ) {
-        throw GaudiException{std::string{"Cannot create handle for "} + ( handle.isPublic() ? "public" : "private" ) +
-                                 " tool " + toolTypeAndName,
-                             name(), sc};
+        throw GaudiException{ std::string{ "Cannot create handle for " } +
+                                  ( handle.isPublic() ? "public" : "private" ) + " tool " + toolTypeAndName,
+                              name(), sc };
       }
 
       m_toolHandles.push_back( &handle );
@@ -488,44 +488,45 @@ namespace Gaudi {
     Gaudi::Property<int> m_outputLevel{
         this, "OutputLevel", MSG::NIL,
         [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
-        "output level"};
-    Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
+        "output level" };
+    Gaudi::Property<bool> m_isEnabled{ this, "Enable", true, "should the algorithm be executed or not" };
 
-    Gaudi::Property<unsigned int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
+    Gaudi::Property<unsigned int> m_errorMax{ this, "ErrorMax", 1, "[[deprecated]] max number of errors" };
 
-    Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", Details::getDefaultAuditorValue( m_pSvcLocator ),
-                                      "[[deprecated]] unused"};
-    Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", m_auditInit.value(),
-                                              "trigger auditor on initialize()"};
-    Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", m_auditInit.value(),
-                                                "trigger auditor on reinitialize()"};
-    Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", m_auditInit.value(), "trigger auditor on restart()"};
-    Gaudi::Property<bool> m_auditorExecute{this, "AuditExecute", m_auditInit.value(), "trigger auditor on execute()"};
-    Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", m_auditInit.value(),
-                                            "trigger auditor on finalize()"};
-    Gaudi::Property<bool> m_auditorStart{this, "AuditStart", m_auditInit.value(), "trigger auditor on start()"};
-    Gaudi::Property<bool> m_auditorStop{this, "AuditStop", m_auditInit.value(), "trigger auditor on stop()"};
+    Gaudi::Property<bool> m_auditInit{ this, "AuditAlgorithms", Details::getDefaultAuditorValue( m_pSvcLocator ),
+                                       "[[deprecated]] unused" };
+    Gaudi::Property<bool> m_auditorInitialize{ this, "AuditInitialize", m_auditInit.value(),
+                                               "trigger auditor on initialize()" };
+    Gaudi::Property<bool> m_auditorReinitialize{ this, "AuditReinitialize", m_auditInit.value(),
+                                                 "trigger auditor on reinitialize()" };
+    Gaudi::Property<bool> m_auditorRestart{ this, "AuditRestart", m_auditInit.value(), "trigger auditor on restart()" };
+    Gaudi::Property<bool> m_auditorExecute{ this, "AuditExecute", m_auditInit.value(), "trigger auditor on execute()" };
+    Gaudi::Property<bool> m_auditorFinalize{ this, "AuditFinalize", m_auditInit.value(),
+                                             "trigger auditor on finalize()" };
+    Gaudi::Property<bool> m_auditorStart{ this, "AuditStart", m_auditInit.value(), "trigger auditor on start()" };
+    Gaudi::Property<bool> m_auditorStop{ this, "AuditStop", m_auditInit.value(), "trigger auditor on stop()" };
 
-    Gaudi::Property<bool> m_doTimeline{this, "Timeline", true, "send events to TimelineSvc"};
+    Gaudi::Property<bool> m_doTimeline{ this, "Timeline", true, "send events to TimelineSvc" };
 
-    Gaudi::Property<std::string> m_monitorSvcName{this, "MonitorService", "MonitorSvc",
-                                                  "name to use for Monitor Service"};
+    Gaudi::Property<std::string> m_monitorSvcName{ this, "MonitorService", "MonitorSvc",
+                                                   "name to use for Monitor Service" };
 
-    Gaudi::Property<bool> m_registerContext{this, "RegisterForContextService", false,
-                                            "flag to enforce the registration for Algorithm Context Service"};
+    Gaudi::Property<bool> m_registerContext{ this, "RegisterForContextService", false,
+                                             "flag to enforce the registration for Algorithm Context Service" };
 
-    Gaudi::Property<int> m_cardinality{this, "Cardinality", 0, "how many clones to create - 0 means algo is reentrant"};
+    Gaudi::Property<int>                      m_cardinality{ this, "Cardinality", 0,
+                                        "how many clones to create - 0 means algo is reentrant" };
     Gaudi::Property<std::vector<std::string>> m_neededResources{
-        this, "NeededResources", {}, "named resources needed during event looping"};
+        this, "NeededResources", {}, "named resources needed during event looping" };
 
     Gaudi::Property<bool> m_blocking{
         this, "Blocking", false,
         "if algorithm invokes CPU-blocking system calls (offloads computations to accelerators or "
-        "quantum processors, performs disk or network I/O, is bound by resource synchronization, etc)"};
+        "quantum processors, performs disk or network I/O, is bound by resource synchronization, etc)" };
 
     // The default should be changed to "false" for v29
-    Gaudi::Property<bool> m_filterCircDeps{this, "FilterCircularDependencies", true,
-                                           "filter out circular data dependencies"};
+    Gaudi::Property<bool> m_filterCircDeps{ this, "FilterCircularDependencies", true,
+                                            "filter out circular data dependencies" };
 
     mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
 

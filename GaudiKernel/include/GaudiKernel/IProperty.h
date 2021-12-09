@@ -44,7 +44,7 @@ public:
   /// Set the property by name and value representation
   virtual StatusCode setPropertyRepr( const std::string& n, const std::string& r ) = 0;
   /// Special case for string literals
-  StatusCode setProperty( const std::string& name, const char* v ) { return setProperty( name, std::string{v} ); }
+  StatusCode setProperty( const std::string& name, const char* v ) { return setProperty( name, std::string{ v } ); }
   /// Special case for std::string
   StatusCode setProperty( const std::string& name, const std::string& v ) {
     if ( !hasProperty( name ) ) return StatusCode::FAILURE;
@@ -86,10 +86,10 @@ public:
   }
   /// Get the property by property
   virtual StatusCode getProperty( Gaudi::Details::PropertyBase* p // Pointer to property to be set
-                                  ) const = 0;
+  ) const = 0;
   /// Get the property by name
   virtual const Gaudi::Details::PropertyBase& getProperty( std::string_view name // Property name
-                                                           ) const = 0;
+  ) const = 0;
   /// Get the property by std::string
   virtual StatusCode getProperty( std::string_view n, std::string& v ) const = 0;
   /// Get list of properties

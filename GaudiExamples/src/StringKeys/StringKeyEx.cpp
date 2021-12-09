@@ -52,8 +52,8 @@ namespace Gaudi {
       typedef Gaudi::StringKey Key;
       typedef std::vector<Key> Keys;
       // ======================================================================
-      Gaudi::Property<Key>  m_key{this, "Key", {}, "The string key"};
-      Gaudi::Property<Keys> m_keys{this, "Keys", {}, "The vector of keys"};
+      Gaudi::Property<Key>  m_key{ this, "Key", {}, "The string key" };
+      Gaudi::Property<Keys> m_keys{ this, "Keys", {}, "The vector of keys" };
       // ======================================================================
     };
     // ========================================================================

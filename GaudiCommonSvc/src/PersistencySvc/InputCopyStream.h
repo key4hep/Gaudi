@@ -45,7 +45,7 @@ private:
   /// Pointer to the (public) tool used to retrieve the objects in a file.
   IDataStoreLeaves* m_leavesTool = nullptr;
 
-  Gaudi::Property<std::vector<std::string>> m_tesVetoList{this, "TESVetoList", {}, "names of TES locations to Veto"};
+  Gaudi::Property<std::vector<std::string>> m_tesVetoList{ this, "TESVetoList", {}, "names of TES locations to Veto" };
 
 protected:
   /// Overridden from the base class (InputCopyStream has always input).

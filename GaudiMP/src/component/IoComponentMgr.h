@@ -177,12 +177,12 @@ private:
   std::string m_dict_location;
 
   /// search patterns for special file names (direct I/O protocols)
-  Gaudi::Property<std::vector<std::string>> m_directio_patterns{this,
-                                                                "DirectIOPatterns",
-                                                                {
-                                                                    "://",
-                                                                },
-                                                                "Search patterns for direct I/O input names"};
+  Gaudi::Property<std::vector<std::string>> m_directio_patterns{ this,
+                                                                 "DirectIOPatterns",
+                                                                 {
+                                                                     "://",
+                                                                 },
+                                                                 "Search patterns for direct I/O input names" };
 
   bool findComp( IIoComponent*, const std::string&, iodITR& ) const;
   bool findComp( IIoComponent*, std::pair<iodITR, iodITR>& ) const;

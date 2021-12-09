@@ -36,7 +36,7 @@ private:
    ** should be reported. The default is 1, corresponding
    ** to every event.
    **/
-  Gaudi::CheckedProperty<int> m_frequency{this, "Frequency", 1};
+  Gaudi::CheckedProperty<int> m_frequency{ this, "Frequency", 1 };
 
   /**
    ** The number of events skipped since the last time

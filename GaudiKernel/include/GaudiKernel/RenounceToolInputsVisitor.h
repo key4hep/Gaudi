@@ -57,7 +57,7 @@ public:
    * @endverbatim
    */
   static Logger createLogger( std::function<void( std::string_view, std::string_view )> func ) {
-    return Logger{std::move( func )};
+    return Logger{ std::move( func ) };
   }
 
   /** construct the renounce visitor helper object

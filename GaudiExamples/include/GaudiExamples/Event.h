@@ -80,9 +80,9 @@ namespace Gaudi {
 
     private:
       /// Event number
-      int m_event{0};
+      int m_event{ 0 };
       /// Run number
-      int m_run{0};
+      int m_run{ 0 };
       /// Time stamp
       Gaudi::Time m_time;
 

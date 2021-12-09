@@ -121,8 +121,8 @@ protected:
   /// Update directory data
   StatusCode updateDirectories();
 
-  Gaudi::Property<DBaseEntries> m_input{this, "Input", {}, "input streams"};
-  Gaudi::Property<DBaseEntries> m_output{this, "Output", {}, "output streams"};
+  Gaudi::Property<DBaseEntries> m_input{ this, "Input", {}, "input streams" };
+  Gaudi::Property<DBaseEntries> m_output{ this, "Output", {}, "output streams" };
 
   /// Container of connection points
   std::map<std::string, Connection> m_connections;

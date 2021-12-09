@@ -61,11 +61,11 @@ namespace System {
 
       // Substitute the full type of std::string with "std::string"
       static const std::regex cxx11_string{
-          "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"};
+          "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?" };
       std::string result = std::regex_replace( realname.get(), cxx11_string, "std::string" );
 
       // Substitute ', ' with ','
-      static const std::regex comma_space{", "};
+      static const std::regex comma_space{ ", " };
       result = std::regex_replace( result, comma_space, "," );
 
       return result;

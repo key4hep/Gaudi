@@ -53,7 +53,7 @@ namespace Gaudi {
                << m_floatTool->getFloat() << " from FloatTool are matching" << endmsg;
       }
 
-      ToolHandle<FloatTool> m_floatTool{this, "FloatTool", "Gaudi::Examples::FloatTool"};
+      ToolHandle<FloatTool> m_floatTool{ this, "FloatTool", "Gaudi::Examples::FloatTool" };
     };
 
     DECLARE_COMPONENT( THDataConsumer )

@@ -27,10 +27,10 @@ public:
   StatusCode execute() override; ///< Algorithm execution
 
 private:
-  Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling."};
+  Gaudi::Property<int> m_nStartFromEvent{ this, "StartFromEventN", 1, "After what event we start profiling." };
   Gaudi::Property<int> m_nStopAtEvent{
       this, "StopAtEventN", 0,
-      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0." };
 
   int m_eventNumber = 0; // Current event number
 };

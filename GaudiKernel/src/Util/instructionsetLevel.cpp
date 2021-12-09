@@ -25,10 +25,10 @@ int main( int argc, char* argv[] ) {
 
   // These names are those reported in flags field of /proc/cpuinfo on Linux
   // See arch/x86/include/asm/cpufeature.h
-  const std::vector<std::string> sets{// "80386",
-                                      "sse",   "sse2",
-                                      "sse3", // Note: This is reported by Linux as 'pni'
-                                      "ssse3", "sse4_1", "sse4_2", "avx", "avx2", "avx512f", "avx512vl"};
+  const std::vector<std::string> sets{ // "80386",
+                                       "sse",   "sse2",
+                                       "sse3", // Note: This is reported by Linux as 'pni'
+                                       "ssse3", "sse4_1", "sse4_2", "avx", "avx2", "avx512f", "avx512vl" };
 
   if ( argc == 1 ) {
     const std::size_t level = System::instructionsetLevel() - 1;
@@ -38,7 +38,7 @@ int main( int argc, char* argv[] ) {
       std::cout << "unknown instruction set level: " << level << std::endl;
       return 2;
     }
-  } else if ( ( argc == 2 ) && ( std::string{"all"} == std::string{argv[1]} ) ) {
+  } else if ( ( argc == 2 ) && ( std::string{ "all" } == std::string{ argv[1] } ) ) {
     for ( auto& s : sets ) std::cout << s << std::endl;
   } else {
     std::cout << "Error: wrong arguments\nUsage:\n\t" << argv[0] << " [all]" << std::endl;

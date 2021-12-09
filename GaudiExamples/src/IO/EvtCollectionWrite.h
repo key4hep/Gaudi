@@ -42,7 +42,7 @@ namespace Gaudi {
 */
 class EvtCollectionWrite : public Algorithm {
 
-  Gaudi::Property<int> m_nMCcut{this, "NumMcTracks", 50, ""};
+  Gaudi::Property<int> m_nMCcut{ this, "NumMcTracks", 50, "" };
 
   NTuple::Item<int>                       m_ntrkColl;
   NTuple::Item<float>                     m_eneColl;

@@ -93,7 +93,7 @@ private:
   std::vector<boost::container::flat_set<int>> m_algsInState;
   SmartIF<IMessageSvc>                         m_MS;
 
-  MsgStream log() { return {m_MS, "AlgsExecutionStates"}; }
+  MsgStream log() { return { m_MS, "AlgsExecutionStates" }; }
 };
 
 /// Streaming of State values

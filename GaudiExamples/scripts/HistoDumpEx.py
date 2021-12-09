@@ -11,17 +11,17 @@
 #####################################################################################
 
 from __future__ import print_function
-import ROOT
-
-from GaudiPython.HistoUtils import histoDump
 
 import random
 
+import ROOT
+from GaudiPython.HistoUtils import histoDump
+
 r = random.Random()
 
-h1 = ROOT.TH1D("h1", 'title', 200, -4, 4)
-p1 = ROOT.TProfile("p1", 'title', 200, -4, 4, -10, 10, 's')
-p2 = ROOT.TProfile("p2", 'title', 200, -4, 4, -10, 10)
+h1 = ROOT.TH1D("h1", "title", 200, -4, 4)
+p1 = ROOT.TProfile("p1", "title", 200, -4, 4, -10, 10, "s")
+p2 = ROOT.TProfile("p2", "title", 200, -4, 4, -10, 10)
 
 for i in range(0, 1000000):
     v = r.gauss(0, 2)

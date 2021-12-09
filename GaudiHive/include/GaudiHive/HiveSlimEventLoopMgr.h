@@ -32,13 +32,13 @@
 class HiveSlimEventLoopMgr : public extends<Service, IEventProcessor> {
 
 protected:
-  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "", ""};
-  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", "", ""};
-  Gaudi::Property<bool> m_warnings{this, "Warnings", true, "Set this property to false to suppress warning messages"};
-  Gaudi::Property<std::string>               m_schedulerName{this, "SchedulerName", "AvalancheSchedulerSvc",
-                                               "Name of the scheduler to be used"};
-  Gaudi::Property<std::vector<unsigned int>> m_eventNumberBlacklist{this, "EventNumberBlackList", {}, ""};
-  Gaudi::Property<bool> m_abortOnFailure{this, "AbortOnFailure", true, "Abort job on event failure"};
+  Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", "", "" };
+  Gaudi::Property<std::string> m_evtsel{ this, "EvtSel", "", "" };
+  Gaudi::Property<bool> m_warnings{ this, "Warnings", true, "Set this property to false to suppress warning messages" };
+  Gaudi::Property<std::string>               m_schedulerName{ this, "SchedulerName", "AvalancheSchedulerSvc",
+                                                "Name of the scheduler to be used" };
+  Gaudi::Property<std::vector<unsigned int>> m_eventNumberBlacklist{ this, "EventNumberBlackList", {}, "" };
+  Gaudi::Property<bool> m_abortOnFailure{ this, "AbortOnFailure", true, "Abort job on event failure" };
 
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc> m_evtDataMgrSvc;
@@ -79,7 +79,7 @@ protected:
   // if finite number of evts is processed use bitset
   std::unique_ptr<boost::dynamic_bitset<>> m_blackListBS;
 
-  EventContext::ContextEvt_t m_nevt{0};
+  EventContext::ContextEvt_t m_nevt{ 0 };
 
 public:
   // inherit base class constructor

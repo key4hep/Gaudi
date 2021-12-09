@@ -30,7 +30,7 @@ class ReadAlg : public Algorithm, virtual public IIncidentListener {
   SmartIF<IDataProviderSvc> m_recordSvc;
   /// Reference to incident service
   SmartIF<IIncidentSvc>        m_incidentSvc;
-  Gaudi::Property<std::string> m_incidentName{this, "IncidentName", "", "incident name of records service"};
+  Gaudi::Property<std::string> m_incidentName{ this, "IncidentName", "", "incident name of records service" };
 
 public:
   /// Constructor: A constructor of this form must be provided.

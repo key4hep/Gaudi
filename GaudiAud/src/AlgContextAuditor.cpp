@@ -31,7 +31,7 @@ namespace {
   void call( IAlgContextSvc* ctx, INamedInterface* a ) {
     if ( ctx ) {
       // make a safe cast using "smart interface"
-      SmartIF<IAlgorithm> alg{a};
+      SmartIF<IAlgorithm> alg{ a };
       const EventContext& ectx = Gaudi::Hive::currentContext();
       if ( alg ) ( ctx->*fun )( alg.get(), ectx ).ignore();
     }

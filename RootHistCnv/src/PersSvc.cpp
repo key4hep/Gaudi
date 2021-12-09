@@ -88,7 +88,7 @@ StatusCode RootHistCnv::PersSvc::createRep( DataObject* pObject, IOpaqueAddress*
         if ( top.ptr() == pObject ) {
           TDirectory* pDir = m_hfile.get();
           refpAddress      = new RootObjAddress( repSvcType(), CLID_DataObject, stat_dir, m_defFileName.value(),
-                                            long( pDir ), long( 0 ) );
+                                                 long( pDir ), long( 0 ) );
           return StatusCode::SUCCESS;
         } else {
           StatusCode sc = ConversionSvc::createRep( pObject, refpAddress );

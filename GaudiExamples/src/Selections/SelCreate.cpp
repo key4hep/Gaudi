@@ -42,7 +42,7 @@ namespace Gaudi {
      */
     class SelCreate : public GaudiAlgorithm {
       using Container = Gaudi::Examples::MyTrack::Container;
-      DataObjectWriteHandle<Container> m_output{this, "Output", this->name(), "TES location of output container"};
+      DataObjectWriteHandle<Container> m_output{ this, "Output", this->name(), "TES location of output container" };
 
     public:
       // ======================================================================

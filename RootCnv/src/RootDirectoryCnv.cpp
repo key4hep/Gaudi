@@ -116,8 +116,8 @@ StatusCode RootDirectoryCnv::updateObjRefs( IOpaqueAddress* pAddr, DataObject* p
                 IOpaqueAddress* pA = nullptr;
                 if ( ref->clid == CLID_StatisticsDirectory || ref->clid == CLID_StatisticsFile ||
                      ref->clid == CLID_RowWiseTuple || ref->clid == CLID_ColumnWiseTuple ) {
-                  string        spar[] = {fname, ref->container};
-                  unsigned long ipar[] = {~0x0UL, ~0x0UL};
+                  string        spar[] = { fname, ref->container };
+                  unsigned long ipar[] = { ~0x0UL, ~0x0UL };
                   status               = m_dbMgr->createAddress( repSvcType(), ref->clid, spar, ipar, pA );
                 }
                 if ( status.isSuccess() ) {

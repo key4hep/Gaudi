@@ -99,25 +99,25 @@ public:
   void handle( const Incident& ) override;
 
 private:
-  Gaudi::Property<int>         m_detStorageType{this, "DetStorageType", XML_StorageType,
-                                        "Detector Data Persistency Storage type"};
-  Gaudi::Property<std::string> m_detDbLocation{this, "DetDbLocation", "empty",
-                                               "location of detector Db (filename,URL)"};
-  Gaudi::Property<std::string> m_detDbRootName{this,
-                                               "DetDbRootName",
-                                               "dd",
-                                               [this]( Gaudi::Details::PropertyBase& ) {
-                                                 this->setProperty( "RootName", "/" + this->m_detDbRootName ).ignore();
-                                               },
-                                               Gaudi::Details::Property::ImmediatelyInvokeHandler{true},
-                                               "name of the root node of the detector"};
-  Gaudi::Property<bool> m_usePersistency{this, "UsePersistency", false, "control if the persistency is required"};
-  Gaudi::Property<std::string> m_persistencySvcName{this, "PersistencySvc", "DetectorPersistencySvc",
-                                                    "name of the persistency service"};
+  Gaudi::Property<int>         m_detStorageType{ this, "DetStorageType", XML_StorageType,
+                                         "Detector Data Persistency Storage type" };
+  Gaudi::Property<std::string> m_detDbLocation{ this, "DetDbLocation", "empty",
+                                                "location of detector Db (filename,URL)" };
+  Gaudi::Property<std::string> m_detDbRootName{ this,
+                                                "DetDbRootName",
+                                                "dd",
+                                                [this]( Gaudi::Details::PropertyBase& ) {
+                                                  this->setProperty( "RootName", "/" + this->m_detDbRootName ).ignore();
+                                                },
+                                                Gaudi::Details::Property::ImmediatelyInvokeHandler{ true },
+                                                "name of the root node of the detector" };
+  Gaudi::Property<bool> m_usePersistency{ this, "UsePersistency", false, "control if the persistency is required" };
+  Gaudi::Property<std::string> m_persistencySvcName{ this, "PersistencySvc", "DetectorPersistencySvc",
+                                                     "name of the persistency service" };
 
-  Gaudi::Property<bool> m_allowLoadInRunning{this, "AllowLoadInRunning", true,
-                                             "if set to false, no new object can be loaded while in running state "
-                                             "(updates are still allowed), this forces preloading of the geometry"};
+  Gaudi::Property<bool> m_allowLoadInRunning{ this, "AllowLoadInRunning", true,
+                                              "if set to false, no new object can be loaded while in running state "
+                                              "(updates are still allowed), this forces preloading of the geometry" };
 
   /// Current event time
   Gaudi::Time m_eventTime = 0;

@@ -122,16 +122,16 @@ namespace Gaudi {
 #if _GLIBCXX_USE_CXX11_ABI
           return std::regex_replace(
               realname.get(),
-              std::regex{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"},
+              std::regex{ "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?" },
               "std::string" );
 #else
-          return std::string{realname.get()};
+          return std::string{ realname.get() };
 #endif
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
         Registry& Registry::instance() {
-          auto            _guard = std::scoped_lock{::registrySingletonMutex};
+          auto            _guard = std::scoped_lock{ ::registrySingletonMutex };
           static Registry r;
           return r;
         }
@@ -139,7 +139,7 @@ namespace Gaudi {
         Registry::Registry() : m_initialized( false ) {}
 
         void Registry::initialize() {
-          auto _guard = std::scoped_lock{m_mutex};
+          auto _guard = std::scoped_lock{ m_mutex };
           if ( m_initialized ) return;
           m_initialized = true;
 #if defined( _WIN32 )
@@ -184,7 +184,7 @@ namespace Gaudi {
                     }
                     // read the file
                     logger().debug( std::string( "  reading " ) + name );
-                    std::ifstream factories{fullPath};
+                    std::ifstream factories{ fullPath };
                     std::string   line;
                     int           factoriesCount = 0;
                     int           lineCount      = 0;
@@ -233,7 +233,7 @@ namespace Gaudi {
         Registry::FactoryInfo& Registry::add( const std::string& id, void* factory, const std::string& type,
                                               const std::string& rtype, const std::string& className,
                                               const Properties& props ) {
-          auto        _guard = std::scoped_lock{m_mutex};
+          auto        _guard = std::scoped_lock{ m_mutex };
           FactoryMap& facts  = factories();
           auto        entry  = facts.find( id );
           if ( entry == facts.end() ) {
@@ -256,7 +256,7 @@ namespace Gaudi {
         }
 
         void* Registry::get( const std::string& id, const std::string& type ) const {
-          auto              _guard = std::scoped_lock{m_mutex};
+          auto              _guard = std::scoped_lock{ m_mutex };
           const FactoryMap& facts  = factories();
           auto              f      = facts.find( id );
           if ( f != facts.end() ) {
@@ -285,7 +285,7 @@ namespace Gaudi {
         }
 
         const Registry::FactoryInfo& Registry::getInfo( const std::string& id ) const {
-          auto                     _guard = std::scoped_lock{m_mutex};
+          auto                     _guard = std::scoped_lock{ m_mutex };
           static const FactoryInfo unknown( "unknown" );
           const FactoryMap&        facts = factories();
           auto                     f     = facts.find( id );
@@ -293,7 +293,7 @@ namespace Gaudi {
         }
 
         Registry& Registry::addProperty( const std::string& id, const std::string& k, const std::string& v ) {
-          auto        _guard = std::scoped_lock{m_mutex};
+          auto        _guard = std::scoped_lock{ m_mutex };
           FactoryMap& facts  = factories();
           auto        f      = facts.find( id );
           if ( f != facts.end() ) f->second.properties[k] = v;
@@ -301,7 +301,7 @@ namespace Gaudi {
         }
 
         std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
-          auto              _guard = std::scoped_lock{m_mutex};
+          auto              _guard = std::scoped_lock{ m_mutex };
           std::set<KeyType> l;
           for ( const auto& f : factories() ) {
             if ( f.second.ptr ) l.insert( f.first );
@@ -310,7 +310,7 @@ namespace Gaudi {
         }
 
         void Logger::report( Level lvl, const std::string& msg ) {
-          static const char* levels[] = {"DEBUG  : ", "INFO   : ", "WARNING: ", "ERROR  : "};
+          static const char* levels[] = { "DEBUG  : ", "INFO   : ", "WARNING: ", "ERROR  : " };
           if ( lvl >= level() ) { std::cerr << levels[lvl] << msg << std::endl; }
         }
 

@@ -168,11 +168,11 @@ namespace Gaudi {
     bool diff( const ParticleProperty* o, const ParticleProperty* n, const MSG::Level l = MSG::DEBUG ) const;
 
   private:
-    Gaudi::Property<std::string>              m_filename{this, "ParticlePropertiesFile", "ParticleTable.txt",
-                                            "Filename of the particle properties file"};
-    Gaudi::Property<std::vector<std::string>> m_other{this, "OtherFiles", {}, "additional file names"};
+    Gaudi::Property<std::string>              m_filename{ this, "ParticlePropertiesFile", "ParticleTable.txt",
+                                             "Filename of the particle properties file" };
+    Gaudi::Property<std::vector<std::string>> m_other{ this, "OtherFiles", {}, "additional file names" };
     Gaudi::Property<std::vector<std::string>> m_particles{
-        this, "Particles", {}, "properties to be redefined explicitly"};
+        this, "Particles", {}, "properties to be redefined explicitly" };
 
     VectPP      m_vectpp;      ///< Vector of all particle properties
     MapID       m_idmap;       ///< Map for geant IDs

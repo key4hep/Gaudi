@@ -19,8 +19,9 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
+__author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
 # @file
 #  Simple example (identical to C++ ExtendedProperties.opts) which illustrates
@@ -38,22 +39,22 @@ SUCCESS = gaudimodule.SUCCESS
 
 
 def configure(gaudi=None):
-    """ the configurtaion of the job """
+    """the configurtaion of the job"""
 
     # create application manager if not done yet
     if not gaudi:
         gaudi = gaudimodule.AppMgr()
 
     # read main configuration files
-    gaudi.config(files=['../options/Common.opts'])
+    gaudi.config(files=["../options/Common.opts"])
 
     # private algorithm configuration options
 
     gaudi.TopAlg = ["ExtendedProperties/xProps"]
-    gaudi.EvtSel = 'NONE'
-    gaudi.HistogramPersistency = 'NONE'
+    gaudi.EvtSel = "NONE"
+    gaudi.HistogramPersistency = "NONE"
 
-    xProps = gaudi.algorithm('xProps')
+    xProps = gaudi.algorithm("xProps")
 
     # std::pair<double,double>
     # xProps.PairDD = ( 3.141592 , 2.18281828 )
@@ -74,36 +75,36 @@ def configure(gaudi=None):
 
     # std::map<std::string,std::string>
     xProps.MapStringString = {
-        'a': 'sddsgsgsdgdggf',
-        'b': 'sddsgsgsdgdggf',
-        'c': 'sddsgsgsdgdggf'
+        "a": "sddsgsgsdgdggf",
+        "b": "sddsgsgsdgdggf",
+        "c": "sddsgsgsdgdggf",
     }
 
     # std::map<std::string,int>
-    xProps.MapStringInt = {'a': 1, 'b': 2, "c": 3}
+    xProps.MapStringInt = {"a": 1, "b": 2, "c": 3}
 
     # std::map<std::string,double>
-    xProps.MapStringDouble = {'aa': 0.1, 'bb': 0.2, "cc": 3}
+    xProps.MapStringDouble = {"aa": 0.1, "bb": 0.2, "cc": 3}
 
     # std::map<std::string,std::vector<std::string> >
     xProps.MapStringVectorOfStrings = {
-        'aaa': ['a', 'b', 'c'],
-        'bbb': ['a', 'b', 'c'],
-        'ccc': ['a', 'b', 'c']
+        "aaa": ["a", "b", "c"],
+        "bbb": ["a", "b", "c"],
+        "ccc": ["a", "b", "c"],
     }
 
     # std::map<std::string,std::vector<double> >
     xProps.MapStringVectorOfDoubles = {
-        'aaa': [1, 2, 3],
-        'bbb': [1., 2., 3.],
-        'ccc': [0.1, 0.2, 0.3]
+        "aaa": [1, 2, 3],
+        "bbb": [1.0, 2.0, 3.0],
+        "ccc": [0.1, 0.2, 0.3],
     }
 
     # std::map<std::string,std::vector<int> >
     xProps.MapStringVectorOfInts = {
-        'aaa': [1, 2, 3],
-        'bbb': [4, 5, 6],
-        'ccc': [7, 8, 9]
+        "aaa": [1, 2, 3],
+        "bbb": [4, 5, 6],
+        "ccc": [7, 8, 9],
     }
 
     return SUCCESS
@@ -112,7 +113,7 @@ def configure(gaudi=None):
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
 
     print(__doc__, __author__)
 
@@ -120,7 +121,7 @@ if '__main__' == __name__:
     configure(gaudi)
     gaudi.run(1)
 
-    alg = gaudi.algorithm('xProps')
+    alg = gaudi.algorithm("xProps")
 
     # get all properties throught python
     #
@@ -131,14 +132,14 @@ if '__main__' == __name__:
     #
     props = alg.properties()
 
-    print('All Properties of %s ' % alg.name())
+    print("All Properties of %s " % alg.name())
     for p in props:
         v = props[p].value()
         t = type(v).__name__
         print("Python: Name/Value:  '%s' / '%s' " % (p, v))
 
     # get the properties in the form of python dictionary:
-    print('All Properties of %s ' % alg.name())
+    print("All Properties of %s " % alg.name())
     properties = {}
     for p in props:
         properties[p] = props[p].value()

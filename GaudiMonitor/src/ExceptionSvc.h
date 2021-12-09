@@ -60,8 +60,8 @@ private:
   Policy                             m_mode_exc = ALL, m_mode_err = NONE;
   std::map<std::string, ReturnState> m_retCodesExc, m_retCodesErr;
 
-  Gaudi::Property<std::string> m_mode_exc_s{this, "Catch", "ALL"};
-  Gaudi::Property<std::string> m_mode_err_s{this, "Errors", "NONE"};
+  Gaudi::Property<std::string> m_mode_exc_s{ this, "Catch", "ALL" };
+  Gaudi::Property<std::string> m_mode_err_s{ this, "Errors", "NONE" };
 };
 
 // ============================================================================

@@ -65,8 +65,8 @@ void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) c
   ost << "  [slot: " << slotID << ", incident: " << m_eventStatus.at( slotID ) << "]:\n\n";
 
   auto& algState = m_algStates.at( slotID );
-  auto  ml       = std::accumulate( begin( algState ), end( algState ), size_t{0},
-                             []( size_t m, const auto& as ) { return std::max( m, as.first.str().length() ); } );
+  auto  ml       = std::accumulate( begin( algState ), end( algState ), size_t{ 0 },
+                                    []( size_t m, const auto& as ) { return std::max( m, as.first.str().length() ); } );
 
   for ( const auto& e : algState ) ost << "  + " << std::setw( ml ) << e.first.str() << "  " << e.second << '\n';
 }
@@ -107,7 +107,7 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
   auto& algState = m_algStates.at( ctx.slot() );
   auto  itr      = algState.find( algName );
   if ( UNLIKELY( itr == algState.end() ) ) {
-    throw GaudiException{"cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE};
+    throw GaudiException{ "cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE };
   }
 
   // Assuming the alg is known, look for its state in the sub-slot
@@ -116,7 +116,7 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
     auto& thisSubSlot = subSlots[ctx.subSlot()];
     auto  subitr      = thisSubSlot.find( algName );
     if ( UNLIKELY( subitr == thisSubSlot.end() ) ) {
-      throw GaudiException{"cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE};
+      throw GaudiException{ "cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE };
     } else {
       return subitr->second;
     }
@@ -133,8 +133,8 @@ AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContex
   auto& algState = m_algStates.at( ctx.slot() );
   auto  itr      = algState.find( iAlg->nameKey() );
   if ( UNLIKELY( itr == algState.end() ) ) {
-    throw GaudiException{std::string{"cannot find Alg "} + iAlg->name() + " in AlgStateMap", name(),
-                         StatusCode::FAILURE};
+    throw GaudiException{ std::string{ "cannot find Alg " } + iAlg->name() + " in AlgStateMap", name(),
+                          StatusCode::FAILURE };
   }
 
   // Sub-slots are dynamic

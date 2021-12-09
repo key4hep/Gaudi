@@ -19,12 +19,14 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
+__author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
 # =============================================================================
 
-import GaudiPython
 import math
+
+import GaudiPython
 
 SUCCESS = GaudiPython.SUCCESS
 
@@ -34,18 +36,18 @@ SUCCESS = GaudiPython.SUCCESS
 
 
 def configure(gaudi=None):
-    """ Configuration of the job """
+    """Configuration of the job"""
 
-    gaudi.HistogramPersistency = 'ROOT'
+    gaudi.HistogramPersistency = "ROOT"
 
     gaudi.DLLs += [
-        'GaudiAlg',
-        'RootHistCnv',
+        "GaudiAlg",
+        "RootHistCnv",
     ]
-    gaudi.ExtSvc += ['TagCollectionSvc/EvtTupleSvc']
+    gaudi.ExtSvc += ["TagCollectionSvc/EvtTupleSvc"]
 
     evtSel = gaudi.evtSel()
-    evtSel.open('PFN:EvtTags1.root', collection='Fill/COL1', sel='binom==6')
+    evtSel.open("PFN:EvtTags1.root", collection="Fill/COL1", sel="binom==6")
 
     gaudi.config()
 
@@ -55,13 +57,15 @@ def configure(gaudi=None):
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
     print(__doc__)
     # configuration (options)
-    from Configurables import GaudiPersistency, FileCatalog, ApplicationMgr
+    from Configurables import ApplicationMgr, FileCatalog, GaudiPersistency
+
     GaudiPersistency()
     ApplicationMgr().ExtSvc.append(
-        FileCatalog(Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
+        FileCatalog(Catalogs=["xmlcatalog_file:EvtColsEx.xml"])
+    )
     # execution
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)

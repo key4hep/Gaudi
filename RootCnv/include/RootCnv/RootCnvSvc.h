@@ -61,24 +61,24 @@ namespace Gaudi {
    */
   class GAUDI_API RootCnvSvc : public ConversionSvc {
   protected:
-    Gaudi::Property<std::string> m_ioPerfStats{this, "IOPerfStats", "",
-                                               "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
-    Gaudi::Property<std::string> m_shareFiles{this, "ShareFiles", "NO",
-                                              "Share files? If set to YES,  files will not be closed on finalize"};
-    Gaudi::Property<bool> m_incidentEnabled{this, "EnableIncident", true, "Flag to enable incidents on FILE_OPEN"};
-    Gaudi::Property<std::string> m_recordName{this, "RecordsName", "/FileRecords",
-                                              "Records name to fire incident for file records"};
+    Gaudi::Property<std::string> m_ioPerfStats{
+        this, "IOPerfStats", "", "Enable TTree IOperfStats if not empty; otherwise perf stat file name" };
+    Gaudi::Property<std::string> m_shareFiles{ this, "ShareFiles", "NO",
+                                               "Share files? If set to YES,  files will not be closed on finalize" };
+    Gaudi::Property<bool> m_incidentEnabled{ this, "EnableIncident", true, "Flag to enable incidents on FILE_OPEN" };
+    Gaudi::Property<std::string> m_recordName{ this, "RecordsName", "/FileRecords",
+                                               "Records name to fire incident for file records" };
 
     // ROOT Write parameters
-    Gaudi::Property<int> m_autoFlush{this, "AutoFlush", 100,
-                                     "AutoFlush parameter for ROOT TTree (Number of events between auto flushes)"};
-    Gaudi::Property<int> m_basketSize{this, "BasketSize", 2 * 1024 * 1024 /*MBYTE*/,
-                                      "Basket optimization parameter for ROOT TTree (total basket size)"};
-    Gaudi::Property<int> m_bufferSize{this, "BufferSize", 2 * 1024 /*kBYTE*/,
-                                      "Buffer size optimization parameter for ROOT TTree"};
-    Gaudi::Property<int> m_splitLevel{this, "SplitLevel", 0, "Split level optimization parameter for ROOT TTree"};
-    Gaudi::Property<std::string> m_compression{this, "GlobalCompression", "",
-                                               "Compression-algorithm:compression-level,  empty: do nothing"};
+    Gaudi::Property<int> m_autoFlush{ this, "AutoFlush", 100,
+                                      "AutoFlush parameter for ROOT TTree (Number of events between auto flushes)" };
+    Gaudi::Property<int> m_basketSize{ this, "BasketSize", 2 * 1024 * 1024 /*MBYTE*/,
+                                       "Basket optimization parameter for ROOT TTree (total basket size)" };
+    Gaudi::Property<int> m_bufferSize{ this, "BufferSize", 2 * 1024 /*kBYTE*/,
+                                       "Buffer size optimization parameter for ROOT TTree" };
+    Gaudi::Property<int> m_splitLevel{ this, "SplitLevel", 0, "Split level optimization parameter for ROOT TTree" };
+    Gaudi::Property<std::string> m_compression{ this, "GlobalCompression", "",
+                                                "Compression-algorithm:compression-level,  empty: do nothing" };
 
     /// Reference to the I/O data manager
     SmartIF<Gaudi::IIODataManager> m_ioMgr;

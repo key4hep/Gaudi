@@ -79,28 +79,28 @@ private:
   /// A shortcut to the algorithm resource pool
   SmartIF<IAlgResourcePool> m_algResourcePool;
   /// Graph of precedence rules
-  concurrency::PrecedenceRulesGraph m_PRGraph{"PrecedenceRulesGraph", serviceLocator()};
+  concurrency::PrecedenceRulesGraph m_PRGraph{ "PrecedenceRulesGraph", serviceLocator() };
   /// Scheduling strategy
-  Gaudi::Property<std::string> m_mode{this, "TaskPriorityRule", "", "Task avalanche induction strategy."};
+  Gaudi::Property<std::string> m_mode{ this, "TaskPriorityRule", "", "Task avalanche induction strategy." };
   /// Scheduling strategy
-  Gaudi::Property<bool> m_ignoreDFRules{this, "IgnoreDFRules", false, "Ignore the data flow rules."};
+  Gaudi::Property<bool> m_ignoreDFRules{ this, "IgnoreDFRules", false, "Ignore the data flow rules." };
   /// Precedence analysis facilities
   boost::filesystem::path m_dumpDirName{
-      boost::filesystem::unique_path( boost::filesystem::path( "precedence.analysis.%%%%" ) )};
-  Gaudi::Property<bool>        m_dumpPrecTrace{this, "DumpPrecedenceTrace", false,
-                                        "Dump task precedence traces for each event."};
+      boost::filesystem::unique_path( boost::filesystem::path( "precedence.analysis.%%%%" ) ) };
+  Gaudi::Property<bool>        m_dumpPrecTrace{ this, "DumpPrecedenceTrace", false,
+                                         "Dump task precedence traces for each event." };
   Gaudi::Property<std::string> m_dumpPrecTraceFile{
       this, "PrecedenceTraceFile", "",
       "Override default name of the GRAPHML trace file. NOTE: if more than "
       "1 event is processed, the setting forces creation of a single file "
-      "with cumulative precedence trace."};
-  Gaudi::Property<bool>        m_dumpPrecRules{this, "DumpPrecedenceRules", false, "Dump task precedence rules."};
-  Gaudi::Property<std::string> m_dumpPrecRulesFile{this, "PrecedenceRulesFile", "",
-                                                   "Override default name of the GRAPHML precedence rules file."};
-  Gaudi::Property<bool>        m_verifyRules{this, "VerifyTaskPrecedenceRules", true,
-                                      "Verify task precedence rules for common errors."};
-  Gaudi::Property<bool>        m_showDataFlow{this, "ShowDataFlow", false,
-                                       "Show the configuration of DataFlow between Algorithms"};
+      "with cumulative precedence trace." };
+  Gaudi::Property<bool>        m_dumpPrecRules{ this, "DumpPrecedenceRules", false, "Dump task precedence rules." };
+  Gaudi::Property<std::string> m_dumpPrecRulesFile{ this, "PrecedenceRulesFile", "",
+                                                    "Override default name of the GRAPHML precedence rules file." };
+  Gaudi::Property<bool>        m_verifyRules{ this, "VerifyTaskPrecedenceRules", true,
+                                       "Verify task precedence rules for common errors." };
+  Gaudi::Property<bool>        m_showDataFlow{ this, "ShowDataFlow", false,
+                                        "Show the configuration of DataFlow between Algorithms" };
 };
 
 #endif /* GAUDIHIVE_PRECEDENCESVC_H_ */

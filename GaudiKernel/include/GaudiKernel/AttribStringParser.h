@@ -83,9 +83,9 @@ namespace Gaudi {
           static const boost::sregex_iterator endmark;
           if ( m_it != endmark ) {
             // if we have a match, we cache the values
-            m_attrib = Attrib{( *m_it )[1], ( *m_it )[2]};
+            m_attrib = Attrib{ ( *m_it )[1], ( *m_it )[2] };
             if ( m_expandVars && m_attrib.value.find( "${" ) != std::string::npos ) {
-              static const boost::regex varexp{"\\$\\{([^}]+)\\}"};
+              static const boost::regex varexp{ "\\$\\{([^}]+)\\}" };
               auto                      i = 1;
               while ( i ) {
                 i              = 0;
@@ -122,7 +122,7 @@ namespace Gaudi {
       bool        m_expandVars;
 
       boost::sregex_iterator parse() const {
-        static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*'(.*?)'"};
+        static const boost::regex exp{ "[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*'(.*?)'" };
         return boost::sregex_iterator( begin( m_data ), end( m_data ), exp );
       }
       friend Iterator begin( const AttribStringParser& );

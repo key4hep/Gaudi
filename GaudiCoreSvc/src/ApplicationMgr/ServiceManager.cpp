@@ -119,7 +119,7 @@ StatusCode ServiceManager::addService( IService* svc, int prio )
 //------------------------------------------------------------------------------
 {
   auto it  = find( svc );
-  auto lck = std::scoped_lock{m_gLock};
+  auto lck = std::scoped_lock{ m_gLock };
   if ( it != m_listsvc.end() ) {
     it->priority = prio; // if the service is already known, it is equivalent to a setPriority
     it->active   = true; // and make it active
@@ -149,7 +149,7 @@ StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeN
     }
     if ( sc.isFailure() ) { // if initialization failed, remove it from the list
       error() << "Unable to initialize service \"" << typeName.name() << "\"" << endmsg;
-      auto lck = std::scoped_lock{m_gLock};
+      auto lck = std::scoped_lock{ m_gLock };
       m_listsvc.erase( it );
       // Note: removing it from the list + the SmartIF going out of scope should trigger the delete
       // delete svc.get();
@@ -158,7 +158,7 @@ StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeN
     // initialization successful, we can work with the service
     // Move the just initialized service to the back of the list
     // (we care more about order of initialization than of creation)
-    auto lck = std::scoped_lock{m_gLock};
+    auto lck = std::scoped_lock{ m_gLock };
     m_listsvc.push_back( *it );
     m_listsvc.erase( it );
     it = std::prev( std::end( m_listsvc ) ); // last entry (the iterator was invalidated by erase)
@@ -183,7 +183,7 @@ SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& 
     // get the global lock, then extract/create the service specific mutex
     // then release global lock
 
-    auto lk  = std::scoped_lock{this->m_gLock};
+    auto lk  = std::scoped_lock{ this->m_gLock };
     auto mit = m_lockMap.find( name );
     if ( mit == m_lockMap.end() ) {
       mit = m_lockMap.emplace( std::piecewise_construct_t{}, std::forward_as_tuple( name ), std::forward_as_tuple() )
@@ -194,7 +194,7 @@ SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& 
 
   {
     // now we have the service specific lock on the above mutex
-    auto lk2 = std::scoped_lock{*imut};
+    auto lk2 = std::scoped_lock{ *imut };
 
     auto it = find( name );
 

@@ -34,9 +34,9 @@
 */
 class EvtCollectionStream : public Algorithm {
 protected:
-  Gaudi::Property<std::vector<std::string>> m_itemNames{this, "ItemList", {}, "vector of item names"};
-  Gaudi::Property<std::string>              m_storeName{this, "EvtDataSvc", "TagCollectionSvc",
-                                           "name of the service managing the data store"};
+  Gaudi::Property<std::vector<std::string>> m_itemNames{ this, "ItemList", {}, "vector of item names" };
+  Gaudi::Property<std::string>              m_storeName{ this, "EvtDataSvc", "TagCollectionSvc",
+                                            "name of the service managing the data store" };
 
   /// Reference to Tuple service for event collection (may or may not be NTuple service)
   SmartIF<INTupleSvc> m_pTupleSvc;

@@ -31,7 +31,7 @@ namespace Gaudi {
       private:
         int                                m_runnum = 0, m_evtnum = 0;
         Gaudi::Property<std::vector<long>> m_randomSeeds{
-            this, "RandomSeeds", {}, "Seeds to be used in the random number generation"};
+            this, "RandomSeeds", {}, "Seeds to be used in the random number generation" };
       };
     } // namespace MultiInput
   }   // namespace Examples

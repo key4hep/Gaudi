@@ -129,21 +129,21 @@ StatusCode RootConnectionSetup::setCompression( std::string_view compression ) {
     else if ( alg.size() == 4 && strncasecmp( alg.data(), "LZMA", 4 ) == 0 )
       alg_code = ROOT::kLZMA;
     else
-      throw runtime_error( "ERROR: request to set unknown ROOT compression algorithm:" + std::string{alg} );
-    res = ::sscanf( std::string{compression.substr( idx + 1 )}.c_str(), "%d",
+      throw runtime_error( "ERROR: request to set unknown ROOT compression algorithm:" + std::string{ alg } );
+    res = ::sscanf( std::string{ compression.substr( idx + 1 ) }.c_str(), "%d",
                     &level ); // TODO: use C++17 std::from_chars instead...
     if ( res == 1 ) {
       s_compressionLevel = ROOT::CompressionSettings( alg_code, level );
       return StatusCode::SUCCESS;
     }
     throw runtime_error( "ERROR: request to set unknown ROOT compression level:" +
-                         std::string{compression.substr( idx + 1 )} );
-  } else if ( 1 == ::sscanf( std::string{compression}.c_str(), "%d", &level ) ) { // TODO: use C++17 std::from_chars
-                                                                                  // instead
+                         std::string{ compression.substr( idx + 1 ) } );
+  } else if ( 1 == ::sscanf( std::string{ compression }.c_str(), "%d", &level ) ) { // TODO: use C++17 std::from_chars
+                                                                                    // instead
     s_compressionLevel = level;
     return StatusCode::SUCCESS;
   }
-  throw runtime_error( "ERROR: request to set unknown ROOT compression mechanism:" + std::string{compression} );
+  throw runtime_error( "ERROR: request to set unknown ROOT compression mechanism:" + std::string{ compression } );
 #else
   if ( !compression.empty() ) {}
   return StatusCode::SUCCESS;
@@ -162,7 +162,7 @@ void RootConnectionSetup::setIncidentSvc( IIncidentSvc* s ) { m_incidentSvc.rese
 /// Standard constructor
 RootDataConnection::RootDataConnection( const IInterface* owner, std::string_view fname,
                                         std::shared_ptr<RootConnectionSetup> setup )
-    : IDataConnection( owner, std::string{fname} )
+    : IDataConnection( owner, std::string{ fname } )
     , m_setup( std::move( setup ) ) { //               01234567890123456789012345678901234567890
   // Check if FID: A82A3BD8-7ECB-DC11-8DC0-000423D950B0
   if ( fname.size() == 36 && fname[8] == '-' && fname[13] == '-' && fname[18] == '-' && fname[23] == '-' ) {
@@ -199,7 +199,7 @@ void RootDataConnection::badWriteError( std::string_view msg ) const {
 void RootDataConnection::saveStatistics( std::string_view statisticsFile ) {
   if ( m_statistics ) {
     m_statistics->Print();
-    if ( !statisticsFile.empty() ) m_statistics->SaveAs( std::string{statisticsFile}.c_str() );
+    if ( !statisticsFile.empty() ) m_statistics->SaveAs( std::string{ statisticsFile }.c_str() );
     m_statistics.reset();
   }
 }
@@ -209,7 +209,7 @@ void RootDataConnection::enableStatistics( std::string_view section ) {
   if ( m_statistics ) {
     TTree* t = getSection( section, false );
     if ( t ) {
-      m_statistics.reset( new TTreePerfStats( ( std::string{section} + "_ioperf" ).c_str(), t ) );
+      m_statistics.reset( new TTreePerfStats( ( std::string{ section } + "_ioperf" ).c_str(), t ) );
       return;
     }
     msgSvc() << MSG::WARNING << "Failed to enable perfstats for tree:" << section << endmsg;
@@ -368,10 +368,10 @@ TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
   auto   it = m_sections.find( section );
   TTree* t  = ( it != m_sections.end() ? it->second : nullptr );
   if ( !t ) {
-    t = (TTree*)m_file->Get( std::string{section}.c_str() );
+    t = (TTree*)m_file->Get( std::string{ section }.c_str() );
     if ( !t && create ) {
       TDirectory::TContext ctxt( m_file.get() );
-      t = new TTree( std::string{section}.c_str(), "Root data for Gaudi" );
+      t = new TTree( std::string{ section }.c_str(), "Root data for Gaudi" );
     }
     if ( t ) {
       int cacheSize = m_setup->cacheSize;
@@ -423,7 +423,7 @@ TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
           }
         }
       }
-      m_sections[std::string{section}] = t;
+      m_sections[std::string{ section }] = t;
     }
   }
   return t;
@@ -432,7 +432,7 @@ TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
 /// Access data branch by name: Get existing branch in write mode
 TBranch* RootDataConnection::getBranch( std::string_view section, std::string_view branch_name, TClass* cl, void* ptr,
                                         int buff_siz, int split_lvl ) {
-  string n = std::string{branch_name};
+  string n = std::string{ branch_name };
   std::replace_if(
       begin( n ), end( n ), []( const char c ) { return !isalnum( c ); }, '_' );
   n += ".";
@@ -441,7 +441,7 @@ TBranch* RootDataConnection::getBranch( std::string_view section, std::string_vi
   if ( !b && cl && m_file->IsWritable() ) {
     b = t->Branch( n.c_str(), cl->GetName(), (void*)( ptr ? &ptr : nullptr ), buff_siz, split_lvl );
   }
-  if ( !b ) b = t->GetBranch( std::string{branch_name}.c_str() );
+  if ( !b ) b = t->GetBranch( std::string{ branch_name }.c_str() );
   if ( b ) b->SetAutoDelete( kFALSE );
   return b;
 }
@@ -450,7 +450,7 @@ TBranch* RootDataConnection::getBranch( std::string_view section, std::string_vi
 int RootDataConnection::makeLink( std::string_view p ) {
   auto ip = std::find( std::begin( m_links ), std::end( m_links ), p );
   if ( ip != std::end( m_links ) ) return std::distance( std::begin( m_links ), ip );
-  m_links.push_back( std::string{p} );
+  m_links.push_back( std::string{ p } );
   return m_links.size() - 1;
 }
 
@@ -497,10 +497,10 @@ pair<int, unsigned long> RootDataConnection::save( std::string_view section, std
       }
     }
     b->SetAddress( &pObj );
-    return {b->Fill(), evt};
+    return { b->Fill(), evt };
   }
   if ( pObj ) { msgSvc() << MSG::ERROR << "Failed to access branch " << m_name << "/" << cnt << endmsg; }
-  return {-1, ~0};
+  return { -1, ~0 };
 }
 
 /// Load object
@@ -586,14 +586,14 @@ RootDataConnection::getMergeSection( std::string_view container, int entry ) con
             msgSvc() << MSG::VERBOSE << "MergeSection for:" << container << "  [" << entry << "]" << endmsg
                      << "FID:" << m_fid << " -> PFN:" << m_pfn << endmsg;
           }
-          return {&( m_linkSects[cnt] ), &c};
+          return { &( m_linkSects[cnt] ), &c };
         }
       }
     }
   }
   msgSvc() << MSG::DEBUG << "Return INVALID MergeSection for:" << container << "  [" << entry << "]" << endmsg
            << "FID:" << m_fid << " -> PFN:" << m_pfn << endmsg;
-  return {nullptr, nullptr};
+  return { nullptr, nullptr };
 }
 
 /// Create reference object from registry entry
@@ -605,28 +605,28 @@ void RootDataConnection::makeRef( const IRegistry& pR, RootRef& ref ) {
 /// Create reference object from values
 void RootDataConnection::makeRef( std::string_view name, long clid, int tech, std::string_view dbase,
                                   std::string_view cnt, int entry, RootRef& ref ) {
-  auto db   = ( dbase == m_fid ? std::string_view{s_local} : dbase );
+  auto db   = ( dbase == m_fid ? std::string_view{ s_local } : dbase );
   ref.entry = entry;
 
   int cdb = -1;
   if ( !db.empty() ) {
     auto idb = std::find_if( m_dbs.begin(), m_dbs.end(), [&]( const std::string& i ) { return i == db; } );
     cdb      = std::distance( m_dbs.begin(), idb );
-    if ( idb == m_dbs.end() ) m_dbs.push_back( std::string{db} );
+    if ( idb == m_dbs.end() ) m_dbs.push_back( std::string{ db } );
   }
 
   int ccnt = -1;
   if ( !cnt.empty() ) {
     auto icnt = std::find_if( m_conts.begin(), m_conts.end(), [&]( const std::string& i ) { return i == cnt; } );
     ccnt      = std::distance( m_conts.begin(), icnt );
-    if ( icnt == m_conts.end() ) m_conts.push_back( std::string{cnt} );
+    if ( icnt == m_conts.end() ) m_conts.push_back( std::string{ cnt } );
   }
 
   int clnk = -1;
   if ( !name.empty() ) {
     auto ilnk = std::find_if( m_links.begin(), m_links.end(), [&]( const std::string& i ) { return i == name; } );
     clnk      = std::distance( m_links.begin(), ilnk );
-    if ( ilnk == m_links.end() ) m_links.push_back( std::string{name} );
+    if ( ilnk == m_links.end() ) m_links.push_back( std::string{ name } );
   }
 
   ref.dbase     = cdb;

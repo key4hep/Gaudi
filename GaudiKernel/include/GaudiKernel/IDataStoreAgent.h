@@ -42,7 +42,7 @@ namespace details {
 
   public:
     template <typename G>
-    GenericDataStoreAgent( G&& g ) : f{std::forward<G>( g )} {}
+    GenericDataStoreAgent( G&& g ) : f{ std::forward<G>( g ) } {}
 
     bool analyse( IRegistry* pObj, int level ) override { return std::invoke( f, pObj, level ); }
   };
@@ -50,7 +50,7 @@ namespace details {
 
 template <typename F>
 ::details::GenericDataStoreAgent<F> makeDataStoreAgent( F&& f ) {
-  return {std::forward<F>( f )};
+  return { std::forward<F>( f ) };
 }
 
 #endif // GAUDIKERNEL_IDATASTOREAGENT_H

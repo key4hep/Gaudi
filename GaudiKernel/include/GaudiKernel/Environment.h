@@ -41,6 +41,6 @@
 namespace System {
   GAUDI_API std::string homeDirectory();
   GAUDI_API std::string tempDirectory();
-  GAUDI_API StatusCode resolveEnv( const std::string& var, std::string& res, int recusions = 124 );
+  GAUDI_API StatusCode  resolveEnv( const std::string& var, std::string& res, int recusions = 124 );
 } // namespace System
 #endif // GAUDIKERNEL_ENVIRONMENT_H

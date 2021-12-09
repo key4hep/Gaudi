@@ -34,7 +34,7 @@ private:
   double myatan();
 
 private:
-  Gaudi::Property<long> m_loops{this, "Loops", 1000000, ""};
+  Gaudi::Property<long> m_loops{ this, "Loops", 1000000, "" };
   int                   m_nevent = 0;
 };
 

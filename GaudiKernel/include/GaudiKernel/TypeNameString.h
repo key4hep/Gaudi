@@ -23,9 +23,9 @@ namespace Gaudi {
 
     public:
       template <size_t N>
-      TypeNameString( const char ( &tn )[N] ) : TypeNameString{std::string_view{tn}} {}
-      TypeNameString( std::string_view sv ) : TypeNameString{std::string{sv}} {}
-      TypeNameString( std::string tn ) : m_type{std::move( tn )} {
+      TypeNameString( const char ( &tn )[N] ) : TypeNameString{ std::string_view{ tn } } {}
+      TypeNameString( std::string_view sv ) : TypeNameString{ std::string{ sv } } {}
+      TypeNameString( std::string tn ) : m_type{ std::move( tn ) } {
         const auto slash_pos = m_type.find_first_of( "/" );
         m_haveType           = slash_pos != std::string::npos;
         if ( m_haveType ) {

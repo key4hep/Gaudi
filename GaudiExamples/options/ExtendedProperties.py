@@ -10,10 +10,9 @@
 #####################################################################################
 # Translation of ExtendedProperties.opts into python job options.
 # @author Marco Clemencic
+from Configurables import ExtendedProperties, GaudiExamplesCommonConf
 from Gaudi.Configuration import *
-from Configurables import ExtendedProperties
 
-from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
 from GaudiKernel.SystemOfUnits import *
@@ -39,37 +38,33 @@ xProps.MapIntDouble = {1: 0.1, 2: 0.2, 3: 0.3}
 
 # std::map<std::string,std::string>
 xProps.MapStringString = {
-    'a': 'sddsgsgsdgdggf',
-    'b': 'sddsgsgsdgdggf',
-    'c': 'sddsgsgsdgdggf'
+    "a": "sddsgsgsdgdggf",
+    "b": "sddsgsgsdgdggf",
+    "c": "sddsgsgsdgdggf",
 }
 
 # std::map<std::string,int>
-xProps.MapStringInt = {'a': 1, 'b': 2, "c": 3}
+xProps.MapStringInt = {"a": 1, "b": 2, "c": 3}
 
 # std::map<std::string,int>
-xProps.MapStringDouble = {'aa': 0.1, 'bb': 0.2, "cc": 3}
+xProps.MapStringDouble = {"aa": 0.1, "bb": 0.2, "cc": 3}
 
 # std::map<std::string,std::vector<std::string> >
 xProps.MapStringVectorOfStrings = {
-    'aaa': ['a', 'b', 'c'],
-    'bbb': ['a', 'b', 'c'],
-    'ccc': ['a', 'b', 'c']
+    "aaa": ["a", "b", "c"],
+    "bbb": ["a", "b", "c"],
+    "ccc": ["a", "b", "c"],
 }
 
 # std::map<std::string,std::vector<double> >
 xProps.MapStringVectorOfDoubles = {
-    'aaa': [1, 2, 3],
-    'bbb': [1., 2., 3.],
-    'ccc': [0.1, 0.2, 0.3]
+    "aaa": [1, 2, 3],
+    "bbb": [1.0, 2.0, 3.0],
+    "ccc": [0.1, 0.2, 0.3],
 }
 
 # std::map<std::string,std::vector<int> >
-xProps.MapStringVectorOfInts = {
-    'aaa': [1, 2, 3],
-    'bbb': [4, 5, 6],
-    'ccc': [7, 8, 9]
-}
+xProps.MapStringVectorOfInts = {"aaa": [1, 2, 3], "bbb": [4, 5, 6], "ccc": [7, 8, 9]}
 
 # std::map<int,int>
 xProps.MapIntInt = {1: 10, 2: 20, 3: 30}
@@ -87,13 +82,14 @@ xProps.EmptyMap = {}
 xProps.EmptyVector = []
 
 xProps.TupleStringIntDouble = ("hello", 10, 0.001)
-xProps.TupleString = ("hello", )
+xProps.TupleString = ("hello",)
 xProps.StdArrayDouble3 = (3.3, 2.2, 1.1)
-xProps.StdArrayInt1 = (42, )
+xProps.StdArrayInt1 = (42,)
 
-xProps.GaudiMapSS = {'a': '1', 'b': '2'}
+xProps.GaudiMapSS = {"a": "1", "b": "2"}
 
 # END of xProp configuration
 
 app = ApplicationMgr(
-    TopAlg=[xProps], EvtMax=1, EvtSel="NONE", HistogramPersistency="NONE")
+    TopAlg=[xProps], EvtMax=1, EvtSel="NONE", HistogramPersistency="NONE"
+)

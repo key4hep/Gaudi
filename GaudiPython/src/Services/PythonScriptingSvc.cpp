@@ -77,9 +77,9 @@ StatusCode PythonScriptingSvc::initialize()
 
   // Python 3 compatibility
 #if PY_MAJOR_VERSION >= 3
-  wchar_t* progName[] = {const_cast<wchar_t*>( L"GaudiPython" )};
+  wchar_t* progName[] = { const_cast<wchar_t*>( L"GaudiPython" ) };
 #else
-  char* progName[] = {const_cast<char*>( "GaudiPython" )};
+  char* progName[] = { const_cast<char*>( "GaudiPython" ) };
 #endif
 
   // Initialize the Python interpreter.  Required.
@@ -134,14 +134,14 @@ StatusCode PythonScriptingSvc::run()
 //----------------------------------------------------------------------------------
 {
   if ( !m_startupScript.empty() ) {
-    std::ifstream     file{m_startupScript};
+    std::ifstream     file{ m_startupScript };
     std::stringstream stream;
     if ( file ) {
       std::string buffer;
       file.seekg( 0, std::ios::end );
       buffer.reserve( file.tellg() );
       file.seekg( 0, std::ios::beg );
-      buffer.assign( ( std::istreambuf_iterator<char>{file} ), std::istreambuf_iterator<char>{} );
+      buffer.assign( ( std::istreambuf_iterator<char>{ file } ), std::istreambuf_iterator<char>{} );
       file.close();
       PyRun_SimpleString( buffer.c_str() );
     } else {

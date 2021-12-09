@@ -32,11 +32,10 @@ namespace Gaudi {
   void* Generic2D<AIDA::IProfile2D, TProfile2D>::cast( const std::string& className ) const {
     return className == "AIDA::IProfile2D"
                ? const_cast<AIDA::IProfile2D*>( static_cast<const AIDA::IProfile2D*>( this ) )
-               : className == "AIDA::IProfile"
-                     ? const_cast<AIDA::IProfile*>( static_cast<const AIDA::IProfile*>( this ) )
-                     : className == "AIDA::IBaseHistogram"
-                           ? const_cast<AIDA::IBaseHistogram*>( static_cast<const AIDA::IBaseHistogram*>( this ) )
-                           : nullptr;
+           : className == "AIDA::IProfile" ? const_cast<AIDA::IProfile*>( static_cast<const AIDA::IProfile*>( this ) )
+           : className == "AIDA::IBaseHistogram"
+               ? const_cast<AIDA::IBaseHistogram*>( static_cast<const AIDA::IBaseHistogram*>( this ) )
+               : nullptr;
   }
 
   template <>
@@ -61,7 +60,7 @@ std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( const std::string
   // Not implemented in ROOT! Can only use TProfile2D with no z-limits
   auto p = new Profile2D( new TProfile2D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1,
                                           &eY.front() /*,zlow,zup */ ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( const std::string& title, int binsX, double xlow,
@@ -69,13 +68,13 @@ std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( const std::string
                                                                double zlow, double zup ) {
   auto p =
       new Profile2D( new TProfile2D( title.c_str(), title.c_str(), binsX, xlow, xup, binsY, ylow, yup, zlow, zup ) );
-  return {p, p};
+  return { p, p };
 }
 
 std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( const AIDA::IProfile2D& hist ) {
   auto h = getRepresentation<AIDA::IProfile2D, TProfile2D>( hist );
   auto n = ( h ? new Profile2D( new TProfile2D( *h ) ) : nullptr );
-  return {n, n};
+  return { n, n };
 }
 
 Gaudi::Profile2D::Profile2D( TProfile2D* rep ) {

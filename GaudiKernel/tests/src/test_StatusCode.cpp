@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( short_circuiting ) {
       done = true;
       return sc;
     }
-    bool done{false};
+    bool done{ false };
   };
 
   // Check AND short-circuiting
@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE( chaining ) {
   BOOST_CHECK_EQUAL( steps, 3 );
 
   // category pass through
-  sc = StatusCode{MyErr::SUCCESS}.andThen( []() {
+  sc = StatusCode{ MyErr::SUCCESS }.andThen( []() {
     // no-op
   } );
   BOOST_CHECK( sc.isSuccess() );
@@ -428,7 +428,7 @@ BOOST_AUTO_TEST_CASE( chaining ) {
   // return value of orThrow
 #pragma GCC diagnostic push
 #pragma GCC diagnostic error "-Wunused-result"
-  StatusCode{StatusCode::SUCCESS}.orThrow( "no error", "test_StatusCode" );
+  StatusCode{ StatusCode::SUCCESS }.orThrow( "no error", "test_StatusCode" );
 #pragma GCC diagnostic pop
 
   // throw

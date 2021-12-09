@@ -24,9 +24,9 @@ namespace {
 } // namespace
 
 BOOST_AUTO_TEST_CASE( declareProperty ) {
-  Gaudi::Property<std::string> p1{"v1"};
-  Gaudi::Property<std::string> p2{"v2"};
-  Gaudi::Property<std::string> p3{"v3"};
+  Gaudi::Property<std::string> p1{ "v1" };
+  Gaudi::Property<std::string> p2{ "v2" };
+  Gaudi::Property<std::string> p3{ "v3" };
   {
     AnonymousPropertyHolder mgr;
     mgr.declareProperty( "p1", p1 );
@@ -51,23 +51,23 @@ BOOST_AUTO_TEST_CASE( declareProperty ) {
 BOOST_AUTO_TEST_CASE( backward_compatibility ) {
   {
     AnonymousPropertyHolder                   mgr;
-    Gaudi::Property<std::vector<std::string>> vp{&mgr, "name", {}};
+    Gaudi::Property<std::vector<std::string>> vp{ &mgr, "name", {} };
 
-    auto sc = Gaudi::Utils::setProperty( &mgr, "name", std::vector<std::string>{{"All"}} );
+    auto sc = Gaudi::Utils::setProperty( &mgr, "name", std::vector<std::string>{ { "All" } } );
 
     BOOST_CHECK( sc.isSuccess() );
-    BOOST_CHECK( vp == std::vector<std::string>{{"All"}} );
+    BOOST_CHECK( vp == std::vector<std::string>{ { "All" } } );
   }
   {
     AnonymousPropertyHolder mgr;
-    Gaudi::Property<bool>   p{&mgr, "flag", false};
+    Gaudi::Property<bool>   p{ &mgr, "flag", false };
 
     BOOST_CHECK( mgr.setProperty( "flag", "true" ) );
     BOOST_CHECK_EQUAL( p, true );
   }
   {
     AnonymousPropertyHolder mgr;
-    Gaudi::Property<int>    p{&mgr, "int_prop", false};
+    Gaudi::Property<int>    p{ &mgr, "int_prop", false };
 
     auto orig_policy =
         Gaudi::Details::Property::setParsingErrorPolicy( Gaudi::Details::Property::ParsingErrorPolicy::Exception );

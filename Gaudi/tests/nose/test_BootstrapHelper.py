@@ -10,4 +10,5 @@
 #####################################################################################
 def test():
     from Gaudi.Main import BootstrapHelper
+
     bsh = BootstrapHelper()

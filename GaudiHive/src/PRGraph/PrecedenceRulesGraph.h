@@ -52,11 +52,11 @@ namespace precedence {
                     long long int start = -1 )
         : m_name( name ), m_index( index ), m_rank( rank ), m_runtime( runtime ), m_start( start ) {}
     std::string   m_name;
-    int           m_index{-1};
-    int           m_rank{-1};
-    long int      m_runtime{-1}; // us
-    long long int m_start{-1};   // ns
-    int           m_eccentricity{-1};
+    int           m_index{ -1 };
+    int           m_rank{ -1 };
+    long int      m_runtime{ -1 }; // us
+    long long int m_start{ -1 };   // ns
+    int           m_eccentricity{ -1 };
   };
 
   using PrecTrace       = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoTraceProps>;
@@ -74,19 +74,19 @@ namespace precedence {
         , m_allPass( allPass )
         , m_isBlocking( algo->isBlocking() ) {}
 
-    std::string m_name{""};
-    int         m_nodeIndex{-1};
-    int         m_algoIndex{-1};
-    int         m_rank{-1};
+    std::string m_name{ "" };
+    int         m_nodeIndex{ -1 };
+    int         m_algoIndex{ -1 };
+    int         m_rank{ -1 };
     /// Algorithm representative behind the AlgorithmNode
-    Gaudi::Algorithm* m_algorithm{nullptr};
+    Gaudi::Algorithm* m_algorithm{ nullptr };
 
     /// Whether the selection result is negated or not
-    bool m_inverted{false};
+    bool m_inverted{ false };
     /// Whether the selection result is relevant or always "pass"
-    bool m_allPass{false};
+    bool m_allPass{ false };
     /// If an algorithm is blocking
-    bool m_isBlocking{false};
+    bool m_isBlocking{ false };
   };
 
   struct DecisionHubProps {
@@ -110,7 +110,7 @@ namespace precedence {
     /// Applicable to both concurrent and sequential cases.
     bool m_modePromptDecision;
     /// Whether the selection result is negated or not
-    bool m_inverted{false};
+    bool m_inverted{ false };
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
@@ -200,8 +200,8 @@ namespace precedence {
   struct EntityState {
     EntityState( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator, bool conditionsEnabled )
         : m_slot( slot ), m_conditionsEnabled( conditionsEnabled ) {
-      SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream            log{msgSvc, "EntityState.Getter"};
+      SmartIF<IMessageSvc> msgSvc{ svcLocator };
+      MsgStream            log{ msgSvc, "EntityState.Getter" };
 
       // Figure if we can discover the data object states
       m_whiteboard = svcLocator->service<IHiveWhiteBoard>( "EventDataSvc", false );
@@ -255,13 +255,13 @@ namespace precedence {
 
     SmartIF<IHiveWhiteBoard> m_whiteboard;
     SmartIF<ICondSvc>        m_condSvc;
-    bool                     m_conditionsEnabled{false};
+    bool                     m_conditionsEnabled{ false };
   };
 
   struct StartTime {
     StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
-      SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream            log{msgSvc, "StartTime.Getter"};
+      SmartIF<IMessageSvc> msgSvc{ svcLocator };
+      MsgStream            log{ msgSvc, "StartTime.Getter" };
 
       // Figure if we can discover the algorithm timings
       m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
@@ -300,8 +300,8 @@ namespace precedence {
 
   struct EndTime {
     EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
-      SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream            log{msgSvc, "EndTime.Getter"};
+      SmartIF<IMessageSvc> msgSvc{ svcLocator };
+      MsgStream            log{ msgSvc, "EndTime.Getter" };
 
       // Figure if we can discover the algorithm timings
       m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
@@ -339,8 +339,8 @@ namespace precedence {
 
   struct Duration {
     Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
-      SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream            log{msgSvc, "Duration.Getter"};
+      SmartIF<IMessageSvc> msgSvc{ svcLocator };
+      MsgStream            log{ msgSvc, "Duration.Getter" };
 
       // Figure if we can discover the algorithm timings
       m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
@@ -474,7 +474,7 @@ namespace concurrency {
     /// Whether always passing regardless of daughter results
     bool m_allPass;
     /// Whether the selection result is negated or not
-    bool m_inverted{false};
+    bool m_inverted{ false };
     /// All direct daughter nodes in the tree
     std::vector<ControlFlowNode*> m_children;
     /// Direct parent nodes
@@ -726,12 +726,12 @@ namespace concurrency {
     /// facilities for algorithm precedence tracing
     precedence::PrecTrace                              m_precTrace;
     std::map<std::string, precedence::AlgoTraceVertex> m_prec_trace_map;
-    bool                                               m_enableAnalysis{false};
+    bool                                               m_enableAnalysis{ false };
     /// BGL-based graph of precedence rules
     precedence::PRGraph m_PRGraph;
 
     /// Enable conditions realm of precedence rules
-    bool m_conditionsRealmEnabled{false};
+    bool m_conditionsRealmEnabled{ false };
   };
 
 } // namespace concurrency

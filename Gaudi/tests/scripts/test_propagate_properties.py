@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
 from Gaudi.Configuration import *
 
 # use cases:
@@ -33,7 +34,7 @@ class PlainConfigurable(ConfigurableAlgTool):
         "LstA": [CU],
         "LstB": [CU],
         "LstC": [CU],
-        "LstD": [CU]
+        "LstD": [CU],
     }
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
@@ -42,10 +43,10 @@ class PlainConfigurable(ConfigurableAlgTool):
             setattr(self, n, v)
 
     def getDlls(self):
-        return 'None'
+        return "None"
 
     def getType(self):
-        return 'PlainConfigurable'
+        return "PlainConfigurable"
 
 
 class Master(ConfigurableUser):
@@ -57,14 +58,14 @@ class Master(ConfigurableUser):
         "LstA": [PU],
         "LstB": [PU],
         "LstC": [PU],
-        "LstD": [PU]
+        "LstD": [PU],
     }
 
     def __apply_configuration__(self):
         self.propagateProperties(others=[PlainConfigurable()])
 
     def getGaudiType(self):
-        return 'Test'
+        return "Test"
 
 
 class SubModule(ConfigurableUser):
@@ -76,11 +77,11 @@ class SubModule(ConfigurableUser):
         "LstA": [CU],
         "LstB": [CU],
         "LstC": [CU],
-        "LstD": [CU]
+        "LstD": [CU],
     }
 
     def getGaudiType(self):
-        return 'Test'
+        return "Test"
 
 
 class SuperModule(ConfigurableUser):
@@ -92,7 +93,7 @@ class SuperModule(ConfigurableUser):
         "LstA": [PU],
         "LstB": [PU],
         "LstC": [PU],
-        "LstD": [PU]
+        "LstD": [PU],
     }
     __used_configurables__ = [SubModule]
 
@@ -100,7 +101,7 @@ class SuperModule(ConfigurableUser):
         self.propagateProperties()
 
     def getGaudiType(self):
-        return 'Test'
+        return "Test"
 
 
 pc = PlainConfigurable(IntA=CS, IntC=CS, LstA=[CS], LstC=[CS])
@@ -111,9 +112,11 @@ sup = SuperModule(IntA=PS, IntB=PS, LstA=[PS], LstB=[PS])
 
 # apply all ConfigurableUser instances
 from GaudiKernel.Configurable import applyConfigurableUsers
+
 applyConfigurableUsers()
 
 from pprint import pprint
+
 pprint(configurationDict())
 
 
@@ -121,8 +124,8 @@ def check(conf, prop, exp):
     v = conf.getProp(prop)
     good = v == exp
     if not good:
-        print("ERROR:", end=' ')
-    print("%s.%s is %r (expected %r)," % (conf.name(), prop, v, exp), end=' ')
+        print("ERROR:", end=" ")
+    print("%s.%s is %r (expected %r)," % (conf.name(), prop, v, exp), end=" ")
     if hasattr(conf, prop):
         print("set")
     else:
@@ -130,22 +133,24 @@ def check(conf, prop, exp):
     return good
 
 
-good = check(pc, "IntA", PS) and \
-    check(pc, "IntB", PS) and \
-    check(pc, "IntC", CS) and \
-    check(pc, "IntD", PU) and \
-    check(sub, "IntA", PS) and \
-    check(sub, "IntB", PS) and \
-    check(sub, "IntC", CS) and \
-    check(sub, "IntD", PU) and \
-    check(pc, "LstA", [PS]) and \
-    check(pc, "LstB", [PS]) and \
-    check(pc, "LstC", [CS]) and \
-    check(pc, "LstD", [PU]) and \
-    check(sub, "LstA", [PS]) and \
-    check(sub, "LstB", [PS]) and \
-    check(sub, "LstC", [CS]) and \
-    check(sub, "LstD", [PU])
+good = (
+    check(pc, "IntA", PS)
+    and check(pc, "IntB", PS)
+    and check(pc, "IntC", CS)
+    and check(pc, "IntD", PU)
+    and check(sub, "IntA", PS)
+    and check(sub, "IntB", PS)
+    and check(sub, "IntC", CS)
+    and check(sub, "IntD", PU)
+    and check(pc, "LstA", [PS])
+    and check(pc, "LstB", [PS])
+    and check(pc, "LstC", [CS])
+    and check(pc, "LstD", [PU])
+    and check(sub, "LstA", [PS])
+    and check(sub, "LstB", [PS])
+    and check(sub, "LstC", [CS])
+    and check(sub, "LstD", [PU])
+)
 
 if not good:
     sys.exit(1)

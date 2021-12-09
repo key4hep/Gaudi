@@ -60,7 +60,7 @@ private:
   StatusCode i_outStreamTransition();
 
   Gaudi::Property<std::vector<std::string>> m_outputStreamNames{
-      this, "OutputStreams", {}, "OutputStream instances that can be called."};
+      this, "OutputStreams", {}, "OutputStream instances that can be called." };
 
   /// Internal storage for the OutputStreams to call.
   OutStreamsMapType m_outputStreams;

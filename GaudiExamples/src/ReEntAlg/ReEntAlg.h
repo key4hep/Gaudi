@@ -26,7 +26,7 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<unsigned int> m_sleep{this, "SleepFor", 1000, "ms to sleep in execute"};
+  Gaudi::Property<unsigned int> m_sleep{ this, "SleepFor", 1000, "ms to sleep in execute" };
 };
 
 #endif // GAUDIEXAMPLES_REENTALG_H

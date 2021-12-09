@@ -9,8 +9,9 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
+
 # cpluginsvc is a ctypes-based wrapper for the C-exposed API of GaudiPluginService
-__doc__ = '''
+__doc__ = """
 cpluginsvc is a ctypes-based wrapper for the C-API of the GaudiPluginService.
 
 e.g.:
@@ -25,7 +26,7 @@ e.g.:
 ...     print(f)
 ...     for k,v in f.properties.iteritems():
 ...         print ("\t%s: %s" % (k,v))
-'''
+"""
 
 import ctypes
 import ctypes.util
@@ -45,12 +46,13 @@ def _get_filename():
     if _libname:
         return _libname
     import platform
+
     name = platform.system()
 
     fname = {
-        'Darwin': "libGaudiPluginService.dylib",
-        'Windows': "libGaudiPluginService.dll",
-        'Linux': "libGaudiPluginService.so",
+        "Darwin": "libGaudiPluginService.dylib",
+        "Windows": "libGaudiPluginService.dll",
+        "Linux": "libGaudiPluginService.so",
     }[name]
     return fname
 
@@ -60,8 +62,8 @@ _lib = ctypes.CDLL(_libname, ctypes.RTLD_GLOBAL)
 
 
 class Registry(ctypes.Structure):
-    '''Registry holds the list of factories known by the gaudi PluginService.
-    '''
+    """Registry holds the list of factories known by the gaudi PluginService."""
+
     _fields_ = [("_registry", ctypes.c_void_p)]
 
     @property
@@ -80,7 +82,7 @@ _instance = None
 
 
 def registry():
-    '''registry returns the singleton-like instance of the plugin service.'''
+    """registry returns the singleton-like instance of the plugin service."""
 
     global _instance
     if _instance:
@@ -90,9 +92,9 @@ def registry():
 
 
 def factories():
-    '''
+    """
     factories returns the list of components factory informations known to the plugin service
-    '''
+    """
     return registry().factories
 
 
@@ -106,6 +108,7 @@ class Factory(ctypes.Structure):
     - the C++ class name of that component
     - the properties which may decorate that component.
     """
+
     _fields_ = [
         ("_registry", Registry),
         ("_id", ctypes.c_char_p),
@@ -113,19 +116,19 @@ class Factory(ctypes.Structure):
 
     @property
     def name(self):
-        return self._id.decode('ascii')
+        return self._id.decode("ascii")
 
     @property
     def library(self):
-        return _lib.cgaudi_factory_get_library(self).decode('ascii')
+        return _lib.cgaudi_factory_get_library(self).decode("ascii")
 
     @property
     def type(self):
-        return _lib.cgaudi_factory_get_type(self).decode('ascii')
+        return _lib.cgaudi_factory_get_type(self).decode("ascii")
 
     @property
     def classname(self):
-        return _lib.cgaudi_factory_get_classname(self).decode('ascii')
+        return _lib.cgaudi_factory_get_classname(self).decode("ascii")
 
     @property
     def properties(self):
@@ -137,8 +140,7 @@ class Factory(ctypes.Structure):
         return props
 
     def load(self):
-        '''load the C++ library hosting this factory
-        '''
+        """load the C++ library hosting this factory"""
         return ctypes.CDLL(self.library, ctypes.RTLD_GLOBAL)
 
     def __repr__(self):
@@ -154,10 +156,11 @@ class Factory(ctypes.Structure):
 
 
 class Property(ctypes.Structure):
-    '''
+    """
     Property is a pair (key, value) optionally decorating a factory.
     It is used to attach additional informations about a factory.
-    '''
+    """
+
     _fields_ = [
         ("_registry", Registry),
         ("_id", ctypes.c_char_p),
@@ -166,56 +169,67 @@ class Property(ctypes.Structure):
 
     @property
     def key(self):
-        return _lib.cgaudi_property_get_key(self).decode('ascii')
+        return _lib.cgaudi_property_get_key(self).decode("ascii")
 
     @property
     def value(self):
-        return _lib.cgaudi_property_get_value(self).decode('ascii')
+        return _lib.cgaudi_property_get_value(self).decode("ascii")
 
     pass
 
 
-_functions_list = [(
-    "cgaudi_pluginsvc_instance",
-    [],
-    Registry,
-), (
-    "cgaudi_pluginsvc_get_factory_size",
-    [Registry],
-    ctypes.c_int,
-), (
-    "cgaudi_pluginsvc_get_factory_at",
-    [Registry, ctypes.c_int],
-    Factory,
-), (
-    "cgaudi_factory_get_library",
-    [Factory],
-    ctypes.c_char_p,
-), (
-    "cgaudi_factory_get_type",
-    [Factory],
-    ctypes.c_char_p,
-), (
-    "cgaudi_factory_get_classname",
-    [Factory],
-    ctypes.c_char_p,
-), (
-    "cgaudi_factory_get_property_size",
-    [Factory],
-    ctypes.c_int,
-), (
-    "cgaudi_factory_get_property_at",
-    [Factory, ctypes.c_int],
-    Property,
-), (
-    "cgaudi_property_get_key",
-    [Property],
-    ctypes.c_char_p,
-), (
-    "cgaudi_property_get_value",
-    [Property],
-    ctypes.c_char_p,
-)]
+_functions_list = [
+    (
+        "cgaudi_pluginsvc_instance",
+        [],
+        Registry,
+    ),
+    (
+        "cgaudi_pluginsvc_get_factory_size",
+        [Registry],
+        ctypes.c_int,
+    ),
+    (
+        "cgaudi_pluginsvc_get_factory_at",
+        [Registry, ctypes.c_int],
+        Factory,
+    ),
+    (
+        "cgaudi_factory_get_library",
+        [Factory],
+        ctypes.c_char_p,
+    ),
+    (
+        "cgaudi_factory_get_type",
+        [Factory],
+        ctypes.c_char_p,
+    ),
+    (
+        "cgaudi_factory_get_classname",
+        [Factory],
+        ctypes.c_char_p,
+    ),
+    (
+        "cgaudi_factory_get_property_size",
+        [Factory],
+        ctypes.c_int,
+    ),
+    (
+        "cgaudi_factory_get_property_at",
+        [Factory, ctypes.c_int],
+        Property,
+    ),
+    (
+        "cgaudi_property_get_key",
+        [Property],
+        ctypes.c_char_p,
+    ),
+    (
+        "cgaudi_property_get_value",
+        [Property],
+        ctypes.c_char_p,
+    ),
+]
 
 for f in _functions_list:
     n = f[0]
@@ -233,8 +247,7 @@ if __name__ == "__main__":
         try:
             f.load()
         except Exception:
-            print("** could not load [%s] for factory [%s]" % (f.library,
-                                                               f.name))
+            print("** could not load [%s] for factory [%s]" % (f.library, f.name))
             continue
         print(f)
         for k, v in f.properties.items():

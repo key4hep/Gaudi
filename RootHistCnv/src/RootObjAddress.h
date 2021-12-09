@@ -29,7 +29,7 @@ namespace RootHistCnv {
     /// String parameters to be accessed
     std::string m_par[2];
     /// Integer parameters to be accessed
-    unsigned long m_ipar[2] = {0xFFFFFFFF, 0xFFFFFFFF};
+    unsigned long m_ipar[2] = { 0xFFFFFFFF, 0xFFFFFFFF };
     /// Pointer to corresponding directory
     IRegistry* m_pRegistry = nullptr;
     /// Pointer to TObject
@@ -56,8 +56,8 @@ namespace RootHistCnv {
     RootObjAddress( long svc, const CLID& clid, std::string_view p1 = {}, std::string_view p2 = {},
                     unsigned long ip1 = 0, unsigned long ip2 = 0, TObject* tObj = nullptr )
         : m_svcType( svc ), m_clID( clid ), m_tObj( tObj ) {
-      m_par[0]  = std::string{p1};
-      m_par[1]  = std::string{p2};
+      m_par[0]  = std::string{ p1 };
+      m_par[1]  = std::string{ p2 };
       m_ipar[0] = ip1;
       m_ipar[1] = ip2;
     }

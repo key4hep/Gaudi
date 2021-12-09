@@ -40,7 +40,7 @@ namespace GaudiUtils {
     /// the generic hash function
     inline std::size_t operator()( const T& key ) const {
       const char* p = reinterpret_cast<const char*>( &key );
-      return std::accumulate( p, p + sizeof( T ), std::size_t{0},
+      return std::accumulate( p, p + sizeof( T ), std::size_t{ 0 },
                               []( std::size_t res, const char& c ) { return ( res << 1 ) ^ c; } );
     }
     // ========================================================================

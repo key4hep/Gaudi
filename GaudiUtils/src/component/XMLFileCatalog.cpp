@@ -301,7 +301,7 @@ string XMLFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const {
 void XMLFileCatalog::dropMetaData( CSTR fid, CSTR attr ) const {
   vector<DOMNode*> gbc;
   DOMNode*         fn = getDoc( true )->getElementById( XMLStr( fid ) );
-  for ( XMLCollection c{child( fn, MetaNode )}; c; ++c )
+  for ( XMLCollection c{ child( fn, MetaNode ) }; c; ++c )
     if ( attr[0] == '*' || !c.attr( attr ).empty() ) gbc.push_back( c );
   for ( const auto& i : gbc ) fn->removeChild( i );
 }
@@ -353,7 +353,7 @@ void XMLFileCatalog::deletePFN( CSTR pfn ) const {
 std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) const {
   if ( readOnly() ) {
     printError( "Cannot update readonly catalog!" );
-    return {nullptr, nullptr};
+    return { nullptr, nullptr };
   }
 
   /// It creates a new node File with name = fid in the XML file catalog
@@ -383,7 +383,7 @@ std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) co
     file->appendChild( logelem );
     m_update = true;
   }
-  return {logelem, phyelem};
+  return { logelem, phyelem };
 }
 // ----------------------------------------------------------------------------
 void XMLFileCatalog::registerPFN( CSTR fid, CSTR pfn, CSTR ftype ) const {
@@ -490,7 +490,7 @@ string XMLFileCatalog::getfile( bool create ) {
     if ( create && !exist ) {
       MsgStream log( m_msgSvc, "XMLCatalog" );
       log << MSG::INFO << "File '" << path << "' does not exist. New file created." << endmsg;
-      ofstream out{path};
+      ofstream out{ path };
       if ( !m_rdOnly && out.is_open() ) {
         out << (CSTR)EmptyCatalog << endl;
       } else {

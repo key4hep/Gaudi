@@ -57,7 +57,7 @@ namespace {
 
     Entry( std::string_view id, std::unique_ptr<DataObject> data, std::unique_ptr<IOpaqueAddress> addr,
            allocator_type alloc ) noexcept
-        : m_data{std::move( data )}, m_addr{std::move( addr )}, m_identifierStorage{id, alloc} {
+        : m_data{ std::move( data ) }, m_addr{ std::move( addr ) }, m_identifierStorage{ id, alloc } {
       if ( m_data ) m_data->setRegistry( this );
       if ( m_addr ) m_addr->setRegistry( this );
     }
@@ -99,23 +99,23 @@ namespace {
     LocalArena  m_resource;
     std::size_t m_est_size;
     // Optional purely to make [re]construction simpler, should "always" be valid
-    std::optional<Map> m_store{std::in_place, &m_resource};
+    std::optional<Map> m_store{ std::in_place, &m_resource };
     static_assert( std::is_same_v<typename Map::key_type, std::string_view> );
 
     const auto& emplace( std::string_view k, std::unique_ptr<DataObject> d, std::unique_ptr<IOpaqueAddress> a = {} ) {
       // tricky way to insert a string_view key which points to the
       // string contained in the mapped type...
       auto [i, b] = m_store->try_emplace( k, k, std::move( d ), std::move( a ), &m_resource );
-      if ( !b ) throw std::runtime_error( "failed to insert " + std::string{k} );
+      if ( !b ) throw std::runtime_error( "failed to insert " + std::string{ k } );
       auto nh  = m_store->extract( i );
       nh.key() = nh.mapped().identifierView(); // "re-point" key to the string contained in the Entry
       auto r   = m_store->insert( std::move( nh ) );
-      if ( !r.inserted ) throw std::runtime_error( "failed to insert " + std::string{k} );
+      if ( !r.inserted ) throw std::runtime_error( "failed to insert " + std::string{ k } );
       return r.position->second;
     }
 
   public:
-    Store( std::size_t est_size, std::size_t pool_size ) : m_resource{pool_size}, m_est_size{est_size} {}
+    Store( std::size_t est_size, std::size_t pool_size ) : m_resource{ pool_size }, m_est_size{ est_size } {}
     [[nodiscard]] bool        empty() const { return m_store->empty(); }
     [[nodiscard]] std::size_t size() const { return m_store->size(); }
     [[nodiscard]] std::size_t used_bytes() const noexcept { return m_resource.size(); }
@@ -162,7 +162,7 @@ namespace {
   StatusCode dummy( std::string s ) {
     std::string trace;
     System::backTrace( trace, 6, 2 );
-    throw std::logic_error{"Unsupported Function Called: " + s + "\n" + trace};
+    throw std::logic_error{ "Unsupported Function Called: " + s + "\n" + trace };
     return StatusCode::FAILURE;
   }
 
@@ -199,12 +199,12 @@ namespace {
   public:
     template <typename F>
     decltype( auto ) with_lock( F&& f ) {
-      WriteLock lock{m_mtx};
+      WriteLock lock{ m_mtx };
       return f( m_obj );
     }
     template <typename F>
     decltype( auto ) with_lock( F&& f ) const {
-      ReadLock lock{m_mtx};
+      ReadLock lock{ m_mtx };
       return f( m_obj );
     }
   };
@@ -219,7 +219,7 @@ namespace {
   template <typename Fun>
   StatusCode fwd( Fun&& f ) {
     return s_current ? s_current->with_lock( std::forward<Fun>( f ) )
-                     : StatusCode{IDataProviderSvc::Status::INVALID_ROOT};
+                     : StatusCode{ IDataProviderSvc::Status::INVALID_ROOT };
   }
 
 } // namespace
@@ -235,14 +235,16 @@ namespace {
  * @version 1.0
  */
 class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard> {
-  Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
-  Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
-  Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
-  Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc"};
-  Gaudi::Property<size_t>      m_slots{this, "EventSlots", 1, "number of event slots"};
-  Gaudi::Property<bool>        m_printPoolStats{this, "PrintPoolStats", false, "Print memory pool statistics"};
-  Gaudi::Property<std::size_t> m_poolSize{this, "PoolSize", 1024, "Initial per-event memory pool size [KiB]"};
-  Gaudi::Property<std::size_t> m_estStoreBuckets{this, "StoreBuckets", 100, "Estimated number of buckets in the store"};
+  Gaudi::Property<CLID>        m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
+  Gaudi::Property<std::string> m_rootName{ this, "RootName", "/Event", "name of root entry" };
+  Gaudi::Property<bool>        m_forceLeaves{ this, "ForceLeaves", false,
+                                       "force creation of default leaves on registerObject" };
+  Gaudi::Property<std::string> m_loader{ this, "DataLoader", "EventPersistencySvc" };
+  Gaudi::Property<size_t>      m_slots{ this, "EventSlots", 1, "number of event slots" };
+  Gaudi::Property<bool>        m_printPoolStats{ this, "PrintPoolStats", false, "Print memory pool statistics" };
+  Gaudi::Property<std::size_t> m_poolSize{ this, "PoolSize", 1024, "Initial per-event memory pool size [KiB]" };
+  Gaudi::Property<std::size_t> m_estStoreBuckets{ this, "StoreBuckets", 100,
+                                                  "Estimated number of buckets in the store" };
   mutable Gaudi::Accumulators::AveragingCounter<std::size_t> m_usedPoolSize, m_servedPoolAllocations,
       m_usedPoolAllocations, m_storeEntries, m_storeBuckets;
 
@@ -284,10 +286,10 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
       this,
       "InhibitedPathPrefixes",
       {},
-      "Prefixes of TES locations that will not be loaded by the persistency service "};
+      "Prefixes of TES locations that will not be loaded by the persistency service " };
   Gaudi::Property<bool> m_followLinksToAncestors{
       this, "FollowLinksToAncestors", true,
-      "Load objects which reside in files other than the one corresponding to the root of the event store"};
+      "Load objects which reside in files other than the one corresponding to the root of the event store" };
   std::string_view m_onlyThisID; // let's be a bit risky... we 'know' when the underlying string goes out of scope...
 
 public:
@@ -307,7 +309,7 @@ public:
   size_t     getNumberOfStores() const override { return m_slots; }
   size_t     getPartitionNumber( int eventnumber ) const override;
   bool       exists( const DataObjID& id ) override {
-    DataObject* pObject{nullptr};
+    DataObject* pObject{ nullptr };
     return findObject( id.fullKey(), pObject ).isSuccess();
   }
 
@@ -343,9 +345,9 @@ public:
     return ( obj && obj->registry() ) ? unregisterObject( obj->registry()->identifier() ) : StatusCode::FAILURE;
   }
   StatusCode unregisterObject( DataObject* obj, std::string_view sr ) override {
-    return !obj ? unregisterObject( sr )
-                : obj->registry() ? unregisterObject( ( obj->registry()->identifier() + '/' ).append( sr ) )
-                                  : StatusCode::FAILURE;
+    return !obj              ? unregisterObject( sr )
+           : obj->registry() ? unregisterObject( ( obj->registry()->identifier() + '/' ).append( sr ) )
+                             : StatusCode::FAILURE;
   };
 
   StatusCode retrieveObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) override;
@@ -430,7 +432,7 @@ size_t EvtStoreSvc::allocateStore( int evtnumber ) {
 }
 /// Set the number of event slots (copies of DataSvc objects).
 StatusCode EvtStoreSvc::setNumberOfStores( size_t slots ) {
-  if ( slots < size_t{1} ) {
+  if ( slots < size_t{ 1 } ) {
     error() << "Invalid number of slots (" << slots << ")" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -489,7 +491,7 @@ StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* 
   return fwd( [&]( Partition& p ) {
     top      = normalize_path( top, rootName() );
     auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
-    std::set<const Entry*, decltype( cmp )> keys{std::move( cmp )};
+    std::set<const Entry*, decltype( cmp )> keys{ std::move( cmp ) };
     for ( const auto& v : *p.store ) {
       if ( boost::algorithm::starts_with( v.second.identifier(), top ) ) keys.insert( &v.second );
     }
@@ -513,7 +515,7 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, DataObject* pObject ) {
   if ( UNLIKELY( !fwd( []( Partition& p ) {
                     return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
                   } ).isSuccess() ) ) {
-    throw GaudiException{"setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE};
+    throw GaudiException{ "setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE };
   }
   return registerObject( nullptr, root_path, pObject );
 }
@@ -527,15 +529,15 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
   if ( UNLIKELY( !fwd( []( Partition& p ) {
                     return p.store->empty() ? StatusCode::SUCCESS : StatusCode::FAILURE;
                   } ).isSuccess() ) ) {
-    throw GaudiException{"setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE};
+    throw GaudiException{ "setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE };
   }
   if ( !rootAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
   if ( !m_followLinksToAncestors ) m_onlyThisID = rootAddr->par()[0];
   auto object = createObj( *m_dataLoader, *rootAddr ); // Call data loader
   if ( !object ) return Status::INVALID_OBJECT;
   if ( msgLevel( MSG::DEBUG ) ) { debug() << "Root Object " << root_path << " created " << endmsg; }
-  LocalArena dummy_arena{root_path.size() + 1};
-  auto       dummy = Entry{root_path, {}, {}, &dummy_arena};
+  LocalArena dummy_arena{ root_path.size() + 1 };
+  auto       dummy = Entry{ root_path, {}, {}, &dummy_arena };
   object->setRegistry( &dummy );
   rootAddr->setRegistry( &dummy );
   auto status = m_dataLoader->fillObjRefs( rootAddr.get(), object.get() );
@@ -576,10 +578,10 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
 
   auto object = createObj( *m_dataLoader, *addr ); // Call data loader
   if ( !object ) return Status::INVALID_OBJECT;
-  auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + std::string{path};
+  auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + std::string{ path };
   // the data loader expects the path _including_ the root
-  LocalArena dummy_arena{fullpath.size() + 1};
-  auto       dummy = Entry{fullpath, {}, {}, &dummy_arena};
+  LocalArena dummy_arena{ fullpath.size() + 1 };
+  auto       dummy = Entry{ fullpath, {}, {}, &dummy_arena };
   object->setRegistry( &dummy );
   addr->setRegistry( &dummy );
   auto status = m_dataLoader->fillObjRefs( addr.get(), object.get() );
@@ -603,7 +605,7 @@ StatusCode EvtStoreSvc::registerObject( std::string_view parentPath, std::string
                                         DataObject* pObject ) {
   return parentPath.empty()
              ? registerObject( nullptr, objectPath, pObject )
-             : registerObject( nullptr, std::string{parentPath}.append( "/" ).append( objectPath ), pObject );
+             : registerObject( nullptr, std::string{ parentPath }.append( "/" ).append( objectPath ), pObject );
 }
 StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view path, DataObject* pObject ) {
   if ( parentObj ) return StatusCode::FAILURE;

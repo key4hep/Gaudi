@@ -14,6 +14,7 @@ from GaudiTesting.BaseTest import FilePreprocessor, normalizeExamples
 class DropUntil(FilePreprocessor):
     def __init__(self, regexp):
         import re
+
         self.regexp = re.compile(regexp)
         self._found = False
 
@@ -32,6 +33,7 @@ class DropUntil(FilePreprocessor):
 class TakeUntil(FilePreprocessor):
     def __init__(self, regexp):
         import re
+
         self.regexp = re.compile(regexp)
         self._found = False
 
@@ -48,7 +50,7 @@ class TakeUntil(FilePreprocessor):
 
 
 preprocessor = (
-    normalizeExamples + DropUntil(
-        'ApplicationMgr       INFO Application Manager Started successfully') +
-    TakeUntil(
-        'ToolSvc              INFO Removing all tools created by ToolSvc'))
+    normalizeExamples
+    + DropUntil("ApplicationMgr       INFO Application Manager Started successfully")
+    + TakeUntil("ToolSvc              INFO Removing all tools created by ToolSvc")
+)

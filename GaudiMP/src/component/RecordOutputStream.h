@@ -41,7 +41,7 @@ public:
 
 private:
   Gaudi::Property<std::string> m_streamName{
-      this, "OutputStreamName", {}, "Name of the OutputStream instance should be triggered."};
+      this, "OutputStreamName", {}, "Name of the OutputStream instance should be triggered." };
 
   /// location of the DataObject flag used to record that this algorithm was
   /// called

@@ -62,7 +62,7 @@ namespace Tuples {
       }
       // create new item:
       // add the newly created item into the store -- and point the key view into the mapped value...
-      auto [iter, ok] = m_map.try_emplace( key, NTuple::Item<VALUE>{}, std::string{key} );
+      auto [iter, ok] = m_map.try_emplace( key, NTuple::Item<VALUE>{}, std::string{ key } );
       if ( ok ) {
         auto nh  = m_map.extract( iter );
         nh.key() = nh.mapped().second; // "re-point" key to the string contained value_type

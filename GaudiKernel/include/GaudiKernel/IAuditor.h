@@ -94,7 +94,7 @@ public:
 /// Simple mapping function from IAuditor::StandardEventType to string.
 inline const char* toStr( IAuditor::StandardEventType e ) {
   static const std::array<const char*, IAuditor::StandardEventType::ReStart + 1> s_tbl = {
-      {"Initialize", "ReInitialize", "Execute", "Finalize", "Start", "Stop", "ReStart"}};
+      { "Initialize", "ReInitialize", "Execute", "Finalize", "Start", "Stop", "ReStart" } };
   return e <= IAuditor::StandardEventType::ReStart ? s_tbl[e] : nullptr;
 }
 

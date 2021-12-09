@@ -49,7 +49,7 @@ public:
   StatusCode initialize() override {
     return BASE::initialize().andThen( [&] {
       // TODO: just call 'acceptDHVisitor` and remove m_updateDataHandles...
-      SmartIF<IDataManagerSvc> dataMgrSvc{BASE::evtSvc()};
+      SmartIF<IDataManagerSvc> dataMgrSvc{ BASE::evtSvc() };
       this->m_updateDataHandles = FixTESPathDetails::fixDataHandlePath(
           rootInTES(), dataMgrSvc->rootName(), BASE::msgLevel( MSG::DEBUG ) ? &this->debug() : nullptr );
     } );
@@ -66,14 +66,14 @@ public:
   }
   // ==========================================================================
 private:
-  Gaudi::Property<std::string> m_rootInTES{this,
-                                           "RootInTES",
-                                           {},
-                                           [=]( Gaudi::Details::PropertyBase& ) { // Check rootInTES ends with a '/'
-                                             auto& rit = this->m_rootInTES.value();
-                                             if ( !rit.empty() && rit.back() != '/' ) rit += '/';
-                                           },
-                                           "note: overridden by parent settings"};
+  Gaudi::Property<std::string> m_rootInTES{ this,
+                                            "RootInTES",
+                                            {},
+                                            [=]( Gaudi::Details::PropertyBase& ) { // Check rootInTES ends with a '/'
+                                              auto& rit = this->m_rootInTES.value();
+                                              if ( !rit.empty() && rit.back() != '/' ) rit += '/';
+                                            },
+                                            "note: overridden by parent settings" };
 };
 
 #endif

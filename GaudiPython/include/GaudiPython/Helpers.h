@@ -91,7 +91,7 @@ namespace GaudiPython {
         NULL,
         NULL,
 #  if PY_VERSION_HEX < 0x03030000
-        {0, 0},
+        { 0, 0 },
 #  endif
         NULL
       };

@@ -185,9 +185,9 @@ public:
 
     StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
     if ( UNLIKELY( !sc ) ) {
-      throw GaudiException{std::string{"Cannot create handle for "} + ( handle.isPublic() ? "public" : "private" ) +
-                               " tool " + toolTypeAndName,
-                           name(), sc};
+      throw GaudiException{ std::string{ "Cannot create handle for " } + ( handle.isPublic() ? "public" : "private" ) +
+                                " tool " + toolTypeAndName,
+                            name(), sc };
     }
 
     m_toolHandles.push_back( &handle );
@@ -307,18 +307,18 @@ private:
   Gaudi::Property<int> m_outputLevel{
       this, "OutputLevel", setUpMessaging(),
       [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
-      "output level"};
+      "output level" };
 
-  Gaudi::Property<std::string> m_monitorSvcName{this, "MonitorService", "MonitorSvc",
-                                                "name to use for Monitor Service"};
+  Gaudi::Property<std::string> m_monitorSvcName{ this, "MonitorService", "MonitorSvc",
+                                                 "name to use for Monitor Service" };
 
-  Gaudi::Property<bool> m_auditInit{this, "AuditTools", false, "[[deprecated]] unused"};
-  Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
-  Gaudi::Property<bool> m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
-  Gaudi::Property<bool> m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
-  Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
-  Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
-  Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
+  Gaudi::Property<bool> m_auditInit{ this, "AuditTools", false, "[[deprecated]] unused" };
+  Gaudi::Property<bool> m_auditorInitialize{ this, "AuditInitialize", false, "trigger auditor on initialize()" };
+  Gaudi::Property<bool> m_auditorStart{ this, "AuditStart", false, "trigger auditor on start()" };
+  Gaudi::Property<bool> m_auditorStop{ this, "AuditStop", false, "trigger auditor on stop()" };
+  Gaudi::Property<bool> m_auditorFinalize{ this, "AuditFinalize", false, "trigger auditor on finalize()" };
+  Gaudi::Property<bool> m_auditorReinitialize{ this, "AuditReinitialize", false, "trigger auditor on reinitialize()" };
+  Gaudi::Property<bool> m_auditorRestart{ this, "AuditRestart", false, "trigger auditor on restart()" };
 
   // tools used by tool
   mutable std::vector<IAlgTool*>             m_tools;

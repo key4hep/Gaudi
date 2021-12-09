@@ -9,10 +9,11 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
-from pygraph.classes.digraph import digraph
-from pygraph.algorithms.cycles import find_cycle
+
 from pygraph.algorithms.accessibility import connected_components
 from pygraph.algorithms.critical import critical_path
+from pygraph.algorithms.cycles import find_cycle
+from pygraph.classes.digraph import digraph
 
 
 def read_graph_from_json(filename):
@@ -80,7 +81,7 @@ def analyze_critical_path(gr):
         total_time += gr.edge_weight(edge)
 
     # calculate time of critical path
-    edges = [tuple(cp[i:i + 2]) for i in range(0, len(cp))]
+    edges = [tuple(cp[i : i + 2]) for i in range(0, len(cp))]
     for edge in edges:
         critical_time += gr.edge_weight(edge)
 
@@ -108,7 +109,7 @@ def print_graph_to_json(gr, filename):
                 "inputs": [],
                 "outputs": [],
                 "runtimes": [1000],  # TODO dummy
-                "runtimes_wall": [1000]  # TODO dummy
+                "runtimes_wall": [1000],  # TODO dummy
             }
             known_names.add(algoname)
         if reading:

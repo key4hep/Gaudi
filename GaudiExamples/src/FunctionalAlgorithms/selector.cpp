@@ -24,8 +24,8 @@ namespace Gaudi {
     public:
       CountSelectedTracks( const std::string& name, ISvcLocator* pSvc )
           : FilterPredicate( name, pSvc,
-                             {KeyValue{"InputData", Functional::concat_alternatives( "BogusLocation", "MoreBogus",
-                                                                                     "MyOutTracks" )}} ) {}
+                             { KeyValue{ "InputData", Functional::concat_alternatives( "BogusLocation", "MoreBogus",
+                                                                                       "MyOutTracks" ) } } ) {}
 
       StatusCode initialize() override {
         StatusCode sc = FilterPredicate::initialize();
@@ -47,8 +47,8 @@ namespace Gaudi {
       }
 
     private:
-      mutable std::atomic<long> m_tracksCount{0};
-      mutable std::atomic<long> m_eventsCount{0};
+      mutable std::atomic<long> m_tracksCount{ 0 };
+      mutable std::atomic<long> m_eventsCount{ 0 };
     };
 
     DECLARE_COMPONENT( CountSelectedTracks )

@@ -36,7 +36,7 @@ protected:
   T m_data;
 
 public:
-  AnyDataWrapper( T&& data ) : m_data{std::move( data )} {};
+  AnyDataWrapper( T&& data ) : m_data{ std::move( data ) } {};
   AnyDataWrapper( AnyDataWrapper&& )      = delete;
   AnyDataWrapper( AnyDataWrapper const& ) = delete;
   AnyDataWrapper& operator=( AnyDataWrapper&& ) = delete;
@@ -56,8 +56,8 @@ class GAUDI_API AnyDataWithViewWrapper : public AnyDataWrapper<ViewType> {
   OwnedType m_owned;
 
 public:
-  AnyDataWithViewWrapper( OwnedType&& data ) : AnyDataWrapper<ViewType>{{}}, m_owned{std::move( data )} {
-    AnyDataWrapper<ViewType>::m_data = ViewType{std::as_const( m_owned )};
+  AnyDataWithViewWrapper( OwnedType&& data ) : AnyDataWrapper<ViewType>{ {} }, m_owned{ std::move( data ) } {
+    AnyDataWrapper<ViewType>::m_data = ViewType{ std::as_const( m_owned ) };
   }
   AnyDataWithViewWrapper( AnyDataWithViewWrapper&& )      = delete;
   AnyDataWithViewWrapper( AnyDataWithViewWrapper const& ) = delete;

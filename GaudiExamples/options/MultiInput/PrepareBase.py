@@ -10,9 +10,9 @@
 #####################################################################################
 # Write a dummy DST-like file.
 
-from Gaudi.Configuration import *
-from Configurables import GaudiPersistency
 from Configurables import Gaudi__Examples__MultiInput__WriteAlg as WriteAlg
+from Configurables import GaudiPersistency
+from Gaudi.Configuration import *
 
 # Enable basic persistency-related settings
 GaudiPersistency()

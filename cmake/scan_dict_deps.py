@@ -10,21 +10,22 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
-import re
+
 import io
-from os.path import join, exists, isabs, isdir
+import re
+from os.path import exists, isabs, isdir, join
 
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s*["<]([^">]*)[">]')
 
 
 def find_file(filename, searchpath):
-    '''
+    """
     Return the absolute path to filename in the searchpath.
 
     If filename is already an absolute path, return it as is, if it exists.
 
     If filename cannot be found, return None.
-    '''
+    """
     if isabs(filename):
         return filename if exists(filename) else None
 
@@ -36,10 +37,10 @@ def find_file(filename, searchpath):
 
 
 def find_deps(filename, searchpath, deps=None):
-    '''
+    """
     Return a set with the absolute paths to the files included (directly and
     indirectly) by filename.
-    '''
+    """
     if deps is None:
         deps = set()
 
@@ -51,12 +52,13 @@ def find_deps(filename, searchpath, deps=None):
     # Look for all "#include" lines in the file, then consider each of the
     # included files, ignoring those already included in the recursion
     for included in [
-            f for f in
-        [
-            find_file(m.group(1), searchpath) for m in
-            [INCLUDE_RE.match(l) for l in io.open(filename, encoding="utf-8")]
+        f
+        for f in [
+            find_file(m.group(1), searchpath)
+            for m in [INCLUDE_RE.match(l) for l in io.open(filename, encoding="utf-8")]
             if m
-        ] if f and f not in deps and not isdir(f)
+        ]
+        if f and f not in deps and not isdir(f)
     ]:
         deps.add(included)
         find_deps(included, searchpath, deps)
@@ -69,18 +71,19 @@ def main():
 
     parser = ArgumentParser()
     parser.add_argument(
-        '-I',
-        action='append',
-        dest='include_dirs',
-        help="directories where to look for header files")
-    parser.add_argument(
-        'output_file',
-        help=
-        "name of the files to write (will be updated only if there's a change)"
+        "-I",
+        action="append",
+        dest="include_dirs",
+        help="directories where to look for header files",
     )
     parser.add_argument(
-        'target', help="build target to be rebuilt if the dependencies change")
-    parser.add_argument('headers', help="header files to process", nargs="+")
+        "output_file",
+        help="name of the files to write (will be updated only if there's a change)",
+    )
+    parser.add_argument(
+        "target", help="build target to be rebuilt if the dependencies change"
+    )
+    parser.add_argument("headers", help="header files to process", nargs="+")
 
     args = parser.parse_args()
 
@@ -97,13 +100,12 @@ def main():
     deps = sorted(deps)
 
     # prepare content of output file
-    new_deps = '{target}: {deps}\n'.format(
-        target=args.target, deps=' '.join(deps))
+    new_deps = "{target}: {deps}\n".format(target=args.target, deps=" ".join(deps))
 
     if new_deps != old_deps:  # write it only if it has changed
-        with open(args.output_file, 'w') as f:
+        with open(args.output_file, "w") as f:
             f.write(new_deps)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

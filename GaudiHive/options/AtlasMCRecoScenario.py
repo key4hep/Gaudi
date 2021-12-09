@@ -10,8 +10,14 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    CPUCrunchSvc,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+)
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool, CPUCrunchSvc
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
@@ -24,11 +30,11 @@ threads = 4
 
 InertMessageSvc(OutputLevel=INFO)
 
-whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG
+)
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=DEBUG)
 
@@ -36,9 +42,10 @@ AlgResourcePool(OutputLevel=DEBUG)
 
 CPUCrunchSvc(shortCalib=True)
 
-#timeValue = precedence.UniformTimeValue(avgRuntime=0.2)
+# timeValue = precedence.UniformTimeValue(avgRuntime=0.2)
 timeValue = precedence.RealTimeValue(
-    path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json", defaultTime=0.0)
+    path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json", defaultTime=0.0
+)
 ifIObound = precedence.UniformBooleanValue(False)
 
 sequencer = precedence.CruncherSequence(
@@ -47,14 +54,16 @@ sequencer = precedence.CruncherSequence(
     sleepFraction=0.0,
     cfgPath="atlas/mcreco/cf.mcreco.TriggerOff.graphml",
     dfgPath="atlas/mcreco/df.mcreco.TriggerOff.3rdEvent.graphml",
-    topSequencer='AthSequencer/AthMasterSeq',
-    cardinality=algosInFlight).get()
+    topSequencer="AthSequencer/AthMasterSeq",
+    cardinality=algosInFlight,
+).get()
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[sequencer],
     MessageSvcType="InertMessageSvc",
-    OutputLevel=DEBUG)
+    OutputLevel=DEBUG,
+)

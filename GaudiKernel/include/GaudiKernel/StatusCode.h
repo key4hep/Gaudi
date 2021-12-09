@@ -106,32 +106,33 @@ public:
 
   /// Constructor from enum type (allowing implicit conversion)
   template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
-  StatusCode( T sc ) noexcept : StatusCode{static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance} {}
+  StatusCode( T sc ) noexcept : StatusCode{ static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance } {}
 
   /// Constructor from enum type (allowing implicit conversion)
   template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
-  [[deprecated( "use StatusCode(T) instead" )]] StatusCode( T sc, bool ) noexcept : StatusCode{sc} {}
+  [[deprecated( "use StatusCode(T) instead" )]] StatusCode( T sc, bool ) noexcept : StatusCode{ sc } {}
 
   /// Constructor from code_t and category (explicit conversion only)
   explicit StatusCode( code_t code, const StatusCode::Category& cat ) noexcept : m_cat( &cat ), m_code( code ) {}
 
   /// Constructor from code_t in the default category (explicit conversion only)
-  [[deprecated( "use StatusCode(code_t, Category) instead" )]] explicit StatusCode(
-      code_t code, const StatusCode::Category& cat, bool ) noexcept
-      : StatusCode{code, cat} {}
+  [[deprecated( "use StatusCode(code_t, Category) instead" )]] explicit StatusCode( code_t                      code,
+                                                                                    const StatusCode::Category& cat,
+                                                                                    bool ) noexcept
+      : StatusCode{ code, cat } {}
 
   /// Constructor from code_t in the default category (explicit conversion only)
   explicit StatusCode( code_t code ) noexcept : StatusCode( code, default_category() ) {}
 
   /// Constructor from code_t and category (explicit conversion only)
   [[deprecated( "use StatusCode(code_t) instead" )]] explicit StatusCode( code_t code, bool ) noexcept
-      : StatusCode{code} {}
+      : StatusCode{ code } {}
 
   /// Copy constructor
   StatusCode( const StatusCode& rhs ) noexcept = default;
 
   /// Move constructor
-  StatusCode( StatusCode && rhs ) noexcept = default;
+  StatusCode( StatusCode&& rhs ) noexcept = default;
 
   /// Destructor.
   ~StatusCode() = default;
@@ -177,7 +178,7 @@ public:
   /// }
   /// \endcode
   template <typename F, typename... ARGS>
-  StatusCode andThen( F && f, ARGS && ... args ) const {
+  StatusCode andThen( F&& f, ARGS&&... args ) const {
     if ( isFailure() ) return *this;
     return i_invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
   }
@@ -199,7 +200,7 @@ public:
   /// }
   /// \endcode
   template <typename F, typename... ARGS>
-  StatusCode orElse( F && f, ARGS && ... args ) const {
+  StatusCode orElse( F&& f, ARGS&&... args ) const {
     if ( isSuccess() ) return *this;
     return i_invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
   }
@@ -296,8 +297,8 @@ public:
   class [[deprecated( "will be removed" )]] ScopedDisableChecking{};
 
 private:
-  const Category* m_cat{&default_category()};                        ///< The status code category
-  code_t          m_code{static_cast<code_t>( ErrorCode::SUCCESS )}; ///< The status code value
+  const Category* m_cat{ &default_category() };                        ///< The status code category
+  code_t          m_code{ static_cast<code_t>( ErrorCode::SUCCESS ) }; ///< The status code value
 
   ErrorCode default_value() const; ///< Project onto the default StatusCode values
   void      check();               ///< Do StatusCode check
@@ -307,7 +308,7 @@ private:
 
   /// Helper to invoke a callable and return the resulting StatusCode or this, if the callable returns void.
   template <typename F, typename... ARGS, typename = std::enable_if_t<std::is_invocable_v<F, ARGS...>>>
-  StatusCode i_invoke( F && f, ARGS && ... args ) const {
+  StatusCode i_invoke( F&& f, ARGS&&... args ) const {
     if constexpr ( std::is_invocable_r_v<StatusCode, F, ARGS...> ) {
       return std::invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );
     } else {
@@ -372,7 +373,7 @@ inline bool operator==( const StatusCode& lhs, const StatusCode& rhs ) {
 
 inline StatusCode& StatusCode::operator&=( const StatusCode& rhs ) {
   // Ternary AND lookup matrix
-  static constexpr StatusCode::code_t AND[3][3] = {{0, 0, 0}, {0, 1, 2}, {0, 2, 2}};
+  static constexpr StatusCode::code_t AND[3][3] = { { 0, 0, 0 }, { 0, 1, 2 }, { 0, 2, 2 } };
 
   StatusCode::code_t l = static_cast<StatusCode::code_t>( default_value() );
   StatusCode::code_t r = static_cast<StatusCode::code_t>( rhs.default_value() );
@@ -382,7 +383,7 @@ inline StatusCode& StatusCode::operator&=( const StatusCode& rhs ) {
 
 inline StatusCode& StatusCode::operator|=( const StatusCode& rhs ) {
   // Ternary OR lookup matrix
-  static constexpr StatusCode::code_t OR[3][3] = {{0, 1, 2}, {1, 1, 1}, {2, 1, 2}};
+  static constexpr StatusCode::code_t OR[3][3] = { { 0, 1, 2 }, { 1, 1, 1 }, { 2, 1, 2 } };
 
   StatusCode::code_t l = static_cast<StatusCode::code_t>( default_value() );
   StatusCode::code_t r = static_cast<StatusCode::code_t>( rhs.default_value() );

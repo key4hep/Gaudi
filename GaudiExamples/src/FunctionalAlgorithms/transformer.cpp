@@ -22,8 +22,8 @@ namespace Gaudi {
                                     const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )> {
 
       SelectTracks( const std::string& name, ISvcLocator* pSvc )
-          : Transformer( name, pSvc, {KeyValue( "InputData", {"MyTracks"} )},
-                         KeyValue( "OutputData", {"MyOutTracks"} ) ) {}
+          : Transformer( name, pSvc, { KeyValue( "InputData", { "MyTracks" } ) },
+                         KeyValue( "OutputData", { "MyOutTracks" } ) ) {}
 
       Gaudi::Examples::MyTrack::Selection
       operator()( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& in_tracks ) const override {

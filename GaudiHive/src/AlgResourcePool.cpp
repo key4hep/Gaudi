@@ -391,7 +391,7 @@ void AlgResourcePool::dumpInstanceMisses() const {
 
   std::multimap<unsigned int, std::string_view, std::greater<unsigned int>> sortedAlgInstanceMisses;
 
-  for ( auto& p : m_algInstanceMisses ) sortedAlgInstanceMisses.insert( {p.second, p.first} );
+  for ( auto& p : m_algInstanceMisses ) sortedAlgInstanceMisses.insert( { p.second, p.first } );
 
   // determine optimal indentation
   int indnt = std::to_string( sortedAlgInstanceMisses.cbegin()->first ).length();

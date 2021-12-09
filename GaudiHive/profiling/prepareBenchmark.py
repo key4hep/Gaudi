@@ -9,19 +9,22 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from __future__ import print_function
-# File to prepare the configs and commands to be executed for the benchmark
 
 import commands
 
+# File to prepare the configs and commands to be executed for the benchmark
 
-def prepareConfig(template_filename,
-                  n_threads=10,
-                  n_parallel_events=10,
-                  n_parallel_algorithms=10):
+
+def prepareConfig(
+    template_filename, n_threads=10, n_parallel_events=10, n_parallel_algorithms=10
+):
     template = open(template_filename)
-    new_filename = "%s_%i_%i_%i.py" % (template_filename.rstrip(".py"),
-                                       n_threads, n_parallel_events,
-                                       n_parallel_algorithms)
+    new_filename = "%s_%i_%i_%i.py" % (
+        template_filename.rstrip(".py"),
+        n_threads,
+        n_parallel_events,
+        n_parallel_algorithms,
+    )
     new_config = open(new_filename, "w")
     for line in template.readlines():
         if line.startswith("n_threads"):
@@ -45,7 +48,10 @@ if __name__ == "__main__":
                 "../options/BrunelScenario.py",
                 n_threads=n_threads,
                 n_parallel_events=n_events,
-                n_parallel_algorithms=n_algos)
+                n_parallel_algorithms=n_algos,
+            )
             # config.replace(".py",".log"))
-            print("/usr/bin/time -f %%S -o %s.time `alias gaudirun` %s > %s" %
-                  (config.replace(".py", ""), config, "/dev/null"))
+            print(
+                "/usr/bin/time -f %%S -o %s.time `alias gaudirun` %s > %s"
+                % (config.replace(".py", ""), config, "/dev/null")
+            )

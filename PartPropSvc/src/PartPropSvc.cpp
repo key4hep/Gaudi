@@ -69,7 +69,7 @@ StatusCode PartPropSvc::initialize() {
     }
 
     // is the file readable?
-    std::ifstream pdfile{rfile};
+    std::ifstream pdfile{ rfile };
     if ( !pdfile ) {
       error() << "Could not open PDT file: \"" << rfile << "\"" << endmsg;
       return StatusCode::FAILURE;
@@ -120,7 +120,7 @@ PartPropSvc::inputFunPtr PartPropSvc::parseTableType( const std::string& typ ) {
   static const auto table = {
       std::make_pair( "PDG", &HepPDT::addPDGParticles ),       std::make_pair( "PYTHIA", &HepPDT::addPythiaParticles ),
       std::make_pair( "EVTGEN", &HepPDT::addEvtGenParticles ), std::make_pair( "HERWIG", &HepPDT::addHerwigParticles ),
-      std::make_pair( "ISAJET", &HepPDT::addIsajetParticles ), std::make_pair( "QQ", &HepPDT::addQQParticles )};
+      std::make_pair( "ISAJET", &HepPDT::addIsajetParticles ), std::make_pair( "QQ", &HepPDT::addQQParticles ) };
   auto i = std::find_if( std::begin( table ), std::end( table ),
                          [&]( const std::pair<const char*, inputFunPtr>& p ) { return typ == p.first; } );
   if ( i == std::end( table ) ) {
@@ -150,7 +150,7 @@ StatusCode PartPropSvc::createTable() {
 
     debug() << "Reading PDT file \"" << f << "\"" << endmsg;
 
-    std::ifstream pdfile{f};
+    std::ifstream pdfile{ f };
     // build a table from the file
     if ( !pF( pdfile, tb ) ) {
       error() << "Error reading PDT file: \"" << f << "\"" << endmsg;

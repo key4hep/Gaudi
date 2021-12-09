@@ -118,7 +118,7 @@ namespace GaudiTesting {
           TestTool::Logger logger;
           DEBUG_TRACE( std::cout << "DEBUG " << name() << " renounce tools "
                                  << "Renounce" << std::endl );
-          auto visitor = RenounceToolInputsVisitor{{i->fullKey()}, logger};
+          auto visitor = RenounceToolInputsVisitor{ { i->fullKey() }, logger };
           ToolVisitor::visit( tools(), visitor );
         }
       }

@@ -53,5 +53,5 @@ void StatusCode::disableChecking() {}
 bool StatusCode::checkingEnabled() { return false; }
 
 void StatusCode::i_doThrow( std::string_view message, std::string_view tag ) const {
-  throw GaudiException{std::string{message}, std::string{tag}, *this};
+  throw GaudiException{ std::string{ message }, std::string{ tag }, *this };
 }

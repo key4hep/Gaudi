@@ -19,8 +19,12 @@
 *******************************************************************************
 """
 from __future__ import print_function
+
 # =============================================================================
-__author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
+__author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
+from Configurables import ApplicationMgr
+from Configurables import Gaudi__Examples__ArrayProperties as AP
+
 # =============================================================================
 # @file
 #  Simple which illustrates
@@ -30,29 +34,25 @@ __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
 from Gaudi.Configuration import *
 
-from Configurables import ApplicationMgr
-
-from Configurables import Gaudi__Examples__ArrayProperties as AP
-
-ap = AP(
-    'ArrayProps', Strings=('a', 'bb', 'ccc', 'dddd'), Doubles=(1, 2, 3, 4, 5))
+ap = AP("ArrayProps", Strings=("a", "bb", "ccc", "dddd"), Doubles=(1, 2, 3, 4, 5))
 
 ApplicationMgr(EvtSel="NONE", TopAlg=[ap], EvtMax=10)
 
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__:
+if "__main__" == __name__:
 
     print(__doc__, __author__)
 
     # make sure cling can generate all required methods in Gaudi::Property
     # Workaround for ROOT-10769
     import warnings
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         import cppyy
-    cppyy.gbl.gInterpreter.Declare('#define NO_C_ARRAY_AS_PROPERTY_WARNING')
+    cppyy.gbl.gInterpreter.Declare("#define NO_C_ARRAY_AS_PROPERTY_WARNING")
     cppyy.gbl.gInterpreter.Declare('#include "GaudiKernel/CArrayAsProperty.h"')
 
     from GaudiPython.Bindings import AppMgr
@@ -61,11 +61,11 @@ if '__main__' == __name__:
 
     gaudi.run(5)
 
-    ap = gaudi.algorithm('ArrayProps')
+    ap = gaudi.algorithm("ArrayProps")
 
     ap.PropertiesPrint = True
 
-    ap.Strings = ['qu-qu', 'qu-qu', 'qu-qu', 'qu-qu']
+    ap.Strings = ["qu-qu", "qu-qu", "qu-qu", "qu-qu"]
     ap.Doubles = [0, -1, 2, -3, 4]
 
     ap.PropertiesPrint = True

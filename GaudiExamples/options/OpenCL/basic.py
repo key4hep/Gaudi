@@ -8,10 +8,10 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Gaudi.Configuration import DEBUG
 from Configurables import ApplicationMgr
 from Configurables import Gaudi__Examples__OpenCLAlg as OpenCLAlg
+from Gaudi.Configuration import DEBUG
 
-alg = OpenCLAlg('OpenCLAlg', OutputLevel=DEBUG)
+alg = OpenCLAlg("OpenCLAlg", OutputLevel=DEBUG)
 
-ApplicationMgr(TopAlg=[alg], EvtSel='NONE', EvtMax=5)
+ApplicationMgr(TopAlg=[alg], EvtSel="NONE", EvtMax=5)

@@ -116,22 +116,22 @@ namespace {
   };
 
   const std::map<std::string, component_t> allowedFactories{
-      {typeid( Gaudi::Algorithm::Factory::FactoryType ).name(), component_t::Algorithm},
-      {typeid( Service::Factory::FactoryType ).name(), component_t::Service},
-      {typeid( AlgTool::Factory::FactoryType ).name(), component_t::AlgTool},
-      {typeid( Auditor::Factory::FactoryType ).name(), component_t::Auditor},
+      { typeid( Gaudi::Algorithm::Factory::FactoryType ).name(), component_t::Algorithm },
+      { typeid( Service::Factory::FactoryType ).name(), component_t::Service },
+      { typeid( AlgTool::Factory::FactoryType ).name(), component_t::AlgTool },
+      { typeid( Auditor::Factory::FactoryType ).name(), component_t::Auditor },
   };
 
   const std::string& toString( component_t type ) {
-    static const std::array<std::string, 11> names = {"Module",    "DefaultName", "Algorithm",      "AlgTool",
-                                                      "Auditor",   "Service",     "ApplicationMgr", "IInterface",
-                                                      "Converter", "DataObject",  "Unknown"};
+    static const std::array<std::string, 11> names = { "Module",    "DefaultName", "Algorithm",      "AlgTool",
+                                                       "Auditor",   "Service",     "ApplicationMgr", "IInterface",
+                                                       "Converter", "DataObject",  "Unknown" };
     return names.at( static_cast<std::underlying_type_t<component_t>>( type ) );
   }
   std::ostream& operator<<( std::ostream& os, component_t type ) { return os << toString( type ); }
 
   std::set<std::string> ignored_interfaces{
-      {"IInterface", "IProperty", "INamedInterface", "IAlgorithm", "IAlgTool", "IService", "IAuditor"}};
+      { "IInterface", "IProperty", "INamedInterface", "IAlgorithm", "IAlgTool", "IService", "IAuditor" } };
 
   //-----------------------------------------------------------------------------
   /// Translate a valid C++ typename into a valid python one
@@ -148,7 +148,7 @@ namespace {
   //-----------------------------------------------------------------------------
   template <typename T>
   std::type_index typeIndex() {
-    return std::type_index{typeid( T )};
+    return std::type_index{ typeid( T ) };
   }
   //-----------------------------------------------------------------------------
   inline std::string libNativeName( const std::string& libName ) {
@@ -694,7 +694,7 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
     m_db2Buf << "Unknown";
   }
   m_db2Buf << "',\n        '__interfaces__': (";
-  for ( const auto& intf : std::set<std::string>{begin( interfaces ), end( interfaces )} ) {
+  for ( const auto& intf : std::set<std::string>{ begin( interfaces ), end( interfaces ) } ) {
     if ( ignored_interfaces.find( intf ) == end( ignored_interfaces ) ) { m_db2Buf << '\'' << intf << "', "; }
   }
   m_db2Buf << "),\n        'properties': {\n";
@@ -835,7 +835,7 @@ int createAppMgr()
   propMgr->setProperty( "OutputLevel", 7 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); // No other printout
                                                                                                     // messages
   appUI->configure().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  auto msgSvc = SmartIF<IMessageSvc>{iface}.as<IProperty>();
+  auto msgSvc = SmartIF<IMessageSvc>{ iface }.as<IProperty>();
   msgSvc->setPropertyRepr( "setWarning", "['DefaultName', 'PropertyHolder']" )
       .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   msgSvc->setProperty( "Format", "%T %0W%M" ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );

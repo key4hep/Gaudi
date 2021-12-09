@@ -9,52 +9,57 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiTesting.BaseTest import *
 import logging
 import os
 import sys
+
+from GaudiTesting.BaseTest import *
 
 
 class QMTTest(BaseTest):
     def __init__(self, path=None):
         BaseTest.__init__(self)
-        self.validator = ''
+        self.validator = ""
         if path:
             self.XMLParser(path)
 
     def XMLParser(self, path):
-        '''
+        """
         Parse a QMTest XML test description (.qmt file) to initialize the test
         instance.
-        '''
+        """
         from string import Template
 
-        log = logging.getLogger('QMTest.XMLParser')
+        log = logging.getLogger("QMTest.XMLParser")
         import xml.etree.ElementTree as ET
-        log.debug('parsing %s', path)
 
-        self.name = '.'.join(
-            os.path.relpath(path, self.basedir).replace('.qmt', '').replace(
-                '.qms', '').split(os.sep))
+        log.debug("parsing %s", path)
+
+        self.name = ".".join(
+            os.path.relpath(path, self.basedir)
+            .replace(".qmt", "")
+            .replace(".qms", "")
+            .split(os.sep)
+        )
 
         tree = ET.parse(path)
         for child in tree.getroot():
-            name = child.attrib['name']
+            name = child.attrib["name"]
             if hasattr(self, name):
-                log.debug('setting %s', name)
+                log.debug("setting %s", name)
                 value = child[0]
-                if name in ('args', 'unsupported_platforms'):
-                    setattr(self, name,
-                            [el.text for el in value.findall('text')])
-                elif name == 'environment':
-                    for el in value.findall('text'):
-                        key, value = el.text.split('=', 1)
-                        self.environment[key] = Template(
-                            value).safe_substitute(self.environment)
+                if name in ("args", "unsupported_platforms"):
+                    setattr(self, name, [el.text for el in value.findall("text")])
+                elif name == "environment":
+                    for el in value.findall("text"):
+                        key, value = el.text.split("=", 1)
+                        self.environment[key] = Template(value).safe_substitute(
+                            self.environment
+                        )
                 else:
                     data = value.text
                     if data is not None:
-                        if value.tag == 'integer':
+                        if value.tag == "integer":
                             data = int(data)
                         setattr(self, name, data)
 
@@ -63,15 +68,16 @@ class QMTTest(BaseTest):
 
             class CallWrapper(object):
                 """
-                    Small wrapper class to dynamically bind some default arguments
-                    to a callable.
-                    """
+                Small wrapper class to dynamically bind some default arguments
+                to a callable.
+                """
 
                 def __init__(self, callable, extra_args={}):
                     self.callable = callable
                     self.extra_args = extra_args
                     # get the list of names of positional arguments
                     from inspect import getargspec
+
                     self.args_order = getargspec(callable)[0]
                     # Remove "self" from the list of positional arguments
                     # since it is added automatically
@@ -80,7 +86,7 @@ class QMTTest(BaseTest):
 
                 def __call__(self, *args, **kwargs):
                     # Check which positional arguments are used
-                    positional = self.args_order[:len(args)]
+                    positional = self.args_order[: len(args)]
 
                     kwargs = dict(kwargs)  # copy the arguments dictionary
                     for a in self.extra_args:
@@ -94,52 +100,38 @@ class QMTTest(BaseTest):
             stdout_ref = self._expandReferenceFileName(self.reference)
             stderr_ref = self._expandReferenceFileName(self.error_reference)
             exported_symbols = {
-                "self":
-                self,
-                "stdout":
-                stdout,
-                "stderr":
-                stderr,
-                "result":
-                result,
-                "causes":
-                self.causes,
-                "reference":
-                stdout_ref,
-                "error_reference":
-                stderr_ref,
-                "findReferenceBlock":
-                CallWrapper(self.findReferenceBlock, {
-                    "stdout": stdout,
-                    "result": result,
-                    "causes": self.causes
-                }),
-                "validateWithReference":
-                CallWrapper(
-                    self.validateWithReference, {
+                "self": self,
+                "stdout": stdout,
+                "stderr": stderr,
+                "result": result,
+                "causes": self.causes,
+                "reference": stdout_ref,
+                "error_reference": stderr_ref,
+                "findReferenceBlock": CallWrapper(
+                    self.findReferenceBlock,
+                    {"stdout": stdout, "result": result, "causes": self.causes},
+                ),
+                "validateWithReference": CallWrapper(
+                    self.validateWithReference,
+                    {
                         "stdout": stdout,
                         "stderr": stderr,
                         "result": result,
-                        "causes": self.causes
-                    }),
-                "countErrorLines":
-                CallWrapper(self.countErrorLines, {
-                    "stdout": stdout,
-                    "result": result,
-                    "causes": self.causes
-                }),
-                "checkTTreesSummaries":
-                CallWrapper(self.CheckTTreesSummaries, {
-                    "stdout": stdout,
-                    "result": result,
-                    "causes": self.causes
-                }),
-                "checkHistosSummaries":
-                CallWrapper(self.CheckHistosSummaries, {
-                    "stdout": stdout,
-                    "result": result,
-                    "causes": self.causes
-                })
+                        "causes": self.causes,
+                    },
+                ),
+                "countErrorLines": CallWrapper(
+                    self.countErrorLines,
+                    {"stdout": stdout, "result": result, "causes": self.causes},
+                ),
+                "checkTTreesSummaries": CallWrapper(
+                    self.CheckTTreesSummaries,
+                    {"stdout": stdout, "result": result, "causes": self.causes},
+                ),
+                "checkHistosSummaries": CallWrapper(
+                    self.CheckHistosSummaries,
+                    {"stdout": stdout, "result": result, "causes": self.causes},
+                ),
             }
             # print self.validator
             exec(self.validator, globals(), exported_symbols)

@@ -142,7 +142,7 @@ namespace Gaudi {
     // class type
     std::string m_classType;
     // cache sumEntries (allEntries)   when setting contents since Root can't compute by himself
-    int m_sumEntries{0};
+    int m_sumEntries{ 0 };
   }; // end class Generic1D
 
   template <class INTERFACE, class IMPLEMENTATION>

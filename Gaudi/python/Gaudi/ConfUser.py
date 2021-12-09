@@ -16,23 +16,23 @@ class GaudiPersistency(ConfigurableUser):
 
     Note: it requires Gaudi::RootCnvSvc (package RootCnv).
     """
+
     __slots__ = {}
 
     def __apply_configuration__(self):
         """Apply low-level configuration"""
-        from Configurables import (
-            ApplicationMgr,
-            PersistencySvc,
-            FileRecordDataSvc,
-            EventPersistencySvc,
-        )
         # aliased names
         from Configurables import (
+            ApplicationMgr,
+            EventPersistencySvc,
+            FileCatalog,
+            FileRecordDataSvc,
+            IODataManager,
+            PersistencySvc,
             RootCnvSvc,
             RootEvtSelector,
-            IODataManager,
-            FileCatalog,
         )
+
         cnvSvcs = [RootCnvSvc()]
         EventPersistencySvc().CnvServices += cnvSvcs
         PersistencySvc("FileRecordPersistencySvc").CnvServices += cnvSvcs

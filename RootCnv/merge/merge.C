@@ -278,7 +278,7 @@ void RootDatabaseMerger::dumpSections() {
 /// Merge new input to existing output
 MergeStatus RootDatabaseMerger::merge( const string& fid ) {
   if ( m_output ) {
-    std::unique_ptr<TFile> source{TFile::Open( fid.c_str() )};
+    std::unique_ptr<TFile> source{ TFile::Open( fid.c_str() ) };
     if ( source && !source->IsZombie() ) {
       size_t idx = fid.rfind( '/' );
       ::printf( "+++ Start merging input file:%s\n",

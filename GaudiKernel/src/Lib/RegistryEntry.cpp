@@ -47,7 +47,7 @@
 //
 #define CAST_REGENTRY( x, y ) dynamic_cast<x>( y )
 //#define CAST_REGENTRY(x,y) (x)(y)
-constexpr char SEPARATOR{'/'};
+constexpr char SEPARATOR{ '/' };
 
 /// Standard Constructor
 DataSvcHelpers::RegistryEntry::RegistryEntry( std::string path, RegistryEntry* parent )
@@ -246,14 +246,14 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( std::strin
       path = std::string_view{};
     }
     auto i = std::find_if( std::begin( m_store ), std::end( m_store ),
-                           [&]( const auto& reg ) { return cpath == std::string_view{reg->name()}.substr( 1 ); } );
+                           [&]( const auto& reg ) { return cpath == std::string_view{ reg->name() }.substr( 1 ); } );
     if ( i != std::end( m_store ) ) {
       RegistryEntry* regEnt = CAST_REGENTRY( RegistryEntry*, *i );
       return path.empty() ? regEnt : regEnt->i_find( path );
     }
     // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
     // our "/NodeB" child.
-    if ( cpath != std::string_view{m_path}.substr( 1 ) ) break;
+    if ( cpath != std::string_view{ m_path }.substr( 1 ) ) break;
   }
   return nullptr;
 }

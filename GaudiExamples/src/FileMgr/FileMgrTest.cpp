@@ -92,7 +92,7 @@ StatusCode FileMgrTest::initialize() {
   }
 
   // make sure we have something in m_f3 to append to;
-  std::ofstream ofs{m_f3};
+  std::ofstream ofs{ m_f3 };
   ofs << "initial line" << std::endl;
   ofs.close();
 

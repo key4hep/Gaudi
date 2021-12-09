@@ -22,7 +22,7 @@ using namespace Gaudi::PluginService::v2::Details;
 
 cgaudi_pluginsvc_t cgaudi_pluginsvc_instance() {
   static Registry& cxxreg = Registry::instance();
-  return {&cxxreg};
+  return { &cxxreg };
 }
 
 int cgaudi_pluginsvc_get_factory_size( cgaudi_pluginsvc_t self ) {
@@ -33,8 +33,8 @@ int cgaudi_pluginsvc_get_factory_size( cgaudi_pluginsvc_t self ) {
 cgaudi_factory_t cgaudi_pluginsvc_get_factory_at( cgaudi_pluginsvc_t self, int n ) {
   const Registry* reg       = static_cast<const Registry*>( self.registry );
   const auto&     factories = reg->factories();
-  if ( n >= static_cast<int>( factories.size() ) ) return {self, nullptr};
-  return {self, next( begin( factories ), n )->first.c_str()};
+  if ( n >= static_cast<int>( factories.size() ) ) return { self, nullptr };
+  return { self, next( begin( factories ), n )->first.c_str() };
 }
 
 const char* cgaudi_factory_get_library( cgaudi_factory_t self ) {
@@ -63,7 +63,7 @@ int cgaudi_factory_get_property_size( cgaudi_factory_t self ) {
 }
 
 cgaudi_property_t cgaudi_factory_get_property_at( cgaudi_factory_t self, int n ) {
-  cgaudi_property_t            cprop{self.registry, self.id, nullptr};
+  cgaudi_property_t            cprop{ self.registry, self.id, nullptr };
   Registry&                    reg = Registry::instance();
   const Registry::FactoryInfo& fi  = reg.getInfo( cprop.id );
   if ( n < static_cast<int>( fi.properties.size() ) ) cprop.key = next( begin( fi.properties ), n )->first.c_str();

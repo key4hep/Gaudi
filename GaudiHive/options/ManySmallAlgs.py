@@ -9,7 +9,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-'''
+"""
 A totally synthetic test of scheduler performance, with a large number of CF nodes and algorithms, but each algorithm does no work.
 
 In the flat mode (nested=False) 1000 algorithms are added directly to the base CF node as a baseline measurement.
@@ -18,11 +18,17 @@ In nested mode the algorithms are grouped into sets of under a parent CF node.
 Those nodes are then given 2 different CF node parents (20 in total) which include a prescale algorithm.
 
 In sequential mode (sequence=True) the prescale algorithms will randomly deactivate CF nodes at a frequency given by filterPass
-'''
+"""
+from Configurables import (
+    AlgResourcePool,
+    AvalancheSchedulerSvc,
+    GaudiSequencer,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    Prescaler,
+    Test__ViewTester,
+)
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool, Prescaler,
-                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -40,8 +46,7 @@ filterPass = 50.0
 # It is useful to call it EventDataSvc to replace the usual data service with
 # the whiteboard transparently.
 
-whiteboard = HiveWhiteBoard(
-    "EventDataSvc", EventSlots=evtslots, OutputLevel=FATAL)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots, OutputLevel=FATAL)
 
 # -------------------------------------------------------------------------------
 
@@ -50,7 +55,8 @@ whiteboard = HiveWhiteBoard(
 # event loop manager. Here we just set its outputlevel to DEBUG.
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO
+)
 
 # -------------------------------------------------------------------------------
 
@@ -63,7 +69,8 @@ scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=threads,
     ShowControlFlow=False,
     ShowDataDependencies=False,
-    OutputLevel=INFO)
+    OutputLevel=INFO,
+)
 
 # -------------------------------------------------------------------------------
 
@@ -88,25 +95,27 @@ baseSeq = GaudiSequencer(
     Sequential=sequence,
     ModeOR=True,
     ShortCircuit=False,
-    OutputLevel=FATAL)
+    OutputLevel=FATAL,
+)
 
 # Nested structure
 allSeqs = []
 allSeqSeqs = []
 if nested:
     for i in range(100):
-        seqAlgs = allAlgs[10 * i:10 * (i + 1)]
+        seqAlgs = allAlgs[10 * i : 10 * (i + 1)]
         seq = GaudiSequencer(
             "seq" + str(i),
             Members=seqAlgs,
             Sequential=sequence,
             ModeOR=False,
             ShortCircuit=True,
-            OutputLevel=FATAL)
+            OutputLevel=FATAL,
+        )
         allSeqs.append(seq)
 
     for i in range(10):
-        seqSeqs = allSeqs[10 * i:10 * (i + 1)]
+        seqSeqs = allSeqs[10 * i : 10 * (i + 1)]
 
         filterAlg = Prescaler("filterAlg" + str(i))
         filterAlg.OutputLevel = FATAL
@@ -119,11 +128,12 @@ if nested:
             Sequential=sequence,
             ModeOR=False,
             ShortCircuit=True,
-            OutputLevel=FATAL)
+            OutputLevel=FATAL,
+        )
         allSeqSeqs.append(seq)
 
     for i in range(9):
-        seqSeqs = allSeqs[5 + (10 * i):15 + (10 * i)]
+        seqSeqs = allSeqs[5 + (10 * i) : 15 + (10 * i)]
 
         filterAlg = Prescaler("filterAlg" + str(i + 10))
         filterAlg.OutputLevel = FATAL
@@ -136,7 +146,8 @@ if nested:
             Sequential=sequence,
             ModeOR=False,
             ShortCircuit=True,
-            OutputLevel=FATAL)
+            OutputLevel=FATAL,
+        )
         allSeqSeqs.append(seq)
 
     baseSeq.Members = allSeqSeqs
@@ -146,10 +157,11 @@ if nested:
 
 ApplicationMgr(
     EvtMax=evtMax,
-    EvtSel='NONE',
+    EvtSel="NONE",
     ExtSvc=[whiteboard],
     EventLoop=slimeventloopmgr,
     TopAlg=[baseSeq],
-    MessageSvcType="InertMessageSvc")
+    MessageSvcType="InertMessageSvc",
+)
 
 # -------------------------------------------------------------------------------

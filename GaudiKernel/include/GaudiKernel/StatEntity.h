@@ -20,7 +20,7 @@ class StatEntity : public Gaudi::Accumulators::PrintableCounter,
                                                               Gaudi::Accumulators::StatAccumulator,
                                                               Gaudi::Accumulators::BinomialAccumulator> {
 public:
-  inline static const std::string typeString{"statentity"};
+  inline static const std::string typeString{ "statentity" };
   using AccParent         = Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full, double,
                                                         Gaudi::Accumulators::StatAccumulator,
                                                         Gaudi::Accumulators::BinomialAccumulator>;
@@ -105,7 +105,7 @@ public:
   }
   template <typename stream>
   stream& printFormattedImpl( stream& o, const std::string& format ) const {
-    boost::format fmt{format};
+    boost::format fmt{ format };
     fmt % nEntries() % sum() % mean() % standard_deviation() % min() % max();
     return o << fmt.str();
   }
@@ -122,17 +122,17 @@ public:
       if ( tableFormat ) {
         if ( name.empty() ) {
           constexpr auto fmt = "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
-          return o << boost::format{fmt} % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
+          return o << boost::format{ fmt } % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
                           ( efficiencyErr() * 100 );
         } else {
-          auto fmt = std::string{" |*"}.append( fmtHead ).append(
+          auto fmt = std::string{ " |*" }.append( fmtHead ).append(
               "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |" );
-          return o << boost::format{fmt} % ( std::string{"\""}.append( name ).append( "\"" ) ) %
+          return o << boost::format{ fmt } % ( std::string{ "\"" }.append( name ).append( "\"" ) ) %
                           BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) % ( efficiencyErr() * 100 );
         }
       } else {
         constexpr auto fmt = "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|";
-        return o << boost::format{fmt} % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
+        return o << boost::format{ fmt } % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
                         ( efficiencyErr() * 100 );
       }
     } else {
@@ -140,17 +140,17 @@ public:
       if ( tableFormat ) {
         if ( name.empty() ) {
           constexpr auto fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
-          return o << boost::format{fmt} % nEntries() % sum() % mean() % standard_deviation() % min() % max();
+          return o << boost::format{ fmt } % nEntries() % sum() % mean() % standard_deviation() % min() % max();
 
         } else {
-          auto fmt = std::string{" | "}.append( fmtHead ).append(
+          auto fmt = std::string{ " | " }.append( fmtHead ).append(
               "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |" );
-          return o << boost::format{fmt} % std::string{"\""}.append( name ).append( "\"" ) % nEntries() % sum() %
+          return o << boost::format{ fmt } % std::string{ "\"" }.append( name ).append( "\"" ) % nEntries() % sum() %
                           mean() % standard_deviation() % min() % max();
         }
       } else {
         constexpr auto fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|";
-        return o << boost::format{fmt} % nEntries() % sum() % mean() % standard_deviation() % min() % max();
+        return o << boost::format{ fmt } % nEntries() % sum() % mean() % standard_deviation() % min() % max();
       }
     }
   }
@@ -183,24 +183,24 @@ public:
   MsgStream&    fillStream( MsgStream& o ) const { return print( o ); }
   /// Basic JSON export for Gaudi::Monitoring::Hub support.
   virtual nlohmann::json toJSON() const override {
-    return {{"type", typeString},
-            {"empty", this->nEntries() == 0},
-            {"nEntries", this->nEntries()},
-            {"sum", this->sum()},
-            {"mean", this->mean()},
-            {"sum2", this->sum2()},
-            {"standard_deviation", this->standard_deviation()},
-            {"min", this->min()},
-            {"max", this->max()},
-            {"nTrueEntries", this->nTrueEntries()},
-            {"nFalseEntries", this->nFalseEntries()},
-            {"efficiency", this->efficiency()},
-            {"efficiencyErr", this->efficiencyErr()}};
+    return { { "type", typeString },
+             { "empty", this->nEntries() == 0 },
+             { "nEntries", this->nEntries() },
+             { "sum", this->sum() },
+             { "mean", this->mean() },
+             { "sum2", this->sum2() },
+             { "standard_deviation", this->standard_deviation() },
+             { "min", this->min() },
+             { "max", this->max() },
+             { "nTrueEntries", this->nTrueEntries() },
+             { "nFalseEntries", this->nFalseEntries() },
+             { "efficiency", this->efficiency() },
+             { "efficiencyErr", this->efficiencyErr() } };
   }
   static StatEntity fromJSON( const nlohmann::json& j ) {
     StatEntity res;
     res.reset( AccParent::extractJSONData(
-        j, {{{{"nEntries", "sum"}, "sum2"}, "min", "max"}, {"nTrueEntries", "nFalseEntries"}} ) );
+        j, { { { { "nEntries", "sum" }, "sum2" }, "min", "max" }, { "nTrueEntries", "nFalseEntries" } } ) );
     return res;
   }
 };

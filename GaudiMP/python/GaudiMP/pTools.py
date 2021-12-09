@@ -8,10 +8,11 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiPython import gbl, SUCCESS, FAILURE
-from multiprocessing import Event
 import pickle
 import time
+from multiprocessing import Event
+
+from GaudiPython import FAILURE, SUCCESS, gbl
 
 # Eoin Smith
 # 3 Aug 2010
@@ -57,7 +58,7 @@ aida2root = gbl.Gaudi.Utils.Aida2ROOT.aida2root
 # =========================== Classes =========================================
 
 
-class HistoAgent():
+class HistoAgent:
     def __init__(self, gmpComponent):
         self._gmpc = gmpComponent
         self.hvt = self._gmpc.hvt
@@ -68,44 +69,44 @@ class HistoAgent():
         # There are many methods for booking Histogram Objects to Histo store
         # here they are collected in a dictionary, with key = a relevant name
         self.bookingDict = {}
-        self.bookingDict['DataObject'] = self.bookDataObject
-        self.bookingDict['NTuple::Directory'] = self.bookDataObject
-        self.bookingDict['NTuple::File'] = self.bookDataObject
-        self.bookingDict['TH1D'] = self.bookTH1D
-        self.bookingDict['TH2D'] = self.bookTH2D
-        self.bookingDict['TH3D'] = self.bookTH3D
-        self.bookingDict['TProfile'] = self.bookTProfile
-        self.bookingDict['TProfile2D'] = self.bookTProfile2D
+        self.bookingDict["DataObject"] = self.bookDataObject
+        self.bookingDict["NTuple::Directory"] = self.bookDataObject
+        self.bookingDict["NTuple::File"] = self.bookDataObject
+        self.bookingDict["TH1D"] = self.bookTH1D
+        self.bookingDict["TH2D"] = self.bookTH2D
+        self.bookingDict["TH3D"] = self.bookTH3D
+        self.bookingDict["TProfile"] = self.bookTProfile
+        self.bookingDict["TProfile2D"] = self.bookTProfile2D
 
     def register(self, tup):
         # add a tuple of (worker-id, histoDict) to self.histos
-        assert tup.__class__.__name__ == 'tuple'
+        assert tup.__class__.__name__ == "tuple"
         self.histos.append(tup)
 
     def Receive(self):
         hstatus = self._gmpc.nWorkers + 1  # +1 for the Reader!
         while True:
             tup = self.qin.get()
-            if tup == 'HISTOS_SENT':
-                self.log.debug('received HISTOS_SENT message')
+            if tup == "HISTOS_SENT":
+                self.log.debug("received HISTOS_SENT message")
                 hstatus -= 1
                 if not hstatus:
                     break
             else:
                 self.register(tup)
         self._gmpc.sEvent.set()
-        self.log.info('Writer received all histo bundles and set sync event')
+        self.log.info("Writer received all histo bundles and set sync event")
         return SUCCESS
 
     def RebuildHistoStore(self):
-        '''
+        """
         Rebuild the Histogram Store from the histos received by Receive()
         If we have a histo which is not in the store,
         book and fill it according to self.bookingDict
         If we have a histo with a matching histo in the store,
         add the two histos, remembering that aida2root must be used on
         the Stored histo for compatibility.
-        '''
+        """
         errors = 0
         for tup in self.histos:
             workerID, histDict = tup
@@ -121,7 +122,7 @@ class HistoAgent():
                     try:
                         aida2root(obj).Add(o)
                     except:
-                        self.log.warning('FAILED TO ADD : %s' % (str(obj)))
+                        self.log.warning("FAILED TO ADD : %s" % (str(obj)))
                         errors += 1
                     added += 1
                 else:
@@ -130,93 +131,113 @@ class HistoAgent():
                         try:
                             self.bookingDict[o.__class__.__name__](n, o)
                         except:
-                            self.log.warning('FAILED TO REGISTER : %s\tto%s' %
-                                             (o.__class__.__name__, n))
+                            self.log.warning(
+                                "FAILED TO REGISTER : %s\tto%s"
+                                % (o.__class__.__name__, n)
+                            )
                             errors += 1
                     else:
-                        self.log.warning('No booking method for: %s\t%s\t%s' %
-                                         (n, type(o), o.__class__.__name__))
+                        self.log.warning(
+                            "No booking method for: %s\t%s\t%s"
+                            % (n, type(o), o.__class__.__name__)
+                        )
                         errors += 1
                     booked += 1
         hs = self.hvt.getHistoNames()
-        self.log.info('Histo Store Rebuilt : ')
-        self.log.info('  Contains %i objects.' % (len(hs)))
-        self.log.info('  Errors in Rebuilding : %i' % (errors))
+        self.log.info("Histo Store Rebuilt : ")
+        self.log.info("  Contains %i objects." % (len(hs)))
+        self.log.info("  Errors in Rebuilding : %i" % (errors))
         return SUCCESS
 
     def bookDataObject(self, n, o):
-        '''
+        """
         Register a DataObject to the Histo Store
-        '''
+        """
         self._gmpc.hvt.registerObject(n, o)
 
     def bookTH1D(self, n, o):
-        '''
+        """
         Register a ROOT 1D THisto to the Histo Store
-        '''
-        obj = self.hvt._ihs.book(n, o.GetTitle(),
-                                 o.GetXaxis().GetNbins(),
-                                 o.GetXaxis().GetXmin(),
-                                 o.GetXaxis().GetXmax())
+        """
+        obj = self.hvt._ihs.book(
+            n,
+            o.GetTitle(),
+            o.GetXaxis().GetNbins(),
+            o.GetXaxis().GetXmin(),
+            o.GetXaxis().GetXmax(),
+        )
         aida2root(obj).Add(o)
 
     def bookTH2D(self, n, o):
-        '''
+        """
         Register a ROOT 2D THisto to the Histo Store
-        '''
-        obj = self.hvt._ihs.book(n, o.GetTitle(),
-                                 o.GetXaxis().GetNbins(),
-                                 o.GetXaxis().GetXmin(),
-                                 o.GetXaxis().GetXmax(),
-                                 o.GetYaxis().GetNbins(),
-                                 o.GetYaxis().GetXmin(),
-                                 o.GetYaxis().GetXmax())
+        """
+        obj = self.hvt._ihs.book(
+            n,
+            o.GetTitle(),
+            o.GetXaxis().GetNbins(),
+            o.GetXaxis().GetXmin(),
+            o.GetXaxis().GetXmax(),
+            o.GetYaxis().GetNbins(),
+            o.GetYaxis().GetXmin(),
+            o.GetYaxis().GetXmax(),
+        )
         aida2root(obj).Add(o)
 
     def bookTH3D(self, n, o):
-        '''
+        """
         Register a ROOT 3D THisto to the Histo Store
-        '''
-        obj = self.hvt._ihs.book(n, o.GetTitle(),
-                                 o.GetXaxis().GetXbins(),
-                                 o.GetXaxis().GetXmin(),
-                                 o.GetXaxis().GetXmax(),
-                                 o.GetYaxis().GetXbins(),
-                                 o.GetYaxis().GetXmin(),
-                                 o.GetYaxis().GetXmax(),
-                                 o.GetZaxis().GetXbins(),
-                                 o.GetZaxis().GetXmin(),
-                                 o.GetZaxis().GetXmax())
+        """
+        obj = self.hvt._ihs.book(
+            n,
+            o.GetTitle(),
+            o.GetXaxis().GetXbins(),
+            o.GetXaxis().GetXmin(),
+            o.GetXaxis().GetXmax(),
+            o.GetYaxis().GetXbins(),
+            o.GetYaxis().GetXmin(),
+            o.GetYaxis().GetXmax(),
+            o.GetZaxis().GetXbins(),
+            o.GetZaxis().GetXmin(),
+            o.GetZaxis().GetXmax(),
+        )
         aida2root(obj).Add(o)
 
     def bookTProfile(self, n, o):
-        '''
+        """
         Register a ROOT TProfile to the Histo Store
-        '''
-        obj = self.hvt._ihs.bookProf(n, o.GetTitle(),
-                                     o.GetXaxis().GetNbins(),
-                                     o.GetXaxis().GetXmin(),
-                                     o.GetXaxis().GetXmax(), o.GetOption())
+        """
+        obj = self.hvt._ihs.bookProf(
+            n,
+            o.GetTitle(),
+            o.GetXaxis().GetNbins(),
+            o.GetXaxis().GetXmin(),
+            o.GetXaxis().GetXmax(),
+            o.GetOption(),
+        )
         aida2root(obj).Add(o)
 
     def bookTProfile2D(self, n, o):
-        '''
+        """
         Register a ROOT TProfile2D to the Histo Store
-        '''
-        obj = self.hvt._ihs.bookProf(n, o.GetTitle(),
-                                     o.GetXaxis().GetNbins(),
-                                     o.GetXaxis().GetXmin(),
-                                     o.GetXaxis().GetXmax(),
-                                     o.GetYaxis().GetNbins(),
-                                     o.GetYaxis().GetXmin(),
-                                     o.GetYaxis().GetXmax())
+        """
+        obj = self.hvt._ihs.bookProf(
+            n,
+            o.GetTitle(),
+            o.GetXaxis().GetNbins(),
+            o.GetXaxis().GetXmin(),
+            o.GetXaxis().GetXmax(),
+            o.GetYaxis().GetNbins(),
+            o.GetYaxis().GetXmin(),
+            o.GetYaxis().GetXmax(),
+        )
         aida2root(obj).Add(o)
 
 
 # =============================================================================
 
 
-class FileRecordsAgent():
+class FileRecordsAgent:
     def __init__(self, gmpComponent):
         self._gmpc = gmpComponent
         self.fsr = self._gmpc.fsr
@@ -250,18 +271,18 @@ class FileRecordsAgent():
         #   a completeness guarantee,
         #
         # send in form ( nodeID, path, object)
-        self.log.info('Sending FileRecords...')
+        self.log.info("Sending FileRecords...")
         lst = self.fsr.getHistoNames()
 
         # Check Validity
         if not lst:
-            self.log.info('No FileRecords Data to send to Writer.')
-            self.q.put('END_FSR')
+            self.log.info("No FileRecords Data to send to Writer.")
+            self.q.put("END_FSR")
             return SUCCESS
 
         # no need to send the root node
-        if '/FileRecords' in lst:
-            lst.remove('/FileRecords')
+        if "/FileRecords" in lst:
+            lst.remove("/FileRecords")
 
         for l in lst:
             o = self.fsr.retrieveObject(l)
@@ -273,40 +294,41 @@ class FileRecordsAgent():
             else:
                 # only add the Event Counter
                 # and non-Empty Keyed Containers (ignore empty ones)
-                if l == '/FileRecords/EventCountFSR':
+                if l == "/FileRecords/EventCountFSR":
                     tup = (self._gmpc.nodeID, l, pickle.dumps(o))
                     self.objectsOut.append(tup)
                 elif "KeyedContainer" in o.__class__.__name__:
                     # It's a Keyed Container
                     nObjects = o.numberOfObjects()
                     if nObjects:
-                        self.log.debug("Keyed Container %s with %i objects" %
-                                       (l, nObjects))
+                        self.log.debug(
+                            "Keyed Container %s with %i objects" % (l, nObjects)
+                        )
                         tup = (self._gmpc.nodeID, l, pickle.dumps(o))
                         self.objectsOut.append(tup)
                 else:
-                    self.log.info('Ignoring %s in FSR' % o.__class__.__name__)
+                    self.log.info("Ignoring %s in FSR" % o.__class__.__name__)
 
-        self.log.debug('Done with FSR store, just to send to Writer.')
+        self.log.debug("Done with FSR store, just to send to Writer.")
 
         if self.objectsOut:
-            self.log.debug('%i FSR objects to Writer' % (len(self.objectsOut)))
+            self.log.debug("%i FSR objects to Writer" % (len(self.objectsOut)))
             for ob in self.objectsOut:
-                self.log.debug('\t%s' % (ob[0]))
+                self.log.debug("\t%s" % (ob[0]))
             self.q.put(self.objectsOut)
         else:
-            self.log.info('Valid FSR Store, but no data to send to Writer')
-        self.log.info('SendFSR complete')
-        self.q.put('END_FSR')
+            self.log.info("Valid FSR Store, but no data to send to Writer")
+        self.log.info("SendFSR complete")
+        self.q.put("END_FSR")
         return SUCCESS
 
     def Receive(self):
         # Receive contents of all Workers FileRecords Transient Stores
-        self.log.info('Receiving FSR store data...')
+        self.log.info("Receiving FSR store data...")
         nc = self._gmpc.nWorkers
         while nc > 0:
             objects = self.q.get()
-            if objects == 'END_FSR':
+            if objects == "END_FSR":
                 nc -= 1
                 continue
                 if nc == 0:
@@ -317,69 +339,75 @@ class FileRecordsAgent():
         # Now sort it by which worker it came from
         # an object is : (nodeID, path, pickledObject)
         self.objectsIn.sort(cmp=self.localCmp)
-        self.log.info('All FSR data received')
+        self.log.info("All FSR data received")
         return SUCCESS
 
     def Rebuild(self):
         # objects is a list of (path, serializedObject) tuples
         for sourceNode, path, serialob in self.objectsIn:
-            self.log.debug('Working with %s' % (path))
+            self.log.debug("Working with %s" % (path))
             ob = pickle.loads(serialob)
-            if hasattr(ob, 'update'):
+            if hasattr(ob, "update"):
                 ob.update()
-            if hasattr(ob, 'numberOfObjects'):
+            if hasattr(ob, "numberOfObjects"):
                 nCont = ob.numberOfObjects()
-                self.log.debug('\t %s has containedObjects : %i' %
-                               (type(ob).__name__, nCont))
+                self.log.debug(
+                    "\t %s has containedObjects : %i" % (type(ob).__name__, nCont)
+                )
             if sourceNode == 0:
-                self.log.debug('Registering Object to : %s' % (path))
+                self.log.debug("Registering Object to : %s" % (path))
                 self.fsr.registerObject(path, ob)
             else:
-                self.log.debug('Merging Object to : %s' % (path))
+                self.log.debug("Merging Object to : %s" % (path))
                 self.MergeFSRobject(sourceNode, path, ob)
         # As RecordStream has been split into Worker and Writer parts, the
         # count for output is wrong... fix that here, as every event received
         # by the writer is written (validation testing occurs on the worker)
 
-        self.log.info('FSR Store Rebuilt.  Correcting EventCountFSR')
+        self.log.info("FSR Store Rebuilt.  Correcting EventCountFSR")
         if bool(self.fsr._idp):  # There might not be an FSR stream (Gauss)
-            ecount = '/FileRecords/EventCountFSR'
+            ecount = "/FileRecords/EventCountFSR"
             if self.fsr[ecount]:
                 self.fsr[ecount].setOutput(self._gmpc.nIn)
-                self.log.info('Event Counter Output set : %s : %i' %
-                              (ecount, self.fsr[ecount].output()))
+                self.log.info(
+                    "Event Counter Output set : %s : %i"
+                    % (ecount, self.fsr[ecount].output())
+                )
             # Do some reporting
-            self.log.debug('FSR store reconstructed!')
+            self.log.debug("FSR store reconstructed!")
             lst = self.fsr.getHistoNames()
             if lst:
                 for l in lst:
                     ob = self.fsr.retrieveObject(l)
-                    if hasattr(ob, 'configureDirectAccess'):
+                    if hasattr(ob, "configureDirectAccess"):
                         ob.configureDirectAccess()
-                    if hasattr(ob, 'containedObjects'):
+                    if hasattr(ob, "containedObjects"):
                         # if ob.numberOfObjects() :
-                        self.log.debug('\t%s (cont. objects : %i)' %
-                                       (l, ob.numberOfObjects()))
+                        self.log.debug(
+                            "\t%s (cont. objects : %i)" % (l, ob.numberOfObjects())
+                        )
                     else:
-                        self.log.debug('\t%s' % (l))
-        self.log.info('FSR Store fully rebuilt.')
+                        self.log.debug("\t%s" % (l))
+        self.log.info("FSR Store fully rebuilt.")
         return SUCCESS
 
     def MergeFSRobject(self, sourceNode, path, ob):
         # Merge Non-Empty Keyed Container from Worker>0
-        if path == '/FileRecords/TimeSpanFSR':
+        if path == "/FileRecords/TimeSpanFSR":
             # TimeSpanFSR is a straightforward case
             self.ProcessTimeSpanFSR(path, ob)
-        elif path == '/FileRecords/EventCountFSR':
+        elif path == "/FileRecords/EventCountFSR":
             # Event Counter is also easy
             self.ProcessEventCountFSR(path, ob)
         # now other cases may not be so easy...
-        elif "KeyedContainer" in ob.__class__.__name__ and "LumiFSR" in ob.__class__.__name__:
+        elif (
+            "KeyedContainer" in ob.__class__.__name__
+            and "LumiFSR" in ob.__class__.__name__
+        ):
             # Keyed Container of LumiFSRs : extract and re-register
             self.MergeLumiFSR(path, ob)
         else:
-            self.log.info(
-                "Skipping Merge of %s at %s" % (ob.__class__.__name__, path))
+            self.log.info("Skipping Merge of %s at %s" % (ob.__class__.__name__, path))
 
     def ProcessTimeSpanFSR(self, path, ob):
         ob2 = self.fsr.retrieveObject(path)
@@ -390,7 +418,7 @@ class FileRecordsAgent():
             max = cob.latest()
             for j in range(sz):
                 cob = ob.containedObjects()[j]
-                self.log.debug('Adding TimeSpanFSR')
+                self.log.debug("Adding TimeSpanFSR")
                 if cob.earliest() < min:
                     min = cob.earliest()
                 if cob.latest() > max:
@@ -404,11 +432,12 @@ class FileRecordsAgent():
             self.fsr[path].add(tsfsr)
 
     def ProcessEventCountFSR(self, path, ob):
-        self.log.debug('Event Count Input Addition')
+        self.log.debug("Event Count Input Addition")
         self.fsr[path].setInput(self.fsr[path].input() + ob.input())
 
     def MergeLumiFSR(self, path, keyedC):
         from ROOT import string
+
         # Fetch the first lumi
         keyedContainer = self.fsr.retrieveObject(path)
         # The LumiFSR KeyedContainers only have one object
@@ -440,7 +469,7 @@ class FileRecordsAgent():
 # =============================================================================
 
 
-class LumiFSR():
+class LumiFSR:
     def __init__(self, lumi):
         # lumi looks like :
         # {  runs : 69857 69858
@@ -463,7 +492,7 @@ class LumiFSR():
         # except as a string
         s = str(lumi)
         sa = s.split("info (key/incr/integral) : ")[-1]
-        sa = sa.split('/')[:-1]
+        sa = sa.split("/")[:-1]
         for rec in sa:
             k, i, t = rec.split()
             k = int(k)
@@ -517,9 +546,9 @@ class LumiFSR():
 # =============================================================================
 
 
-class PackedCaloHypo():
+class PackedCaloHypo:
     def __init__(self, o):
-        cl = 'LHCb::PackedCaloHypo'
+        cl = "LHCb::PackedCaloHypo"
         assert o.__class__.__name__ == cl
         self.centX = o.centX
         self.centY = o.centY
@@ -599,13 +628,9 @@ class SyncMini(object):
 
 
 class Syncer(object):
-    def __init__(self,
-                 nWorkers,
-                 log,
-                 manyEvents=False,
-                 limit=None,
-                 step=None,
-                 firstEvent=None):
+    def __init__(
+        self, nWorkers, log, manyEvents=False, limit=None, step=None, firstEvent=None
+    ):
         # Class to help synchronise the sub-processes
         self.limit = limit
         self.step = step
@@ -632,7 +657,7 @@ class Syncer(object):
         # Regular version ----------------------------
         for i in range(0, self.limit, self.step):
             if self.checkAll():
-                self.log.info('%s : All procs done @ %i s' % (step, i))
+                self.log.info("%s : All procs done @ %i s" % (step, i))
                 break
             else:
                 time.sleep(self.step)
@@ -642,10 +667,9 @@ class Syncer(object):
             self.log.info("All processes : %s ok." % (step))
             return SUCCESS
         else:
-            self.log.critical('Some process is hanging on : %s' % (step))
+            self.log.critical("Some process is hanging on : %s" % (step))
             for k in self.keys:
-                hangString = "%s : Proc/Stat : %i/%s" % (step, k,
-                                                         self.d[k].check())
+                hangString = "%s : Proc/Stat : %i/%s" % (step, k, self.d[k].check())
                 self.log.critical(hangString)
             return FAILURE
 
@@ -676,8 +700,7 @@ class Syncer(object):
                         # if last Event set,then event loop finished
                         active.remove(k)
                         alive = time.time() - begin
-                        self.log.info(
-                            "Audit : Node %i alive for %5.2f" % (k, alive))
+                        self.log.info("Audit : Node %i alive for %5.2f" % (k, alive))
                     else:
                         sMini.reset()
                 else:
@@ -690,13 +713,13 @@ class Syncer(object):
                         firstEv[k] = True
                     if cond:
                         # It is hanging!
-                        self.log.critical('Single event wait : %5.2f' % (wait))
+                        self.log.critical("Single event wait : %5.2f" % (wait))
                         self.processHang()
                         return FAILURE
 
             # Termination Criteria : if all procs have been removed, we're done
             if self.checkLastEvents():
-                self.log.info('TC met for event loop')
+                self.log.info("TC met for event loop")
                 break
             else:
                 # sleep, loop again
@@ -706,7 +729,7 @@ class Syncer(object):
         return SUCCESS
 
     def processHang(self):
-        self.log.critical('Some proc is hanging during Event processing!')
+        self.log.critical("Some proc is hanging during Event processing!")
         for k in self.keys:
             self.log.critical("Proc/Stat : %i / %s" % (k, self.d[k].check()))
         return
@@ -731,7 +754,7 @@ def getEventNumber(evt):
     #
     n = None
     # First Attempt : Unpacked Event Data
-    lst = ['/Event/Gen/Header', '/Event/Rec/Header']
+    lst = ["/Event/Gen/Header", "/Event/Rec/Header"]
     for l in lst:
         try:
             n = evt[l].evtNumber()
@@ -743,7 +766,7 @@ def getEventNumber(evt):
     # second attepmt : try DAQ/RawEvent data
     # The Evt Number is in bank type 16, bank 0, data pt 4
     try:
-        n = evt['/Event/DAQ/RawEvent'].banks(16)[0].data()[4]
+        n = evt["/Event/DAQ/RawEvent"].banks(16)[0].data()[4]
         return n
     except:
         pass

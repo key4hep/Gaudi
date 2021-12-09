@@ -43,10 +43,10 @@ public:
       Callable* m_func;
 
     public:
-      Visitor( Callable* f ) : m_func{f} {}
+      Visitor( Callable* f ) : m_func{ f } {}
       void visit( IAlgTool* alg_tool ) const override { std::invoke( *m_func, alg_tool ); }
     };
-    recursiveVisit( tools, Visitor{&callable}, reject_filter );
+    recursiveVisit( tools, Visitor{ &callable }, reject_filter );
   }
 
 private:

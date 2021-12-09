@@ -58,10 +58,10 @@ public:
 
   /** Listener properties */
   struct Listener final {
-    IIncidentListener* iListener{nullptr};
-    long               priority{0};
-    bool               rethrow{false};
-    bool               singleShot{false};
+    IIncidentListener* iListener{ nullptr };
+    long               priority{ 0 };
+    bool               rethrow{ false };
+    bool               singleShot{ false };
   };
 
   /** List of incidents and their listeners */
