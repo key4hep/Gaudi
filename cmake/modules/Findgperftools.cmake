@@ -133,7 +133,8 @@ endif()
 
 if(COMMAND __deprecate_var_for_target)
   foreach(v IN ITEMS GPERFTOOLS_INCLUDE_DIR
-                     GPERFTOOLS_INCLUDE_DIRS GPERFTOOLS_TCMALLOC_LIBRARY
+                     # GPERFTOOLS_INCLUDE_DIRS
+                     GPERFTOOLS_TCMALLOC_LIBRARY
                      GPERFTOOLS_TCMALLOC_DEBUG_LIBRARY
                      GPERFTOOLS_TCMALLOC_MINIMAL_LIBRARY
                      GPERFTOOLS_TCMALLOC_AND_PROFILER_LIBRARY
