@@ -128,8 +128,8 @@ namespace Gaudi::Functional {
       //             vector<handle> property ... as soon as declareProperty can deal with that.
     };
 
-    template <typename Out, typename In, typename Traits_>
-    struct MergingTransformer<Out( const vector_of_const_<In>& ), Traits_, false>
+    template <typename Out, typename... Ins, typename Traits_>
+    struct MergingTransformer<Out( const vector_of_const_<Ins>&... ), Traits_, false>
         : DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_> {
     private:
       using base_class = DataHandleMixin<std::tuple<Out>, std::tuple<>, Traits_>;
@@ -137,55 +137,87 @@ namespace Gaudi::Functional {
     public:
       using KeyValue  = typename base_class::KeyValue;
       using KeyValues = typename base_class::KeyValues;
+      using InKeys    = details::RepeatValues_<KeyValues, sizeof...( Ins )>;
 
-      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs )
-          : base_class( std::move( name ), locator )
-          , m_inputLocations{ this, inputs.first, inputs.second,
-                              [=]( Gaudi::Details::PropertyBase& ) {
-                                this->m_inputs =
-                                    make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
-                                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
-                                                               // optional flag... so do it
-                                                               // explicitly here...
-                                  std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
-                                                 []( auto& h ) { h.setOptional( true ); } );
-                                }
-                              },
-                              Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {
+      MergingTransformer( std::string name, ISvcLocator* locator, InKeys inputs )
+          : base_class( std::move( name ), locator ), m_inputLocations{ details::for_<sizeof...( Ins )>( [&]( auto I ) {
+            constexpr auto i   = decltype( I )::value;
+            auto&          ins = std::get<i>( inputs );
+            return Gaudi::Property<std::vector<std::string>>{
+                this, ins.first, ins.second,
+                [=]( auto&& ) {
+                  auto& handles = std::get<i>( this->m_inputs );
+                  auto& ins     = std::get<i>( this->m_inputLocations );
+                  using In      = typename std::decay_t<decltype( handles )>::value_type;
+                  handles       = make_vector_of_handles<std::decay_t<decltype( handles )>>( this, ins );
+                  if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
+                                                 // optional flag... so do it
+                                                 // explicitly here...
+                    std::for_each( handles.begin(), handles.end(), []( auto& h ) { h.setOptional( true ); } );
+                  }
+                },
+                Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } };
+          } ) } {
         static_assert( std::is_void_v<Out> );
       }
 
-      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs, const KeyValue& output )
+      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs )
+          : MergingTransformer{ name, locator, InKeys{ inputs } } {
+        static_assert( sizeof...( Ins ) == 1 );
+      }
+
+      MergingTransformer( std::string name, ISvcLocator* locator, InKeys inputs, const KeyValue& output )
           : base_class( std::move( name ), locator, output )
-          , m_inputLocations{ this, inputs.first, inputs.second,
-                              [=]( Gaudi::Details::PropertyBase& ) {
-                                this->m_inputs =
-                                    make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
-                                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
-                                                               // optional flag... so do it
-                                                               // explicitly here...
-                                  std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
-                                                 []( auto& h ) { h.setOptional( true ); } );
-                                }
-                              },
-                              Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {
+          , m_inputLocations{ details::for_<sizeof...( Ins )>( [&]( auto I ) {
+            constexpr auto i   = decltype( I )::value;
+            auto&          ins = std::get<i>( inputs );
+            return Gaudi::Property<std::vector<std::string>>{
+                this, ins.first, ins.second,
+                [=]( auto&& ) {
+                  auto& handles = std::get<i>( this->m_inputs );
+                  auto& ins     = std::get<i>( this->m_inputLocations );
+                  using In      = typename std::decay_t<decltype( handles )>::value_type;
+                  handles       = make_vector_of_handles<std::decay_t<decltype( handles )>>( this, ins );
+                  if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
+                                                 // optional flag... so do it
+                                                 // explicitly here...
+                    std::for_each( handles.begin(), handles.end(), []( auto& h ) { h.setOptional( true ); } );
+                  }
+                },
+                Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } };
+          } ) } {
         static_assert( !std::is_void_v<Out> );
       }
 
+      MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs, const KeyValue& output )
+          : MergingTransformer{ name, locator, InKeys{ inputs }, output } {
+        static_assert( sizeof...( Ins ) == 1 );
+      }
+
       // accessor to input Locations
-      const std::string& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
-      unsigned int       inputLocationSize() const { return m_inputLocations.value().size(); }
+      const std::string& inputLocation( unsigned int i, unsigned int j ) const {
+        return m_inputLocations.value().at( i ).at( j );
+      }
+      unsigned int inputLocationSize() const { return m_inputLocations.value().size(); }
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ) const override final {
-        vector_of_const_<In> ins;
-        ins.reserve( m_inputs.size() );
-        std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
+        std::tuple<vector_of_const_<Ins>...> inss;
+        details::for_<sizeof...( Ins )>( [&]( auto I ) {
+          constexpr size_t i       = decltype( I )::value;
+          auto&            ins     = std::get<i>( inss );
+          auto&            handles = std::get<i>( m_inputs );
+          ins.reserve( handles.size() );
+          std::transform( handles.begin(), handles.end(), std::back_inserter( ins ),
+                          details::details2::get_from_handle<typename std::decay_t<decltype( ins )>::value_type>{} );
+        } );
         try {
           if constexpr ( std::is_void_v<Out> ) {
-            ( *this )( std::as_const( ins ) );
+            std::apply( [&]( auto&&... ins ) { return std::as_const( *this )( std::as_const( ins )... ); }, inss );
           } else {
-            put( std::get<0>( this->m_outputs ), ( *this )( std::as_const( ins ) ) );
+            put( std::get<0>( this->m_outputs ),
+                 std::apply( [&]( auto&&... ins ) { return std::as_const( *this )( std::as_const( ins )... ); },
+                             inss ) );
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
@@ -194,14 +226,15 @@ namespace Gaudi::Functional {
         }
       }
 
-      virtual Out operator()( const vector_of_const_<In>& inputs ) const = 0;
+      virtual Out operator()( const vector_of_const_<Ins>&... inputs ) const = 0;
 
     private:
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
       using InputHandle_t = InputHandle_t<Traits_, std::remove_pointer_t<T>>;
-      std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
-      Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
+      std::tuple<std::vector<InputHandle_t<Ins>>...> m_inputs; //   and make the handles properties instead...
+      std::array<Gaudi::Property<std::vector<std::string>>, sizeof...( Ins )> m_inputLocations; // TODO/FIXME: remove
+                                                                                                // this duplication...
       // TODO/FIXME: replace vector of string property + call-back with a
       //             vector<handle> property ... as soon as declareProperty can deal with that.
     };
@@ -261,8 +294,10 @@ namespace Gaudi::Functional {
     }
 
     // accessor to input Locations
-    std::string const& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
-    unsigned int       inputLocationSize() const { return m_inputLocations.value().size(); }
+    std::string const& inputLocation( unsigned int i, unsigned int j ) const {
+      return m_inputLocations.value().at( i ).at( j );
+    }
+    unsigned int inputLocationSize() const { return m_inputLocations.value().size(); }
 
     // derived classes can NOT implement execute
     StatusCode execute( EventContext const& ) const override final {
