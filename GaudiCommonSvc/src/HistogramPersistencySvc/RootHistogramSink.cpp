@@ -106,24 +106,8 @@ namespace {
     auto histo = std::make_from_tuple<typename Traits::Histo>(
         std::tuple_cat( std::tuple{ name.c_str(), title.c_str() },
                         std::tuple{ axis[index].nBins, axis[index].minValue, axis[index].maxValue }... ) );
-
-    // fill Root histogram
-    for ( unsigned int i = 0; i < totNBins; i++ ) {
-      auto         ind        = i;
-      unsigned int root_index = 0;
-      for ( unsigned int j = 0; j < axis.size(); ++j ) {
-        auto dim = axis.size() - j - 1;
-
-        unsigned int bin = ind % ( axis[dim].nBins + 2 );
-        ind -= bin;
-        ind /= ( axis[dim].nBins + 2 );
-
-        root_index *= ( axis[dim].nBins + 2 );
-        root_index += bin;
-      }
-      Traits::fill( histo, root_index, weights[i] );
-    }
-
+    // fill Histo
+    for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
     auto try_set_bin_labels = [&histo, &jsonAxis]( auto idx ) {
       if ( jsonAxis[idx].contains( "labels" ) ) {
         TAxis* axis = nullptr;
