@@ -41,7 +41,7 @@ namespace Gaudi::Interface::Bind {
     }
 
     ~Box() {
-      if ( m_destruct ) ( *m_destruct )( &m_storage );
+      if ( m_destruct ) ( *m_destruct )( const_cast<IFace*>( m_ptr ) );
     }
     Box( const Box& ) = delete;
     Box& operator=( const Box& ) = delete;
