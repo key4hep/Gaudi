@@ -28,7 +28,7 @@ class IOpaqueAddress;
  *
  *  @author M.Frank
  */
-class GAUDI_API LinkManager {
+class GAUDI_API LinkManager final {
 
 public:
   /// Directory link types
@@ -117,13 +117,5 @@ public:
   Link* link( const std::string& path );
   /// Add link by object reference and path
   long addLink( const std::string& path, const DataObject* pObject ) const;
-  /// Remove link by object reference
-  long removeLink( const DataObject* pObject ) const;
-  /// Remove link by object reference
-  long removeLink( const std::string& fullPath ) const;
-  /// Remove link by link ID
-  long removeLink( long id ) const;
-  /// Remove all possibly existing symbolic links
-  void clearLinks();
 };
 #endif // GAUDIKERNEL_LINKMANAGER_H
