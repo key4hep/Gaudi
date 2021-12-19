@@ -61,7 +61,7 @@ LinkManager::Link* LinkManager::link( const std::string& path ) {
 }
 
 /// Add link by object reference and path string
-long LinkManager::addLink( const std::string& path, const DataObject* pObject ) const {
+long LinkManager::addLink( const std::string& path, const DataObject* pObject ) {
   long n = 0;
   for ( auto& lnk : m_linkVector ) {
     const DataObject* pO = lnk->object();

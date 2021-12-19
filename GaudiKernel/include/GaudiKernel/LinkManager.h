@@ -95,7 +95,7 @@ private:
   ///        -- but that requires more invasive schema evolution.
   ///
   /// The vector containing all links which are non-tree like
-  mutable std::vector<Link*> m_linkVector;
+  std::vector<Link*> m_linkVector;
 
 public:
   /// Standard Constructor
@@ -116,6 +116,6 @@ public:
   /// Retrieve symbolic link identified by path
   Link* link( const std::string& path );
   /// Add link by object reference and path
-  long addLink( const std::string& path, const DataObject* pObject ) const;
+  long addLink( const std::string& path, const DataObject* pObject );
 };
 #endif // GAUDIKERNEL_LINKMANAGER_H
