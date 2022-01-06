@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -9,6 +9,8 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import os
+
+from GaudiKernel.GaudiHandles import PrivateToolHandle
 
 os.environ["GAUDICONFIG2_DB"] = __name__ + "._DB"
 
@@ -70,4 +72,18 @@ _DB = {
         },
     },
     "TestConf::TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >": {},
+    "TestConf::AlgWithComplexProperty": {
+        "__component_type__": "Algorithm",
+        "__doc__": "configurable for testing default semantics on non trivial properties",
+        "properties": {
+            "TH": ("PrivateToolHandle", PrivateToolHandle("MyTool/SomeTool")),
+            "VS": ("std::vector<std::string,std::allocator<std::string> >", []),
+            "OS": (
+                "std::vector<std::string,std::allocator<std::string> >",
+                [],
+                "",
+                "OrderedSet<string>",
+            ),
+        },
+    },
 }
