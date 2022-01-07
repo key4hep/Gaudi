@@ -108,11 +108,7 @@ public:
 
   void disable() { m_enabled = false; }
 
-  bool setEnabled( const bool flag ) {
-    auto old  = m_enabled;
-    m_enabled = flag;
-    return old;
-  }
+  bool setEnabled( bool flag ) { return std::exchange( m_enabled, flag ); }
 
 protected:
   virtual const IAlgTool* getAsIAlgTool() const = 0;

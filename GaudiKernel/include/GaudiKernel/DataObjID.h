@@ -112,7 +112,8 @@ struct DataObjID_Hasher {
   std::size_t operator()( const DataObjID& k ) const { return k.m_hash; }
 };
 
-using DataObjIDColl = std::unordered_set<DataObjID, DataObjID_Hasher>;
+using DataObjIDColl   = std::unordered_set<DataObjID, DataObjID_Hasher>;
+using DataObjIDVector = std::vector<DataObjID>;
 
 namespace Gaudi {
   namespace Details {
@@ -124,6 +125,12 @@ namespace Gaudi {
       struct StringConverter<DataObjIDColl> {
         std::string   toString( const DataObjIDColl& v );
         DataObjIDColl fromString( const DataObjIDColl&, const std::string& );
+      };
+
+      template <>
+      struct StringConverter<DataObjIDVector> {
+        std::string     toString( const DataObjIDVector& v );
+        DataObjIDVector fromString( const DataObjIDVector&, const std::string& );
       };
     } // namespace Property
   }   // namespace Details
