@@ -110,4 +110,28 @@ namespace Gaudi::Tests::Histograms {
     };
     DECLARE_COMPONENT( EnumAxisAlg )
   } // namespace CustomAxis
+  namespace MultiDimLayout {
+    // Simple algorithm used to check https://gitlab.cern.ch/gaudi/Gaudi/-/issues/212
+    struct TestAlg : Gaudi::Functional::Consumer<void()> {
+      using Base = Gaudi::Functional::Consumer<void()>;
+      using Base::Base;
+
+      mutable Gaudi::Accumulators::Histogram<1> m_h1{ this, "h1", "", { 10, 0, 10 } };
+      mutable Gaudi::Accumulators::Histogram<2> m_h2{ this, "h2", "", { 10, 0, 10 }, { 10, 0, 10 } };
+      mutable Gaudi::Accumulators::Histogram<3> m_h3{ this, "h3", "", { 10, 0, 10 }, { 10, 0, 10 }, { 10, 0, 10 } };
+
+      void operator()() const override {
+        int value = 0;
+        // fill 1, 2 and 3 dimensional histograms with different values in each bin
+        for ( double x = -0.5; x < 11; x += 1.0 ) {
+          m_h1[x] += ++value;
+          for ( double y = -0.5; y < 11; y += 1.0 ) {
+            m_h2[{ x, y }] += ++value;
+            for ( double z = -0.5; z < 11; z += 1.0 ) { m_h3[{ x, y, z }] += ++value; }
+          }
+        }
+      }
+    };
+    DECLARE_COMPONENT( TestAlg )
+  } // namespace MultiDimLayout
 } // namespace Gaudi::Tests::Histograms

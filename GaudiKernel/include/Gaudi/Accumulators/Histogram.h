@@ -199,11 +199,13 @@ namespace Gaudi::Accumulators {
     using AxisArithmeticType = Arithmetic;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       unsigned int index = 0;
-      for ( unsigned int dim = 0; dim < NIndex; dim++ ) {
+      for ( unsigned int j = 0; j < NIndex; j++ ) {
+        unsigned int dim = NIndex - j - 1;
         // compute local index for a given dimension
         int localIndex = axis[dim].index( ( *this )[dim] );
-        // compute global index. Bins are stored in a row first manner
-        index = ( dim > 0 ? ( axis[dim].nBins + 2 ) : 0 ) * index + localIndex;
+        // compute global index. Bins are stored in a column first manner
+        index *= ( axis[dim].nBins + 2 );
+        index += localIndex;
       }
       return index;
     }
