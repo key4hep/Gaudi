@@ -10,6 +10,7 @@
 #####################################################################################
 from GaudiConfig2 import Configurable, useGlobalInstances
 from GaudiConfig2.Configurables.TestConf import (
+    AlgWithComplexProperty,
     AlgWithMaps,
     AlgWithVectors,
     SimpleOptsAlg,
@@ -69,16 +70,44 @@ def test_props():
 
 
 @with_setup(setup_func, teardown_func)
-def test_special_cases_for_is_set():
+def test_special_cases_for_is_set_with_custom_handler():
     p = SimpleOptsAlg("Dummy")
     assert p.__opt_properties__() == {}
 
     p.String  # just accessing is not setting, so it should not appear
     # setting to default should show as explicitly set
     p.Int = p._descriptors["Int"].default
-    print(p.__opt_properties__())
     assert p.__opt_properties__() == {
         "Dummy.Int": "0",
+    }
+
+
+@with_setup(setup_func, teardown_func)
+def test_special_cases_for_is_set_with_default_handler():
+    p = AlgWithComplexProperty("Dummy")
+    assert p.__opt_properties__() == {}
+    # just accessing is not setting, so it should not appear
+    p.TH
+    assert p.__opt_properties__() == {}
+    # internal change to same as default, equivalent to no change
+    p.TH.typeAndName = "ToolType/AndName"
+    assert p.__opt_properties__() == {
+        "Dummy.TH": "'ToolType/AndName'",
+    }
+    # internal change to same as default, equivalent to no change
+    p.TH.typeAndName = p._descriptors["TH"].default.typeAndName
+    assert p.__opt_properties__() == {}
+    # explicit set as default, equivalent to change
+    p.TH = p._descriptors["TH"].default
+    assert p.__opt_properties__() == {
+        "Dummy.TH": "'MyTool/SomeTool'",
+    }
+
+    p = AlgWithComplexProperty("Dummy2")
+    # explicit set as default, equivalent to change (never retrieved)
+    p.TH = p._descriptors["TH"].default
+    assert p.__opt_properties__() == {
+        "Dummy2.TH": "'MyTool/SomeTool'",
     }
 
 

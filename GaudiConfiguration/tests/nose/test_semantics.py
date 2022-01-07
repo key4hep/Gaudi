@@ -240,3 +240,34 @@ def test_semantics_opt_value():
     ):
         s = getSemanticsFor(cpp_type)
         assert s.opt_value(value) == expected
+
+
+def test_default_semantics_special_cases():
+    class SpecialType:
+        def __init__(self, value):
+            self.value = value
+
+        def __eq__(self, other):
+            return self.value == other.value
+
+    default = SpecialType(42)
+
+    # just initialized, it is not set
+    assert not DefaultSemantics("dummy").is_set(SpecialType(0))
+
+    # the default value gets cloned and it reports it as set only
+    # if the property value is different from the default
+    s = DefaultSemantics("dummy")
+    val = s.default(default)
+    assert val is not default
+    assert val == default
+    assert not s.is_set(val)
+    val.value = 35
+    assert s.is_set(val)
+
+    # flag as set even if set to the same value as the default
+    s = DefaultSemantics("dummy")
+    val = s.store(SpecialType(42))
+    assert val is not default
+    assert val == default
+    assert s.is_set(val)

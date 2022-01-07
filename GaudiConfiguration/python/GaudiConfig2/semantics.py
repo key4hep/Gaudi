@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,6 +10,7 @@
 #####################################################################################
 from __future__ import absolute_import
 
+import copy
 import logging
 import re
 import sys
@@ -30,9 +31,11 @@ is_64bits = sys.maxsize > 2 ** 32
 class PropertySemantics(object):
     """
     Basic property semantics implementation, with no validation/transformation.
+
+    Not to be used directly for any actual property, use only specializations.
     """
 
-    __handled_types__ = (re.compile(r".*"),)
+    __handled_types__ = ()
 
     def __init__(self, cpp_type, name=None):
         self.name = None
@@ -90,7 +93,37 @@ class PropertySemantics(object):
         return a
 
 
-DefaultSemantics = PropertySemantics
+class DefaultSemantics(PropertySemantics):
+    """
+    Special semantics that makes a deep copy of the default value on first access
+    and considers a property set if its value is different from the default.
+
+    This semantics is meant to be used whenever there is no specific semantic
+    (with proper change detection) implemented for a type.
+    """
+
+    __handled_types__ = (re.compile(r".*"),)
+
+    def default(self, value):
+        # remember the default value we got and return a copy
+        self._default = value
+        self._is_set = False
+        return copy.deepcopy(value)
+
+    def store(self, value):
+        # flag that the value was explicitly set
+        self._is_set = True
+        return super(DefaultSemantics, self).store(value)
+
+    def is_set(self, value):
+        try:
+            # we assume the property was set if it was changed
+            return self._is_set or self._default != value
+        except AttributeError:
+            # either self._is_set or self._default is not defined,
+            # so the value was not explicitly set nor modified
+            # from the default
+            return False
 
 
 class StringSemantics(PropertySemantics):
@@ -467,7 +500,7 @@ SEMANTICS = [
     for c in globals().values()
     if isinstance(c, type)
     and issubclass(c, PropertySemantics)
-    and c is not PropertySemantics
+    and c not in (PropertySemantics, DefaultSemantics)
 ]
 
 
