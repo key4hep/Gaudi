@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -346,10 +346,13 @@ class OrderedSetSemantics(SequenceSemantics):
     Extend the sequence-semantics with a merge-method to behave like a
     OrderedSet: Values are unique but the order is maintained.
     Use 'OrderedSet<T>' as fifth parameter of the Gaudi::Property<T> constructor
-    to invoke this merging method.
+    to invoke this merging method. Also applies to std::[unordered_]set.
     """
 
-    __handled_types__ = (re.compile(r"^OrderedSet<.*>$"),)
+    __handled_types__ = (
+        re.compile(r"(std::)?(unordered_)?set<.*>$"),
+        re.compile(r"^OrderedSet<.*>$"),
+    )
 
     def __init__(self, cpp_type, name=None):
         super(OrderedSetSemantics, self).__init__(cpp_type, name)
