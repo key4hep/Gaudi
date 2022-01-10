@@ -6,10 +6,10 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [v36r3][] - 2021-12-09
-This is a bugfix release with a couple of changes that technically backward incompatible
-because they fix issues that might have gone un noticed:
+This is a bugfix release with a couple of changes that technically are backward incompatible
+because they fix issues that might have gone unnoticed:
 
-- gaudi/Gaudi!1265 make the property parser throw an exception in case of problems,
+- gaudi/Gaudi!1265 makes the property parser throw an exception in case of problems,
   instead of silently doing nothing (see gaudi/Gaudi#163)
 - `Gaudi::Accumulators` counters were copiable but not movable, which was not correct:
   they should be neither and we fixed it, but this means you cannot use them in
