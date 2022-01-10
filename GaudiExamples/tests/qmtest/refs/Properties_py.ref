@@ -1,25 +1,7 @@
-# setting LC_ALL to "C"
-# --> Including file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Properties.py'
-# --> Including file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
-# Dummy1.Property=true;
-# --> Including file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
-# Dummy2.Property=true;
-# <-- End of file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
-# <-- End of file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
-# <-- End of file '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options/Properties.py'
-# applying configuration of GaudiExamplesCommonConf
-# /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
-# |-OutputLevel = 3  (default: 3)
-# |-DummyEvents = -1
-# \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
-ApplicationMgr    SUCCESS 
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v34r0)
-                                          running on zeus on Thu Sep 24 13:24:20 2020
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-StatusCodeSvc        INFO initialize
-EventLoopMgr        DEBUG Service base class initialized successfully
 EventLoopMgr        DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
 PropertyAlg          INFO Before Initialization......
 PropertyAlg          INFO Int    = 100
@@ -85,10 +67,10 @@ PropertyAlg          INFO PInt= 155 [should be 155, bounds are 0, 200]
 PropertyAlg          INFO Got an exception when setting a value outside bounds
 PropertyAlg          INFO PInt=  'PInt':155 [should be 155]
 PropertyAlg          INFO ===============Checking Property CallBaks ===============
-PropertyAlg          INFO Accessing PDouble ... 
+PropertyAlg          INFO Accessing PDouble ...
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
 PropertyAlg          INFO Value obtained is: 1.01e+07
-PropertyAlg          INFO Updating PDouble ... 
+PropertyAlg          INFO Updating PDouble ...
 PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
 PropertyAlg          INFO Update handler called for property:  'PDouble':999.00000
 PropertyAlg          INFO ==========Checking Accesing Properties by string=========
@@ -141,7 +123,7 @@ ApplicationMgr.ExtSvcCreates: True
 ApplicationMgr.Go: 0
 ApplicationMgr.HistogramPersistency: 'NONE'
 ApplicationMgr.InitializationLoopCheck: True
-ApplicationMgr.JobOptionsPath: ''
+ApplicationMgr.JobOptionsPath: '...'
 ApplicationMgr.JobOptionsPostAction: ''
 ApplicationMgr.JobOptionsPreAction: ''
 ApplicationMgr.JobOptionsSvcType: 'JobOptionsSvc'
@@ -264,14 +246,14 @@ JobOptionsSvc.AuditStart: False
 JobOptionsSvc.AuditStop: False
 JobOptionsSvc.AutoRetrieveTools: True
 JobOptionsSvc.CheckToolDeps: True
-JobOptionsSvc.DUMPFILE: ''
+JobOptionsSvc.DUMPFILE: 'gaudiexamples.properties.all_py.joboptsdump'
 JobOptionsSvc.GlobalDefaults: [  ]
 JobOptionsSvc.OutputLevel: 3
-JobOptionsSvc.PATH: '../options/job.opts'
+JobOptionsSvc.PATH: '...'
 JobOptionsSvc.PYTHONACTION: ''
 JobOptionsSvc.PYTHONPARAMS: ''
 JobOptionsSvc.ReportUnused: False
-JobOptionsSvc.SEARCHPATH: '/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/tests/qmtest:/bld2/leggett/work/git/leggett/Gaudi/GaudiExamples/options'
+JobOptionsSvc.SEARCHPATH: '...'
 JobOptionsSvc.TYPE: 'NONE'
 MessageSvc.AuditFinalize: False
 MessageSvc.AuditInitialize: False
@@ -360,20 +342,6 @@ PropertyAlg.StringMap: { 'one' : 'une' }
 PropertyAlg.Timeline: False
 PropertyAlg.UInt64: 4294967296
 PropertyAlg.UInt64Array: [ 4294967296 ]
-StatusCodeSvc.AbortOnError: False
-StatusCodeSvc.AuditFinalize: False
-StatusCodeSvc.AuditInitialize: False
-StatusCodeSvc.AuditReinitialize: False
-StatusCodeSvc.AuditRestart: False
-StatusCodeSvc.AuditServices: False
-StatusCodeSvc.AuditStart: False
-StatusCodeSvc.AuditStop: False
-StatusCodeSvc.AutoRetrieveTools: True
-StatusCodeSvc.CheckToolDeps: True
-StatusCodeSvc.Filter: [  ]
-StatusCodeSvc.IgnoreDicts: True
-StatusCodeSvc.OutputLevel: 3
-StatusCodeSvc.SuppressCheck: False
 TimelineSvc.AuditFinalize: False
 TimelineSvc.AuditInitialize: False
 TimelineSvc.AuditReinitialize: False
@@ -400,13 +368,13 @@ PropertyProxy        INFO  Got property this.RInt = 101;
 PropertyProxy        INFO  Set property this.RInt = 1001;
 PropertyProxy        INFO  Got property this.RInt = 1001;
 PropertyProxy        INFO  Got property this.String = hundred "one";
-EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
+PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
 ApplicationMgr       INFO Application Manager Started successfully
 PropertyAlg          INFO executing....
 PropertyProxy        INFO executing....
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 73.4336 | total time (skipping 1st evt) 123857 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 PropertyAlg          INFO finalizing....
 PropertyProxy        INFO finalizing....

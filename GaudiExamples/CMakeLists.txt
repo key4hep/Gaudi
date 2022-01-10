@@ -184,6 +184,19 @@ gaudi_add_tests(QMTest)
 if(TEST "GaudiExamples.jira.gaudi_1174" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
   set_property(TEST GaudiExamples.jira.gaudi_1174 PROPERTY DISABLED TRUE)
 endif()
+foreach(test IN ITEMS
+    metadatasvc
+    properties.all properties.all2 properties.all_py
+    bug_34121_tool_properties_in_python
+    deferred_write.enforced deferred_write.explicit)
+  if(TEST "GaudiExamples.${test}")
+    set_property(
+      TEST GaudiExamples.${test}
+      APPEND PROPERTY ENVIRONMENT JOBOPTSDUMPFILE=gaudiexamples.${test}.joboptsdump
+    )
+  endif()
+endforeach()
+
 gaudi_add_tests(pytest)
 
 # Compiled python module
