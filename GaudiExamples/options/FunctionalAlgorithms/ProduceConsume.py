@@ -38,6 +38,7 @@ from Configurables import Gaudi__Examples__OptLdExpTransformer as OptLdExpTransf
 from Configurables import Gaudi__Examples__SDataProducer as SDataProducer
 from Configurables import Gaudi__Examples__SRangesToIntVector as SRangesToIntVector
 from Configurables import Gaudi__Examples__ToolConsumer as ToolConsumer
+from Configurables import Gaudi__Examples__TwoDMerger as TwoDMerger
 from Configurables import Gaudi__Examples__VectorDataProducer as VectorDataProducer
 from Configurables import Gaudi__Examples__VectorDoubleProducer as VectorDoubleProducer
 from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
@@ -143,6 +144,18 @@ app.TopAlg = [
             str(VectorDataProducer1.OutputLocation),
             str(VectorDataProducer2.OutputLocation),
         ],
+    ),
+    TwoDMerger(
+        "TwoDMerger",
+        InputInts=[
+            str(VectorDataProducer1.OutputLocation),
+            str(VectorDataProducer2.OutputLocation),
+        ],
+        InputDoubles=[
+            str(OptLdExpTransformer("OptLdExpTransformer").OutputDoubles),
+        ],
+        OutputInts="/Event/SummedInts",
+        OutputDoubles="/Event/SummedDoubles",
     ),
 ]
 # - Events

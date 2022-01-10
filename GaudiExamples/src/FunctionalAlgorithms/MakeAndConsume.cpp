@@ -490,4 +490,36 @@ namespace Gaudi::Examples {
   };
   DECLARE_COMPONENT( RangeProducer )
 
+  /** @brief Concatenates a list of input vectors into a single output vector.
+   */
+  struct TwoDMerger final : public Gaudi::Functional::MergingMultiTransformer<
+                                std::tuple<std::vector<int>, std::vector<double>>(
+                                    const Gaudi::Functional::vector_of_const_<std::vector<int>>&,
+                                    const Gaudi::Functional::vector_of_const_<std::vector<double>>& ),
+                                BaseClass_t> {
+
+    TwoDMerger( const std::string& name, ISvcLocator* svcLoc )
+        : MergingMultiTransformer{ name,
+                                   svcLoc,
+                                   { KeyValues{ "InputInts", {} }, KeyValues{ "InputDoubles", {} } },
+                                   { KeyValue{ "OutputInts", "/Event/MySummedInts" },
+                                     KeyValue{ "OutputDoubles", "/Event/MySummedDoubles" } } } {}
+
+    std::tuple<std::vector<int>, std::vector<double>>
+    operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>&    intVectors,
+                const Gaudi::Functional::vector_of_const_<std::vector<double>>& doubleVectors ) const override {
+      auto r         = std::tuple{ std::vector<int>{}, std::vector<double>{} };
+      auto& [is, ds] = r;
+      std::transform( begin( intVectors ), end( intVectors ), std::back_inserter( is ),
+                      []( const std::vector<int>& vi ) { return std::accumulate( begin( vi ), end( vi ), 0 ); } );
+      always() << " accumulated: " << is << endmsg;
+      std::transform( begin( doubleVectors ), end( doubleVectors ), std::back_inserter( ds ),
+                      []( const std::vector<double>& vd ) { return std::accumulate( begin( vd ), end( vd ), 0. ); } );
+      always() << " accumulated: " << ds << endmsg;
+      return r;
+    }
+  };
+
+  DECLARE_COMPONENT( TwoDMerger )
+
 } // namespace Gaudi::Examples

@@ -46,8 +46,8 @@
 # <-- End of file '/project/bfys/graven/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r2)
-                                          running on stbc-i1.nikhef.nl on Sat Oct 30 20:39:05 2021
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r3)
+                                          running on stbc-i1.nikhef.nl on Wed Dec 15 09:41:14 2021
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -111,6 +111,8 @@ IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO sum of input sizes: 8
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+TwoDMerger        SUCCESS  accumulated: [12, 12]
+TwoDMerger        SUCCESS  accumulated: [103.68]
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -164,6 +166,8 @@ IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO sum of input sizes: 8
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+TwoDMerger        SUCCESS  accumulated: [12, 12]
+TwoDMerger        SUCCESS  accumulated: [103.68]
 CountingConsumer     INFO Number of counters : 3
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "This is not a warning..."                      |         4 |
