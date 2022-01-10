@@ -379,10 +379,13 @@ class OrderedSetSemantics(SequenceSemantics):
     Extend the sequence-semantics with a merge-method to behave like a
     OrderedSet: Values are unique but the order is maintained.
     Use 'OrderedSet<T>' as fifth parameter of the Gaudi::Property<T> constructor
-    to invoke this merging method.
+    to invoke this merging method. Also applies to std::[unordered_]set.
     """
 
-    __handled_types__ = (re.compile(r"^OrderedSet<.*>$"),)
+    __handled_types__ = (
+        re.compile(r"(std::)?(unordered_)?set<.*>$"),
+        re.compile(r"^OrderedSet<.*>$"),
+    )
 
     def __init__(self, cpp_type, name=None):
         super(OrderedSetSemantics, self).__init__(cpp_type, name)
