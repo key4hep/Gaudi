@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,6 +10,7 @@
 #####################################################################################
 from GaudiConfig2 import Configurable, useGlobalInstances
 from GaudiConfig2.Configurables.TestConf import (
+    AlgWithComplexProperty,
     AlgWithMaps,
     AlgWithVectors,
     SimpleOptsAlg,
@@ -65,6 +66,48 @@ def test_props():
         "Dummy.Int": "42",
         "Dummy.String": "'default'",
         "Dummy.Tool": "'TestConf::SimpleOptsAlgTool/Dummy.MyTool'",
+    }
+
+
+@with_setup(setup_func, teardown_func)
+def test_special_cases_for_is_set_with_custom_handler():
+    p = SimpleOptsAlg("Dummy")
+    assert p.__opt_properties__() == {}
+
+    p.String  # just accessing is not setting, so it should not appear
+    # setting to default should show as explicitly set
+    p.Int = p._descriptors["Int"].default
+    assert p.__opt_properties__() == {
+        "Dummy.Int": "0",
+    }
+
+
+@with_setup(setup_func, teardown_func)
+def test_special_cases_for_is_set_with_default_handler():
+    p = AlgWithComplexProperty("Dummy")
+    assert p.__opt_properties__() == {}
+    # just accessing is not setting, so it should not appear
+    p.TH
+    assert p.__opt_properties__() == {}
+    # internal change to same as default, equivalent to no change
+    p.TH.typeAndName = "ToolType/AndName"
+    assert p.__opt_properties__() == {
+        "Dummy.TH": "'ToolType/AndName'",
+    }
+    # internal change to same as default, equivalent to no change
+    p.TH.typeAndName = p._descriptors["TH"].default.typeAndName
+    assert p.__opt_properties__() == {}
+    # explicit set as default, equivalent to change
+    p.TH = p._descriptors["TH"].default
+    assert p.__opt_properties__() == {
+        "Dummy.TH": "'MyTool/SomeTool'",
+    }
+
+    p = AlgWithComplexProperty("Dummy2")
+    # explicit set as default, equivalent to change (never retrieved)
+    p.TH = p._descriptors["TH"].default
+    assert p.__opt_properties__() == {
+        "Dummy2.TH": "'MyTool/SomeTool'",
     }
 
 

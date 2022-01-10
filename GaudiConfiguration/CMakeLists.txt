@@ -18,13 +18,8 @@ if(BUILD_TESTING)
   _import_nosetests()
   add_test(NAME GaudiConfiguration.nose
            COMMAND run $<TARGET_FILE:nosetests> -v --with-doctest --with-coverage --cover-package=GaudiConfig2
+                   --cover-min-percentage=100
                    ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
-
-  # Ideally I would use '--cover-min-percentage=100', but the version of nose we
-  # have is a bit old
-  set_tests_properties(GaudiConfiguration.nose
-                       PROPERTIES PASS_REGULAR_EXPRESSION "TOTAL .* 100%"
-                                  FAIL_REGULAR_EXPRESSION "FAILED")
 endif()
 
 # Note: The file tools/print_limits.cpp is a ROOT macro, so it is not meant to be compiled
