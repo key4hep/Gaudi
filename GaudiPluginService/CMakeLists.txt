@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -71,6 +71,13 @@ gaudi_add_executable(Test_GaudiPluginService_UseCases
                      LINK GaudiPluginService
                           Boost::unit_test_framework
                      TEST)
+
+# enable C++20 for plugin service test if possible, so that we can test
+# source_location info of the component declaration
+list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_20 compiler_has_cxx20)
+if(compiler_has_cxx20 GREATER_EQUAL 0)
+  target_compile_features(Test_GaudiPluginService_UseCases PRIVATE cxx_std_20)
+endif()
 
 gaudi_add_library(Test_GaudiPluginService_LegacyUseCasesLib
                   SOURCES tests/src/LegacyUseCasesLib.cpp
