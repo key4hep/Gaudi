@@ -22,7 +22,7 @@
 #include <typeinfo>
 #include <utility>
 
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L && __has_include( <source_location> )
 #  include <source_location>
 #  include <sstream>
 #  include <string_view>
@@ -32,7 +32,7 @@ namespace Gaudi {
   /// See @ref GaudiPluginService-readme
   namespace PluginService {
     GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2 {
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L && __has_include( <source_location> )
       using std::source_location;
 #else
       // dummy implementation for backward compatibility
@@ -110,7 +110,7 @@ namespace Gaudi {
           using Details::Registry;
 
           if ( props.find( "ClassName" ) == end( props ) ) props.emplace( "ClassName", Details::demangle<T>() );
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L && __has_include( <source_location> )
           // keep only the file name
           std::string_view fn  = src_loc.file_name();
           auto             pos = fn.rfind( '/' );
