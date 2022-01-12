@@ -62,7 +62,7 @@ namespace Gaudi::Functional {
 
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs )
           : base_class( std::move( name ), locator )
-          , m_inputLocations{ this, inputs.first, inputs.second,
+          , m_inputLocations{ this, inputs.first, details::to_DataObjID( inputs.second ),
                               [=]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
@@ -79,7 +79,7 @@ namespace Gaudi::Functional {
 
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs, const KeyValue& output )
           : base_class( std::move( name ), locator, output )
-          , m_inputLocations{ this, inputs.first, inputs.second,
+          , m_inputLocations{ this, inputs.first, details::to_DataObjID( inputs.second ),
                               [=]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
@@ -95,7 +95,7 @@ namespace Gaudi::Functional {
       }
 
       // accessor to input Locations
-      const std::string& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
+      const std::string& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n].key(); }
       unsigned int       inputLocationSize() const { return m_inputLocations.value().size(); }
 
       // derived classes can NOT implement execute
@@ -122,9 +122,9 @@ namespace Gaudi::Functional {
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
       using InputHandle_t = InputHandle_t<Traits_, std::remove_pointer_t<T>>;
-      std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
-      Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
-      // TODO/FIXME: replace vector of string property + call-back with a
+      std::vector<InputHandle_t<In>>          m_inputs;         //   and make the handles properties instead...
+      Gaudi::Property<std::vector<DataObjID>> m_inputLocations; // TODO/FIXME: remove this duplication...
+      // TODO/FIXME: replace vector of DataObjID property + call-back with a
       //             vector<handle> property ... as soon as declareProperty can deal with that.
     };
 
@@ -142,8 +142,8 @@ namespace Gaudi::Functional {
         return details::for_<sizeof...( Ins )>( [&]( auto I ) {
           constexpr auto i   = decltype( I )::value;
           auto&          ins = std::get<i>( inputs );
-          return Gaudi::Property<std::vector<std::string>>{
-              this, ins.first, ins.second,
+          return Gaudi::Property<std::vector<DataObjID>>{
+              this, ins.first, details::to_DataObjID( ins.second ),
               [=]( auto&& ) {
                 auto& handles = std::get<i>( this->m_inputs );
                 auto& ins     = std::get<i>( this->m_inputLocations );
@@ -183,7 +183,7 @@ namespace Gaudi::Functional {
 
       // accessor to input Locations
       const std::string& inputLocation( unsigned int i, unsigned int j ) const {
-        return m_inputLocations.at( i ).value().at( j );
+        return m_inputLocations.at( i ).value().at( j ).key();
       }
       const std::string& inputLocation( unsigned int i ) const {
         static_assert( sizeof...( Ins ) == 1 );
@@ -224,8 +224,8 @@ namespace Gaudi::Functional {
       template <typename T>
       using InputHandle_t = InputHandle_t<Traits_, std::remove_pointer_t<T>>;
       std::tuple<std::vector<InputHandle_t<Ins>>...> m_inputs; //   and make the handles properties instead...
-      std::array<Gaudi::Property<std::vector<std::string>>, sizeof...( Ins )> m_inputLocations; // TODO/FIXME: remove
-                                                                                                // this duplication...
+      std::array<Gaudi::Property<std::vector<DataObjID>>, sizeof...( Ins )> m_inputLocations; // TODO/FIXME: remove
+                                                                                              // this duplication...
       // TODO/FIXME: replace vector of string property + call-back with a
       //             vector<handle> property ... as soon as declareProperty can deal with that.
     };
@@ -263,8 +263,8 @@ namespace Gaudi::Functional {
         , m_inputLocations{ details::for_<n_args>( [&]( auto I ) {
           constexpr auto i   = decltype( I )::value;
           auto&          ins = std::get<i>( inputs );
-          return Gaudi::Property<std::vector<std::string>>{
-              this, ins.first, ins.second,
+          return Gaudi::Property<std::vector<DataObjID>>{
+              this, ins.first, details::to_DataObjID( ins.second ),
               [=]( auto&& ) {
                 auto& handles = std::get<i>( this->m_inputs );
                 auto& ins     = std::get<i>( this->m_inputLocations );
@@ -286,7 +286,7 @@ namespace Gaudi::Functional {
 
     // accessor to input Locations
     std::string const& inputLocation( unsigned int i, unsigned int j ) const {
-      return m_inputLocations.at( i ).value().at( j );
+      return m_inputLocations.at( i ).value().at( j ).key();
     }
     std::string const& inputLocation( unsigned int j ) const {
       static_assert( n_args == 1 );
@@ -332,8 +332,8 @@ namespace Gaudi::Functional {
     template <typename T>
     using InputHandle_t = details::InputHandle_t<Traits_, typename std::remove_pointer<T>::type>;
     std::tuple<std::vector<InputHandle_t<Ins>>...> m_inputs; //   and make the handles properties instead...
-    std::array<Gaudi::Property<std::vector<std::string>>, sizeof...( Ins )> m_inputLocations; // TODO/FIXME: remove this
-                                                                                              // duplication...
+    std::array<Gaudi::Property<std::vector<DataObjID>>, sizeof...( Ins )> m_inputLocations; // TODO/FIXME: remove this
+                                                                                            // duplication...
     // TODO/FIXME: replace vector of string property + call-back with a
     //             vector<handle> property ... as soon as declareProperty can deal with that.
   };
@@ -358,7 +358,7 @@ namespace Gaudi::Functional {
                                    OutKeys const& outputs );
 
     // accessor to input Locations
-    std::string const& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
+    std::string const& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n].key(); }
     unsigned int       inputLocationSize() const { return m_inputLocations.value().size(); }
 
     // derived classes can NOT implement execute
@@ -394,8 +394,8 @@ namespace Gaudi::Functional {
     // if In is a pointer, it signals optional (as opposed to mandatory) input
     template <typename T>
     using InputHandle_t = details::InputHandle_t<Traits_, typename std::remove_pointer<T>::type>;
-    std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
-    Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
+    std::vector<InputHandle_t<In>>          m_inputs;         //   and make the handles properties instead...
+    Gaudi::Property<std::vector<DataObjID>> m_inputLocations; // TODO/FIXME: remove this duplication...
     // TODO/FIXME: replace vector of string property + call-back with a
     //             vector<handle> property ... as soon as declareProperty can deal with that.
   };
@@ -408,7 +408,7 @@ namespace Gaudi::Functional {
                                                                          OutKeys const&     outputs )
       : base_class( name, pSvcLocator, outputs )
       , m_inputLocations{
-            this, inputs.first, inputs.second,
+            this, inputs.first, details::to_DataObjID( inputs.second ),
             [=]( Gaudi::Details::PropertyBase& ) {
               this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
               if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set

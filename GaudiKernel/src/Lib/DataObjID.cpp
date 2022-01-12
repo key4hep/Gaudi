@@ -112,3 +112,16 @@ DataObjIDColl Gaudi::Details::Property::StringConverter<DataObjIDColl>::fromStri
   }
   return c;
 }
+
+std::string Gaudi::Details::Property::StringConverter<DataObjIDVector>::toString( const DataObjIDVector& v ) {
+  return Gaudi::Utils::toString( v );
+}
+
+DataObjIDVector Gaudi::Details::Property::StringConverter<DataObjIDVector>::fromString( const DataObjIDVector&,
+                                                                                        const std::string& s ) {
+  DataObjIDVector c;
+  if ( !Gaudi::Parsers::parse_( c, s ).isSuccess() ) {
+    throw std::invalid_argument( "cannot parse '" + s + "' to DataObjIDVector" );
+  }
+  return c;
+}

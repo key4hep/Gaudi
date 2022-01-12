@@ -116,6 +116,14 @@ namespace Gaudi::Functional::details {
     }
   } // namespace zip
 
+  inline std::vector<DataObjID> to_DataObjID( const std::vector<std::string>& in ) {
+    std::vector<DataObjID> out;
+    out.reserve( in.size() );
+    std::transform( in.begin(), in.end(), std::back_inserter( out ),
+                    []( const std::string& i ) { return DataObjID{ i }; } );
+    return out;
+  }
+
   /////////////////////////////////////////
   namespace details2 {
     // note: boost::optional in boost 1.66 does not have 'has_value()'...
@@ -371,9 +379,13 @@ namespace Gaudi::Functional::details {
     using InputHandle_t = typename Tr::template InputHandle<T>;
 
     template <typename T>
-    using DefaultInputHandle =
-        std::conditional_t<std::is_base_of_v<IAlgTool, T>, ToolHandle<Gaudi::Interface::Bind::IBinder<T>>,
-                           DataObjectReadHandle<T>>;
+    constexpr auto is_tool_v = std::is_base_of_v<IAlgTool, std::decay_t<T>>;
+
+    template <typename T>
+    using ToolHandle_t = ToolHandle<Gaudi::Interface::Bind::IBinder<std::decay_t<T>>>;
+
+    template <typename T>
+    using DefaultInputHandle = std::conditional_t<is_tool_v<T>, ToolHandle_t<T>, DataObjectReadHandle<T>>;
   } // namespace detail2
 
   // check whether Traits::BaseClass is a valid type,
@@ -396,13 +408,14 @@ namespace Gaudi::Functional::details {
       std::is_base_of_v<Gaudi::details::LegacyAlgorithmAdapter, details::BaseClass_t<Traits>>;
 
   /////////
+#define GAUDI_FUNCTIONAL_MAKE_VECTOR_OF_HANDLES_USES_DATAOBJID
 
   template <typename Handles>
-  Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<std::string>& init ) {
+  Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<DataObjID>& init ) {
     Handles handles;
     handles.reserve( init.size() );
     std::transform( init.begin(), init.end(), std::back_inserter( handles ),
-                    [&]( const std::string& loc ) -> typename Handles::value_type {
+                    [&]( const auto& loc ) -> typename Handles::value_type {
                       return { loc, owner };
                     } );
     return handles;

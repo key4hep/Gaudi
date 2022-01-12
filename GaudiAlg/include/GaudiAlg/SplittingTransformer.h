@@ -47,7 +47,7 @@ namespace Gaudi::Functional {
                             const KeyValues& outputs )
           : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
-                this, outputs.first, outputs.second,
+                this, outputs.first, details::to_DataObjID( outputs.second ),
                 [=]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
@@ -66,7 +66,7 @@ namespace Gaudi::Functional {
       }
 
       // accessor to output Locations
-      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n]; }
+      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n].key(); }
       unsigned int       outputLocationSize() const { return m_outputLocations.value().size(); }
 
       // derived classes can NOT implement execute
@@ -95,9 +95,9 @@ namespace Gaudi::Functional {
     private:
       template <typename T>
       using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
-      std::vector<OutputHandle<Out>>            m_outputs;
-      Gaudi::Property<std::vector<std::string>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
-                                                                   // actual handles!
+      std::vector<OutputHandle<Out>>          m_outputs;
+      Gaudi::Property<std::vector<DataObjID>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
+                                                                 // actual handles!
     };
 
     template <typename Out, typename... In, typename Traits_>
@@ -114,7 +114,7 @@ namespace Gaudi::Functional {
                             const KeyValues& outputs )
           : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
-                this, outputs.first, outputs.second,
+                this, outputs.first, details::to_DataObjID( outputs.second ),
                 [=]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
@@ -133,7 +133,7 @@ namespace Gaudi::Functional {
       }
 
       // accessor to output Locations
-      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n]; }
+      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n].key(); }
       unsigned int       outputLocationSize() const { return m_outputLocations.value().size(); }
 
       // derived classes can NOT implement execute
@@ -162,9 +162,9 @@ namespace Gaudi::Functional {
     private:
       template <typename T>
       using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
-      std::vector<OutputHandle<Out>>            m_outputs;
-      Gaudi::Property<std::vector<std::string>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
-                                                                   // actual handles!
+      std::vector<OutputHandle<Out>>          m_outputs;
+      Gaudi::Property<std::vector<DataObjID>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
+                                                                 // actual handles!
     };
 
   } // namespace details
