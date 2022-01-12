@@ -17,29 +17,30 @@
 #include <Gaudi/Details/PluginServiceDetailsV2.h>
 #include <functional>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
 
 #if __cplusplus > 201703L && __has_include( <source_location> )
 #  include <source_location>
-#  include <sstream>
-#  include <string_view>
+namespace Gaudi::PluginService::Details {
+  using std::source_location;
+}
+#elif __cplusplus >= 201402L
+#  include <experimental/source_location>
+namespace Gaudi::PluginService::Details {
+  using std::experimental::source_location;
+}
 #endif
 
 namespace Gaudi {
   /// See @ref GaudiPluginService-readme
   namespace PluginService {
     GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2 {
-#if __cplusplus > 201703L && __has_include( <source_location> )
-      using std::source_location;
-#else
-      // dummy implementation for backward compatibility
-      struct source_location {
-        static source_location current() { return {}; }
-      };
-#endif
+      using Gaudi::PluginService::Details::source_location;
 
       /// \cond FWD_DECL
       template <typename>
@@ -110,7 +111,6 @@ namespace Gaudi {
           using Details::Registry;
 
           if ( props.find( "ClassName" ) == end( props ) ) props.emplace( "ClassName", Details::demangle<T>() );
-#if __cplusplus > 201703L && __has_include( <source_location> )
           // keep only the file name
           std::string_view fn  = src_loc.file_name();
           auto             pos = fn.rfind( '/' );
@@ -118,7 +118,6 @@ namespace Gaudi {
           std::stringstream s;
           s << fn << ':' << src_loc.line();
           props["declaration_location"] = s.str();
-#endif
           Registry::instance().add( id, { libraryName(), std::move( f ), std::move( props ) } );
         }
 

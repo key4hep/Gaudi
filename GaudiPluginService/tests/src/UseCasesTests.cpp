@@ -56,7 +56,6 @@ BOOST_AUTO_TEST_CASE( properties ) {
   BOOST_CHECK( reg.getInfo( "special-id" ).getprop( "MyProperty" ) == "special" );
 }
 
-#if __cplusplus > 201703L && __has_include( <source_location> )
 BOOST_AUTO_TEST_CASE( source_location ) {
   using Gaudi::PluginService::Details::Registry;
   Registry&            reg   = Registry::instance();
@@ -64,7 +63,6 @@ BOOST_AUTO_TEST_CASE( source_location ) {
 
   BOOST_CHECK( props["declaration_location"] == "UseCasesLib.cpp:37" );
 }
-#endif
 
 BOOST_AUTO_TEST_CASE( custom_factory ) {
   {
