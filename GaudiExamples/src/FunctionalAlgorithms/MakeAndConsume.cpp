@@ -39,7 +39,8 @@ namespace Gaudi::Examples {
 
   struct MyConsumerTool final : Gaudi::Functional::ToolBinder<Gaudi::Interface::Bind::Box<IMyTool>( const int& )> {
     MyConsumerTool( std::string type, std::string name, const IInterface* parent )
-        : ToolBinder{ std::move( type ), std::move( name ), parent, KeyValue{ "MyInt", "/Event/MyInt" } } {}
+        : ToolBinder{ std::move( type ), std::move( name ), parent, KeyValue{ "MyInt", "/Event/MyInt" },
+                      construct<BoundInstance>( this ) } {}
 
     class BoundInstance final : public Gaudi::Interface::Bind::Stub<IMyTool> {
       MyConsumerTool const* parent;
@@ -50,10 +51,6 @@ namespace Gaudi::Examples {
       void operator()() const override {
         parent->always() << "BoundInstance - got: " << i << " from " << parent->inputLocation<int>() << endmsg;
       }
-    };
-
-    Gaudi::Interface::Bind::Box<IMyTool> operator()( const int& i ) const override {
-      return { std::in_place_type<BoundInstance>, this, i };
     };
   };
   DECLARE_COMPONENT( MyConsumerTool )
