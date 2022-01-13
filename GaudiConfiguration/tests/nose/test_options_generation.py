@@ -52,10 +52,11 @@ def test_props():
     p = SimpleOptsAlg("Dummy")
 
     assert p.__opt_properties__() == {}
+    print(p.__opt_properties__(explicit_defaults=True))
     assert p.__opt_properties__(explicit_defaults=True) == {
         "Dummy.Int": "0",
-        "Dummy.String": "'default'",
-        "Dummy.Tool": "'TestConf::SimpleOptsAlgTool'",
+        "Dummy.String": '"default"',
+        "Dummy.Tool": '"TestConf::SimpleOptsAlgTool"',
     }
     p.Int = 42
     assert p.__opt_properties__() == {
@@ -64,8 +65,8 @@ def test_props():
     p.Tool = SimpleOptsAlgTool("MyTool", parent=p)
     assert p.__opt_properties__(explicit_defaults=True) == {
         "Dummy.Int": "42",
-        "Dummy.String": "'default'",
-        "Dummy.Tool": "'TestConf::SimpleOptsAlgTool/Dummy.MyTool'",
+        "Dummy.String": '"default"',
+        "Dummy.Tool": '"TestConf::SimpleOptsAlgTool/Dummy.MyTool"',
     }
 
 
@@ -92,7 +93,7 @@ def test_special_cases_for_is_set_with_default_handler():
     # internal change to same as default, equivalent to no change
     p.TH.typeAndName = "ToolType/AndName"
     assert p.__opt_properties__() == {
-        "Dummy.TH": "'ToolType/AndName'",
+        "Dummy.TH": '"ToolType/AndName"',
     }
     # internal change to same as default, equivalent to no change
     p.TH.typeAndName = p._descriptors["TH"].default.typeAndName
@@ -100,14 +101,14 @@ def test_special_cases_for_is_set_with_default_handler():
     # explicit set as default, equivalent to change
     p.TH = p._descriptors["TH"].default
     assert p.__opt_properties__() == {
-        "Dummy.TH": "'MyTool/SomeTool'",
+        "Dummy.TH": '"MyTool/SomeTool"',
     }
 
     p = AlgWithComplexProperty("Dummy2")
     # explicit set as default, equivalent to change (never retrieved)
     p.TH = p._descriptors["TH"].default
     assert p.__opt_properties__() == {
-        "Dummy2.TH": "'MyTool/SomeTool'",
+        "Dummy2.TH": '"MyTool/SomeTool"',
     }
 
 
@@ -121,12 +122,12 @@ def test_all_options_default():
     assert all_options() == {}
     assert all_options(explicit_defaults=True) == {
         "Parent.Int": "0",
-        "Parent.String": "'default'",
-        "Parent.Tool": "'TestConf::SimpleOptsAlgTool'",
+        "Parent.String": '"default"',
+        "Parent.Tool": '"TestConf::SimpleOptsAlgTool"',
         "Parent.MyTool.Bool": "False",
         "AnotherAlg.Int": "0",
-        "AnotherAlg.String": "'default'",
-        "AnotherAlg.Tool": "'TestConf::SimpleOptsAlgTool'",
+        "AnotherAlg.String": '"default"',
+        "AnotherAlg.Tool": '"TestConf::SimpleOptsAlgTool"',
     }
 
 
@@ -144,12 +145,12 @@ def test_all_options():
     }
     assert all_options(explicit_defaults=True) == {
         "Parent.Int": "9",
-        "Parent.String": "'default'",
-        "Parent.Tool": "'TestConf::SimpleOptsAlgTool'",
+        "Parent.String": '"default"',
+        "Parent.Tool": '"TestConf::SimpleOptsAlgTool"',
         "Parent.MyTool.Bool": "False",
         "AnotherAlg.Int": "0",
-        "AnotherAlg.String": "'default'",
-        "AnotherAlg.Tool": "'TestConf::SimpleOptsAlgTool'",
+        "AnotherAlg.String": '"default"',
+        "AnotherAlg.Tool": '"TestConf::SimpleOptsAlgTool"',
     }
 
 
