@@ -28,19 +28,17 @@ class IOpaqueAddress;
  *
  *  @author M.Frank
  */
-class GAUDI_API LinkManager {
+class GAUDI_API LinkManager final {
 
 public:
   /// Directory link types
   enum DirLinkType { INVALID, VALID };
 
   /** Embedded class defining a symbolic link
-   * Note: No copy constructor; bitwise copy (done by the compiler)
+   * Note: No explicit copy constructor; implicit compiler generated one
    *       is just fine.
    */
   class Link final {
-    /// DataObject is a friend
-    // friend class LinkManager;
     /// String containing path of symbolic link
     std::string m_path;
     /// Pointer to object behind the link
@@ -52,14 +50,8 @@ public:
     /// Standard constructor
     Link( long id, std::string path, DataObject* pObject = nullptr )
         : m_path( std::move( path ) ), m_pObject( pObject ), m_id( id ) {}
-    /// Standard constructor
+    /// Standard constructor for Root I/O
     Link() = default;
-    /// Update the link content
-    void set( long id, std::string path, DataObject* pObject ) {
-      setObject( pObject );
-      m_path = std::move( path );
-      m_id   = id;
-    }
     /// Equality operator: check paths only
     bool operator==( const Link& link ) const { return link.m_path == m_path; }
     /// Update object pointer
@@ -76,17 +68,6 @@ public:
   };
 
 private:
-  ///@ TODO: provide interface to let MergeEvntAlg do its thing
-  //         without the need for friendship. It needs to 'shunt'
-  //         all contained links to a new prefix...
-  //         The steps to get there are
-  //           1) provide friend access for backwards compatibility
-  //           2) add new interface here
-  //           3) once released, update MergeEventAlg to use the new
-  //              interface
-  //           4) revoke friendship.
-  //         Now we're at stage 1...
-  friend class MergeEventAlg;
   ///@ TODO: replace by std::vector<std::unique_ptr<Link>> once
   ///        ROOT does 'automatic' schema conversion from T* to
   ///        std::unique_ptr<T>...
@@ -95,13 +76,13 @@ private:
   ///        -- but that requires more invasive schema evolution.
   ///
   /// The vector containing all links which are non-tree like
-  mutable std::vector<Link*> m_linkVector;
+  std::vector<Link*> m_linkVector;
 
 public:
   /// Standard Constructor
   LinkManager() = default;
   /// Standard Destructor
-  virtual ~LinkManager();
+  ~LinkManager();
   /// Static instantiation
   static LinkManager* newInstance();
   /// Assign new instantiator
@@ -114,16 +95,8 @@ public:
   /// Retrieve symbolic link identified by object
   Link* link( const DataObject* pObject );
   /// Retrieve symbolic link identified by path
-  Link* link( const std::string& path );
+  Link* link( std::string_view path );
   /// Add link by object reference and path
-  long addLink( const std::string& path, const DataObject* pObject ) const;
-  /// Remove link by object reference
-  long removeLink( const DataObject* pObject ) const;
-  /// Remove link by object reference
-  long removeLink( const std::string& fullPath ) const;
-  /// Remove link by link ID
-  long removeLink( long id ) const;
-  /// Remove all possibly existing symbolic links
-  void clearLinks();
+  long addLink( const std::string& path, const DataObject* pObject );
 };
 #endif // GAUDIKERNEL_LINKMANAGER_H
