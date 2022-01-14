@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -28,9 +28,10 @@ if version_info >= (3,):  # pragma no cover
     basestring = str
 
 # Regular expression to check if any of the options is a Python callable,
-# in the form of a string like `package.sub_package.module:callable`
+# in the form of a string like `package.sub_package.module:callable` or
+# `path/to/file.py:callable`
 CALLABLE_FORMAT = re.compile(
-    r"^(?P<module>[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*):(?P<callable>[a-zA-Z_][a-zA-Z0-9_]*)$"
+    r"^(?:(?P<module>[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*)|(?P<path>[^\0]+\.py)):(?P<callable>[a-zA-Z_][a-zA-Z0-9_]*)$"
 )
 
 
@@ -69,8 +70,17 @@ def invokeConfig(func, *args, **kwargs):
     if not callable(func):
         if isinstance(func, basestring):
             m = CALLABLE_FORMAT.match(func)
-            if m:
+            if m and m.group("module"):
                 func = getattr(import_module(m.group("module")), m.group("callable"))
+            elif m and m.group("path"):
+                globals = {}
+                exec(
+                    compile(
+                        open(m.group("path"), "rb").read(), m.group("path"), "exec"
+                    ),
+                    globals,
+                )
+                func = globals[m.group("callable")]
             else:
                 raise ValueError("invalid callable id %r" % func)
         else:

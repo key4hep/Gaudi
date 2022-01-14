@@ -10,15 +10,15 @@
 #####################################################################################
 from ast import literal_eval
 from pathlib import Path
-from subprocess import run
 from tempfile import NamedTemporaryFile
 
 import pytest
+from GaudiTests import run_gaudi
 
 
 def gen_opts_dict(options):
     with NamedTemporaryFile(mode="w+", suffix=".py") as tmp:
-        run(["gaudirun.py", "--dry-run", "--output", tmp.name, options])
+        run_gaudi("--dry-run", "--output", tmp.name, options)
         return literal_eval(tmp.read())
 
 
@@ -35,6 +35,6 @@ def gen_opts_dict(options):
 def test_opts_dump(options, filetype):
     expected = gen_opts_dict(options)
     with NamedTemporaryFile(suffix=f".{filetype}") as dump:
-        run(["gaudirun.py", "--dry-run", "--output", dump.name, options])
+        run_gaudi("--dry-run", "--output", dump.name, options)
         configuration = gen_opts_dict(dump.name)
         assert configuration == expected

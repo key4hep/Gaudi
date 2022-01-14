@@ -8,14 +8,20 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-def run_gaudi(*args, **kwargs):
-    """
-    Helper to simplify the invocation of gaudirun.py in tests.
-    """
-    from subprocess import run
+from GaudiTests import run_gaudi
 
-    cmd = ["gaudirun.py"]
-    cmd.extend(str(x) for x in args)
 
-    print("running", cmd)
-    return run(cmd, **kwargs)
+def config():
+    """
+    Dummy no-op configuration function
+    """
+    return []
+
+
+def test():
+    """
+    Run gaudirun.py with full path to a Python module.
+
+    See https://gitlab.cern.ch/gaudi/Gaudi/-/issues/192
+    """
+    run_gaudi(f"{__file__}:config", "-n", check=True)
