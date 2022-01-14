@@ -21,8 +21,8 @@ def config():
     from Configurables import GaudiExamplesCommonConf
 
     GaudiExamplesCommonConf(DummyEvents=42)
+
     # no GaudiConfig2 configurables to add
-    return []
 
 
 def test(tmp_path):

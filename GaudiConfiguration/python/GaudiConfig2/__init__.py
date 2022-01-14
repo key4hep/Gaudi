@@ -40,6 +40,9 @@ def _makeConfigDict(iterable):
         from collections.abc import Mapping
     except ImportError:  # pragma no cover
         from collections import Mapping
+
+    if iterable is None:
+        return {}
     if not isinstance(iterable, Mapping):
         return {c.name: c for c in iterable}
     return iterable
