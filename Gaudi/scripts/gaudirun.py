@@ -531,29 +531,16 @@ if __name__ == "__main__":
         """
 
         def __init__(self, initial_config=None):
-            self._configs_to_merge = [initial_config] if initial_config else []
+            self.config = {} if initial_config is None else initial_config
 
         def __call__(self, arg):
             from Gaudi.Configuration import importOptions
-            from GaudiConfig2 import CALLABLE_FORMAT, invokeConfig
+            from GaudiConfig2 import CALLABLE_FORMAT, invokeConfig, mergeConfigs
 
             if CALLABLE_FORMAT.match(arg):
-                self._configs_to_merge.append(invokeConfig(arg))
+                self.config = mergeConfigs(self.config, invokeConfig(arg))
             else:
                 importOptions(arg)
-
-        @property
-        def config(self):
-            """
-            dict of configurables (after merge)
-            """
-            if not self._configs_to_merge:
-                return {}
-            elif len(self._configs_to_merge) > 1:
-                from Gaudi.Configuration import mergeConfigs
-
-                self._configs_to_merge = [mergeConfigs(*self._configs_to_merge)]
-            return self._configs_to_merge[0]
 
     process = ArgProcessor()
 
