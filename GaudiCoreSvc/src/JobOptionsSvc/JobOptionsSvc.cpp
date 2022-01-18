@@ -27,8 +27,10 @@
 #include "Units.h"
 
 #include <algorithm>
-#include <cctype>
-#include <map>
+#include <functional>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #if __cplusplus >= 201703
@@ -46,12 +48,87 @@ namespace Gaudi {
   }
 } // namespace Gaudi
 
+namespace Gaudi::Details {
+  class SharedString final {
+  public:
+    SharedString( std::string_view s = {} ) : m_sv{ SharedString::get( s ) } {}
+
+    operator std::string() const { return std::string{ m_sv }; }
+    operator std::string_view() const { return m_sv; }
+
+    bool operator==( std::string_view other ) const { return m_sv == other; }
+
+    template <typename T>
+    bool operator==( const T& other ) const {
+      return m_sv == other;
+    }
+
+  private:
+    std::string_view m_sv;
+
+    static std::string_view get( std::string_view s ) {
+      if ( s.empty() ) { return {}; }
+      return *( storage.emplace( s ).first );
+    }
+
+    static std::unordered_set<std::string> storage;
+  };
+
+  class PropertyId final {
+  public:
+    PropertyId( const std::string& s ) : PropertyId( std::string_view{ s } ) {}
+    PropertyId( std::string_view s ) {
+      m_hash = std::hash<std::string_view>()( s );
+      if ( !s.empty() ) {
+        m_chunks.reserve( std::count( begin( s ), end( s ), '.' ) + 1 );
+        while ( true ) {
+          if ( auto pos = s.find( '.' ); pos != std::string_view::npos ) {
+            m_chunks.emplace_back( s.substr( 0, pos ) );
+            s.remove_prefix( pos + 1 );
+          } else {
+            m_chunks.emplace_back( s );
+            break;
+          }
+        }
+      }
+    }
+
+    std::string str() const {
+      auto        it = m_chunks.begin();
+      std::string s{ *it++ };
+      while ( it != m_chunks.end() ) {
+        s += '.';
+        s += *it++;
+      }
+      return s;
+    }
+
+    operator std::string() const { return str(); }
+
+    std::size_t hash() const noexcept { return m_hash; }
+
+  private:
+    std::vector<SharedString> m_chunks;
+    std::size_t               m_hash;
+    friend bool               operator==( const PropertyId& lhs, const PropertyId& rhs );
+  };
+  bool operator==( const PropertyId& lhs, const PropertyId& rhs ) { return lhs.m_chunks == rhs.m_chunks; }
+} // namespace Gaudi::Details
+
+template <>
+struct std::hash<Gaudi::Details::PropertyId> {
+  std::size_t operator()( Gaudi::Details::PropertyId const& s ) const noexcept { return s.hash(); }
+};
+
+std::unordered_set<std::string> Gaudi::Details::SharedString::storage;
+
 class JobOptionsSvc : public extends<Service, Gaudi::Interfaces::IOptionsSvc> {
 public:
   typedef std::vector<const Gaudi::Details::PropertyBase*> PropertiesT;
 
 private:
-  using StorageType = std::unordered_map<std::string, Gaudi::Details::WeakPropertyRef>;
+  using PropertyId  = Gaudi::Details::PropertyId;
+  using StorageType = std::unordered_map<PropertyId, Gaudi::Details::WeakPropertyRef>;
 
   StorageType m_options;
 
@@ -171,7 +248,7 @@ StatusCode JobOptionsSvc::initialize() {
 }
 StatusCode JobOptionsSvc::stop() {
   if ( m_reportUnused ) {
-    std::vector<std::string_view> unused;
+    std::vector<std::string> unused;
     unused.reserve( m_options.size() );
 
     for ( const auto& p : m_options ) {
@@ -278,7 +355,8 @@ void JobOptionsSvc::broadcast( const std::regex& filter, const std::string& valu
   std::smatch match;
   for ( auto& p : m_options ) {
     if ( !defaults_only || !p.second.isSet() ) {
-      if ( regex_match( p.first, match, filter ) ) { p.second = value; }
+      const auto s = p.first.str();
+      if ( regex_match( s, match, filter ) ) { p.second = value; }
     }
   }
 }
