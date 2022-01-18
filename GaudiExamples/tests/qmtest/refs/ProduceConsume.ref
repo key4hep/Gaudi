@@ -1,4 +1,4 @@
-# --> Including file '/project/bfys/graven/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# --> Including file '/project/bfys/graven/stack33/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ---
 # List of input and output types by class
 "Gaudi::Examples::ContextConsumer":
@@ -37,17 +37,21 @@
   InputFractions: "std::vector<double,std::allocator<double> >"
   InputIntegers: "std::vector<int,std::allocator<int> >"
   OutputDoubles: "std::vector<double,std::allocator<double> >"
+"Gaudi::Examples::ShrdPtrConsumer":
+  InputLocation: "std::shared_ptr<Gaudi::Examples::Foo>"
+"Gaudi::Examples::ShrdPtrProducer":
+  OutputLocation: "std::shared_ptr<Gaudi::Examples::Foo>"
 "Gaudi::Examples::ToolConsumer":
 "Gaudi::Examples::VectorDataProducer":
   OutputLocation: "std::vector<int,std::allocator<int> >"
 "Gaudi::Examples::VectorDoubleProducer":
   OutputLocation: "std::vector<double,std::allocator<double> >"
 ---
-# <-- End of file '/project/bfys/graven/stack2/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# <-- End of file '/project/bfys/graven/stack33/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r3)
-                                          running on stbc-i1.nikhef.nl on Wed Dec 15 09:41:14 2021
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r4)
+                                          running on stbc-i1.nikhef.nl on Wed Jan 19 10:19:46 2022
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -113,6 +117,8 @@ IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 TwoDMerger        SUCCESS  accumulated: [12, 12]
 TwoDMerger        SUCCESS  accumulated: [103.68]
+SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x2dd9930 and value  7 into /Event/MySharedFoo
+SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x2dd9930 with value  7 from /Event/MySharedFoo
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -168,6 +174,8 @@ IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 TwoDMerger        SUCCESS  accumulated: [12, 12]
 TwoDMerger        SUCCESS  accumulated: [103.68]
+SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x2dd7fe0 and value  7 into /Event/MySharedFoo
+SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x2dd7fe0 with value  7 from /Event/MySharedFoo
 CountingConsumer     INFO Number of counters : 3
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "This is not a warning..."                      |         4 |
