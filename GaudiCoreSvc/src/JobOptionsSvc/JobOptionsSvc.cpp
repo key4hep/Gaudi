@@ -51,24 +51,25 @@ namespace Gaudi {
 namespace Gaudi::Details {
   class SharedString final {
   public:
-    SharedString( std::string_view s = {} ) : m_sv{ SharedString::get( s ) } {}
+    SharedString( std::string_view s = {} ) : m_s{ SharedString::get( s ) } {}
 
-    operator std::string() const { return std::string{ m_sv }; }
-    operator std::string_view() const { return m_sv; }
+    operator std::string() const { return *m_s; }
+    operator std::string_view() const { return *m_s; }
 
-    bool operator==( std::string_view other ) const { return m_sv == other; }
+    bool operator==( std::string_view other ) const { return *m_s == other; }
+    bool operator==( const SharedString& other ) const { return m_s == other.m_s; }
 
     template <typename T>
     bool operator==( const T& other ) const {
-      return m_sv == other;
+      return *m_s == other;
     }
 
   private:
-    std::string_view m_sv;
+    const std::string* m_s;
 
-    static std::string_view get( std::string_view s ) {
+    static const std::string* get( std::string_view s ) {
       if ( s.empty() ) { return {}; }
-      return *( storage.emplace( s ).first );
+      return &*( storage.emplace( s ).first );
     }
 
     static std::unordered_set<std::string> storage;
