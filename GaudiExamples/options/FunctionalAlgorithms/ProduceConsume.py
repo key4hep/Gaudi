@@ -36,6 +36,8 @@ from Configurables import Gaudi__Examples__MyExampleTool as MyExampleTool
 from Configurables import Gaudi__Examples__OptFrExpTransformer as OptFrExpTransformer
 from Configurables import Gaudi__Examples__OptLdExpTransformer as OptLdExpTransformer
 from Configurables import Gaudi__Examples__SDataProducer as SDataProducer
+from Configurables import Gaudi__Examples__ShrdPtrConsumer as ShrdPtrConsumer
+from Configurables import Gaudi__Examples__ShrdPtrProducer as ShrdPtrProducer
 from Configurables import Gaudi__Examples__SRangesToIntVector as SRangesToIntVector
 from Configurables import Gaudi__Examples__ToolConsumer as ToolConsumer
 from Configurables import Gaudi__Examples__TwoDMerger as TwoDMerger
@@ -71,6 +73,8 @@ for configurable in sorted(
         OptFrExpTransformer,
         OptLdExpTransformer,
         CountingConsumer,
+        ShrdPtrProducer,
+        ShrdPtrConsumer,
     ],
     key=lambda c: c.getType(),
 ):
@@ -157,6 +161,8 @@ app.TopAlg = [
         OutputInts="/Event/SummedInts",
         OutputDoubles="/Event/SummedDoubles",
     ),
+    ShrdPtrProducer("SharedPtrProducer"),
+    ShrdPtrConsumer("SharedPtrConsumer"),
 ]
 # - Events
 app.EvtMax = 2

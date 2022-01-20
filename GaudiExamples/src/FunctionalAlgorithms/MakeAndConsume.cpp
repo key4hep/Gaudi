@@ -519,4 +519,45 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( TwoDMerger )
 
+  struct Foo {
+    int i;
+
+    Foo( int i ) : i{ i } {}
+    Foo( Foo&& ) = delete;
+    Foo& operator=( Foo&& ) = delete;
+    Foo( const Foo& )       = delete;
+    Foo& operator=( const Foo& ) = delete;
+    ~Foo(){};
+  };
+
+  struct ShrdPtrProducer final : Gaudi::Functional::Producer<std::shared_ptr<Foo>(), BaseClass_t> {
+
+    ShrdPtrProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MySharedFoo" ) ) {}
+
+    std::shared_ptr<Foo> operator()() const override {
+      auto foo = std::make_shared<Foo>( m_value.value() );
+      info() << "executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at " << foo.get() << " and value  "
+             << foo->i << " into " << outputLocation() << endmsg;
+      return foo;
+    }
+
+    Gaudi::Property<int> m_value{ this, "Value", 7, "The integer value to produce." };
+  };
+
+  DECLARE_COMPONENT( ShrdPtrProducer )
+
+  struct ShrdPtrConsumer final : Gaudi::Functional::Consumer<void( std::shared_ptr<Foo> const& ), BaseClass_t> {
+
+    ShrdPtrConsumer( const std::string& name, ISvcLocator* svcLoc )
+        : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MySharedFoo" ) ) {}
+
+    void operator()( const std::shared_ptr<Foo>& foo ) const override {
+      info() << "executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at " << foo.get() << " with value  "
+             << foo->i << " from " << inputLocation() << endmsg;
+    }
+  };
+
+  DECLARE_COMPONENT( ShrdPtrConsumer )
+
 } // namespace Gaudi::Examples
