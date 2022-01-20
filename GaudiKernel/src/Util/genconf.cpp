@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -231,7 +231,8 @@ public:
 
 private:
   bool genComponent( const std::string& libName, const std::string& componentName, component_t componentType,
-                     const vector<PropertyBase*>& properties, const std::vector<std::string>& interfaces );
+                     const vector<PropertyBase*>& properties, const std::vector<std::string>& interfaces,
+                     const Gaudi::PluginService::Details::Registry::FactoryInfo& info );
   void genImport( std::ostream& s, std::string_view frmt, std::string indent );
   void genHeader( std::ostream& pyOut, std::ostream& dbOut );
   void genBody( std::ostream& pyOut, std::ostream& dbOut ) {
@@ -564,7 +565,9 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
       if ( prop ) {
-        if ( !genComponent( lib, name, type, prop->getProperties(), prop->getInterfaceNames() ) ) { allGood = false; }
+        if ( !genComponent( lib, name, type, prop->getProperties(), prop->getInterfaceNames(), info ) ) {
+          allGood = false;
+        }
         prop.reset();
       } else {
         LOG_ERROR << "could not cast IInterface* object to an IProperty* !";
@@ -666,10 +669,12 @@ void configGenerator::genTrailer( std::ostream& /*py*/, std::ostream& db )
 //-----------------------------------------------------------------------------
 bool configGenerator::genComponent( const std::string& libName, const std::string& componentName,
                                     component_t componentType, const vector<PropertyBase*>& properties,
-                                    const vector<std::string>& interfaces )
+                                    const vector<std::string>&                                  interfaces,
+                                    const Gaudi::PluginService::Details::Registry::FactoryInfo& info )
 //-----------------------------------------------------------------------------
 {
-  auto cname = pythonizeName( componentName );
+  auto       cname    = pythonizeName( componentName );
+  const auto decl_loc = info.getprop( "declaration_location" );
 
   std::vector<std::pair<std::string, std::string>> propDoc;
   propDoc.reserve( properties.size() );
@@ -693,6 +698,7 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
   default:
     m_db2Buf << "Unknown";
   }
+  if ( !decl_loc.empty() ) { m_db2Buf << "',\n        '__declaration_location__': '" << decl_loc; }
   m_db2Buf << "',\n        '__interfaces__': (";
   for ( const auto& intf : std::set<std::string>{ begin( interfaces ), end( interfaces ) } ) {
     if ( ignored_interfaces.find( intf ) == end( ignored_interfaces ) ) { m_db2Buf << '\'' << intf << "', "; }
@@ -735,6 +741,7 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
   }
   m_pyBuf << "  }\n";
 
+  if ( !decl_loc.empty() ) { m_pyBuf << "  __declaration_location__ = '" << decl_loc << "'\n"; }
   m_pyBuf << "  def __init__(self, name = " << m_configurable[component_t::DefaultName] << ", **kwargs):\n"
           << "      super(" << cname << ", self).__init__(name)\n"
           << "      for n,v in kwargs.items():\n"

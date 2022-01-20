@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -54,6 +54,14 @@ BOOST_AUTO_TEST_CASE( properties ) {
   BOOST_CHECK( props["name"] == "Component1" );
 
   BOOST_CHECK( reg.getInfo( "special-id" ).getprop( "MyProperty" ) == "special" );
+}
+
+BOOST_AUTO_TEST_CASE( source_location ) {
+  using Gaudi::PluginService::Details::Registry;
+  Registry&            reg   = Registry::instance();
+  Registry::Properties props = reg.getInfo( "Component1" ).properties;
+
+  BOOST_CHECK( props["declaration_location"] == "UseCasesLib.cpp:37" );
 }
 
 BOOST_AUTO_TEST_CASE( custom_factory ) {

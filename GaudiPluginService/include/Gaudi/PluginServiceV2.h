@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,15 +17,31 @@
 #include <Gaudi/Details/PluginServiceDetailsV2.h>
 #include <functional>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
+
+#if __cplusplus > 201703L && __has_include( <source_location> )
+#  include <source_location>
+namespace Gaudi::PluginService::Details {
+  using std::source_location;
+}
+#elif __cplusplus >= 201402L
+#  include <experimental/source_location>
+namespace Gaudi::PluginService::Details {
+  using std::experimental::source_location;
+}
+#endif
 
 namespace Gaudi {
   /// See @ref GaudiPluginService-readme
   namespace PluginService {
     GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2 {
+      using Gaudi::PluginService::Details::source_location;
+
       /// \cond FWD_DECL
       template <typename>
       struct Factory;
@@ -85,20 +101,28 @@ namespace Gaudi {
       struct DeclareFactory {
         using DefaultFactory = Details::DefaultFactory<T, F>;
 
-        DeclareFactory( typename F::FactoryType f = DefaultFactory{}, Details::Registry::Properties props = {} )
-            : DeclareFactory( Details::demangle<T>(), std::move( f ), std::move( props ) ) {}
+        DeclareFactory( typename F::FactoryType f = DefaultFactory{}, Details::Registry::Properties props = {},
+                        source_location src_loc = source_location::current() )
+            : DeclareFactory( Details::demangle<T>(), std::move( f ), std::move( props ), src_loc ) {}
 
         DeclareFactory( const std::string& id, typename F::FactoryType f = DefaultFactory{},
-                        Details::Registry::Properties props = {} ) {
+                        Details::Registry::Properties    props   = {},
+                        [[maybe_unused]] source_location src_loc = source_location::current() ) {
           using Details::Registry;
 
           if ( props.find( "ClassName" ) == end( props ) ) props.emplace( "ClassName", Details::demangle<T>() );
-
+          // keep only the file name
+          std::string_view fn  = src_loc.file_name();
+          auto             pos = fn.rfind( '/' );
+          if ( pos != std::string_view::npos ) { fn.remove_prefix( pos + 1 ); }
+          std::stringstream s;
+          s << fn << ':' << src_loc.line();
+          props["declaration_location"] = s.str();
           Registry::instance().add( id, { libraryName(), std::move( f ), std::move( props ) } );
         }
 
-        DeclareFactory( Details::Registry::Properties props )
-            : DeclareFactory( DefaultFactory{}, std::move( props ) ) {}
+        DeclareFactory( Details::Registry::Properties props, source_location src_loc = source_location::current() )
+            : DeclareFactory( DefaultFactory{}, std::move( props ), src_loc ) {}
 
       private:
         /// Helper to record the name of the library that declare the factory.
