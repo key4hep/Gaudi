@@ -5,6 +5,31 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r4][] - 2022-01-20
+This minor release features a few bugfixes, some usability improvements and some small backward incompatible changes
+that could be as well classified as bugfixes.
+
+## Changed
+- Remove unused `LinkManager::removeLink` (gaudi/Gaudi!1294)
+- {Merging,Splitting}Transformer: replace vector&lt;string&gt; property with vector&lt;DataObjID&gt; (gaudi/Gaudi!1297)
+- ToolBinder: prefer function pointer in constructor over pure virtual inheritance (gaudi/Gaudi!1292)
+- GaudiConfig2: apply OrderedSetSemantics to `std::[unordered_]set` (gaudi/Gaudi!1298)
+- Change GaudiConfig2 default semantics to use deepcopy of the default (gaudi/Gaudi#114  gaudi/Gaudi!1296)
+
+## Added
+- Add example of consuming/producing `std::shared_ptr` with `Gaudi::Functional` (gaudi/Gaudi!1303)
+- Allow use of `ConfigurableUser` specializations in configuration functions (gaudi/Gaudi#213  gaudi/Gaudi!1302)
+- Record the source location of `DECLARE_COMPONENT` in Python configurables (gaudi/Gaudi#203  gaudi/Gaudi!1299)
+- Extend the `gaudirun.py` `GaudiConfig2` file lookup to allow full path to modules (gaudi/Gaudi#192  gaudi/Gaudi!1301)
+- Add support for multiple input arguments to Merging{,Multi}Transformer (gaudi/Gaudi!1291)
+
+## Fixed
+- Fix spurious options mismatch between old and new configurables (gaudi/Gaudi#191  gaudi/Gaudi!1300)
+- `IBinder::Box` call destruct with the right pointer. (gaudi/Gaudi!1293)
+- Fixes for running tests with LHCb test class (gaudi/Gaudi!1289)
+- Correct conversion to Root histograms in RootHistogramSink (gaudi/Gaudi#212  gaudi/Gaudi!1290)
+
+
 ## [v36r3][] - 2021-12-09
 This is a bugfix release with a couple of changes that technically are backward incompatible
 because they fix issues that might have gone unnoticed:
@@ -822,6 +847,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r4
 [v36r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r3
 [v36r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r2
 [v36r1]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r1
