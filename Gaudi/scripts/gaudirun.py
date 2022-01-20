@@ -524,20 +524,30 @@ if __name__ == "__main__":
 
     c = gaudimain()
 
-    from GaudiConfig2 import CALLABLE_FORMAT, Configurable, invokeConfig, mergeConfigs
+    class ArgProcessor:
+        """
+        Helper class to be able to process option files or options
+        callables as they come along in the arguments.
+        """
 
-    callables = []
-    opt_files = []
-    for arg in args:
-        if CALLABLE_FORMAT.match(arg):
-            callables.append(arg)
-        else:
-            opt_files.append(arg)
+        def __init__(self, initial_config=None):
+            self.config = {} if initial_config is None else initial_config
+
+        def __call__(self, arg):
+            from Gaudi.Configuration import importOptions
+            from GaudiConfig2 import CALLABLE_FORMAT, invokeConfig, mergeConfigs
+
+            if CALLABLE_FORMAT.match(arg):
+                self.config = mergeConfigs(self.config, invokeConfig(arg))
+            else:
+                importOptions(arg)
+
+    process = ArgProcessor()
 
     # Prepare the "configuration script" to parse (like this it is easier than
     # having a list with files and python commands, with an if statements that
     # decides to do importOptions or exec)
-    options = ["importOptions(%r)" % f for f in opt_files]
+    options = ["process({!r})".format(arg) for arg in args]
     # The option lines are inserted into the list of commands using their
     # position on the command line
     optlines = list(opts.options)
@@ -561,12 +571,12 @@ if __name__ == "__main__":
     # when the special env GAUDI_TEMP_OPTS_FILE is set, it overrides any
     # option(file) on the command line
     if "GAUDI_TEMP_OPTS_FILE" in os.environ:
-        options = ["importOptions(%r)" % os.environ["GAUDI_TEMP_OPTS_FILE"]]
+        options = ["process({!r})".format(os.environ["GAUDI_TEMP_OPTS_FILE"])]
         PrintOff(100)
 
     # "execute" the configuration script generated (if any)
     if options:
-        g = {}
+        g = {"process": process}
         l = {}
         exec("from Gaudi.Configuration import *", g, l)
         for o in options:
@@ -591,7 +601,7 @@ if __name__ == "__main__":
 
     # Options to be processed after applyConfigurableUsers
     if opts.post_options:
-        g = {}
+        g = {"process": process}
         l = {}
         exec("from Gaudi.Configuration import *", g, l)
         for o in opts.post_options:
@@ -602,11 +612,11 @@ if __name__ == "__main__":
         os.remove(os.environ["GAUDI_TEMP_OPTS_FILE"])
         opts.use_temp_opts = False
 
-    # Run callables
-    config = mergeConfigs(*[invokeConfig(f) for f in callables])
     # make configurations available to getAllOpts
     # FIXME the whole machinery has to be inverted, to avoid relying on globals
-    Configurable.instances = mergeConfigs(Configurable.instances, config)
+    from GaudiConfig2 import Configurable, mergeConfigs
+
+    Configurable.instances = mergeConfigs(Configurable.instances, process.config)
 
     if opts.verbose and not opts.use_temp_opts:
         c.printconfig(opts.old_opts, opts.all_opts)
