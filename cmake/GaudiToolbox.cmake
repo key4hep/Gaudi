@@ -168,13 +168,13 @@ endmacro()
   .. warning::
     Public headers must be under ``${CMAKE_CURRENT_SOURCE_DIR}/include``
     (e.g. ``${CMAKE_CURRENT_SOURCE_DIR}/include/Gaudi/file.hpp``)
-  
+
   ``lib_name``
     the name of the target to build
-  
+
   ``SOURCES file.cpp...``
     the list of file to compile
-  
+
   ``LINK PUBLIC <lib>... PRIVATE <lib>... INTERFACE <lib>...``
     ``<lib>`` can be ``Package::Lib``, ``MyTarget``, ``SomeLib``
     with the same syntax as :cmake:command:`target_link_libraries`.
@@ -353,7 +353,7 @@ function(gaudi_add_module plugin_name)
     add_custom_command(TARGET ${plugin_name} POST_BUILD
         BYPRODUCTS ${plugin_name}.components
         COMMAND run $<TARGET_FILE:Gaudi::listcomponents> --output ${plugin_name}.components $<TARGET_FILE_NAME:${plugin_name}>)
-    _merge_files(MergeComponents "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.components" # see private functions at the end
+    _merge_files(${PROJECT_NAME}_MergeComponents "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.components" # see private functions at the end
         ${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/${plugin_name}.components"
         "Merging .components files")
     # genconf
@@ -389,11 +389,11 @@ function(gaudi_add_module plugin_name)
         ${_gaudi_install_optional})
     # Merge the .confdb files
     _merge_files_confdb(${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb") # see private functions at the end
-    _merge_files(MergeConfDB2 "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2"  # see private functions at the end
+    _merge_files(${PROJECT_NAME}_MergeConfDB2 "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2"  # see private functions at the end
                  ${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb2_part"
                  "Merging .confdb2 files")
-    set_property(TARGET MergeConfDB2 PROPERTY command run merge_confdb2_parts)
-    set_property(TARGET MergeConfDB2 PROPERTY output_option --output)
+    set_property(TARGET ${PROJECT_NAME}_MergeConfDB2 PROPERTY command run merge_confdb2_parts)
+    set_property(TARGET ${PROJECT_NAME}_MergeConfDB2 PROPERTY output_option --output)
     # To append the path to the generated library to LD_LIBRARY_PATH with run
     _gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:${plugin_name}>)
     # To append the path to the generated Conf.py file to PYTHONPATH
@@ -816,7 +816,7 @@ function(gaudi_add_dictionary dictionary)
         DESTINATION "${GAUDI_INSTALL_PLUGINDIR}"
         ${_gaudi_install_optional})
     # Merge all the .rootmap files
-    _merge_files(MergeRootmaps "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Dict.rootmap" # see private functions at the end
+    _merge_files(${PROJECT_NAME}_MergeRootmaps "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Dict.rootmap" # see private functions at the end
         ${dictionary}-gen "${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.rootmap"
         "Merging .rootmap files")
     # To append the path to the generated library to LD_LIBRARY_PATH with run
@@ -857,7 +857,7 @@ endfunction()
     to ``${CMAKE_CURRENT_SOURCE_DIR}``).
 
 .. note::
-  If directory is specified without a trailing slash (e.g. mydir), the 
+  If directory is specified without a trailing slash (e.g. mydir), the
   directory itself will be installed.
   If directory is specified with a trailing slash (e.g. mydir/), the content
   of the directory will be installed.
@@ -1141,7 +1141,7 @@ function(_merge_files merge_target output_file dependency file_to_merge message)
 endfunction()
 # special wrapper for genconf and genconfuser so that they always have the same merge_target
 function(_merge_files_confdb dependency file_to_merge)
-    _merge_files(MergeConfdb "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb"
+    _merge_files(${PROJECT_NAME}_MergeConfdb "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb"
         ${dependency} "${file_to_merge}"
         "Merging .confdb files")
 endfunction()
