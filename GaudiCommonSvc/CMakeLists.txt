@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -34,7 +34,6 @@ gaudi_add_module(GaudiCommonSvc
                  SOURCES src/AlgContextSvc.cpp
                          src/AuditorSvc.cpp
                          src/ChronoStatSvc.cpp
-                         src/StatusCodeSvc.cpp
                          src/DataSvc/EvtDataSvc.cpp
                          src/DataSvc/EvtStoreSvc.cpp
                          src/DataSvc/FileRecordDataSvc.cpp
