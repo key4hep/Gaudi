@@ -819,6 +819,8 @@ function(gaudi_add_dictionary dictionary)
     _merge_files(${PROJECT_NAME}_MergeRootmaps "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Dict.rootmap" # see private functions at the end
         ${dictionary}-gen "${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.rootmap"
         "Merging .rootmap files")
+    # The merged rootmap should also depend on the library (runtime dependency)
+    add_dependencies(${PROJECT_NAME}_MergeRootmaps ${dictionary})
     # To append the path to the generated library to LD_LIBRARY_PATH with run
     _gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:${dictionary}>)
     # Add the path to the merged rootmap file to LD_LIBRARY_PATH
