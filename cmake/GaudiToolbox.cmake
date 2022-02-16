@@ -355,7 +355,7 @@ function(gaudi_add_module plugin_name)
         COMMAND run $<TARGET_FILE:Gaudi::listcomponents> --output ${plugin_name}.components $<TARGET_FILE_NAME:${plugin_name}>)
     _merge_files(${PROJECT_NAME}_MergeComponents "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.components" # see private functions at the end
         ${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/${plugin_name}.components"
-        "Merging .components files")
+        "Merging .components files for ${PROJECT_NAME}")
     # genconf
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name})
@@ -391,7 +391,7 @@ function(gaudi_add_module plugin_name)
     _merge_files_confdb(${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb") # see private functions at the end
     _merge_files(${PROJECT_NAME}_MergeConfDB2 "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2"  # see private functions at the end
                  ${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb2_part"
-                 "Merging .confdb2 files")
+                 "Merging .confdb2 files for ${PROJECT_NAME}")
     set_property(TARGET ${PROJECT_NAME}_MergeConfDB2 PROPERTY command run merge_confdb2_parts)
     set_property(TARGET ${PROJECT_NAME}_MergeConfDB2 PROPERTY output_option --output)
     # To append the path to the generated library to LD_LIBRARY_PATH with run
@@ -818,7 +818,7 @@ function(gaudi_add_dictionary dictionary)
     # Merge all the .rootmap files
     _merge_files(${PROJECT_NAME}_MergeRootmaps "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Dict.rootmap" # see private functions at the end
         ${dictionary}-gen "${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.rootmap"
-        "Merging .rootmap files")
+        "Merging .rootmap files for ${PROJECT_NAME}")
     # The merged rootmap should also depend on the library (runtime dependency)
     add_dependencies(${PROJECT_NAME}_MergeRootmaps ${dictionary})
     # To append the path to the generated library to LD_LIBRARY_PATH with run
@@ -1145,7 +1145,7 @@ endfunction()
 function(_merge_files_confdb dependency file_to_merge)
     _merge_files(${PROJECT_NAME}_MergeConfdb "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb"
         ${dependency} "${file_to_merge}"
-        "Merging .confdb files")
+        "Merging .confdb files for ${PROJECT_NAME}")
 endfunction()
 
 
