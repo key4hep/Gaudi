@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -27,7 +27,7 @@ class GaudiExamplesCommonConf(ConfigurableUser):
         from Configurables import ApplicationMgr, AuditorSvc, ChronoAuditor, MessageSvc
 
         AuditorSvc().Auditors.append(ChronoAuditor())
-        appmgr = ApplicationMgr(StatusCodeCheck=True)
+        appmgr = ApplicationMgr()
         self.propagateProperties(others=MessageSvc())
         if self.getProp("DummyEvents") >= 0:
             appmgr.EvtMax = self.getProp("DummyEvents")

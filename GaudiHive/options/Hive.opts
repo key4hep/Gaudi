@@ -37,6 +37,5 @@ Test4.Inputs = {"Foo", "Bar" };
 ApplicationMgr.EvtMax    = 10;   // events to be processed (default is 10)
 ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
 ApplicationMgr.HistogramPersistency = "NONE";
-ApplicationMgr.StatusCodeCheck = true ;
 
 ApplicationMgr.EventLoop = "EventLoopMgr";

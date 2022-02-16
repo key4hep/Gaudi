@@ -6,8 +6,6 @@
 
 #include "Services.opts"
 
-ApplicationMgr.StatusCodeCheck = true ;
-
 //==============================================================
 //
 // End of standard job options file

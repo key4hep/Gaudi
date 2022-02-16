@@ -262,7 +262,6 @@ protected:
   Gaudi::Property<std::string> m_appName{ this, "AppName", "ApplicationMgr", "The name of the application" };
   Gaudi::Property<std::string> m_appVersion{ this, "AppVersion", {}, "The version of the application" };
   Gaudi::Property<bool>        m_actHistory{ this, "ActivateHistory", false, "Activate HistorySvc" };
-  Gaudi::Property<bool>        m_codeCheck{ this, "StatusCodeCheck", false, "[[deprecated]] will be removed" };
   Gaudi::Property<int>         m_pluginDebugLevel{ this, "PluginDebugLevel", 0,
                                            [this]( auto& ) {
                                              // Setup debug level for the plugin system
