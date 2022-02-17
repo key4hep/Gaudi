@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -81,12 +81,6 @@ public:
   Service( std::string name, ISvcLocator* svcloc );
   /** Retrieve pointer to service locator        */
   SmartIF<ISvcLocator>& serviceLocator() const override;
-
-  [[deprecated( "not to be called explicitly, will be removed in v36r0" )]] StatusCode setProperties() {
-    if ( !serviceLocator() ) return StatusCode::FAILURE;
-    bindPropertiesTo( serviceLocator()->getOptsSvc() );
-    return StatusCode::SUCCESS;
-  }
 
   /** Access a service by name, creating it if it doesn't already exist.
    */

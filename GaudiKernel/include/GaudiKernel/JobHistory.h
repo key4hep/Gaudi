@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -67,8 +67,6 @@ public: // functions
   static const CLID& classID();
 
   // add a global property
-  [[deprecated( "will be removed in v36r0, use addProperty( string, string ) instead" )]] void
-       addProperty( const std::string&, const Gaudi::Details::PropertyBase* );
   void addProperty( const std::string& key, const std::string& value );
 
   // Return the job history data.

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -86,10 +86,6 @@ const CLID& JobHistory::classID() {
 
   static const CLID CLID_JobHistory = 247994533;
   return CLID_JobHistory;
-}
-
-void JobHistory::addProperty( const std::string& client, const PropertyBase* prop ) {
-  addProperty( client + '.' + prop->name(), prop->toString() );
 }
 
 void JobHistory::addProperty( const std::string& key, const std::string& value ) {
