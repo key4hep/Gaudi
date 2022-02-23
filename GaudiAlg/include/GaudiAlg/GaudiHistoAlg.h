@@ -46,14 +46,6 @@
 
 struct GAUDI_API GaudiHistoAlg : GaudiHistos<GaudiAlgorithm> {
   using GaudiHistos<GaudiAlgorithm>::GaudiHistos;
-  using GaudiHistos<GaudiAlgorithm>::initialize;
-  using GaudiHistos<GaudiAlgorithm>::finalize;
-
-  // delete  default/copy constructor and assignment
-  GaudiHistoAlg()                       = delete;
-  GaudiHistoAlg( const GaudiHistoAlg& ) = delete;
-  GaudiHistoAlg& operator=( const GaudiHistoAlg& ) = delete;
-
 }; // end of class GaudiHistoAlg
 
 // ============================================================================

@@ -50,12 +50,6 @@
 
 struct GAUDI_API GaudiTupleAlg : GaudiTuples<GaudiHistoAlg> {
   using GaudiTuples<GaudiHistoAlg>::GaudiTuples;
-  using GaudiTuples<GaudiHistoAlg>::initialize;
-  using GaudiTuples<GaudiHistoAlg>::finalize;
-
-  GaudiTupleAlg()                       = delete;
-  GaudiTupleAlg( const GaudiTupleAlg& ) = delete;
-  GaudiTupleAlg& operator=( const GaudiTupleAlg& ) = delete;
 };
 
 // ============================================================================

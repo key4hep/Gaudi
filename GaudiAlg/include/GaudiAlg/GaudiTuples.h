@@ -296,25 +296,11 @@ protected:
   /** standard initialization method
    *  @return status code
    */
-  StatusCode initialize() override
-#ifdef __ICC
-  {
-    return i_gtInitialize();
-  }
-  StatusCode i_gtInitialize()
-#endif
-      ;
+  StatusCode initialize() override;
   /** standard finalization method
    *  @return status code
    */
-  StatusCode finalize() override
-#ifdef __ICC
-  {
-    return i_gtFinalize();
-  }
-  StatusCode i_gtFinalize()
-#endif
-      ;
+  StatusCode finalize() override;
   // ==========================================================================
 private:
   // ==========================================================================
