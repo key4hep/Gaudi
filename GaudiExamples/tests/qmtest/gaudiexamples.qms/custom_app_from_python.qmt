@@ -21,6 +21,6 @@ findReferenceBlock("=== Custom Application ===")
 </text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="environment"><set>
-<text>ROOT_INCLUDE_PATH=$ENV_CMAKE_SOURCE_DIR/GaudiKernel/include:$ENV_CMAKE_SOURCE_DIR/GaudiPluginService/include:$ROOT_INCLUDE_PATH</text>
+<text>ROOT_INCLUDE_PATH=$ENV_PROJECT_SOURCE_DIR/GaudiKernel/include:$ENV_PROJECT_SOURCE_DIR/GaudiPluginService/include:$ROOT_INCLUDE_PATH</text>
 </set></argument>
 </extension>

@@ -36,7 +36,7 @@ app = ApplicationMgr(TopAlg = [alg],
 
 </text></argument>
 <argument name="environment"><set>
-<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+<text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
 </set></argument>
 <argument name="signal"><integer>3</integer></argument>
 <argument name="validator"><text>

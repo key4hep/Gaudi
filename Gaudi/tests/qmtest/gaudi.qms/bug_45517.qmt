@@ -13,7 +13,7 @@
   <argument name="program"><text>gaudirun.py</text></argument>
   <argument name="args"><set><text>-v</text><text>-n</text></set></argument>
   <argument name="environment"><set>
-  <text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
+  <text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_PROJECT_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
   </set></argument>
   <argument name="options"><text>
 from Gaudi.Configuration import *

@@ -18,8 +18,8 @@
 <argument name="reference"><text>refs/conditional_output/write.ref</text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="environment"><set>
-<text>STDOPTS=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options</text>
-<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests</text>
-<text>PYTHONPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/python:$PYTHONPATH</text>
+<text>STDOPTS=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options</text>
+<text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests</text>
+<text>PYTHONPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/python:$PYTHONPATH</text>
 </set></argument>
 </extension>

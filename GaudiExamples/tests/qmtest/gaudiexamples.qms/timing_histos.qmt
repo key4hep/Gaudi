@@ -15,7 +15,7 @@
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/TimingHistograms.ref</text></argument>
 <argument name="environment"><set>
-<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+<text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
 </set></argument>
 <argument name="validator"><text>
 # Default validation.
@@ -25,9 +25,9 @@ validateWithReference()
 import os
 from subprocess import Popen, PIPE
 
-testscript = os.path.join(os.environ['ENV_CMAKE_SOURCE_DIR'], 'GaudiExamples', 'tests', 'scripts', 'test_timing_histo_file.py')
+testscript = os.path.join(os.environ['ENV_PROJECT_SOURCE_DIR'], 'GaudiExamples', 'tests', 'scripts', 'test_timing_histo_file.py')
 if not os.path.exists(testscript):
-    testscript = os.path.join(os.environ['ENV_CMAKE_SOURCE_DIR'], 'Gaudi', 'GaudiExamples', 'tests', 'scripts', 'test_timing_histo_file.py')
+    testscript = os.path.join(os.environ['ENV_PROJECT_SOURCE_DIR'], 'Gaudi', 'GaudiExamples', 'tests', 'scripts', 'test_timing_histo_file.py')
 
 test = Popen(['python', testscript], stdout=PIPE, stderr=PIPE)
 out, err = test.communicate()

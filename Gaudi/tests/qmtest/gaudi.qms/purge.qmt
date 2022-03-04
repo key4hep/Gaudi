@@ -13,7 +13,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>../scripts/test_purge.py</text></argument>
 <argument name="environment"><set>
-<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
+<text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_PROJECT_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts</text>
 </set></argument>
 <argument name="validator"><text>
 from pprint import PrettyPrinter

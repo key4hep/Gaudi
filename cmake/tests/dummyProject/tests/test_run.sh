@@ -35,9 +35,9 @@ then
     exit 4
 fi
 
-if [ "x$ENV_CMAKE_SOURCE_DIR" = "x" ]
+if [ "x$ENV_PROJECT_SOURCE_DIR" = "x" ]
 then
-    echo "Error ENV_CMAKE_SOURCE_DIR not set"
+    echo "Error ENV_PROJECT_SOURCE_DIR not set"
     exit 5
 fi
 
