@@ -281,6 +281,8 @@ class Configurable(ConfigMetaHelper):
         (or both unnamed) and the settings must be mergable (according to
         their semantics).
         """
+        if self is other:
+            return self
         if type(self) is not type(other):
             raise TypeError(
                 "cannot merge instance of {} into an instance of {}".format(
@@ -296,8 +298,11 @@ class Configurable(ConfigMetaHelper):
                 )
             )
 
-        for name in other._descriptors:
-            if not other.is_property_set(name):
+        for name in other._properties:
+            if (
+                name in self._properties
+                and self._properties[name] == other._properties[name]
+            ):
                 continue
             try:
                 setattr(
