@@ -29,9 +29,7 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
     , m_MS( std::move( other.m_MS ) )
     , m_init( other.m_init )
     , m_optional( other.m_optional )
-    , m_wasRead( other.m_wasRead )
-    , m_wasWritten( other.m_wasWritten )
-    , m_searchDone( other.m_searchDone ) {
+    , m_searchDone( other.m_searchDone.load() ) {
   m_owner->declare( *this );
 }
 
@@ -45,9 +43,7 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
   m_MS                       = other.m_MS;
   m_init                     = other.m_init;
   m_optional                 = other.m_optional;
-  m_wasRead                  = other.m_wasRead;
-  m_wasWritten               = other.m_wasWritten;
-  m_searchDone               = other.m_searchDone;
+  m_searchDone               = other.m_searchDone.load();
   return *this;
 }
 
@@ -68,12 +64,18 @@ DataObjectHandleBase::~DataObjectHandleBase() { owner()->renounce( *this ); }
 //---------------------------------------------------------------------------
 DataObject* DataObjectHandleBase::fetch() const {
   DataObject* p = nullptr;
-  if ( LIKELY( m_searchDone ) ) { // fast path: searchDone, objKey is in its final state
+  if ( m_searchDone ) { // fast path: searchDone, objKey is in its final state
     m_EDS->retrieveObject( objKey(), p ).ignore();
     return p;
   }
 
   // slow path -- move into seperate function to improve code generation?
+
+  // as m_searchDone is not true yet, objKey may change... so in this
+  // branch we _first_ grab the mutex, to avoid objKey changing while we use it
+
+  // take a lock to be sure we only execute this one at a time
+  auto guard = std::scoped_lock{ m_searchMutex };
 
   // convenience towards users -- remind them to register
   // but as m_MS is not yet set, we cannot use a MsgStream...
@@ -82,35 +84,24 @@ DataObject* DataObjectHandleBase::fetch() const {
               << std::endl;
   }
 
-  // as m_searchDone is not true yet, objKey may change... so in this
-  // branch we _first_ grab the mutex, to avoid objKey changing while we use it
-
-  // take a lock to be sure we only execute this once at a time
-  auto guard = std::scoped_lock{ m_searchMutex };
-
-  StatusCode sc = m_EDS->retrieveObject( objKey(), p );
-  if ( m_searchDone ) { // another thread has done the search while we were blocked
-                        // on the mutex. As a result, nothing left to do but return...
-    sc.ignore();
-    return p;
+  // note: if no seperator is found, this returns a range of one with the  input as the single token
+  // so if the search was done while we were waiting on the mutex, this (also) does the right thing
+  auto tokens = boost::tokenizer<boost::char_separator<char>>{ objKey(), boost::char_separator<char>{ ":" } };
+  // let's try our alternatives (if any)
+  auto alt = std::find_if( tokens.begin(), tokens.end(),
+                           [&]( const std::string& n ) { return m_EDS->retrieveObject( n, p ).isSuccess(); } );
+  if ( alt != tokens.end() && *alt != objKey() ) {
+    MsgStream log( m_MS, owner()->name() + ":DataObjectHandle" );
+    log << MSG::DEBUG << ": could not find \"" << objKey() << "\" -- using alternative source: \"" << *alt
+        << "\" instead" << endmsg;
+    // found something -- set it as default; this is not atomic, but
+    // at least in `fetch` there is no use of `objKey` that races with
+    // this assignment... (but there may be others!)
+    setKey( *alt ); // if there was one token, this is an unnecessary write... but who cares...
   }
 
-  if ( !sc.isSuccess() ) {
-    auto tokens = boost::tokenizer<boost::char_separator<char>>{ objKey(), boost::char_separator<char>{ ":" } };
-    // let's try our alternatives (if any)
-    auto alt = std::find_if( tokens.begin(), tokens.end(),
-                             [&]( const std::string& n ) { return m_EDS->retrieveObject( n, p ).isSuccess(); } );
-    if ( alt != tokens.end() ) {
-      MsgStream log( m_MS, owner()->name() + ":DataObjectHandle" );
-      log << MSG::DEBUG << ": could not find \"" << objKey() << "\" -- using alternative source: \"" << *alt
-          << "\" instead" << endmsg;
-      // found something -- set it as default; this is not atomic, but
-      // at least in `fetch` there is no use of `objKey` that races with
-      // this assignment... (but there may be others!)
-      setKey( *alt );
-    }
-  }
-  m_searchDone = true;
+  bool expected = false;                                  // but could be true (already)...
+  m_searchDone.compare_exchange_strong( expected, true ); // if not yet true, set it to true...
   return p;
 }
 
@@ -121,9 +112,6 @@ bool DataObjectHandleBase::init() {
   assert( !m_init );
 
   if ( !owner() ) return false;
-
-  setRead( false );
-  setWritten( false );
 
   Gaudi::Algorithm* algorithm = dynamic_cast<Gaudi::Algorithm*>( owner() );
   if ( algorithm ) {

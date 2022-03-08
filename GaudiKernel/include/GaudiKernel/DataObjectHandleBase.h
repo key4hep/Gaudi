@@ -59,16 +59,9 @@ public:
   bool isOptional() const { return m_optional; }
   void setOptional( bool optional = true ) { m_optional = optional; }
 
-  bool initialized() const { return m_init; }
-  bool wasRead() const { return m_wasRead; }
-  bool wasWritten() const { return m_wasWritten; }
-
   bool isValid() const;
 
 protected:
-  void setRead( bool wasRead = true ) { m_wasRead = wasRead; }
-  void setWritten( bool wasWritten = true ) { m_wasWritten = wasWritten; }
-
   bool init() override;
 
   DataObject* fetch() const;
@@ -77,17 +70,15 @@ protected:
   SmartIF<IDataProviderSvc> m_EDS;
   SmartIF<IMessageSvc>      m_MS;
 
-  bool m_init       = false;
-  bool m_optional   = false;
-  bool m_wasRead    = false;
-  bool m_wasWritten = false;
+  bool m_init     = false;
+  bool m_optional = false;
 
   /**
    * Whether the search part of the fetch method (so dealing with alt names
    * was already executed or not. On subsequent calls (when this is true),
    * it will be skipped.
    */
-  mutable bool m_searchDone = false; // TODO: optimize it so that it is std::any_of( objKey, ":" )
+  mutable std::atomic<bool> m_searchDone = false; // TODO: optimize it so that it is std::any_of( objKey, ":" )
 
   /**
    * A Mutex protecting the calls to the search part of the fetch method,
