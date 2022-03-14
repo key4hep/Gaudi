@@ -147,7 +147,8 @@ namespace Gaudi {
           std::regex  line_format{ "^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$" };
           std::smatch m;
 
-          std::string_view search_path = std::getenv( envVar );
+          std::string_view search_path;
+          if ( auto ptr = std::getenv( envVar ) ) search_path = std::string_view{ ptr };
           if ( !search_path.empty() ) {
             logger().debug( std::string( "searching factories in " ) + envVar );
 
