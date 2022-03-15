@@ -8,24 +8,36 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "FileReadTool.h"
+#include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/IFileAccess.h"
 #include <fstream>
 
-DECLARE_COMPONENT( FileReadTool )
+/** @class FileReadTool FileReadTool.h
+ *
+ *  Basic implementation of the IFileAccess interface.
+ *  This tool simply takes a path to a file as url and return the std::istream interface
+ *  of std::ifstream.
+ *
+ *  @author Marco Clemencic
+ *  @date 2008-01-18
+ */
+struct FileReadTool : extends<AlgTool, IFileAccess> {
+  /// Standard constructor
+  using extends::extends;
 
-std::unique_ptr<std::istream> FileReadTool::open( const std::string& url ) {
-  // remove the optional "file://" from the beginning of the url
-  std::string path;
-  if ( url.compare( 0, 7, "file://" ) == 0 ) {
-    path = url.substr( 7 );
-  } else {
-    path = url;
+  std::unique_ptr<std::istream> open( std::string const& url ) override {
+    // remove the optional "file://" from the beginning of the url
+    constexpr auto prefix = std::string_view{ "file://" };
+    return std::make_unique<std::ifstream>( url.compare( 0, prefix.size(), prefix ) == 0 ? url.substr( prefix.size() )
+                                                                                         : url );
   }
-  return std::make_unique<std::ifstream>( path );
-}
 
-const std::vector<std::string>& FileReadTool::protocols() const {
-  /// Vector of supported protocols.
-  static const std::vector<std::string> s_protocols = { { "file" } };
-  return s_protocols;
-}
+  /// Protocols supported by the instance.
+  const std::vector<std::string>& protocols() const override {
+    /// Vector of supported protocols.
+    static const std::vector<std::string> s_protocols = { { "file" } };
+    return s_protocols;
+  }
+};
+
+DECLARE_COMPONENT( FileReadTool )
