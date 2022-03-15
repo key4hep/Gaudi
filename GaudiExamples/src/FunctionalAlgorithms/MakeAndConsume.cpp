@@ -590,4 +590,40 @@ namespace Gaudi::Examples {
   };
   DECLARE_COMPONENT( IntVectorsToInts )
 
+  struct Eventually {
+    Gaudi::Algorithm const* parent              = nullptr;
+    void ( *action )( Gaudi::Algorithm const* ) = nullptr;
+    Eventually( Gaudi::Algorithm const* p, void ( *a )( Gaudi::Algorithm const* ) ) : parent{ p }, action{ a } {}
+    Eventually( Eventually const& ) = delete;
+    Eventually& operator=( Eventually const& ) = delete;
+    Eventually( Eventually&& other )
+        : parent{ std::exchange( other.parent, nullptr ) }, action{ std::exchange( other.action, nullptr ) } {}
+    Eventually& operator=( Eventually&& other ) {
+      parent = std::exchange( other.parent, nullptr );
+      action = std::exchange( other.action, nullptr );
+      return *this;
+    }
+    ~Eventually() {
+      if ( action ) action( parent );
+    }
+  };
+
+  struct OpaqueProducer final
+      : Gaudi::Functional::Producer<
+            Eventually(),
+            Gaudi::Functional::Traits::use_<BaseClass_t, Gaudi::Functional::Traits::WriteOpaqueFor<Eventually>>> {
+
+    OpaqueProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/Eventually" ) ) {}
+
+    Eventually operator()() const override {
+      always() << "creating Eventually" << endmsg;
+      return Eventually{ this, []( Gaudi::Algorithm const* me ) {
+                          me->always() << "My Eventually is about to be destroyed" << endmsg;
+                        } };
+    }
+  };
+
+  DECLARE_COMPONENT( OpaqueProducer )
+
 } // namespace Gaudi::Examples

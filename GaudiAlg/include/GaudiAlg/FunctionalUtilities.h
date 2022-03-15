@@ -91,6 +91,20 @@ namespace Gaudi::Functional {
       using OutputHandle = std::enable_if_t<std::is_same_v<T, Data>, DataObjectWriteHandle<View, Data>>;
     };
 
+    // add support for objects that should reside in the TES for lifetime management, but should not
+    // be used explicitly and/or directly by downstream code.
+    template <typename Data>
+    struct WriteOpaqueFor {
+      struct OpaqueView {
+        OpaqueView() = default;
+        template <typename T>
+        OpaqueView( T const& ) {}
+      };
+
+      template <typename T>
+      using OutputHandle = std::enable_if_t<std::is_same_v<T, Data>, DataObjectWriteHandle<OpaqueView, Data>>;
+    };
+
     // this uses the defaults -- and it itself is the default ;-)
     using useDefaults = use_<>;
 

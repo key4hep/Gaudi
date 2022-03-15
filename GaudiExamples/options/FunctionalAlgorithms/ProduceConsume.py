@@ -34,6 +34,7 @@ from Configurables import (
 from Configurables import Gaudi__Examples__LdExpTransformer as LdExpTransformer
 from Configurables import Gaudi__Examples__MyConsumerTool as MyConsumerTool
 from Configurables import Gaudi__Examples__MyExampleTool as MyExampleTool
+from Configurables import Gaudi__Examples__OpaqueProducer as OpaqueProducer
 from Configurables import Gaudi__Examples__OptFrExpTransformer as OptFrExpTransformer
 from Configurables import Gaudi__Examples__OptLdExpTransformer as OptLdExpTransformer
 from Configurables import Gaudi__Examples__SDataProducer as SDataProducer
@@ -162,6 +163,7 @@ app.TopAlg = [
         OutputInts="/Event/SummedInts",
         OutputDoubles="/Event/SummedDoubles",
     ),
+    OpaqueProducer("OpaqueProducer"),
     ShrdPtrProducer("SharedPtrProducer"),
     ShrdPtrConsumer("SharedPtrConsumer"),
     VectorDataProducer(
