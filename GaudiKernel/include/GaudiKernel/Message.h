@@ -38,22 +38,22 @@ public:
   ~Message() = default;
 
   /// Get the message string.
-  const std::string& getMessage() const;
+  const std::string& getMessage() const { return m_message; }
 
   /// Set the message string.
-  void setMessage( std::string msg );
+  void setMessage( std::string msg ) { m_message = std::move( msg ); }
 
   /// Get the message type.
-  int getType() const;
+  int getType() const { return m_type; }
 
   /// Set the message type.
-  void setType( int msg_type );
+  void setType( int msg_type ) { m_type = msg_type; }
 
   /// Get the message source.
-  const std::string& getSource() const;
+  const std::string& getSource() const { return m_source; }
 
   /// Set the message source.
-  void setSource( std::string_view src );
+  void setSource( std::string_view src ) { m_source = src; }
 
   /** @name Event identifiers of message */
   //@{
@@ -63,19 +63,19 @@ public:
   //@}
 
   /// Get the format string.
-  const std::string& getFormat() const;
+  const std::string& getFormat() const { return m_format; }
 
   /// Get the default format string.
-  static const std::string getDefaultFormat();
+  static const std::string getDefaultFormat() { return DEFAULT_FORMAT; }
 
   /// Set the format string.
   void setFormat( std::string msg ) const;
 
   /// Get the time format string.
-  const std::string& getTimeFormat() const;
+  const std::string& getTimeFormat() const { return m_time_format; }
 
   /// Get the default time format string
-  static const std::string getDefaultTimeFormat();
+  static const std::string getDefaultTimeFormat() { return DEFAULT_TIME_FORMAT; }
 
   /// Set the time format string.
   void setTimeFormat( std::string timeFormat ) const;
