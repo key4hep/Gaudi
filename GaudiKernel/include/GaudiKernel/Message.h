@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -54,6 +54,13 @@ public:
 
   /// Set the message source.
   void setSource( std::string_view src );
+
+  /** @name Event identifiers of message */
+  //@{
+  EventContext::ContextID_t  getEventSlot() const { return m_ecSlot; }
+  EventContext::ContextEvt_t getEventNumber() const { return m_ecEvt; }
+  EventIDBase                getEventID() const { return m_ecEvtId; }
+  //@}
 
   /// Get the format string.
   const std::string& getFormat() const;
