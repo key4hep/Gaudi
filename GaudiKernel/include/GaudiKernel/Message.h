@@ -13,7 +13,6 @@
 
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/Kernel.h" // for GAUDI_API
-#include "GaudiKernel/ThreadLocalContext.h"
 #include <iostream>
 #include <string>
 
@@ -111,10 +110,10 @@ private:
 
   /** @name Event identifiers */
   //@{
-  EventContext::ContextID_t  m_ecSlot{ Gaudi::Hive::currentContext().slot() };     ///< Event slot
-  EventContext::ContextEvt_t m_ecEvt{ Gaudi::Hive::currentContext().evt() };       ///< Event number
-  EventIDBase                m_ecEvtId{ Gaudi::Hive::currentContext().eventID() }; ///< Full event ID
-  pthread_t                  m_ecThrd{ pthread_self() };                           ///< Thread ID
+  EventContext::ContextID_t  m_ecSlot;  ///< Event slot
+  EventContext::ContextEvt_t m_ecEvt;   ///< Event number
+  EventIDBase                m_ecEvtId; ///< Full event ID
+  pthread_t                  m_ecThrd;  ///< Thread ID
   //@}
 
   /** @name Formatting characters */
