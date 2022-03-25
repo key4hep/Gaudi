@@ -20,6 +20,7 @@
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/INTupleSvc.h"
+#include "GaudiKernel/System.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -123,9 +124,9 @@ namespace GaudiToolLocal {
   // ==========================================================================
 } // namespace GaudiToolLocal
 // ============================================================================
-/// summary is enabled
+/// enable summary based on ENABLE_GAUDITOOL_SUMMARY variable
 // ============================================================================
-bool GaudiTool::s_enableSummary = true; // summary is enabled
+bool GaudiTool::s_enableSummary = System::isEnvSet( "ENABLE_GAUDITOOL_SUMMARY" );
 // ============================================================================
 // enable/disable summary
 // ============================================================================
