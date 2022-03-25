@@ -343,17 +343,34 @@ namespace Gaudi::Functional::details {
     template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_pointer,ptr_t,val_t>>
     void push_back( T&& container ) {
       details2::push_back( m_containers, std::forward<T>( container ),
-                           std::bool_constant < is_pointer or is_range > {} );
+                           std::bool_constant < is_pointer || is_range > {} );
     } // note: does not copy its argument, so we're not really a container...
     iterator  begin() const { return m_containers.begin(); }
     iterator  end() const { return m_containers.end(); }
     size_type size() const { return m_containers.size(); }
 
     template <typename X = Container>
+    std::enable_if_t<!std::is_pointer_v<X>, ref_t> front() const {
+      return *m_containers.front();
+    }
+    template <typename X = Container>
+    std::enable_if_t<std::is_pointer_v<X>, ptr_t> front() const {
+      return m_containers.front();
+    }
+
+    template <typename X = Container>
+    std::enable_if_t<!std::is_pointer_v<X>, ref_t> back() const {
+      return *m_containers.back();
+    }
+    template <typename X = Container>
+    std::enable_if_t<std::is_pointer_v<X>, ptr_t> back() const {
+      return m_containers.back();
+    }
+
+    template <typename X = Container>
     std::enable_if_t<!std::is_pointer_v<X>, ref_t> operator[]( size_type i ) const {
       return *m_containers[i];
     }
-
     template <typename X = Container>
     std::enable_if_t<std::is_pointer_v<X>, ptr_t> operator[]( size_type i ) const {
       return m_containers[i];
@@ -363,7 +380,6 @@ namespace Gaudi::Functional::details {
     std::enable_if_t<!std::is_pointer_v<X>, ref_t> at( size_type i ) const {
       return *m_containers[i];
     }
-
     template <typename X = Container>
     std::enable_if_t<std::is_pointer_v<X>, ptr_t> at( size_type i ) const {
       return m_containers[i];
