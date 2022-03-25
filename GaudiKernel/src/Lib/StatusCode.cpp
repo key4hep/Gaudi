@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -45,12 +45,6 @@ namespace {
 } // namespace
 
 STATUSCODE_ENUM_IMPL( StatusCode::ErrorCode, DefaultCategory )
-
-void StatusCode::enableChecking() {}
-
-void StatusCode::disableChecking() {}
-
-bool StatusCode::checkingEnabled() { return false; }
 
 void StatusCode::i_doThrow( std::string_view message, std::string_view tag ) const {
   throw GaudiException{ std::string{ message }, std::string{ tag }, *this };

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -86,8 +86,6 @@ def configure():
 
     seq.Members += ["HelloWorld/Hello3"]  # it is ok
     seq.Members += [myAlg2.name()]  # it fails
-
-    cpp.StatusCode.enableChecking()
 
 
 if "__main__" == __name__:

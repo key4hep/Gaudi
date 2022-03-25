@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -86,8 +86,8 @@ StringPropertyRef = gbl.Gaudi.Property("std::string&")
 GaudiHandleProperty = gbl.GaudiHandleProperty
 GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject = gbl.DataObject
-SUCCESS = gbl.StatusCode(gbl.StatusCode.SUCCESS, True)
-FAILURE = gbl.StatusCode(gbl.StatusCode.FAILURE, True)
+SUCCESS = gbl.StatusCode(gbl.StatusCode.SUCCESS)
+FAILURE = gbl.StatusCode(gbl.StatusCode.FAILURE)
 # Workaround for ROOT-10770
 if hasattr(cppyy, "nullptr"):
     nullptr = cppyy.nullptr

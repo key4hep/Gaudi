@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -108,25 +108,11 @@ public:
   template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
   StatusCode( T sc ) noexcept : StatusCode{ static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance } {}
 
-  /// Constructor from enum type (allowing implicit conversion)
-  template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
-  [[deprecated( "use StatusCode(T) instead" )]] StatusCode( T sc, bool ) noexcept : StatusCode{ sc } {}
-
   /// Constructor from code_t and category (explicit conversion only)
   explicit StatusCode( code_t code, const StatusCode::Category& cat ) noexcept : m_cat( &cat ), m_code( code ) {}
 
   /// Constructor from code_t in the default category (explicit conversion only)
-  [[deprecated( "use StatusCode(code_t, Category) instead" )]] explicit StatusCode( code_t                      code,
-                                                                                    const StatusCode::Category& cat,
-                                                                                    bool ) noexcept
-      : StatusCode{ code, cat } {}
-
-  /// Constructor from code_t in the default category (explicit conversion only)
   explicit StatusCode( code_t code ) noexcept : StatusCode( code, default_category() ) {}
-
-  /// Constructor from code_t and category (explicit conversion only)
-  [[deprecated( "use StatusCode(code_t) instead" )]] explicit StatusCode( code_t code, bool ) noexcept
-      : StatusCode{ code } {}
 
   /// Copy constructor
   StatusCode( const StatusCode& rhs ) noexcept = default;
@@ -134,7 +120,7 @@ public:
   /// Move constructor
   StatusCode( StatusCode&& rhs ) noexcept = default;
 
-  /// Destructor.
+  /// Destructor
   ~StatusCode() = default;
 
   StatusCode& operator=( const StatusCode& rhs ) noexcept = default;
@@ -146,12 +132,8 @@ public:
   /// Shorthand for isSuccess()
   explicit operator bool() const { return isSuccess(); }
 
-  /// Retrieve value ("checks" the StatusCode)
+  /// Retrieve value
   code_t getCode() const { return m_code; }
-
-  /// Check/uncheck StatusCode
-  [[deprecated( "will be removed" )]] const StatusCode& setChecked( bool = true ) const { return *this; }
-  [[deprecated( "will be removed" )]] StatusCode&       setChecked( bool = true ) { return *this; }
 
   /// Allow discarding a StatusCode without warning
   const StatusCode& ignore() const { return *this; }
@@ -235,10 +217,7 @@ public:
     return *this;
   }
 
-  /// Has the StatusCode been checked?
-  [[deprecated( "will be removed" )]] bool checked() const { return true; }
-
-  /// Retrieve category (does not "check" the StatusCode)
+  /// Retrieve category
   const StatusCode::Category& getCategory() const { return *m_cat; }
 
   /// Description (or name) of StatusCode value
@@ -276,32 +255,11 @@ public:
   /// Boolean OR assignment operator
   friend bool& operator|=( bool& lhs, const StatusCode& sc ) { return lhs |= sc.isSuccess(); }
 
-  [[deprecated( "will be removed" )]] static GAUDI_API void enableChecking();
-  [[deprecated( "will be removed" )]] static GAUDI_API void disableChecking();
-  [[deprecated( "will be removed" )]] static GAUDI_API bool checkingEnabled();
-
-  /**
-   * Simple RAII class to ignore unchecked StatusCode instances in a scope.
-   *
-   * Example:
-   * @code{.cpp}
-   * void myFunction() {
-   *   StatusCode sc1 = aFunction(); // must be checked
-   *   {
-   *     StatusCode::ScopedDisableChecking _sc_ignore;
-   *     StatusCode sc2 = anotherFunction(); // automatically ignored
-   *   }
-   * }
-   * @endcode
-   */
-  class [[deprecated( "will be removed" )]] ScopedDisableChecking{};
-
 private:
   const Category* m_cat{ &default_category() };                        ///< The status code category
   code_t          m_code{ static_cast<code_t>( ErrorCode::SUCCESS ) }; ///< The status code value
 
   ErrorCode default_value() const; ///< Project onto the default StatusCode values
-  void      check();               ///< Do StatusCode check
 
   /// Helper function to avoid circular dependency between GaudiException.h and StatusCode.h
   [[noreturn]] void i_doThrow( std::string_view message, std::string_view tag ) const;
