@@ -44,13 +44,7 @@
 // Initialize ntupling
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiTuples<PBASE>::
-#ifdef __ICC
-    i_gtInitialize
-#else
-    initialize
-#endif
-    () {
+StatusCode GaudiTuples<PBASE>::initialize() {
   // initialize base class
   const StatusCode sc = PBASE::initialize();
   if ( sc.isFailure() ) return sc;
@@ -80,13 +74,7 @@ StatusCode GaudiTuples<PBASE>::
 // finalize ntupling
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiTuples<PBASE>::
-#ifdef __ICC
-    i_gtFinalize
-#else
-    finalize
-#endif
-    () {
+StatusCode GaudiTuples<PBASE>::finalize() {
   if ( !( m_nTupleMap.empty() && m_evtColMap.empty() ) ) {
     const int nNtuples = m_nTupleMap.size();
     const int nEvtCols = m_evtColMap.size();
