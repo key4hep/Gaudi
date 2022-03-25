@@ -493,7 +493,7 @@ public:
     auto lock = std::scoped_lock{ m_countersOwnMutex };
     // Return referenced StatEntity if it already exists, else create it
     auto p = m_countersOwn.find( tag );
-    if ( UNLIKELY( p == m_countersOwn.end() ) ) {
+    if ( p == m_countersOwn.end() ) {
       auto [iter, b] = m_countersOwn.try_emplace( std::string{ tag } );
       assert( b );
       this->serviceLocator()->monitoringHub().registerEntity( this->name(), iter->first, StatEntity::typeString,

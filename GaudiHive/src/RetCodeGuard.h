@@ -21,9 +21,7 @@ public:
   inline RetCodeGuard( const SmartIF<IProperty>& appmgr, int retcode ) : m_appmgr( appmgr ), m_retcode( retcode ) {}
   inline void ignore() { m_retcode = Gaudi::ReturnCode::Success; }
   inline ~RetCodeGuard() {
-    if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) {
-      Gaudi::setAppReturnCode( m_appmgr, m_retcode ).ignore();
-    }
+    if ( Gaudi::ReturnCode::Success != m_retcode ) { Gaudi::setAppReturnCode( m_appmgr, m_retcode ).ignore(); }
   }
 
 private:

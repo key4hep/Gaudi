@@ -71,8 +71,7 @@ private:
 
   using TsDataSvc::loadObject;
   StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode ) override final {
-    if ( LIKELY( m_allowLoadInRunning ||
-                 serviceLocator().as<IStateful>()->FSMState() != Gaudi::StateMachine::RUNNING ) ) {
+    if ( m_allowLoadInRunning || serviceLocator().as<IStateful>()->FSMState() != Gaudi::StateMachine::RUNNING ) {
       return TsDataSvc::loadObject( pLoader, pNode );
     }
     error() << "Trying to load " << pNode->identifier() << " while RUNNING" << endmsg;

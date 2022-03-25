@@ -378,7 +378,7 @@ namespace Gaudi {
     StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true ) {
 
       StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
-      if ( UNLIKELY( !sc ) ) {
+      if ( !sc ) {
         throw GaudiException{ std::string{ "Cannot create handle for " } +
                                   ( handle.isPublic() ? "public" : "private" ) + " tool " + toolTypeAndName,
                               name(), sc };

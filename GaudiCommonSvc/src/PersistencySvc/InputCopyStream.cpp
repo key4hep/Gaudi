@@ -53,7 +53,7 @@ StatusCode InputCopyStream::collectObjects() {
     const IDataStoreLeaves::LeavesList& leaves = m_leavesTool->leaves();
 
     // Do we need to veto anything ?
-    if ( UNLIKELY( !m_tesVetoList.empty() ) ) {
+    if ( !m_tesVetoList.empty() ) {
       // Veto out locations
       IDataStoreLeaves::LeavesList filteredLeaves;
       filteredLeaves.reserve( leaves.size() );

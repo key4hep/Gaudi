@@ -37,24 +37,24 @@ DECLARE_COMPONENT( DetDataSvc )
 StatusCode DetDataSvc::initialize() {
   // Call base class initialization
   StatusCode sc = TsDataSvc::initialize();
-  if ( UNLIKELY( sc.isFailure() ) ) return sc;
+  if ( sc.isFailure() ) return sc;
 
   // Set Data Loader
   auto cnv_svc = serviceLocator()->service<IConversionSvc>( m_persistencySvcName );
-  if ( UNLIKELY( !cnv_svc ) ) {
+  if ( !cnv_svc ) {
     error() << "Unable to retrieve " << m_persistencySvcName << endmsg;
     return StatusCode::FAILURE;
   }
 
   sc = setDataLoader( cnv_svc );
-  if ( UNLIKELY( sc.isFailure() ) ) {
+  if ( sc.isFailure() ) {
     error() << "Unable to set DataLoader" << endmsg;
     return sc;
   }
 
   // Get address creator from the DetectorPersistencySvc
   m_addrCreator = cnv_svc;
-  if ( UNLIKELY( !m_addrCreator ) ) {
+  if ( !m_addrCreator ) {
     error() << "Unable to get AddressCreator." << endmsg;
     return StatusCode::FAILURE;
   }

@@ -203,12 +203,12 @@ namespace Tuples {
     private:
       long& get( std::string_view sv ) {
         auto i = m_map.find( sv );
-        if ( UNLIKELY( i == m_map.end() ) ) { i = m_map.emplace( std::pair{ std::string{ sv }, 0 } ).first; }
+        if ( i == m_map.end() ) { i = m_map.emplace( std::pair{ std::string{ sv }, 0 } ).first; }
         return i->second;
       }
       long get( std::string_view sv ) const {
         auto i = m_map.find( sv );
-        if ( UNLIKELY( i == m_map.end() ) ) throw;
+        if ( i == m_map.end() ) throw;
         return i->second;
       }
       std::map<std::string, long, std::less<>> m_map;

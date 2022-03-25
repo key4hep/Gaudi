@@ -270,7 +270,7 @@ private:
   /// Issue a runtime warning if the name is already present in the
   /// list of properties (see <a href="https://its.cern.ch/jira/browse/GAUDI-1023">GAUDI-1023</a>).
   void assertUniqueName( std::string_view name ) const {
-    if ( UNLIKELY( hasProperty( name ) ) ) {
+    if ( hasProperty( name ) ) {
       auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
       if ( !msgSvc ) std::cerr << "error: cannot get MessageSvc!" << std::endl;
       MsgStream log( msgSvc, this->name() );

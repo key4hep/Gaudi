@@ -29,7 +29,7 @@ namespace details {
   template <typename Range, typename StorageType>
   Range make_range( const DataObject* obj ) {
     auto c = static_cast<const StorageType*>( obj );
-    if ( UNLIKELY( !c ) ) return Range();
+    if ( !c ) return Range();
     using std::begin;
     using std::end;
     auto first  = begin( *c );
@@ -160,14 +160,14 @@ private:
 template <typename T>
 T* DataObjectHandle<T>::get( bool mustExist ) const {
   auto dataObj = fetch();
-  if ( UNLIKELY( !dataObj ) ) {
+  if ( !dataObj ) {
     if ( mustExist ) { // Problems in getting from the store
       throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
                             m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
     }
     return nullptr;
   }
-  if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<T>( dataObj );
+  if ( !m_goodType ) m_goodType = ::details::verifyType<T>( dataObj );
   return static_cast<T*>( dataObj );
 }
 
@@ -216,11 +216,11 @@ private:
 template <typename ValueType>
 auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range {
   auto dataObj = fetch();
-  if ( UNLIKELY( !dataObj ) ) {
+  if ( !dataObj ) {
     throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
                           m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
-  if ( UNLIKELY( !m_converter ) ) {
+  if ( !m_converter ) {
     m_converter = ::details::select_range_converter<ValueType>( dataObj );
     if ( !m_converter ) {
       throw GaudiException( "The type requested for " + objKey() + " (" + System::typeinfoName( typeid( ValueType ) ) +
@@ -261,11 +261,11 @@ private:
 template <typename ValueType>
 auto DataObjectHandle<Gaudi::NamedRange_<ValueType>>::get() const -> Range {
   auto dataObj = fetch();
-  if ( UNLIKELY( !dataObj ) ) {
+  if ( !dataObj ) {
     throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
                           m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
-  if ( UNLIKELY( !m_converter ) ) {
+  if ( !m_converter ) {
     m_converter = ::details::select_range_converter<ValueType, Range>( dataObj );
     if ( !m_converter ) {
       throw GaudiException( "The type requested for " + objKey() + " (" + System::typeinfoName( typeid( ValueType ) ) +
@@ -319,7 +319,7 @@ public:
 private:
   AnyDataWrapper<T>* _get( bool mustExist ) const {
     auto obj = fetch();
-    if ( UNLIKELY( !obj ) ) {
+    if ( !obj ) {
       if ( mustExist ) {
         throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
                               m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
@@ -328,7 +328,7 @@ private:
         return nullptr;
       }
     }
-    if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<AnyDataWrapper<T>>( obj );
+    if ( !m_goodType ) m_goodType = ::details::verifyType<AnyDataWrapper<T>>( obj );
     return static_cast<AnyDataWrapper<T>*>( obj );
   }
   mutable bool m_goodType = false;
@@ -378,7 +378,7 @@ public:
 private:
   AnyDataWithViewWrapper<View, Owned>* _get( bool mustExist ) const {
     auto obj = fetch();
-    if ( UNLIKELY( !obj ) ) {
+    if ( !obj ) {
       if ( mustExist ) {
         throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
                               m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
@@ -387,7 +387,7 @@ private:
         return nullptr;
       }
     }
-    if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<AnyDataWithViewWrapper<View, Owned>>( obj );
+    if ( !m_goodType ) m_goodType = ::details::verifyType<AnyDataWithViewWrapper<View, Owned>>( obj );
     return static_cast<AnyDataWithViewWrapper<View, Owned>*>( obj );
   }
   mutable bool m_goodType = false;

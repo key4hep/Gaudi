@@ -210,7 +210,7 @@ bool PropertyMgr::hasProperty( std::string_view name ) const {
                  [name]( const PropertyBase* prop ) { return noCaseCmp( prop->name(), name ); } );
 }
 void PropertyMgr::assertUniqueName( const std::string& name ) const {
-  if ( LIKELY( !hasProperty( name ) ) ) return;
+  if ( !hasProperty( name ) ) return;
   auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
   if ( !msgSvc ) std::cerr << "error: cannot get MessageSvc!" << std::endl;
   auto      owner = SmartIF<INamedInterface>( m_pOuter );

@@ -106,7 +106,7 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
 
   auto& algState = m_algStates.at( ctx.slot() );
   auto  itr      = algState.find( algName );
-  if ( UNLIKELY( itr == algState.end() ) ) {
+  if ( itr == algState.end() ) {
     throw GaudiException{ "cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE };
   }
 
@@ -115,7 +115,7 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
     auto& subSlots    = m_algSubSlotStates[ctx.slot()];
     auto& thisSubSlot = subSlots[ctx.subSlot()];
     auto  subitr      = thisSubSlot.find( algName );
-    if ( UNLIKELY( subitr == thisSubSlot.end() ) ) {
+    if ( subitr == thisSubSlot.end() ) {
       throw GaudiException{ "cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE };
     } else {
       return subitr->second;
@@ -132,7 +132,7 @@ AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContex
 
   auto& algState = m_algStates.at( ctx.slot() );
   auto  itr      = algState.find( iAlg->nameKey() );
-  if ( UNLIKELY( itr == algState.end() ) ) {
+  if ( itr == algState.end() ) {
     throw GaudiException{ std::string{ "cannot find Alg " } + iAlg->name() + " in AlgStateMap", name(),
                           StatusCode::FAILURE };
   }

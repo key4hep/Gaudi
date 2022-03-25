@@ -52,7 +52,7 @@ DECLARE_COMPONENT( MemStatAuditor )
 StatusCode MemStatAuditor::initialize() {
   return CommonAuditor::initialize().andThen( [&]() -> StatusCode {
     m_stat = serviceLocator()->service( "ChronoStatSvc" );
-    if ( UNLIKELY( !m_stat ) ) {
+    if ( !m_stat ) {
       error() << "Cannot get ChronoStatSvc" << endmsg;
       return StatusCode::FAILURE;
     }

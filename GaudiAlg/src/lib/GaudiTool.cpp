@@ -212,49 +212,49 @@ bool GaudiTool::isPublic() const {
 // accessor to detector service
 // ============================================================================
 IDataProviderSvc* GaudiTool::detSvc() const {
-  if ( UNLIKELY( !m_detSvc ) ) m_detSvc = service( GaudiToolServices::s_DetectorDataSvc, true );
+  if ( !m_detSvc ) m_detSvc = service( GaudiToolServices::s_DetectorDataSvc, true );
   return m_detSvc;
 }
 // ============================================================================
 // The standard N-Tuple
 // ============================================================================
 INTupleSvc* GaudiTool::ntupleSvc() const {
-  if ( UNLIKELY( !m_ntupleSvc ) ) m_ntupleSvc = service( "NTupleSvc", true );
+  if ( !m_ntupleSvc ) m_ntupleSvc = service( "NTupleSvc", true );
   return m_ntupleSvc;
 }
 // ============================================================================
 // The standard event collection service
 // ============================================================================
 INTupleSvc* GaudiTool::evtColSvc() const {
-  if ( UNLIKELY( !m_evtColSvc ) ) m_evtColSvc = service( "EvtTupleSvc", true );
+  if ( !m_evtColSvc ) m_evtColSvc = service( "EvtTupleSvc", true );
   return m_evtColSvc;
 }
 // ============================================================================
 // accessor to Incident Service
 // ============================================================================
 IIncidentSvc* GaudiTool::incSvc() const {
-  if ( UNLIKELY( !m_incSvc ) ) m_incSvc = service( GaudiToolServices::s_IncidentSvc, true );
+  if ( !m_incSvc ) m_incSvc = service( GaudiToolServices::s_IncidentSvc, true );
   return m_incSvc;
 }
 // ============================================================================
 // accessor to Chrono & Stat Service
 // ============================================================================
 IChronoStatSvc* GaudiTool::chronoSvc() const {
-  if ( UNLIKELY( !m_chronoSvc ) ) m_chronoSvc = service( GaudiToolServices::s_ChronoStatSvc, true );
+  if ( !m_chronoSvc ) m_chronoSvc = service( GaudiToolServices::s_ChronoStatSvc, true );
   return m_chronoSvc;
 }
 // ============================================================================
 // accessor to histogram Service
 // ============================================================================
 IHistogramSvc* GaudiTool::histoSvc() const {
-  if ( UNLIKELY( !m_histoSvc ) ) m_histoSvc = service( GaudiToolServices::s_HistoSvc, true );
+  if ( !m_histoSvc ) m_histoSvc = service( GaudiToolServices::s_HistoSvc, true );
   return m_histoSvc;
 }
 // ============================================================================
 // accessor to Algorithm Context Service
 // ============================================================================
 IAlgContextSvc* GaudiTool::contextSvc() const {
-  if ( UNLIKELY( !m_contextSvc ) ) m_contextSvc = service( m_contextSvcName, true );
+  if ( !m_contextSvc ) m_contextSvc = service( m_contextSvcName, true );
   return m_contextSvc;
 }
 // ============================================================================

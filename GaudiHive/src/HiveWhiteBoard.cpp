@@ -393,7 +393,7 @@ public:
   StatusCode freeStore( size_t partition ) override {
     assert( partition < m_partitions.size() );
     auto prev = m_partitions[partition].with_lock( []( Partition& p ) { return std::exchange( p.eventNumber, -1 ); } );
-    if ( UNLIKELY( prev == -1 ) ) return StatusCode::FAILURE; // double free -- should never happen!
+    if ( prev == -1 ) return StatusCode::FAILURE; // double free -- should never happen!
     m_freeSlots.push( partition );
     return StatusCode::SUCCESS;
   }

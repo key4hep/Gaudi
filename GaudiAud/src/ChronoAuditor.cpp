@@ -18,7 +18,7 @@ DECLARE_COMPONENT( ChronoAuditor )
 StatusCode ChronoAuditor::initialize() {
   return CommonAuditor::initialize().andThen( [&]() -> StatusCode {
     m_chronoSvc = serviceLocator()->service( "ChronoStatSvc" );
-    if ( UNLIKELY( !m_chronoSvc.get() ) ) {
+    if ( !m_chronoSvc.get() ) {
       error() << "Cannot get ChronoStatSvc" << endmsg;
       return StatusCode::FAILURE;
     }

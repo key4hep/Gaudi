@@ -15,8 +15,8 @@
 #include <tbb/concurrent_queue.h>
 #include <thread>
 
-#define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
-#define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
+#define ON_DEBUG if ( outputLevel() <= MSG::DEBUG )
+#define ON_VERBOSE if ( outputLevel() <= MSG::VERBOSE )
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
@@ -88,9 +88,7 @@ namespace {
         : m_appmgr( std::move( appmgr ) ), m_retcode( retcode ) {}
     inline void ignore() { m_retcode = Gaudi::ReturnCode::Success; }
     inline ~RetCodeGuard() {
-      if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) {
-        Gaudi::setAppReturnCode( m_appmgr, m_retcode ).ignore();
-      }
+      if ( Gaudi::ReturnCode::Success != m_retcode ) { Gaudi::setAppReturnCode( m_appmgr, m_retcode ).ignore(); }
     }
 
   private:
@@ -110,7 +108,7 @@ StatusCode QueueingEventLoopMgr::start() {
       EventContext ctx;
       ++m_inFlight; // yes, this is not accurate.
       m_incoming.pop( ctx );
-      if ( LIKELY( ctx.valid() ) ) {
+      if ( ctx.valid() ) {
         // the sleep is not strictly needed, but it should make the output more stable for the test
         std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
         m_done.push( processEvent( std::move( ctx ) ) );
@@ -144,7 +142,7 @@ std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventCo
   for ( auto& ita : m_topAlgList ) {
     StatusCode sc( StatusCode::FAILURE );
     try {
-      if ( UNLIKELY( m_abortEventListener.abortEvent ) ) {
+      if ( m_abortEventListener.abortEvent ) {
         DEBMSG << "AbortEvent incident fired by " << m_abortEventListener.abortEventSource << endmsg;
         m_abortEventListener.abortEvent = false;
         sc.ignore();
@@ -161,7 +159,7 @@ std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventCo
       error() << Exception.what() << endmsg;
     } catch ( ... ) { fatal() << ".executeEvent(): UNKNOWN Exception thrown by " << ita->name() << endmsg; }
 
-    if ( UNLIKELY( !sc.isSuccess() ) ) {
+    if ( !sc.isSuccess() ) {
       warning() << "Execution of algorithm " << ita->name() << " failed" << endmsg;
       eventfailed = true;
     }
@@ -170,7 +168,7 @@ std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventCo
   m_aess->updateEventStatus( eventfailed, context );
 
   // ensure that the abortEvent flag is cleared before the next event
-  if ( UNLIKELY( m_abortEventListener.abortEvent ) ) {
+  if ( m_abortEventListener.abortEvent ) {
     DEBMSG << "AbortEvent incident fired by " << m_abortEventListener.abortEventSource << endmsg;
     m_abortEventListener.abortEvent = false;
   }
@@ -180,7 +178,7 @@ std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventCo
     AlgExecState& state = m_aess->algExecState( ito, context );
     state.setFilterPassed( true );
     StatusCode sc = ito->sysExecute( context );
-    if ( UNLIKELY( !sc.isSuccess() ) ) {
+    if ( !sc.isSuccess() ) {
       warning() << "Execution of output stream " << ito->name() << " failed" << endmsg;
       eventfailed = true;
     }
@@ -188,7 +186,7 @@ std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventCo
 
   StatusCode outcome = StatusCode::SUCCESS;
   // Check if there was an error processing current event
-  if ( UNLIKELY( eventfailed ) ) {
+  if ( eventfailed ) {
     error() << "Error processing event loop." << endmsg;
     std::ostringstream ost;
     m_aess->dump( ost, context );

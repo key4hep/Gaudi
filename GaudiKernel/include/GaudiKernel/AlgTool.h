@@ -184,7 +184,7 @@ public:
   StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true ) {
 
     StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
-    if ( UNLIKELY( !sc ) ) {
+    if ( !sc ) {
       throw GaudiException{ std::string{ "Cannot create handle for " } + ( handle.isPublic() ? "public" : "private" ) +
                                 " tool " + toolTypeAndName,
                             name(), sc };
@@ -214,17 +214,17 @@ public:
 
 public:
   void registerTool( IAlgTool* tool ) const {
-    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "Registering tool " << tool->name() << endmsg;
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "Registering tool " << tool->name() << endmsg;
     m_tools.push_back( tool );
   }
 
   void deregisterTool( IAlgTool* tool ) const {
     auto it = std::find( m_tools.begin(), m_tools.end(), tool );
     if ( it != m_tools.end() ) {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "De-Registering tool " << tool->name() << endmsg;
+      if ( msgLevel( MSG::DEBUG ) ) debug() << "De-Registering tool " << tool->name() << endmsg;
       m_tools.erase( it );
     } else {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "Could not de-register tool " << tool->name() << endmsg;
+      if ( msgLevel( MSG::DEBUG ) ) debug() << "Could not de-register tool " << tool->name() << endmsg;
     }
   }
 

@@ -89,7 +89,7 @@ namespace Gaudi::Functional::details {
     /// Verify the data container sizes have the same sizes
     template <typename... Args>
     inline decltype( auto ) verifySizes( Args&... args ) {
-      if ( UNLIKELY( !check_sizes( args... ) ) ) {
+      if ( !check_sizes( args... ) ) {
         std::ostringstream mess;
         mess << "Zipped containers have different sizes : ";
         printSizes( mess, args... );

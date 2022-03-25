@@ -215,7 +215,7 @@ StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::st
 // ============================================================================
 StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause ) {
 
-  if ( LIKELY( Cause::source::Task == cause.m_source ) ) {
+  if ( Cause::source::Task == cause.m_source ) {
     ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '" << cause.m_sourceName << "'" << endmsg;
     auto       visitor = concurrency::DecisionUpdater( slot, cause, m_dumpPrecTrace );
     m_PRGraph.getAlgorithmNode( cause.m_sourceName )->accept( visitor );
@@ -225,12 +225,12 @@ StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause ) {
     m_PRGraph.getHeadNode()->accept( visitor );
   }
 
-  if ( UNLIKELY( m_dumpPrecTrace ) )
-    if ( UNLIKELY( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) ) )
+  if ( m_dumpPrecTrace )
+    if ( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) )
       dumpPrecedenceTrace( slot.parentSlot ? *slot.parentSlot : slot );
 
-  if ( UNLIKELY( m_dumpPrecRules ) )
-    if ( UNLIKELY( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) ) )
+  if ( m_dumpPrecRules )
+    if ( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) )
       dumpPrecedenceRules( slot.parentSlot ? *slot.parentSlot : slot );
 
   return StatusCode::SUCCESS;

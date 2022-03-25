@@ -30,7 +30,7 @@ namespace Gaudi {
         StatusCode sc = Algorithm::start();
         if ( sc ) {
           for ( const auto& k : outputDataObjs() ) {
-            if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "adding data key " << k << endmsg;
+            if ( msgLevel( MSG::DEBUG ) ) debug() << "adding data key " << k << endmsg;
             if ( sc = evtSvc()->addPreLoadItem( k.key() ); !sc ) return sc;
           }
         }

@@ -358,25 +358,25 @@ AlgTool::~AlgTool()
 void AlgTool::initToolHandles() const {
   auto init_one = [&]( BaseToolHandle* th ) {
     if ( !th->isEnabled() ) {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) && !th->typeAndName().empty() )
+      if ( msgLevel( MSG::DEBUG ) && !th->typeAndName().empty() )
         debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
       return;
     }
     if ( !th->get() ) {
       auto sc = th->retrieve();
-      if ( UNLIKELY( sc.isFailure() ) ) {
+      if ( sc.isFailure() ) {
         throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
       }
     }
     auto* tool = th->get();
-    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+    if ( msgLevel( MSG::DEBUG ) )
       debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
               << tool->type() << ")" << endmsg;
     m_tools.push_back( tool );
   };
 
   for ( auto thArr : m_toolHandleArrays ) {
-    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+    if ( msgLevel( MSG::DEBUG ) )
       debug() << "Registering all Tools in ToolHandleArray " << thArr->propertyName() << endmsg;
     // Iterate over its tools:
     for ( auto toolHandle : thArr->getBaseArray() ) {
@@ -397,13 +397,13 @@ void AlgTool::initToolHandles() const {
 }
 
 const std::vector<IAlgTool*>& AlgTool::tools() const {
-  if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
+  if ( !m_toolHandlesInit ) initToolHandles();
 
   return m_tools;
 }
 
 std::vector<IAlgTool*>& AlgTool::tools() {
-  if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
+  if ( !m_toolHandlesInit ) initToolHandles();
 
   return m_tools;
 }

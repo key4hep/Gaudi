@@ -273,7 +273,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( EventContext&& ctx ) {
   m_algExecStateSvc->reset( ctx );
 
   // Check if event number is in blacklist
-  if ( LIKELY( m_blackListBS != nullptr ) ) { // we are processing a finite number of events, use bitset blacklist
+  if ( m_blackListBS != nullptr ) { // we are processing a finite number of events, use bitset blacklist
     if ( m_blackListBS->test( ctx.evt() ) ) {
       VERBOSE_MSG << "Event " << ctx.evt() << " on black list" << endmsg;
       m_whiteboard->freeStore( ctx.slot() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );

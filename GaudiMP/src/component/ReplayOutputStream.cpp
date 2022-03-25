@@ -97,10 +97,10 @@ StatusCode ReplayOutputStream::initialize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
 
   m_algMgr = service( "ApplicationMgr" );
-  if ( UNLIKELY( !m_algMgr ) ) return Error( "cannot retrieve IAlgManager" );
+  if ( !m_algMgr ) return Error( "cannot retrieve IAlgManager" );
 
   m_evtMgr = evtSvc();
-  if ( UNLIKELY( !m_evtMgr ) ) return Error( "cannot retrieve IDataManagerSvc " );
+  if ( !m_evtMgr ) return Error( "cannot retrieve IDataManagerSvc " );
 
   std::for_each( m_outputStreamNames.begin(), m_outputStreamNames.end(), OutStreamAdder( this ) );
 

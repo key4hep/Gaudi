@@ -42,8 +42,8 @@ using System::isEnvSet;
 #include <limits>
 #include <sstream>
 
-#define ON_DEBUG if ( UNLIKELY( m_outputLevel <= MSG::DEBUG ) )
-#define ON_VERBOSE if ( UNLIKELY( m_outputLevel <= MSG::VERBOSE ) )
+#define ON_DEBUG if ( m_outputLevel <= MSG::DEBUG )
+#define ON_VERBOSE if ( m_outputLevel <= MSG::VERBOSE )
 
 DECLARE_OBJECT_FACTORY( ApplicationMgr )
 
@@ -301,7 +301,7 @@ StatusCode ApplicationMgr::configure() {
     const std::string& value = var.second;
     std::string        old   = System::getEnv( name.c_str() );
     const MSG::Level   lvl   = ( !old.empty() && ( old != "UNKNOWN" ) ) ? MSG::WARNING : MSG::DEBUG;
-    if ( UNLIKELY( m_outputLevel <= lvl ) ) log << lvl << "Setting " << name << " = " << value << endmsg;
+    if ( m_outputLevel <= lvl ) log << lvl << "Setting " << name << " = " << value << endmsg;
     System::setEnv( name, value );
   }
 
