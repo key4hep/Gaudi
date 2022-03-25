@@ -13,6 +13,7 @@
 #include "GaudiAlg/MergingTransformer.h"
 #include "GaudiAlg/Producer.h"
 #include "GaudiAlg/ScalarTransformer.h"
+#include "GaudiAlg/SplittingMergingTransformer.h"
 #include "GaudiAlg/Transformer.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/IAlgTool.h"
@@ -105,12 +106,14 @@ namespace Gaudi::Examples {
 
   struct VectorDataProducer final : Gaudi::Functional::Producer<std::vector<int>(), BaseClass_t> {
 
+    Gaudi::Property<std::vector<int>> m_data{ this, "Data", { 3, 3, 3, 3 } };
+
     VectorDataProducer( const std::string& name, ISvcLocator* svcLoc )
         : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyVector" ) ) {}
 
     std::vector<int> operator()() const override {
-      info() << "executing VectorDataProducer, storing [3,3,3,3] into " << outputLocation() << endmsg;
-      return { 3, 3, 3, 3 };
+      info() << "executing VectorDataProducer, storing " << m_data.value() << " into " << outputLocation() << endmsg;
+      return m_data;
     }
   };
 
@@ -559,5 +562,32 @@ namespace Gaudi::Examples {
   };
 
   DECLARE_COMPONENT( ShrdPtrConsumer )
+
+  /** @brief transform a vector of vector of int to a vector of int, where the output vector of in is scattered into the
+   * TES
+   */
+  struct IntVectorsToInts final
+      : public Gaudi::Functional::SplittingMergingTransformer<
+            std::vector<int>( const Gaudi::Functional::vector_of_const_<std::vector<int>>& ), BaseClass_t> {
+
+    Gaudi::Property<std::vector<std::pair<int, int>>> m_mapping{ this, "Mapping", {} };
+
+    IntVectorsToInts( const std::string& name, ISvcLocator* svcLoc )
+        : SplittingMergingTransformer( name, svcLoc, { "InputLocations", {} }, { "OutputLocations", {} } ) {}
+
+    std::vector<int>
+    operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors ) const override {
+      int l = 0;
+      for ( const auto& iv : intVectors ) { info() << "loaded " << iv << " from " << inputLocation( l++ ) << endmsg; }
+      std::vector<int> out( outputLocationSize(), 0 );
+      for ( const auto& [l, r] : m_mapping.value() ) {
+        out[l] = std::accumulate( intVectors.at( r ).begin(), intVectors.at( r ).end(), out[l] );
+      }
+      l = 0;
+      for ( const auto& o : out ) { info() << "storing " << o << " in " << outputLocation( l++ ) << endmsg; }
+      return out;
+    }
+  };
+  DECLARE_COMPONENT( IntVectorsToInts )
 
 } // namespace Gaudi::Examples
