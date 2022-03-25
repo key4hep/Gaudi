@@ -77,9 +77,7 @@ public:
 
   /** Retrieve the Service. Release existing Service if needed.
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */
-  StatusCode retrieve() const { // not really const, because it updates m_pObject
-    return GaudiHandle<T>::retrieve();
-  }
+  using GaudiHandle<T>::retrieve;
 
   //  /** Release the Service.
   //    Function must be repeated here to avoid hiding the function release( T*& ) */
