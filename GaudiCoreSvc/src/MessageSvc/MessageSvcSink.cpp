@@ -45,6 +45,13 @@ namespace {
       { "counter:BinomialCounter",
         "{0:nEntries|10d} |{0:nTrueEntries|11d} |({0:efficiency|#9.7p} +- {0:efficiencyErr|-#8.7p})%" },
   };
+
+  // Helper to fix custom formatting of nlohmann::json version 3.10.5
+  // See https://gitlab.cern.ch/gaudi/Gaudi/-/issues/220
+  struct json_fmt_arg {
+    json_fmt_arg( const nlohmann::json& j ) : payload{ j } {}
+    const nlohmann::json& payload;
+  };
 } // namespace
 
 /**
@@ -57,7 +64,7 @@ namespace {
  *        for more details
  */
 template <>
-class fmt::formatter<nlohmann::json> {
+class fmt::formatter<json_fmt_arg> {
 public:
   template <typename ParseContext>
   constexpr auto parse( ParseContext& ctx ) {
@@ -75,7 +82,8 @@ public:
     return fmt_end;
   }
   template <typename FormatContext>
-  auto format( const nlohmann::json& j, FormatContext& ctx ) {
+  auto format( const json_fmt_arg& json_arg, FormatContext& ctx ) {
+    const auto& j = json_arg.payload;
     if ( currentFormat.size() == 0 ) {
       // dealing with {} format, let's find entry for our type in registry
       const auto type = j.at( "type" ).get<std::string>();
@@ -98,7 +106,7 @@ public:
       assert( entry != registry.end() );
       // print the json string according to format found
       // This actually will call this formatter again a number of times
-      return fmt::format_to( ctx.out(), entry->second, j );
+      return fmt::format_to( ctx.out(), entry->second, json_arg );
     } else {
       // dealing with a {:name|fmt} format
       auto actualFormat = fmt::format( "{{:{}", currentFormat ) + "}";
@@ -139,7 +147,7 @@ namespace {
     // binomial counters are slightly different ('*' character)
     return log << fmt::format( " |{}{:48}|{} |",
                                ( std::string_view{ type }.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
-                               fmt::format( "\"{}\"", id ), j );
+                               fmt::format( "\"{}\"", id ), json_fmt_arg{ j } );
   }
 
 } // namespace
