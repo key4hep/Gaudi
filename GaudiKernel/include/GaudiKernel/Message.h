@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,7 +13,6 @@
 
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/Kernel.h" // for GAUDI_API
-#include "GaudiKernel/ThreadLocalContext.h"
 #include <iostream>
 #include <string>
 
@@ -39,37 +38,44 @@ public:
   ~Message() = default;
 
   /// Get the message string.
-  const std::string& getMessage() const;
+  const std::string& getMessage() const { return m_message; }
 
   /// Set the message string.
-  void setMessage( std::string msg );
+  void setMessage( std::string msg ) { m_message = std::move( msg ); }
 
   /// Get the message type.
-  int getType() const;
+  int getType() const { return m_type; }
 
   /// Set the message type.
-  void setType( int msg_type );
+  void setType( int msg_type ) { m_type = msg_type; }
 
   /// Get the message source.
-  const std::string& getSource() const;
+  const std::string& getSource() const { return m_source; }
 
   /// Set the message source.
-  void setSource( std::string_view src );
+  void setSource( std::string_view src ) { m_source = src; }
+
+  /** @name Event identifiers of message */
+  //@{
+  EventContext::ContextID_t  getEventSlot() const { return m_ecSlot; }
+  EventContext::ContextEvt_t getEventNumber() const { return m_ecEvt; }
+  EventIDBase                getEventID() const { return m_ecEvtId; }
+  //@}
 
   /// Get the format string.
-  const std::string& getFormat() const;
+  const std::string& getFormat() const { return m_format; }
 
   /// Get the default format string.
-  static const std::string getDefaultFormat();
+  static const std::string getDefaultFormat() { return DEFAULT_FORMAT; }
 
   /// Set the format string.
   void setFormat( std::string msg ) const;
 
   /// Get the time format string.
-  const std::string& getTimeFormat() const;
+  const std::string& getTimeFormat() const { return m_time_format; }
 
   /// Get the default time format string
-  static const std::string getDefaultTimeFormat();
+  static const std::string getDefaultTimeFormat() { return DEFAULT_TIME_FORMAT; }
 
   /// Set the time format string.
   void setTimeFormat( std::string timeFormat ) const;
@@ -111,10 +117,10 @@ private:
 
   /** @name Event identifiers */
   //@{
-  EventContext::ContextID_t  m_ecSlot{ Gaudi::Hive::currentContext().slot() };     ///< Event slot
-  EventContext::ContextEvt_t m_ecEvt{ Gaudi::Hive::currentContext().evt() };       ///< Event number
-  EventIDBase                m_ecEvtId{ Gaudi::Hive::currentContext().eventID() }; ///< Full event ID
-  pthread_t                  m_ecThrd{ pthread_self() };                           ///< Thread ID
+  EventContext::ContextID_t  m_ecSlot;  ///< Event slot
+  EventContext::ContextEvt_t m_ecEvt;   ///< Event number
+  EventIDBase                m_ecEvtId; ///< Full event ID
+  pthread_t                  m_ecThrd;  ///< Thread ID
   //@}
 
   /** @name Formatting characters */

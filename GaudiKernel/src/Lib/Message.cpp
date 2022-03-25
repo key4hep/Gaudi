@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -36,7 +36,8 @@ namespace {
 // Purpose:
 // ---------------------------------------------------------------------------
 //
-Message::Message( const char* src, int type, const char* msg ) : m_message( msg ), m_source( src ), m_type( type ) {}
+Message::Message( const char* src, int type, const char* msg )
+    : Message( std::string( src ), type, std::string( msg ) ) {}
 
 //#############################################################################
 // ---------------------------------------------------------------------------
@@ -45,55 +46,14 @@ Message::Message( const char* src, int type, const char* msg ) : m_message( msg 
 // ---------------------------------------------------------------------------
 //
 Message::Message( std::string src, int type, std::string msg )
-    : m_message( std::move( msg ) ), m_source( std::move( src ) ), m_type( type ) {}
+    : m_message( std::move( msg ) ), m_source( std::move( src ) ), m_type( type ) {
 
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: getMessage
-// Purpose: Get the message string.
-// ---------------------------------------------------------------------------
-//
-const std::string& Message::getMessage() const { return m_message; }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: setMessage
-// Purpose: Set the message string.
-// ---------------------------------------------------------------------------
-//
-void Message::setMessage( std::string msg ) { m_message = std::move( msg ); }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: getType
-// Purpose: Get the message type.
-// ---------------------------------------------------------------------------
-//
-int Message::getType() const { return m_type; }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: setType
-// Purpose: Set the message type.
-// ---------------------------------------------------------------------------
-//
-void Message::setType( int msg_type ) { m_type = msg_type; }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: getSource
-// Purpose: Get the message source.
-// ---------------------------------------------------------------------------
-//
-const std::string& Message::getSource() const { return m_source; }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: setSource
-// Purpose: Set the message source.
-// ---------------------------------------------------------------------------
-//
-void Message::setSource( std::string_view src ) { m_source = src; }
+  const EventContext& ctx = Gaudi::Hive::currentContext();
+  m_ecSlot                = ctx.slot();
+  m_ecEvt                 = ctx.evt();
+  m_ecEvtId               = ctx.eventID();
+  m_ecThrd                = pthread_self();
+}
 
 //#############################################################################
 // ---------------------------------------------------------------------------
@@ -130,22 +90,6 @@ bool operator==( const Message& a, const Message& b ) {
 //#############################################################################
 // ---------------------------------------------------------------------------
 // Routine:
-// Purpose: Get the format string.
-// ---------------------------------------------------------------------------
-//
-const std::string& Message::getFormat() const { return m_format; }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine:
-// Purpose: Get the default format string.
-// ---------------------------------------------------------------------------
-//
-const std::string Message::getDefaultFormat() { return DEFAULT_FORMAT; }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine:
 // Purpose: Set the format string -
 //          use isFormatted() to check for valid format.
 // ---------------------------------------------------------------------------
@@ -157,22 +101,6 @@ void Message::setFormat( std::string format ) const {
     m_format = DEFAULT_FORMAT;
   }
 }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine:
-// Purpose: Get the time format string.
-// ---------------------------------------------------------------------------
-//
-const std::string& Message::getTimeFormat() const { return m_time_format; }
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine:
-// Purpose: Get the default time format string.
-// ---------------------------------------------------------------------------
-//
-const std::string Message::getDefaultTimeFormat() { return DEFAULT_TIME_FORMAT; }
 
 //#############################################################################
 // ---------------------------------------------------------------------------
