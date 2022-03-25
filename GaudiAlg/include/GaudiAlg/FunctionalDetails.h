@@ -126,10 +126,12 @@ namespace Gaudi::Functional::details {
 
   /////////////////////////////////////////
   namespace details2 {
-    // note: boost::optional in boost 1.66 does not have 'has_value()'...
-    // that requires boost 1.68 or later... so for now, use operator bool() instead ;-(
     template <typename T>
-    using is_optional_ = decltype( bool{ std::declval<T>() }, std::declval<T>().value() );
+    using is_optional_ = decltype( std::declval<T>().has_value(), std::declval<T>().value() );
+
+    template <typename T>
+    using value_type_of_t = typename T::value_type;
+
   } // namespace details2
   template <typename Arg>
   constexpr bool is_optional_v = Gaudi::cpp17::is_detected_v<details2::is_optional_, Arg>;
@@ -141,7 +143,8 @@ namespace Gaudi::Functional::details {
   using require_is_not_optional = std::enable_if_t<!is_optional_v<Arg>>;
 
   template <typename T>
-  using remove_optional_t = std::conditional_t<is_optional_v<T>, typename T::value_type, T>;
+  using remove_optional_t =
+      std::conditional_t<is_optional_v<T>, Gaudi::cpp17::detected_t<details2::value_type_of_t, T>, T>;
 
   constexpr struct invoke_optionally_t {
     template <typename F, typename Arg, typename = require_is_not_optional<Arg>>

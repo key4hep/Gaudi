@@ -27,6 +27,7 @@ from Configurables import Gaudi__Examples__IntVectorsMerger as IntVectorsMerger
 from Configurables import (
     Gaudi__Examples__IntVectorsMergingConsumer as IntVectorsMergingConsumer,
 )
+from Configurables import Gaudi__Examples__IntVectorsToInts as IntVectorsToInts
 from Configurables import (
     Gaudi__Examples__IntVectorsToIntVector as IntVectorsToIntVector,
 )
@@ -163,6 +164,23 @@ app.TopAlg = [
     ),
     ShrdPtrProducer("SharedPtrProducer"),
     ShrdPtrConsumer("SharedPtrConsumer"),
+    VectorDataProducer(
+        "IntProducer0", Data=[0, 2, 4], OutputLocation="/Event/EventInts"
+    ),
+    VectorDataProducer(
+        "IntProducer1", Data=[1, 3, 5, 7], OutputLocation="/Event/OddInt"
+    ),
+    VectorDataProducer(
+        "IntProducer2", Data=[1, 1, 2, 3, 5, 8, 13], OutputLocation="/Event/Fib7"
+    ),
+    IntVectorsToInts(
+        "IntVectorsToInts",
+        Mapping=[[0, 0], [0, 1], [0, 2], [1, 1], [1, 2]],
+        InputLocations=["/Event/EventInts", "/Event/OddInt", "/Event/Fib7"],
+        OutputLocations=["/Event/EvenOddFib", "/Event/OddFib"],
+    ),
+    ContextIntConsumer("EvenOddFibConsumer", InputLocation="/Event/EvenOddFib"),
+    ContextIntConsumer("OddFibConsumer", InputLocation="/Event/OddFib"),
 ]
 # - Events
 app.EvtMax = 2

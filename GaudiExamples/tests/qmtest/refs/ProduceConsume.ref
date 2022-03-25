@@ -1,4 +1,4 @@
-# --> Including file '/project/bfys/graven/stack33/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# --> Including file '/project/bfys/graven/stack/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ---
 # List of input and output types by class
 "Gaudi::Examples::ContextConsumer":
@@ -47,11 +47,11 @@
 "Gaudi::Examples::VectorDoubleProducer":
   OutputLocation: "std::vector<double,std::allocator<double> >"
 ---
-# <-- End of file '/project/bfys/graven/stack33/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# <-- End of file '/project/bfys/graven/stack/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v36r4)
-                                          running on stbc-i1.nikhef.nl on Wed Jan 19 10:19:46 2022
+                                          running on stbc-i1.nikhef.nl on Sun Mar 13 17:19:02 2022
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -71,8 +71,8 @@ FloatDataConsumer    INFO executing FloatDataConsumer: 7
 ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 0
 ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 7
 VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
-VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector1
-VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector2
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector1
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector2
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
 IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
@@ -117,8 +117,18 @@ IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 TwoDMerger        SUCCESS  accumulated: [12, 12]
 TwoDMerger        SUCCESS  accumulated: [103.68]
-SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x2dd9930 and value  7 into /Event/MySharedFoo
-SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x2dd9930 with value  7 from /Event/MySharedFoo
+SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x166f170 and value  7 into /Event/MySharedFoo
+SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x166f170 with value  7 from /Event/MySharedFoo
+IntProducer0         INFO executing VectorDataProducer, storing [0, 2, 4] into /Event/EventInts
+IntProducer1         INFO executing VectorDataProducer, storing [1, 3, 5, 7] into /Event/OddInt
+IntProducer2         INFO executing VectorDataProducer, storing [1, 1, 2, 3, 5, 8, 13] into /Event/Fib7
+IntVectorsToInts     INFO loaded [0, 2, 4] from /Event/EventInts
+IntVectorsToInts     INFO loaded [1, 3, 5, 7] from /Event/OddInt
+IntVectorsToInts     INFO loaded [1, 1, 2, 3, 5, 8, 13] from /Event/Fib7
+IntVectorsToInts     INFO storing 55 in /Event/EvenOddFib
+IntVectorsToInts     INFO storing 49 in /Event/OddFib
+EvenOddFibConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 55
+OddFibConsumer       INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 49
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -132,8 +142,8 @@ FloatDataConsumer    INFO executing FloatDataConsumer: 7
 ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 1
 ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 7
 VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
-VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector1
-VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector2
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector1
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector2
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
 IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
 IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
@@ -174,8 +184,18 @@ IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
 TwoDMerger        SUCCESS  accumulated: [12, 12]
 TwoDMerger        SUCCESS  accumulated: [103.68]
-SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x2dd7fe0 and value  7 into /Event/MySharedFoo
-SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x2dd7fe0 with value  7 from /Event/MySharedFoo
+SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x166f170 and value  7 into /Event/MySharedFoo
+SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x166f170 with value  7 from /Event/MySharedFoo
+IntProducer0         INFO executing VectorDataProducer, storing [0, 2, 4] into /Event/EventInts
+IntProducer1         INFO executing VectorDataProducer, storing [1, 3, 5, 7] into /Event/OddInt
+IntProducer2         INFO executing VectorDataProducer, storing [1, 1, 2, 3, 5, 8, 13] into /Event/Fib7
+IntVectorsToInts     INFO loaded [0, 2, 4] from /Event/EventInts
+IntVectorsToInts     INFO loaded [1, 3, 5, 7] from /Event/OddInt
+IntVectorsToInts     INFO loaded [1, 1, 2, 3, 5, 8, 13] from /Event/Fib7
+IntVectorsToInts     INFO storing 55 in /Event/EvenOddFib
+IntVectorsToInts     INFO storing 49 in /Event/OddFib
+EvenOddFibConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 55
+OddFibConsumer       INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 49
 CountingConsumer     INFO Number of counters : 3
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "This is not a warning..."                      |         4 |
