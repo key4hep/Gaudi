@@ -489,8 +489,9 @@ StatusCode EvtStoreSvc::clearStore() {
 }
 StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* pAgent ) {
   return fwd( [&]( Partition& p ) {
-    top      = normalize_path( top, rootName() );
-    auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
+    top                              = normalize_path( top, rootName() );
+    unsigned int nbSlashesInRootName = std::count( rootName().begin(), rootName().end(), '/' );
+    auto         cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
     std::set<const Entry*, decltype( cmp )> keys{ std::move( cmp ) };
     for ( const auto& v : *p.store ) {
       if ( boost::algorithm::starts_with( v.second.identifier(), top ) ) keys.insert( &v.second );
@@ -498,7 +499,7 @@ StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* 
     auto k = keys.begin();
     while ( k != keys.end() ) {
       const auto& id     = ( *k )->identifier();
-      int         level  = std::count( id.begin(), id.end(), '/' );
+      int         level  = std::count( id.begin(), id.end(), '/' ) + nbSlashesInRootName;
       bool        accept = pAgent->analyse( const_cast<Entry*>( *( k++ ) ), level );
       if ( !accept ) {
         k = std::find_if_not( k, keys.end(),
