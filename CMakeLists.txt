@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -80,7 +80,7 @@ Maintainer's guide: `<https://twiki.cern.ch/twiki/bin/view/LHCb/MaintainGaudiCMa
 
 cmake_minimum_required(VERSION 3.15)
 
-project(Gaudi VERSION 36.4
+project(Gaudi VERSION 36.5
               LANGUAGES CXX
               DESCRIPTION "Gaudi Software Framework"
               HOMEPAGE_URL "https://cern.ch/gaudi")
