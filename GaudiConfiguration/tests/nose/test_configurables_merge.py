@@ -23,6 +23,12 @@ def teardown_func():
     useGlobalInstances(False)
 
 
+def test_merge_identical():
+    a = MyAlg("ThisAlg", AnIntProp=42)
+    a.merge(a)
+    assert a.AnIntProp == 42
+
+
 def test_merge():
     a = MyAlg("ThisAlg", AnIntProp=42)
     b = MyAlg("ThisAlg", AStringProp="42")
