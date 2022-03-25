@@ -65,8 +65,7 @@ namespace HepRndm {
   // Initialize engine
   template <class TYPE>
   StatusCode Engine<TYPE>::initialize() {
-    auto& seeds = m_seeds.value();
-    seeds.clear();
+    auto&      seeds  = m_seeds.value();
     StatusCode status = RndmEngine::initialize();
     if ( m_seeds.size() == 0 ) {
       // Default seeds
