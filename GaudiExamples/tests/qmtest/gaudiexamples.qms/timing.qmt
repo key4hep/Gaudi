@@ -14,11 +14,11 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set><text>Timing.py</text></set></argument>
 <argument name="environment"><set>
-<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+<text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
 </set></argument>
 <argument name="validator"><text>
 import re
-expected = ( r"Timing\s+SUCCESS\s+The timing is \(in us\)\s*\n" + 
+expected = ( r"Timing\s+SUCCESS\s+The timing is \(in us\)\s*\n" +
              r"\|\s*\|\s*#\s*\|\s*Total\s*\|\s*Mean\+-RMS\s*\|\s*Min/Max\s*\|\s*\n" +
              r"\|\s*\(1U\)\s*\|\s*\d*\s*\|(?:[-+.\deE /]+\|){3}\s*\n" +
              r"\|\s*\(2U\)\s*\|\s*\d*\s*\|(?:[-+.\deE /]+\|){3}\s*\n" +

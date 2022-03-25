@@ -30,9 +30,9 @@ MessageSvc().setDebug.append("EventLoopMgr")
 
 </text></argument>
 <argument name="environment"><set>
-<text>STDOPTS=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
-<text>JOBOPTSEARCHPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/options:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests</text>
-<text>PYTHONPATH=$ENV_CMAKE_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/python:$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiExamples/tests/qmtest:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/python:$PYTHONPATH</text>
+<text>STDOPTS=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
+<text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/Gaudi/tests/pyjobopts:$ENV_PROJECT_SOURCE_DIR/Gaudi/Gaudi/tests</text>
+<text>PYTHONPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/python:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/Gaudi/Gaudi/tests/python:$PYTHONPATH</text>
 </set></argument>
 <argument name="validator"><text>
 stdout = '\n'.join(l for l in stdout.splitlines()

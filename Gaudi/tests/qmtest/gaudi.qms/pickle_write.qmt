@@ -16,7 +16,7 @@
                            <text>-p</text><text>options.pkl</text>
                       </set></argument>
 <argument name="environment"><set>
-<text>PYTHONPATH=$ENV_CMAKE_SOURCE_DIR/Gaudi/tests/python:$ENV_CMAKE_SOURCE_DIR/Gaudi/Gaudi/tests/python:$PYTHONPATH</text>
+<text>PYTHONPATH=$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/python:$ENV_PROJECT_SOURCE_DIR/Gaudi/Gaudi/tests/python:$PYTHONPATH</text>
 </set></argument>
 <argument name="options"><text>
 # Add the fake configurables to the path

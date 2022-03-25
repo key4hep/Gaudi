@@ -23,11 +23,11 @@ from GaudiProfiling.GenerateGaudiOpts import ConvertXmlToDict
 if __name__ == "__main__":
     from PyCPUFamily import CPUFamily
 
-    if "ENV_CMAKE_SOURCE_DIR" not in os.environ:
+    if "ENV_PROJECT_SOURCE_DIR" not in os.environ:
         print(
             """
             ****************************************** ERROR *****************************************
-            * GaudiProfiler: Environment variable $ENV_CMAKE_SOURCE_DIR is missing. Process stopped. *
+            * GaudiProfiler: Environment variable $ENV_PROJECT_SOURCE_DIR is missing. Process stopped. *
             ******************************************************************************************
         """
         )
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     else:
         configFile = os.path.sep.join(
             [
-                os.environ["ENV_CMAKE_SOURCE_DIR"],
+                os.environ["ENV_PROJECT_SOURCE_DIR"],
                 "GaudiProfiling",
                 "data",
                 "pfm_config_%s.xml" % CPUFamily(),
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     shutil.copy2(
         os.path.sep.join(
             [
-                os.environ["ENV_CMAKE_SOURCE_DIR"],
+                os.environ["ENV_PROJECT_SOURCE_DIR"],
                 "GaudiProfiling",
                 "data",
                 "sorttable.js",

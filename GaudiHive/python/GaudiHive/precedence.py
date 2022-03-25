@@ -31,7 +31,7 @@ def _buildFilePath(filePath):
     if not os.path.exists(filePath):
         __fullFilePath__ = os.path.realpath(
             os.path.join(
-                os.environ.get("ENV_CMAKE_SOURCE_DIR", ""),
+                os.environ.get("ENV_PROJECT_SOURCE_DIR", ""),
                 "GaudiHive",
                 "data",
                 filePath,
@@ -40,7 +40,7 @@ def _buildFilePath(filePath):
         if not os.path.exists(__fullFilePath__):
             __fullFilePath__ = os.path.realpath(
                 os.path.join(
-                    os.environ.get("ENV_CMAKE_SOURCE_DIR", ""),
+                    os.environ.get("ENV_PROJECT_SOURCE_DIR", ""),
                     "Gaudi",
                     "GaudiHive",
                     "data",
@@ -51,8 +51,8 @@ def _buildFilePath(filePath):
                 print(
                     "\nERROR: invalid file path '%s'. "
                     "It must be either absolute, or relative to "
-                    "'$ENV_CMAKE_SOURCE_DIR/GaudiHive/data/' or to "
-                    "'$ENV_CMAKE_SOURCE_DIR/Gaudi/GaudiHive/data/'." % filePath
+                    "'$ENV_PROJECT_SOURCE_DIR/GaudiHive/data/' or to "
+                    "'$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiHive/data/'." % filePath
                 )
                 sys.exit(1)
     else:
@@ -200,8 +200,8 @@ class CruncherSequence(object):
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
         BlockingBoolValue -- *BooleanValue object to set whether an algorithm has to experience CPU-blocking execution
-        cfgPath -- relative to $ENV_CMAKE_SOURCE_DIR/GaudiHive/data path to GRAPHML file with control flow dependencies
-        dfgPath -- relative to $ENV_CMAKE_SOURCE_DIR/GaudiHive/data path to GRAPHML file with data flow dependencies
+        cfgPath -- relative to $ENV_PROJECT_SOURCE_DIR/GaudiHive/data path to GRAPHML file with control flow dependencies
+        dfgPath -- relative to $ENV_PROJECT_SOURCE_DIR/GaudiHive/data path to GRAPHML file with data flow dependencies
         showStat -- print out statistics on precedence graph
         """
 

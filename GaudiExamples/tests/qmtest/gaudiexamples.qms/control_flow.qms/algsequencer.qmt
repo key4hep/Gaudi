@@ -17,8 +17,8 @@
   <argument name="validator"><text>
 import os
 import sys
-sys.path.append(os.path.join(os.environ.get("ENV_CMAKE_SOURCE_DIR"), "GaudiExamples", "tests", "qmtest"))
-sys.path.append(os.path.join(os.environ.get("ENV_CMAKE_SOURCE_DIR"), "Gaudi", "GaudiExamples", "tests", "qmtest"))
+sys.path.append(os.path.join(os.environ.get("ENV_PROJECT_SOURCE_DIR"), "GaudiExamples", "tests", "qmtest"))
+sys.path.append(os.path.join(os.environ.get("ENV_PROJECT_SOURCE_DIR"), "Gaudi", "GaudiExamples", "tests", "qmtest"))
 
 from ControlFlowTestValidator import preprocessor
 validateWithReference(preproc = preprocessor)
