@@ -212,7 +212,7 @@ namespace Gaudi ::Functional {
           return std::apply(
                      GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN[&]( auto&... ohandle ) {
                        return std::apply(
-                           [&ohandle..., &ctx, this]( bool passed, auto&&... data ) {
+                           [&ohandle...]( bool passed, auto&&... data ) {
                              ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                              return passed;
                            },
