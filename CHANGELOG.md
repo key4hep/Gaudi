@@ -5,25 +5,53 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r5][] - 2022-04-04
+Several small changes and fixes in this release. It also features the removal of some deprecated and unused code.
+
+### Changed
+- Suppress Initialize/Finalize (mis)balance messages (gaudi/Gaudi#215 gaudi/Gaudi!1313)
+- GaudiKernel: remove deprecated `setProperties` methods (gaudi/Gaudi!1311)
+- StatusCode: remove deprecated checking code (gaudi/Gaudi!1309)
+- Changes for LHCb super project builds (gaudi/Gaudi!1308)
+- Dropped usage of `(UN)LIKELY` macro (gaudi/Gaudi!1307)
+
+### Added
+- Add Trait to write an *OpaqueView* to the TES which makes the underlying object inaccessible (gaudi/Gaudi!1318)
+- Message: cleanup and add accessors for event ID (gaudi/Gaudi!1325)
+- Extend `IFileAccess` interface with a `read` function (gaudi/Gaudi!1317)
+- Add another `Gaudi::Functional` transformer: `SplittingMergingTransformer` (gaudi/Gaudi!1315)
+
+### Fixed
+- Remove unused lambda captures (clang warning) (gaudi/Gaudi!1326)
+- Fix compilation with nlohman_json 3.10.5 (gaudi/Gaudi#220 gaudi/Gaudi!1324)
+- Fix `PluginService` segfault at initialize when `LD_LIBRARY_PATH` is not defined (gaudi/Gaudi!1316)
+- Add missing `front()` and `back()` to `Functional::vector_of_const_` (gaudi/Gaudi!1323)
+- Fixed computation of &quot;levels&quot; in EvtStoreSvc (gaudi/Gaudi!1322)
+- Remove clearing of seed at initialization (gaudi/Gaudi!1321)
+- Improvements to the `Configurable` method `merge` (gaudi/Gaudi!1319)
+- Fix spurious / irrelevant data race in `DataObjectHandle` and remove unused state (gaudi/Gaudi!1314)
+- Remove redundant lines from Gaudi{Tuple,Histo}Alg definition (gaudi/Gaudi!1312)
+
+
 ## [v36r4][] - 2022-01-20
 This minor release features a few bugfixes, some usability improvements and some small backward incompatible changes
 that could be as well classified as bugfixes.
 
-## Changed
+### Changed
 - Remove unused `LinkManager::removeLink` (gaudi/Gaudi!1294)
 - {Merging,Splitting}Transformer: replace vector&lt;string&gt; property with vector&lt;DataObjID&gt; (gaudi/Gaudi!1297)
 - ToolBinder: prefer function pointer in constructor over pure virtual inheritance (gaudi/Gaudi!1292)
 - GaudiConfig2: apply OrderedSetSemantics to `std::[unordered_]set` (gaudi/Gaudi!1298)
 - Change GaudiConfig2 default semantics to use deepcopy of the default (gaudi/Gaudi#114  gaudi/Gaudi!1296)
 
-## Added
+### Added
 - Add example of consuming/producing `std::shared_ptr` with `Gaudi::Functional` (gaudi/Gaudi!1303)
 - Allow use of `ConfigurableUser` specializations in configuration functions (gaudi/Gaudi#213  gaudi/Gaudi!1302)
 - Record the source location of `DECLARE_COMPONENT` in Python configurables (gaudi/Gaudi#203  gaudi/Gaudi!1299)
 - Extend the `gaudirun.py` `GaudiConfig2` file lookup to allow full path to modules (gaudi/Gaudi#192  gaudi/Gaudi!1301)
 - Add support for multiple input arguments to Merging{,Multi}Transformer (gaudi/Gaudi!1291)
 
-## Fixed
+### Fixed
 - Fix spurious options mismatch between old and new configurables (gaudi/Gaudi#191  gaudi/Gaudi!1300)
 - `IBinder::Box` call destruct with the right pointer. (gaudi/Gaudi!1293)
 - Fixes for running tests with LHCb test class (gaudi/Gaudi!1289)
@@ -847,6 +875,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r5]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r5
 [v36r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r4
 [v36r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r3
 [v36r2]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r2
