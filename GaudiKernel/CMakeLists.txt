@@ -10,6 +10,9 @@
 #####################################################################################
 # GaudiKernel subdirectory
 
+option(GAUDI_V21 "disable Gaudi v20 compatibiility" OFF)
+option(GAUDI_V22 "enable Gaudi v22 new APIs (implies GAUDI_V21=ON)" OFF)
+
 # Look for VectorClass required header (private dependency)
 find_path(VectorClass_INCLUDE_DIR NAMES instrset_detect.cpp)
 if(VectorClass_INCLUDE_DIR AND NOT VectorClass_VERSION)
@@ -173,6 +176,14 @@ elseif(UNIX)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemLinux.h
                                      src/Lib/Platform/SystemLinux.cpp)
   target_link_libraries(GaudiKernel PUBLIC ${rt_LIBRARY})
+endif()
+
+if(GAUDI_v22)
+  set(GAUDI_V21 TRUE)
+  target_compile_definitions(GaudiKernel PUBLIC GAUDI_V22_API)
+endif()
+if(NOT GAUDI_V21)
+  target_compile_definitions(GaudiKernel PUBLIC GAUDI_V20_COMPAT)
 endif()
 
 # Build an executable

@@ -55,6 +55,8 @@ after the configuration or use ccmake or cmake-gui.
 * For sanitized build
   * GAUDI_GENCONF_NO_FAIL
 * Compile options
+  * GAUDI_V21: disable Gaudi v20 compatibiility (default OFF)
+  * GAUDI_V22: enable Gaudi v22 new APIs, implies GAUDI_V21 (default OFF)
   * GAUDI_REFLEX_COMPONENT_ALIASES
 * Doxygen
   * DOXYGEN_WITH_LOCAL_MATHJAX
