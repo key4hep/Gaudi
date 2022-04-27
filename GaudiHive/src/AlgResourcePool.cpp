@@ -129,10 +129,10 @@ StatusCode AlgResourcePool::acquireAlgorithm( std::string_view name, IAlgorithm*
       error() << "Failure to allocate resources of algorithm " << name << endmsg;
       // in case of not reentrant, push it back. Reentrant ones are pushed back
       // in all cases further down
-      if ( 0 != algo->cardinality() ) { itQueueIAlgPtr->second->push( algo ); }
+      if ( !algo->isReEntrant() ) { itQueueIAlgPtr->second->push( algo ); }
     }
     m_resource_mutex.unlock();
-    if ( 0 == algo->cardinality() ) {
+    if ( algo->isReEntrant() ) {
       // push back reentrant algorithms immediately as it can be reused
       itQueueIAlgPtr->second->push( algo );
     }
@@ -153,7 +153,7 @@ StatusCode AlgResourcePool::releaseAlgorithm( std::string_view name, IAlgorithm*
   m_resource_mutex.unlock();
 
   // release algorithm itself if not reentrant
-  if ( 0 != algo->cardinality() ) { m_algqueue_map[algo_id]->push( algo ); }
+  if ( !algo->isReEntrant() ) { m_algqueue_map[algo_id]->push( algo ); }
   return StatusCode::SUCCESS;
 }
 
@@ -303,11 +303,9 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
     if ( ialgo->isReEntrant() ) {
       if ( ialgo->cardinality() != 0 ) {
         info() << "Algorithm " << ialgo->name() << " is ReEntrant, but Cardinality was set to " << ialgo->cardinality()
-               << endmsg;
-        m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
-      } else {
-        m_n_of_allowed_instances[algo_id] = 1;
+               << ". Only creating 1 instance" << endmsg;
       }
+      m_n_of_allowed_instances[algo_id] = 1;
     } else if ( ialgo->isClonable() ) {
       m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
     } else {
