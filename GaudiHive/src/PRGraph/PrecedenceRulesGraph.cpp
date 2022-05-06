@@ -629,7 +629,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
 
   void PrecedenceRulesGraph::dumpPrecRules( const boost::filesystem::path& fileName, const EventSlot& slot ) {
-    boost::filesystem::ofstream myfile;
+    std::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
     // Declare properties to dump
@@ -670,7 +670,7 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::dumpPrecTrace( const boost::filesystem::path& fileName, const EventSlot& slot ) {
-    boost::filesystem::ofstream myfile;
+    std::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
     // Fill runtimes (as this could not be done on the fly during trace assembling)
