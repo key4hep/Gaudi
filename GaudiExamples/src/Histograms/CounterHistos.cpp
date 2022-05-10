@@ -46,7 +46,7 @@ namespace Gaudi {
 
         StatusCode execute( const EventContext& ) const override {
           for ( unsigned int iT = 0; iT < m_nTracks; ++iT ) {
-            for ( auto& h : m_histos ) { h += m_rand(); }
+            for ( auto& h : m_histos ) { ++h[m_rand()]; }
           }
           return StatusCode::SUCCESS;
         }
@@ -87,11 +87,8 @@ namespace Gaudi {
 
           // updating histograms
           ++m_gauss[gauss];
-          m_gauss += gauss; // also test += operator of accumulator
           ++m_gaussVflat[{ flat, gauss }];
-          m_gaussVflat += { flat, gauss }; // also test += operator of accumulator
           ++m_gaussVflatVgauss[{ flat, gauss, gauss2 }];
-          m_gaussVflatVgauss += { flat, gauss, gauss2 }; // also test += operator of accumulator
           ++m_gauss_noato[gauss];
           ++m_gaussVflat_noato[{ flat, gauss }];
           ++m_gaussVflatVgauss_noato[{ flat, gauss, gauss2 }];
@@ -101,11 +98,8 @@ namespace Gaudi {
 
           // weighted cases
           m_gauss_w[gauss] += .5;
-          m_gauss_w += { gauss, .5 }; // also test += operator of accumulator
           m_gaussVflat_w[{ flat, gauss }] += .5;
-          m_gaussVflat_w += { { flat, gauss }, .5 }; // also test += operator of accumulator
           m_gaussVflatVgauss_w[{ flat, gauss, gauss2 }] += .5;
-          m_gaussVflatVgauss_w += { { flat, gauss, gauss2 }, .5 }; // also test += operator of accumulator
 
           // using buffers
           auto gauss_buf            = m_gauss_buf.buffer();
@@ -119,11 +113,8 @@ namespace Gaudi {
 
           // updating profile histograms
           m_prof_gauss[gauss] += gauss3;
-          m_prof_gauss += { gauss, gauss3 }; // also test += operator of accumulator
           m_prof_gaussVflat[{ flat, gauss }] += gauss3;
-          m_prof_gaussVflat += { flat, gauss, gauss3 }; // also test += operator of accumulator
           m_prof_gaussVflatVgauss[{ flat, gauss, gauss2 }] += gauss3;
-          m_prof_gaussVflatVgauss += { flat, gauss, gauss2, gauss3 }; // also test += operator of accumulator
           m_prof_gauss_noato[gauss] += gauss3;
           m_prof_gaussVflat_noato[{ flat, gauss }] += gauss3;
           m_prof_gaussVflatVgauss_noato[{ flat, gauss, gauss2 }] += gauss3;
@@ -133,11 +124,8 @@ namespace Gaudi {
 
           // wieghted profile histograms
           m_prof_gauss_w[gauss] += { gauss3, .5 };
-          m_prof_gauss_w += { { gauss, gauss3 }, .5 }; // also test += operator of accumulator
           m_prof_gaussVflat_w[{ flat, gauss }] += { gauss3, .5 };
-          m_prof_gaussVflat_w += { { flat, gauss, gauss3 }, .5 }; // also test += operator of accumulator
           m_prof_gaussVflatVgauss_w[{ flat, gauss, gauss2 }] += { gauss3, .5 };
-          m_prof_gaussVflatVgauss_w += { { flat, gauss, gauss2, gauss3 }, .5 }; // also test += operator of accumulator
 
           // using buffers on profile histograms
           auto prof_gauss_buf            = m_prof_gauss_buf.buffer();
