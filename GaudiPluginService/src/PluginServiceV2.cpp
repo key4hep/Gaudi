@@ -247,6 +247,12 @@ namespace Gaudi {
           return entry->second;
         }
 
+        Registry::FactoryMap::size_type Registry::erase( const KeyType& id ) {
+          auto        _guard = std::scoped_lock{ m_mutex };
+          FactoryMap& facts  = factories();
+          return facts.erase( id );
+        }
+
         const Registry::FactoryInfo& Registry::getInfo( const KeyType& id, const bool load ) const {
           auto                     _guard  = std::scoped_lock{ m_mutex };
           static const FactoryInfo unknown = { "unknown" };
