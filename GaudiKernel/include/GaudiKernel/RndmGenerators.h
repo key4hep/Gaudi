@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -383,13 +383,13 @@ namespace Rndm {
     /// Check if the number supply is possible
     operator bool() const { return m_generator; }
     /// Operator () for the use within STL
-    double operator()() { return this->shoot(); }
+    double operator()() const { return this->shoot(); }
     /// Pop a new number from the buffer
-    double pop() { return this->shoot(); }
+    double pop() const { return this->shoot(); }
     /// Pop a new number from the buffer
-    double shoot() { return m_generator ? m_generator->shoot() : -1; }
+    double shoot() const { return m_generator ? m_generator->shoot() : -1; }
     /// Pop a new number from the buffer
-    StatusCode shootArray( std::vector<double>& array, long num, long start = 0 ) {
+    StatusCode shootArray( std::vector<double>& array, long num, long start = 0 ) const {
       return m_generator ? m_generator->shootArray( array, num, start ) : StatusCode::FAILURE;
     }
   };
