@@ -136,6 +136,9 @@ namespace Gaudi {
           /// Add factory info to the registry (used internally by DeclareFactory).
           FactoryInfo& add( const KeyType& id, FactoryInfo info );
 
+          /// delete a factory info from the registry.
+          FactoryMap::size_type erase( const KeyType& id );
+
           /// Retrieve the FactoryInfo object for an `id`.
           const FactoryInfo& getInfo( const KeyType& id, const bool load = false ) const;
 
