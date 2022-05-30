@@ -209,7 +209,7 @@ namespace Gaudi::Accumulators {
       }
       return index;
     }
-    auto forInternalCounter() { return this->operator[]( ND - 1 ); }
+    auto forInternalCounter() { return 1ul; }
   };
 
   /// specialization of HistoInputType for ND == 1 in order to have simpler syntax
@@ -223,7 +223,7 @@ namespace Gaudi::Accumulators {
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const { return axis[0].index( value ); }
     Arithmetic&  operator[]( int ) { return value; }
                  operator Arithmetic() const { return value; }
-    auto         forInternalCounter() { return value; }
+    auto         forInternalCounter() { return 1ul; }
 
   private:
     Arithmetic value;
@@ -279,7 +279,8 @@ namespace Gaudi::Accumulators {
         : m_axis( other.m_axis ), m_totNBins{ computeTotNBins() }, m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
-    HistogramingAccumulatorInternal& operator+=( InputType v ) {
+    [[deprecated( "Use `++h1[x]`, `++h2[{x,y}]`, etc. instead." )]] HistogramingAccumulatorInternal&
+    operator+=( InputType v ) {
       accumulator( v.computeIndex( m_axis ) ) += v.forInternalCounter();
       return *this;
     }
@@ -293,7 +294,7 @@ namespace Gaudi::Accumulators {
         accumulator( index ).mergeAndReset( std::move( other.accumulator( index ) ) );
       }
     }
-    auto operator[]( typename InputType::ValueType v ) {
+    [[nodiscard]] auto operator[]( typename InputType::ValueType v ) {
       return Buffer<BaseAccumulatorT, Atomicity, Arithmetic>{ accumulator( v.computeIndex( m_axis ) ) };
     }
 

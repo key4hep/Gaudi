@@ -38,12 +38,46 @@ struct HistSink : public Gaudi::Monitoring::Hub::Sink {
 };
 
 BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
-  Algo                                      algo;
+  Algo algo;
+
+  {
+    Gaudi::Accumulators::Histogram<1> histo1d{ &algo, "GaudiH1D", "A Gaudi 1D histogram", { 21, -10.5, 10.5, "X" } };
+    ++histo1d[-10.0]; // fill the first (non-overflow) bin
+    BOOST_TEST( histo1d.toJSON().at( "bins" )[1] == 1 );
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    histo1d += -10.0; // fill the first (non-overflow) bin
+#pragma GCC diagnostic pop
+    BOOST_TEST( histo1d.toJSON().at( "bins" )[1] == 2 );
+  }
+  {
+    Gaudi::Accumulators::Histogram<2> histo2d{
+        &algo, "GaudiH2D", "A Gaudi 2D histogram", { { 21, -10.5, 10.5, "X" }, { 21, -10.5, 10.5, "Y" } } };
+    ++histo2d[{ -10.0, -10.0 }]; // fill the first (non-overflow) bin
+    BOOST_TEST( histo2d.toJSON().at( "bins" )[( 1 + 21 + 1 ) + 1] == 1 );
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    histo2d += { -10.0, -10.0 }; // fill the first (non-overflow) bin
+#pragma GCC diagnostic pop
+    BOOST_TEST( histo2d.toJSON().at( "bins" )[( 1 + 21 + 1 ) + 1] == 2 );
+  }
+  {
+    Gaudi::Accumulators::WeightedHistogram<1> histo1dw{ &algo, "", "", { 21, -10.5, 10.5, "X" } };
+    histo1dw[-10.0] += 0.25; // fill the first (non-overflow) bin
+    BOOST_TEST( histo1dw.toJSON().at( "bins" )[1] == 0.25 );
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    histo1dw += { -10.0, 0.5 }; // fill the first (non-overflow) bin
+    BOOST_TEST( histo1dw.toJSON().at( "bins" )[1] == 0.75 );
+#pragma GCC diagnostic pop
+    std::cout << histo1dw.toJSON() << std::endl;
+  }
+
   Gaudi::Accumulators::ProfileHistogram<1u> histo{ &algo, "GaudiP1D", "A Gaudi 1D Profile", { 10, 0, 100 } };
 
-  histo += { -0.5, -0.5 };
-  for ( int i = 0; i < 10; i++ ) { histo += { 10.0 * double( i ) + 0.5, double( i ) }; }
-  histo += { 120.0, 120.0 };
+  histo[-0.5] += -0.5;
+  for ( int i = 0; i < 10; i++ ) { histo[10.0 * double( i ) + 0.5] += double( i ); }
+  histo[120.0] += 120.0;
 
   nlohmann::json j        = histo.toJSON();
   auto           nEntries = j.at( "nEntries" ).get<unsigned long>();
