@@ -444,30 +444,3 @@ public:
   DataObjectWriteHandle( std::tuple<Args...>&& args )
       : DataObjectWriteHandle( std::move( args ), std::index_sequence_for<Args...>{} ) {}
 };
-
-/**
- * Transitional class to help moving all code to Handles even if
- * some usage requires 'dynamic' behavior, that is handles declared
- * at run time only and not registered in their owner.
- *
- * Again should no be used for long term code, only for helping in the
- * transition. It is bound to be marked Deprecated and then dropped
- *
- * Note : as the handles of this type are not registered, their init
- * method is called directly in the constructor. So they cannot be
- * used at initialization time safely. These are really pure runtime
- * beasts
- */
-// we disable the deprecated warning due to the call of the non registering
-// constructor of DataObjectHandleBase
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-template <typename T>
-struct DeprecatedDynamicDataObjectHandle : public DataObjectHandle<T> {
-  template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
-  DeprecatedDynamicDataObjectHandle( OWNER const* owner, K key = {} )
-      : DataObjectHandle<T>( std::move( key ), const_cast<OWNER*>( owner ) ) {
-    this->init();
-  }
-};
-#pragma GCC diagnostic pop
