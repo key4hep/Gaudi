@@ -319,6 +319,7 @@ public:
 
     return ToolHandle<IAlgTool>::retrieve().andThen( [&] {
       const IAlgTool* tool = get();
+      assert( tool != nullptr ); // retrieve was succesfull, so get() better return something valid!
       return const_cast<IAlgTool*>( tool )
           ->queryInterface( IFace::interfaceID(), &( self->m_ptr ) )
           .andThen( [&] {
@@ -340,7 +341,13 @@ public:
     } );
   }
 
-  auto bind( const EventContext& ctx ) const { return ( *m_bind )( m_ptr, ctx ); }
+  auto bind( const EventContext& ctx ) const {
+    if ( !m_bind || !m_ptr ) {
+      throw GaudiException{ "request bind on toolhandle which was not (successfully) 'retrieved'", __PRETTY_FUNCTION__,
+                            StatusCode::FAILURE };
+    }
+    return ( *m_bind )( m_ptr, ctx );
+  }
 };
 
 /** Helper class to construct ToolHandle instances for public tools via the
