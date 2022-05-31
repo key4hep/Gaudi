@@ -429,7 +429,7 @@ A3                   INFO Running in view viewOne0
 A4                   INFO Running in whole event context
 A4                   INFO Attached view viewTwo0 to node viewNodeTwo for s: 0  e: 0
 A6                   INFO Running in view viewTwo0
-AvalancheSchedu...  ERROR *** Stall detected in slot 0! ***
+AvalancheSchedu...  ERROR *** Stall detected, event context: s: 0  e: 0
 AvalancheSchedu...  ERROR Event 0 on slot 0 failed
 AvalancheSchedu...   INFO Dumping scheduler state
 =========================================================================================

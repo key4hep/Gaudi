@@ -768,7 +768,7 @@ bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const {
   if ( !slot.algsStates.containsAny( { AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS } ) &&
        !subSlotAlgsInStates( slot, { AState::DATAREADY, AState::SCHEDULED, AState::RESOURCELESS } ) ) {
 
-    error() << "*** Stall detected in slot " << slot.eventContext->slot() << "! ***" << endmsg;
+    error() << "*** Stall detected, event context: " << slot.eventContext.get() << endmsg;
 
     return true;
   }
