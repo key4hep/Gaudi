@@ -97,7 +97,7 @@ A3                  FATAL  Exception with tag= is caught
 A3                  ERROR  	 A3:: Stopping loop	 StatusCode=FAILURE
 AlgTask             FATAL .executeEvent(): Exception with tag= thrown by A3
 AlgTask             ERROR  	 A3:: Stopping loop	 StatusCode=FAILURE
-AvalancheSchedu...  ERROR *** Stall detected in slot 0! ***
+AvalancheSchedu...  ERROR *** Stall detected, event context: s: 0  e: 1
 AvalancheSchedu...  ERROR Event 1 on slot 0 failed
 AvalancheSchedu...   INFO Dumping scheduler state
 =========================================================================================
