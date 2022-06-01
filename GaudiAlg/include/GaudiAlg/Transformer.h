@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef TRANSFORMER_H
-#define TRANSFORMER_H
+
+#pragma once
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
@@ -49,7 +49,7 @@ namespace Gaudi ::Functional {
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -75,7 +75,7 @@ namespace Gaudi ::Functional {
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -116,7 +116,7 @@ namespace Gaudi ::Functional {
               this->m_outputs );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -154,7 +154,7 @@ namespace Gaudi ::Functional {
           GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -192,7 +192,7 @@ namespace Gaudi ::Functional {
                      ? FilterDecision::PASSED
                      : FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -224,7 +224,7 @@ namespace Gaudi ::Functional {
                      ? FilterDecision::PASSED
                      : FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -244,5 +244,3 @@ namespace Gaudi ::Functional {
   using MultiTransformerFilter = details::MultiTransformerFilter<Signature, Traits_, details::isLegacy<Traits_>>;
 
 } // namespace Gaudi::Functional
-
-#endif

@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef SPLITTING_TRANSFORMER_H
-#define SPLITTING_TRANSFORMER_H
+
+#pragma once
 
 #include <functional>
 #include <optional>
@@ -82,7 +82,7 @@ namespace Gaudi::Functional {
           for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -149,7 +149,7 @@ namespace Gaudi::Functional {
           for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -173,5 +173,3 @@ namespace Gaudi::Functional {
   using SplittingTransformer = details::SplittingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
 
 } // namespace Gaudi::Functional
-
-#endif

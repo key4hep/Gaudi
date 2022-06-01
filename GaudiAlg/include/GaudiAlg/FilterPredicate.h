@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef FILTER_PREDICATE_H
-#define FILTER_PREDICATE_H
+
+#pragma once
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
@@ -35,7 +35,7 @@ namespace Gaudi::Functional {
           return filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) ? FilterDecision::PASSED
                                                                             : FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -55,7 +55,7 @@ namespace Gaudi::Functional {
           return filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) ? FilterDecision::PASSED
                                                                                  : FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -70,5 +70,3 @@ namespace Gaudi::Functional {
   using FilterPredicate = details::FilterPredicate<Signature, Traits_, details::isLegacy<Traits_>>;
 
 } // namespace Gaudi::Functional
-
-#endif
