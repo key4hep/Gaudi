@@ -128,6 +128,12 @@ StatusCode RootConnectionSetup::setCompression( std::string_view compression ) {
       alg_code = ROOT::kZLIB;
     else if ( alg.size() == 4 && strncasecmp( alg.data(), "LZMA", 4 ) == 0 )
       alg_code = ROOT::kLZMA;
+    else if ( alg.size() == 3 && strncasecmp( alg.data(), "LZ4", 3 ) == 0 )
+      alg_code = ROOT::kLZ4;
+#  if ROOT_VERSION_CODE >= ROOT_VERSION( 6, 20, 0 )
+    else if ( alg.size() == 4 && strncasecmp( alg.data(), "ZSTD", 4 ) == 0 )
+      alg_code = ROOT::kZSTD;
+#  endif
     else
       throw runtime_error( "ERROR: request to set unknown ROOT compression algorithm:" + std::string{ alg } );
     res = ::sscanf( std::string{ compression.substr( idx + 1 ) }.c_str(), "%d",

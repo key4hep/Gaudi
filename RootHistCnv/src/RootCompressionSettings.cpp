@@ -37,6 +37,12 @@ RootHistCnv::RootCompressionSettings::RootCompressionSettings( const std::string
       alg_code = ROOT::kZLIB;
     } else if ( alg == "LZMA" ) {
       alg_code = ROOT::kLZMA;
+    } else if ( alg == "LZ4" ) {
+      alg_code = ROOT::kLZ4;
+#if ROOT_VERSION_CODE >= ROOT_VERSION( 6, 20, 0 )
+    } else if ( alg == "ZSTD" ) {
+      alg_code = ROOT::kZSTD;
+#endif
     } else {
       throw std::runtime_error( "ERROR: Unknown ROOT compression algorithm:" + alg );
     }
