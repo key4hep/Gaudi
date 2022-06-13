@@ -97,7 +97,7 @@ def test_int_ok():
 
 @raises(ValueError)
 def test_int_bad():
-    getSemanticsFor("int").store(2 ** 32)
+    getSemanticsFor("int").store(2**32)
 
 
 @raises(ValueError)
