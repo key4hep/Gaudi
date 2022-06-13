@@ -25,7 +25,7 @@ if sys.version_info >= (3,):  # pragma no cover
     basestring = str
 
 _log = logging.getLogger(__name__)
-is_64bits = sys.maxsize > 2 ** 32
+is_64bits = sys.maxsize > 2**32
 
 
 class PropertySemantics(object):
