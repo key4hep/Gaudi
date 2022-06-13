@@ -38,13 +38,22 @@ void DHHVisitor::visit( const IDataHandleHolder* v ) {
   for ( auto& hs : { make_tuple( v->inputHandles(), std::ref( m_ido ), std::ref( m_ign_i ) ),
                      make_tuple( v->outputHandles(), std::ref( m_odo ), std::ref( m_ign_o ) ) } ) {
     for ( const auto& h : std::get<0>( hs ) ) {
+      if ( h->mode() == Gaudi::DataHandle::Mode::Reader ) {
+        m_src_i[h->fullKey()].emplace( v );
+      } else {
+        m_src_i[h->fullKey()].emplace( v );
+      }
       if ( !h->objKey().empty() ) {
         std::get<1>( hs ).emplace( h->fullKey() );
       } else {
         std::get<2>( hs ).emplace( h->fullKey() );
       }
+      m_all.push_back( std::make_pair( h->fullKey(), h->owner() ) );
     }
   }
+
+  for ( auto& id : v->extraInputDeps() ) { m_src_i[id].emplace( v ); }
+  for ( auto& id : v->extraOutputDeps() ) { m_src_o[id].emplace( v ); }
 
   // The containers of handles are a different type than the on of input deps and input
   // objects, so we need another loop here.
@@ -59,6 +68,7 @@ void DHHVisitor::visit( const IDataHandleHolder* v ) {
       } else {
         std::get<2>( hs ).emplace( h );
       }
+      m_all.push_back( std::make_pair( h, v ) );
     }
   }
 }

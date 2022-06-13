@@ -13,7 +13,10 @@
 
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/IDataHandleHolder.h"
+#include <map>
 #include <set>
+#include <string>
+#include <vector>
 
 class DHHVisitor : public IDataHandleVisitor {
 public:
@@ -24,9 +27,17 @@ public:
 
   void visit( const IDataHandleHolder* visitee ) override;
 
+  const std::vector<std::pair<DataObjID, const IDataHandleHolder*>>& all() const { return m_all; }
+
+  const std::map<DataObjID, std::set<const IDataHandleHolder*>>& src_i() const { return m_src_i; }
+  const std::map<DataObjID, std::set<const IDataHandleHolder*>>& src_o() const { return m_src_o; }
+
 private:
   DataObjIDColl &m_ido, &m_odo;
   DataObjIDColl  m_ign_i, m_ign_o;
+
+  std::vector<std::pair<DataObjID, const IDataHandleHolder*>> m_all;
+  std::map<DataObjID, std::set<const IDataHandleHolder*>>     m_src_i, m_src_o;
 };
 
 #endif

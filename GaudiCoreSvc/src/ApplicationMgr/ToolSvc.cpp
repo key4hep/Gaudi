@@ -659,6 +659,24 @@ StatusCode ToolSvc::start()
 
   ON_DEBUG debug() << "START transition for AlgTools" << endmsg;
 
+  if ( m_showToolDataDeps.value() ) {
+    info() << "Listing Data Dependencies of all Tools";
+    for ( auto& iTool : m_instancesTools ) {
+      IDataHandleHolder* idh = dynamic_cast<IDataHandleHolder*>( iTool );
+      if ( idh ) {
+        std::ostringstream ost;
+        for ( auto& dh : idh->inputHandles() ) { ost << "\n   INP:   " << dh->fullKey(); }
+        for ( auto& id : idh->extraInputDeps() ) { ost << "\n   EXT I: " << id; }
+        for ( auto& dh : idh->outputHandles() ) { ost << "\n   OUT:   " << dh->fullKey(); }
+        for ( auto& id : idh->extraOutputDeps() ) { ost << "\n   EXT O: " << id; }
+        if ( ost.str().length() > 0 ) { info() << "\n" << iTool->name() << ost.str(); }
+      } else {
+        error() << "can't cast " << iTool->name() << " to IDataHandleHolder!" << endmsg;
+      }
+    }
+    info() << endmsg;
+  }
+
   bool fail( false );
   for ( auto& iTool : m_instancesTools ) {
     ON_VERBOSE verbose() << iTool->name() << "::start()" << endmsg;
