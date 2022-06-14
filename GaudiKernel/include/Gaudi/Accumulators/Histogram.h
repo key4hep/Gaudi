@@ -12,15 +12,7 @@
 
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/MonitoringHub.h>
-#include <ROOT/RHist.hxx>
-
-#include <boost/format.hpp>
-#include <boost/histogram/algorithm/sum.hpp>
-#include <boost/histogram/fwd.hpp>
-#include <gsl/span>
-
 #include <nlohmann/json.hpp>
-
 #include <array>
 #include <cmath>
 #include <string>
