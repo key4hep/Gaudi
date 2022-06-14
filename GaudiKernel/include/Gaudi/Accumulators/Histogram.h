@@ -12,9 +12,9 @@
 
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/MonitoringHub.h>
-#include <nlohmann/json.hpp>
 #include <array>
 #include <cmath>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <type_traits>
 #include <utility>
