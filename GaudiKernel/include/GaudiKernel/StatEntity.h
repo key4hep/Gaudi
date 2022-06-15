@@ -9,9 +9,10 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
+
 #include <Gaudi/Accumulators.h>
+
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/format.hpp>
 
 /**
  * backward compatible StatEntity class. Should not be used.
@@ -107,9 +108,7 @@ public:
   }
   template <typename stream>
   stream& printFormattedImpl( stream& o, const std::string& format ) const {
-    boost::format fmt{ format };
-    fmt % nEntries() % sum() % mean() % standard_deviation() % min() % max();
-    return o << fmt.str();
+    return o << fmt::format( format, nEntries(), sum(), mean(), standard_deviation(), min(), max() );
   }
   std::ostream& printFormatted( std::ostream& o, const std::string& format ) const {
     return printFormattedImpl( o, format );
@@ -123,45 +122,46 @@ public:
       // efficiency printing
       if ( tableFormat ) {
         if ( name.empty() ) {
-          constexpr auto fmt = "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
-          return o << boost::format{ fmt } % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
-                          ( efficiencyErr() * 100 );
+          constexpr auto fmt = "|{:10d} |{:11.5g} |({:#9.7g} +- {:<#8.7g})%|   -------   |   -------   |";
+          return o << fmt::format( fmt, BinomialAccParent::nEntries(), sum(), ( efficiency() * 100 ),
+                                   ( efficiencyErr() * 100 ) );
         } else {
           auto fmt = std::string{ " |*" }.append( fmtHead ).append(
-              "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |" );
-          return o << boost::format{ fmt } % ( std::string{ "\"" }.append( name ).append( "\"" ) ) %
-                          BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) % ( efficiencyErr() * 100 );
+              "|{:10d} |{:11.5g} |({:#9.7g} +- {:<#8.7g})%|   -------   |   -------   |" );
+          return o << fmt::format( fmt, ( std::string{ "\"" }.append( name ).append( "\"" ) ),
+                                   BinomialAccParent::nEntries(), sum(), ( efficiency() * 100 ),
+                                   ( efficiencyErr() * 100 ) );
         }
       } else {
-        constexpr auto fmt = "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|";
-        return o << boost::format{ fmt } % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
-                        ( efficiencyErr() * 100 );
+        constexpr auto fmt = "#={:<7d} Sum={:<11.5g} Eff=|({:#9.7g} +- {:<#8.6g})%|";
+        return o << fmt::format( fmt, BinomialAccParent::nEntries(), sum(), ( efficiency() * 100 ),
+                                 ( efficiencyErr() * 100 ) );
       }
     } else {
       // Standard printing
       if ( tableFormat ) {
         if ( name.empty() ) {
-          constexpr auto fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
-          return o << boost::format{ fmt } % nEntries() % sum() % mean() % standard_deviation() % min() % max();
+          constexpr auto fmt = "|{:10d} |{:11.7g} |{:#11.5g} |{:#11.5g} |{:#12.5g} |{:#12.5g} |";
+          return o << fmt::format( fmt, nEntries(), sum(), mean(), standard_deviation(), min(), max() );
 
         } else {
           auto fmt = std::string{ " | " }.append( fmtHead ).append(
-              "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |" );
-          return o << boost::format{ fmt } % std::string{ "\"" }.append( name ).append( "\"" ) % nEntries() % sum() %
-                          mean() % standard_deviation() % min() % max();
+              "|{:10d} |{:11.7g} |{:#11.5g} |{:#11.5g} |{:#12.5g} |{:#12.5g} |" );
+          return o << fmt::format( fmt, std::string{ "\"" }.append( name ).append( "\"" ), nEntries(), sum(), mean(),
+                                   standard_deviation(), min(), max() );
         }
       } else {
-        constexpr auto fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|";
-        return o << boost::format{ fmt } % nEntries() % sum() % mean() % standard_deviation() % min() % max();
+        constexpr auto fmt = "#={:<7d} Sum={:<11.5g} Mean={:#10.4g} +- {:<#10.5g} Min/Max={:#10.4g}/{:<#10.4g}";
+        return o << fmt::format( fmt, nEntries(), sum(), mean(), standard_deviation(), min(), max() );
       }
     }
   }
   std::ostream& print( std::ostream& o, bool tableFormat, std::string_view name, bool flag = true,
-                       std::string_view fmtHead = "%|-48.48s|%|27t|" ) const {
+                       std::string_view fmtHead = "{:<48.48s}" ) const {
     return printImpl( o, tableFormat, name, flag, fmtHead );
   }
   MsgStream& print( MsgStream& o, bool tableFormat, std::string_view name, bool flag = true,
-                    std::string_view fmtHead = "%|-48.48s|%|27t|" ) const {
+                    std::string_view fmtHead = "{:<48.48s}" ) const {
     return printImpl( o, tableFormat, name, flag, fmtHead );
   }
   virtual std::ostream& print( std::ostream& o, std::string_view tag ) const override {

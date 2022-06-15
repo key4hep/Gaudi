@@ -490,10 +490,10 @@ void ChronoStatSvc::printStats() {
       if ( !tag ) { continue; } /// CONTINUE
       ///
       if ( m_statCoutFlag ) {
-        entity->print( std::cout, true, *tag, m_useEffFormat, "%|-15.15s|%|17t|" );
+        entity->print( std::cout, true, *tag, m_useEffFormat, "{:<15.15s}" );
       } else {
         std::ostringstream ost;
-        entity->print( ost, true, *tag, m_useEffFormat, "%|-15.15s|%|17t|" );
+        entity->print( ost, true, *tag, m_useEffFormat, "{:<15.15s}" );
         log << m_statPrintLevel << ost.str() << endmsg;
       }
     }

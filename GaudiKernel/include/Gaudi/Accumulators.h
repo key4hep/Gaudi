@@ -204,9 +204,10 @@ namespace Gaudi::Accumulators {
  * @endcode
  */
 
-#include "boost/format.hpp"
 #include <atomic>
 #include <cmath>
+#include <fmt/chrono.h>
+#include <fmt/format.h>
 #include <iostream>
 #include <limits>
 #include <nlohmann/json.hpp>
@@ -831,7 +832,7 @@ namespace Gaudi::Accumulators {
     // add tag to printout
     template <typename stream>
     stream& printImpl( stream& s, std::string_view tag ) const {
-      s << boost::format{ " | %|-48.48s|%|50t|" } % ( std::string{ '\"' }.append( tag ).append( "\"" ) );
+      s << fmt::format( " | {:<48.48s}", std::string{ '\"' }.append( tag ).append( "\"" ) );
       return print( s, true );
     }
     /// prints the counter to a stream
@@ -907,8 +908,8 @@ namespace Gaudi::Accumulators {
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
       // Avoid printing empty counters in non DEBUG mode
-      auto fmt = ( tableFormat ? "|%|10d| |" : "#=%|-7lu|" );
-      return o << boost::format{ fmt } % this->nEntries();
+      auto fmt = ( tableFormat ? "|{:10d} |" : "#={:<7d}" );
+      return o << fmt::format( fmt, this->nEntries() );
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -940,8 +941,8 @@ namespace Gaudi::Accumulators {
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
-      auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |" : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g|" );
-      return o << boost::format{ fmt } % this->nEntries() % this->sum() % this->mean();
+      auto fmt = ( tableFormat ? "|{:10d} |{:11.7g} |{:#11.5g} |" : "#={:<7d} Sum={:<11.5g} Mean={:#10.4g}" );
+      return o << fmt::format( fmt, this->nEntries(), this->sum(), this->mean() );
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -979,9 +980,9 @@ namespace Gaudi::Accumulators {
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
-      auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |"
-                               : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g|" );
-      return o << boost::format{ fmt } % this->nEntries() % this->sum() % this->mean() % this->standard_deviation();
+      auto fmt = ( tableFormat ? "|{:10d} |{:11.7g} |{:#11.5g} |{:#11.5g} |"
+                               : "#={:<7d} Sum={:<11.5g} Mean={:#10.4g} +- {:<#10.5g}" );
+      return o << fmt::format( fmt, this->nEntries(), this->sum(), this->mean(), this->standard_deviation() );
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -1018,10 +1019,10 @@ namespace Gaudi::Accumulators {
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
-      auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |"
-                               : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|" );
-      return o << boost::format{ fmt } % this->nEntries() % this->sum() % this->mean() % this->standard_deviation() %
-                      this->min() % this->max();
+      auto fmt = ( tableFormat ? "|{:10d} |{:11.7g} |{:#11.5g} |{:#11.5g} |{:#12.5g} |{:#12.5g} |"
+                               : "#={:<7d} Sum={:<11.5g} Mean={:#10.4g} +- {:<#10.5g} Min/Max={:#10.4g}/{:<#10.4g}" );
+      return o << fmt::format( fmt, this->nEntries(), this->sum(), this->mean(), this->standard_deviation(),
+                               this->min(), this->max() );
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -1061,10 +1062,10 @@ namespace Gaudi::Accumulators {
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
-      auto fmt = ( tableFormat ? "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%% |"
-                               : "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|" );
-      return o << boost::format{ fmt } % this->nEntries() % this->nTrueEntries() % ( this->efficiency() * 100 ) %
-                      ( this->efficiencyErr() * 100 );
+      auto fmt = ( tableFormat ? "|{:10d} |{:11d} |({:#9.7g} +- {:<#8.7g})% |"
+                               : "#={:<7d} Sum={:<11d} Eff=|({:#9.7g} +- {:<#8.6g})%|" );
+      return o << fmt::format( fmt, this->nEntries(), this->nTrueEntries(), ( this->efficiency() * 100 ),
+                               ( this->efficiencyErr() * 100 ) );
     }
 
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
@@ -1075,7 +1076,7 @@ namespace Gaudi::Accumulators {
     template <typename stream>
     stream& printImpl( stream& o, std::string_view tag ) const {
       // override default print to add a '*' in from of the name
-      o << boost::format{ " |*%|-48.48s|%|50t|" } % ( std::string{ "\"" }.append( tag ).append( "\"" ) );
+      o << fmt::format( " |*{:<48.48s}", std::string{ "\"" }.append( tag ).append( "\"" ) );
       return print( o, true );
     }
     /// prints the counter to a stream in table format, with the given tag
@@ -1133,7 +1134,7 @@ namespace Gaudi::Accumulators {
     ~MsgCounter() { m_monitoringHub.removeEntity( *this ); }
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
-      return o << boost::format{ tableFormat ? "|%|10d| |" : "#=%|-7lu|" } % this->value();
+      return o << fmt::format( tableFormat ? "|{:10d} |" : "#={:<7d}", this->value() );
     }
     using PrintableCounter::print;
     std::ostream& print( std::ostream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
