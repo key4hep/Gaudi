@@ -199,6 +199,19 @@ endforeach()
 
 gaudi_add_tests(pytest)
 
+# add compilation failure test for Gaudihistogram usage
+add_executable(test_CounterHistoFail src/Histograms/CounterHistos_fail.cpp)
+get_target_property(nlohman_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(fmt_DIR fmt::fmt INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(fmt_DIR fmt::fmt INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(boost_DIR Boost::system INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(test_CounterHistoFail PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../GaudiKernel/include ${CMAKE_CURRENT_SOURCE_DIR}/../GaudiPluginService/include ${nlohman_DIR} ${fmt_DIR} ${boost_DIR})
+set_target_properties(test_CounterHistoFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+add_test(NAME GaudiExamples.test_CounterHistoFail COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_CounterHistoFail)
+set_property(TEST GaudiExamples.test_CounterHistoFail PROPERTY PASS_REGULAR_EXPRESSION "++m_gaussVflat\[ flat \]; // should not compile, as it's a 2D histogram and we give a single number")
+set_property(TEST GaudiExamples.test_CounterHistoFail PROPERTY RESOURCE_LOCK build-system)
+
+
 # Compiled python module
 gaudi_add_python_module(PyExample
                         SOURCES src/PythonModule/Functions.cpp

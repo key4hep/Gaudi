@@ -192,7 +192,7 @@ namespace Gaudi::Accumulators {
   template <typename Arithmetic, unsigned int ND, unsigned int NIndex = ND>
   struct HistoInputType : std::array<Arithmetic, ND> {
     // allow construction from set of values
-    template <class... ARGS>
+    template <class... ARGS, typename = typename std::enable_if_t<( sizeof...( ARGS ) == NIndex )>>
     HistoInputType( ARGS... args ) : std::array<Arithmetic, ND>{ static_cast<Arithmetic>( args )... } {}
     // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
     using ValueType          = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
