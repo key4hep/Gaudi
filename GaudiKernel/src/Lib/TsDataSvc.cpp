@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -584,7 +584,7 @@ StatusCode TsDataSvc::retrieveEntry( RegEntry* parentObj, std::string_view path,
         if ( root_entry->isSoft() ) { root_entry = CAST_REGENTRY( RegEntry*, pO->registry() ); }
         return retrieveEntry( root_entry, o_path, pEntry );
       }
-      return status;
+      return Status::INVALID_OBJ_PATH;
     } else if ( path.empty() ) {
       pEntry = parentObj;
     } else {

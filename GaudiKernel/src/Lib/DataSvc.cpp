@@ -590,7 +590,7 @@ StatusCode DataSvc::i_retrieveEntry( RegEntry* parentObj, std::string_view path,
       if ( root_entry->isSoft() ) { root_entry = CAST_REGENTRY( RegEntry*, pO->registry() ); }
       return i_retrieveEntry( root_entry, path.substr( sep ), pEntry );
     }
-    return status;
+    return Status::INVALID_OBJ_PATH;
   } else if ( path.empty() ) {
     pEntry = parentObj;
   } else {
