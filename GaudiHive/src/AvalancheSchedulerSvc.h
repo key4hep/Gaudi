@@ -234,7 +234,7 @@ private:
   std::vector<EventSlot> m_eventSlots;
 
   /// Atomic to account for asyncronous updates by the scheduler wrt the rest
-  std::atomic_int m_freeSlots;
+  std::atomic_int m_freeSlots{ 0 };
 
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
