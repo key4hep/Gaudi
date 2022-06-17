@@ -199,16 +199,6 @@ endforeach()
 
 gaudi_add_tests(pytest)
 
-if(BUILD_TESTING)
-  # add compilation failure test for Gaudihistogram usage
-  add_executable(test_CounterHistoFail src/Histograms/CounterHistos_fail.cpp)
-  target_link_libraries(test_CounterHistoFail Gaudi::GaudiKernel)
-  set_target_properties(test_CounterHistoFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-  add_test(NAME GaudiExamples.test_CounterHistoFail COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_CounterHistoFail)
-  set_property(TEST GaudiExamples.test_CounterHistoFail PROPERTY PASS_REGULAR_EXPRESSION "\\+\\+m_gaussVflat\\[flat\\]\; // should not compile, as it's a 2D histogram and we give a single number")
-  set_property(TEST GaudiExamples.test_CounterHistoFail PROPERTY RESOURCE_LOCK build-system)
-endif()
-
 # Compiled python module
 gaudi_add_python_module(PyExample
                         SOURCES src/PythonModule/Functions.cpp
