@@ -73,7 +73,9 @@ BOOST_AUTO_TEST_CASE( test_counter_resets, *utf::tolerance( 1e-14 ) ) {
   BOOST_TEST( sig.sum() == 0, tt::tolerance( 0. ) );
   BOOST_TEST( sig.mean() == 0, tt::tolerance( 0. ) );
   BOOST_TEST( sig.standard_deviation() == 0, tt::tolerance( 0. ) );
-  BOOST_TEST( sig.toString() == "#=0       Sum=0           Mean=     0.000 +- 0.0000    " );
+  BOOST_TEST( ( sig.toString() == "#=0       Sum=0           Mean=     0.000 +- 0.0000    " ||
+                // dealing with fmt bug in version 7.1.3, can be removed once we are at fmt >= 8
+                sig.toString() == "#=0       Sum=0           Mean=      0.000 +- 0.0000     ") );
 }
 
 BOOST_AUTO_TEST_CASE( test_AveragingCounter, *utf::tolerance( 1e-14 ) ) {
@@ -210,8 +212,9 @@ BOOST_AUTO_TEST_CASE( test_StatEntity_binomial,
   BOOST_TEST( sb.rms() == 0.4898979485566356 );
   BOOST_TEST( sb.min() == 0 );
   BOOST_TEST( sb.max() == 1 );
-  BOOST_TEST( sb.toString() ==
-              "#=5       Sum=2           Mean=    0.4000 +- 0.48990    Min/Max=     0.000/1.000     " );
+  BOOST_TEST( ( sb.toString() == "#=5       Sum=2           Mean=    0.4000 +- 0.48990    Min/Max=     0.000/1.000     "  ||
+                // dealing with fmt bug in version 7.1.3, can be removed once we are at fmt >= 8
+                sb.toString() == "#=5       Sum=2           Mean=    0.4000 +- 0.48990    Min/Max=      0.000/1.000     " ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_StatEntity_direct_set, *utf::tolerance( 1e-14 ) ) {
