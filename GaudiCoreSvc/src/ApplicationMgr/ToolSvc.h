@@ -95,6 +95,10 @@ private: // methods
   StatusCode finalizeTool( IAlgTool* itool ) const;
 
 private: // data
+  Gaudi::Property<bool> m_checkNamedToolsConfigured{
+      this, "CheckedNamedToolsConfigured", false,
+      "Check that tools which do not have the default name have some explicit configuration." };
+
   /// Common Tools
   std::vector<IAlgTool*> m_instancesTools; // List of all instances of tools
 

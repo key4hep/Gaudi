@@ -519,6 +519,24 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
     return sc;
   }
 
+  if ( m_checkNamedToolsConfigured ) {
+    // Check to ensure that non-default named tools are configured.
+    if ( toolname != tooltype ) {
+      bool                            propsSet = false;
+      Gaudi::Interfaces::IOptionsSvc& joSvc    = this->serviceLocator()->getOptsSvc();
+      // Check that at least one of the properties has been set:
+      for ( const auto prop : mytool->getProperties() ) {
+        bool isSet = joSvc.isSet( mytool->name() + "." + prop->name() );
+        if ( isSet ) propsSet = true;
+      }
+      if ( !propsSet ) {
+        warning() << tooltype << "/" << fullname
+                  << " : Explicitly named tools should be configured! (assigned name=" << toolname << ", default is "
+                  << tooltype << ")" << endmsg;
+      }
+    }
+  }
+
   // Start the tool if we are running.
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
     sc = toolguard->sysStart();
