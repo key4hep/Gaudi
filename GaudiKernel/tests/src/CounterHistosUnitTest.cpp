@@ -12,6 +12,8 @@
 #define BOOST_TEST_MODULE test_CounterHistos
 #include <Gaudi/Accumulators/Histogram.h>
 
+#include "LogHistogram.h"
+
 #include <boost/test/unit_test.hpp>
 
 #include <deque>
@@ -128,7 +130,7 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
   Algo algo;
 
   // note that for default constructible axis, we have to specify {{}} otherwise
-  // it is inerpreted as an empty array of axes (instead of using the constructor for a single axis)
+  // it is interpreted as an empty array of axes (instead of using the constructor for a single axis)
   Histogram<1, atomicity::full, TestEnum> hist{ &algo, "TestEnumHist", "TestEnum histogram", Axis<TestEnum>{} };
 
   hist[TestEnum::A] += 1;
@@ -150,6 +152,55 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
 
   nlohmann::json expected_labels = { "A", "B", "C", "D" };
   BOOST_TEST( j["axis"][0]["labels"] == expected_labels );
+}
+
+BOOST_AUTO_TEST_CASE( test_custom ) {
+  using namespace Gaudi::Accumulators;
+  Algo algo;
+
+  LogHistogram<1> hist{ &algo, "TestLogHist", "TestLog histogram", { 4, 0, 4 } };
+
+  ++hist[.1];
+  ++hist[1.];
+  ++hist[3.];
+  ++hist[9.];
+  ++hist[32456789.];
+
+  auto j = hist.toJSON();
+
+  auto bins = j["bins"];
+  BOOST_TEST( bins[0] == 1 );
+  BOOST_TEST( bins[1] == 1 );
+  BOOST_TEST( bins[2] == 1 );
+  BOOST_TEST( bins[3] == 1 );
+  BOOST_TEST( bins[4] == 0 );
+  BOOST_TEST( bins[5] == 1 );
+
+  BOOST_TEST( j["axis"][0]["nBins"] == 4 );
+}
+
+BOOST_AUTO_TEST_CASE( test_custom_2d ) {
+  using namespace Gaudi::Accumulators;
+  Algo algo;
+
+  LogHistogram<2, atomicity::none, float> hist{
+      &algo, "TestLogHist", "TestLog histogram", { { 2, 0, 2 }, { 2, 0, 2 } } };
+
+  ++hist[{ 2, 2 }];
+  ++hist[{ 9, .1 }];
+  ++hist[{ .2, .3 }];
+
+  auto j    = hist.toJSON();
+  auto bins = j["bins"];
+  BOOST_TEST( bins[0] == 1 );
+  BOOST_TEST( bins[1] == 0 );
+  BOOST_TEST( bins[2] == 0 );
+  BOOST_TEST( bins[3] == 1 );
+  BOOST_TEST( bins[4] == 0 );
+  BOOST_TEST( bins[5] == 1 );
+  for ( unsigned int i = 6; i < 16; i++ ) { BOOST_TEST( bins[i] == 0 ); }
+  BOOST_TEST( j["axis"][0]["nBins"] == 2 );
+  BOOST_TEST( j["axis"][1]["nBins"] == 2 );
 }
 
 BOOST_AUTO_TEST_CASE( test_histos_merge_reset, *boost::unit_test::tolerance( 1e-14 ) ) {

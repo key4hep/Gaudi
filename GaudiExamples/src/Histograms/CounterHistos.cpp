@@ -11,6 +11,9 @@
 #include <Gaudi/Accumulators/Histogram.h>
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/RndmGenerators.h>
+
+#include "../../../GaudiKernel/tests/src/LogHistogram.h"
+
 #include <deque>
 
 namespace Gaudi {
@@ -122,7 +125,7 @@ namespace Gaudi {
           m_prof_gaussVflat_int[{ (int)flat, (int)gauss }] += (int)gauss3;
           m_prof_gaussVflatVgauss_int[{ (int)flat, (int)gauss, (int)gauss2 }] += (int)gauss3;
 
-          // wieghted profile histograms
+          // weighted profile histograms
           m_prof_gauss_w[gauss] += { gauss3, .5 };
           m_prof_gaussVflat_w[{ flat, gauss }] += { gauss3, .5 };
           m_prof_gaussVflatVgauss_w[{ flat, gauss, gauss2 }] += { gauss3, .5 };
@@ -136,6 +139,10 @@ namespace Gaudi {
             prof_gaussVflat_buf[{ flat, gauss }] += gauss3;
             prof_gaussVflatVgauss_buf[{ flat, gauss, gauss2 }] += gauss3;
           }
+
+          // using CaloHistogram
+          m_log_gauss[gauss]++;
+          m_log_gaussVflat[{ flat, gauss }]++;
 
           if ( m_nCalls.nEntries() == 0 ) always() << "Filling Histograms...... Please be patient !" << endmsg;
           ++m_nCalls;
@@ -261,6 +268,11 @@ namespace Gaudi {
             "ProfGaussFlatGaussBuf",
             "Profile, Gaussian V Flat V Gaussian, buffered",
             { { 10, -5, 5 }, { 10, -5, 5 }, { 10, -5, 5 } } };
+
+        // Custom histogram, with log or log log behavior
+        mutable Accumulators::LogHistogram<1> m_log_gauss{ this, "LogGauss", "Log, Gaussian", { 5, 0, 2 } };
+        mutable Accumulators::LogHistogram<2, Accumulators::atomicity::full, float> m_log_gaussVflat{
+            this, "LogGaussFlat", "LogLog, Gaussian V Flat", { { 5, 0, 2 }, { 5, 0, 2 } } };
       };
       DECLARE_COMPONENT( GaudiHistoAlgorithm )
     } // namespace Counter
