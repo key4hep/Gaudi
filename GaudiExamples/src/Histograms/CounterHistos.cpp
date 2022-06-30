@@ -90,6 +90,7 @@ namespace Gaudi {
 
           // updating histograms
           ++m_gauss[gauss];
+          ++m_gaussAbsName[gauss];
           ++m_gaussVflat[{ flat, gauss }];
           ++m_gaussVflatVgauss[{ flat, gauss, gauss2 }];
           ++m_gauss_noato[gauss];
@@ -273,6 +274,10 @@ namespace Gaudi {
         mutable Accumulators::LogHistogram<1> m_log_gauss{ this, "LogGauss", "Log, Gaussian", { 5, 0, 2 } };
         mutable Accumulators::LogHistogram<2, Accumulators::atomicity::full, float> m_log_gaussVflat{
             this, "LogGaussFlat", "LogLog, Gaussian V Flat", { { 5, 0, 2 }, { 5, 0, 2 } } };
+
+        // Histogram in an absolute location
+        mutable Gaudi::Accumulators::Histogram<1> m_gaussAbsName{
+            this, "/TopDir/SubDir/Gauss", "Gaussian mean=0, sigma=1, atomic", { 100, -5, 5, "X" } };
       };
       DECLARE_COMPONENT( GaudiHistoAlgorithm )
     } // namespace Counter

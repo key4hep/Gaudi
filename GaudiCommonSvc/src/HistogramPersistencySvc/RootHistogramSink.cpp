@@ -67,6 +67,11 @@ namespace {
     auto totNBins = ( ( axis[index].nBins + 2 ) * ... );
     assert( weights.size() == totNBins );
 
+    if ( name[0] == '/' ) {
+      dir  = "";
+      name = name.substr( 1 );
+    }
+
     // take into account the case where name contains '/'s (e.g. "Group/Name") by
     // moving the prefix into dir
     if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
