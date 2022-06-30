@@ -129,7 +129,6 @@ foreach(dep IN ITEMS UUID Threads ZLIB Rangev3 cppgsl fmt nlohmann_json)
 endforeach()
 
 set(_gaudi_CLHEP_MIN_VERSION 2.4.0.1)
-set(_gaudi_gperftools_MIN_VERSION 2.7.0)
 set(_gaudi_Doxygen_MIN_VERSION 1.8.15)
 set(CLHEP_FORCE_MODE CONFIG)
 
@@ -138,6 +137,9 @@ if(NOT CMAKE_FIND_PACKAGE_NAME)
   # these build-time only dependencies are not needed downstream
   list(APPEND deps CppUnit Doxygen)
 endif()
+
+# Identify dependencies using pkgconfig (by the pkgconfig module to use)
+set(gperftools_pkgconfig_module "libprofiler>=2.7.0")
 
 foreach(dep IN LISTS deps)
   string(TOUPPER ${dep} DEP)
@@ -163,7 +165,14 @@ foreach(dep IN LISTS deps)
     else()
       set(is_required)
     endif()
-    find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} ${${dep}_FORCE_MODE} ${is_required} ${__quiet})
+    if(DEFINED ${dep}_pkgconfig_module)
+      if(NOT COMMAND pkg_check_modules)
+        find_package(PkgConfig REQUIRED)
+      endif()
+      pkg_check_modules(${dep} "${${dep}_pkgconfig_module}" ${is_required} ${__quiet} IMPORTED_TARGET)
+    else()
+      find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} ${${dep}_FORCE_MODE} ${is_required} ${__quiet})
+    endif()
   endif()
 endforeach()
 
