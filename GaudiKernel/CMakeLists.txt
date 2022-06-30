@@ -268,6 +268,23 @@ foreach(test_case IN ITEMS 01 02 03 04)
   set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY RESOURCE_LOCK build-system)
 endforeach()
 
+# add compilation failure test for Gaudihistogram usage
+add_executable(test_CounterHistoFail tests/src/CounterHistos_fail.cpp)
+target_link_libraries(test_CounterHistoFail PRIVATE
+  nlohmann_json::nlohmann_json
+  cppgsl::cppgsl
+  Boost::headers
+  ROOT::Hist
+)
+target_include_directories(test_CounterHistoFail PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/GaudiPluginService/include
+)
+set_target_properties(test_CounterHistoFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+add_test(NAME GaudiKernel.test_CounterHistoFail COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_CounterHistoFail)
+set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY PASS_REGULAR_EXPRESSION "\\+\\+h2d\\[1\\.2\\]\; // ERROR: cannot fill a 2D histogram with a single index")
+set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY RESOURCE_LOCK build-system)
+
 if(GAUDI_USE_CPPUNIT)
   gaudi_add_executable(test_SerializeSTL SOURCES tests/src/test_SerializeSTL.cpp
     LINK GaudiKernel CppUnit::cppunit TEST)
