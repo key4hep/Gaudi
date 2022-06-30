@@ -8,6 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization  *
 * or submit itself to any jurisdiction.                                       *
 \*****************************************************************************/
+
+#pragma once
+
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 #include "GaudiKernel/FunctionalFilterDecision.h"
@@ -15,6 +18,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 namespace Gaudi::Functional {
   template <typename Container>
   using vector_of_ = std::vector<Container>;
@@ -90,7 +94,7 @@ namespace Gaudi::Functional {
           for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }

@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef MERGING_TRANSFORMER_H
-#define MERGING_TRANSFORMER_H
+
+#pragma once
 
 #include <functional>
 #include <string>
@@ -111,7 +111,7 @@ namespace Gaudi::Functional {
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -212,7 +212,7 @@ namespace Gaudi::Functional {
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -320,7 +320,7 @@ namespace Gaudi::Functional {
             this->m_outputs );
         return FilterDecision::PASSED;
       } catch ( GaudiException& e ) {
-        ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+        ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
         return e.code();
       }
     }
@@ -383,7 +383,7 @@ namespace Gaudi::Functional {
                    ? FilterDecision::PASSED
                    : FilterDecision::FAILED;
       } catch ( GaudiException& e ) {
-        ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+        ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
         return e.code();
       }
     }
@@ -420,5 +420,3 @@ namespace Gaudi::Functional {
             Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {}
 
 } // namespace Gaudi::Functional
-
-#endif
