@@ -210,6 +210,12 @@ namespace Gaudi::Accumulators {
       return index;
     }
     auto forInternalCounter() { return 1ul; }
+    template <typename AxisType, long unsigned NAxis>
+    static unsigned int computeTotNBins( std::array<AxisType, NAxis> axis ) {
+      unsigned int nTotBins = 1;
+      for ( unsigned int i = 0; i < NAxis; i++ ) { nTotBins *= ( axis[i].nBins + 2 ); }
+      return nTotBins;
+    }
   };
 
   /// specialization of HistoInputType for ND == 1 in order to have simpler syntax
@@ -224,6 +230,10 @@ namespace Gaudi::Accumulators {
     Arithmetic&  operator[]( int ) { return value; }
                  operator Arithmetic() const { return value; }
     auto         forInternalCounter() { return 1ul; }
+    template <typename AxisType>
+    static unsigned int computeTotNBins( std::array<AxisType, 1> axis ) {
+      return axis[0].nBins + 2;
+    }
 
   private:
     Arithmetic value;
@@ -240,6 +250,10 @@ namespace Gaudi::Accumulators {
       return this->first.computeIndex( axis );
     }
     auto forInternalCounter() { return std::pair( this->first.forInternalCounter(), this->second ); }
+    template <typename AxisType, long unsigned NAxis>
+    static unsigned int computeTotNBins( std::array<AxisType, NAxis> axis ) {
+      return HistoInputType<Arithmetic, ND, NIndex>::computeTotNBins( axis );
+    }
   };
 
   /**
@@ -268,7 +282,7 @@ namespace Gaudi::Accumulators {
     template <std::size_t... Is>
     HistogramingAccumulatorInternal( GetTuple_t<Axis<AxisArithmeticType>, ND::value> axis, std::index_sequence<Is...> )
         : m_axis{ std::get<Is>( axis )... }
-        , m_totNBins{ computeTotNBins() }
+        , m_totNBins{ InputType::computeTotNBins( m_axis ) }
         , m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
@@ -276,7 +290,9 @@ namespace Gaudi::Accumulators {
     HistogramingAccumulatorInternal(
         construct_empty_t,
         const HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other )
-        : m_axis( other.m_axis ), m_totNBins{ computeTotNBins() }, m_value( new BaseAccumulator[m_totNBins] ) {
+        : m_axis( other.m_axis )
+        , m_totNBins{ InputType::computeTotNBins( m_axis ) }
+        , m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
     [[deprecated( "Use `++h1[x]`, `++h2[{x,y}]`, etc. instead." )]] HistogramingAccumulatorInternal&
@@ -311,11 +327,6 @@ namespace Gaudi::Accumulators {
     BaseAccumulator& accumulator( unsigned int index ) const {
       assert( index < m_totNBins );
       return m_value[index];
-    }
-    unsigned int computeTotNBins() const {
-      unsigned int nTotBins = 1;
-      for ( unsigned int i = 0; i < ND::value; i++ ) { nTotBins *= ( m_axis[i].nBins + 2 ); }
-      return nTotBins;
     }
     /// set of Axis of this Histogram
     std::array<Axis<AxisArithmeticType>, ND::value> m_axis;
