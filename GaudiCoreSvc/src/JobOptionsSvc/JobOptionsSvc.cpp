@@ -49,8 +49,17 @@ namespace Gaudi {
 } // namespace Gaudi
 
 namespace Gaudi::Details {
+  /** std::string wrapper for static strings where identical values actually share the memory.
+   *
+   *  This class is useful when dealing with several duplicated strings so that the actual
+   *  value is kept in memory only once and all the SharedString instances point to it.
+   *
+   *  SharedString is automatically comparable and convertible to std::string.
+   */
   class SharedString final {
   public:
+    /// Create a new SharedString checking if the value is already in the shared storage
+    /// otherwise adding it.
     SharedString( std::string_view s = {} ) : m_s{ SharedString::get( s ) } {}
 
     operator std::string() const { return *m_s; }
@@ -75,6 +84,15 @@ namespace Gaudi::Details {
     static std::unordered_set<std::string> storage;
   };
 
+  /** Helper to record a property identifier as a sequence of SharedString instances.
+   *
+   *  A PropertyId instance initilized from a string like `SomeName.OtherName.AnotherLevel.PropertyName` will
+   *  use internally a vector of 4 SharedString instances so that the storage for the various components
+   *  can be shared with other PropertyId instances.
+   *
+   *  To be afficiently used as key in an `std::unordered_map`, PropertyId caches the hash computed from the
+   *  string it was constructed from.
+   */
   class PropertyId final {
   public:
     PropertyId( const std::string& s ) : PropertyId( std::string_view{ s } ) {}
