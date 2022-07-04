@@ -56,7 +56,8 @@ if(GAUDI_USE_GPERFTOOLS)
                         GaudiAlgLib
                         ZLIB::ZLIB)
   # but we still need to add the include directories to the search path
-  target_include_directories(GaudiGoogleProfiling PRIVATE ${GPERFTOOLS_INCLUDE_DIRS})
+  target_include_directories(GaudiGoogleProfiling
+    PRIVATE $<TARGET_PROPERTY:PkgConfig::gperftools,INTERFACE_INCLUDE_DIRECTORIES>)
 
   # Special handling of unresolved symbols in GaudiGoogleProfiling.
   # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
