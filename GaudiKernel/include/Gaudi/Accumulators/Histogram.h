@@ -28,26 +28,26 @@
 #include <utility>
 #include <vector>
 
-namespace {
-  template <std::size_t, typename T>
-  using alwaysT = T;
-  // get a tuple of n types the given Type, or directly the type for n = 1
-  template <typename Type, unsigned int ND>
-  struct GetTuple;
-  template <typename Type, unsigned int ND>
-  using GetTuple_t = typename GetTuple<Type, ND>::type;
-  template <typename Type, unsigned int ND>
-  struct GetTuple {
-    using type =
-        decltype( std::tuple_cat( std::declval<std::tuple<Type>>(), std::declval<GetTuple_t<Type, ND - 1>>() ) );
-  };
-  template <typename Type>
-  struct GetTuple<Type, 1> {
-    using type = std::tuple<Type>;
-  };
-} // namespace
-
 namespace Gaudi::Accumulators {
+
+  namespace details {
+    template <std::size_t, typename T>
+    using alwaysT = T;
+    // get a tuple of n types the given Type, or directly the type for n = 1
+    template <typename Type, unsigned int ND>
+    struct GetTuple;
+    template <typename Type, unsigned int ND>
+    using GetTuple_t = typename GetTuple<Type, ND>::type;
+    template <typename Type, unsigned int ND>
+    struct GetTuple {
+      using type =
+          decltype( std::tuple_cat( std::declval<std::tuple<Type>>(), std::declval<GetTuple_t<Type, ND - 1>>() ) );
+    };
+    template <typename Type>
+    struct GetTuple<Type, 1> {
+      using type = std::tuple<Type>;
+    };
+  } // namespace details
 
   /**
    * A functor to extract weight, take a pair (valueTuple, weight) as input
@@ -280,7 +280,8 @@ namespace Gaudi::Accumulators {
     using BaseAccumulator    = BaseAccumulatorT<Atomicity, Arithmetic>;
     using AxisArithmeticType = typename InputType::AxisArithmeticType;
     template <std::size_t... Is>
-    HistogramingAccumulatorInternal( GetTuple_t<Axis<AxisArithmeticType>, ND::value> axis, std::index_sequence<Is...> )
+    HistogramingAccumulatorInternal( details::GetTuple_t<Axis<AxisArithmeticType>, ND::value> axis,
+                                     std::index_sequence<Is...> )
         : m_axis{ std::get<Is>( axis )... }
         , m_totNBins{ InputType::computeTotNBins( m_axis ) }
         , m_value( new BaseAccumulator[m_totNBins] ) {
@@ -439,13 +440,13 @@ namespace Gaudi::Accumulators {
     using Parent = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
-                                     GetTuple_t<Axis<Arithmetic>, ND> axis )
+                                     details::GetTuple_t<Axis<Arithmetic>, ND> axis )
         : Parent( owner, name, std::string( Type ) + ":" + typeid( Arithmetic ).name(), axis,
                   std::make_index_sequence<ND>{} )
         , m_title( title ) {}
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
-                                     alwaysT<NDs, Axis<Arithmetic>>... allAxis )
+                                     details::alwaysT<NDs, Axis<Arithmetic>>... allAxis )
         : HistogramingCounterBaseInternal( owner, name, title, std::make_tuple( allAxis... ) ) {}
     using Parent::print;
     template <typename stream>
@@ -488,29 +489,31 @@ namespace Gaudi::Accumulators {
   using HistogramingCounterBase =
       HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::make_index_sequence<ND>>;
 
-  namespace {
-    static const char histogramString[]                = "histogram:Histogram";
-    static const char weightedHistogramString[]        = "histogram:WeightedHistogram";
-    static const char profilehistogramString[]         = "histogram:ProfileHistogram";
-    static const char weightedProfilehistogramString[] = "histogram:WeightedProfileHistogram";
-  } // namespace
+  namespace naming {
+    constexpr char histogramString[]                = "histogram:Histogram";
+    constexpr char weightedHistogramString[]        = "histogram:WeightedHistogram";
+    constexpr char profilehistogramString[]         = "histogram:ProfileHistogram";
+    constexpr char weightedProfilehistogramString[] = "histogram:WeightedProfileHistogram";
+  } // namespace naming
   /// standard histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using Histogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, histogramString, HistogramingAccumulator>;
+  using Histogram =
+      HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::histogramString, HistogramingAccumulator>;
 
   /// standard histograming counter with weight. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using WeightedHistogram =
-      HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedHistogramString, WeightedHistogramingAccumulator>;
+  using WeightedHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::weightedHistogramString,
+                                                    WeightedHistogramingAccumulator>;
 
   /// profile histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using ProfileHistogram =
-      HistogramingCounterBase<ND, Atomicity, Arithmetic, profilehistogramString, ProfileHistogramingAccumulator>;
+  using ProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::profilehistogramString,
+                                                   ProfileHistogramingAccumulator>;
 
   /// weighted profile histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using WeightedProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, weightedProfilehistogramString,
-                                                           WeightedProfileHistogramingAccumulator>;
+  using WeightedProfileHistogram =
+      HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::weightedProfilehistogramString,
+                              WeightedProfileHistogramingAccumulator>;
 
 } // namespace Gaudi::Accumulators
