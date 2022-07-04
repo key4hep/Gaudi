@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -43,11 +43,10 @@ class ExampleIO(ConfigurableUser):
 
 
 class ExampleCommon(ConfigurableUser):
-    __slots__ = {"OutputLevel": INFO, "StatusCodeCheck": False}
+    __slots__ = {"OutputLevel": INFO}
     __used_configurables__ = []
 
     def __apply_configuration__(self):
-        ApplicationMgr().StatusCodeCheck = self.getProp("StatusCodeCheck")
         MessageSvc().OutputLevel = self.getProp("OutputLevel")
 
 
@@ -60,9 +59,9 @@ class ExampleApplication(ConfigurableUser):
 
     def __apply_configuration__(self):
         if self.getProp("FullDebug"):
-            ExampleCommon(OutputLevel=VERBOSE, StatusCodeCheck=True)
+            ExampleCommon(OutputLevel=VERBOSE)
         else:
-            ExampleCommon(OutputLevel=INFO, StatusCodeCheck=False)
+            ExampleCommon(OutputLevel=INFO)
         # Propagate the properties to all used configurables
         # In this case the only effect is to set the ApplicationMgr TopAlg.
         self.propagateProperties()
