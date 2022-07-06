@@ -11,12 +11,12 @@ RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
-NTupleSvc            INFO Added stream file:TupleEx.root as MYLUN
+NTupleSvc            INFO Added stream file:TupleEx_pyopts.root as MYLUN
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-RFileCnv             INFO opening Root file "TupleEx.root" for writing, CompressionLevel='LZMA:6'
+RFileCnv             INFO opening Root file "TupleEx_pyopts.root" for writing, CompressionLevel='LZMA:6'
 RRWNTupleCnv         INFO ID 1: added branch: gauss / gauss/D
 RRWNTupleCnv         INFO ID 1: added branch: flat / flat/D
 RRWNTupleCnv         INFO ID 1: added branch: expo / expo/D
@@ -27,14 +27,14 @@ RRWNTupleCnv         INFO ID 1: added branch: pois2 / pois2/I
 RRWNTupleCnv         INFO ID 1: added branch: bino2 / bino2/I
 RRWNTupleCnv         INFO ID 1: added branch: poisb / poisb/O
 RRWNTupleCnv         INFO Booked TTree with ID:1 "Trivial Row-Wise Tuple"
-RCWNTupleCnv         INFO Booked TTree with ID: two "Column-Wise Tuple" in directory TupleEx.root:/Tuple
-RCWNTupleCnv         INFO Booked TTree with ID: 3 "Fixed-size arrays/vectors" in directory TupleEx.root:/Tuple
-RCWNTupleCnv         INFO Booked TTree with ID: four "Fixed-size matrices" in directory TupleEx.root:/Tuple/subdir
-RCWNTupleCnv         INFO Booked TTree with ID: 5 "Variable-size arrays/vectors" in directory TupleEx.root:/Tuple
-RCWNTupleCnv         INFO Booked TTree with ID: six "Variable-size matrices" in directory TupleEx.root:/Tuple
+RCWNTupleCnv         INFO Booked TTree with ID: two "Column-Wise Tuple" in directory TupleEx_pyopts.root:/Tuple
+RCWNTupleCnv         INFO Booked TTree with ID: 3 "Fixed-size arrays/vectors" in directory TupleEx_pyopts.root:/Tuple
+RCWNTupleCnv         INFO Booked TTree with ID: four "Fixed-size matrices" in directory TupleEx_pyopts.root:/Tuple/subdir
+RCWNTupleCnv         INFO Booked TTree with ID: 5 "Variable-size arrays/vectors" in directory TupleEx_pyopts.root:/Tuple
+RCWNTupleCnv         INFO Booked TTree with ID: six "Variable-size matrices" in directory TupleEx_pyopts.root:/Tuple
 Tuple             WARNING TupleAlg:: Tuple 'Types Test Column Wise' 'long' has different sizes on 32/64 bit systems. Casting 'long' to 'long long'
 Tuple             WARNING TupleAlg:: Tuple 'Types Test Column Wise' 'unsigned long' has different sizes on 32/64 bit systems. Casting 'ulong' to 'unsigned long long'
-RCWNTupleCnv         INFO Booked TTree with ID: typesCW "Types Test Column Wise" in directory TupleEx.root:/Tuple
+RCWNTupleCnv         INFO Booked TTree with ID: typesCW "Types Test Column Wise" in directory TupleEx_pyopts.root:/Tuple
 Tuple             WARNING TupleAlg:: Tuple 'Types Test Row Wise' 'long' has different sizes on 32/64 bit systems. Casting 'long' to 'long long'
 Tuple             WARNING TupleAlg:: Tuple 'Types Test Row Wise' 'unsigned long' has different sizes on 32/64 bit systems. Casting 'ulong' to 'unsigned long long'
 RRWNTupleCnv         INFO ID typesRW: added branch: bool / bool/O
@@ -52,13 +52,13 @@ RRWNTupleCnv         INFO ID typesRW: added branch: char / char/B
 RRWNTupleCnv         INFO ID typesRW: added branch: uchar / uchar/b
 RRWNTupleCnv         INFO ID typesRW: added branch: EventID / EventID/l
 RRWNTupleCnv         INFO Booked TTree with ID:typesRW "Types Test Row Wise"
-RCWNTupleCnv         INFO Booked TTree with ID: dublets "Tuple with dublets" in directory TupleEx.root:/Tuple2
-RCWNTupleCnv         INFO Booked TTree with ID: triplets "Tuple with triplets" in directory TupleEx.root:/Tuple2
-RCWNTupleCnv         INFO Booked TTree with ID: LorentzVectors "Tuple with Lorentz Vectors " in directory TupleEx.root:/Tuple3
-RCWNTupleCnv         INFO Booked TTree with ID: Vectors-3D "Tuple with Vectors in 3D " in directory TupleEx.root:/Tuple3
-RCWNTupleCnv         INFO Booked TTree with ID: Math-vectors "Tuple with Math Vectors" in directory TupleEx.root:/Tuple3
-RCWNTupleCnv         INFO Booked TTree with ID: S-matrices "Tuple with S-matrices" in directory TupleEx.root:/Tuple3
-RCWNTupleCnv         INFO Booked TTree with ID: VectorMaps "Tuple with VectorMaps/'ExtraInfo'" in directory TupleEx.root:/Tuple3
+RCWNTupleCnv         INFO Booked TTree with ID: dublets "Tuple with dublets" in directory TupleEx_pyopts.root:/Tuple2
+RCWNTupleCnv         INFO Booked TTree with ID: triplets "Tuple with triplets" in directory TupleEx_pyopts.root:/Tuple2
+RCWNTupleCnv         INFO Booked TTree with ID: LorentzVectors "Tuple with Lorentz Vectors " in directory TupleEx_pyopts.root:/Tuple3
+RCWNTupleCnv         INFO Booked TTree with ID: Vectors-3D "Tuple with Vectors in 3D " in directory TupleEx_pyopts.root:/Tuple3
+RCWNTupleCnv         INFO Booked TTree with ID: Math-vectors "Tuple with Math Vectors" in directory TupleEx_pyopts.root:/Tuple3
+RCWNTupleCnv         INFO Booked TTree with ID: S-matrices "Tuple with S-matrices" in directory TupleEx_pyopts.root:/Tuple3
+RCWNTupleCnv         INFO Booked TTree with ID: VectorMaps "Tuple with VectorMaps/'ExtraInfo'" in directory TupleEx_pyopts.root:/Tuple3
 Tuple             WARNING TupleAlg:: Tuple 'Types Test Column Wise' 'long' has different sizes on 32/64 bit systems. Casting 'long' to 'long long'
 Tuple             WARNING TupleAlg:: Tuple 'Types Test Column Wise' 'unsigned long' has different sizes on 32/64 bit systems. Casting 'ulong' to 'unsigned long long'
 Tuple             WARNING TupleAlg:: Tuple 'Types Test Row Wise' 'long' has different sizes on 32/64 bit systems. Casting 'long' to 'long long'
@@ -125,7 +125,7 @@ Tuple3            SUCCESS  ID=Vectors-3D    Title="Tuple with Vectors in 3D "   
 RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
 EventLoopMgr         INFO Histograms converted successfully according to request.
 RFileCnv             INFO dumping contents of /NTUPLES/MYLUN
-TFile: name=TupleEx.root, title=Gaudi Trees, option=CREATE
+TFile: name=TupleEx_pyopts.root, title=Gaudi Trees, option=CREATE
 ******************************************************************************
 *Tree    :1         : Trivial Row-Wise Tuple                                 *
 *Entries :    10000 : Total =          496257 bytes  File  Size =     285715 *

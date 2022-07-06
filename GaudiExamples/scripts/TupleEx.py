@@ -96,7 +96,7 @@ def configure(gaudi=None):
     gaudi.ExtSvc += ["NTupleSvc"]
 
     ntSvc = gaudi.service("NTupleSvc")
-    ntSvc.Output = ["MYLUN DATAFILE='TupleEx.root' OPT='NEW' TYP='ROOT'"]
+    ntSvc.Output = ["MYLUN DATAFILE='TupleEx_py.root' OPT='NEW' TYP='ROOT'"]
 
     gaudi.config()
 

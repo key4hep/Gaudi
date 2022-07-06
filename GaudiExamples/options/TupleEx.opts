@@ -36,11 +36,11 @@ ApplicationMgr.EvtSel  = "NONE" ;
 //--------------------------------------------------------------
 // Histogram output file
 //ApplicationMgr.HistogramPersistency = "HBOOK";
-//HistogramPersistencySvc.OutputFile = "histo.hbook";
-//NTupleSvc.Output = { "MYLUN DATAFILE='TupleEx.hbook' OPT='NEW' TYP='HBOOK'" };
+//HistogramPersistencySvc.OutputFile = "histo_opts.hbook";
+//NTupleSvc.Output = { "MYLUN DATAFILE='TupleEx_opts.hbook' OPT='NEW' TYP='HBOOK'" };
 
 ApplicationMgr.HistogramPersistency = "ROOT";
-NTupleSvc.Output = { "MYLUN DATAFILE='TupleEx.root'  OPT='NEW' TYP='ROOT'"  };
+NTupleSvc.Output = { "MYLUN DATAFILE='TupleEx_opts.root'  OPT='NEW' TYP='ROOT'"  };
 
 // ============================================================================
 // The END 
