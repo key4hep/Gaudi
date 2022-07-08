@@ -10,6 +10,8 @@
 \***********************************************************************************/
 #pragma once
 #include <Gaudi/Accumulators.h>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/format.hpp>
 
 /**
  * backward compatible StatEntity class. Should not be used.
