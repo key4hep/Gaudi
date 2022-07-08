@@ -16,7 +16,7 @@ JobOptionsSvc        INFO # (39,1): ApplicationMgr.EvtMax = 50000
 JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (47,1): ApplicationMgr.HistogramPersistency = "ROOT"
 JobOptionsSvc        INFO # (48,1): ApplicationMgr.ExtSvc = ["Gaudi::Monitoring::MessageSvcSink"]
-JobOptionsSvc        INFO # (49,1): RootHistSvc.OutputFile = "histo-opts.root"
+JobOptionsSvc        INFO # (49,1): RootHistSvc.OutputFile = "histo-aida2root.root"
 JobOptionsSvc        INFO # (60,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
 JobOptionsSvc        INFO # (64,1): HistogramDataSvc.OutputLevel = 2
 JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/Aida2Root.opts
@@ -78,7 +78,7 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
-RootHistSvc          INFO Writing ROOT histograms to: histo-opts.root
+RootHistSvc          INFO Writing ROOT histograms to: histo-aida2root.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 HistogramDataSvc     INFO  Predefined 1D-Histograms:
 HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
