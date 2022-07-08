@@ -204,7 +204,6 @@ namespace Gaudi::Accumulators {
  * @endcode
  */
 
-#include "boost/algorithm/string/predicate.hpp"
 #include "boost/format.hpp"
 #include <atomic>
 #include <cmath>
