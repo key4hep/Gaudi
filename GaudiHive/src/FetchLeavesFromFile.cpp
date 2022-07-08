@@ -8,15 +8,16 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiAlg/Producer.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IDataStoreLeaves.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiAlg/GaudiAlgorithm.h>
+#include <GaudiAlg/Producer.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IDataStoreLeaves.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/SmartIF.h>
+#include <fmt/format.h>
 
 namespace Gaudi {
   namespace Hive {
@@ -31,19 +32,11 @@ namespace Gaudi {
 
       StatusCode finalize() override {
         m_dataMgrSvc.reset();
-        return Algorithm::finalize();
+        return Producer::finalize();
       }
 
       // Scan the data service starting from the node specified as \b Root.
       IDataStoreLeaves::LeavesList i_collectLeaves() const;
-
-      // Scan the data service starting from the specified node.
-      template <typename OutputIterator>
-      void i_collectLeaves( const IRegistry& reg, OutputIterator iter ) const;
-
-      // Return the pointer to the IRegistry object associated to the node
-      // specified as \b Root.
-      const IRegistry& i_getRootNode() const;
 
     private:
       Gaudi::Property<std::string> m_dataSvcName{ this, "DataService", "EventDataSvc",
@@ -58,62 +51,66 @@ namespace Gaudi {
     // implementation
 
     StatusCode FetchLeavesFromFile::initialize() {
-      StatusCode sc = Algorithm::initialize();
-      if ( sc ) {
+      return Producer::initialize().andThen( [&]() {
         m_dataMgrSvc = serviceLocator()->service( m_dataSvcName );
         if ( !m_dataMgrSvc ) {
           error() << "Cannot get IDataManagerSvc " << m_dataSvcName << endmsg;
           return StatusCode::FAILURE;
         }
-      }
-      return sc;
-    }
-
-    const IRegistry& FetchLeavesFromFile::i_getRootNode() const {
-      DataObject* obj = nullptr;
-      StatusCode  sc  = Gaudi::Algorithm::evtSvc()->retrieveObject( m_rootNode.value(), obj );
-      if ( sc.isFailure() ) {
-        throw GaudiException( "Cannot get " + m_rootNode + " from " + m_dataSvcName, name(), StatusCode::FAILURE );
-      }
-      return *obj->registry();
+        return StatusCode::SUCCESS;
+      } );
     }
 
     IDataStoreLeaves::LeavesList FetchLeavesFromFile::i_collectLeaves() const {
-      IDataStoreLeaves::LeavesList all_leaves;
-      i_collectLeaves( i_getRootNode(), std::back_inserter( all_leaves ) );
-      return all_leaves;
-    }
-
-    template <typename OutputIterator>
-    void FetchLeavesFromFile::i_collectLeaves( const IRegistry& reg, OutputIterator iter ) const {
-      // create a LeavesList to save all the leaves
-      IOpaqueAddress* addr = reg.address();
-      if ( addr ) { // we consider only objects that are in a file
-        if ( msgLevel( MSG::VERBOSE ) ) verbose() << "::i_collectLeaves added " << reg.identifier() << endmsg;
-        *iter = reg.object(); // add this object
-        // Origin of the current object
-        const std::string& base = addr->par()[0];
-
-        std::vector<IRegistry*> lfs; // leaves of the current object
-        StatusCode              sc = m_dataMgrSvc->objectLeaves( &reg, lfs );
-        if ( sc.isSuccess() ) {
-          for ( const auto& i : lfs ) {
-            // Continue if the leaf has the same database as the parent
-            if ( i->address() && i->address()->par()[0] == base ) {
-              DataObject* obj = nullptr;
-              // append leaves to all leaves
-              Gaudi::Algorithm::evtSvc()
-                  ->retrieveObject( const_cast<IRegistry*>( &reg ), i->name(), obj )
-                  .andThen( [&] { i_collectLeaves( *i, iter ); } )
-                  .orElse( [&] {
-                    throw GaudiException( "Cannot get " + i->identifier() + " from " + m_dataSvcName, name(),
-                                          StatusCode::FAILURE );
-                  } )
-                  .ignore();
-            }
-          }
-        }
+      // we have to make sure that the node we start the traversal from is loaded
+      {
+        DataObject* obj = nullptr;
+        evtSvc()
+            ->retrieveObject( m_rootNode, obj )
+            .orThrow( fmt::format( "failed to retrieve {} from {}", m_rootNode.value(), m_dataSvcName ), name() );
       }
+      // result
+      IDataStoreLeaves::LeavesList all_leaves;
+      // used to test for nodes with same origin
+      std::string origin;
+      // we do not get info from exceptions in the data store agent, so we record the exception message, if any
+      std::string failure_msg;
+      m_dataMgrSvc
+          ->traverseSubTree(
+              m_rootNode,
+              [&]( IRegistry* reg, int ) {
+                if ( reg->address() && reg->dataSvc() ) { // we consider only objects that come from a file
+                  if ( origin.empty() ) {
+                    // this is the first node we encounter, so we record where it comes from
+                    origin = reg->address()->par()[0];
+                  }
+                  // if the current object comes from the same file as the first entry...
+                  if ( origin == reg->address()->par()[0] ) {
+                    // ... make sure the object has been loaded...
+                    DataObject* obj = reg->object();
+                    if ( !obj )
+                      reg->dataSvc()
+                          ->retrieveObject( reg->identifier(), obj )
+                          .orElse( [&]() {
+                            failure_msg =
+                                fmt::format( "failed to retrieve {} from {}", reg->identifier(), m_dataSvcName );
+                            // we do not really care about the exception we throw because traverseSubTree will just use
+                            // it to abort the traversal
+                            throw GaudiException( failure_msg, name(), StatusCode::FAILURE );
+                          } )
+                          .ignore();
+                    // ... and add it to the list
+                    all_leaves.push_back( obj );
+                    if ( msgLevel( MSG::VERBOSE ) )
+                      verbose() << "::i_collectLeaves added " << reg->identifier() << endmsg;
+                    return true; // we can continue the recursion
+                  }
+                }
+                // if we reach this point the object was not interesting, so no need to recurse further
+                return false;
+              } )
+          .orThrow( failure_msg, name() );
+      return all_leaves;
     }
 
   } // namespace Hive

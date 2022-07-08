@@ -1,7 +1,6 @@
 # setting LC_ALL to "C"
-# Running /afs/cern.ch/work/a/axu/private/persistency/Gaudi/Gaudi/scripts/gaudirun.py with arguments ['-v', '/afs/cern.ch/work/a/axu/private/persistency/Gaudi/GaudiExamples/options/ROOT_IO/NewInputWrite.py']
-# --> Including file '/afs/cern.ch/work/a/axu/private/persistency/Gaudi/GaudiExamples/options/ROOT_IO/NewInputWrite.py'
-# <-- End of file '/afs/cern.ch/work/a/axu/private/persistency/Gaudi/GaudiExamples/options/ROOT_IO/NewInputWrite.py'
+# --> Including file '/home/marcocle/stacks/master/Gaudi/GaudiExamples/options/ROOT_IO/NewInputWrite.py'
+# <-- End of file '/home/marcocle/stacks/master/Gaudi/GaudiExamples/options/ROOT_IO/NewInputWrite.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -27,10 +26,10 @@
  'MessageSvc': {'OutputLevel': 1},
  'NewRootDst': {'Output': "DATAFILE='PFN:NEWROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
  'RootCnvSvc': {'OutputLevel': 3}}
-ApplicationMgr    SUCCESS 
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v33r2)
-                                          running on lxplus749.cern.ch on Sun Jul 19 09:08:00 2020
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r5)
+                                          running on lblhcbpr20.cern.ch on Fri Jul  8 12:24:36 2022
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service FileRecordDataSvc
@@ -55,7 +54,6 @@ EventPersistenc...  DEBUG Service base class initialized successfully
 EventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EventLoopMgr        DEBUG Creating Output Stream CopyInputStream/NewRootDst
 EventLoopMgr        DEBUG Creating Top Algorithm Gaudi::Hive::FetchLeavesFromFile with name NewFetch
-NewFetch          VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 AlgContextSvc       DEBUG Service base class initialized successfully
 AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0
@@ -65,12 +63,46 @@ NewFetch          VERBOSE ServiceLocatorHelper::service: found service EventData
 TimelineSvc         DEBUG Service base class initialized successfully
 TimelineSvc         DEBUG initialize
 NewFetch          VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+NewFetch          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+NewFetch            DEBUG Initialize base class GaudiCommon<Algorithm>
+NewFetch            DEBUG could not locate CounterSummarySvc, no counter summary will be made
+NewFetch            DEBUG List of ALL properties of Gaudi::Hive::FetchLeavesFromFile/NewFetch  #properties = 31
+NewFetch            DEBUG Property ['Name': Value] =  'Root':''
+NewFetch            DEBUG Property ['Name': Value] =  'DataService':'EventDataSvc'
+NewFetch            DEBUG Property ['Name': Value] =  'InputFileLeavesLocation':/Event/InputFileLeaves
+NewFetch            DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
+NewFetch            DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
+NewFetch            DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
+NewFetch            DEBUG Property ['Name': Value] =  'Context':''
+NewFetch            DEBUG Property ['Name': Value] =  'TypePrint':True
+NewFetch            DEBUG Property ['Name': Value] =  'PropertiesPrint':False
+NewFetch            DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+NewFetch            DEBUG Property ['Name': Value] =  'RootInTES':''
+NewFetch            DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
+NewFetch            DEBUG Property ['Name': Value] =  'Blocking':False
+NewFetch            DEBUG Property ['Name': Value] =  'NeededResources':[  ]
+NewFetch            DEBUG Property ['Name': Value] =  'Cardinality':0
+NewFetch            DEBUG Property ['Name': Value] =  'RegisterForContextService':True
+NewFetch            DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
+NewFetch            DEBUG Property ['Name': Value] =  'Timeline':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditStop':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditStart':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditFinalize':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditExecute':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditRestart':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditReinitialize':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditInitialize':False
+NewFetch            DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
+NewFetch            DEBUG Property ['Name': Value] =  'ErrorMax':1
+NewFetch            DEBUG Property ['Name': Value] =  'Enable':True
+NewFetch            DEBUG Property ['Name': Value] =  'OutputLevel':1
+NewFetch            DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+NewFetch            DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 NewFetch          VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 NewFetch            DEBUG input handles: 0
 NewFetch            DEBUG output handles: 1
 NewFetch            DEBUG Data Deps for NewFetch
   + OUTPUT '/Event/InputFileLeaves'
-NewFetch          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 NewRootDst        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 NewRootDst        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 IODataManager       DEBUG Service base class initialized successfully
@@ -102,6 +134,7 @@ HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...  DEBUG Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
 ApplicationMgr       INFO Application Manager Initialized successfully
+JobOptionsSvc        INFO Properties are dumped into "gaudiexamples.root_io.newinputwrite.joboptsdump"
 ServiceManager      DEBUG Starting service FileRecordDataSvc
 ServiceManager      DEBUG Starting service AppMgrRunable
 ServiceManager      DEBUG Starting service IncidentSvc
@@ -473,8 +506,8 @@ EventDataSvc      VERBOSE Object /Event/MyTracks created
 EventDataSvc      VERBOSE Filling object /Event/MyTracks
 EventDataSvc      VERBOSE Object /Event/MyTracks successfully loaded
 NewFetch          VERBOSE ::i_collectLeaves added /Event/MyTracks
-EventLoopMgr         INFO No more events in event selection 
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 112.496 | total time (skipping 1st evt) 11058826 ns
+EventLoopMgr         INFO No more events in event selection
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 221.934 | total time (skipping 1st evt) 19896175 ns
 ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service EventSelector
 ServiceManager      DEBUG Stopping service HistogramDataSvc
@@ -496,6 +529,9 @@ ServiceManager      DEBUG Stopping service AppMgrRunable
 ServiceManager      DEBUG Stopping service FileRecordDataSvc
 ApplicationMgr       INFO Application Manager Stopped successfully
 ServiceManager      DEBUG Finalizing service EventLoopMgr
+NewFetch            DEBUG Finalize base class GaudiAlgorithm
+NewFetch            DEBUG Tools to release :
+NewFetch            DEBUG Services to release :
 NewRootDst           INFO Events output: 10
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
 EventLoopMgr         INFO Histograms converted successfully according to request.
@@ -503,15 +539,15 @@ ServiceManager      DEBUG Finalizing service EventSelector
 EventSelector       DEBUG finalize()
 ServiceManager      DEBUG Finalizing service ToolSvc
 ToolSvc              INFO Removing all tools created by ToolSvc
-ToolSvc             DEBUG   Tool List : EventSelector.DataStreamTool:1 
+ToolSvc             DEBUG   Tool List : EventSelector.DataStreamTool:1
 ToolSvc             DEBUG 1 tools left to finalize. Summed refCounts: 1
 ToolSvc             DEBUG Will finalize tools with refCount <= 1
 ToolSvc             DEBUG   Performing finalization of EventSelector.DataStreamTool (refCount 1)
 ToolSvc             DEBUG Deleting 1 finalized tools
 ToolSvc             DEBUG   Performing deletion of EventSelector.DataStreamTool
 ServiceManager      DEBUG Finalizing service RootCnvSvc
-RootCnvSvc           INFO Disconnected data IO:806ABE18-0EA3-EA11-B05F-FA163ED78D1B [NEWROOTIO.dst]
-RootCnvSvc           INFO Disconnected data IO:D66430AA-C899-11EA-A5EF-FA163E21D5E6 [ROOTIO.2.dst]
+RootCnvSvc           INFO Disconnected data IO:DBCEDEFC-FEA5-11EC-8E4A-3CECEF1070AC [ROOTIO.2.dst]
+RootCnvSvc           INFO Disconnected data IO:E2CE4868-FEA6-11EC-BB1A-3CECEF1070AC [NEWROOTIO.dst]
 ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
 ServiceManager      DEBUG Finalizing service AlgExecStateSvc
@@ -526,8 +562,8 @@ ServiceManager      DEBUG Finalizing service IncidentSvc
 IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service FileRecordDataSvc
-IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
+IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Looping over all active services...
