@@ -38,6 +38,7 @@ gaudi_add_module(GaudiCoreSvc
                    src/JobOptionsSvc/Parser.cpp
                    src/JobOptionsSvc/Position.cpp
                    src/JobOptionsSvc/Property.cpp
+                   src/JobOptionsSvc/PropertyId.cpp
                    src/JobOptionsSvc/PropertyName.cpp
                    src/JobOptionsSvc/PropertyValue.cpp
                    src/JobOptionsSvc/PythonConfig.cpp
@@ -60,12 +61,16 @@ gaudi_add_module(GaudiCoreSvc
                    ${rt_LIBRARY} # UNIX only
                    ${GAUDI_ATOMIC_LIBS})
 
-foreach(name IN ITEMS base binding)
-    gaudi_add_executable(test_JOS_${name} SOURCES tests/src/test_JOS/${name}.cpp
-                         LINK GaudiKernel Boost::unit_test_framework TEST)
-endforeach()
-
-gaudi_add_executable(JOS_benchmark SOURCES tests/src/test_JOS/benchmark.cpp
-                     LINK GaudiKernel)
-
 gaudi_install(SCRIPTS)
+
+if(BUILD_TESTING)
+    foreach(name IN ITEMS base binding)
+        gaudi_add_executable(test_JOS_${name} SOURCES tests/src/test_JOS/${name}.cpp
+                             LINK GaudiKernel Boost::unit_test_framework TEST)
+    endforeach()
+
+    gaudi_add_executable(JOS_benchmark SOURCES tests/src/test_JOS/benchmark.cpp
+                         LINK GaudiKernel)
+
+    gaudi_add_executable(JOS_memory_use SOURCES tests/src/test_JOS/memory_use.cpp src/JobOptionsSvc/PropertyId.cpp)
+endif()
