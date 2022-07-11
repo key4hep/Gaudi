@@ -5,6 +5,42 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r6][] - 2022-07-11
+Same as [v36r5][], we have several small changes and fixes in this release, as well as the removal of some deprecated and unused code.
+
+### Changed
+- Modify `FetchLeavesFromFile` to use `IDataManagerSvc::traverseSubTree` (gaudi/Gaudi#232  gaudi/Gaudi!1357)
+- Accumulators: drop unused Boost includes (gaudi/Gaudi#228  gaudi/Gaudi!1349)
+- Use pkgconfig to find gperftools (gaudi/Gaudi#210  gaudi/Gaudi!1354)
+- Delete `StatusCodeSvc` and its interface (gaudi/Gaudi!1310)
+- EventIDRange c'tor: Don't reset UNDEF values to 0 (gaudi/Gaudi!1347)
+- Cleanup old, unsed and deprecated code in DataHandles (gaudi/Gaudi!1337)
+- Update version of Black used in pre-commit  (gaudi/Gaudi!1334)
+
+### Added
+- Allow histograms to be saved in custom directories (gaudi/Gaudi!1353)
+- Support writing ROOT files with LZ4 and ZSTD compression (gaudi/Gaudi!1346)
+- Include GaudiException `tag()` strings in GaudiAlg functional warning/error messages when caught (gaudi/Gaudi!1345)
+- AvalancheSchedulerSvc: Print also event number if a stall is detected (gaudi/Gaudi!1339)
+- Add erase method to PluginSvc Registry class (gaudi/Gaudi!1338)
+- Provide diagnostic information instead of SEGV when a bound tool is disabled (gaudi/Gaudi!1330)
+
+### Fixed
+- Resolve race conditions in tests (gaudi/Gaudi#211  gaudi/Gaudi!1356)
+- Improve memory footprint of `JobOptionsSvc` (gaudi/Gaudi#194  gaudi/Gaudi!1304)
+- Do not use anonymous namespaces in Histograms headers (gaudi/Gaudi!1351)
+- Fix for allowing full customization of Histograms (gaudi/Gaudi!1352)
+- Prevent usage of histograms with wrong number of coordinates (gaudi/Gaudi#226  gaudi/Gaudi!1350)
+- Fix a possible uninitialized variable warning (gaudi/Gaudi!1344)
+- Fix invalid SUCCESS in `[Ts]DataSvc::retrieveEntry` (gaudi/Gaudi!1333)
+- Make `Rndm::Numbers` methods const (gaudi/Gaudi!1343)
+- Fix compilation with gcc12. (gaudi/Gaudi!1341)
+- Fix clang warning. (gaudi/Gaudi!1340)
+- Fix and deprecate histogram filling with `operator+=` (gaudi/Gaudi!1336)
+- Use ofstream from std (gaudi/Gaudi!1335)
+- Change `AlgResourcePool` to obey isReEntrant() (gaudi/Gaudi!1331)
+
+
 ## [v36r5][] - 2022-04-04
 Several small changes and fixes in this release. It also features the removal of some deprecated and unused code.
 
@@ -875,6 +911,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r6]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r6
 [v36r5]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r5
 [v36r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r4
 [v36r3]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r3
