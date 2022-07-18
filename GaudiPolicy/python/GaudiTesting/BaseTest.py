@@ -130,6 +130,7 @@ class BaseTest(object):
         self.proc = None
         self.stack_trace = None
         self.basedir = os.getcwd()
+        self.validate_time = None
 
     def run(self):
         logging.debug("running test %s", self.name)
@@ -257,9 +258,11 @@ class BaseTest(object):
                         f"completed test {self.name} with returncode = {self.returnedCode}"
                     )
                     logging.debug("validating test...")
+                    val_start_time = time.perf_counter()
                     self.result, self.causes = self.ValidateOutput(
                         stdout=self.out, stderr=self.err, result=self.result
                     )
+                    self.validate_time = round(time.perf_counter() - val_start_time, 2)
                 else:
                     logging.debug(f"skipped test {self.name}")
                     self.status = "skipped"
@@ -302,6 +305,7 @@ class BaseTest(object):
             "Program Name": "program",
             "Name": "name",
             "Validator": "validator",
+            "Validation execution time": "validate_time",
             "Output Reference File": "reference",
             "Error Reference File": "error_reference",
             "Causes": "causes",
