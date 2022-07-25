@@ -436,8 +436,12 @@ namespace Gaudi::Accumulators {
     friend class GenericAccumulator;
 
   public:
-    using InputType             = InputTypeT;
-    using OutputType            = std::decay_t<std::result_of_t<OutputTransform( InnerType )>>;
+    using InputType = InputTypeT;
+#if __cplusplus >= 201703L
+    using OutputType = std::decay_t<std::invoke_result_t<OutputTransform, InnerType>>;
+#else
+    using OutputType = std::decay_t<std::result_of_t<OutputTransform( InnerType )>>;
+#endif
     using InternalType          = InnerType;
     using JSONStringEntriesType = std::string;
     GenericAccumulator operator+=( const InputType by ) {
