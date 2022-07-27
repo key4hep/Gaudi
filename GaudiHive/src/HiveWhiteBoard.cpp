@@ -127,14 +127,15 @@ namespace {
  */
 class HiveWhiteBoard : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard> {
 protected:
-  Gaudi::Property<CLID>        m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
-  Gaudi::Property<std::string> m_rootName{ this, "RootName", "/Event", "name of root entry" };
-  Gaudi::Property<std::string> m_loader{ this, "DataLoader", "EventPersistencySvc", "" };
-  Gaudi::Property<size_t>      m_slots{ this, "EventSlots", 1, "number of event slots" };
-  Gaudi::Property<bool>        m_forceLeaves{ this, "ForceLeaves", false,
+  Gaudi::Property<CLID>                     m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
+  Gaudi::Property<std::string>              m_rootName{ this, "RootName", "/Event", "name of root entry" };
+  Gaudi::Property<std::string>              m_loader{ this, "DataLoader", "EventPersistencySvc", "" };
+  Gaudi::Property<size_t>                   m_slots{ this, "EventSlots", 1, "number of event slots" };
+  Gaudi::Property<bool>                     m_forceLeaves{ this, "ForceLeaves", false,
                                        "force creation of default leaves on registerObject" };
-  Gaudi::Property<bool>        m_enableFaultHdlr{ this, "EnableFaultHandler", false,
+  Gaudi::Property<bool>                     m_enableFaultHdlr{ this, "EnableFaultHandler", false,
                                            "enable incidents on data creation requests" };
+  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{ this, "InhibitPathes", {}, "inhibited leaves" };
 
   /// Pointer to data loader service
   IConversionSvc* m_dataLoader = nullptr;
@@ -468,6 +469,7 @@ public:
       svc->setProperty( m_enableFaultHdlr ).ignore();
       // make sure that CommonMessaging is initialized
       svc->setProperty( m_outputLevel ).ignore();
+      svc->setProperty( m_inhibitPathes ).ignore();
 
       sc = svc->initialize();
       if ( !sc.isSuccess() ) {
