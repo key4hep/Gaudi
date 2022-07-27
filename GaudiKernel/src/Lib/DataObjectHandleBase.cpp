@@ -108,8 +108,7 @@ DataObject* DataObjectHandleBase::fetch() const {
 //---------------------------------------------------------------------------
 
 bool DataObjectHandleBase::init() {
-
-  assert( !m_init );
+  if ( m_init ) return true; // initialization already done
 
   if ( !owner() ) return false;
 
