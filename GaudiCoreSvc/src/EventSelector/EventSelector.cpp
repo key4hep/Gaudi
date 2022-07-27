@@ -40,7 +40,7 @@ void EventSelector::printEvtInfo( const EvtSelectorContext* iter ) const {
       info() << "End of event input reached." << endmsg;
     } else if ( iter->numStreamEvent() == -1 ) {
       // Intial value for this stream
-    } else if ( m_evtPrintFrequency != -1 && ( count % m_evtPrintFrequency == 0 ) ) {
+    } else if ( m_evtPrintFrequency > 0 && ( count % m_evtPrintFrequency == 0 ) ) {
       always() << "Reading Event record " << count + 1 << ". Record number within stream " << iter->ID() + 1 << ": "
                << iter->numStreamEvent() + 1 << endmsg;
     }
