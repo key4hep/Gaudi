@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2019-20 CERN for the benefit of the LHCb and ATLAS collaborations   *
+* (c) Copyright 2019-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,15 +9,15 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-#include "Gaudi/Allocator/Arena.h"
-#include "GaudiKernel/Kernel.h"
 
+#include <Gaudi/Allocator/Arena.h>
+#include <GaudiKernel/Kernel.h>
 #include <boost/container/small_vector.hpp>
-
-#include <gsl/span>
-
 #include <cstddef>
+#include <gsl/span>
 #include <numeric>
+#include <utility>
+
 namespace Gaudi::Arena {
   namespace details {
     template <std::size_t Alignment>
