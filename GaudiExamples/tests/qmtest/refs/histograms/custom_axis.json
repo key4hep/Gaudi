@@ -1,0 +1,35 @@
+[
+    {
+        "component": "Alg",
+        "entity": {
+            "axis": [
+                {
+                    "labels": [
+                        "Simple",
+                        "Complex",
+                        "Bad",
+                        "Wrong"
+                    ],
+                    "maxValue": 4,
+                    "minValue": 0,
+                    "nBins": 4,
+                    "title": "Category"
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                10,
+                15,
+                20,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 50,
+            "title": "",
+            "type": "histogram:Histogram:N5Gaudi5Tests10Histograms10CustomAxis8CategoryE"
+        },
+        "name": "Categories"
+    }
+]

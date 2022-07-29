@@ -1,0 +1,37 @@
+[
+    {
+        "component": "HistoAlgo",
+        "entity": {
+            "axis": [
+                {
+                    "labels": [
+                        "a",
+                        "b",
+                        "c",
+                        "d",
+                        "e"
+                    ],
+                    "maxValue": 5,
+                    "minValue": 0,
+                    "nBins": 5,
+                    "title": "axis title"
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                10,
+                15,
+                20,
+                25,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 75,
+            "title": "Histogram title",
+            "type": "histogram:Histogram:i"
+        },
+        "name": "hist"
+    }
+]

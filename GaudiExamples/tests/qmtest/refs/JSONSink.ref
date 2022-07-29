@@ -1,12 +1,11 @@
-# setting LC_ALL to "C"
-# --> Including file '/pool/marcocle/cmake-modernization/Gaudi/GaudiExamples/options/CounterAlg.py'
-# <-- End of file '/pool/marcocle/cmake-modernization/Gaudi/GaudiExamples/options/CounterAlg.py'
-# --> Including file '/tmp/marcocle/tmpngt9187y.py'
-# <-- End of file '/tmp/marcocle/tmpngt9187y.py'
+# --> Including file '/scratch/everyone/jheuel/stack_main/Gaudi/GaudiExamples/options/CounterAlg.py'
+# <-- End of file '/scratch/everyone/jheuel/stack_main/Gaudi/GaudiExamples/options/CounterAlg.py'
+# --> Including file '/run/user/10297/tmppnu4ewxy.py'
+# <-- End of file '/run/user/10297/tmppnu4ewxy.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r1)
-                                          running on lblhcbpr4.cern.ch on Tue Oct  5 17:33:30 2021
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r6)
+                                          running on pluscc03 on Mon Jul 25 15:53:21 2022
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -18,7 +17,7 @@ CounterAlg           INFO Super nice message, max 5 times
 CounterAlg           INFO Super nice message, max 5 times
 CounterAlg           INFO Super nice message, max 5 times
 CounterAlg           INFO Suppressing message: 'Super nice message, max 5 times'
-Gaudi::Monitori...   INFO Writing counters to JSON file counters.json
+Gaudi::Monitori...   INFO Writing JSON file CounterAlg.json
 CounterAlg           INFO Number of counters : 18
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Average"                                       |       500 |        750 |     1.5000 |

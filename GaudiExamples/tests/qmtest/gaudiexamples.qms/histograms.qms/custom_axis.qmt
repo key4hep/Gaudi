@@ -14,7 +14,8 @@
 <argument name="args"><set><text>GaudiTests.Histograms.custom_axis:config</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="validator"><text>
-from GaudiTests.Histograms.custom_axis import check
+from GaudiTests.Histograms.custom_axis import check, FILENAMEJSON
 check(causes, result)
+validateJSONWithReference(FILENAMEJSON, "refs/histograms/custom_axis.json")
 </text></argument>
 </extension>

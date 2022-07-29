@@ -15,7 +15,8 @@
 <argument name="args"><set><text>GaudiTests.Histograms.issue_212:config</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="validator"><text>
-from GaudiTests.Histograms.issue_212 import check
+from GaudiTests.Histograms.issue_212 import check, FILENAMEJSON
 check(causes, result)
+validateJSONWithReference(FILENAMEJSON, "refs/histograms/issue_212.json")
 </text></argument>
 </extension>
