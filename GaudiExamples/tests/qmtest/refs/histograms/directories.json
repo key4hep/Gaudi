@@ -1,0 +1,194 @@
+[
+    {
+        "component": "Alg",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "Top title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Top"
+    },
+    {
+        "component": "Alg",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "First title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Group/First"
+    },
+    {
+        "component": "Alg",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "Second title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Group/Second"
+    },
+    {
+        "component": "Alg",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "Third title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Group/SubGroup/Third"
+    },
+    {
+        "component": "Alg.Tool",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "Top title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Top"
+    },
+    {
+        "component": "Alg.Tool",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "First title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Group/First"
+    },
+    {
+        "component": "Alg.Tool",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "Second title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Group/Second"
+    },
+    {
+        "component": "Alg.Tool",
+        "entity": {
+            "axis": [
+                {
+                    "maxValue": 1.0,
+                    "minValue": 0.0,
+                    "nBins": 1,
+                    "title": ""
+                }
+            ],
+            "bins": [
+                0,
+                5,
+                0
+            ],
+            "dimension": 1,
+            "empty": false,
+            "nEntries": 5,
+            "title": "Third title",
+            "type": "histogram:Histogram:d"
+        },
+        "name": "Group/SubGroup/Third"
+    }
+]

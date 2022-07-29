@@ -120,6 +120,13 @@ class QMTTest(BaseTest):
                         "causes": self.causes,
                     },
                 ),
+                "validateJSONWithReference": CallWrapper(
+                    self.validateJSONWithReference,
+                    {
+                        "result": result,
+                        "causes": self.causes,
+                    },
+                ),
                 "countErrorLines": CallWrapper(
                     self.countErrorLines,
                     {"stdout": stdout, "result": result, "causes": self.causes},

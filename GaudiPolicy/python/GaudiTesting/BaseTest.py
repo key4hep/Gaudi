@@ -11,6 +11,7 @@
 #####################################################################################
 
 import inspect
+import json
 import logging
 import os
 import platform
@@ -21,6 +22,7 @@ import tempfile
 import threading
 import time
 from subprocess import PIPE, STDOUT, Popen
+from unittest import TestCase
 
 try:
     from html import escape as escape_for_html
@@ -611,6 +613,60 @@ class BaseTest(object):
             causes += BasicOutputValidator(
                 lreference, "standard error", "ExecTest.expected_stderr"
             )(stderr, result)
+        return causes
+
+    def validateJSONWithReference(
+        self,
+        output_file,
+        reference_file,
+        result=None,
+        causes=None,
+        detailed=True,
+    ):
+        """
+        JSON validation action: compare json file to reference file
+        """
+
+        if result is None:
+            result = self.result
+        if causes is None:
+            causes = self.causes
+
+        if not os.path.isfile(output_file):
+            causes.append(f"output file {output_file} does not exist")
+            return causes
+
+        try:
+            with open(output_file) as f:
+                output = json.load(f)
+        except json.JSONDecodeError as err:
+            causes.append("json parser error")
+            result["output_parse_error"] = f"json parser error in {output_file}: {err}"
+            return causes
+
+        lreference = self._expandReferenceFileName(reference_file)
+        if not lreference:
+            causes.append("reference file not set")
+        elif not os.path.isfile(lreference):
+            causes.append("reference file does not exist")
+        else:
+            causes += JSONOutputValidator()(lreference, output, result, detailed)
+        if causes and lreference:  # Write a new reference file for output
+            try:
+                cnt = 0
+                newrefname = ".".join([lreference, "new"])
+                while os.path.exists(newrefname):
+                    cnt += 1
+                    newrefname = ".".join([lreference, "~%d~" % cnt, "new"])
+                with open(newrefname, "w") as newref:
+                    json.dump(output, newref, indent=4)
+                result["New JSON Output Reference File"] = os.path.relpath(
+                    newrefname, self.basedir
+                )
+            except IOError:
+                # Ignore IO errors when trying to update reference files
+                # because we may be in a read-only filesystem
+                pass
         return causes
 
     def _expandReferenceFileName(self, reffile):
@@ -1404,3 +1460,34 @@ def isWinPlatform(self):
     """
     platform = GetPlatform(self)
     return "winxp" in platform or platform.startswith("win")
+
+
+class JSONOutputValidator:
+    def __call__(self, ref, out, result, detailed=True):
+        """Validate JSON output.
+        returns -- A list of strings giving causes of failure."""
+
+        causes = []
+        try:
+            with open(ref) as f:
+                expected = json.load(f)
+        except json.JSONDecodeError as err:
+            causes.append("json parser error")
+            result["reference_parse_error"] = f"json parser error in {ref}: {err}"
+            return causes
+
+        if not detailed:
+            if expected != out:
+                causes.append("json content")
+                result["json_diff"] = "detailed diff was turned off"
+            return causes
+
+        # piggyback on TestCase dict diff report
+        t = TestCase()
+        try:
+            t.assertEqual(expected, out)
+        except AssertionError as err:
+            causes.append("json content")
+            result["json_diff"] = str(err).splitlines()[0]
+
+        return causes

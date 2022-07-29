@@ -12,6 +12,7 @@ import os
 from traceback import format_exc
 
 FILENAME = f"{__name__}.root"
+FILENAMEJSON = f"{__name__}.json"
 
 
 def config():
@@ -26,6 +27,7 @@ def config():
     algs.append(Alg("Alg"))
 
     svcs.append(C.Gaudi.Histograming.Sink.Root(FileName=FILENAME))
+    svcs.append(C.Gaudi.Monitoring.JSONSink(FileName=FILENAMEJSON))
     svcs.append(C.Gaudi.Monitoring.MessageSvcSink())
 
     yield from algs

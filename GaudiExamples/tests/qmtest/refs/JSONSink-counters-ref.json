@@ -1,97 +1,187 @@
-{
-  "CounterAlg": {
-    "Average": {
-      "mean": 1.5,
-      "nEntries": 500,
-      "sum": 750.0,
-      "type": "counter:AveragingCounter:d"
+[
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 500,
+            "type": "counter:Counter:m"
+        },
+        "name": "Basic"
     },
-    "AverageInteger": {
-      "mean": 1.0,
-      "nEntries": 500,
-      "sum": 500,
-      "type": "counter:AveragingCounter:j"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "mean": 1.5,
+            "nEntries": 500,
+            "sum": 750.0,
+            "type": "counter:AveragingCounter:d"
+        },
+        "name": "Average"
     },
-    "AverageNonAtomic": {
-      "mean": 1.5,
-      "nEntries": 500,
-      "sum": 750.0,
-      "type": "counter:AveragingCounter:d"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "mean": 2.5,
+            "nEntries": 500,
+            "standard_deviation": 0.0,
+            "sum": 1250.0,
+            "sum2": 3125.0,
+            "type": "counter:SigmaCounter:d"
+        },
+        "name": "Sigma"
     },
-    "Basic": {
-      "nEntries": 500,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "max": 3.5,
+            "mean": 3.5,
+            "min": 3.5,
+            "nEntries": 500,
+            "standard_deviation": 0.0,
+            "sum": 1750.0,
+            "sum2": 6125.0,
+            "type": "counter:StatCounter:d"
+        },
+        "name": "Stat"
     },
-    "Binomial": {
-      "efficiency": 1.0,
-      "efficiencyErr": 0.0,
-      "nEntries": 500,
-      "nFalseEntries": 0,
-      "nTrueEntries": 500,
-      "type": "counter:BinomialCounter:d"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "efficiency": 1.0,
+            "efficiencyErr": 0.0,
+            "empty": false,
+            "nEntries": 500,
+            "nFalseEntries": 0,
+            "nTrueEntries": 500,
+            "type": "counter:BinomialCounter:d"
+        },
+        "name": "Binomial"
     },
-    "DQCounter10": {
-      "nEntries": 490,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "level": 3,
+            "max": 5,
+            "msg": "Super nice message, max 5 times",
+            "nEntries": 500,
+            "type": "counter:MsgCounter"
+        },
+        "name": "Super nice message, max 5 times"
     },
-    "DQCounter11": {
-      "nEntries": 489,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "mean": 1.0,
+            "nEntries": 500,
+            "sum": 500,
+            "type": "counter:AveragingCounter:j"
+        },
+        "name": "AverageInteger"
     },
-    "DQCounter12": {
-      "nEntries": 488,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "mean": 1.5,
+            "nEntries": 500,
+            "sum": 750.0,
+            "type": "counter:AveragingCounter:d"
+        },
+        "name": "AverageNonAtomic"
     },
-    "DQCounter13": {
-      "nEntries": 487,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 490,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter10"
     },
-    "DQCounter14": {
-      "nEntries": 486,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 489,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter11"
     },
-    "DQCounter15": {
-      "nEntries": 485,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 488,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter12"
     },
-    "DQCounter16": {
-      "nEntries": 484,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 487,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter13"
     },
-    "DQCounter17": {
-      "nEntries": 483,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 486,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter14"
     },
-    "DQCounter18": {
-      "nEntries": 482,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 485,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter15"
     },
-    "DQCounter19": {
-      "nEntries": 481,
-      "type": "counter:Counter:m"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 484,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter16"
     },
-    "Sigma": {
-      "mean": 2.5,
-      "nEntries": 500,
-      "standard_deviation": 0.0,
-      "sum": 1250.0,
-      "type": "counter:SigmaCounter:d"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 483,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter17"
     },
-    "Stat": {
-      "max": 3.5,
-      "mean": 3.5,
-      "min": 3.5,
-      "nEntries": 500,
-      "standard_deviation": 0.0,
-      "sum": 1750.0,
-      "type": "counter:StatCounter:d"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 482,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter18"
     },
-    "Super nice message, max 5 times": {
-      "level": 3,
-      "max": 5,
-      "msg": "Super nice message, max 5 times",
-      "nEntries": 500,
-      "type": "counter:MsgCounter"
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 481,
+            "type": "counter:Counter:m"
+        },
+        "name": "DQCounter19"
     }
-  }
-}
+]
