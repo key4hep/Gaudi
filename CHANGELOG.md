@@ -5,6 +5,23 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r7][] - 2022-07-29
+Minor release needed by LHCb to pick up some fixes.
+
+Note that the re-write of `Gaudi::Monitoring::JSONSink` is not backward compatible.
+
+### Changed
+- New improved `Gaudi::Monitoring::JSONSink` (with support for histograms) (gaudi/Gaudi!1362)
+
+### Fixed
+- Allow calling `init()` twice on a `DataHandle` (gaudi/Gaudi#221  gaudi/Gaudi!1366)
+- Add missing include of `<utility>` (gaudi/Gaudi#235  gaudi/Gaudi!1365)
+- Avoid floating point exception during printing in `EventSelector` (gaudi/Gaudi!1364)
+- Forward forgotten `InhibitPathes` property from `HiveWhiteBoard` to `DataSvc` (gaudi/Gaudi!1361)
+- Fix check for finding PkgConfig (gaudi/Gaudi!1363)
+- Replace `std::result_of_t` with `std::invoke_result_t` following its deprecation in C++17  (gaudi/Gaudi!1359)
+
+
 ## [v36r6][] - 2022-07-11
 Same as [v36r5][], we have several small changes and fixes in this release, as well as the removal of some deprecated and unused code.
 
@@ -911,6 +928,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r7]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r7
 [v36r6]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r6
 [v36r5]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r5
 [v36r4]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r4
