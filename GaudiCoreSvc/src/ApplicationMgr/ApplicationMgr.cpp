@@ -626,6 +626,7 @@ StatusCode ApplicationMgr::terminate() {
     log << MSG::ERROR << "Could not get the IService interface of the MessageSvc" << endmsg;
   } else {
     svc->sysFinalize().ignore();
+    svcManager()->removeService( svc ).ignore();
   }
 
   // finalize JobOptionsSvc
@@ -634,6 +635,7 @@ StatusCode ApplicationMgr::terminate() {
     log << MSG::ERROR << "Could not get the IService interface of the JobOptionsSvc" << endmsg;
   } else {
     svc->sysFinalize().ignore();
+    svcManager()->removeService( svc ).ignore();
   }
 
   m_state = m_targetState;
