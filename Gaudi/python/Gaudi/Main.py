@@ -332,9 +332,9 @@ class gaudimain(object):
         from Configurables import ApplicationMgr
 
         appMgr = ApplicationMgr()
-        if "GAUDIAPPNAME" in os.environ:
+        if os.environ.get("GAUDIAPPNAME"):
             appMgr.AppName = str(os.environ["GAUDIAPPNAME"])
-        if "GAUDIAPPVERSION" in os.environ:
+        if os.environ.get("GAUDIAPPVERSION"):
             appMgr.AppVersion = str(os.environ["GAUDIAPPVERSION"])
         self.log = logging.getLogger(__name__)
         self.printsequence = False
