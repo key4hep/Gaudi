@@ -22,4 +22,8 @@ preprocessor = (normalizeExamples +
      RegexpReplacer(r"(JobOptionsSvc\.(SEARCH)?PATH|ApplicationMgr\.JobOptionsPath): '.*'", r"\1: '...'"))
 validateWithReference(preproc=preprocessor)
 </text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

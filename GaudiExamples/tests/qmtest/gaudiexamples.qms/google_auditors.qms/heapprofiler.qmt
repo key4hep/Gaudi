@@ -39,4 +39,8 @@ ApplicationMgr(EvtMax=10,
   <text>ubsan</text>
   <text>tsan</text>
 </set></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

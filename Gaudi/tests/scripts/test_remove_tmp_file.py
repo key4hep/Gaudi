@@ -19,6 +19,8 @@ with open(tmpfile, "w") as f:
     f.write("MyAlg.MyOpt = 1;\n")
 
 os.environ["GAUDI_TEMP_OPTS_FILE"] = tmpfile
+os.environ["GAUDIAPPNAME"] = ""
+os.environ["GAUDIAPPVERSION"] = ""
 
 assert call(["gaudirun.py", "--dry-run", "--output", "out.py"]) == 0
 

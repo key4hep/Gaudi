@@ -21,4 +21,8 @@
   <tuple><text>gaudiexamples.root_io.coll.write</text><enumeral>PASS</enumeral></tuple>
   <tuple><text>gaudiexamples.root_io.read</text><enumeral>PASS</enumeral></tuple>
 </set></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

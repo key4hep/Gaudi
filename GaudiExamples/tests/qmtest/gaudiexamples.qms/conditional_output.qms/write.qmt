@@ -21,5 +21,7 @@
 <text>STDOPTS=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options</text>
 <text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests</text>
 <text>PYTHONPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/python:$PYTHONPATH</text>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
 </set></argument>
 </extension>
