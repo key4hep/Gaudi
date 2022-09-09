@@ -1191,7 +1191,7 @@ class ReferenceFileValidator:
         if self.preproc:
             new = self.preproc(new)
 
-        diffs = difflib.ndiff(orig, new, charjunk=difflib.IS_CHARACTER_JUNK)
+        diffs = diff(orig, new)
         filterdiffs = list(
             map(lambda x: x.strip(), filter(lambda x: x[0] != " ", diffs))
         )
@@ -1208,6 +1208,23 @@ class ReferenceFileValidator:
             )
             causes.append(self.cause)
         return causes
+
+
+def diff(orig, new):
+    matcher = difflib.SequenceMatcher(None, orig, new)
+    # Use a large value of n to ensure all lines are printed
+    for group in matcher.get_grouped_opcodes(99999999):
+        for tag, i1, i2, j1, j2 in group:
+            if tag == "equal":
+                for line in orig[i1:i2]:
+                    yield "  " + line
+                continue
+            if tag in {"replace", "delete"}:
+                for line in orig[i1:i2]:
+                    yield "- " + line
+            if tag in {"replace", "insert"}:
+                for line in new[j1:j2]:
+                    yield "+ " + line
 
 
 def findTTreeSummaries(stdout):
