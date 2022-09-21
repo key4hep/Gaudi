@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,10 +11,8 @@
 
 #include "GaudiKernel/Service.h"
 
-#include <Gaudi/MonitoringHub.h>
+#include <HistogramPersistencySvc/RootHistogramSinkBase.h>
 
-#include <TDirectory.h>
-#include <TFile.h>
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TH3D.h>
@@ -22,152 +20,74 @@
 #include <TProfile2D.h>
 #include <TProfile3D.h>
 
-#include <algorithm>
-#include <deque>
-#include <range/v3/numeric/accumulate.hpp>
-#include <range/v3/range/conversion.hpp>
-#include <range/v3/view/split_when.hpp>
-#include <range/v3/view/transform.hpp>
-// upstream has renamed namespace ranges::view -> ranges::views
-#if RANGE_V3_VERSION < 900
-namespace ranges::views {
-  using namespace ranges::view;
-}
-#endif
-#include <string>
-#include <vector>
-
 namespace {
 
-  struct Axis {
-    unsigned int nBins;
-    double       minValue;
-    double       maxValue;
-    std::string  title;
-  };
-
-  Axis toAxis( nlohmann::json& jAxis ) {
-    return { jAxis.at( "nBins" ).get<unsigned int>(), jAxis.at( "minValue" ).get<double>(),
-             jAxis.at( "maxValue" ).get<double>(),
-             ";" + jAxis.at( "title" ).get<std::string>() }; // ";" to prepare concatenations of titles
-  }
-
-  template <typename Traits, std::size_t... index>
-  void saveRootHistoInternal( TFile& file, std::string dir, std::string name, const nlohmann::json& j,
-                              std::index_sequence<index...> ) {
-    // extract data from json
-    auto jsonAxis = j.at( "axis" );
-    auto axis     = std::array{ toAxis( jsonAxis[index] )... };
-    auto weights  = j.at( "bins" ).get<std::vector<typename Traits::WeightType>>();
-    auto title    = j.at( "title" ).get<std::string>();
-    auto nentries = j.at( "nEntries" ).get<unsigned int>();
-    // weird way ROOT has to give titles to axis
-    title += ( axis[index].title + ... );
-    // compute total number of bins, multiplying bins per axis
-    auto totNBins = ( ( axis[index].nBins + 2 ) * ... );
-    assert( weights.size() == totNBins );
-
-    if ( name[0] == '/' ) {
-      dir  = "";
-      name = name.substr( 1 );
+  template <typename RootHisto, unsigned int N>
+  struct TraitsBase {
+    static constexpr unsigned int Dimension{ N };
+    template <typename AxisArray, std::size_t... index>
+    static RootHisto create( std::string& name, std::string& title, AxisArray axis, std::index_sequence<index...> ) {
+      return std::make_from_tuple<RootHisto>(
+          std::tuple_cat( std::tuple{ name.c_str(), title.c_str() },
+                          std::tuple{ std::get<index>( axis ).nBins, std::get<index>( axis ).minValue,
+                                      std::get<index>( axis ).maxValue }... ) );
     }
-
-    // take into account the case where name contains '/'s (e.g. "Group/Name") by
-    // moving the prefix into dir
-    if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
-      dir += '/' + name.substr( 0, pos );
-      name = name.substr( pos + 1 );
+    template <typename... Axis>
+    static RootHisto create( std::string& name, std::string& title, Axis&... axis ) {
+      return create( name, title, std::make_tuple( axis... ), std::make_index_sequence<sizeof...( Axis )>() );
     }
-
-    // remember the current directory
-    auto previousDir = gDirectory;
-
-    // find or create the directory for the histogram
-    {
-      using namespace ranges;
-      auto is_delimiter        = []( auto c ) { return c == '/' || c == '.'; };
-      auto transform_to_string = views::transform( []( auto&& rng ) { return rng | to<std::string>; } );
-
-      auto currentDir = accumulate( dir | views::split_when( is_delimiter ) | transform_to_string,
-                                    file.GetDirectory( "" ), []( auto current, auto&& dir_level ) {
-                                      if ( current ) {
-                                        // try to get next level
-                                        auto nextDir = current->GetDirectory( dir_level.c_str() );
-                                        // if it does not exist, create it
-                                        if ( !nextDir ) nextDir = current->mkdir( dir_level.c_str() );
-                                        // move to next level
-                                        current = nextDir;
-                                      }
-                                      return current;
-                                    } );
-
-      if ( !currentDir )
-        throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
-      // switch to the directory
-      currentDir->cd();
-    }
-
-    // Create Root histogram calling constructors with the args tuple
-    auto histo = std::make_from_tuple<typename Traits::Histo>(
-        std::tuple_cat( std::tuple{ name.c_str(), title.c_str() },
-                        std::tuple{ axis[index].nBins, axis[index].minValue, axis[index].maxValue }... ) );
-    // fill Histo
-    for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
-    auto try_set_bin_labels = [&histo, &jsonAxis]( auto idx ) {
-      if ( jsonAxis[idx].contains( "labels" ) ) {
-        TAxis* axis = nullptr;
-        switch ( idx ) {
-        case 0:
-          axis = histo.GetXaxis();
-          break;
-        case 1:
-          axis = histo.GetYaxis();
-          break;
-        case 2:
-          axis = histo.GetZaxis();
-          break;
-        default:
-          break;
-        }
-        if ( axis ) {
-          const auto labels = jsonAxis[idx].at( "labels" );
-          for ( unsigned int i = 0; i < labels.size(); i++ ) {
-            axis->SetBinLabel( i + 1, labels[i].template get<std::string>().c_str() );
+    static void fillMetaData( RootHisto& histo, nlohmann::json const& jsonAxis, unsigned int nentries ) {
+      auto try_set_bin_labels = [&histo, &jsonAxis]( auto idx ) {
+        if ( jsonAxis[idx].contains( "labels" ) ) {
+          TAxis* axis = nullptr;
+          switch ( idx ) {
+          case 0:
+            axis = histo.GetXaxis();
+            break;
+          case 1:
+            axis = histo.GetYaxis();
+            break;
+          case 2:
+            axis = histo.GetZaxis();
+            break;
+          default:
+            break;
+          }
+          if ( axis ) {
+            const auto labels = jsonAxis[idx].at( "labels" );
+            for ( unsigned int i = 0; i < labels.size(); i++ ) {
+              axis->SetBinLabel( i + 1, labels[i].template get<std::string>().c_str() );
+            }
           }
         }
-      }
-    };
-    ( try_set_bin_labels( index ), ... );
-    // Fix the number of entries, wrongly computed by ROOT from the numer of calls to fill
-    histo.SetEntries( nentries );
-    // write to file
-    histo.Write();
+      };
+      for ( unsigned int i = 0; i < jsonAxis.size(); i++ ) try_set_bin_labels( i );
+      // Fix the number of entries, wrongly computed by ROOT from the numer of calls to fill
+      histo.SetEntries( nentries );
+    }
+  };
 
-    // switch back to the previous directory
-    previousDir->cd();
-  }
-
-  template <bool isProfile, typename RootHisto>
+  template <bool isProfile, typename RootHisto, unsigned int N>
   struct Traits;
 
-  template <typename RootHisto>
-  struct Traits<false, RootHisto> {
+  template <typename RootHisto, unsigned int N>
+  struct Traits<false, RootHisto, N> : TraitsBase<RootHisto, N> {
     using Histo      = RootHisto;
     using WeightType = double;
-    static auto fill( Histo& histo, unsigned int i, const WeightType& weight ) { histo.SetBinContent( i, weight ); }
+    static void fill( Histo& histo, unsigned int i, const WeightType& weight ) { histo.SetBinContent( i, weight ); }
   };
-  template <typename RootHisto>
-  struct Traits<true, RootHisto> {
-    /// Wrapper around TProfileX to be able to fill it
-    template <typename TP>
-    struct ProfileWrapper : TP {
-      using TP::TP;
-      void setBinNEntries( Int_t i, Int_t n ) { this->fBinEntries.fArray[i] = n; }
-      void setBinW2( Int_t i, Double_t v ) { this->fSumw2.fArray[i] = v; }
-    };
+  /// Wrapper around TProfileX to be able to fill it
+  template <typename TP>
+  struct ProfileWrapper : TP {
+    using TP::TP;
+    void setBinNEntries( Int_t i, Int_t n ) { this->fBinEntries.fArray[i] = n; }
+    void setBinW2( Int_t i, Double_t v ) { this->fSumw2.fArray[i] = v; }
+  };
+  template <typename RootHisto, unsigned int N>
+  struct Traits<true, RootHisto, N> : TraitsBase<ProfileWrapper<RootHisto>, N> {
     using Histo      = ProfileWrapper<RootHisto>;
     using WeightType = std::tuple<std::tuple<unsigned int, double>, double>;
-    static constexpr auto fill( Histo& histo, unsigned int i, const WeightType& weight ) {
+    static constexpr void fill( Histo& histo, unsigned int i, const WeightType& weight ) {
       auto [c, sumWeight2]       = weight;
       auto [nEntries, sumWeight] = c;
       histo.setBinNEntries( i, nEntries );
@@ -176,80 +96,40 @@ namespace {
     };
   };
 
-  template <unsigned int N, bool isProfile, typename ROOTHisto>
-  void saveRootHisto( TFile& file, std::string dir, std::string name, nlohmann::json& j ) {
-    saveRootHistoInternal<Traits<isProfile, ROOTHisto>>( file, std::move( dir ), std::move( name ), j,
-                                                         std::make_index_sequence<N>() );
-  }
-
-  using namespace std::string_literals;
-  static const auto registry = std::map{
-      std::pair{ std::pair{ "histogram:Histogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
-      std::pair{ std::pair{ "histogram:WeightedHistogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
-      std::pair{ std::pair{ "histogram:Histogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
-      std::pair{ std::pair{ "histogram:WeightedHistogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
-      std::pair{ std::pair{ "histogram:Histogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
-      std::pair{ std::pair{ "histogram:WeightedHistogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
-      std::pair{ std::pair{ "histogram:ProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
-      std::pair{ std::pair{ "histogram:WeightedProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
-      std::pair{ std::pair{ "histogram:ProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
-      std::pair{ std::pair{ "histogram:WeightedProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
-      std::pair{ std::pair{ "histogram:ProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> },
-      std::pair{ std::pair{ "histogram:WeightedProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> } };
 } // namespace
 
 namespace Gaudi::Histograming::Sink {
 
-  class Root : public Service, public Gaudi::Monitoring::Hub::Sink {
+  using namespace std::string_literals;
 
-  public:
-    using Service::Service;
+  template <unsigned int N, bool isProfile, typename ROOTHisto>
+  void saveRootHisto( TFile& file, std::string dir, std::string name, nlohmann::json& j ) {
+    details::saveRootHisto<Traits<isProfile, ROOTHisto, N>>( file, std::move( dir ), std::move( name ), j );
+  }
+
+  struct Root : Base {
+
+    using Base::Base;
+
+    HistoRegistry registry = { { { "histogram:Histogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
+                               { { "histogram:WeightedHistogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
+                               { { "histogram:Histogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
+                               { { "histogram:WeightedHistogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
+                               { { "histogram:Histogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
+                               { { "histogram:WeightedHistogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
+                               { { "histogram:ProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
+                               { { "histogram:WeightedProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
+                               { { "histogram:ProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
+                               { { "histogram:WeightedProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
+                               { { "histogram:ProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> },
+                               { { "histogram:WeightedProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> } };
 
     StatusCode initialize() override {
-      return Service::initialize().andThen( [&] { serviceLocator()->monitoringHub().addSink( this ); } );
-    }
-
-    StatusCode stop() override {
-      auto ok = Service::stop();
-      if ( !ok ) return ok;
-      std::sort( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( const auto& a, const auto& b ) {
-        return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
+      return Base::initialize().andThen( [&] {
+        for ( auto& [id, func] : registry ) { registerHandler( id, func ); }
       } );
-      TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
-      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [&histoFile]( auto& ent ) {
-        auto j    = ent.toJSON();
-        auto dim  = j.at( "dimension" ).template get<unsigned int>();
-        auto type = j.at( "type" ).template get<std::string>();
-        // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
-        // as ROOT anyway treats everything as doubles in histograms
-        type       = type.substr( 0, type.find_last_of( ':' ) );
-        auto saver = registry.find( { type, dim } );
-        if ( saver == registry.end() )
-          throw GaudiException( "Unknown type : " + type + " dim : " + std::to_string( dim ), "Histogram::Sink::Root",
-                                StatusCode::FAILURE );
-        ( *saver->second )( histoFile, ent.component, ent.name, j );
-      } );
-      return ok;
     }
-
-    void registerEntity( Monitoring::Hub::Entity ent ) override {
-      if ( std::string_view( ent.type ).substr( 0, 10 ) == "histogram:" ) {
-        m_monitoringEntities.emplace_back( std::move( ent ) );
-      }
-    }
-
-    void removeEntity( Monitoring::Hub::Entity const& ent ) override {
-      auto it = std::find( begin( m_monitoringEntities ), end( m_monitoringEntities ), ent );
-      if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
-    }
-
-  private:
-    std::deque<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
-
-    Gaudi::Property<std::string> m_fileName{ this, "FileName", "testHisto.root",
-                                             "Name of file where to save histograms" };
   };
 
   DECLARE_COMPONENT( Root )
-
 } // namespace Gaudi::Histograming::Sink
