@@ -136,8 +136,41 @@ SimpleHistos        DEBUG Monitoring histogram 'test1' desc = 'Forced Alpha ID t
 SimpleHistos        DEBUG Booked 1D Histogram : ID='test1' Path=SimpleHistos Title='Forced Alpha ID time test'
 SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please be patient !
 SimpleCounterHi...SUCCESS Filling Histograms...... Please be patient !
-SimpleCounterHi...   INFO Number of counters : 1
+SimpleCounterHi...   INFO Number of counters : 34
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "/TopDir/SubDir/Gauss"                          |     50000 |
+ | "Gauss"                                         |     50000 |
+ | "GaussBuf"                                      |    500000 |
+ | "GaussFlat"                                     |     50000 |
+ | "GaussFlatBuf"                                  |    500000 |
+ | "GaussFlatGauss"                                |     50000 |
+ | "GaussFlatGaussBuf"                             |    500000 |
+ | "GaussFlatGaussInt"                             |     50000 |
+ | "GaussFlatGaussNA"                              |     50000 |
+ | "GaussFlatGaussW"                               |     24836 |
+ | "GaussFlatInt"                                  |     50000 |
+ | "GaussFlatNA"                                   |     50000 |
+ | "GaussFlatW"                                    |     24592 |
+ | "GaussInt"                                      |     50000 |
+ | "GaussNA"                                       |     50000 |
+ | "GaussW"                                        |     24981 |
+ | "LogGauss"                                      |     50000 |
+ | "LogGaussFlat"                                  |     50000 |
+ | "ProfGauss"                                     |     50000 |
+ | "ProfGaussBuf"                                  |    500000 |
+ | "ProfGaussFlat"                                 |     50000 |
+ | "ProfGaussFlatBuf"                              |    500000 |
+ | "ProfGaussFlatGauss"                            |     50000 |
+ | "ProfGaussFlatGaussBuf"                         |    500000 |
+ | "ProfGaussFlatGaussInt"                         |     50000 |
+ | "ProfGaussFlatGaussNA"                          |     50000 |
+ | "ProfGaussFlatGaussW"                           |     24836 |
+ | "ProfGaussFlatInt"                              |     50000 |
+ | "ProfGaussFlatNA"                               |     50000 |
+ | "ProfGaussFlatW"                                |     24592 |
+ | "ProfGaussInt"                                  |     50000 |
+ | "ProfGaussNA"                                   |     50000 |
+ | "ProfGaussW"                                    |     24981 |
  | "calls"                                         |     50000 |
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3

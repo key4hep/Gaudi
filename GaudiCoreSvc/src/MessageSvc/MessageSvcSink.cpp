@@ -172,8 +172,10 @@ namespace Gaudi::Monitoring {
 
     // Gaudi::Monitoring::Hub::Sink implementation
     void registerEntity( Hub::Entity ent ) override {
-      if ( std::string_view( ent.type ).substr( 0, 8 ) == "counter:" || ent.type == "statentity" ||
-           ent.type == "histogram" ) {
+      auto starts_with = []( std::string_view s, std::string_view preamble ) {
+        return s.substr( 0, preamble.size() ) == preamble;
+      };
+      if ( starts_with( ent.type, "counter:" ) || ent.type == "statentity" || starts_with( ent.type, "histogram:" ) ) {
         m_monitoringEntities.emplace_back( std::move( ent ) );
       }
     }
