@@ -125,6 +125,12 @@ set(CMAKE_CXX_EXTENSIONS OFF) # strict c++.. instead of gnu++..
 # Enable testing with CTest/CDash
 include(CTest)
 
+# These are test-only, private dependencies
+if(BUILD_TESTING)
+  find_package(Catch2 REQUIRED)
+  include(Catch)
+endif()
+
 # Include sub-projects one by one without introducing dependency conflicts
 add_subdirectory(GaudiPluginService)
 add_subdirectory(GaudiPolicy)

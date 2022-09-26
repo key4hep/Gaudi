@@ -308,6 +308,23 @@ if(GAUDI_USE_CPPUNIT)
     LINK GaudiKernel CppUnit::cppunit Boost::thread ${CMAKE_DL_LIBS} TEST)
 endif()
 
+if(BUILD_TESTING)
+  gaudi_add_executable(GaudiKernel_catch2_tests
+    SOURCES 
+      tests/src/CounterSerializationTest.cpp
+    LINK
+      GaudiKernel
+      Catch2::Catch2WithMain
+      nlohmann_json::nlohmann_json
+  )
+  catch_discover_tests(GaudiKernel_catch2_tests
+      TEST_PREFIX GaudiKernel.
+      PROPERTIES
+          LABELS "Gaudi"
+          LABELS "Gaudi.GaudiKernel"
+  )
+endif()
+
 # nosetests
 gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
 gaudi_add_tests(nosetests)
