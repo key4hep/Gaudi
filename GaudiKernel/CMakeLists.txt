@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -312,6 +312,7 @@ if(BUILD_TESTING)
   gaudi_add_executable(GaudiKernel_catch2_tests
     SOURCES 
       tests/src/CounterSerializationTest.cpp
+      tests/src/MonitoringEntityUnitTest.cpp
     LINK
       GaudiKernel
       Catch2::Catch2WithMain
