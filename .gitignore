@@ -34,7 +34,7 @@ DoxyWarnings.log
 *_cache
 
 # QMTest byproducts
-**/tests/qmtest/*
+**/tests/qmtest/*.*
 !**/tests/qmtest/*.qms
 !**/tests/qmtest/*.qmt
 
