@@ -46,10 +46,9 @@ class HistoEx2(HistoAlgo):
 
     def execute(self):
         """The major method 'execute', it is invoked for each event"""
-
         gauss = Rndm.Numbers(self.randSvc(), Rndm.Gauss(0, 1))
 
-        for i in range(0, 10000):
+        for i in range(0, 1000):
             x = gauss()
             y = gauss()
             self.plot2D(x, y, " x vs y    ", -2, 2, -4, 4)
@@ -75,6 +74,9 @@ def configure(gaudi=None):
         gaudi = AppMgr()
 
     HistoEx1.configure(gaudi)
+
+    hsvc = gaudi.service("HistogramPersistencySvc")
+    hsvc.OutputFile = "histoex2.root"
 
     alg = HistoEx2("HistoEx2")
     gaudi.addAlgorithm(alg)

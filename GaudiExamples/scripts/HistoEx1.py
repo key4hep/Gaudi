@@ -80,6 +80,9 @@ def configure(gaudi=None):
 
     HistoEx.configure(gaudi)
 
+    hsvc = gaudi.service("HistogramPersistencySvc")
+    hsvc.OutputFile = "histoex1.root"
+
     alg = HistoEx1("HistoEx1")
     gaudi.addAlgorithm(alg)
 

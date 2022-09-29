@@ -77,7 +77,7 @@ def configure(gaudi=None):
     alg.HistoPrint = True
 
     hsvc = gaudi.service("HistogramPersistencySvc")
-    hsvc.OutputFile = "histo1.root"
+    hsvc.OutputFile = "histoex.root"
 
     # This does not harm and tests bug #50389
     getMyalgBack = gaudi.algorithm("HistoEx")

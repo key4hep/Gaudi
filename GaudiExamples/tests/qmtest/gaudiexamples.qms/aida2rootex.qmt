@@ -15,9 +15,6 @@
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/Aida2RootEx.ref</text></argument>
   <argument name="error_reference"><text>refs/Aida2RootEx.err.ref</text></argument>
-  <argument name="prerequisites"><set>
-    <tuple><text>gaudiexamples.histoex2</text><enumeral>PASS</enumeral></tuple>
-  </set></argument>
   <argument name="validator"><text>
 preprocessor = (normalizeExamples +
      LineSkipper(regexps = [r'Info in &lt;TCanvas::Print&gt;: png file .* has been created']))
