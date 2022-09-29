@@ -55,7 +55,7 @@ StatusCode WriteAlg::execute() {
   Event* hdr = new Event();
   hdr->setEvent( ++m_evtnum );
   hdr->setRun( m_runnum );
-  hdr->setTime( Gaudi::Time::current() );
+  hdr->setTime( Gaudi::Time( 1577836800 + m_evtnum, m_evtnum * 1e6 ) );
 
   sc = eventSvc()->registerObject( "Header", hdr );
   if ( sc.isFailure() ) {
