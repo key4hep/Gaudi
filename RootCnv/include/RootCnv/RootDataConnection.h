@@ -288,10 +288,12 @@ namespace Gaudi {
 
     /// Save object of a given class to section and container
     std::pair<int, unsigned long> saveObj( std::string_view section, std::string_view cnt, TClass* cl, DataObject* pObj,
-                                           int buff_siz, int split_lvl, bool fill_missing = false );
+                                           int minBufferSize, int maxBufferSize, int approxEventsPerBasket,
+                                           int split_lvl, bool fill_missing = false );
     /// Save object of a given class to section and container
     std::pair<int, unsigned long> save( std::string_view section, std::string_view cnt, TClass* cl, void* pObj,
-                                        int buff_siz, int split_lvl, bool fill_missing = false );
+                                        int minBufferSize, int maxBufferSize, int approxEventsPerBasket, int split_lvl,
+                                        bool fill_missing = false );
 
     /// Open data stream in read mode
     StatusCode connectRead() override;
