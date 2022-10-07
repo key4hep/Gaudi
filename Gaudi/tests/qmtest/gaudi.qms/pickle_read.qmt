@@ -43,4 +43,8 @@ if conf_dict != expected:
     result["GaudiTest.configuration.found"] = result.Quote(pp.pformat(conf_dict))
 </text></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

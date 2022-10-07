@@ -20,4 +20,8 @@
 <argument name="prerequisites"><set>
   <tuple><text>gaudiexamples.root_io.newwrite</text><enumeral>PASS</enumeral></tuple>
 </set></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

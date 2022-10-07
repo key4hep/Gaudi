@@ -43,4 +43,8 @@ if not re.search(expected_warning,stdout):
     causes.append("missing warning message")
     result["GaudiTest.expected_warning"] = result.Quote(expected_warning)
 </text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

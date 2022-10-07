@@ -16,4 +16,8 @@
   <text>../../options/ROOT_IO/WriteAndReadHandleWhiteBoard.py</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

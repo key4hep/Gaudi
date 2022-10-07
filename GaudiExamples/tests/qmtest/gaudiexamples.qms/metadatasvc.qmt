@@ -48,4 +48,8 @@ try:
 except CalledProcessError as e:
     causes.append('dump metadata script failure')
 </text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

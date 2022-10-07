@@ -46,4 +46,8 @@ preprocessor = normalizeExamples + \
                     "PROFILE: interrupts/evictions/bytes = X/Y/Z")
 validateWithReference(preproc = preprocessor)
 </text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

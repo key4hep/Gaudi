@@ -38,4 +38,8 @@ MyTestTool().DataHandle = '/Event/X'
 
 </text></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

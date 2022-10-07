@@ -56,4 +56,8 @@ preprocessor = (normalizeExamples +
                     "found XXX reachable heap objects of YYY bytes"))
 validateWithReference(preproc = preprocessor)
 </text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>

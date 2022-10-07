@@ -15,8 +15,23 @@
   <text>-v</text>
   <text>../../options/SubSlotException.py</text>
 </set></argument>
+<argument name="options"><text>
+# this is to force QMT to interpreter these options as Python
+from Gaudi.Configuration import *
+
+# this is to prevent GaudiException to print a stack trace (it confuses the test)
+import os
+try:
+    del os.environ["ENABLE_BACKTRACE"]
+except KeyError:
+    pass  # the environment variable might not be set, but it's OK
+</text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="timeout"><integer>120</integer></argument>
 <argument name="reference"><text>refs/ViewExceptionTest.ref</text></argument>
 <argument name="exit_code"><integer>6</integer></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>
