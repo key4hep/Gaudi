@@ -271,9 +271,9 @@ namespace Gaudi::Accumulators {
   public:
     using BaseAccumulator    = BaseAccumulatorT<Atomicity, Arithmetic>;
     using AxisArithmeticType = typename InputType::AxisArithmeticType;
+    using AxisType           = Axis<AxisArithmeticType>;
     template <std::size_t... Is>
-    HistogramingAccumulatorInternal( details::GetTuple_t<Axis<AxisArithmeticType>, ND::value> axis,
-                                     std::index_sequence<Is...> )
+    HistogramingAccumulatorInternal( details::GetTuple_t<AxisType, ND::value> axis, std::index_sequence<Is...> )
         : m_axis{ std::get<Is>( axis )... }
         , m_totNBins{ InputType::computeTotNBins( m_axis ) }
         , m_value( new BaseAccumulator[m_totNBins] ) {
@@ -322,7 +322,7 @@ namespace Gaudi::Accumulators {
       return m_value[index];
     }
     /// set of Axis of this Histogram
-    std::array<Axis<AxisArithmeticType>, ND::value> m_axis;
+    std::array<AxisType, ND::value> m_axis;
     /// total number of bins in this histogram, under and overflow included
     unsigned int m_totNBins;
     /// Histogram content
@@ -429,16 +429,18 @@ namespace Gaudi::Accumulators {
   class HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::index_sequence<NDs...>>
       : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
   public:
-    using Parent = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
+    using Parent           = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
+    using AccumulatorType  = Accumulator<Atomicity, Arithmetic, std::integral_constant<int, ND>>;
+    using NumberDimensions = std::integral_constant<unsigned int, ND>;
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
-                                     details::GetTuple_t<Axis<Arithmetic>, ND> axis )
+                                     details::GetTuple_t<typename AccumulatorType::AxisType, ND> axis )
         : Parent( owner, name, std::string( Type ) + ":" + typeid( Arithmetic ).name(), axis,
                   std::make_index_sequence<ND>{} )
         , m_title( title ) {}
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
-                                     details::alwaysT<NDs, Axis<Arithmetic>>... allAxis )
+                                     details::alwaysT<NDs, typename AccumulatorType::AxisType>... allAxis )
         : HistogramingCounterBaseInternal( owner, name, title, std::make_tuple( allAxis... ) ) {}
     using Parent::print;
     template <typename stream>
@@ -455,8 +457,7 @@ namespace Gaudi::Accumulators {
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     nlohmann::json toJSON() const override {
       // get all bin values and compute total nbEntries
-      using Acc = Accumulator<Atomicity, Arithmetic, std::integral_constant<int, ND>>;
-      std::vector<typename Acc::BaseAccumulator::OutputType> bins;
+      std::vector<typename AccumulatorType::BaseAccumulator::OutputType> bins;
       bins.reserve( this->totNBins() );
       unsigned long totNEntries{ 0 };
       for ( unsigned int i = 0; i < this->totNBins(); i++ ) {
