@@ -107,6 +107,7 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
     }
   }
 
+  auto lck = std::scoped_lock{ m_gLock };
   m_listsvc.push_back( service );
   service->setServiceManager( this );
   return m_listsvc.back().service; // DANGER: returns a reference to a SmartIF in m_listsvc, and hence does no longer
