@@ -55,7 +55,6 @@ gaudi_add_module(GaudiExamples
                          src/CounterEx/StatSvcAlg.cpp
                          src/DataOnDemand/DataCreator.cpp
                          src/DataOnDemand/MyDataAlgorithm.cpp
-                         src/ExtendedProperties/ArrayProperties.cpp
                          src/ExtendedProperties/BoostArrayProperties.cpp
                          src/ExtendedProperties/ExtendedProperties.cpp
                          src/ExtendedProperties/ExtendedProperties2.cpp
