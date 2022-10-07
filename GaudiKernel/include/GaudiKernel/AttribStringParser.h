@@ -47,8 +47,14 @@ namespace Gaudi {
 
       /// Iterator to loop over the tag/value pairs in the attribute string.
       // This class is essentially a wrapper around boost::sregex_iterator.
-      class Iterator : public std::iterator<std::input_iterator_tag, Attrib> {
+      class Iterator {
       public:
+        using iterator_category = std::input_iterator_tag;
+        using value_type        = Attrib;
+        using difference_type   = std::ptrdiff_t;
+        using pointer           = value_type*;
+        using reference         = value_type&;
+
         Iterator() = default;
         Iterator( const boost::sregex_iterator& it, bool expand_vars ) : m_it( it ), m_expandVars( expand_vars ) {
           // i_setAttrib();
