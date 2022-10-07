@@ -28,6 +28,8 @@
 
 #include "RVersion.h"
 
+#include "Python.h"
+
 namespace Gaudi {
 
   /** @class BootSvcLocator
@@ -261,8 +263,13 @@ bool PyHelper( configureApp )( IInterface* app ) {
 int PyHelper( ROOT_VERSION_CODE )() { return ROOT_VERSION_CODE; }
 
 bool py_bootstrap_app_run( IInterface* i, int maxevt ) {
-  auto ep = SmartIF<IEventProcessor>( i );
-  return ep && ep->executeRun( maxevt ).isSuccess();
+  auto ep   = SmartIF<IEventProcessor>( i );
+  bool stat = false;
+  // Relinquish the GIL to allow python algs in MT mode
+  Py_BEGIN_ALLOW_THREADS;
+  stat = ep && ep->executeRun( maxevt ).isSuccess();
+  Py_END_ALLOW_THREADS;
+  return stat;
 }
 
 #define PyFSMHelper( s )                                                                                               \
