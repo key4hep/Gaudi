@@ -1126,6 +1126,8 @@ namespace Gaudi::Accumulators {
         : m_monitoringHub{ &o->serviceLocator()->monitoringHub() }, logger( o ), msg( ms ), max( nMax ) {
       m_monitoringHub->registerEntity( o->name(), ms, typeString, *this );
     }
+    template <typename OWNER>
+    MsgCounter( OWNER* o, std::string const& ms, int nMax ) : MsgCounter( o, ms, static_cast<unsigned long>( nMax ) ) {}
     MsgCounter& operator++() {
       ( *this ) += true;
       return *this;
