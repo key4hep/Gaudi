@@ -1195,18 +1195,13 @@ class ReferenceFileValidator:
         if self.preproc:
             new = self.preproc(new)
 
-        diffs = difflib.ndiff(orig, new, charjunk=difflib.IS_CHARACTER_JUNK)
         filterdiffs = list(
-            map(lambda x: x.strip(), filter(lambda x: x[0] != " ", diffs))
+            difflib.unified_diff(
+                orig, new, n=1, fromfile="Reference file", tofile="Actual output"
+            )
         )
         if filterdiffs:
-            result[self.result_key] = result.Quote("\n".join(filterdiffs))
-            result[self.result_key] += result.Quote(
-                """
-                Legend:
-                -) reference file
-                +) standard output of the test"""
-            )
+            result[self.result_key] = result.Quote("".join(filterdiffs))
             result[self.result_key + ".preproc.new"] = result.Quote(
                 "\n".join(map(str.strip, new))
             )
