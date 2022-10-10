@@ -473,6 +473,7 @@ namespace Gaudi::Accumulators {
     }
 
   protected:
+    GenericAccumulator( InnerType in ) : m_value( std::move( in ) ) {}
     auto             rawValue() const { return ValueHandler::getValue( m_value ); }
     void             reset( InnerType in ) { m_value = std::move( in ); }
     static InnerType extractJSONData( const nlohmann::json& j, const JSONStringEntriesType& entries ) {
@@ -517,6 +518,7 @@ namespace Gaudi::Accumulators {
     }
 
   protected:
+    AccumulatorSet( const InternalType& t ) : AccumulatorSet() { reset( t ); }
     void reset( const InternalType& t ) {
       std::apply( [this]( const auto&... i ) { ( this->Bases<Atomicity, Arithmetic>::reset( i ), ... ); }, t );
     }
@@ -871,6 +873,7 @@ namespace Gaudi::Accumulators {
   template <atomicity Atomicity, template <atomicity Ato, typename... Int> class Accumulator, typename... Args>
   class BufferableCounter : public PrintableCounter, public Accumulator<Atomicity, Args...> {
   public:
+    using Accumulator<Atomicity, Args...>::Accumulator;
     BufferableCounter() = default;
     template <typename OWNER, typename... CARGS>
     BufferableCounter( OWNER* o, std::string const& name, const std::string counterType, CARGS... args )
@@ -924,7 +927,7 @@ namespace Gaudi::Accumulators {
       return { { "type", typeString }, { "empty", this->nEntries() == 0 }, { "nEntries", this->nEntries() } };
     }
     static Counter fromJSON( const nlohmann::json& j ) {
-      return CountAccumulator<Atomicity, int>::extractJSONData( j, { "nEntries" } );
+      return IntegralAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { "nEntries" } );
     }
   };
 
@@ -1119,10 +1122,12 @@ namespace Gaudi::Accumulators {
   public:
     inline static const std::string typeString{ "counter:MsgCounter" };
     template <typename OWNER>
-    MsgCounter( OWNER* o, std::string const& ms, int nMax = 10 )
-        : m_monitoringHub{ o->serviceLocator()->monitoringHub() }, logger( o ), msg( ms ), max( nMax ) {
-      m_monitoringHub.registerEntity( o->name(), std::move( ms ), typeString, *this );
+    MsgCounter( OWNER* o, std::string const& ms, unsigned long nMax = 10 )
+        : m_monitoringHub{ &o->serviceLocator()->monitoringHub() }, logger( o ), msg( ms ), max( nMax ) {
+      m_monitoringHub->registerEntity( o->name(), ms, typeString, *this );
     }
+    template <typename OWNER>
+    MsgCounter( OWNER* o, std::string const& ms, int nMax ) : MsgCounter( o, ms, static_cast<unsigned long>( nMax ) ) {}
     MsgCounter& operator++() {
       ( *this ) += true;
       return *this;
@@ -1134,7 +1139,9 @@ namespace Gaudi::Accumulators {
     }
     MsgCounter( MsgCounter const& ) = delete;
     MsgCounter& operator=( MsgCounter const& ) = delete;
-    ~MsgCounter() { m_monitoringHub.removeEntity( *this ); }
+    ~MsgCounter() {
+      if ( m_monitoringHub ) m_monitoringHub->removeEntity( *this );
+    }
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {
       return o << boost::format{ tableFormat ? "|%|10d| |" : "#=%|-7lu|" } % this->value();
@@ -1152,13 +1159,15 @@ namespace Gaudi::Accumulators {
                { "msg", msg } };
     }
     static MsgCounter fromJSON( const nlohmann::json& j ) {
-      MsgCounter c = MsgCounter::extractJSONData( j, { "nEntries" } );
-      c.msg        = j.at( "msg" ).get<std::string>();
-      c.max        = j.at( "max" ).get<unsigned long>();
+      return { j.at( "msg" ).get<std::string>(), j.at( "max" ).get<unsigned long>(),
+               j.at( "nEntries" ).get<unsigned long>() };
     }
 
   private:
-    Monitoring::Hub&           m_monitoringHub;
+    MsgCounter( std::string const& ms, unsigned long nMax, unsigned long count )
+        : details::MsgCounter::MsgAccumulator<Atomicity>{ count }, msg( ms ), max( nMax ) {}
+
+    Monitoring::Hub*           m_monitoringHub{ nullptr };
     const CommonMessagingBase* logger{ nullptr };
     std::string                msg;
     unsigned long              max;

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -306,6 +306,24 @@ if(GAUDI_USE_CPPUNIT)
 
   gaudi_add_executable(test_LockedHandle SOURCES tests/src/test_LockedHandle.cpp
     LINK GaudiKernel CppUnit::cppunit Boost::thread ${CMAKE_DL_LIBS} TEST)
+endif()
+
+if(BUILD_TESTING)
+  gaudi_add_executable(GaudiKernel_catch2_tests
+    SOURCES 
+      tests/src/CounterSerializationTest.cpp
+      tests/src/MonitoringEntityUnitTest.cpp
+    LINK
+      GaudiKernel
+      Catch2::Catch2WithMain
+      nlohmann_json::nlohmann_json
+  )
+  catch_discover_tests(GaudiKernel_catch2_tests
+      TEST_PREFIX GaudiKernel.
+      PROPERTIES
+          LABELS "Gaudi"
+          LABELS "Gaudi.GaudiKernel"
+  )
 endif()
 
 # nosetests

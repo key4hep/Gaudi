@@ -1,5 +1,5 @@
 /*****************************************************************************\
-* (c) Copyright 2020 CERN for the benefit of the LHCb Collaboration           *
+* (c) Copyright 2020-2022 CERN for the benefit of the LHCb Collaboration      *
 *                                                                             *
 * This software is distributed under the terms of the GNU General Public      *
 * Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   *
@@ -27,11 +27,14 @@ namespace Gaudi::Monitoring {
     using has_merge_and_reset_ = decltype( std::declval<T>().mergeAndReset( std::declval<T&&>() ) );
     template <typename T>
     inline constexpr bool has_merge_and_reset_v = Gaudi::cpp17::is_detected_v<has_merge_and_reset_, T>;
-
-    struct MergeAndResetBase {
-      virtual ~MergeAndResetBase()                  = default;
-      virtual void operator()( void*, void* ) const = 0;
-    };
+    template <typename T>
+    using has_merge_from_json_ = decltype( std::declval<T>().mergeAndReset( nlohmann::json{} ) );
+    template <typename T>
+    inline constexpr bool has_merge_from_json_v = Gaudi::cpp17::is_detected_v<has_merge_from_json_, T>;
+    template <typename T>
+    using has_from_json_ = decltype( T::fromJSON( nlohmann::json{} ) );
+    template <typename T>
+    inline constexpr bool has_from_json_v = Gaudi::cpp17::is_detected_v<has_from_json_, T>;
 
     using MergeAndReset_t = void ( * )( void*, void* );
 
@@ -43,6 +46,21 @@ namespace Gaudi::Monitoring {
         };
       } else {
         return []( void*, void* ) {};
+      }
+    }
+
+    using MergeAndResetFromJSON_t = void ( * )( void*, const nlohmann::json& );
+
+    template <typename T>
+    MergeAndResetFromJSON_t makeMergeAndResetFromJSONFor() {
+      if constexpr ( has_merge_from_json_v<T> ) {
+        return []( void* ptr, const nlohmann::json& other ) { reinterpret_cast<T*>( ptr )->mergeAndReset( other ); };
+      } else if constexpr ( has_merge_and_reset_v<T> && has_from_json_v<T> ) {
+        return []( void* ptr, const nlohmann::json& other ) {
+          reinterpret_cast<T*>( ptr )->mergeAndReset( T::fromJSON( other ) );
+        };
+      } else {
+        return nullptr;
       }
     }
 
@@ -81,7 +99,8 @@ namespace Gaudi::Monitoring {
           } }
           , m_reset{ []( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); } }
           , m_mergeAndReset{ details::makeMergeAndResetFor<T>() }
-          , m_getJSON{ []( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); } } {}
+          , m_getJSON{ []( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); } }
+          , m_mergeAndResetFromJSON{ details::makeMergeAndResetFromJSONFor<T>() } {}
       /// name of the component owning the Entity
       std::string component;
       /// name of the entity
@@ -104,6 +123,12 @@ namespace Gaudi::Monitoring {
         }
         return ( *m_mergeAndReset )( m_ptr, ent.m_ptr );
       }
+      /// tell if the Entity data can be updated from JSON input
+      bool canMergeFromJSON() const { return m_mergeAndResetFromJSON; }
+      /// allow merging to internal data from JSON input
+      void mergeAndReset( nlohmann::json const& j ) {
+        if ( canMergeFromJSON() ) ( *m_mergeAndResetFromJSON )( m_ptr, j );
+      }
       /// operator== for comparison with raw pointer
       bool operator==( void* ent ) { return m_ptr == ent; }
       /// operator== for comparison with an entity
@@ -123,6 +148,8 @@ namespace Gaudi::Monitoring {
       details::MergeAndReset_t m_mergeAndReset{ nullptr };
       /// function converting the internal data to json.
       json ( *m_getJSON )( const void* );
+      /// function calling merge and reset on internal data from JSON input
+      details::MergeAndResetFromJSON_t m_mergeAndResetFromJSON{ nullptr };
     };
 
     /// Interface reporting services must implement.
