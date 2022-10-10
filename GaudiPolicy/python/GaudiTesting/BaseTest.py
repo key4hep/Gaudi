@@ -85,7 +85,9 @@ def kill_tree(ppid, sig):
     """
     log = logging.getLogger("kill_tree")
     ps_cmd = ["ps", "--no-headers", "-o", "pid", "--ppid", str(ppid)]
-    get_children = Popen(ps_cmd, stdout=PIPE, stderr=PIPE)
+    # Note: start in a clean env to avoid a freeze with libasan.so
+    # See https://sourceware.org/bugzilla/show_bug.cgi?id=27653
+    get_children = Popen(ps_cmd, stdout=PIPE, stderr=PIPE, env={})
     children = map(int, get_children.communicate()[0].split())
     for child in children:
         kill_tree(child, sig)
