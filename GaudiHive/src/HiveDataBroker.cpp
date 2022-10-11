@@ -298,6 +298,10 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
       throw GaudiException( "unknown requested input: " + id.key(), __func__, StatusCode::FAILURE );
     deps.push_back( i->second );
   }
+  // producers may be responsible for multiple requested DataObjID -- make sure they are only mentioned once
+  std::sort( deps.begin(), deps.end() );
+  deps.erase( std::unique( deps.begin(), deps.end() ), deps.end() );
+
   // insert the (direct) dependencies of 'current' right after 'current', and
   // interate until done...
   for ( auto current = deps.begin(); current != deps.end(); ++current ) {
