@@ -180,7 +180,16 @@ private:
   Gaudi::Property<bool>        m_enablePreemptiveBlockingTasks{
       this, "PreemptiveBlockingTasks", false,
       "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly." };
-  Gaudi::Property<bool> m_checkDeps{ this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies" };
+  Gaudi::Property<bool>                     m_checkDeps{ this, "CheckDependencies", false,
+                                     "Runtime check of Algorithm Input Data Dependencies" };
+  Gaudi::Property<bool>                     m_checkOutput{ this, "CheckOutputUsage", false,
+                                       "Runtime check of Algorithm Output Data usage" };
+  Gaudi::Property<std::vector<std::string>> m_checkOutputIgnoreList{
+      this,
+      "CheckOutputUsageIgnoreList",
+      {},
+      "Ignore outputs of the Algorithms of this name when doing the check",
+      "OrderedSet<std::string>" };
 
   Gaudi::Property<std::string> m_useDataLoader{ this, "DataLoaderAlg", "",
                                                 "Attribute unmet input dependencies to this DataLoader Algorithm" };
