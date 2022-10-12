@@ -5,6 +5,32 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r8][] - 2022-10-12
+Minor release to pick up some fixes for ATLAS and LHCb.
+
+This release also features some clean up and some improvements to monitoring and testing infrastructure.
+
+### Changed
+- Separated `RootHistogramSinkBase` from `RootHistogramSink` (gaudi/Gaudi!1377)
+- Avoid worse-case performance issues when computing test diffs (gaudi/Gaudi!1375)
+- Remove long deprecated header `CArrayAsProperty.h` (gaudi/Gaudi!1373)
+
+### Added
+- Add method to update `Monitoring::Hub::Entity` from JSON data (gaudi/Gaudi!1379)
+- Implemented `HistogramArray` class to ease the use of arrays of histograms (gaudi/Gaudi!1372)
+- Add execution time of `ValidateOutput` to `BaseTest` output (gaudi/Gaudi!1360)
+
+### Fixed
+- Prevent hanging on test timeout with ASan builds (gaudi/Gaudi!1383)
+- DataBroker: avoid entering the same producer multiple times as scheduling dependency (gaudi/Gaudi!1382)
+- Avoid deprecated `std::iterator` (gaudi/Gaudi!1371)
+- Fix race condition in `ServiceManager` (gaudi/Gaudi#237  gaudi/Gaudi!1376)
+- Fix test failures when `GAUDIAPPNAME` or `GAUDIAPPVERSION` are set (gaudi/Gaudi#233  gaudi/Gaudi!1374)
+- Fix deprecation warnings with Boost 1.79 (gaudi/Gaudi!1370)
+- Bootstrap.cpp: Relinquish Python's GIL before calling `executeRun` to allow Python algs in MT mode (gaudi/Gaudi!1369)
+- Ensure `MessageSvc` and `JobOptionsSvc` are cleaned up when terminating `ApplicationMgr` (gaudi/Gaudi!1368)
+
+
 ## [v36r7][] - 2022-07-29
 Minor release needed by LHCb to pick up some fixes.
 
@@ -928,6 +954,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r8]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r8
 [v36r7]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r7
 [v36r6]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r6
 [v36r5]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r5
