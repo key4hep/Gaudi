@@ -424,8 +424,8 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
           }
         }
         for ( int i = 0, n = pLinks->size(); i < n; ++i ) {
-          LinkManager::Link* lnk     = pLinks->link( i );
-          int                link_id = m_current->makeLink( lnk->path() );
+          const LinkManager::Link* lnk     = pLinks->link( i );
+          int                      link_id = m_current->makeLink( lnk->path() );
           refs.links.push_back( link_id );
         }
         pair<int, unsigned long> ret =

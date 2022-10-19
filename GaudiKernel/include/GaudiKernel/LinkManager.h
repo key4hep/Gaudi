@@ -91,12 +91,35 @@ public:
   long size() const { return m_linkVector.size(); }
   bool empty() const { return m_linkVector.empty(); }
   /// Retrieve symbolic link identified by ID
-  Link* link( long id );
+  const Link* link( long id ) const;
+  Link*       link( long id );
   /// Retrieve symbolic link identified by object
-  Link* link( const DataObject* pObject );
+  const Link* link( const DataObject* pObject ) const;
+  Link*       link( const DataObject* pObject );
   /// Retrieve symbolic link identified by path
-  Link* link( std::string_view path );
+  const Link* link( std::string_view path ) const;
+  Link*       link( std::string_view path );
   /// Add link by object reference and path
   long addLink( const std::string& path, const DataObject* pObject );
+
+  struct Sentinel {};
+  Sentinel end() const { return {}; }
+  auto     begin() const {
+    class Iterator {
+      int                i;
+      LinkManager const* parent;
+
+    public:
+      Iterator( LinkManager const* p, int i ) : i{ i }, parent{ p } {}
+      bool      operator==( Sentinel ) const { return i == parent->size(); }
+      bool      operator!=( Sentinel ) const { return !( *this == Sentinel{} ); }
+      Iterator& operator++() {
+        ++i;
+        return *this;
+      }
+      const Link& operator*() const { return *parent->link( i ); }
+    };
+    return Iterator{ this, 0 };
+  }
 };
 #endif // GAUDIKERNEL_LINKMANAGER_H

@@ -50,25 +50,19 @@ const ContainedObject* SmartRefBase::accessData( const ContainedObject* ) const 
 
 /// Load on demand: DataObject type references
 const DataObject* SmartRefBase::accessData( const DataObject* ) const {
-  DataObject* target = nullptr;
-  DataObject* source = nullptr;
   if ( !m_data && m_contd ) m_data = m_contd->parent();
-  source = const_cast<DataObject*>( m_data );
-  if ( m_hintID != StreamBuffer::INVALID && source ) {
-    LinkManager* mgr = source->linkMgr();
-    if ( mgr ) {
-      LinkManager::Link* link = mgr->link( m_hintID );
-      if ( link ) {
-        target = link->object();
-        if ( !target ) {
-          IRegistry* reg = source->registry();
-          if ( reg ) {
-            IDataProviderSvc* datasvc = reg->dataSvc();
-            if ( datasvc && datasvc->retrieveObject( link->path(), target ).isSuccess() ) { link->setObject( target ); }
-          }
-        }
-      }
-    }
+  DataObject* source = const_cast<DataObject*>( m_data );
+  if ( m_hintID == StreamBuffer::INVALID || !source ) return nullptr;
+  LinkManager* mgr = source->linkMgr();
+  if ( !mgr ) return nullptr;
+  LinkManager::Link* link = mgr->link( m_hintID );
+  if ( !link ) return nullptr;
+  DataObject* target = link->object();
+  if ( !target ) {
+    IRegistry* reg = source->registry();
+    if ( !reg ) return nullptr;
+    IDataProviderSvc* datasvc = reg->dataSvc();
+    if ( datasvc && datasvc->retrieveObject( link->path(), target ).isSuccess() ) { link->setObject( target ); }
   }
   return target;
 }
@@ -80,7 +74,7 @@ bool SmartRefBase::isEqualEx( const DataObject* pObj, const SmartRefBase& c ) co
     if ( source ) {
       LinkManager* mgr = source->linkMgr();
       if ( mgr ) {
-        LinkManager::Link* link = mgr->link( c.m_hintID );
+        const LinkManager::Link* link = mgr->link( c.m_hintID );
         if ( link ) {
           IRegistry* pReg = pObj->registry();
           return pReg && link->path() == pReg->identifier();
@@ -104,7 +98,7 @@ const std::string& SmartRefBase::path() const {
   if ( m_hintID != StreamBuffer::INVALID && source ) {
     LinkManager* mgr = source->linkMgr();
     if ( mgr ) {
-      LinkManager::Link* link = mgr->link( m_hintID );
+      const LinkManager::Link* link = mgr->link( m_hintID );
       if ( link ) return link->path();
     }
   }
