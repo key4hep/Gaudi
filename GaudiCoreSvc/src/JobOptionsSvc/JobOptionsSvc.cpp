@@ -21,6 +21,7 @@
 #include <Gaudi/Property.h>
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/PathResolver.h>
 #include <GaudiKernel/PropertyHolder.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/StatusCode.h>
@@ -28,6 +29,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -233,10 +235,19 @@ void JobOptionsSvc::fillServiceCatalog( const gp::Catalog& catalog ) {
 StatusCode JobOptionsSvc::readOptions( std::string_view file, std::string_view path ) {
   std::string search_path = std::string{ path };
   if ( search_path.empty() && !m_dir_search_path.empty() ) { search_path = m_dir_search_path; }
-  //
+
   if ( msgLevel( MSG::DEBUG ) )
     debug() << "Reading options from the file "
             << "'" << file << "'" << endmsg;
+
+  if ( file.size() >= 5 && file.substr( file.size() - 5 ) == ".json" ) {
+    nlohmann::json opts;
+    std::ifstream  input( System::PathResolver::find_file( std::string( file ), std::string( path ) ) );
+    input >> opts;
+    for ( auto item = opts.begin(); item != opts.end(); ++item ) { set( item.key(), item.value().get<std::string>() ); }
+    return StatusCode::SUCCESS;
+  }
+
   gp::Messages      messages( msgStream() );
   gp::Catalog       catalog;
   gp::Units         units;
