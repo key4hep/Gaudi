@@ -432,12 +432,11 @@ namespace Gaudi::Accumulators {
     using Parent           = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
     using AccumulatorType  = Accumulator<Atomicity, Arithmetic, std::integral_constant<int, ND>>;
     using NumberDimensions = std::integral_constant<unsigned int, ND>;
+    inline static const std::string typeString{ std::string{ Type } + ':' + typeid( Arithmetic ).name() };
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
                                      details::GetTuple_t<typename AccumulatorType::AxisType, ND> axis )
-        : Parent( owner, name, std::string( Type ) + ":" + typeid( Arithmetic ).name(), axis,
-                  std::make_index_sequence<ND>{} )
-        , m_title( title ) {}
+        : Parent( owner, name, *this, axis, std::make_index_sequence<ND>{} ), m_title( title ) {}
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
                                      details::alwaysT<NDs, typename AccumulatorType::AxisType>... allAxis )

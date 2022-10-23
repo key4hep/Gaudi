@@ -875,18 +875,22 @@ namespace Gaudi::Accumulators {
   public:
     using Accumulator<Atomicity, Args...>::Accumulator;
     BufferableCounter() = default;
-    template <typename OWNER, typename... CARGS>
-    BufferableCounter( OWNER* o, std::string const& name, const std::string counterType, CARGS... args )
-        : Accumulator<Atomicity, Args...>( args... ), m_monitoringHub( &o->serviceLocator()->monitoringHub() ) {
-      m_monitoringHub->registerEntity( o->name(), name, counterType, *this );
-    }
     template <typename OWNER>
-    BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, "counter" ) {}
+    BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, *this ) {}
     Buffer<Accumulator, Atomicity, Args...> buffer() { return { *this }; }
     BufferableCounter( BufferableCounter const& ) = delete;
     BufferableCounter& operator=( BufferableCounter const& ) = delete;
     ~BufferableCounter() {
       if ( m_monitoringHub ) { m_monitoringHub->removeEntity( *this ); }
+    }
+
+    inline static const std::string typeString{ "counter" };
+
+  protected:
+    template <typename OWNER, typename SELF, typename... CARGS>
+    BufferableCounter( OWNER* o, std::string const& name, SELF& self, CARGS... args )
+        : Accumulator<Atomicity, Args...>( args... ), m_monitoringHub( &o->serviceLocator()->monitoringHub() ) {
+      m_monitoringHub->registerEntity( o->name(), name, self.typeString, self );
     }
 
   private:
@@ -899,11 +903,11 @@ namespace Gaudi::Accumulators {
    */
   template <atomicity Atomicity = atomicity::full, typename Arithmetic = unsigned long>
   struct Counter : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic> {
-    inline static const std::string typeString{ std::string{ "counter:Counter:" } + typeid( unsigned long ).name() };
+    inline static const std::string typeString{ std::string{ "counter:Counter:" } + typeid( Arithmetic ).name() };
     using BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     Counter( OWNER* o, std::string const& name )
-        : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>( o, name, typeString ) {}
+        : BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>( o, name, *this ) {}
     Counter& operator++() { return ( *this ) += 1; }
     Counter& operator+=( const Arithmetic v ) {
       BufferableCounter<Atomicity, IntegralAccumulator, Arithmetic>::operator+=( v );
@@ -942,7 +946,7 @@ namespace Gaudi::Accumulators {
     using BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     AveragingCounter( OWNER* o, std::string const& name )
-        : BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>( o, name, typeString ) {}
+        : BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>( o, name, *this ) {}
     using BufferableCounter<Atomicity, AveragingAccumulator, Arithmetic>::print;
 
     template <typename stream>
@@ -981,7 +985,7 @@ namespace Gaudi::Accumulators {
     using BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     SigmaCounter( OWNER* o, std::string const& name )
-        : BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>( o, name, typeString ) {}
+        : BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>( o, name, *this ) {}
     using BufferableCounter<Atomicity, SigmaAccumulator, Arithmetic>::print;
 
     template <typename stream>
@@ -1020,7 +1024,7 @@ namespace Gaudi::Accumulators {
     using BufferableCounter<Atomicity, StatAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     StatCounter( OWNER* o, std::string const& name )
-        : BufferableCounter<Atomicity, StatAccumulator, Arithmetic>( o, name, typeString ) {}
+        : BufferableCounter<Atomicity, StatAccumulator, Arithmetic>( o, name, *this ) {}
     using BufferableCounter<Atomicity, StatAccumulator, Arithmetic>::print;
 
     template <typename stream>
@@ -1064,7 +1068,7 @@ namespace Gaudi::Accumulators {
     using BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic>::BufferableCounter;
     template <typename OWNER>
     BinomialCounter( OWNER* o, std::string const& name )
-        : BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic>( o, name, typeString ) {}
+        : BufferableCounter<Atomicity, BinomialAccumulator, Arithmetic>( o, name, *this ) {}
 
     template <typename stream>
     stream& printImpl( stream& o, bool tableFormat ) const {

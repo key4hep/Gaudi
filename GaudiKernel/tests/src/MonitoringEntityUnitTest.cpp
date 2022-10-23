@@ -10,6 +10,27 @@
 \***********************************************************************************/
 #include <Gaudi/Accumulators.h>
 #include <catch2/catch.hpp>
+#include <map>
+#include <optional>
+#include <string>
+#include <utility>
+
+namespace {
+  /// Mock helpers to be able to invoke counters auto registering constructor.
+  Gaudi::Monitoring::Hub localHub;
+  struct MiniSink : Gaudi::Monitoring::Hub::Sink {
+    MiniSink() { localHub.addSink( this ); }
+    ~MiniSink() { localHub.removeSink( this ); }
+    void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { entity.emplace( std::move( ent ) ); }
+    void removeEntity( Gaudi::Monitoring::Hub::Entity const& ) override {}
+    std::optional<Gaudi::Monitoring::Hub::Entity> entity;
+  };
+  struct Owner {
+    Owner*                  serviceLocator() { return this; }
+    Gaudi::Monitoring::Hub& monitoringHub() { return localHub; }
+    std::string             name() { return "owner"; }
+  };
+} // namespace
 
 TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
   using namespace Gaudi::Accumulators;
@@ -61,6 +82,18 @@ TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
       CHECK( c.nEntries() == 5 );
       e.mergeAndReset( nlohmann::json{ { "nEntries", 10 } } );
       CHECK( c.nEntries() == 15 );
+    }
+    SECTION( "self registered" ) {
+      MiniSink  sink;
+      Owner     owner;
+      Counter<> owned( &owner, "counter" );
+      REQUIRE( sink.entity.has_value() );
+      CHECK( sink.entity->canMergeFromJSON() );
+      CHECK( owned.nEntries() == 0 );
+      owned += 5;
+      CHECK( owned.nEntries() == 5 );
+      sink.entity->mergeAndReset( nlohmann::json{ { "nEntries", 10 } } );
+      CHECK( owned.nEntries() == 15 );
     }
   }
   SECTION( "no merge" ) {
