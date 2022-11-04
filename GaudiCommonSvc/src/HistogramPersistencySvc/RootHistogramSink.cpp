@@ -79,7 +79,14 @@ namespace {
   /// Wrapper around TProfileX to be able to fill it
   template <typename TP>
   struct ProfileWrapper : TP {
-    using TP::TP;
+    template <typename... Args>
+    ProfileWrapper( Args&&... args ) : TP( std::forward<Args>( args )... ) {
+      // When the static function TH1::SetDefaultSumw2 had been called (passing true), `Sumw2(true)` is automatically
+      // called by the constructor of TProfile. This is a problem because in the profiles in Gaudi::Accumulators we do
+      // not keep track of the sum of squares of weights and consequently don't set fBinSumw2 of the TProfile, which in
+      // turn leads to a self-inconsistent TProfile object. The "fix" is to disable sum of squares explicitly.
+      this->Sumw2( false );
+    }
     void setBinNEntries( Int_t i, Int_t n ) { this->fBinEntries.fArray[i] = n; }
     void setBinW2( Int_t i, Double_t v ) { this->fSumw2.fArray[i] = v; }
   };
