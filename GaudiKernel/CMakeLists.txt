@@ -175,165 +175,6 @@ elseif(UNIX)
   target_link_libraries(GaudiKernel PUBLIC ${rt_LIBRARY})
 endif()
 
-# Build an executable
-gaudi_add_executable(profile_Property
-                     SOURCES tests/src/profile_Property.cpp
-                     LINK GaudiKernel)
-
-# Build and register tests
-get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-gaudi_add_executable(DirSearchPath_test
-                     SOURCES tests/src/DirSearchPath_test.cpp
-                     LINK GaudiKernel
-                     TEST)
-
-gaudi_add_executable(PathResolver_test SOURCES tests/src/PathResolver_test.cpp
-  LINK GaudiKernel)
-add_test(NAME ${package_name}.PathResolver_test
-         COMMAND run $<TARGET_FILE:PathResolver_test>
-         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-
-gaudi_add_executable(Parsers_test SOURCES tests/src/parsers.cpp
-  LINK GaudiKernel TEST)
-
-gaudi_add_executable(Memory_test SOURCES tests/src/Memory_test.cpp
-  LINK GaudiKernel TEST)
-
-gaudi_add_executable(ContextSpecificPtrTest SOURCES tests/src/test_ContextSpecificPtr.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_GAUDI-905 SOURCES tests/src/GAUDI-905.cpp
-  LINK GaudiKernel TEST)
-
-gaudi_add_executable(test_GAUDI-973 SOURCES tests/src/GAUDI-973.cpp
-  LINK GaudiKernel TEST)
-
-gaudi_add_executable(test_PropertyHolder SOURCES tests/src/test_PropertyHolder.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_Property SOURCES tests/src/test_Property.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_WeakPropertyRef SOURCES tests/src/test_WeakPropertyRef.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_StatusCode SOURCES tests/src/test_StatusCode.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_EventIDBase SOURCES tests/src/test_EventIDBase.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_EventIDRange SOURCES tests/src/test_EventIDRange.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_SystemTypeinfoName SOURCES tests/src/test_SystemTypeinfoName.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_SystemCmdLineArgs SOURCES tests/src/test_SystemCmdLineArgs.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_compose SOURCES tests/src/test_compose.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_reverse SOURCES tests/src/test_reverse.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_Counters SOURCES tests/src/CountersUnitTest.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_CounterHistos SOURCES tests/src/CounterHistosUnitTest.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_CounterHistoArray SOURCES tests/src/CounterHistoArrayUnitTest.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_GenericSink SOURCES tests/src/GenericSinkUnitTest.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(AttribStringParser_test SOURCES tests/src/test_AttribStringParser.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_MonotonicArena SOURCES tests/src/test_MonotonicArena.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-gaudi_add_executable(test_GaudiTimer SOURCES tests/src/test_GaudiTimer.cpp
-  LINK GaudiKernel Boost::unit_test_framework TEST)
-
-foreach(test_case IN ITEMS 01 02 03 04)
-  add_executable(test_StatusCodeFail_case${test_case} tests/src/test_StatusCode_fail.cxx)
-  target_include_directories(test_StatusCodeFail_case${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-  target_link_libraries(test_StatusCodeFail_case${test_case} PRIVATE Boost::headers)
-  set_target_properties(test_StatusCodeFail_case${test_case} PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-  target_compile_definitions(test_StatusCodeFail_case${test_case} PRIVATE CASE${test_case})
-  add_test(NAME ${package_name}.test_StatusCodeFail.case${test_case}
-           COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_StatusCodeFail_case${test_case})
-  set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY PASS_REGULAR_EXPRESSION "FAIL${test_case}")
-  set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY RESOURCE_LOCK build-system)
-endforeach()
-
-# add compilation failure test for Gaudihistogram usage
-add_executable(test_CounterHistoFail tests/src/CounterHistos_fail.cpp)
-target_link_libraries(test_CounterHistoFail PRIVATE
-  nlohmann_json::nlohmann_json
-  cppgsl::cppgsl
-  Boost::headers
-  ROOT::Hist
-)
-target_include_directories(test_CounterHistoFail PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${PROJECT_SOURCE_DIR}/GaudiPluginService/include
-)
-set_target_properties(test_CounterHistoFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-add_test(NAME GaudiKernel.test_CounterHistoFail COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_CounterHistoFail)
-set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY PASS_REGULAR_EXPRESSION "\\+\\+h2d\\[1\\.2\\]\; // ERROR: cannot fill a 2D histogram with a single index")
-set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY RESOURCE_LOCK build-system)
-
-if(GAUDI_USE_CPPUNIT)
-  gaudi_add_executable(test_SerializeSTL SOURCES tests/src/test_SerializeSTL.cpp
-    LINK GaudiKernel CppUnit::cppunit TEST)
-
-  gaudi_add_executable(test_AnyDataObject SOURCES tests/src/test_AnyDataObject.cpp
-    LINK GaudiKernel CppUnit::cppunit TEST)
-
-  gaudi_add_executable(test_DataHandleVector SOURCES tests/src/test_DataHandleVector.cpp
-    LINK GaudiKernel CppUnit::cppunit TEST)
-
-  gaudi_add_executable(test_GaudiTime SOURCES tests/src/test_GaudiTime.cpp
-    LINK GaudiKernel CppUnit::cppunit TEST)
-
-  gaudi_add_executable(test_GaudiTiming SOURCES tests/src/test_GaudiTiming.cpp
-    LINK GaudiKernel CppUnit::cppunit TEST)
-
-  gaudi_add_executable(test_LockedHandle SOURCES tests/src/test_LockedHandle.cpp
-    LINK GaudiKernel CppUnit::cppunit Boost::thread ${CMAKE_DL_LIBS} TEST)
-endif()
-
-if(BUILD_TESTING)
-  gaudi_add_executable(GaudiKernel_catch2_tests
-    SOURCES 
-      tests/src/CounterSerializationTest.cpp
-      tests/src/MonitoringEntityUnitTest.cpp
-    LINK
-      GaudiKernel
-      Catch2::Catch2WithMain
-      nlohmann_json::nlohmann_json
-  )
-  catch_discover_tests(GaudiKernel_catch2_tests
-      TEST_PREFIX GaudiKernel.
-      PROPERTIES
-          LABELS "Gaudi"
-          LABELS "Gaudi.GaudiKernel"
-  )
-endif()
-
-# nosetests
-gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
-gaudi_add_tests(nosetests)
-
-gaudi_add_module(test_CustomFactory
-  SOURCES tests/src/custom_factory.cpp
-  LINK GaudiPluginService)
-
 # Genconf
 gaudi_add_executable(genconf
   SOURCES src/Util/genconf.cpp
@@ -347,26 +188,17 @@ gaudi_add_executable(genconf
        ROOT::Core)
 target_compile_definitions(genconf PRIVATE BOOST_LOG_DYN_LINK)
 set_target_properties(genconf PROPERTIES ENABLE_EXPORTS TRUE)
+
 if(WIN32)
   gaudi_add_executable(genwindef
     SOURCES src/Util/genwindef.cpp
             src/Util/LibSymbolInfo.cpp)
 endif()
+
 gaudi_add_executable(instructionsetLevel
   SOURCES src/Util/instructionsetLevel.cpp
   LINK GaudiKernel
        GaudiPluginService)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
-add_test(NAME ${package_name}.genconf_with_custom_factory
-  COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=$<TARGET_FILE_DIR:test_CustomFactory>:$<TARGET_FILE_DIR:GaudiCoreSvc>:$ENV{LD_LIBRARY_PATH}
-          $<TARGET_FILE:genconf>
-          -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
-          -p CustomFactoryTest
-          -i test_CustomFactory
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
-
-# QMTest
-gaudi_add_tests(QMTest)
 
 # ROOT dictionaries
 gaudi_add_dictionary(GaudiKernelDict
@@ -376,6 +208,7 @@ gaudi_add_dictionary(GaudiKernelDict
 
 # Install python modules
 gaudi_install(PYTHON)
+
 # Install other scripts
 gaudi_install(SCRIPTS)
 
@@ -391,4 +224,174 @@ if(gdb_cmd)
   endif()
 else()
   message(WARNING "gdb not found, you will not be able to have stack traces for problems")
+endif()
+
+if(BUILD_TESTING)
+  gaudi_add_executable(profile_Property
+                      SOURCES tests/src/profile_Property.cpp
+                      LINK GaudiKernel)
+
+  # Build and register tests
+  get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  gaudi_add_executable(DirSearchPath_test
+                      SOURCES tests/src/DirSearchPath_test.cpp
+                      LINK GaudiKernel
+                      TEST)
+
+  gaudi_add_executable(PathResolver_test SOURCES tests/src/PathResolver_test.cpp
+    LINK GaudiKernel)
+  add_test(NAME ${package_name}.PathResolver_test
+          COMMAND run $<TARGET_FILE:PathResolver_test>
+          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
+  gaudi_add_executable(Parsers_test SOURCES tests/src/parsers.cpp
+    LINK GaudiKernel TEST)
+
+  gaudi_add_executable(Memory_test SOURCES tests/src/Memory_test.cpp
+    LINK GaudiKernel TEST)
+
+  gaudi_add_executable(ContextSpecificPtrTest SOURCES tests/src/test_ContextSpecificPtr.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_GAUDI-905 SOURCES tests/src/GAUDI-905.cpp
+    LINK GaudiKernel TEST)
+
+  gaudi_add_executable(test_GAUDI-973 SOURCES tests/src/GAUDI-973.cpp
+    LINK GaudiKernel TEST)
+
+  gaudi_add_executable(test_PropertyHolder SOURCES tests/src/test_PropertyHolder.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_Property SOURCES tests/src/test_Property.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_WeakPropertyRef SOURCES tests/src/test_WeakPropertyRef.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_StatusCode SOURCES tests/src/test_StatusCode.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_EventIDBase SOURCES tests/src/test_EventIDBase.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_EventIDRange SOURCES tests/src/test_EventIDRange.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_SystemTypeinfoName SOURCES tests/src/test_SystemTypeinfoName.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_SystemCmdLineArgs SOURCES tests/src/test_SystemCmdLineArgs.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_compose SOURCES tests/src/test_compose.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_reverse SOURCES tests/src/test_reverse.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_Counters SOURCES tests/src/CountersUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_CounterHistos SOURCES tests/src/CounterHistosUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_CounterHistoArray SOURCES tests/src/CounterHistoArrayUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_GenericSink SOURCES tests/src/GenericSinkUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(AttribStringParser_test SOURCES tests/src/test_AttribStringParser.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_MonotonicArena SOURCES tests/src/test_MonotonicArena.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_GaudiTimer SOURCES tests/src/test_GaudiTimer.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  foreach(test_case IN ITEMS 01 02 03 04)
+    add_executable(test_StatusCodeFail_case${test_case} tests/src/test_StatusCode_fail.cxx)
+    target_include_directories(test_StatusCodeFail_case${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_link_libraries(test_StatusCodeFail_case${test_case} PRIVATE Boost::headers)
+    set_target_properties(test_StatusCodeFail_case${test_case} PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    target_compile_definitions(test_StatusCodeFail_case${test_case} PRIVATE CASE${test_case})
+    add_test(NAME ${package_name}.test_StatusCodeFail.case${test_case}
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_StatusCodeFail_case${test_case})
+    set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY PASS_REGULAR_EXPRESSION "FAIL${test_case}")
+    set_property(TEST ${package_name}.test_StatusCodeFail.case${test_case} PROPERTY RESOURCE_LOCK build-system)
+  endforeach()
+
+  # add compilation failure test for Gaudihistogram usage
+  add_executable(test_CounterHistoFail tests/src/CounterHistos_fail.cpp)
+  target_link_libraries(test_CounterHistoFail PRIVATE
+    nlohmann_json::nlohmann_json
+    cppgsl::cppgsl
+    Boost::headers
+    ROOT::Hist
+  )
+  target_include_directories(test_CounterHistoFail PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/GaudiPluginService/include
+  )
+  set_target_properties(test_CounterHistoFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+  add_test(NAME GaudiKernel.test_CounterHistoFail COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_CounterHistoFail)
+  set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY PASS_REGULAR_EXPRESSION "\\+\\+h2d\\[1\\.2\\]\; // ERROR: cannot fill a 2D histogram with a single index")
+  set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY RESOURCE_LOCK build-system)
+
+  if(GAUDI_USE_CPPUNIT)
+    gaudi_add_executable(test_SerializeSTL SOURCES tests/src/test_SerializeSTL.cpp
+      LINK GaudiKernel CppUnit::cppunit TEST)
+
+    gaudi_add_executable(test_AnyDataObject SOURCES tests/src/test_AnyDataObject.cpp
+      LINK GaudiKernel CppUnit::cppunit TEST)
+
+    gaudi_add_executable(test_DataHandleVector SOURCES tests/src/test_DataHandleVector.cpp
+      LINK GaudiKernel CppUnit::cppunit TEST)
+
+    gaudi_add_executable(test_GaudiTime SOURCES tests/src/test_GaudiTime.cpp
+      LINK GaudiKernel CppUnit::cppunit TEST)
+
+    gaudi_add_executable(test_GaudiTiming SOURCES tests/src/test_GaudiTiming.cpp
+      LINK GaudiKernel CppUnit::cppunit TEST)
+
+    gaudi_add_executable(test_LockedHandle SOURCES tests/src/test_LockedHandle.cpp
+      LINK GaudiKernel CppUnit::cppunit Boost::thread ${CMAKE_DL_LIBS} TEST)
+  endif()
+
+  gaudi_add_executable(GaudiKernel_catch2_tests
+    SOURCES 
+      tests/src/CounterSerializationTest.cpp
+      tests/src/MonitoringEntityUnitTest.cpp
+    LINK
+      GaudiKernel
+      Catch2::Catch2WithMain
+      nlohmann_json::nlohmann_json
+  )
+  catch_discover_tests(GaudiKernel_catch2_tests
+      TEST_PREFIX GaudiKernel.
+      PROPERTIES
+          LABELS "Gaudi"
+          LABELS "Gaudi.GaudiKernel"
+  )
+
+  # nosetests
+  gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
+  gaudi_add_tests(nosetests)
+
+  gaudi_add_module(test_CustomFactory
+    SOURCES tests/src/custom_factory.cpp
+    LINK GaudiPluginService)
+
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
+  add_test(NAME ${package_name}.genconf_with_custom_factory
+    COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=$<TARGET_FILE_DIR:test_CustomFactory>:$<TARGET_FILE_DIR:GaudiCoreSvc>:$ENV{LD_LIBRARY_PATH}
+            $<TARGET_FILE:genconf>
+            -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
+            -p CustomFactoryTest
+            -i test_CustomFactory
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
+
+  # QMTest
+  gaudi_add_tests(QMTest)
 endif()

@@ -10,15 +10,17 @@
 #####################################################################################
 # GaudiPolicy subdirectory
 
-# QMTest
-# GAUDI-976: make GaudiTest.py more resilient towards unicode-ascii conversion failure
-# https://its.cern.ch/jira/browse/GAUDI-976
-gaudi_add_tests(QMTest ${CMAKE_CURRENT_SOURCE_DIR}/tests/GAUDI-976)
-
-# nosetests
-gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/python/GaudiTesting)
-
 # Install python modules
 gaudi_install(PYTHON)
 # Install other scripts
 gaudi_install(SCRIPTS)
+
+if(BUILD_TESTING)
+    # QMTest
+    # GAUDI-976: make GaudiTest.py more resilient towards unicode-ascii conversion failure
+    # https://its.cern.ch/jira/browse/GAUDI-976
+    gaudi_add_tests(QMTest ${CMAKE_CURRENT_SOURCE_DIR}/tests/GAUDI-976)
+
+    # nosetests
+    gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/python/GaudiTesting)
+endif()
