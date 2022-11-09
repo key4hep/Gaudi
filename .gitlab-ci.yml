@@ -8,12 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-stages:
-  - pre-build-checks
-  - build
-  - test
-  - deploy
-
 variables:
   LCG_VERSION: "101"
   CMAKE_GENERATOR: 'Ninja' # default build system
@@ -30,7 +24,6 @@ default:
 
 # Job templates
 .build: &template_build
-  stage: build
   tags:
     - cvmfs
   script:
@@ -59,13 +52,11 @@ default:
       - .ccache
 
 .build-check: &template_build_check
-  stage: test
   script:
     - ci-utils/build-check build/build.log
   allow_failure: true
 
 .test: &template_test
-  stage: test
   tags:
     - cvmfs
   script:
@@ -216,7 +207,6 @@ lhcb-gcc11:build-check:
 
 ### Misc checks
 x86_64-centos7-gcc11-opt:check-unused:
-  stage: test
   needs:
     - job: "x86_64-centos7-gcc11-opt"
       artifacts: true
@@ -225,7 +215,6 @@ x86_64-centos7-gcc11-opt:check-unused:
   allow_failure: true
 
 pre-commit-checks:
-  stage: pre-build-checks
   image: registry.cern.ch/docker.io/library/python:3.8
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
@@ -267,7 +256,6 @@ pre-commit-checks:
   allow_failure: true
 
 check-copyright:
-  stage: pre-build-checks
   image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
   script:
     - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
@@ -275,7 +263,6 @@ check-copyright:
   allow_failure: true
 
 website:
-  stage: build
   image: python
   script:
     - rm -rf public
@@ -291,7 +278,6 @@ website:
     expire_in: 1 day
 
 doxygen:
-  stage: test
   tags:
     - cvmfs
   needs:
@@ -316,7 +302,6 @@ doxygen:
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration
 deploy-website:
-  stage: deploy
   needs:
     - job: "website"
       artifacts: true
