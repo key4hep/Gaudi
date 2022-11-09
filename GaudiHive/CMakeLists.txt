@@ -10,9 +10,6 @@
 #####################################################################################
 # GaudiHive subdirectory
 
-# Register the header only library (install include/)
-gaudi_add_header_only_library(GaudiHiveHeaders)
-
 # Build the plugin
 gaudi_add_module(GaudiHive
                  SOURCES src/AlgResourcePool.cpp
@@ -37,8 +34,7 @@ gaudi_add_module(GaudiHive
                          src/ThreadPoolSvc.cpp
                          src/TimelineSvc.cpp
                          src/ViewTester.cpp
-                 LINK GaudiHiveHeaders
-                      GaudiKernel
+                 LINK GaudiKernel
                       GaudiAlgLib
                       Boost::headers
                       Boost::system
