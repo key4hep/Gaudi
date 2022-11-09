@@ -115,10 +115,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Include directory not installed correctly,"
             " TESSerializer.h not found in include/GaudiMP/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiProfiling/PfmCodeAnalyser.h)
-        message(FATAL_ERROR "Include directory not installed correctly,"
-            " PfmCodeAnalyser.h not found in include/GaudiProfiling/")
-    endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiPython/AlgDecorators.h)
         message(FATAL_ERROR "Include directory not installed correctly,"
             " AlgDecorators.h not found in include/GaudiPython/")

@@ -124,8 +124,6 @@ if(GAUDI_USE_JEMALLOC)
            COMMAND run ${CMAKE_COMMAND} -E env LD_PRELOAD=$<TARGET_PROPERTY:jemalloc::jemalloc,LOCATION> gaudirun.py)
 endif()
 
-# Register the header only library (install include/)
-gaudi_add_header_only_library(GaudiProfilingHeaders)
 # Install python modules
 gaudi_install(PYTHON)
 # Install other scripts
