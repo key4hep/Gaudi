@@ -253,14 +253,12 @@ pre-commit-checks:
       - 0001-pre-commit-fixes.patch
     when: on_failure
     expire_in: 1 week
-  allow_failure: true
 
 check-copyright:
   image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
   script:
     - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
     - python lb-check-copyright --exclude lhcbproject.yml origin/${TARGET_BRANCH}
-  allow_failure: true
 
 website:
   image: python
@@ -271,7 +269,6 @@ website:
     - pip install -r source/requirements.txt
     - make html
     - cp -a build/html/. ../public/.
-  allow_failure: true
   artifacts:
     paths:
       - public
