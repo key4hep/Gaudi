@@ -24,6 +24,7 @@ if(GAUDI_USE_AIDA)
                       PUBLIC GaudiKernel
                              Boost::system
                              Boost::filesystem
+                             Rangev3::rangev3
                              ROOT::Hist
                              ROOT::RIO
                              AIDA::aida)
