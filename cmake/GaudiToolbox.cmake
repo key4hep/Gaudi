@@ -91,6 +91,8 @@ Functions
 include_guard(GLOBAL) # Protect from multiple include (global scope, because
                       # everything defined in this file is globally visible)
 
+set(GAUDI_TOOLBOX_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE PATH "Directory containing this file")
+
 ################################ Global options ################################
 
 # Option used to know if the install() function must be called with OPTIONAL
@@ -110,6 +112,10 @@ endif()
 # Option to prefer local targets to imported ones
 option(GAUDI_PREFER_LOCAL_TARGETS "Prefer local targets over imported ones" FALSE)
 
+option(GAUDI_TEST_PUBLIC_HEADERS_BUILD
+    "Execute a test build of all public headers in the global target 'all'"
+    FALSE)
+
 # Default layout fo the installation (may be overridden in the cache)
 set(CMAKE_INSTALL_BINDIR "bin" CACHE STRING "Install executable in <prefix>/\${CMAKE_INSTALL_BINDIR}")
 set(CMAKE_INSTALL_LIBDIR "lib" CACHE STRING "Install libraries in <prefix>/\${CMAKE_INSTALL_LIBDIR}")
@@ -118,7 +124,7 @@ set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Install plug
 set(GAUDI_INSTALL_PYTHONDIR "python" CACHE STRING "Install python packages in <prefix>/\${GAUDI_INSTALL_PYTHONDIR}")
 set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
 
-set(scan_dict_deps_command ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py
+set(scan_dict_deps_command ${GAUDI_TOOLBOX_DIR}/scan_dict_deps.py
     CACHE INTERNAL "command to use to scan dependencies of dictionary headers")
 
 ################################## Functions  ##################################
@@ -151,6 +157,60 @@ endmacro()
 macro(_gaudi_runtime_append runtime value)
     set_property(TARGET target_runtime_paths APPEND PROPERTY runtime_${runtime} ${value})
 endmacro()
+
+# Helper function to add build test for every public header
+function(_test_build_public_headers lib_name)
+    if(NOT BUILD_TESTING)
+        # we test the build of the public headers only when tests are enabled
+        return()
+    endif()
+    # collect the list of public headers
+    file(GLOB_RECURSE headers
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/include
+        CONFIGURE_DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hxx
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
+    )
+    # list the test source files generated (in a previous config)
+    file(GLOB_RECURSE old_srcs
+        ${CMAKE_CURRENT_BINARY_DIR}/headers_build_test/*.h.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/headers_build_test/*.hxx.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/headers_build_test/*.hpp.cpp
+    )
+    set(srcs)
+    if(headers)
+        # create a cpp file for each header file to test
+        foreach(header IN LISTS headers)
+            set(s "${CMAKE_CURRENT_BINARY_DIR}/headers_build_test/${header}.cpp")
+            configure_file("${GAUDI_TOOLBOX_DIR}/header_build_test.tpl" "${s}")
+            list(APPEND srcs "${s}")
+        endforeach()
+        # create an object library (we never need to use the product)
+        add_library(test_public_headers_build_${lib_name} OBJECT EXCLUDE_FROM_ALL ${srcs})        
+        target_link_libraries(test_public_headers_build_${lib_name}
+            PRIVATE ${lib_name})
+        target_compile_definitions(test_public_headers_build_${lib_name}
+            PRIVATE GAUDI_TEST_PUBLIC_HEADERS_BUILD)
+        # add it to the global target "test_public_headers_build" (making sure it exists)
+        if(NOT TARGET test_public_headers_build)
+            if(GAUDI_TEST_PUBLIC_HEADERS_BUILD)
+                add_custom_target(test_public_headers_build ALL
+                    COMMENT "test build of public headers")
+            else()
+                add_custom_target(test_public_headers_build
+                    COMMENT "test build of public headers")
+            endif()
+        endif()
+        add_dependencies(test_public_headers_build test_public_headers_build_${lib_name})
+        # keep in old_srcs only the source files not needed anymore 
+        list(REMOVE_ITEM old_srcs ${srcs})
+    endif()
+    # remove stale test source files
+    if(old_srcs)
+        file(REMOVE ${old_srcs})
+    endif()
+endfunction()
 
 #[========================================================================[.rst:
 .. command:: gaudi_add_library
@@ -216,6 +276,7 @@ function(gaudi_add_library lib_name)
         install(DIRECTORY include/
                 TYPE INCLUDE)
         set_property(DIRECTORY PROPERTY include_installed TRUE)
+        _test_build_public_headers(${lib_name})
     endif()
     # Runtime ROOT_INCLUDE_PATH
     _gaudi_runtime_append(root_include_path $<TARGET_PROPERTY:${lib_name},INTERFACE_INCLUDE_DIRECTORIES>)
@@ -287,6 +348,7 @@ function(gaudi_add_header_only_library lib_name)
         install(DIRECTORY include/
                 TYPE INCLUDE)
         set_property(DIRECTORY PROPERTY include_installed TRUE)
+        _test_build_public_headers(${lib_name})
     endif()
     # Runtime ROOT_INCLUDE_PATH
     _gaudi_runtime_append(root_include_path $<TARGET_PROPERTY:${lib_name},INTERFACE_INCLUDE_DIRECTORIES>)

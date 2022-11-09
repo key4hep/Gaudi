@@ -52,8 +52,10 @@ default:
       - .ccache
 
 .build-check: &template_build_check
+  variables:
+    LOG: build/build.log
   script:
-    - ci-utils/build-check build/build.log
+    - ci-utils/build-check ${LOG}
   allow_failure: true
 
 .test: &template_test
@@ -76,6 +78,25 @@ default:
         - results.xml
     when: always
     expire_in: 1 week
+
+.test_headers: &template_test_headers
+  tags:
+    - cvmfs
+  script:
+    - export CCACHE_DIR=$PWD/.ccache_headers
+    - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
+    - ccache -z
+    - cmake --build build --target test_public_headers_build 2>&1 | tee build/test_public_headers_build.log
+    - ccache -s
+  artifacts:
+    paths:
+      - build/test_public_headers_build.log
+    when: always
+    expire_in: 1 week
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - .ccache_headers
 
 
 ### Build
@@ -135,8 +156,20 @@ x86_64-centos7-gcc11-opt:test:
     - job: "x86_64-centos7-gcc11-opt"
       artifacts: true
 
+x86_64-centos7-gcc11-opt:test_headers:
+  <<: *template_test_headers
+  needs:
+    - job: "x86_64-centos7-gcc11-opt"
+      artifacts: true
+
 x86_64-centos7-gcc11-dbg:test:
   <<: *template_test
+  needs:
+    - job: "x86_64-centos7-gcc11-dbg"
+      artifacts: true
+
+x86_64-centos7-gcc11-dbg:test_headers:
+  <<: *template_test_headers
   needs:
     - job: "x86_64-centos7-gcc11-dbg"
       artifacts: true
@@ -187,6 +220,22 @@ x86_64-centos7-gcc11-dbg:build-check:
   <<: *template_build_check
   needs:
     - job: "x86_64-centos7-gcc11-dbg"
+      artifacts: true
+
+x86_64-centos7-gcc11-opt:build-headers-check:
+  <<: *template_build_check
+  variables:
+    LOG: build/test_public_headers_build.log
+  needs:
+    - job: "x86_64-centos7-gcc11-opt:test_headers"
+      artifacts: true
+
+x86_64-centos7-gcc11-dbg:build-headers-check:
+  <<: *template_build_check
+  variables:
+    LOG: build/test_public_headers_build.log
+  needs:
+    - job: "x86_64-centos7-gcc11-dbg:test_headers"
       artifacts: true
 
 view-gcc8:build-check:

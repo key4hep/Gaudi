@@ -194,6 +194,7 @@ install(EXPORT ${PROJECT_NAME} NAMESPACE ${PROJECT_NAME}::
             DESTINATION "${GAUDI_INSTALL_CONFIGDIR}")
 # Install cmake files for downstream project to be able to use Gaudi
 gaudi_install(CMAKE cmake/GaudiToolbox.cmake
+                    cmake/header_build_test.tpl
                     cmake/GaudiDependencies.cmake
                     cmake/DeveloperBuildType.cmake
                     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
