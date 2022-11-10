@@ -44,9 +44,11 @@
 #  include "Platform/SystemWin32.h"
 #endif
 
-#define VCL_NAMESPACE Gaudi
-#include "instrset_detect.cpp"
-#undef VCL_NAMESPACE
+#ifdef __x86_64
+#  define VCL_NAMESPACE Gaudi
+#  include "instrset_detect.cpp"
+#  undef VCL_NAMESPACE
+#endif
 
 #ifdef _WIN32
 #  define strcasecmp _stricmp
@@ -334,8 +336,12 @@ const std::string& System::machineType() {
 }
 
 int System::instructionsetLevel() {
+#ifdef __x86_64
   using namespace Gaudi;
   return instrset_detect();
+#else
+  return -1;
+#endif
 }
 
 /// User login name
