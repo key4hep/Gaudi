@@ -329,6 +329,7 @@ if(BUILD_TESTING)
     cppgsl::cppgsl
     Boost::headers
     ROOT::Hist
+    fmt::fmt
   )
   target_include_directories(test_CounterHistoFail PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
