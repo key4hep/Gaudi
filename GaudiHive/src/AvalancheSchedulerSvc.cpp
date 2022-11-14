@@ -162,19 +162,26 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   DataObjIDColl globalInp, globalOutp;
 
   // figure out all outputs
+  std::map<std::string, DataObjIDColl> algosOutputDependenciesMap;
   for ( IAlgorithm* ialgoPtr : algos ) {
     Gaudi::Algorithm* algoPtr = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
     if ( !algoPtr ) {
       fatal() << "Could not convert IAlgorithm into Gaudi::Algorithm: this will result in a crash." << endmsg;
       return StatusCode::FAILURE;
     }
-    for ( auto id : algoPtr->outputDataObjs() ) globalOutp.insert( id );
+
+    DataObjIDColl algoOutputs;
+    for ( auto id : algoPtr->outputDataObjs() ) {
+      globalOutp.insert( id );
+      algoOutputs.insert( id );
+    }
+    algosOutputDependenciesMap[algoPtr->name()] = algoOutputs;
   }
 
   std::ostringstream ostdd;
   ostdd << "Data Dependencies for Algorithms:";
 
-  std::map<std::string, DataObjIDColl> algosDependenciesMap;
+  std::map<std::string, DataObjIDColl> algosInputDependenciesMap;
   for ( IAlgorithm* ialgoPtr : algos ) {
     Gaudi::Algorithm* algoPtr = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
     if ( nullptr == algoPtr ) {
@@ -219,25 +226,50 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     } else {
       ostdd << "\n      none";
     }
-    algosDependenciesMap[algoPtr->name()] = algoDependencies;
+    algosInputDependenciesMap[algoPtr->name()] = algoDependencies;
   }
 
   if ( m_showDataDeps ) { info() << ostdd.str() << endmsg; }
 
   // Check if we have unmet global input dependencies, and, optionally, heal them
   // WARNING: this step must be done BEFORE the Precedence Service is initialized
-  if ( m_checkDeps ) {
-    DataObjIDColl unmetDep;
-    for ( auto o : globalInp )
-      if ( globalOutp.find( o ) == globalOutp.end() ) unmetDep.insert( o );
+  DataObjIDColl unmetDepInp, unusedOutp;
+  if ( m_checkDeps || m_checkOutput ) {
+    std::set<std::string> requiredInputKeys;
+    for ( auto o : globalInp ) {
+      // track aliases
+      // (assuming there should be no items with different class and same key corresponding to different objects)
+      requiredInputKeys.insert( o.key() );
+      if ( globalOutp.find( o ) == globalOutp.end() ) unmetDepInp.insert( o );
+    }
+    if ( m_checkOutput ) {
+      for ( auto o : globalOutp ) {
+        if ( globalInp.find( o ) == globalInp.end() && requiredInputKeys.find( o.key() ) == requiredInputKeys.end() ) {
+          // check ignores
+          bool ignored{};
+          for ( const std::string& algoName : m_checkOutputIgnoreList ) {
+            auto it = algosOutputDependenciesMap.find( algoName );
+            if ( it != algosOutputDependenciesMap.end() ) {
+              if ( it->second.find( o ) != it->second.end() ) {
+                ignored = true;
+                break;
+              }
+            }
+          }
+          if ( !ignored ) { unusedOutp.insert( o ); }
+        }
+      }
+    }
+  }
 
-    if ( unmetDep.size() > 0 ) {
+  if ( m_checkDeps ) {
+    if ( unmetDepInp.size() > 0 ) {
 
       auto printUnmet = [&]( auto msg ) {
-        for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
+        for ( const DataObjID* o : sortedDataObjIDColl( unmetDepInp ) ) {
           msg << "   o " << *o << "    required by Algorithm: " << endmsg;
 
-          for ( const auto& p : algosDependenciesMap )
+          for ( const auto& p : algosInputDependenciesMap )
             if ( p.second.find( *o ) != p.second.end() ) msg << "       * " << p.first << endmsg;
         }
       };
@@ -272,7 +304,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
           return StatusCode::FAILURE;
         }
 
-        for ( auto& id : unmetDep ) {
+        for ( auto& id : unmetDepInp ) {
           ON_DEBUG debug() << "adding OUTPUT dep \"" << id << "\" to " << dataLoaderAlg->type() << "/"
                            << dataLoaderAlg->name() << endmsg;
           dataAlg->addDependency( id, Gaudi::DataHandle::Writer );
@@ -287,6 +319,26 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
     } else {
       info() << "No unmet INPUT data dependencies were found" << endmsg;
+    }
+  }
+
+  if ( m_checkOutput ) {
+    if ( unusedOutp.size() > 0 ) {
+
+      auto printUnusedOutp = [&]( auto msg ) {
+        for ( const DataObjID* o : sortedDataObjIDColl( unusedOutp ) ) {
+          msg << "   o " << *o << "    produced by Algorithm: " << endmsg;
+
+          for ( const auto& p : algosOutputDependenciesMap )
+            if ( p.second.find( *o ) != p.second.end() ) msg << "       * " << p.first << endmsg;
+        }
+      };
+
+      fatal() << "The following unused OUTPUT items were found:" << endmsg;
+      printUnusedOutp( fatal() );
+      return StatusCode::FAILURE;
+    } else {
+      info() << "No unused OUTPUT items were found" << endmsg;
     }
   }
 
