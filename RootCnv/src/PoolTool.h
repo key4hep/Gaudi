@@ -78,8 +78,8 @@ namespace Gaudi {
               }
             }
             for ( int i = 0, n = lm.size(); i < n; ++i ) {
-              LinkManager::Link* lnk     = lm.link( i );
-              int                link_id = c->makeLink( lnk->path() );
+              const LinkManager::Link* lnk     = lm.link( i );
+              int                      link_id = c->makeLink( lnk->path() );
               msg << "Add Link:" << lnk->path() << endl;
               refs.links.push_back( link_id );
             }

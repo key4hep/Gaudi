@@ -81,7 +81,8 @@ public:
   /// Get pointer to Registry
   IRegistry* registry() const { return m_pRegistry; }
   /// Retrieve Link manager
-  LinkManager* linkMgr() const { return m_pLinkMgr.get(); }
+  LinkManager*       linkMgr() { return m_pLinkMgr.get(); }
+  const LinkManager* linkMgr() const { return m_pLinkMgr.get(); }
   /// Retrieve version number of this object representation
   unsigned char version() const { return m_version; }
   /// Set version number of this object representation

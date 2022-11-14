@@ -14,6 +14,15 @@
 #include "GaudiKernel/IRegistry.h"
 #include <algorithm>
 
+namespace {
+  template <typename Container, typename Pred>
+  auto findLink( Container& c, Pred pred ) {
+    auto i = std::find_if( c.begin(), c.end(), pred );
+    return i != c.end() ? *i : nullptr;
+  }
+
+} // namespace
+
 static LinkManager* ( *s_newInstance )() = nullptr;
 
 /// destructor
@@ -37,22 +46,29 @@ void LinkManager::setInstantiator( LinkManager* ( *newInstance )() ) { s_newInst
 LinkManager* LinkManager::newInstance() { return s_newInstance ? ( *s_newInstance )() : new LinkManager(); }
 
 /// Retrieve symbolic link identified by ID
+const LinkManager::Link* LinkManager::link( long id ) const {
+  return ( 0 <= id && (unsigned)id < m_linkVector.size() ) ? m_linkVector[id] : nullptr;
+}
+
 LinkManager::Link* LinkManager::link( long id ) {
   return ( 0 <= id && (unsigned)id < m_linkVector.size() ) ? m_linkVector[id] : nullptr;
 }
 
 /// Retrieve symbolic link identified by Object pointer
+const LinkManager::Link* LinkManager::link( const DataObject* pObject ) const {
+  return pObject ? findLink( m_linkVector, [=]( auto* j ) { return j->object() == pObject; } ) : nullptr;
+}
+
 LinkManager::Link* LinkManager::link( const DataObject* pObject ) {
-  if ( !pObject ) return nullptr;
-  auto i = std::find_if( m_linkVector.begin(), m_linkVector.end(), [=]( auto* j ) { return j->object() == pObject; } );
-  return i != m_linkVector.end() ? *i : nullptr;
+  return pObject ? findLink( m_linkVector, [=]( auto* j ) { return j->object() == pObject; } ) : nullptr;
 }
 
 /// Retrieve symbolic link identified by Object path
+const LinkManager::Link* LinkManager::link( std::string_view path ) const {
+  return !path.empty() ? findLink( m_linkVector, [=]( auto* j ) { return j->path() == path; } ) : nullptr;
+}
 LinkManager::Link* LinkManager::link( std::string_view path ) {
-  if ( path.empty() ) return nullptr;
-  auto i = std::find_if( m_linkVector.begin(), m_linkVector.end(), [=]( auto* j ) { return j->path() == path; } );
-  return i != m_linkVector.end() ? *i : nullptr;
+  return !path.empty() ? findLink( m_linkVector, [=]( auto* j ) { return j->path() == path; } ) : nullptr;
 }
 
 /// Add link by object reference and path string
