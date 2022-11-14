@@ -88,9 +88,9 @@ class Application(object):
     def __init__(self, opts, appType="Gaudi::Application"):
         global _GaudiKernelLib
         if _GaudiKernelLib is None:
-            # FIXME: note that we need PyDLL instead of CDLL if the calls to
-            #        Python functions are not protected with the GIL.
-            gkl = _GaudiKernelLib = ctypes.PyDLL(
+            # Note: using CDLL instead of PyDLL means that every call to the Python C
+            #       API must be protected acquiring the GIL
+            gkl = _GaudiKernelLib = ctypes.CDLL(
                 "libGaudiKernel" + (".dylib" if sys.platform == "darwin" else ".so"),
                 mode=ctypes.RTLD_GLOBAL,
             )
