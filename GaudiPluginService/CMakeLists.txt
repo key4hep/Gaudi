@@ -61,53 +61,55 @@ gaudi_add_executable(listcomponents
                      LINK GaudiPluginService
                           ${CMAKE_DL_LIBS})
 
-# Tests
-gaudi_add_library(Test_GaudiPluginService_UseCasesLib
-                  SOURCES tests/src/UseCasesLib.cpp
-                  LINK PRIVATE GaudiPluginService
-                       Boost::unit_test_framework)
-gaudi_add_executable(Test_GaudiPluginService_UseCases
-                     SOURCES tests/src/UseCasesTests.cpp
-                     LINK GaudiPluginService
-                          Boost::unit_test_framework
-                     TEST)
-
-gaudi_add_library(Test_GaudiPluginService_LegacyUseCasesLib
-                  SOURCES tests/src/LegacyUseCasesLib.cpp
-                  LINK PRIVATE GaudiPluginService)
-gaudi_add_executable(Test_GaudiPluginService_LegacyUseCases
-                     SOURCES tests/src/LegacyUseCasesTests.cpp
-                     LINK GaudiPluginService
-                          Boost::unit_test_framework
-                     TEST)
-
-get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-# tests on listcomponents
-add_test(NAME ${package_name}.listcomponents.usage
-         COMMAND run $<TARGET_FILE:listcomponents>)
-set_tests_properties(${package_name}.listcomponents.usage
-                     PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")
-add_test(NAME ${package_name}.listcomponents.help1
-         COMMAND run $<TARGET_FILE:listcomponents> -h)
-set_tests_properties(${package_name}.listcomponents.help1
-                     PROPERTIES PASS_REGULAR_EXPRESSION "Options:")
-add_test(NAME ${package_name}.listcomponents.help2
-         COMMAND run $<TARGET_FILE:listcomponents> --help)
-set_tests_properties(${package_name}.listcomponents.help2
-                     PROPERTIES PASS_REGULAR_EXPRESSION "Options:")
-add_test(NAME ${package_name}.listcomponents.wrong_args
-         COMMAND run $<TARGET_FILE:listcomponents> -o)
-set_tests_properties(${package_name}.listcomponents.wrong_args
-                     PROPERTIES PASS_REGULAR_EXPRESSION
-                                "ERROR: missing argument")
-add_test(NAME ${package_name}.listcomponents.v1
-         COMMAND run $<TARGET_FILE:listcomponents> $<TARGET_FILE_NAME:Test_GaudiPluginService_LegacyUseCasesLib>)
-set_tests_properties(${package_name}.listcomponents.v1
-  PROPERTIES PASS_REGULAR_EXPRESSION "v1::$<TARGET_FILE_NAME:Test_GaudiPluginService_LegacyUseCasesLib>:Test::ComponentA")
-add_test(NAME ${package_name}.listcomponents.v2
-         COMMAND run $<TARGET_FILE:listcomponents> $<TARGET_FILE_NAME:Test_GaudiPluginService_UseCasesLib>)
-set_tests_properties(${package_name}.listcomponents.v2
-  PROPERTIES PASS_REGULAR_EXPRESSION "v2::$<TARGET_FILE_NAME:Test_GaudiPluginService_UseCasesLib>:special-id")
-
 # Install python modules
 gaudi_install(PYTHON)
+
+# Tests
+if(BUILD_TESTING)
+  gaudi_add_library(Test_GaudiPluginService_UseCasesLib
+                    SOURCES tests/src/UseCasesLib.cpp
+                    LINK PRIVATE GaudiPluginService
+                        Boost::unit_test_framework)
+  gaudi_add_executable(Test_GaudiPluginService_UseCases
+                      SOURCES tests/src/UseCasesTests.cpp
+                      LINK GaudiPluginService
+                            Boost::unit_test_framework
+                      TEST)
+
+  gaudi_add_library(Test_GaudiPluginService_LegacyUseCasesLib
+                    SOURCES tests/src/LegacyUseCasesLib.cpp
+                    LINK PRIVATE GaudiPluginService)
+  gaudi_add_executable(Test_GaudiPluginService_LegacyUseCases
+                      SOURCES tests/src/LegacyUseCasesTests.cpp
+                      LINK GaudiPluginService
+                            Boost::unit_test_framework
+                      TEST)
+
+  get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  # tests on listcomponents
+  add_test(NAME ${package_name}.listcomponents.usage
+          COMMAND run $<TARGET_FILE:listcomponents>)
+  set_tests_properties(${package_name}.listcomponents.usage
+                      PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")
+  add_test(NAME ${package_name}.listcomponents.help1
+          COMMAND run $<TARGET_FILE:listcomponents> -h)
+  set_tests_properties(${package_name}.listcomponents.help1
+                      PROPERTIES PASS_REGULAR_EXPRESSION "Options:")
+  add_test(NAME ${package_name}.listcomponents.help2
+          COMMAND run $<TARGET_FILE:listcomponents> --help)
+  set_tests_properties(${package_name}.listcomponents.help2
+                      PROPERTIES PASS_REGULAR_EXPRESSION "Options:")
+  add_test(NAME ${package_name}.listcomponents.wrong_args
+          COMMAND run $<TARGET_FILE:listcomponents> -o)
+  set_tests_properties(${package_name}.listcomponents.wrong_args
+                      PROPERTIES PASS_REGULAR_EXPRESSION
+                                  "ERROR: missing argument")
+  add_test(NAME ${package_name}.listcomponents.v1
+          COMMAND run $<TARGET_FILE:listcomponents> $<TARGET_FILE_NAME:Test_GaudiPluginService_LegacyUseCasesLib>)
+  set_tests_properties(${package_name}.listcomponents.v1
+    PROPERTIES PASS_REGULAR_EXPRESSION "v1::$<TARGET_FILE_NAME:Test_GaudiPluginService_LegacyUseCasesLib>:Test::ComponentA")
+  add_test(NAME ${package_name}.listcomponents.v2
+          COMMAND run $<TARGET_FILE:listcomponents> $<TARGET_FILE_NAME:Test_GaudiPluginService_UseCasesLib>)
+  set_tests_properties(${package_name}.listcomponents.v2
+    PROPERTIES PASS_REGULAR_EXPRESSION "v2::$<TARGET_FILE_NAME:Test_GaudiPluginService_UseCasesLib>:special-id")
+endif()

@@ -47,6 +47,7 @@ gaudi_add_module(GaudiUtils
                   LINK
                     GaudiUtilsLib
                     UUID::uuid)
+
 if(GAUDI_USE_XERCESC)
   target_sources(GaudiUtils PRIVATE src/component/XMLCatalogTest.cpp
                                     src/component/XMLFileCatalog.cpp)
@@ -54,7 +55,7 @@ if(GAUDI_USE_XERCESC)
 endif()
 
 # Build and register tests
-if(GAUDI_USE_CPPUNIT AND GAUDI_USE_XERCESC)
+if(BUILD_TESTING AND GAUDI_USE_CPPUNIT AND GAUDI_USE_XERCESC)
   get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   gaudi_add_executable(testXMLFileCatalogWrite
                         SOURCES

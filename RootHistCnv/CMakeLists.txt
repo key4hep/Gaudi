@@ -12,9 +12,7 @@
 
 # If AIDA is missing, don't build this module:
 if(NOT GAUDI_USE_AIDA)
-   message(WARNING "Requirements for building RootHistCnv disabled. "
-      "RootHistCnv will not be built. "
-      "AIDA is disabled.")
+   message(AUTHOR_WARNING "RootHistCnv is only available if AIDA is enabled")
    return()
 endif()
 

@@ -12,9 +12,7 @@
 
 # If we do not build for Linux, give up on this subdirectory:
 if(NOT CMAKE_SYSTEM_NAME MATCHES Linux)
-    message(WARNING "Requirements for building GaudiProfiling not reached. "
-        "GaudiProfiling will not be built. "
-        "Not building for Linux.")
+    message(AUTHOR_WARNING "GaudiProfiling is only supported on Linux")
     return()
 endif()
 
