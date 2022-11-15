@@ -683,11 +683,7 @@ class BaseTest(object):
         # function to split an extension in constituents parts
         import re
 
-        platformSplit = (
-            (lambda p: set(re.split(r"[-+]", p)))
-            if "-" in GetPlatform(self)
-            else (lambda p: set(re.split(r"_", p)))
-        )
+        platformSplit = lambda p: set(re.split(r"[-+]", p))
 
         reference = os.path.normpath(
             os.path.join(self.basedir, os.path.expandvars(reffile))
