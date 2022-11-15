@@ -9,10 +9,19 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import os
+from platform import processor
 from subprocess import PIPE, Popen
+
+from nose import SkipTest
 
 
 def test():
+    if processor() != "x86_64":
+        raise SkipTest(
+            "platform {} not supported (instructionsetLevel only works on x86_64".format(
+                processor()
+            )
+        )
     out = Popen(["instructionsetLevel", "all"], stdout=PIPE).communicate()[0]
     out = out.decode("utf-8")
     known_flags = set(l.strip() for l in out.splitlines())
