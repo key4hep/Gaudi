@@ -26,6 +26,9 @@ AvalancheSchedu...  DEBUG RootDecisionHub (0), w/ decision: TRUE(1)
     emptySeq (3), w/ decision: FALSE(0)
     A2 (4), w/ decision: UNDEFINED(-1), in state: INITIAL
 """
-findReferenceBlock(ref1, id="ref1")
+# remove noise from stdout
+stdout = '\n'.join(l for l in stdout.splitlines() if "Popped slot 0" not in l)
+
+findReferenceBlock(ref1, stdout, id="ref1")
 </text></argument>
 </extension>
