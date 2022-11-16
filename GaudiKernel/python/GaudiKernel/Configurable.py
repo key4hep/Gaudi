@@ -1405,7 +1405,7 @@ class ConfigurableUser(Configurable):
         for queried in self.__queried_configurables__:
             try:
                 if type(queried) is str:
-                    queried = confDbGetConfigurable(used)
+                    queried = confDbGetConfigurable(queried)
                 inst = queried(_enabled=False)
             except AttributeError:
                 inst = queried()
