@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                       *
 \*****************************************************************************/
 #include "GaudiAlg/FunctionalDetails.h"
+#include "GaudiAlg/FunctionalUtilities.h"
 #include "GaudiKernel/IBinder.h"
 
 #define GAUDI_FUNCTIONAL_TOOL_BINDER_USES_CREATE

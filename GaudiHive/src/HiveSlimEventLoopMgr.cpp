@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Local includes
-#include "GaudiHive/HiveSlimEventLoopMgr.h"
+#include "HiveSlimEventLoopMgr.h"
 #include "HistogramAgent.h"
 
 // Framework includes
