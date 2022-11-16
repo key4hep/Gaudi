@@ -23,14 +23,14 @@ class TestCase(unittest.TestCase):
 
     def test_000_Import(self):
         try:
-            import PyExample
+            import GaudiExamples.PyExample
         except ImportError:
-            self.fail("Cannot import PyExample from %s" % sys.path)
+            self.fail("Cannot import GaudiExamples.PyExample from %s" % sys.path)
 
     def test_010_Function(self):
-        import PyExample
+        import GaudiExamples.PyExample
 
-        self.assertEqual(PyExample.greet(), "hello, world")
+        self.assertEqual(GaudiExamples.PyExample.greet(), "hello, world")
 
 
 if __name__ == "__main__":

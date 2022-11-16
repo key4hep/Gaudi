@@ -459,9 +459,6 @@ function(gaudi_add_python_module module_name)
         _resolve_local_targets(ARG_LINK)
         target_link_libraries(${module_name} PRIVATE ${ARG_LINK})
     endif()
-    # Add it to the runtime PYTHONPATH
-    _gaudi_runtime_prepend(pythonpath ${CMAKE_CURRENT_BINARY_DIR})
-    # install
     if(ARG_PACKAGE)
         set(package_path "${ARG_PACKAGE}")
         get_filename_component(package_name "${package_path}" NAME)
@@ -473,6 +470,14 @@ function(gaudi_add_python_module module_name)
         message(FATAL_ERROR "${package_path}/__init__.py"
             " must exist and the package must be installed (see gaudi_install(PYTHON)).")
     endif()
+
+    # make the module accessible from the build tree
+    add_custom_command(TARGET ${module_name} POST_BUILD
+        BYPRODUCTS ${CMAKE_BINARY_DIR}/python/${package_name}/${module_name}${CMAKE_SHARED_MODULE_SUFFIX}
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            $<TARGET_FILE:${module_name}>
+            ${CMAKE_BINARY_DIR}/python/${package_name}/$<TARGET_FILE_NAME:${module_name}>)
+
     install(
         TARGETS ${module_name}
         LIBRARY DESTINATION "${GAUDI_INSTALL_PYTHONDIR}/${package_name}"
@@ -892,7 +897,8 @@ function(gaudi_install type)
 "import os, sys
 __path__ = [d for d in [os.path.join(os.path.realpath(d), '${python_package_name}') for d in sys.path if d]
             if (d.startswith(os.path.realpath('${CMAKE_CURRENT_BINARY_DIR}')) or
-                d.startswith(os.path.realpath('${CMAKE_CURRENT_SOURCE_DIR}'))) and
+                d.startswith(os.path.realpath('${CMAKE_CURRENT_SOURCE_DIR}')) or
+                d.startswith(os.path.realpath('${CMAKE_BINARY_DIR}/python/${python_package_name}'))) and
             (os.path.exists(d) or 'python.zip' in d)]
 fname = '${CMAKE_CURRENT_SOURCE_DIR}/python/${python_package_name}/__init__.py'
 if os.path.exists(fname):
