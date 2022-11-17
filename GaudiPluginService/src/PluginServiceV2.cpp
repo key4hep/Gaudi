@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -284,6 +284,10 @@ namespace Gaudi {
           if ( f != facts.end() ) f->second.properties[k] = v;
           return *this;
         }
+
+        void Registry::setError( const KeyType& warning ) { m_werror.insert( warning ); }
+
+        void Registry::unsetError( const KeyType& warning ) { m_werror.erase( warning ); }
 
         std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
           auto              _guard = std::scoped_lock{ m_mutex };
