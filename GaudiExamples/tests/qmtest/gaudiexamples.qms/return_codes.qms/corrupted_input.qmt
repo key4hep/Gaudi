@@ -22,10 +22,17 @@ from Gaudi.Configuration import *
 import shutil
 shutil.copy('ROOTIO.dst', 'ROOTIO_corrupted.dst')
 
-f = open('ROOTIO_corrupted.dst', 'rb+')
-f.seek(1024)
-f.write(b'corruption!')
-f.close()
+# find a specific byte sequence to determine where to corrupt the file
+magic_bytes = b"\xa6\xbc\x8c\xe9"
+with open('ROOTIO_corrupted.dst', 'rb') as f:
+    data = f.read()
+    if data.count(magic_bytes) != 1:
+        raise NotImplementedError("The test file is not as expected")
+    seek_index = data.index(magic_bytes) - 4
+
+with open('ROOTIO_corrupted.dst', 'rb+') as f:
+    f.seek(seek_index)
+    f.write(b'corruption!')
 
 esel = EventSelector()
 esel.Input = ["DATAFILE='PFN:ROOTIO_corrupted.dst' SVC='Gaudi::RootEvtSelector' OPT='READ'"]

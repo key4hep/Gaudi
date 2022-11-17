@@ -70,12 +70,12 @@ namespace Gaudi {
                                                "Records name to fire incident for file records" };
 
     // ROOT Write parameters
-    Gaudi::Property<int> m_autoFlush{ this, "AutoFlush", 100,
-                                      "AutoFlush parameter for ROOT TTree (Number of events between auto flushes)" };
-    Gaudi::Property<int> m_basketSize{ this, "BasketSize", 2 * 1024 * 1024 /*MBYTE*/,
-                                       "Basket optimization parameter for ROOT TTree (total basket size)" };
-    Gaudi::Property<int> m_bufferSize{ this, "BufferSize", 2 * 1024 /*kBYTE*/,
-                                       "Buffer size optimization parameter for ROOT TTree" };
+    Gaudi::Property<int> m_minBufferSize{ this, "MinBufferSize", 2 * 1024 /*kBYTE*/,
+                                          "Minimum buffer size to use for writing TTree baskets" };
+    Gaudi::Property<int> m_maxBufferSize{ this, "MaxBufferSize", 100 * 1024 * 1024 /*MBYTE*/,
+                                          "Maximum buffer size to use for writing TTree baskets" };
+    Gaudi::Property<int> m_approxEventsPerBasket{ this, "ApproxEventsPerBasket", 1000,
+                                                  "Resize TBasket buffers to fit approximately this many events" };
     Gaudi::Property<int> m_splitLevel{ this, "SplitLevel", 0, "Split level optimization parameter for ROOT TTree" };
     Gaudi::Property<std::string> m_compression{ this, "GlobalCompression", "",
                                                 "Compression-algorithm:compression-level,  empty: do nothing" };

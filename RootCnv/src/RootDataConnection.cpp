@@ -31,6 +31,7 @@
 #include "TClass.h"
 #include "TFile.h"
 #include "TLeaf.h"
+#include "TMemFile.h"
 #include "TROOT.h"
 #include "TTree.h"
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
@@ -41,6 +42,7 @@ static int s_compressionLevel = 1;
 #endif
 
 // C/C++ include files
+#include <limits>
 #include <numeric>
 #include <stdexcept>
 
@@ -474,23 +476,27 @@ CSTR RootDataConnection::empty() const { return s_empty; }
 
 /// Save object of a given class to section and container
 pair<int, unsigned long> RootDataConnection::saveObj( std::string_view section, std::string_view cnt, TClass* cl,
-                                                      DataObject* pObj, int buff_siz, int split_lvl, bool fill ) {
+                                                      DataObject* pObj, int minBufferSize, int maxBufferSize,
+                                                      int approxEventsPerBasket, int split_lvl, bool fill ) {
   DataObjectPush push( pObj );
-  return save( section, cnt, cl, pObj, buff_siz, split_lvl, fill );
+  return save( section, cnt, cl, pObj, minBufferSize, maxBufferSize, approxEventsPerBasket, split_lvl, fill );
 }
 
 /// Save object of a given class to section and container
 pair<int, unsigned long> RootDataConnection::save( std::string_view section, std::string_view cnt, TClass* cl,
-                                                   void* pObj, int buff_siz, int split_lvl, bool fill_missing ) {
+                                                   void* pObj, int minBufferSize, int maxBufferSize,
+                                                   int approxEventsPerBasket, int split_lvl, bool fill_missing ) {
   split_lvl  = 0;
-  TBranch* b = getBranch( section, cnt, cl, pObj ? &pObj : nullptr, buff_siz, split_lvl );
+  TBranch* b = getBranch( section, cnt, cl, pObj ? &pObj : nullptr, minBufferSize, split_lvl );
   if ( b ) {
     Long64_t evt = b->GetEntries();
     // msgSvc() << MSG::DEBUG << cnt.c_str() << " Obj:" << (void*)pObj
-    //         << " Split:" << split_lvl << " Buffer size:" << buff_siz << endl;
+    //         << " Split:" << split_lvl << " Buffer size:" << minBufferSize << endl;
+    bool set_buffer_size = ( evt == 0 );
     if ( fill_missing ) {
       Long64_t num, nevt = b->GetTree()->GetEntries();
       if ( nevt > evt ) {
+        set_buffer_size = true;
         b->SetAddress( nullptr );
         num = nevt - evt;
         while ( num > 0 ) {
@@ -501,6 +507,20 @@ pair<int, unsigned long> RootDataConnection::save( std::string_view section, std
                  << " / Branch: " << b->GetEntries() + 1 << " NULL entries to:" << cnt << endmsg;
         evt = b->GetEntries();
       }
+    }
+    if ( set_buffer_size ) {
+      auto     dummy_file = make_unique<TMemFile>( "dummy.root", "CREATE" );
+      auto     dummy_tree = make_unique<TTree>( "DummyTree", "DummyTree", split_lvl, dummy_file->GetDirectory( "/" ) );
+      TBranch* dummy_branch = dummy_tree->Branch( "DummyBranch", cl->GetName(), &pObj, minBufferSize, split_lvl );
+      Int_t    nWritten     = dummy_branch->Fill();
+      if ( nWritten < 0 ) return { nWritten, evt };
+      Int_t newBasketSize = nWritten * approxEventsPerBasket;
+      // Ensure that newBasketSize doesn't wrap around
+      if ( std::numeric_limits<Int_t>::max() / approxEventsPerBasket < nWritten ) {
+        newBasketSize = std::numeric_limits<Int_t>::max();
+      }
+      b->SetBasketSize( std::min( maxBufferSize, std::max( minBufferSize, newBasketSize ) ) );
+      msgSvc() << MSG::DEBUG << "Setting basket size to " << newBasketSize << " for " << cnt << endmsg;
     }
     b->SetAddress( &pObj );
     return { b->Fill(), evt };

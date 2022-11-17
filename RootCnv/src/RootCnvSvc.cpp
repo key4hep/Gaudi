@@ -329,15 +329,6 @@ StatusCode RootCnvSvc::commitOutput( CSTR dsn, bool /* doCommit */ ) {
       }
 
       b->GetTree()->SetEntries( evt );
-      if ( evt == 1 ) { b->GetTree()->OptimizeBaskets( m_basketSize, 1.1, "" ); }
-      if ( evt > 0 && ( evt % m_autoFlush ) == 0 ) {
-        if ( evt == m_autoFlush ) {
-          b->GetTree()->SetAutoFlush( m_autoFlush );
-          b->GetTree()->OptimizeBaskets( m_basketSize, 1., "" );
-        } else {
-          b->GetTree()->FlushBaskets();
-        }
-      }
       if ( log().level() <= MSG::DEBUG )
         log() << MSG::DEBUG << "Set section entries of " << m_currSection << " to " << long( evt ) << " entries."
               << endmsg;
@@ -365,7 +356,8 @@ StatusCode RootCnvSvc::createAddress( long typ, const CLID& clid, const string* 
 StatusCode RootCnvSvc::createNullRep( const std::string& path ) {
   size_t len     = path.find( '/', 1 );
   string section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
-  m_current->saveObj( section, path, nullptr, nullptr, m_bufferSize, m_splitLevel );
+  m_current->saveObj( section, path, nullptr, nullptr, m_minBufferSize, m_maxBufferSize, m_approxEventsPerBasket,
+                      m_splitLevel );
   return S_OK;
 }
 
@@ -374,7 +366,8 @@ StatusCode RootCnvSvc::createNullRef( const std::string& path ) {
   RootObjectRefs*          refs    = nullptr;
   size_t                   len     = path.find( '/', 1 );
   string                   section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
-  pair<int, unsigned long> ret     = m_current->save( section, path + "#R", nullptr, refs, m_bufferSize, m_splitLevel );
+  pair<int, unsigned long> ret = m_current->save( section, path + "#R", nullptr, refs, m_minBufferSize, m_maxBufferSize,
+                                                  m_approxEventsPerBasket, m_splitLevel );
   if ( log().level() <= MSG::VERBOSE )
     log() << MSG::VERBOSE << "Writing object:" << path << " " << ret.first << " " << hex << ret.second << dec
           << " [NULL]" << endmsg;
@@ -391,7 +384,8 @@ StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr
   TClass*                  cl   = ( clid == CLID_DataObject ) ? m_classDO : getClass( pObj );
   size_t                   len  = p[1].find( '/', 1 );
   string                   sect = p[1].substr( 1, len == string::npos ? string::npos : len - 1 );
-  pair<int, unsigned long> ret  = m_current->saveObj( sect, p[1], cl, pObj, m_bufferSize, m_splitLevel, true );
+  pair<int, unsigned long> ret  = m_current->saveObj( sect, p[1], cl, pObj, m_minBufferSize, m_maxBufferSize,
+                                                      m_approxEventsPerBasket, m_splitLevel, true );
   if ( ret.first > 1 || ( clid == CLID_DataObject && ret.first == 1 ) ) {
     unsigned long ip[2] = { 0, ret.second };
     if ( m_currSection.empty() ) m_currSection = p[1];
@@ -428,8 +422,8 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
           int                      link_id = m_current->makeLink( lnk->path() );
           refs.links.push_back( link_id );
         }
-        pair<int, unsigned long> ret =
-            m_current->save( sect, id + "#R", m_classRefs, &refs, m_bufferSize, m_splitLevel, true );
+        pair<int, unsigned long> ret = m_current->save( sect, id + "#R", m_classRefs, &refs, m_minBufferSize,
+                                                        m_maxBufferSize, m_approxEventsPerBasket, m_splitLevel, true );
         if ( ret.first > 1 ) {
           if ( log().level() <= MSG::DEBUG )
             log() << MSG::DEBUG << "Writing object:" << id << " " << ret.first << " " << hex << ret.second << dec
