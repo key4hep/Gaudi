@@ -41,13 +41,15 @@ app = ApplicationMgr(TopAlg = [alg],
 <argument name="signal"><integer>3</integer></argument>
 <argument name="validator"><text>
 import re
+import platform
+
 stdout = re.subn(r"size = [0-9]+(\.[0-9]*)? MB", "size = # MB", stdout)[0]
 
 findReferenceBlock("EventWatchdog       FATAL too much time on a single event: aborting process")
 
 findReferenceBlock("=== Stalled event: current stack trace ===", stdout=stderr, id='stderr')
 
-if not 'in GaudiTesting::SleepyAlg::execute' in stderr:
+if platform.processor() != "aarch64" and 'in GaudiTesting::SleepyAlg::execute' not in stderr:
     causes.append('invalid stack trace')
 
 </text></argument>

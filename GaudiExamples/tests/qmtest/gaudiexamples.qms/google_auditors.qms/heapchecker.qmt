@@ -45,6 +45,8 @@ ApplicationMgr(EvtMax=10,
   <text>lsan</text>
   <text>ubsan</text>
   <text>tsan</text>
+  <text>^arm</text>
+  <text>^aarch</text>
 </set></argument>
 <argument name="validator"><text>
 # hide a difference between JobOptionsSvc and Configurables
