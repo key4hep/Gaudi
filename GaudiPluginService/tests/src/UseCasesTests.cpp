@@ -65,6 +65,7 @@ BOOST_AUTO_TEST_CASE( deprecated ) {
 
   reg.setError( "deprecated" );
   BOOST_CHECK( Base::Factory::create( "Component0" ) == nullptr );
+  BOOST_CHECK( Base::Factory::create( "ObsoleteComponent" ) == nullptr );
 
   reg.unsetError( "deprecated" );
   reg.addProperty( "Component0", "deprecated", "this factory will be removed in Gaudi v99" );
