@@ -14,6 +14,7 @@
 #include <Gaudi/MonitoringHub.h>
 #include <array>
 #include <cmath>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <type_traits>
@@ -39,6 +40,14 @@ namespace Gaudi::Accumulators {
     struct GetTuple<Type, 1> {
       using type = std::tuple<Type>;
     };
+
+    inline void requireValidTitle( std::string_view sv ) {
+      if ( !sv.empty() && ( std::isspace( sv.back() ) || std::isspace( sv.front() ) ) ) {
+        throw GaudiException(
+            fmt::format( "Histogram title \'{}\' has whitespace at front or back -- please remove", sv ),
+            "Gaudi::Accumulators", StatusCode::FAILURE );
+      }
+    }
   } // namespace details
 
   /**
@@ -148,7 +157,10 @@ namespace Gaudi::Accumulators {
         , maxValue( _maxValue )
         , title( std::move( _title ) )
         , labels( std::move( _labels ) )
-        , ratio( _nBins / ( _maxValue - _minValue ) ){};
+        , ratio( _nBins / ( _maxValue - _minValue ) ) {
+      details::requireValidTitle( title );
+      for ( const auto& s : labels ) details::requireValidTitle( s );
+    };
     /// number of bins for this Axis
     unsigned int nBins;
     /// min and max values on this axis
@@ -436,7 +448,9 @@ namespace Gaudi::Accumulators {
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
                                      details::GetTuple_t<typename AccumulatorType::AxisType, ND> axis )
-        : Parent( owner, name, *this, axis, std::make_index_sequence<ND>{} ), m_title( title ) {}
+        : Parent( owner, name, *this, axis, std::make_index_sequence<ND>{} ), m_title( title ) {
+      details::requireValidTitle( m_title );
+    }
     template <typename OWNER>
     HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
                                      details::alwaysT<NDs, typename AccumulatorType::AxisType>... allAxis )
