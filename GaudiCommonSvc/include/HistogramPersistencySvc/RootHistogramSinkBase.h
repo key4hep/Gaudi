@@ -9,8 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include "GaudiKernel/Service.h"
-
+#include <Gaudi/BaseSink.h>
 #include <Gaudi/MonitoringHub.h>
 
 #include <functional>
@@ -32,17 +31,10 @@ namespace ranges::views {
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
-#include <deque>
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
-
-namespace {
-  bool isHistogram( Gaudi::Monitoring::Hub::Entity const& ent ) {
-    return std::string_view( ent.type ).substr( 0, 10 ) == "histogram:";
-  }
-} // namespace
 
 namespace Gaudi::Histograming::Sink {
 
@@ -160,48 +152,34 @@ namespace Gaudi::Histograming::Sink {
    *
    * provides the common method plus a generic way of registering handler for different types
    */
-  class Base : public Service, public Gaudi::Monitoring::Hub::Sink {
+  class Base : public Monitoring::BaseSink {
   public:
     using HistoIdentification = std::pair<std::string, int>;
     using HistoHandler        = std::function<void( TFile& file, std::string, std::string, nlohmann::json& )>;
     using HistoRegistry       = std::map<HistoIdentification, HistoHandler>;
 
-    Base( std::string name, ISvcLocator* svcloc,
-          std::function<bool( Monitoring::Hub::Entity const& )> const isRelevant = isHistogram )
-        : Service( name, svcloc ), m_isRelevant( std::move( isRelevant ) ) {}
-
-    StatusCode initialize() override {
-      return Service::initialize().andThen( [&] { serviceLocator()->monitoringHub().addSink( this ); } );
+    Base( std::string name, ISvcLocator* svcloc ) : Monitoring::BaseSink( name, svcloc ) {
+      // only deal with histograms
+      setProperty( "TypesToSave", std::vector<std::string>{ "histogram:.*" } );
     }
 
     StatusCode stop() override {
-      auto ok = Service::stop();
-      if ( !ok ) return ok;
-      /// sort entities to ensure reproducibility of the output of the sink
-      std::sort( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( const auto& a, const auto& b ) {
-        return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
+      return Service::stop().andThen( [&] {
+        TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
+        applytoAllEntities(
+            [&histoFile, this]( auto& ent ) {
+              auto j    = ent.toJSON();
+              auto dim  = j.at( "dimension" ).template get<unsigned int>();
+              auto type = j.at( "type" ).template get<std::string>();
+              // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
+              // as ROOT anyway treats everything as doubles in histograms
+              type       = type.substr( 0, type.find_last_of( ':' ) );
+              auto saver = m_registry.find( { type, dim } );
+              if ( saver != m_registry.end() ) ( saver->second )( histoFile, ent.component, ent.name, j );
+            },
+            true );
+        return StatusCode::SUCCESS;
       } );
-      TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
-      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [&histoFile, this]( auto& ent ) {
-        auto j    = ent.toJSON();
-        auto dim  = j.at( "dimension" ).template get<unsigned int>();
-        auto type = j.at( "type" ).template get<std::string>();
-        // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
-        // as ROOT anyway treats everything as doubles in histograms
-        type       = type.substr( 0, type.find_last_of( ':' ) );
-        auto saver = m_registry.find( { type, dim } );
-        if ( saver != m_registry.end() ) ( saver->second )( histoFile, ent.component, ent.name, j );
-      } );
-      return ok;
-    }
-
-    void registerEntity( Monitoring::Hub::Entity ent ) override {
-      if ( m_isRelevant( ent ) ) { m_monitoringEntities.emplace_back( std::move( ent ) ); }
-    }
-
-    void removeEntity( Monitoring::Hub::Entity const& ent ) override {
-      auto it = std::find( begin( m_monitoringEntities ), end( m_monitoringEntities ), ent );
-      if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
     }
 
     void registerHandler( HistoIdentification const& id, HistoHandler const& func ) {
@@ -211,12 +189,6 @@ namespace Gaudi::Histograming::Sink {
   private:
     /// map of supported type and the way to handle them
     HistoRegistry m_registry{};
-
-    /// function saying whether a given entity is relevant for this Sink
-    std::function<bool( Monitoring::Hub::Entity const& )> const m_isRelevant;
-
-    /// list of entities handled by this Sink
-    std::deque<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
 
     Gaudi::Property<std::string> m_fileName{ this, "FileName", "testHisto.root",
                                              "Name of file where to save histograms" };
