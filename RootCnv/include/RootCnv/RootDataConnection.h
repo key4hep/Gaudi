@@ -12,6 +12,7 @@
 #define GAUDIROOT_ROOTDATACONNECTION_H
 
 // Framework include files
+#include "Gaudi/Property.h"
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/SmartIF.h"
@@ -72,6 +73,9 @@ namespace Gaudi {
     int cacheSize{ 0 };
     /// RootCnvSvc Property: ROOT cache learn entries
     int learnEntries{ 0 };
+
+    Gaudi::Property<bool> produceReproducibleFiles{ "ProduceReproducibleFiles", true,
+                                                    "configure output files to be more reproducible" };
 
     /// Standard constructor
     RootConnectionSetup() = default;

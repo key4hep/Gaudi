@@ -136,6 +136,9 @@ def configure(gaudi=None):
 
     HistoEx2.configure(gaudi)
 
+    hsvc = gaudi.service("HistogramPersistencySvc")
+    hsvc.OutputFile = "aida2rootex.root"
+
     # create the algorithms
     alg1 = Aida2RootEx1()
     alg2 = Aida2RootEx2()

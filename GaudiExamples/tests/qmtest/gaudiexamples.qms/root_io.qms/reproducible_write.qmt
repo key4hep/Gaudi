@@ -1,0 +1,46 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<!--
+    (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="prerequisites"><set>
+  <tuple><text>root_io.write</text><enumeral>PASS</enumeral></tuple>
+</set></argument>
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>-v</text>
+  <text>../../options/ROOT_IO/Write.py</text>
+</set></argument>
+<argument name="options"><text>
+
+# from Configurables import # dummy line to signify these are python options
+import os
+import shutil
+try:
+    os.mkdir("ReproducibleWrite")
+except FileExistsError:
+    pass
+os.chdir("ReproducibleWrite")
+shutil.copy("../ROOTIO.xml", "ROOTIO.xml")
+
+</text></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="reference"><text>refs/ROOT_IO/Write.ref</text></argument>
+<argument name="validator"><text>
+
+validateWithReference()
+
+import filecmp
+for name in ["ROOTIO.dst", "ROOTIO.mdst"]:
+    if not filecmp.cmp(name, "ReproducibleWrite/" + name, shallow=False):
+        causes.append(f"File {name} was not reproduced")
+
+</text></argument>
+</extension>

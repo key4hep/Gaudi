@@ -90,7 +90,7 @@ StatusCode WriteAlg::execute() {
   Event* evt = new Event();
   evt->setEvent( ++evtnum );
   evt->setRun( runnum );
-  evt->setTime( Gaudi::Time::current() );
+  evt->setTime( Gaudi::Time( 1577836800 + evtnum, evtnum * 1e6 ) );
 
   sc = eventSvc()->registerObject( "/Event", "Header", evt );
   if ( sc.isFailure() ) {

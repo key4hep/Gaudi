@@ -21,7 +21,4 @@ preprocessor = normalizeExamples + \
 validateWithReference(preproc = preprocessor)
   </text></argument>
   <argument name="reference"><text>refs/HistoEx2.pyref</text></argument>
-  <argument name="prerequisites"><set>
-    <tuple><text>gaudiexamples.histoex1</text><enumeral>PASS</enumeral></tuple>
-  </set></argument>
 </extension>

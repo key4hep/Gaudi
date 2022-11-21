@@ -1072,7 +1072,6 @@ lineSkipper = LineSkipper(
         "Time User",
         "Welcome to",
         "This machine has a speed",
-        "TIME:",
         "running on",
         "ToolSvc.Sequenc...   INFO",
         "DataListenerSvc      INFO XML written to file:",

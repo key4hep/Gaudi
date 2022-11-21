@@ -290,10 +290,12 @@ StatusCode RootDataConnection::connectRead() {
 StatusCode RootDataConnection::connectWrite( IoType typ ) {
   int compress = RootConnectionSetup::compression();
   msgSvc() << MSG::DEBUG;
+  std::string spec = m_pfn;
+  if ( m_setup->produceReproducibleFiles ) spec += "?reproducible"; // https://root.cern.ch/doc/master/classTFile.html
   switch ( typ ) {
   case CREATE:
     resetAge();
-    m_file.reset( TFile::Open( m_pfn.c_str(), "CREATE", "Root event data", compress ) );
+    m_file.reset( TFile::Open( spec.c_str(), "CREATE", "Root event data", compress ) );
     m_refs = new TTree( "Refs", "Root reference data" );
     msgSvc() << "Opened file " << m_pfn << " in mode CREATE. [" << m_fid << "]" << endmsg;
     m_params.emplace_back( "PFN", m_pfn );
@@ -302,7 +304,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ ) {
     break;
   case RECREATE:
     resetAge();
-    m_file.reset( TFile::Open( m_pfn.c_str(), "RECREATE", "Root event data", compress ) );
+    m_file.reset( TFile::Open( spec.c_str(), "RECREATE", "Root event data", compress ) );
     msgSvc() << "Opened file " << m_pfn << " in mode RECREATE. [" << m_fid << "]" << endmsg;
     m_refs = new TTree( "Refs", "Root reference data" );
     m_params.emplace_back( "PFN", m_pfn );
@@ -311,7 +313,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ ) {
     break;
   case UPDATE:
     resetAge();
-    m_file.reset( TFile::Open( m_pfn.c_str(), "UPDATE", "Root event data", compress ) );
+    m_file.reset( TFile::Open( spec.c_str(), "UPDATE", "Root event data", compress ) );
     msgSvc() << "Opened file " << m_pfn << " in mode UPDATE. [" << m_fid << "]" << endmsg;
     if ( m_file && !m_file->IsZombie() ) {
       if ( makeTool() ) {

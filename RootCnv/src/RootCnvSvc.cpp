@@ -67,6 +67,9 @@ RootCnvSvc::RootCnvSvc( CSTR nam, ISvcLocator* svc )
   declareProperty( "LearnEntries", m_setup->learnEntries = 10 );
   declareProperty( "CacheBranches", m_setup->cacheBranches );
   declareProperty( "VetoBranches", m_setup->vetoBranches );
+
+  declareProperty( m_setup->produceReproducibleFiles );
+  m_setup->produceReproducibleFiles.setOwnerType<RootCnvSvc>();
 }
 
 // Small routine to issue exceptions
