@@ -289,7 +289,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ ) {
   int compress = RootConnectionSetup::compression();
   msgSvc() << MSG::DEBUG;
   std::string spec = m_pfn;
-  spec += "?reproducible"; // https://root.cern.ch/doc/master/classTFile.html
+  if ( m_setup->produceReproducibleFiles ) spec += "?reproducible"; // https://root.cern.ch/doc/master/classTFile.html
   switch ( typ ) {
   case CREATE:
     resetAge();
