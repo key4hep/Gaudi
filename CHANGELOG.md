@@ -5,6 +5,50 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r9][] - 2022-11-21
+Just some minor bugfixes and a few (mostly backword compatible) changes in behaviour.
+
+To be noted:
+- ROOT file produced by `RootCnvSvc` are now more reproducible
+  (gaudi/Gaudi!1380), thanks to a special flag from
+  [TFile](https://root.cern/doc/master/classTFile.html#ae82abd48570a83d8aecb2af32eaa324ea31be021b9a54c95db15121c28b69f242),
+  in case of problems or for backward compatibility the new behaviour can be
+  turned off with the `RootCnvSvc` property `ProduceReproducibleFiles` (dafalt
+  is `true`)
+- `RootCnvSvc` improves compressibility of files by using larger basket sizes
+  (see gaudi/Gaudi!1381), the side effect is that one may notice al larger use
+  of VMEM from the job
+- we added a few missing `const` in `LinkManager` interface (gaudi/Gaudi!1386),
+  but that means that downstream code might fail to build if it was relying on
+  `const` instances returning pointer to non-`const` objects
+- you will get a runtime error when trying to create histograms with heading or
+  trailing whitespaces in titles and labels (gaudi/Gaudi!1397)
+
+
+## Changed
+- Create reproducible ROOT files and clean up tests (gaudi/Gaudi!1380)
+- Do not allow whitespace at front or back of histogram titles or labels (lhcb/Gaudi#3 gaudi/Gaudi!1397)
+- Optimise basket sizes created by `RootCnvSvc` (gaudi/Gaudi!1381)
+- Avoid unneccessary work if tests are not requested (gaudi/Gaudi!1391)
+- Use Gitlab CI DAG pipelines (gaudi/Gaudi!1393)
+- More const-correct `LinkManager` interface (gaudi/Gaudi!1386)
+
+## Added
+- Add test build of public headers (again) (gaudi/Gaudi!1394)
+- Add support for `.json` options to `Gaudi.exe` (gaudi/Gaudi!1388)
+- Add output dependency checks to `AvalancheSchedulerSvc` (gaudi/Gaudi!1384)
+
+## Fixed
+- Fixes to support builds on ARM processors (gaudi/Gaudi!1396)
+- Fix use of deprecated Boost headers (gaudi/Gaudi!1400)
+- Fix `UnboundLocalError` in `GaudiKernel/Configurable.py` (gaudi/Gaudi!1399)
+- Fix detection of platform specific reference files (gaudi/Gaudi#236  gaudi/Gaudi!1398)
+- Fix access to Python binary modules from the build tree (gaudi/Gaudi#240  gaudi/Gaudi!1392)
+- Fix TProfile creation in ROOT monitoring sink when SetDefaultSumw2 is used (gaudi/Gaudi!1390)
+- Use actual counter type when registering to monitoring (gaudi/Gaudi!1389)
+- Release the GIL when bootstrapping with `Gaudi.Application` (gaudi/Gaudi!1387)
+
+
 ## [v36r8][] - 2022-10-12
 Minor release to pick up some fixes for ATLAS and LHCb.
 
@@ -954,6 +998,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r9]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r9
 [v36r8]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r8
 [v36r7]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r7
 [v36r6]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r6
