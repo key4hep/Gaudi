@@ -17,6 +17,11 @@
 #include <TDirectory.h>
 #include <TFile.h>
 #include <TH1.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TH3D.h>
+#include <TProfile.h>
+#include <TProfile2D.h>
 
 #include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/range/conversion.hpp>
@@ -29,6 +34,7 @@ namespace ranges::views {
 }
 #endif
 
+#include <gsl/span>
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
@@ -56,12 +62,21 @@ namespace Gaudi::Histograming::Sink {
   /**
    * generic function to convert json to a ROOT Histogram
    *
-   * returns the Root histogram and the dir wher to save it in the Root file
+   * returns the Root histogram and the dir where to save it in the Root file
    * This may be different from input dir in case name has slashes
    */
   template <typename Traits>
   std::tuple<typename Traits::Histo, std::string> jsonToRootHistogram( std::string& dir, std::string& name,
                                                                        nlohmann::json const& j );
+
+  /**
+   * generic function to convert a ROOT Histogram to json
+   *
+   * essentially used for backward compatibility of old HistogramService with MonitoringHub
+   */
+  template <typename Histo>
+  nlohmann::json rootHistogramTojson( Histo const& );
+
   /**
    * generic method to save histograms to files, based on Traits
    */
@@ -238,6 +253,49 @@ namespace Gaudi::Histograming::Sink {
       return previousDir;
     }
 
+    template <typename Histo>
+    nlohmann::json allAxisTojson( Histo const& h ) {
+      if constexpr ( std::is_base_of_v<TH3D, Histo> ) {
+        return { *h.GetXaxis(), *h.GetYaxis(), *h.GetZaxis() };
+      } else if constexpr ( std::is_base_of_v<TProfile2D, Histo> || std::is_base_of_v<TH2D, Histo> ) {
+        return { *h.GetXaxis(), *h.GetYaxis() };
+      } else {
+        return { *h.GetXaxis() };
+      }
+    }
+
+    template <typename Histo>
+    nlohmann::json binsTojson( Histo const& h ) {
+      if constexpr ( std::is_base_of_v<TProfile, Histo> || std::is_base_of_v<TProfile2D, Histo> ) {
+        nlohmann::json j;
+        // ROOT TProfile interface being completely inconsistent, we have to play
+        // with different ways to access values of the histogram... one per value !
+        auto* sums  = h.GetArray();
+        auto* sums2 = h.GetSumw2();
+        for ( unsigned long n = 0; n < (unsigned long)h.GetSize(); n++ ) {
+          j.push_back( nlohmann::json{ { h.GetBinEntries( n ), sums[n] }, sums2->At( n ) } );
+        }
+        return j;
+      } else {
+        return gsl::span{ h.GetArray(), (unsigned long)h.GetSize() };
+      }
+    }
+
+    /// automatic translation of Root Histograms to json
+    template <typename Histo>
+    nlohmann::json rootHistogramToJson( Histo const& h ) {
+      std::string type = std::is_base_of_v<TProfile, Histo> || std::is_base_of_v<TProfile2D, Histo>
+                             ? "histogram:ProfileHistogram:double"
+                             : "histogram:Histogram:double";
+      return nlohmann::json{ { "type", type },
+                             { "title", h.GetTitle() },
+                             { "dimension", h.GetDimension() },
+                             { "empty", (int)h.GetEntries() == 0 },
+                             { "nEntries", (int)h.GetEntries() },
+                             { "axis", allAxisTojson( h ) },
+                             { "bins", binsTojson( h ) } };
+    }
+
   } // namespace details
 
   /**
@@ -290,3 +348,30 @@ namespace Gaudi::Histograming::Sink {
   }
 
 } // namespace Gaudi::Histograming::Sink
+
+namespace nlohmann {
+  /// automatic translation of TAxis to json
+  inline void to_json( nlohmann::json& j, TAxis const& axis ) {
+    j = nlohmann::json{ { "nBins", axis.GetNbins() },
+                        { "minValue", axis.GetXmin() },
+                        { "maxValue", axis.GetXmax() },
+                        { "title", axis.GetTitle() } };
+  }
+  /// automatic translation of Root histograms to json
+  inline void to_json( nlohmann::json& j, TH1D const& h ) {
+    j = Gaudi::Histograming::Sink::details::rootHistogramToJson( h );
+  }
+  inline void to_json( nlohmann::json& j, TH2D const& h ) {
+    j = Gaudi::Histograming::Sink::details::rootHistogramToJson( h );
+  }
+  inline void to_json( nlohmann::json& j, TH3D const& h ) {
+    j = Gaudi::Histograming::Sink::details::rootHistogramToJson( h );
+  }
+  inline void to_json( nlohmann::json& j, TProfile const& h ) {
+    j = Gaudi::Histograming::Sink::details::rootHistogramToJson( h );
+  }
+  inline void to_json( nlohmann::json& j, TProfile2D const& h ) {
+    j = Gaudi::Histograming::Sink::details::rootHistogramToJson( h );
+  }
+
+} // namespace nlohmann
