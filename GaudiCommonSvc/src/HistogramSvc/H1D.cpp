@@ -20,27 +20,37 @@
 #  pragma warning( disable : 4996 )
 #endif
 #include "GaudiPI.h"
+#include <Gaudi/MonitoringHub.h>
 #include <GaudiCommonSvc/H1D.h>
 #include <GaudiCommonSvc/HistogramUtility.h>
 #include <GaudiKernel/ObjectFactory.h>
 #include <GaudiKernel/StreamBuffer.h>
 
-std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string& title, int nBins, double xlow,
+#include <HistogramPersistencySvc/RootHistogramUtils.h>
+
+std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( ISvcLocator* svcLocator, const std::string& path,
+                                                              const std::string& title, int nBins, double xlow,
                                                               double xup ) {
   auto p = new Histogram1D( new TH1D( title.c_str(), title.c_str(), nBins, xlow, xup ) );
+  svcLocator->monitoringHub().registerEntity( "", path, "histogram:Histogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string& title, const Edges& e ) {
+std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( ISvcLocator* svcLocator, const std::string& path,
+                                                              const std::string& title, const Edges& e ) {
   auto p = new Histogram1D( new TH1D( title.c_str(), title.c_str(), e.size() - 1, &e.front() ) );
+  svcLocator->monitoringHub().registerEntity( "", path, "histogram:Histogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const AIDA::IHistogram1D& hist ) {
+std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( ISvcLocator* svcLocator, const std::string& path,
+                                                              const AIDA::IHistogram1D& hist ) {
   TH1D* h = getRepresentation<AIDA::IHistogram1D, TH1D>( hist );
   auto  n = ( h ? new Histogram1D( new TH1D( *h ) ) : nullptr );
+  if ( n ) { svcLocator->monitoringHub().registerEntity( "", path, "histogram:Histogram:double", *n ); }
   return { n, n };
 }
+
 namespace Gaudi {
 
   template <>
@@ -98,6 +108,8 @@ bool Gaudi::Histogram1D::reset() {
   m_sumEntries = 0;
   return Base::reset();
 }
+
+nlohmann::json Gaudi::Histogram1D::toJSON() const { return *m_rep.get(); }
 
 /// Adopt ROOT histogram representation
 void Gaudi::Histogram1D::adoptRepresentation( TObject* rep ) {

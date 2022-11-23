@@ -16,6 +16,8 @@
 #include <GaudiKernel/DataObject.h>
 #include <TH1D.h>
 
+#include <nlohmann/json.hpp>
+
 #include <mutex>
 
 namespace Gaudi {
@@ -47,6 +49,8 @@ namespace Gaudi {
     virtual bool setBinContents( int i, int entries, double height, double error, double centre );
     /// need to overwrite reset to reset the sums
     bool reset() override;
+    /// dumps Histogram to json data
+    nlohmann::json toJSON() const;
     /// set histogram statistics
     virtual bool setStatistics( int allEntries, double eqBinEntries, double mean, double rms );
     /// Fill the Profile1D with a value and the corresponding weight.

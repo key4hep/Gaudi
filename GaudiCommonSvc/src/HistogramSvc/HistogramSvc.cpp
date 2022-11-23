@@ -93,7 +93,7 @@ AIDA::IHistogram2D* HistogramSvc::i_project( const string& nameAndTitle, const I
   if ( h3d ) {
     TH2D* h2d = dynamic_cast<TH2D*>( h3d->Project3D( dir.c_str() ) );
     if ( h2d ) {
-      std::pair<DataObject*, AIDA::IHistogram2D*> r = Gaudi::createH2D( h2d );
+      std::pair<DataObject*, AIDA::IHistogram2D*> r = Gaudi::createH2D( serviceLocator(), nameAndTitle, h2d );
       if ( r.second && registerObject( nameAndTitle, r.second ).isSuccess() ) { return r.second; }
     }
   }
@@ -319,17 +319,23 @@ bool HistogramSvc::destroy( IBaseHistogram* hist ) {
 // ============================================================================
 AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const string& rel, const string& title, int nx, double lowx,
                                         double upx ) {
-  if ( m_defs1D.empty() ) { return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) ); }
+  if ( m_defs1D.empty() ) {
+    return i_book( pPar, rel, title,
+                   Gaudi::createH1D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx ) );
+  }
   string hn     = histoAddr( pPar, rel );
   auto   ifound = m_defs1D.find( hn );
-  if ( m_defs1D.end() == ifound ) { return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) ); }
+  if ( m_defs1D.end() == ifound ) {
+    return i_book( pPar, rel, title,
+                   Gaudi::createH1D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx ) );
+  }
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << " Redefine the parameters for the histogram '" + hn + "' to be " << ifound->second << endmsg;
   }
   m_mods1D.insert( hn );
   return i_book( pPar, rel, ifound->second.title(),
-                 Gaudi::createH1D( ifound->second.title(), ifound->second.bins(), ifound->second.lowEdge(),
-                                   ifound->second.lowEdge() ) );
+                 Gaudi::createH1D( serviceLocator(), buildHistoPath( pPar, rel ), ifound->second.title(),
+                                   ifound->second.bins(), ifound->second.lowEdge(), ifound->second.lowEdge() ) );
 }
 
 // ============================================================================
@@ -344,6 +350,12 @@ HistogramSvc::HistogramSvc( const string& nam, ISvcLocator* svc ) : base_class( 
 void HistogramSvc::update1Ddefs() {
   // check and remove the leading '/stat/'
   removeLeading( m_defs1D.value(), "/stat/" );
+}
+
+std::string HistogramSvc::buildHistoPath( DataObject const* pPar, std::string const& rel ) {
+  std::string const& path = pPar->registry()->identifier();
+  std::string const& root = rootName();
+  return path.substr( root.size() ) + '/' + rel;
 }
 
 // ============================================================================
@@ -424,7 +436,9 @@ AIDA::IProfile1D* HistogramSvc::bookProf( const string& full, const string& titl
 // ============================================================================
 AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const string& rel, const string& title, int nx, double lowx,
                                           double upx, const string& opt ) {
-  return i_book( pPar, rel, title, Gaudi::createProf1D( title, nx, lowx, upx, 0, 0, opt ) );
+  return i_book(
+      pPar, rel, title,
+      Gaudi::createProf1D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx, 0, 0, opt ) );
 }
 
 // ============================================================================
@@ -460,7 +474,9 @@ AIDA::IProfile1D* HistogramSvc::bookProf( const string& full, const string& titl
 // ============================================================================
 AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const string& rel, const string& title, int nx, double lowx,
                                           double upx, double upper, double lower, const string& opt ) {
-  return i_book( pPar, rel, title, Gaudi::createProf1D( title, nx, lowx, upx, upper, lower, opt ) );
+  return i_book(
+      pPar, rel, title,
+      Gaudi::createProf1D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx, upper, lower, opt ) );
 }
 
 // ============================================================================
@@ -492,7 +508,7 @@ AIDA::IHistogram1D* HistogramSvc::book( const std::string& full, const std::stri
 
 // ============================================================================
 AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, Edges e ) {
-  return i_book( pPar, rel, title, Gaudi::createH1D( title, e ) );
+  return i_book( pPar, rel, title, Gaudi::createH1D( serviceLocator(), buildHistoPath( pPar, rel ), title, e ) );
 }
 
 // ============================================================================
@@ -525,7 +541,8 @@ AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<std::string, std::stri
 // ============================================================================
 AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title,
                                           Edges e ) {
-  return i_book( pPar, rel, title, Gaudi::createProf1D( title, e, 0, 0 ) );
+  return i_book( pPar, rel, title,
+                 Gaudi::createProf1D( serviceLocator(), buildHistoPath( pPar, rel ), title, e, 0, 0 ) );
 }
 
 // ============================================================================
@@ -561,7 +578,8 @@ AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<std::string, std::stri
 // ============================================================================
 AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, Edges e,
                                           double upper, double lower ) {
-  return i_book( pPar, rel, title, Gaudi::createProf1D( title, e, upper, lower ) );
+  return i_book( pPar, rel, title,
+                 Gaudi::createProf1D( serviceLocator(), buildHistoPath( pPar, rel ), title, e, upper, lower ) );
 }
 
 // ============================================================================
@@ -597,7 +615,9 @@ AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, int hID, const std::st
 // ============================================================================
 AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
                                         double lowx, double upx, int ny, double lowy, double upy ) {
-  return i_book( pPar, rel, title, Gaudi::createH2D( title, nx, lowx, upx, ny, lowy, upy ) );
+  return i_book(
+      pPar, rel, title,
+      Gaudi::createH2D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx, ny, lowy, upy ) );
 }
 
 // ============================================================================
@@ -637,7 +657,9 @@ AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::
 AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
                                           double lowx, double upx, int ny, double lowy, double upy, double upper,
                                           double lower ) {
-  return i_book( pPar, rel, title, Gaudi::createProf2D( title, nx, lowx, upx, ny, lowy, upy, upper, lower ) );
+  return i_book( pPar, rel, title,
+                 Gaudi::createProf2D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx, ny, lowy,
+                                      upy, upper, lower ) );
 }
 
 // ============================================================================
@@ -673,7 +695,9 @@ AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::
 // ============================================================================
 AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
                                           double lowx, double upx, int ny, double lowy, double upy ) {
-  return i_book( pPar, rel, title, Gaudi::createProf2D( title, nx, lowx, upx, ny, lowy, upy, 0, 0 ) );
+  return i_book(
+      pPar, rel, title,
+      Gaudi::createProf2D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx, ny, lowy, upy, 0, 0 ) );
 }
 
 // ============================================================================
@@ -706,7 +730,7 @@ AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, int hID, const std::st
 // ============================================================================
 AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
                                         Edges y ) {
-  return i_book( pPar, rel, title, Gaudi::createH2D( title, x, y ) );
+  return i_book( pPar, rel, title, Gaudi::createH2D( serviceLocator(), buildHistoPath( pPar, rel ), title, x, y ) );
 }
 
 // ============================================================================
@@ -740,7 +764,8 @@ AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::stri
 // ============================================================================
 AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
                                           Edges y ) {
-  return i_book( pPar, rel, title, Gaudi::createProf2D( title, x, y, 0, 0 ) );
+  return i_book( pPar, rel, title,
+                 Gaudi::createProf2D( serviceLocator(), buildHistoPath( pPar, rel ), title, x, y, 0, 0 ) );
 }
 
 // ============================================================================
@@ -776,7 +801,8 @@ AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::stri
 // ============================================================================
 AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
                                           Edges y, double upper, double lower ) {
-  return i_book( pPar, rel, title, Gaudi::createProf2D( title, x, y, upper, lower ) );
+  return i_book( pPar, rel, title,
+                 Gaudi::createProf2D( serviceLocator(), buildHistoPath( pPar, rel ), title, x, y, upper, lower ) );
 }
 
 // ============================================================================
@@ -815,7 +841,9 @@ AIDA::IHistogram3D* HistogramSvc::book( const std::pair<std::string, std::string
 AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
                                         double lowx, double upx, int ny, double lowy, double upy, int nz, double lowz,
                                         double upz ) {
-  return i_book( pPar, rel, title, Gaudi::createH3D( title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz ) );
+  return i_book( pPar, rel, title,
+                 Gaudi::createH3D( serviceLocator(), buildHistoPath( pPar, rel ), title, nx, lowx, upx, ny, lowy, upy,
+                                   nz, lowz, upz ) );
 }
 
 // ============================================================================
@@ -850,7 +878,7 @@ AIDA::IHistogram3D* HistogramSvc::book( const std::pair<std::string, std::string
 // ============================================================================
 AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
                                         Edges y, Edges z ) {
-  return i_book( pPar, rel, title, Gaudi::createH3D( title, x, y, z ) );
+  return i_book( pPar, rel, title, Gaudi::createH3D( serviceLocator(), buildHistoPath( pPar, rel ), title, x, y, z ) );
 }
 
 // ============================================================================
@@ -1421,7 +1449,7 @@ AIDA::IHistogram1D* HistogramSvc::createCopy( const std::pair<std::string, std::
 
 // ============================================================================
 AIDA::IHistogram1D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram1D& h ) {
-  return i_book( pPar, rel, h.title(), Gaudi::createH1D( h ) );
+  return i_book( pPar, rel, h.title(), Gaudi::createH1D( serviceLocator(), buildHistoPath( pPar, rel ), h ) );
 }
 
 // ============================================================================
@@ -1468,7 +1496,7 @@ AIDA::IHistogram2D* HistogramSvc::createCopy( const std::pair<std::string, std::
 
 // ============================================================================
 AIDA::IHistogram2D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram2D& h ) {
-  return i_book( pPar, rel, h.title(), Gaudi::createH2D( h ) );
+  return i_book( pPar, rel, h.title(), Gaudi::createH2D( serviceLocator(), buildHistoPath( pPar, rel ), h ) );
 }
 
 // ============================================================================
@@ -1517,7 +1545,7 @@ AIDA::IHistogram3D* HistogramSvc::createCopy( const std::pair<std::string, std::
 
 // ============================================================================
 AIDA::IHistogram3D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram3D& h ) {
-  return i_book( pPar, rel, h.title(), Gaudi::createH3D( h ) );
+  return i_book( pPar, rel, h.title(), Gaudi::createH3D( serviceLocator(), buildHistoPath( pPar, rel ), h ) );
 }
 
 // ============================================================================
@@ -1574,7 +1602,7 @@ AIDA::IProfile1D* HistogramSvc::createCopy( const std::pair<std::string, std::st
 
 // ============================================================================
 AIDA::IProfile1D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IProfile1D& h ) {
-  return i_book( pPar, rel, h.title(), Gaudi::createProf1D( h ) );
+  return i_book( pPar, rel, h.title(), Gaudi::createProf1D( serviceLocator(), buildHistoPath( pPar, rel ), h ) );
 }
 
 // ============================================================================
@@ -1648,5 +1676,5 @@ AIDA::IProfile2D* HistogramSvc::createCopy( const std::pair<std::string, std::st
 
 // ============================================================================
 AIDA::IProfile2D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IProfile2D& h ) {
-  return i_book( pPar, rel, h.title(), Gaudi::createProf2D( h ) );
+  return i_book( pPar, rel, h.title(), Gaudi::createProf2D( serviceLocator(), buildHistoPath( pPar, rel ), h ) );
 }
