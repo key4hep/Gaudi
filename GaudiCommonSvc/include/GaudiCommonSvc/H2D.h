@@ -16,6 +16,8 @@
 #include <GaudiKernel/DataObject.h>
 #include <TH2D.h>
 
+#include <nlohmann/json.hpp>
+
 namespace Gaudi {
   class Histogram1D;
 
@@ -41,6 +43,8 @@ namespace Gaudi {
     bool setRms( double rmsX, double rmsY );
     // overwrite reset
     bool reset() override;
+    /// dumps Histogram to json data
+    nlohmann::json toJSON() const;
     /// Create new histogram from any AIDA based histogram
     void copyFromAida( const AIDA::IHistogram2D& h );
     /// Retrieve reference to class defininition identifier

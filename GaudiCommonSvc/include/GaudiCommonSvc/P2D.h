@@ -16,6 +16,8 @@
 #include <GaudiKernel/DataObject.h>
 #include <TProfile2D.h>
 
+#include <nlohmann/json.hpp>
+
 namespace Gaudi {
 
   /**@class Profile2D
@@ -42,6 +44,8 @@ namespace Gaudi {
       m_rep->Fill( x, y, z, weight );
       return true;
     }
+    /// dumps Histogram to json data
+    nlohmann::json toJSON() const;
     /// Retrieve reference to class defininition identifier
     const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_ProfileH2; }

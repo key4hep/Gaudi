@@ -20,10 +20,14 @@
 #  pragma warning( disable : 4996 )
 #endif
 #include "GaudiPI.h"
+#include <Gaudi/MonitoringHub.h>
 #include <GaudiCommonSvc/HistogramUtility.h>
 #include <GaudiCommonSvc/P2D.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/ObjectFactory.h>
+
+#include <HistogramPersistencySvc/RootHistogramUtils.h>
+
 #include <TH2D.h>
 #include <TProfile2D.h>
 
@@ -55,27 +59,37 @@ namespace Gaudi {
   }
 } // namespace Gaudi
 
-std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( const std::string& title, const Edges& eX,
+std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( ISvcLocator* svcLocator, const std::string& path,
+                                                               const std::string& title, const Edges& eX,
                                                                const Edges& eY, double /* zlow */, double /* zup */ ) {
   // Not implemented in ROOT! Can only use TProfile2D with no z-limits
   auto p = new Profile2D( new TProfile2D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1,
                                           &eY.front() /*,zlow,zup */ ) );
+  svcLocator->monitoringHub().registerEntity( path, title, "histogram:ProfileHistogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( const std::string& title, int binsX, double xlow,
+std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( ISvcLocator* svcLocator, const std::string& path,
+                                                               const std::string& title, int binsX, double xlow,
                                                                double xup, int binsY, double ylow, double yup,
                                                                double zlow, double zup ) {
   auto p =
       new Profile2D( new TProfile2D( title.c_str(), title.c_str(), binsX, xlow, xup, binsY, ylow, yup, zlow, zup ) );
+  svcLocator->monitoringHub().registerEntity( path, title, "histogram:ProfileHistogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( const AIDA::IProfile2D& hist ) {
+std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( ISvcLocator* svcLocator, const std::string& path,
+                                                               const AIDA::IProfile2D& hist ) {
   auto h = getRepresentation<AIDA::IProfile2D, TProfile2D>( hist );
   auto n = ( h ? new Profile2D( new TProfile2D( *h ) ) : nullptr );
+  if ( n ) {
+    svcLocator->monitoringHub().registerEntity( path, h->GetName(), "histogram:ProfileHistogram:double", *n );
+  }
   return { n, n };
 }
+
+nlohmann::json Gaudi::Profile2D::toJSON() const { return *m_rep.get(); }
 
 Gaudi::Profile2D::Profile2D( TProfile2D* rep ) {
   m_classType = "IProfile2D";

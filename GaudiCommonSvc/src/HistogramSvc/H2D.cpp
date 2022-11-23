@@ -20,6 +20,7 @@
 #  pragma warning( disable : 4996 )
 #endif
 #include "GaudiPI.h"
+#include <Gaudi/MonitoringHub.h>
 #include <GaudiCommonSvc/H1D.h>
 #include <GaudiCommonSvc/H2D.h>
 #include <GaudiCommonSvc/HistogramUtility.h>
@@ -29,32 +30,41 @@
 #include <TProfile.h>
 #include <array>
 
+#include <HistogramPersistencySvc/RootHistogramUtils.h>
+
 namespace {
   using AIDA::IHistogram1D;
   using AIDA::IHistogram2D;
   using AIDA::IProfile1D;
 } // namespace
 
-std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const std::string& title, int binsX, double iminX, double imaxX,
+std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( ISvcLocator* svcLocator, const std::string& path,
+                                                        const std::string& title, int binsX, double iminX, double imaxX,
                                                         int binsY, double iminY, double imaxY ) {
   auto p = new Histogram2D( new TH2D( title.c_str(), title.c_str(), binsX, iminX, imaxX, binsY, iminY, imaxY ) );
+  svcLocator->monitoringHub().registerEntity( path, title, "histogram:Histogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const std::string& title, const Edges& eX, const Edges& eY ) {
+std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( ISvcLocator* svcLocator, const std::string& path,
+                                                        const std::string& title, const Edges& eX, const Edges& eY ) {
   auto p = new Histogram2D(
       new TH2D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front() ) );
+  svcLocator->monitoringHub().registerEntity( path, title, "histogram:Histogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( TH2D* rep ) {
+std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( ISvcLocator* svcLocator, const std::string& path, TH2D* rep ) {
   auto p = new Histogram2D( rep );
+  svcLocator->monitoringHub().registerEntity( path, rep->GetName(), "histogram:Histogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist ) {
+std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( ISvcLocator* svcLocator, const std::string& path,
+                                                        const IHistogram2D& hist ) {
   TH2D*        h = getRepresentation<AIDA::IHistogram2D, TH2D>( hist );
   Histogram2D* n = h ? new Histogram2D( new TH2D( *h ) ) : nullptr;
+  if ( n ) { svcLocator->monitoringHub().registerEntity( path, h->GetName(), "histogram:Histogram:double", *n ); }
   return { n, n };
 }
 
@@ -164,6 +174,8 @@ bool Gaudi::Histogram2D::reset() {
   m_sumwy = 0;
   return Base::reset();
 }
+
+nlohmann::json Gaudi::Histogram2D::toJSON() const { return *m_rep.get(); }
 
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable

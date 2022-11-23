@@ -21,29 +21,41 @@
 #endif
 
 #include "GaudiPI.h"
+#include <Gaudi/MonitoringHub.h>
 #include <GaudiCommonSvc/HistogramUtility.h>
 #include <GaudiCommonSvc/P1D.h>
 #include <GaudiKernel/ObjectFactory.h>
+
+#include <HistogramPersistencySvc/RootHistogramUtils.h>
+
 #include <cmath>
 
-std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const std::string& title, int nBins, double xlow,
+std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( ISvcLocator* svcLocator, const std::string& path,
+                                                               const std::string& title, int nBins, double xlow,
                                                                double xup, double ylow, double yup,
                                                                const std::string& opt ) {
   auto _p = new TProfile( title.c_str(), title.c_str(), nBins, xlow, xup, ylow, yup, opt.c_str() );
   auto p  = new Profile1D( _p );
+  svcLocator->monitoringHub().registerEntity( path, title, "histogram:ProfileHistogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const std::string& title, const Edges& e, double ylow,
+std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( ISvcLocator* svcLocator, const std::string& path,
+                                                               const std::string& title, const Edges& e, double ylow,
                                                                double yup, const std::string& opt ) {
   auto p =
       new Profile1D( new TProfile( title.c_str(), title.c_str(), e.size() - 1, &e.front(), ylow, yup, opt.c_str() ) );
+  svcLocator->monitoringHub().registerEntity( path, title, "histogram:ProfileHistogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const AIDA::IProfile1D& hist ) {
+std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( ISvcLocator* svcLocator, const std::string& path,
+                                                               const AIDA::IProfile1D& hist ) {
   TProfile* h = getRepresentation<AIDA::IProfile1D, TProfile>( hist );
   auto      n = ( h ? new Profile1D( new TProfile( *h ) ) : nullptr );
+  if ( n ) {
+    svcLocator->monitoringHub().registerEntity( path, h->GetName(), "histogram:ProfileHistogram:double", *n );
+  }
   return { n, n };
 }
 
@@ -114,3 +126,5 @@ bool Gaudi::Profile1D::fill( double x, double y, double weight ) {
   ( weight == 1. ) ? m_rep->Fill( x, y ) : m_rep->Fill( x, y, weight );
   return true;
 }
+
+nlohmann::json Gaudi::Profile1D::toJSON() const { return *m_rep.get(); }
