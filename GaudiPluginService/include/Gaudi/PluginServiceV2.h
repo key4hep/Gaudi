@@ -29,10 +29,18 @@
 namespace Gaudi::PluginService::Details {
   using std::source_location;
 }
-#elif __cplusplus >= 201402L
+#elif __cplusplus >= 201402L && __has_include( <experimental/source_location> ) && false
 #  include <experimental/source_location>
 namespace Gaudi::PluginService::Details {
   using std::experimental::source_location;
+}
+#else
+namespace Gaudi::PluginService::Details {
+  struct source_location {
+    std::string file_name() {return "";};
+    std::string line() {return "";}
+    static constexpr source_location current() { return source_location();}
+  };
 }
 #endif
 
