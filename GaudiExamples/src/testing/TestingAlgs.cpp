@@ -33,10 +33,9 @@ namespace GaudiTesting {
     using GaudiAlgorithm::GaudiAlgorithm;
     ~DestructorCheckAlg() override {
       // do not print messages if we are created in genconf
-      const std::string cmd = System::cmdLineArgs()[0];
-      if ( cmd.find( "genconf" ) != std::string::npos ) return;
-
-      std::cout << "Destructor of " << name() << std::endl;
+      if ( System::cmdLineArgs()[0].find( "genconf" ) == std::string::npos ) {
+        std::cout << "Destructor of " << name() << std::endl;
+      }
     }
     StatusCode execute() override {
       info() << "Executing " << name() << endmsg;
