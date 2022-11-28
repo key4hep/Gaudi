@@ -31,7 +31,7 @@ namespace Gaudi::PluginService::Details {
   using std::source_location;
 }
 
-#elif __cplusplus >= 201402L && __has_include( <experimental/source_location> ) && false //TODO: false for debugging, turn on again
+#elif __cplusplus >= 201402L && __has_include( <experimental/source_location> )
 #  include <experimental/source_location>
 namespace Gaudi::PluginService::Details {
   using std::experimental::source_location;
