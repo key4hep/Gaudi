@@ -15,6 +15,7 @@
 /// See @ref GaudiPluginService-readme
 
 #include <Gaudi/Details/PluginServiceDetailsV2.h>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <sstream>
@@ -23,7 +24,6 @@
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
-#include <cstdint>
 
 #if __cplusplus > 201703L && __has_include( <source_location> )
 #  include <source_location>
@@ -39,41 +39,36 @@ namespace Gaudi::PluginService::Details {
 #else
 namespace Gaudi::PluginService::Details {
 
-struct source_location {
+  struct source_location {
 
-  // 14.1.2, source_location creation
-  static constexpr source_location
-  current(const char* __file = __builtin_FILE(),
-    const char* __func = __builtin_FUNCTION(),
-    int __line = __builtin_LINE(),
-    int __col = 0) noexcept
-  {
-    source_location __loc;
-    __loc._M_file = __file;
-    __loc._M_func = __func;
-    __loc._M_line = __line;
-    __loc._M_col = __col;
-    return __loc;
-  }   
+    // 14.1.2, source_location creation
+    static constexpr source_location current( const char* __file = __builtin_FILE(),
+                                              const char* __func = __builtin_FUNCTION(), int __line = __builtin_LINE(),
+                                              int __col = 0 ) noexcept {
+      source_location __loc;
+      __loc._M_file = __file;
+      __loc._M_func = __func;
+      __loc._M_line = __line;
+      __loc._M_col  = __col;
+      return __loc;
+    }
 
-  constexpr source_location() noexcept
-  : _M_file("unknown"), _M_func(_M_file), _M_line(0), _M_col(0)
-  { } 
+    constexpr source_location() noexcept : _M_file( "unknown" ), _M_func( _M_file ), _M_line( 0 ), _M_col( 0 ) {}
 
-  // 14.1.3, source_location field access
-  constexpr uint_least32_t line() const noexcept { return _M_line; }
-  constexpr uint_least32_t column() const noexcept { return _M_col; }
-  constexpr const char* file_name() const noexcept { return _M_file; }
-  constexpr const char* function_name() const noexcept { return _M_func; }
+    // 14.1.3, source_location field access
+    constexpr uint_least32_t line() const noexcept { return _M_line; }
+    constexpr uint_least32_t column() const noexcept { return _M_col; }
+    constexpr const char*    file_name() const noexcept { return _M_file; }
+    constexpr const char*    function_name() const noexcept { return _M_func; }
 
-private:
-  const char* _M_file;
-  const char* _M_func;
-  uint_least32_t _M_line;
-  uint_least32_t _M_col;
-};  
+  private:
+    const char*    _M_file;
+    const char*    _M_func;
+    uint_least32_t _M_line;
+    uint_least32_t _M_col;
+  };
 
-}
+} // namespace Gaudi::PluginService::Details
 #endif
 
 namespace Gaudi {
