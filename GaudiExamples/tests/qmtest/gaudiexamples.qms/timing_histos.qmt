@@ -29,7 +29,7 @@ testscript = os.path.join(os.environ['ENV_PROJECT_SOURCE_DIR'], 'GaudiExamples',
 if not os.path.exists(testscript):
     testscript = os.path.join(os.environ['ENV_PROJECT_SOURCE_DIR'], 'Gaudi', 'GaudiExamples', 'tests', 'scripts', 'test_timing_histo_file.py')
 
-test = Popen(['python', testscript], stdout=PIPE, stderr=PIPE)
+test = Popen(['python3', testscript], stdout=PIPE, stderr=PIPE)
 out, err = test.communicate()
 
 result['root_file_check.returncode'] = str(test.returncode)

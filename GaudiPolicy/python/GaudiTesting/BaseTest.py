@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #####################################################################################
 # (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
@@ -209,7 +208,7 @@ class BaseTest(object):
             args = list(map(RationalizePath, self.args))
 
             if prog_ext == ".py":
-                params = ["python", RationalizePath(prog)] + args
+                params = ["python3", RationalizePath(prog)] + args
             else:
                 params = [RationalizePath(prog)] + args
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #####################################################################################
 # (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
