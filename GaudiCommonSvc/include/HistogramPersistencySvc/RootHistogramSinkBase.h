@@ -16,6 +16,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <filesystem>
 #include <map>
 #include <string>
 #include <vector>
@@ -39,9 +40,21 @@ namespace Gaudi::Histograming::Sink {
           .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
     }
 
+    StatusCode initialize() override {
+      return BaseSink::initialize().andThen( [&] {
+        // empty output file if it exists, as we will update it at the end
+        // This allows multiple Sinks to write to the same ROOT file
+        std::filesystem::remove( m_fileName.value() );
+      } );
+    }
+
     StatusCode stop() override {
       return Service::stop().andThen( [&] {
-        TFile histoFile( m_fileName.value().c_str(), "RECREATE" );
+        // File is updated so that multiple sinks can write to the same file
+        // As we are in stop, there is no multithreading so it is safe
+        // As we dropped the file at initialization, no old data from a previous
+        // run may be mixed with new one
+        TFile histoFile( m_fileName.value().c_str(), "UPDATE" );
         applytoAllEntities(
             [&histoFile, this]( auto& ent ) {
               auto j    = ent.toJSON();
