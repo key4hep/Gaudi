@@ -9,11 +9,18 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <Gaudi/Accumulators.h>
-#include <catch2/catch.hpp>
 #include <map>
 #include <optional>
 #include <string>
 #include <utility>
+
+#if __has_include( <catch2/catch.hpp>)
+// Catch2 v2
+#  include <catch2/catch.hpp>
+#else
+// Catch2 v3
+#  include <catch2/catch_test_macros.hpp>
+#endif
 
 namespace {
   /// Mock helpers to be able to invoke counters auto registering constructor.
