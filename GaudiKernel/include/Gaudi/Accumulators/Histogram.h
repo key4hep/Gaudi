@@ -12,6 +12,8 @@
 
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/MonitoringHub.h>
+#include <GaudiKernel/HistoDef.h>
+
 #include <array>
 #include <cmath>
 #include <fmt/format.h>
@@ -161,6 +163,8 @@ namespace Gaudi::Accumulators {
       details::requireValidTitle( title );
       for ( const auto& s : labels ) details::requireValidTitle( s );
     };
+    explicit Axis( Gaudi::Histo1DDef const& def )
+        : Axis( (unsigned int)def.bins(), def.lowEdge(), def.highEdge(), def.title() ){};
     /// number of bins for this Axis
     unsigned int nBins;
     /// min and max values on this axis
