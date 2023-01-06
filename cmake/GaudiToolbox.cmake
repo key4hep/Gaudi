@@ -397,6 +397,11 @@ function(gaudi_add_module plugin_name)
         ${ARGN}
     )
     add_library(${plugin_name} MODULE "${ARG_SOURCES}")
+    # public headers
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        target_include_directories(${plugin_name}
+            PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+    endif()
     # dependencies
     if(ARG_LINK)
         _resolve_local_targets(ARG_LINK)
