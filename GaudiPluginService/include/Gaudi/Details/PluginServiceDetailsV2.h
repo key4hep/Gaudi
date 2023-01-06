@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -120,6 +120,20 @@ namespace Gaudi {
           template <typename F>
           F get( const KeyType& id ) {
             const FactoryInfo& info = Registry::instance().getInfo( id, true );
+
+            // Check if factory has been marked as deprecated.
+            const auto& prop = info.properties.find( "deprecated" );
+            if ( prop != info.properties.end() ) {
+              std::string msg = "factory '" + info.getprop( "ClassName" ) + "' is deprecated" +
+                                ( prop->second.empty() ? "" : ( ": " + prop->second ) );
+              if ( m_werror.find( "deprecated" ) != m_werror.end() ) {
+                logger().error( msg );
+                return std::any_cast<F>( std::any() );
+              } else {
+                logger().warning( msg );
+              }
+            }
+
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
             if ( !info.getprop( "ReflexName" ).empty() ) {
               const std::string real_name = info.getprop( "ClassName" );
@@ -144,6 +158,12 @@ namespace Gaudi {
 
           /// Add a property to an already existing FactoryInfo object (via its `id`).
           Registry& addProperty( const KeyType& id, const KeyType& k, const std::string& v );
+
+          /// Turn the given warning type into an error.
+          void setError( const KeyType& warning );
+
+          /// Disable errors for the given warning type.
+          void unsetError( const KeyType& warning );
 
           /// Return a list of all the known and loaded factories
           std::set<KeyType> loadedFactoryNames() const;
@@ -174,6 +194,9 @@ namespace Gaudi {
 
           /// Internal storage for factories.
           FactoryMap m_factories;
+
+          /// Warnings that will be turned into an error.
+          std::set<KeyType> m_werror;
 
           /// Mutex used to control concurrent access to the internal data.
           mutable std::recursive_mutex m_mutex;

@@ -154,11 +154,21 @@ namespace Gaudi {
         ::Gaudi::PluginService::v2::Details::stringify_id( id ) };                                                     \
   }
 
+#define _PS_V2_DECLARE_COMPONENT_PROPERTY( id, name, value )                                                           \
+  namespace {                                                                                                          \
+    struct _PS_V2_INTERNAL_SET_PROPERTY {                                                                              \
+      _PS_V2_INTERNAL_SET_PROPERTY() {                                                                                 \
+        ::Gaudi::PluginService::v2::Details::Registry::instance().addProperty( #id, name, value );                     \
+      }                                                                                                                \
+    } _ps_v2_internal_set_property;                                                                                    \
+  }
+
 #if GAUDI_PLUGIN_SERVICE_USE_V2
 #  define DECLARE_COMPONENT( type ) _PS_V2_DECLARE_COMPONENT( type )
 #  define DECLARE_COMPONENT_WITH_ID( type, id ) _PS_V2_DECLARE_COMPONENT_WITH_ID( type, id )
 #  define DECLARE_FACTORY( type, factory ) _PS_V2_DECLARE_FACTORY( type, factory )
 #  define DECLARE_FACTORY_WITH_ID( type, id, factory ) _PS_V2_DECLARE_FACTORY_WITH_ID( type, id, factory )
+#  define DECLARE_COMPONENT_PROPERTY( id, name, value ) _PS_V2_DECLARE_COMPONENT_PROPERTY( id, name, value )
 #endif
 
 #endif //_GAUDI_PLUGIN_SERVICE_H_
