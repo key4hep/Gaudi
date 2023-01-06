@@ -630,7 +630,7 @@ namespace concurrency {
 
   void PrecedenceRulesGraph::dumpPrecRules( const boost::filesystem::path& fileName, const EventSlot& slot ) {
     std::ofstream myfile;
-    myfile.open( fileName, std::ios::app );
+    myfile.open( fileName.c_str(), std::ios::app );
 
     // Declare properties to dump
     boost::dynamic_properties dp;
@@ -671,7 +671,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::dumpPrecTrace( const boost::filesystem::path& fileName, const EventSlot& slot ) {
     std::ofstream myfile;
-    myfile.open( fileName, std::ios::app );
+    myfile.open( fileName.c_str(), std::ios::app );
 
     // Fill runtimes (as this could not be done on the fly during trace assembling)
     SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
