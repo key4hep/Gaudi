@@ -111,6 +111,16 @@ gaudi_add_module(GaudiJemalloc
                  LINK GaudiKernel
                       GaudiAlgLib)
 
+#-----------------------------------
+# Linux perf
+#-----------------------------------
+# TODO: The PerfProfile algorithm should only be compiled for Linux
+#       (and consequently the test should only run if PerfProfile is there).
+gaudi_add_module(GaudiPerf
+                 SOURCES src/component/perf/PerfProfile.cpp
+                 LINK GaudiKernel
+                      GaudiAlgLib)
+
 # Special handling of unresolved symbols in Jemmalloc.
 # The profilers need to have libjemalloc.so pre-loaded to
 # work, so it's better if the symbols stay undefined in case somebody tries to
@@ -121,6 +131,8 @@ if(GAUDI_USE_JEMALLOC)
   add_test(NAME GaudiProfiling.jira.gaudi_1045
            COMMAND run ${CMAKE_COMMAND} -E env LD_PRELOAD=$<TARGET_PROPERTY:jemalloc::jemalloc,LOCATION> gaudirun.py)
 endif()
+
+gaudi_add_tests(pytest)
 
 # Install python modules
 gaudi_install(PYTHON)
