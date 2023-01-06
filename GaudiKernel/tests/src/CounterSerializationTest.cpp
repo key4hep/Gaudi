@@ -9,7 +9,18 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <Gaudi/Accumulators.h>
-#include <catch2/catch.hpp>
+#if __has_include( <catch2/catch.hpp>)
+// Catch2 v2
+#  include <catch2/catch.hpp>
+namespace Catch {
+  using Detail::Approx;
+}
+#else
+// Catch2 v3
+#  include <catch2/catch_approx.hpp>
+#  include <catch2/catch_template_test_macros.hpp>
+#  include <catch2/catch_test_macros.hpp>
+#endif
 
 using namespace Gaudi::Accumulators;
 
@@ -109,7 +120,7 @@ namespace {
         CHECK( j["sum"].get<double>() == 60 );
         CHECK( j["mean"].get<double>() == 20 );
         CHECK( j["sum2"].get<double>() == 1400 );
-        CHECK( j["standard_deviation"].get<double>() == Approx( 8.164966 ) );
+        CHECK( j["standard_deviation"].get<double>() == Catch::Approx( 8.164966 ) );
       }
     }
   };
@@ -134,7 +145,7 @@ namespace {
         CHECK( j["sum"].get<double>() == 60 );
         CHECK( j["mean"].get<double>() == 20 );
         CHECK( j["sum2"].get<double>() == 1400 );
-        CHECK( j["standard_deviation"].get<double>() == Approx( 8.164966 ) );
+        CHECK( j["standard_deviation"].get<double>() == Catch::Approx( 8.164966 ) );
         CHECK( j["min"].get<double>() == 10 );
         CHECK( j["max"].get<double>() == 30 );
       }
@@ -160,7 +171,7 @@ namespace {
         CHECK( j["nTrueEntries"].get<double>() == 5 );
         CHECK( j["nFalseEntries"].get<double>() == 5 );
         CHECK( j["efficiency"].get<double>() == 0.5 );
-        CHECK( j["efficiencyErr"].get<double>() == Approx( 0.158114 ) );
+        CHECK( j["efficiencyErr"].get<double>() == Catch::Approx( 0.158114 ) );
       }
     }
   };
