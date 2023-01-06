@@ -117,7 +117,15 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
       auto vvalue = GetPropertyValue( &child.children[1], catalog, units );
       result.emplace( kvalue->ToString(), vvalue->ToString() );
     }
+#if __GNUC__ >= 12
+#  pragma GCC diagnostic push
+// hide gcc 12 warning (false positive? see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=107138)
+#  pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
     value = std::make_unique<gp::PropertyValue>( std::move( result ) );
+#if __GNUC__ >= 12
+#  pragma GCC diagnostic pop
+#endif
     break;
   }
   // ------------------------------------------------------------------------
