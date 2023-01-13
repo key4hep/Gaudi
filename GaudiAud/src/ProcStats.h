@@ -107,11 +107,10 @@ private:
 #undef unique_fd_forward
   };
 
-  unique_fd   m_ufd;
-  double      m_pg_size{ 0 };
-  procInfo    m_curr;
-  std::string m_fname;
-  char        m_buf[500];
-  bool        m_valid{ false };
-  std::mutex  m_mutex;
+private:
+  unique_fd  m_ufd;
+  double     m_pg_size{ 0 };
+  procInfo   m_curr;
+  bool       m_valid{ false };
+  std::mutex m_mutex;
 };

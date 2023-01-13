@@ -249,13 +249,11 @@ ProcStats* ProcStats::instance() {
 
 ProcStats::ProcStats() {
 #if defined( __linux__ ) or defined( __APPLE__ )
-  m_pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
-
-  m_fname = "/proc/" + std::to_string( getpid() ) + "/stat";
-
-  m_ufd.open( m_fname.c_str(), O_RDONLY );
+  m_pg_size        = sysconf( _SC_PAGESIZE ); // getpagesize();
+  const auto fname = "/proc/" + std::to_string( getpid() ) + "/stat";
+  m_ufd.open( fname.c_str(), O_RDONLY );
   if ( !m_ufd ) {
-    cerr << "Failed to open " << m_fname << endl;
+    cerr << "Failed to open " << fname << endl;
     return;
   }
 #endif // __linux__ or __APPLE__
@@ -272,18 +270,19 @@ bool ProcStats::fetch( procInfo& f ) {
   double     pr_size{ 0 }, pr_rssize{ 0 };
   linux_proc pinfo;
   int        cnt{ 0 };
+  char       buf[500];
 
   m_ufd.lseek( 0, SEEK_SET );
 
-  if ( ( cnt = m_ufd.read( m_buf, sizeof( m_buf ) ) ) < 0 ) {
+  if ( ( cnt = m_ufd.read( buf, sizeof( buf ) ) ) < 0 ) {
     cout << "LINUX Read of Proc file failed:" << endl;
     return false;
   }
 
   if ( cnt > 0 ) {
-    m_buf[std::min( static_cast<std::size_t>( cnt ), sizeof( m_buf ) - 1 )] = '\0';
+    buf[std::min( static_cast<std::size_t>( cnt ), sizeof( buf ) - 1 )] = '\0';
 
-    sscanf( m_buf,
+    sscanf( buf,
             // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
             // 30  1   2   3   4   5
             "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
