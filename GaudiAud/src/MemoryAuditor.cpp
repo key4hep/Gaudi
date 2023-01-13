@@ -48,7 +48,9 @@ void MemoryAuditor::i_printinfo( std::string_view msg, CustomEventTypeRef evt, s
   /// Get the process informations.
   /// fetch true if it was possible to retrieve the informations.
   if ( procInfo pInfo; ProcStats::instance()->fetch( pInfo ) ) {
-    info() << msg << " " << caller << " " << evt << " virtual size = " << pInfo.vsize << " MB"
-           << " resident set size = " << pInfo.rss << " MB" << endmsg;
+    if ( pInfo.vsize > 0 ) {
+      info() << msg << " " << caller << " " << evt << " virtual size = " << pInfo.vsize << " MB"
+             << " resident set size = " << pInfo.rss << " MB" << endmsg;
+    }
   }
 }
