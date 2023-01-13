@@ -18,6 +18,7 @@
 #endif
 
 #include "ProcStats.h"
+#include <memory>
 
 #if defined( __linux__ ) or defined( __APPLE__ )
 #  include <iostream>
@@ -239,55 +240,50 @@ struct linux_proc {
 };
 #endif // __linux__ or __APPLE__
 
-ProcStats::cleanup::~cleanup() {
-  if ( ProcStats::inst != 0 ) {
-    delete ProcStats::inst;
-    ProcStats::inst = 0;
-  }
-}
-
 ProcStats* ProcStats::instance() {
-  static cleanup c;
-  if ( !inst ) inst = new ProcStats;
-  return inst;
+  static std::once_flag             alloc_instance_once;
+  static std::unique_ptr<ProcStats> inst;
+  std::call_once( alloc_instance_once, []() { inst = std::make_unique<ProcStats>(); } );
+  return inst.get();
 }
 
-ProcStats* ProcStats::inst = 0;
-
-ProcStats::ProcStats() : valid( false ) {
+ProcStats::ProcStats() {
 #if defined( __linux__ ) or defined( __APPLE__ )
-  pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
+  m_pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
 
-  fname = "/proc/" + std::to_string( getpid() ) + "/stat";
+  m_fname = "/proc/" + std::to_string( getpid() ) + "/stat";
 
-  fd.open( fname.c_str(), O_RDONLY );
-  if ( !fd ) {
-    cerr << "Failed to open " << fname << endl;
+  m_ufd.open( m_fname.c_str(), O_RDONLY );
+  if ( !m_ufd ) {
+    cerr << "Failed to open " << m_fname << endl;
     return;
   }
 #endif // __linux__ or __APPLE__
-  valid = true;
+  m_valid = true;
 }
 
 bool ProcStats::fetch( procInfo& f ) {
-  if ( valid == false ) return false;
+  if ( !m_valid ) { return false; }
 
 #if defined( __linux__ ) or defined( __APPLE__ )
-  double     pr_size, pr_rssize;
+
+  std::scoped_lock lock{ m_mutex };
+
+  double     pr_size{ 0 }, pr_rssize{ 0 };
   linux_proc pinfo;
-  int        cnt;
+  int        cnt{ 0 };
 
-  fd.lseek( 0, SEEK_SET );
+  m_ufd.lseek( 0, SEEK_SET );
 
-  if ( ( cnt = fd.read( buf, sizeof( buf ) ) ) < 0 ) {
+  if ( ( cnt = m_ufd.read( m_buf, sizeof( m_buf ) ) ) < 0 ) {
     cout << "LINUX Read of Proc file failed:" << endl;
     return false;
   }
 
   if ( cnt > 0 ) {
-    buf[std::min( static_cast<std::size_t>( cnt ), sizeof( buf ) - 1 )] = '\0';
+    m_buf[std::min( static_cast<std::size_t>( cnt ), sizeof( m_buf ) - 1 )] = '\0';
 
-    sscanf( buf,
+    sscanf( m_buf,
             // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
             // 30  1   2   3   4   5
             "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
@@ -304,7 +300,7 @@ bool ProcStats::fetch( procInfo& f ) {
     pr_rssize = (double)pinfo.rss;
 
     f.vsize = pr_size / ( 1024 * 1024 );
-    f.rss   = pr_rssize * pg_size / ( 1024 * 1024 );
+    f.rss   = pr_rssize * m_pg_size / ( 1024 * 1024 );
   }
 
 #else
@@ -312,10 +308,10 @@ bool ProcStats::fetch( procInfo& f ) {
   f.rss   = 0;
 #endif // __linux__ or __APPLE__
 
-  bool rc = ( curr == f ) ? false : true;
+  const bool rc = !( m_curr == f );
 
-  curr.rss   = f.rss;
-  curr.vsize = f.vsize;
+  m_curr.rss   = f.rss;
+  m_curr.vsize = f.vsize;
 
   return rc;
 }
