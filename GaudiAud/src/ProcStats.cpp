@@ -241,10 +241,8 @@ struct linux_proc {
 #endif // __linux__ or __APPLE__
 
 ProcStats* ProcStats::instance() {
-  static std::once_flag             alloc_instance_once;
-  static std::unique_ptr<ProcStats> inst;
-  std::call_once( alloc_instance_once, []() { inst = std::make_unique<ProcStats>(); } );
-  return inst.get();
+  static ProcStats inst{};
+  return &inst;
 }
 
 ProcStats::ProcStats() {
