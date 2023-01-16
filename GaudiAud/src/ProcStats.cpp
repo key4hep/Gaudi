@@ -261,9 +261,9 @@ ProcStats::ProcStats() {
 bool ProcStats::fetch( procInfo& f ) {
   if ( !m_valid ) { return false; }
 
-#if defined( __linux__ ) or defined( __APPLE__ )
-
   std::scoped_lock lock{ m_mutex };
+
+#if defined( __linux__ ) or defined( __APPLE__ )
 
   double     pr_size{ 0 }, pr_rssize{ 0 };
   linux_proc pinfo;
