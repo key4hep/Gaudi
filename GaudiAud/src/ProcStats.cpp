@@ -30,10 +30,6 @@
 #  endif // __linux__
 #  include <cstdio>
 
-using std::cerr;
-using std::cout;
-using std::endl;
-
 /* Format of the Linux proc/stat (man 5 proc, kernel 2.6.35):
  pid %d      The process ID.
 
@@ -245,17 +241,19 @@ ProcStats* ProcStats::instance() {
   return &inst;
 }
 
-ProcStats::ProcStats() {
+void ProcStats::open_ufd() {
+  m_valid = false;
 #if defined( __linux__ ) or defined( __APPLE__ )
+  m_ufd.close();
   m_pg_size        = sysconf( _SC_PAGESIZE ); // getpagesize();
   const auto fname = "/proc/" + std::to_string( getpid() ) + "/stat";
   m_ufd.open( fname.c_str(), O_RDONLY );
   if ( !m_ufd ) {
-    cerr << "Failed to open " << fname << endl;
-    return;
+    std::cerr << "ProcStats : Failed to open " << fname << std::endl;
+  } else {
+    m_valid = true;
   }
 #endif // __linux__ or __APPLE__
-  m_valid = true;
 }
 
 bool ProcStats::fetch( procInfo& f ) {
@@ -273,7 +271,7 @@ bool ProcStats::fetch( procInfo& f ) {
   m_ufd.lseek( 0, SEEK_SET );
 
   if ( ( cnt = m_ufd.read( buf, sizeof( buf ) ) ) < 0 ) {
-    cout << "LINUX Read of Proc file failed:" << endl;
+    std::cerr << "ProcStats : LINUX Read of Proc file failed:" << std::endl;
     return false;
   }
 
@@ -298,6 +296,11 @@ bool ProcStats::fetch( procInfo& f ) {
 
     f.vsize = pr_size / ( 1024 * 1024 );
     f.rss   = pr_rssize * m_pg_size / ( 1024 * 1024 );
+
+    if ( 0 == pinfo.vsize ) {
+      std::cerr << "ProcStats : 0==vsize -> Will try reopening process proc stats" << std::endl;
+      open_ufd();
+    }
   }
 
 #else

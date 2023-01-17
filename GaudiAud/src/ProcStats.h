@@ -51,41 +51,49 @@ struct procInfo {
 };
 
 class ProcStats {
+
+public:
+  ProcStats() { open_ufd(); }
+
+private:
+  void open_ufd();
+
 public:
   static ProcStats* instance();
-
-  bool fetch( procInfo& fill_me );
-  auto pageSize() const noexcept { return m_pg_size; }
-  ProcStats();
+  bool              fetch( procInfo& fill_me );
+  auto              pageSize() const noexcept { return m_pg_size; }
 
 private:
   class unique_fd {
 
   private:
     int m_fd{ -1 };
+
+  private:
     unique_fd( const unique_fd& ) = delete;
     unique_fd& operator=( const unique_fd& ) = delete;
 
   public:
-    unique_fd( int fd = -1 ) : m_fd( fd ) {}
+    unique_fd( const int fd = -1 ) : m_fd( fd ) {}
     unique_fd( unique_fd&& other ) {
       m_fd       = other.m_fd;
       other.m_fd = -1;
     }
-    ~unique_fd() {
-      if ( m_fd != -1 ) { ::close( m_fd ); }
-    }
+    ~unique_fd() { close(); }
 
+  public:
     explicit operator bool() const { return m_fd != -1; }
     template <typename... Args>
     unique_fd& open( Args&&... args ) {
       m_fd = ::open( std::forward<Args>( args )... );
       return *this;
     }
-
     int close() {
-      auto r = ::close( m_fd );
-      m_fd   = -1;
+      int r = 0;
+      if ( m_fd != -1 ) {
+        r    = ::close( m_fd );
+        m_fd = -1;
+      }
       return r;
     }
 
