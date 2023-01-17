@@ -198,41 +198,41 @@
              (divide by sysconf(_SC_CLK_TCK).
 */
 struct linux_proc {
-  int                pid;
+  int                pid{ -1 };
   char               comm[400];
   char               state;
-  int                ppid;
-  int                pgrp;
-  int                session;
-  int                tty;
-  int                tpgid;
-  unsigned long      flags;
-  unsigned long      minflt;
-  unsigned long      cminflt;
-  unsigned long      majflt;
-  unsigned long      cmajflt;
-  unsigned long      utime;
-  unsigned long      stime;
-  long               cutime;
-  long               cstime;
-  long               priority;
-  long               nice;
-  long               num_threads;
-  long               itrealvalue;
-  unsigned long long starttime;
-  unsigned long      vsize;
-  long               rss;
-  unsigned long      rlim;
-  unsigned long      startcode;
-  unsigned long      endcode;
-  unsigned long      startstack;
-  unsigned long      kstkesp;
-  unsigned long      kstkeip;
-  unsigned long      signal;
-  unsigned long      blocked;
-  unsigned long      sigignore;
-  unsigned long      sigcatch;
-  unsigned long      wchan;
+  int                ppid{ -1 };
+  int                pgrp{ -1 };
+  int                session{ -1 };
+  int                tty{ -1 };
+  int                tpgid{ -1 };
+  unsigned long      flags{ 0 };
+  unsigned long      minflt{ 0 };
+  unsigned long      cminflt{ 0 };
+  unsigned long      majflt{ 0 };
+  unsigned long      cmajflt{ 0 };
+  unsigned long      utime{ 0 };
+  unsigned long      stime{ 0 };
+  long               cutime{ 0 };
+  long               cstime{ 0 };
+  long               priority{ 0 };
+  long               nice{ 0 };
+  long               num_threads{ 0 };
+  long               itrealvalue{ 0 };
+  unsigned long long starttime{ 0 };
+  unsigned long      vsize{ 0 };
+  long               rss{ 0 };
+  unsigned long      rlim{ 0 };
+  unsigned long      startcode{ 0 };
+  unsigned long      endcode{ 0 };
+  unsigned long      startstack{ 0 };
+  unsigned long      kstkesp{ 0 };
+  unsigned long      kstkeip{ 0 };
+  unsigned long      signal{ 0 };
+  unsigned long      blocked{ 0 };
+  unsigned long      sigignore{ 0 };
+  unsigned long      sigcatch{ 0 };
+  unsigned long      wchan{ 0 };
 };
 #endif // __linux__ or __APPLE__
 
@@ -263,44 +263,43 @@ bool ProcStats::fetch( procInfo& f ) {
 
 #if defined( __linux__ ) or defined( __APPLE__ )
 
-  double     pr_size{ 0 }, pr_rssize{ 0 };
-  linux_proc pinfo;
-  int        cnt{ 0 };
-  char       buf[500];
-
-  m_ufd.lseek( 0, SEEK_SET );
-
-  if ( ( cnt = m_ufd.read( buf, sizeof( buf ) ) ) < 0 ) {
-    std::cerr << "ProcStats : LINUX Read of Proc file failed:" << std::endl;
-    return false;
-  }
-
-  if ( cnt > 0 ) {
-    buf[std::min( static_cast<std::size_t>( cnt ), sizeof( buf ) - 1 )] = '\0';
-
-    sscanf( buf,
-            // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
-            // 30  1   2   3   4   5
-            "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
-            "%lu %lu %lu %lu %lu %lu %lu",
-            &pinfo.pid, pinfo.comm, &pinfo.state, &pinfo.ppid, &pinfo.pgrp, &pinfo.session, &pinfo.tty, &pinfo.tpgid,
-            &pinfo.flags, &pinfo.minflt, &pinfo.cminflt, &pinfo.majflt, &pinfo.cmajflt, &pinfo.utime, &pinfo.stime,
-            &pinfo.cutime, &pinfo.cstime, &pinfo.priority, &pinfo.nice, &pinfo.num_threads, &pinfo.itrealvalue,
-            &pinfo.starttime, &pinfo.vsize, &pinfo.rss, &pinfo.rlim, &pinfo.startcode, &pinfo.endcode,
-            &pinfo.startstack, &pinfo.kstkesp, &pinfo.kstkeip, &pinfo.signal, &pinfo.blocked, &pinfo.sigignore,
-            &pinfo.sigcatch, &pinfo.wchan );
-
-    // resident set size in pages
-    pr_size   = (double)pinfo.vsize;
-    pr_rssize = (double)pinfo.rss;
-
-    f.vsize = pr_size / ( 1024 * 1024 );
-    f.rss   = pr_rssize * m_pg_size / ( 1024 * 1024 );
-
-    if ( 0 == pinfo.vsize ) {
-      std::cerr << "ProcStats : 0==vsize -> Will try reopening process proc stats" << std::endl;
-      open_ufd();
+  auto read_proc = [&]() {
+    bool       ok = true;
+    int        cnt{ 0 };
+    char       buf[500];
+    linux_proc pinfo;
+    m_ufd.lseek( 0, SEEK_SET );
+    if ( ( cnt = m_ufd.read( buf, sizeof( buf ) ) ) < 0 ) { ok = false; }
+    if ( cnt > 0 ) {
+      buf[std::min( static_cast<std::size_t>( cnt ), sizeof( buf ) - 1 )] = '\0';
+      sscanf(
+          buf,
+          // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
+          // 30  1   2   3   4   5
+          "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
+          "%lu %lu %lu %lu %lu %lu %lu",
+          &pinfo.pid, pinfo.comm, &pinfo.state, &pinfo.ppid, &pinfo.pgrp, &pinfo.session, &pinfo.tty, &pinfo.tpgid,
+          &pinfo.flags, &pinfo.minflt, &pinfo.cminflt, &pinfo.majflt, &pinfo.cmajflt, &pinfo.utime, &pinfo.stime,
+          &pinfo.cutime, &pinfo.cstime, &pinfo.priority, &pinfo.nice, &pinfo.num_threads, &pinfo.itrealvalue,
+          &pinfo.starttime, &pinfo.vsize, &pinfo.rss, &pinfo.rlim, &pinfo.startcode, &pinfo.endcode, &pinfo.startstack,
+          &pinfo.kstkesp, &pinfo.kstkeip, &pinfo.signal, &pinfo.blocked, &pinfo.sigignore, &pinfo.sigcatch,
+          &pinfo.wchan );
+      // resident set size in pages
+      const auto       pr_size   = static_cast<double>( pinfo.vsize );
+      const auto       pr_rssize = static_cast<double>( pinfo.rss );
+      constexpr double MB        = 1.0 / ( 1024 * 1024 );
+      f.vsize                    = pr_size * MB;
+      f.rss                      = pr_rssize * m_pg_size * MB;
+      if ( 0 == pinfo.vsize ) { ok = false; }
     }
+    return ok;
+  };
+
+  // attempt to read from proc
+  if ( !read_proc() ) {
+    std::cerr << "ProcStats : -> Problems reading proc file. Will try reopening..." << std::endl;
+    open_ufd();
+    if ( !read_proc() ) { return false; }
   }
 
 #else
