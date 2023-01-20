@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,43 +9,60 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-// Include files
 #include "ApplicationMgr.h"
-
 #include "AlgorithmManager.h"
 #include "DLLClassManager.h"
 #include "ServiceManager.h"
-
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/IRunable.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/TypeNameString.h"
-
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ObjectFactory.h"
-#include "GaudiKernel/SmartIF.h"
-
-#include "GaudiKernel/GaudiException.h"
-
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/System.h"
-#include "GaudiKernel/Time.h"
-
-#include "GAUDI_VERSION.h"
-
-using System::getEnv;
-using System::isEnvSet;
-
+#include <GAUDI_VERSION.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/IRunable.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/Message.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/System.h>
+#include <GaudiKernel/Time.h>
+#include <GaudiKernel/TypeNameString.h>
+#include <TError.h>
+#include <TROOT.h>
 #include <algorithm>
 #include <cassert>
 #include <ctime>
 #include <limits>
 #include <sstream>
 
+using System::getEnv;
+using System::isEnvSet;
+
 #define ON_DEBUG if ( m_outputLevel <= MSG::DEBUG )
 #define ON_VERBOSE if ( m_outputLevel <= MSG::VERBOSE )
 
 DECLARE_OBJECT_FACTORY( ApplicationMgr )
+
+namespace {
+  /// Pointer to the IMessageSvc instance used by ROOTErrorHandlerAdapter.
+  static IMessageSvc* s_messageSvcInstance{ nullptr };
+
+  /// @brief Adapter to forward ROOT messages to a MessageSvc.
+  void ROOTErrorHandlerAdapter( int level, Bool_t abort, const char* location, const char* msg ) {
+    if ( s_messageSvcInstance ) {
+      // # Map ROOT level to Gaudi level:
+      // ROOT levels go from 0 to 6000 in step of 1000,
+      // kInfo is 1000 while MSG::INFO is 3, so we aim for `level / 1000 + 2`,
+      // but we have to put a cap at MSG::FATAL.
+      int msgLevel = std::min<int>( level / 1000 + 2, MSG::FATAL );
+      if ( msgLevel >= s_messageSvcInstance->outputLevel( location ) )
+        s_messageSvcInstance->reportMessage( Message{ location, msgLevel, msg }, msgLevel );
+    } else {
+      // If a message is sent when we do not have an IMessageSvc, let's use a basic implementation from ROOT
+      ROOT::Internal::MinimalErrorHandler( level, abort, location, msg );
+    }
+  }
+
+} // namespace
 
 // Implementation class for the Application Manager. In this way the
 // ApplicationMgr class is a fully insulated concrete class. Clients
@@ -144,6 +161,11 @@ StatusCode ApplicationMgr::i_startup() {
   if ( !sc ) {
     log << MSG::FATAL << "Error setting OutputLevel option of MessageSvc" << endmsg;
     return sc;
+  }
+  if ( gROOT ) {
+    // if ROOT is already initialized (usually it is the case) we redirect messages to MessageSvc.
+    s_messageSvcInstance = m_messageSvc.get();
+    SetErrorHandler( ROOTErrorHandlerAdapter );
   }
 
   auto jobsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "JobOptionsSvc", m_jobOptionsSvcType ) );
@@ -620,6 +642,8 @@ StatusCode ApplicationMgr::terminate() {
     opts.set( "JobOptionsSvc.AuditFinalize", "false" );
   }
 
+  // make sure ROOTErrorHandlerAdapter (if in use) does not try to use the MessageSvc we are about to delete
+  s_messageSvcInstance = nullptr;
   // finalize MessageSvc
   auto svc = m_messageSvc.as<IService>();
   if ( !svc ) {
