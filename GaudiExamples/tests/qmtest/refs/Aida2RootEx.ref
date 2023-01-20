@@ -256,6 +256,18 @@ Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
 TH1.Print Name  =  x vs y+3x (profile), Entries= 5000, Total sum= -2.1759
 Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
 TH1.Print Name  =  x vs y-3x (profile), Entries= 5000, Total sum= -2.24644
+TCanvas::Print       INFO png file HistoEx__1D_histo_.png has been created
+TCanvas::Print       INFO png file HistoEx__2D_histo_.png has been created
+TCanvas::Print       INFO png file HistoEx__3D_histo_.png has been created
+TCanvas::Print       INFO png file HistoEx1__1D_histo_.png has been created
+TCanvas::Print       INFO png file HistoEx1__2D_histo_.png has been created
+TCanvas::Print       INFO png file HistoEx1__3D_histo_.png has been created
+TCanvas::Print       INFO png file HistoEx2__x_vs_y____.png has been created
+TCanvas::Print       INFO png file HistoEx2__x_vs_y+3x_.png has been created
+TCanvas::Print       INFO png file HistoEx2__x_vs_y-3x_.png has been created
+TCanvas::Print       INFO png file HistoEx2__x_vs_y____(profile).png has been created
+TCanvas::Print       INFO png file HistoEx2__x_vs_y+3x_(profile).png has been created
+TCanvas::Print       INFO png file HistoEx2__x_vs_y-3x_(profile).png has been created
 The file name is 'HistoEx__1D_histo_.png'
 The file name is 'HistoEx__2D_histo_.png'
 The file name is 'HistoEx__3D_histo_.png'
