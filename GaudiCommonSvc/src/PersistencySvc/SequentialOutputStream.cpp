@@ -59,7 +59,7 @@ StatusCode SequentialOutputStream::execute() {
 void SequentialOutputStream::makeFilename() {
   if ( m_events % m_eventsPerFile != 0 ) return;
 
-  bf::path outputPath( m_outputName );
+  bf::path outputPath( m_outputName.value() );
   string   filename  = outputPath.filename().string();
   bf::path dir       = outputPath.parent_path();
   string   stem      = outputPath.stem().string();
