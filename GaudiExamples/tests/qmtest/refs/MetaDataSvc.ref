@@ -92,6 +92,7 @@ ApplicationMgr.StopOnSignal:False
 ApplicationMgr.SvcMapping:[ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' , 'HistogramSvc/HistogramDataSvc' , 'HbookCnv::PersSvc/HbookHistSvc' , 'RootHistCnv::PersSvc/RootHistSvc' , 'EvtPersistencySvc/EventPersistencySvc' , 'DetPersistencySvc/DetectorPersistencySvc' , 'HistogramPersistencySvc/HistogramPersistencySvc' ]
 ApplicationMgr.SvcOptMapping:[  ]
 ApplicationMgr.TopAlg:[ 'TupleAlg/Tuple' , 'TupleAlg2/Tuple2' , 'TupleAlg3/Tuple3' ]
+ApplicationMgr.UseMessageSvcForROOTMessages:True
 EventDataSvc.AuditFinalize:False
 EventDataSvc.AuditInitialize:False
 EventDataSvc.AuditReinitialize:False

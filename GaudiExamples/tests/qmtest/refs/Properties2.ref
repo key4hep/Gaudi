@@ -143,6 +143,7 @@ ApplicationMgr.StopOnSignal: False
 ApplicationMgr.SvcMapping: [ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' , 'HistogramSvc/HistogramDataSvc' , 'HbookCnv::PersSvc/HbookHistSvc' , 'RootHistCnv::PersSvc/RootHistSvc' , 'EvtPersistencySvc/EventPersistencySvc' , 'DetPersistencySvc/DetectorPersistencySvc' , 'HistogramPersistencySvc/HistogramPersistencySvc' ]
 ApplicationMgr.SvcOptMapping: [  ]
 ApplicationMgr.TopAlg: [ 'PropertyAlg' , 'PropertyProxy' ]
+ApplicationMgr.UseMessageSvcForROOTMessages: True
 AuditorSvc.Auditors: ['ChronoAuditor']
 DetectorDataSvc.AllowLoadInRunning: True
 DetectorDataSvc.AuditFinalize: False

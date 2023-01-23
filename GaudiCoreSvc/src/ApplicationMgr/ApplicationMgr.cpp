@@ -162,10 +162,17 @@ StatusCode ApplicationMgr::i_startup() {
     log << MSG::FATAL << "Error setting OutputLevel option of MessageSvc" << endmsg;
     return sc;
   }
-  if ( gROOT ) {
-    // if ROOT is already initialized (usually it is the case) we redirect messages to MessageSvc.
-    s_messageSvcInstance = m_messageSvc.get();
-    SetErrorHandler( ROOTErrorHandlerAdapter );
+  if ( m_useMessageSvcForROOTMessages ) {
+    if ( gROOT ) {
+      // if ROOT is already initialized (usually it is the case) we redirect messages to MessageSvc.
+      s_messageSvcInstance = m_messageSvc.get();
+      SetErrorHandler( ROOTErrorHandlerAdapter );
+    } else {
+      log << MSG::WARNING
+          << "ROOT not yet initialized, we cannot override the error handler are requested "
+             "(UseMessageSvcForROOTMessages==true)"
+          << endmsg;
+    }
   }
 
   auto jobsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "JobOptionsSvc", m_jobOptionsSvcType ) );

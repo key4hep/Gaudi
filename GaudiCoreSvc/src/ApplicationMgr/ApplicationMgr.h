@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -309,6 +309,9 @@ protected:
 
   Gaudi::Property<bool> m_printAlgsSequence{ this, "PrintAlgsSequence", false,
                                              "Print the sequence of algorithms that have been loaded." };
+
+  Gaudi::Property<bool> m_useMessageSvcForROOTMessages{ this, "UseMessageSvcForROOTMessages", true,
+                                                        "Replace ROOT error handler with MessageSvc." };
 
   // For concurrency
   bool m_useHiveAlgorithmManager;
