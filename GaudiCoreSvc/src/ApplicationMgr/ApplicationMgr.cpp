@@ -45,6 +45,8 @@ DECLARE_OBJECT_FACTORY( ApplicationMgr )
 namespace {
   /// Pointer to the IMessageSvc instance used by ROOTErrorHandlerAdapter.
   static IMessageSvc* s_messageSvcInstance{ nullptr };
+  /// Pointer to the ROOT error handler registered before we replaced it with ROOTErrorHandlerAdapter.
+  static ErrorHandlerFunc_t s_originalRootErrorHandler{ nullptr };
 
   /// @brief Adapter to forward ROOT messages to a MessageSvc.
   void ROOTErrorHandlerAdapter( int level, Bool_t abort, const char* location, const char* msg ) {
@@ -57,8 +59,14 @@ namespace {
       if ( msgLevel >= s_messageSvcInstance->outputLevel( location ) )
         s_messageSvcInstance->reportMessage( Message{ location, msgLevel, msg }, msgLevel );
     } else {
-      // If a message is sent when we do not have an IMessageSvc, let's use a basic implementation from ROOT
-      ROOT::Internal::MinimalErrorHandler( level, abort, location, msg );
+      // If a message is sent when we do not have an IMessageSvc, let's use something else
+      if ( s_originalRootErrorHandler ) {
+        // either the original handler (if any)
+        s_originalRootErrorHandler( level, abort, location, msg );
+      } else {
+        // or some minimalistic implementation from ROOT (just not to loose the message)
+        ROOT::Internal::MinimalErrorHandler( level, abort, location, msg );
+      }
     }
   }
 
@@ -165,8 +173,8 @@ StatusCode ApplicationMgr::i_startup() {
   if ( m_useMessageSvcForROOTMessages ) {
     if ( gROOT ) {
       // if ROOT is already initialized (usually it is the case) we redirect messages to MessageSvc.
-      s_messageSvcInstance = m_messageSvc.get();
-      SetErrorHandler( ROOTErrorHandlerAdapter );
+      s_messageSvcInstance       = m_messageSvc.get();
+      s_originalRootErrorHandler = SetErrorHandler( ROOTErrorHandlerAdapter );
     } else {
       log << MSG::WARNING
           << "ROOT not yet initialized, we cannot override the error handler are requested "
@@ -649,6 +657,11 @@ StatusCode ApplicationMgr::terminate() {
     opts.set( "JobOptionsSvc.AuditFinalize", "false" );
   }
 
+  // if we have overriden it, restore the original ROOT error handler
+  if ( s_originalRootErrorHandler ) {
+    SetErrorHandler( s_originalRootErrorHandler );
+    s_originalRootErrorHandler = nullptr;
+  }
   // make sure ROOTErrorHandlerAdapter (if in use) does not try to use the MessageSvc we are about to delete
   s_messageSvcInstance = nullptr;
   // finalize MessageSvc
