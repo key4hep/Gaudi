@@ -51,13 +51,17 @@ namespace {
   /// @brief Adapter to forward ROOT messages to a MessageSvc.
   void ROOTErrorHandlerAdapter( int level, Bool_t abort, const char* location, const char* msg ) {
     if ( s_messageSvcInstance ) {
-      // # Map ROOT level to Gaudi level:
-      // ROOT levels go from 0 to 6000 in step of 1000,
-      // kInfo is 1000 while MSG::INFO is 3, so we aim for `level / 1000 + 2`,
-      // but we have to put a cap at MSG::FATAL.
-      int msgLevel = std::min<int>( level / 1000 + 2, MSG::FATAL );
-      if ( msgLevel >= s_messageSvcInstance->outputLevel( location ) )
-        s_messageSvcInstance->reportMessage( Message{ location, msgLevel, msg }, msgLevel );
+      // we pass the message to MessageSvc only if it is not suppressed by ROOT itself
+      if ( level >= gErrorIgnoreLevel ) {
+        // # Map ROOT level to Gaudi level:
+        // ROOT levels go from 0 to 6000 in step of 1000,
+        // kInfo is 1000 while MSG::INFO is 3, so we aim for `level / 1000 + 2`,
+        // but we have to put a cap at MSG::FATAL.
+        int msgLevel = std::min<int>( level / 1000 + 2, MSG::FATAL );
+        if ( msgLevel >= s_messageSvcInstance->outputLevel( location ) ) {
+          s_messageSvcInstance->reportMessage( Message{ location, msgLevel, msg }, msgLevel );
+        }
+      }
     } else {
       // If a message is sent when we do not have an IMessageSvc, let's use something else
       if ( s_originalRootErrorHandler ) {
