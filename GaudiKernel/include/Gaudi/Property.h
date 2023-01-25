@@ -235,7 +235,6 @@ namespace Gaudi {
     /// Accessor to verifier.
     VerifierType& verifier() { return m_verifier; }
 
-    /// Backward compatibility (\deprecated will be removed)
     /// @{
     const ValueType& value() const { return *this; }
     ValueType&       value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
