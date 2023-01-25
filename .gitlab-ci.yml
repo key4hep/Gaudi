@@ -21,15 +21,18 @@ default:
     # Add Ninja and CMake to the PATH
     - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH"
     - export CCACHE_DIR=$PWD/.ccache
+    - export PRESET=full
 
 # Job templates
 .build: &template_build
   tags:
     - cvmfs
   script:
+    - platform=${CI_JOB_NAME%/*}
+    - if [[ "${CI_JOB_NAME}" = */* ]] ; then PRESET=${CI_JOB_NAME#*/} ; fi
     - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
     - cmake --version
-    - cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${CI_JOB_NAME}.cmake -DGAUDI_USE_INTELAMPLIFIER:BOOL=TRUE -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    - cmake -S . -B build -Wno-dev -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -C ci-utils/preset-${PRESET}.cmake
     - ccache -z
     # pre-heat ccache cache for GaudiKernel
     - jobs=$(nproc)
@@ -104,6 +107,9 @@ x86_64-centos7-gcc11-opt:
   <<: *template_build
 
 x86_64-centos7-gcc11-dbg:
+  <<: *template_build
+
+x86_64-centos7-gcc11-opt/minimal:
   <<: *template_build
 
 view-gcc8:
@@ -307,7 +313,7 @@ check-copyright:
   image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
   script:
     - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
-    - python lb-check-copyright --exclude lhcbproject.yml origin/${TARGET_BRANCH}
+    - python lb-check-copyright --exclude lhcbproject.yml --exclude ci-utils/preset-default.cmake --exclude ci-utils/preset-full.cmake --exclude ci-utils/preset-minimal.cmake --exclude ci-utils/preset-no-test.cmake origin/${TARGET_BRANCH}
 
 website:
   image: python
