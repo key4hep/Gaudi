@@ -116,4 +116,12 @@ UseTab:          Never
 Language: ObjC
 # Don't format Objective-C, Objective-C++ files.
 DisableFormat: true
+---
+Language: Json
+# Don't format JSON files.
+DisableFormat: true
+---
+Language: JavaScript
+# Don't format Javascript files.
+DisableFormat: true
 ...
