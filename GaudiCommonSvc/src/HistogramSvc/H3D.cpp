@@ -20,11 +20,14 @@
 #  pragma warning( disable : 4996 )
 #endif
 
+#include <Gaudi/MonitoringHub.h>
 #include <GaudiCommonSvc/Generic3D.h>
 #include <GaudiCommonSvc/H3D.h>
 #include <GaudiCommonSvc/HistogramUtility.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/ObjectFactory.h>
+
+#include <HistogramPersistencySvc/RootHistogramUtils.h>
 
 #include "GaudiPI.h"
 #include "TH3D.h"
@@ -45,25 +48,31 @@ namespace Gaudi {
 } // namespace Gaudi
 
 /// Create 3D histogram with fixed bins
-std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string& title, int nBinsX, double xlow,
+std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( ISvcLocator* svcLocator, const std::string& path,
+                                                              const std::string& title, int nBinsX, double xlow,
                                                               double xup, int nBinsY, double ylow, double yup,
                                                               int nBinsZ, double zlow, double zup ) {
   auto p = new Histogram3D(
       new TH3D( title.c_str(), title.c_str(), nBinsX, xlow, xup, nBinsY, ylow, yup, nBinsZ, zlow, zup ) );
+  svcLocator->monitoringHub().registerEntity( "", path, "histogram:Histogram:double", *p );
   return { p, p };
 }
 
 /// Create 3D histogram with variable bins
-std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string& title, const Edges& eX,
+std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( ISvcLocator* svcLocator, const std::string& path,
+                                                              const std::string& title, const Edges& eX,
                                                               const Edges& eY, const Edges& eZ ) {
   auto p = new Histogram3D( new TH3D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1,
                                       &eY.front(), eZ.size() - 1, &eZ.front() ) );
+  svcLocator->monitoringHub().registerEntity( "", path, "histogram:Histogram:double", *p );
   return { p, p };
 }
 
-std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const AIDA::IHistogram3D& hist ) {
+std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( ISvcLocator* svcLocator, const std::string& path,
+                                                              const AIDA::IHistogram3D& hist ) {
   TH3D*        h = getRepresentation<AIDA::IHistogram3D, TH3D>( hist );
   Histogram3D* n = h ? new Histogram3D( new TH3D( *h ) ) : nullptr;
+  if ( n ) { svcLocator->monitoringHub().registerEntity( "", path, "histogram:Histogram:double", *n ); }
   return { n, n };
 }
 
@@ -107,6 +116,8 @@ bool Gaudi::Histogram3D::reset() {
   m_rep->Reset();
   return true;
 }
+
+nlohmann::json Gaudi::Histogram3D::toJSON() const { return *m_rep.get(); }
 
 bool Gaudi::Histogram3D::fill( double x, double y, double z, double weight ) {
   // avoid race conditiosn when filling the histogram

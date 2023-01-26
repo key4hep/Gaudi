@@ -9,16 +9,15 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
+#include "Gaudi/BaseSink.h"
 #include "Gaudi/MonitoringHub.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Service.h"
 
 #include <boost/algorithm/string.hpp>
 
 #include <fmt/core.h>
 #include <fmt/format.h>
 
-#include <deque>
 #include <map>
 #include <string_view>
 
@@ -154,38 +153,14 @@ namespace {
 
 namespace Gaudi::Monitoring {
 
-  class MessageSvcSink : public Service, public Hub::Sink {
-
-  public:
-    using Service::Service;
-
-    /// initialization, registers to Monitoring::Hub
-    StatusCode initialize() override {
-      return Service::initialize().andThen( [&] {
-        // declare ourself as a monitoding sink
-        serviceLocator()->monitoringHub().addSink( this );
-      } );
+  struct MessageSvcSink : BaseSink {
+    MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
+      // only deal with counters, statentity and histograms
+      setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:" } )
+          .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
     }
-
     /// stop method, handles the printing
     StatusCode stop() override;
-
-    // Gaudi::Monitoring::Hub::Sink implementation
-    void registerEntity( Hub::Entity ent ) override {
-      if ( std::string_view( ent.type ).substr( 0, 8 ) == "counter:" || ent.type == "statentity" ||
-           ent.type == "histogram" ) {
-        m_monitoringEntities.emplace_back( std::move( ent ) );
-      }
-    }
-
-    // Gaudi::Monitoring::Hub::Sink implementation
-    void removeEntity( Hub::Entity const& ent ) override {
-      auto it = std::find( begin( m_monitoringEntities ), end( m_monitoringEntities ), ent );
-      if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
-    }
-
-  private:
-    std::deque<Hub::Entity> m_monitoringEntities;
   };
 
   DECLARE_COMPONENT( MessageSvcSink )
@@ -199,7 +174,7 @@ StatusCode Gaudi::Monitoring::MessageSvcSink::stop() {
   // the counter name of each subentity and the associated json
   std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
   // fill the sorted map
-  for ( auto& entity : m_monitoringEntities ) { sortedEntities[entity.component][entity.name] = entity.toJSON(); }
+  applytoAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent.toJSON(); } );
   // dump all counters
   for ( auto& [algoName, entityMap] : sortedEntities ) {
     // check first whether there is any counter to log

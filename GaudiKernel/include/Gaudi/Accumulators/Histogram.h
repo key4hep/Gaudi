@@ -12,6 +12,8 @@
 
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/MonitoringHub.h>
+#include <GaudiKernel/HistoDef.h>
+
 #include <array>
 #include <cmath>
 #include <fmt/format.h>
@@ -161,6 +163,8 @@ namespace Gaudi::Accumulators {
       details::requireValidTitle( title );
       for ( const auto& s : labels ) details::requireValidTitle( s );
     };
+    explicit Axis( Gaudi::Histo1DDef const& def )
+        : Axis( (unsigned int)def.bins(), def.lowEdge(), def.highEdge(), def.title() ){};
     /// number of bins for this Axis
     unsigned int nBins;
     /// min and max values on this axis
@@ -427,11 +431,13 @@ namespace Gaudi::Accumulators {
    * where :
    *     + axis is an array of tuples, one per dimension, with content (nBins(integer), minValue(number),
    * maxValue(number), title(string))
-   *     + bins is an array of values. The length of the array is the product of (nBins+2) for all axis
-   *       the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values above
-   * maxValue bins are stored row first, so we iterate first on highest dimension For each bin the value is either a
-   * number (for non profile histograms) or a triplet (for profile histograms) containing (nEntries(integer),
-   * sum(number), sum2(number))
+   *     + bins is an array of values
+   *       - The length of the array is the product of (nBins+2) for all axis
+   *       - the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values
+   * above maxValue bins are stored row first so we iterate first on highest dimension
+   *       - the value is a number for non profile histograms
+   *       - the value is of the form ( (nEntries(integer), sum(number) ), sum2(number) ) for profile histograms
+   *         Note the pair with a pair as first entry
    */
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
             template <atomicity, typename, typename> typename Accumulator, typename Seq>

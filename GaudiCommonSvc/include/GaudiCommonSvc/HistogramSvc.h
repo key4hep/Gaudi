@@ -1075,6 +1075,9 @@ private:
   /// handler to be invoked for updating property m_defs1D
   void update1Ddefs();
 
+  /// extracts the path of an histogram from the related DataObject
+  std::string buildHistoPath( DataObject const* pPar, std::string const& rel );
+
   Gaudi::Property<DBaseEntries> m_input{ this, "Input", {}, "input streams" };
   Gaudi::Property<Histo1DMap>   m_defs1D{
       this, "Predefined1DHistos", {}, &HistogramSvc::update1Ddefs, "histograms with predefined parameters" };

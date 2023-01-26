@@ -12,6 +12,7 @@
 #include "GaudiKernel/Service.h"
 
 #include <HistogramPersistencySvc/RootHistogramSinkBase.h>
+#include <HistogramPersistencySvc/RootHistogramUtils.h>
 
 #include <TH1D.h>
 #include <TH2D.h>
@@ -20,104 +21,12 @@
 #include <TProfile2D.h>
 #include <TProfile3D.h>
 
-namespace {
-
-  template <typename RootHisto, unsigned int N>
-  struct TraitsBase {
-    static constexpr unsigned int Dimension{ N };
-    template <typename AxisArray, std::size_t... index>
-    static RootHisto create( std::string& name, std::string& title, AxisArray axis, std::index_sequence<index...> ) {
-      return std::make_from_tuple<RootHisto>(
-          std::tuple_cat( std::tuple{ name.c_str(), title.c_str() },
-                          std::tuple{ std::get<index>( axis ).nBins, std::get<index>( axis ).minValue,
-                                      std::get<index>( axis ).maxValue }... ) );
-    }
-    template <typename... Axis>
-    static RootHisto create( std::string& name, std::string& title, Axis&... axis ) {
-      return create( name, title, std::make_tuple( axis... ), std::make_index_sequence<sizeof...( Axis )>() );
-    }
-    static void fillMetaData( RootHisto& histo, nlohmann::json const& jsonAxis, unsigned int nentries ) {
-      auto try_set_bin_labels = [&histo, &jsonAxis]( auto idx ) {
-        if ( jsonAxis[idx].contains( "labels" ) ) {
-          TAxis* axis = nullptr;
-          switch ( idx ) {
-          case 0:
-            axis = histo.GetXaxis();
-            break;
-          case 1:
-            axis = histo.GetYaxis();
-            break;
-          case 2:
-            axis = histo.GetZaxis();
-            break;
-          default:
-            break;
-          }
-          if ( axis ) {
-            const auto labels = jsonAxis[idx].at( "labels" );
-            for ( unsigned int i = 0; i < labels.size(); i++ ) {
-              axis->SetBinLabel( i + 1, labels[i].template get<std::string>().c_str() );
-            }
-          }
-        }
-      };
-      for ( unsigned int i = 0; i < jsonAxis.size(); i++ ) try_set_bin_labels( i );
-      // Fix the number of entries, wrongly computed by ROOT from the numer of calls to fill
-      histo.SetEntries( nentries );
-    }
-  };
-
-  template <bool isProfile, typename RootHisto, unsigned int N>
-  struct Traits;
-
-  template <typename RootHisto, unsigned int N>
-  struct Traits<false, RootHisto, N> : TraitsBase<RootHisto, N> {
-    using Histo      = RootHisto;
-    using WeightType = double;
-    static void fill( Histo& histo, unsigned int i, const WeightType& weight ) { histo.SetBinContent( i, weight ); }
-  };
-  /// Wrapper around TProfileX to be able to fill it
-  template <typename TP>
-  struct ProfileWrapper : TP {
-    template <typename... Args>
-    ProfileWrapper( Args&&... args ) : TP( std::forward<Args>( args )... ) {
-      // When the static function TH1::SetDefaultSumw2 had been called (passing true), `Sumw2(true)` is automatically
-      // called by the constructor of TProfile. This is a problem because in the profiles in Gaudi::Accumulators we do
-      // not keep track of the sum of squares of weights and consequently don't set fBinSumw2 of the TProfile, which in
-      // turn leads to a self-inconsistent TProfile object. The "fix" is to disable sum of squares explicitly.
-      this->Sumw2( false );
-    }
-    void setBinNEntries( Int_t i, Int_t n ) { this->fBinEntries.fArray[i] = n; }
-    void setBinW2( Int_t i, Double_t v ) { this->fSumw2.fArray[i] = v; }
-  };
-  template <typename RootHisto, unsigned int N>
-  struct Traits<true, RootHisto, N> : TraitsBase<ProfileWrapper<RootHisto>, N> {
-    using Histo      = ProfileWrapper<RootHisto>;
-    using WeightType = std::tuple<std::tuple<unsigned int, double>, double>;
-    static constexpr void fill( Histo& histo, unsigned int i, const WeightType& weight ) {
-      auto [c, sumWeight2]       = weight;
-      auto [nEntries, sumWeight] = c;
-      histo.setBinNEntries( i, nEntries );
-      histo.SetBinContent( i, sumWeight );
-      histo.setBinW2( i, sumWeight2 );
-    };
-  };
-
-} // namespace
-
 namespace Gaudi::Histograming::Sink {
 
   using namespace std::string_literals;
 
-  template <unsigned int N, bool isProfile, typename ROOTHisto>
-  void saveRootHisto( TFile& file, std::string dir, std::string name, nlohmann::json& j ) {
-    details::saveRootHisto<Traits<isProfile, ROOTHisto, N>>( file, std::move( dir ), std::move( name ), j );
-  }
-
   struct Root : Base {
-
     using Base::Base;
-
     HistoRegistry registry = { { { "histogram:Histogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
                                { { "histogram:WeightedHistogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
                                { { "histogram:Histogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
@@ -139,4 +48,5 @@ namespace Gaudi::Histograming::Sink {
   };
 
   DECLARE_COMPONENT( Root )
+
 } // namespace Gaudi::Histograming::Sink
