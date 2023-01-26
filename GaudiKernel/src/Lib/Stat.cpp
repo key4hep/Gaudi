@@ -21,6 +21,12 @@
  *  @date 2005-08-02
  *  @date 2007-07-08
  */
+
+#if FMT_VERSION >= 90000
+template <>
+struct fmt::formatter<StatEntity> : fmt::ostream_formatter {};
+#endif
+
 // ============================================================================
 /*   Constructor from IStatSvc,tag and value
  *
