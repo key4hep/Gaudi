@@ -59,6 +59,7 @@ EventSelector.D...  DEBUG Selection root:/Event CLID:110
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='LFN:input.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
+TFile::TFile        ERROR file .../dummy.dst does not exist
 IODataManager       ERROR Error: connectDataIO> Cannot connect to database: PFN=dummy.dst FID=8BE41ECA-4004-11ED-8ECA-54AB3A714084
 IODataManager     WARNING Attempt to connect dsn:8BE41ECA-4004-11ED-8ECA-54AB3A714084 with next entry in data federation:ROOTIO.dst.
 FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc

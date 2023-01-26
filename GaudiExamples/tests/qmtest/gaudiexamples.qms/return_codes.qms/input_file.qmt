@@ -1,6 +1,6 @@
 <?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
 <!--
-    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+    (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations
 
     This software is distributed under the terms of the Apache version 2 licence,
     copied verbatim in the file "LICENSE".
@@ -24,14 +24,11 @@ EventSelector(Input = ["DATAFILE='PFN:none.dst'  SVC='Gaudi::RootEvtSelector' OP
 app = ApplicationMgr(TopAlg = [sla(EventCount = 3, Mode = "failure")],
                      EvtMax = 5)
 </text></argument>
-<argument name="validator"><text>
-preprocessor = normalizeExamples + \
-    RegexpReplacer(when = "TFile::TFile",
-        orig = r"file (.*)none.dst does not exist",
-        repl = r"file .../none.dst does not exist")
-
-validateWithReference(preproc = preprocessor)
-</text></argument>
-<argument name="error_reference"><text>refs/return_codes/input_file.err.ref</text></argument>
 <argument name="exit_code"><integer>2</integer></argument>
+<argument name="validator"><text>
+expected = "/none.dst does not exist"
+if not expected in stdout:
+    causes.append("missing signature")
+    result["GaudiTest.expected_line"] = result.Quote(expected)
+</text></argument>
 </extension>
