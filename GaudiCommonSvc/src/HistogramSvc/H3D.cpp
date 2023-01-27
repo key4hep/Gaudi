@@ -27,7 +27,7 @@
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/ObjectFactory.h>
 
-#include <HistogramPersistencySvc/RootHistogramUtils.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 
 #include "GaudiPI.h"
 #include "TH3D.h"

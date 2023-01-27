@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -157,6 +157,7 @@ gaudi_add_library(GaudiKernel
            cppgsl::cppgsl
            fmt::fmt
            nlohmann_json::nlohmann_json
+           Rangev3::rangev3
            ${GAUDI_ATOMIC_LIBS}
     PRIVATE Python::Python
 )
@@ -312,6 +313,9 @@ if(BUILD_TESTING)
 
   gaudi_add_executable(test_GaudiTimer SOURCES tests/src/test_GaudiTimer.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_HistoUtils SOURCES tests/src/RootHistogramUtilsUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework ROOT::Hist TEST)
 
   foreach(test_case IN ITEMS 01 02 03 04)
     add_executable(test_StatusCodeFail_case${test_case} tests/src/test_StatusCode_fail.cxx)

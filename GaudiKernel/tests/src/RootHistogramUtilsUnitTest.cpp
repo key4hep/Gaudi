@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,9 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_CounterHistos
+#define BOOST_TEST_MODULE test_HistoUtils
 
-#include <HistogramPersistencySvc/RootHistogramUtils.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 
 #include <boost/test/unit_test.hpp>
 
