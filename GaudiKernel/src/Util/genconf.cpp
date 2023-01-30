@@ -755,7 +755,7 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
 
   // name of the auto-generated module
   const string pyName  = ( fs::path( m_outputDirName ) / fs::path( libName + "Conf.py" ) ).string();
-  const string modName = fs::basename( fs::path( pyName ).leaf() );
+  const string modName = fs::path( pyName ).filename().stem().string();
 
   m_db2Buf << "        },\n    },\n";
 
