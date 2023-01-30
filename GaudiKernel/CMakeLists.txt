@@ -389,8 +389,7 @@ if(BUILD_TESTING)
 
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
   add_test(NAME ${package_name}.genconf_with_custom_factory
-    COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=$<TARGET_FILE_DIR:test_CustomFactory>:$<TARGET_FILE_DIR:GaudiCoreSvc>:$ENV{LD_LIBRARY_PATH}
-            $<TARGET_FILE:genconf>
+    COMMAND run $<TARGET_FILE:genconf>
             -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
             -p CustomFactoryTest
             -i test_CustomFactory
