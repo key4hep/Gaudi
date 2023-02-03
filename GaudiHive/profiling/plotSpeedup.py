@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 #####################################################################################
 # (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #

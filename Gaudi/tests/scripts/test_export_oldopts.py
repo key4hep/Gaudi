@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #####################################################################################
 # (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
@@ -9,8 +9,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-
-from __future__ import print_function
 
 import os
 import sys
@@ -44,7 +42,7 @@ try:
 
     # parse the option file and cache the configuration (python only)
     cmd = [
-        "python",
+        "python3",
         which("gaudirun.py"),
         "-n",
         "-v",
@@ -65,7 +63,7 @@ try:
 
     # parse the option file, export old options, parse again
     cmd = [
-        "python",
+        "python3",
         which("gaudirun.py"),
         "-n",
         "-v",
@@ -86,7 +84,7 @@ try:
         print(err.decode("utf-8"))
 
     cmd = [
-        "python",
+        "python3",
         which("gaudirun.py"),
         "-n",
         "-v",

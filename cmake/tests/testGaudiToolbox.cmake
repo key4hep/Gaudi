@@ -76,15 +76,11 @@ elseif(DEFINED TEST_INSTALLATION_LAYOUT)
         message(FATAL_ERROR "Scripts are not installed")
     endif()
     # try to execute
-    execute_process(COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${BIN_DIR}/${INSTALL_DIR}/lib:$ENV{LD_LIBRARY_PATH}
-                            ${BIN_DIR}/${INSTALL_DIR}/bin/qux
-                            RESULT_VARIABLE returned_value)
+    execute_process(COMMAND qux RESULT_VARIABLE returned_value)
     if(NOT returned_value EQUAL "0")
         message(FATAL_ERROR "Cannot run the executable qux or something went wrong.")
     endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${BIN_DIR}/${INSTALL_DIR}/python:$ENV{PYTHONPATH}
-                            ${BIN_DIR}/${INSTALL_DIR}/bin/dummyRun.py
-                            RESULT_VARIABLE returned_value)
+    execute_process(COMMAND dummyRun.py RESULT_VARIABLE returned_value)
     if(NOT returned_value EQUAL "0")
         message(FATAL_ERROR "Cannot run the script dummyRun.py.")
     endif()
@@ -157,7 +153,9 @@ else()
         DEPENDS cmake.test_dummyProject_install
         FIXTURES_REQUIRED cmake.test_dummyProject_install
         FIXTURES_SETUP cmake.test_dummyProject_install_checks
-        LABELS CMake)
+        LABELS CMake
+        ENVIRONMENT "PATH=${CMAKE_CURRENT_BINARY_DIR}/dummyProjectBinaryDir/install/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/dummyProjectBinaryDir/install/lib:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/dummyProjectBinaryDir/python:${CMAKE_SOURCE_DIR}/cmake/tests/dummyProject/python:$ENV{PYTHONPATH}"
+        )
 endif()
 
 cmake_policy(POP)

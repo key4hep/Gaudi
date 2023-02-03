@@ -10,6 +10,6 @@
     or submit itself to any jurisdiction.
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
-  <argument name="program"><text>python</text></argument>
+  <argument name="program"><text>python3</text></argument>
   <argument name="args"><set><text>../scripts/test_iDataSvc.py</text></set></argument>
 </extension>

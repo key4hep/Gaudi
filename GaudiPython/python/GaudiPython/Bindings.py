@@ -195,14 +195,13 @@ class Interface(InterfaceCast):
 
 
 def loaddict(dict):
-    """Load a LCG dictionary using various mechanisms"""
-    if Helper.loadDynamicLib(dict) == 1:
+    """Load an LCG dictionary"""
+    loadlib_return_code = Helper.loadDynamicLib(dict)
+    if loadlib_return_code == 1:
         return
-    else:
-        try:
-            cppyy.loadDict(dict)
-        except:
-            raise ImportError("Error loading dictionary library")
+    raise RuntimeError(
+        f"Failed to load dictionary library {dict} (return code {loadlib_return_code})"
+    )
 
 
 # ---get a class (by loading modules if needed)--------------------------------
