@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,11 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include "GaudiKernel/Service.h"
-
-#include <HistogramPersistencySvc/RootHistogramSinkBase.h>
-#include <HistogramPersistencySvc/RootHistogramUtils.h>
-
+#include <Gaudi/Histograming/Sink/Base.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
+#include <GaudiKernel/Service.h>
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TH3D.h>

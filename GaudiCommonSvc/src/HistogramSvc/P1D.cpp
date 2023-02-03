@@ -26,7 +26,7 @@
 #include <GaudiCommonSvc/P1D.h>
 #include <GaudiKernel/ObjectFactory.h>
 
-#include <HistogramPersistencySvc/RootHistogramUtils.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 
 #include <cmath>
 

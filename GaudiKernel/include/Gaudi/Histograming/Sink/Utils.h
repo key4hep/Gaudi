@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,10 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-#include "GaudiKernel/GaudiException.h"
-
-#include <functional>
-
+#include <GaudiKernel/GaudiException.h>
 #include <TDirectory.h>
 #include <TFile.h>
 #include <TH1.h>
@@ -22,25 +19,23 @@
 #include <TH3D.h>
 #include <TProfile.h>
 #include <TProfile2D.h>
-
+#include <algorithm>
+#include <functional>
+#include <gsl/span>
+#include <nlohmann/json.hpp>
 #include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/split_when.hpp>
 #include <range/v3/view/transform.hpp>
+#include <string>
+#include <vector>
+
 // upstream has renamed namespace ranges::view -> ranges::views
 #if RANGE_V3_VERSION < 900
 namespace ranges::views {
   using namespace ranges::view;
 }
 #endif
-
-#include <gsl/span>
-#include <nlohmann/json.hpp>
-
-#include <algorithm>
-#include <functional>
-#include <string>
-#include <vector>
 
 namespace Gaudi::Histograming::Sink {
 

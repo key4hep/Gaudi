@@ -12,7 +12,7 @@
 
 # If HepPDT is not available, give up on this subdirectory:
 if(NOT GAUDI_USE_HEPPDT)
-    message(WARNING "Requirements for building PartPropSvc disabled. "
+    message(AUTHOR_WARNING "Requirements for building PartPropSvc disabled. "
         "PartPropSvc will not be built. "
         "HepPDT is disabled.")
     return()

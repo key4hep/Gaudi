@@ -70,8 +70,3 @@ if(GAUDI_USE_AIDA)
                                         src/HistogramPersistencySvc/HistogramPersistencySvc.cpp)
   target_link_libraries(GaudiCommonSvc PRIVATE AIDA::aida GaudiCommonSvcLib)
 endif()
-
-if(BUILD_TESTING)
-  gaudi_add_executable(test_HistoUtils SOURCES tests/src/RootHistogramUtilsUnitTest.cpp
-    LINK GaudiCommonSvcLib Boost::unit_test_framework TEST)
-endif()

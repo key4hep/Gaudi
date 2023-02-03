@@ -30,7 +30,7 @@
 #include <TProfile.h>
 #include <array>
 
-#include <HistogramPersistencySvc/RootHistogramUtils.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 
 namespace {
   using AIDA::IHistogram1D;

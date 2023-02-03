@@ -26,7 +26,7 @@
 #include <GaudiKernel/ObjectFactory.h>
 #include <GaudiKernel/StreamBuffer.h>
 
-#include <HistogramPersistencySvc/RootHistogramUtils.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( ISvcLocator* svcLocator, const std::string& path,
                                                               const std::string& title, int nBins, double xlow,
