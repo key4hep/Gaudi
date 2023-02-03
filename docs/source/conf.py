@@ -19,13 +19,13 @@
 # -- Project information -----------------------------------------------------
 
 project = "Gaudi"
-copyright = "1998-2021, CERN for the benefit of the LHCb and ATLAS collaborations"
+copyright = "1998-2023, CERN for the benefit of the LHCb and ATLAS collaborations"
 author = "The Gaudi Developers"
 
 # The short X.Y version
-version = "36.9"
+version = "36.9.1"
 # The full version, including alpha/beta/rc tags
-release = "v36r9"
+release = "v36r9p1"
 
 # -- General configuration ---------------------------------------------------
 

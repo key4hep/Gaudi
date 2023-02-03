@@ -5,6 +5,11 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r9p1][] - 2023-02-03
+Strictly identical to v36r9 (except for the version number), needed by LHCb for
+a special deployment.
+
+
 ## [v36r9][] - 2022-11-21
 Just some minor bugfixes and a few (mostly backword compatible) changes in behaviour.
 
@@ -25,7 +30,7 @@ To be noted:
   trailing whitespaces in titles and labels (gaudi/Gaudi!1397)
 
 
-## Changed
+### Changed
 - Create reproducible ROOT files and clean up tests (gaudi/Gaudi!1380)
 - Do not allow whitespace at front or back of histogram titles or labels (lhcb/Gaudi#3 gaudi/Gaudi!1397)
 - Optimise basket sizes created by `RootCnvSvc` (gaudi/Gaudi!1381)
@@ -33,12 +38,12 @@ To be noted:
 - Use Gitlab CI DAG pipelines (gaudi/Gaudi!1393)
 - More const-correct `LinkManager` interface (gaudi/Gaudi!1386)
 
-## Added
+### Added
 - Add test build of public headers (again) (gaudi/Gaudi!1394)
 - Add support for `.json` options to `Gaudi.exe` (gaudi/Gaudi!1388)
 - Add output dependency checks to `AvalancheSchedulerSvc` (gaudi/Gaudi!1384)
 
-## Fixed
+### Fixed
 - Fixes to support builds on ARM processors (gaudi/Gaudi!1396)
 - Fix use of deprecated Boost headers (gaudi/Gaudi!1400)
 - Fix `UnboundLocalError` in `GaudiKernel/Configurable.py` (gaudi/Gaudi!1399)
