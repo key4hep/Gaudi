@@ -60,11 +60,18 @@ if __name__ == "__main__":
         logging.debug("opening %r for writing", output)
         if os.path.exists(output):
             os.remove(output)
+        if sys.platform.startswith("darwin") and os.path.exists(output + ".db"):
+            os.remove(output + ".db")
         out = shelve.open(output)
         for input in inputs:
             logging.debug("adding %r", input)
             out.update(eval(open(input, "rb").read()))
         out.close()
+        if sys.platform.startswith("darwin"):
+            if os.path.exists(output):  # this Python uses dbm.gnu
+                open(output + ".db", "w")  # make a dummy ".db" version
+            elif os.path.exists(output + ".db"):  # this Python uses dbm.ndbm
+                open(output, "w")  # make a dummy version without the artificial ".db"
     except:
         if os.path.exists(output):
             os.remove(output)
