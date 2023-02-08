@@ -665,10 +665,10 @@ StatusCode ToolSvc::start()
       IDataHandleHolder* idh = dynamic_cast<IDataHandleHolder*>( iTool );
       if ( idh ) {
         std::ostringstream ost;
-        for ( auto& dh : idh->inputHandles() ) { ost << "\n   INP:   " << dh->fullKey(); }
-        for ( auto& id : idh->extraInputDeps() ) { ost << "\n   EXT I: " << id; }
-        for ( auto& dh : idh->outputHandles() ) { ost << "\n   OUT:   " << dh->fullKey(); }
-        for ( auto& id : idh->extraOutputDeps() ) { ost << "\n   EXT O: " << id; }
+        for ( auto& dh : idh->inputHandles() ) { ost << "\n   INPUT       " << dh->fullKey(); }
+        for ( auto& id : idh->extraInputDeps() ) { ost << "\n   EXTRA INPUT " << id; }
+        for ( auto& dh : idh->outputHandles() ) { ost << "\n   OUTPUT       " << dh->fullKey(); }
+        for ( auto& id : idh->extraOutputDeps() ) { ost << "\n   EXTRA OUTPUT " << id; }
         if ( ost.str().length() > 0 ) { info() << "\n" << iTool->name() << ost.str(); }
       } else {
         error() << "can't cast " << iTool->name() << " to IDataHandleHolder!" << endmsg;
