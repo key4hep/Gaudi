@@ -196,16 +196,18 @@ namespace Gaudi {
     // initialize handles
     initDataHandleHolder();
 
-    std::ostringstream ost;
-    for ( auto& in : avis.src_i() ) {
-      ost << "\n  INPUT  " << in.first;
-      for ( auto& v : in.second ) { ost << " " << v->name(); }
+    if ( msgLevel( MSG::DEBUG ) ) {
+      std::ostringstream ost;
+      for ( auto& in : avis.src_i() ) {
+        ost << "\n  INPUT  " << in.first;
+        for ( auto& v : in.second ) { ost << " " << v->name(); }
+      }
+      for ( auto& out : avis.src_o() ) {
+        ost << "\n  OUTPUT " << out.first;
+        for ( auto& v : out.second ) { ost << " " << v->name(); }
+      }
+      if ( ost.str().length() > 0 ) { debug() << "listing sources of ALL handles:" << ost.str() << endmsg; }
     }
-    for ( auto& out : avis.src_o() ) {
-      ost << "\n  OUTPUT " << out.first;
-      for ( auto& v : out.second ) { ost << " " << v->name(); }
-    }
-    if ( ost.str().length() > 0 ) { debug() << "listing sources of ALL handles:" << ost.str() << endmsg; }
 
     return sc;
   }
