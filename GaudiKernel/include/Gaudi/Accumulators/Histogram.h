@@ -502,10 +502,10 @@ namespace Gaudi::Accumulators {
       HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::make_index_sequence<ND>>;
 
   namespace naming {
-    constexpr char histogramString[]                = "histogram:Histogram";
-    constexpr char weightedHistogramString[]        = "histogram:WeightedHistogram";
-    constexpr char profilehistogramString[]         = "histogram:ProfileHistogram";
-    constexpr char weightedProfilehistogramString[] = "histogram:WeightedProfileHistogram";
+    inline constexpr char histogramString[]                = "histogram:Histogram";
+    inline constexpr char weightedHistogramString[]        = "histogram:WeightedHistogram";
+    inline constexpr char profilehistogramString[]         = "histogram:ProfileHistogram";
+    inline constexpr char weightedProfilehistogramString[] = "histogram:WeightedProfileHistogram";
   } // namespace naming
   /// standard histograming counter. See HistogramingCounterBase for details
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
