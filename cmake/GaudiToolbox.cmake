@@ -451,11 +451,7 @@ function(gaudi_add_module plugin_name)
         ${_gaudi_install_optional})
     # Merge the .confdb files
     _merge_files_confdb(${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb") # see private functions at the end
-    _merge_files(${PROJECT_NAME}_MergeConfDB2 "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2"  # see private functions at the end
-                 ${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb2_part"
-                 "Merging .confdb2 files for ${PROJECT_NAME}")
-    set_property(TARGET ${PROJECT_NAME}_MergeConfDB2 PROPERTY command run merge_confdb2_parts)
-    set_property(TARGET ${PROJECT_NAME}_MergeConfDB2 PROPERTY output_option --output)
+    _merge_files_confdb2(${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb2_part")
     # To append the path to the generated library to LD_LIBRARY_PATH with run
     _gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:${plugin_name}>)
     # To append the path to the generated Conf.py file to PYTHONPATH
@@ -1215,7 +1211,29 @@ function(_merge_files_confdb dependency file_to_merge)
         ${dependency} "${file_to_merge}"
         "Merging .confdb files for ${PROJECT_NAME}")
 endfunction()
-
+# special merge function for .confdb2 as a workaround for https://gitlab.cern.ch/gaudi/Gaudi/-/issues/258
+function(_merge_files_confdb2 dependency file_to_merge)
+    set(merge_target ${PROJECT_NAME}_MergeConfDB2)
+    if(NOT TARGET ${merge_target})
+        if(APPLE)
+            set(output_files ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2 ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2.db)
+        else()
+            set(output_files ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2)
+        endif()
+        add_custom_command(OUTPUT ${output_files}
+            COMMAND run merge_confdb2_parts $<TARGET_PROPERTY:${merge_target},fragments>
+                    --output ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2
+            DEPENDS $<TARGET_PROPERTY:${merge_target},fragments>
+            COMMENT "Merging .confdb2 files for ${PROJECT_NAME}"
+            COMMAND_EXPAND_LISTS)
+        add_custom_target(${merge_target} ALL DEPENDS ${output_files})
+        install(FILES ${output_files}
+            TYPE LIB
+            ${_gaudi_install_optional})
+    endif()
+    add_dependencies(${merge_target} ${dependency})
+    set_property(TARGET ${merge_target} APPEND PROPERTY fragments "${file_to_merge}")
+endfunction()
 
 # A function to factor out nosetests and pytest lookup
 function(_import_runtime runtime)
