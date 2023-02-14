@@ -5,7 +5,38 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [v36r9p1][] - 2023-02-03
+
+## [v36r10][] - 2023-02-14
+This is a small maintenance release focusing on fixing bugs. In particular we fixed a
+number of issues affecting builds on MacOS.
+
+There are a few changes that should be mostly transparent from the code point of view,
+but may produce slightly different printouts.
+
+### Changed
+- Use `python3` instead of `python` (gaudi/Gaudi!1418)
+- Use MessageSvc to handle ROOT messages (gaudi/Gaudi!1412)
+- Switching from histogramPersistencySvc to new Sinks (gaudi/Gaudi!1401)
+
+### Added
+- Add algorithm to programmatically enable/disable perf (gaudi/Gaudi!1408)
+- PluginServiceV2: allow factories to be deprecated (gaudi/Gaudi!1395)
+
+### Fixed
+- Various fixes for MacOS (gaudi/Gaudi!1422 gaudi/Gaudi!1405 gaudi/Gaudi#249)
+- Fix gcc11 anonymous namespace warnings (gaudi/Gaudi!1425)
+- Fix use of Boost unit test framework in AttribStringParser_test (gaudi/Gaudi!1420)
+- Fixes in preparation for LCG 103 (gaudi/Gaudi!1419)
+- Fixed minimal build of Gaudi and added CI test job to validate it (gaudi/Gaudi!1417)
+- ProcStats: Use mutex lock to make fetch() thread safe. (gaudi/Gaudi!1410)
+- Fix fmt for StatEntity for latest fmt versions (gaudi/Gaudi!1409)
+- Property: remove deprecation comment on value() (gaudi/Gaudi!1416)
+- Fix issue when building Gaudi with Boost 1.81 (gaudi/Gaudi#255  gaudi/Gaudi!1413)
+- Make Catch2 based test compatible with Catch2 v3 (gaudi/Gaudi#252  gaudi/Gaudi!1407)
+- Fix gcc12 warnings (gaudi/Gaudi!1403)
+
+
+## v36r9p1 - 2023-02-03
 Strictly identical to v36r9 (except for the version number), needed by LHCb for
 a special deployment.
 
@@ -1003,6 +1034,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r10]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r10
 [v36r9]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r9
 [v36r8]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r8
 [v36r7]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r7
