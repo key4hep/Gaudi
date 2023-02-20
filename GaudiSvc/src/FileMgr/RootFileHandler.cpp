@@ -59,53 +59,16 @@ Io::open_t RootFileHandler::openRootFile( const std::string& n, const Io::IoFlag
 
   std::unique_ptr<TFile> tf;
 
-  if ( ba::starts_with( n, "https://", ba::is_iequal{} ) || ba::starts_with( n, "http://", ba::is_iequal{} ) ) {
-
-    if ( !f.isRead() ) {
-      m_log << MSG::ERROR << "can only open web files in READ mode. "
-            << "requested mode is: " << f << endmsg;
-      return 1;
-    }
-
-    if ( !m_ssl_setup && ba::starts_with( n, "https://", ba::is_iequal{} ) ) {
-
-      if ( !setupSSL() ) {
-        m_log << MSG::ERROR << "Unable to setup TSSLSocket for ROOT TWebFile access over https" << endmsg;
-      }
-    }
-
-    try {
-      tf.reset( new TWebFile( n.c_str() ) );
-    } catch ( const std::exception& Exception ) {
-      m_log << MSG::ERROR << "exception caught while trying to open root"
-            << " file for reading: " << Exception.what() << std::endl
-            << "  -> file probably corrupt." << endmsg;
-      return 1;
-    } catch ( ... ) {
-      m_log << MSG::ERROR << "Problems opening input file  \"" << n << "\": probably corrupt" << endmsg;
-      return 1;
-    }
-
-    if ( tf && tf->IsZombie() ) {
-      m_log << MSG::ERROR << "Problems opening input file  \"" << n << "\": file does not exist or in not accessible"
-            << endmsg;
-      tf.reset();
-      return 1;
-    }
-
-  } else {
-
-    try {
-      tf.reset( TFile::Open( n.c_str(), opt.c_str() ) );
-    } catch ( const std::exception& Exception ) {
-      m_log << MSG::ERROR << "exception caught while trying to open root"
-            << " file for reading: " << Exception.what() << std::endl
-            << "  -> file probably corrupt." << endmsg;
-      return 1;
-    } catch ( ... ) {
-      m_log << MSG::ERROR << "Problems opening input file  \"" << n << "\": probably corrupt" << endmsg;
-      return 1;
-    }
+  try {
+    tf.reset( TFile::Open( n.c_str(), opt.c_str() ) );
+  } catch ( const std::exception& Exception ) {
+    m_log << MSG::ERROR << "exception caught while trying to open root"
+          << " file for reading: " << Exception.what() << std::endl
+          << "  -> file probably corrupt." << endmsg;
+    return 1;
+  } catch ( ... ) {
+    m_log << MSG::ERROR << "Problems opening input file  \"" << n << "\": probably corrupt" << endmsg;
+    return 1;
   }
 
   if ( !tf || !tf->IsOpen() ) {
