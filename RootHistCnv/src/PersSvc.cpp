@@ -50,10 +50,12 @@ StatusCode RootHistCnv::PersSvc::initialize()
     // Initialize ROOT if output file name is defined
     if ( undefFileName != m_defFileName ) {
       m_hfile.reset( TFile::Open( m_defFileName.value().c_str(), "RECREATE", "GAUDI Histograms" ) );
+      info() << "Writing ROOT histograms to: " << m_defFileName.value() << endmsg;
     } else {
       m_hfile.reset();
+      // assume using another output system (Gaudi::Histograming::Sink::Base) to write hists
+      // if default file name still set
     }
-    info() << "Writing ROOT histograms to: " << m_defFileName.value() << endmsg;
   } else {
     info() << "Writing ROOT histograms disabled." << endmsg;
   }
@@ -104,8 +106,11 @@ StatusCode RootHistCnv::PersSvc::createRep( DataObject* pObject, IOpaqueAddress*
   } else {
     if ( m_outputEnabled && !m_prtWar ) {
       m_prtWar = true;
-      warning() << "no ROOT output file name, "
-                << "Histograms cannot be persistified" << endmsg;
+      // if undefined this may be due to using RootHistSink and not a warning
+      if ( undefFileName != m_defFileName ) {
+        warning() << "no ROOT output file name, "
+                  << "Histograms cannot be persistified" << endmsg;
+      }
     }
   }
   return StatusCode::SUCCESS;

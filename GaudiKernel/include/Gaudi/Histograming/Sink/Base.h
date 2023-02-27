@@ -42,6 +42,7 @@ namespace Gaudi::Histograming::Sink {
         // empty output file if it exists, as we will update it at the end
         // This allows multiple Sinks to write to the same ROOT file
         std::filesystem::remove( m_fileName.value() );
+        info() << "Writing ROOT histograms to: " << m_fileName.value() << endmsg;
       } );
     }
 
@@ -64,6 +65,7 @@ namespace Gaudi::Histograming::Sink {
               if ( saver != m_registry.end() ) ( saver->second )( histoFile, ent.component, ent.name, j );
             },
             true );
+        info() << "Completed update of ROOT histograms in: " << m_fileName.value() << endmsg;
         return StatusCode::SUCCESS;
       } );
     }

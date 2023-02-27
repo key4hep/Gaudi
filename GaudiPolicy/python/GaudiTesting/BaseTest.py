@@ -1097,6 +1097,10 @@ lineSkipper = LineSkipper(
         "Histograms saving not required.",
         # Message added in gaudi/Gaudi!577
         "Properties are dumped into",
+        # Messages changed in gaudi/Gaudi!1426
+        "WARNING no ROOT output file name",
+        "INFO Writing ROOT histograms to:",
+        "INFO Completed update of ROOT histograms in:",
     ],
     regexps=[
         r"^JobOptionsSvc        INFO *$",

@@ -13,5 +13,5 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set><text>../../options/Histograms.py</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-<argument name="reference"><text>refs/Histograms.ref</text></argument>
+<argument name="reference"><text>refs/Histograms_py.ref</text></argument>
 </extension>
