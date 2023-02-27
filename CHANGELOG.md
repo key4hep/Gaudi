@@ -6,6 +6,19 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v36r11][] - 2023-02-27
+Just a minor update to pick up some changes that didn't make it for v36r10.
+
+### Added
+- Adds `CheckedNamedToolsConfigured` functionality (gaudi/Gaudi!1424)
+
+### Fixed
+- Fix log file messages when using `Histograming::Sink::Base` (gaudi/Gaudi!1426)
+- Remove `TWebFile` access for http(s) `TURL`s and use default `TFile::Open`
+  via davix instead (gaudi/Gaudi!1427)
+- Update version of `isort` used in `pre-commit` (gaudi/Gaudi!1429)
+
+
 ## [v36r10][] - 2023-02-14
 This is a small maintenance release focusing on fixing bugs. In particular we fixed a
 number of issues affecting builds on MacOS.
@@ -1034,6 +1047,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r11]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r11
 [v36r10]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r10
 [v36r9]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r9
 [v36r8]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r8
