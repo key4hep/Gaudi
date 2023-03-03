@@ -171,13 +171,13 @@ namespace Gaudi::Monitoring {
           .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
     }
     /// stop method, handles the printing
-    StatusCode stop() override;
+    void flush( bool ) override;
   };
 
   DECLARE_COMPONENT( MessageSvcSink )
 } // namespace Gaudi::Monitoring
 
-StatusCode Gaudi::Monitoring::MessageSvcSink::stop() {
+void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
   // We will try to mimic the old monitoring of counters, so we need to split
   // them per Algo. The algo name can be extracted form the id of the entity
   // as its format is "algoName/counterName"
@@ -207,5 +207,4 @@ StatusCode Gaudi::Monitoring::MessageSvcSink::stop() {
     } );
     log << endmsg;
   }
-  return Service::stop();
 }

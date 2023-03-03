@@ -9,20 +9,33 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include "GaudiKernel/Service.h"
-
 #include <Gaudi/MonitoringHub.h>
+#include <Gaudi/Property.h>
+#include <GaudiKernel/Service.h>
 
+#include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace Gaudi::Monitoring {
 
   /**
    * Base class for all Sinks registering to the Monitoring Hub
+   * Should be extended by actual Sinks
    *
    * Deals with registration and manages selection of Entities
-   * Should be extended by actual Sinks
+   * Provides support for regular flushing of the Sink content.
+   * The AutoFlushPeriod property defines the interval. A value
+   * of 0 means no auto flush.
+   *
+   * Actual Sinks extending this base class have to implement
+   * the `flush` method. This one has a boolean argument allowing
+   * to know whether it was called at a regular interval or a the
+   * end
    */
   class BaseSink : public Service, public Hub::Sink {
 
@@ -48,6 +61,36 @@ namespace Gaudi::Monitoring {
       if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
     }
 
+    /**
+     * pure virtual method to be defined by children and responsible for
+     * flushing current data of the Sink. This method is called every
+     * m_autoFlushPeriod (if not set to 0) and in the stop method by default
+     * @param isStop allows to know which case we are in
+     */
+    virtual void flush( bool isStop ) = 0;
+
+    StatusCode start() override {
+      return Service::start().andThen( [&] {
+        // enable periodic output file flush if requested
+        if ( m_autoFlushPeriod.value() != 0 ) {
+          m_flushThread = std::thread{ [this]() {
+            using namespace std::chrono_literals;
+            std::unique_lock lk( m_flushCondMutex );
+            while ( m_flushCond.wait_for( lk, m_autoFlushPeriod.value() * 1s ) == std::cv_status::timeout ) {
+              flush( false );
+            }
+          } };
+        }
+      } );
+    }
+
+    StatusCode stop() override {
+      m_flushCond.notify_all();                             // tell the flush thread we are stopping
+      if ( m_flushThread.joinable() ) m_flushThread.join(); // and wait that it exits
+      flush( true );
+      return Service::stop();
+    }
+
   protected:
     /**
      * applies a callable to all monitoring entities
@@ -71,7 +114,6 @@ namespace Gaudi::Monitoring {
       applyToAllEntities( func );
     }
 
-  private:
     /// deciding whether a given name matches the list of regexps given
     /// empty list means everything matches
     bool wanted( std::string name, std::vector<std::string> searchNames ) {
@@ -85,12 +127,23 @@ namespace Gaudi::Monitoring {
 
     /// list of entities we are dealing with
     std::vector<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
-    Gaudi::Property<std::vector<std::string>>   m_namesToSave{
+
+    /// Management of entities we will handle or not
+    Gaudi::Property<std::vector<std::string>> m_namesToSave{
         this, "NamesToSave", {}, "List of regexps used to match names of entities to save" };
     Gaudi::Property<std::vector<std::string>> m_componentsToSave{
         this, "ComponentsToSave", {}, "List of regexps used to match component names of entities to save" };
     Gaudi::Property<std::vector<std::string>> m_typesToSave{
         this, "TypesToSave", {}, "List of regexps used to match type names of entities to save" };
+
+    /// Handling of regular flushes, if requested
+    std::thread             m_flushThread;
+    std::condition_variable m_flushCond;
+    std::mutex              m_flushCondMutex;
+    Gaudi::Property<float>  m_autoFlushPeriod{
+        this, "AutoFlushPeriod", 0.,
+        "if different from 0, indicates every how many seconds to force a write of the FSR data to OutputFile (this "
+         "parameter makes sense only if used in conjunction with OutputFile)" };
   };
 
 } // namespace Gaudi::Monitoring
