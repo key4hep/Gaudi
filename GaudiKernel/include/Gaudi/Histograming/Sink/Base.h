@@ -52,7 +52,7 @@ namespace Gaudi::Histograming::Sink {
       // As we dropped the file at initialization, no old data from a previous
       // run may be mixed with new one
       TFile histoFile( m_fileName.value().c_str(), "UPDATE" );
-      applytoAllEntities(
+      applyToAllEntitiesWithSort(
           [&histoFile, this]( auto& ent ) {
             auto j    = ent.toJSON();
             auto dim  = j.at( "dimension" ).template get<unsigned int>();
@@ -62,8 +62,7 @@ namespace Gaudi::Histograming::Sink {
             type       = type.substr( 0, type.find_last_of( ':' ) );
             auto saver = m_registry.find( { type, dim } );
             if ( saver != m_registry.end() ) ( saver->second )( histoFile, ent.component, ent.name, j );
-          },
-          true );
+          } );
       info() << "Completed update of ROOT histograms in: " << m_fileName.value() << endmsg;
       // call parent's stop
       return Service::stop();

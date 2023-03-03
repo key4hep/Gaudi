@@ -13,8 +13,8 @@
 
 #include <Gaudi/MonitoringHub.h>
 
-#include <deque>
 #include <string>
+#include <vector>
 
 namespace Gaudi::Monitoring {
 
@@ -51,19 +51,24 @@ namespace Gaudi::Monitoring {
   protected:
     /**
      * applies a callable to all monitoring entities
-     *
-     * Entities may be first sorted to improve reproducibility
      */
     template <typename Callable>
-    void applytoAllEntities( Callable func, bool sortFirst = false ) {
-      // sort if required
-      if ( sortFirst ) {
-        std::sort( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( const auto& a, const auto& b ) {
-          return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
-        } );
-      }
+    void applyToAllEntities( Callable func ) const {
       // loop over entities
       std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), func );
+    }
+
+    /**
+     * applies a callable to all monitoring entities
+     *
+     * Entities are first sorted to improve reproducibility
+     */
+    template <typename Callable>
+    void applyToAllEntitiesWithSort( Callable func ) {
+      std::sort( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( const auto& a, const auto& b ) {
+        return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
+      } );
+      applyToAllEntities( func );
     }
 
   private:
@@ -79,8 +84,8 @@ namespace Gaudi::Monitoring {
     }
 
     /// list of entities we are dealing with
-    std::deque<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
-    Gaudi::Property<std::vector<std::string>>  m_namesToSave{
+    std::vector<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
+    Gaudi::Property<std::vector<std::string>>   m_namesToSave{
         this, "NamesToSave", {}, "List of regexps used to match names of entities to save" };
     Gaudi::Property<std::vector<std::string>> m_componentsToSave{
         this, "ComponentsToSave", {}, "List of regexps used to match component names of entities to save" };

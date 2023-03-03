@@ -185,7 +185,7 @@ StatusCode Gaudi::Monitoring::MessageSvcSink::stop() {
   // the counter name of each subentity and the associated json
   std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
   // fill the sorted map
-  applytoAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent.toJSON(); } );
+  applyToAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent.toJSON(); } );
   // dump all counters
   for ( auto& [algoName, entityMap] : sortedEntities ) {
     // check first whether there is any counter to log
