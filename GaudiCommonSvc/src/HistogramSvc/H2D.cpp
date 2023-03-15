@@ -30,8 +30,6 @@
 #include <TProfile.h>
 #include <array>
 
-#include <Gaudi/Histograming/Sink/Utils.h>
-
 namespace {
   using AIDA::IHistogram1D;
   using AIDA::IHistogram2D;
@@ -174,8 +172,6 @@ bool Gaudi::Histogram2D::reset() {
   m_sumwy = 0;
   return Base::reset();
 }
-
-nlohmann::json Gaudi::Histogram2D::toJSON() const { return *m_rep.get(); }
 
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable

@@ -164,6 +164,13 @@ namespace {
 
 namespace Gaudi::Monitoring {
 
+  /**
+   * Sink dedicated to printing messages to the MessageSvc.
+   *
+   * Deals with counters and histograms at this stage.
+   * Relies on these entities to have a "type" entry in their json following
+   * the convention described in Accumulators.h
+   */
   struct MessageSvcSink : BaseSink {
     MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
       // only deal with counters, statentity and histograms
@@ -185,7 +192,7 @@ void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
   // the counter name of each subentity and the associated json
   std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
   // fill the sorted map
-  applyToAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent.toJSON(); } );
+  applyToAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent; } );
   // dump all counters
   for ( auto& [algoName, entityMap] : sortedEntities ) {
     // check first whether there is any counter to log

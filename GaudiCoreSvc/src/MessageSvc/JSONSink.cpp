@@ -30,7 +30,7 @@ namespace Gaudi::Monitoring {
         output.emplace_back( nlohmann::json{
             { "name", ent.name },
             { "component", ent.component },
-            { "entity", ent.toJSON() },
+            { "entity", ent },
         } );
       } );
       info() << "Writing JSON file " << m_fileName.value() << endmsg;

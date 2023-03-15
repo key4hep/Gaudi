@@ -66,25 +66,21 @@ namespace Gaudi::Monitoring {
 
   } // namespace details
 
+  /// default (empty) implementation of reset method for types stored into an entity
+  template <typename T>
+  void reset( T const& t ) {}
+
   /// Central entity in a Gaudi application that manages monitoring objects (i.e. counters, histograms, etc.).
   ///
   /// The Gaudi::Monitoring::Hub delegates the actual reports to services implementing the Gaudi::Monitoring::Hub::Sink
   /// interface.
   struct Hub {
-    using json = nlohmann::json;
-
     /** Wrapper class for arbitrary monitoring objects.
      *
      * Mainly contains a pointer to the actual data with component, name and type metadata
-     * Any object having a toJSON and a reset method can be used as internal data and wrapped into an Entity
-     *
-     * This toJSON method should generate a json dictionnary with a "type" entry of type string
-     * and as many others as entries as needed. Entity producers are thus free to add their own entries
-     * provided they provide a type one. If the type value contains a ':' character, then the part
-     * preceding it will be considered as a namespace. The rest is free text.
-     * The type in json should match the type member of the Entity. It is used by Sink instances
-     * to decide if they have to handle a given entity or not.
-     * It can also be used to know which fields to expect in the json dictionnary
+     * Any object can be used as internal data and wrapped into an Entity as long as they can
+     * be translated to json format. It is enough to make them aware to the nlohmann library
+     * through a dedicated to_json method.
      */
     class Entity {
     public:
@@ -97,9 +93,9 @@ namespace Gaudi::Monitoring {
           , m_typeIndex{ []( const void* ptr ) {
             return std::type_index( typeid( *reinterpret_cast<const T*>( ptr ) ) );
           } }
-          , m_reset{ []( void* ptr ) { reinterpret_cast<T*>( ptr )->reset(); } }
+          , m_reset{ []( void* ptr ) { reset( *reinterpret_cast<T*>( ptr ) ); } }
           , m_mergeAndReset{ details::makeMergeAndResetFor<T>() }
-          , m_getJSON{ []( const void* ptr ) { return reinterpret_cast<const T*>( ptr )->toJSON(); } }
+          , m_getJSON{ []( const void* ptr ) -> nlohmann::json { return *reinterpret_cast<const T*>( ptr ); } }
           , m_mergeAndResetFromJSON{ details::makeMergeAndResetFromJSONFor<T>() } {}
       /// name of the component owning the Entity
       std::string component;
@@ -107,12 +103,14 @@ namespace Gaudi::Monitoring {
       std::string name;
       /// type of the entity, see comment above concerning its format and usage
       std::string type;
-      /// function giving access to internal data in json format
-      json toJSON() const { return ( *m_getJSON )( m_ptr ); }
       /// function to get internal type
       std::type_index typeIndex() const { return ( *m_typeIndex )( m_ptr ); }
+      /// conversion to json via nlohmann library
+      friend void to_json( nlohmann::json& j, Gaudi::Monitoring::Hub::Entity const& e ) {
+        j = ( *e.m_getJSON )( e.m_ptr );
+      }
       /// function resetting internal data
-      void reset() { return ( *m_reset )( m_ptr ); }
+      friend void reset( Entity& e ) { ( *e.m_reset )( e.m_ptr ); }
       // The following function does not protect against usage with entities with different internal types
       // The user should ensure that entities are compatible before calling this function
       /// function calling merge and reset on internal data with the internal data of another entity
@@ -147,7 +145,7 @@ namespace Gaudi::Monitoring {
       /// function calling merge and reset on internal data with the internal data of another entity
       details::MergeAndReset_t m_mergeAndReset{ nullptr };
       /// function converting the internal data to json.
-      json ( *m_getJSON )( const void* );
+      nlohmann::json ( *m_getJSON )( const void* );
       /// function calling merge and reset on internal data from JSON input
       details::MergeAndResetFromJSON_t m_mergeAndResetFromJSON{ nullptr };
     };

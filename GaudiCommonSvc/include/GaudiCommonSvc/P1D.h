@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDISVC_P1D_H
-#define GAUDISVC_P1D_H
+#pragma once
 
 #include "Generic1D.h"
 #include <AIDA/IProfile1D.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 #include <GaudiKernel/DataObject.h>
 #include <TProfile.h>
 
@@ -44,8 +44,9 @@ namespace Gaudi {
     /// Fill the Profile1D with a value and the corresponding weight.
     bool         fill( double x, double y, double weight = 1. ) override;
     virtual bool setBinContents( int i, int entries, double height, double error, double spread, double centre );
-    /// dumps Histogram to json data
-    nlohmann::json toJSON() const;
+    friend void  reset( Profile1D& h ) { h.reset(); }
+    /// conversion to json via nlohmann library
+    friend void to_json( nlohmann::json& j, Profile1D const& p ) { j = *p.m_rep.get(); }
     /// Retrieve reference to class defininition identifier
     const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_ProfileH; }
@@ -55,5 +56,3 @@ namespace Gaudi {
 
   }; // end class IProfile1D
 } // end namespace Gaudi
-
-#endif // GAUDISVC_P1D_H

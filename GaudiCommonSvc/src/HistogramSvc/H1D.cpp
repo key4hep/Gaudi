@@ -26,8 +26,6 @@
 #include <GaudiKernel/ObjectFactory.h>
 #include <GaudiKernel/StreamBuffer.h>
 
-#include <Gaudi/Histograming/Sink/Utils.h>
-
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( ISvcLocator* svcLocator, const std::string& path,
                                                               const std::string& title, int nBins, double xlow,
                                                               double xup ) {
@@ -108,8 +106,6 @@ bool Gaudi::Histogram1D::reset() {
   m_sumEntries = 0;
   return Base::reset();
 }
-
-nlohmann::json Gaudi::Histogram1D::toJSON() const { return *m_rep.get(); }
 
 /// Adopt ROOT histogram representation
 void Gaudi::Histogram1D::adoptRepresentation( TObject* rep ) {

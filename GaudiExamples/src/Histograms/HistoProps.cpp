@@ -57,10 +57,9 @@ namespace Gaudi {
         return StatusCode::SUCCESS;
       }
       StatusCode finalize() override {
-        auto format = []( std::string_view name, auto& hist ) {
-          auto data = hist.toJSON();
-          return fmt::format( " | {:25} | {:25} | {:7} |", name, data["axis"][0]["title"].template get<std::string>(),
-                              data["nEntries"].template get<unsigned long long>() );
+        auto format = []( std::string_view name, const nlohmann::json& data ) {
+          return fmt::format( " | {:25} | {:25} | {:7} |", name, data["axis"][0]["title"].get<std::string>(),
+                              data["nEntries"].get<unsigned long long>() );
         };
         always() << fmt::format( "Histograms report\n | {:25} | {:25} | {:7} |\n", "name", "title", "entries" )
                  << format( "Histo1", *m_hist1 ) << '\n'

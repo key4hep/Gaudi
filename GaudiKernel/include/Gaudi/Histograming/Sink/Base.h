@@ -53,9 +53,9 @@ namespace Gaudi::Histograming::Sink {
       // run may be mixed with new one
       TFile histoFile( m_fileName.value().c_str(), "UPDATE" );
       applyToAllEntitiesWithSort( [&histoFile, this]( auto& ent ) {
-        auto j    = ent.toJSON();
-        auto dim  = j.at( "dimension" ).template get<unsigned int>();
-        auto type = j.at( "type" ).template get<std::string>();
+        nlohmann::json j    = ent;
+        auto           dim  = j.at( "dimension" ).template get<unsigned int>();
+        auto           type = j.at( "type" ).template get<std::string>();
         // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
         // as ROOT anyway treats everything as doubles in histograms
         type       = type.substr( 0, type.find_last_of( ':' ) );

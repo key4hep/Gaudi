@@ -37,6 +37,18 @@ namespace {
     Gaudi::Monitoring::Hub& monitoringHub() { return localHub; }
     std::string             name() { return "owner"; }
   };
+  struct DummyData {
+    friend void to_json( nlohmann::json& j, DummyData const& ) {
+      j = { { "type", "DummyData" }, { "data", "dummy data" } };
+    }
+  };
+
+  // Little helper for using automatic nlohmann conversion mechanism
+  template <typename T>
+  nlohmann::json toJSON( T const& t ) {
+    nlohmann::json j = t;
+    return t;
+  }
 } // namespace
 
 TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
@@ -45,11 +57,6 @@ TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
 
   Counter<>   c;
   Hub::Entity e( "algo", "counter", c.typeString, c );
-
-  struct DummyData {
-    void           reset() {}
-    nlohmann::json toJSON() const { return { { "type", "DummyData" }, { "data", "dummy data" } }; }
-  };
   DummyData   d;
   Hub::Entity de( "owner", "dummy", "DummyData", d );
 
@@ -65,10 +72,10 @@ TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
     CHECK( de.typeIndex() == std::type_index{ typeid( d ) } );
   }
   SECTION( "serialize to JSON" ) {
-    CHECK( c.toJSON() == e.toJSON() );
-    CHECK( d.toJSON() == de.toJSON() );
+    CHECK( toJSON( c ) == toJSON( e ) );
+    CHECK( toJSON( d ) == toJSON( de ) );
     c += 5;
-    CHECK( c.toJSON() == e.toJSON() );
+    CHECK( toJSON( c ) == toJSON( e ) );
   }
   SECTION( "simple merge" ) {
     SECTION( "from Entity" ) {

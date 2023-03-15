@@ -28,8 +28,7 @@ struct ServiceLocator {
   MonitoringHub  m_monitHub{};
 };
 struct EmptyEntity {
-  void           reset() {}
-  nlohmann::json toJSON() const { return {}; }
+  friend void to_json( nlohmann::json& j, EmptyEntity const& ) { j = {}; }
 };
 
 struct TestSelectSink : public Gaudi::Monitoring::BaseSink {

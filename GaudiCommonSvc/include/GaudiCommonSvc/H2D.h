@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef HISTOGRAMSVC_H2D_H
-#define HISTOGRAMSVC_H2D_H 1
+#pragma once
 
 #include "AIDA/IHistogram2D.h"
 #include "Generic2D.h"
+#include <Gaudi/Histograming/Sink/Utils.h>
 #include <GaudiKernel/DataObject.h>
 #include <TH2D.h>
 
@@ -43,8 +43,10 @@ namespace Gaudi {
     bool setRms( double rmsX, double rmsY );
     // overwrite reset
     bool reset() override;
-    /// dumps Histogram to json data
-    nlohmann::json toJSON() const;
+    // free function reset
+    friend void reset( Histogram2D& h ) { h.reset(); }
+    /// conversion to json via nlohmann library
+    friend void to_json( nlohmann::json& j, Histogram2D const& h ) { j = *h.m_rep.get(); }
     /// Create new histogram from any AIDA based histogram
     void copyFromAida( const AIDA::IHistogram2D& h );
     /// Retrieve reference to class defininition identifier
@@ -60,4 +62,3 @@ namespace Gaudi {
     std::mutex m_fillSerialization;
   };
 } // namespace Gaudi
-#endif // HISTOGRAMSVC_H2D_H
