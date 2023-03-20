@@ -6,6 +6,24 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v36r12][] - 2023-03-20
+Another minor release requested by LHCb.  The main change is that now
+`OutputStream` creates the output file during the *start* transition instead of
+when trying to write the first selected event.  This means that output files
+might be created and left empty rather than not created.  The rationale for
+this change is to have a more predicatble behaviour (one that does not depend
+on the job details).
+
+### Changed
+- Always write output files (gaudi/Gaudi!1432)
+
+### Added
+- GaudiConfig2: add clone for Configurable (gaudi/Gaudi!1433)
+
+### Fixed
+- GaudiKernel: flake8 fixes (gaudi/Gaudi!1434)
+
+
 ## [v36r11][] - 2023-02-27
 Just a minor update to pick up some changes that didn't make it for v36r10.
 
@@ -1047,6 +1065,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
+[v36r12]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r12
 [v36r11]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r11
 [v36r10]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r10
 [v36r9]: https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r9
