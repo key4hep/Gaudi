@@ -74,7 +74,7 @@ public:
     return *this;
   }
   StatEntity& operator+=( StatEntity by ) {
-    mergeAndReset( std::move( by ) );
+    mergeAndReset( by );
     return *this;
   }
   unsigned long add( const double v ) {

@@ -66,9 +66,17 @@ namespace Gaudi::Monitoring {
 
   } // namespace details
 
+  struct ClashingEntityName : std::logic_error {
+    using logic_error::logic_error;
+  };
+
   /// default (empty) implementation of reset method for types stored into an entity
   template <typename T>
-  void reset( T const& t ) {}
+  void reset( T& ) {}
+
+  /// default (empty) implementation of mergeAndReset method for types stored into an entity
+  template <typename T>
+  void mergeAndReset( T&, T& ) {}
 
   /// Central entity in a Gaudi application that manages monitoring objects (i.e. counters, histograms, etc.).
   ///
@@ -81,6 +89,13 @@ namespace Gaudi::Monitoring {
      * Any object can be used as internal data and wrapped into an Entity as long as they can
      * be translated to json format. It is enough to make them aware to the nlohmann library
      * through a dedicated to_json method.
+     *
+     * another 2 free functions can be overloaded to adapt the behavior of an Entity for a
+     * given type T :
+     *   - void reset( T& t )
+     *     called to reset the entity. The default provided implementation is empty
+     *   - void mergeAndReset( T& ent, T&& other )
+     *     called to merge other into entity and reset other. The default provided implementation is empty
      */
     class Entity {
     public:
@@ -93,10 +108,11 @@ namespace Gaudi::Monitoring {
           , m_typeIndex{ []( const void* ptr ) {
             return std::type_index( typeid( *reinterpret_cast<const T*>( ptr ) ) );
           } }
-          , m_reset{ []( void* ptr ) { reset( *reinterpret_cast<T*>( ptr ) ); } }
-          , m_mergeAndReset{ details::makeMergeAndResetFor<T>() }
-          , m_getJSON{ []( const void* ptr ) -> nlohmann::json { return *reinterpret_cast<const T*>( ptr ); } }
-          , m_mergeAndResetFromJSON{ details::makeMergeAndResetFromJSONFor<T>() } {}
+          , m_getJSON{ []( Entity const& e ) -> nlohmann::json { return *reinterpret_cast<const T*>( e.m_ptr ); } }
+          , m_reset{ []( Entity& e ) { reset( *reinterpret_cast<T*>( e.m_ptr ) ); } }
+          , m_mergeAndReset{ []( Entity& e, Entity& o ) {
+            mergeAndReset( *reinterpret_cast<T*>( e.m_ptr ), *reinterpret_cast<T*>( o.m_ptr ) );
+          } } {}
       /// name of the component owning the Entity
       std::string component;
       /// name of the entity
@@ -106,26 +122,21 @@ namespace Gaudi::Monitoring {
       /// function to get internal type
       std::type_index typeIndex() const { return ( *m_typeIndex )( m_ptr ); }
       /// conversion to json via nlohmann library
-      friend void to_json( nlohmann::json& j, Gaudi::Monitoring::Hub::Entity const& e ) {
-        j = ( *e.m_getJSON )( e.m_ptr );
-      }
+      friend void to_json( nlohmann::json& j, Gaudi::Monitoring::Hub::Entity const& e ) { j = ( *e.m_getJSON )( e ); }
       /// function resetting internal data
-      friend void reset( Entity& e ) { ( *e.m_reset )( e.m_ptr ); }
-      // The following function does not protect against usage with entities with different internal types
-      // The user should ensure that entities are compatible before calling this function
-      /// function calling merge and reset on internal data with the internal data of another entity
-      void mergeAndReset( Entity const& ent ) {
-        if ( typeIndex() != ent.typeIndex() ) {
+      friend void reset( Entity& e ) { ( *e.m_reset )( e ); }
+      /**
+       * function calling merge and reset on internal data with the internal data of another entity
+       *
+       * This function does not protect against usage with entities with different internal types
+       * The user should ensure that entities are compatible before calling this function
+       */
+      friend void mergeAndReset( Entity& ent, Entity& other ) {
+        if ( ent.typeIndex() != other.typeIndex() ) {
           throw std::runtime_error( std::string( "Entity: mergeAndReset called on different types: " ) +
-                                    typeIndex().name() + " and " + ent.typeIndex().name() );
+                                    ent.typeIndex().name() + " and " + other.typeIndex().name() );
         }
-        return ( *m_mergeAndReset )( m_ptr, ent.m_ptr );
-      }
-      /// tell if the Entity data can be updated from JSON input
-      bool canMergeFromJSON() const { return m_mergeAndResetFromJSON; }
-      /// allow merging to internal data from JSON input
-      void mergeAndReset( nlohmann::json const& j ) {
-        if ( canMergeFromJSON() ) ( *m_mergeAndResetFromJSON )( m_ptr, j );
+        ( *ent.m_mergeAndReset )( ent, other );
       }
       /// operator== for comparison with raw pointer
       bool operator==( void* ent ) { return m_ptr == ent; }
@@ -140,14 +151,12 @@ namespace Gaudi::Monitoring {
       // (see Constructor above and the usage of T in the reinterpret_cast)
       /// function to get internal type.
       std::type_index ( *m_typeIndex )( const void* );
-      /// function reseting internal data.
-      void ( *m_reset )( void* );
-      /// function calling merge and reset on internal data with the internal data of another entity
-      details::MergeAndReset_t m_mergeAndReset{ nullptr };
       /// function converting the internal data to json.
-      nlohmann::json ( *m_getJSON )( const void* );
-      /// function calling merge and reset on internal data from JSON input
-      details::MergeAndResetFromJSON_t m_mergeAndResetFromJSON{ nullptr };
+      nlohmann::json ( *m_getJSON )( Entity const& );
+      /// function reseting internal data.
+      void ( *m_reset )( Entity& );
+      /// function calling merge and reset on internal data with the internal data of another entity
+      void ( *m_mergeAndReset )( Entity&, Entity& );
     };
 
     /// Interface reporting services must implement.

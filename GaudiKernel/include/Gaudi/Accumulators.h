@@ -464,7 +464,7 @@ namespace Gaudi::Accumulators {
     OutputType value() const { return OutputTransform{}( ValueHandler::getValue( m_value ) ); }
     void       reset() { reset( ValueHandler::DefaultValue() ); }
     template <atomicity ato, typename VH>
-    void mergeAndReset( GenericAccumulator<InputType, InnerType, ato, InputTransform, OutputTransform, VH>&& other ) {
+    void mergeAndReset( GenericAccumulator<InputType, InnerType, ato, InputTransform, OutputTransform, VH>& other ) {
       ValueHandler::merge( m_value, VH::exchange( other.m_value, VH::DefaultValue() ) );
     }
     template <atomicity ato, typename VH>
@@ -509,8 +509,8 @@ namespace Gaudi::Accumulators {
     OutputType value() const { return std::make_tuple( Bases<Atomicity, Arithmetic>::value()... ); }
     void       reset() { ( Bases<Atomicity, Arithmetic>::reset(), ... ); }
     template <atomicity Ato>
-    void mergeAndReset( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
-      ( Bases<Atomicity, Arithmetic>::mergeAndReset( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
+    void mergeAndReset( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>& other ) {
+      ( Bases<Atomicity, Arithmetic>::mergeAndReset( static_cast<Bases<Ato, Arithmetic>&>( other ) ), ... );
     }
     template <atomicity Ato>
     void operator+( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
@@ -696,10 +696,10 @@ namespace Gaudi::Accumulators {
     };
     BinomialAccumulator& operator+=( binomial_t b ) {
       assert( b.nPass <= b.nTotal );
-      TrueAccumulator<Atomicity, bool>::mergeAndReset(
-          TrueAccumulator<atomicity::none, bool>{ std::in_place, b.nPass } );
-      FalseAccumulator<Atomicity, bool>::mergeAndReset(
-          FalseAccumulator<atomicity::none, bool>{ std::in_place, b.nTotal - b.nPass } );
+      TrueAccumulator<atomicity::none, bool> t{ std::in_place, b.nPass };
+      TrueAccumulator<Atomicity, bool>::mergeAndReset( t );
+      FalseAccumulator<atomicity::none, bool> f{ std::in_place, b.nTotal - b.nPass };
+      FalseAccumulator<Atomicity, bool>::mergeAndReset( f );
       return *this;
     }
   };
@@ -819,7 +819,7 @@ namespace Gaudi::Accumulators {
     Buffer( const Buffer& ) = delete;
     void operator=( const Buffer& ) = delete;
     Buffer( Buffer&& other ) : base_type( other ), m_prime( other.m_prime ) { other.reset(); }
-    void push() { m_prime.mergeAndReset( static_cast<base_type&&>( *this ) ); }
+    void push() { m_prime.mergeAndReset( static_cast<base_type&>( *this ) ); }
     ~Buffer() { push(); }
 
   private:
@@ -926,6 +926,7 @@ namespace Gaudi::Accumulators {
     MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool        toBePrinted() const override { return this->nEntries() > 0; }
     friend void reset( Counter& c ) { c.reset(); }
+    friend void mergeAndReset( Counter& c, Counter& o ) { c.mergeAndReset( o ); }
     friend void to_json( nlohmann::json& j, Counter const& c ) {
       j = { { "type", c.typeString }, { "empty", c.nEntries() == 0 }, { "nEntries", c.nEntries() } };
     }
@@ -961,6 +962,7 @@ namespace Gaudi::Accumulators {
 
     bool        toBePrinted() const override { return this->nEntries() > 0; }
     friend void reset( AveragingCounter& c ) { return c.reset(); }
+    friend void mergeAndReset( AveragingCounter& c, AveragingCounter& o ) { c.mergeAndReset( o ); }
     friend void to_json( nlohmann::json& j, AveragingCounter const& c ) {
       j = { { "type", c.typeString },
             { "empty", c.nEntries() == 0 },
@@ -1001,6 +1003,7 @@ namespace Gaudi::Accumulators {
     MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool        toBePrinted() const override { return this->nEntries() > 0; }
     friend void reset( SigmaCounter& c ) { c.reset(); }
+    friend void mergeAndReset( SigmaCounter& c, SigmaCounter& o ) { c.mergeAndReset( o ); }
     friend void to_json( nlohmann::json& j, SigmaCounter const& c ) {
       j = { { "type", c.typeString },
             { "empty", c.nEntries() == 0 },
@@ -1042,6 +1045,7 @@ namespace Gaudi::Accumulators {
     MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     bool        toBePrinted() const override { return this->nEntries() > 0; }
     friend void reset( StatCounter& c ) { c.reset(); }
+    friend void mergeAndReset( StatCounter& c, StatCounter& o ) { c.mergeAndReset( o ); }
     friend void to_json( nlohmann::json& j, StatCounter const& c ) {
       j = { { "type", c.typeString },
             { "empty", c.nEntries() == 0 },
@@ -1096,6 +1100,7 @@ namespace Gaudi::Accumulators {
     MsgStream&    print( MsgStream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
     bool          toBePrinted() const override { return this->nEntries() > 0; }
     friend void   reset( BinomialCounter& c ) { c.reset(); }
+    friend void   mergeAndReset( BinomialCounter& c, BinomialCounter& o ) { c.mergeAndReset( o ); }
     friend void   to_json( nlohmann::json& j, BinomialCounter const& c ) {
       j = { { "type", c.typeString },
             { "empty", c.nEntries() == 0 },
@@ -1158,6 +1163,7 @@ namespace Gaudi::Accumulators {
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     bool          toBePrinted() const override { return this->value() > 0; }
     friend void   reset( MsgCounter& c ) { c.reset(); }
+    friend void   mergeAndReset( MsgCounter& c, MsgCounter& o ) { c.mergeAndReset( o ); }
     friend void   to_json( nlohmann::json& j, MsgCounter const& c ) {
       j = { { "type", c.typeString },  { "empty", c.value() == 0 },
             { "nEntries", c.value() }, { "level", level },

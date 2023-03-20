@@ -261,16 +261,16 @@ BOOST_AUTO_TEST_CASE( test_histos_merge_reset, *boost::unit_test::tolerance( 1e-
     hist2[i] += 2 * i;
   }
 
-  ent1a.mergeAndReset( ent2a );
+  mergeAndReset( ent1a, ent2a );
   BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
   BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
-  ent2b.mergeAndReset( ent1b );
+  mergeAndReset( ent2b, ent1b );
   BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
   BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
-  ent1a.mergeAndReset( ent2b );
+  mergeAndReset( ent1a, ent2b );
   BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
   BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
-  ent2b.mergeAndReset( ent1a );
+  mergeAndReset( ent2b, ent1a );
   BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
   BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
 }

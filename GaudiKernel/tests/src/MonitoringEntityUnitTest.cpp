@@ -86,44 +86,17 @@ TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
       other += 10;
       CHECK( other.nEntries() == 10 );
       Hub::Entity other_entity( "", "", other.typeString, other );
-      e.mergeAndReset( other_entity );
+      mergeAndReset( e, other_entity );
       CHECK( c.nEntries() == 15 );
-    }
-    SECTION( "from JSON" ) {
-      REQUIRE( e.canMergeFromJSON() );
-      CHECK( c.nEntries() == 0 );
-      c += 5;
-      CHECK( c.nEntries() == 5 );
-      e.mergeAndReset( nlohmann::json{ { "nEntries", 10 } } );
-      CHECK( c.nEntries() == 15 );
-    }
-    SECTION( "self registered" ) {
-      MiniSink  sink;
-      Owner     owner;
-      Counter<> owned( &owner, "counter" );
-      REQUIRE( sink.entity.has_value() );
-      CHECK( sink.entity->canMergeFromJSON() );
-      CHECK( owned.nEntries() == 0 );
-      owned += 5;
-      CHECK( owned.nEntries() == 5 );
-      sink.entity->mergeAndReset( nlohmann::json{ { "nEntries", 10 } } );
-      CHECK( owned.nEntries() == 15 );
     }
   }
   SECTION( "no merge" ) {
     SECTION( "from Entity" ) {
       DummyData   other;
       Hub::Entity other_entity( "", "", de.type, other );
-      de.mergeAndReset( other_entity );
+      mergeAndReset( de, other_entity );
       // we just check there is no error
     }
-    SECTION( "from JSON" ) {
-      CHECK_FALSE( de.canMergeFromJSON() );
-      de.mergeAndReset( nlohmann::json{} ); // can be invoked, but still no-op
-    }
-    SECTION( "invalid data" ) {
-      CHECK_THROWS( e.mergeAndReset( de ) );
-      CHECK_THROWS( e.mergeAndReset( nlohmann::json{} ) );
-    }
+    SECTION( "invalid data" ) { CHECK_THROWS( mergeAndReset( e, de ) ); }
   }
 }

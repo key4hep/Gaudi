@@ -320,10 +320,10 @@ namespace Gaudi::Accumulators {
       for ( unsigned int index = 0; index < m_totNBins; index++ ) accumulator( index ).reset();
     }
     template <atomicity ato>
-    void mergeAndReset( HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>&& other ) {
+    void mergeAndReset( HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other ) {
       assert( m_totNBins == other.m_totNBins );
       for ( unsigned int index = 0; index < m_totNBins; index++ ) {
-        accumulator( index ).mergeAndReset( std::move( other.accumulator( index ) ) );
+        accumulator( index ).mergeAndReset( other.accumulator( index ) );
       }
     }
     [[nodiscard]] auto operator[]( typename InputType::ValueType v ) {
@@ -481,6 +481,9 @@ namespace Gaudi::Accumulators {
     }
     MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
     friend void reset( HistogramingCounterBaseInternal& c ) { c.reset(); }
+    friend void mergeAndReset( HistogramingCounterBaseInternal& h, HistogramingCounterBaseInternal& o ) {
+      h.mergeAndReset( o );
+    }
     friend void to_json( nlohmann::json& j, HistogramingCounterBaseInternal const& h ) {
       // get all bin values and compute total nbEntries
       std::vector<typename AccumulatorType::BaseAccumulator::OutputType> bins;

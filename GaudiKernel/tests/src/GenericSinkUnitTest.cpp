@@ -30,7 +30,7 @@ namespace {
   };
 
   // A class to be used in Entities and through the Sink/Hub machinery but
-  // not deriving from counters and with no mergeAndReset method
+  // not deriving from counters
   // Basically accumulate data into a string
   struct Store {
     std::string             m_data;
