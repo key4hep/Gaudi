@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -22,8 +22,6 @@ __all__ = [
     "PrivateToolHandleArray",
 ]
 __doc__ = """The python module holding python bindings to XyzHandles"""
-
-from os import linesep
 
 
 class GaudiHandle(object):

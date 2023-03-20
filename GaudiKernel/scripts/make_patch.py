@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,7 +15,7 @@ import os
 import re
 import sys
 from fnmatch import fnmatch
-from subprocess import PIPE, STDOUT, Popen
+from subprocess import PIPE, Popen
 
 
 def command(cmd, *args, **kwargs):
@@ -30,9 +30,16 @@ def command(cmd, *args, **kwargs):
     return proc.communicate()
 
 
-cmt = lambda *args, **kwargs: command("cmt", *args, **kwargs)
-cvs = lambda *args, **kwargs: command("cvs", *args, **kwargs)
-svn = lambda *args, **kwargs: command("svn", *args, **kwargs)
+def cmt(*args, **kwargs):
+    return command("cmt", *args, **kwargs)
+
+
+def cvs(*args, **kwargs):
+    return command("cvs", *args, **kwargs)
+
+
+def svn(*args, **kwargs):
+    return command("svn", *args, **kwargs)
 
 
 def broadcast_packages():
