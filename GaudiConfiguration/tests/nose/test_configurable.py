@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -82,7 +82,7 @@ def test_configurable():
 
     assert MyAlg.getDefaultProperty("AStringProp") == "text"
 
-    assert MyAlg.getDefaultProperties()["ABoolProp"] == False
+    assert MyAlg.getDefaultProperties()["ABoolProp"] is False
 
 
 def test_properties():
@@ -122,3 +122,17 @@ def test_parent_with_no_name():
 @raises(TypeError)
 def test_child_with_no_name():
     SimpleOptsAlgTool(parent=MyAlg("Dummy"))
+
+
+@with_setup(setup_func, teardown_func)
+def test_clone():
+    a = MyAlg("a", AnIntProp=42)
+    b = a.clone("b")
+    assert id(a) != id(b)
+    assert b.name == "b"
+    assert b.AnIntProp == 42
+
+    c = MyAlg()
+    d = c.clone()
+    assert id(c) != id(d)
+    assert c.AnIntProp == d.AnIntProp
