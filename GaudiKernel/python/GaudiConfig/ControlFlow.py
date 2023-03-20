@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -295,7 +295,6 @@ class DotVisitor(object):
         If AND nodes are inside AND nodes, the graph could be simplified
         to not contain those (same true for OR and ordered)
         """
-        counter = 0
         if len(self.stack) != 0:
             mother = self.stack[-1][1]
             for entry in self.stack[::-1]:

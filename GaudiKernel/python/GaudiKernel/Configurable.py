@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,7 +15,6 @@ from __future__ import absolute_import
 
 import copy
 import os
-import string
 import sys
 import types
 from inspect import isclass
@@ -42,8 +41,14 @@ from GaudiKernel.Constants import (
     WARNING,
     error_explanation,
 )
-from GaudiKernel.DataHandle import *
-from GaudiKernel.GaudiHandles import *
+from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.GaudiHandles import (
+    GaudiHandle,
+    GaudiHandleArray,
+    PrivateToolHandle,
+    PublicToolHandle,
+    ServiceHandle,
+)
 from GaudiKernel.PropertyProxy import PropertyProxy
 
 # data ---------------------------------------------------------------------
@@ -238,7 +243,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
                     setattr(conf, n, v)
             if (
                 not cls._configurationLocked
-                and not "_enabled" in kwargs
+                and "_enabled" not in kwargs
                 and isinstance(conf, ConfigurableUser)
             ):
                 # Ensure that the ConfigurableUser gets enabled if nothing is
@@ -551,7 +556,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
         if type(items) != list and type(items) != tuple:
             items = [items]
 
-        self.__children = [e for e in self.__children if not e in items]
+        self.__children = [e for e in self.__children if e not in items]
 
     def removeAll(self):
         self.remove(self.__children)
@@ -743,7 +748,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
 
         # defaults from C++
         for k, v in cls._properties.items():
-            if not k in c.__dict__ and hasattr(v, "default"):
+            if k not in c.__dict__ and hasattr(v, "default"):
                 c.__dict__[k] = v.default
 
         return c.__dict__
@@ -920,7 +925,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
         import __main__
 
         for svc in svcs:
-            handle = __main__.Service(svc)
+            handle = __main__.Service(svc)  # noqa: F841 (used in eval below)
             # services should be configurables as well, but aren't for now
             # handle.setup()
 
@@ -932,7 +937,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
         dlls = self.getDlls()
         if not dlls:
             dlls = []
-        elif type(dlls) == types.StringType:
+        elif isinstance(dlls, types.StringType):
             dlls = [dlls]
 
         from __main__ import theApp
@@ -1113,7 +1118,7 @@ class ConfigurableGeneric(Configurable):
             return
 
         # assume all the rest are properties
-        if not name in self._properties:
+        if name not in self._properties:
             self._properties[name] = PropertyProxy(DummyDescriptor(name))
         self._properties[name].__set__(self, value)
 
@@ -1145,7 +1150,9 @@ class ConfigurableAlgorithm(Configurable):
         return self  # algorithms are always shared
 
     def getHandle(self):
-        return iAlgorithm(self.getJobOptName())
+        return iAlgorithm(  # noqa: F821 (to avoid circular dependeny)
+            self.getJobOptName()
+        )
 
     @classmethod
     def getGaudiType(cls):
@@ -1197,6 +1204,7 @@ class ConfigurableAlgorithm(Configurable):
 
 
 class ConfigurableService(Configurable):
+
     __slots__ = {
         "OutputLevel": 0,
         "AuditServices": 0,
@@ -1215,7 +1223,7 @@ class ConfigurableService(Configurable):
             return child
 
     def getHandle(self):
-        return iService(self._name)
+        return iService(self._name)  # noqa: F821 (to avoid circular dependeny)
 
     @classmethod
     def getGaudiType(cls):
@@ -1249,7 +1257,9 @@ class ConfigurableAlgTool(Configurable):
 
     def getHandle(self):
         # iAlgTool isn't useful, unless one knows for sure that the tool exists
-        return iProperty(self.getJobOptName())
+        return iProperty(  # noqa: F821 (to avoid circular dependeny)
+            self.getJobOptName()
+        )
 
     @classmethod
     def getGaudiType(cls):
@@ -1330,7 +1340,9 @@ class ConfigurableAuditor(Configurable):
 
     def getHandle(self):
         # iAlgTool isn't useful, unless one knows for sure that the tool exists
-        return iProperty(self.getJobOptName())
+        return iProperty(  # noqa: F821 (to avoid circular dependeny)
+            self.getJobOptName()
+        )
 
     @classmethod
     def getGaudiType(cls):
@@ -1572,7 +1584,7 @@ def appendPostConfigAction(function):
     """
     try:
         postConfigActions.remove(function)
-    except:
+    except Exception:
         pass
     postConfigActions.append(function)
 

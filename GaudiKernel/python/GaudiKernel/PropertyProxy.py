@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -19,7 +19,7 @@ import logging
 import os
 
 from GaudiKernel.DataHandle import DataHandle
-from GaudiKernel.GaudiHandles import *
+from GaudiKernel.GaudiHandles import GaudiHandle, GaudiHandleArray
 
 from GaudiKernel import ConfigurableDb
 
@@ -137,7 +137,7 @@ class PropertyProxy(object):
         # binding (if ever done)
         if (
             proptype
-            and proptype != type(None)
+            and not isinstance(None, proptype)
             and not derives_from(value, "PropertyReference")
         ):
             try:
@@ -166,9 +166,9 @@ class PropertyProxy(object):
 
         # allow a property to be set if we're in non-default mode, or if it
         # simply hasn't been set before
-        if not obj._isInSetDefaults() or not obj in self.history:
+        if not obj._isInSetDefaults() or obj not in self.history:
             # by convention, 'None' for default is used to designate objects setting
-            if hasattr(self, "default") and self.default == None:
+            if hasattr(self, "default") and self.default is None:
                 obj.__iadd__(value, self.descr)  # to establish hierarchy
             else:
                 self.descr.__set__(obj, value)
@@ -226,7 +226,7 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
     def __set__(self, obj, value):
         # allow a property to be set if we're in non-default mode, or if it
         # simply hasn't been set before
-        if not obj._isInSetDefaults() or not obj in self.history:
+        if not obj._isInSetDefaults() or obj not in self.history:
             value = self.convertValueToBeSet(obj, value)
             # assign the value
             self.descr.__set__(obj, value)
@@ -442,7 +442,7 @@ class DataHandlePropertyProxy(PropertyProxy):
         return self.descr.__get__(obj, type)
 
     def __set__(self, obj, value):
-        if not obj._isInSetDefaults() or not obj in self.history:
+        if not obj._isInSetDefaults() or obj not in self.history:
             value = self.convertValueToBeSet(obj, value)
             # assign the value
             self.descr.__set__(obj, value)

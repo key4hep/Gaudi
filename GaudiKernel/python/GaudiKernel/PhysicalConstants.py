@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -50,7 +50,7 @@
 # 08.07.20 Updated
 # -----
 
-from GaudiKernel.SystemOfUnits import *
+import GaudiKernel.SystemOfUnits as Units
 
 #
 #
@@ -63,13 +63,13 @@ pi2 = pi * pi
 #
 #
 #
-Avogadro = 6.0221367e23 / mole
+Avogadro = 6.0221367e23 / Units.mole
 
 #
 # c   = 299.792458 mm/ns
 # c^2 = 898.7404 (mm/ns)^2
 #
-c_light = 2.99792458e8 * m / s
+c_light = 2.99792458e8 * Units.m / Units.s
 c_squared = c_light * c_light
 
 #
@@ -77,7 +77,7 @@ c_squared = c_light * c_light
 # hbar  = 6.58212e-13 MeV*ns
 # hbarc = 197.32705e-12 MeV*mm
 #
-h_Planck = 6.62606896e-34 * joule * s
+h_Planck = 6.62606896e-34 * Units.joule * Units.s
 hbar_Planck = h_Planck / twopi
 hbarc = hbar_Planck * c_light
 hbarc_squared = hbarc * hbarc
@@ -85,24 +85,24 @@ hbarc_squared = hbarc * hbarc
 #
 #
 #
-electron_charge = -eplus  # see SystemOfUnits.h
-e_squared = eplus * eplus
+electron_charge = -Units.eplus  # see SystemOfUnits.h
+e_squared = Units.eplus * Units.eplus
 
 #
 # amu_c2 - atomic equivalent mass unit
 # amu    - atomic mass unit
 #
-electron_mass_c2 = 0.510998910 * MeV
-proton_mass_c2 = 938.272013 * MeV
-neutron_mass_c2 = 939.56536 * MeV
-amu_c2 = 931.494028 * MeV
+electron_mass_c2 = 0.510998910 * Units.MeV
+proton_mass_c2 = 938.272013 * Units.MeV
+neutron_mass_c2 = 939.56536 * Units.MeV
+amu_c2 = 931.494028 * Units.MeV
 amu = amu_c2 / c_squared
 
 #
 # permeability of free space mu0    = 2.01334e-16 Mev*(ns*eplus)^2/mm
 # permittivity of free space epsil0 = 5.52636e+10 eplus^2/(MeV*mm)
 #
-mu0 = 4 * pi * 1.0e-7 * henry / m
+mu0 = 4 * pi * 1.0e-7 * Units.henry / Units.m
 epsilon0 = 1.0 / (c_squared * mu0)
 
 #
@@ -122,16 +122,16 @@ twopi_mc2_rcl2 = (
 #
 #
 #
-k_Boltzmann = 8.617343e-11 * MeV / kelvin
+k_Boltzmann = 8.617343e-11 * Units.MeV / Units.kelvin
 
 #
 #
 #
-STP_Temperature = 273.15 * kelvin
-STP_Pressure = 1.0 * atmosphere
-kGasThreshold = 10.0 * mg / cm3
+STP_Temperature = 273.15 * Units.kelvin
+STP_Pressure = 1.0 * Units.atmosphere
+kGasThreshold = 10.0 * Units.mg / Units.cm3
 
 #
 #
 #
-universe_mean_density = 1.0e-25 * g / cm3
+universe_mean_density = 1.0e-25 * Units.g / Units.cm3
