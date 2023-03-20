@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -41,6 +41,13 @@ namespace {
     return algState.state() == AlgExecState::State::Done && algState.filterPassed();
   }
 } // namespace
+
+StatusCode OutputStream::start() {
+  return Algorithm::start().andThen( [this]() {
+    // Open the output file now to ensure it is always written even if empty
+    return m_pConversionSvc->connectOutput( m_outputName, m_outputType );
+  } );
+}
 
 // initialize data writer
 StatusCode OutputStream::initialize() {
@@ -126,6 +133,7 @@ StatusCode OutputStream::initialize() {
   m_acceptNames.useUpdateHandler();
   m_requireNames.useUpdateHandler();
   m_vetoNames.useUpdateHandler();
+
   return StatusCode::SUCCESS;
 }
 
