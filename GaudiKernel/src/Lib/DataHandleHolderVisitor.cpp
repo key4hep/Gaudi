@@ -41,7 +41,7 @@ void DHHVisitor::visit( const IDataHandleHolder* v ) {
       if ( h->mode() == Gaudi::DataHandle::Mode::Reader ) {
         m_src_i[h->fullKey()].emplace( v );
       } else {
-        m_src_i[h->fullKey()].emplace( v );
+        m_src_o[h->fullKey()].emplace( v );
       }
       if ( !h->objKey().empty() ) {
         std::get<1>( hs ).emplace( h->fullKey() );
