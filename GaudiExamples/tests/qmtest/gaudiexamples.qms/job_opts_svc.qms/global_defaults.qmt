@@ -34,12 +34,10 @@ alg1                 INFO initializing....
 alg1              VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 alg1                DEBUG input handles: 0
 alg1                DEBUG output handles: 0
-alg1                DEBUG Data Deps for alg1
 alg2                DEBUG Property update for OutputLevel : new value = 2
 alg2                 INFO initializing....
 alg2                DEBUG input handles: 0
 alg2                DEBUG output handles: 0
-alg2                DEBUG Data Deps for alg2
 alg3                DEBUG Property update for OutputLevel : new value = 1
 alg3              VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 alg3              VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
@@ -47,12 +45,10 @@ alg3                 INFO initializing....
 alg3              VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 alg3                DEBUG input handles: 0
 alg3                DEBUG output handles: 0
-alg3                DEBUG Data Deps for alg3
 alg4                DEBUG Property update for OutputLevel : new value = 2
 alg4                 INFO initializing....
 alg4                DEBUG input handles: 0
 alg4                DEBUG output handles: 0
-alg4                DEBUG Data Deps for alg4
 alg6                 INFO initializing....
 alg7                 INFO initializing....
 alg8                 INFO initializing....

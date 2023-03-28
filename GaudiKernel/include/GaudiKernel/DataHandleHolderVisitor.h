@@ -20,6 +20,8 @@
 
 class DHHVisitor : public IDataHandleVisitor {
 public:
+  using Owners = std::vector<const IDataHandleHolder*>;
+
   DHHVisitor( DataObjIDColl& ido, DataObjIDColl& odo );
 
   const DataObjIDColl& ignoredInpKeys() const { return m_ign_i; }
@@ -27,17 +29,26 @@ public:
 
   void visit( const IDataHandleHolder* visitee ) override;
 
-  const std::vector<std::pair<DataObjID, const IDataHandleHolder*>>& all() const { return m_all; }
+  const std::map<DataObjID, std::set<const IDataHandleHolder*>>& owners() const { return m_owners; }
 
-  const std::map<DataObjID, std::set<const IDataHandleHolder*>>& src_i() const { return m_src_i; }
-  const std::map<DataObjID, std::set<const IDataHandleHolder*>>& src_o() const { return m_src_o; }
+  std::vector<const IDataHandleHolder*> owners_of( const DataObjID& id ) const;
+
+  std::vector<std::string> owners_names_of( const DataObjID& id, bool with_main = false ) const;
+
+  /// return true if no DataHandle was found
+  bool empty() const;
 
 private:
   DataObjIDColl &m_ido, &m_odo;
   DataObjIDColl  m_ign_i, m_ign_o;
 
-  std::vector<std::pair<DataObjID, const IDataHandleHolder*>> m_all;
-  std::map<DataObjID, std::set<const IDataHandleHolder*>>     m_src_i, m_src_o;
+  std::map<DataObjID, std::set<const IDataHandleHolder*>> m_owners;
+
+  std::string m_initialName;
+
+  MsgStream& report( MsgStream& stream ) const;
+
+  friend MsgStream& operator<<( MsgStream& stream, const DHHVisitor& visitor ) { return visitor.report( stream ); }
 };
 
 #endif

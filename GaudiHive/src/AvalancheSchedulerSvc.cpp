@@ -19,6 +19,7 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include <Gaudi/Algorithm.h> // can be removed ASA dynamic casts to Algorithm are removed
+#include <GaudiKernel/SerializeSTL.h>
 
 // C++
 #include <algorithm>
@@ -194,21 +195,19 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     DHHVisitor    avis( i1, i2 );
     algoPtr->acceptDHVisitor( &avis );
 
-    auto src_o = avis.src_o();
-    auto src_i = avis.src_i();
-
     ostdd << "\n  " << algoPtr->name();
+
+    auto write_owners = [&avis, &ostdd]( const DataObjID id ) {
+      auto owners = avis.owners_names_of( id );
+      if ( !owners.empty() ) { GaudiUtils::operator<<( ostdd << ' ', owners ); }
+    };
 
     DataObjIDColl algoDependencies;
     if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
       for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->inputDataObjs() ) ) {
         DataObjID id = *idp;
         ostdd << "\n    o INPUT  " << id;
-        for ( auto& src : src_i[id] ) {
-          if ( !( src_i[id].size() == 1 && src->name() == algoPtr->name() ) ) {
-            ostdd << "\n               " << src->name();
-          }
-        }
+        write_owners( id );
         if ( id.key().find( ":" ) != std::string::npos ) {
           ostdd << " contains alternatives which require resolution...\n";
           auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
@@ -229,11 +228,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
       }
       for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->outputDataObjs() ) ) {
         ostdd << "\n    o OUTPUT " << *id;
-        for ( auto& src : src_o[*id] ) {
-          if ( !( src_o[*id].size() == 1 && src->name() == algoPtr->name() ) ) {
-            ostdd << "\n               " << src->name();
-          }
-        }
+        write_owners( *id );
         if ( id->key().find( ":" ) != std::string::npos ) {
           error() << " in Alg " << algoPtr->name() << " alternatives are NOT allowed for outputs! id: " << *id
                   << endmsg;

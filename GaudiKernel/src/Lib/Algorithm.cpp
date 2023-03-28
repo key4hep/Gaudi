@@ -177,37 +177,10 @@ namespace Gaudi {
 
     if ( !sc ) return sc;
 
-    if ( msgLevel( MSG::DEBUG ) ) {
-      // sort out DataObjects by path so that logging is reproducable
-      // we define a little helper creating an ordered set from a non ordered one
-      auto sort     = []( const DataObjID a, const DataObjID b ) -> bool { return a.fullKey() < b.fullKey(); };
-      auto orderset = [&sort]( const DataObjIDColl& in ) -> std::set<DataObjID, decltype( sort )> {
-        return { in.begin(), in.end(), sort };
-      };
-      // Logging
-      debug() << "Data Deps for " << name();
-      for ( auto h : orderset( m_inputDataObjs ) ) { debug() << "\n  + INPUT  " << h; }
-      for ( auto id : orderset( avis.ignoredInpKeys() ) ) { debug() << "\n  + INPUT IGNORED " << id; }
-      for ( auto h : orderset( m_outputDataObjs ) ) { debug() << "\n  + OUTPUT " << h; }
-      for ( auto id : orderset( avis.ignoredOutKeys() ) ) { debug() << "\n  + OUTPUT IGNORED " << id; }
-      debug() << endmsg;
-    }
+    if ( msgLevel( MSG::DEBUG ) && !avis.empty() ) { debug() << "data dependencies:" << avis << endmsg; }
 
     // initialize handles
     initDataHandleHolder();
-
-    if ( msgLevel( MSG::DEBUG ) ) {
-      std::ostringstream ost;
-      for ( auto& in : avis.src_i() ) {
-        ost << "\n  INPUT  " << in.first;
-        for ( auto& v : in.second ) { ost << " " << v->name(); }
-      }
-      for ( auto& out : avis.src_o() ) {
-        ost << "\n  OUTPUT " << out.first;
-        for ( auto& v : out.second ) { ost << " " << v->name(); }
-      }
-      if ( ost.str().length() > 0 ) { debug() << "listing sources of ALL handles:" << ost.str() << endmsg; }
-    }
 
     return sc;
   }

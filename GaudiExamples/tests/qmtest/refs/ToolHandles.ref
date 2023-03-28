@@ -17,7 +17,7 @@ AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   THDataProducer2
     o OUTPUT '/Event/MyFloat'
   THDataConsumer
-    o INPUT  '/Event/MyFloat'
+    o INPUT  '/Event/MyFloat' [THDataConsumer.Gaudi::Examples::FloatTool]
     o INPUT  '/Event/MyInt'
 PrecedenceSvc        INFO Assembling CF and DF task precedence rules
 PrecedenceSvc        INFO PrecedenceSvc initialized successfully
