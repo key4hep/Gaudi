@@ -22,10 +22,12 @@ scheduler = AvalancheSchedulerSvc(ThreadPoolSize=2)
 
 # - Algorithms
 topalgs = [
-    THDataProducer("THDataProducer"),
-    THDataProducer2("THDataProducer2"),
-    THDataConsumer("THDataConsumer"),
+    THDataProducer("THDataProducer", OutputLevel=DEBUG),
+    THDataProducer2("THDataProducer2", OutputLevel=DEBUG),
+    THDataConsumer("THDataConsumer", OutputLevel=DEBUG),
 ]
+
+topalgs[-1].FloatTool.OutputLevel = INFO
 
 # Application manager
 app = ApplicationMgr(
