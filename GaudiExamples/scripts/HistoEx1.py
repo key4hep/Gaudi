@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -20,8 +20,6 @@
 *                                                                             *
 *******************************************************************************
 """
-from __future__ import print_function
-
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
 # =============================================================================
@@ -104,7 +102,7 @@ if "__main__" == __name__:
     configure(gaudi)
 
     gaudi.run(20)
-    import GaudiPython.HistoUtils
+    import GaudiPython.HistoUtils  # noqa: F401 (adds dump method)
 
     alg = gaudi.algorithm("HistoEx1")
     histos = alg.Histos()

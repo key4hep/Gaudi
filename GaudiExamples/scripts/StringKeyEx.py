@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -17,8 +17,6 @@
 *                                                                             *
 *******************************************************************************
 """
-from __future__ import print_function
-
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 from Configurables import ApplicationMgr
@@ -30,7 +28,6 @@ from Configurables import Gaudi__Examples__StringKeyEx as SKE
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date 2009-10-07
 # =============================================================================
-from Gaudi.Configuration import *
 
 ske = SKE("StringKeys", Key="key", Keys=["a", "b", "key", "c", "d"])
 

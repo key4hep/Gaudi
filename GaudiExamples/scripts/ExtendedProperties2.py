@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -17,8 +17,6 @@
 *                                                                             *
 *******************************************************************************
 """
-from __future__ import print_function
-
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # Flag to check if we are running on Windows, where LorentzVectors cannot be used as properties
@@ -34,7 +32,6 @@ from Configurables import Gaudi__Examples__ExtendedProperties2 as EP2
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
 #  @date 2007-02-13
 # =============================================================================
-from Gaudi.Configuration import *
 
 isWin = sys.platform.startswith("win")
 
