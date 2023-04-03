@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,16 +14,18 @@ from __future__ import absolute_import
 
 import logging
 
-from Gaudi.CommonGaudiConfigurables import *
-from GaudiKernel.Configurable import *
+# Make these available in our namespace
+from Gaudi.CommonGaudiConfigurables import *  # noqa: F401 F403
+from GaudiKernel.Configurable import *  # noqa: F401 F403
+from GaudiKernel.Configurable import Configurable
 from GaudiKernel.ConfigurableDb import cfgDb
 from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
 from GaudiKernel.ConfigurableDb import loadConfigurableDb
-from GaudiKernel.Constants import *
+from GaudiKernel.Constants import *  # noqa: F401 F403
 from GaudiKernel.ProcessJobOptions import (
     InstallRootLoggingHandler as _InstallRootLoggingHandler,
 )
-from GaudiKernel.ProcessJobOptions import importOptions, importUnits
+from GaudiKernel.ProcessJobOptions import importOptions, importUnits  # noqa: F401
 
 log = logging.getLogger(__name__)
 # Ensure that a root logging handler is always present.
@@ -71,9 +73,6 @@ def _fillConfDict():
 
 # fill the configurable dictionary at module load
 _fillConfDict()
-
-import os
-import sys
 
 
 def importConfiguration(conf, local=locals()):
