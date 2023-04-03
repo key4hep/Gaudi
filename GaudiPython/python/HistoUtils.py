@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,7 +11,7 @@
 """ HistoUtils python module
     This module is deprecated use 'GaudiPython.HistoUtils' instead
 """
-from GaudiPython.HistoUtils import *
+from GaudiPython.HistoUtils import *  # noqa: F401 F403
 
 from GaudiPython import deprecation
 

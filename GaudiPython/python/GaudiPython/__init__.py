@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -27,5 +27,5 @@ if os.environ.get("LC_ALL") != "C":
     # !!!
     os.environ["LC_ALL"] = "C"
 
-from .Bindings import *
-from .Pythonizations import *
+from .Bindings import *  # noqa: F401 F403
+from .Pythonizations import *  # noqa: F401 F403

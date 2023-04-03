@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -357,7 +357,7 @@ def _evtSvc(self, location=None):
 #  @date 2006-11-26
 
 
-def _detSvc(self):
+def _detSvc(self, location=None):
     """
     Trivial helper function to access Detector Data and Event Data Service
 
@@ -368,7 +368,7 @@ def _detSvc(self):
     # get the data
     lhcb = self.detSvc('/dd/Structure/LHCb')
     """
-    if not location:
+    if location is None:
         return self._detSvc_
     return self._detSvc_[location]
 
@@ -1523,7 +1523,7 @@ def _get_all_histos_(component, method, name):
             elif _id.literal():
                 _id = _id.literalID()
             else:
-                _id = _is.idAsString()
+                _id = _id.idAsString()
             _res[_id] = _his[_i]
 
     if not name:
