@@ -1,0 +1,4 @@
+[flake8]
+select = F,E101,E7,E9,W6
+extend-ignore = E741
+exclude = */options/*
