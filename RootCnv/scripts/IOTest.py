@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -20,16 +20,11 @@
    M.Frank  CERN/LHCb
 
 """
-from __future__ import print_function
-
-import os
 import sys
 import time
 
 from Configurables import ApplicationMgr, EventSelector, Gaudi__RootCnvSvc
-from Gaudi.Configuration import *
-
-from GaudiKernel import *
+from Gaudi.Configuration import INFO, EventDataSvc, EventPersistencySvc, MessageSvc
 
 input_file = "castor://castorlhcb.cern.ch//castor/cern.ch/grid/lhcb/LHCb/Collision11/SEMILEPTONIC.DST/00012569/0000/00012569_00000004_1.semileptonic.dst?svcClass=lhcbdisk"
 input_file = "root://castorlhcb.cern.ch//castor/cern.ch/grid//lhcb/data/2010/BHADRON.DST/00008399/0000/00008399_00001052_1.bhadron.dst?svcClass=lhcbdisk"
