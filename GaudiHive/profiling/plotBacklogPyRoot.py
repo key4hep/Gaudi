@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,12 +8,21 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
-
 import re
 import sys
 
-from ROOT import *
+from ROOT import (
+    TCanvas,
+    TGraph,
+    TLatex,
+    TLegend,
+    kBlue,
+    kFullCircle,
+    kGreen,
+    kOpenCircle,
+    kRed,
+    kWhite,
+)
 
 """
 Produces the backlog plot, parsing the output of the EventLoopManager.
@@ -51,7 +60,7 @@ def parseLog(logfilename):
         if "Event backlog" in line:
             content.append(
                 re.match(
-                    ".* \(max= ([0-9]*), min= ([0-9]*) \) = ([0-9]*).*", line
+                    r".* \(max= ([0-9]*), min= ([0-9]*) \) = ([0-9]*).*", line
                 ).groups()
             )
         elif "Running with" in line:
@@ -155,7 +164,7 @@ def doPlot(logfilename, logfilename_copy):
     legend.AddEntry(graph_c, "Cloning enabled", LegendDrawOpts)
     legend.Draw()
 
-    a = raw_input("press enter to continue")
+    input("press enter to continue")
 
     canvas.Print("EventBacklog.png")
 

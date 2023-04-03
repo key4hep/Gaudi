@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,13 +14,18 @@ Script that fetches all the logfiles from disk and reads the timings.
 Parameters can be changed according to the working points considered.
 Some parameters of the plots are hardcoded.
 """
-from __future__ import print_function
-
-from ROOT import *
+import ROOT
 
 n_algos_in_flight_l = [1, 2, 5, 7, 10, 16, 20, 22]
 n_evts_in_flight_l = [1, 2, 4, 6, 7, 8, 9, 11, 13, 14, 15]
-colour_l = [kRed, kBlue, kOrange, kGreen, kMagenta, kCyan] * 2
+colour_l = [
+    ROOT.kRed,
+    ROOT.kBlue,
+    ROOT.kOrange,
+    ROOT.kGreen,
+    ROOT.kMagenta,
+    ROOT.kCyan,
+] * 2
 line_style_l = [1] * 6 + [2] * 6
 cloneFlag_l = [True, False]
 """
@@ -71,7 +76,7 @@ def getGraphPoints(n_evts_in_flight, cloneFlag, runtimes):
 
 def getSingleGraph(n_evts_in_flight, cloneFlag, runtimes, colour, style):
     points = getGraphPoints(n_evts_in_flight, cloneFlag, runtimes)
-    graph = TGraph(len(points))
+    graph = ROOT.TGraph(len(points))
     graph.GetXaxis().SetTitle("Maximum # in flight algos")
     graph.GetXaxis().SetRangeUser(0, 23)
     graph.GetYaxis().SetTitle("Runtime [s]")
@@ -82,7 +87,7 @@ def getSingleGraph(n_evts_in_flight, cloneFlag, runtimes, colour, style):
     graph.SetLineColor(colour)
     graph.SetMarkerColor(colour)
     graph.SetLineStyle(style)
-    graph.SetFillColor(kWhite)
+    graph.SetFillColor(ROOT.kWhite)
     point_n = 0
     # print points
     for x, y in points:
@@ -99,7 +104,7 @@ def make_plot(runtimes, cloneFlag):
         title += " (Cloning)"
     plotname = "runtime%s.pdf" % clone_string
 
-    canvas = TCanvas(plotname, "plot", 500, 400)
+    canvas = ROOT.TCanvas(plotname, "plot", 500, 400)
     canvas.SetGrid()
     canvas.cd()
 
@@ -121,20 +126,20 @@ def make_plot(runtimes, cloneFlag):
         graphs.append(graph)
 
     # Make Legend
-    legend = TLegend(0.499, 0.45, 0.9, 0.9, "# Parallel Events")
+    legend = ROOT.TLegend(0.499, 0.45, 0.9, 0.9, "# Parallel Events")
     legend.SetTextSize(0.04)
-    legend.SetFillColor(kWhite)
+    legend.SetFillColor(ROOT.kWhite)
     # evil
     for graph, n in zip(graphs, n_evts_in_flight_l):
         legend.AddEntry(graph, "%s" % n)
     legend.Draw()
 
     # Add some text
-    l = TLatex(0.13, 0.16, "#font[12]{#scale[.8]{24 Threads}}")
+    l = ROOT.TLatex(0.13, 0.16, "#font[12]{#scale[.8]{24 Threads}}")
     l.SetNDC()
     l.Draw()
 
-    dummy = raw_input("Press enter to save...")
+    input("Press enter to save...")
     canvas.Print(plotname)
 
 
