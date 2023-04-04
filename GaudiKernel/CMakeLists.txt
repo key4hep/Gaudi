@@ -383,9 +383,7 @@ if(BUILD_TESTING)
           LABELS "Gaudi.GaudiKernel"
   )
 
-  # nosetests
-  gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
-  gaudi_add_tests(nosetests)
+  gaudi_add_pytest(tests/nose)
 
   gaudi_add_module(test_CustomFactory
     SOURCES tests/src/custom_factory.cpp

@@ -53,5 +53,4 @@ gaudi_install(PYTHON)
 # Enable QMTest tests
 gaudi_add_tests(QMTest)
 
-# nosetests
-gaudi_add_tests(nosetests)
+gaudi_add_pytest(tests/nose)

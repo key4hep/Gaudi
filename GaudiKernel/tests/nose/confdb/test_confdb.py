@@ -40,7 +40,7 @@ class fixLibPath(object):
 
 
 def setup():
-    for n in filter(lambda n: n.startswith("GaudiKernel"), sys.modules):
+    for n in [n for n in sys.modules if n.startswith("GaudiKernel")]:
         del sys.modules[n]
 
 

@@ -67,7 +67,7 @@ endif()
 
 # Test python tests
 enable_testing()
-gaudi_add_tests(pytest ${PROJECT_SOURCE_DIR}/python)
+gaudi_add_pytest(python OPTIONS --doctest-modules)
 
 # Install python modules
 gaudi_install(PYTHON)

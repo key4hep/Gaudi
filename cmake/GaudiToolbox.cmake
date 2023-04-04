@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2020-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -735,6 +735,197 @@ function(gaudi_add_tests type)
     endif()
 endfunction()
 
+#[========================================================================[.rst:
+.. command:: gaudi_add_pytest
+
+  .. code-block:: cmake
+
+    gaudi_add_pytest(
+        [path1 [path2...]]
+        [ROOT_DIR base/path/for/tests]
+        [PREFIX prefix.for.test.name]
+        [LABELS label1 label2]
+        [OPTIONS pytest_option_1 pytest_option_2]
+        [WORKING_DIRECTORY path]
+        [PROPERTIES name value...]
+    )
+
+  This function is used to declare a directories and/or files with pytest tests.
+  The test files are collected and for each of them one CTest test is added using the name
+  ``${PREFIX}<filename>`` (where ``<filename>`` is relative to ``${ROOT_DIR}``).
+  The list of tests is constructed when ``ctest`` collects the available tests, so additions
+  or removals of tests are automatically detected at the cost of a small performance
+  penalty when ctest is invoked.
+
+  If :variable:`BUILD_TESTING` is false, this call is a no-op.
+
+  ``[path1 [path2...]]``
+    directories or files to be searched for pytest tests
+
+  ``ROOT_DIR base/path/for/tests``
+    base directoy to compute relative file names of test files, by default it is
+    deduced from the provided paths; explicitly setting the ``ROOT_DIR`` value
+    is useful when the test names generated with the default are not satisfactory
+
+  ``PREFIX prefix.for.test.name``
+    string to prefix to the filename to construct the test name, by default it
+    is ``<current_dir basename>.pytest.<ROOT_DIR base name>.``
+
+  ``LABELS label1 label2``
+    optional labels to add to all the tests generated with this call
+    (labels ``${PROJECT_NAME}`` , ``<current_dir basename>`` and ``pytest`` are always added)
+
+  ``OPTIONS pytest_option_1 pytest_option_2``
+    optional extra arguments for pytest
+
+  ``WORKING_DIRECTORY path``
+    where pytest should be executed from, by default set to the current directory
+
+  ``PROPERTIES name value...``
+    list of properties to set on the discovered tests
+#]========================================================================]
+function(gaudi_add_pytest)
+    if(NOT BUILD_TESTING)
+        return()
+    endif()
+
+    cmake_parse_arguments(
+        ARG
+        ""
+        "PREFIX;ROOT_DIR;WORKING_DIRECTORY"
+        "LABELS;OPTIONS;PROPERTIES"
+        ${ARGN}
+    )
+    get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+
+    # check args
+    foreach(path IN LISTS ARG_UNPARSED_ARGUMENTS)
+        if(IS_ABSOLUTE "${path}")
+            set(abs_path "${path}")
+        else()
+            set(abs_path "${CMAKE_CURRENT_SOURCE_DIR}/${path}")
+        endif()
+        if(NOT EXISTS "${abs_path}")
+            message(FATAL_ERROR "specified path '${path}' does not exist")
+        endif()
+    endforeach()
+    # prepare args to pytest
+    string(JOIN " " collect_roots ${ARG_UNPARSED_ARGUMENTS})
+    # set baseline for PREFIX and ROOT_DIR defaults
+    set(ARG_PREFIX_DEFAULT "${package_name}.pytest.")
+    set(ARG_ROOT_DIR_DEFAULT "${CMAKE_CURRENT_SOURCE_DIR}")
+    # deal with the different possible numbers of paths (none, one, many)
+    list(LENGTH ARG_UNPARSED_ARGUMENTS N_of_roots)
+    if(N_of_roots EQUAL 0)
+        # "no path" is equivalent to pass the current subdirectory
+        set(roots_msg "${package_name}")
+    elseif(N_of_roots EQUAL 1)
+        # one path:
+        # - ROOT_DIR defaults to the path passed
+        # - PREFIX defaults extended with ROOT_DIR basename
+        #   (removing the .py extension if path points to a file)
+        set(roots_msg "${package_name}/${ARG_UNPARSED_ARGUMENTS}")
+        if("${ARG_ROOT_DIR}" STREQUAL "")
+            set(ARG_ROOT_DIR "${ARG_UNPARSED_ARGUMENTS}")
+        endif()
+        get_filename_component(root_name ${ARG_ROOT_DIR} NAME)
+        string(REGEX REPLACE "\\.py\$" "" root_name "${root_name}")
+        # we already hawe "pytest." in the default prefix, so we do not
+        # want to add it again
+        if(NOT root_name STREQUAL "pytest")
+            string(APPEND ARG_PREFIX_DEFAULT "${root_name}.")
+        endif()
+    else()
+        # multiple paths, same root and prefix as no path, but need
+        # to tune the command line arguments 
+        string(JOIN " ${package_name}/" roots_msg ${ARG_UNPARSED_ARGUMENTS})
+        string(PREPEND roots_msg "${package_name}/")
+    endif()
+    # check if we need the defaults or not
+    if("${ARG_ROOT_DIR}" STREQUAL "")
+        set(ARG_ROOT_DIR "${ARG_ROOT_DIR_DEFAULT}")
+    endif()
+    if("${ARG_PREFIX}" STREQUAL "")
+        set(ARG_PREFIX "${ARG_PREFIX_DEFAULT}")
+    endif()
+
+    if("${ARG_WORKING_DIRECTORY}" STREQUAL "")
+        set(ARG_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    list(TRANSFORM ARG_LABELS PREPEND --ctest-label=)
+
+    set(base_filename ${CMAKE_CURRENT_BINARY_DIR}/pytest/collect_${ARG_PREFIX}${CMAKE_BUILD_TYPE})
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pytest)
+    string(JOIN " " ARG_OPTIONS_CMD ${ARG_OPTIONS})
+    string(JOIN "\\ " ARG_OPTIONS_ESC ${ARG_OPTIONS})
+    string(JOIN "\\ " ARG_PROPERTIES_ESC WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY} ${ARG_PROPERTIES})
+    file(GENERATE OUTPUT ${base_filename}.cmake
+        CONTENT "
+set(files_to_hash)
+foreach(file IN ITEMS ${collect_roots})
+    if(NOT IS_ABSOLUTE \${file})
+        string(PREPEND file ${CMAKE_CURRENT_SOURCE_DIR}/)
+    endif()
+    if(IS_DIRECTORY \${file})
+        file(GLOB_RECURSE tmp LIST_DIRECTORIES false \${file}/*.py)
+        list(APPEND files_to_hash \${tmp})
+    else()
+        list(APPEND files_to_hash \${file})
+    endif()
+endforeach()
+list(SORT files_to_hash)
+set(hash)
+foreach(file IN LISTS files_to_hash)
+    file(MD5 \${file} tmp)
+    string(MD5 hash \${hash}\${file}\${tmp})
+endforeach()
+set(old_hash)
+if(EXISTS ${base_filename}.tests.checksum)
+    file(READ ${base_filename}.tests.checksum old_hash)
+endif()
+if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
+    if(NOT DEFINED PREFECTH_PYTEST_TESTS)
+        message(\"... collect pytest tests from ${roots_msg}\")
+    endif()
+    execute_process(
+        COMMAND $<TARGET_FILE:run> $<TARGET_FILE:pytest>
+            --collect-only --quiet --no-header --no-summary
+            ${ARG_OPTIONS_CMD}
+            -p GaudiTesting.pytest.collect_for_ctest
+            --ctest-output-file=${base_filename}.tests.cmake
+            --ctest-pytest-command=$<TARGET_FILE:run>\\ $<TARGET_FILE:pytest>\\ ${ARG_OPTIONS_ESC}
+            --ctest-pytest-root-dir=${ARG_ROOT_DIR}
+            --ctest-prefix=${ARG_PREFIX}
+            --ctest-label=${PROJECT_NAME}
+            --ctest-label=${package_name}
+            --ctest-properties=${ARG_PROPERTIES_ESC}
+            ${ARG_LABELS}
+            ${collect_roots}
+        WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
+        OUTPUT_QUIET
+    )
+    file(WRITE ${base_filename}.tests.checksum \${hash})
+endif()
+if(NOT DEFINED PREFECTH_PYTEST_TESTS)
+    include(${base_filename}.tests.cmake)
+endif()
+")
+
+    set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES ${base_filename}.cmake)
+
+    string(REGEX REPLACE "\\.$" "" target_name "${ARG_PREFIX}")
+    # the same prefix may be used in several places, so we need to somehow disambiguate
+    # the generated target names
+    while(TARGET "pytest-prefetch-${package_name}-${target_name}")
+        string(APPEND target_name ".")
+    endwhile()
+    add_custom_target(pytest-prefetch-${package_name}-${target_name}
+        ALL
+        COMMAND ${CMAKE_COMMAND} -DPREFECTH_PYTEST_TESTS=TRUE -P ${base_filename}.cmake
+        COMMENT "Collecting pytest tests for ${package_name}:${target_name}"
+    )
+endfunction()
 
 #[========================================================================[.rst:
 .. command:: gaudi_add_dictionary

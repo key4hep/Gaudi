@@ -23,11 +23,16 @@ gaudi_generate_confuserdb(Gaudi.ConfUser)
 # QMTest
 gaudi_add_tests(QMTest)
 
-# nosetests
-gaudi_add_tests(nosetests)
-gaudi_add_tests(nosetests ${CMAKE_CURRENT_SOURCE_DIR}/python/Gaudi)
+# Python tests
+gaudi_add_pytest(tests/nose)
+gaudi_add_pytest(python/Gaudi/Main.py
+    OPTIONS --doctest-modules
+    ROOT_DIR python
+    PREFIX Gaudi.doctest.python.
+)
 
 # Install python modules
 gaudi_install(PYTHON)
 # Install other scripts
 gaudi_install(SCRIPTS)
+

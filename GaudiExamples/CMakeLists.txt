@@ -196,7 +196,7 @@ foreach(test IN ITEMS
   endif()
 endforeach()
 
-gaudi_add_tests(pytest)
+gaudi_add_pytest(tests/pytest)
 
 # Compiled python module
 gaudi_add_python_module(PyExample

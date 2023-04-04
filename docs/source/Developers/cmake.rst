@@ -333,7 +333,7 @@ Look and feel of typical sub-project ``CMakeLists.txt``:
   
   # Tests
   gaudi_add_tests(QMTest)
-  gaudi_add_tests(nosetests)
+  gaudi_add_pytest(tests/pytest)
   
   # Compiled python module
   gaudi_add_python_module(PyExample
