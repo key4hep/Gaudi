@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -322,10 +322,7 @@ class _ListHelper(MutableSequence):
         self.data.__delitem__(key)
 
     def __eq__(self, other):
-        return self.data == other.data
-
-    def __ne__(self, other):
-        return self.data != other.data
+        return self.data == other
 
     def insert(self, key, value):
         self.is_dirty = True
