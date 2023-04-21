@@ -80,7 +80,11 @@ private:
 
 public:
   /// Standard Constructor
-  LinkManager() = default;
+  LinkManager()                = default;
+  LinkManager( LinkManager&& ) = default;
+  LinkManager& operator=( LinkManager&& ) = default;
+  LinkManager( LinkManager const& )       = delete;
+  LinkManager& operator=( LinkManager const& ) = delete;
   /// Standard Destructor
   ~LinkManager();
   /// Static instantiation
