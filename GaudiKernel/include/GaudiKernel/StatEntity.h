@@ -184,21 +184,7 @@ public:
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   MsgStream&    fillStream( MsgStream& o ) const { return print( o ); }
   /// Basic JSON export for Gaudi::Monitoring::Hub support.
-  friend void to_json( nlohmann::json& j, StatEntity const& s ) {
-    j = { { "type", s.typeString },
-          { "empty", s.nEntries() == 0 },
-          { "nEntries", s.nEntries() },
-          { "sum", s.sum() },
-          { "mean", s.mean() },
-          { "sum2", s.sum2() },
-          { "standard_deviation", s.standard_deviation() },
-          { "min", s.min() },
-          { "max", s.max() },
-          { "nTrueEntries", s.nTrueEntries() },
-          { "nFalseEntries", s.nFalseEntries() },
-          { "efficiency", s.efficiency() },
-          { "efficiencyErr", s.efficiencyErr() } };
-  }
+  friend void       to_json( nlohmann::json& j, StatEntity const& s );
   static StatEntity fromJSON( const nlohmann::json& j ) {
     StatEntity res;
     res.reset( AccParent::extractJSONData(
