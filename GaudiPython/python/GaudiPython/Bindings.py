@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -45,7 +45,6 @@ __all__ = [
 
 import os
 import re
-import string
 import sys
 import warnings
 
@@ -70,7 +69,7 @@ if ROOT6WorkAroundEnabled("ROOT-5478"):
 # available.
 from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
-from . import Pythonizations
+from . import Pythonizations  # noqa: F401 (side-effects)
 
 # namespaces
 gbl = cppyy.gbl
@@ -253,7 +252,7 @@ class PropertyEntry(object):
             # for all other types try to extract the native python type
             try:
                 self._value = eval(prop.toString(), {}, {})
-            except:
+            except Exception:
                 if hasattr(prop, "value"):
                     self._value = prop.value()
                 else:
@@ -349,7 +348,7 @@ class iProperty(object):
                 return prop.value()
             try:
                 return eval(prop.toString(), {}, {})
-            except:
+            except Exception:
                 return prop.value()
         else:
             opts = self._svcloc.getOptsSvc()
@@ -611,10 +610,8 @@ class iDataSvc(iService):
         if node == cppyy.nullptr:
             node = self.retrieveObject("")
         ll = gbl.std.vector("IRegistry*")()
-        if type(node) is str:
-            obj = self.retrieveObject(node)
-        else:
-            obj = node
+        if isinstance(node, str):
+            _ = self.retrieveObject(node)
         if self._idm.objectLeaves(node, ll).isSuccess():
             return ll
 
@@ -1359,9 +1356,9 @@ def getComponentProperties(name):
             raise ImportError("Error loading component library " + name)
         factorylist = gbl.FactoryTable.instance().getEntries()
         factories = _copyFactoriesFromList(factorylist)
-        g = AppMgr(outputlevel=7)
+        _ = AppMgr(outputlevel=7)
     else:
-        g = AppMgr(outputlevel=7)
+        _ = AppMgr(outputlevel=7)
         if Helper.loadDynamicLib(name) != 1:
             raise ImportError("Error loading component library " + name)
         factorylist = gbl.FactoryTable.instance().getEntries()
@@ -1394,7 +1391,7 @@ def getComponentProperties(name):
             properties[cname] = [ctype, prop.properties()]
             try:
                 obj.release()
-            except:
+            except Exception:
                 pass
     return properties
 
@@ -1467,8 +1464,8 @@ class PyAlgorithm(_PyAlgorithm):
 # ----Enable tab completion----------------------------------------------------
 try:
     import readline
-    import rlcompleter
+    import rlcompleter  # noqa: F401
 
     readline.parse_and_bind("tab: complete")
-except:
+except Exception:
     pass
