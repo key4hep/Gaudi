@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,22 +11,12 @@
 from __future__ import print_function
 
 import multiprocessing
-import os
-import sys
 import time
-from multiprocessing import (
-    Event,
-    JoinableQueue,
-    Process,
-    Queue,
-    cpu_count,
-    current_process,
-)
+from multiprocessing import Event, JoinableQueue, Process, cpu_count, current_process
 from multiprocessing.queues import Empty
 
-from Gaudi.Configuration import *
-from GaudiMP.pTools import *
-from ROOT import TBuffer, TBufferFile, TParallelMergingFile
+from GaudiMP.pTools import FileRecordsAgent, HistoAgent, Syncer
+from ROOT import TBuffer, TBufferFile
 
 from GaudiPython import (
     FAILURE,
@@ -321,7 +311,7 @@ class EventCommunicator(object):
             self.nRecv -= 1
         try:
             self.qin.task_done()
-        except:
+        except Exception:
             self._gmpc.log.warning(
                 "TASK_DONE called too often by : %s" % (self._gmpc.nodeType)
             )
@@ -584,7 +574,7 @@ class GMPComponent(object):
                     n = self.evt[path].evtNumber()
 
                     return n
-                except:
+                except Exception:
                     # No evt number at this path
                     continue
 
@@ -594,7 +584,7 @@ class GMPComponent(object):
                 n = self.evt["/Event/DAQ/RawEvent"].banks(16)[0].data()[4]
 
                 return n
-            except:
+            except Exception:
                 pass
 
             # Default Action
@@ -748,7 +738,7 @@ class Reader(GMPComponent):
                             daqnode = self.evt.retrieveObject("/Event/DAQ").registry()
                             setOwnership(daqnode, False)
                             self.evt.getList(daqnode, lst, daqnode.address().par())
-                    except:
+                    except Exception:
                         self.log.critical("Reader could not acquire TES List!")
                         self.lastEvent.set()
                         return FAILURE
@@ -768,7 +758,6 @@ class Reader(GMPComponent):
     def Engine(self):
         # rename process
         import ctypes
-        import os
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
@@ -844,7 +833,6 @@ class Subworker(GMPComponent):
     def Engine(self):
         # rename process
         import ctypes
-        import os
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
@@ -862,7 +850,6 @@ class Subworker(GMPComponent):
         # populate the TESSerializer itemlist
         self.log.info("EVT WRITERS ON WORKER : %i" % (len(self.writerDict["events"])))
 
-        nEventWriters = len(self.writerDict["events"])
         self.a.addAlgorithm(CollectHistograms(self))
 
         # Begin processing
@@ -876,7 +863,7 @@ class Subworker(GMPComponent):
             if packet == "FINISHED":
                 break
             evtNumber, tbin = packet  # unpack
-            if self.cntr != None:
+            if self.cntr is not None:
 
                 self.cntr.setEventCounter(evtNumber)
 
@@ -1053,7 +1040,7 @@ class Worker(GMPComponent):
                 else:
                     counter = self.config["ToolSvc.EvtCounter"]
                 counter.UseIncident = False
-            except:
+            except Exception:
                 # ignore errors when trying to change the configuration of the EvtCounter
                 self.log.warning("Cannot configure EvtCounter")
 
@@ -1061,7 +1048,6 @@ class Worker(GMPComponent):
 
         # rename process
         import ctypes
-        import os
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
@@ -1113,7 +1099,7 @@ class Worker(GMPComponent):
             if packet == "FINISHED":
                 break
             evtNumber, tbin = packet  # unpack
-            if self.cntr != None:
+            if self.cntr is not None:
                 self.cntr.setEventCounter(evtNumber)
 
             # subworkers are forked before the first event is processed
@@ -1267,13 +1253,11 @@ class Writer(GMPComponent):
     def Engine(self):
         # rename process
         import ctypes
-        import os
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
         libc.prctl(15, name, 0, 0, 0)
 
-        startEngine = time.time()
         self.Initialize()
         self.histoAgent = HistoAgent(self)
         self.filerecordsAgent = FileRecordsAgent(self)
@@ -1281,11 +1265,10 @@ class Writer(GMPComponent):
         # Begin processing
         Go = True
         current = -1
-        stopCriteria = self.nWorkers
         while Go:
             current = (current + 1) % self.nWorkers
             packet = self.evcoms[current].receive(timeout=0.01)
-            if packet == None:
+            if packet is None:
                 continue
             if packet == "FINISHED":
                 self.log.info("Writer got FINISHED flag : Worker %i" % (current))

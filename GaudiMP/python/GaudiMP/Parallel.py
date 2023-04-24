@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -93,7 +93,7 @@ class Task(object):
         pass
 
     def _mergeResults(self, result):
-        if type(result) is not type(self.output):
+        if not isinstance(result, type(self.output)):
             raise TypeError("output type is not same as obtained result")
         # --No iteratable---
         if not hasattr(result, "__iter__"):
@@ -107,10 +107,6 @@ class Task(object):
                 raise TypeError("result cannot be added")
         # --Dictionary---
         elif type(result) is dict:
-            if self.output.keys() <= result.keys():
-                minkeys = self.output.keys()
-            else:
-                minkeys = result.keys()
             for key in result.keys():
                 if key in self.output:
                     if hasattr(self.output[key], "Add"):

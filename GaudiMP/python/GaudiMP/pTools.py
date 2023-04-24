@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -111,7 +111,6 @@ class HistoAgent:
         for tup in self.histos:
             workerID, histDict = tup
             added = 0
-            registered = 0
             booked = 0
 
             for n in histDict.keys():
@@ -121,7 +120,7 @@ class HistoAgent:
                 if obj:
                     try:
                         aida2root(obj).Add(o)
-                    except:
+                    except Exception:
                         self.log.warning("FAILED TO ADD : %s" % (str(obj)))
                         errors += 1
                     added += 1
@@ -130,7 +129,7 @@ class HistoAgent:
                     if o.__class__.__name__ in self.bookingDict.keys():
                         try:
                             self.bookingDict[o.__class__.__name__](n, o)
-                        except:
+                        except Exception:
                             self.log.warning(
                                 "FAILED TO REGISTER : %s\tto%s"
                                 % (o.__class__.__name__, n)
@@ -759,7 +758,7 @@ def getEventNumber(evt):
         try:
             n = evt[l].evtNumber()
             return n
-        except:
+        except Exception:
             # No evt number at this path
             continue
 
@@ -768,7 +767,7 @@ def getEventNumber(evt):
     try:
         n = evt["/Event/DAQ/RawEvent"].banks(16)[0].data()[4]
         return n
-    except:
+    except Exception:
         pass
 
     # Default Action

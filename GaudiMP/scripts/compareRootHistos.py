@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -243,13 +243,13 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
 
     # find the histos in the reference file
     for k in ds.keys():
-        if not any(regex.search(k) != None for regex in omit):
+        if not any(regex.search(k) is not None for regex in omit):
             if ds[k].__class__.__name__ in histos:
                 hcs += 1
                 sHistos.append(k)
     # same for test
     for k in dp.keys():
-        if not any(regex.search(k) != None for regex in omit):
+        if not any(regex.search(k) is not None for regex in omit):
             if dp[k].__class__.__name__ in histos:
                 hcp += 1
                 pHistos.append(k)
@@ -257,13 +257,11 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
     cEntries = 0
     xEntries = 0
     diffEntries = []
-    cIntegrals = 0
     xIntegrals = 0
     diffIntegrals = []
     passedKol = 0
     failedKol = 0
     diffKols = []
-    zeroIntegrals = 0
     passedIdentity = 0
     failedIdentity = 0
     diffIdentity = []
@@ -445,7 +443,7 @@ def extractBlacklist(listString):
         for blackRegexp in listString.split(","):
             gRegexBlackList.append(blackRegexp)
     else:
-        gBlackList = []
+        gRegexBlackList = []
 
 
 # =============================================================================
