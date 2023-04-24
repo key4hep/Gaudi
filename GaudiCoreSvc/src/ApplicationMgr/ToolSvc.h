@@ -99,6 +99,8 @@ private: // data
       this, "CheckedNamedToolsConfigured", false,
       "Check that tools which do not have the default name have some explicit configuration." };
 
+  Gaudi::Property<bool> m_showToolDataDeps{ this, "ShowDataDeps", false, "show the data dependencies of AlgTools" };
+
   /// Common Tools
   std::vector<IAlgTool*> m_instancesTools; // List of all instances of tools
 

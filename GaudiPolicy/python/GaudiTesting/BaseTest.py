@@ -1101,6 +1101,9 @@ lineSkipper = LineSkipper(
         "WARNING no ROOT output file name",
         "INFO Writing ROOT histograms to:",
         "INFO Completed update of ROOT histograms in:",
+        # absorb changes in data dependencies reports (https://gitlab.cern.ch/gaudi/Gaudi/-/merge_requests/1348)
+        "Data Deps for ",
+        "data dependencies:",
     ],
     regexps=[
         r"^JobOptionsSvc        INFO *$",

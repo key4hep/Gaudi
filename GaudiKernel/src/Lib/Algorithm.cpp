@@ -177,21 +177,7 @@ namespace Gaudi {
 
     if ( !sc ) return sc;
 
-    if ( msgLevel( MSG::DEBUG ) ) {
-      // sort out DataObjects by path so that logging is reproducable
-      // we define a little helper creating an ordered set from a non ordered one
-      auto sort     = []( const DataObjID a, const DataObjID b ) -> bool { return a.fullKey() < b.fullKey(); };
-      auto orderset = [&sort]( const DataObjIDColl& in ) -> std::set<DataObjID, decltype( sort )> {
-        return { in.begin(), in.end(), sort };
-      };
-      // Logging
-      debug() << "Data Deps for " << name();
-      for ( auto h : orderset( m_inputDataObjs ) ) { debug() << "\n  + INPUT  " << h; }
-      for ( auto id : orderset( avis.ignoredInpKeys() ) ) { debug() << "\n  + INPUT IGNORED " << id; }
-      for ( auto h : orderset( m_outputDataObjs ) ) { debug() << "\n  + OUTPUT " << h; }
-      for ( auto id : orderset( avis.ignoredOutKeys() ) ) { debug() << "\n  + OUTPUT IGNORED " << id; }
-      debug() << endmsg;
-    }
+    if ( msgLevel( MSG::DEBUG ) && !avis.empty() ) { debug() << "data dependencies:" << avis << endmsg; }
 
     // initialize handles
     initDataHandleHolder();
