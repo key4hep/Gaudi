@@ -160,7 +160,11 @@ gaudi_generate_version_header_file()
 
 # Framework level tests
 # Test scripts inside cmake/
-gaudi_add_tests(nosetests ${PROJECT_SOURCE_DIR}/cmake/extract_qmtest_metadata.py)
+gaudi_add_pytest(cmake/extract_qmtest_metadata.py
+  PREFIX cmake.doctest.
+  ROOT_DIR cmake
+  OPTIONS --doctest-modules
+)
 
 if(NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME) # If we are building the full stack as one project
   # we do not install nor package nor register CMake tests
