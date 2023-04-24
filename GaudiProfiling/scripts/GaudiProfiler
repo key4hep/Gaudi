@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,7 +14,6 @@ from __future__ import print_function
 import os
 import shutil
 import sys
-import time
 import xml.parsers.expat
 from subprocess import Popen
 
@@ -62,7 +61,7 @@ if __name__ == "__main__":
         cmask = []
         invmask = []
         sampling_period = []
-        if type([]) != type(es.EVENT):
+        if not isinstance(es.EVENT, list):
             es.EVENT = [es.EVENT]
         for x in range(len(es.EVENT)):
             counter.append(es.EVENT[x].NAME)

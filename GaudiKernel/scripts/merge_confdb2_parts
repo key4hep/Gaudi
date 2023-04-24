@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,8 +15,8 @@ import shelve
 import sys
 from optparse import OptionParser
 
-from GaudiKernel.DataHandle import DataHandle
-from GaudiKernel.GaudiHandles import *
+from GaudiKernel.DataHandle import DataHandle  # noqa: F401
+from GaudiKernel.GaudiHandles import *  # noqa: F401 F403
 
 parser = OptionParser(  # desc='simple script to merge files',
     usage="%prog [options] input1 input2 ... [output|--output output]"
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 open(output + ".db", "w")  # make a dummy ".db" version
             elif os.path.exists(output + ".db"):  # this Python uses dbm.ndbm
                 open(output, "w")  # make a dummy version without the artificial ".db"
-    except:
+    except Exception:
         if os.path.exists(output):
             os.remove(output)
         raise
