@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -9,7 +9,6 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-import inspect
 import json
 import logging
 import os
@@ -152,7 +151,7 @@ class BaseTest(object):
         if self.options:
             if re.search(
                 r"from\s+Gaudi.Configuration\s+import\s+\*|"
-                "from\s+Configurables\s+import",
+                r"from\s+Configurables\s+import",
                 self.options,
             ):
                 suffix, lang = ".py", "python"
@@ -395,7 +394,7 @@ class BaseTest(object):
                 msg = "standard output"
                 # I do not want 2 messages in causes if the function is called
                 # twice
-                if not msg in causes:
+                if msg not in causes:
                     causes.append(msg)
                 result[res_field + ".observed"] = result.Quote("\n".join(outlines))
         except ValueError:
@@ -682,7 +681,8 @@ class BaseTest(object):
         # function to split an extension in constituents parts
         import re
 
-        platformSplit = lambda p: set(re.split(r"[-+]", p))
+        def platformSplit(p):
+            return set(re.split(r"[-+]", p))
 
         reference = os.path.normpath(
             os.path.join(self.basedir, os.path.expandvars(reffile))
@@ -718,10 +718,8 @@ class BaseTest(object):
 
 # ======= GAUDI TOOLS =======
 
-import calendar
 import difflib
 import shutil
-import string
 
 try:
     from GaudiKernel import ROOT6WorkAroundEnabled
@@ -772,7 +770,6 @@ def which(executable):
 # -------------------------------------------------------------------------#
 # ----------------------------- Result Classe -----------------------------#
 # -------------------------------------------------------------------------#
-import types
 
 
 class Result:
@@ -1389,7 +1386,7 @@ def parseHistosSummary(lines, pos):
                     pos += 1
             else:  # not interpreted
                 raise RuntimeError("Cannot understand line %d: '%s'" % (pos, l))
-            if not d in summ:
+            if d not in summ:
                 summ[d] = {}
             summ[d][t] = cont
             summ[d]["header"] = header

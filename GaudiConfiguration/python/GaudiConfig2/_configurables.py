@@ -154,7 +154,7 @@ class Configurable(ConfigMetaHelper):
         self._properties = {}
         if "parent" in kwargs:
             parent = kwargs.pop("parent")
-            if isinstance(parent, basestring if sys.version_info[0] == 2 else str):
+            if isinstance(parent, str):
                 parent = self.instances[parent]
             if not name:
                 raise TypeError("name is needed when a parent is specified")
@@ -182,10 +182,7 @@ class Configurable(ConfigMetaHelper):
     def name(self, value):
         if value == self._name:
             return  # it's already the name of the instance, nothing to do
-        if (
-            not isinstance(value, basestring if sys.version_info[0] == 2 else str)
-            or not value
-        ):
+        if not isinstance(value, str) or not value:
             raise TypeError(
                 "expected string, got {} instead".format(type(value).__name__)
             )

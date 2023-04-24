@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,9 +10,6 @@
 #####################################################################################
 from __future__ import print_function
 
-import os
-import sys
-import time
 from xml.etree import ElementTree
 
 
@@ -111,13 +108,13 @@ class XmlDictObject(dict):
 
 
 def _ConvertDictToXmlRecurse(parent, dictitem):
-    assert type(dictitem) is not type([])
+    assert not isinstance(dictitem, list)
 
     if isinstance(dictitem, dict):
         for (tag, child) in dictitem.iteritems():
             if str(tag) == "_text":
                 parent.text = str(child)
-            elif type(child) is type([]):
+            elif isinstance(child, list):
                 # iterate through the array and convert
                 for listchild in child:
                     elem = ElementTree.Element(tag)
@@ -154,7 +151,7 @@ def _ConvertXmlToDictRecurse(node, dictclass):
         newitem = _ConvertXmlToDictRecurse(child, dictclass)
         if child.tag in nodedict:
             # found duplicate tag, force a list
-            if type(nodedict[child.tag]) is type([]):
+            if isinstance(nodedict[child.tag], list):
                 # append to existing list
                 nodedict[child.tag].append(newitem)
             else:
@@ -186,7 +183,7 @@ def ConvertXmlToDict(root, dictclass=XmlDictObject):
     """
 
     # If a string is passed in, try to open it as a file
-    if type(root) == type(""):
+    if isinstance(root, str):
         root = ElementTree.parse(root).getroot()
     elif not isinstance(root, ElementTree.Element):
         raise TypeError("Expected ElementTree.Element or file path string")

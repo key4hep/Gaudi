@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,7 +10,7 @@
 #####################################################################################
 import GaudiConfig2._configurables
 from GaudiConfig2 import Configurable, useGlobalInstances
-from GaudiConfig2.Configurables.TestConf import MyAlg, SimpleOptsAlgTool
+from GaudiConfig2.Configurables.TestConf import MyAlg
 from nose.tools import raises, with_setup
 
 

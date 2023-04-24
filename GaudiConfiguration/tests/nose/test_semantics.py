@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -76,11 +76,11 @@ def test_bool():
 def test_float_ok():
     s = getSemanticsFor("double")
     assert type(s.store(1)) is float
-    assert s.store(1e30) is 1e30
+    assert s.store(1e30) == 1e30
 
     s = getSemanticsFor("float")
     assert type(s.store(1)) is float
-    assert s.store(1e30) is 1e30
+    assert s.store(1e30) == 1e30
 
 
 @raises(TypeError)
