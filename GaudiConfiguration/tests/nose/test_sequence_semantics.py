@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -34,7 +34,7 @@ def test_default():
     d = s.default(["a", "b", "c"])
     assert not d.is_dirty
     assert len(d) == 3
-    assert list(d) == list("abc")
+    assert d == list("abc")
 
 
 @raises(RuntimeError)
@@ -45,24 +45,33 @@ def test_default_read_only():
     del d[1]
 
 
+def test_comparison():
+    s = S.getSemanticsFor("std::vector<int>")
+    d1 = s.store([1, 2])
+    d2 = s.store([1, 2])
+    assert d1 == [1, 2]
+    assert d1 == d2
+    assert d1 != []
+
+
 def test_changes():
     s = S.getSemanticsFor("std::vector<std::string, alloc<string> >")
     d = s.store(["a", "b", "c"])
     assert d.is_dirty
-    assert list(d) == list("abc")
+    assert d == list("abc")
 
     d[2] = "z"
-    assert list(d) == list("abz")
+    assert d == list("abz")
 
     d.append("1")
-    assert list(d) == list("abz1")
+    assert d == list("abz1")
 
     d.insert(1, "_")
-    assert list(d) == list("a_bz1")
+    assert d == list("a_bz1")
     assert len(d) == 5
 
     del d[2]
-    assert list(d) == list("a_z1")
+    assert d == list("a_z1")
 
 
 def test_opt_value():
@@ -83,7 +92,7 @@ def test_assignment_bad():
 
 def test_in_alg():
     p = AlgWithVectors()
-    assert list(p.VS) == []
+    assert p.VS == []
 
     p.VS = ["a", "z"]
     assert len(p.VS) == 2
@@ -99,11 +108,11 @@ def test_nested_vector():
 
     assert isinstance(d[0], S._ListHelper)
     assert d[0].is_dirty
-    assert list(d[0]) == list("ab")
+    assert d[0] == list("ab")
 
     assert isinstance(d[1], S._ListHelper)
     assert d[1].is_dirty
-    assert list(d[1]) == list("cde")
+    assert d[1] == list("cde")
 
 
 @raises(ValueError)
