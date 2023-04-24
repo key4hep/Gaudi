@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,8 +14,6 @@ This script acts as a wrapper in order to generate Gaudi configs for running
 with different parameters in order to perform performance measurements.
 It takes command line arguments.
 """
-from __future__ import print_function
-
 import optparse
 
 """
@@ -93,7 +91,7 @@ def replaceValues(cfg_name, n, eif, aif, nthreads, scale, clone, dumpQueues, ver
         if (
             "NumberOfEvents" in line
             and "NUMBEROFEVENTS" in line
-            and not "FLIGHT" in line
+            and "FLIGHT" not in line
         ):
             line = line.replace("NUMBEROFEVENTS", str(n))
         if "NumberOfEventsInFlight" in line and "NUMBEROFEVENTSINFLIGHT" in line:

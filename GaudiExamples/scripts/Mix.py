@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -19,19 +19,15 @@
 Simple example to illustrate the problem for task #13911
 https://savannah.cern.ch/task/?13911
 """
-from __future__ import print_function
-
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
 __date__ = "2010-04-24"
 # =============================================================================
 import sys
 
-from Configurables import GaudiSequencer, HelloWorld, Sequencer
-from Gaudi.Configuration import *
+from Configurables import GaudiSequencer, HelloWorld
+from Gaudi.Configuration import ApplicationMgr, importOptions
 from GaudiPython.Bindings import AppMgr
-from GaudiPython.Bindings import gbl as cpp
-from GaudiPython.Bindings import setOwnership
 from GaudiPython.GaudiAlgs import SUCCESS, GaudiAlgo
 
 # =============================================================================

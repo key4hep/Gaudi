@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,12 +8,10 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
-
 import re
 import sys
 
-from ROOT import *
+from ROOT import TCanvas, TGraph, TLatex, kBlue, kFullStar
 
 """
 Prepare the clones plot.
@@ -136,7 +134,7 @@ def doPlot(logfilename):
     )
     evtsIf.Draw()
 
-    a = raw_input("press enter to continue")
+    input("press enter to continue")
     canvas.Print("PlotClones.png")
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -26,13 +26,9 @@
 *                                                                             *
 *******************************************************************************
 """
-from __future__ import print_function
-
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
 # =============================================================================
-
-import math
 
 import GaudiPython
 
@@ -65,8 +61,6 @@ class TupleEx2(TupleAlgo):
         """The major method 'execute', it is invoked for each event"""
 
         gauss = Rndm.Numbers(self.randSvc(), Rndm.Gauss(0.0, 1.0))
-        flat = Rndm.Numbers(self.randSvc(), Rndm.Flat(-10, 10))
-        breit = Rndm.Numbers(self.randSvc(), Rndm.BreitWigner(0.0, 1.0))
 
         # N-tuple with 4D-vectors
         tup = self.nTuple("Vectors-4D", "N-tuple with 4D-vectors")

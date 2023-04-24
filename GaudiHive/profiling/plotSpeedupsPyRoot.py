@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,9 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
-
-from ROOT import *
+import ROOT
 
 """
 Script to parse all the logs and produce the speedup plot.
@@ -39,14 +37,21 @@ ScalarTime = 1640.87
 
 # Style
 LegendDrawOpts = "lp"
-LineColours = [kRed, kBlue, kGreen + 2, kOrange, kPink + 10, kViolet + 10]
+LineColours = [
+    ROOT.kRed,
+    ROOT.kBlue,
+    ROOT.kGreen + 2,
+    ROOT.kOrange,
+    ROOT.kPink + 10,
+    ROOT.kViolet + 10,
+]
 MarkerStyles = [
-    kFullCircle,
-    kOpenCross,
-    kFullTriangleUp,
-    kOpenStar,
-    kFullCross,
-    kOpenCircle,
+    ROOT.kFullCircle,
+    ROOT.kOpenCross,
+    ROOT.kFullTriangleUp,
+    ROOT.kOpenStar,
+    ROOT.kFullCross,
+    ROOT.kOpenCircle,
 ]
 MarkerSize = 4
 LineWidth = 6
@@ -75,7 +80,7 @@ def scaleCores(n_threads):
 
 
 def getText(x, y, text, scale, angle, colour, font):
-    lat = TLatex(
+    lat = ROOT.TLatex(
         x, y, "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text)
     )
     if angle != 0.0:
@@ -143,7 +148,7 @@ for neif in neif_l:
 
 len_nt = len(nts) + 1
 # Prepare ideal speedup graph
-idealSpeedup = TGraph(2)
+idealSpeedup = ROOT.TGraph(2)
 idealSpeedup.SetPoint(0, 1, 1)
 idealSpeedup.SetPoint(1, TotalCores, TotalCores)
 scaled_s = ""
@@ -154,17 +159,17 @@ idealSpeedup.SetTitle(
     % scaled_s
 )
 idealSpeedup.SetLineWidth(4)
-idealSpeedup.SetLineColor(kGray - 2)
+idealSpeedup.SetLineColor(ROOT.kGray - 2)
 idealSpeedup.SetLineStyle(2)
 
 # Main Loop: fill all graphs
 neif_graphs = []
 for neif in neif_l:  # One graph per number of events in flight
-    graph = TGraph(len_nt)
+    graph = ROOT.TGraph(len_nt)
     graph.SetName("%s" % neif)
     graph.SetPoint(0, 1, 1)
 
-    graphc = TGraph(len_nt)
+    graphc = ROOT.TGraph(len_nt)
     graphc.SetName("%s clone" % neif)
     graphc.SetPoint(0, 1, 1)
     counter = 1
@@ -183,15 +188,15 @@ for neif in neif_l:  # One graph per number of events in flight
 neif_graphs.reverse()
 
 # Now that all are complete, let's make the plot
-canvas = TCanvas("Speedup", "Speedup", 2048, 1800)
+canvas = ROOT.TCanvas("Speedup", "Speedup", 2048, 1800)
 canvas.cd()
 canvas.SetGrid()
 idealSpeedup.Draw("APL")
 idealSpeedup.GetYaxis().SetRangeUser(0.1, TotalCores + 1)  # only one 0
 
 # Line
-line = TLine(11, 0, 11, 25)
-line.SetLineColor(kRed)
+line = ROOT.TLine(11, 0, 11, 25)
+line.SetLineColor(ROOT.kRed)
 line.SetLineWidth(4)
 line.SetLineStyle(2)
 line.Draw()
@@ -201,8 +206,8 @@ for neif, graph, graphc in neif_graphs:
     graphc.Draw("SamePL")
 
 # Prepare Legend
-legend = TLegend(0.1, 0.45, 0.38, 0.9)
-legend.SetFillColor(kWhite)
+legend = ROOT.TLegend(0.1, 0.45, 0.38, 0.9)
+legend.SetFillColor(ROOT.kWhite)
 legend.SetHeader("# Simultaneous Evts")
 for neif, graph, graphc in neif_graphs:
     legend.AddEntry(graph, "%s" % neif, LegendDrawOpts)

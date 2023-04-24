@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -20,12 +20,9 @@
 *                                                                             *
 *******************************************************************************
 """
-from __future__ import print_function
-
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
-import os
 
 from GaudiPython.Bindings import gbl as cpp
 from GaudiPython.GaudiAlgs import SUCCESS, HistoAlgo
@@ -92,7 +89,7 @@ def configure(gaudi=None):
 if "__main__" == __name__:
     print(__doc__ + __author__)
 
-    import GaudiPython.HistoUtils
+    import GaudiPython.HistoUtils  # noqa: F401 (adds dump method)
     from GaudiPython.Bindings import AppMgr
 
     gaudi = AppMgr()

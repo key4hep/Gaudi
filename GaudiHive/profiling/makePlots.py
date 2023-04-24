@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -38,7 +38,7 @@ def instancesVsTime(filename):
         y.append(nOfInstances[name])
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    yo = ax.scatter(x, y)
+    ax.scatter(x, y)
     ax.grid(True)
     plt.xlabel("Runtime (s)")
     plt.ylabel("# instances")

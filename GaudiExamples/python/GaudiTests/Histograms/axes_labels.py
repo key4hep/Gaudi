@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2021 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2021, 2023 CERN for the benefit of the LHCb and ATLAS collaborations      #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -65,7 +65,7 @@ def check(causes, result):
             result["found_labels"] = ", ".join(repr(l) for l in labels)
             return False
 
-    except Exception as err:
+    except Exception:
         causes.append("failure reading histogram file")
         result["python_exception"] = result.Quote(format_exc())
         return False

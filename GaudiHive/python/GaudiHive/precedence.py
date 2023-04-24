@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,12 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
-
 import json
 import os
 import random
-import string
 import sys
 
 # FIXME: workaround for the old version of networkx in LCG 100
@@ -221,8 +218,6 @@ class CruncherSequence(object):
         self.sequencer = self._generate_sequence(topSequencer)
 
         if showStat:
-            import pprint
-
             print("\n===== Statistics on Algorithms =====")
             print(
                 "Total number of algorithm nodes: ",
