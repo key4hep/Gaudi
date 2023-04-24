@@ -309,7 +309,7 @@ namespace Gaudi {
 
         // This chunk of code was taken from GaudiKernel (genconf) DsoUtils.h
         std::string getDSONameFor( void* fptr ) {
-#ifdef _GNU_SOURCE
+#if defined _GNU_SOURCE || defined __APPLE__
           Dl_info info;
           if ( dladdr( fptr, &info ) == 0 ) return "";
 
