@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2022 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2022-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -9,13 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 from GaudiConfig2 import Configurable, useGlobalInstances
-from GaudiConfig2.semantics import (
-    ComponentSemantics,
-    DefaultSemantics,
-    StringSemantics,
-    getSemanticsFor,
-)
-from nose.tools import raises, with_setup
+from nose.tools import with_setup
 
 
 def setup_func():
