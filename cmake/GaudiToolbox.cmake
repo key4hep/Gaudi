@@ -789,6 +789,9 @@ function(gaudi_add_pytest)
         return()
     endif()
 
+    # ensure the imported target pytest for the generator expression $<TARGET_FILE:pytest>
+    _import_pytest()
+
     cmake_parse_arguments(
         ARG
         ""
