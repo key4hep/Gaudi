@@ -41,8 +41,8 @@ public:
 
   EventContext() = default;
 
-  EventContext( const ContextEvt_t e, const ContextID_t s = INVALID_CONTEXT_ID,
-                const ContextID_t subSlot = INVALID_CONTEXT_ID )
+  explicit EventContext( const ContextEvt_t e, const ContextID_t s = INVALID_CONTEXT_ID,
+                         const ContextID_t subSlot = INVALID_CONTEXT_ID )
       : m_evt_num( e ), m_evt_slot( s ), m_sub_slot( subSlot ) {
     m_valid = ( e != INVALID_CONTEXT_EVT && s != INVALID_CONTEXT_ID );
   }
