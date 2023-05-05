@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,8 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
-
 import logging
 import os
 import sys
@@ -225,8 +223,6 @@ def _getAllOpts_old(explicit_defaults=False):
             if isinstance(v, str):
                 # properly escape quotes in the string (see gaudi/Gaudi#78)
                 v = '"%s"' % v.replace('"', '\\"')
-            elif sys.version_info < (3,) and isinstance(v, long):
-                v = "%d" % v  # prevent pending 'L'
             elif hasattr(v, "__opt_value__"):
                 v = v.__opt_value__()
             old_opts[".".join((n, p))] = str(v)
@@ -553,7 +549,7 @@ class gaudimain(object):
             self.log.info("%s: %30s : %s ", __name__, name, value or "Undefined")
         try:
             events = str(c["ApplicationMgr"].EvtMax)
-        except:
+        except Exception:
             events = "Undetermined"
         self.log.info("%s: Events Specified : %s ", __name__, events)
         self.log.info("-" * 80)
