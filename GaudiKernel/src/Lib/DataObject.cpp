@@ -20,16 +20,15 @@
 static std::string _sDataObjectCppNotRegistered( "NotRegistered" );
 
 /// Standard Constructor
-DataObject::DataObject() : m_pLinkMgr{ LinkManager::newInstance() } {}
+DataObject::DataObject() : m_pLinkMgr{ new LinkManager() } {}
 
 /// Copy Constructor
-DataObject::DataObject( const DataObject& rhs )
-    : m_version{ rhs.m_version }, m_pLinkMgr{ LinkManager::newInstance() } {}
+DataObject::DataObject( const DataObject& rhs ) : m_version{ rhs.m_version }, m_pLinkMgr{ new LinkManager() } {}
 
 /// Assignment Operator
 DataObject& DataObject::operator=( const DataObject& rhs ) {
   m_version = rhs.m_version;
-  m_pLinkMgr.reset( LinkManager::newInstance() );
+  m_pLinkMgr.reset( new LinkManager() );
   return *this;
 }
 
