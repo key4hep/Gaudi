@@ -130,8 +130,8 @@ private:
 
 namespace {
 
-  template <typename stream>
-  stream printCounter( stream& log, const std::string& id, const nlohmann::json& j ) {
+  template <typename Stream>
+  Stream& printCounter( Stream& log, std::string_view id, const nlohmann::json& j ) {
     const auto type = j.at( "type" ).get<std::string>();
     // for backward compatibility, we need to deal with statentity in a special way
     // this block should be dropped when StatEntities are gone
