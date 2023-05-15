@@ -14,7 +14,7 @@
 #include <GaudiKernel/Service.h>
 
 #include <chrono>
-#include <condition_variable>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -71,12 +71,13 @@ namespace Gaudi::Monitoring {
 
     StatusCode start() override {
       return Service::start().andThen( [&] {
+        // promise needs to be recreated in case of a restart
+        m_flushThreadStop = std::promise<void>{};
         // enable periodic output file flush if requested
         if ( m_autoFlushPeriod.value() != 0 ) {
-          m_flushThread = std::thread{ [this]() {
+          m_flushThread = std::thread{ [this, flushStop = m_flushThreadStop.get_future()]() {
             using namespace std::chrono_literals;
-            std::unique_lock lk( m_flushCondMutex );
-            while ( m_flushCond.wait_for( lk, m_autoFlushPeriod.value() * 1s ) == std::cv_status::timeout ) {
+            while ( flushStop.wait_for( m_autoFlushPeriod.value() * 1s ) == std::future_status::timeout ) {
               flush( false );
             }
           } };
@@ -85,7 +86,7 @@ namespace Gaudi::Monitoring {
     }
 
     StatusCode stop() override {
-      m_flushCond.notify_all();                             // tell the flush thread we are stopping
+      m_flushThreadStop.set_value();                        // tell the flush thread we are stopping
       if ( m_flushThread.joinable() ) m_flushThread.join(); // and wait that it exits
       flush( true );
       return Service::stop();
@@ -137,13 +138,12 @@ namespace Gaudi::Monitoring {
         this, "TypesToSave", {}, "List of regexps used to match type names of entities to save" };
 
     /// Handling of regular flushes, if requested
-    std::thread             m_flushThread;
-    std::condition_variable m_flushCond;
-    std::mutex              m_flushCondMutex;
-    Gaudi::Property<float>  m_autoFlushPeriod{
+    std::thread            m_flushThread;
+    std::promise<void>     m_flushThreadStop;
+    Gaudi::Property<float> m_autoFlushPeriod{
         this, "AutoFlushPeriod", 0.,
         "if different from 0, indicates every how many seconds to force a write of the FSR data to OutputFile (this "
-         "parameter makes sense only if used in conjunction with OutputFile)" };
+        "parameter makes sense only if used in conjunction with OutputFile)" };
   };
 
 } // namespace Gaudi::Monitoring
