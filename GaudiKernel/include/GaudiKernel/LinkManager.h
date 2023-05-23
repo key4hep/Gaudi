@@ -87,10 +87,6 @@ public:
   LinkManager& operator=( LinkManager const& ) = delete;
   /// Standard Destructor
   ~LinkManager();
-  /// Static instantiation
-  static LinkManager* newInstance();
-  /// Assign new instantiator
-  static void setInstantiator( LinkManager* ( *newInstance )() );
   /// Retrieve number of link present
   long size() const { return m_linkVector.size(); }
   bool empty() const { return m_linkVector.empty(); }

@@ -23,8 +23,6 @@ namespace {
 
 } // namespace
 
-static LinkManager* ( *s_newInstance )() = nullptr;
-
 /// destructor
 LinkManager::~LinkManager() {
   for ( auto& i : m_linkVector ) delete i;
@@ -38,12 +36,6 @@ IOpaqueAddress* LinkManager::Link::address() {
   }
   return nullptr;
 }
-
-/// Assign new instantiator
-void LinkManager::setInstantiator( LinkManager* ( *newInstance )() ) { s_newInstance = newInstance; }
-
-/// Static instantiation
-LinkManager* LinkManager::newInstance() { return s_newInstance ? ( *s_newInstance )() : new LinkManager(); }
 
 /// Retrieve symbolic link identified by ID
 const LinkManager::Link* LinkManager::link( long id ) const {
