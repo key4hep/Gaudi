@@ -100,7 +100,9 @@ def getArgsFromQmt(qmtfile):
     args = [a.text for a in qmt.findall("argument[@name='args']//text")]
     options = qmt.find("argument[@name='options']/text")
 
-    if options is not None:  # options need to be dumped in a temporary file
+    if (
+        options is not None and options.text is not None
+    ):  # options need to be dumped in a temporary file
         import re
         from tempfile import NamedTemporaryFile
 
