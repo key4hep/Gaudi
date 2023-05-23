@@ -167,11 +167,17 @@ public:
   TYPE*       data() { return const_cast<TYPE*>( m_target ); }
   const TYPE* data() const { return m_target; }
   /// Access to the object
-  const TYPE* target() const;
+  const TYPE* target() const {
+    if ( !m_target ) { m_target = dynamic_cast<const TYPE*>( m_base.accessData( m_target ) ); }
+    return m_target;
+  }
   /// Access to the object
-  TYPE* target();
+  TYPE* target() {
+    if ( !m_target ) { m_target = dynamic_cast<const TYPE*>( m_base.accessData( m_target ) ); }
+    return const_cast<TYPE*>( m_target );
+  }
   /// Return the path of the linked object inside the data store.
-  inline const std::string& path() const { return m_base.path(); }
+  const std::string& path() const { return m_base.path(); }
   /// Equality operator
   bool operator==( const SmartRef<TYPE>& c ) const {
     if ( m_target && c.m_target ) return m_target == c.m_target;
@@ -180,8 +186,27 @@ public:
     if ( !m_target && c.m_target ) return c.m_base.isEqualEx( c.m_target, m_base );
     return false;
   }
+  /*[[deprecated]]*/ friend bool operator==( const SmartRef<TYPE>& ref, int ) { return ref.target() == nullptr; }
+  friend bool operator==( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() == nullptr; }
+
+  /// Friend helper to check for object existence (will load object)
+  /*[[deprecated]]*/ friend bool operator==( int, const SmartRef<TYPE>& ref ) { return ref.target() == nullptr; }
+  friend bool operator==( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() == nullptr; }
   /// NON-Equality operator
   bool operator!=( const SmartRef<TYPE>& c ) const { return !( this->operator==( c ) ); }
+
+  /*[[deprecated]]*/ friend bool operator!=( const SmartRef<TYPE>& ref, int ) { return ref.target() != nullptr; }
+
+  friend bool operator!=( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() != nullptr; }
+
+  /// Friend helper to check for object existence (will load object)
+  /*[[deprecated]]*/ friend bool operator!=( int, const SmartRef<TYPE>& ref ) { return ref.target() != nullptr; }
+
+  friend bool operator!=( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() != nullptr; }
+
+  /// explicit conversion to bool to check for object existence (will load object)
+  explicit operator bool() const { return target() != nullptr; }
+
   /// Set the environment (CONST)
   const SmartRef<TYPE>& _setEnvironment( const DataObject* pObj, const ContainedObject* pContd ) const {
     m_base.m_data  = pObj;
@@ -237,9 +262,15 @@ public:
   /// Implicit type conversion
   operator TYPE*() { return SmartRef<TYPE>::target(); }
   /// Write the reference to the stream buffer (needed due to stupid G++ compiler)
-  StreamBuffer& writeRef( StreamBuffer& s ) const;
+  StreamBuffer& writeRef( StreamBuffer& s ) const {
+    m_base.writeObject( m_target, s );
+    return s;
+  }
   /// Read the reference from the stream buffer (needed due to stupid G++ compiler)
-  StreamBuffer& readRef( StreamBuffer& s );
+  StreamBuffer& readRef( StreamBuffer& s ) {
+    m_target = dynamic_cast<TYPE*>( m_base.readObject( m_target, s ) );
+    return s;
+  }
   /// Output Streamer operator
   // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
   friend StreamBuffer& operator<<( StreamBuffer& _s, const SmartRef<TYPE>& ptr ) { return ptr.writeRef( _s ); }
@@ -247,66 +278,5 @@ public:
   // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
   friend StreamBuffer& operator>>( StreamBuffer& _s, SmartRef<TYPE>& ptr ) { return ptr.readRef( _s ); }
 };
-
-//
-// Inline function necessary to be outside the class definition.
-// Mostly this stuff cannot go into the class definition because
-// G++ has problems recognizing proper templates if they are not
-// completely defined.
-//
-// M.Frank
-//
-
-/// Access to the object
-template <class TYPE>
-inline TYPE* SmartRef<TYPE>::target() {
-  if ( !m_target ) { m_target = dynamic_cast<const TYPE*>( m_base.accessData( m_target ) ); }
-  return const_cast<TYPE*>( m_target );
-}
-
-/// Access to the object  (CONST)
-template <class TYPE>
-inline const TYPE* SmartRef<TYPE>::target() const {
-  if ( !m_target ) { m_target = dynamic_cast<const TYPE*>( m_base.accessData( m_target ) ); }
-  return m_target;
-}
-
-/// Write the reference to the stream buffer (needed due to stupid G++ compiler)
-template <class TYPE>
-inline StreamBuffer& SmartRef<TYPE>::writeRef( StreamBuffer& s ) const {
-  m_base.writeObject( m_target, s );
-  return s;
-}
-
-/// Read the reference from the stream buffer (needed due to stupid G++ compiler)
-template <class TYPE>
-inline StreamBuffer& SmartRef<TYPE>::readRef( StreamBuffer& s ) {
-  m_target = dynamic_cast<TYPE*>( m_base.readObject( m_target, s ) );
-  return s;
-}
-
-/// Friend helper to check for object existence (will load object)
-template <class TYPE>
-inline bool operator==( const SmartRef<TYPE>& ref, int ) {
-  return ref.target() == nullptr;
-}
-
-/// Friend helper to check for object existence (will load object)
-template <class TYPE>
-inline bool operator==( int, const SmartRef<TYPE>& ref ) {
-  return ref.target() == nullptr;
-}
-
-/// Friend helper to check for object existence (will load object)
-template <class TYPE>
-inline bool operator!=( const SmartRef<TYPE>& ref, int ) {
-  return ref.target() != nullptr;
-}
-
-/// Friend helper to check for object existence (will load object)
-template <class TYPE>
-inline bool operator!=( int, const SmartRef<TYPE>& ref ) {
-  return ref.target() != nullptr;
-}
 
 #endif // KERNEL_SMARTREF_H
