@@ -67,7 +67,8 @@ namespace Gaudi {
         DataObject* obj = nullptr;
         evtSvc()
             ->retrieveObject( m_rootNode, obj )
-            .orThrow( fmt::format( "failed to retrieve {} from {}", m_rootNode.value(), m_dataSvcName ), name() );
+            .orThrow( fmt::format( "failed to retrieve {} from {}", m_rootNode.value(), m_dataSvcName.value() ),
+                      name() );
       }
       // result
       IDataStoreLeaves::LeavesList all_leaves;
@@ -76,39 +77,39 @@ namespace Gaudi {
       // we do not get info from exceptions in the data store agent, so we record the exception message, if any
       std::string failure_msg;
       m_dataMgrSvc
-          ->traverseSubTree(
-              m_rootNode,
-              [&]( IRegistry* reg, int ) {
-                if ( reg->address() && reg->dataSvc() ) { // we consider only objects that come from a file
-                  if ( origin.empty() ) {
-                    // this is the first node we encounter, so we record where it comes from
-                    origin = reg->address()->par()[0];
-                  }
-                  // if the current object comes from the same file as the first entry...
-                  if ( origin == reg->address()->par()[0] ) {
-                    // ... make sure the object has been loaded...
-                    DataObject* obj = reg->object();
-                    if ( !obj )
-                      reg->dataSvc()
-                          ->retrieveObject( reg->identifier(), obj )
-                          .orElse( [&]() {
-                            failure_msg =
-                                fmt::format( "failed to retrieve {} from {}", reg->identifier(), m_dataSvcName );
-                            // we do not really care about the exception we throw because traverseSubTree will just use
-                            // it to abort the traversal
-                            throw GaudiException( failure_msg, name(), StatusCode::FAILURE );
-                          } )
-                          .ignore();
-                    // ... and add it to the list
-                    all_leaves.push_back( obj );
-                    if ( msgLevel( MSG::VERBOSE ) )
-                      verbose() << "::i_collectLeaves added " << reg->identifier() << endmsg;
-                    return true; // we can continue the recursion
-                  }
-                }
-                // if we reach this point the object was not interesting, so no need to recurse further
-                return false;
-              } )
+          ->traverseSubTree( m_rootNode,
+                             [&]( IRegistry* reg, int ) {
+                               if ( reg->address() && reg->dataSvc() ) { // we consider only objects that come from a
+                                                                         // file
+                                 if ( origin.empty() ) {
+                                   // this is the first node we encounter, so we record where it comes from
+                                   origin = reg->address()->par()[0];
+                                 }
+                                 // if the current object comes from the same file as the first entry...
+                                 if ( origin == reg->address()->par()[0] ) {
+                                   // ... make sure the object has been loaded...
+                                   DataObject* obj = reg->object();
+                                   if ( !obj )
+                                     reg->dataSvc()
+                                         ->retrieveObject( reg->identifier(), obj )
+                                         .orElse( [&]() {
+                                           failure_msg = fmt::format( "failed to retrieve {} from {}",
+                                                                      reg->identifier(), m_dataSvcName.value() );
+                                           // we do not really care about the exception we throw because traverseSubTree
+                                           // will just use it to abort the traversal
+                                           throw GaudiException( failure_msg, name(), StatusCode::FAILURE );
+                                         } )
+                                         .ignore();
+                                   // ... and add it to the list
+                                   all_leaves.push_back( obj );
+                                   if ( msgLevel( MSG::VERBOSE ) )
+                                     verbose() << "::i_collectLeaves added " << reg->identifier() << endmsg;
+                                   return true; // we can continue the recursion
+                                 }
+                               }
+                               // if we reach this point the object was not interesting, so no need to recurse further
+                               return false;
+                             } )
           .orThrow( failure_msg, name() );
       return all_leaves;
     }
