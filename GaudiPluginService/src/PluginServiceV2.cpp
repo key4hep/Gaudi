@@ -139,6 +139,9 @@ namespace Gaudi {
 #if defined( _WIN32 )
           const char* envVar = "PATH";
           const char  sep    = ';';
+#elif defined( __APPLE__ )
+          const char* envVar = "GAUDI_PLUGIN_PATH";
+          const char  sep    = ':';
 #else
           const char* envVar = "LD_LIBRARY_PATH";
           const char  sep    = ':';
@@ -165,7 +168,6 @@ namespace Gaudi {
                   search_path.substr( start_pos, end_pos - start_pos );
 #endif
               start_pos = end_pos;
-
               logger().debug( " looking into " + dirName.string() );
               // look for files called "*.components" in the directory
               if ( is_directory( dirName ) ) {
@@ -262,12 +264,47 @@ namespace Gaudi {
           if ( f != facts.end() ) {
             if ( load && !f->second.is_set() ) {
               const std::string library = f->second.library;
+#ifdef __APPLE__
+              std::string_view search_path;
+              if ( auto ptr = std::getenv( "GAUDI_PLUGIN_PATH" ) ) search_path = std::string_view{ ptr };
+              if ( !search_path.empty() ) {
+
+                std::string_view::size_type start_pos = 0, end_pos = 0;
+                while ( start_pos != std::string_view::npos ) {
+                  // correctly handle begin of string or path separator
+                  if ( start_pos ) ++start_pos;
+
+                  end_pos = search_path.find( ":", start_pos );
+                  fs::path dirName =
+#  ifdef USE_BOOST_FILESYSTEM
+                      std::string{ search_path.substr( start_pos, end_pos - start_pos ) };
+#  else
+                      search_path.substr( start_pos, end_pos - start_pos );
+#  endif
+                  start_pos = end_pos;
+
+                  logger().debug( " looking into " + dirName.string() );
+                  // look for files called "*.components" in the directory
+                  if ( is_directory( dirName ) && is_regular_file( dirName / fs::path( library ) ) ) {
+                    logger().debug( "found " + dirName.string() + "/" + library.c_str() + " for factory " + id );
+                    if ( !dlopen( ( dirName.string() + "/" + library ).c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
+                      logger().warning( "cannot load " + library + " for factory " + id );
+                      char* dlmsg = dlerror();
+                      if ( dlmsg ) logger().warning( dlmsg );
+                      return unknown;
+                    }
+                  }
+                }
+              }
+#else
+
               if ( !dlopen( library.c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
                 logger().warning( "cannot load " + library + " for factory " + id );
                 char* dlmsg = dlerror();
                 if ( dlmsg ) logger().warning( dlmsg );
                 return unknown;
               }
+#endif
               f = facts.find( id ); // ensure that the iterator is valid
             }
             return f->second;

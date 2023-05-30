@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import ctypes
+import os
 import sys
 
 __configurables_module_fullname__ = __name__ + ".Configurables"
@@ -89,10 +90,25 @@ class Application(object):
         if _GaudiKernelLib is None:
             # Note: using CDLL instead of PyDLL means that every call to the Python C
             #       API must be protected acquiring the GIL
-            gkl = _GaudiKernelLib = ctypes.CDLL(
-                "libGaudiKernel" + (".dylib" if sys.platform == "darwin" else ".so"),
-                mode=ctypes.RTLD_GLOBAL,
-            )
+            #
+            if sys.platform == "darwin":
+                # LD_LIBRARY_PATH cannot be used for dlopen on macos;
+                # use custom variable GAUDI_PLUGIN_PATH instead
+                _libpaths = os.environ.get("GAUDI_PLUGIN_PATH")
+                if not _libpaths:
+                    print("WARNING: GAUDI_PLUGIN_PATH is empty!")
+                for _path in _libpaths.split(":"):
+                    _lib = os.path.join(_path, "libGaudiKernel.dylib")
+                    if os.path.isfile(_lib):
+                        gkl = _GaudiKernelLib = ctypes.CDLL(
+                            _lib,
+                            mode=ctypes.RTLD_GLOBAL,
+                        )
+            else:
+                gkl = _GaudiKernelLib = ctypes.CDLL(
+                    "libGaudiKernel.so",
+                    mode=ctypes.RTLD_GLOBAL,
+                )
             gkl._py_Gaudi__Application__create.restype = ctypes.c_void_p
             gkl._py_Gaudi__Application__run.argtypes = [ctypes.c_void_p]
             gkl._py_Gaudi__Application__run.restype = ctypes.c_int
