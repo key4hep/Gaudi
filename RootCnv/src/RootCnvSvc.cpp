@@ -223,6 +223,8 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
               ContextIncident<TFile*>( connection->pfn(), "CONNECTED_OUTPUT", connection->file() ) );
         }
         if ( 0 != ( mode & IDataConnection::READ ) ) {
+          m_incidentSvc->fireIncident(
+              ContextIncident<TFile*>( connection->pfn(), "CONNECTED_INPUT", connection->file() ) );
           if ( !m_ioPerfStats.empty() ) { connection->enableStatistics( m_setup->loadSection ); }
         }
         connection.release();
