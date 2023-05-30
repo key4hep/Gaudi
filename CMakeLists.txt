@@ -88,6 +88,11 @@ project(Gaudi VERSION 36.12
 # Add the "Developer" build type
 include(cmake/DeveloperBuildType.cmake)
 
+# set RPATH (currently only on macOS)
+if(APPLE)
+  include(cmake/GaudiRPath.cmake)
+endif()
+
 # Set up the GAUDI_ATOMIC_LIBS variable
 include(cmake/GaudiAtomicLibs.cmake)
 

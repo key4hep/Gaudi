@@ -96,9 +96,12 @@ static unsigned long doLoad( const std::string& name, System::ImageHandle* handl
   *handle  = mh;
 #else
   const char* path = name.c_str();
-#  if defined( __linux ) || defined( __APPLE__ )
+#  if defined( __linux )
   void*       mh   = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
   *handle          = mh;
+#  elif defined( __APPLE__ )
+  void* mh = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
+  *handle  = mh;
 #  elif __hpux
   shl_t    mh  = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
   HMODULE* mod = new HMODULE;
