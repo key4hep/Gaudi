@@ -813,7 +813,11 @@ function(gaudi_add_pytest)
         endif()
     endforeach()
     # prepare args to pytest
-    string(JOIN " " collect_roots ${ARG_UNPARSED_ARGUMENTS})
+    if(ARG_UNPARSED_ARGUMENTS)
+        string(JOIN " " collect_roots ${ARG_UNPARSED_ARGUMENTS})
+    else()
+        set(collect_roots ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
     # set baseline for PREFIX and ROOT_DIR defaults
     set(ARG_PREFIX_DEFAULT "${package_name}.pytest.")
     set(ARG_ROOT_DIR_DEFAULT "${CMAKE_CURRENT_SOURCE_DIR}")
