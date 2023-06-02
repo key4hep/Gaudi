@@ -85,7 +85,7 @@ StatusCode TagCollectionStream::initialize() {
         logical_name += log_node;
         m_topLeafName =
             m_addrLeaf.value().substr( 0, m_addrLeaf.value().find( SEPARATOR, m_addrLeaf[0] == '/' ? 1 : 0 ) );
-        m_isTopLeaf = m_topLeafName == m_addrLeaf;
+        m_isTopLeaf = m_addrLeaf == m_topLeafName;
         if ( src_mgr->isConnected( logical_name ) ) return sc;
         sc = src_mgr->connect( log_file );
         if ( sc.isSuccess() ) return sc;

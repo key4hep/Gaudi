@@ -25,7 +25,7 @@
 #include <typeinfo>
 #include <utility>
 
-#if __cplusplus > 201703L && __has_include( <source_location> )
+#if __cplusplus > 201703L && __has_include( <source_location> ) && !defined (__CLING__)
 #  include <source_location>
 namespace Gaudi::PluginService::Details {
   using std::source_location;

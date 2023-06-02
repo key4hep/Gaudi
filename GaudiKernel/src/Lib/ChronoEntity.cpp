@@ -103,8 +103,8 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
                                   const double maximal, const unsigned long number ) const {
 
   /// @todo: cache the format
-  const auto fmt      = "Tot={1:5.3g}{0:5} {3} #={2:3}";
-  const auto stat_fmt = "Ave/Min/Max={1:8.3g}(+-{2:8.3g})/{3:8.3g}/{4:8.3g}{0:5}";
+  constexpr auto fmt      = "Tot={1:5.3g}{0:5} {3} #={2:3}";
+  constexpr auto stat_fmt = "Ave/Min/Max={1:8.3g}(+-{2:8.3g})/{3:8.3g}/{4:8.3g}{0:5}";
 
   static const std::array<std::tuple<int, double, std::string_view>, 9> tbl{ { { 500, microsecond, " [us]" },
                                                                                { 500, millisecond, " [ms]" },

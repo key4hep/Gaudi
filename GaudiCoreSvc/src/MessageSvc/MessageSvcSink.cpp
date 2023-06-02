@@ -21,6 +21,15 @@
 #include <map>
 #include <string_view>
 
+#if FMT_VERSION < 80000
+namespace fmt {
+  template <typename T>
+  const T& runtime( const T& v ) {
+    return v;
+  }
+} // namespace fmt
+#endif
+
 namespace {
 
   /**
@@ -105,18 +114,20 @@ public:
       assert( entry != registry.end() );
       // print the json string according to format found
       // This actually will call this formatter again a number of times
-      return fmt::format_to( ctx.out(), entry->second, json_arg );
+      return fmt::format_to( ctx.out(), fmt::runtime( entry->second ), json_arg );
     } else {
       // dealing with a {:name|fmt} format
-      auto actualFormat = fmt::format( "{{:{}", currentFormat ) + "}";
+      auto actualFormat = "{:" + currentFormat + '}';
       switch ( currentFormat.back() ) {
       case 'd':
-        return fmt::format_to( ctx.out(), actualFormat, j.at( currentName ).template get<unsigned int>() );
+        return fmt::format_to( ctx.out(), fmt::runtime( actualFormat ),
+                               j.at( currentName ).template get<unsigned int>() );
       case 'g':
-        return fmt::format_to( ctx.out(), actualFormat, j.at( currentName ).template get<double>() );
+        return fmt::format_to( ctx.out(), fmt::runtime( actualFormat ), j.at( currentName ).template get<double>() );
       case 'p':
         actualFormat[actualFormat.size() - 2] = 'g';
-        return fmt::format_to( ctx.out(), actualFormat, j.at( currentName ).template get<double>() * 100 );
+        return fmt::format_to( ctx.out(), fmt::runtime( actualFormat ),
+                               j.at( currentName ).template get<double>() * 100 );
       default:
         return fmt::format_to( ctx.out(), "Unknown counter format : {}", currentFormat );
       }

@@ -291,7 +291,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
         // Find the DataLoader Alg
         IAlgorithm* dataLoaderAlg( nullptr );
         for ( IAlgorithm* algo : algos )
-          if ( algo->name() == m_useDataLoader ) {
+          if ( m_useDataLoader == algo->name() ) {
             dataLoaderAlg = algo;
             break;
           }

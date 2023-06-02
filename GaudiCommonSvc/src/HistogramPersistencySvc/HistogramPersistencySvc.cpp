@@ -181,7 +181,7 @@ StatusCode HistogramPersistencySvc::createRep( DataObject* pObj, IOpaqueAddress*
   // enable the conversion
   enable( true );
   // conversion is possible ?
-  if ( "NONE" == m_histPersName ) {
+  if ( m_histPersName == "NONE" ) {
     enable( false );
     return PersistencySvc::createRep( pObj, refpAddr ); // RETURN
   }

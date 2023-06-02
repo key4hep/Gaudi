@@ -114,7 +114,7 @@ Containers::KeyedObjectManager<T>::KeyedObjectManager( KeyedObjectManager&& othe
 }
 
 template <class T>
-Containers::KeyedObjectManager<T>::~KeyedObjectManager<T>() {
+Containers::KeyedObjectManager<T>::~KeyedObjectManager() {
   m_setup.s->~T();
 }
 

@@ -111,7 +111,7 @@ void RecordDataSvc::handle( const Incident& incident ) {
         for ( const auto& i : incidents ) m_incidentSvc->fireIncident( Incident{ i, m_incidentName } );
       }
     }
-  } else if ( incident.type() == m_saveIncidentName ) {
+  } else if ( m_saveIncidentName == incident.type() ) {
     always() << "Saving records not implemented." << endmsg;
   }
 }
