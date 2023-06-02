@@ -69,6 +69,15 @@
 #include <type_traits>
 #include <vector>
 
+#if FMT_VERSION < 80000
+namespace fmt {
+  template <typename T>
+  const T& runtime( const T& v ) {
+    return v;
+  }
+} // namespace fmt
+#endif
+
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
@@ -616,7 +625,7 @@ void configGenerator::genImport( std::ostream& s, std::string_view frmt, std::st
     // Prepare import string
     mod = m_configurable[component_t::Module].substr( pos, nxtpos - pos );
     std::ostringstream import;
-    import << fmt::format( frmt, mod );
+    import << fmt::format( fmt::runtime( frmt ), mod );
 
     // append a normal import or a try/except enclosed one depending
     // on availability of a fall-back module (next in the list)

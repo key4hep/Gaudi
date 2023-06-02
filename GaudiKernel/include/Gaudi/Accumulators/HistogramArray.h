@@ -11,9 +11,6 @@
 #pragma once
 
 #include <Gaudi/Accumulators/Histogram.h>
-
-#include <fmt/format.h>
-
 #include <utility>
 
 namespace Gaudi::Accumulators {
@@ -27,7 +24,7 @@ namespace Gaudi::Accumulators {
     struct FormatHistDefault {
       std::string_view text;
       FormatHistDefault( std::string_view t ) : text{ t } {}
-      auto operator()( size_t n ) { return fmt::format( text, n ); }
+      std::string operator()( size_t n );
     };
 
     /**

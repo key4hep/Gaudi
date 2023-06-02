@@ -191,7 +191,7 @@ GaudiUtils::Allocator<Type>::Allocator() throw() : mem( sizeof( Type ) ) {}
 // ************************************************************
 //
 template <class Type>
-GaudiUtils::Allocator<Type>::~Allocator<Type>() throw() {}
+GaudiUtils::Allocator<Type>::~Allocator() throw() {}
 
 // ************************************************************
 // MallocSingle

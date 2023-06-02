@@ -63,7 +63,7 @@ namespace Gaudi::Functional {
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs )
           : base_class( std::move( name ), locator )
           , m_inputLocations{ this, inputs.first, details::to_DataObjID( inputs.second ),
-                              [=]( Gaudi::Details::PropertyBase& ) {
+                              [this]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
                                 if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
@@ -80,7 +80,7 @@ namespace Gaudi::Functional {
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs, const KeyValue& output )
           : base_class( std::move( name ), locator, output )
           , m_inputLocations{ this, inputs.first, details::to_DataObjID( inputs.second ),
-                              [=]( Gaudi::Details::PropertyBase& ) {
+                              [this]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
                                 if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
@@ -144,7 +144,7 @@ namespace Gaudi::Functional {
           auto&          ins = std::get<i>( inputs );
           return Gaudi::Property<std::vector<DataObjID>>{
               this, ins.first, details::to_DataObjID( ins.second ),
-              [=]( auto&& ) {
+              [this]( auto&& ) {
                 auto& handles = std::get<i>( this->m_inputs );
                 auto& ins     = std::get<i>( this->m_inputLocations );
                 using Handles = typename std::decay_t<decltype( handles )>;
@@ -265,7 +265,7 @@ namespace Gaudi::Functional {
           auto&          ins = std::get<i>( inputs );
           return Gaudi::Property<std::vector<DataObjID>>{
               this, ins.first, details::to_DataObjID( ins.second ),
-              [=]( auto&& ) {
+              [this]( auto&& ) {
                 auto& handles = std::get<i>( this->m_inputs );
                 auto& ins     = std::get<i>( this->m_inputLocations );
                 using In      = typename std::decay_t<decltype( handles )>::value_type;
@@ -409,7 +409,7 @@ namespace Gaudi::Functional {
       : base_class( name, pSvcLocator, outputs )
       , m_inputLocations{
             this, inputs.first, details::to_DataObjID( inputs.second ),
-            [=]( Gaudi::Details::PropertyBase& ) {
+            [this]( Gaudi::Details::PropertyBase& ) {
               this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
               if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
                                              // optional flag... so do it

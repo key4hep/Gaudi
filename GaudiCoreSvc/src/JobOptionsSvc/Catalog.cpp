@@ -84,7 +84,7 @@ std::ostream& Gaudi::Parsers::Catalog::fillStream( std::ostream& o ) const {
     }
   }
   o << fmt::format( R"(// ==================================================================================
-// End parser catalog #Components={1} #Properties={2}
+// End parser catalog #Components={} #Properties={}
 // ==================================================================================
 )",
                     nComponents, nProperties );

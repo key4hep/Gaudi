@@ -69,7 +69,7 @@ private:
   Gaudi::Property<std::string> m_rootInTES{ this,
                                             "RootInTES",
                                             {},
-                                            [=]( Gaudi::Details::PropertyBase& ) { // Check rootInTES ends with a '/'
+                                            [this]( Gaudi::Details::PropertyBase& ) { // Check rootInTES ends with a '/'
                                               auto& rit = this->m_rootInTES.value();
                                               if ( !rit.empty() && rit.back() != '/' ) rit += '/';
                                             },

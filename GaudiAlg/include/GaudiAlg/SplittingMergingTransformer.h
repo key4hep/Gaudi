@@ -44,7 +44,7 @@ namespace Gaudi::Functional {
                                    const KeyValues& outputs )
           : base_class( std::move( name ), locator )
           , m_inputLocations{ this, inputs.first, details::to_DataObjID( inputs.second ),
-                              [=]( Gaudi::Details::PropertyBase& ) {
+                              [this]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
                                 if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
@@ -57,7 +57,7 @@ namespace Gaudi::Functional {
                               Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } }
           , m_outputLocations(
                 this, outputs.first, details::to_DataObjID( outputs.second ),
-                [=]( Gaudi::Details::PropertyBase& ) {
+                [this]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
                   if constexpr ( details::is_optional_v<Out> ) { // handle constructor does not (yet) allow to

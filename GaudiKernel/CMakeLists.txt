@@ -79,6 +79,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/GaudiMain.cpp
           src/Lib/Guards.cpp
           src/Lib/HistoDef.cpp
+          src/Lib/HistogramArray.cpp
           src/Lib/HistoryObj.cpp
           src/Lib/IChronoStatSvc.cpp
           src/Lib/IConversionSvc.cpp

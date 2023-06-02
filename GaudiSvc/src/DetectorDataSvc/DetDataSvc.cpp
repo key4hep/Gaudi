@@ -72,7 +72,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
   if ( m_usePersistency ) {
 
     IOpaqueAddress* rootAddr = nullptr;
-    if ( m_detDbLocation.empty() || "empty" == m_detDbLocation ) {
+    if ( m_detDbLocation.empty() || m_detDbLocation == "empty" ) {
 
       // if the name of DBlocation is not given - construct it!
       // by retrieving the value of XMLDDBROOT
@@ -83,7 +83,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
         m_detDbLocation       = loc + "/DDDB/lhcb.xml";
       }
     }
-    if ( m_detDbLocation.empty() || "empty" == m_detDbLocation ) {
+    if ( m_detDbLocation.empty() || m_detDbLocation == "empty" ) {
       error() << "Detector data location name not set. Detector data will "
                  "not be found."
               << endmsg;

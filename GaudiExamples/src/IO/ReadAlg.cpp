@@ -90,7 +90,7 @@ StatusCode ReadAlg::finalize() {
 //--------------------------------------------------------------------
 void ReadAlg::handle( const Incident& incident ) {
   always() << "Got incident: " << incident.type() << " Source:" << incident.source() << endmsg;
-  if ( incident.type() == m_incidentName ) {
+  if ( m_incidentName == incident.type() ) {
     std::string n = incident.source();
     always() << "Received incident:" << incident.type() << ": " << n << endmsg;
     SmartDataPtr<Counter> evt_cnt( m_recordSvc.get(), n + "/EvtCount" );
