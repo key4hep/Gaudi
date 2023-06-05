@@ -6,12 +6,43 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v36r13](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r13) - 2023-06-05
+This is a minor bugfix release needed by LHCb to pick up some additions.
+
+The most interesting changes in this release are:
+- fixes to Python code addressing flake8 reports (now flake8 is also in the pre-commit hooks)
+- fixes to be able to compile with C++20
+- fixes to be able to run on macOS (some usability improvements are still needed, but no blocker left)
+
+### Changed
+- Use `GAUDI_LIBRARY_PATH` instead of `LD_LIBRARY_PATH` on macOS (gaudi/Gaudi!1452)
+- Cleanup `SmartRef` (in)equality comparisons (gaudi/Gaudi!1451)
+- Remove unused indirection for creating new `LinkManagers` (gaudi/Gaudi!1450)
+- Avoid spurious copy of `Stream` (gaudi/Gaudi!1449)
+- EventContext: make constructor explicit (gaudi/Gaudi!1446)
+
+### Added
+- Add new incident `CONNECTED_INPUT` to detect opening of ROOT files for read (gaudi/Gaudi!1456)
+- Add flake8 pre-commit hook (gaudi/Gaudi#263  gaudi/Gaudi!1441)
+- Add specialized function to declare pytest tests (gaudi/Gaudi!1440, gaudi/Gaudi!1448, gaudi/Gaudi!1457)
+- Add move constructor/assignment to `LinkManager` (gaudi/Gaudi!1447)
+- Adds the ability to show the data dependencies of AlgTools (gaudi/Gaudi!1348)
+
+### Fixed
+- C++20 fixes (gaudi/Gaudi#266  gaudi/Gaudi!1455)
+- Fix compiler error with fmt 10.0.0 (gaudi/Gaudi!1454)
+- Fix corner case in QMT file parsing (gaudi/Gaudi!1453)
+- GaudiConfig2: fix comparison of sequence properties (gaudi/Gaudi#264  gaudi/Gaudi!1445)
+- flake8 fixes (gaudi/Gaudi!1443, gaudi/Gaudi!1442, gaudi/Gaudi!1438, gaudi/Gaudi!1437)
+- Fix genconf on macOS (gaudi/Gaudi!1406)
+
+
 ## [v36r12][] - 2023-03-20
 Another minor release requested by LHCb.  The main change is that now
 `OutputStream` creates the output file during the *start* transition instead of
 when trying to write the first selected event.  This means that output files
 might be created and left empty rather than not created.  The rationale for
-this change is to have a more predicatble behaviour (one that does not depend
+this change is to have a more predictable behaviour (one that does not depend
 on the job details).
 
 ### Changed
