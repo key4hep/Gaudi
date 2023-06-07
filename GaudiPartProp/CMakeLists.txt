@@ -10,7 +10,40 @@
 #####################################################################################
 # GaudiPartProp subdirectory
 
-gaudi_add_module(GaudiPartProp
-                 SOURCES src/ParticlePropertySvc.cpp
-                 LINK GaudiKernel
-                      Boost::headers)
+gaudi_add_library(GaudiPartProp
+    SOURCES
+        src/CC.cpp
+        src/Decay.cpp
+        src/IParticlePropertySvc.cpp
+        src/NodePIDs.cpp
+        src/Nodes.cpp
+        src/ParticleID.cpp
+        src/ParticleProperty.cpp
+        src/Symbols.cpp
+        src/TrackDefaultParticles.cpp
+        src/iNode.cpp
+        src/Lomont.cpp
+    LINK
+        PUBLIC
+            Gaudi::GaudiKernel
+)
+
+gaudi_add_module(PartProp
+    SOURCES
+        src/Module/ParticlePropertySvc.cpp
+    LINK
+        GaudiPartProp
+)
+
+gaudi_add_dictionary(PartPropDict
+    HEADERFILES dict/PartPropDict.h
+    SELECTION dict/PartProp.xml
+    LINK
+        GaudiPartProp
+)
+
+gaudi_install(PYTHON)
+
+gaudi_install(SCRIPTS)
+
+gaudi_add_tests(QMTest)

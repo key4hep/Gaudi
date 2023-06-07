@@ -1,0 +1,67 @@
+<!--
+    (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<!--
+     * ========================================================================
+     * @file
+     * The seleciton file to build Reflex dictionaries for
+     * Kernel/PartProp package
+     * @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     * @date 2008-12-01
+     * ========================================================================
+-->
+
+<lcgdict>
+
+
+  <class name = "Gaudi::ParticleID"                />
+  <class name = "Gaudi::ParticleProperty"          />
+  <class name = "Gaudi::IParticlePropertySvc"      />
+  <class name = "Gaudi::IParticlePropertySvc::ParticleProperties" />
+  <class name = "Gaudi::IParticlePropertySvc::iterator"           />
+
+  <class name = "std::vector<Gaudi::ParticleID>"              />
+  <class name = "std::vector<const Gaudi::ParticleProperty*>" />
+
+
+  <enum name = "Gaudi::ParticleID::Quark"    />
+  <enum name = "Gaudi::ParticleID::Location" />
+
+  <function name = "Gaudi::ParticleProperties::printAsTable"   />
+  <function name = "Gaudi::ParticleProperties::particle"       />
+  <function name = "Gaudi::ParticleProperties::particleID"     />
+  <function name = "Gaudi::ParticleProperties::byPythiaID"     />
+  <function name = "Gaudi::ParticleProperties::byEvtGenName"   />
+  <function name = "Gaudi::ParticleProperties::allProperties"  />
+  <function name = "Gaudi::ParticleProperties::index"          />
+
+  <class name = "Decays::Symbols"/>
+
+  <class name = "Decays::Decay"       />
+  <class name = "Decays::Decay::Item" />
+  <class name = "std::vector<Decays::Decay>"       />
+  <class name = "std::vector<Decays::Decay::Item>" />
+
+  <class name    = "Decays::iNode"    />
+  <class name    = "Decays::Node"     />
+  <class pattern = "Decays::Nodes::*" />
+  <class name    = "Decays::Dict::NodeOps" />
+  <class name    = "Decays::NodeList" />
+  <class name    = "std::vector<Decays::Nodes::_Node>" />
+
+
+  <exclusion>
+    <class name = "Gaudi::ParticleID">
+      <method name="digit_"/>
+      <method name="digits_"/>
+    </class>
+  </exclusion>
+
+</lcgdict>

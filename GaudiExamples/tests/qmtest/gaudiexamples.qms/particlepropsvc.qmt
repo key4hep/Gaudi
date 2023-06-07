@@ -18,7 +18,11 @@ from Configurables import GaudiExamples__GaudiPPS as GaudiPPS
 
 importOptions("Common.opts")
 
-ParticlePropertySvc( ParticlePropertiesFile = "../data/ParticleTable.txt" )
+from pathlib import Path
+ParticlePropertiesFilePath = Path("..") / "data" / "ParticleTable.txt"
+
+ParticlePropertySvc( ParticlePropertiesFile = str(ParticlePropertiesFilePath) )
+
 
 ApplicationMgr( EvtMax = 1,
                 EvtSel = 'NONE',

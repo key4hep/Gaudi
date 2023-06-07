@@ -1,3 +1,4 @@
+#
 # ParticleTable.txt file containing particle
 # properties for ParticlePropertySvc, EvtGen and Pythia.
 # Uses PDG 2014 when available.

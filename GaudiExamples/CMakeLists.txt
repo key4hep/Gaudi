@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -76,6 +76,7 @@ gaudi_add_module(GaudiExamples
                          src/NTuples/NTupleAlgorithm.cpp
                          src/PluginService/BackwardCompatibleAliases.cpp
                          src/PluginService/SpecialCustomFactory.cpp
+                         src/PartProp/PartPropAlg.cpp
                          src/Properties/CustomPropertiesAlg.cpp
                          src/Properties/PropertyAlg.cpp
                          src/Properties/PropertyProxy.cpp
@@ -100,6 +101,7 @@ gaudi_add_module(GaudiExamples
                       Gaudi::Functional
                       GaudiUtilsLib
                       GaudiExamplesLib
+                      GaudiPartProp
                       ROOT::Tree
                       ROOT::RIO
                       ROOT::Hist
