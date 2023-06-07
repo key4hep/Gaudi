@@ -256,7 +256,7 @@ namespace Gaudi {
     decltype( auto ) size() const {
       return value().size();
     }
-    template <class T = const ValueType>
+    template <class T = const ValueType, typename = decltype( std::declval<const T>().length() )>
     decltype( auto ) length() const {
       return value().length();
     }
@@ -268,7 +268,7 @@ namespace Gaudi {
     decltype( auto ) clear() {
       value().clear();
     }
-    template <class T = const ValueType>
+    template <class T = const ValueType, typename = decltype( std::declval<const T>().begin() )>
     decltype( auto ) begin() const {
       return value().begin();
     }
@@ -276,7 +276,7 @@ namespace Gaudi {
     decltype( auto ) end() const {
       return value().end();
     }
-    template <class T = ValueType>
+    template <class T = ValueType, typename = decltype( std::declval<T>().begin() )>
     decltype( auto ) begin() {
       return value().begin();
     }
