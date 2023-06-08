@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #include <Gaudi/PropertyFmt.h>
 #include <string>
-#include <string_view>
 #include <vector>
 
 // this is needed to format std::vector
@@ -31,39 +30,39 @@ namespace {
 
   template <>
   struct test_data<int> {
-    std::string_view name{ "SomeInt" };
-    int              value{ 42 };
-    std::string_view fmt{ "42" };
-    std::string_view dbg{ " 'SomeInt':42" };
+    std::string name{ "SomeInt" };
+    int         value{ 42 };
+    std::string fmt{ "42" };
+    std::string dbg{ " 'SomeInt':42" };
   };
 
   template <>
   struct test_data<double> {
-    std::string_view name{ "SomeDouble" };
-    double           value{ 100 };
-    std::string_view fmt{ "100" };
-    std::string_view dbg{ " 'SomeDouble':100" };
+    std::string name{ "SomeDouble" };
+    double      value{ 100 };
+    std::string fmt{ "100" };
+    std::string dbg{ " 'SomeDouble':100" };
   };
 
   template <>
   struct test_data<std::vector<int>> {
-    std::string_view name{ "SomeVector" };
+    std::string      name{ "SomeVector" };
     std::vector<int> value{ 0, 1, 2, 3 };
 #if FMT_VERSION < 80000
-    std::string_view fmt{ "{0, 1, 2, 3}" };
-    std::string_view dbg{ " 'SomeVector':{0, 1, 2, 3}" };
+    std::string fmt{ "{0, 1, 2, 3}" };
+    std::string dbg{ " 'SomeVector':{0, 1, 2, 3}" };
 #else
-    std::string_view fmt{ "[0, 1, 2, 3]" };
-    std::string_view dbg{ " 'SomeVector':[0, 1, 2, 3]" };
+    std::string fmt{ "[0, 1, 2, 3]" };
+    std::string dbg{ " 'SomeVector':[0, 1, 2, 3]" };
 #endif
   };
 
   template <>
   struct test_data<std::string> {
-    std::string_view name{ "SomeString" };
-    std::string      value{ "hello world" };
-    std::string_view fmt{ "hello world" };
-    std::string_view dbg{ " 'SomeString':'hello world'" };
+    std::string name{ "SomeString" };
+    std::string value{ "hello world" };
+    std::string fmt{ "hello world" };
+    std::string dbg{ " 'SomeString':'hello world'" };
   };
 } // namespace
 
