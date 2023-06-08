@@ -24,22 +24,21 @@ namespace Gaudi::Monitoring {
     using BaseSink::BaseSink;
 
     StatusCode stop() override {
-      return BaseSink::stop().andThen( [&] {
-        if ( m_fileName.empty() ) { return StatusCode::SUCCESS; }
-        nlohmann::json output;
-        applytoAllEntities( [&output]( auto& ent ) {
-          output.emplace_back( nlohmann::json{
-              { "name", ent.name },
-              { "component", ent.component },
-              { "entity", ent.toJSON() },
-          } );
+      if ( m_fileName.empty() ) { return StatusCode::SUCCESS; }
+      nlohmann::json output;
+      applytoAllEntities( [&output]( auto& ent ) {
+        output.emplace_back( nlohmann::json{
+            { "name", ent.name },
+            { "component", ent.component },
+            { "entity", ent.toJSON() },
         } );
-        info() << "Writing JSON file " << m_fileName.value() << endmsg;
-        std::ofstream os( m_fileName, std::ios::out );
-        os << output.dump( 4 );
-        os.close();
-        return StatusCode::SUCCESS;
       } );
+      info() << "Writing JSON file " << m_fileName.value() << endmsg;
+      std::ofstream os( m_fileName, std::ios::out );
+      os << output.dump( 4 );
+      os.close();
+      // call parent's stop
+      return BaseSink::stop();
     }
 
   private:
