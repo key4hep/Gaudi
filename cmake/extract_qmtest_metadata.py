@@ -115,7 +115,9 @@ def analyze_deps(pkg, rootdir):
             print(
                 (
                     "set_property(TEST {0} APPEND PROPERTY DEPENDS {1})\n"
-                    "set_property(TEST {0} APPEND PROPERTY FIXTURES_REQUIRED {1})"
+                    "if(NOT QMTEST_DISABLE_FIXTURES_REQUIRED)\n"
+                    "  set_property(TEST {0} APPEND PROPERTY FIXTURES_REQUIRED {1})\n"
+                    "endif()"
                 ).format(name, " ".join(prereqs))
             )
             fixtures_setup.update(prereqs)
