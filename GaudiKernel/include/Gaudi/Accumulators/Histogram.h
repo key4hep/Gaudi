@@ -175,13 +175,20 @@ namespace Gaudi::Accumulators {
     std::vector<std::string> labels;
     /**
      * precomputed ratio to convert a value into bin number
-     * equal to nBins/(maxValue-minValue)
+     * equal to nBins/(maxValue-minValue). Only used for floating Arithmetic
      */
     Arithmetic ratio;
 
     /// returns the bin number for a given value, ranging from 0 (underflow) to nBins+1 (overflow)
     unsigned int index( Arithmetic value ) const {
-      int idx = std::floor( ( value - minValue ) * ratio ) + 1;
+      // In case we use integer as Arithmetic type, we cannot use ratio for computing indices,
+      // as ratios < 1.0 will simply be 0, so we have to pay the division in such a case
+      int idx;
+      if constexpr ( std::is_integral_v<Arithmetic> ) {
+        idx = ( ( value - minValue ) * nBins / ( maxValue - minValue ) ) + 1;
+      } else {
+        idx = std::floor( ( value - minValue ) * ratio ) + 1;
+      }
       return idx < 0 ? 0 : ( (unsigned int)idx > nBins ? nBins + 1 : (unsigned int)idx );
     }
   };

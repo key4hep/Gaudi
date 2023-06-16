@@ -106,6 +106,29 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
   }
 }
 
+BOOST_AUTO_TEST_CASE( test_integer_histos ) {
+  using namespace Gaudi::Accumulators;
+  Algo                                                             algo;
+  Gaudi::Accumulators::Histogram<1, atomicity::none, unsigned int> histo{
+      &algo, "IntH1D", "A 1D histogram with integer content", { 10, 0, 10, "X" } };
+  ++histo[1]; // fill the second (non-overflow) bin
+  ++histo[3]; // fill the fourth (non-overflow) bin
+  BOOST_TEST( histo.toJSON().at( "bins" )[0] == 0 );
+  BOOST_TEST( histo.toJSON().at( "bins" )[2] == 1 );
+  BOOST_TEST( histo.toJSON().at( "bins" )[4] == 1 );
+}
+
+BOOST_AUTO_TEST_CASE( test_integer_histos_small_ratio ) {
+  using namespace Gaudi::Accumulators;
+  Algo                                                             algo;
+  Gaudi::Accumulators::Histogram<1, atomicity::none, unsigned int> histo{
+      &algo, "IntH1D", "A 1D histogram with integer content", { 5, 0, 10, "X" } };
+  ++histo[1]; // fill the first (non-overflow) bin
+  ++histo[3]; // fill the second (non-overflow) bin
+  BOOST_TEST( histo.toJSON().at( "bins" )[1] == 1 );
+  BOOST_TEST( histo.toJSON().at( "bins" )[2] == 1 );
+}
+
 enum class TestEnum { A, B, C, D };
 
 namespace Gaudi::Accumulators {
