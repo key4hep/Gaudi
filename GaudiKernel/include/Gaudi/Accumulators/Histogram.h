@@ -323,7 +323,6 @@ namespace Gaudi::Accumulators {
       return Buffer<BaseAccumulatorT, Atomicity, Arithmetic>{ accumulator( v.computeIndex( m_axis ) ) };
     }
 
-  protected:
     auto& axis() const { return m_axis; }
     auto  nBins( unsigned int i ) const { return m_axis[i].nBins; }
     auto  minValue( unsigned int i ) const { return m_axis[i].minValue; }
