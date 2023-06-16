@@ -51,6 +51,8 @@ StatusCode OutputStream::start() {
 
 // initialize data writer
 StatusCode OutputStream::initialize() {
+  auto status = Algorithm::initialize();
+  if ( status.isFailure() ) return status;
 
   // Reset the number of events written
   m_events = 0;
