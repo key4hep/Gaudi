@@ -18,9 +18,6 @@ from GaudiConfig2._configurables import Configurable, Property
 from GaudiConfig2.semantics import SEMANTICS, PropertySemantics
 from nose.tools import raises, with_setup
 
-if sys.version_info >= (3,):  # pragma no cover
-    basestring = str
-
 
 class InternalType(object):
     """
@@ -97,7 +94,7 @@ def _test_custom_class():
 
 def test_default_init():
     a = MyAlgo1()
-    assert isinstance(a.Option, basestring)
+    assert isinstance(a.Option, str)
     assert a.Option == "abc"
 
     assert "Option" in a._properties

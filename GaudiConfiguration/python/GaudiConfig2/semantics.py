@@ -8,21 +8,11 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import absolute_import
-
 import copy
 import logging
 import re
 import sys
-
-try:
-    from collections.abc import MutableMapping, MutableSequence
-except ImportError:  # pragma no cover
-    # Python 2 version
-    from collections import MutableMapping, MutableSequence
-
-if sys.version_info >= (3,):  # pragma no cover
-    basestring = str
+from collections.abc import MutableMapping, MutableSequence
 
 _log = logging.getLogger(__name__)
 is_64bits = sys.maxsize > 2**32
@@ -130,7 +120,7 @@ class StringSemantics(PropertySemantics):
     __handled_types__ = ("std::string",)
 
     def store(self, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             raise ValueError("cannot set property {} to {!r}".format(self.name, value))
         return value
 
@@ -227,7 +217,7 @@ class ComponentSemantics(PropertySemantics):
 
         if isinstance(value, Configurable):
             value.name  # make sure the configurable has a name
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             # try to map the sring to an existing Configurable
             if value in Configurable.instances:
                 value = Configurable.instances[value]
