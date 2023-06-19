@@ -9,23 +9,21 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import GaudiConfig2._configurables
+import pytest
 from GaudiConfig2 import Configurable, useGlobalInstances
 from GaudiConfig2.Configurables.TestConf import MyAlg
-from nose.tools import raises, with_setup
 
 
-def setup_func():
+@pytest.fixture
+def reset_global_instances_flag():
+    Configurable.instances.clear()
+    GaudiConfig2._configurables._GLOBAL_INSTANCES = False
+    yield
     Configurable.instances.clear()
     GaudiConfig2._configurables._GLOBAL_INSTANCES = False
 
 
-def teardown_func():
-    Configurable.instances.clear()
-    GaudiConfig2._configurables._GLOBAL_INSTANCES = False
-
-
-@with_setup(setup_func, teardown_func)
-def test_enable_disable():
+def test_enable_disable(reset_global_instances_flag):
 
     useGlobalInstances(False)
     assert not GaudiConfig2._configurables._GLOBAL_INSTANCES
@@ -43,16 +41,14 @@ def test_enable_disable():
     assert not GaudiConfig2._configurables._GLOBAL_INSTANCES
 
 
-@with_setup(setup_func, teardown_func)
-@raises(AssertionError)
-def test_cannot_disable():
+def test_cannot_disable(reset_global_instances_flag):
     useGlobalInstances(True)
     MyAlg("a")
-    useGlobalInstances(False)
+    with pytest.raises(AssertionError):
+        useGlobalInstances(False)
 
 
-@with_setup(setup_func, teardown_func)
-def test_no_globals():
+def test_no_globals(reset_global_instances_flag):
     useGlobalInstances(True)
     anonymous = MyAlg()
     assert not hasattr(anonymous, "name")
@@ -65,25 +61,22 @@ def test_no_globals():
     assert a.name == MyAlg.__cpp_type__
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_cannot_delete_name():
+def test_cannot_delete_name(reset_global_instances_flag):
     useGlobalInstances(False)
     a = MyAlg()
-    del a.name
+    with pytest.raises(TypeError):
+        del a.name
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_cannot_nullify_name_1():
+def test_cannot_nullify_name_1(reset_global_instances_flag):
     useGlobalInstances(False)
     a = MyAlg()
-    a.name = None
+    with pytest.raises(TypeError):
+        a.name = None
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_cannot_nullify_name_2():
+def test_cannot_nullify_name_2(reset_global_instances_flag):
     useGlobalInstances(False)
     a = MyAlg()
-    a.name = ""
+    with pytest.raises(TypeError):
+        a.name = ""

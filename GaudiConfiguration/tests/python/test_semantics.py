@@ -8,7 +8,8 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2 import Configurable, useGlobalInstances
+import pytest
+from GaudiConfig2 import Configurable
 from GaudiConfig2.Configurables.TestConf import MyAlg
 from GaudiConfig2.semantics import (
     ComponentSemantics,
@@ -16,17 +17,6 @@ from GaudiConfig2.semantics import (
     StringSemantics,
     getSemanticsFor,
 )
-from nose.tools import raises, with_setup
-
-
-def setup_func():
-    Configurable.instances.clear()
-    useGlobalInstances(True)
-
-
-def teardown_func():
-    Configurable.instances.clear()
-    useGlobalInstances(False)
 
 
 def test_semantics_lookup():
@@ -39,9 +29,9 @@ def test_string_ok():
     assert s.store("something") == "something"
 
 
-@raises(TypeError)
 def test_string_bad():
-    getSemanticsFor("std::string").store(123)
+    with pytest.raises(TypeError):
+        getSemanticsFor("std::string").store(123)
 
 
 def test_semantics_delegation():
@@ -50,9 +40,9 @@ def test_semantics_delegation():
     assert p.AStringProp == "something"
 
 
-@raises(TypeError)
 def test_semantics_delegation_bad():
-    MyAlg(AStringProp=123)
+    with pytest.raises(TypeError):
+        MyAlg(AStringProp=123)
 
 
 def test_no_change_after_exception():
@@ -83,10 +73,10 @@ def test_float_ok():
     assert s.store(1e30) == 1e30
 
 
-@raises(TypeError)
 def test_float_bad():
     s = getSemanticsFor("double")
-    s.store("number")
+    with pytest.raises(TypeError):
+        s.store("number")
 
 
 def test_int_ok():
@@ -95,19 +85,19 @@ def test_int_ok():
     assert s.store(-999) == -999
 
 
-@raises(ValueError)
 def test_int_bad():
-    getSemanticsFor("int").store(2**32)
+    with pytest.raises(ValueError):
+        getSemanticsFor("int").store(2**32)
 
 
-@raises(ValueError)
 def test_uint_bad():
-    getSemanticsFor("unsigned int").store(-1)
+    with pytest.raises(ValueError):
+        getSemanticsFor("unsigned int").store(-1)
 
 
-@raises(TypeError)
 def test_int_bad_type():
-    getSemanticsFor("int").store("42")
+    with pytest.raises(TypeError):
+        getSemanticsFor("int").store("42")
 
 
 def test_int_coercion():
@@ -116,8 +106,7 @@ def test_int_coercion():
     assert s.store(True) == 1
 
 
-@with_setup(setup_func, teardown_func)
-def test_alg_semantics():
+def test_alg_semantics(with_global_instances):
     s = getSemanticsFor("Algorithm")
     p = MyAlg("p")
 
@@ -136,36 +125,31 @@ def test_alg_semantics():
     assert q is Configurable.instances["q"]
 
 
-@with_setup(setup_func, teardown_func)
-@raises(AttributeError)
-def test_alg_semantics_bad_type_name():
+def test_alg_semantics_bad_type_name(with_global_instances):
     s = getSemanticsFor("Algorithm")
-    s.store("GluGluGlu")
+    with pytest.raises(AttributeError):
+        s.store("GluGluGlu")
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_alg_semantics_bad_type():
+def test_alg_semantics_bad_type(with_global_instances):
     s = getSemanticsFor("Algorithm")
-    s.store(123)
+    with pytest.raises(TypeError):
+        s.store(123)
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_alg_semantics_bad_comp_type():
+def test_alg_semantics_bad_comp_type(with_global_instances):
     s = getSemanticsFor("Service")
-    s.store("TestConf::MyAlg")
+    with pytest.raises(TypeError):
+        s.store("TestConf::MyAlg")
 
 
-@with_setup(setup_func, teardown_func)
-@raises(AttributeError)
-def test_alg_semantics_bad_unnamed_comp():
+def test_alg_semantics_bad_unnamed_comp(with_global_instances):
     s = getSemanticsFor("Algorithm")
-    s.store(MyAlg())
+    with pytest.raises(AttributeError):
+        s.store(MyAlg())
 
 
-@with_setup(setup_func, teardown_func)
-def test_interfaces_check():
+def test_interfaces_check(with_global_instances):
     s = getSemanticsFor("AlgTool")
     assert isinstance(s, ComponentSemantics)
     assert s.store("TestConf::SimpleOptsAlgTool")
@@ -187,39 +171,34 @@ def test_interfaces_check():
     assert s.store("TestConf::SimpleOptsAlgTool")
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_interfaces_check_bad1():
+def test_interfaces_check_bad1(with_global_instances):
     s = getSemanticsFor("AlgTool:IToolTypeA")
     assert isinstance(s, ComponentSemantics)
-    assert s.store("TestConf::SimpleOptsAlgTool")
+    with pytest.raises(TypeError):
+        s.store("TestConf::SimpleOptsAlgTool")
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_interfaces_check_bad2():
+def test_interfaces_check_bad2(with_global_instances):
     s = getSemanticsFor("AlgTool:IToolType1,IToolTypeA")
     assert isinstance(s, ComponentSemantics)
-    assert s.store("TestConf::SimpleOptsAlgTool")
+    with pytest.raises(TypeError):
+        s.store("TestConf::SimpleOptsAlgTool")
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_interfaces_check_bad3():
+def test_interfaces_check_bad3(with_global_instances):
     s = getSemanticsFor("AlgTool:IToolType1,IToolType2,IToolTypeA")
-    assert s.store("TestConf::SimpleOptsAlgTool")
+    with pytest.raises(TypeError):
+        s.store("TestConf::SimpleOptsAlgTool")
 
 
-@with_setup(setup_func, teardown_func)
-def test_component_default():
+def test_component_default(with_global_instances):
     from GaudiConfig2 import Configurables as C
 
     a = C.TestConf.SimpleOptsAlg()
     assert isinstance(a.Tool, C.TestConf.SimpleOptsAlgTool)
 
 
-@with_setup(setup_func, teardown_func)
-def test_parent_handling():
+def test_parent_handling(with_global_instances):
     import GaudiConfig2.Configurables.TestConf as TC
 
     p = TC.SimpleOptsAlg("Dummy")

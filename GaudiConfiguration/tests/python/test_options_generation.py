@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2 import Configurable, useGlobalInstances
+import pytest
 from GaudiConfig2.Configurables.TestConf import (
     AlgWithComplexProperty,
     AlgWithMaps,
@@ -16,39 +16,24 @@ from GaudiConfig2.Configurables.TestConf import (
     SimpleOptsAlg,
     SimpleOptsAlgTool,
 )
-from nose.tools import raises, with_setup
 
 
-def setup_func():
-    Configurable.instances.clear()
-    useGlobalInstances(True)
-
-
-def teardown_func():
-    Configurable.instances.clear()
-    useGlobalInstances(False)
-
-
-@with_setup(setup_func, teardown_func)
-def test_opt_value():
+def test_opt_value(with_global_instances):
     assert SimpleOptsAlg("Dummy").__opt_value__() == "TestConf::SimpleOptsAlg/Dummy"
     del SimpleOptsAlg.instances["Dummy"].name
 
 
-@with_setup(setup_func, teardown_func)
-@raises(AttributeError)
-def test_comp_requires_name():
-    SimpleOptsAlg().__opt_value__()
+def test_comp_requires_name(with_global_instances):
+    with pytest.raises(AttributeError):
+        SimpleOptsAlg().__opt_value__()
 
 
-@with_setup(setup_func, teardown_func)
-@raises(AttributeError)
-def test_props_require_name():
-    SimpleOptsAlg(AnIntProp=10).__opt_properties__()
+def test_props_require_name(with_global_instances):
+    with pytest.raises(AttributeError):
+        SimpleOptsAlg(AnIntProp=10).__opt_properties__()
 
 
-@with_setup(setup_func, teardown_func)
-def test_props():
+def test_props(with_global_instances):
     p = SimpleOptsAlg("Dummy")
 
     assert p.__opt_properties__() == {}
@@ -70,8 +55,7 @@ def test_props():
     }
 
 
-@with_setup(setup_func, teardown_func)
-def test_special_cases_for_is_set_with_custom_handler():
+def test_special_cases_for_is_set_with_custom_handler(with_global_instances):
     p = SimpleOptsAlg("Dummy")
     assert p.__opt_properties__() == {}
 
@@ -83,8 +67,7 @@ def test_special_cases_for_is_set_with_custom_handler():
     }
 
 
-@with_setup(setup_func, teardown_func)
-def test_special_cases_for_is_set_with_default_handler():
+def test_special_cases_for_is_set_with_default_handler(with_global_instances):
     p = AlgWithComplexProperty("Dummy")
     assert p.__opt_properties__() == {}
     # just accessing is not setting, so it should not appear
@@ -112,8 +95,7 @@ def test_special_cases_for_is_set_with_default_handler():
     }
 
 
-@with_setup(setup_func, teardown_func)
-def test_all_options_default():
+def test_all_options_default(with_global_instances):
     SimpleOptsAlgTool("MyTool", parent=SimpleOptsAlg("Parent"))
     SimpleOptsAlg("AnotherAlg")
 
@@ -131,8 +113,7 @@ def test_all_options_default():
     }
 
 
-@with_setup(setup_func, teardown_func)
-def test_all_options():
+def test_all_options(with_global_instances):
     SimpleOptsAlgTool("MyTool", parent=SimpleOptsAlg("Parent", Int=9), Bool=False)
     SimpleOptsAlg("AnotherAlg", Int=0)
 
@@ -154,8 +135,7 @@ def test_all_options():
     }
 
 
-@with_setup(setup_func, teardown_func)
-def test_vector_options():
+def test_vector_options(with_global_instances):
     a = AlgWithVectors("a")
     a.VS = list("abc")
 
@@ -174,8 +154,7 @@ def test_vector_options():
     }
 
 
-@with_setup(setup_func, teardown_func)
-def test_map_options():
+def test_map_options(with_global_instances):
     a = AlgWithMaps("a")
     a.MSS = dict(zip("abc", "ABC"))
 

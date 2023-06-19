@@ -8,9 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import pytest
 from GaudiConfig2 import semantics as S
 from GaudiConfig2.Configurables.TestConf import AlgWithMaps
-from nose.tools import raises
 
 
 def test_init_map():
@@ -46,12 +46,12 @@ def test_empyDict():
     assert d == {}
 
 
-@raises(RuntimeError)
 def test_default_read_only():
     s = S.getSemanticsFor("std::map<std::string, std::string>")
     d = s.default({"a": "A", "b": "B", "c": "C"})
     assert len(d) == 3
-    del d[1]
+    with pytest.raises(RuntimeError):
+        del d[1]
 
 
 def test_changes():
@@ -95,16 +95,16 @@ def test_access():
     assert d.get("q", "Q") == "Q"
 
 
-@raises(TypeError)
 def test_assignment_bad_value():
     s = S.getSemanticsFor("std::map<std::string, std::string>")
-    s.store({"a": "A", "b": "B", "c": 1})
+    with pytest.raises(TypeError):
+        s.store({"a": "A", "b": "B", "c": 1})
 
 
-@raises(TypeError)
 def test_assignment_bad_key():
     s = S.getSemanticsFor("std::map<std::string, std::string>")
-    s.store({"a": "A", "b": "B", 1: "C"})
+    with pytest.raises(TypeError):
+        s.store({"a": "A", "b": "B", 1: "C"})
 
 
 def test_in_alg():
@@ -132,7 +132,7 @@ def test_nested_map_vector():
     assert list(d[2]) == list("cde")
 
 
-@raises(ValueError)
 def test_nested_map_vector_bad():
     s = S.getSemanticsFor("map<int,vector<std::string>>")
-    s.store({1: ["a", "b"], 2: ["c", 0, "e"]})
+    with pytest.raises(TypeError):
+        s.store({1: ["a", "b"], 2: ["c", 0, "e"]})

@@ -8,22 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2 import Configurable, useGlobalInstances
-from nose.tools import with_setup
 
 
-def setup_func():
-    Configurable.instances.clear()
-    useGlobalInstances(True)
-
-
-def teardown_func():
-    Configurable.instances.clear()
-    useGlobalInstances(False)
-
-
-@with_setup(setup_func, teardown_func)
-def test_property_default():
+def test_property_default(with_global_instances):
     import GaudiConfig2.Configurables.TestConf as TC
 
     a = TC.AlgWithComplexProperty()
@@ -41,8 +28,7 @@ def test_property_default():
     assert b.TH.typeAndName == orig_b_value
 
 
-@with_setup(setup_func, teardown_func)
-def test_sequence_property_default():
+def test_sequence_property_default(with_global_instances):
     import GaudiConfig2.Configurables.TestConf as TC
 
     a = TC.AlgWithComplexProperty()
@@ -57,8 +43,7 @@ def test_sequence_property_default():
     assert list(b.VS) == []
 
 
-@with_setup(setup_func, teardown_func)
-def test_set_property_default():
+def test_set_property_default(with_global_instances):
     import GaudiConfig2.Configurables.TestConf as TC
 
     a = TC.AlgWithComplexProperty()

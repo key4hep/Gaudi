@@ -8,23 +8,11 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2 import Configurable, useGlobalInstances
+import pytest
 from GaudiConfig2.Configurables.TestConf import MyAlg, SimpleOptsAlgTool
-from nose.tools import raises, with_setup
 
 
-def setup_func():
-    Configurable.instances.clear()
-    useGlobalInstances(True)
-
-
-def teardown_func():
-    Configurable.instances.clear()
-    useGlobalInstances(False)
-
-
-@with_setup(setup_func, teardown_func)
-def test_configurable():
+def test_configurable(with_global_instances):
 
     from GaudiConfig2 import Configurable
 
@@ -98,8 +86,7 @@ def test_properties():
     assert p.AnIntProp == 42
 
 
-@with_setup(setup_func, teardown_func)
-def test_parent_handling():
+def test_parent_handling(with_global_instances):
     p = MyAlg("Dummy")
 
     t = SimpleOptsAlgTool("ATool", parent=p)
@@ -112,20 +99,17 @@ def test_parent_handling():
     assert t.getName() == "Dummy.ATool.BTool"
 
 
-@with_setup(setup_func, teardown_func)
-@raises(AttributeError)
-def test_parent_with_no_name():
-    SimpleOptsAlgTool("ATool", parent=MyAlg())
+def test_parent_with_no_name(with_global_instances):
+    with pytest.raises(AttributeError):
+        SimpleOptsAlgTool("ATool", parent=MyAlg())
 
 
-@with_setup(setup_func, teardown_func)
-@raises(TypeError)
-def test_child_with_no_name():
-    SimpleOptsAlgTool(parent=MyAlg("Dummy"))
+def test_child_with_no_name(with_global_instances):
+    with pytest.raises(TypeError):
+        SimpleOptsAlgTool(parent=MyAlg("Dummy"))
 
 
-@with_setup(setup_func, teardown_func)
-def test_clone():
+def test_clone(with_global_instances):
     a = MyAlg("a", AnIntProp=42)
     b = a.clone("b")
     assert id(a) != id(b)
