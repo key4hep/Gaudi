@@ -121,7 +121,7 @@ class StringSemantics(PropertySemantics):
 
     def store(self, value):
         if not isinstance(value, str):
-            raise ValueError("cannot set property {} to {!r}".format(self.name, value))
+            raise TypeError("cannot set property {} to {!r}".format(self.name, value))
         return value
 
 
@@ -171,7 +171,7 @@ class IntSemantics(PropertySemantics):
 
         if not isinstance(value, Number):
             raise TypeError(
-                "number expected, got {!r} in assignemnt to {}".format(value, self.name)
+                "number expected, got {!r} in assignment to {}".format(value, self.name)
             )
         v = int(value)
         if v != value:

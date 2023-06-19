@@ -39,7 +39,7 @@ def test_string_ok():
     assert s.store("something") == "something"
 
 
-@raises(ValueError)
+@raises(TypeError)
 def test_string_bad():
     getSemanticsFor("std::string").store(123)
 
@@ -50,7 +50,7 @@ def test_semantics_delegation():
     assert p.AStringProp == "something"
 
 
-@raises(ValueError)
+@raises(TypeError)
 def test_semantics_delegation_bad():
     MyAlg(AStringProp=123)
 
@@ -61,8 +61,8 @@ def test_no_change_after_exception():
     assert p.AStringProp == "something"
     try:
         p.AStringProp = 123
-        assert False, "ValueError expected"
-    except ValueError:
+        assert False, "TypeError expected"
+    except TypeError:
         pass
     assert p.AStringProp == "something"
 

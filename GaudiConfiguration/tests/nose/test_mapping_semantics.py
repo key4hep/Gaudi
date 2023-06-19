@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -95,13 +95,13 @@ def test_access():
     assert d.get("q", "Q") == "Q"
 
 
-@raises(ValueError)
+@raises(TypeError)
 def test_assignment_bad_value():
     s = S.getSemanticsFor("std::map<std::string, std::string>")
     s.store({"a": "A", "b": "B", "c": 1})
 
 
-@raises(ValueError)
+@raises(TypeError)
 def test_assignment_bad_key():
     s = S.getSemanticsFor("std::map<std::string, std::string>")
     s.store({"a": "A", "b": "B", 1: "C"})
