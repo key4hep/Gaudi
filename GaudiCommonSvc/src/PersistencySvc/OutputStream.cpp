@@ -51,6 +51,13 @@ StatusCode OutputStream::start() {
 
 // initialize data writer
 StatusCode OutputStream::initialize() {
+  auto status = Algorithm::initialize();
+  if ( status.isFailure() ) return status;
+
+  if ( m_output.empty() ) {
+    fatal() << "property Output not set. OutputStream instances require an output" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   // Reset the number of events written
   m_events = 0;
