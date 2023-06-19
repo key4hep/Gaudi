@@ -6,6 +6,25 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v36r14](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r14) - 2023-06-19
+This release features a number of minor fixes to help downstream projects
+work with C++20, plus a few minor fixes.
+
+### Changed
+- Make sure `OutputStream` instances are configured with and explicit `Output`
+  option (gaudi/Gaudi#262  gaudi/Gaudi!1467)
+
+### Added
+- Allow disabling of `FIXTURES_REQUIRED` for qmtests (gaudi/Gaudi!1465)
+- Made more methods public in Histograms (gaudi/Gaudi!1460)
+- Add support for Gaudi::Property to fmtlib (gaudi/Gaudi!1462)
+
+### Fixed
+- Fix delegation of `T == Property&lt;T&gt;` for C++20 (gaudi/Gaudi!1466)
+- Fixed improper ordering of stops methods in Sinks (gaudi/Gaudi!1464)
+- Fixed usage of histograms with integer Arithmetic (gaudi/Gaudi!1461)
+
+
 ## [v36r13](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r13) - 2023-06-05
 This is a minor bugfix release needed by LHCb to pick up some additions.
 
