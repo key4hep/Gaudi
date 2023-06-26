@@ -339,7 +339,7 @@ private:
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  tbb::task_arena*        m_arena{ nullptr };
+  std::shared_ptr<tbb::task_arena> m_arena{ nullptr };
   size_t                  m_maxEventsInFlight{ 0 };
   size_t                  m_maxAlgosInFlight{ 1 };
 
