@@ -114,7 +114,8 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( m_threadPoolSize );
 
     // Create the task arena to run all algorithms
-    m_arena = tbb::task_arena( m_threadPoolSize + 1 );
+    m_arena =
+        std::make_shared<tbb::task_arena>( m_threadPoolSize + 1 );
 
     // Create the barrier for task synchronization at termination
     // (here we increase the number of threads by one to account for calling thread)
@@ -124,6 +125,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
     // don't use a thread pool
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );
     m_tbbgc = std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism, 0 );
+    m_arena = std::make_shared<tbb::task_arena>( 1 );
   }
 
   ON_DEBUG debug() << "Thread Pool initialization complete. Maximum allowed parallelism: "
@@ -177,7 +179,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
       // Queue the task
       if ( !terminate ) m_threadInitCount++;
-      m_arena.enqueue( ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate ) );
+      m_arena->enqueue( ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate ) );
       std::this_thread::sleep_for( std::chrono::milliseconds( 20 ) );
     }
 

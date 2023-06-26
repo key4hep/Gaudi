@@ -58,7 +58,7 @@ public:
 
   virtual void initThisThread() override;
 
-  tbb::task_arena* getArena() { return &m_arena; }
+  std::shared_ptr<tbb::task_arena> getArena() { return m_arena; }
 
 private:
   /// Launch tasks to execute the ThreadInitTools
@@ -83,7 +83,7 @@ private:
   std::unique_ptr<tbb::global_control> m_tbbgc;
 
   /// TBB task arena to run all algorithms
-  tbb::task_arena m_arena;
+  std::shared_ptr<tbb::task_arena> m_arena;
 
   /// Counter for all threads that are initialised
   std::atomic<int> m_threadInitCount = 0;

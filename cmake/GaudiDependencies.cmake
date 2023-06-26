@@ -121,7 +121,11 @@ endif()
 
 # FIXME: if you are using the normal version of TBB, it has a config file so
 #   remove cmake/FindTBB.cmake and add CONFIG to the next line.
-find_package(TBB 2019.0.11007.2 REQUIRED ${__quiet})
+find_package(TBB 2019.0.11007.2 REQUIRED ${__quiet} CONFIG)
+if (NOT TBB_FOUND)
+  # Fall back to the module
+  find_package(TBB 2019.0.11007.2 REQUIRED ${__quiet})
+endif ()
 
 set(_gaudi_ZLIB_MIN_VERSION 1.2.11)
 foreach(dep IN ITEMS UUID Threads ZLIB Rangev3 cppgsl fmt nlohmann_json)

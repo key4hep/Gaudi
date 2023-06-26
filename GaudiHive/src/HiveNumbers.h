@@ -33,7 +33,7 @@ class IRndmGenSvc;
 
 namespace HiveRndm {
 
-  typedef tbb::spin_rw_mutex_v3 HiveNumbersMutex;
+  typedef tbb::spin_rw_mutex HiveNumbersMutex;
 
   class GAUDI_API HiveNumbers {
   private:
