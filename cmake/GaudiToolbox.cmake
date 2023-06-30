@@ -127,6 +127,28 @@ set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cm
 set(scan_dict_deps_command ${GAUDI_TOOLBOX_DIR}/scan_dict_deps.py
     CACHE INTERNAL "command to use to scan dependencies of dictionary headers")
 
+##################################### PGO  #####################################
+
+if("${PGO}" MATCHES "GENERATE")
+	message("PGO generate")
+	if(DEFINED PGO_PATH)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-generate=${PGO_PATH}")
+	else()
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-generate")
+	endif()
+endif()
+if("${PGO}" MATCHES "USE")
+	message("PGO use")
+	if(DEFINED PGO_PATH)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-use=${PGO_PATH} -fprofile-correction")
+	else()
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-use -fprofile-correction")
+	endif()
+	include(CheckIPOSupported)
+	check_ipo_supported()
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 ################################## Functions  ##################################
 
 # Helper function that replaces imported targets in ``<var>`` with local ones,
