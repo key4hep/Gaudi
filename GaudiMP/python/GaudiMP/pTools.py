@@ -641,7 +641,7 @@ class Syncer(object):
             if self.manyEvents:
                 self.limitFirst = firstEvent
 
-        self.keys = self.d.keys()
+        self.keys = list(self.d.keys())
         self.nWorkers = nWorkers
         self.log = log
 
