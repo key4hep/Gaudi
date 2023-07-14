@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations      *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,24 +8,25 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <utility>
-//
-//  make it possible to execute an action at the exit of a scope
-//
-//  auto f = finally( [](){ std::cout << "end of scope!" << std::endl; } );
-//
-//  the above will execute the provided callable when f goes out of scope,
-//  i.e. the 'current' scope ends.
+#include <GaudiKernel/finally.h>
+#include <string>
 
-template <typename F>
-struct final_action {
-  F act;
-  final_action( F&& act ) : act{ std::move( act ) } {}
-  final_action( final_action&& ) = default;
-  ~final_action() { act(); }
-};
+#if __has_include( <catch2/catch.hpp> )
+// Catch2 v2
+#  include <catch2/catch.hpp>
+#else
+// Catch2 v3
+#  include <catch2/catch_template_test_macros.hpp>
+#  include <catch2/catch_test_macros.hpp>
+#endif
 
-template <typename F>
-final_action<F> finally( F&& act ) {
-  return { std::forward<F>( act ) };
+TEST_CASE( "finally" ) {
+  std::string store = "initial";
+  {
+    CHECK( store == "initial" );
+    auto f = finally( [&store]() { store = "final"; } );
+    store  = "temporary";
+    CHECK( store == "temporary" );
+  }
+  CHECK( store == "final" );
 }
