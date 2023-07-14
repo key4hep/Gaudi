@@ -9,30 +9,26 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 variables:
-  LCG_VERSION: "101"
   CMAKE_GENERATOR: 'Ninja' # default build system
-  NO_LBLOGIN: "1" # prevent lbdocker containers to start LbLogin/LbEnv
   TARGET_BRANCH: master
-
-# All the configuration
-default:
-  image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
-  before_script:
-    # Add Ninja and CMake to the PATH
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH"
-    - export CCACHE_DIR=$PWD/.ccache
-    - export PRESET=full
 
 # Job templates
 .build: &template_build
   tags:
     - cvmfs
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/centos7-devel:latest
+  before_script:
+    # Add Ninja and CMake to the PATH
+    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.20.0/Linux-$(uname -m)/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.11.1/Linux-$(uname -m)/bin:$PATH"
+    - export CCACHE_DIR=$PWD/.ccache
+    - "export LCG_VERSION=$(cut -d: -f2 <<< $CI_JOB_NAME)"
+    - "export platform=$(cut -d: -f3 <<< $CI_JOB_NAME)"
+    - "export PRESET=$(cut -d: -f4 <<< $CI_JOB_NAME)" 
+    - if [ -z "$PRESET" ] ; then PRESET=full ; fi
   script:
-    - platform=${CI_JOB_NAME%/*}
-    - if [[ "${CI_JOB_NAME}" = */* ]] ; then PRESET=${CI_JOB_NAME#*/} ; fi
     - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
     - cmake --version
-    - cmake -S . -B build -Wno-dev -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -C ci-utils/preset-${PRESET}.cmake
+    - cmake -S . -B build -Wno-dev -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DGAUDI_TEST_PUBLIC_HEADERS_BUILD=yes -C ci-utils/preset-${PRESET}.cmake
     - ccache -z
     # pre-heat ccache cache for GaudiKernel
     - jobs=$(nproc)
@@ -42,30 +38,10 @@ default:
     - done
     # build from scratch
     - cmake --build build --target clean
-    - cmake --build build 2>&1 | tee build/build.log
+    - cmake --build build 2>&1 | tee build.log
     - ccache -s
-  artifacts:
-    paths:
-      - build
-      - lcg-toolchains
-    expire_in: 1 week
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - .ccache
-
-.build-check: &template_build_check
-  variables:
-    LOG: build/build.log
-  script:
-    - ci-utils/build-check ${LOG}
-  allow_failure: true
-
-.test: &template_test
-  tags:
-    - cvmfs
-  script:
-    - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
+    - cp build/compile_commands.json .
+    # run the tests
     - cd build
     - if ctest -T test -j $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
     - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
@@ -75,47 +51,92 @@ default:
     - test "$result" = "success"
   artifacts:
     paths:
+      - build.log
+      - compile_commands.json
       - Test.xml
     reports:
       junit:
         - results.xml
     when: always
     expire_in: 1 week
-
-.test_headers: &template_test_headers
-  tags:
-    - cvmfs
-  script:
-    - export CCACHE_DIR=$PWD/.ccache_headers
-    - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
-    - ccache -z
-    - cmake --build build --target test_public_headers_build 2>&1 | tee build/test_public_headers_build.log
-    - ccache -s
-  artifacts:
-    paths:
-      - build/test_public_headers_build.log
-    when: always
-    expire_in: 1 week
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - .ccache_headers
+      - .ccache
+      - build/Testing
 
+.warnings-check: &template_warnings_check
+  variables:
+    LOG: build.log
+  script:
+    - ci-utils/build-check ${LOG}
+  allow_failure: true
 
 ### Build
-x86_64-centos7-gcc11-opt:
+lcg:103:x86_64-centos7-gcc12-opt:
   <<: *template_build
 
-x86_64-centos7-gcc11-dbg:
+lcg:103:x86_64-centos7-gcc12-dbg:
   <<: *template_build
 
-x86_64-centos7-gcc11-opt/minimal:
+lcg:103:x86_64-centos9-gcc12-opt:
+  <<: *template_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+
+lcg:103:x86_64-centos9-gcc12-dbg:
+  <<: *template_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+
+lcg:103:x86_64-centos7-gcc11-opt:minimal:
   <<: *template_build
 
-view-gcc8:
+lhcb:103:x86_64_v2-el9-gcc12-opt:
+  <<: *template_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+  script:
+    - shopt -s expand_aliases
+    - . /cvmfs/lhcb.cern.ch/lib/LbEnv
+    - cmake --version
+    - lb-set-platform $platform
+    - lb-project-init --overwrite
+    - ccache -z
+    - mkdir build.${BINARY_TAG}
+    - if [ -e build/Testing ] ; then mv build/Testing build.${BINARY_TAG} ; fi
+    # pre-heat ccache cache for GaudiKernel
+    - jobs=$(nproc)
+    - while [[ $jobs -ge 1 ]] ; do
+    -   make BUILDFLAGS=-j$jobs GaudiKernel && break || true
+    -   jobs=$(( $jobs / 2 ))
+    - done
+    # build from scratch
+    - make clean
+    - make 2>&1 | tee build.log
+    - ccache -s
+    # run the tests
+    - if make test ARGS="-j $(nproc) --repeat until-pass:3 --no-compress-output" ; then result=success ; else result=failure ; fi
+    - cp build.${BINARY_TAG}/Testing/$(head -1 build.${BINARY_TAG}/Testing/TAG)/Test.xml .
+    - mkdir -p build && mv build.${BINARY_TAG}/Testing build
+    - cp build.${BINARY_TAG}/compile_commands.json .
+    - mv build.${BINARY_TAG}/html .
+    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
+    - test "$result" = "success"
+  artifacts:
+    paths:
+      - build.log
+      - compile_commands.json
+      - Test.xml
+      - html
+    reports:
+      junit:
+        - results.xml
+    when: always
+    expire_in: 1 week
+
+lcg-view:102b:x86_64-centos7-gcc11-opt:
   <<: *template_build
   script:
-    - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
+    - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
     - cmake --version
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
@@ -127,150 +148,72 @@ view-gcc8:
     - done
     # build from scratch
     - cmake --build build --target clean
-    - cmake --build build 2>&1 | tee build/build.log
+    - cmake --build build 2>&1 | tee build.log
     - ccache -s
-
-lhcb-gcc11:
-  <<: *template_build
-  variables:
-    BINARY_TAG: x86_64_v2-centos7-gcc11-opt
-  script:
-    - . /cvmfs/lhcb.cern.ch/lib/LbEnv
-    - cmake --version
-    - lb-project-init --overwrite
-    - ccache -z
-    - mkdir build.${BINARY_TAG}
-    # pre-heat ccache cache for GaudiKernel
-    - jobs=$(nproc)
-    - while [[ $jobs -ge 1 ]] ; do
-    -   make BUILDFLAGS=-j$jobs GaudiKernel && break || true
-    -   jobs=$(( $jobs / 2 ))
-    - done
-    # build from scratch
-    - make clean
-    - make 2>&1 | tee build.${BINARY_TAG}/build.log
-    - ccache -s
-  artifacts:
-    paths:
-      - build.${BINARY_TAG}
-    expire_in: 1 week
-
-### Tests
-x86_64-centos7-gcc11-opt:test:
-  <<: *template_test
-  needs:
-    - job: "x86_64-centos7-gcc11-opt"
-      artifacts: true
-
-x86_64-centos7-gcc11-opt:test_headers:
-  <<: *template_test_headers
-  needs:
-    - job: "x86_64-centos7-gcc11-opt"
-      artifacts: true
-
-x86_64-centos7-gcc11-dbg:test:
-  <<: *template_test
-  needs:
-    - job: "x86_64-centos7-gcc11-dbg"
-      artifacts: true
-
-x86_64-centos7-gcc11-dbg:test_headers:
-  <<: *template_test_headers
-  needs:
-    - job: "x86_64-centos7-gcc11-dbg"
-      artifacts: true
-
-view-gcc8:test:
-  <<: *template_test
-  needs:
-    - job: "view-gcc8"
-      artifacts: true
-  before_script:
-    - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-
-lhcb-gcc11:test:
-  <<: *template_test
-  needs:
-    - job: "lhcb-gcc11"
-      artifacts: true
-  variables:
-    BINARY_TAG: x86_64_v2-centos7-gcc11-opt
-  script:
-    - . /cvmfs/lhcb.cern.ch/lib/LbEnv
-    - lb-project-init --overwrite
-    - find build.${BINARY_TAG} -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
-    - if make test ARGS="-j $(nproc) --repeat until-pass:3 --no-compress-output" ; then result=success ; else result=failure ; fi
-    - cp build.${BINARY_TAG}/Testing/$(head -1 build.${BINARY_TAG}/Testing/TAG)/Test.xml .
-    - mv build.${BINARY_TAG}/html .
+    - cp build/compile_commands.json .
+    # run the tests
+    - cd build
+    - if ctest -T test -j $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
+    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
+    - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
-  artifacts:
-    paths:
-      - Test.xml
-      - html
-    reports:
-      junit:
-        - results.xml
-    when: always
-    expire_in: 1 day
 
 ### Check build outputs
-x86_64-centos7-gcc11-opt:build-check:
-  <<: *template_build_check
+warnings-check:lcg:103:x86_64-centos7-gcc12-opt:
+  <<: *template_warnings_check
   needs:
-    - job: "x86_64-centos7-gcc11-opt"
+    - job: "lcg:103:x86_64-centos7-gcc12-opt"
       artifacts: true
 
-x86_64-centos7-gcc11-dbg:build-check:
-  <<: *template_build_check
+warnings-check:lcg:103:x86_64-centos7-gcc12-dbg:
+  <<: *template_warnings_check
   needs:
-    - job: "x86_64-centos7-gcc11-dbg"
+    - job: "lcg:103:x86_64-centos7-gcc12-dbg"
       artifacts: true
 
-x86_64-centos7-gcc11-opt:build-headers-check:
-  <<: *template_build_check
-  variables:
-    LOG: build/test_public_headers_build.log
+warnings-check:lcg:103:x86_64-centos9-gcc12-opt:
+  <<: *template_warnings_check
   needs:
-    - job: "x86_64-centos7-gcc11-opt:test_headers"
+    - job: "lcg:103:x86_64-centos9-gcc12-opt"
       artifacts: true
 
-x86_64-centos7-gcc11-dbg:build-headers-check:
-  <<: *template_build_check
-  variables:
-    LOG: build/test_public_headers_build.log
+warnings-check:lcg:103:x86_64-centos9-gcc12-dbg:
+  <<: *template_warnings_check
   needs:
-    - job: "x86_64-centos7-gcc11-dbg:test_headers"
+    - job: "lcg:103:x86_64-centos9-gcc12-dbg"
       artifacts: true
 
-view-gcc8:build-check:
-  <<: *template_build_check
+warnings-check:lcg:103:x86_64-centos7-gcc11-opt:minimal:
+  <<: *template_warnings_check
   needs:
-    - job: "view-gcc8"
+    - job: "lcg:103:x86_64-centos7-gcc11-opt:minimal"
       artifacts: true
 
-lhcb-gcc11:build-check:
-  <<: *template_build_check
+warnings-check:lhcb:103:x86_64_v2-el9-gcc12-opt:
+  <<: *template_warnings_check
   needs:
-    - job: "lhcb-gcc11"
+    - job: "lhcb:103:x86_64_v2-el9-gcc12-opt"
       artifacts: true
-  variables:
-    BINARY_TAG: x86_64_v2-centos7-gcc11-opt
-  script:
-    - ci-utils/build-check build.${BINARY_TAG}/build.log
+
+warnings-check:lcg-view:102b:x86_64-centos7-gcc11-opt:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg-view:102b:x86_64-centos7-gcc11-opt"
+      artifacts: true
 
 ### Misc checks
-x86_64-centos7-gcc11-opt:check-unused:
+lcg:103:x86_64-centos7-gcc12-opt:check-unused:
   needs:
-    - job: "x86_64-centos7-gcc11-opt"
+    - job: "lcg:103:x86_64-centos7-gcc12-opt"
       artifacts: true
   script:
-    - ci-utils/check-sources build/build.ninja
+    - ci-utils/check-sources compile_commands.json
   allow_failure: true
 
 pre-commit-checks:
-  image: registry.cern.ch/docker.io/library/python:3.8
+  image: registry.cern.ch/docker.io/library/python:3.9
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
   cache:
@@ -310,13 +253,12 @@ pre-commit-checks:
     expire_in: 1 week
 
 check-copyright:
-  image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
   script:
     - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
     - python lb-check-copyright --exclude lhcbproject.yml --exclude ci-utils/preset-default.cmake --exclude ci-utils/preset-full.cmake --exclude ci-utils/preset-minimal.cmake --exclude ci-utils/preset-no-test.cmake origin/${TARGET_BRANCH}
 
 website:
-  image: python
+  image: registry.cern.ch/docker.io/library/python:3.9
   script:
     - rm -rf public
     - mkdir -p public
@@ -329,27 +271,21 @@ website:
       - public
     expire_in: 1 day
 
-doxygen:
-  tags:
-    - cvmfs
-  needs:
-    - job: "view-gcc8"
-      artifacts: true
+doxygen:103:x86_64-centos7-gcc12-opt:
+  <<: *template_build
   script:
-    - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/x86_64-centos7-gcc8-opt/setup.sh
-    - find build -type f -exec touch -d $(date +@%s) \{} \; # not to re-run cmake
+    - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
     - cmake --build build --target doc
     - rm -rf public
     - mkdir -p public/doxygen
     - cp -r GaudiRelease/web_helpers/. public/doxygen/.
     - mv build/doxygen/html ${CI_COMMIT_REF_SLUG}
     - zip -r -q public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
-
   artifacts:
     paths:
       - public
     expire_in: 1 day
-
 
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration
@@ -357,7 +293,7 @@ deploy-website:
   needs:
     - job: "website"
       artifacts: true
-    - job: "doxygen"
+    - job: "doxygen:103:x86_64-centos7-gcc12-opt"
       artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
