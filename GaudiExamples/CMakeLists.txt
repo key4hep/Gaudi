@@ -132,18 +132,18 @@ if(GAUDI_USE_AIDA)
                                          src/IO/WriteHandleAlg.cpp
                                          src/RandomNumber/RandomNumberAlg.cpp)
     target_link_libraries(GaudiExamples PRIVATE AIDA::aida)
+    if(GAUDI_USE_CLHEP)
+        target_sources(GaudiExamples PRIVATE src/TupleEx/TupleAlg2.cpp
+                                             src/TupleEx/TupleAlg3.cpp
+                                             src/TupleEx/TupleAlg.cpp
+                                             src/TupleEx/TupleDef.cpp)
+        target_link_libraries(GaudiExamples PRIVATE CLHEP::CLHEP)
+    endif()
 endif()
 if(GAUDI_USE_HEPPDT)
     target_sources(GaudiExamples PRIVATE src/PartProp/GaudiPPS.cpp
                                          src/PartProp/PartPropExa.cpp)
     target_link_libraries(GaudiExamples PRIVATE HepPDT::heppdt)
-endif()
-if(GAUDI_USE_CLHEP)
-    target_sources(GaudiExamples PRIVATE src/TupleEx/TupleAlg2.cpp
-                                         src/TupleEx/TupleAlg3.cpp
-                                         src/TupleEx/TupleAlg.cpp
-                                         src/TupleEx/TupleDef.cpp)
-    target_link_libraries(GaudiExamples PRIVATE CLHEP::CLHEP)
 endif()
 if(TARGET RootCnvLib)
     target_sources(GaudiExamples PRIVATE src/MultiInput/DumpAddress.cpp
