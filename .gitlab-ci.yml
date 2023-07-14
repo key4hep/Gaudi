@@ -48,7 +48,8 @@ variables:
     - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
-    - test "$result" = "success"
+    # FIXME: Many tests require AIDA, so we ignore them in that case
+    - test "$PRESET" = "no-AIDA" -o "$result" = "success"
   artifacts:
     paths:
       - build.log
@@ -88,6 +89,9 @@ lcg:103:x86_64-centos9-gcc12-dbg:
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
 
 lcg:103:x86_64-centos7-gcc11-opt:minimal:
+  <<: *template_build
+ 
+lcg:103:x86_64-centos7-gcc11-opt:no-AIDA:
   <<: *template_build
 
 lhcb:103:x86_64_v2-el9-gcc12-opt:
@@ -254,8 +258,17 @@ pre-commit-checks:
 
 check-copyright:
   script:
-    - curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
-    - python lb-check-copyright --exclude lhcbproject.yml --exclude ci-utils/preset-default.cmake --exclude ci-utils/preset-full.cmake --exclude ci-utils/preset-minimal.cmake --exclude ci-utils/preset-no-test.cmake origin/${TARGET_BRANCH}
+    - |
+      curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
+      python lb-check-copyright \
+        --exclude lhcbproject.yml \
+        --exclude ci-utils/preset-default.cmake \
+        --exclude ci-utils/preset-full.cmake \
+        --exclude ci-utils/preset-minimal.cmake \
+        --exclude ci-utils/preset-no-AIDA.cmake \
+        --exclude ci-utils/preset-no-test.cmake \
+        origin/${TARGET_BRANCH}
+
 
 website:
   image: registry.cern.ch/docker.io/library/python:3.9
