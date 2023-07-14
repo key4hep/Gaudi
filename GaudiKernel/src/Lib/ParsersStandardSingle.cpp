@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,6 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+/// @fixme workaround for a warning in a Boost spirit header
+/// ```
+/// include/boost/spirit/.../real_impl.hpp:337:45: warning: 'n' may be used uninitialized [-Wmaybe-uninitialized]
+///   337 |             traits::assign_to(traits::negate(neg, n), attr);
+///       |                               ~~~~~~~~~~~~~~^~~~~~~~
+/// ```
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 // ============================================================================
 // Include files
 // ============================================================================
