@@ -22,10 +22,10 @@ gaudi_add_library(GaudiPythonLib
 if(GAUDI_USE_AIDA)
    target_sources(GaudiPythonLib PRIVATE src/Lib/HistoDecorator.cpp)
    target_link_libraries(GaudiPythonLib PUBLIC AIDA::aida)
-endif()
-if(GAUDI_USE_CLHEP)
-   target_sources(GaudiPythonLib PRIVATE src/Lib/TupleDecorator.cpp)
-   target_link_libraries(GaudiPythonLib PUBLIC CLHEP::CLHEP)
+   if(GAUDI_USE_CLHEP)
+      target_sources(GaudiPythonLib PRIVATE src/Lib/TupleDecorator.cpp)
+      target_link_libraries(GaudiPythonLib PUBLIC CLHEP::CLHEP)
+   endif()
 endif()
 
 # Build the plugin

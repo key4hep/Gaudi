@@ -75,13 +75,13 @@
 #include "GaudiPython/GaudiPython.h"
 #ifdef AIDA_FOUND
 #  include "GaudiPython/HistoDecorator.h"
-#endif // AIDA_FOUND
+#  ifdef CLHEP_FOUND
+#    include "GaudiPython/TupleDecorator.h"
+#  endif // CLHEP_FOUND
+#endif   // AIDA_FOUND
 #include "GaudiPython/Interface.h"
 #include "GaudiPython/Printer.h"
 #include "GaudiPython/Vector.h"
-#ifdef CLHEP_FOUND
-#  include "GaudiPython/TupleDecorator.h"
-#endif // CLHEP_FOUND
 
 #ifdef AIDA_FOUND
 #  include "GaudiAlg/GaudiHistoAlg.h"
