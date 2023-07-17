@@ -28,7 +28,7 @@ namespace Gaudi::Histograming::Sink {
   class Base : public Monitoring::BaseSink {
   public:
     using HistoIdentification = std::pair<std::string, int>;
-    using HistoHandler        = std::function<void( TFile& file, std::string, std::string, nlohmann::json& )>;
+    using HistoHandler        = std::function<void( TFile& file, std::string, std::string, nlohmann::json const& )>;
     using HistoRegistry       = std::map<HistoIdentification, HistoHandler>;
 
     Base( std::string name, ISvcLocator* svcloc ) : Monitoring::BaseSink( name, svcloc ) {
@@ -52,18 +52,19 @@ namespace Gaudi::Histograming::Sink {
       // As we dropped the file at initialization, no old data from a previous
       // run may be mixed with new one
       TFile histoFile( m_fileName.value().c_str(), "UPDATE" );
-      applytoAllEntities(
-          [&histoFile, this]( auto& ent ) {
-            auto j    = ent.toJSON();
-            auto dim  = j.at( "dimension" ).template get<unsigned int>();
-            auto type = j.at( "type" ).template get<std::string>();
-            // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
-            // as ROOT anyway treats everything as doubles in histograms
-            type       = type.substr( 0, type.find_last_of( ':' ) );
-            auto saver = m_registry.find( { type, dim } );
-            if ( saver != m_registry.end() ) ( saver->second )( histoFile, ent.component, ent.name, j );
-          },
-          true );
+      // get all entities, sorted by component and name
+      std::map<std::string, std::map<std::string, nlohmann::json>> const sortedEntities = sortedEntitiesAsJSON();
+      for ( auto& [component, entityMap] : sortedEntities ) {
+        for ( auto& [name, j] : entityMap ) {
+          auto dim  = j.at( "dimension" ).template get<unsigned int>();
+          auto type = j.at( "type" ).template get<std::string>();
+          // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
+          // as ROOT anyway treats everything as doubles in histograms
+          type       = type.substr( 0, type.find_last_of( ':' ) );
+          auto saver = m_registry.find( { type, dim } );
+          if ( saver != m_registry.end() ) ( saver->second )( histoFile, component, name, j );
+        }
+      }
       info() << "Completed update of ROOT histograms in: " << m_fileName.value() << endmsg;
       // call parent's stop
       return Service::stop();

@@ -133,6 +133,8 @@ namespace Gaudi::Monitoring {
       bool operator==( void* ent ) { return m_ptr == ent; }
       /// operator== for comparison with an entity
       bool operator==( Entity const& ent ) { return m_ptr == ent.m_ptr; }
+      /// unique identifier, actually mapped to internal pointer
+      void* id() const { return m_ptr; }
 
     private:
       /// pointer to the actual data inside this Entity
@@ -159,26 +161,28 @@ namespace Gaudi::Monitoring {
       virtual ~Sink()                                = default;
     };
 
+    Hub() { m_sinks.reserve( 5 ); }
+
     template <typename T>
     void registerEntity( std::string c, std::string n, std::string t, T& ent ) {
       registerEntity( { std::move( c ), std::move( n ), std::move( t ), ent } );
     }
     void registerEntity( Entity ent ) {
       std::for_each( begin( m_sinks ), end( m_sinks ), [ent]( auto sink ) { sink->registerEntity( ent ); } );
-      m_entities.emplace_back( std::move( ent ) );
+      m_entities.insert( { ent.id(), std::move( ent ) } );
     }
     template <typename T>
     void removeEntity( T& ent ) {
-      auto it = std::find( begin( m_entities ), end( m_entities ), &ent );
+      auto it = m_entities.find( &ent );
       if ( it != m_entities.end() ) {
-        std::for_each( begin( m_sinks ), end( m_sinks ), [&it]( auto sink ) { sink->removeEntity( *it ); } );
+        std::for_each( begin( m_sinks ), end( m_sinks ), [&it]( auto sink ) { sink->removeEntity( it->second ); } );
         m_entities.erase( it );
       }
     }
 
     void addSink( Sink* sink ) {
       std::for_each( begin( m_entities ), end( m_entities ),
-                     [sink]( Entity ent ) { sink->registerEntity( std::move( ent ) ); } );
+                     [sink]( auto ent ) { sink->registerEntity( ent.second ); } );
       m_sinks.push_back( sink );
     }
     void removeSink( Sink* sink ) {
@@ -187,7 +191,7 @@ namespace Gaudi::Monitoring {
     }
 
   private:
-    std::deque<Sink*>  m_sinks;
-    std::deque<Entity> m_entities;
+    std::vector<Sink*>      m_sinks;
+    std::map<void*, Entity> m_entities;
   };
 } // namespace Gaudi::Monitoring

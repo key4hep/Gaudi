@@ -38,13 +38,13 @@ namespace Gaudi::Monitoring {
     void registerEntity( Hub::Entity ent ) override {
       if ( wanted( ent.type, m_typesToSave ) && wanted( ent.name, m_namesToSave ) &&
            wanted( ent.component, m_componentsToSave ) ) {
-        m_monitoringEntities.emplace_back( std::move( ent ) );
+        m_monitoringEntities.insert( { ent.id(), std::move( ent ) } );
       }
     }
 
     /// handles removal of an entity
     void removeEntity( Hub::Entity const& ent ) override {
-      auto it = std::find( begin( m_monitoringEntities ), end( m_monitoringEntities ), ent );
+      auto it = m_monitoringEntities.find( ent.id() );
       if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
     }
 
@@ -55,15 +55,18 @@ namespace Gaudi::Monitoring {
      * Entities may be first sorted to improve reproducibility
      */
     template <typename Callable>
-    void applytoAllEntities( Callable func, bool sortFirst = false ) {
-      // sort if required
-      if ( sortFirst ) {
-        std::sort( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( const auto& a, const auto& b ) {
-          return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
-        } );
-      }
-      // loop over entities
-      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), func );
+    void applytoAllEntities( Callable func ) {
+      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ),
+                     [func]( auto& p ) { func( p.second ); } );
+    }
+
+    /**
+     * returns all entities in JSON format, grouped by component first and then name
+     */
+    std::map<std::string, std::map<std::string, nlohmann::json>> const sortedEntitiesAsJSON() {
+      std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
+      applytoAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent.toJSON(); } );
+      return sortedEntities;
     }
 
   private:
@@ -79,8 +82,8 @@ namespace Gaudi::Monitoring {
     }
 
     /// list of entities we are dealing with
-    std::deque<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
-    Gaudi::Property<std::vector<std::string>>  m_namesToSave{
+    std::map<void*, Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
+    Gaudi::Property<std::vector<std::string>>       m_namesToSave{
         this, "NamesToSave", {}, "List of regexps used to match names of entities to save" };
     Gaudi::Property<std::vector<std::string>> m_componentsToSave{
         this, "ComponentsToSave", {}, "List of regexps used to match component names of entities to save" };
