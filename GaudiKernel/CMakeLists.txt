@@ -373,6 +373,7 @@ if(BUILD_TESTING)
       tests/src/CounterSerializationTest.cpp
       tests/src/MonitoringEntityUnitTest.cpp
       tests/src/test_PropertyFmt.cpp
+      tests/src/test_finally.cpp
     LINK
       GaudiKernel
       Catch2::Catch2WithMain
