@@ -185,16 +185,8 @@ namespace Gaudi::Monitoring {
 } // namespace Gaudi::Monitoring
 
 void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
-  // We will try to mimic the old monitoring of counters, so we need to split
-  // them per Algo. The algo name can be extracted form the id of the entity
-  // as its format is "algoName/counterName"
-  // This map groups entities per algoName. For each name, the submap gives
-  // the counter name of each subentity and the associated json
-  std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
-  // fill the sorted map
-  applyToAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent; } );
   // dump all counters
-  for ( auto& [algoName, entityMap] : sortedEntities ) {
+  for ( auto& [algoName, entityMap] : sortedEntitiesAsJSON() ) {
     // check first whether there is any counter to log
     unsigned int nbCounters =
         std::accumulate( begin( entityMap ), end( entityMap ), 0, []( const unsigned int& a, const auto& j ) {

@@ -3,74 +3,12 @@
         "component": "CounterAlg",
         "entity": {
             "empty": false,
-            "nEntries": 500,
-            "type": "counter:Counter:m"
-        },
-        "name": "Basic"
-    },
-    {
-        "component": "CounterAlg",
-        "entity": {
-            "empty": false,
             "mean": 1.5,
             "nEntries": 500,
             "sum": 750.0,
             "type": "counter:AveragingCounter:d"
         },
         "name": "Average"
-    },
-    {
-        "component": "CounterAlg",
-        "entity": {
-            "empty": false,
-            "mean": 2.5,
-            "nEntries": 500,
-            "standard_deviation": 0.0,
-            "sum": 1250.0,
-            "sum2": 3125.0,
-            "type": "counter:SigmaCounter:d"
-        },
-        "name": "Sigma"
-    },
-    {
-        "component": "CounterAlg",
-        "entity": {
-            "empty": false,
-            "max": 3.5,
-            "mean": 3.5,
-            "min": 3.5,
-            "nEntries": 500,
-            "standard_deviation": 0.0,
-            "sum": 1750.0,
-            "sum2": 6125.0,
-            "type": "counter:StatCounter:d"
-        },
-        "name": "Stat"
-    },
-    {
-        "component": "CounterAlg",
-        "entity": {
-            "efficiency": 1.0,
-            "efficiencyErr": 0.0,
-            "empty": false,
-            "nEntries": 500,
-            "nFalseEntries": 0,
-            "nTrueEntries": 500,
-            "type": "counter:BinomialCounter:d"
-        },
-        "name": "Binomial"
-    },
-    {
-        "component": "CounterAlg",
-        "entity": {
-            "empty": false,
-            "level": 3,
-            "max": 5,
-            "msg": "Super nice message, max 5 times",
-            "nEntries": 500,
-            "type": "counter:MsgCounter"
-        },
-        "name": "Super nice message, max 5 times"
     },
     {
         "component": "CounterAlg",
@@ -93,6 +31,28 @@
             "type": "counter:AveragingCounter:d"
         },
         "name": "AverageNonAtomic"
+    },
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "nEntries": 500,
+            "type": "counter:Counter:m"
+        },
+        "name": "Basic"
+    },
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "efficiency": 1.0,
+            "efficiencyErr": 0.0,
+            "empty": false,
+            "nEntries": 500,
+            "nFalseEntries": 0,
+            "nTrueEntries": 500,
+            "type": "counter:BinomialCounter:d"
+        },
+        "name": "Binomial"
     },
     {
         "component": "CounterAlg",
@@ -183,5 +143,45 @@
             "type": "counter:Counter:m"
         },
         "name": "DQCounter19"
+    },
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "mean": 2.5,
+            "nEntries": 500,
+            "standard_deviation": 0.0,
+            "sum": 1250.0,
+            "sum2": 3125.0,
+            "type": "counter:SigmaCounter:d"
+        },
+        "name": "Sigma"
+    },
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "max": 3.5,
+            "mean": 3.5,
+            "min": 3.5,
+            "nEntries": 500,
+            "standard_deviation": 0.0,
+            "sum": 1750.0,
+            "sum2": 6125.0,
+            "type": "counter:StatCounter:d"
+        },
+        "name": "Stat"
+    },
+    {
+        "component": "CounterAlg",
+        "entity": {
+            "empty": false,
+            "level": 3,
+            "max": 5,
+            "msg": "Super nice message, max 5 times",
+            "nEntries": 500,
+            "type": "counter:MsgCounter"
+        },
+        "name": "Super nice message, max 5 times"
     }
 ]

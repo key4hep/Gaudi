@@ -51,13 +51,13 @@ namespace Gaudi::Monitoring {
     void registerEntity( Hub::Entity ent ) override {
       if ( wanted( ent.type, m_typesToSave ) && wanted( ent.name, m_namesToSave ) &&
            wanted( ent.component, m_componentsToSave ) ) {
-        m_monitoringEntities.emplace_back( std::move( ent ) );
+        m_monitoringEntities.emplace( ent.id(), std::move( ent ) );
       }
     }
 
     /// handles removal of an entity
     void removeEntity( Hub::Entity const& ent ) override {
-      auto it = std::find( begin( m_monitoringEntities ), end( m_monitoringEntities ), ent );
+      auto it = m_monitoringEntities.find( ent.id() );
       if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
     }
 
@@ -98,21 +98,17 @@ namespace Gaudi::Monitoring {
      */
     template <typename Callable>
     void applyToAllEntities( Callable func ) const {
-      // loop over entities
-      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), func );
+      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ),
+                     [func]( auto& p ) { func( p.second ); } );
     }
 
     /**
-     * applies a callable to all monitoring entities
-     *
-     * Entities are first sorted to improve reproducibility
+     * returns all entities in JSON format, grouped by component first and then name
      */
-    template <typename Callable>
-    void applyToAllEntitiesWithSort( Callable func ) {
-      std::sort( begin( m_monitoringEntities ), end( m_monitoringEntities ), []( const auto& a, const auto& b ) {
-        return std::tie( a.name, a.component ) > std::tie( b.name, b.component );
-      } );
-      applyToAllEntities( func );
+    std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntitiesAsJSON() const {
+      std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
+      applyToAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent; } );
+      return sortedEntities;
     }
 
     /// deciding whether a given name matches the list of regexps given
@@ -127,10 +123,8 @@ namespace Gaudi::Monitoring {
     }
 
     /// list of entities we are dealing with
-    std::vector<Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
-
-    /// Management of entities we will handle or not
-    Gaudi::Property<std::vector<std::string>> m_namesToSave{
+    std::map<void*, Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
+    Gaudi::Property<std::vector<std::string>>       m_namesToSave{
         this, "NamesToSave", {}, "List of regexps used to match names of entities to save" };
     Gaudi::Property<std::vector<std::string>> m_componentsToSave{
         this, "ComponentsToSave", {}, "List of regexps used to match component names of entities to save" };

@@ -34,7 +34,10 @@ struct EmptyEntity {
 struct TestSelectSink : public Gaudi::Monitoring::BaseSink {
   TestSelectSink( std::ostream& output, ISvcLocator* sl ) : BaseSink( "TestSelectSink", sl ), m_output( output ) {}
   void flush( bool ) override {
-    applyToAllEntitiesWithSort( [this]( Gaudi::Monitoring::Hub::Entity const& ent ) { m_output << ent.name << "\n"; } );
+    std::map<std::string, std::map<std::string, nlohmann::json>> const sortedEntities = sortedEntitiesAsJSON();
+    for ( [[maybe_unused]] auto& [component, entityMap] : sortedEntities ) {
+      for ( [[maybe_unused]] auto& [name, j] : entityMap ) { m_output << name << "\n"; }
+    }
   }
   std::ostream& m_output;
 };
@@ -52,16 +55,16 @@ BOOST_AUTO_TEST_CASE( test_sink_select ) {
     // setup sink to ignore some entities and add entitites
     sink.setProperty( "NamesToSave", std::vector<std::string>{ "GivenName", "OKName.*" } ).ignore();
     sink.setProperty( "ComponentsToSave", std::vector<std::string>{ "OKComp", "OKReg[123]+Comp" } ).ignore();
-    EmptyEntity ee;
-    mh.registerEntity( "OKComp", "GivenName", "Any type should work", ee );
-    mh.registerEntity( "NotOkComp", "OKName", "Any type should work", ee );
-    mh.registerEntity( "OKComp", "NotOKName", "Any type should work", ee );
-    mh.registerEntity( "OKReg122333Comp", "OKNameExtended", "Any type should work", ee );
-    mh.registerEntity( "OKRegNoNumberComp", "OKNameExtended2", "Any type should work", ee );
+    EmptyEntity e1, e2, e3, e4, e5;
+    mh.registerEntity( "OKComp", "GivenName", "Any type should work", e1 );
+    mh.registerEntity( "NotOkComp", "OKName", "Any type should work", e2 );
+    mh.registerEntity( "OKComp", "NotOKName", "Any type should work", e3 );
+    mh.registerEntity( "OKReg122333Comp", "OKNameExtended", "Any type should work", e4 );
+    mh.registerEntity( "OKRegNoNumberComp", "OKNameExtended2", "Any type should work", e5 );
     // Run the sink and check
     sink.start().ignore();
     sink.stop().ignore();
-    BOOST_TEST( output.str() == "OKNameExtended\nGivenName\n" );
+    BOOST_TEST( output.str() == "GivenName\nOKNameExtended\n" );
     return 0;
   } );
 }
