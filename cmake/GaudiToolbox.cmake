@@ -37,6 +37,19 @@ When linking against an imported target (``Project::Target``), if there is a loc
 target with the same name, use that instead of the imported one.
 This is useful in to LHCb satellite projects.
 
+.. variable:: GAUDI_PGO
+
+Used to tune Profile Guided Optimization builds. When set to ``GENERATE`` the
+binaries are instrumented to generate profile reports on execution, while if set
+to ``USE`` the compiler is instructed to optimize the code according to the
+collected profile reports. Note that PGO works best when paired to IPO/LTO,
+so, if possible, the latter will be enabled by default when using PGO.
+
+.. variable:: GAUDI_PGO_PATH
+
+Directory where to store profile reports when ``GAUDI_PGO=GENERATE`` or read them from
+when using ``GAUDI_PGO=USE``.
+
 
 Other Cached variables (added to the project)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -126,6 +139,43 @@ set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cm
 
 set(scan_dict_deps_command ${GAUDI_TOOLBOX_DIR}/scan_dict_deps.py
     CACHE INTERNAL "command to use to scan dependencies of dictionary headers")
+
+##################################### PGO  #####################################
+
+if(DEFINED GAUDI_PGO)
+    # use case insensitive values for GAUDI_PGO
+    string(TOUPPER "${GAUDI_PGO}" GAUDI_PGO)
+endif()
+if(GAUDI_PGO STREQUAL "GENERATE")
+    if("${GAUDI_PGO_PATH}" STREQUAL "")
+        message(STATUS "PGO: building to generate execution profiles")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-generate")
+    else()
+        message(STATUS "PGO: building to generate execution profiles in ${GAUDI_PGO_PATH}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-generate=${GAUDI_PGO_PATH}")
+    endif()
+elseif(GAUDI_PGO STREQUAL "USE")
+    if("${GAUDI_PGO_PATH}" STREQUAL "")
+        message(STATUS "PGO: use profiles to optimize the build")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-use -fprofile-correction")
+    else()
+        message(STATUS "PGO: use profiles from ${GAUDI_PGO_PATH} to optimize the build")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-use=${GAUDI_PGO_PATH} -fprofile-correction")
+    endif()
+    if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+        include(CheckIPOSupported)
+        check_ipo_supported(RESULT CMAKE_INTERPROCEDURAL_OPTIMIZATION LANGUAGES CXX OUTPUT _ipo_output)
+    else()
+        # this message is printed if the IPO flag was already set (so we do not check)
+        # and a few lines below we find it set to false 
+        set(_ipo_output "explicitly disabled")
+    endif()
+    if(NOT CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+        message(WARNING "PGO works better when combined with IPO, but IPO is not used (${_ipo_output})")
+    endif()
+elseif(GAUDI_PGO)
+    message(FATAL_ERROR "invalid value for GAUDI_PGO, allowed values are 'GENERATE', 'USE' or a false value (GAUDI_PGO == '${GAUDI_PGO}')")
+endif()
 
 ################################## Functions  ##################################
 
