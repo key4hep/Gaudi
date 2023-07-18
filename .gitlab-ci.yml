@@ -94,6 +94,9 @@ lcg:103:x86_64-centos7-gcc11-opt:minimal:
 lcg:103:x86_64-centos7-gcc11-opt:no-AIDA:
   <<: *template_build
 
+lcg:103:x86_64-centos7-gcc12-opt:no-GaudiAlg:
+  <<: *template_build
+
 lhcb:103:x86_64_v2-el9-gcc12-opt:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
@@ -196,6 +199,12 @@ warnings-check:lcg:103:x86_64-centos7-gcc11-opt:minimal:
     - job: "lcg:103:x86_64-centos7-gcc11-opt:minimal"
       artifacts: true
 
+warnings-check:lcg:103:x86_64-centos7-gcc12-opt:no-GaudiAlg:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg:103:x86_64-centos7-gcc12-opt:no-GaudiAlg"
+      artifacts: true
+
 warnings-check:lhcb:103:x86_64_v2-el9-gcc12-opt:
   <<: *template_warnings_check
   needs:
@@ -267,6 +276,7 @@ check-copyright:
         --exclude ci-utils/preset-full.cmake \
         --exclude ci-utils/preset-minimal.cmake \
         --exclude ci-utils/preset-no-AIDA.cmake \
+        --exclude ci-utils/preset-no-GaudiAlg.cmake \
         --exclude ci-utils/preset-no-test.cmake \
         origin/${TARGET_BRANCH}
 
