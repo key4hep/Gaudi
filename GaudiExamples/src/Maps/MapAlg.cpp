@@ -23,7 +23,7 @@
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 // ============================================================================
 /** @file
  *
@@ -48,7 +48,7 @@
  *  @author Vanya BELYAEV ibelyav@physics.syr.edu
  *  @date 2006-11-26
  */
-class MapAlg : public GaudiAlgorithm {
+class MapAlg : public Algorithm {
 public:
   typedef int    Key;
   typedef double Value;
@@ -62,7 +62,7 @@ public:
              << System::typeinfoName( typeid( m_map3 ) ) << endmsg << " \t4) "
              << System::typeinfoName( typeid( m_map4 ) ) << endmsg;
     // finalize the base class
-    return GaudiAlgorithm::finalize(); ///< finalize the base class
+    return Algorithm::finalize(); ///< finalize the base class
   };
   /// the main execution method
   StatusCode execute() override;
@@ -72,7 +72,7 @@ public:
    *  @param name algoritmm instance name
    *  @param pSvc pointer to Servcie Locator
    */
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   /// The copy constructor is disabled
   MapAlg( const MapAlg& ) = delete;

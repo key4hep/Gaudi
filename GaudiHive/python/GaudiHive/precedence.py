@@ -19,7 +19,7 @@ import warnings
 warnings.filterwarnings("ignore", message='"is" with a literal', category=SyntaxWarning)
 
 import networkx as nx
-from Configurables import CPUCruncher, GaudiSequencer
+from Configurables import CPUCruncher, Gaudi__Sequencer
 from Gaudi.Configuration import INFO
 
 
@@ -283,7 +283,7 @@ class CruncherSequence(object):
         """Assemble the tree of sequencers."""
 
         if not seq:
-            seq = GaudiSequencer(name, ShortCircuit=False)
+            seq = Gaudi__Sequencer(name, ShortCircuit=False)
 
         for n in self.cfg[name]:
             # extract entity name and type
@@ -309,7 +309,7 @@ class CruncherSequence(object):
                     else:
                         self.dupl_seqs[n] += 1
 
-                seq_daughter = GaudiSequencer(algo_name, OutputLevel=INFO)
+                seq_daughter = Gaudi__Sequencer(algo_name, OutputLevel=INFO)
                 if self.cfg.nodes[n].get("ModeOR") == "True":
                     self.OR_sequencers.append(n)
                     seq_daughter.ModeOR = True

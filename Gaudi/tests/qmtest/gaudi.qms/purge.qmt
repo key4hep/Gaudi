@@ -19,7 +19,7 @@
 from pprint import PrettyPrinter
 pp = PrettyPrinter()
 
-expected = {'AuditorSvc': {'Auditors': ['ChronoAuditor', 'TimingAuditor/TIMER']}}
+expected = {'AuditorSvc': {'Auditors': ['ChronoAuditor', 'AlgTimingAuditor/TIMER']}}
 exec("\n".join(stdout.splitlines())) # stdout needs to be sanitized for windows
 
 result["GaudiTest.expected_config"] = result.Quote(pp.pformat(expected))

@@ -1,0 +1,78 @@
+<!--
+    (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+  <class name    = "__gnu_cxx::dummy" />
+  <class name    = "GaudiPython::Helper"/>
+
+  <class name    = "std::vector<Gaudi::Details::PropertyBase*>" />
+  <class name    = "std::vector<const Gaudi::Details::PropertyBase*>"/>
+  <class name    = "std::vector<std::basic_string<char> >" rootmap="false"/>
+  <class name    = "std::vector<std::vector<double> >" rootmap="false"/>
+  <class name    = "std::vector<IRegistry*>"/>
+  <class name    = "std::ostream"/>
+  <class name    = "std::basic_stringbuf<char,std::char_traits<char>,std::allocator<char> >" rootmap="false"/>
+  <class name    = "std::map<std::basic_string<char>,std::basic_string<char> >"  rootmap="false"/>
+  <class pattern = "std::_Bit_reference*"/>
+
+  <class name    = "std::list<IAlgorithm*>"/>
+  <class name    = "std::list<IService*>"/>
+
+  <class name    = "std::allocator<IRegistry*>"/>
+  <class name    = "std::allocator<IAlgorithm*>"/>
+  <class name    = "std::allocator<IService*>"/>
+
+
+  <class name    = "std::vector<IAlgTool*>"          />
+  <class name    = "std::vector<StatEntity*>"        />
+  <class name    = "std::vector<AIDA::IHistogram1D*>"/>
+  <class name    = "std::vector<AIDA::IHistogram2D*>"/>
+  <class name    = "std::vector<AIDA::IHistogram3D*>"/>
+  <class name    = "std::vector<AIDA::IProfile1D*>"  />
+  <class name    = "std::vector<AIDA::IProfile2D*>"  />
+  <function name = "Gaudi::Utils::Histos::path"      />
+  <function name = "Gaudi::Utils::Histos::histoDump" />
+  <class name    = "Gaudi::Utils::Histos::HistoStrings" />
+
+  <class name    = "StatEntity"               />
+  <class pattern = "GaudiPython::Printer<*>"  />
+
+  <class name    = "Gaudi::Utils::Aida2ROOT"    />
+
+  <class name    = "Stat"                   />
+  <class pattern = "Chrono*"                 />
+
+  <class pattern = "AIDA::I*"  />
+  <class name    = "GaudiPython::PyAlgorithm"/>
+  <class name    = "GaudiPython::CallbackStreamBuf"/>
+  <class name    = "ParticleProperty"/>
+
+  <class name    = "Gaudi::StringKey" />
+  <class name    = "Gaudi::Utils::MapBase" />
+
+  <function name= "Gaudi::Utils::hasProperty" />
+
+  <class name = "Gaudi::IFileCatalog" />
+  <class name = "Gaudi::IFileCatalogMgr" />
+  <class name = "Gaudi::IDataConnection" />
+  <class name = "Gaudi::IIODataManager" />
+
+  <enum     name= "Gaudi::Utils::Histos::Formats::Format" />
+  <function name= "Gaudi::Utils::Histos::Formats::format" />
+  <function name= "Gaudi::Utils::Histos::Formats::header" />
+  <function name= "Gaudi::Utils::Histos::format" />
+  <class    name= "Gaudi::Utils::Histos::Table"  />
+  <class    name= "Gaudi::Utils::HistoStats"  />
+
+  <function name= "Gaudi::Utils::QuasiRandom::mix" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix32" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix64" />
+  <function name= "Gaudi::Utils::QuasiRandom::mixString" />
+
+  <class    name= "Gaudi::RangeBase_"  />

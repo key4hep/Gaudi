@@ -22,7 +22,7 @@
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 // ============================================================================
 /** @file
  *  Simple example to illustrate the statistical abilities of
@@ -47,14 +47,14 @@ namespace GaudiExamples {
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date 2008-07-08
    */
-  class StatSvcAlg : public GaudiAlgorithm {
+  class StatSvcAlg : public Algorithm {
   public:
     /// standard constructor from name and Service Locator
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
 
     /// initialize the algorithm
     StatusCode initialize() override {
-      StatusCode sc = GaudiAlgorithm::initialize();
+      StatusCode sc = Algorithm::initialize();
       if ( sc.isFailure() ) return sc; // RETURN
       m_stat = service( "ChronoStatSvc", true );
       return StatusCode::SUCCESS;

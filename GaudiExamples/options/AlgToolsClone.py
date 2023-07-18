@@ -17,14 +17,20 @@ from Configurables import (
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
     MyAlgorithm,
-    MyGaudiAlgorithm,
     ToolSvc,
 )
 from Gaudi.Configuration import *
 
 GaudiExamplesCommonConf()
 
-myalg = MyAlgorithm("MyAlg", PrivateToolsOnly=True, Cardinality=20)
+myalg = MyAlgorithm(
+    "MyAlg",
+    PrivateToolsOnly=True,
+    Cardinality=20,
+    # this is needed because by default (for testing)
+    # MyAlgorithm default configuration is meant to fail
+    InvalidToolHandle="",
+)
 
 ToolSvc(OutputLevel=INFO)
 

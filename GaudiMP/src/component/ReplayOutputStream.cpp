@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,15 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
-
-// From Gaudi
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-// local
-#include "RecordOutputStream.h"
 #include "ReplayOutputStream.h"
-
+#include "RecordOutputStream.h"
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IRegistry.h>
 #include <algorithm>
 #include <functional>
 #include <list>
@@ -91,16 +87,22 @@ StatusCode ReplayOutputStream::i_outStreamTransition() {
 // Initialization
 // ============================================================================
 StatusCode ReplayOutputStream::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
+  StatusCode sc = Algorithm::initialize(); // must be executed first
+  if ( sc.isFailure() ) return sc;         // error printed already by Algorithm
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
 
   m_algMgr = service( "ApplicationMgr" );
-  if ( !m_algMgr ) return Error( "cannot retrieve IAlgManager" );
+  if ( !m_algMgr ) {
+    error() << "cannot retrieve IAlgManager" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   m_evtMgr = evtSvc();
-  if ( !m_evtMgr ) return Error( "cannot retrieve IDataManagerSvc " );
+  if ( !m_evtMgr ) {
+    error() << "cannot retrieve IDataManagerSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   std::for_each( m_outputStreamNames.begin(), m_outputStreamNames.end(), OutStreamAdder( this ) );
 
@@ -108,8 +110,8 @@ StatusCode ReplayOutputStream::initialize() {
 }
 
 StatusCode ReplayOutputStream::start() {
-  StatusCode sc = GaudiAlgorithm::start(); // must be executed first
-  if ( sc.isFailure() ) return sc;         // error printed already by GaudiAlgorithm
+  StatusCode sc = Algorithm::start(); // must be executed first
+  if ( sc.isFailure() ) return sc;    // error printed already by Algorithm
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Start" << endmsg;
 
@@ -161,7 +163,7 @@ StatusCode ReplayOutputStream::finalize() {
   m_algMgr.reset();
   m_evtMgr.reset();
 
-  StatusCode fsc = GaudiAlgorithm::finalize(); // must be called after all other actions
+  StatusCode fsc = Algorithm::finalize(); // must be called after all other actions
   if ( sc.isSuccess() ) sc = fsc;
   return sc;
 }
@@ -171,7 +173,7 @@ StatusCode ReplayOutputStream::stop() {
 
   StatusCode sc = i_outStreamTransition<Gaudi::StateMachine::STOP>();
 
-  StatusCode ssc = GaudiAlgorithm::stop(); // must be called after all other actions
+  StatusCode ssc = Algorithm::stop(); // must be called after all other actions
   if ( sc.isSuccess() ) sc = ssc;
   return sc;
 }

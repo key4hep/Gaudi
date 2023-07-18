@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,12 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "CPUCruncher.h"
-#include "GaudiKernel/ThreadLocalContext.h"
 #include "HiveNumbers.h"
+#include <GaudiKernel/ThreadLocalContext.h>
 #include <ctime>
 #include <sys/resource.h>
 #include <sys/times.h>
-
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for.h>
 #include <tbb/tick_count.h>
@@ -34,7 +33,7 @@ DECLARE_COMPONENT( CPUCruncher )
 
 CPUCruncher::CPUCruncher( const std::string& name, // the algorithm instance name
                           ISvcLocator*       pSvc )
-    : GaudiAlgorithm( name, pSvc ) {
+    : Algorithm( name, pSvc ) {
 
   // Register the algo in the static concurrent hash map in order to
   // monitor the # of copies
@@ -50,7 +49,7 @@ CPUCruncher::~CPUCruncher() {
 }
 
 StatusCode CPUCruncher::initialize() {
-  auto sc = GaudiAlgorithm::initialize();
+  auto sc = Algorithm::initialize();
   if ( !sc ) return sc;
 
   m_crunchSvc = serviceLocator()->service( "CPUCrunchSvc" );
@@ -261,7 +260,7 @@ StatusCode CPUCruncher::finalize() // the finalization of the algorithm
     name_ninstances->second = 0;
   }
 
-  return GaudiAlgorithm::finalize();
+  return Algorithm::finalize();
 }
 
 //------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ from Configurables import (
     AvalancheSchedulerSvc,
     CPUCruncher,
     CPUCrunchSvc,
-    GaudiSequencer,
+    Gaudi__Sequencer,
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
 )
@@ -62,8 +62,8 @@ for a in [a1, a2, a3]:
     a.avgRuntime = 0.01
 
 # Assemble control flow graph
-branch1 = GaudiSequencer("Branch1", ModeOR=False, ShortCircuit=False)
-branch2 = GaudiSequencer("Branch2", ModeOR=False, ShortCircuit=True, Sequential=True)
+branch1 = Gaudi__Sequencer("Branch1", ModeOR=False, ShortCircuit=False)
+branch2 = Gaudi__Sequencer("Branch2", ModeOR=False, ShortCircuit=True, Sequential=True)
 
 branch2.Members = [a1, a2]
 branch1.Members = [branch2, a3]

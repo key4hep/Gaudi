@@ -9,8 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Framework include files
-#include "GaudiKernel/DataStoreItem.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 
 // Example related include files

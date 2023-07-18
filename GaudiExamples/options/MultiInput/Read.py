@@ -22,7 +22,7 @@ esel = EventSelector()
 esel.Input = ["DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
 FileCatalog(Catalogs=["xmlcatalog_file:MultiInput.xml"])
 # Algorithms
-evtAlgs = GaudiSequencer(
+evtAlgs = Gaudi__Sequencer(
     "EventAlgs", Members=[ReadAlg(AddressesFile="addresses.txt", OutputLevel=DEBUG)]
 )
 

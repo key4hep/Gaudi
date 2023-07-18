@@ -15,19 +15,12 @@ AuditorSvc().Auditors = ["ChronoAuditor"]
 MessageSvc().OutputLevel = INFO
 RootHistSvc("RootHistSvc").OutputFile = "histo.root"
 
-HistogramSvc("HistogramDataSvc").Input = [
-    "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"
-]
-
-# from GaudiExamples.GaudiExamplesConf import GaudiHistoAlgorithm
 from Configurables import (
     Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg,
 )
 from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
-from Configurables import GaudiHistoAlgorithm
 
 algs = [
-    GaudiHistoAlgorithm("SimpleHistos", HistoPrint=True, OutputLevel=DEBUG),
     CounterHistoAlg("SimpleCounterHistos", OutputLevel=DEBUG),
 ]
 

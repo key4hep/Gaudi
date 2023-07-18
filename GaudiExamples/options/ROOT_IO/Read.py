@@ -28,14 +28,14 @@ esel.Input = [
 ]
 
 # Algorithms
-evtAlgs = GaudiSequencer(
+evtAlgs = Gaudi__Sequencer(
     "EventAlgs",
     Members=[
         ReadAlg(OutputLevel=VERBOSE, IncidentName=FileRecordDataSvc().IncidentName)
     ],
     VetoObjects=["FSR"],
 )
-fsrAlgs = GaudiSequencer(
+fsrAlgs = Gaudi__Sequencer(
     "FSRAlgs", Members=[ReadTES(Locations=["FSR"])], RequireObjects=["FSR"]
 )
 
@@ -49,4 +49,3 @@ app.HistogramPersistency = "NONE"
 
 RootCnvSvc(OutputLevel=INFO)
 # ChronoStatSvc(OutputLevel=WARNING)
-SequencerTimerTool(OutputLevel=WARNING)

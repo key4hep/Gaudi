@@ -9,16 +9,16 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # Standard app configuration
-from Configurables import ApplicationMgr, GaudiSequencer
+from Configurables import ApplicationMgr, Gaudi__Sequencer
 from Configurables import GaudiTesting__EvenEventsFilter as EvenEvents
 from Configurables import GaudiTesting__OddEventsFilter as OddEvents
 from Configurables import InputCopyStream, OutputStream
 from Configurables import SubAlg as EmptyAlg
 
-oddEvtSelect = GaudiSequencer("OddEventsSelection")
+oddEvtSelect = Gaudi__Sequencer("OddEventsSelection")
 oddEvtSelect.Members = [OddEvents("OddEvents"), OutputStream("Stream1")]
 
-evenEvtSelect = GaudiSequencer("EvenEventsSelection")
+evenEvtSelect = Gaudi__Sequencer("EvenEventsSelection")
 evenEvtSelect.Members = [EvenEvents("EvenEvents"), InputCopyStream("Stream2")]
 
 app = ApplicationMgr(EvtSel="NONE", EvtMax=4)

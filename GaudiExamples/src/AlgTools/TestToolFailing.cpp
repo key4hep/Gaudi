@@ -16,11 +16,11 @@
  */
 
 // from Gaudi
-#include "GaudiAlg/GaudiTool.h"
+#include "GaudiKernel/AlgTool.h"
 
 #include "ITestTool.h"
 
-class TestToolFailing : public extends<GaudiTool, ITestTool> {
+class TestToolFailing : public extends<AlgTool, ITestTool> {
 
 public:
   using extends::extends;
@@ -34,7 +34,8 @@ DECLARE_COMPONENT( TestToolFailing )
 
 StatusCode TestToolFailing::initialize() {
   debug() << "Initialize" << endmsg;
-  if ( !GaudiTool::initialize() ) return StatusCode::FAILURE;
+  if ( !base_class::initialize() ) return StatusCode::FAILURE;
 
-  return Error( "Initialization failure" );
+  error() << "Initialization failure" << endmsg;
+  return StatusCode::FAILURE;
 }

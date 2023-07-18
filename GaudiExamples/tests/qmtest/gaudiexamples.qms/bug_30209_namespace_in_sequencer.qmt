@@ -14,10 +14,12 @@
   <argument name="options"><text>
 from Gaudi.Configuration import *
 from Configurables import GaudiExamples__CounterSvcAlg
+from Configurables import Gaudi__Sequencer as Sequencer
 
 counter2 = GaudiExamples__CounterSvcAlg("Counter2")
 
-seq = Sequencer(Members = [ GaudiExamples__CounterSvcAlg.getType(),
+seq = Sequencer("Sequencer",
+                Members = [ GaudiExamples__CounterSvcAlg.getType(),
                             counter2,
                             "GaudiExamples::StatSvcAlg:invert" ])
 

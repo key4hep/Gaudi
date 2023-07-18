@@ -13,7 +13,7 @@
                     'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
-                    'TopAlg': ['GaudiSequencer/EventAlgs']},
+                    'TopAlg': ['Gaudi::Sequencer/EventAlgs']},
  'EventAlgs': {'Members': ['Gaudi::Examples::ExtendedEvtCol/Fill'],
                'VetoObjects': ['FSR']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
@@ -23,8 +23,7 @@
  'EvtTupleSvc': {'Output': ["EXTEVT DATAFILE='PFN:ROOT_IO.etags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'Fill': {'EvtColLUN': 'EXTEVT'},
- 'ToolSvc.SequencerTimerTool': {'OutputLevel': 4}}
+ 'Fill': {'EvtColLUN': 'EXTEVT'}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
@@ -33,9 +32,6 @@ ApplicationMgr    SUCCESS
 ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:ROOT_IO.etags as EXTEVT
 EventAlgs            INFO Member list: Gaudi::Examples::ExtendedEvtCol/Fill
-RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
-RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
-RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 Fill              SUCCESS List of ALL properties of Gaudi::Examples::ExtendedEvtCol/Fill  #properties = 58
 Fill              SUCCESS Property ['Name': Value] =  'Tracks':'MyTracks'
 Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':'Fill'
@@ -101,7 +97,6 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
-IODataManager        INFO Referring to dataset ROOT_IO.etags by its file ID:7F71277E-1215-11EB-ABB4-0242AC110005
 Gaudi::RootData...   INFO Recreate Database file:PFN:ROOT_IO.etags as /EXTEVT
 EventSelector     SUCCESS Reading Event record 101. Record number within stream 1: 101
 EventSelector     SUCCESS Reading Event record 201. Record number within stream 1: 201

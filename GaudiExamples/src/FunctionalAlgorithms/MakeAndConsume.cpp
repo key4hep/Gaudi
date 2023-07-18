@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,18 +8,19 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiAlg/Consumer.h"
-#include "GaudiAlg/FunctionalTool.h"
-#include "GaudiAlg/MergingTransformer.h"
-#include "GaudiAlg/Producer.h"
-#include "GaudiAlg/ScalarTransformer.h"
-#include "GaudiAlg/SplittingMergingTransformer.h"
-#include "GaudiAlg/Transformer.h"
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IBinder.h"
-#include "GaudiKernel/KeyedContainer.h"
-#include "GaudiKernel/SharedObjectsContainer.h"
+#include <Gaudi/Accumulators.h>
+#include <Gaudi/Functional/Consumer.h>
+#include <Gaudi/Functional/MergingTransformer.h>
+#include <Gaudi/Functional/Producer.h>
+#include <Gaudi/Functional/ScalarTransformer.h>
+#include <Gaudi/Functional/SplittingMergingTransformer.h>
+#include <Gaudi/Functional/ToolBinder.h>
+#include <Gaudi/Functional/Transformer.h>
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/IAlgTool.h>
+#include <GaudiKernel/IBinder.h>
+#include <GaudiKernel/KeyedContainer.h>
+#include <GaudiKernel/SharedObjectsContainer.h>
 #include <cmath>
 #include <numeric>
 #include <optional>

@@ -1,6 +1,6 @@
 # setting LC_ALL to "C"
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/MultiInput/Read.py'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/MultiInput/Read.py'
+# --> Including file '/home/marcocle/stacks/master/Gaudi/GaudiExamples/options/MultiInput/Read.py'
+# <-- End of file '/home/marcocle/stacks/master/Gaudi/GaudiExamples/options/MultiInput/Read.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -12,7 +12,7 @@
                     'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
-                    'TopAlg': ['GaudiSequencer/EventAlgs']},
+                    'TopAlg': ['Gaudi::Sequencer/EventAlgs']},
  'EventAlgs': {'Members': ['Gaudi::Examples::MultiInput::ReadAlg/Gaudi::Examples::MultiInput::ReadAlg']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'EventSelector': {'Input': ["DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]},
@@ -22,15 +22,11 @@
                                           'OutputLevel': 2}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Thu Feb 11 14:56:44 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r12)
+                                          running on lbbuildinter01.cern.ch on Wed Apr 19 23:30:05 2023
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventAlgs            INFO Member list: Gaudi::Examples::MultiInput::ReadAlg
-RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
-RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
-RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   4.05 times the speed of a 2.8 GHz Xeon.
 Gaudi::Examples...  DEBUG Property update for OutputLevel : new value = 2
 Gaudi::Examples...  DEBUG Reading addresses.txt
 Gaudi::Examples...  DEBUG Read 100 addresses
@@ -39,7 +35,6 @@ Gaudi::Examples...  DEBUG output handles: 0
 Gaudi::Examples...  DEBUG Data Deps for Gaudi::Examples::MultiInput::ReadAlg
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
-HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
@@ -254,13 +249,8 @@ Gaudi::Examples...   INFO Base event tracks: 21
 Gaudi::Examples...   INFO Extra event tracks: 88
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:B2FAEA47-C7D0-E511-B012-082E5F2B1B1D [MI_Ext.dst]
-RootCnvSvc           INFO Disconnected data IO:FA964946-C7D0-E511-9ED6-082E5F2B1B1D [MI_Base.dst]
+RootCnvSvc           INFO Disconnected data IO:095A8C84-CFB3-11ED-8483-3CECEF0DE804 [MI_Ext.dst]
+RootCnvSvc           INFO Disconnected data IO:FEB1A97A-CFB2-11ED-A821-3CECEF0DE804 [MI_Base.dst]
 ToolSvc              INFO Removing all tools created by ToolSvc
-ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   4.05 times the speed of a 2.8 GHz Xeon.
-ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
-ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

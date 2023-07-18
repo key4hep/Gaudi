@@ -15,7 +15,7 @@
 #include <string>
 
 // base class
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class TestToolAlgFailure
  *
@@ -25,11 +25,11 @@
  *  @date   2008-10-22
  */
 
-class TestToolAlgFailure : public GaudiAlgorithm {
+class TestToolAlgFailure : public Algorithm {
 
 public:
   /// Standard constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override;
   StatusCode execute() override;

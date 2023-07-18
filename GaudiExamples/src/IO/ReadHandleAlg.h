@@ -12,11 +12,8 @@
 #define GAUDIEXAMPLES_READALG_H
 
 // Framework include files
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/IIncidentListener.h" // Required for inheritance
-
-// Forward declarations
-class IIncidentSvc;
+#include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/DataObjectHandle.h"
 
 // Event Model related classes
 #include "GaudiExamples/Counter.h"
@@ -28,12 +25,12 @@ using namespace Gaudi::Examples;
 /** @class ReadHandleAlg ReadHandleAlg.h
  */
 
-class ReadHandleAlg : public GaudiAlgorithm {
+class ReadHandleAlg : public Algorithm {
 
   DataObjectReadHandle<Collision> m_inputHandle{ this, "Input", "/Event/MyCollision" };
 
 public:
-  ReadHandleAlg( const std::string& n, ISvcLocator* l ) : GaudiAlgorithm( n, l ) {}
+  ReadHandleAlg( const std::string& n, ISvcLocator* l ) : Algorithm( n, l ) {}
 
   bool isClonable() const override { return true; }
 

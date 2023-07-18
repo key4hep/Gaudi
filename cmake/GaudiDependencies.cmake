@@ -141,6 +141,8 @@ endif()
 # Identify dependencies using pkgconfig (by the pkgconfig module to use)
 set(gperftools_pkgconfig_module "libprofiler>=2.7.0")
 
+option(GAUDI_ENABLE_GAUDIALG "Build the subdirectory GaudiAlg" YES)
+
 foreach(dep IN LISTS deps)
   string(TOUPPER ${dep} DEP)
 

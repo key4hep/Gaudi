@@ -11,11 +11,9 @@
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,
-    ContextEventCounterData,
-    ContextEventCounterPtr,
     CPUCruncher,
     CPUCrunchSvc,
-    GaudiSequencer,
+    Gaudi__Sequencer,
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
 )
@@ -87,7 +85,7 @@ for algo in [a1, a2, a3, a4]:
 for algo in [a3]:
     algo.Cardinality = cardinality
 
-seq = GaudiSequencer(
+seq = Gaudi__Sequencer(
     "CriticalSection", Members=[a1, a2, a4], Sequential=True, OutputLevel=VERBOSE
 )
 

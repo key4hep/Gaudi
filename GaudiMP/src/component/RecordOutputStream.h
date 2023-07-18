@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,11 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef COMPONENT_RECORDOUTPUTSTREAM_H
-#define COMPONENT_RECORDOUTPUTSTREAM_H 1
-// Include files
-// from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#pragma once
+
+#include <GaudiKernel/Algorithm.h>
 
 /** @class RecordOutputStream
  *
@@ -27,13 +25,12 @@
  * @author Marco Clemencic
  * @date 30/08/2013
  */
-class RecordOutputStream : public GaudiAlgorithm {
+class RecordOutputStream : public Algorithm {
 public:
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
-  StatusCode finalize() override;   ///< Algorithm finalization
 
   /// Return the path in the Transient Store used to record the triggered
   /// instances.
@@ -47,5 +44,3 @@ private:
   /// called
   std::string m_flagLocation;
 };
-
-#endif // COMPONENT_RECORDOUTPUTSTREAM_H

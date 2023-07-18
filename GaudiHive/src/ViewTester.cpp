@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "ViewTester.h"
-#include "GaudiKernel/ThreadLocalContext.h"
+#include <GaudiKernel/ThreadLocalContext.h>
 
 DECLARE_COMPONENT( Test::ViewTester )
 
@@ -25,10 +25,10 @@ using namespace Test;
 
 ViewTester::ViewTester( const std::string& name, // the algorithm instance name
                         ISvcLocator*       pSvc )
-    : GaudiAlgorithm( name, pSvc ) {}
+    : Algorithm( name, pSvc ) {}
 
 StatusCode ViewTester::initialize() {
-  auto sc = GaudiAlgorithm::initialize();
+  auto sc = Algorithm::initialize();
   if ( !sc ) return sc;
 
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
@@ -102,12 +102,3 @@ StatusCode ViewTester::execute() // the execution of the algorithm
 
   return StatusCode::SUCCESS;
 }
-
-//------------------------------------------------------------------------------
-
-StatusCode ViewTester::finalize() // the finalization of the algorithm
-{
-  return GaudiAlgorithm::finalize();
-}
-
-//------------------------------------------------------------------------------

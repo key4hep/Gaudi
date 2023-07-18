@@ -12,7 +12,7 @@
 #define PROPERTIES_CUSTOMPROPERTIESALG_H 1
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include <Gaudi/Examples/TestAlg.h>
 
 #include <unordered_map>
 
@@ -25,10 +25,10 @@ namespace Gaudi {
      * @author Marco Clemencic
      * @date 14/11/2014
      */
-    class CustomPropertiesAlg : public GaudiAlgorithm {
+    class CustomPropertiesAlg : public TestAlg {
     public:
       /// Standard constructor
-      using GaudiAlgorithm::GaudiAlgorithm;
+      using TestAlg::TestAlg;
 
       StatusCode initialize() override; ///< Algorithm initialization
       StatusCode execute() override;    ///< Algorithm execution

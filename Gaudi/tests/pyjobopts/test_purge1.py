@@ -12,4 +12,4 @@ from Gaudi.Configuration import AuditorSvc, importOptions
 
 importOptions("test_purge2.opts")
 
-AuditorSvc().Auditors += ["TimingAuditor/TIMER"]
+AuditorSvc().Auditors += ["AlgTimingAuditor/TIMER"]

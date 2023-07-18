@@ -1804,9 +1804,9 @@ class CreateSequencesVisitor(object):
         return name
 
     def _newSeq(self, prefix="seq_", **kwargs):
-        from Configurables import GaudiSequencer
+        from Configurables import Gaudi__Sequencer
 
-        return GaudiSequencer(self._getUniqueName("seq_"), **kwargs)
+        return Gaudi__Sequencer(self._getUniqueName("seq_"), **kwargs)
 
     def leave(self, visitee):
         stack = self.stack
@@ -1821,7 +1821,6 @@ class CreateSequencesVisitor(object):
                 Members=[a, b],
                 ModeOR=isinstance(visitee, OrNode),
                 ShortCircuit=not isinstance(visitee, OrderedNode),
-                MeasureTime=True,
             )
             stack.append(seq)
         elif isinstance(visitee, ignore):

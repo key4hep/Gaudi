@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -51,7 +51,6 @@ if(GAUDI_USE_GPERFTOOLS)
   gaudi_add_module(GaudiGoogleProfiling
                    SOURCES src/component/google/GoogleAuditor.cpp
                    LINK GaudiKernel
-                        GaudiAlgLib
                         ZLIB::ZLIB)
   # but we still need to add the include directories to the search path
   target_include_directories(GaudiGoogleProfiling
@@ -87,7 +86,6 @@ if(GAUDI_USE_INTELAMPLIFIER)
   gaudi_add_module(GaudiIntelProfiling
                    SOURCES src/component/intel/IntelProfile.cpp
                    LINK GaudiKernel
-                        GaudiAlgLib
                         IntelAmplifier::libittnotify)
 else()
   message(STATUS "GaudiProfiling: the module Intel VTune profiler is disabled")
@@ -99,7 +97,6 @@ endif()
 gaudi_add_module(GaudiValgrindProfiling
                  SOURCES src/component/valgrind/CallgrindProfile.cpp
                  LINK GaudiKernel
-                      GaudiAlgLib
                       ZLIB::ZLIB)
 
 #-----------------------------------
@@ -108,8 +105,7 @@ gaudi_add_module(GaudiValgrindProfiling
 gaudi_add_module(GaudiJemalloc
                  SOURCES src/component/jemalloc/JemallocProfile.cpp
                          src/component/jemalloc/JemallocProfileSvc.cpp
-                 LINK GaudiKernel
-                      GaudiAlgLib)
+                 LINK GaudiKernel)
 
 #-----------------------------------
 # Linux perf
@@ -119,7 +115,7 @@ gaudi_add_module(GaudiJemalloc
 gaudi_add_module(GaudiPerf
                  SOURCES src/component/perf/PerfProfile.cpp
                  LINK GaudiKernel
-                      GaudiAlgLib)
+                      Gaudi::Functional)
 
 # Special handling of unresolved symbols in Jemmalloc.
 # The profilers need to have libjemalloc.so pre-loaded to

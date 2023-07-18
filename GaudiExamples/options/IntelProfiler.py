@@ -22,8 +22,8 @@ alg4 = CpuHungryAlg("Alg4")
 
 alg1.Loops = alg2.Loops = alg3.Loops = alg4.Loops = 5000000
 
-subtop = Sequencer("SubSequence", Members=[alg1, alg2, alg3], StopOverride=True)
-top = Sequencer("TopSequence", Members=[subtop, alg4], StopOverride=True)
+subtop = Sequencer("SubSequence", Members=[alg1, alg2, alg3], ShortCircuit=False)
+top = Sequencer("TopSequence", Members=[subtop, alg4], ShortCircuit=False)
 
 profiler = IntelProfilerAuditor()
 profiler.OutputLevel = DEBUG

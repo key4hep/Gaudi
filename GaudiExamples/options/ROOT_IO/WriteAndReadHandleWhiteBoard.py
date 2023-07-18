@@ -56,10 +56,10 @@ RootCnvSvc(OutputLevel=INFO)
 
 GaudiPersistency()
 
-product_name = "MyCollision"
+product_name = "/Event/MyCollision"
 
 writer = WriteHandleAlg("Writer", OutputLevel=DEBUG, UseHandle=True)
-writer.Output.Path = "/Event/" + product_name
+writer.Output.Path = product_name
 
 reader = ReadHandleAlg("Reader", OutputLevel=DEBUG)
 reader.Input.Path = product_name

@@ -20,7 +20,7 @@ from Configurables import (
     AvalancheSchedulerSvc,
     CPUCruncher,
     CPUCrunchSvc,
-    GaudiSequencer,
+    Gaudi__Sequencer,
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
     IncidentAsyncTestAlg,
@@ -105,19 +105,19 @@ Producer2 = CPUCruncher("Producer2", inpKeys=["/Event/a3"], outKeys=["/Event/a2"
 
 Filter2 = CPUCruncher("Filter2", inpKeys=["/Event/a2"])
 
-sequence0 = GaudiSequencer("Sequence0")
+sequence0 = Gaudi__Sequencer("Sequence0")
 sequence0.ModeOR = False
 sequence0.ShortCircuit = False  # whether the evaluation is lazy or not!
 sequence0.Members += [EventLoopInitProcAlg]
-sequencex = GaudiSequencer("SequenceX")
+sequencex = Gaudi__Sequencer("SequenceX")
 sequencex.ModeOR = False
 sequencex.ShortCircuit = False  # whether the evaluation is lazy or not!
 sequencex.Members += [EventLoopFinalProcAlg]
-sequence1 = GaudiSequencer("Sequence1")
+sequence1 = Gaudi__Sequencer("Sequence1")
 sequence1.Members += [FakeInput, Producer1, Filter, Producer2, AITestAlg1, AITestAlg2]
 sequence1.ModeOR = False
 sequence1.ShortCircuit = False  # whether the evaluation is lazy or not!
-sequence2 = GaudiSequencer("Sequence2")
+sequence2 = Gaudi__Sequencer("Sequence2")
 sequence2.Members += [sequence0, sequence1, Filter2, sequencex]
 
 ApplicationMgr(

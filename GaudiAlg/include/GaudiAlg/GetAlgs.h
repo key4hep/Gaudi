@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,24 +8,20 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIALG_GETALGS_H
-#define GAUDIALG_GETALGS_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/Kernel.h"
-// ============================================================================
-// forward declarations
-// ============================================================================
+#pragma once
+
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/Kernel.h>
+
 class IAlgContextSvc;
 class GaudiAlgorithm;
 struct GaudiHistoAlg;
 struct GaudiTupleAlg;
 class GaudiSequencer;
-class Sequencer;
-// ============================================================================
+
 namespace Gaudi {
+  class Sequencer;
+
   namespace Utils {
     // ========================================================================
     /** simple function to extract the last active
@@ -133,7 +129,3 @@ namespace Gaudi {
     // ========================================================================
   } // namespace Utils
 } // end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
-#endif // GAUDIALG_GETALGS_H

@@ -55,6 +55,7 @@ after the configuration or use ccmake or cmake-gui.
 * For sanitized build
   * GAUDI_GENCONF_NO_FAIL
 * Compile options
+  * GAUDI_ENABLE_GAUDIALG
   * GAUDI_REFLEX_COMPONENT_ALIASES
 * Doxygen
   * DOXYGEN_WITH_LOCAL_MATHJAX
@@ -103,11 +104,13 @@ include(cmake/GaudiToolbox.cmake)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Enable/Disable output of compile_commands.json" FORCE)
 
 set(GAUDI_USE_PYTHON_MAJOR 3 CACHE STRING "Major version of Python to use")
-set(GAUDI_OPTIONAL_DEPENDENCIES "${GAUDI_OPTIONAL_DEPENDENCIES}set(GAUDI_USE_PYTHON_MAJOR ${GAUDI_USE_PYTHON_MAJOR})\n")
+string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_USE_PYTHON_MAJOR ${GAUDI_USE_PYTHON_MAJOR})\n")
 
 # Find all the dependencies of the project
 list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules") # (Find*.cmake)
 include(cmake/GaudiDependencies.cmake)
+
+string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_ENABLE_GAUDIALG ${GAUDI_ENABLE_GAUDIALG})\n")
 
 # The C++ standard used must be the same as ROOT's
 if(NOT GAUDI_CXX_STANDARD)
@@ -145,6 +148,7 @@ add_subdirectory(GaudiCoreSvc)
 add_subdirectory(GaudiUtils)
 add_subdirectory(Gaudi)
 add_subdirectory(GaudiAlg)
+add_subdirectory(GaudiFunctional)
 add_subdirectory(GaudiAud)
 add_subdirectory(GaudiCommonSvc)
 add_subdirectory(GaudiHive)

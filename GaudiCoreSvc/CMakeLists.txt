@@ -20,6 +20,7 @@ gaudi_add_module(GaudiCoreSvc
                    src/ApplicationMgr/DLLClassManager.cpp
                    src/ApplicationMgr/EventLoopMgr.cpp
                    src/ApplicationMgr/MinimalEventLoopMgr.cpp
+                   src/ApplicationMgr/Sequencer.cpp
                    src/ApplicationMgr/ServiceManager.cpp
                    src/ApplicationMgr/ToolSvc.cpp
                    src/EventSelector/DataStreamToolFactory.cpp

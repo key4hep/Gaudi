@@ -12,7 +12,7 @@
 #define ABORTEVENTALG_H_
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 class IIncidentSvc;
 
@@ -23,10 +23,10 @@ class IIncidentSvc;
  *  @author Marco Clemencic
  *  @date   Nov 16, 2007
  */
-class AbortEventAlg : public GaudiAlgorithm {
+class AbortEventAlg : public Algorithm {
 public:
   /// Standard constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution

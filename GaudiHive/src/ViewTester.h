@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/RegistryEntry.h"
-#include "GaudiKernel/RndmGenerators.h"
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/DataObjectHandle.h>
+#include <GaudiKernel/IScheduler.h>
+#include <GaudiKernel/RegistryEntry.h>
+#include <GaudiKernel/RndmGenerators.h>
 
 //------------------------------------------------------------------------------
 
@@ -22,7 +22,7 @@
  */
 namespace Test {
 
-  class ViewTester : public GaudiAlgorithm {
+  class ViewTester : public Algorithm {
 
   public:
     bool isClonable() const override { return true; }
@@ -31,8 +31,6 @@ namespace Test {
     StatusCode execute() override;
     /// Its initialization
     StatusCode initialize() override;
-    /// the finalization of the algorithm
-    StatusCode finalize() override;
 
     ViewTester( const std::string& name, // the algorithm instance name
                 ISvcLocator*       pSvc );     // the Service Locator

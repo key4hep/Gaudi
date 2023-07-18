@@ -15,7 +15,7 @@ from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,
     CPUCruncher,
-    GaudiSequencer,
+    Gaudi__Sequencer,
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
 )
@@ -37,7 +37,7 @@ AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
 
 def parOR(name, subs=[]):
     """parallel OR sequencer"""
-    seq = GaudiSequencer(name)
+    seq = Gaudi__Sequencer(name)
     seq.ModeOR = True
     seq.Sequential = False
     seq.ShortCircuit = False
@@ -49,7 +49,7 @@ def parOR(name, subs=[]):
 
 def seqAND(name, subs=[]):
     """sequential AND sequencer"""
-    seq = GaudiSequencer(name)
+    seq = Gaudi__Sequencer(name)
     seq.ModeOR = False
     seq.Sequential = True
     #    seq.StopOverride = True
@@ -59,7 +59,7 @@ def seqAND(name, subs=[]):
     return seq
 
 
-topSequence = GaudiSequencer("topSequence")
+topSequence = Gaudi__Sequencer("topSequence")
 
 and1A = seqAND("AND1A")
 

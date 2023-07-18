@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -483,7 +483,7 @@ _parser = JobOptsParser()
 def _import_python(file):
     with open(file) as f:
         code = compile(f.read(), file, "exec")
-        exec(code, {})
+        exec(code, {"__file__": file})
 
 
 def _import_pickle(file):

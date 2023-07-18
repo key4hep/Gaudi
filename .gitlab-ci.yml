@@ -141,6 +141,7 @@ lcg-view:102b:x86_64-centos7-gcc11-opt:
   <<: *template_build
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
+    - export CONFIGURABLE_DB_IGNORE=/cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/lib/Gaudi.confdb
     - cmake --version
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z

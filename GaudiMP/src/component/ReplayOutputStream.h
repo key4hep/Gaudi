@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,14 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef COMPONENT_REPLAYOUTPUTSTREAM_H
-#define COMPONENT_REPLAYOUTPUTSTREAM_H 1
-// Include files
-// from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/ThreadLocalContext.h"
+#pragma once
+
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 
 class IAlgManager;
 struct IDataManagerSvc;
@@ -26,10 +24,10 @@ struct IDataManagerSvc;
  * @author Marco Clemencic
  * @date 30/08/2013
  */
-class ReplayOutputStream : public GaudiAlgorithm {
+class ReplayOutputStream : public Algorithm {
 public:
   /// Inherited constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode start() override;      ///< Algorithm initialization
@@ -68,5 +66,3 @@ private:
   SmartIF<IAlgManager>     m_algMgr;
   SmartIF<IDataManagerSvc> m_evtMgr;
 };
-
-#endif // COMPONENT_REPLAYOUTPUTSTREAM_H

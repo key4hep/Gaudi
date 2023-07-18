@@ -18,7 +18,7 @@ DECLARE_COMPONENT( MyDataAlgorithm )
 
 // Constructor
 //------------------------------------------------------------------------------
-MyDataAlgorithm::MyDataAlgorithm( const std::string& name, ISvcLocator* ploc ) : GaudiAlgorithm( name, ploc ) {
+MyDataAlgorithm::MyDataAlgorithm( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc ) {
   //------------------------------------------------------------------------------
 }
 
@@ -36,8 +36,9 @@ StatusCode MyDataAlgorithm::initialize() {
 StatusCode MyDataAlgorithm::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
-  get<DataObject>( "Rec/Muon/Digits" );
-  get<DataObject>( "Rec/Muon/Foos" );
+  DataObject* tmp = nullptr;
+  eventSvc()->retrieveObject( "Rec/Muon/Digits", tmp ).ignore();
+  eventSvc()->retrieveObject( "Rec/Muon/Foos", tmp ).ignore();
   info() << "....execution done" << endmsg;
   return StatusCode::SUCCESS;
 }

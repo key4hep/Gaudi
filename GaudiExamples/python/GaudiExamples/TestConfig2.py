@@ -14,7 +14,9 @@ from GaudiConfig2 import mergeConfigs
 
 def setUpAlgorithms():
     algorithms = [
-        C.GaudiHistoAlgorithm("SimpleHistos", HistoPrint=True, OutputLevel=3),
+        C.Gaudi.Examples.Counter.GaudiHistoAlgorithm(
+            "SimpleCounterHistos", OutputLevel=3
+        ),
     ]
     app = C.ApplicationMgr(TopAlg=algorithms)
     return algorithms + [app]
@@ -35,8 +37,8 @@ def histogramWriting(filename):
         C.HistogramSvc(
             "HistogramDataSvc",
             OutputLevel=2,
-            Input=["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"],
         ),
+        C.Gaudi.Histograming.Sink.Root(),
     ]
 
 

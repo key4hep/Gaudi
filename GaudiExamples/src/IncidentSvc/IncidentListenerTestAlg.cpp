@@ -24,7 +24,7 @@ std::string& IncidentListenerTestAlg::incident() { return s_incidentType; }
 
 //=============================================================================
 StatusCode IncidentListenerTestAlg::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize();
+  StatusCode sc = Algorithm::initialize();
   if ( sc.isFailure() ) return sc;
 
   // get a the incident service
@@ -67,5 +67,5 @@ StatusCode IncidentListenerTestAlg::execute() {
 //=============================================================================
 StatusCode IncidentListenerTestAlg::finalize() {
   info() << "Finalize" << endmsg;
-  return GaudiAlgorithm::finalize();
+  return Algorithm::finalize();
 }

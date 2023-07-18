@@ -10,7 +10,7 @@
 \***********************************************************************************/
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class AuditorTestAlg AuditorTestAlg.cpp
  *
@@ -18,7 +18,7 @@
  *  @author Marco Clemencic
  *  @date   Apr 2, 2008
  */
-class AuditorTestAlg : public GaudiAlgorithm {
+class AuditorTestAlg : public Algorithm {
 public:
   /// Standard constructor
   AuditorTestAlg( const std::string& name, ISvcLocator* pSvcLocator );
@@ -45,8 +45,7 @@ DECLARE_COMPONENT( AuditorTestAlg )
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
-AuditorTestAlg::AuditorTestAlg( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator ) {}
+AuditorTestAlg::AuditorTestAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
 //=============================================================================
 // Destructor
 //=============================================================================
@@ -56,8 +55,8 @@ AuditorTestAlg::~AuditorTestAlg() {}
 // Initialization
 //=============================================================================
 StatusCode AuditorTestAlg::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
+  StatusCode sc = Algorithm::initialize(); // must be executed first
+  if ( sc.isFailure() ) return sc;         // error printed already by Algorithm
 
   debug() << "==> Initialize" << endmsg;
 
@@ -86,7 +85,7 @@ StatusCode AuditorTestAlg::finalize() {
 
   debug() << "==> Finalize" << endmsg;
 
-  return GaudiAlgorithm::finalize(); // must be called after all other actions
+  return Algorithm::finalize(); // must be called after all other actions
 }
 
 //=============================================================================

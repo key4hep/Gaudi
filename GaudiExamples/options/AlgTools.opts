@@ -26,6 +26,8 @@ MyAlg.MyTool.Int    = 101;
 MyAlg.MyTool.Double = 101.1e+10;
 MyAlg.MyTool.String = "hundred one";
 MyAlg.MyTool.Bool   = false;
+// disable a ToolHandle
+MyAlg.InvalidToolHandle = "";
 
 ToolSvc.MyTool.Int    = 201;
 ToolSvc.MyTool.Double = 201.1e+10;
@@ -33,7 +35,7 @@ ToolSvc.MyTool.String = "two hundred and one";
 ToolSvc.MyTool.Bool   = true;
 
 ToolSvc.MyTool.OutputLevel = 3;
-MyAlgorithm.OutputLevel = 2;
+MyAlg.OutputLevel = 2;
 
 //--------------------------------------------------------------
 // Test circular tool dependencies  (by Chris Jones)
@@ -44,4 +46,3 @@ ToolSvc.ToolA.Tools = { "TestTool/ToolB" };
 ToolSvc.ToolB.Tools = { "TestTool/ToolA" };
 ToolSvc.ToolA.OutputLevel = 2;
 ToolSvc.ToolB.OutputLevel = 2;
-

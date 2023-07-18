@@ -46,7 +46,7 @@ public:
   T&       getData() { return m_data; }
 
   std::optional<std::size_t> size() const override {
-    using details::size;
+    using ::details::size;
     return size( getData() );
   }
 };

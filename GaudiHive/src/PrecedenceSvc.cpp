@@ -187,7 +187,7 @@ StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::st
     allPass        = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
     promptDecision = ( algo->getProperty( "ShortCircuit" ).toString() == "True" );
     isInverted     = ( algo->getProperty( "Invert" ).toString() == "True" );
-    if ( allPass ) promptDecision = false; // standard GaudiSequencer behavior on all pass is to execute everything
+    if ( allPass ) promptDecision = false; // standard Gaudi::Sequencer behavior on all pass is to execute everything
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   } else if ( isAthSequencer ) {
     modeOr         = ( algo->getProperty( "ModeOR" ).toString() == "True" );

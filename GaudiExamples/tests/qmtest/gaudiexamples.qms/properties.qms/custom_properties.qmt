@@ -22,6 +22,7 @@ from Configurables import Gaudi__Examples__CustomPropertiesAlg as CPA
 alg = CPA("CPA")
 alg.UnorderedMap["hello"] = "world"
 alg.UnorderedMap["abc"] = "123"
+alg.PropertiesPrint = True
 
 ApplicationMgr(TopAlg=[alg], OutputLevel=DEBUG)
 

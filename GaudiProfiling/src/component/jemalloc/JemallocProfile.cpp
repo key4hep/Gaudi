@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,9 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
-
-// local
 #include "JemallocProfile.h"
 
 // including jemmalloc.h is difficult as the malloc signature is not exactly identical
@@ -34,8 +31,8 @@ DECLARE_COMPONENT( JemallocProfile )
 // Initialization
 //=============================================================================
 StatusCode JemallocProfile::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
+  StatusCode sc = Algorithm::initialize(); // must be executed first
+  if ( sc.isFailure() ) return sc;         // error printed already by GaudiAlgorithm
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
   bool active = true;
@@ -71,14 +68,3 @@ StatusCode JemallocProfile::execute() {
   }
   return StatusCode::SUCCESS;
 }
-
-//=============================================================================
-//  Finalize
-//=============================================================================
-StatusCode JemallocProfile::finalize() {
-
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
-  return GaudiAlgorithm::finalize(); // must be called after all other actions
-}
-
-//=============================================================================

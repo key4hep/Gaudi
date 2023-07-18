@@ -25,8 +25,7 @@ StatusCode DataCreator::initialize() {
 StatusCode DataCreator::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
-  put( new DataObject(), m_data );
-  return StatusCode::SUCCESS;
+  return eventSvc()->registerObject( m_data, new DataObject() );
 }
 
 //------------------------------------------------------------------------------

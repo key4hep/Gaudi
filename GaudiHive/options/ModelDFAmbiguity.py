@@ -62,10 +62,10 @@ updaterAlg3.outKeys = ["/Event/B"]
 updaterAlg4 = CPUCruncher(name="UpdaterAlg4")
 updaterAlg4.outKeys = ["/Event/A"]
 
-branch2 = GaudiSequencer("ConditionalBranch", Sequential=True, ShortCircuit=True)
+branch2 = Gaudi__Sequencer("ConditionalBranch", Sequential=True, ShortCircuit=True)
 branch2.Members = [producerAlg1, updaterAlg1, producerAlg2, updaterAlg3]
 
-branch = GaudiSequencer("UnConditionalBranch", ShortCircuit=False)
+branch = Gaudi__Sequencer("UnConditionalBranch", ShortCircuit=False)
 branch.Members = [branch2, updaterAlg2, updaterAlg4]
 
 ApplicationMgr(

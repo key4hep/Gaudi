@@ -12,7 +12,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
-  <text>../../options/TupleEx.py</text>
+  <text>../../options/NTuples.opts</text>
   <text>--option</text>
   <text>ApplicationMgr(EvtMax=10).ExtSvc.append('Gaudi::MetaDataSvc')</text>
   <text>--option</text>
@@ -20,11 +20,11 @@
   <text>--option</text>
   <text>from Configurables import Gaudi__MetaDataSvc; Gaudi__MetaDataSvc(OutputLevel=DEBUG)</text>
   <text>--option</text>
-  <text>NTupleSvc().Output = ["MYLUN DATAFILE='TupleEx_with_metadata.root' OPT='NEW' TYP='ROOT'"]</text>
+  <text>NTupleSvc().Output = ["MyTuples DATAFILE='ntuple_with_metadata.root' OPT='NEW' TYP='ROOT'"]</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="prerequisites"><set>
-    <tuple><text>gaudiexamples.tupleex_py</text><enumeral>PASS</enumeral></tuple>
+    <tuple><text>gaudiexamples.ntuples</text><enumeral>PASS</enumeral></tuple>
   </set></argument>
 <argument name="reference"><text>refs/MetaDataSvc.ref</text></argument>
 <argument name="validator"><text>
@@ -40,7 +40,7 @@ stdout = filter(lambda x: x.strip(),
 stdout = sorted(stdout)
 from subprocess import check_output, CalledProcessError
 try:
-    info = eval(check_output(['dumpMetaData', 'TupleEx_with_metadata.root']))
+    info = eval(check_output(['dumpMetaData', 'ntuple_with_metadata.root']))
     info = [':'.join(item) for item in info.items()]
     info.sort()
     if stdout != info:

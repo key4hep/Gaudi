@@ -1,20 +1,23 @@
-//
-//  HiveTestAlgorithm.h
-//
-//
-//  Created by Benedikt Hegner on 7/21/12.
-//  Copyright (c) 2012 __CERN__. All rights reserved.
-//
-
-#include "GaudiAlg/GaudiAlgorithm.h"
+/***********************************************************************************\
+* (c) Copyright 2012-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+*                                                                                   *
+* This software is distributed under the terms of the Apache version 2 licence,     *
+* copied verbatim in the file "LICENSE".                                            *
+*                                                                                   *
+* In applying this licence, CERN does not waive the privileges and immunities       *
+* granted to it by virtue of its status as an Intergovernmental Organization        *
+* or submit itself to any jurisdiction.                                             *
+\***********************************************************************************/
 #include <Gaudi/Property.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/DataObjectHandle.h>
 
-class GAUDI_API HiveTestAlgorithm : public GaudiAlgorithm {
+class GAUDI_API HiveTestAlgorithm : public Algorithm {
 public:
   /**
    ** Constructor(s)
    **/
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   /*****************************
    ** Public Function Members **

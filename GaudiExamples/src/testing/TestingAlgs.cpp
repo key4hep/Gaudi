@@ -15,7 +15,7 @@
  *      Author: Marco Clemencic
  */
 
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Incident.h"
@@ -28,9 +28,9 @@
 
 namespace GaudiTesting {
 
-  class DestructorCheckAlg : public GaudiAlgorithm {
+  class DestructorCheckAlg : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     ~DestructorCheckAlg() override {
       // do not print messages if we are created in genconf
       if ( System::cmdLineArgs()[0].find( "genconf" ) == std::string::npos ) {
@@ -43,9 +43,9 @@ namespace GaudiTesting {
     }
   };
 
-  class SleepyAlg : public GaudiAlgorithm {
+  class SleepyAlg : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     StatusCode execute() override {
       info() << "Executing event " << ++m_counter << endmsg;
       info() << "Sleeping for " << m_sleep.value() << " seconds" << endmsg;
@@ -62,9 +62,9 @@ namespace GaudiTesting {
   /**
    * Simple algorithm that raise a signal after N events.
    */
-  class SignallingAlg : public GaudiAlgorithm {
+  class SignallingAlg : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     StatusCode execute() override {
       if ( m_eventCount <= 0 ) {
         info() << "Raising signal now" << endmsg;
@@ -81,14 +81,14 @@ namespace GaudiTesting {
     Gaudi::Property<int> m_signal{ this, "Signal", SIGINT, "Signal to raise" };
   };
 
-  class StopLoopAlg : public GaudiAlgorithm {
+  class StopLoopAlg : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     StatusCode execute() override {
       if ( m_eventCount <= 0 ) {
         info() << "Stopping loop with " << m_mode.value() << endmsg;
         if ( m_mode == "exception" ) {
-          Exception( "Stopping loop" );
+          throw GaudiException( "Stopping loop", name(), StatusCode::FAILURE );
         } else if ( m_mode == "stopRun" ) {
           auto ep = serviceLocator()->as<IEventProcessor>();
           if ( !ep ) {
@@ -113,11 +113,11 @@ namespace GaudiTesting {
                                          "Type of interruption ['exception', 'stopRun',  'failure']" };
   };
 
-  class CustomIncidentAlg : public GaudiAlgorithm {
+  class CustomIncidentAlg : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     StatusCode initialize() override {
-      StatusCode sc = GaudiAlgorithm::initialize();
+      StatusCode sc = Algorithm::initialize();
       if ( sc.isFailure() ) return sc;
 
       if ( m_incident.empty() ) {
@@ -144,7 +144,7 @@ namespace GaudiTesting {
     }
     StatusCode finalize() override {
       m_incidentSvc.reset();
-      return GaudiAlgorithm::finalize();
+      return Algorithm::finalize();
     }
 
   private:
@@ -158,12 +158,12 @@ namespace GaudiTesting {
   /**
    * Simple algorithm that creates dummy objects in the transient store.
    */
-  class PutDataObjectAlg : public GaudiAlgorithm {
+  class PutDataObjectAlg : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
 
     StatusCode initialize() override {
-      StatusCode sc = GaudiAlgorithm::initialize();
+      StatusCode sc = Algorithm::initialize();
       if ( sc.isFailure() ) return sc;
 
       m_dataProvider = service( m_dataSvc );
@@ -187,7 +187,7 @@ namespace GaudiTesting {
 
     StatusCode finalize() override {
       m_dataProvider.reset();
-      return GaudiAlgorithm::finalize();
+      return Algorithm::finalize();
     }
 
   private:
@@ -200,12 +200,12 @@ namespace GaudiTesting {
   /**
    * Simple algorithm that retrieves objects from the transient store.
    */
-  class GetDataObjectAlg : public GaudiAlgorithm {
+  class GetDataObjectAlg : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
 
     StatusCode initialize() override {
-      StatusCode sc = GaudiAlgorithm::initialize();
+      StatusCode sc = Algorithm::initialize();
       if ( sc.isFailure() ) return sc;
 
       m_dataProvider = service( m_dataSvc );
@@ -232,7 +232,7 @@ namespace GaudiTesting {
 
     StatusCode finalize() override {
       m_dataProvider.reset();
-      return GaudiAlgorithm::finalize();
+      return Algorithm::finalize();
     }
 
   private:
@@ -244,12 +244,12 @@ namespace GaudiTesting {
     SmartIF<IDataProviderSvc>    m_dataProvider;
   };
 
-  class OddEventsFilter : public GaudiAlgorithm {
+  class OddEventsFilter : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     StatusCode initialize() override {
       m_counter = 0;
-      return GaudiAlgorithm::initialize();
+      return Algorithm::initialize();
     }
     StatusCode execute() override {
       setFilterPassed( ( ++m_counter ) % 2 );
@@ -272,9 +272,9 @@ namespace GaudiTesting {
   /**
    * Simple algorithm that creates dummy objects in the transient store.
    */
-  class ListTools : public GaudiAlgorithm {
+  class ListTools : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
 
     StatusCode execute() override {
       StatusCode sc = StatusCode::SUCCESS;
@@ -287,12 +287,12 @@ namespace GaudiTesting {
   /**
    * Simple algorithm that prints the memory usage every N events (property "Frequency").
    */
-  class PrintMemoryUsage : public GaudiAlgorithm {
+  class PrintMemoryUsage : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     StatusCode initialize() override {
       m_counter = 0;
-      return GaudiAlgorithm::initialize();
+      return Algorithm::initialize();
     }
     StatusCode execute() override {
       if ( ( m_frequency <= 1 ) || ( ( m_counter ) % m_frequency == 0 ) ) print();
@@ -300,7 +300,7 @@ namespace GaudiTesting {
     }
     StatusCode finalize() override {
       print();
-      return GaudiAlgorithm::finalize();
+      return Algorithm::finalize();
     }
 
   protected:

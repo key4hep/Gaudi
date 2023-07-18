@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include <GaudiKernel/Algorithm.h>
 
 namespace Gaudi {
   namespace Hive {

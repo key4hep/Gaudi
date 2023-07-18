@@ -9,14 +9,14 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "Gaudi/PluginService.h"
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 #include <iostream>
 
 namespace PluginServiceTest {
-  class CustomFactoryAlgorithm : public GaudiAlgorithm {
+  class CustomFactoryAlgorithm : public Algorithm {
   public:
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
 
     StatusCode execute() override {
       info() << "running" << endmsg;

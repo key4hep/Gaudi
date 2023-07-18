@@ -1,9 +1,9 @@
 # setting LC_ALL to "C"
-# --> Including file '/bld2/leggett/work/BeginRun/gaudi_g/Gaudi/GaudiExamples/options/ControlFlow/SuperAlgDynamicGraph.py'
+# --> Including file '/home/marcocle/stacks/master/Gaudi/GaudiExamples/options/ControlFlow/SuperAlgDynamicGraph.py'
 # --- Configured Control Flow Expression:
 # (MySuperAlg('s1') >> MySuperAlg('s2'))
 # ---
-# <-- End of file '/bld2/leggett/work/BeginRun/gaudi_g/Gaudi/GaudiExamples/options/ControlFlow/SuperAlgDynamicGraph.py'
+# <-- End of file '/home/marcocle/stacks/master/Gaudi/GaudiExamples/options/ControlFlow/SuperAlgDynamicGraph.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
@@ -11,204 +11,143 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r0)
-                                          running on zeus on Mon Dec 18 15:35:35 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r12)
+                                          running on lbbuildinter01.cern.ch on Fri Apr 21 11:57:53 2023
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-StatusCodeSvc        INFO initialize
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-TIMER.TIMER          INFO This machine has a speed about   2.22 times the speed of a 2.8 GHz Xeon.
-ChronoStatSvc        INFO  Number of skipped events for MemStat-1
+TIMER.TIMER          INFO This machine has a speed about   3.03 times the speed of a 2.8 GHz Xeon.
 seq_3                INFO Member list: GaudiSequencer/seq_1, GaudiSequencer/seq_2
-ToolSvc.Sequenc...   INFO This machine has a speed about   2.22 times the speed of a 2.8 GHz Xeon.
-seq_1                INFO Member list: GaudiSequencer/seq_0, EventCounter/s1_Counter
-seq_0                INFO Member list: Prescaler/s1_Prescaler, HelloWorld/s1_HW
-s1_Prescaler         INFO s1_Prescaler:Prescaler::Initialize - pass:  'PercentPass':50.000000
+ToolSvc.Sequenc...   INFO This machine has a speed about   3.23 times the speed of a 2.8 GHz Xeon.
+seq_1                INFO Member list: GaudiSequencer/seq_0, Gaudi::Examples::EventCounter/s1_Counter
+seq_0                INFO Member list: Gaudi::Examples::Prescaler/s1_Prescaler, HelloWorld/s1_HW
 s1_HW                INFO initializing....
-s1_Counter           INFO s1_Counter:EventCounter::initialize - Frequency:  'Frequency':1
-seq_2                INFO Member list: Prescaler/s2_Prescaler, EventCounter/s2_Counter
+seq_2                INFO Member list: Gaudi::Examples::Prescaler/s2_Prescaler, Gaudi::Examples::EventCounter/s2_Counter
 s2_Prescaler        DEBUG Property update for OutputLevel : new value = 2
-s2_Prescaler        DEBUG Initialize base class GaudiCommon<Algorithm>
-s2_Prescaler        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-s2_Prescaler        DEBUG List of ALL properties of Prescaler/s2_Prescaler  #properties = 37
-s2_Prescaler        DEBUG Property ['Name': Value] =  'PercentPass':75.000000
-s2_Prescaler        DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
-s2_Prescaler        DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-s2_Prescaler        DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
-s2_Prescaler        DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-s2_Prescaler        DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
-s2_Prescaler        DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
-s2_Prescaler        DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-s2_Prescaler        DEBUG Property ['Name': Value] =  'RootInTES':
-s2_Prescaler        DEBUG Property ['Name': Value] =  'Context':
-s2_Prescaler        DEBUG Property ['Name': Value] =  'TypePrint':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
-s2_Prescaler        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'Blocking':False
-s2_Prescaler        DEBUG Property ['Name': Value] =  'NeededResources':[  ]
-s2_Prescaler        DEBUG Property ['Name': Value] =  'Cardinality':1
-s2_Prescaler        DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
-s2_Prescaler        DEBUG Property ['Name': Value] =  'Timeline':False
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditStop':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditStart':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditFinalize':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditExecute':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditRestart':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditReinitialize':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditInitialize':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'AuditAlgorithms':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'ErrorMax':1
-s2_Prescaler        DEBUG Property ['Name': Value] =  'Enable':True
-s2_Prescaler        DEBUG Property ['Name': Value] =  'OutputLevel':2
-s2_Prescaler        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-s2_Prescaler        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
-s2_Prescaler         INFO s2_Prescaler:Prescaler::Initialize - pass:  'PercentPass':75.000000
 s2_Prescaler        DEBUG input handles: 0
 s2_Prescaler        DEBUG output handles: 0
 s2_Prescaler        DEBUG Data Deps for s2_Prescaler
 s2_Counter          DEBUG Property update for OutputLevel : new value = 2
-s2_Counter           INFO s2_Counter:EventCounter::initialize - Frequency:  'Frequency':1
 s2_Counter          DEBUG input handles: 0
 s2_Counter          DEBUG output handles: 0
 s2_Counter          DEBUG Data Deps for s2_Counter
 EventLoopMgr         INFO Control Flow Expression:
-EventLoopMgr         INFO seq(seq(seq(Prescaler('s1_Prescaler') & HelloWorld('s1_HW')) & EventCounter('s1_Counter')) & seq(Prescaler('s2_Prescaler') & EventCounter('s2_Counter')))
+EventLoopMgr         INFO seq(seq(seq(Gaudi::Examples::Prescaler('s1_Prescaler') & HelloWorld('s1_HW')) & Gaudi::Examples::EventCounter('s1_Counter')) & seq(Gaudi::Examples::Prescaler('s2_Prescaler') & Gaudi::Examples::EventCounter('s2_Counter')))
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter failed
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter failed
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter passed
 s1_HW                INFO executing....
-s1_Counter           INFO s1_Counter:EventCounter::execute - seen events: 1
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter passed
-s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 1
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter failed
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter passed
-s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 2
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter passed
+s2_Prescaler        DEBUG filter passed
+s2_Prescaler        DEBUG filter failed
 s1_HW                INFO executing....
-s1_Counter           INFO s1_Counter:EventCounter::execute - seen events: 2
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter passed
-s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 3
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter failed
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter failed
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter passed
+s2_Prescaler        DEBUG filter passed
+s2_Prescaler        DEBUG filter passed
 s1_HW                INFO executing....
-s1_Counter           INFO s1_Counter:EventCounter::execute - seen events: 3
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter passed
-s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 4
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter failed
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter passed
-s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 5
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter passed
+s2_Prescaler        DEBUG filter passed
+s2_Prescaler        DEBUG filter failed
 s1_HW                INFO executing....
-s1_Counter           INFO s1_Counter:EventCounter::execute - seen events: 4
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter passed
-s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 6
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter failed
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter failed
-s1_Prescaler         INFO s1_Prescaler:Prescaler::execute - filter passed
+s2_Prescaler        DEBUG filter passed
+s2_Prescaler        DEBUG filter passed
 s1_HW                INFO executing....
-s1_Counter           INFO s1_Counter:EventCounter::execute - seen events: 5
-s2_Prescaler         INFO s2_Prescaler:Prescaler::execute - filter passed
-s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 7
+s2_Prescaler        DEBUG filter passed
+s2_Prescaler        DEBUG filter failed
+s1_Counter           INFO Number of counters : 1
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "count"                                         |         5 |
+s1_Prescaler         INFO Number of counters : 1
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ |*"passed"                                        |        10 |          5 |( 50.00000 +- 15.81139)% |
+s2_Counter           INFO Number of counters : 1
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "count"                                         |         7 |
+s2_Prescaler         INFO Number of counters : 1
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ |*"passed"                                        |        10 |          7 |( 70.00000 +- 14.49138)% |
 ApplicationMgr       INFO Application Manager Stopped successfully
-s1_Prescaler         INFO s1_Prescaler:Prescaler::finalize - total events: 10, passed events: 5
 s1_HW                INFO finalizing....
-s1_Counter           INFO s1_Counter:EventCounter::finalize - total events: 5
-s2_Prescaler         INFO s2_Prescaler:Prescaler::finalize - total events: 10, passed events: 7
-s2_Prescaler        DEBUG Finalize base class GaudiAlgorithm
-s2_Prescaler        DEBUG Tools to release :
-s2_Prescaler        DEBUG Services to release :
-s2_Counter           INFO s2_Counter:EventCounter::finalize - total events: 7
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   2.22 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   3.23 times the speed of a 2.8 GHz Xeon.
 ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO seq_3                         |     0.000 |     0.151 |    0.087       0.2     0.04 |      10 |     0.002 |
-ToolSvc.Sequenc...   INFO   seq_1                       |     0.000 |     0.085 |    0.047       0.1     0.03 |      10 |     0.001 |
-ToolSvc.Sequenc...   INFO     seq_0                     |     0.000 |     0.060 |    0.039       0.1     0.02 |      10 |     0.001 |
-ToolSvc.Sequenc...   INFO       s1_Prescaler            |     0.000 |     0.037 |    0.030       0.1     0.01 |      10 |     0.000 |
-ToolSvc.Sequenc...   INFO       s1_HW                   |     0.000 |     0.028 |    0.024       0.0     0.00 |       5 |     0.000 |
-ToolSvc.Sequenc...   INFO     s1_Counter                |     0.000 |     0.033 |    0.028       0.0     0.01 |       5 |     0.000 |
-ToolSvc.Sequenc...   INFO   seq_2                       |     0.000 |     0.062 |    0.037       0.1     0.01 |      10 |     0.001 |
-ToolSvc.Sequenc...   INFO     s2_Prescaler              |     0.000 |     0.032 |    0.028       0.0     0.00 |      10 |     0.000 |
-ToolSvc.Sequenc...   INFO     s2_Counter                |     0.000 |     0.027 |    0.025       0.0     0.00 |       7 |     0.000 |
+ToolSvc.Sequenc...   INFO seq_3                         |     0.000 |     0.039 |    0.029       0.1     0.01 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO   seq_1                       |     0.000 |     0.022 |    0.014       0.0     0.01 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO     seq_0                     |     0.000 |     0.014 |    0.008       0.0     0.01 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO       s1_Prescaler            |     0.000 |     0.004 |    0.004       0.0     0.00 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO       s1_HW                   |     0.000 |     0.008 |    0.008       0.0     0.00 |       5 |     0.000 |
+ToolSvc.Sequenc...   INFO     s1_Counter                |     0.000 |     0.004 |    0.004       0.0     0.00 |       5 |     0.000 |
+ToolSvc.Sequenc...   INFO   seq_2                       |     0.000 |     0.016 |    0.013       0.0     0.00 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO     s2_Prescaler              |     0.000 |     0.008 |    0.008       0.0     0.00 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO     s2_Counter                |     0.000 |     0.003 |    0.003       0.0     0.00 |       7 |     0.000 |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 TIMER.TIMER          INFO --------------------------------------------------------------------------------------------------
-TIMER.TIMER          INFO This machine has a speed about   2.22 times the speed of a 2.8 GHz Xeon.
+TIMER.TIMER          INFO This machine has a speed about   3.03 times the speed of a 2.8 GHz Xeon.
 TIMER.TIMER          INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
 TIMER.TIMER          INFO --------------------------------------------------------------------------------------------------
-TIMER.TIMER          INFO EVENT LOOP                    |     1.000 |     0.194 |    0.104       0.4     0.08 |      10 |     0.002 |
-TIMER.TIMER          INFO  seq_3                        |     0.000 |     0.154 |    0.089       0.2     0.04 |      10 |     0.002 |
-TIMER.TIMER          INFO   seq_1                       |     0.000 |     0.082 |    0.043       0.1     0.03 |      10 |     0.001 |
-TIMER.TIMER          INFO    seq_0                      |     0.000 |     0.056 |    0.036       0.1     0.02 |      10 |     0.001 |
-TIMER.TIMER          INFO     s1_Prescaler              |     0.000 |     0.031 |    0.025       0.1     0.01 |      10 |     0.000 |
-TIMER.TIMER          INFO     s1_HW                     |     0.000 |     0.024 |    0.020       0.0     0.00 |       5 |     0.000 |
-TIMER.TIMER          INFO    s1_Counter                 |     0.000 |     0.028 |    0.024       0.0     0.01 |       5 |     0.000 |
-TIMER.TIMER          INFO   seq_2                       |     0.000 |     0.056 |    0.033       0.1     0.01 |      10 |     0.001 |
-TIMER.TIMER          INFO    s2_Prescaler               |     0.000 |     0.026 |    0.023       0.0     0.00 |      10 |     0.000 |
-TIMER.TIMER          INFO    s2_Counter                 |     0.000 |     0.023 |    0.021       0.0     0.00 |       7 |     0.000 |
+TIMER.TIMER          INFO EVENT LOOP                    |     0.000 |     0.061 |    0.038       0.2     0.04 |      10 |     0.001 |
+TIMER.TIMER          INFO  seq_3                        |     0.000 |     0.041 |    0.030       0.1     0.01 |      10 |     0.000 |
+TIMER.TIMER          INFO   seq_1                       |     0.000 |     0.019 |    0.011       0.0     0.01 |      10 |     0.000 |
+TIMER.TIMER          INFO    seq_0                      |     0.000 |     0.012 |    0.007       0.0     0.01 |      10 |     0.000 |
+TIMER.TIMER          INFO     s1_Prescaler              |     0.000 |     0.002 |    0.001       0.0     0.00 |      10 |     0.000 |
+TIMER.TIMER          INFO     s1_HW                     |     0.000 |     0.006 |    0.005       0.0     0.00 |       5 |     0.000 |
+TIMER.TIMER          INFO    s1_Counter                 |     0.000 |     0.002 |    0.001       0.0     0.00 |       5 |     0.000 |
+TIMER.TIMER          INFO   seq_2                       |     0.000 |     0.014 |    0.011       0.0     0.00 |      10 |     0.000 |
+TIMER.TIMER          INFO    s2_Prescaler               |     0.000 |     0.006 |    0.006       0.0     0.00 |      10 |     0.000 |
+TIMER.TIMER          INFO    s2_Counter                 |     0.000 |     0.001 |    0.001       0.0     0.00 |       7 |     0.000 |
 TIMER.TIMER          INFO --------------------------------------------------------------------------------------------------
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-seq_3:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_0:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_0:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_1:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_1:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Prescaler:Stop    INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Prescaler:Start   INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_2:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Counter:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Counter:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_2:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Prescaler:Stop    INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_3:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_HW:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_HW:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Counter:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Counter:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Prescaler:Start   INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_3:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_1:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_2:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Counter:Fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_HW:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_0:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Counter:Init...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Counter:Fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Counter:Init...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_HW:Initialize     INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Prescaler:Fi...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Prescaler:Fi...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Prescaler:In...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Prescaler:In...   INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_2:Initialize     INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_HW:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #=  5
-s1_Counter:Execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #=  5
-s2_Counter:Execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #=  7
-s2_Prescaler:Ex...   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
-s1_Prescaler:Ex...   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
-seq_0:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
-seq_2:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
-seq_1:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
-seq_3:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
-seq_0:Initialize     INFO Time User   : Tot=   70 [ms]                                             #=  1
-seq_1:Initialize     INFO Time User   : Tot=   70 [ms]                                             #=  1
-seq_3:Initialize     INFO Time User   : Tot= 0.52  [s]                                             #=  1
-ChronoStatSvc        INFO Time User   : Tot= 0.54  [s]                                             #=  1
+s1_HW:Stop           INFO Time User   : Tot=    0 [us]  #=  1
+s2_Counter:Stop      INFO Time User   : Tot=    0 [us]  #=  1
+s2_Counter:Start     INFO Time User   : Tot=    0 [us]  #=  1
+s2_Counter:Fina...   INFO Time User   : Tot=    0 [us]  #=  1
+s1_Prescaler:Stop    INFO Time User   : Tot=    0 [us]  #=  1
+s1_Prescaler:Start   INFO Time User   : Tot=    0 [us]  #=  1
+s2_Prescaler:Fi...   INFO Time User   : Tot=    0 [us]  #=  1
+s1_Prescaler:Fi...   INFO Time User   : Tot=    0 [us]  #=  1
+s2_Prescaler:In...   INFO Time User   : Tot=    0 [us]  #=  1
+s1_HW:Start          INFO Time User   : Tot=    0 [us]  #=  1
+s2_Prescaler:Start   INFO Time User   : Tot=    0 [us]  #=  1
+s2_Prescaler:Stop    INFO Time User   : Tot=    0 [us]  #=  1
+s1_Counter:Stop      INFO Time User   : Tot=    0 [us]  #=  1
+s1_Counter:Start     INFO Time User   : Tot=    0 [us]  #=  1
+s1_Counter:Init...   INFO Time User   : Tot=    0 [us]  #=  1
+s1_Counter:Fina...   INFO Time User   : Tot=    0 [us]  #=  1
+s2_Counter:Init...   INFO Time User   : Tot=    0 [us]  #=  1
+seq_2:Stop           INFO Time User   : Tot=    0 [us]  #=  1
+seq_2:Start          INFO Time User   : Tot=    0 [us]  #=  1
+seq_0:Start          INFO Time User   : Tot=    0 [us]  #=  1
+seq_0:Stop           INFO Time User   : Tot=    0 [us]  #=  1
+s1_HW:Finalize       INFO Time User   : Tot=    0 [us]  #=  1
+s1_Prescaler:In...   INFO Time User   : Tot=    0 [us]  #=  1
+seq_1:Stop           INFO Time User   : Tot=    0 [us]  #=  1
+seq_1:Start          INFO Time User   : Tot=    0 [us]  #=  1
+seq_2:Finalize       INFO Time User   : Tot=    0 [us]  #=  1
+seq_3:Stop           INFO Time User   : Tot=    0 [us]  #=  1
+seq_3:Start          INFO Time User   : Tot=    0 [us]  #=  1
+s1_HW:Initialize     INFO Time User   : Tot=    0 [us]  #=  1
+seq_0:Finalize       INFO Time User   : Tot=    0 [us]  #=  1
+seq_1:Finalize       INFO Time User   : Tot=    0 [us]  #=  1
+seq_3:Finalize       INFO Time User   : Tot=    0 [us]  #=  1
+seq_2:Initialize     INFO Time User   : Tot=    0 [us]  #=  1
+seq_0:Initialize     INFO Time User   : Tot=    0 [us]  #=  1
+s1_Counter:Execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #=  5
+s1_HW:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #=  5
+s2_Counter:Execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #=  7
+s1_Prescaler:Ex...   INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #= 10
+s2_Prescaler:Ex...   INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #= 10
+seq_0:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #= 10
+seq_2:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #= 10
+seq_1:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #= 10
+seq_3:Execute        INFO Time User   : Tot=    0 [us] Ave/Min/Max=       0(+-       0)/       0/       0 [us] #= 10
+seq_1:Initialize     INFO Time User   : Tot=   50 [ms]  #=  1
+seq_3:Initialize     INFO Time User   : Tot=  360 [ms]  #=  1
+ChronoStatSvc        INFO Time User   : Tot=  370 [ms]  #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 ApplicationMgr       INFO Application Manager Finalized successfully

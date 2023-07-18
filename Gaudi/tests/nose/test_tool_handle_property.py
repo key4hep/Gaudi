@@ -14,16 +14,16 @@ def test():
     allConfigurables = GaudiKernel.Configurable.Configurable.allConfigurables
     allConfigurables.clear()
 
-    from Configurables import MyGaudiAlgorithm
+    from Configurables import MyAlgorithm
 
     assert not allConfigurables
 
-    alg = MyGaudiAlgorithm()
+    alg = MyAlgorithm()
     assert len(allConfigurables) == 1
-    assert "MyGaudiAlgorithm.PrivToolHandle" not in allConfigurables
+    assert "MyAlgorithm.PrivToolHandle" not in allConfigurables
 
     _ = alg.PrivToolHandle
-    assert "MyGaudiAlgorithm.PrivToolHandle" in allConfigurables
+    assert "MyAlgorithm.PrivToolHandle" in allConfigurables
     assert "ToolSvc.PrivToolHandle" not in allConfigurables
 
     print(list(allConfigurables))

@@ -54,55 +54,16 @@ EventPersistenc...  DEBUG Service base class initialized successfully
 EventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EventLoopMgr        DEBUG Creating Output Stream CopyInputStream/NewRootDst
 EventLoopMgr        DEBUG Creating Top Algorithm Gaudi::Hive::FetchLeavesFromFile with name NewFetch
-AlgContextSvc       DEBUG Service base class initialized successfully
-AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0
-IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0
-NewFetch          VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 NewFetch          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 TimelineSvc         DEBUG Service base class initialized successfully
 TimelineSvc         DEBUG initialize
 NewFetch          VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-NewFetch          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-NewFetch            DEBUG Initialize base class GaudiCommon<Algorithm>
-NewFetch            DEBUG could not locate CounterSummarySvc, no counter summary will be made
-NewFetch            DEBUG List of ALL properties of Gaudi::Hive::FetchLeavesFromFile/NewFetch  #properties = 31
-NewFetch            DEBUG Property ['Name': Value] =  'Root':''
-NewFetch            DEBUG Property ['Name': Value] =  'DataService':'EventDataSvc'
-NewFetch            DEBUG Property ['Name': Value] =  'InputFileLeavesLocation':/Event/InputFileLeaves
-NewFetch            DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
-NewFetch            DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-NewFetch            DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-NewFetch            DEBUG Property ['Name': Value] =  'Context':''
-NewFetch            DEBUG Property ['Name': Value] =  'TypePrint':True
-NewFetch            DEBUG Property ['Name': Value] =  'PropertiesPrint':False
-NewFetch            DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-NewFetch            DEBUG Property ['Name': Value] =  'RootInTES':''
-NewFetch            DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
-NewFetch            DEBUG Property ['Name': Value] =  'Blocking':False
-NewFetch            DEBUG Property ['Name': Value] =  'NeededResources':[  ]
-NewFetch            DEBUG Property ['Name': Value] =  'Cardinality':0
-NewFetch            DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-NewFetch            DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
-NewFetch            DEBUG Property ['Name': Value] =  'Timeline':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditStop':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditStart':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditFinalize':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditExecute':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditRestart':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditReinitialize':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditInitialize':False
-NewFetch            DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-NewFetch            DEBUG Property ['Name': Value] =  'ErrorMax':1
-NewFetch            DEBUG Property ['Name': Value] =  'Enable':True
-NewFetch            DEBUG Property ['Name': Value] =  'OutputLevel':1
-NewFetch            DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-NewFetch            DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 NewFetch          VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 NewFetch            DEBUG input handles: 0
 NewFetch            DEBUG output handles: 1
 NewFetch            DEBUG Data Deps for NewFetch
   + OUTPUT '/Event/InputFileLeaves'
+NewFetch          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 NewRootDst        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 NewRootDst        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 IODataManager       DEBUG Service base class initialized successfully
@@ -134,14 +95,12 @@ HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...  DEBUG Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
 ApplicationMgr       INFO Application Manager Initialized successfully
-JobOptionsSvc        INFO Properties are dumped into "gaudiexamples.root_io.newinputwrite.joboptsdump"
 ServiceManager      DEBUG Starting service FileRecordDataSvc
 ServiceManager      DEBUG Starting service AppMgrRunable
 ServiceManager      DEBUG Starting service IncidentSvc
 ServiceManager      DEBUG Starting service FileRecordPersistencySvc
 ServiceManager      DEBUG Starting service EventPersistencySvc
 ServiceManager      DEBUG Starting service EventDataSvc
-ServiceManager      DEBUG Starting service AlgContextSvc
 ServiceManager      DEBUG Starting service TimelineSvc
 ServiceManager      DEBUG Starting service AlgExecStateSvc
 ServiceManager      DEBUG Starting service FileCatalog
@@ -520,7 +479,6 @@ ServiceManager      DEBUG Stopping service IODataManager
 ServiceManager      DEBUG Stopping service FileCatalog
 ServiceManager      DEBUG Stopping service AlgExecStateSvc
 ServiceManager      DEBUG Stopping service TimelineSvc
-ServiceManager      DEBUG Stopping service AlgContextSvc
 ServiceManager      DEBUG Stopping service EventDataSvc
 ServiceManager      DEBUG Stopping service EventPersistencySvc
 ServiceManager      DEBUG Stopping service FileRecordPersistencySvc
@@ -529,9 +487,6 @@ ServiceManager      DEBUG Stopping service AppMgrRunable
 ServiceManager      DEBUG Stopping service FileRecordDataSvc
 ApplicationMgr       INFO Application Manager Stopped successfully
 ServiceManager      DEBUG Finalizing service EventLoopMgr
-NewFetch            DEBUG Finalize base class GaudiAlgorithm
-NewFetch            DEBUG Tools to release :
-NewFetch            DEBUG Services to release :
 NewRootDst           INFO Events output: 10
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
 EventLoopMgr         INFO Histograms converted successfully according to request.
@@ -552,9 +507,6 @@ ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
 ServiceManager      DEBUG Finalizing service AlgExecStateSvc
 ServiceManager      DEBUG Finalizing service TimelineSvc
-ServiceManager      DEBUG Finalizing service AlgContextSvc
-IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
-IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
@@ -567,7 +519,7 @@ IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 27)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 26)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
@@ -577,7 +529,6 @@ ServiceManager      DEBUG ---- IncidentSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventDataSvc (refCount = 5)
-ServiceManager      DEBUG ---- AlgContextSvc (refCount = 2)
 ServiceManager      DEBUG ---- TimelineSvc (refCount = 3)
 ServiceManager      DEBUG ---- AlgExecStateSvc (refCount = 4)
 ServiceManager      DEBUG ---- FileCatalog (refCount = 2)

@@ -13,7 +13,7 @@
 
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 namespace GaudiExamples {
   /** Small algorithm using Gaudi::ParticlePropertySvc.
@@ -21,10 +21,10 @@ namespace GaudiExamples {
    *  @author Marco CLEMENCIC
    *  @date   2008-05-23
    */
-  class GaudiPPS : public GaudiAlgorithm {
+  class GaudiPPS : public Algorithm {
   public:
     /// Standard constructor
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
 
     StatusCode initialize() override; ///< Algorithm initialization
     StatusCode execute() override;    ///< Algorithm execution

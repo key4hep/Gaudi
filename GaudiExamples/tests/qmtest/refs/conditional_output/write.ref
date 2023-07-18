@@ -59,49 +59,10 @@ EventLoopMgr        DEBUG Creating Output Stream OutputStream/OutputStream
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::PutDataObjectAlg with name DataCreator
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::OddEventsFilter with name OddEvents
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::EvenEventsFilter with name EvenEvents
-AlgContextSvc       DEBUG Service base class initialized successfully
-AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0
-IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0
-DataCreator       VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 TimelineSvc         DEBUG Service base class initialized successfully
 TimelineSvc         DEBUG initialize
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-DataCreator         DEBUG Initialize base class GaudiCommon<Algorithm>
-DataCreator         DEBUG could not locate CounterSummarySvc, no counter summary will be made
-DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 30
-DataCreator         DEBUG Property ['Name': Value] =  'DataSvc':'EventDataSvc'
-DataCreator         DEBUG Property ['Name': Value] =  'Paths':[ 'A' , 'B' , 'C' , 'D' ]
-DataCreator         DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
-DataCreator         DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-DataCreator         DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-DataCreator         DEBUG Property ['Name': Value] =  'Context':''
-DataCreator         DEBUG Property ['Name': Value] =  'TypePrint':True
-DataCreator         DEBUG Property ['Name': Value] =  'PropertiesPrint':False
-DataCreator         DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-DataCreator         DEBUG Property ['Name': Value] =  'RootInTES':''
-DataCreator         DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
-DataCreator         DEBUG Property ['Name': Value] =  'Blocking':False
-DataCreator         DEBUG Property ['Name': Value] =  'NeededResources':[  ]
-DataCreator         DEBUG Property ['Name': Value] =  'Cardinality':1
-DataCreator         DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-DataCreator         DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
-DataCreator         DEBUG Property ['Name': Value] =  'Timeline':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditStop':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditStart':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditFinalize':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditExecute':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditRestart':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditReinitialize':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditInitialize':False
-DataCreator         DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-DataCreator         DEBUG Property ['Name': Value] =  'ErrorMax':1
-DataCreator         DEBUG Property ['Name': Value] =  'Enable':True
-DataCreator         DEBUG Property ['Name': Value] =  'OutputLevel':1
-DataCreator         DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-DataCreator         DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 AlgExecStateSvc     DEBUG Service base class initialized successfully
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
@@ -109,81 +70,15 @@ AlgExecStateSvc     DEBUG preInit: will add Alg DataCreator later
 DataCreator         DEBUG input handles: 0
 DataCreator         DEBUG output handles: 0
 DataCreator         DEBUG Data Deps for DataCreator
-OddEvents         VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-OddEvents           DEBUG Initialize base class GaudiCommon<Algorithm>
-OddEvents           DEBUG could not locate CounterSummarySvc, no counter summary will be made
-OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 28
-OddEvents           DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
-OddEvents           DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-OddEvents           DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-OddEvents           DEBUG Property ['Name': Value] =  'Context':''
-OddEvents           DEBUG Property ['Name': Value] =  'TypePrint':True
-OddEvents           DEBUG Property ['Name': Value] =  'PropertiesPrint':False
-OddEvents           DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-OddEvents           DEBUG Property ['Name': Value] =  'RootInTES':''
-OddEvents           DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
-OddEvents           DEBUG Property ['Name': Value] =  'Blocking':False
-OddEvents           DEBUG Property ['Name': Value] =  'NeededResources':[  ]
-OddEvents           DEBUG Property ['Name': Value] =  'Cardinality':1
-OddEvents           DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-OddEvents           DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
-OddEvents           DEBUG Property ['Name': Value] =  'Timeline':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditStop':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditStart':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditFinalize':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditExecute':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditRestart':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditReinitialize':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditInitialize':False
-OddEvents           DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-OddEvents           DEBUG Property ['Name': Value] =  'ErrorMax':1
-OddEvents           DEBUG Property ['Name': Value] =  'Enable':True
-OddEvents           DEBUG Property ['Name': Value] =  'OutputLevel':1
-OddEvents           DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-OddEvents           DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgExecStateSvc     DEBUG preInit: will add Alg OddEvents later
 OddEvents           DEBUG input handles: 0
 OddEvents           DEBUG output handles: 0
 OddEvents           DEBUG Data Deps for OddEvents
-EvenEvents        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-EvenEvents          DEBUG Initialize base class GaudiCommon<Algorithm>
-EvenEvents          DEBUG could not locate CounterSummarySvc, no counter summary will be made
-EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 28
-EvenEvents          DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
-EvenEvents          DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-EvenEvents          DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
-EvenEvents          DEBUG Property ['Name': Value] =  'Context':''
-EvenEvents          DEBUG Property ['Name': Value] =  'TypePrint':True
-EvenEvents          DEBUG Property ['Name': Value] =  'PropertiesPrint':False
-EvenEvents          DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-EvenEvents          DEBUG Property ['Name': Value] =  'RootInTES':''
-EvenEvents          DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
-EvenEvents          DEBUG Property ['Name': Value] =  'Blocking':False
-EvenEvents          DEBUG Property ['Name': Value] =  'NeededResources':[  ]
-EvenEvents          DEBUG Property ['Name': Value] =  'Cardinality':1
-EvenEvents          DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-EvenEvents          DEBUG Property ['Name': Value] =  'MonitorService':'MonitorSvc'
-EvenEvents          DEBUG Property ['Name': Value] =  'Timeline':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditStop':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditStart':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditFinalize':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditExecute':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditRestart':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditReinitialize':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditInitialize':False
-EvenEvents          DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-EvenEvents          DEBUG Property ['Name': Value] =  'ErrorMax':1
-EvenEvents          DEBUG Property ['Name': Value] =  'Enable':True
-EvenEvents          DEBUG Property ['Name': Value] =  'OutputLevel':1
-EvenEvents          DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-EvenEvents          DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgExecStateSvc     DEBUG preInit: will add Alg EvenEvents later
 EvenEvents          DEBUG input handles: 0
@@ -226,7 +121,6 @@ ServiceManager      DEBUG Starting service IncidentSvc
 ServiceManager      DEBUG Starting service FileRecordPersistencySvc
 ServiceManager      DEBUG Starting service EventPersistencySvc
 ServiceManager      DEBUG Starting service EventDataSvc
-ServiceManager      DEBUG Starting service AlgContextSvc
 ServiceManager      DEBUG Starting service TimelineSvc
 ServiceManager      DEBUG Starting service AlgExecStateSvc
 ServiceManager      DEBUG Starting service FileCatalog
@@ -330,7 +224,6 @@ ServiceManager      DEBUG Stopping service IODataManager
 ServiceManager      DEBUG Stopping service FileCatalog
 ServiceManager      DEBUG Stopping service AlgExecStateSvc
 ServiceManager      DEBUG Stopping service TimelineSvc
-ServiceManager      DEBUG Stopping service AlgContextSvc
 ServiceManager      DEBUG Stopping service EventDataSvc
 ServiceManager      DEBUG Stopping service EventPersistencySvc
 ServiceManager      DEBUG Stopping service FileRecordPersistencySvc
@@ -339,15 +232,6 @@ ServiceManager      DEBUG Stopping service AppMgrRunable
 ServiceManager      DEBUG Stopping service FileRecordDataSvc
 ApplicationMgr       INFO Application Manager Stopped successfully
 ServiceManager      DEBUG Finalizing service EventLoopMgr
-DataCreator         DEBUG Finalize base class GaudiAlgorithm
-DataCreator         DEBUG Tools to release :
-DataCreator         DEBUG Services to release :
-OddEvents           DEBUG Finalize base class GaudiAlgorithm
-OddEvents           DEBUG Tools to release :
-OddEvents           DEBUG Services to release :
-EvenEvents          DEBUG Finalize base class GaudiAlgorithm
-EvenEvents          DEBUG Tools to release :
-EvenEvents          DEBUG Services to release :
 OutputStream         INFO Events output: 10
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
 EventLoopMgr         INFO Histograms converted successfully according to request.
@@ -360,9 +244,6 @@ ServiceManager      DEBUG Finalizing service FileCatalog
 XMLCatalog           INFO File 'ConditionalOutput.xml' does not exist. New file created.
 ServiceManager      DEBUG Finalizing service AlgExecStateSvc
 ServiceManager      DEBUG Finalizing service TimelineSvc
-ServiceManager      DEBUG Finalizing service AlgContextSvc
-IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
-IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
@@ -370,10 +251,10 @@ ServiceManager      DEBUG Finalizing service IncidentSvc
 IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service FileRecordDataSvc
-IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
+IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 24)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 23)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
@@ -381,7 +262,6 @@ ServiceManager      DEBUG ---- IncidentSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
-ServiceManager      DEBUG ---- AlgContextSvc (refCount = 2)
 ServiceManager      DEBUG ---- TimelineSvc (refCount = 3)
 ServiceManager      DEBUG ---- AlgExecStateSvc (refCount = 4)
 ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
