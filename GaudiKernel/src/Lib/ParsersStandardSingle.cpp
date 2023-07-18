@@ -14,7 +14,9 @@
 ///   337 |             traits::assign_to(traits::negate(neg, n), attr);
 ///       |                               ~~~~~~~~~~~~~~^~~~~~~~
 /// ```
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#ifndef __clang__
+#  pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 // ============================================================================
 // Include files
 // ============================================================================
