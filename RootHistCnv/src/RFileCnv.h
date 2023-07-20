@@ -12,6 +12,7 @@
 #define ROOTHISTCNV_RFILECNV_H 1
 
 // Include files
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/NTuple.h"
 #include "RDirectoryCnv.h"
 
@@ -51,8 +52,9 @@ namespace RootHistCnv {
     RFileCnv( ISvcLocator* svc );
 
   protected:
-    TFile*      rfile{ nullptr }; ///< Pointer to ROOT file
-    std::string m_compLevel;      ///< Compression setting, property RFileCnv.GlobalCompression
+    TFile*                rfile{ nullptr }; ///< Pointer to ROOT file
+    std::string           m_compLevel;      ///< Compression setting, property RFileCnv.GlobalCompression
+    SmartIF<IIncidentSvc> m_incSvc;
   };
 } // namespace RootHistCnv
 #endif // RootHistCnv_RFileCNV_H
