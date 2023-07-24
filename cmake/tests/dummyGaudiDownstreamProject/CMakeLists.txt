@@ -27,7 +27,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 gaudi_add_executable(mainexe SOURCES src/main.cpp LINK Gaudi::GaudiPluginService)
 gaudi_generate_version_header_file() # generate DUMMYGAUDIDOWNSTREAMPROJECT_VERSION.h
 gaudi_generate_version_header_file(Main) # generate MainVersion.h
-target_include_directories(mainexe PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include)
+target_include_directories(mainexe PRIVATE ${CMAKE_BINARY_DIR}/include)
 
 
 ###################### Simple unit tests beyond this line ######################
