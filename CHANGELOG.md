@@ -5,6 +5,13 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r15](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r15) - 2023-07-24
+This release is needed so that LHCb can pick up a backward compatible version
+of gaudi/Gaudi!1477.
+
+### Fixed
+- Fix performance of Counter destructor by using appropriate containers in Sink
+  (adaptation of gaudi/Gaudi!1477)
 
 ## [v36r14](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r14) - 2023-06-19
 This release features a number of minor fixes to help downstream projects
