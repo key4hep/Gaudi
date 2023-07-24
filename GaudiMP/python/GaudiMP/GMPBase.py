@@ -12,6 +12,7 @@ from __future__ import print_function
 
 import multiprocessing
 import time
+import warnings
 from multiprocessing import Event, JoinableQueue, Process, cpu_count, current_process
 from multiprocessing.queues import Empty
 
@@ -27,6 +28,11 @@ from GaudiPython import (
     gbl,
     setOwnership,
 )
+
+# Workaround for ROOT-10769
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import cppyy
 
 # This script contains the bases for the Gaudi MultiProcessing (GMP)
 # classes
@@ -55,7 +61,7 @@ from GaudiPython import (
 NAP = 0.001
 MB = 1024.0 * 1024.0
 # waits to guard against hanging, in seconds
-WAIT_INITIALISE = 60 * 5
+WAIT_INITIALISE = 60 * 10
 WAIT_FIRST_EVENT = 60 * 3
 WAIT_SINGLE_EVENT = 60 * 6
 WAIT_FINALISE = 60 * 2
@@ -228,14 +234,14 @@ class CollectHistograms(PyAlgorithm):
     def finalize(self):
         self.log.info("CollectHistograms Finalise (%s)" % (self._gmpc.nodeType))
         self._gmpc.hDict = self._gmpc.dumpHistograms()
-        ks = self._gmpc.hDict.keys()
+        ks = list(self._gmpc.hDict.keys())
         self.log.info("%i Objects in Histogram Store" % (len(ks)))
 
         # crashes occurred due to Memory Error during the sending of hundreds
         # histos on slc5 machines, so instead, break into chunks
         # send 100 at a time
         chunk = 100
-        reps = len(ks) / chunk + 1
+        reps = int(len(ks) / chunk + 1)
         for i in range(reps):
             someKeys = ks[i * chunk : (i + 1) * chunk]
             smalld = dict([(key, self._gmpc.hDict[key]) for key in someKeys])
@@ -658,7 +664,7 @@ class GMPComponent(object):
             tool = self.a.tool("ToolSvc.EvtCounter")
             self.cntr = InterfaceCast(gbl.IEventCounter)(tool.getInterface())
         else:
-            self.cntr = None
+            self.cntr = cppyy.nullptr
 
         self.iTime = time.time() - start
 
@@ -761,7 +767,7 @@ class Reader(GMPComponent):
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
-        libc.prctl(15, name, 0, 0, 0)
+        libc.prctl(15, ctypes.create_unicode_buffer(name), 0, 0, 0)
 
         startEngine = time.time()
         self.log.name = "Reader"
@@ -836,7 +842,7 @@ class Subworker(GMPComponent):
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
-        libc.prctl(15, name, 0, 0, 0)
+        libc.prctl(15, ctypes.create_unicode_buffer(name), 0, 0, 0)
 
         self.initEvent.set()
         startEngine = time.time()
@@ -863,8 +869,7 @@ class Subworker(GMPComponent):
             if packet == "FINISHED":
                 break
             evtNumber, tbin = packet  # unpack
-            if self.cntr is not None:
-
+            if self.cntr != cppyy.nullptr:
                 self.cntr.setEventCounter(evtNumber)
 
             self.nIn += 1
@@ -1016,7 +1021,7 @@ class Worker(GMPComponent):
         formatHead = "[Worker-%i]" % (self.nodeID)
         self.config["MessageSvc"].Format = "%-13s " % formatHead + self.msgFormat
 
-        for key, lst in self.writerDict.iteritems():
+        for key, lst in self.writerDict.items():
             self.log.info("Writer Type : %s\t : %i" % (key, len(lst)))
 
         for m in self.writerDict["tuples"]:
@@ -1051,7 +1056,7 @@ class Worker(GMPComponent):
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
-        libc.prctl(15, name, 0, 0, 0)
+        libc.prctl(15, ctypes.create_unicode_buffer(name), 0, 0, 0)
 
         startEngine = time.time()
         self.log.info("Worker %i starting Engine" % (self.nodeID))
@@ -1099,7 +1104,7 @@ class Worker(GMPComponent):
             if packet == "FINISHED":
                 break
             evtNumber, tbin = packet  # unpack
-            if self.cntr is not None:
+            if self.cntr != cppyy.nullptr:
                 self.cntr.setEventCounter(evtNumber)
 
             # subworkers are forked before the first event is processed
@@ -1256,7 +1261,7 @@ class Writer(GMPComponent):
 
         libc = ctypes.CDLL("libc.so.6")
         name = str(self.nodeType) + str(self.nodeID) + "\0"
-        libc.prctl(15, name, 0, 0, 0)
+        libc.prctl(15, ctypes.create_unicode_buffer(name), 0, 0, 0)
 
         self.Initialize()
         self.histoAgent = HistoAgent(self)
