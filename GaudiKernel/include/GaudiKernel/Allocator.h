@@ -81,7 +81,7 @@ namespace GaudiUtils {
     /// Constructor
     Allocator() throw();
     /// destructor
-    ~Allocator() throw();
+    ~Allocator() throw() {}
 
     /** Malloc and Free methods to be used when overloading
      *  new and delete operators in the client &lt;Type&gt; object
@@ -185,13 +185,6 @@ namespace GaudiUtils {
 //
 template <class Type>
 GaudiUtils::Allocator<Type>::Allocator() throw() : mem( sizeof( Type ) ) {}
-
-// ************************************************************
-// G4Allocator destructor
-// ************************************************************
-//
-template <class Type>
-GaudiUtils::Allocator<Type>::~Allocator() throw() {}
 
 // ************************************************************
 // MallocSingle

@@ -113,10 +113,15 @@ Containers::KeyedObjectManager<T>::KeyedObjectManager( KeyedObjectManager&& othe
   other.m_direct  = 0;
 }
 
-template <class T>
-Containers::KeyedObjectManager<T>::~KeyedObjectManager() {
-  m_setup.s->~T();
-}
+// the usage of namespace here is only to avoid a clang11/12 compiler warning
+// due to a miswording in the specification of C++ and fixed in C++20, see
+// https://stackoverflow.com/questions/68751682/is-a-class-templates-name-in-scope-for-a-qualified-out-of-line-destructors-def
+namespace Containers {
+  template <class T>
+  KeyedObjectManager<T>::~KeyedObjectManager() {
+    m_setup.s->~T();
+  }
+} // namespace Containers
 
 /// Setup of the Map and the parent object
 template <class T>
