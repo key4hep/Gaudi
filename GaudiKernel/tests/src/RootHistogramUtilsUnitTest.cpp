@@ -185,6 +185,9 @@ BOOST_AUTO_TEST_CASE( test_json_to_histo1D ) {
   BOOST_CHECK( histo.GetBinContent( 0 ) == 1.0 );
   BOOST_CHECK( histo.GetBinContent( 1 ) == 0.0 );
   BOOST_CHECK( histo.GetBinContent( 5 ) == 5.0 );
+  BOOST_CHECK( histo.GetBinError( 0 ) == 1.0 );
+  BOOST_CHECK( histo.GetBinError( 1 ) == 0.0 );
+  BOOST_CHECK( histo.GetBinError( 5 ) == std::sqrt( 5.0 ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_json_to_histo2D ) {
@@ -209,6 +212,9 @@ BOOST_AUTO_TEST_CASE( test_json_to_histo2D ) {
   BOOST_CHECK( histo.GetBinContent( 0 ) == 1.0 );
   BOOST_CHECK( histo.GetBinContent( 1 ) == 0.0 );
   BOOST_CHECK( histo.GetBinContent( 5 ) == 5.0 );
+  BOOST_CHECK( histo.GetBinError( 0 ) == 1.0 );
+  BOOST_CHECK( histo.GetBinError( 1 ) == 0.0 );
+  BOOST_CHECK( histo.GetBinError( 5 ) == std::sqrt( 5.0 ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_json_to_histo3D ) {
@@ -237,6 +243,9 @@ BOOST_AUTO_TEST_CASE( test_json_to_histo3D ) {
   BOOST_CHECK( histo.GetBinContent( 0 ) == 1.0 );
   BOOST_CHECK( histo.GetBinContent( 1 ) == 0.0 );
   BOOST_CHECK( histo.GetBinContent( 21 ) == 5.0 );
+  BOOST_CHECK( histo.GetBinError( 0 ) == 1.0 );
+  BOOST_CHECK( histo.GetBinError( 1 ) == 0.0 );
+  BOOST_CHECK( histo.GetBinError( 21 ) == std::sqrt( 5.0 ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_json_to_prof1D ) {
@@ -247,7 +256,7 @@ BOOST_AUTO_TEST_CASE( test_json_to_prof1D ) {
       { "empty", false },
       { "nEntries", 6 },
       { "axis", { { { "maxValue", 1.5 }, { "minValue", -0.5 }, { "nBins", 2 }, { "title", "MyNiceAxisTitle" } } } },
-      { "bins", { { { 1.0, 2.0 }, 4.0 }, { { 5.0, 15.0 }, 45.0 }, { { 0.0, 0.0 }, 0.0 }, { { 0.0, 0.0 }, 0.0 } } } };
+      { "bins", { { { 1.0, 2.0 }, 4.0 }, { { 5.0, 15.0 }, 55.0 }, { { 0.0, 0.0 }, 0.0 }, { { 0.0, 0.0 }, 0.0 } } } };
   std::string dir{ "dir" };
   std::string name{ "subdir/name" };
   auto [histo, fullDir] = jsonToRootHistogram<Traits<true, TProfile, 1>>( dir, name, j );
@@ -260,12 +269,15 @@ BOOST_AUTO_TEST_CASE( test_json_to_prof1D ) {
   BOOST_CHECK( histo.GetBinEntries( 0 ) == 1.0 );
   BOOST_CHECK( histo.GetBinContent( 0 ) == 2.0 );
   BOOST_CHECK( sumw2->At( 0 ) == 4.0 );
+  BOOST_CHECK( histo.GetBinError( 0 ) == 0.0 );
   BOOST_CHECK( histo.GetBinEntries( 1 ) == 5.0 );
   BOOST_CHECK( histo.GetBinContent( 1 ) == 3.0 );
-  BOOST_CHECK( sumw2->At( 1 ) == 45.0 );
+  BOOST_CHECK( sumw2->At( 1 ) == 55.0 );
+  BOOST_CHECK( histo.GetBinError( 1 ) == std::sqrt( 0.4 ) );
   BOOST_CHECK( histo.GetBinEntries( 2 ) == 0.0 );
   BOOST_CHECK( histo.GetBinContent( 2 ) == 0.0 );
   BOOST_CHECK( sumw2->At( 2 ) == 0.0 );
+  BOOST_CHECK( histo.GetBinError( 2 ) == 0.0 );
 }
 
 BOOST_AUTO_TEST_CASE( test_json_to_prof2D ) {
@@ -283,7 +295,7 @@ BOOST_AUTO_TEST_CASE( test_json_to_prof2D ) {
                         { { 0.0, 0.0 }, 0.0 },
                         { { 0.0, 0.0 }, 0.0 },
                         { { 0.0, 0.0 }, 0.0 },
-                        { { 5.0, 15.0 }, 45.0 },
+                        { { 5.0, 15.0 }, 55.0 },
                         { { 0.0, 0.0 }, 0.0 },
                         { { 0.0, 0.0 }, 0.0 },
                         { { 0.0, 0.0 }, 0.0 },
@@ -307,10 +319,13 @@ BOOST_AUTO_TEST_CASE( test_json_to_prof2D ) {
   BOOST_CHECK( histo.GetBinEntries( 0 ) == 1.0 );
   BOOST_CHECK( histo.GetBinContent( 0 ) == 2.0 );
   BOOST_CHECK( sumw2->At( 0 ) == 4.0 );
+  BOOST_CHECK( histo.GetBinError( 0 ) == 0.0 );
   BOOST_CHECK( histo.GetBinEntries( 5 ) == 5.0 );
   BOOST_CHECK( histo.GetBinContent( 5 ) == 3.0 );
-  BOOST_CHECK( sumw2->At( 5 ) == 45.0 );
+  BOOST_CHECK( sumw2->At( 5 ) == 55.0 );
+  BOOST_CHECK( histo.GetBinError( 5 ) == std::sqrt( 0.4 ) );
   BOOST_CHECK( histo.GetBinEntries( 2 ) == 0.0 );
   BOOST_CHECK( histo.GetBinContent( 2 ) == 0.0 );
   BOOST_CHECK( sumw2->At( 2 ) == 0.0 );
+  BOOST_CHECK( histo.GetBinError( 2 ) == 0.0 );
 }
