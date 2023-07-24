@@ -10,6 +10,7 @@
 \***********************************************************************************/
 // Include files
 #include "GaudiKernel/Bootstrap.h"
+#include "GaudiKernel/DataIncident.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -44,7 +45,14 @@ StatusCode RootHistCnv::RFileCnv::initialize() {
     if ( !sc ) return sc;
   }
   // initialise base class
-  return RDirectoryCnv::initialize();
+  return RDirectoryCnv::initialize().andThen( [&]() {
+    m_incSvc = service( "IncidentSvc" );
+    if ( !m_incSvc ) {
+      MsgStream( msgSvc() ) << MSG::ERROR << "Cannot access IncidentSvc" << endmsg;
+      return StatusCode::FAILURE;
+    }
+    return StatusCode::SUCCESS;
+  } );
 }
 //------------------------------------------------------------------------------
 
@@ -126,6 +134,7 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress, DataObjec
     regTFile( ooname, rfile ).ignore();
 
     log << MSG::DEBUG << "creating ROOT file " << fname << endmsg;
+    m_incSvc->fireIncident( ContextIncident<TFile*>( fname, "CONNECTED_NTUPLE_OUTPUT", rfile ) );
 
     ipar[0]             = (unsigned long)rfile;
     NTuple::File* pFile = new NTuple::File( objType(), fname, oname );
