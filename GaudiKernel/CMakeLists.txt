@@ -179,7 +179,12 @@ elseif(UNIX)
                                      src/Lib/Platform/SystemLinux.cpp)
   target_link_libraries(GaudiKernel PUBLIC ${rt_LIBRARY})
 endif()
-
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  target_include_directories(GaudiKernel
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include-x86_64>  # for RtdscClock.h
+  )
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include-x86_64/Gaudi TYPE INCLUDE)
+endif()
 # Genconf
 gaudi_add_executable(genconf
   SOURCES src/Util/genconf.cpp

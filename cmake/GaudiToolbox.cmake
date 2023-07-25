@@ -1362,7 +1362,7 @@ endfunction()
 
     gaudi_generate_version_header_file([name])
 
-  This function generates a file ``${name}Version.h`` in ``${CMAKE_CURRENT_BINARY_DIR}/include``
+  This function generates a file ``${name}Version.h`` in ``${CMAKE_BINARY_DIR}/include``
   with the following content (``${NAME}`` is ``${name}`` uppercased):
 
   .. code-block:: cpp
@@ -1394,12 +1394,12 @@ function(gaudi_generate_version_header_file)
     if(NOT ARGV0)
         string(TOUPPER ${PROJECT_NAME} NAME)
         set(output_file_name ${NAME}_VERSION.h)
-        install(FILES ${CMAKE_BINARY_DIR}/include/${output_file_name} TYPE INCLUDE)
     else()
         set(name ${ARGV0})
         string(TOUPPER ${name} NAME)
         set(output_file_name ${name}Version.h)
     endif()
+    install(FILES ${CMAKE_BINARY_DIR}/include/${output_file_name} TYPE INCLUDE)
     # No patch number => set to 0
     if(NOT PROJECT_VERSION_PATCH)
         set(PROJECT_VERSION_PATCH 0)

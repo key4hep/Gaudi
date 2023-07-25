@@ -12,13 +12,13 @@
 
 #ifndef __x86_64__
 #  error "<Gaudi/Timers/RdtscClock.h> is only supported on x86"
-#endif // not __x86_64__
+#else // not __x86_64__
 
-#include <chrono>
-#include <functional>
-#include <ratio>
-#include <thread>
-#include <x86intrin.h>
+#  include <chrono>
+#  include <functional>
+#  include <ratio>
+#  include <thread>
+#  include <x86intrin.h>
 
 namespace Gaudi {
   namespace Timers {
@@ -81,3 +81,4 @@ namespace Gaudi {
     };
   } // namespace Timers
 } // namespace Gaudi
+#endif
