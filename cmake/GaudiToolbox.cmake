@@ -711,7 +711,7 @@ function(gaudi_add_tests type)
     if(type STREQUAL "QMTest")
 
         if(NOT TARGET Python::Interpreter)
-            message(FATAL_ERROR "No python interpreter was found, call find_package(Python COMPONENT Interpreter) first.")
+            message(FATAL_ERROR "No python interpreter was found, call find_package(Python REQUIRED Interpreter) first.")
         endif()
 
         if(test_directory)
