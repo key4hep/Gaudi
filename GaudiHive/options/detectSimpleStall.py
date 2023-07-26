@@ -58,7 +58,7 @@ a3 = CPUCruncher("A3")
 a3.inpKeys = ["/Event/a2"]
 
 # Assemble control flow graph
-branch = GaudiSequencer(
+branch = Gaudi__Sequencer(
     "EarlyExitBranch", ModeOR=False, ShortCircuit=True, Sequential=True
 )
 branch.Members = [a1, a2]

@@ -89,7 +89,7 @@ a2.inpKeys = ["/Event/A1"]
 a3 = Test__ViewTester("AlgC", OutputLevel=INFO)
 a3.outKeys = ["/Event/A2"]
 
-algSeq = GaudiSequencer(
+algSeq = Gaudi__Sequencer(
     "algSeq", Members=[a1, a2, a3], Sequential=True, OutputLevel=INFO
 )
 

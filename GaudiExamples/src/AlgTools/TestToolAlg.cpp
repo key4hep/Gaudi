@@ -32,7 +32,7 @@ StatusCode TestToolAlg::initialize() {
 
   debug() << "Initialise" << endmsg;
 
-  if ( !GaudiAlgorithm::initialize() ) return StatusCode::FAILURE;
+  if ( !Algorithm::initialize() ) return StatusCode::FAILURE;
 
   // setup tool registry
   // IAlgTool * mytool;
@@ -45,7 +45,8 @@ StatusCode TestToolAlg::initialize() {
       name = i.substr( slash + 1 );
     }
     debug() << "Loading tool " << name << " of type " << type << endmsg;
-    /*mytool = */ tool<IAlgTool>( type, name );
+    IAlgTool* tmp = nullptr;
+    toolSvc()->retrieve( type, name, IAlgTool::interfaceID(), tmp ).ignore();
   }
 
   return StatusCode::SUCCESS;
@@ -68,7 +69,7 @@ StatusCode TestToolAlg::finalize() {
 
   debug() << "Finalize" << endmsg;
 
-  return GaudiAlgorithm::finalize();
+  return Algorithm::finalize();
 }
 
 //=============================================================================

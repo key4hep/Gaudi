@@ -19,15 +19,9 @@ Those nodes are then given 2 different CF node parents (20 in total) which inclu
 
 In sequential mode (sequence=True) the prescale algorithms will randomly deactivate CF nodes at a frequency given by filterPass
 """
-from Configurables import (
-    AlgResourcePool,
-    AvalancheSchedulerSvc,
-    GaudiSequencer,
-    HiveSlimEventLoopMgr,
-    HiveWhiteBoard,
-    Prescaler,
-    Test__ViewTester,
-)
+from Configurables import AlgResourcePool, AvalancheSchedulerSvc
+from Configurables import Gaudi__Examples__Prescaler as Prescaler
+from Configurables import Gaudi__Sequencer, HiveSlimEventLoopMgr, HiveWhiteBoard
 from Gaudi.Configuration import *
 
 # metaconfig -------------------------------------------------------------------
@@ -89,7 +83,7 @@ for i in range(1000):
     alg.PercentPass = 100.0
     allAlgs.append(alg)
 
-baseSeq = GaudiSequencer(
+baseSeq = Gaudi__Sequencer(
     "baseSeq",
     Members=allAlgs,
     Sequential=sequence,
@@ -104,7 +98,7 @@ allSeqSeqs = []
 if nested:
     for i in range(100):
         seqAlgs = allAlgs[10 * i : 10 * (i + 1)]
-        seq = GaudiSequencer(
+        seq = Gaudi__Sequencer(
             "seq" + str(i),
             Members=seqAlgs,
             Sequential=sequence,
@@ -122,7 +116,7 @@ if nested:
         filterAlg.Cardinality = cardinality
         filterAlg.PercentPass = filterPass
 
-        seq = GaudiSequencer(
+        seq = Gaudi__Sequencer(
             "seqSeq" + str(i),
             Members=[filterAlg] + seqSeqs,
             Sequential=sequence,
@@ -140,7 +134,7 @@ if nested:
         filterAlg.Cardinality = cardinality
         filterAlg.PercentPass = filterPass
 
-        seq = GaudiSequencer(
+        seq = Gaudi__Sequencer(
             "seqSeq" + str(i + 10),
             Members=[filterAlg] + seqSeqs,
             Sequential=sequence,

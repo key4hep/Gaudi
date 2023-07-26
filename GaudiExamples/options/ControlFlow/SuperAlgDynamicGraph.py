@@ -10,7 +10,7 @@
 #####################################################################################
 from __future__ import print_function
 
-from Configurables import EventLoopMgr, GaudiExamplesCommonConf, TimingAuditor
+from Configurables import AlgTimingAuditor, EventLoopMgr, GaudiExamplesCommonConf
 from Gaudi.Configuration import *
 from GaudiKernel.Configurable import SuperAlgorithm
 
@@ -51,9 +51,11 @@ class MySuperAlg(SuperAlgorithm):
         """
         Prepare the graph represented by the SuperAlgorithm.
         """
-        from Configurables import EventCounter, HelloWorld, Prescaler
+        from Configurables import Gaudi__Examples__EventCounter as EventCounter
+        from Configurables import Gaudi__Examples__Prescaler as Prescaler
+        from Configurables import HelloWorld
 
-        p = self._makeAlg(Prescaler, PercentPass=50.0)
+        p = self._makeAlg(Prescaler, name="Prescaler", PercentPass=50.0)
         h = self._makeAlg(HelloWorld, name="HW")
         c = self._makeAlg(EventCounter, name="Counter")
         # the actual graph depends on the UseHelloWorld flag
@@ -76,8 +78,8 @@ ApplicationMgr(
     TopAlg=[top],
     EvtMax=10,  # events to be processed (default is 10)
     EvtSel="NONE",  # do not use any event input
-    ExtSvc=["ToolSvc", "AuditorSvc"],
+    ExtSvc=["ToolSvc", "AuditorSvc", "Gaudi::Monitoring::MessageSvcSink"],
     AuditAlgorithms=True,
 )
 
-AuditorSvc().Auditors.append(TimingAuditor("TIMER"))
+AuditorSvc().Auditors.append(AlgTimingAuditor("TIMER"))

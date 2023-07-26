@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Configurables import GaudiPersistency, ReadAlg, SequencerTimerTool
+from Configurables import GaudiPersistency, ReadAlg
 from Gaudi.Configuration import *
 
 # Basic configuration for Gaudi persistency
@@ -27,6 +27,3 @@ evtColl = TagCollectionSvc("EvtTupleSvc")
 # Application
 app = ApplicationMgr(TopAlg=[ReadAlg()], EvtMax=-1, HistogramPersistency="NONE")
 app.ExtSvc.append(evtColl)
-
-# Verbosity
-# SequencerTimerTool(OutputLevel=WARNING)

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,28 +8,24 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIHIVE_ALGRESOURCEPOOL_H
-#define GAUDIHIVE_ALGRESOURCEPOOL_H
+#pragma once
 
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgResourcePool.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/Service.h"
 #include <Gaudi/Algorithm.h>
-
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgResourcePool.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/Service.h>
 #include <atomic>
 #include <bitset>
+#include <boost/dynamic_bitset.hpp>
 #include <list>
 #include <map>
 #include <mutex>
 #include <string>
 #include <string_view>
+#include <tbb/concurrent_queue.h>
 #include <unordered_map>
 #include <vector>
-
-// External libs
-#include "boost/dynamic_bitset.hpp"
-#include "tbb/concurrent_queue.h"
 
 /** @class AlgResourcePool AlgResourcePool.h GaudiHive/AlgResourcePool.h
 
@@ -112,5 +108,3 @@ private:
   /// The top list of algorithms
   std::list<IAlgorithm*> m_topAlgPtrList;
 };
-
-#endif // GAUDIHIVE_ALGRESOURCEPOOL_H

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,12 +9,12 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/ICPUCrunchSvc.h"
-#include "GaudiKernel/IRndmGenSvc.h"
-#include "GaudiKernel/RegistryEntry.h"
-#include "GaudiKernel/RndmGenerators.h"
-
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/DataObjectHandle.h>
+#include <GaudiKernel/ICPUCrunchSvc.h>
+#include <GaudiKernel/IRndmGenSvc.h>
+#include <GaudiKernel/RegistryEntry.h>
+#include <GaudiKernel/RndmGenerators.h>
 #include <tbb/concurrent_hash_map.h>
 
 //------------------------------------------------------------------------------
@@ -26,7 +26,7 @@
  * unit of the CPU.
  *
  */
-class CPUCruncher : public GaudiAlgorithm {
+class CPUCruncher : public Algorithm {
 
 public:
   typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;

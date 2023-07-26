@@ -76,8 +76,8 @@ namespace Gaudi {
     // Initialization
     // ============================================================================
     StatusCode CustomPropertiesAlg::initialize() {
-      StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-      if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
+      StatusCode sc = TestAlg::initialize(); // must be executed first
+      if ( sc.isFailure() ) return sc;       // error printed already by TestAlg
 
       if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
 
@@ -105,7 +105,7 @@ namespace Gaudi {
 
       // TODO Implement finalize
 
-      return GaudiAlgorithm::finalize(); // must be called after all other actions
+      return TestAlg::finalize(); // must be called after all other actions
     }
   } // namespace Examples
 } // namespace Gaudi

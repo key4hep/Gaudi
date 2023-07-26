@@ -25,7 +25,6 @@ gaudi_add_library(GaudiMPLib
 gaudi_add_module(GaudiMP
                  SOURCES src/component/IoComponentMgr.cpp
                  LINK GaudiMPLib
-                      GaudiAlgLib
                       Python::Python
                       ROOT::Net
                       ROOT::RIO

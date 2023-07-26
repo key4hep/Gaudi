@@ -126,6 +126,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/RndmTypeInfos.cpp
           src/Lib/Selector.cpp
           src/Lib/Sequence.cpp
+          src/Lib/Sequencer.cpp
           src/Lib/Service.cpp
           src/Lib/ServiceHistory.cpp
           src/Lib/ServiceLocatorHelper.cpp

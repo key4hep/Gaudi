@@ -1,0 +1,29 @@
+<!--
+    (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<lcgdict>
+  <class name = "GaudiAlgorithm"/>
+  <class name = "GaudiPython::PyAlg<GaudiAlgorithm>"/>
+  <class name = "GaudiPython::PyAlg<GaudiHistoAlg>"/>
+  <class name = "GaudiPython::PyAlg<GaudiTupleAlg>"/>
+  <class name = "IErrorTool"/>
+  <class name = "IGenericTool"/>
+  <class name = "IHistoTool"/>
+  <class name = "ISequencerTimerTool"/>
+  <class name = "ITupleTool"/>
+  <class name = "std::vector<GaudiAlg::ID>"/>
+  <class name = "Tuples::Tuple"/>
+  <class pattern = "GaudiAlg::*"/>
+  <class pattern = "GaudiAlg::Print*"/>
+  <class pattern = "GaudiCommon<*>"/>
+  <class pattern = "GaudiHistos<*>"/>
+  <class pattern = "GaudiPython::*Decorator*"/>
+  <class pattern = "GaudiTuples<*>"/>
+</lcgdict>

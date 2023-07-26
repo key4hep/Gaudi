@@ -31,7 +31,7 @@
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include <Gaudi/Examples/TestAlg.h>
 // ============================================================================
 
 /** @file
@@ -50,7 +50,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date  2009-09-05
      */
-    class ExtendedProperties2 : public GaudiAlgorithm {
+    class ExtendedProperties2 : public TestAlg {
     public:
       // ======================================================================
       StatusCode execute() override;
@@ -61,7 +61,7 @@ namespace Gaudi {
        *  @param name algorithm instance name
        *  @param pSvc pointer to Service Locator
        */
-      ExtendedProperties2( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {
+      ExtendedProperties2( const std::string& name, ISvcLocator* pSvc ) : TestAlg( name, pSvc ) {
         setProperty( "PropertiesPrint", true ).ignore();
       }
       // ======================================================================

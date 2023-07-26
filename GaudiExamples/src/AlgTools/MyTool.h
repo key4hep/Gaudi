@@ -21,7 +21,7 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyTool : public extends<AlgTool, IMyTool> {
+class MyTool : public extends<AlgTool, IMyTool, IMyOtherTool> {
 public:
   /// Standard Constructor
   using extends::extends;
@@ -29,6 +29,8 @@ public:
   /// IMyTool interface
   const std::string& message() const override;
   void               doIt() const override;
+  // IMyOtherTool interface
+  void doItAgain() const override;
 
   /// Overriding initialize and finalize
   StatusCode initialize() override;

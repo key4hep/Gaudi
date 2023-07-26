@@ -17,7 +17,7 @@
 #include <vector>
 
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class ReadTES ReadTES.h
  *
@@ -25,10 +25,10 @@
  *  @author Marco Cattaneo
  *  @date   2008-11-03
  */
-class ReadTES : public GaudiAlgorithm {
+class ReadTES : public Algorithm {
 public:
   /// Standard constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution

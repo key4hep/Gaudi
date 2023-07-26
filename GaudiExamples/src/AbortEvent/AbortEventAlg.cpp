@@ -30,8 +30,8 @@ DECLARE_COMPONENT( AbortEventAlg )
 // Initialization
 //=============================================================================
 StatusCode AbortEventAlg::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
+  StatusCode sc = Algorithm::initialize(); // must be executed first
+  if ( sc.isFailure() ) return sc;         // error printed already by Algorithm
 
   debug() << "==> Initialize" << endmsg;
 
@@ -61,7 +61,7 @@ StatusCode AbortEventAlg::finalize() {
 
   debug() << "==> Finalize" << endmsg;
 
-  return GaudiAlgorithm::finalize(); // must be called after all other actions
+  return Algorithm::finalize(); // must be called after all other actions
 }
 
 //=============================================================================

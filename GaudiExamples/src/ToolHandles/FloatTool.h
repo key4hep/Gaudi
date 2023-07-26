@@ -10,16 +10,16 @@
 \***********************************************************************************/
 #pragma once
 
-#include "GaudiAlg/GaudiTool.h"
+#include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/DataObjectHandle.h"
 
 namespace Gaudi {
   namespace Examples {
 
-    struct FloatTool : public GaudiTool {
+    struct FloatTool : public AlgTool {
 
       FloatTool( const std::string& type, const std::string& name, const IInterface* parent )
-          : GaudiTool( type, name, parent ) {}
+          : AlgTool( type, name, parent ) {}
 
       float getFloat() const;
 

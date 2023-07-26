@@ -1022,8 +1022,7 @@ class SortGroupOfLines(FilePreprocessor):
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
 for w, o, r in [
-    # ("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
-    ("TIMER.TIMER", r"\s+[+-]?[0-9]+[0-9.]*", " 0"),  # Normalize time output
+    ("TIMER", r"\s+[+-]?[0-9]+[0-9.e+-]*", " 0"),  # Normalize time output
     ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
     ("^#.*file", r"file '.*[/\\]([^/\\]*)$", r"file '\1"),
     (
@@ -1057,7 +1056,7 @@ for w, o, r in [
     (r"Property \['Name': Value\]", r"( =  '[^']+':)'(.*)'", r"\1\2"),
     ("TimelineSvc", "to file  'TimelineFile':", "to file "),
     ("DataObjectHandleBase", r'DataObjectHandleBase\("([^"]*)"\)', r"'\1'"),
-]:  # [ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
+]:
     normalizeExamples += RegexpReplacer(o, r, w)
 
 lineSkipper = LineSkipper(

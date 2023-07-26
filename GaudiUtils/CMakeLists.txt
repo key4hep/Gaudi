@@ -87,5 +87,5 @@ if(BUILD_TESTING AND GAUDI_USE_CPPUNIT AND GAUDI_USE_XERCESC)
   add_test(NAME ${package_name}.testXMLFileCatalogRead
            COMMAND run $<TARGET_FILE:testXMLFileCatalogRead>)
   set_property(TEST ${package_name}.testXMLFileCatalogRead
-    PROPERTY DEPENDS testXMLFileCatalogWrite)
+    PROPERTY DEPENDS ${package_name}.testXMLFileCatalogWrite)
 endif()

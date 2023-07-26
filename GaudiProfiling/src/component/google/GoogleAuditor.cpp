@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,31 +9,21 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
+#include <GaudiKernel/Auditor.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IAuditorSvc.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/MsgStream.h>
 #include <algorithm>
+#include <gperftools/heap-checker.h>
+#include <gperftools/heap-profiler.h>
+#include <gperftools/profiler.h>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "GaudiKernel/Auditor.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IAuditorSvc.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/MsgStream.h"
-
-#include "GaudiAlg/GaudiSequencer.h"
-#include "GaudiAlg/Sequencer.h"
-
-#ifdef TCMALLOC_OLD_GOOGLE_HEADERS
-#  include "google/heap-checker.h"
-#  include "google/heap-profiler.h"
-#  include "google/profiler.h"
-#else
-#  include "gperftools/heap-checker.h"
-#  include "gperftools/heap-profiler.h"
-#  include "gperftools/profiler.h"
-#endif
 
 namespace Google {
 
@@ -94,10 +84,10 @@ namespace Google {
       m_sampleEventCount = 0;
     }
 
-    /** Check if the component in question is a GaudiSequencer or
-     *  a Sequencer */
+    // Check if the component in question is a Sequencer
     inline bool isSequencer( INamedInterface* i ) const {
-      return ( dynamic_cast<GaudiSequencer*>( i ) != NULL || dynamic_cast<Sequencer*>( i ) != NULL );
+      if ( auto alg = dynamic_cast<IAlgorithm*>( i ) ) { return alg->isSequence(); }
+      return false;
     }
 
     /// Check if auditing is enabled for the current processing phase

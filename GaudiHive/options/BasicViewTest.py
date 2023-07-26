@@ -26,7 +26,7 @@ from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,
     CPUCruncher,
-    GaudiSequencer,
+    Gaudi__Sequencer,
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
     Test__ViewTester,
@@ -95,11 +95,11 @@ for algo in [a1, a2, a3, a4]:
     algo.Cardinality = cardinality
     algo.OutputLevel = INFO
 
-viewNode = GaudiSequencer(
+viewNode = Gaudi__Sequencer(
     "viewNode", Members=[a2, a3], Sequential=False, ShortCircuit=False, OutputLevel=INFO
 )
 
-createViewSeq = GaudiSequencer(
+createViewSeq = Gaudi__Sequencer(
     "createViewSeq", Members=[a1, viewNode, a4], Sequential=True, OutputLevel=INFO
 )
 

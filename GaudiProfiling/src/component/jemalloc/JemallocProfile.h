@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,12 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef JEMALLOC_PROFILE_H
-#define JEMALLOC_PROFILE_H 1
+#pragma once
 
-// Include files
-// from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include <GaudiKernel/Algorithm.h>
 
 /** @class JemallocProfile JemallocProfile.h jemalloc/JemallocProfile.h
  *
@@ -26,14 +23,13 @@
  *  @author Ben Couturier
  *  @date   2015-06-09
  */
-class JemallocProfile : public GaudiAlgorithm {
+class JemallocProfile : public Algorithm {
 public:
   /// Standard constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
-  StatusCode finalize() override;   ///< Algorithm finalization
 
 private:
   Gaudi::Property<int> m_nStartFromEvent{ this, "StartFromEventN", 1, "After what event we start profiling. " };
@@ -45,4 +41,3 @@ private:
   bool m_profiling   = false; // whether we are profiling...
   int  m_eventNumber = 0;     // Current event number
 };
-#endif // JEMALLOC_PROFILE_H

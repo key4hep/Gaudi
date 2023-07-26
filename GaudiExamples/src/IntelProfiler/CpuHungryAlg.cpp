@@ -13,15 +13,15 @@
 #include <math.h>
 #include <unistd.h>
 // Gaudi:
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /// Algorithm which consume a lot of CPU.
 ///
 /// Author: Alexander Mazurov (alexander.mazurov@gmail.com)
-class CpuHungryAlg : public GaudiAlgorithm {
+class CpuHungryAlg : public Algorithm {
 public:
   /// Standard constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
@@ -43,8 +43,8 @@ DECLARE_COMPONENT( CpuHungryAlg )
 
 /// Initialization.
 StatusCode CpuHungryAlg::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
+  StatusCode sc = Algorithm::initialize(); // must be executed first
+  if ( sc.isFailure() ) return sc;         // error printed already by Algorithm
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
   return StatusCode::SUCCESS;
@@ -96,7 +96,7 @@ StatusCode CpuHungryAlg::execute() {
 StatusCode CpuHungryAlg::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
-  return GaudiAlgorithm::finalize(); // must be called after all other actions
+  return Algorithm::finalize(); // must be called after all other actions
 }
 
 // ============================================================================

@@ -1,6 +1,8 @@
 # setting LC_ALL to "C"
-# --> Including file '/workdir/gaudi/GaudiHive/options/SubSlotException.py'
-# <-- End of file '/workdir/gaudi/GaudiHive/options/SubSlotException.py'
+# --> Including file '/home/marcocle/stacks/master/Gaudi/GaudiHive/options/SubSlotException.py'
+# <-- End of file '/home/marcocle/stacks/master/Gaudi/GaudiHive/options/SubSlotException.py'
+# --> Including file '/tmp/marcocle/tmpr0_r55f2.py'
+# <-- End of file '/tmp/marcocle/tmpr0_r55f2.py'
 # Dumping all configurables and properties (different from default)
 {'A1': {'Cardinality': 1,
         'OutputLevel': 3,
@@ -19,7 +21,7 @@
                     'EvtSel': 'NONE',
                     'ExtSvc': ['HiveWhiteBoard/EventDataSvc'],
                     'MessageSvcType': 'InertMessageSvc',
-                    'TopAlg': ['GaudiSequencer/createViewSeq']},
+                    'TopAlg': ['Gaudi::Sequencer/createViewSeq']},
  'AvalancheSchedulerSvc': {'OutputLevel': 3,
                            'ThreadPoolSize': 1,
                            'VerboseSubSlots': True},
@@ -27,7 +29,7 @@
  'HiveSlimEventLoopMgr': {'OutputLevel': 3,
                           'SchedulerName': 'AvalancheSchedulerSvc'},
  'createViewSeq': {'Members': ['Test::ViewTester/A1',
-                               'GaudiSequencer/viewNode',
+                               'Gaudi::Sequencer/viewNode',
                                'Test::ViewTester/A4'],
                    'OutputLevel': 3,
                    'Sequential': True},
@@ -39,18 +41,14 @@
 MessageSvc           INFO Activating in a separate thread
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r0)
-                                          running on 05d0ccd909cb on Mon Aug 16 17:47:42 2021
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r12)
+                                          running on lbbuildinter01.cern.ch on Fri Apr 21 19:34:27 2023
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ThreadPoolSvc        INFO no thread init tools attached
 AvalancheSchedu...   INFO Activating scheduler in a separate thread
 AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
-createViewSeq        INFO Member list: Test::ViewTester/A1, GaudiSequencer/viewNode, Test::ViewTester/A4
-RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
-RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
-RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   2.94 times the speed of a 2.8 GHz Xeon.
+createViewSeq        INFO Member list: Test::ViewTester/A1, Gaudi::Sequencer/viewNode, Test::ViewTester/A4
 viewNode             INFO Member list: Test::ViewTester/A2, GaudiTesting::StopLoopAlg/A3
 AvalancheSchedu...   INFO Found 4 algorithms
 AvalancheSchedu...   INFO Data Dependencies for Algorithms:
@@ -92,11 +90,10 @@ A2                   INFO Running in view view0
 A3                   INFO 1 events to go
 A2                   INFO Running in view view1
 A3                   INFO Stopping loop with exception
-A3                  FATAL GaudiTesting::StopLoopAlg:: Exception throw: Stopping loop StatusCode=FAILURE
-A3                  FATAL  Exception with tag= is caught
-A3                  ERROR  	 A3:: Stopping loop	 StatusCode=FAILURE
-AlgTask             FATAL .executeEvent(): Exception with tag= thrown by A3
-AlgTask             ERROR  	 A3:: Stopping loop	 StatusCode=FAILURE
+A3                  FATAL  Exception with tag=A3 is caught
+A3                  ERROR A3 	 Stopping loop	 StatusCode=FAILURE
+AlgTask             FATAL .executeEvent(): Exception with tag=A3 thrown by A3
+AlgTask             ERROR A3 	 Stopping loop	 StatusCode=FAILURE
 AvalancheSchedu...  ERROR *** Stall detected, event context: s: 0  e: 1
 AvalancheSchedu...  ERROR Event 1 on slot 0 failed
 AvalancheSchedu...   INFO Dumping scheduler state
@@ -113,6 +110,7 @@ WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the m
 [ slot: 0  event: 1 ]:
 
 ERROR alg(s): in subslot(s)
+
 
 Number of sub-slots: 2
 
@@ -132,13 +130,10 @@ ERROR alg(s): A3
 
 PrecedenceSvc     WARNING To trace temporal and topological aspects of execution flow, set DumpPrecedenceRules property to True
 HiveSlimEventLo...  FATAL Failed event detected on s: 0  e: 1
-HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 152.238 total time 3002218
+HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 219.785 total time 4035442
 HiveSlimEventLo...   INFO 0 events were SKIPed
 ApplicationMgr       INFO Application Manager Stopped successfully
-A3                SUCCESS Exceptions/Errors/Warnings/Infos Statistics : 1/0/0/0
-A3                SUCCESS  #EXCEPTIONS = 1        Message = 'Stopping loop'
 HiveSlimEventLo...   INFO Histograms converted successfully according to request.
 AvalancheSchedu...   INFO Joining Scheduler thread
-ToolSvc              INFO Removing all tools created by ToolSvc
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr      ERROR Application Manager Terminated with error code 6

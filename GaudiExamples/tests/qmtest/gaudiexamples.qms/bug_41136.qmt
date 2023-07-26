@@ -26,9 +26,7 @@ ApplicationMgr(TopAlg = [ tta1, tta2 ],
 
 </text></argument>
 <argument name="validator"><text>
-countErrorLines({"FATAL":2,
-                 "ERROR":8,
-                 })
+countErrorLines({"ERROR":8})
 </text></argument>
 <argument name="exit_code"><integer>1</integer></argument>
 </extension>

@@ -12,7 +12,7 @@
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
 
-from Configurables import AlgResourcePool, AvalancheSchedulerSvc
+from Configurables import AvalancheSchedulerSvc
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
 from Configurables import (
     GaudiPersistency,
@@ -20,7 +20,6 @@ from Configurables import (
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
     ReadHandleAlg,
-    WriteHandleAlg,
 )
 from Gaudi.Configuration import *
 
@@ -28,7 +27,6 @@ from Gaudi.Configuration import *
 MessageSvc(OutputLevel=WARNING)
 IncidentSvc(OutputLevel=DEBUG)
 RootCnvSvc(OutputLevel=INFO)
-SequencerTimerTool(OutputLevel=WARNING)
 
 # Output setup
 # - DST

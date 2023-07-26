@@ -11,7 +11,7 @@
 #ifndef HANDLEWRITE_ALG_H
 #define HANDLEWRITE_ALG_H
 
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 #include "GaudiKernel/DataObjectHandle.h"
 
@@ -24,9 +24,9 @@ using namespace Gaudi::Examples;
 
 //------------------------------------------------------------------------------
 
-class WriteHandleAlg : public GaudiAlgorithm {
+class WriteHandleAlg : public Algorithm {
 public:
-  WriteHandleAlg( const std::string& n, ISvcLocator* l ) : GaudiAlgorithm( n, l ) {}
+  WriteHandleAlg( const std::string& n, ISvcLocator* l ) : Algorithm( n, l ) {}
 
   bool isClonable() const override { return true; }
 

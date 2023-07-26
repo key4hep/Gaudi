@@ -31,7 +31,7 @@
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 // ============================================================================
 
 #ifdef __ICC
@@ -55,11 +55,11 @@
  *  @date  2006-03-21
  */
 
-class ExtendedProperties : public GaudiAlgorithm {
+class ExtendedProperties : public Algorithm {
 public:
   StatusCode execute() override;
 
-  ExtendedProperties( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {
+  ExtendedProperties( const std::string& name, ISvcLocator* pSvc ) : Algorithm( name, pSvc ) {
     setProperty( "PropertiesPrint", true ).ignore();
 
     m_20["key"] = "value";

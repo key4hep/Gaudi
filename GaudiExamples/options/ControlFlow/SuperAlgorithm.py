@@ -11,15 +11,10 @@
 from __future__ import print_function
 
 # see implementation of Gaudi_Test_MySuperAlg in GaudiExamples/Configuration.py
-from Configurables import EventLoopMgr
+from Configurables import AlgTimingAuditor, EventLoopMgr
+from Configurables import Gaudi__Examples__EventCounter as GE_EventCounter
 from Configurables import Gaudi_Test_MySuperAlg as MySuperAlg
-from Configurables import (
-    GaudiExamplesCommonConf,
-    HelloWorld,
-    ParentAlg,
-    StopperAlg,
-    TimingAuditor,
-)
+from Configurables import GaudiExamplesCommonConf, HelloWorld, ParentAlg, StopperAlg
 from Gaudi.Configuration import *
 from GaudiConfig.ControlFlow import seq
 
@@ -39,8 +34,8 @@ MySuperAlg("s2", PercentPass=75, OutputLevel=DEBUG)
 # -----------------------------------------------------------------
 # Testing the new GaudiSequencer
 # -----------------------------------------------------------------
-sand = HelloWorld("AND") & EventCounter("ANDCounter")
-sor = HelloWorld("OR") | EventCounter("ORCounter")
+sand = HelloWorld("AND") & GE_EventCounter("ANDCounter")
+sor = HelloWorld("OR") | GE_EventCounter("ORCounter")
 
 try:
     MySuperAlg("AND")
@@ -60,8 +55,8 @@ ApplicationMgr(
     TopAlg=[all],
     EvtMax=10,  # events to be processed (default is 10)
     EvtSel="NONE",  # do not use any event input
-    ExtSvc=["ToolSvc", "AuditorSvc"],
+    ExtSvc=["ToolSvc", "AuditorSvc", "Gaudi::Monitoring::MessageSvcSink"],
     AuditAlgorithms=True,
 )
 
-AuditorSvc().Auditors.append(TimingAuditor("TIMER"))
+AuditorSvc().Auditors.append(AlgTimingAuditor("TIMER"))

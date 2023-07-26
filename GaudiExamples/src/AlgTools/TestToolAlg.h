@@ -15,7 +15,7 @@
 #include <string>
 
 // base class
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class RichToolTest RichToolTest.h component/RichToolTest.h
  *
@@ -24,11 +24,11 @@
  *  @date   2004-03-08
  */
 
-class TestToolAlg : public GaudiAlgorithm {
+class TestToolAlg : public Algorithm {
 
 public:
   /// Standard constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution

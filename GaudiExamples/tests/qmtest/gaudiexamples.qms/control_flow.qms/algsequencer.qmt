@@ -13,14 +13,5 @@
   <argument name="program"><text>gaudirun.py</text></argument>
   <argument name="args"><set><text>../../options/ControlFlow/AlgSequencer.py</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>refs/AlgSequencer_pyopts.ref</text></argument>
-  <argument name="validator"><text>
-import os
-import sys
-sys.path.append(os.path.join(os.environ.get("ENV_PROJECT_SOURCE_DIR"), "GaudiExamples", "tests", "qmtest"))
-sys.path.append(os.path.join(os.environ.get("ENV_PROJECT_SOURCE_DIR"), "Gaudi", "GaudiExamples", "tests", "qmtest"))
-
-from ControlFlowTestValidator import preprocessor
-validateWithReference(preproc = preprocessor)
-  </text></argument>
+  <argument name="reference"><text>refs/ControlFlow/AlgSequencer.ref</text></argument>
 </extension>

@@ -24,7 +24,7 @@
 // ===========================================================================
 // GaudiAlg
 // ===========================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include <Gaudi/Examples/TestAlg.h>
 // ===========================================================================
 namespace Gaudi {
   // =========================================================================
@@ -36,16 +36,16 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-07
      */
-    class StringKeyEx : public GaudiAlgorithm {
+    class StringKeyEx : public TestAlg {
     public:
       // ======================================================================
-      /// execution of the algorithm
+      /// execution of the Testalg
       StatusCode execute() override;
       // ======================================================================
     public:
       // ======================================================================
       /// standard constructor
-      using GaudiAlgorithm::GaudiAlgorithm;
+      using TestAlg::TestAlg;
       // ======================================================================
     private:
       // ======================================================================

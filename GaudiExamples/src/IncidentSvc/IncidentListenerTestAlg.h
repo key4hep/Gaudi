@@ -11,16 +11,16 @@
 #ifndef GAUDIEXAMPLES_INCIDENTLISTENERTESTALG_H_
 #define GAUDIEXAMPLES_INCIDENTLISTENERTESTALG_H_
 
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 #include <memory>
 
 class IIncidentSvc;
 class IncidentListenerTest;
 
-class IncidentListenerTestAlg : public GaudiAlgorithm {
+class IncidentListenerTestAlg : public Algorithm {
 public:
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override;
   StatusCode execute() override;

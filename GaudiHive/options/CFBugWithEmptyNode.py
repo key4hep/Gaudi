@@ -21,7 +21,7 @@ In this test, A2 will run unless the bug has been fixed
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,
-    GaudiSequencer,
+    Gaudi__Sequencer,
     HiveSlimEventLoopMgr,
     HiveWhiteBoard,
     Test__ViewTester,
@@ -80,7 +80,7 @@ a2.Cardinality = cardinality
 a2.OutputLevel = INFO
 a2.viewNodeName = ""
 
-emptySeq = GaudiSequencer(
+emptySeq = Gaudi__Sequencer(
     "emptySeq",
     Members=[],
     Sequential=False,
@@ -89,7 +89,7 @@ emptySeq = GaudiSequencer(
     OutputLevel=INFO,
 )
 
-topSeq = GaudiSequencer(
+topSeq = Gaudi__Sequencer(
     "topSeq",
     # Members=[emptySeq, a1], #This finds a different bug/quirk
     Members=[a1, emptySeq, a2],

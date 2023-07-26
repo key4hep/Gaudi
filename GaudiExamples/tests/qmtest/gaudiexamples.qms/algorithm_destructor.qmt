@@ -17,12 +17,24 @@
 </set></argument>
 <argument name="options"><text>
 from Gaudi.Configuration import *
-from Configurables import GaudiTesting__DestructorCheckAlg as dca;
+from Configurables import GaudiTesting__DestructorCheckAlg as dca
+
+# FIXME: drop when we drop GAUDI_ENABLE_GAUDIALG
+import Configurables
+if hasattr(Configurables, "GaudiSequencer"):
+    # GaudiAlg available
+    Sequencer = Configurables.Sequencer
+    GaudiSequencer = Configurables.GaudiSequencer
+else:
+    # GaudiAlg not available
+    Sequencer = Configurables.Gaudi__Sequencer
+    GaudiSequencer = Configurables.Gaudi__Sequencer
+
 
 ApplicationMgr(TopAlg = [ dca("TopAlg"),
-                          Sequencer(Members = [dca("SequencerAlg"), dca("SharedAlg")]),
-                          GaudiSequencer(Members = [dca("GaudiSequencerAlg"), dca("SharedAlg"), dca("SharedAlg2")]),
-                          Sequencer("Sequencer2", Members = [dca("SharedAlg2")]),
+                          Sequencer("seq1", Members = [dca("SequencerAlg"), dca("SharedAlg")]),
+                          GaudiSequencer("seq2", Members = [dca("GaudiSequencerAlg"), dca("SharedAlg"), dca("SharedAlg2")]),
+                          Sequencer("seq3", Members = [dca("SharedAlg2")]),
                            ],
                EvtSel = "NONE",
                EvtMax = 2)

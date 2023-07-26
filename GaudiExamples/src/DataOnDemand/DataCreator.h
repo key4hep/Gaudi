@@ -12,16 +12,16 @@
 #define GAUDIEXAMPLE_DATACREATOR_H 1
 
 // Include files
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class DataCreator
     Trivial Algorithm for test purposes
     @author nobody
 */
-class DataCreator : public GaudiAlgorithm {
+class DataCreator : public Algorithm {
 public:
   /// Constructor of this form must be provided
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
   /// Three mandatory member functions of any algorithm
   StatusCode initialize() override;

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,6 +22,7 @@
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/MapBase.h"
 #include "GaudiKernel/ParticleProperty.h"
@@ -69,42 +70,19 @@
 
 #include "GaudiPython/Helpers.h"
 
-#include "GaudiPython/AlgDecorators.h"
 #include "GaudiPython/Algorithm.h"
 #include "GaudiPython/CallbackStreamBuf.h"
 #include "GaudiPython/GaudiPython.h"
-#ifdef AIDA_FOUND
-#  include "GaudiPython/HistoDecorator.h"
-#  ifdef CLHEP_FOUND
-#    include "GaudiPython/TupleDecorator.h"
-#  endif // CLHEP_FOUND
-#endif   // AIDA_FOUND
 #include "GaudiPython/Interface.h"
 #include "GaudiPython/Printer.h"
 #include "GaudiPython/Vector.h"
-
-#ifdef AIDA_FOUND
-#  include "GaudiAlg/GaudiHistoAlg.h"
-#  include "GaudiAlg/GaudiTupleAlg.h"
-#  include "GaudiAlg/Print.h"
-// Added to avoid warnings about inlined functions never implemented.
-#  include "GaudiAlg/GaudiHistos.icpp"
-#endif // AIDA_FOUND
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiAlg/GaudiCommon.h"
-#include "GaudiAlg/GaudiHistoID.h"
-#include "GaudiAlg/IErrorTool.h"
-#include "GaudiAlg/IGenericTool.h"
-#include "GaudiAlg/IHistoTool.h"
-#include "GaudiAlg/ISequencerTimerTool.h"
-#include "GaudiAlg/ITupleTool.h"
-#include "GaudiAlg/Tuple.h"
 
 #ifdef AIDA_FOUND
 #  include "GaudiUtils/Aida2ROOT.h"
 #  include "GaudiUtils/HistoDump.h"
 #  include "GaudiUtils/HistoStats.h"
 #  include "GaudiUtils/HistoStrings.h"
+#  include "GaudiUtils/HistoTableFormat.h"
 #endif // AIDA_FOUND
 #include "GaudiUtils/IFileCatalog.h"
 #include "GaudiUtils/IFileCatalogMgr.h"
@@ -145,10 +123,9 @@ namespace GaudiPython {
     std::list<IAlgorithm*> i01;
     std::list<IService*>   i02;
 
-    std::vector<IService*>    i05_1;
-    std::vector<IAlgTool*>    i05_2;
-    std::vector<StatEntity*>  i05_3;
-    std::vector<GaudiAlg::ID> i05_4;
+    std::vector<IService*>   i05_1;
+    std::vector<IAlgTool*>   i05_2;
+    std::vector<StatEntity*> i05_3;
 #ifdef AIDA_FOUND
     std::vector<AIDA::IHistogram1D*> i05_5;
     std::vector<AIDA::IHistogram2D*> i05_6;
@@ -160,12 +137,6 @@ namespace GaudiPython {
     // Gaudi::IIODataManager              *gu_i1000;
 
     GaudiUtils::VectorMap<int, double> i034;
-
-    GaudiPython::PyAlg<GaudiAlgorithm> _alg0;
-#ifdef AIDA_FOUND
-    GaudiPython::PyAlg<GaudiHistoAlg> _alg1;
-    GaudiPython::PyAlg<GaudiTupleAlg> _alg2;
-#endif // AIDA_FOUND
 
     GaudiPython::Matrix              _mtrx;
     GaudiPython::Vector              _vctr;

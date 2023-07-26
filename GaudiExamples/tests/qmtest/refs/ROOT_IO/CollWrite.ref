@@ -12,7 +12,7 @@
                     'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
-                    'TopAlg': ['GaudiSequencer/EventAlgs']},
+                    'TopAlg': ['Gaudi::Sequencer/EventAlgs']},
  'EventAlgs': {'Members': ['EvtCollectionWrite/Writer'],
                'VetoObjects': ['FSR']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
@@ -21,8 +21,7 @@
                    'PrintFreq': 100},
  'EvtTupleSvc': {'Output': ["EvtColl DATAFILE='PFN:ROOT_IO.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
- 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'ToolSvc.SequencerTimerTool': {'OutputLevel': 4}}
+ 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
@@ -31,13 +30,9 @@ ApplicationMgr    SUCCESS
 ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:ROOT_IO.tags as EvtColl
 EventAlgs            INFO Member list: EvtCollectionWrite/Writer
-RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
-RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
-RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 Gaudi::RootData...   INFO Recreate Database file:PFN:ROOT_IO.tags as /EvtColl
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
-HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
@@ -85,7 +80,6 @@ EventSelector     SUCCESS Reading Event record 1801. Record number within stream
 EventSelector     SUCCESS Reading Event record 1901. Record number within stream 2: 901
 Writer               INFO ================ EVENT:1000 RUN:999 ====== N(Track)=55 PASSED selection (>=50) ============
 EventLoopMgr         INFO No more events in event selection
-EventLoopMgr         INFO ---> Loop Finished -  WSS 235.105 | total time (skipping 1st evt) 4507249661 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
 RootCnvSvc           INFO Disconnected data IO:02802356-5A77-E511-9E13-001E67ABF0AC [ROOTIO.mdst]

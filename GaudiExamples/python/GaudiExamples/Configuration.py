@@ -43,9 +43,11 @@ class Gaudi_Test_MySuperAlg(SuperAlgorithm):
         """
         Prepare the graph represented by the SuperAlgorithm.
         """
-        from Configurables import EventCounter, HelloWorld, Prescaler
+        from Configurables import Gaudi__Examples__EventCounter as EventCounter
+        from Configurables import Gaudi__Examples__Prescaler as Prescaler
+        from Configurables import HelloWorld
 
-        p = self._makeAlg(Prescaler, PercentPass=50.0)
+        p = self._makeAlg(Prescaler, name="Prescaler", PercentPass=50.0)
         h = self._makeAlg(HelloWorld, name="HW")
         c = self._makeAlg(EventCounter, name="Counter")
         return p & h & c

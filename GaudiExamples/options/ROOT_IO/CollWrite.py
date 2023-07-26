@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Configurables import EvtCollectionWrite, GaudiPersistency, SequencerTimerTool
+from Configurables import EvtCollectionWrite, GaudiPersistency
 from Gaudi.Configuration import *
 
 # Basic configuration for Gaudi persistency
@@ -30,13 +30,10 @@ evtColl.Output = [
 ]
 
 # Algorithms
-algs = GaudiSequencer(
+algs = Gaudi__Sequencer(
     "EventAlgs", Members=[EvtCollectionWrite("Writer")], VetoObjects=["FSR"]
 )
 
 # Application
 app = ApplicationMgr(TopAlg=[algs], EvtMax=-1, HistogramPersistency="NONE")
 app.ExtSvc.append(evtColl)
-
-# Verbosity
-SequencerTimerTool(OutputLevel=WARNING)

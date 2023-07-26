@@ -12,10 +12,7 @@
 <!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>Timing.py</text></set></argument>
-<argument name="environment"><set>
-<text>JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiExamples/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiExamples/options</text>
-</set></argument>
+<argument name="args"><set><text>../../options/Timing.py</text></set></argument>
 <argument name="validator"><text>
 import re
 expected = ( r"Timing\s+SUCCESS\s+The timing is \(in us\)\s*\n" +

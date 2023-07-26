@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiAlg/Consumer.h"
+#include <Gaudi/Functional/Consumer.h>
 #include <fcntl.h>
 #include <string_view>
 #include <sys/stat.h>

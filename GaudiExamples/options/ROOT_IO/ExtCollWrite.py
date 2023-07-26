@@ -31,7 +31,7 @@ evtColl.Output = [
 ]
 
 # Algorithms
-algs = GaudiSequencer(
+algs = Gaudi__Sequencer(
     "EventAlgs",
     Members=[
         ExtendedEvtCol("Fill", EvtColLUN="EXTEVT")
@@ -42,6 +42,3 @@ algs = GaudiSequencer(
 # Application
 app = ApplicationMgr(TopAlg=[algs], EvtMax=-1, HistogramPersistency="NONE")
 app.ExtSvc.append(evtColl)
-
-# Verbosity
-SequencerTimerTool(OutputLevel=WARNING)

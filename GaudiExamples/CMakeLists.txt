@@ -32,8 +32,6 @@ gaudi_add_module(GaudiExamples
                          src/AlgSequencer/SubAlg.cpp
                          src/AlgSequencer/TemplatedAlg.cpp
                          src/AlgTools/MyAlgorithm.cpp
-                         src/AlgTools/MyGaudiAlgorithm.cpp
-                         src/AlgTools/MyGaudiTool.cpp
                          src/AlgTools/MyServiceWithTool.cpp
                          src/AlgTools/MyTool.cpp
                          src/AlgTools/TestTool.cpp
@@ -59,12 +57,13 @@ gaudi_add_module(GaudiExamples
                          src/ExtendedProperties/ExtendedProperties.cpp
                          src/ExtendedProperties/ExtendedProperties2.cpp
                          src/FileMgr/FileMgrTest.cpp
+                         src/FunctionalAlgorithms/EventCounter.cpp
                          src/FunctionalAlgorithms/MakeAndConsume.cpp
                          src/FunctionalAlgorithms/merging_transformer.cpp
+                         src/FunctionalAlgorithms/Prescaler.cpp
                          src/FunctionalAlgorithms/selector.cpp
                          src/FunctionalAlgorithms/TestObjectVersion.cpp
                          src/FunctionalAlgorithms/transformer.cpp
-                         src/GaudiCommonTests/GaudiCommonTests.cpp
                          src/Histograms/CounterHistos.cpp
                          src/History/History.cpp
                          src/IncidentSvc/IncidentAsyncTestAlg.cpp
@@ -83,8 +82,6 @@ gaudi_add_module(GaudiExamples
                          src/QueueingEventProcessor/QueueingEventLoopMgr.cpp
                          src/QueueingEventProcessor/QueueingApplication.cpp
                          src/ReEntAlg/ReEntAlg.cpp
-                         src/Selections/SelCreate.cpp
-                         src/Selections/SelFilter.cpp
                          src/StringKeys/StringKeyEx.cpp
                          src/SvcInitLoop/LoopAlg.cpp
                          src/SvcInitLoop/ServiceA.cpp
@@ -100,7 +97,7 @@ gaudi_add_module(GaudiExamples
                          src/ToolHandles/Algorithms.cpp
                          src/ToolHandles/FloatTool.cpp
                  LINK GaudiKernel
-                      GaudiAlgLib
+                      Gaudi::Functional
                       GaudiUtilsLib
                       GaudiExamplesLib
                       ROOT::Tree
@@ -115,16 +112,12 @@ if(NOT ROOT_VERSION VERSION_LESS "6.20")
 endif()
 
 if(GAUDI_USE_AIDA)
-    target_sources(GaudiExamples PRIVATE src/EvtColsEx/EvtColAlg.cpp
-                                         src/Histograms/Aida2Root.cpp
-                                         src/Histograms/GaudiHistoAlgorithm.cpp
+    target_sources(GaudiExamples PRIVATE
                                          src/Histograms/HistoAlgorithm.cpp
                                          src/Histograms/HistoProps.cpp
-                                         src/Histograms/HistoTimingAlg.cpp
                                          src/IO/EvtCollectionSelector.cpp
                                          src/IO/EvtCollectionWrite.cpp
                                          src/IO/EvtExtCollectionSelector.cpp
-                                         src/IO/ExtendedEvtCol.cpp
                                          src/IO/ReadAlg.cpp
                                          src/IO/ReadHandleAlg.cpp
                                          src/IO/ReadTES.cpp
@@ -132,13 +125,6 @@ if(GAUDI_USE_AIDA)
                                          src/IO/WriteHandleAlg.cpp
                                          src/RandomNumber/RandomNumberAlg.cpp)
     target_link_libraries(GaudiExamples PRIVATE AIDA::aida)
-    if(GAUDI_USE_CLHEP)
-        target_sources(GaudiExamples PRIVATE src/TupleEx/TupleAlg2.cpp
-                                             src/TupleEx/TupleAlg3.cpp
-                                             src/TupleEx/TupleAlg.cpp
-                                             src/TupleEx/TupleDef.cpp)
-        target_link_libraries(GaudiExamples PRIVATE CLHEP::CLHEP)
-    endif()
 endif()
 if(GAUDI_USE_HEPPDT)
     target_sources(GaudiExamples PRIVATE src/PartProp/GaudiPPS.cpp
@@ -158,7 +144,6 @@ gaudi_add_executable(Allocator
                                 src/Allocator/MyClass1A.cpp
                                 src/Allocator/MyClass1.cpp
                         LINK GaudiExamplesLib
-                            GaudiAlgLib
                             GaudiKernel)
 gaudi_add_executable(testAppMgrStateMachine
                      SOURCES src/testing/TestAppMgrStateMachine.cpp
@@ -180,21 +165,30 @@ gaudi_generate_confuserdb()
 
 # Tests
 gaudi_add_tests(QMTest)
-if(TEST "GaudiExamples.jira.gaudi_1174" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set_property(TEST GaudiExamples.jira.gaudi_1174 PROPERTY DISABLED TRUE)
-endif()
-foreach(test IN ITEMS
-    metadatasvc
-    properties.all properties.all2 properties.all_py
-    bug_34121_tool_properties_in_python
-    deferred_write.enforced deferred_write.explicit)
-  if(TEST "GaudiExamples.${test}")
-    set_property(
-      TEST GaudiExamples.${test}
-      APPEND PROPERTY ENVIRONMENT JOBOPTSDUMPFILE=gaudiexamples.${test}.joboptsdump
+if(BUILD_TESTING)
+  if(TEST "GaudiExamples.jira.gaudi_1174" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set_property(TEST GaudiExamples.jira.gaudi_1174 PROPERTY DISABLED TRUE)
+  endif()
+  foreach(test IN ITEMS
+      metadatasvc
+      properties.all properties.all2 properties.all_py
+      bug_34121_tool_properties_in_python
+      deferred_write.enforced deferred_write.explicit)
+    if(TEST "GaudiExamples.${test}")
+      set_property(
+        TEST GaudiExamples.${test}
+        APPEND PROPERTY ENVIRONMENT JOBOPTSDUMPFILE=gaudiexamples.${test}.joboptsdump
+      )
+    endif()
+  endforeach()
+  if(NOT GAUDI_ENABLE_GAUDIALG)
+    # these tests are for features available in GaudiAlg, but depend on a fixture in GaudiExamples tests
+    set_tests_properties(
+      GaudiExamples.root_io.extcoll.write GaudiExamples.root_io.extcoll.read
+      PROPERTIES DISABLED TRUE
     )
   endif()
-endforeach()
+endif()
 
 gaudi_add_pytest(tests/pytest)
 
@@ -214,9 +208,4 @@ gaudi_add_dictionary(GaudiExamplesDict
 # Install python modules
 gaudi_install(PYTHON)
 # Install other scripts
-configure_file(scripts/TupleEx3.py.in
-               ${CMAKE_CURRENT_BINARY_DIR}/generated/scripts/TupleEx3.py)
-configure_file(scripts/TupleEx4.py.in
-               ${CMAKE_CURRENT_BINARY_DIR}/generated/scripts/TupleEx4.py)
 gaudi_install(SCRIPTS)
-gaudi_install(SCRIPTS ${CMAKE_CURRENT_BINARY_DIR}/generated/scripts/)

@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Configurables import ApplicationMgr, EventDataSvc, GaudiSequencer
+from Configurables import ApplicationMgr, EventDataSvc, Gaudi__Sequencer
 from Configurables import GaudiTesting__EvenEventsFilter as EvenEvents
 from Configurables import GaudiTesting__OddEventsFilter as OddEvents
 from Configurables import RecordOutputStream, ReplayOutputStream
@@ -17,13 +17,13 @@ from Configurables import SubAlg as EmptyAlg
 outDelegate = ReplayOutputStream()
 outDelegate.OutputStreams = [EmptyAlg("Stream1"), EmptyAlg("Stream2")]
 
-oddEvtSelect = GaudiSequencer("OddEventsSelection")
+oddEvtSelect = Gaudi__Sequencer("OddEventsSelection")
 oddEvtSelect.Members = [
     OddEvents("OddEvents"),
     RecordOutputStream("Rec1", OutputStreamName="Stream1"),
 ]
 
-evenEvtSelect = GaudiSequencer("EvenEventsSelection")
+evenEvtSelect = Gaudi__Sequencer("EvenEventsSelection")
 evenEvtSelect.Members = [
     EvenEvents("EvenEvents"),
     RecordOutputStream("Rec2", OutputStreamName="Stream2"),

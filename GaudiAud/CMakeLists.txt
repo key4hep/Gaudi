@@ -13,6 +13,7 @@
 # Build the plugin
 gaudi_add_module(GaudiAud
                  SOURCES src/AlgContextAuditor.cpp
+                         src/AlgTimingAuditor.cpp
                          src/ChronoAuditor.cpp
                          src/CommonAuditor.cpp
                          src/MemoryAuditor.cpp

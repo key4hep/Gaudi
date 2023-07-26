@@ -7,7 +7,7 @@ Imported Targets
 
 The following targets will be imported:
 * Shared libraries
-  * ``Gaudi::GaudiAlgLib``
+  * ``Gaudi::GaudiAlgLib`` (optional)
   * ``Gaudi::GaudiCommonSvcLib``
   * ``Gaudi::GaudiExamplesLib``
   * ``Gaudi::GaudiKernel``
@@ -17,6 +17,7 @@ The following targets will be imported:
   * ``Gaudi::GaudiUtilsLib``
   * ``Gaudi::RootCnvLib``
 * Header only libraries
+  * ``Gaudi::Functional``
   * ``Gaudi::GaudiHiveHeaders``
   * ``Gaudi::GaudiProfilingHeaders``
 * Executable

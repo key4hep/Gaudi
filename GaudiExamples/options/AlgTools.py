@@ -11,7 +11,7 @@
 ###############################################################
 # Job options file
 # ==============================================================
-from Configurables import GaudiExamplesCommonConf, MyAlgorithm, MyGaudiAlgorithm, MyTool
+from Configurables import GaudiExamplesCommonConf, MyAlgorithm, MyTool
 from Gaudi.Configuration import *
 
 GaudiExamplesCommonConf()
@@ -46,18 +46,15 @@ assert myalg.ToolWithName == myToolWithName
 
 myToolWithName.String = "abc"
 
-mygalg = MyGaudiAlgorithm("MyGaudiAlg")
-mygalg.PrivToolHandle.String = "Is a private tool"
+myalg.PrivToolHandle.String = "Is a private tool"
 
 pubtool = MyTool("TestPubToolHandle", String="Is a public tool")
-mygalg.PubToolHandle = pubtool
+myalg.PubToolHandle = pubtool
 
 # disable a ToolHandle
-mygalg.InvalidToolHandle = ""
+myalg.InvalidToolHandle = ""
 
-ApplicationMgr(
-    EvtMax=10, EvtSel="NONE", HistogramPersistency="NONE", TopAlg=[myalg, mygalg]
-)
+ApplicationMgr(EvtMax=10, EvtSel="NONE", HistogramPersistency="NONE", TopAlg=[myalg])
 # --------------------------------------------------------------
 # Test circular tool dependencies  (by Chris Jones)
 # --------------------------------------------------------------

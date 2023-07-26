@@ -23,7 +23,7 @@
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 // ============================================================================
 // Boost
 // ============================================================================
@@ -41,11 +41,11 @@ namespace GaudiExamples {
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-02
    */
-  class TimingAlg : public GaudiAlgorithm {
+  class TimingAlg : public Algorithm {
   public:
     // ========================================================================
     /// standard constructor
-    using GaudiAlgorithm::GaudiAlgorithm;
+    using Algorithm::Algorithm;
     // ========================================================================
     /// the execution of the algorithm
     StatusCode execute() override; // the execution of the algorithm
@@ -140,7 +140,7 @@ StatusCode GaudiExamples::TimingAlg::finalize() // the finalization of the algor
            << "|  (2U)  " << m_chrono2.outputUserTime( format, System::microSec ) << std::endl
            << "|  (3U)  " << m_chrono3.outputUserTime( format, System::microSec ) << endmsg;
 
-  return GaudiAlgorithm::finalize();
+  return Algorithm::finalize();
 }
 // ============================================================================
 // declare the factory (needed for instantiation)
