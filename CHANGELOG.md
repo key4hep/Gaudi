@@ -5,6 +5,13 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v36r16](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r16) - 2023-07-28
+Release requested by LHCb to backport gaudi/Gaudi!1478
+
+### Added
+- Fire ContextIncident `CONNECTED_NTUPLE_OUTPUT` when opening a ntuple file in
+  RFileCnv (gaudi/Gaudi!1482)
+
 ## [v36r15](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r15) - 2023-07-24
 This release is needed so that LHCb can pick up a backward compatible version
 of gaudi/Gaudi!1477.
