@@ -26,8 +26,6 @@
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/ObjectFactory.h>
 
-#include <Gaudi/Histograming/Sink/Utils.h>
-
 #include <TH2D.h>
 #include <TProfile2D.h>
 
@@ -86,8 +84,6 @@ std::pair<DataObject*, AIDA::IProfile2D*> Gaudi::createProf2D( ISvcLocator* svcL
   if ( n ) { svcLocator->monitoringHub().registerEntity( "", path, "histogram:ProfileHistogram:double", *n ); }
   return { n, n };
 }
-
-nlohmann::json Gaudi::Profile2D::toJSON() const { return *m_rep.get(); }
 
 Gaudi::Profile2D::Profile2D( TProfile2D* rep ) {
   m_classType = "IProfile2D";

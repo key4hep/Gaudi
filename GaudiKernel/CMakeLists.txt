@@ -146,6 +146,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/TsDataSvc.cpp
           src/Lib/VirtualDestructors.cpp
           src/Lib/WatchdogThread.cpp
+          src/Lib/StatEntity.cpp
   LINK
     PUBLIC GaudiPluginService
            Boost::headers
@@ -310,6 +311,9 @@ if(BUILD_TESTING)
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
   gaudi_add_executable(test_GenericSink SOURCES tests/src/GenericSinkUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_BaseSink SOURCES tests/src/BaseSinkUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
   gaudi_add_executable(AttribStringParser_test SOURCES tests/src/test_AttribStringParser.cpp

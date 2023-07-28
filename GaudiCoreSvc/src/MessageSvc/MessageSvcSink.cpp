@@ -164,6 +164,13 @@ namespace {
 
 namespace Gaudi::Monitoring {
 
+  /**
+   * Sink dedicated to printing messages to the MessageSvc.
+   *
+   * Deals with counters and histograms at this stage.
+   * Relies on these entities to have a "type" entry in their json following
+   * the convention described in Accumulators.h
+   */
   struct MessageSvcSink : BaseSink {
     MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
       // only deal with counters, statentity and histograms
@@ -171,23 +178,15 @@ namespace Gaudi::Monitoring {
           .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
     }
     /// stop method, handles the printing
-    StatusCode stop() override;
+    void flush( bool ) override;
   };
 
   DECLARE_COMPONENT( MessageSvcSink )
 } // namespace Gaudi::Monitoring
 
-StatusCode Gaudi::Monitoring::MessageSvcSink::stop() {
-  // We will try to mimic the old monitoring of counters, so we need to split
-  // them per Algo. The algo name can be extracted form the id of the entity
-  // as its format is "algoName/counterName"
-  // This map groups entities per algoName. For each name, the submap gives
-  // the counter name of each subentity and the associated json
-  std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
-  // fill the sorted map
-  applytoAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent.toJSON(); } );
+void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
   // dump all counters
-  for ( auto& [algoName, entityMap] : sortedEntities ) {
+  for ( auto& [algoName, entityMap] : sortedEntitiesAsJSON() ) {
     // check first whether there is any counter to log
     unsigned int nbCounters =
         std::accumulate( begin( entityMap ), end( entityMap ), 0, []( const unsigned int& a, const auto& j ) {
@@ -207,5 +206,4 @@ StatusCode Gaudi::Monitoring::MessageSvcSink::stop() {
     } );
     log << endmsg;
   }
-  return Service::stop();
 }

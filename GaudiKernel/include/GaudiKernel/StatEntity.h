@@ -37,8 +37,8 @@ public:
         std::make_tuple( std::make_tuple( std::make_tuple( entries, flag ), flag2 ), minFlag, maxFlag ),
         std::make_tuple( 0, 0 ) ) );
   }
-  void reset() { AccParent::reset(); }
-  void operator=( double by ) {
+  friend void reset( StatEntity& s ) { s.reset(); }
+  void        operator=( double by ) {
     this->reset();
     ( *this ) += by;
   }
@@ -74,7 +74,7 @@ public:
     return *this;
   }
   StatEntity& operator+=( StatEntity by ) {
-    mergeAndReset( std::move( by ) );
+    mergeAndReset( by );
     return *this;
   }
   unsigned long add( const double v ) {
@@ -184,21 +184,7 @@ public:
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   MsgStream&    fillStream( MsgStream& o ) const { return print( o ); }
   /// Basic JSON export for Gaudi::Monitoring::Hub support.
-  virtual nlohmann::json toJSON() const override {
-    return { { "type", typeString },
-             { "empty", this->nEntries() == 0 },
-             { "nEntries", this->nEntries() },
-             { "sum", this->sum() },
-             { "mean", this->mean() },
-             { "sum2", this->sum2() },
-             { "standard_deviation", this->standard_deviation() },
-             { "min", this->min() },
-             { "max", this->max() },
-             { "nTrueEntries", this->nTrueEntries() },
-             { "nFalseEntries", this->nFalseEntries() },
-             { "efficiency", this->efficiency() },
-             { "efficiencyErr", this->efficiencyErr() } };
-  }
+  friend void       to_json( nlohmann::json& j, StatEntity const& s );
   static StatEntity fromJSON( const nlohmann::json& j ) {
     StatEntity res;
     res.reset( AccParent::extractJSONData(

@@ -15,46 +15,54 @@
 
 #include <boost/test/unit_test.hpp>
 
-// Mock code for the test
-struct MonitoringHub : Gaudi::Monitoring::Hub {};
-struct ServiceLocator {
-  MonitoringHub& monitoringHub() { return m_monitHub; }
-  MonitoringHub  m_monitHub{};
-};
+namespace {
+  // Mock code for the test
+  struct MonitoringHub : Gaudi::Monitoring::Hub {};
+  struct ServiceLocator {
+    MonitoringHub& monitoringHub() { return m_monitHub; }
+    MonitoringHub  m_monitHub{};
+  };
 
-struct Algo {
-  ServiceLocator* serviceLocator() { return &m_serviceLocator; }
-  std::string     name() { return ""; }
-  ServiceLocator  m_serviceLocator{};
-};
+  struct Algo {
+    ServiceLocator* serviceLocator() { return &m_serviceLocator; }
+    std::string     name() { return ""; }
+    ServiceLocator  m_serviceLocator{};
+  };
 
-// A class to be used in Entities and through the Sink/Hub machinery but
-// not deriving from counters and with no mergeAndReset method
-// Basically accumulate data into a string
-struct Store {
-  std::string             m_data;
-  Gaudi::Monitoring::Hub* m_monitoringHub{ nullptr };
+  // A class to be used in Entities and through the Sink/Hub machinery but
+  // not deriving from counters
+  // Basically accumulate data into a string
+  struct Store {
+    std::string             m_data;
+    Gaudi::Monitoring::Hub* m_monitoringHub{ nullptr };
 
-  template <typename OWNER>
-  Store( OWNER* o, std::string const& name, const std::string storeType )
-      : m_monitoringHub( &o->serviceLocator()->monitoringHub() ) {
-    m_monitoringHub->registerEntity( o->name(), name, storeType, *this );
+    template <typename OWNER>
+    Store( OWNER* o, std::string const& name, const std::string storeType )
+        : m_monitoringHub( &o->serviceLocator()->monitoringHub() ) {
+      m_monitoringHub->registerEntity( o->name(), name, storeType, *this );
+    }
+    ~Store() { m_monitoringHub->removeEntity( *this ); }
+    void        storeData( std::string const& data ) { m_data += data; }
+    friend void to_json( nlohmann::json& j, Store const& s ) { j = s.m_data; }
+  };
+
+  // dummy  Sink for the purpose of testing Hub and Sink with non mergeable items
+  struct NonMergeableSink : public Gaudi::Monitoring::Hub::Sink {
+    virtual void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { m_entities.push_back( ent ); }
+    virtual void removeEntity( Gaudi::Monitoring::Hub::Entity const& ent ) override {
+      auto it = std::find( begin( m_entities ), end( m_entities ), ent );
+      if ( it != m_entities.end() ) m_entities.erase( it );
+    }
+    std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
+  };
+
+  // Little helper for using automatic nlohmann conversion mechanism
+  template <typename T>
+  nlohmann::json toJSON( T const& t ) {
+    nlohmann::json j = t;
+    return t;
   }
-  ~Store() { m_monitoringHub->removeEntity( *this ); }
-  void           reset() { m_data = ""; }
-  void           storeData( std::string const& data ) { m_data += data; }
-  nlohmann::json toJSON() const { return m_data; }
-};
-
-// dummy  Sink for the purpose of testing Hub and Sink with non mergeable items
-struct NonMergeableSink : public Gaudi::Monitoring::Hub::Sink {
-  virtual void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { m_entities.push_back( ent ); }
-  virtual void removeEntity( Gaudi::Monitoring::Hub::Entity const& ent ) override {
-    auto it = std::find( begin( m_entities ), end( m_entities ), ent );
-    if ( it != m_entities.end() ) m_entities.erase( it );
-  }
-  std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
-};
+} // namespace
 
 BOOST_AUTO_TEST_CASE( test_entity_no_merge_reset, *boost::unit_test::tolerance( 1e-14 ) ) {
   Algo             algo;
@@ -71,6 +79,6 @@ BOOST_AUTO_TEST_CASE( test_entity_no_merge_reset, *boost::unit_test::tolerance( 
   auto& entities = sink.m_entities;
   std::sort( begin( entities ), end( entities ), []( const auto& a, const auto& b ) { return a.name < b.name; } );
   std::string output;
-  for ( auto& ent : entities ) { output += ent.toJSON().get<std::string>(); }
+  for ( auto& ent : entities ) { output += toJSON( ent ).get<std::string>(); }
   BOOST_TEST( output == "Hello World !" );
 }

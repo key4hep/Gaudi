@@ -26,8 +26,6 @@
 #include <GaudiCommonSvc/P1D.h>
 #include <GaudiKernel/ObjectFactory.h>
 
-#include <Gaudi/Histograming/Sink/Utils.h>
-
 #include <cmath>
 
 std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( ISvcLocator* svcLocator, const std::string& path,
@@ -124,5 +122,3 @@ bool Gaudi::Profile1D::fill( double x, double y, double weight ) {
   ( weight == 1. ) ? m_rep->Fill( x, y ) : m_rep->Fill( x, y, weight );
   return true;
 }
-
-nlohmann::json Gaudi::Profile1D::toJSON() const { return *m_rep.get(); }

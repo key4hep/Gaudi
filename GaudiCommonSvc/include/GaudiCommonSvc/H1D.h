@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef HISTOGRAMSVC_H1D_H
-#define HISTOGRAMSVC_H1D_H 1
+#pragma once
 
 #include "Generic1D.h"
 #include <AIDA/IHistogram1D.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 #include <GaudiKernel/DataObject.h>
 #include <TH1D.h>
 
@@ -47,10 +47,12 @@ namespace Gaudi {
     void adoptRepresentation( TObject* rep ) override;
     /// set bin content (entries and centre are not used )
     virtual bool setBinContents( int i, int entries, double height, double error, double centre );
-    /// need to overwrite reset to reset the sums
+    // overwrite reset
     bool reset() override;
-    /// dumps Histogram to json data
-    nlohmann::json toJSON() const;
+    // free function reset
+    friend void reset( Histogram1D& h ) { h.reset(); }
+    /// conversion to json via nlohmann library
+    friend void to_json( nlohmann::json& j, Gaudi::Histogram1D const& h ) { j = *h.m_rep.get(); }
     /// set histogram statistics
     virtual bool setStatistics( int allEntries, double eqBinEntries, double mean, double rms );
     /// Fill the Profile1D with a value and the corresponding weight.
@@ -77,6 +79,5 @@ namespace Gaudi {
   private:
     std::mutex m_fillSerialization;
 
-  }; // end class IHistogram1D
+  }; // end class Histogram1D
 } // end namespace Gaudi
-#endif // HISTOGRAMSVC_H1D_H

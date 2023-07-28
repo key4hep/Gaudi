@@ -23,22 +23,22 @@ namespace Gaudi::Monitoring {
   public:
     using BaseSink::BaseSink;
 
-    StatusCode stop() override {
-      if ( m_fileName.empty() ) { return StatusCode::SUCCESS; }
+    void flush( bool ) override {
+      if ( m_fileName.empty() ) { return; }
       nlohmann::json output;
-      applytoAllEntities( [&output]( auto& ent ) {
-        output.emplace_back( nlohmann::json{
-            { "name", ent.name },
-            { "component", ent.component },
-            { "entity", ent.toJSON() },
-        } );
-      } );
+      for ( auto& [component, entityMap] : sortedEntitiesAsJSON() ) {
+        for ( auto& [name, j] : entityMap ) {
+          output.emplace_back( nlohmann::json{
+              { "name", name },
+              { "component", component },
+              { "entity", j },
+          } );
+        }
+      }
       info() << "Writing JSON file " << m_fileName.value() << endmsg;
       std::ofstream os( m_fileName, std::ios::out );
       os << output.dump( 4 );
       os.close();
-      // call parent's stop
-      return BaseSink::stop();
     }
 
   private:

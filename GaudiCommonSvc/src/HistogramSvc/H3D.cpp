@@ -27,8 +27,6 @@
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/ObjectFactory.h>
 
-#include <Gaudi/Histograming/Sink/Utils.h>
-
 #include "GaudiPI.h"
 #include "TH3D.h"
 
@@ -116,8 +114,6 @@ bool Gaudi::Histogram3D::reset() {
   m_rep->Reset();
   return true;
 }
-
-nlohmann::json Gaudi::Histogram3D::toJSON() const { return *m_rep.get(); }
 
 bool Gaudi::Histogram3D::fill( double x, double y, double z, double weight ) {
   // avoid race conditiosn when filling the histogram

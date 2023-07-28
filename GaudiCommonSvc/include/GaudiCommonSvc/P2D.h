@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDICOMMONSVC_P2D_H
-#define GAUDICOMMONSVC_P2D_H
+#pragma once
 
 #include "Generic2D.h"
 #include <AIDA/IProfile1D.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 #include <GaudiKernel/DataObject.h>
 #include <TProfile2D.h>
 
@@ -44,8 +44,9 @@ namespace Gaudi {
       m_rep->Fill( x, y, z, weight );
       return true;
     }
-    /// dumps Histogram to json data
-    nlohmann::json toJSON() const;
+    friend void reset( Profile2D& h ) { h.reset(); }
+    /// conversion to json via nlohmann library
+    friend void to_json( nlohmann::json& j, Profile2D const& p ) { j = *p.m_rep.get(); }
     /// Retrieve reference to class defininition identifier
     const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_ProfileH2; }
@@ -54,5 +55,3 @@ namespace Gaudi {
     std::mutex m_fillSerialization;
   };
 } // namespace Gaudi
-
-#endif

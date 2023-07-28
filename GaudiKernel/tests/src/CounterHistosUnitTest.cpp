@@ -19,25 +19,35 @@
 #include <deque>
 #include <iostream>
 
-// Mock code for the test
-struct MonitoringHub : Gaudi::Monitoring::Hub {};
-struct ServiceLocator {
-  MonitoringHub& monitoringHub() { return m_monitHub; }
-  MonitoringHub  m_monitHub{};
-};
-struct Algo {
-  ServiceLocator* serviceLocator() { return &m_serviceLocator; }
-  std::string     name() { return ""; }
-  ServiceLocator  m_serviceLocator{};
-};
-struct HistSink : public Gaudi::Monitoring::Hub::Sink {
-  virtual void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { m_entities.push_back( ent ); }
-  virtual void removeEntity( Gaudi::Monitoring::Hub::Entity const& ent ) override {
-    auto it = std::find( begin( m_entities ), end( m_entities ), ent );
-    if ( it != m_entities.end() ) m_entities.erase( it );
+namespace {
+
+  // Mock code for the test
+  struct MonitoringHub : Gaudi::Monitoring::Hub {};
+  struct ServiceLocator {
+    MonitoringHub& monitoringHub() { return m_monitHub; }
+    MonitoringHub  m_monitHub{};
+  };
+  struct Algo {
+    ServiceLocator* serviceLocator() { return &m_serviceLocator; }
+    std::string     name() { return ""; }
+    ServiceLocator  m_serviceLocator{};
+  };
+  struct HistSink : public Gaudi::Monitoring::Hub::Sink {
+    virtual void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { m_entities.push_back( ent ); }
+    virtual void removeEntity( Gaudi::Monitoring::Hub::Entity const& ent ) override {
+      auto it = std::find( begin( m_entities ), end( m_entities ), ent );
+      if ( it != m_entities.end() ) m_entities.erase( it );
+    }
+    std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
+  };
+
+  // Little helper for using automatic nlohmann conversion mechanism
+  template <typename T>
+  nlohmann::json toJSON( T const& t ) {
+    nlohmann::json j = t;
+    return t;
   }
-  std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
-};
+} // namespace
 
 BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
   Algo algo;
@@ -45,34 +55,34 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
   {
     Gaudi::Accumulators::Histogram<1> histo1d{ &algo, "GaudiH1D", "A Gaudi 1D histogram", { 21, -10.5, 10.5, "X" } };
     ++histo1d[-10.0]; // fill the first (non-overflow) bin
-    BOOST_TEST( histo1d.toJSON().at( "bins" )[1] == 1 );
+    BOOST_TEST( toJSON( histo1d ).at( "bins" )[1] == 1 );
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     histo1d += -10.0; // fill the first (non-overflow) bin
 #pragma GCC diagnostic pop
-    BOOST_TEST( histo1d.toJSON().at( "bins" )[1] == 2 );
+    BOOST_TEST( toJSON( histo1d ).at( "bins" )[1] == 2 );
   }
   {
     Gaudi::Accumulators::Histogram<2> histo2d{
         &algo, "GaudiH2D", "A Gaudi 2D histogram", { { 21, -10.5, 10.5, "X" }, { 21, -10.5, 10.5, "Y" } } };
     ++histo2d[{ -10.0, -10.0 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( histo2d.toJSON().at( "bins" )[( 1 + 21 + 1 ) + 1] == 1 );
+    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 1 );
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     histo2d += { -10.0, -10.0 }; // fill the first (non-overflow) bin
 #pragma GCC diagnostic pop
-    BOOST_TEST( histo2d.toJSON().at( "bins" )[( 1 + 21 + 1 ) + 1] == 2 );
+    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 2 );
   }
   {
     Gaudi::Accumulators::WeightedHistogram<1> histo1dw{ &algo, "", "", { 21, -10.5, 10.5, "X" } };
     histo1dw[-10.0] += 0.25; // fill the first (non-overflow) bin
-    BOOST_TEST( histo1dw.toJSON().at( "bins" )[1] == 0.25 );
+    BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.25 );
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     histo1dw += { -10.0, 0.5 }; // fill the first (non-overflow) bin
-    BOOST_TEST( histo1dw.toJSON().at( "bins" )[1] == 0.75 );
+    BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.75 );
 #pragma GCC diagnostic pop
-    std::cout << histo1dw.toJSON() << std::endl;
+    std::cout << toJSON( histo1dw ) << std::endl;
   }
 
   Gaudi::Accumulators::ProfileHistogram<1u> histo{ &algo, "GaudiP1D", "A Gaudi 1D Profile", { 10, 0, 100 } };
@@ -81,7 +91,7 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
   for ( int i = 0; i < 10; i++ ) { histo[10.0 * double( i ) + 0.5] += double( i ); }
   histo[120.0] += 120.0;
 
-  nlohmann::json j        = histo.toJSON();
+  nlohmann::json j        = toJSON( histo );
   auto           nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 12 );
 
@@ -113,9 +123,10 @@ BOOST_AUTO_TEST_CASE( test_integer_histos ) {
       &algo, "IntH1D", "A 1D histogram with integer content", { 10, 0, 10, "X" } };
   ++histo[1]; // fill the second (non-overflow) bin
   ++histo[3]; // fill the fourth (non-overflow) bin
-  BOOST_TEST( histo.toJSON().at( "bins" )[0] == 0 );
-  BOOST_TEST( histo.toJSON().at( "bins" )[2] == 1 );
-  BOOST_TEST( histo.toJSON().at( "bins" )[4] == 1 );
+  auto j = toJSON( histo );
+  BOOST_TEST( j.at( "bins" )[0] == 0 );
+  BOOST_TEST( j.at( "bins" )[2] == 1 );
+  BOOST_TEST( j.at( "bins" )[4] == 1 );
 }
 
 BOOST_AUTO_TEST_CASE( test_integer_histos_small_ratio ) {
@@ -125,8 +136,9 @@ BOOST_AUTO_TEST_CASE( test_integer_histos_small_ratio ) {
       &algo, "IntH1D", "A 1D histogram with integer content", { 5, 0, 10, "X" } };
   ++histo[1]; // fill the first (non-overflow) bin
   ++histo[3]; // fill the second (non-overflow) bin
-  BOOST_TEST( histo.toJSON().at( "bins" )[1] == 1 );
-  BOOST_TEST( histo.toJSON().at( "bins" )[2] == 1 );
+  auto j = toJSON( histo );
+  BOOST_TEST( j.at( "bins" )[1] == 1 );
+  BOOST_TEST( j.at( "bins" )[2] == 1 );
 }
 
 enum class TestEnum { A, B, C, D };
@@ -160,7 +172,7 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
   ++hist[TestEnum::B];
   hist[TestEnum::C] += 2;
 
-  auto j = hist.toJSON();
+  auto j = toJSON( hist );
 
   auto bins = j["bins"];
   BOOST_TEST( bins[0] == 0 );
@@ -189,7 +201,7 @@ BOOST_AUTO_TEST_CASE( test_custom ) {
   ++hist[9.];
   ++hist[32456789.];
 
-  auto j = hist.toJSON();
+  auto j = toJSON( hist );
 
   auto bins = j["bins"];
   BOOST_TEST( bins[0] == 1 );
@@ -213,7 +225,7 @@ BOOST_AUTO_TEST_CASE( test_custom_2d ) {
   ++hist[{ 9, .1 }];
   ++hist[{ .2, .3 }];
 
-  auto j    = hist.toJSON();
+  auto j    = toJSON( hist );
   auto bins = j["bins"];
   BOOST_TEST( bins[0] == 1 );
   BOOST_TEST( bins[1] == 0 );
@@ -249,18 +261,18 @@ BOOST_AUTO_TEST_CASE( test_histos_merge_reset, *boost::unit_test::tolerance( 1e-
     hist2[i] += 2 * i;
   }
 
-  ent1a.mergeAndReset( ent2a );
-  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
-  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
-  ent2b.mergeAndReset( ent1b );
-  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
-  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
-  ent1a.mergeAndReset( ent2b );
-  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
-  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
-  ent2b.mergeAndReset( ent1a );
-  BOOST_TEST( hist1.toJSON().at( "nEntries" ).get<unsigned long>() == 0 );
-  BOOST_TEST( hist2.toJSON().at( "nEntries" ).get<unsigned long>() == 135 );
+  mergeAndReset( ent1a, ent2a );
+  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  mergeAndReset( ent2b, ent1b );
+  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
+  mergeAndReset( ent1a, ent2b );
+  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  mergeAndReset( ent2b, ent1a );
+  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
 }
 
 BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
@@ -275,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
     for ( int j = 0; j < 52; ++j ) { ++hist[{ i, j }]; }
   }
 
-  auto j        = hist.toJSON();
+  auto j        = toJSON( hist );
   auto nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 64 * 52 );
 }
@@ -294,7 +306,7 @@ BOOST_AUTO_TEST_CASE( test_2d_histos_unique_ptr, *boost::unit_test::tolerance( 1
     }
   }
 
-  auto j        = histos[0].toJSON();
+  auto j        = toJSON( histos[0] );
   auto nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 100 );
 }

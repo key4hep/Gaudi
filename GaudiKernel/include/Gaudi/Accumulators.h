@@ -129,9 +129,9 @@ namespace Gaudi::Accumulators {
  * Symetrically to serialization, all counters objects can be constructed from json objects
  * using the same nlohmann's json library via a the fromJSON static method;
  *
- * The serialized json needs to respect a given format, described in the documentation of
- * Gaudi::Monitoring::Hub, but essentially boiling down to having a 'type' entry in the
- * generated json dictionnary. This type defines the rest of the json structure.
+ * The serialized json needs to contain a 'type' entry defining the rest of the json structure.
+ * If the type value contains a ':' character, then the part preceding it will be considered
+ * as a namespace. The rest is free text.
  *
  * Here is a list of types defined in this header and their corresponding fields.
  * Note that there are 2 kinds of fields : raw ones and derived ones, built on top of raw ones.
@@ -464,7 +464,7 @@ namespace Gaudi::Accumulators {
     OutputType value() const { return OutputTransform{}( ValueHandler::getValue( m_value ) ); }
     void       reset() { reset( ValueHandler::DefaultValue() ); }
     template <atomicity ato, typename VH>
-    void mergeAndReset( GenericAccumulator<InputType, InnerType, ato, InputTransform, OutputTransform, VH>&& other ) {
+    void mergeAndReset( GenericAccumulator<InputType, InnerType, ato, InputTransform, OutputTransform, VH>& other ) {
       ValueHandler::merge( m_value, VH::exchange( other.m_value, VH::DefaultValue() ) );
     }
     template <atomicity ato, typename VH>
@@ -509,8 +509,8 @@ namespace Gaudi::Accumulators {
     OutputType value() const { return std::make_tuple( Bases<Atomicity, Arithmetic>::value()... ); }
     void       reset() { ( Bases<Atomicity, Arithmetic>::reset(), ... ); }
     template <atomicity Ato>
-    void mergeAndReset( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
-      ( Bases<Atomicity, Arithmetic>::mergeAndReset( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
+    void mergeAndReset( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>& other ) {
+      ( Bases<Atomicity, Arithmetic>::mergeAndReset( static_cast<Bases<Ato, Arithmetic>&>( other ) ), ... );
     }
     template <atomicity Ato>
     void operator+( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
@@ -696,10 +696,10 @@ namespace Gaudi::Accumulators {
     };
     BinomialAccumulator& operator+=( binomial_t b ) {
       assert( b.nPass <= b.nTotal );
-      TrueAccumulator<Atomicity, bool>::mergeAndReset(
-          TrueAccumulator<atomicity::none, bool>{ std::in_place, b.nPass } );
-      FalseAccumulator<Atomicity, bool>::mergeAndReset(
-          FalseAccumulator<atomicity::none, bool>{ std::in_place, b.nTotal - b.nPass } );
+      TrueAccumulator<atomicity::none, bool> t{ std::in_place, b.nPass };
+      TrueAccumulator<Atomicity, bool>::mergeAndReset( t );
+      FalseAccumulator<atomicity::none, bool> f{ std::in_place, b.nTotal - b.nPass };
+      FalseAccumulator<Atomicity, bool>::mergeAndReset( f );
       return *this;
     }
   };
@@ -819,7 +819,7 @@ namespace Gaudi::Accumulators {
     Buffer( const Buffer& ) = delete;
     void operator=( const Buffer& ) = delete;
     Buffer( Buffer&& other ) : base_type( other ), m_prime( other.m_prime ) { other.reset(); }
-    void push() { m_prime.mergeAndReset( static_cast<base_type&&>( *this ) ); }
+    void push() { m_prime.mergeAndReset( static_cast<base_type&>( *this ) ); }
     ~Buffer() { push(); }
 
   private:
@@ -855,8 +855,6 @@ namespace Gaudi::Accumulators {
       print( ost );
       return ost.str();
     }
-    /// Basic JSON export for Gaudi::Monitoring::Hub support.
-    virtual nlohmann::json toJSON() const = 0;
   };
 
   /**
@@ -925,10 +923,12 @@ namespace Gaudi::Accumulators {
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
       return printImpl( o, tableFormat );
     }
-    MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
-    bool       toBePrinted() const override { return this->nEntries() > 0; }
-    virtual nlohmann::json toJSON() const override {
-      return { { "type", typeString }, { "empty", this->nEntries() == 0 }, { "nEntries", this->nEntries() } };
+    MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
+    bool        toBePrinted() const override { return this->nEntries() > 0; }
+    friend void reset( Counter& c ) { c.reset(); }
+    friend void mergeAndReset( Counter& c, Counter& o ) { c.mergeAndReset( o ); }
+    friend void to_json( nlohmann::json& j, Counter const& c ) {
+      j = { { "type", c.typeString }, { "empty", c.nEntries() == 0 }, { "nEntries", c.nEntries() } };
     }
     static Counter fromJSON( const nlohmann::json& j ) {
       return IntegralAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { "nEntries" } );
@@ -960,13 +960,15 @@ namespace Gaudi::Accumulators {
     }
     MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
 
-    bool                   toBePrinted() const override { return this->nEntries() > 0; }
-    virtual nlohmann::json toJSON() const override {
-      return { { "type", typeString },
-               { "empty", this->nEntries() == 0 },
-               { "nEntries", this->nEntries() },
-               { "sum", this->sum() },
-               { "mean", this->mean() } };
+    bool        toBePrinted() const override { return this->nEntries() > 0; }
+    friend void reset( AveragingCounter& c ) { return c.reset(); }
+    friend void mergeAndReset( AveragingCounter& c, AveragingCounter& o ) { c.mergeAndReset( o ); }
+    friend void to_json( nlohmann::json& j, AveragingCounter const& c ) {
+      j = { { "type", c.typeString },
+            { "empty", c.nEntries() == 0 },
+            { "nEntries", c.nEntries() },
+            { "sum", c.sum() },
+            { "mean", c.mean() } };
     }
     static AveragingCounter fromJSON( const nlohmann::json& j ) {
       return AveragingAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { "nEntries", "sum" } );
@@ -998,16 +1000,18 @@ namespace Gaudi::Accumulators {
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
       return printImpl( o, tableFormat );
     }
-    MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
-    bool       toBePrinted() const override { return this->nEntries() > 0; }
-    virtual nlohmann::json toJSON() const override {
-      return { { "type", typeString },
-               { "empty", this->nEntries() == 0 },
-               { "nEntries", this->nEntries() },
-               { "sum", this->sum() },
-               { "mean", this->mean() },
-               { "sum2", this->sum2() },
-               { "standard_deviation", this->standard_deviation() } };
+    MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
+    bool        toBePrinted() const override { return this->nEntries() > 0; }
+    friend void reset( SigmaCounter& c ) { c.reset(); }
+    friend void mergeAndReset( SigmaCounter& c, SigmaCounter& o ) { c.mergeAndReset( o ); }
+    friend void to_json( nlohmann::json& j, SigmaCounter const& c ) {
+      j = { { "type", c.typeString },
+            { "empty", c.nEntries() == 0 },
+            { "nEntries", c.nEntries() },
+            { "sum", c.sum() },
+            { "mean", c.mean() },
+            { "sum2", c.sum2() },
+            { "standard_deviation", c.standard_deviation() } };
     }
     static SigmaCounter fromJSON( const nlohmann::json& j ) {
       return SigmaAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { { "nEntries", "sum" }, "sum2" } );
@@ -1038,18 +1042,20 @@ namespace Gaudi::Accumulators {
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
       return printImpl( o, tableFormat );
     }
-    MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
-    bool       toBePrinted() const override { return this->nEntries() > 0; }
-    virtual nlohmann::json toJSON() const override {
-      return { { "type", typeString },
-               { "empty", this->nEntries() == 0 },
-               { "nEntries", this->nEntries() },
-               { "sum", this->sum() },
-               { "mean", this->mean() },
-               { "sum2", this->sum2() },
-               { "standard_deviation", this->standard_deviation() },
-               { "min", this->min() },
-               { "max", this->max() } };
+    MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
+    bool        toBePrinted() const override { return this->nEntries() > 0; }
+    friend void reset( StatCounter& c ) { c.reset(); }
+    friend void mergeAndReset( StatCounter& c, StatCounter& o ) { c.mergeAndReset( o ); }
+    friend void to_json( nlohmann::json& j, StatCounter const& c ) {
+      j = { { "type", c.typeString },
+            { "empty", c.nEntries() == 0 },
+            { "nEntries", c.nEntries() },
+            { "sum", c.sum() },
+            { "mean", c.mean() },
+            { "sum2", c.sum2() },
+            { "standard_deviation", c.standard_deviation() },
+            { "min", c.min() },
+            { "max", c.max() } };
     }
     static StatCounter fromJSON( const nlohmann::json& j ) {
       return StatAccumulator<Atomicity, Arithmetic>::extractJSONData(
@@ -1090,17 +1096,19 @@ namespace Gaudi::Accumulators {
       return print( o, true );
     }
     /// prints the counter to a stream in table format, with the given tag
-    std::ostream&          print( std::ostream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
-    MsgStream&             print( MsgStream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
-    bool                   toBePrinted() const override { return this->nEntries() > 0; }
-    virtual nlohmann::json toJSON() const override {
-      return { { "type", typeString },
-               { "empty", this->nEntries() == 0 },
-               { "nEntries", this->nTrueEntries() + this->nFalseEntries() },
-               { "nTrueEntries", this->nTrueEntries() },
-               { "nFalseEntries", this->nFalseEntries() },
-               { "efficiency", this->efficiency() },
-               { "efficiencyErr", this->efficiencyErr() } };
+    std::ostream& print( std::ostream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
+    MsgStream&    print( MsgStream& o, std::string_view tag ) const override { return printImpl( o, tag ); }
+    bool          toBePrinted() const override { return this->nEntries() > 0; }
+    friend void   reset( BinomialCounter& c ) { c.reset(); }
+    friend void   mergeAndReset( BinomialCounter& c, BinomialCounter& o ) { c.mergeAndReset( o ); }
+    friend void   to_json( nlohmann::json& j, BinomialCounter const& c ) {
+      j = { { "type", c.typeString },
+            { "empty", c.nEntries() == 0 },
+            { "nEntries", c.nTrueEntries() + c.nFalseEntries() },
+            { "nTrueEntries", c.nTrueEntries() },
+            { "nFalseEntries", c.nFalseEntries() },
+            { "efficiency", c.efficiency() },
+            { "efficiencyErr", c.efficiencyErr() } };
     }
     static BinomialCounter fromJSON( const nlohmann::json& j ) {
       return BinomialAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { "nTrueEntries", "nFalseEntries" } );
@@ -1154,13 +1162,12 @@ namespace Gaudi::Accumulators {
     std::ostream& print( std::ostream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     MsgStream&    print( MsgStream& os, bool tableFormat ) const override { return printImpl( os, tableFormat ); }
     bool          toBePrinted() const override { return this->value() > 0; }
-    virtual nlohmann::json toJSON() const override {
-      return { { "type", typeString },
-               { "empty", this->value() == 0 },
-               { "nEntries", this->value() },
-               { "level", level },
-               { "max", max },
-               { "msg", msg } };
+    friend void   reset( MsgCounter& c ) { c.reset(); }
+    friend void   mergeAndReset( MsgCounter& c, MsgCounter& o ) { c.mergeAndReset( o ); }
+    friend void   to_json( nlohmann::json& j, MsgCounter const& c ) {
+      j = { { "type", c.typeString },  { "empty", c.value() == 0 },
+            { "nEntries", c.value() }, { "level", level },
+            { "max", c.max },          { "msg", c.msg } };
     }
     static MsgCounter fromJSON( const nlohmann::json& j ) {
       return { j.at( "msg" ).get<std::string>(), j.at( "max" ).get<unsigned long>(),

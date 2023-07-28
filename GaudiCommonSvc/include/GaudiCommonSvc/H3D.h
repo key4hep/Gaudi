@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDICOMMONSVC_H3D_H
-#define GAUDICOMMONSVC_H3D_H
+#pragma once
 
 #include "Generic3D.h"
 #include <AIDA/IHistogram3D.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 #include <GaudiKernel/DataObject.h>
 #include <TH3D.h>
 
@@ -42,8 +42,10 @@ namespace Gaudi {
     virtual bool setRms( double rmsX, double rmsY, double rmsZ );
     // overwrite reset
     bool reset() override;
-    /// dumps Histogram to json data
-    nlohmann::json toJSON() const;
+    // free function reset
+    friend void reset( Histogram3D& h ) { h.reset(); }
+    /// conversion to json via nlohmann library
+    friend void to_json( nlohmann::json& j, Histogram3D const& h ) { j = *h.m_rep.get(); }
     /// Introspection method
     void* cast( const std::string& className ) const override;
     /// Create new histogram from any AIDA based histogram
@@ -62,5 +64,3 @@ namespace Gaudi {
     std::mutex m_fillSerialization;
   };
 } // namespace Gaudi
-
-#endif

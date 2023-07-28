@@ -320,10 +320,10 @@ namespace Gaudi::Accumulators {
       for ( unsigned int index = 0; index < m_totNBins; index++ ) accumulator( index ).reset();
     }
     template <atomicity ato>
-    void mergeAndReset( HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>&& other ) {
+    void mergeAndReset( HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other ) {
       assert( m_totNBins == other.m_totNBins );
       for ( unsigned int index = 0; index < m_totNBins; index++ ) {
-        accumulator( index ).mergeAndReset( std::move( other.accumulator( index ) ) );
+        accumulator( index ).mergeAndReset( other.accumulator( index ) );
       }
     }
     [[nodiscard]] auto operator[]( typename InputType::ValueType v ) {
@@ -479,24 +479,28 @@ namespace Gaudi::Accumulators {
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
       return printImpl( o, tableFormat );
     }
-    MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
-    nlohmann::json toJSON() const override {
+    MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
+    friend void reset( HistogramingCounterBaseInternal& c ) { c.reset(); }
+    friend void mergeAndReset( HistogramingCounterBaseInternal& h, HistogramingCounterBaseInternal& o ) {
+      h.mergeAndReset( o );
+    }
+    friend void to_json( nlohmann::json& j, HistogramingCounterBaseInternal const& h ) {
       // get all bin values and compute total nbEntries
       std::vector<typename AccumulatorType::BaseAccumulator::OutputType> bins;
-      bins.reserve( this->totNBins() );
+      bins.reserve( h.totNBins() );
       unsigned long totNEntries{ 0 };
-      for ( unsigned int i = 0; i < this->totNBins(); i++ ) {
-        bins.push_back( this->binValue( i ) );
-        totNEntries += this->nEntries( i );
+      for ( unsigned int i = 0; i < h.totNBins(); i++ ) {
+        bins.push_back( h.binValue( i ) );
+        totNEntries += h.nEntries( i );
       }
       // build json
-      return { { "type", std::string( Type ) + ":" + typeid( Arithmetic ).name() },
-               { "title", m_title },
-               { "dimension", ND },
-               { "empty", totNEntries == 0 },
-               { "nEntries", totNEntries },
-               { "axis", this->axis() },
-               { "bins", bins } };
+      j = { { "type", std::string( Type ) + ":" + typeid( Arithmetic ).name() },
+            { "title", h.m_title },
+            { "dimension", ND },
+            { "empty", totNEntries == 0 },
+            { "nEntries", totNEntries },
+            { "axis", h.axis() },
+            { "bins", bins } };
     }
 
   private:
