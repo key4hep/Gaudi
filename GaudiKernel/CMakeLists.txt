@@ -55,6 +55,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/ContainedObject.cpp
           src/Lib/ConversionSvc.cpp
           src/Lib/Converter.cpp
+          src/Lib/CounterArray.cpp
           src/Lib/DataHandle.cpp
           src/Lib/DataHandleFinder.cpp
           src/Lib/DataHandleHolderVisitor.cpp
@@ -302,6 +303,9 @@ if(BUILD_TESTING)
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
   gaudi_add_executable(test_Counters SOURCES tests/src/CountersUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_CounterArray SOURCES tests/src/CounterArrayUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
   gaudi_add_executable(test_CounterHistos SOURCES tests/src/CounterHistosUnitTest.cpp
