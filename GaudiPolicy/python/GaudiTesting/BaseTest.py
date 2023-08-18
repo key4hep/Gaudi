@@ -1295,10 +1295,21 @@ def _parseTTreeSummary(lines, pos):
 
     def parseblock(ll):
         r = {}
+        delta_i = 0
         cols = splitcols(ll[0])
-        r["Name"], r["Title"] = cols[1:]
 
-        cols = splitcols(ll[1])
+        if len(ll) == 3:
+            # default one line name/title
+            r["Name"], r["Title"] = cols[1:]
+        elif len(ll) == 4:
+            # in case title is moved to next line due to too long name
+            delta_i = 1
+            r["Name"] = cols[1]
+            r["Title"] = ll[1].strip("*\n").split("|")[1].strip()
+        else:
+            assert False
+
+        cols = splitcols(ll[1 + delta_i])
         r["Entries"] = int(cols[1])
 
         sizes = cols[2].split()
@@ -1308,26 +1319,44 @@ def _parseTTreeSummary(lines, pos):
         else:
             r["File size"] = int(sizes[-1])
 
-        cols = splitcols(ll[2])
+        cols = splitcols(ll[2 + delta_i])
         sizes = cols[2].split()
         if cols[0] == "Baskets":
             r["Baskets"] = int(cols[1])
             r["Basket size"] = int(sizes[2])
         r["Compression"] = float(sizes[-1])
+
         return r
 
+    def nextblock(lines, i):
+        delta_i = 1
+        dots = re.compile(r"^\.+$")
+        stars = re.compile(r"^\*+$")
+        count = len(lines)
+        while (
+            i + delta_i < count
+            and not dots.match(lines[i + delta_i][1:-1])
+            and not stars.match(lines[i + delta_i])
+        ):
+            delta_i += 1
+        return i + delta_i
+
     if i < (count - 3) and lines[i].startswith("*Tree"):
-        result = parseblock(lines[i : i + 3])
+        i_nextblock = nextblock(lines, i)
+        result = parseblock(lines[i:i_nextblock])
         result["Branches"] = {}
-        i += 4
+        i = i_nextblock + 1
         while i < (count - 3) and lines[i].startswith("*Br"):
             if i < (count - 2) and lines[i].startswith("*Branch "):
                 # skip branch header
                 i += 3
                 continue
-            branch = parseblock(lines[i : i + 3])
+            i_nextblock = nextblock(lines, i)
+            if i_nextblock >= count:
+                break
+            branch = parseblock(lines[i:i_nextblock])
             result["Branches"][branch["Name"]] = branch
-            i += 4
+            i = i_nextblock + 1
 
     return (result, i)
 
