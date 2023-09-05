@@ -8,33 +8,29 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// STD&STL
-// ============================================================================
 #include "boost/algorithm/string/classification.hpp"
 #include "boost/algorithm/string/split.hpp"
 #include "boost/algorithm/string/trim.hpp"
 #include <cctype>
 #include <fstream>
 namespace ba = boost::algorithm;
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include "GaudiKernel/IFileAccess.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/PhysicalConstants.h"
 #include "GaudiKernel/System.h"
-// ============================================================================
-// #include "GaudiKernel/ToStream.h"
-// ============================================================================
-// Local
-// ============================================================================
+
 #include "ParticlePropertySvc.h"
-// ============================================================================
+
+namespace {
+  // idea coming from The art of computer programming by Knuth
+  constexpr bool essentiallyEqual( double const a, double const b ) {
+    return std::abs( a - b ) <= std::min( std::abs( a ), std::abs( b ) ) * std::numeric_limits<double>::epsilon();
+  }
+} // namespace
+
 namespace Gaudi {
   /** Instantiation of a static factory class used by clients to create
    *  instances of this service
@@ -370,13 +366,7 @@ namespace Gaudi {
     //
     return StatusCode::SUCCESS;
   }
-// ============================================================================
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison are meant
-#  pragma warning( push )
-#  pragma warning( disable : 1572 )
-#endif
+  // ============================================================================
   bool ParticlePropertySvc::diff( const ParticleProperty* o, const ParticleProperty* n, const MSG::Level l ) const {
     //
     if ( o == n ) { return false; }
@@ -405,15 +395,15 @@ namespace Gaudi {
       result = true;
       log << " PYID:" << o->pythiaID() << "/" << n->pythiaID() << "'";
     }
-    if ( o->charge() != n->charge() ) {
+    if ( essentiallyEqual( o->charge(), n->charge() ) ) {
       result = true;
       log << " Q:" << o->charge() << "/" << n->charge() << "'";
     }
-    if ( o->mass() != n->mass() ) {
+    if ( essentiallyEqual( o->mass(), n->mass() ) ) {
       result = true;
       log << " M:" << o->mass() << "/" << n->mass() << "'";
     }
-    if ( o->lifetime() != n->lifetime() ) {
+    if ( essentiallyEqual( o->lifetime(), n->lifetime() ) ) {
       result = true;
       log << " T:" << o->lifetime() << "/" << n->lifetime() << "'";
     }
@@ -421,7 +411,7 @@ namespace Gaudi {
       result = true;
       log << " EvtGen:" << o->evtGenName() << "/" << n->evtGenName() << "'";
     }
-    if ( o->maxWidth() != n->maxWidth() ) {
+    if ( essentiallyEqual( o->maxWidth(), n->maxWidth() ) ) {
       result = true;
       log << " WMAX:" << o->maxWidth() << "/" << n->maxWidth() << "'";
     }
@@ -430,10 +420,6 @@ namespace Gaudi {
     return result;
   }
 } // namespace Gaudi
-#ifdef __ICC
-// re-enable icc remark #1572
-#  pragma warning( pop )
-#endif
 // ============================================================================
 // The END
 // ============================================================================
