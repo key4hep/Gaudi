@@ -88,10 +88,6 @@ namespace Gaudi {
     // ========================================================================
     /// ordering operator (to please BoundedVerifier)
     friend bool operator<( const Histo1DDef& left, const Histo1DDef& right );
-    /// equality operator
-    friend bool operator==( const Histo1DDef& left, const Histo1DDef& right );
-    /// non-equality
-    friend bool operator!=( const Histo1DDef& left, const Histo1DDef& right );
     // ========================================================================
     /// the streamer operator for class Gaudi::Histo1DDef
     friend std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo );

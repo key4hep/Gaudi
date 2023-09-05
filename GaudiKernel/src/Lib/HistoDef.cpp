@@ -60,26 +60,6 @@ namespace Gaudi {
     return std::tie( left.m_title, left.m_low, left.m_high, left.m_bins ) <
            std::tie( right.m_title, right.m_low, right.m_high, right.m_bins );
   }
-// ============================================================================
-// equality operator
-// ============================================================================
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-#  pragma warning( push )
-#  pragma warning( disable : 1572 )
-#endif
-  bool operator==( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right ) {
-    return std::tie( left.m_title, left.m_low, left.m_high, left.m_bins ) ==
-           std::tie( right.m_title, right.m_low, right.m_high, right.m_bins );
-  }
-#ifdef __ICC
-// re-enable icc remark #1572
-#  pragma warning( pop )
-#endif
-  // ============================================================================
-  // non-equality
-  // ============================================================================
-  bool operator!=( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right ) { return !( left == right ); }
   // ============================================================================
   // the streamer operator for class Gaudi::Histo1DDef
   // ============================================================================
