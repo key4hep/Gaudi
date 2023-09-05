@@ -12,9 +12,6 @@
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #  pragma warning( disable : 2259 )
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison are meant
-#  pragma warning( disable : 1572 )
 #endif
 #ifdef WIN32
 // Disable warning
@@ -44,6 +41,12 @@
 
 // ============================================================================
 namespace {
+
+  // idea coming from The art of computer programming by Knuth
+  constexpr bool essentiallyEqual( double const a, double const b ) {
+    return std::abs( a - b ) <= std::min( std::abs( a ), std::abs( b ) ) * std::numeric_limits<double>::epsilon();
+  }
+
   // ==========================================================================
   /** @struct Histo
    *  helper structure to keep the representation of the histogram
@@ -255,10 +258,10 @@ namespace {
    *  @date 2009-09-19
    */
   std::pair<double, int> decompose( double v ) {
-    if ( 0 == v ) {
+    if ( abs( v ) < std::numeric_limits<double>::epsilon() ) {
       return { 0.0, 0 };
     } // RETURN
-    else if ( 1 == v ) {
+    else if ( essentiallyEqual( 1.0, v ) ) {
       return { 1.0, 0 };
     } // RETURN
     else if ( 0 > v ) {
@@ -302,12 +305,7 @@ namespace {
    *  @date 2009-09-19
    */
   inline double rValMax( double v ) {
-    if ( 0 == v ) {
-      return 0;
-    } // RETURN
-    else if ( 0 > v ) {
-      return -1 * rValMin( -v );
-    } // RETURN
+    if ( 0 > v ) { return -1 * rValMin( -v ); } // RETURN
     // decompose the double value into decimal significand and mantissa
     std::pair<double, int> r = decompose( v );
     //
@@ -321,12 +319,7 @@ namespace {
    *  @date 2009-09-19
    */
   inline double rValMin( double v ) {
-    if ( 0 == v ) {
-      return 0;
-    } // RETURN
-    else if ( 0 > v ) {
-      return -1 * rValMax( -v );
-    } // RETURN
+    if ( 0 > v ) { return -1 * rValMax( -v ); } // RETURN
     // decompose the double value into decimal significand and mantissa
     std::pair<double, int> r = decompose( v );
     const double           f = std::floor( 20 * r.first ) / 2; // - 1 ;
@@ -392,7 +385,7 @@ namespace {
     double yMax = std::max( rValMax( histo.maxY( errors ) ), 0.0 );
     double yMin = std::min( rValMin( histo.minY( errors ) ), 0.0 );
 
-    if ( yMin == yMax ) { yMax = yMin + 1; }
+    if ( essentiallyEqual( yMin, yMax ) ) { yMax = yMin + 1; }
     /// try to define the proper "Y-binning"
     std::pair<double, int> r   = decompose( yMax - yMin );
     double                 _ny = std::ceil( 10 * r.first ); //   1 <= ny < 10
