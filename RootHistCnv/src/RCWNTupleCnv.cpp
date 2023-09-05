@@ -121,13 +121,8 @@ namespace {
     }
     if ( it->hasIndex() || it->length() > 1 ) { desc += ']'; }
 
-    if ( it->range().lower() != it->range().min() && it->range().upper() != it->range().max() ) {
-      lowerRange = it->range().lower();
-      upperRange = it->range().upper();
-    } else {
-      lowerRange = 0;
-      upperRange = -1;
-    }
+    lowerRange = it->range().lower();
+    upperRange = it->range().upper();
     desc += typ;
     size += item_size * dimension;
   }
@@ -340,17 +335,12 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
       int  itemSize;
       item = nullptr;
 
-      //      TLeaf* tl = (TLeaf*)tobj;
       TLeaf* tl = dynamic_cast<TLeaf*>( tobj );
-      if ( tl ) {
-        itemName = tl->GetName();
-      } else {
+      if ( !tl ) {
         log << MSG::ERROR << "cannot dynamic cast to TLeaf" << endmsg;
+        return StatusCode::FAILURE;
       }
-
-      //	char* buf_pos = (char*)tl->GetValuePointer();
-      //  	cout << " " << itemName << "  " << blockName << "  "
-      //  	     << (void*)buf_pos;
+      itemName = tl->GetName();
 
       if ( blockName != "" ) {
         log << MSG::DEBUG << "loading NTuple item " << blockName << "/" << itemName;
@@ -359,15 +349,14 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
       }
 
       int    arraySize{ 0 };
-      TLeaf* indexLeaf = ( tl ? tl->GetLeafCounter( arraySize ) : nullptr );
+      TLeaf* indexLeaf = tl->GetLeafCounter( arraySize );
 
       if ( arraySize == 0 ) { log << MSG::ERROR << "TLeaf counter size = 0. This should not happen!" << endmsg; }
 
       if ( indexLeaf ) {
         // index Arrays and Matrices
 
-        indexName = indexLeaf->GetName();
-        //	  indexRange = tl->GetNdata();
+        indexName  = indexLeaf->GetName();
         indexRange = indexLeaf->GetMaximum();
         itemSize   = indexRange * tl->GetLenType() * arraySize;
 
@@ -392,9 +381,6 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
 
       log << endmsg;
 
-      //  	cout << "  index: " << indexName <<  endl;
-
-      //	size = tl->GetNdata() * tl->GetLenType();
       size = itemSize;
       totsize += size;
 
@@ -414,7 +400,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
               max = tli->GetMaximum();
             }
 
-            item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+            item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup, hasRange );
           } else {
             long min = 0, max = 0;
             if ( hasRange ) {
@@ -422,7 +408,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
               max = tli->GetMaximum();
             }
 
-            item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+            item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup, hasRange );
           }
         } else {
           log << MSG::ERROR << "cannot dynamic cast to TLeafI" << endmsg;
@@ -442,7 +428,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
           log << MSG::ERROR << "cannot dynamic cast to TLeafF" << endmsg;
         }
 
-        item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+        item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup, hasRange );
 
         // Double
       } else if ( tobj->IsA()->InheritsFrom( "TLeafD" ) ) {
@@ -458,7 +444,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
           log << MSG::ERROR << "cannot dynamic cast to TLeafD" << endmsg;
         }
 
-        item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup );
+        item = createNTupleItem( itemName, blockName, indexName, indexRange, arraySize, min, max, ntup, hasRange );
 
       } else {
         log << MSG::ERROR << "Uknown data type" << endmsg;
