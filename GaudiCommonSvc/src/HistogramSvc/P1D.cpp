@@ -111,11 +111,6 @@ bool Gaudi::Profile1D::setBinContents( int i, int entries, double height, double
   return true;
 }
 
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison is correct
-#  pragma warning( disable : 1572 )
-#endif
 bool Gaudi::Profile1D::fill( double x, double y, double weight ) {
   // avoid race conditions when filling the profile
   auto guard = std::scoped_lock{ m_fillSerialization };
