@@ -326,12 +326,6 @@ namespace HepRndm {
     double shoot() const override { return m_generator->shoot( m_hepEngine ); }
   };
 
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison is meant
-#  pragma warning( push )
-#  pragma warning( disable : 1572 )
-#endif
   // Specialized shoot function
   template <>
   double Generator<Rndm::GaussianTail>::shoot() const {
@@ -365,15 +359,11 @@ namespace HepRndm {
         do {
           // v = gsl_rng_uniform (r);
           v = RandFlat::shoot( m_hepEngine );
-        } while ( v == 0.0 );
+        } while ( std::abs( v ) < std::numeric_limits<double>::epsilon() * m_specs->cut() );
         x = sqrt( s * s - 2 * log( v ) );
       } while ( x * u > s );
       return x * sigma;
     }
-#ifdef __ICC
-// re-enable icc remark #1572
-#  pragma warning( pop )
-#endif
   }
 } // namespace HepRndm
 
