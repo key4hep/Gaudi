@@ -119,6 +119,6 @@ bool Gaudi::Profile1D::setBinContents( int i, int entries, double height, double
 bool Gaudi::Profile1D::fill( double x, double y, double weight ) {
   // avoid race conditions when filling the profile
   auto guard = std::scoped_lock{ m_fillSerialization };
-  ( weight == 1. ) ? m_rep->Fill( x, y ) : m_rep->Fill( x, y, weight );
+  m_rep->Fill( x, y, weight );
   return true;
 }
