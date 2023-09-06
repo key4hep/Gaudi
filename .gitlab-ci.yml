@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -67,6 +67,7 @@ variables:
       - build/Testing
 
 .warnings-check: &template_warnings_check
+  image: gitlab-registry.cern.ch/linuxsupport/alma9-base:latest
   variables:
     LOG: build.log
   script:
@@ -219,6 +220,7 @@ warnings-check:lcg-view:102b:x86_64-centos7-gcc11-opt:
 
 ### Misc checks
 lcg:103:x86_64-centos7-gcc12-opt:check-unused:
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   needs:
     - job: "lcg:103:x86_64-centos7-gcc12-opt"
       artifacts: true
@@ -267,6 +269,7 @@ pre-commit-checks:
     expire_in: 1 week
 
 check-copyright:
+  image: registry.cern.ch/docker.io/library/python:3.9
   script:
     - |
       curl -o lb-check-copyright "https://gitlab.cern.ch/lhcb-core/LbDevTools/-/raw/master/LbDevTools/SourceTools.py?inline=false"
