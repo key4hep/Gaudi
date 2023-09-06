@@ -1,6 +1,6 @@
 #!/bin/bash
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,15 +14,12 @@ set -eo pipefail
 build_file="$1"
 IFS=$'\n'
 
-# FIXME remove this once the system git is not as old...
-git=/cvmfs/lhcb.cern.ch/lib/contrib/git/2.14.2/bin/git
-
 # Find sources not explicitly referenced from CMakeLists.txt files
 not_in_cmakelists=()
 for package in $($git ls-files -- '*/CMakeLists.txt' ':!:cmake/'); do
   dir=$(dirname $package)
   pushd "$dir" >/dev/null
-  missing=$($git ls-files --cached --others '*.cpp' ':!:*/contrib/*' | \
+  missing=$(git ls-files --cached --others '*.cpp' ':!:*/contrib/*' | \
     xargs -n1 -I_path bash -c \
       "git grep -q '_path' -- CMakeLists.txt || echo $dir/_path")
   if [ -n "$missing" ]; then

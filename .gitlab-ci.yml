@@ -221,8 +221,6 @@ warnings-check:lcg-view:102b:x86_64-centos7-gcc11-opt:
 ### Misc checks
 lcg:103:x86_64-centos7-gcc12-opt:check-unused:
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-  tags:
-    - cvmfs
   needs:
     - job: "lcg:103:x86_64-centos7-gcc12-opt"
       artifacts: true
