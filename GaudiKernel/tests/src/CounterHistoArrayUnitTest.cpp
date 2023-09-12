@@ -14,7 +14,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <deque>
 #include <iostream>
 
 namespace {
@@ -29,14 +28,6 @@ namespace {
     ServiceLocator* serviceLocator() { return &m_serviceLocator; }
     std::string     name() { return ""; }
     ServiceLocator  m_serviceLocator{};
-  };
-  struct HistSink : public Gaudi::Monitoring::Hub::Sink {
-    virtual void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { m_entities.push_back( ent ); }
-    virtual void removeEntity( Gaudi::Monitoring::Hub::Entity const& ent ) override {
-      auto it = std::find( begin( m_entities ), end( m_entities ), ent );
-      if ( it != m_entities.end() ) m_entities.erase( it );
-    }
-    std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
   };
 
   // Little helper for using automatic nlohmann conversion mechanism
