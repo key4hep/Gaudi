@@ -12,8 +12,17 @@ import pytest
 
 
 def test_1():
-    from GaudiConfig2.Configurables.TestConf import AlgWithVectors
+    from GaudiConfig2.Configurables.TestConf import AlgWithMaps, AlgWithVectors
 
     alg = AlgWithVectors()
     with pytest.raises(TypeError, match=r"cannot set property VS .*"):
         alg.VS = [3]
+
+    alg = AlgWithMaps()
+    with pytest.raises(TypeError, match=r"cannot set property MSS key .*"):
+        alg.MSS[3] = "value"
+    with pytest.raises(TypeError, match=r"cannot set property MSS value .*"):
+        alg.MSS["key"] = 3
+    alg.MIV[3] = []
+    with pytest.raises(TypeError, match=r"cannot set property MIV value element.*"):
+        alg.MIV[3].append(5)

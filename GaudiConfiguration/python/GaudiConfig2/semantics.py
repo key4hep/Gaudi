@@ -28,8 +28,16 @@ class PropertySemantics(object):
     __handled_types__ = ()
 
     def __init__(self, cpp_type, name=None):
-        self.name = None
+        self._name = name
         self.cpp_type = cpp_type
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def cpp_type(self):
@@ -341,6 +349,16 @@ class SequenceSemantics(PropertySemantics):
         self.value_semantics = valueSem or getSemanticsFor(
             list(extract_template_args(cpp_type))[0]
         )
+        self.value_semantics.name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+        self.value_semantics.name = "{} element".format(self._name)
 
     def store(self, value):
         new_value = _ListHelper(self.value_semantics)
@@ -464,7 +482,19 @@ class MappingSemantics(PropertySemantics):
         super(MappingSemantics, self).__init__(cpp_type, name)
         template_args = list(extract_template_args(cpp_type))
         self.key_semantics = getSemanticsFor(template_args[0])
+        self.key_semantics.name = "{} key".format(name)
         self.value_semantics = getSemanticsFor(template_args[1])
+        self.value_semantics.name = "{} value".format(name)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+        self.key_semantics.name = "{} key".format(self._name)
+        self.value_semantics.name = "{} value".format(self._name)
 
     def store(self, value):
         new_value = _DictHelper(self.key_semantics, self.value_semantics)
