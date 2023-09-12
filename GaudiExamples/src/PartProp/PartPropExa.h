@@ -12,7 +12,15 @@
 #define GAUDIEXAMPLES_PARTPROPEXA_H 1
 
 #include "GaudiKernel/Algorithm.h"
-#include "HepPDT/CommonParticleData.hh"
+#if HEPPDT_VERSION_MAJOR == 2
+#  include "HepPDT/CommonParticleData.hh"
+#endif
+#if HEPPDT_VERSION_MAJOR == 3
+#  include "HepPDT/ParticleData.hh"
+namespace HepPDT {
+  using CommonParticleData = ParticleData;
+}
+#endif
 #include "HepPDT/ProcessUnknownID.hh"
 
 class IPartPropSvc;
