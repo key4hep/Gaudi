@@ -63,7 +63,6 @@ def _fillConfDict():
             )
             pass
         del dups
-        log.warning("Fix your cmt/requirements file !!")
         pass
     else:
         log.debug("No duplicates have been found: that's good !")
