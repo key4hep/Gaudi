@@ -75,9 +75,19 @@ class QMTTest(BaseTest):
                     self.callable = callable
                     self.extra_args = extra_args
                     # get the list of names of positional arguments
-                    from inspect import getargspec
+                    try:
+                        # Removed in Python 3.11
+                        from inspect import getargspec
 
-                    self.args_order = getargspec(callable)[0]
+                        self.args_order = getargspec(callable)[0]
+                    except ImportError:
+                        import inspect
+
+                        self.args_order = [
+                            param.name
+                            for param in inspect.signature(callable).parameters.values()
+                            if param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD
+                        ]
                     # Remove "self" from the list of positional arguments
                     # since it is added automatically
                     if self.args_order[0] == "self":
