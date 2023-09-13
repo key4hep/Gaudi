@@ -90,9 +90,9 @@ namespace {
         if ( m_node && m_node->getNodeType() != DOMNode::ELEMENT_NODE ) ++( *this );
       }
     }
-                operator bool() const { return m_node; }
-                operator DOMNode*() const { return m_node; }
-                operator DOMElement*() const { return m_node; }
+    operator bool() const { return m_node; }
+    operator DOMNode*() const { return m_node; }
+    operator DOMElement*() const { return m_node; }
     DOMElement* operator->() const { return m_node; }
     string      attr( const XMLTag& tag ) const { return _toString( m_node->getAttribute( tag ) ); }
     string      attr( CSTR tag ) const { return attr( XMLTag( tag ) ); }

@@ -39,11 +39,11 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
   auto guard = std::scoped_lock{ other.m_searchMutex };
   // FIXME: operator= should not change our owner, only our 'value'
   Gaudi::DataHandle::operator=( other );
-  m_EDS                      = other.m_EDS;
-  m_MS                       = other.m_MS;
-  m_init                     = other.m_init;
-  m_optional                 = other.m_optional;
-  m_searchDone               = other.m_searchDone.load();
+  m_EDS        = other.m_EDS;
+  m_MS         = other.m_MS;
+  m_init       = other.m_init;
+  m_optional   = other.m_optional;
+  m_searchDone = other.m_searchDone.load();
   return *this;
 }
 

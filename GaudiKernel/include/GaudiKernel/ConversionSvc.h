@@ -75,7 +75,7 @@ class GAUDI_API ConversionSvc : public extends<Service, IConversionSvc, IAddress
       return *this;
     }
 
-    WorkerEntry( const WorkerEntry& copy ) = delete;
+    WorkerEntry( const WorkerEntry& copy )            = delete;
     WorkerEntry& operator=( const WorkerEntry& copy ) = delete;
 
     IConverter* converter() { return m_converter; }
@@ -88,7 +88,7 @@ public:
   ConversionSvc( const std::string& name, ISvcLocator* svc, long type );
 
   /// disable copy and assignment
-  ConversionSvc( const ConversionSvc& ) = delete;
+  ConversionSvc( const ConversionSvc& )            = delete;
   ConversionSvc& operator=( const ConversionSvc& ) = delete;
 
   /// Initialize the service.

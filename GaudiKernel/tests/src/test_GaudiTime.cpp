@@ -26,8 +26,8 @@
 
 // to produce one line per test
 #include <cppunit/TestResult.h>
-//#include <cppunit/BriefTestProgressListener.h>
-//#include <cppunit/TestResultCollector.h>
+// #include <cppunit/BriefTestProgressListener.h>
+// #include <cppunit/TestResultCollector.h>
 
 // needed by the implementation of cool::ProgressListener
 #include <cppunit/Test.h>

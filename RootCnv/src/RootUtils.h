@@ -12,7 +12,7 @@
 #define GAUDIROOTCNV_ROOTUTILS_H
 
 // Framework include files
-//#include "GaudiKernel/DataObject.h"
+// #include "GaudiKernel/DataObject.h"
 
 // Forward declarations
 class DataObject;

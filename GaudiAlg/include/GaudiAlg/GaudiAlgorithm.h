@@ -645,7 +645,7 @@ public:
   // no default/copy constructor, no assignment -- except that ROOT really
   // wants a default constructor declared. So we define it, and don't implement
   // it...
-  GaudiAlgorithm( const GaudiAlgorithm& ) = delete;
+  GaudiAlgorithm( const GaudiAlgorithm& )            = delete;
   GaudiAlgorithm& operator=( const GaudiAlgorithm& ) = delete;
   // ==========================================================================
 public:

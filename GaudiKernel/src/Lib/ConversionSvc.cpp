@@ -297,9 +297,8 @@ StatusCode ConversionSvc::connectOutput( const std::string& /* outputFile */ ) {
 StatusCode ConversionSvc::commitOutput( const std::string&, bool ) { return StatusCode::SUCCESS; }
 
 /// Create a Generic address using explicit arguments to identify a single object.
-StatusCode ConversionSvc::createAddress( long /* svc_type */, const CLID& /* clid     */,
-                                         const std::string* /* par      */, const unsigned long* /* ip       */,
-                                         IOpaqueAddress*& refpAddress ) {
+StatusCode ConversionSvc::createAddress( long /* svc_type */, const CLID& /* clid     */, const std::string* /* par */,
+                                         const unsigned long* /* ip       */, IOpaqueAddress*& refpAddress ) {
   refpAddress = nullptr;
   return StatusCode::FAILURE;
 }

@@ -534,7 +534,7 @@ namespace concurrency {
     auto vp = vertices( m_PRGraph );
     auto i  = std::find_if( vp.first, vp.second, [&]( const PRVertexDesc& v ) {
       return std::visit( precedence::VertexName(), m_PRGraph[v] ) == name;
-     } );
+    } );
     return i != vp.second ? *i : PRVertexDesc{};
   }
 

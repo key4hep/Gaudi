@@ -73,7 +73,7 @@ namespace {
 //
 // M.Frank
 #define CAST_REGENTRY( x, y ) dynamic_cast<x>( y )
-//#define CAST_REGENTRY(x,y) (x)(y)
+// #define CAST_REGENTRY(x,y) (x)(y)
 typedef DataSvcHelpers::RegistryEntry RegEntry;
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )

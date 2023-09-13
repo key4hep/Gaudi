@@ -47,11 +47,11 @@ protected:
   /// definition of the container key traits to be made friend
   typedef typename Containers::key_traits<key_type> traits;
   /// Allow the container traits to access full object properties
-  //#ifdef _WIN32
-  //  friend traits;
-  //#else
+  // #ifdef _WIN32
+  //   friend traits;
+  // #else
   friend struct Containers::key_traits<key_type>;
-  //#endif
+  // #endif
 
   /// Object Key
   key_type m_key{};

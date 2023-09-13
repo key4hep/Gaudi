@@ -151,8 +151,8 @@ namespace Gaudi {
 
     private:
       // delete default/copy constructor and assignment
-      ExceptionGuard()                        = delete;
-      ExceptionGuard( const ExceptionGuard& ) = delete;
+      ExceptionGuard()                                   = delete;
+      ExceptionGuard( const ExceptionGuard& )            = delete;
       ExceptionGuard& operator=( const ExceptionGuard& ) = delete;
 
     protected:
@@ -240,8 +240,8 @@ namespace Gaudi {
 
     private:
       // delete the default/copy constructor and assigment
-      AuditorGuard()                            = delete;
-      AuditorGuard( const AuditorGuard& right ) = delete;
+      AuditorGuard()                                       = delete;
+      AuditorGuard( const AuditorGuard& right )            = delete;
       AuditorGuard& operator=( const AuditorGuard& right ) = delete;
 
     private:

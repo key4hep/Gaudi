@@ -100,7 +100,7 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
   std::fill( std::begin( m_msgCount ), std::end( m_msgCount ), 0 );
 }
 
-//#############################################################################
+// #############################################################################
 
 /// Initialize Service
 StatusCode MessageSvc::initialize() {
@@ -117,7 +117,7 @@ StatusCode MessageSvc::initialize() {
   return StatusCode::SUCCESS;
 }
 
-//#############################################################################
+// #############################################################################
 
 /// Reinitialize Service
 StatusCode MessageSvc::reinitialize() {
@@ -128,7 +128,7 @@ StatusCode MessageSvc::reinitialize() {
   return sc;
 }
 
-//#############################################################################
+// #############################################################################
 
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop ) {
   const auto& pname = prop.name();
@@ -163,7 +163,7 @@ void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop ) {
     code = "";
   }
 }
-//#############################################################################
+// #############################################################################
 
 void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop ) {
   // Just report problems in the settings of the limits and unknown limit parameters
@@ -183,7 +183,7 @@ void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop ) {
     return;
   }
 }
-//#############################################################################
+// #############################################################################
 
 void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop ) {
 
@@ -212,7 +212,7 @@ void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop ) {
   }
 }
 
-//#############################################################################
+// #############################################################################
 
 #ifdef NDEBUG
 void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& ) {}
@@ -225,7 +225,7 @@ void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& prop ) {
 }
 #endif
 
-//#############################################################################
+// #############################################################################
 /// Finalize Service
 StatusCode MessageSvc::finalize() {
 
@@ -335,7 +335,7 @@ StatusCode MessageSvc::finalize() {
   return StatusCode::SUCCESS;
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: reportMessage
 // Purpose: dispatches a message to the relevant streams.
@@ -393,7 +393,7 @@ void MessageSvc::i_reportMessage( const Message& msg, int outputLevel ) {
   if ( cmsg != &msg ) { delete cmsg; }
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: reportMessage
 // Purpose: dispatches a message to the relevant streams.
@@ -401,7 +401,7 @@ void MessageSvc::i_reportMessage( const Message& msg, int outputLevel ) {
 //
 void MessageSvc::reportMessage( const Message& msg ) { reportMessage( msg, outputLevel( msg.getSource() ) ); }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: reportMessage
 // Purpose: dispatches a message to the relevant streams.
@@ -411,7 +411,7 @@ void MessageSvc::reportMessage( std::string source, int type, std::string messag
   reportMessage( Message{ std::move( source ), type, std::move( message ) } );
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: sendMessage
 // Purpose: finds a message for a given status code and dispatches it.
@@ -439,7 +439,7 @@ void MessageSvc::i_reportMessage( const StatusCode& code, std::string_view sourc
   }
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: insertStream
 // Purpose: inserts a stream for a message type.
@@ -450,7 +450,7 @@ void MessageSvc::insertStream( int key, std::string name, std::ostream* stream )
   m_streamMap.emplace( key, NamedStream( std::move( name ), stream ) );
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: eraseStream
 // Purpose: erases all the streams for all the message types.
@@ -459,7 +459,7 @@ void MessageSvc::insertStream( int key, std::string name, std::ostream* stream )
 
 void MessageSvc::eraseStream() { m_streamMap.clear(); }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: eraseStream
 // Purpose: erases all the streams for a message type.
@@ -468,7 +468,7 @@ void MessageSvc::eraseStream() { m_streamMap.clear(); }
 
 void MessageSvc::eraseStream( int message_type ) { m_streamMap.erase( message_type ); }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: eraseStream
 // Purpose: erases one stream for a message type.
@@ -482,7 +482,7 @@ void MessageSvc::eraseStream( int key, std::ostream* stream ) {
   }
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: eraseStream
 // Purpose: erases one stream for all message types.
@@ -495,7 +495,7 @@ void MessageSvc::eraseStream( std::ostream* stream ) {
   }
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: insertMessage
 // Purpose: inserts a message for a status code.
@@ -507,7 +507,7 @@ void MessageSvc::insertMessage( const StatusCode& key, Message msg ) {
   m_messageMap.emplace( key, std::move( msg ) );
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: eraseMessage
 // Purpose: erases all the messages for all the status codes.
@@ -519,7 +519,7 @@ void MessageSvc::eraseMessage() {
   m_messageMap.clear();
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: eraseMessage
 // Purpose: erases all the messages for a status code.
@@ -531,7 +531,7 @@ void MessageSvc::eraseMessage( const StatusCode& key ) {
   m_messageMap.erase( key );
 }
 
-//#############################################################################
+// #############################################################################
 // ---------------------------------------------------------------------------
 // Routine: eraseMessage
 // Purpose: erases one message for a status code.

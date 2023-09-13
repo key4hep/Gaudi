@@ -1934,7 +1934,7 @@ namespace Tuples {
     FMatrix* fMatrix( std::string_view name, const MIndex& rows, const MIndex& cols );
     // =======================================================================
     /// delete the copy constructor and assignment
-    TupleObj( const TupleObj& ) = delete;
+    TupleObj( const TupleObj& )            = delete;
     TupleObj& operator=( const TupleObj& ) = delete;
     // =======================================================================
   private:

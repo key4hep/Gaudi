@@ -739,7 +739,7 @@ public:
 private:
   // ==========================================================================
   /// no copy constructor, no assignment
-  GaudiTool( const GaudiTool& ) = delete;
+  GaudiTool( const GaudiTool& )            = delete;
   GaudiTool& operator=( const GaudiTool& ) = delete;
   // ==========================================================================
 private:

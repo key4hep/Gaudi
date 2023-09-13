@@ -96,7 +96,7 @@ public:
 
   /// \{
   /// prevent copies
-  PropertyHolder( const PropertyHolder& ) = delete;
+  PropertyHolder( const PropertyHolder& )            = delete;
   PropertyHolder& operator=( const PropertyHolder& ) = delete;
   /// \}
 

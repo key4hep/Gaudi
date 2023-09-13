@@ -63,8 +63,8 @@ public:
   using extends::extends;
 
   // delete default/copy constructor and assignment
-  TimingAuditor()                       = delete;
-  TimingAuditor( const TimingAuditor& ) = delete;
+  TimingAuditor()                                  = delete;
+  TimingAuditor( const TimingAuditor& )            = delete;
   TimingAuditor& operator=( const TimingAuditor& ) = delete;
 
 private:

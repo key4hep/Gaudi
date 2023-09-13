@@ -22,11 +22,11 @@
 //====================================================================
 #define SYSTEM_MODULEINFO_CPP
 
-//#include <ctime>
+// #include <ctime>
 #include <cstdlib>
 #include <cstring>
-//#include <iostream>
-//#include <typeinfo>
+// #include <iostream>
+// #include <typeinfo>
 
 #include "GaudiKernel/ModuleInfo.h"
 #include "GaudiKernel/System.h"

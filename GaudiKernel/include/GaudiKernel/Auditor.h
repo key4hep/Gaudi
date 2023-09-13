@@ -50,7 +50,7 @@ public:
       @param svcloc  A pointer to a service location service */
   Auditor( std::string name, ISvcLocator* svcloc );
 
-  Auditor( const Auditor& a ) = delete;
+  Auditor( const Auditor& a )              = delete;
   Auditor& operator=( const Auditor& rhs ) = delete;
 
   /** Initialization method invoked by the framework. This method is responsible

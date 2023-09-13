@@ -56,7 +56,7 @@ public:
   // the default constructor (creates the empty vector)
   SharedObjectsContainer() = default;
   // move constructor and move assignement
-  SharedObjectsContainer( SharedObjectsContainer&& ) = default;
+  SharedObjectsContainer( SharedObjectsContainer&& )            = default;
   SharedObjectsContainer& operator=( SharedObjectsContainer&& ) = default;
   // the constructor from the data
   SharedObjectsContainer( const ConstVector& data ) : m_data( data ) {}

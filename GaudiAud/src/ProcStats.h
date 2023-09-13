@@ -70,7 +70,7 @@ private:
     int m_fd{ -1 };
 
   private:
-    unique_fd( const unique_fd& ) = delete;
+    unique_fd( const unique_fd& )            = delete;
     unique_fd& operator=( const unique_fd& ) = delete;
 
   public:

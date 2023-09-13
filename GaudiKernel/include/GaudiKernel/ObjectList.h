@@ -69,7 +69,7 @@ public:
   /// Constructors
   ObjectList() = default;
 
-  ObjectList( const ObjectList<TYPE>& ) = delete;
+  ObjectList( const ObjectList<TYPE>& )            = delete;
   ObjectList& operator=( const ObjectList<TYPE>& ) = delete;
 
   /// Destructor

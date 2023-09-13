@@ -53,8 +53,8 @@ struct GAUDI_API GaudiHistoTool : GaudiHistos<GaudiTool> {
   using GaudiHistos<GaudiTool>::finalize;
 
   // delete default/copy constructor and assignment
-  GaudiHistoTool()                        = delete;
-  GaudiHistoTool( const GaudiHistoTool& ) = delete;
+  GaudiHistoTool()                                   = delete;
+  GaudiHistoTool( const GaudiHistoTool& )            = delete;
   GaudiHistoTool& operator=( const GaudiHistoTool& ) = delete;
 };
 

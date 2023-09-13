@@ -33,7 +33,7 @@ public:
 
 public:
   void* operator new( size_t );
-  void  operator delete( void* hit );
+  void operator delete( void* hit );
 
 private:
   // Empty class:                  // gain is ~3.5

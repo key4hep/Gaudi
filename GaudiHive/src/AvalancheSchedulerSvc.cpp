@@ -213,7 +213,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
           auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
           auto itok   = std::find_if( tokens.begin(), tokens.end(), [&]( const std::string& t ) {
             return globalOutp.find( DataObjID{ t } ) != globalOutp.end();
-            } );
+          } );
           if ( itok != tokens.end() ) {
             ostdd << "found matching output for " << *itok << " -- updating scheduler info\n";
             id.updateKey( *itok );

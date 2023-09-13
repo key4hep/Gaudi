@@ -69,7 +69,7 @@ using namespace Gaudi;
     in total 134774 * 86400 = 11644473600 seconds.  For the actual
     bias this needs to be multiplied by 10000000 since Windows time
     uses 100ns resolution, not seconds.  */
-//# define SECS_1601_TO_1970	((369 * 365 + 89) * SECS_PER_DAY)
+// # define SECS_1601_TO_1970	((369 * 365 + 89) * SECS_PER_DAY)
 #  define SECS_1601_TO_1970 ( ( 369 * 365 + 89 ) * 86400ui64 )
 #endif
 

@@ -80,9 +80,9 @@ namespace Gaudi::Arena {
 
     // Allocators will hold pointers to instances of this class, deleting these
     // methods makes it harder to accidentally invalidate those pointers...
-    Monotonic( Monotonic&& )      = delete;
-    Monotonic( Monotonic const& ) = delete;
-    Monotonic& operator=( Monotonic&& ) = delete;
+    Monotonic( Monotonic&& )                 = delete;
+    Monotonic( Monotonic const& )            = delete;
+    Monotonic& operator=( Monotonic&& )      = delete;
     Monotonic& operator=( Monotonic const& ) = delete;
 
     /** Return an aligned point to n bytes of memory.

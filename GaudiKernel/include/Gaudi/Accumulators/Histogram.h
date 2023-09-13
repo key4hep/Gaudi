@@ -243,8 +243,8 @@ namespace Gaudi::Accumulators {
     HistoInputType( Arithmetic a ) : value( a ) {}
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const { return axis[0].index( value ); }
     Arithmetic&  operator[]( int ) { return value; }
-                 operator Arithmetic() const { return value; }
-    auto         forInternalCounter() { return 1ul; }
+    operator Arithmetic() const { return value; }
+    auto forInternalCounter() { return 1ul; }
     template <typename AxisType>
     static unsigned int computeTotNBins( std::array<AxisType, 1> axis ) {
       return axis[0].nBins + 2;
