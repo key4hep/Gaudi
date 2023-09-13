@@ -4,7 +4,7 @@
    (Reported by O. Callot)
 
 ! 22020502 Pere Mato
- - Bug fix in base classes Service and Converter. The accessor msgsvc() shpould 
+ - Bug fix in base classes Service and Converter. The accessor msgsvc() shpould
    returns always a valid MessageSvc (Reported by RD Schaffer)
  - Added templated function service() in Converter base class.
  - Bug fix in Service.cpp. The finalize method access violates if called before
@@ -12,7 +12,7 @@
 
 ================ GaudiObjDesc v4r2====================================
 ! 20020503 Pere Mato
-- Small problem on the fragment obj2doth_header that forced the re-creation of 
+- Small problem on the fragment obj2doth_header that forced the re-creation of
   all header files each time.
 - Some changes in the generation of dictionaries:
   ~ In methods avoid use of static variables for complex types (one one instance available)
@@ -30,7 +30,7 @@
  - Adapted to new LHCb event model (KeyedContainers in addition to
    ObjectVectors).
  - Re-structured a bit: the IntrosObj and IntrosFunc share a single
-   function to handle conversion of single and complex types to python. 
+   function to handle conversion of single and complex types to python.
 
 ================ GaudiKernel v12r1=====================================
 ! 20020426 Markus Frank
@@ -44,7 +44,7 @@
   - Changed files:
     +++ GaudiDb_load.cpp	: GenericDataBase factory
 
-    +++ IOODataBase.h,		
+    +++ IOODataBase.h,
     +++ DbContainer.h/cpp
     +++ DbImplementation.h/cpp,
     +++ DbContainerObj.h/cpp  	: Enhanced SQL access
@@ -66,6 +66,5 @@
 
 ================ GaudiIntrospection v4r1===============================
 ! 20020419 - Stefan Roiser
- - changed static maps of MetaClass to pointers to maps to be able to check 
+ - changed static maps of MetaClass to pointers to maps to be able to check
    whether they are created or not
-

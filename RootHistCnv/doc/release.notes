@@ -269,8 +269,8 @@ Commit Id: $Format:%H$
       from GaudiKernel.Configurable import ConfigurableGeneric as RFileCnv
       RFileCnv('RFileCnv').GlobalCompression = "LZMA:6"
    where the first part of the string is the compression algorithm, the second
-   the compression level. Default string is "" which means the nothing 
-   explicitly set, and the defualt ROOT compression level (currently equivalent 
+   the compression level. Default string is "" which means the nothing
+   explicitly set, and the defualt ROOT compression level (currently equivalent
    to "ZLIB:1") is used.
 
 ============================= RootHistCnv v11r2 ==============================
@@ -612,5 +612,3 @@ ApplicationMgr.DLLs += "RootHistSvc";
 ApplicationMgr.HistogramPersistency = "ROOT";
 // Specify Histogram Persistency Output File
 HistogramPersistencySvc.OutputFile = "histo.rt"
-
-

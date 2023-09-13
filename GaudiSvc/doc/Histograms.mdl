@@ -2702,7 +2702,7 @@
 		    (object Attribute
 			tool       	"cg"
 			name       	"IncludeFormat"
-			value      	(value Text 
+			value      	(value Text
 |// $package
 |#include "$file"
 |
@@ -2798,7 +2798,7 @@
 		    (object Attribute
 			tool       	"cg"
 			name       	"IncludeFormat"
-			value      	(value Text 
+			value      	(value Text
 |// $package
 |#include "$file"
 |

@@ -1,3 +1,2 @@
 
-AuditorSvc.Auditors = {"ChronoAuditor"}; 
-
+AuditorSvc.Auditors = {"ChronoAuditor"};

@@ -160,13 +160,13 @@
               \leftmark\end{tabular}}}}
 \rhead[\fancyplain{}{\bfseries\scriptsize\mbox{%
               \begin{tabular}{@{}lr@{}}%
-                Reference:     & \@docref\\% 
+                Reference:     & \@docref\\%
                 Revision:      & \@docrev\\%
                 Last modified: & \@docmod\\
                                &\end{tabular}}}]
         {\fancyplain{}{\bfseries\scriptsize\mbox{%
               \begin{tabular}{@{}lr@{}}%
-                Reference:     & \@docref\\% 
+                Reference:     & \@docref\\%
                 Revision:      & \@docrev\\%
                 Last modified: & \@docmod\\
                                &\end{tabular}}}}

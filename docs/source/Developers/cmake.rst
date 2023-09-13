@@ -40,7 +40,7 @@ followed by optional spaces and the arguments to the function as a
 space-separated list enclosed in parentheses. The arguments to a
 function can span over several lines, and double quotes (``"``) can be
 used to pass arguments containing spaces and new-lines. Examples of
-functions: 
+functions:
 
 .. code-block:: cmake
 
@@ -48,11 +48,11 @@ functions:
 
 .. code-block:: cmake
 
-  if(1 GREATER 0) 
-    message("this is true") 
-  else() 
+  if(1 GREATER 0)
+    message("this is true")
+  else()
     message("this is false")
-  endif() 
+  endif()
 
 One can add comments to the code using ``#`` at the beginning of the
 comment text (spaces preceding ``#`` are ignored), like, e.g., in Unix
@@ -62,23 +62,23 @@ shells and Python:
 
   # I'm a comment
   if(TRUE)
-    # this is always printed 
+    # this is always printed
     message("it's true")
   else() # this is never printed
     message("it's false")
   endif()
 
 The CMake language supports variables, which are set with the function
-``set`` and dereferenced with ``${...}``, e.g.: 
+``set`` and dereferenced with ``${...}``, e.g.:
 
 .. code-block:: cmake
 
 
   set(MyMessage "hello world")
-  message(${MyMessage}) 
+  message(${MyMessage})
 
 Dereferencing of variables can be nested and works also in between
-double quotes: 
+double quotes:
 
 .. code-block:: cmake
 
@@ -98,7 +98,7 @@ C++ sources. In CMake you could find it invoked like this:
 
 
 .. code-block:: cmake
-  
+
   make_a_library(MyLibrary C_SOURCES file1.c file2.c file3.c)
 
   make_a_library(MyLibrary CXX_SOURCES file1.cpp file2.cpp file3.cpp)
@@ -122,20 +122,20 @@ Several steps must be performed to build a Gaudi based project:
 Set up the build environment
 ----------------------------
 
-To set up the build environment, some environment variables need to be set. 
+To set up the build environment, some environment variables need to be set.
 
-* **BINARY_TAG**: the variable that describe the platform 
-* **CMAKE_PREFIX_PATH**: is a path-like variable that must contain the list the list of path to: 
+* **BINARY_TAG**: the variable that describe the platform
+* **CMAKE_PREFIX_PATH**: is a path-like variable that must contain the list the list of path to:
 
-  * the compiler e.g. *g++*, *clang++* (the compiler may be a wrapper) 
-  * the build system e.g. *make*, *ninja* 
-  * all third-party dependencies e.g. Boost, ROOT 
+  * the compiler e.g. *g++*, *clang++* (the compiler may be a wrapper)
+  * the build system e.g. *make*, *ninja*
+  * all third-party dependencies e.g. Boost, ROOT
 
 * **PATH** (optional): may contain the paths to the compiler and the build system
 
-There are several ways to set these variables: 
-* use *export* several time (or run a shell script that will do so) 
-* source a view (a shell script that sets the aforementioned variables to a directory of symlinks) 
+There are several ways to set these variables:
+* use *export* several time (or run a shell script that will do so)
+* source a view (a shell script that sets the aforementioned variables to a directory of symlinks)
 * specify a toolchain to the configuration
 
 With *export*
@@ -169,38 +169,38 @@ With a toolchain
 
 .. code-block:: bash
 
-  # Either use 
-  -D CMAKE_TOOLCHAIN_FILE=/path/to/a/toolchain 
-  # at configure time when calling cmake 
-  # or 
-  ln -s /path/to/a/toolchain 
-  toolchain.cmake 
+  # Either use
+  -D CMAKE_TOOLCHAIN_FILE=/path/to/a/toolchain
+  # at configure time when calling cmake
+  # or
+  ln -s /path/to/a/toolchain
+  toolchain.cmake
   # right away
 
 Configuration of the project
 ----------------------------
 
 The configuration requires at least CMake 3.15. CMake 3.15.0 was
-released on 2019-07-17. 
+released on 2019-07-17.
 
 
 .. code-block:: bash
 
-  # Check CMake version 
-  cmake --version 
+  # Check CMake version
+  cmake --version
   # if version < 3.15
   export PATH="/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.15.2/Linux-x86_64/bin:$PATH"
 
 The configuration is the step when CMake is called and produces the
 files for the build system (e.g. *make*, *ninja*).
 
-Two directories must be specified: 
-* the source tree: contains the sources 
+Two directories must be specified:
+* the source tree: contains the sources
 * the build tree: will contain the outputs of the build
 
 .. code-block:: bash
 
-  cmake -S . -B build.$BINARY_TAG 
+  cmake -S . -B build.$BINARY_TAG
   # options can be passed at configure time
   cmake -S . -B build.$BINARY_TAG -G Ninja
   # set the build system
@@ -227,7 +227,7 @@ tree. They will be used to compile the project.
 .. code-block:: bash
 
   cd build.$BINARY_TAG
-  make # or ninja or an IDE 
+  make # or ninja or an IDE
   # or directly with CMake
   cmake --build build.$BINARY_TAG
 
@@ -238,7 +238,7 @@ Good developers test their code. To run the tests:
 
 .. code-block:: bash
 
-  cd build.$BINARY_TAG 
+  cd build.$BINARY_TAG
   ctest  -j <nproc> --output-on-failure --schedule-random
 
 The wrapper
@@ -291,16 +291,16 @@ At the top level directory of a project and in every sub-project
 (package) there must be one file: ``CMakeLists.txt``
 
 The file at the top level directory describes the build of the whole
-project: 
-* may contain a licence block 
-* contains documentation (how to configure it, available options) 
-* describes the project (name, version) 
-* fetches the dependencies 
-* sets options for the build (C++ standard) 
-* list all the sub-projects (packages in sub-directories) 
-* handles the installation The files in the sub-projects directories: 
-* describes the binaries that will be compiled (libraries, modules, executable, ROOT dictionaries) 
-* register tests for these binaries 
+project:
+* may contain a licence block
+* contains documentation (how to configure it, available options)
+* describes the project (name, version)
+* fetches the dependencies
+* sets options for the build (C++ standard)
+* list all the sub-projects (packages in sub-directories)
+* handles the installation The files in the sub-projects directories:
+* describes the binaries that will be compiled (libraries, modules, executable, ROOT dictionaries)
+* register tests for these binaries
 * handles the installation of their python packages and scripts
 
 Configuration of sub-projects
@@ -308,7 +308,7 @@ Configuration of sub-projects
 
 
 
-Look and feel of typical sub-project ``CMakeLists.txt``: 
+Look and feel of typical sub-project ``CMakeLists.txt``:
 
 .. code-block:: cmake
 
@@ -330,24 +330,24 @@ Look and feel of typical sub-project ``CMakeLists.txt``:
     LINK SubdirNameLib GaudiKernel)
   # Generate GaudiExamples_user.confdb
   gaudi_generate_confuserdb()
-  
+
   # Tests
   gaudi_add_tests(QMTest)
   gaudi_add_pytest(tests/pytest)
-  
+
   # Compiled python module
   gaudi_add_python_module(PyExample
     SOURCES src/PythonModule/Functions.cpp src/PythonModule/PyExample.cpp
     LINK Python::Python Boost::python)
-  
+
   # ROOT dictionaries
   gaudi_add_dictionary(SubdirNameDict
     HEADERFILES src/IO/dict.h
     SELECTION src/IO/dict.xml
     LINK SubdirNameLib)
-  
+
   # Install python modules
-  gaudi_install(PYTHON) 
+  gaudi_install(PYTHON)
   # Install other scripts
   gaudi_install(SCRIPTS)
 
@@ -398,7 +398,7 @@ like. They should be in ``cmake/modules``.)
 Then, add the look up of the dependency in the file
 ``cmake/{ProjectName}Dependencies.cmake`` (replace <DependencyName> with
 the name of the dependency and <minVersion> with the minimal required
-version). 
+version).
 
 .. code-block:: cmake
 
@@ -440,18 +440,18 @@ documentation can be found
 `here <https://gitlab.cern.ch/gaudi/Gaudi/blob/master/cmake/GaudiToolbox.cmake>`__
 in ``GaudiToolbox.cmake``.
 
-List of defined functions: 
+List of defined functions:
 
-* ``gaudi_add_library()`` 
-* ``gaudi_add_header_only_library()`` 
-* ``gaudi_add_module()`` 
-* ``gaudi_add_python_module()`` 
-* ``gaudi_add_executable()`` 
-* ``gaudi_add_tests()`` 
-* ``gaudi_add_dictionary()`` 
-* ``gaudi_install()`` 
-* ``gaudi_generate_confuserdb()`` 
-* ``gaudi_check_python_module()`` 
+* ``gaudi_add_library()``
+* ``gaudi_add_header_only_library()``
+* ``gaudi_add_module()``
+* ``gaudi_add_python_module()``
+* ``gaudi_add_executable()``
+* ``gaudi_add_tests()``
+* ``gaudi_add_dictionary()``
+* ``gaudi_install()``
+* ``gaudi_generate_confuserdb()``
+* ``gaudi_check_python_module()``
 * ``gaudi_generate_version_header_file()``
 
 Building a stack of project at once
@@ -480,7 +480,7 @@ Example of a stack: Gaudi, LHCb, Lbcom, Rec, Brunel
     add_subdirectory(Gaudi)
     add_subdirectory(LHCb)
     # add_subdirectory() ... all the other projects of the stack
-    EOF 
+    EOF
 
 Using GaudiObjDesc (LHCb-specific)
 ----------------------------------
@@ -503,7 +503,7 @@ When updating an existing Gaudi Project to use v35, the following changes need t
 * Add a ``project(PROJECTNAME)`` line in the top level CMakeLists.txt
 * change ``find_package(GaudiProject)`` to ``find_package(Gaudi)`` in the top level CMakeLists.txt
 * remove any calls to ``gaudi_project(...)``
-* explicitly add all subdirectories that contain a CMakeLists.txt with ``add_subdirectory(...)`` 
+* explicitly add all subdirectories that contain a CMakeLists.txt with ``add_subdirectory(...)``
 * update any calls to ```gaudi_add_library``` to use the new signature
 * update any calls to ```gaudi_add_module``` to use the new signature
 * change ``gaudi_install_*()`` to ``gaudi_install(*)``
@@ -512,6 +512,3 @@ When updating an existing Gaudi Project to use v35, the following changes need t
 * add a CMake config file ``cmake/PROJECTNAMEConfig.cmake`` which should include the targets file
 
 For a concrete example, see the changes needed to update key4hep framework core library: https://github.com/key4hep/k4FWCore/pull/19/files
-
-
-

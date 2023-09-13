@@ -167,7 +167,7 @@ elseif(GAUDI_PGO STREQUAL "USE")
         check_ipo_supported(RESULT CMAKE_INTERPROCEDURAL_OPTIMIZATION LANGUAGES CXX OUTPUT _ipo_output)
     else()
         # this message is printed if the IPO flag was already set (so we do not check)
-        # and a few lines below we find it set to false 
+        # and a few lines below we find it set to false
         set(_ipo_output "explicitly disabled")
     endif()
     if(NOT CMAKE_INTERPROCEDURAL_OPTIMIZATION)
@@ -237,7 +237,7 @@ function(_test_build_public_headers lib_name)
             list(APPEND srcs "${s}")
         endforeach()
         # create an object library (we never need to use the product)
-        add_library(test_public_headers_build_${lib_name} OBJECT EXCLUDE_FROM_ALL ${srcs})        
+        add_library(test_public_headers_build_${lib_name} OBJECT EXCLUDE_FROM_ALL ${srcs})
         target_link_libraries(test_public_headers_build_${lib_name}
             PRIVATE ${lib_name})
         target_compile_definitions(test_public_headers_build_${lib_name}
@@ -253,7 +253,7 @@ function(_test_build_public_headers lib_name)
             endif()
         endif()
         add_dependencies(test_public_headers_build test_public_headers_build_${lib_name})
-        # keep in old_srcs only the source files not needed anymore 
+        # keep in old_srcs only the source files not needed anymore
         list(REMOVE_ITEM old_srcs ${srcs})
     endif()
     # remove stale test source files
@@ -894,7 +894,7 @@ function(gaudi_add_pytest)
         endif()
     else()
         # multiple paths, same root and prefix as no path, but need
-        # to tune the command line arguments 
+        # to tune the command line arguments
         string(JOIN " ${package_name}/" roots_msg ${ARG_UNPARSED_ARGUMENTS})
         string(PREPEND roots_msg "${package_name}/")
     endif()

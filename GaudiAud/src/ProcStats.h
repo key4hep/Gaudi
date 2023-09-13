@@ -104,12 +104,12 @@ private:
     return ::fun( m_fd, std::forward<Args>( args )... );                                                               \
   }
     // clang-format off
-    unique_fd_forward( lseek )      
-    unique_fd_forward( read )   
-    unique_fd_forward( write )  
-    unique_fd_forward( fcntl )  
-    unique_fd_forward( fsync )  
-    unique_fd_forward( fchown ) 
+    unique_fd_forward( lseek )
+    unique_fd_forward( read )
+    unique_fd_forward( write )
+    unique_fd_forward( fcntl )
+    unique_fd_forward( fsync )
+    unique_fd_forward( fchown )
     unique_fd_forward( stat )
     // clang-format on
 #undef unique_fd_forward

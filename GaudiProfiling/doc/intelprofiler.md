@@ -105,6 +105,3 @@ An argument is a path to profiling database.
 [amplxe]: http://software.intel.com/sites/products/documentation/hpc/amplifierxe/en-us/lin/ug_docs/index.htm
 [interpret]: http://software.intel.com/sites/products/documentation/hpc/amplifierxe/en-us/lin/ug_docs/index.htm
 [example]: https://github.com/mazurov/IntelProfilerExample
-
-
-

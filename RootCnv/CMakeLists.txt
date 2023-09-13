@@ -55,6 +55,6 @@ gaudi_add_dictionary(RootCnvDict
 
 set_property(TARGET RootCnvLib RootCnv RootCnvDict
              APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
-        
+
 # Install other scripts
 gaudi_install(SCRIPTS)

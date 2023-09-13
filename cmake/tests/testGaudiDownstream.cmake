@@ -96,7 +96,7 @@ elseif(DEFINED TEST_GAUDI_DOWNSTREAM_FROM_BUILD)
         file(RENAME ${BIN_DIR}/bck/GaudiConfig.cmake ${BIN_DIR}/GaudiConfig.cmake)
         message(FATAL_ERROR "Configuration of dummyGaudiDownstreamProject using the build tree of Gaudi failed.")
     endif()
-    # Build 
+    # Build
     execute_process(COMMAND ${CMAKE_COMMAND} --build
                             ${BIN_DIR}/dummyGaudiDownstreamProjectFromBuildTree
                             RESULT_VARIABLE returned_value

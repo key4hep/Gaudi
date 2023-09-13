@@ -1,6 +1,6 @@
 //**************************************************************
 //
-// DLLs needed by a standard job. 
+// DLLs needed by a standard job.
 // Must not be used for statically linked program
 //
 //==============================================================

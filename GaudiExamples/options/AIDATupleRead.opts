@@ -25,4 +25,3 @@ ApplicationMgr.EvtSel  = "NONE";
 AIDATupleSvc.Input = { "MyTuples DATAFILE='ntuple_out.root' OPT='AUTO' TYP='POOL' CAT='xmlcatalog_file:exampleCatalog.xml' SUB='POOL_ROOTTREE'" };
 //AIDATupleSvc.Input = { "MyTuples DATAFILE='ntuple_out.root' OPT='AUTO' TYP='ROOT' CAT='xmlcatalog_file:exampleCatalog.xml' SUB='POOL_ROOTTREE'" };
 //RndmGenSvc.Engine.Seeds = { 70, 71, 0 };
-

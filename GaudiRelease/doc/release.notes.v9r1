@@ -17,7 +17,7 @@
  - Fixed bug reported by O. Callot that failing to load a DLL
    should fail the configuration phase of ApplicationMgr.
    Changed ApplicationMgr.cpp
-   
+
 ! 20020123 - Marco Cattaneo & Pere Mato
  - Changed search list for the job options path.
    It would take:
@@ -29,11 +29,8 @@
  - Removed the use of variable DDDB in DetDataSvc
 
 ====GaudiAlg v5r1 =========================================================
- 
+
 ! 20020205 - Pere Mato (v5r1)
- - Fixed bug reported by O. Callot that a Sequence must return an 
+ - Fixed bug reported by O. Callot that a Sequence must return an
    error when it can not create one or more of the member Algorithms.
    Changed Sequencer.cpp
-
-
-

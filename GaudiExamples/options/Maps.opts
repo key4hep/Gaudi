@@ -1,15 +1,15 @@
 // ============================================================================
 
 /** @file
- *  configuration file to run "MapAlg" 
+ *  configuration file to run "MapAlg"
  *
  *  @see MapAlg
  *  @see GaudiUtils::VectorMap
  *  @see GaudiUtils::Map
  *  @see GaudiUtils::HashMap
  *
- *  @see GaudiAlgorithm 
- *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr 
+ *  @see GaudiAlgorithm
+ *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *  @date 2005-08-06
  */
 
@@ -23,8 +23,7 @@ ApplicationMgr.EvtMax  =  10  ;
 ApplicationMgr.EvtSel  = "NONE" ;
 
 // ============================================================================
-// 
+//
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
-

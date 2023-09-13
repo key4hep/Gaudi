@@ -13,7 +13,7 @@
 A test for a control flow bug arising from empty graph nodes
 
 An empty node with ModeOR=True will return a default decision of False, without any algs needing evaluation
-This can have the effect of short-circuiting/early return from its parent node, while also continuing 
+This can have the effect of short-circuiting/early return from its parent node, while also continuing
 evaluation within that parent - see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/135
 
 In this test, A2 will run unless the bug has been fixed

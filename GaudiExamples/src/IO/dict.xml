@@ -17,33 +17,33 @@
   <class name="Gaudi::Examples::MyVertex"    id="00000164-0000-0000-0000-000000000000"/>
 
   <class name="SmartRef<Gaudi::Examples::Event>">
-    <field name="m_target" transient="true"/>  
+    <field name="m_target" transient="true"/>
   </class>
 
   <class name="SmartRef<Gaudi::Examples::Collision>">
-    <field name="m_target" transient="true"/>  
+    <field name="m_target" transient="true"/>
   </class>
   <class name="SmartRefVector<Gaudi::Examples::Collision>">
-    <field name="m_data" transient="true"/>  
-    <field name="m_contd" transient="true"/>  
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
   </class>
   <class name="std::vector<SmartRef<Gaudi::Examples::Collision> >"/>
 
   <class name="SmartRef<Gaudi::Examples::MyTrack>">
-    <field name="m_target" transient="true"/>  
+    <field name="m_target" transient="true"/>
   </class>
   <class name="SmartRefVector<Gaudi::Examples::MyTrack>">
-    <field name="m_data" transient="true"/>  
-    <field name="m_contd" transient="true"/>  
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
   </class>
   <class name="std::vector<SmartRef<Gaudi::Examples::MyTrack> >"/>
 
   <class name="SmartRef<Gaudi::Examples::MyVertex>">
-    <field name="m_target" transient="true"/>  
+    <field name="m_target" transient="true"/>
   </class>
   <class name="SmartRefVector<Gaudi::Examples::MyVertex>">
-    <field name="m_data" transient="true"/>  
-    <field name="m_contd" transient="true"/>  
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
   </class>
   <class name="std::vector<SmartRef<Gaudi::Examples::MyVertex> >"/>
 
@@ -56,11 +56,11 @@
   <!-- <class name="std::vector<KeyedObject<long int>* >"/> -->
 
   <class name="KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >" id="00060163-0000-0000-0000-000000000000">
-    <field name="m_cont" transient="true"/>  
-    <field name="m_random" transient="true"/>  
+    <field name="m_cont" transient="true"/>
+    <field name="m_random" transient="true"/>
   </class>
   <class name="KeyedContainer<Gaudi::Examples::MyVertex,Containers::KeyedObjectManager<Containers::hashmap> >" id="00060164-0000-0000-0000-000000000000">
-    <field name="m_cont" transient="true"/>  
-    <field name="m_random" transient="true"/>  
+    <field name="m_cont" transient="true"/>
+    <field name="m_random" transient="true"/>
   </class>
 </lcgdict>

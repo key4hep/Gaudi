@@ -1,5 +1,5 @@
 DirSearchPath::existsDir: WARNING not a directory: /NONEXISTINGDIR
-JobOptionsSvc        INFO 
+JobOptionsSvc        INFO
 
 ////////////////////////////////////////////////////////////////
 // Example options file.
@@ -20,7 +20,7 @@ JobOptionsSvc        INFO
 
 //**************************************************************
 //
-// Services needed by a standard job 
+// Services needed by a standard job
 //
 //==============================================================
 
@@ -51,7 +51,7 @@ AuditorSvc.Auditors = { "ChronoAuditor" };
 
 //**************************************************************
 //
-// DLLs needed by a standard job. 
+// DLLs needed by a standard job.
 // Must not be used for statically linked program
 //
 //==============================================================
@@ -95,7 +95,7 @@ ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
 ApplicationMgr.HistogramPersistency = "NONE";
 
 //--------------------------------------------------------------
-// Persistency service setup: 
+// Persistency service setup:
 //--------------------------------------------------------------
 EventPersistencySvc.CnvServices += { "RootEvtCnvSvc" };
 
@@ -193,8 +193,8 @@ ServiceManager      DEBUG Initializing service RootEvtCnvSvc
 RootEvtCnvSvc     VERBOSE service_i: found service JobOptionsSvc
 RootEvtCnvSvc       DEBUG Service base class initialized successfully
 RootEvtCnvSvc     VERBOSE service_i: found service JobOptionsSvc
-ROOT                 INFO --> Open     DbSession     Mode:UPDATE   
-ROOT                 INFO --> Access   DbFederation 
+ROOT                 INFO --> Open     DbSession     Mode:UPDATE
+ROOT                 INFO --> Access   DbFederation
 ServiceManager      DEBUG Initializing service AppMgrRunable
 AppMgrRunable     VERBOSE service_i: found service JobOptionsSvc
 AppMgrRunable       DEBUG Service base class initialized successfully
@@ -217,7 +217,7 @@ RootDst              INFO Data output: DATAFILE='RootDst.root' TYP='ROOT' OPT='R
 IncidentSvc       VERBOSE service_i: found service JobOptionsSvc
 IncidentSvc         DEBUG Service base class initialized successfully
 IncidentSvc       VERBOSE service_i: found service JobOptionsSvc
-EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc  VERBOSE service_i: found service JobOptionsSvc
 HistogramDataSvc    DEBUG Service base class initialized successfully
@@ -282,12 +282,12 @@ WriteAlg:execute     INFO Time User   : Tot=   10 [ms] Ave/Min/Max=    1(+-    3
 RootDst:execute      INFO Time User   : Tot=   30 [ms] Ave/Min/Max=    3(+-    9)/    0/   30 [ms] #= 10
 ChronoStatSvc        INFO Time User   : Tot=   40 [ms]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
-ChronoStatSvc.f...   INFO  Service finalized successfully 
+ChronoStatSvc.f...   INFO  Service finalized successfully
 ROOT                 INFO --> Deaccess DbDataBase    Mode:CREATE   RootDst.root
 RootDst.root        DEBUG --> Deaccess DbContainer  CREATE    ##Links
 RootDst.root        DEBUG --> Deaccess DbContainer  CREATE    ##Types
 RootDst.root        DEBUG --> Deaccess DbContainer  CREA/UPDA /Event
 RootDst.root        DEBUG --> Deaccess DbContainer  CREA/UPDA /Event/MyTracks
-ROOT                 INFO --> Deaccess DbFederation  Mode:UPDATE   
-ROOT                 INFO --> Closed   DbSession     Mode:UPDATE   RootEvtCnvSvc.DataBase 
+ROOT                 INFO --> Deaccess DbFederation  Mode:UPDATE
+ROOT                 INFO --> Closed   DbSession     Mode:UPDATE   RootEvtCnvSvc.DataBase
 ApplicationMgr       INFO Application Manager Finalized successfully

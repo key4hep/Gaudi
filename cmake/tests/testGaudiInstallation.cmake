@@ -253,7 +253,7 @@ else()
     # Try to install (locally in the build tree)
     set(tmpInstallDest ${CMAKE_CURRENT_BINARY_DIR}/GaudiTestInstall)
     add_test(NAME cmake.test_gaudi_install
-             COMMAND ${CMAKE_COMMAND} 
+             COMMAND ${CMAKE_COMMAND}
                 -D TEST_GAUDI_INSTALL_BUILD:BOOL=TRUE
                 -D GAUDI_INSTALL_DIR=${tmpInstallDest}
                 -D BIN_DIR=${CMAKE_CURRENT_BINARY_DIR}

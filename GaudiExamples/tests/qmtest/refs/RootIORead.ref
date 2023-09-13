@@ -1,5 +1,5 @@
 DirSearchPath::existsDir: WARNING not a directory: /NONEXISTINGDIR
-JobOptionsSvc        INFO 
+JobOptionsSvc        INFO
 
 ////////////////////////////////////////////////////////////////
 // Example options file.
@@ -20,7 +20,7 @@ JobOptionsSvc        INFO
 
 //**************************************************************
 //
-// Services needed by a standard job 
+// Services needed by a standard job
 //
 //==============================================================
 
@@ -51,7 +51,7 @@ AuditorSvc.Auditors = { "ChronoAuditor" };
 
 //**************************************************************
 //
-// DLLs needed by a standard job. 
+// DLLs needed by a standard job.
 // Must not be used for statically linked program
 //
 //==============================================================
@@ -103,7 +103,7 @@ EventSelector.Input = {"DATAFILE='RootDst.root' TYP='ROOT' OPT='READ'" };
 HistogramPersistencySvc.OutputFile = "histo.hbook";
 
 //--------------------------------------------------------------
-// Persistency service setup: 
+// Persistency service setup:
 //--------------------------------------------------------------
 EventPersistencySvc.CnvServices += { "RootEvtCnvSvc" };
 
@@ -195,8 +195,8 @@ ServiceManager      DEBUG Initializing service EventSelector
 EventSelector       DEBUG Service base class initialized successfully
 ServiceManager      DEBUG Initializing service RootEvtCnvSvc
 RootEvtCnvSvc       DEBUG Service base class initialized successfully
-ROOT                 INFO --> Open     DbSession     Mode:UPDATE   
-ROOT                 INFO --> Access   DbFederation 
+ROOT                 INFO --> Open     DbSession     Mode:UPDATE
+ROOT                 INFO --> Access   DbFederation
 ServiceManager      DEBUG Initializing service AppMgrRunable
 AppMgrRunable       DEBUG Service base class initialized successfully
 ServiceManager      DEBUG Initializing service EventLoopMgr
@@ -301,7 +301,7 @@ RootDst.root        DEBUG --> Deaccess DbContainer  READ      ##Types
 EventSelector        INFO End of event input reached.
 RootDst.root        DEBUG --> Deaccess DbContainer  READ      /Event/MyTracks
 RootDst.root        DEBUG --> Deaccess DbContainer  READ      /Event
-EventLoopMgr         INFO No more events in event selection 
+EventLoopMgr         INFO No more events in event selection
 EventLoopMgr         INFO Histograms converted successfully according to request.
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
@@ -309,7 +309,7 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 ReadAlg:execute      INFO Time User   : Tot=   20 [ms] Ave/Min/Max=    2(+-    4)/    0/   10 [ms] #= 10
 ChronoStatSvc        INFO Time User   : Tot=   30 [ms]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
-ChronoStatSvc.f...   INFO  Service finalized successfully 
-ROOT                 INFO --> Deaccess DbFederation  Mode:READ     
-ROOT                 INFO --> Closed   DbSession     Mode:UPDATE   RootEvtCnvSvc.DataBase 
+ChronoStatSvc.f...   INFO  Service finalized successfully
+ROOT                 INFO --> Deaccess DbFederation  Mode:READ
+ROOT                 INFO --> Closed   DbSession     Mode:UPDATE   RootEvtCnvSvc.DataBase
 ApplicationMgr       INFO Application Manager Finalized successfully

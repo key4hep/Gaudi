@@ -211,7 +211,7 @@ Defining the job input
     A discussion of event I/O can be found in :numref:`chapNtup`. Converters and the conversion
     process are described in :numref:`chapConv`.
 
-.. _star-jobi: 
+.. _star-jobi:
 
 Defining job output
 ~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -52,16 +52,16 @@ function help()
 while getopts ‘o:m:n:hv?’ argv
   do
     case $argv in
-      o) 
+      o)
         OUTPUTDIR=$OPTARG
-        ;;  
-      h) 
+        ;;
+      h)
         help
         ;;
-      v) 
+      v)
         version
         ;;
-      m) 
+      m)
         MAILTO=$OPTARG
         ;;
       n)
@@ -98,7 +98,7 @@ if [ ! -x "$AMPLXECMD" ]
     msg_warning "Couldn'find Intel Amplifier command tool."
     if [ -f "$DEFAULT_AMPLXEENV" ]
       then
-        msg_info "Setup Intel environment..." 
+        msg_info "Setup Intel environment..."
         . $DEFAULT_AMPLXEENV
         AMPLXECMD=$(which amplxe-cl 2>/dev/null)
         if [ -z $AMPLXECMD ]
@@ -125,11 +125,11 @@ if [ -n "$NOTE" ]; then printf "$NOTE\n\n" > $LOGFILE; fi
    awk '!/Executing actions/ { print; fflush();}' |\
    tee -a $LOGFILE
 
-msg_info "Log was written to $LOGFILE" 
+msg_info "Log was written to $LOGFILE"
 
 # Send mail
 if [ -n "$MAILTO" ]
   then
     msg_info "Send mail to $MAILTO"
     mail -s "Finish $LOGFILE" $MAILTO < $LOGFILE
-  fi;  
+  fi;

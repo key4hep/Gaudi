@@ -24,4 +24,3 @@ cf.r2a.graphml     : control flow rules
 df.r2a.graphml     : data flow rules
 time.r2a.json      : timing data for regular datafile (seconds)
 time.r2a.himu.json : timing data for high-mu datafile (seconds)
-

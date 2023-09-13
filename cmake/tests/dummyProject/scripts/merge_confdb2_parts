@@ -2,7 +2,7 @@
 inputs=
 output=
 while [ -n "$1" ] ; do
-  if [ "$1" = "--output" ] ; then 
+  if [ "$1" = "--output" ] ; then
     output="$2"
     shift
   else

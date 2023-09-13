@@ -110,13 +110,13 @@ package manager: Pere Mato
  - Changes to deal with the template specialization in the new version of GNU c++ compiler
 
  - Modified System.cpp. Added suffix in the DLL name when loading
- 
+
  - Changed CLID& by CLID in Converter base class to avoid weird problems with some
    converters in Linux.
  - Corrected bug in Algorithm::service()
- - In Bootstrap.h, added static method Gaudi::svcLocator() to get the ISvcLocator* 
+ - In Bootstrap.h, added static method Gaudi::svcLocator() to get the ISvcLocator*
    in isolation.
- - In ISvcLocation.h added a templated method ISvcLocator::service() to facilitate 
+ - In ISvcLocation.h added a templated method ISvcLocator::service() to facilitate
    retrival of services.
 
  - GaudiKernel/IGiGa*.h - update include file path to new schema.
@@ -132,9 +132,9 @@ package manager: Pere Mato
    IDetectorElement
 
  - Renamed Time::Time class by TimePoint class
- - The constants Time::time_absolutepast and Time::time_absolutefutre are now defined 
+ - The constants Time::time_absolutepast and Time::time_absolutefutre are now defined
    in the TimePoint.h. The namespace Time has been removed.
-  
+
  - Cleanup and adaptation to the new way of documenting the code based
    on Doxygen (JavaDoc style)
  - Incorparated changes done by D.Quarrie in the old LHCb repository
@@ -193,7 +193,7 @@ package manager: Pere Mato
    AppMgrRunable it is the default runable (implements IRunable) that is activated
    after the initialization is complete. It calls the nextEvent() of the ApplicationMgr.
  - Changed in HistogramSvc and NTupleSvc the strtream for convering numbers to strings for
-   the itoa() function.    
+   the itoa() function.
 
  - Adapted to the new method IProperty::getProperty(const string&, string&)
  - Adapted to the new method IAppMgrUI::state()
@@ -226,7 +226,7 @@ package manager: Pere Mato
         ApplicationMgr.TopAlgs += {};
 
  - Corrected bug in EventSelector.cpp which core dumped when accessing a non
-   existing file. 
+   existing file.
 
  - ApplicationMgr
    Added update callback handlers to "TopAlg", "ExtSvc" and "Dlls" properties.
@@ -293,7 +293,7 @@ package manager: Pere Mato
 
  - Adapted to the new method IProperty::getProperty(const string&, string&)
 
- - Add support to re-locate (rename etc) files. 
+ - Add support to re-locate (rename etc) files.
    References are now consistent within the same file.
 
  - Changes for Solaris support.
@@ -336,9 +336,8 @@ package manager: Pere Mato
    program termination from within a script.
  - Add handling for direct execution of a script from the C++ side.
 
- - This package is an implementation of the ScriptingSvc based on the Python 
-   scripting language. The package name derives from "Scripting Interface, 
-   Python". Note that many of the files are in fact generic, and might be 
-   moved to a SIGeneric package in the future, leaving only the minimal 
+ - This package is an implementation of the ScriptingSvc based on the Python
+   scripting language. The package name derives from "Scripting Interface,
+   Python". Note that many of the files are in fact generic, and might be
+   moved to a SIGeneric package in the future, leaving only the minimal
    Python-specific C++ file and Python scripts.
-

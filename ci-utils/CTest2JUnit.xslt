@@ -1,6 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:output method="xml" indent="yes"/>
-	<!-- 
+	<!--
 	This XSLT comes from http://pastebin.com/3mQ2ZQfa, see https://stackoverflow.com/a/6329217
 	-->
 	<xsl:template match="/Site">
@@ -52,7 +52,7 @@
 				<property name="ProcessorClockFrequency" value="{$ProcessorClockFrequency}" />
 			</properties>
 			<xsl:apply-templates select="Testing/Test"/>
-			
+
 			<system-out>
 				BuildName: <xsl:value-of select="$BuildName" />
 				BuildStamp: <xsl:value-of select="$BuildStamp" />
@@ -89,7 +89,7 @@
 				</xsl:if>
 			</xsl:for-each>
 		</xsl:variable>
-		
+
 			<testcase name="{$testcasename}" classname="TestSuite" time="{$exectime}">
             <xsl:if test="@Status = 'passed'">
             </xsl:if>

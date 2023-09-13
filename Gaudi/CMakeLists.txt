@@ -35,4 +35,3 @@ gaudi_add_pytest(python/Gaudi/Main.py
 gaudi_install(PYTHON)
 # Install other scripts
 gaudi_install(SCRIPTS)
-

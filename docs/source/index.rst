@@ -25,7 +25,7 @@ for many years and is also the framework used by the *Key4hep* common software f
 * LBNE (Long Baseline Neutrino Detector, WCD group), see also GARPI project
 * Key4hep (common software for FCC, CLIC/ILC and CEPC)
 
-Gaudi is fully open-source and licenced under the `Apache Licence 2.0 <https://gitlab.cern.ch/gaudi/Gaudi/-/blob/master/LICENSE>`_. Contributions are welcome; see the :doc:`contribution_guide` for details. 
+Gaudi is fully open-source and licenced under the `Apache Licence 2.0 <https://gitlab.cern.ch/gaudi/Gaudi/-/blob/master/LICENSE>`_. Contributions are welcome; see the :doc:`contribution_guide` for details.
 
 .. toctree::
    :maxdepth: 2

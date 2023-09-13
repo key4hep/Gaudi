@@ -54,7 +54,7 @@ for changing return codes:
  string ExceptionSvc.Errors = "_DEFAULT-BEHAVIOUR_ [ALG1=MODE  ALG2=MODE...]"
 
 
- _DEFAULT-BEHAVIOUR_ must be one of "ALL" or "NONE". 
+ _DEFAULT-BEHAVIOUR_ must be one of "ALL" or "NONE".
 
   ALL: catch all exceptions/errors, and rethrow/process them
   NONE: do not process any exceptions/errors, return StatusCode::FAILURE for
@@ -87,7 +87,7 @@ ExceptionSvc.Errors = "ALL Alg4=SUCCESS Alg5=RECOVERABLE"
  -> all RECOVERABLES (and FAILURES) caught and translated into
     FAILURES, except for Alg4 which, if it produces a FAILURE or
     RECOVERABLE, will translate into a SUCCESS, and Alg5 which will
-    return a RECOVERABLE 
+    return a RECOVERABLE
 
 
 Default Behavior
@@ -100,6 +100,3 @@ The default behavior is:
 
 This means that ALL exceptions are caught and rethrown. Return codes
 of Algorithms are not modified.
-
-
-
