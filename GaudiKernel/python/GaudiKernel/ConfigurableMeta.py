@@ -51,7 +51,7 @@ class ConfigurableMeta(type):
             propDict = dct.get("_propertyDocDct")
             for prop in props:
                 docString = propDict and propDict.get(prop)
-                if type(slots) == dict:
+                if isinstance(slots, dict):
                     default = slots[prop]
                 else:
                     default = None

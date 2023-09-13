@@ -472,17 +472,17 @@ def fill(
     """
 
     # if value is a string, try to get the objects from TES
-    if type(data) == str:
+    if isinstance(data, str):
         svc = _getEvtSvc(**kwargs)
         data = svc[data]
         return fill(histo, data, fun, cut, **kwargs)
 
     # if the function  is a string: evaluate it!
-    if type(fun) == str:
+    if isinstance(fun, str):
         fun = eval(fun, globals())
 
     # if the criterion is a string: evaluate it!
-    if type(cut) == str:
+    if isinstance(cut, str):
         cut = eval(cut, globals())
 
     if not hasattr(data, "__iter__"):
@@ -1052,7 +1052,7 @@ class HistoFile:
         a list of them.
         """
         if args:
-            if type(args[0]) == list:
+            if isinstance(args[0], list):
                 histoList = args[0]
             else:
                 histoList = args

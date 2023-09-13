@@ -150,4 +150,4 @@ def testValueSem():
     from GaudiConfig2.semantics import FloatSemantics, SequenceSemantics
 
     s = SequenceSemantics("std::vector<int>", None, FloatSemantics("float", None))
-    assert type(s.value_semantics) == FloatSemantics
+    assert isinstance(s.value_semantics, FloatSemantics)

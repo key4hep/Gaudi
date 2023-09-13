@@ -267,7 +267,7 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
 
     def convertDefaultToBeSet(self, obj, default):
         # turn string into handle
-        isString = type(default) == str
+        isString = isinstance(default, str)
         if not isString and self.isConfig(default):
             #         print self.fullPropertyName(obj) + ": Setting default configurable: %r" % default
             return default
@@ -319,7 +319,7 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
     def convertValueToBeSet(self, obj, value):
         if value is None:
             value = ""
-        isString = type(value) == str
+        isString = isinstance(value, str)
         if isString:
             # create an new handle
             return self._handleType(value)
@@ -455,7 +455,7 @@ class DataHandlePropertyProxy(PropertyProxy):
 
         mode = obj.__class__.getDefaultProperty(self.descr.__name__).mode()
         _type = obj.__class__.getDefaultProperty(self.descr.__name__).type()
-        if type(value) == str:
+        if isinstance(value, str):
             return DataHandle(value, mode, _type)
         elif isinstance(value, DataHandle):
             return DataHandle(value.__str__(), mode, _type)

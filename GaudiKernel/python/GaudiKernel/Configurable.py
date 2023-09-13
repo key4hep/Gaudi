@@ -214,7 +214,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
                 name = cls.DefaultedName
             else:
                 name = cls.getType()
-        elif not name or type(name) != str:
+        elif not name or not isinstance(name, str):
             # unnamed, highly specialized user code, etc. ... unacceptable
             raise TypeError(
                 "could not retrieve name from %s.__init__ arguments" % cls.__name__
@@ -552,7 +552,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
     __nonzero__ = __bool__
 
     def remove(self, items):
-        if type(items) != list and type(items) != tuple:
+        if not isinstance(items, (list, tuple)):
             items = [items]
 
         self.__children = [e for e in self.__children if e not in items]
