@@ -8,21 +8,11 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import absolute_import
-
 import copy
 import logging
 import re
 import sys
-
-try:
-    from collections.abc import MutableMapping, MutableSequence
-except ImportError:  # pragma no cover
-    # Python 2 version
-    from collections import MutableMapping, MutableSequence
-
-if sys.version_info >= (3,):  # pragma no cover
-    basestring = str
+from collections.abc import MutableMapping, MutableSequence
 
 _log = logging.getLogger(__name__)
 is_64bits = sys.maxsize > 2**32
@@ -38,8 +28,16 @@ class PropertySemantics(object):
     __handled_types__ = ()
 
     def __init__(self, cpp_type, name=None):
-        self.name = None
+        self._name = name
         self.cpp_type = cpp_type
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def cpp_type(self):
@@ -130,8 +128,8 @@ class StringSemantics(PropertySemantics):
     __handled_types__ = ("std::string",)
 
     def store(self, value):
-        if not isinstance(value, basestring):
-            raise ValueError("cannot set property {} to {!r}".format(self.name, value))
+        if not isinstance(value, str):
+            raise TypeError("cannot set property {} to {!r}".format(self.name, value))
         return value
 
 
@@ -181,7 +179,7 @@ class IntSemantics(PropertySemantics):
 
         if not isinstance(value, Number):
             raise TypeError(
-                "number expected, got {!r} in assignemnt to {}".format(value, self.name)
+                "number expected, got {!r} in assignment to {}".format(value, self.name)
             )
         v = int(value)
         if v != value:
@@ -227,7 +225,7 @@ class ComponentSemantics(PropertySemantics):
 
         if isinstance(value, Configurable):
             value.name  # make sure the configurable has a name
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             # try to map the sring to an existing Configurable
             if value in Configurable.instances:
                 value = Configurable.instances[value]
@@ -351,6 +349,16 @@ class SequenceSemantics(PropertySemantics):
         self.value_semantics = valueSem or getSemanticsFor(
             list(extract_template_args(cpp_type))[0]
         )
+        self.value_semantics.name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+        self.value_semantics.name = "{} element".format(self._name)
 
     def store(self, value):
         new_value = _ListHelper(self.value_semantics)
@@ -474,7 +482,19 @@ class MappingSemantics(PropertySemantics):
         super(MappingSemantics, self).__init__(cpp_type, name)
         template_args = list(extract_template_args(cpp_type))
         self.key_semantics = getSemanticsFor(template_args[0])
+        self.key_semantics.name = "{} key".format(name)
         self.value_semantics = getSemanticsFor(template_args[1])
+        self.value_semantics.name = "{} value".format(name)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+        self.key_semantics.name = "{} key".format(self._name)
+        self.value_semantics.name = "{} value".format(self._name)
 
     def store(self, value):
         new_value = _DictHelper(self.key_semantics, self.value_semantics)

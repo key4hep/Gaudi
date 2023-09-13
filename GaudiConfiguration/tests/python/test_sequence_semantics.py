@@ -8,9 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import pytest
 from GaudiConfig2 import semantics as S
 from GaudiConfig2.Configurables.TestConf import AlgWithVectors
-from nose.tools import raises
 
 
 def test_init_vector():
@@ -37,12 +37,12 @@ def test_default():
     assert d == list("abc")
 
 
-@raises(RuntimeError)
 def test_default_read_only():
     s = S.getSemanticsFor("std::vector<std::string, alloc<string> >")
     d = s.default(["a", "b", "c"])
     assert len(d) == 3
-    del d[1]
+    with pytest.raises(RuntimeError):
+        del d[1]
 
 
 def test_comparison():
@@ -84,10 +84,10 @@ def test_opt_value():
     assert s.opt_value(d) == ["a", "b", "c"]
 
 
-@raises(ValueError)
 def test_assignment_bad():
     s = S.getSemanticsFor("std::vector<std::string, alloc<string> >")
-    s.store(["a", "b", 1])
+    with pytest.raises(TypeError):
+        s.store(["a", "b", 1])
 
 
 def test_in_alg():
@@ -115,10 +115,10 @@ def test_nested_vector():
     assert d[1] == list("cde")
 
 
-@raises(ValueError)
 def test_nested_vector_bad():
     s = S.getSemanticsFor("std::vector<std::vector<std::string>, a<s> >")
-    s.store([["a", "b"], ["c", 0, "e"]])
+    with pytest.raises(TypeError):
+        s.store([["a", "b"], ["c", 0, "e"]])
 
 
 def test_sequence_semantics():
@@ -137,13 +137,13 @@ def test_merge():
     s.merge(s1, s2)
 
 
-@raises(ValueError)
 def test_merge_fail():
     s = S.getSemanticsFor("std::vector<int>")
     s1 = s.store([1, 2])
     s2 = s.store([1, 1])
     assert s1 != s2
-    s.merge(s1, s2)
+    with pytest.raises(ValueError):
+        s.merge(s1, s2)
 
 
 def testValueSem():

@@ -8,24 +8,13 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2 import Configurable, all_options, useGlobalInstances
+from GaudiConfig2 import Configurable, all_options
 from GaudiConfig2.Configurables.TestConf import (
     AlgWithMaps,
     AlgWithVectors,
     MyAlg,
     SimpleOptsAlgTool,
 )
-from nose.tools import with_setup
-
-
-def setup_func():
-    Configurable.instances.clear()
-    useGlobalInstances(True)
-
-
-def teaardown_func():
-    Configurable.instances.clear()
-    useGlobalInstances(False)
 
 
 class MyDerivedAlg(MyAlg):
@@ -36,8 +25,7 @@ class MyDerivedAlg(MyAlg):
         self.AnIntProp = 42
 
 
-@with_setup(setup_func, teaardown_func)
-def test_repr():
+def test_repr(with_global_instances):
     p = MyAlg(AnIntProp=42)
 
     q = eval(repr(p))
@@ -73,8 +61,7 @@ def test_repr():
     assert repr(q) == repr(p)
 
 
-@with_setup(setup_func, teaardown_func)
-def test_pickle():
+def test_pickle(with_global_instances):
     from pickle import dumps, loads
 
     p = MyAlg(AnIntProp=42)
@@ -117,8 +104,7 @@ def test_pickle():
     assert dumps(q) == dumps(p)
 
 
-@with_setup(setup_func, teaardown_func)
-def test_full_serialization_repr():
+def test_full_serialization_repr(with_global_instances):
     MyAlg("Alg1", AnIntProp=1)
     SimpleOptsAlgTool("ToolA", parent=MyAlg("Alg2", AnIntProp=2))
     AlgWithVectors("AV", VS="abc")
@@ -131,8 +117,7 @@ def test_full_serialization_repr():
     assert all_options(explicit_defaults=True) == opts
 
 
-@with_setup(setup_func, teaardown_func)
-def test_full_serialization_pickle():
+def test_full_serialization_pickle(with_global_instances):
     from pickle import dumps, loads
 
     MyAlg("Alg1", AnIntProp=1)

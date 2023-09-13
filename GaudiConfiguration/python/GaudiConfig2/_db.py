@@ -9,7 +9,6 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # Classes and functions to work with Configurables Database
-import atexit
 import logging
 import os
 import sys
@@ -54,20 +53,7 @@ else:  # pragma no cover
     _DB = ConfDB2()
 
 
-# Workaround for a bug in Python (2) clean up
-# see https://stackoverflow.com/q/2180946
-def _fix_clean_up():  # pragma no cover
-    global _DB
-    del _DB
-
-
-atexit.register(_fix_clean_up)
-
-if sys.version_info >= (3,):  # pragma no cover
-    maketrans = str.maketrans
-else:  # pragma no cover
-    from string import maketrans
-_TRANS_TABLE = maketrans("<>&*,: ().", "__rp__s___")
+_TRANS_TABLE = str.maketrans("<>&*,: ().", "__rp__s___")
 
 
 def _normalize_cpp_type_name(name):

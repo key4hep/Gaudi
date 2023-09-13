@@ -8,19 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiConfig2 import Configurable, mergeConfigs, useGlobalInstances
+import pytest
+from GaudiConfig2 import mergeConfigs
 from GaudiConfig2.Configurables.TestConf import MyAlg, SimpleOptsAlgTool
-from nose.tools import raises, with_setup
-
-
-def setup_func():
-    Configurable.instances.clear()
-    useGlobalInstances(True)
-
-
-def teardown_func():
-    Configurable.instances.clear()
-    useGlobalInstances(False)
 
 
 def test_merge_identical():
@@ -44,8 +34,7 @@ def test_merge_same_value():
     assert a.AnIntProp == 42
 
 
-@with_setup(setup_func, teardown_func)
-def test_merge_unnamed():
+def test_merge_unnamed(with_global_instances):
     a = MyAlg(AnIntProp=42)
     assert not hasattr(a, "name")
     b = MyAlg(AStringProp="42")
@@ -56,34 +45,33 @@ def test_merge_unnamed():
     assert a.AStringProp == "42"
 
 
-@raises(TypeError)
 def test_diff_type():
     a = MyAlg()
     b = SimpleOptsAlgTool()
-    a.merge(b)
+    with pytest.raises(TypeError):
+        a.merge(b)
 
 
-@raises(ValueError)
 def test_diff_name():
     a = MyAlg("a")
     b = MyAlg("b")
-    a.merge(b)
+    with pytest.raises(ValueError):
+        a.merge(b)
 
 
-@with_setup(setup_func, teardown_func)
-@raises(ValueError)
-def test_diff_unnamed():
+def test_diff_unnamed(with_global_instances):
     a = MyAlg("MyAlg")
     b = MyAlg()
     assert not hasattr(b, "name")
-    a.merge(b)
+    with pytest.raises(ValueError):
+        a.merge(b)
 
 
-@raises(ValueError)
 def test_merge_conflict():
     a = MyAlg("ThisAlg", AnIntProp=42)
     b = MyAlg("ThisAlg", AnIntProp=50)
-    a.merge(b)
+    with pytest.raises(ValueError):
+        a.merge(b)
 
 
 def test_merge_lists():

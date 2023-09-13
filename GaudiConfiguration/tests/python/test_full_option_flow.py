@@ -13,13 +13,17 @@ from __future__ import print_function
 import os
 import sys
 
+import pytest
 from GaudiConfig2 import invokeConfig
 from GaudiConfig2._configurables import Configurable, Property
 from GaudiConfig2.semantics import SEMANTICS, PropertySemantics
-from nose.tools import raises, with_setup
 
-if sys.version_info >= (3,):  # pragma no cover
-    basestring = str
+
+@pytest.fixture
+def clear_instances():
+    Configurable.instances.clear()
+    yield
+    Configurable.instances.clear()
 
 
 class InternalType(object):
@@ -97,7 +101,7 @@ def _test_custom_class():
 
 def test_default_init():
     a = MyAlgo1()
-    assert isinstance(a.Option, basestring)
+    assert isinstance(a.Option, str)
     assert a.Option == "abc"
 
     assert "Option" in a._properties
@@ -117,18 +121,14 @@ def test_set_and_get():
     assert a.Option == dict(zip("abc", "123"))
 
 
-@raises(AssertionError)
-def test_set_bad_1():
-    MyAlgo1(Option=(1, 2, 3, 4))
+def test_set_bad():
+    with pytest.raises(AssertionError):
+        MyAlgo1(Option=(1, 2, 3, 4))
+    with pytest.raises(AssertionError):
+        MyAlgo1(Option="ab")
 
 
-@raises(AssertionError)
-def test_set_bad_2():
-    MyAlgo1(Option="ab")
-
-
-@with_setup(Configurable.instances.clear, Configurable.instances.clear)
-def test_to_cpp_string():
+def test_to_cpp_string(clear_instances):
     # default
     a = MyAlgo1("a")
     assert a.__opt_properties__() == {}
@@ -166,11 +166,11 @@ def test_invoke_config_function_string():
         sys.path.pop(0)
 
 
-@raises(TypeError)
 def test_invoke_no_call():
-    invokeConfig(tuple())
+    with pytest.raises(TypeError):
+        invokeConfig(tuple())
 
 
-@raises(ValueError)
 def test_invoke_bad_string():
-    invokeConfig("bad string")
+    with pytest.raises(ValueError):
+        invokeConfig("bad string")

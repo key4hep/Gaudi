@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from nose.tools import raises
+import pytest
 
 
 def test_import():
@@ -64,11 +64,11 @@ def test_get_by_full_type_ignore_spaces():
     assert C.getByType("TestConf::" + name) is C.getByType("TestConf::" + mix_name)
 
 
-@raises(AttributeError)
 def get_get_by_full_type_missing():
     from GaudiConfig2 import Configurables as C
 
-    C.getByType("Gaudi::NotThere")
+    with pytest.raises(AttributeError):
+        C.getByType("Gaudi::NotThere")
 
 
 def test_confdb():

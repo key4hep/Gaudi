@@ -9,10 +9,6 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # Classes and functions for handling Configurables
-from __future__ import absolute_import
-
-import sys
-
 _GLOBAL_INSTANCES = False
 
 
@@ -111,9 +107,6 @@ class ConfigurableMeta(type):
                 ]
             )
             namespace["__doc__"] = doc
-            if sys.version_info < (3, 6):  # pragma no cover
-                for n in props:
-                    namespace[n].__set_name__(None, n)
             namespace["_descriptors"] = props
         slots = set(namespace.get("__slots__", []))
         slots.update(["_properties", "_name"])
@@ -134,15 +127,7 @@ def opt_repr(value):
     return repr(value)
 
 
-if sys.version_info >= (3,):  # pragma no cover
-    exec("class ConfigMetaHelper(metaclass=ConfigurableMeta):\n pass")
-else:  # pragma no cover
-
-    class ConfigMetaHelper(object):
-        __metaclass__ = ConfigurableMeta
-
-
-class Configurable(ConfigMetaHelper):
+class Configurable(metaclass=ConfigurableMeta):
     """
     Base class for all configurable instances.
     """

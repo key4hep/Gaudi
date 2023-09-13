@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations      #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,12 +8,21 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-# GaudiConfiguration subdirectory
+import pytest
 
-# Install python modules
-gaudi_install(PYTHON)
 
-# FIXME: with nosetests we were using --cover-min-percentage=100, but it is not available with gaudi_add_pytest
-gaudi_add_pytest(tests/python)
+def test_1():
+    from GaudiConfig2.Configurables.TestConf import AlgWithMaps, AlgWithVectors
 
-# Note: The file tools/print_limits.cpp is a ROOT macro, so it is not meant to be compiled
+    alg = AlgWithVectors()
+    with pytest.raises(TypeError, match=r"cannot set property VS .*"):
+        alg.VS = [3]
+
+    alg = AlgWithMaps()
+    with pytest.raises(TypeError, match=r"cannot set property MSS key .*"):
+        alg.MSS[3] = "value"
+    with pytest.raises(TypeError, match=r"cannot set property MSS value .*"):
+        alg.MSS["key"] = 3
+    alg.MIV[3] = []
+    with pytest.raises(TypeError, match=r"cannot set property MIV value element.*"):
+        alg.MIV[3].append(5)
