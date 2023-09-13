@@ -117,11 +117,10 @@ Language:        Json
 IndentWidth:     4
 ColumnLimit:     120
 ---
+Language:        JavaScript
+ColumnLimit:     120
+---
 Language: ObjC
 # Don't format Objective-C, Objective-C++ files.
-DisableFormat: true
----
-Language: JavaScript
-# Don't format Javascript files.
 DisableFormat: true
 ...
