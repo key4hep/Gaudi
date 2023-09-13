@@ -113,12 +113,12 @@ Standard:        Cpp11
 TabWidth:        8
 UseTab:          Never
 ---
+Language:        Json
+IndentWidth:     4
+ColumnLimit:     120
+---
 Language: ObjC
 # Don't format Objective-C, Objective-C++ files.
-DisableFormat: true
----
-Language: Json
-# Don't format JSON files.
 DisableFormat: true
 ---
 Language: JavaScript
