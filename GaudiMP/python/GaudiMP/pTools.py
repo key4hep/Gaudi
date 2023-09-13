@@ -125,7 +125,6 @@ class HistoAgent:
                         errors += 1
                     added += 1
                 else:
-
                     if o.__class__.__name__ in self.bookingDict.keys():
                         try:
                             self.bookingDict[o.__class__.__name__](n, o)

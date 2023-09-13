@@ -37,7 +37,6 @@ ApplicationMgr(EvtSel="NONE", TopAlg=[ske], EvtMax=10)
 # The actual job excution
 # =============================================================================
 if "__main__" == __name__:
-
     print(__doc__)
     print(__author__)
 

@@ -37,7 +37,6 @@ def prepareConfig(
 
 ##########################
 if __name__ == "__main__":
-
     n_threads = 10
     for n_algos in range(1, 11):
         for n_events in range(1, n_algos + 1):

@@ -13,7 +13,6 @@ from GaudiConfig2.Configurables.TestConf import MyAlg, SimpleOptsAlgTool
 
 
 def test_configurable(with_global_instances):
-
     from GaudiConfig2 import Configurable
 
     x = MyAlg()

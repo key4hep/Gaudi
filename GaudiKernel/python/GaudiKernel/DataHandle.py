@@ -12,7 +12,6 @@ __doc__ = """The python module holding python bindings to DataHandle"""
 
 
 class DataHandle(object):
-
     __slots__ = ("Path", "Mode", "Type", "IsCondition")
 
     __hash__ = None  # Make class non-hashable for Python2 (default in Python3)

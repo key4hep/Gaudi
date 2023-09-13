@@ -24,7 +24,6 @@ def reset_global_instances_flag():
 
 
 def test_enable_disable(reset_global_instances_flag):
-
     useGlobalInstances(False)
     assert not GaudiConfig2._configurables._GLOBAL_INSTANCES
 

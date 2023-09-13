@@ -214,7 +214,6 @@ def bin2binIdentity(h1, h2):
 #                 Arguments t1 and t2 are checked and the test/reference auto-detected
 #
 def compareHistos(t1, t2, state, checkBin2BinIdentity):
-
     (
         ((referenceObjects, referenceHistos), (parallObjects, parallHistos)),
         (uniqueSerPaths, uniqueSerHistos),

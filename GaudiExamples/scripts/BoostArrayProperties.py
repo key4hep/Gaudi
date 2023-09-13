@@ -41,7 +41,6 @@ ApplicationMgr(EvtSel="NONE", TopAlg=[bap], EvtMax=10)
 # The actual job excution
 # =============================================================================
 if "__main__" == __name__:
-
     print(__doc__, __author__)
 
     from GaudiPython.Bindings import AppMgr

@@ -30,7 +30,6 @@ def which(file, path=None):
 
 retcode = 0
 try:
-
     if len(sys.argv) > 1:
         optfiles = sys.argv[1:]
     else:

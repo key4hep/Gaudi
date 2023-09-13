@@ -112,7 +112,6 @@ def configure(gaudi=None):
 # The actual job excution
 # =============================================================================
 if "__main__" == __name__:
-
     print(__doc__, __author__)
 
     gaudi = gaudimodule.AppMgr()

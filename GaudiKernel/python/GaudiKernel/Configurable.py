@@ -491,7 +491,6 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
         return self
 
     def __getattr__(self, attr):  # until ToolProperties exist ...
-
         if attr in self.__tools:
             return self.__tools[attr]
 
@@ -1204,7 +1203,6 @@ class ConfigurableAlgorithm(Configurable):
 
 
 class ConfigurableService(Configurable):
-
     __slots__ = {
         "OutputLevel": 0,
         "AuditServices": 0,
