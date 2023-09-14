@@ -50,8 +50,8 @@ public:
 
 private:
   /// delete the default/copy constructor and assignment
-  AlgContextAuditor()                           = delete;
-  AlgContextAuditor( const AlgContextAuditor& ) = delete;
+  AlgContextAuditor()                                      = delete;
+  AlgContextAuditor( const AlgContextAuditor& )            = delete;
   AlgContextAuditor& operator=( const AlgContextAuditor& ) = delete;
 
 private:

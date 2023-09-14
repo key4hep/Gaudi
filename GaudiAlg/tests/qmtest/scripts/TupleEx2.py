@@ -65,7 +65,6 @@ class TupleEx2(TupleAlgo):
         # N-tuple with 4D-vectors
         tup = self.nTuple("Vectors-4D", "N-tuple with 4D-vectors")
         for i in range(0, 100):
-
             lv1 = Math.PxPyPzEVector()
 
             lv1.SetPx(gauss())
@@ -80,7 +79,6 @@ class TupleEx2(TupleAlgo):
         # N-tuple with 3D-vectors
         tup = self.nTuple("Vectors-3D", "N-tuple with 3D-vectors")
         for i in range(0, 100):
-
             v1 = Math.XYZVector()
             v1.SetX(gauss())
             v1.SetY(gauss())
@@ -93,7 +91,6 @@ class TupleEx2(TupleAlgo):
         # N-tuple with 3D-points
         tup = self.nTuple("Points-3D", "N-tuple with 3D-points")
         for i in range(0, 100):
-
             p1 = Math.XYZPoint()
             p1.SetX(gauss())
             p1.SetY(gauss())

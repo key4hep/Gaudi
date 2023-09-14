@@ -191,8 +191,8 @@ public:
   // check the existence AND validity of the histogram with given title
   bool histoExists( const HistoID& ID ) const override { return GaudiHistoTool::histoExists( ID ); }
 
-  HistoTool()                   = delete;
-  HistoTool( const HistoTool& ) = delete;
+  HistoTool()                              = delete;
+  HistoTool( const HistoTool& )            = delete;
   HistoTool& operator=( const HistoTool& ) = delete;
 };
 

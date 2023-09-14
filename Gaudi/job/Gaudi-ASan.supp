@@ -3,7 +3,7 @@
 # Address sanitizer specific suppressions
 # http://clang.llvm.org/docs/AddressSanitizer.html
 #
-# Note the leak sanitizer options in Gaudi-LSan.supp 
+# Note the leak sanitizer options in Gaudi-LSan.supp
 # are also used by the address sanitizer.
 # --------------------------------------------------
 

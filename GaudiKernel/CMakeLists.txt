@@ -383,7 +383,7 @@ if(BUILD_TESTING)
   endif()
 
   gaudi_add_executable(GaudiKernel_catch2_tests
-    SOURCES 
+    SOURCES
       tests/src/CounterSerializationTest.cpp
       tests/src/MonitoringEntityUnitTest.cpp
       tests/src/test_PropertyFmt.cpp

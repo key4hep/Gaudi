@@ -33,7 +33,7 @@ class GaudiHandle(object):
         if hasattr(typeAndName, "toStringProperty"):
             # this is a GaudiHandle or equivalent
             typeAndName = typeAndName.toStringProperty()
-        if type(typeAndName) != str:
+        if not isinstance(typeAndName, str):
             raise TypeError(
                 "Argument to %s must be a string. Got a %s instead"
                 % (self.__class__.__name__, type(typeAndName).__name__)
@@ -131,7 +131,7 @@ class GaudiHandleArray(list):
             typesAndNames = []
         list.__init__(self)
         # check the type
-        if type(typesAndNames) != list:
+        if not isinstance(typesAndNames, list):
             raise TypeError(
                 "Argument to %s must be a list. Got a %s instead"
                 % (self.__class__.__name__, type(typesAndNames).__name__)
@@ -157,7 +157,7 @@ class GaudiHandleArray(list):
         #                  linesep + linesep.join([str(s) for s in self]))
 
     def __getitem__(self, index):
-        if type(index) == str:
+        if isinstance(index, str):
             # seach by instance name
             for h in self:
                 if h.getName() == index:
@@ -173,24 +173,22 @@ class GaudiHandleArray(list):
         super(GaudiHandleArray, self).__delitem__(self.index(self[key]))
 
     def __iadd__(self, array):
-        arrayType = type(array)
-        if arrayType == list or arrayType == type(self):
+        if isinstance(array, (list, type(self))):
             for v in array:
                 self.append(v)
         else:
             raise TypeError(
-                "Can not add a %s to a %s"
-                % (arrayType.__name__, self.__class__.__name__)
+                "Can not add a %s to a %s" % (type(array).__name__, type(self).__name__)
             )
 
         return self
 
     def append(self, value):
         """Only allow appending compatible types. It accepts a string, a handle or a configurable."""
-        if type(value) == str:
+        if isinstance(value, str):
             # convert string to handle
             value = self.__class__.handleType(value)
-        elif type(value) == self.__class__.handleType:
+        elif isinstance(value, self.__class__.handleType):
             pass  # leave handle as-is
         elif isinstance(value, GaudiHandle):
             # do not allow different type of handles

@@ -15,15 +15,15 @@ EventDataSvc.RootCLID    =    1;
 //-- GAUDI data cards generated on Jun 14, 2005 5:43:35 PM
 //-- For Event Type = 10000000 / Data type = DST 1
 //--     Configuration = DC04 - v1
-//--     DST 1 datasets output 
+//--     DST 1 datasets output
 //--     From DIGI 1 datasets produced by ANY
 //--     From SIM 1 datasets produced by ANY
 //--     Database version = ANY
 //--     Cards content = physical
-//--     
+//--
 //-- Datasets replicated at CERN
 //-- 200 dataset(s) - NbEvents = 200000
-//-- 
+//--
 EventSelector.Input   = {
 "DATAFILE='PFN:castor:/castor/cern.ch/lhcb/DC04/00000541_00000001_9.dst' TYP='POOL_ROOTTREE' OPT='READ'",
 "DATAFILE='PFN:castor:/castor/cern.ch/lhcb/DC04/00000541_00000002_9.dst' TYP='POOL_ROOTTREE' OPT='READ'",
@@ -224,7 +224,7 @@ EventSelector.Input   = {
 // "DATAFILE='PFN:castor:/castor/cern.ch/lhcb/DC04/00000541_00000224_9.dst' TYP='POOL_ROOTTREE' OPT='READ'",
 // "DATAFILE='PFN:castor:/castor/cern.ch/lhcb/DC04/00000541_00000031_9.dst' TYP='POOL_ROOTTREE' OPT='READ'",
 // "DATAFILE='PFN:castor:/castor/cern.ch/lhcb/DC04/00000541_00000121_9.dst' TYP='POOL_ROOTTREE' OPT='READ'",
-// "DATAFILE='PFN:castor:/castor/cern.ch/lhcb/DC04/00000541_00000127_9.dst' TYP='POOL_ROOTTREE' OPT='READ'" 
+// "DATAFILE='PFN:castor:/castor/cern.ch/lhcb/DC04/00000541_00000127_9.dst' TYP='POOL_ROOTTREE' OPT='READ'"
 };
-//-- End of Data cards 
+//-- End of Data cards
 //

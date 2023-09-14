@@ -59,7 +59,6 @@ class TimingInfo(object):
 
 
 def prepareTimingPlots(config="BrunelScenario", path="../options"):
-
     # first read all the timings
     timings = []
     for filename in os.listdir(path):
@@ -88,6 +87,5 @@ def prepareTimingPlots(config="BrunelScenario", path="../options"):
 
 ##########################
 if __name__ == "__main__":
-
     #  instancesVsTime("/afs/cern.ch/work/h/hegner/hive/Gaudi/GaudiHive/options/log.log")
     prepareTimingPlots()

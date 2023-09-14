@@ -1,5 +1,5 @@
 # setting LC_ALL to "C"
-ApplicationMgr    SUCCESS 
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v30r5)
                                           running on marco-XPS-13 on Fri Feb  1 12:41:18 2019
@@ -9,7 +9,7 @@ ConditionsStore: requested condition condition/key
 ConditionsUser1      INFO initialize
 ConditionsStore: requested condition another/key
 ConditionsUser2      INFO initialize
-EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully

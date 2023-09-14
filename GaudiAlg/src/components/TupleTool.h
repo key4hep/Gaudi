@@ -79,8 +79,8 @@ public:
     return GaudiTupleTool::evtCol( ID, title, clid );
   }
 
-  TupleTool()                   = delete;
-  TupleTool( const TupleTool& ) = delete;
+  TupleTool()                              = delete;
+  TupleTool( const TupleTool& )            = delete;
   TupleTool& operator=( const TupleTool& ) = delete;
 };
 #endif // GAUDIALG_TUPLETOOL_H

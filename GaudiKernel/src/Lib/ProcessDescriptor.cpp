@@ -349,8 +349,8 @@ void readProcStat( long pid, linux_proc& pinfo ) {
 }
 #endif
 
-  // static long s_myPid  = ::getpid();
-  // In order to properly support e.g. fork() calls, we cannot keep a copy of the pid!
+// static long s_myPid  = ::getpid();
+// In order to properly support e.g. fork() calls, we cannot keep a copy of the pid!
 
 #ifndef __APPLE__
 static inline long processID( long pid ) { return ( pid > 0 ) ? pid : ( ::getpid() ); }

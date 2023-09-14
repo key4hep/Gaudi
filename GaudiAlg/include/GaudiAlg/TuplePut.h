@@ -95,7 +95,7 @@ namespace Tuples {
     }
 
     // delete copy constructor and assignment
-    ItemStore( const ItemStore& ) = delete;
+    ItemStore( const ItemStore& )            = delete;
     ItemStore& operator=( const ItemStore& ) = delete;
 
   private:

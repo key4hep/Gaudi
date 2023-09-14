@@ -461,9 +461,7 @@ public:
     size_t      len = strlen( ptr ) + 1;
     if ( 0 == m_analyzer )
       writeBytes( ptr, len );
-    else {
-      STREAM_ANALYSE( data, len );
-    }
+    else { STREAM_ANALYSE( data, len ); }
     return *this;
   }
   /// Streamer to read strings in (std::string) format

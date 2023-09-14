@@ -13,9 +13,9 @@
 # Description:
 #
 # This is a shell script library. It contains functions that can be called by
-# programs that include (source) this library. 
+# programs that include (source) this library.
 #
-# By simply sourcing this library, you can use all available functions as 
+# By simply sourcing this library, you can use all available functions as
 # documented on the projects page.
 #
 #
@@ -34,8 +34,8 @@ init () {
     # Value: yes or no (y / n)
     #
     DEBUG=no
-    
-    # 
+
+    #
     # Syslog style log messages
     #
     if ! defined LOGDATEFORMAT
@@ -51,7 +51,7 @@ init () {
             LOG_FILE="$0".log
         fi
     fi
-    
+
     #
     # Enable / disable logging to a file
     # Value: yes or no (y / n)
@@ -68,7 +68,7 @@ init () {
     then
         SYSLOG_TAG=$0
     fi
-    
+
     #
     # Use colours in output.
     #
@@ -80,15 +80,15 @@ init () {
     CYAN="tput setaf 6"
     BOLD="tput bold"
     DEFAULT="tput sgr0"
-    
+
     RED_BG="tput setab 1"
     GREEN_BG="tput setab 2"
     YELLOW_BG="tput setab 3"
     BLUE_BG="tput setab 4"
     MAGENTA_BG="tput setab 5"
     CYAN_BG="tput setab 6"
-    
-    # 
+
+    #
     # Bug fix for Bash, parsing exclamation mark.
     #
     set +o histexpand
@@ -96,7 +96,7 @@ init () {
 
     #
     # Some 'internal' BSFL specific variables.
-    # 
+    #
     START_WATCH=""
 }
 
@@ -165,8 +165,8 @@ function trim {
 # Override this function if required.
 #
 show_usage () {
-   
-    MESSAGE="$1" 
+
+    MESSAGE="$1"
     echo "$MESSAGE"
     exit 1
 }
@@ -188,7 +188,7 @@ option_enabled () {
 }
 
 #
-# The log funcion just puts a string into a file, prepended with a date & time in 
+# The log funcion just puts a string into a file, prepended with a date & time in
 # syslog format.
 #
 
@@ -204,13 +204,13 @@ log2syslog () {
 #
 # This function writes messages to a log file and/or syslog
 # The only argument is a message that has to be logged.
-# 
+#
 
 log () {
-    
-    if option_enabled LOG_ENABLED || option_enabled SYSLOG_ENABLED 
+
+    if option_enabled LOG_ENABLED || option_enabled SYSLOG_ENABLED
     then
-        LOG_MESSAGE="$1" 
+        LOG_MESSAGE="$1"
         STATE="$2"
         DATE=`date +"$LOGDATEFORMAT"`
 
@@ -229,8 +229,8 @@ log () {
         if option_enabled SYSLOG_ENABLED
         then
             #
-            # Syslog already prepends a date/time stamp so only the message 
-            # is logged. 
+            # Syslog already prepends a date/time stamp so only the message
+            # is logged.
             #
             log2syslog "$LOG_MESSAGE"
         fi
@@ -240,7 +240,7 @@ log () {
 
 #
 # This function basically replaces the 'echo' function in bash scripts.
-# The added functionality over echo is logging and using colors. 
+# The added functionality over echo is logging and using colors.
 #
 # The first argument is the string / message that must be displayed.
 # The second argument is the text color.
@@ -258,7 +258,7 @@ msg () {
     if has_value "MESSAGE"
     then
         $COLOR
-        echo "$MESSAGE" 
+        echo "$MESSAGE"
         $DEFAULT
         if ! option_enabled "DONOTLOG"
         then
@@ -283,11 +283,11 @@ msg () {
 log_status () {
 
     if option_enabled LOG_ENABLED
-    then 
-        
+    then
+
         MESSAGE="$1"
         STATUS="$2"
-        
+
         log "$MESSAGE" "$STATUS"
     fi
 }
@@ -384,7 +384,7 @@ log_passed () {
 }
 
 #
-# This function echos a message 
+# This function echos a message
 # and displays the status at the end of the line.
 #
 # It can be used to create status messages other
@@ -406,8 +406,8 @@ msg_status () {
 }
 
 #
-# The following functions are shorthand for 
-# msg_status "a message" OK 
+# The following functions are shorthand for
+# msg_status "a message" OK
 # msg_status "another message" FAIL
 #
 # Same for log functions.
@@ -556,7 +556,7 @@ display_status () {
 
     STATUS="$1"
 
-    case $STATUS in 
+    case $STATUS in
 
     EMERGENCY )
             STATUS="EMERGENCY"
@@ -571,30 +571,30 @@ display_status () {
             COLOR="$RED"
             ;;
     ERROR )
-            STATUS="  ERROR  " 
+            STATUS="  ERROR  "
             COLOR="$RED"
             ;;
 
     WARNING )
-            STATUS=" WARNING "  
+            STATUS=" WARNING "
             COLOR="$YELLOW"
             ;;
 
     NOTICE )
-            STATUS=" NOTICE  "  
+            STATUS=" NOTICE  "
             COLOR="$BLUE"
             ;;
     INFO )
-            STATUS="  INFO   "  
+            STATUS="  INFO   "
             COLOR="$CYAN"
             ;;
     DEBUG )
             STATUS="  DEBUG  "
             COLOR="$DEFAULT"
-            ;;    
+            ;;
 
-    OK  ) 
-            STATUS="   OK    "  
+    OK  )
+            STATUS="   OK    "
             COLOR="$GREEN"
             ;;
     NOT_OK)
@@ -602,18 +602,18 @@ display_status () {
             COLOR="$RED"
             ;;
 
-    PASSED ) 
-            STATUS=" PASSED  "  
+    PASSED )
+            STATUS=" PASSED  "
             COLOR="$GREEN"
             ;;
 
-    SUCCESS ) 
-            STATUS=" SUCCESS "  
+    SUCCESS )
+            STATUS=" SUCCESS "
             COLOR="$GREEN"
             ;;
-    
+
     FAILURE | FAILED )
-            STATUS=" FAILED  "  
+            STATUS=" FAILED  "
             COLOR="$RED"
             ;;
 
@@ -626,7 +626,7 @@ display_status () {
 }
 
 #
-# Exit with error status 
+# Exit with error status
 #
 bail () {
 
@@ -652,7 +652,7 @@ cmd () {
     ERROR="$?"
 
     MSG="Command: ${COMMAND:0:29}..."
-    
+
     tput cuu1
 
     if [ "$ERROR" == "0" ]
@@ -680,7 +680,7 @@ now () {
 }
 
 elapsed () {
-    
+
     START="$1"
     STOP="$2"
 
@@ -804,7 +804,7 @@ array_append () {
 # Returns the size of an array.
 #
 array_size () {
-   
+
     $(__bsfl_array_len size $1)
     echo "$size"
 }
@@ -847,7 +847,7 @@ __stack_push_tmp () {
 }
 
 #
-# Implementation of stack. 
+# Implementation of stack.
 # Supports push and pop (add item/get+remove item)
 #
 
@@ -856,11 +856,11 @@ declare STACK
 stack_push () {
 
     line="$1"
-        
-    if has_value $STACK 
-    then    
+
+    if has_value $STACK
+    then
         STACK="$line"
-    else    
+    else
         STACK="$line"$'\n'"$STACK"
     fi
 }
@@ -868,7 +868,7 @@ stack_push () {
 stack_pop () {
 
     TMP_STACK=""
-    i=0 
+    i=0
     tmp=""
     for x in $STACK
     do
@@ -904,7 +904,7 @@ function str_replace_in_file () {
     local DEST="$2"
     local FILE="$3"
 
-    has_value FILE 
+    has_value FILE
     die_if_false $? "Empty argument 'file'"
     file_exists "$FILE"
     die_if_false $? "File does not exist"

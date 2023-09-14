@@ -71,7 +71,7 @@ other ones weak, the string one is used.
 
 First attempt : look at the gcc web site
 ----------------------------------------
-  
+
   The gcc web site actually has an FAQ dealing with the problem (see
 http://gcc.gnu.org/faq.html#dso). Here is the relevant part of it for us :
       "You must also make the external symbols in the loaded library

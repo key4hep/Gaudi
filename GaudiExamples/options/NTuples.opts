@@ -30,4 +30,3 @@ HistogramPersistencySvc.OutputFile = "histo.root";
 NTupleSvc.Output = { "MyTuples DATAFILE='ntuple.root' OPT='NEW' TYP='ROOT'" };
 
 //RndmGenSvc.Engine.Seeds = { 70, 71, 0 };
-

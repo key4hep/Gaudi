@@ -5,8 +5,8 @@ AthSequencer/AthBeginSeq  AthSequencer/AthAlgEvtSeq
 AthSequencer/AthCondSeq  AthSequencer/AthAllAlgSeq
 AthSequencer/AthEndSeq  AthSequencer/AthAlgEvtSeq
 AthSequencer/AthFilterSeq  AthSequencer/AthMasterSeq
-AthSequencer/AthMasterSeq  
-AthSequencer/AthOutSeq  
+AthSequencer/AthMasterSeq
+AthSequencer/AthOutSeq
 AthSequencer/AthRegSeq  AthSequencer/AthMasterSeq
 Analysis::JetBTaggerAlg/btagging_antikt4emtopo   AthSequencer/AthAlgSeq
    R ( 'Analysis::JetTagCalibCondData' , 'ConditionStore+JetTagCalibHistosKey' )

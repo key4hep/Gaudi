@@ -29,7 +29,7 @@ namespace ba = boost::algorithm;
 #include "GaudiKernel/PhysicalConstants.h"
 #include "GaudiKernel/System.h"
 // ============================================================================
-//#include "GaudiKernel/ToStream.h"
+// #include "GaudiKernel/ToStream.h"
 // ============================================================================
 // Local
 // ============================================================================

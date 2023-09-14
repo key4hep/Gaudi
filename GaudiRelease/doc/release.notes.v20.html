@@ -12,7 +12,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  
+
   <title>Gaudi Release Notes</title>
   <script type="text/javascript" language="JavaScript">
 <!-- Work around for old browsers
@@ -317,7 +317,7 @@ Purpose: Gaudi common set of packages<br><br>
     (<span class="author">Vanya Belyaev</span>)</li>
 <li>Patch #1963. Add getGraphs() method to THistSvc<br/>
     (<span class="author">Charles Leggett</span>)</li>
-<li>Reimplemented IssueLogger::getTraceBack() in terms of the version of 
+<li>Reimplemented IssueLogger::getTraceBack() in terms of the version of
     System::backTrace() introduced with patch #1797.<br/>
     (<span class="author">Marco Clemencic, Frank Winklmeier</span>)</li>
 <li>Patch #1796: Performance improvement for message reporting<br/>
@@ -390,7 +390,7 @@ Purpose: Gaudi common set of packages<br><br>
 <li>Added the interface IEventTimeDecoder (from LHCb).<br>
     (<span class="author">Marco Clemencic</span>)</li>
 <li>Fixed bug #38868. MinimalEventLoopMgr does not restart algorithms<br>
-    Implemented restart so that it calls the restart of all the algorithms. 
+    Implemented restart so that it calls the restart of all the algorithms.
     Fixed the implementation of reinitialize too.<br>
     (<span class="author">Marco Clemencic</span>)</li>
 <li>Fixed bug #38855. Inconsistent check in Service::sysRestart.
@@ -472,10 +472,10 @@ Purpose: Gaudi common set of packages<br><br>
 <li>Changed the name of the extension for libraries on OSX from ".dylib" to
     ".so".<br>
     (<span class="author">Charles Leggett</span>)</li>
-<li>Added a path cleaner to the global Gaudi setup. This is removing invalid or 
+<li>Added a path cleaner to the global Gaudi setup. This is removing invalid or
     empty components in the PATH, LD_LIBRARY_PATH, JOBOPTSEARCHPATH, PYTHONPATH.<br>
     (<span class="author">Hubert Degaudenzi</span>)</li>
-<li>Added the pattern pyd_module in order to be able to create python binary 
+<li>Added the pattern pyd_module in order to be able to create python binary
     modules (.pyd files).<br>
     (<span class="author">Hubert Degaudenzi</span>)</li>
 </ul></li>
@@ -811,7 +811,7 @@ Purpose: Gaudi common set of packages<br><br>
 </ul>
 <li>GaudiUtils (v1r5):</li>
 <ul>
-<li>Patch #1700, fixed the filter mechanism to reduce the number of messages 
+<li>Patch #1700, fixed the filter mechanism to reduce the number of messages
     for inaccessible objects.<br>
     (<span class="author">Markus Frank</span>)</li>
 <li>Fixed Bug #33372, tiny memory leak in XmlFileCatalog.<br>
@@ -821,7 +821,7 @@ Purpose: Gaudi common set of packages<br><br>
 </ul>
 <li>GaudiPoolDb (v3r1):</li>
 <ul>
-<li>Patch #1700, fixed the filter mechanism to reduce the number of messages 
+<li>Patch #1700, fixed the filter mechanism to reduce the number of messages
     for inaccessible objects.<br>
     (<span class="author">Markus Frank</span>)</li>
 </ul>
@@ -875,7 +875,7 @@ Purpose: Gaudi common set of packages<br><br>
 <li>Removed the genmap related macros and fragments, now available in LCG_Interfaces/ROOT (needs
     <font color="red">LCGCMT &gt;= 54</font>)
 <li>Fixes for Python 2.5.<br>(<span class="author">Marco Clemencic</span>)
-<li>Fixed bug #32341. install.py uses absolute path if the source and 
+<li>Fixed bug #32341. install.py uses absolute path if the source and
 the destination files are on different windows drives.<br>(<span class="author">Hubert Degaudenzi</span>)
 </ul>
 <li>GaudiKernel (v23r3):</li>
@@ -958,7 +958,7 @@ the destination files are on different windows drives.<br>(<span class="author">
 <li>GaudiUtils (v1r4):</li>
 <ul>
 <li>Patch #1622. Reduce printout level on unsuccessful catalog lookup.
-                (MultiFileCatalog) 
+                (MultiFileCatalog)
    An unsuccessful catalog lookup is not an error, but rather a normal operation
    if e.g. the existence of a file should be checked.<br>(<span class="author">Markus Frank</span>)
 <li>Patch #1585.
@@ -978,8 +978,8 @@ the destination files are on different windows drives.<br>(<span class="author">
    Modified the logic of GaudiCommon&lt;PBASE&gt;::fullTESLocation to return RootInTES
    when the user asks for "" or "/Event" (and the rootInTES flag is true).<br>(<span class="author">Marco Clemencic</span>)
 <li>Patch #1625.
-    Introduce fix for the problem of non-deterministic automatically 
-    assigned numerical IDs in the GaudiTuples and GaudiHistos base 
+    Introduce fix for the problem of non-deterministic automatically
+    assigned numerical IDs in the GaudiTuples and GaudiHistos base
     classes.<br>(<span class="author">Chris Rob Jones</span>)
 <li>Patch #1620 (bug #32030).
   <ul>
@@ -1103,9 +1103,9 @@ the destination files are on different windows drives.<br>(<span class="author">
   <li>Patch #1418 (<span style="color: rgb(115, 115, 115);">Chris Jones</span>)<br>
       Minor fix to <tt>GaudiHistos&lt;PBASE&gt;::monitorHisto</tt> to use the full TES path
       instead of just the base histogram ID when registering the histogram to
-      the monitoring service. I.e. When an algorithm called 'MyAlg' creates a 
+      the monitoring service. I.e. When an algorithm called 'MyAlg' creates a
       histogram with ID 'MyID' register this as 'MyAlg/MyID' instead of just
-      'MyID', in order to prevent conflicts in the case some another algorithm 
+      'MyID', in order to prevent conflicts in the case some another algorithm
       also creates a histogram with base ID MyID.</li>
 </ul>
 </li>

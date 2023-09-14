@@ -316,7 +316,7 @@ class iProperty(object):
             value = str(value.toStringProperty())
         elif hasattr(value, "toString"):
             value = str(value.toString())
-        elif type(value) == long:
+        elif isinstance(value, long):
             value = "%d" % value  # prevent pending 'L'
         else:
             value = str(value)
@@ -971,16 +971,15 @@ class AppMgr(iService):
             for p, v in c.getValuedProperties().items():
                 v = expandvars(v)
                 # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
-                if (
-                    hasattr(Configurable, "PropertyReference")
-                    and type(v) == Configurable.PropertyReference
+                if hasattr(Configurable, "PropertyReference") and isinstance(
+                    v, Configurable.PropertyReference
                 ):
                     # this is done in "getFullName", but the exception is ignored,
                     # so we do it again to get it
                     v = v.__resolve__()
-                if type(v) == str:
+                if isinstance(v, str):
                     v = repr(v)  # need double quotes
-                if type(v) == long:
+                if isinstance(v, long):
                     v = "%d" % v  # prevent pending 'L'
                 gbl.GaudiPython.Helpers.setProperty(
                     self._svcloc, ".".join([n, p]), str(v)

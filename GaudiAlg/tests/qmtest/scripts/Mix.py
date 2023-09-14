@@ -39,7 +39,6 @@ from GaudiPython.Bindings import AppMgr
 
 class SimpleAlgo(GaudiAlgo):
     def execute(self):
-
         print("I am SimpleAlgo.execute!  ", self.name())
         sys.stdout.flush()
 
@@ -51,7 +50,6 @@ class SimpleAlgo(GaudiAlgo):
 
 
 def configure():
-
     AuditorSvc(Auditors=["ChronoAuditor"])
 
     ApplicationMgr(
@@ -85,7 +83,6 @@ def configure():
 
 
 if "__main__" == __name__:
-
     # make printout of the own documentations
     print("*" * 120)
     print(__doc__)

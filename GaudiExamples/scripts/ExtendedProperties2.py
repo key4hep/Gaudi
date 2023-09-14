@@ -43,7 +43,6 @@ ApplicationMgr(EvtSel="NONE", TopAlg=[ep2], EvtMax=10)
 # The actual job excution
 # =============================================================================
 if "__main__" == __name__:
-
     print(__doc__, __author__)
 
     # make sure cling can generate all required methods in Gaudi::Property

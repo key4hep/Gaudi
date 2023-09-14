@@ -18,9 +18,9 @@
     +++ GaudiKernel/src/Lib/System.cpp
        in System::typeinfoName(), added a #elif defined(sun)
     +++ GaudiKernel/CnvFactory.h
-       removed virtual inheritence in class CnvFactory & CnvFactory2 
+       removed virtual inheritence in class CnvFactory & CnvFactory2
     +++ GaudiKernel/ObjectFactory.h
-       removed virtual inheritence in class ObjectFactory & ObjectFactory2 
+       removed virtual inheritence in class ObjectFactory & ObjectFactory2
 
 ! 20020315 Markus Frank
   - Kernel.h
@@ -33,7 +33,7 @@
   - Converter.cpp
     Do not dereference dataProvider if pointer is invalid
   - TimePoint.h
-    Add StreamBuffer& operator<<(), StreamBuffer& operator>>(), 
+    Add StreamBuffer& operator<<(), StreamBuffer& operator>>(),
     MsgStream& operator<<()
   - TimePoint.h
     Add MsgStream& operator<<()
@@ -46,18 +46,18 @@
 
 ! 20020215 Pere Mato
   - Removed dependency with AIDA
-  - Eliminated the old IHistogramXXX interfaces. Users should use the 
+  - Eliminated the old IHistogramXXX interfaces. Users should use the
     AIDA ones directly
   - Changed ClassId.h and IHistogramSvc.h to include 3D histograms
-  
+
 ! 20020225 Markus Frank
   - Problem reported by Kambiz Mahboubi fixed concerning the
     user defined random number generator (i.e. DefinedPdf)
   - GaudiKernel/RndmGenerators.h
 
 ! 20020213 - Pere Mato
-  - Algorithm.cpp: Fixed bug 
-    The status code of sysInitilize() of sub-algorithms was not 
+  - Algorithm.cpp: Fixed bug
+    The status code of sysInitilize() of sub-algorithms was not
     checked. Now it should fail and report an error.
 
 === GaudiSvc v9r0  =========================================================
@@ -84,8 +84,8 @@
   - Moved ListItem.h to GaudiKernel package since it is quite usefull helper class.
 
 ! 20020313 - Pere Mato (David Quarrie)
-  - New property "OutStreamType" for the ApplicationMgr to select the 
-	  default type for Output Streams. The default value is "OutputStream" 
+  - New property "OutStreamType" for the ApplicationMgr to select the
+	  default type for Output Streams. The default value is "OutputStream"
 		be compatible.
 
 ! 20020226 - Pere Mato
@@ -129,13 +129,13 @@
         added forward declaration of dbHandle< DbSession >
     +++ GaudiDb/DbDataBase.h
         added forward declarations of DbFederation and DbSession
-        added forward declaration of dbHandle< DbFederation >  
+        added forward declaration of dbHandle< DbFederation >
     +++ GaudiDb/DbSession.h
         removed include of DbFederation.h
         removed include guard of DbBase.h
         removed forward declaration of specialisation of template dbHandle< DbSession >
         added forward declaration of class DbDataBase
-        added forward declaration of dbHandle< DbFederation >  and dbHandle< DbDataBase > 
+        added forward declaration of dbHandle< DbFederation >  and dbHandle< DbDataBase >
     +++ GaudiDb/src/Base/DbBaseConverter.cpp
         added include of DbFederation.h as first of the GaudiDb includes
         moved DbDataBase.h include to just before DbFederation.h include
@@ -187,7 +187,7 @@
  - added doxygen-documentation
 
 ! 20020319 - Stefan Roiser
- - changes to the interface when adding information about methods, passing only strings for return-types and 
+ - changes to the interface when adding information about methods, passing only strings for return-types and
    argument-types. Internal resolving of information about MetaClasses.
  - default modifier for meta-fields set to 'private'
  - added MetaConstructor
@@ -214,7 +214,7 @@
 
 !=== GaudiPython v4r0 ======================================================
 ! 20020321 - Pere Mato
- - Adapted to the new GaudiIntrospection, which adds method support 
+ - Adapted to the new GaudiIntrospection, which adds method support
 
 ! 20020319 - Markus Frank
  - Added the possibility to obtain any interface implemented by
@@ -234,15 +234,15 @@
     libraryShr, library_stamps, library_Clinkopts, library_Cshlibflags
     library_Llinkopts, library_Lshlibflags, library_Softlinks, library_path
     i.e. apply_pattern libraryShr library=GaudiAlg
-         apply_pattern library_path library=GaudiAlgLIb 
- 
+         apply_pattern library_path library=GaudiAlgLIb
+
   - new patterns to handle component library and linker library
     accepts one argument library=<library name>
     i.e. apply_pattern component_library library=GaudiAlg
          apply_pattern linker_library library=GaudiAlgLib
 
-  - following patterns accept an argument 
-    library=<library name> 
+  - following patterns accept an argument
+    library=<library name>
     packageShr, package_stamps, package_Clinkopts, package_Cshlibflags,
     package_Llinkopts, package_Lshlibflags
 
@@ -256,7 +256,7 @@
 ! 20020321 - GaudiPolicy (Pere)
   - added tags from ATLAS and definition of a set of "primitive" tags
     to be used when defining macros and sets.
- 
+
 ! 20020313 - GaudiPolicy (Pere)
   - changed dsp_all fragment to add the release.notes in the DevStudio project
 

@@ -78,7 +78,7 @@
 # WARNING: Using default tag head-20110721 for partition DDDB
 # WARNING: Using default tag head-20110614 for partition LHCBCOND
 # WARNING: Using default tag tt-20110126 for partition DQFLAGS
-ApplicationMgr    SUCCESS 
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to Brunel version v40r1
                                           running on lxplus251.cern.ch on Fri Sep 30 15:31:42 2011
@@ -92,41 +92,41 @@ BrunelInit        SUCCESS ======================================================
 RemovePrsPacked...SUCCESS bankKiller : all banks of type 'PrsPacked' will be removed.
 RemoveEcalPacke...SUCCESS bankKiller : all banks of type 'EcalPacked' will be removed.
 RemoveHcalPacke...SUCCESS bankKiller : all banks of type 'HcalPacked' will be removed.
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Electron_Long_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Muon_Long_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Pion_Long_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Kaon_Long_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Proton_Long_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Ghost_Long_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Electron_Downstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Muon_Downstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Pion_Downstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Kaon_Downstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Proton_Downstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Ghost_Downstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Electron_Upstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Muon_Upstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Pion_Upstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Kaon_Upstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Proton_Upstream_NeuroBayes.conf
- NB_READEXPERTISE: reading expertise from 
+ NB_READEXPERTISE: reading expertise from
  /afs/cern.ch/lhcb/software/releases/PARAM/ChargedProtoANNPIDParam/v1r1/data/MC10TuneV1/GlobalPID_Ghost_Upstream_NeuroBayes.conf
 IODataManager       ERROR Referring to existing dataset /afs/cern.ch/user/r/rlambert/public/forMarkus/run_69669_large_2ev.mdf by its physical name.
 IODataManager       ERROR You may not be able to navigate back to the input file -- processing continues
@@ -4684,7 +4684,7 @@ StoreTracer (Executing Algorithm[1]) :  FSROutputStreamDstWriter
 StoreTracer (Done with Algorithm[1]) :  FSROutputStreamDstWriter
 StoreTracer [EventDataSvc] (Framework) : CLEAR_ROOT       : /Event
 EventSelector.D...   INFO Cannot read more data  (Header). End-of-File reached.
-EventLoopMgr         INFO No more events in event selection 
+EventLoopMgr         INFO No more events in event selection
 ApplicationMgr       INFO Application Manager Stopped successfully
 --> Framework / Unknown [Seq:1 / Level:0]
 Inputs:  /Event/DAQ/RawEvent
@@ -5595,7 +5595,7 @@ Outputs: /Event/DAQ/ODIN
 BrunelInit        SUCCESS ==================================================================
 BrunelInit        SUCCESS 2 events processed
 BrunelInit        SUCCESS ==================================================================
-BrunelEventCount  SUCCESS Booked 1 Histogram(s) : 1D=1 
+BrunelEventCount  SUCCESS Booked 1 Histogram(s) : 1D=1
 FilterNoBeam      SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  |*"#passed"                                       |         2 |          0 |(  0.00000 +- 50.0000  )%|   -------   |   -------   |
@@ -5867,173 +5867,173 @@ NeutralProtoPMakerSUCCESS Number of counters : 14
  | "Rec/Calo/Photons=>Rec/ProtoP/Neutrals"         |         2 |         15 |     7.5000 |     4.5000 |      3.0000 |      12.000 |
  | "Rec/Calo/SplitPhotons=>Rec/ProtoP/Neutrals"    |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "ShowerShape   for 'Photon'"                    |        15 |   64777.39 |     4318.5 |     2636.7 |      643.12 |      9937.7 |
-OverallEventPro...SUCCESS Booked 1 Histogram(s) : 1D=1 
-TrackEventProcTimeSUCCESS Booked 1 Histogram(s) : 1D=1 
-VertexEventProc...SUCCESS Booked 1 Histogram(s) : 1D=1 
-RichEventProcTime SUCCESS Booked 1 Histogram(s) : 1D=1 
-CaloEventProcTime SUCCESS Booked 1 Histogram(s) : 1D=1 
-MuonEventProcTime SUCCESS Booked 1 Histogram(s) : 1D=1 
-ProtoEventProcTimeSUCCESS Booked 1 Histogram(s) : 1D=1 
-ProcStatAbortMoni SUCCESS Booked 1 Histogram(s) : 1DProf=1 
-EcalDigitMon      SUCCESS Booked 5 Histogram(s) : 1D=3 2D=2 
+OverallEventPro...SUCCESS Booked 1 Histogram(s) : 1D=1
+TrackEventProcTimeSUCCESS Booked 1 Histogram(s) : 1D=1
+VertexEventProc...SUCCESS Booked 1 Histogram(s) : 1D=1
+RichEventProcTime SUCCESS Booked 1 Histogram(s) : 1D=1
+CaloEventProcTime SUCCESS Booked 1 Histogram(s) : 1D=1
+MuonEventProcTime SUCCESS Booked 1 Histogram(s) : 1D=1
+ProtoEventProcTimeSUCCESS Booked 1 Histogram(s) : 1D=1
+ProcStatAbortMoni SUCCESS Booked 1 Histogram(s) : 1DProf=1
+EcalDigitMon      SUCCESS Booked 5 Histogram(s) : 1D=3 2D=2
 EcalDigitMon      SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Raw/Ecal/Digits"                       |         2 |        197 |     98.500 |     43.500 |      55.000 |      142.00 |
-HcalDigitMon      SUCCESS Booked 5 Histogram(s) : 1D=3 2D=2 
+HcalDigitMon      SUCCESS Booked 5 Histogram(s) : 1D=3 2D=2
 HcalDigitMon      SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Raw/Hcal/Digits"                       |         2 |         88 |     44.000 |     30.000 |      14.000 |      74.000 |
-PrsDigitMon       SUCCESS Booked 4 Histogram(s) : 1D=2 2D=2 
+PrsDigitMon       SUCCESS Booked 4 Histogram(s) : 1D=2 2D=2
 PrsDigitMon       SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Raw/Prs/Digits"                        |         2 |       1245 |     622.50 |     126.50 |      496.00 |      749.00 |
-SpdDigitMon       SUCCESS Booked 2 Histogram(s) : 1D=1 2D=1 
+SpdDigitMon       SUCCESS Booked 2 Histogram(s) : 1D=1 2D=1
 SpdDigitMon       SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Raw/Spd/Digits"                        |         2 |        846 |     423.00 |     107.00 |      316.00 |      530.00 |
-SpdMon            SUCCESS Booked 2 Histogram(s) : 2D=2 
+SpdMon            SUCCESS Booked 2 Histogram(s) : 2D=2
 EcalEFlowMon      SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Raw/Ecal/Digits"                       |         2 |        197 |     98.500 |     43.500 |      55.000 |      142.00 |
-EcalClusterMon    SUCCESS Booked 7 Histogram(s) : 1D=5 2D=2 
+EcalClusterMon    SUCCESS Booked 7 Histogram(s) : 1D=5 2D=2
 EcalClusterMon    SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/Calo/EcalClusters"                 |         2 |         16 |     8.0000 |     4.0000 |      4.0000 |      12.000 |
-ElectronMon       SUCCESS Booked 9 Histogram(s) : 1D=7 2D=2 
+ElectronMon       SUCCESS Booked 9 Histogram(s) : 1D=7 2D=2
 ElectronMon       SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/Calo/Electrons"                    |         1 |          2 |     2.0000 |     0.0000 |      2.0000 |      2.0000 |
-PhotonMon         SUCCESS Booked 9 Histogram(s) : 1D=7 2D=2 
+PhotonMon         SUCCESS Booked 9 Histogram(s) : 1D=7 2D=2
 PhotonMon         SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/Calo/Photons"                      |         2 |         15 |     7.5000 |     4.5000 |      3.0000 |      12.000 |
-SplitPhotonMon    SUCCESS Booked 8 Histogram(s) : 1D=6 2D=2 
-MergedPi0Mon      SUCCESS Booked 8 Histogram(s) : 1D=8 
-ResolvedPi0Mon    SUCCESS Booked 7 Histogram(s) : 1D=7 
+SplitPhotonMon    SUCCESS Booked 8 Histogram(s) : 1D=6 2D=2
+MergedPi0Mon      SUCCESS Booked 8 Histogram(s) : 1D=8
+ResolvedPi0Mon    SUCCESS Booked 7 Histogram(s) : 1D=7
 ResolvedPi0Mon    SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/Calo/Photons"                      |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
-ProtoElectronMon  SUCCESS Booked 7 Histogram(s) : 1D=5 2D=2 
+ProtoElectronMon  SUCCESS Booked 7 Histogram(s) : 1D=5 2D=2
 ProtoElectronMon  SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/ProtoP/Charged"                    |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
-PhotonMatchMon    SUCCESS Booked 5 Histogram(s) : 1D=5 
+PhotonMatchMon    SUCCESS Booked 5 Histogram(s) : 1D=5
 PhotonMatchMon    SUCCESS Number of counters : 3
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/Calo/ClusterMatch"                 |         2 |         57 |     28.500 |     28.500 |      0.0000 |      57.000 |
  | "Monitor Rec/Calo/EcalClusters"                 |         2 |         16 |     8.0000 |     4.0000 |      4.0000 |      12.000 |
  | "Monitor Rec/Calo/EcalSplitClusters"            |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
-ElectronMatchMon  SUCCESS Booked 5 Histogram(s) : 1D=5 
+ElectronMatchMon  SUCCESS Booked 5 Histogram(s) : 1D=5
 ElectronMatchMon  SUCCESS Number of counters : 2
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/Calo/ElectronMatch"                |         2 |          5 |     2.5000 |     2.5000 |      0.0000 |      5.0000 |
  | "Monitor Rec/Calo/Electrons"                    |         2 |          2 |     1.0000 |     1.0000 |      0.0000 |      2.0000 |
-BremMatchMon      SUCCESS Booked 5 Histogram(s) : 1D=5 
+BremMatchMon      SUCCESS Booked 5 Histogram(s) : 1D=5
 BremMatchMon      SUCCESS Number of counters : 2
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Monitor Rec/Calo/BremMatch"                    |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "Monitor Rec/Calo/Photons"                      |         2 |         15 |     7.5000 |     4.5000 |      3.0000 |      12.000 |
-CaloEMuPIDMonUncutSUCCESS Booked 6 Histogram(s) : 1D=6 
+CaloEMuPIDMonUncutSUCCESS Booked 6 Histogram(s) : 1D=6
 CaloEMuPIDMonUncutSUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "nEvents"                                       |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-CaloEMuPIDMonSoft SUCCESS Booked 4 Histogram(s) : 1D=4 
+CaloEMuPIDMonSoft SUCCESS Booked 4 Histogram(s) : 1D=4
 CaloEMuPIDMonSoft SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "nEvents"                                       |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-CaloEMuPIDMonHard SUCCESS Booked 4 Histogram(s) : 1D=4 
+CaloEMuPIDMonHard SUCCESS Booked 4 Histogram(s) : 1D=4
 CaloEMuPIDMonHard SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "nEvents"                                       |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-RichRawDataSize   SUCCESS Booked 3 Histogram(s) : 1DProf=3 
+RichRawDataSize   SUCCESS Booked 3 Histogram(s) : 1DProf=3
 RichDataSizeL0F...SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  |*"#passed"                                       |         2 |          2 |(  100.000 +- 50.0000  )%|   -------   |   -------   |
-RichRawDataSizeL0 SUCCESS Booked 3 Histogram(s) : 1DProf=3 
-RichDecodingErrorsSUCCESS Booked 16 Histogram(s) : 1DProf=16 
-RichRecPixelQC    SUCCESS Booked 6 Histogram(s) : 1D=6 
-RichRecPixelClu...SUCCESS Booked 2 Histogram(s) : 1D=2 
-RiLongTrkEff      SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6 
-RiForwardTrkEff   SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6 
-RiMatchTrkEff     SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6 
-RiKsTrackTrkEff   SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6 
-RiVeloTTTrkEff    SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6 
-RiSeedTrkEff      SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6 
-RiCKResLong       SUCCESS Booked 74 Histogram(s) : 1D=71 1DProf=3 
-RiCKResForward    SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResMatch      SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResKsTrack    SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResVeloTT     SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResSeed       SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResLongTight  SUCCESS Booked 74 Histogram(s) : 1D=71 1DProf=3 
-RiCKResForwardT...SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResMatchTight SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResKsTrackT...SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResVeloTTTightSUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-RiCKResSeedTight  SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3 
-ENNRingMoniAll    SUCCESS Booked 12 Histogram(s) : 1D=12 
-ENNRingMoniBest   SUCCESS Booked 12 Histogram(s) : 1D=12 
-ENNRingMoniIsol...SUCCESS Booked 12 Histogram(s) : 1D=12 
-RichAlignMoniR1GasSUCCESS Booked 13 Histogram(s) : 1D=3 2D=10 
-RichAlignMoniR2GasSUCCESS Booked 13 Histogram(s) : 1D=3 2D=10 
-RichHPDIFBMoni    SUCCESS Booked 487 Histogram(s) : 1D=487 
-MuonPIDMonitorDownSUCCESS Booked 70 Histogram(s) : 1D=58 1DProf=12 
-MuonPIDMonitorLongSUCCESS Booked 70 Histogram(s) : 1D=58 1DProf=12 
+RichRawDataSizeL0 SUCCESS Booked 3 Histogram(s) : 1DProf=3
+RichDecodingErrorsSUCCESS Booked 16 Histogram(s) : 1DProf=16
+RichRecPixelQC    SUCCESS Booked 6 Histogram(s) : 1D=6
+RichRecPixelClu...SUCCESS Booked 2 Histogram(s) : 1D=2
+RiLongTrkEff      SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6
+RiForwardTrkEff   SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6
+RiMatchTrkEff     SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6
+RiKsTrackTrkEff   SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6
+RiVeloTTTrkEff    SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6
+RiSeedTrkEff      SUCCESS Booked 20 Histogram(s) : 1D=14 1DProf=6
+RiCKResLong       SUCCESS Booked 74 Histogram(s) : 1D=71 1DProf=3
+RiCKResForward    SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResMatch      SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResKsTrack    SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResVeloTT     SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResSeed       SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResLongTight  SUCCESS Booked 74 Histogram(s) : 1D=71 1DProf=3
+RiCKResForwardT...SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResMatchTight SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResKsTrackT...SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResVeloTTTightSUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+RiCKResSeedTight  SUCCESS Booked 42 Histogram(s) : 1D=39 1DProf=3
+ENNRingMoniAll    SUCCESS Booked 12 Histogram(s) : 1D=12
+ENNRingMoniBest   SUCCESS Booked 12 Histogram(s) : 1D=12
+ENNRingMoniIsol...SUCCESS Booked 12 Histogram(s) : 1D=12
+RichAlignMoniR1GasSUCCESS Booked 13 Histogram(s) : 1D=3 2D=10
+RichAlignMoniR2GasSUCCESS Booked 13 Histogram(s) : 1D=3 2D=10
+RichHPDIFBMoni    SUCCESS Booked 487 Histogram(s) : 1D=487
+MuonPIDMonitorDownSUCCESS Booked 70 Histogram(s) : 1D=58 1DProf=12
+MuonPIDMonitorLongSUCCESS Booked 70 Histogram(s) : 1D=58 1DProf=12
 MuonTrackFitter   SUCCESS Number of counters : 3
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "nBadInput"                                     |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "nFitted"                                       |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "nTracks"                                       |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
-MuonTrackAligMo...SUCCESS Booked 64 Histogram(s) : 1D=42 2D=2 1DProf=20 
-MuEffMonitor      SUCCESS Booked 34 Histogram(s) : 1D=31 2D=3 
-VeloClusterMonitorSUCCESS Booked 15 Histogram(s) : 1D=12 2D=3 
+MuonTrackAligMo...SUCCESS Booked 64 Histogram(s) : 1D=42 2D=2 1DProf=20
+MuEffMonitor      SUCCESS Booked 34 Histogram(s) : 1D=31 2D=3
+VeloClusterMonitorSUCCESS Booked 15 Histogram(s) : 1D=12 2D=3
 VeloClusterMonitorSUCCESS Number of counters : 2
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "# VeloClusters"                                |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "# events"                                      |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-VeloTrackMonitor  SUCCESS Booked 112 Histogram(s) : 1D=19 1DProf=93 
-VeloIPResolutio...SUCCESS Booked 21 Histogram(s) : 1D=21 
+VeloTrackMonitor  SUCCESS Booked 112 Histogram(s) : 1D=19 1DProf=93
+VeloIPResolutio...SUCCESS Booked 21 Histogram(s) : 1D=21
 VeloIPResolutio...SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Events Analysed"                               |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-TrackMonitor      SUCCESS Booked 106 Histogram(s) : 1D=89 1DProf=17 
+TrackMonitor      SUCCESS Booked 106 Histogram(s) : 1D=89 1DProf=17
 TrackMonitor      SUCCESS Number of counters : 3
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "#Downstream"                                   |         2 |        100 |     50.000 |     50.000 |      0.0000 |      100.00 |
  | "#Tracks"                                       |         2 |        114 |     57.000 |     57.000 |      0.0000 |      114.00 |
  | "#Ttrack"                                       |         2 |         14 |     7.0000 |     7.0000 |      0.0000 |      14.000 |
-TrackDiMuonMonitorSUCCESS Booked 1 Histogram(s) : 1D=1 
+TrackDiMuonMonitorSUCCESS Booked 1 Histogram(s) : 1D=1
 TrackDiMuonMonitorSUCCESS Number of counters : 4
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "numcombinations"                               |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "numnegtracks"                                  |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "numpostracks"                                  |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
  | "numselected"                                   |         2 |          0 |     0.0000 |     0.0000 |      0.0000 |      0.0000 |
-TrackVertexMonitorSUCCESS Booked 30 Histogram(s) : 1D=16 1DProf=14 
-TrackV0Monitor    SUCCESS Booked 1 Histogram(s) : 1D=1 
-TrackFitMatchMo...SUCCESS Booked 10 Histogram(s) : 1D=5 1DProf=5 
-TrackAlignMonitor SUCCESS Booked 27 Histogram(s) : 1D=18 1DProf=9 
-TrackITOverlapM...SUCCESS Booked 21 Histogram(s) : 1D=21 
-TrackVeloOverla...SUCCESS Booked 8 Histogram(s) : 1D=8 
-TTTrackMonitor    SUCCESS Booked 27 Histogram(s) : 1D=24 1DProf=3 
-ITTrackMonitor    SUCCESS Booked 55 Histogram(s) : 1D=48 2D=1 1DProf=6 
-TrackEcalMatchM...SUCCESS Booked 32 Histogram(s) : 1D=24 1DProf=8 
-TrackSpdMatchMo...SUCCESS Booked 32 Histogram(s) : 1D=24 1DProf=8 
-TrackPrsMatchMo...SUCCESS Booked 32 Histogram(s) : 1D=24 1DProf=8 
-TrackMuonMatchM...SUCCESS Booked 16 Histogram(s) : 1D=16 
-OTTimeMonitor     SUCCESS Booked 9 Histogram(s) : 1D=8 1DProf=1 
-OTTrackMonitor    SUCCESS Booked 67 Histogram(s) : 1D=47 2D=7 1DProf=13 
-OTHitEfficiency...SUCCESS Booked 101 Histogram(s) : 1D=9 2D=21 1DProf=47 2DProf=24 
-TTClusterMonitor  SUCCESS Booked 18 Histogram(s) : 1D=13 2D=4 1DProf=1 
+TrackVertexMonitorSUCCESS Booked 30 Histogram(s) : 1D=16 1DProf=14
+TrackV0Monitor    SUCCESS Booked 1 Histogram(s) : 1D=1
+TrackFitMatchMo...SUCCESS Booked 10 Histogram(s) : 1D=5 1DProf=5
+TrackAlignMonitor SUCCESS Booked 27 Histogram(s) : 1D=18 1DProf=9
+TrackITOverlapM...SUCCESS Booked 21 Histogram(s) : 1D=21
+TrackVeloOverla...SUCCESS Booked 8 Histogram(s) : 1D=8
+TTTrackMonitor    SUCCESS Booked 27 Histogram(s) : 1D=24 1DProf=3
+ITTrackMonitor    SUCCESS Booked 55 Histogram(s) : 1D=48 2D=1 1DProf=6
+TrackEcalMatchM...SUCCESS Booked 32 Histogram(s) : 1D=24 1DProf=8
+TrackSpdMatchMo...SUCCESS Booked 32 Histogram(s) : 1D=24 1DProf=8
+TrackPrsMatchMo...SUCCESS Booked 32 Histogram(s) : 1D=24 1DProf=8
+TrackMuonMatchM...SUCCESS Booked 16 Histogram(s) : 1D=16
+OTTimeMonitor     SUCCESS Booked 9 Histogram(s) : 1D=8 1DProf=1
+OTTrackMonitor    SUCCESS Booked 67 Histogram(s) : 1D=47 2D=7 1DProf=13
+OTHitEfficiency...SUCCESS Booked 101 Histogram(s) : 1D=9 2D=21 1DProf=47 2DProf=24
+TTClusterMonitor  SUCCESS Booked 18 Histogram(s) : 1D=13 2D=4 1DProf=1
 TTClusterMonitor  SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Number of events"                              |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-ITClusterMonitor  SUCCESS Booked 14 Histogram(s) : 1D=9 2D=4 1DProf=1 
+ITClusterMonitor  SUCCESS Booked 14 Histogram(s) : 1D=9 2D=4 1DProf=1
 ITClusterMonitor  SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Number of events"                              |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-ChargedProtoPMoni SUCCESS Booked 10 Histogram(s) : 1DProf=10 
-MuMonitor         SUCCESS Booked 4 Histogram(s) : 1D=3 1DProf=1 
+ChargedProtoPMoni SUCCESS Booked 10 Histogram(s) : 1DProf=10
+MuMonitor         SUCCESS Booked 4 Histogram(s) : 1D=3 1DProf=1
 PackTracks        SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "# PackedTracks"                                |         2 |        114 |     57.000 |     57.000 |      0.0000 |      114.00 |
@@ -6221,7 +6221,7 @@ PrsL0Bit.PrsL0B...SUCCESS Number of counters : 1
 PrsADCs.PrsADCs...SUCCESS Number of counters : 1
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "getCaloBanks"                                  |         2 |          2 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
-BrunelInit.Brun...SUCCESS Booked 4 Histogram(s) : 1D=4 
+BrunelInit.Brun...SUCCESS Booked 4 Histogram(s) : 1D=4
 BrunelInit.Brun...SUCCESS Number of counters : 2
  |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
  | "Delta Memory/MB"                               |         1 |    125.456 |     125.46 |     0.0000 |      125.46 |      125.46 |

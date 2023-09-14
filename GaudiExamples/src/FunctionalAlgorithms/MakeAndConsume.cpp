@@ -527,9 +527,9 @@ namespace Gaudi::Examples {
     int i;
 
     Foo( int i ) : i{ i } {}
-    Foo( Foo&& ) = delete;
-    Foo& operator=( Foo&& ) = delete;
-    Foo( const Foo& )       = delete;
+    Foo( Foo&& )                 = delete;
+    Foo& operator=( Foo&& )      = delete;
+    Foo( const Foo& )            = delete;
     Foo& operator=( const Foo& ) = delete;
     ~Foo(){};
   };
@@ -595,7 +595,7 @@ namespace Gaudi::Examples {
     Gaudi::Algorithm const* parent              = nullptr;
     void ( *action )( Gaudi::Algorithm const* ) = nullptr;
     Eventually( Gaudi::Algorithm const* p, void ( *a )( Gaudi::Algorithm const* ) ) : parent{ p }, action{ a } {}
-    Eventually( Eventually const& ) = delete;
+    Eventually( Eventually const& )            = delete;
     Eventually& operator=( Eventually const& ) = delete;
     Eventually( Eventually&& other )
         : parent{ std::exchange( other.parent, nullptr ) }, action{ std::exchange( other.action, nullptr ) } {}

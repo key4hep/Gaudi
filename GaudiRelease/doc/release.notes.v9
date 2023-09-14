@@ -4,14 +4,14 @@ package manager: Pere Mato
 ! ============================================================================
 ! 20011129 GaudiKernel v11
 
-  - Many Changes for the DataStore classes re-design. It affects many classes: DataObject, 
+  - Many Changes for the DataStore classes re-design. It affects many classes: DataObject,
     RegistryEntry, Converter, DataSvc and Interfaces: IRegistry, IDataProviderSvc, ...
     More detailed instruction refer to:
     http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/Changes_cookbook.pdf
 
   - MsgStream.cpp
     Any change of the printout level from the application program
-    using MsgStream::setLevel(...) is ignored by the message service. 
+    using MsgStream::setLevel(...) is ignored by the message service.
     Update the local printout level on a by message bases and restore
     the previous printout level.
 
@@ -26,13 +26,13 @@ package manager: Pere Mato
   - The base class AlgTool implemements them as dummy but allows an implementation
     of  them on specific Algorithm Tools
   - Removed the need to implement a queryInterface() in specific Algorithm tools. Instead
-    use the expresion declareInterface<Ixxxx>(this) in the constructor.  
+    use the expresion declareInterface<Ixxxx>(this) in the constructor.
   - Added releaseTool() method in IToolSvc.
- 
+
   - New versions of interfaces:
     ISvcManager.h (incompatible) Added more functionality to offload ApplicationMgr
     ISvsLocator.h (compatible) Changed getServices() to const
-  
+
   - Added new methods in DataSvc to be able to set the root without clearing
     the store
 
@@ -64,10 +64,10 @@ package manager: Pere Mato
     #pragma print off
     off will switch printing off; on will switch it on.
 
-  - Changed ToolSvc to make use of the new methods initialize() and finalize() 
+  - Changed ToolSvc to make use of the new methods initialize() and finalize()
     in the IAlgTool interface modified in GaudiKernel.
   - Implement new method of IToolSvc::releaseTool()
- 
+
   - Many Changes  for the DataStore classes re-design. See details in separate note
 
   - Removed functionality from ApplicationMgr and moved to ServiceManager
@@ -75,7 +75,7 @@ package manager: Pere Mato
   - Interface ISvcManager improved and extended
   - Removed the inheritance of ApplicationMgr to (ISvcManager, IAlgManager,
     ICnvManager, IObjManager). Functionality recovered by queryInterface()
-  - Removed default services being creted by ApplicationMgr 
+  - Removed default services being creted by ApplicationMgr
 
   - Implementation of ClearStore for DetectorDataSvc
 
@@ -93,7 +93,7 @@ package manager: Pere Mato
   - Changes to adapt to the new GaudiKernel that includes a re-design of
     the data store classes
 
-  - New job option HistogramPersistencySvc.PrintHistos to steer 
+  - New job option HistogramPersistencySvc.PrintHistos to steer
     printing to standard output. Defaults to false.
   - Persistency service fails initialize if output file not defined.
 
@@ -147,14 +147,11 @@ package manager: Pere Mato
 
  - many small changes: handling of arguments in selfdefined methods, concatenate class descriptions, produce
    at least one empty constructor, handling and errorhandling of class-attribute 'argList'
- 
- - CppWriter generates an entry (classname - packagename/classname) to the 'Headerdatabase' before writing the cpp 
+
+ - CppWriter generates an entry (classname - packagename/classname) to the 'Headerdatabase' before writing the cpp
 
  - Added production of non-standard constructors, destructors, warning at top of file
 
  - Changed production of serializers in .h-files
 
  - New package object description based on XML files
-
-
-

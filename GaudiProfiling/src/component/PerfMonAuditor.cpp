@@ -404,9 +404,7 @@ private:
   void pfm_bv_copy( uint64_t* d, uint64_t* j, uint16_t n ) {
     if ( n <= BPL )
       *d = *j;
-    else {
-      memcpy( d, j, ( n >> LBPL ) * sizeof( uint64_t ) );
-    }
+    else { memcpy( d, j, ( n >> LBPL ) * sizeof( uint64_t ) ); }
   }
   static void process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_size );
   static void sigio_handler( int, siginfo_t*, void* ); // dlopen ==>
@@ -579,9 +577,7 @@ StatusCode PerfMonAuditor::initialize() {
     nehalem = true;
   else if ( family.compare( "WESTMERE" ) == 0 )
     westmere = true;
-  else {
-    error() << "ERROR: Unsupported processor family " << family << ". aborting..." << endmsg;
-  }
+  else { error() << "ERROR: Unsupported processor family " << family << ". aborting..." << endmsg; }
 
   info() << "Initialized!" << endmsg;
   return StatusCode::SUCCESS;

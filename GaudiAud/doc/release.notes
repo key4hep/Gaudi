@@ -442,5 +442,3 @@ Commit Id: $Format:%H$
                 cause this warning to be triggered. It is designed to
                 warn of memory leaks from Algorithms that retrieve objects
                 from the transient event store.
-
-

@@ -1,5 +1,5 @@
 DirSearchPath::existsDir: WARNING not a directory: /NONEXISTINGDIR
-JobOptionsSvc        INFO 
+JobOptionsSvc        INFO
 
 //##############################################################
 // Job options file
@@ -31,7 +31,7 @@ AIDATupleSvc.Output = { "MyTuples DATAFILE='ntuple_out.root' OPT='AUTO' TYP='ROO
 
 
 Job options successfully read in from ../options/AIDATupleWrite.opts
-ApplicationMgr    SUCCESS 
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.7 $
                                           running on pcphsft11.cern.ch on Wed Oct  5 15:44:10 2005
@@ -39,7 +39,7 @@ ApplicationMgr    SUCCESS
 ApplicationMgr       INFO Application Manager Configured successfully
 AIDATupleAlgori...   INFO Initializing...
 AIDATupleAlgori...   INFO Finished booking NTuples
-EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...   INFO "CnvServices": ["HbookHistSvc", "RootHistSvc"]
 HistogramPersis...WARNING Histograms saving not required.

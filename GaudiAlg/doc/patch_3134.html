@@ -30,28 +30,28 @@ and patch <a href="https://savannah.cern.ch/patch/?2873">#2873</a></h2>
 <p>It allows flexibility for interactive
 inspection&amp;manipulation&amp;mointoring of algoritms and tools. <br>
 From the given component one can extract the counters, tools &amp;
-histograms. 
+histograms.
 <br>
 </p>
-<textarea readonly="readonly" rows="20" cols="80">&gt;&gt;&gt; cmp = ...   ## get the component: algorithm or tool 
+<textarea readonly="readonly" rows="20" cols="80">&gt;&gt;&gt; cmp = ...   ## get the component: algorithm or tool
 
 &gt;&gt;&gt; counters = cmp.Counters()  ## get the dictionary of counetrs
-&gt;&gt;&gt; for key in counters : 
-...     print key, counters[key] 
+&gt;&gt;&gt; for key in counters :
+...     print key, counters[key]
 
 
 &gt;&gt;&gt; tools = cmp.Tools()   ## get the list of iAlgTool-objects
 &gt;&gt;&gt; for t in tools :
-...     if hasattr ( t , 'Context' ) : print t.Context() 
+...     if hasattr ( t , 'Context' ) : print t.Context()
 
 
 &gt;&gt;&gt; counter = cmp.Counter('#accept')  ## get the counter by name
-&gt;&gt;&gt; print counter 
+&gt;&gt;&gt; print counter
 
 
 &gt;&gt;&gt; histos = cmp.Histos()  ## get the dictionary of histograms
-&gt;&gt;&gt; for key in histos :  
-...      print key , histos[key] 
+&gt;&gt;&gt; for key in histos :
+...      print key , histos[key]
 
 
 </textarea>
@@ -60,7 +60,7 @@ histograms.
 iAlgTool from GaudiPython.Bindings module, as well as for the actual
 Python algorithms from GaudiPython.GaudiAlgs module, e.g. <br>
 </p>
-<textarea readonly="readonly" rows="7" cols="80">&gt;&gt;&gt; alg = gaudi.algorithm ('MyAlg')    ## use proxy class 
+<textarea readonly="readonly" rows="7" cols="80">&gt;&gt;&gt; alg = gaudi.algorithm ('MyAlg')    ## use proxy class
 
 or
 
@@ -98,7 +98,7 @@ got keywords arguments for constructors, thus making possible to set the
 properties and attributes at construction time: <br>
 </p>
 <textarea readonly="readonly" rows="3" cols="80">&gt;&gt;&gt; alg = MyPythonAlg ( 'MyName' , OutputLevel = 3 , PtCut = 5 * GeV , ... )
- 
+
 </textarea>
 
 <p>The non-nesessary public-virtual bases have been removed from

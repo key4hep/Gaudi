@@ -132,8 +132,8 @@ protected:
 private:
   // ============================================================================
   // default/copy constructor and assignment are disabled
-  ChronoStatSvc()                       = delete;
-  ChronoStatSvc( const ChronoStatSvc& ) = delete;
+  ChronoStatSvc()                                  = delete;
+  ChronoStatSvc( const ChronoStatSvc& )            = delete;
   ChronoStatSvc& operator=( const ChronoStatSvc& ) = delete;
   // ============================================================================
   /// dump the statistics into an ASCII file for offline processing

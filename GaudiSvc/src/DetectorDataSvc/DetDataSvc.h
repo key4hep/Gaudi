@@ -12,7 +12,7 @@
 #define DETECTORDATASVC_DETDATASVC_H
 
 // Base classes
-//#include "GaudiKernel/DataSvc.h"
+// #include "GaudiKernel/DataSvc.h"
 // D. Piparo: Change to the new thread safe version
 #include "GaudiKernel/IDetDataSvc.h"
 #include "GaudiKernel/IIncidentListener.h"

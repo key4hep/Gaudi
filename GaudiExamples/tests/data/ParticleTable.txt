@@ -1,7 +1,7 @@
-# 
+#
 # Example of a file containing particle properties for ParticlePropertySvc,
 # EvtGen and Pythia.
-# 
+#
 PARTICLE
 #
 #                    GEANTID    PDGID  CHARGE   MASS(GeV)      TLIFE(s)            EVTGENNAME    PYTHIAID    MAXWIDTH
@@ -21,5 +21,5 @@ PARTICLE
  n0                   13        2112  0.0        0.939565      885.646128                       n0        2112   0.000000e+000
  p+                   14        2212  1.0        0.938272   1.000000e+016                       p+        2212   0.000000e+000
  p~-                  15       -2212 -1.0        0.938272   1.000000e+016                  anti-p-       -2212   0.000000e+000
-#  
-END PARTICLE 
+#
+END PARTICLE

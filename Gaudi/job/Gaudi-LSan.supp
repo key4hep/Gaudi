@@ -4,8 +4,8 @@
 # http://clang.llvm.org/docs/LeakSanitizer.html
 # --------------------------------------------------
 
-# Gaudi leaks -- Should really be looked into, but proving difficult to 
-# isolate and these errors cause a lot of noise downstream so mask 
+# Gaudi leaks -- Should really be looked into, but proving difficult to
+# isolate and these errors cause a lot of noise downstream so mask
 # until properly fixed.
 
 #Indirect leak of 1528 byte(s) in 1 object(s) allocated from:
@@ -24,7 +24,7 @@ leak:Gaudi::PluginService::v2::Details::DefaultFactory*
 #    #0 0x7fe26d832da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
 #    #1 0x41082b in Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>::ReturnType Gaudi::PluginService::v1::Details::Factory<Component2>::create<Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int&&) ../GaudiPluginService/Gaudi/Details/PluginServiceDetailsV1.h:40
 #    #2 0x40505a in Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) ../GaudiPluginService/Gaudi/PluginServiceV1.h:62
-#    #3 0x40505a in Base2* Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>::create<char [11]>(char const (&) [11], std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) ../GaudiPluginService/Gaudi/PluginServiceV1.h:69   
+#    #3 0x40505a in Base2* Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>::create<char [11]>(char const (&) [11], std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) ../GaudiPluginService/Gaudi/PluginServiceV1.h:69
 leak:Gaudi::PluginService::v1::Factory*
 
 # Direct leak of 48 byte(s) in 2 object(s) allocated from:

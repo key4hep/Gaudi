@@ -13,21 +13,21 @@ Naming is something difficult to check by an automated tool, and everybody has h
 2. Names are case sensitive. However, do not create names that differ only by the case. Example : `track, Track, TRACK`
 3. Avoid single character, or meaningless names like "`jjj`" except for local loop or array indices.
 3. Class names must be nouns, or noun phrases. The first letter is capital.
-4. Data Member names should be private variables and start with "m_" followed by a lowercase letter. 
+4. Data Member names should be private variables and start with "m_" followed by a lowercase letter.
     - Protected variables may be used for base classes.
     - Never use public data members. Instead you should use accessors functions.
 5. Static variables -- if really needed -- should start by "s_" to distinguish them clearly.
-6. Avoid global variables. They cause problems with shared images. Their function is better replaced by a class with mainly accessor methods. Avoid global functions and operators. The only case where you can use them is symmetric binary operators and mathematical functions. 
+6. Avoid global variables. They cause problems with shared images. Their function is better replaced by a class with mainly accessor methods. Avoid global functions and operators. The only case where you can use them is symmetric binary operators and mathematical functions.
 7. Accessor functions are named from the variable they control. The "get" accessor is mainly the variable name, the set accessor has a "set" prefix.
 Ex: trackHits( )         // Get the value of m_TrackHits
     setTrackHits( nnn )  // Set the value.
-8. Other functions must be verb or verb phrases. Like all member functions (excluding creators) they start with a lowercase letter. 
+8. Other functions must be verb or verb phrases. Like all member functions (excluding creators) they start with a lowercase letter.
 9. Functions that create or make a new object should start with the verb "create" or "make".
 
 ## Header files
-Header files with extension ".h" contain the description of the class. They may contain some implementation, but only in the case this is inline code. The rest of the code is in the implementation file, with extension ".cpp". 
+Header files with extension ".h" contain the description of the class. They may contain some implementation, but only in the case this is inline code. The rest of the code is in the implementation file, with extension ".cpp".
 
-1. Each class should have a header file and an implementation file, the name of the files should be the name of the class. 
+1. Each class should have a header file and an implementation file, the name of the files should be the name of the class.
 2. A header file should contain the definition of only a single class. If this class defines and uses internally another class, they can be both defined in the same file.
 3. Every header file contains a mechanism to prevent multiple inclusion. The file "Package/File.h" starts and ends by the following lines:
 
@@ -55,13 +55,13 @@ Header files with extension ".h" contain the description of the class. They may 
     class Point {
    public:
       Number x()                   const {return m_x; }
-     void   setX( const Number x )      {m_x = x;    } 
+     void   setX( const Number x )      {m_x = x;    }
     private:
       Number m_x;
 };
 ~~~~~~
 
-7. C++ include (header) files should have the extension ".h" and  C++ implementation files should have the extension ".cpp". 
+7. C++ include (header) files should have the extension ".h" and  C++ implementation files should have the extension ".cpp".
 8. For including standard files, use `#include <filename>`, for user files, use the syntax `#include "Package/FileName.h"`. Never use a relative path for include file. For private header files which are in the same directory as the source file, you should use `#include "FileName.h"`.
 
 
@@ -101,7 +101,7 @@ The implementation file contains the non-trivial member functions. They should h
     };
 ~~~~
 
-2. Pass objects by constant reference. Passing by value is also acceptable for small objects. 
+2. Pass objects by constant reference. Passing by value is also acceptable for small objects.
 3. The use of default arguments is strongly discouraged. This reduces the risk of forgetting an argument…
 4. Do not declare functions with unspecified ( "..." ) arguments.
 5. The returned value of a function should always be tested. A function that does not have a void type should always return a meaningful value. `StatusCode::SUCCESS` is a good return value, this is used in the Algorithm class.
@@ -116,7 +116,7 @@ These considerations aside, the following conventions may be useful:
 3. If you share access and ownership, make sure the shared data are thread-safe.
 4. Avoid the usage of bare pointers. Smart pointers are cheaper than you may think! For example, unique_ptr do not cost anything extra in terms of runtime.
 5. Every invocation of "new" should be matched with exactly one invocation of "delete", and they should be clearly related if they are more than 5 lines apart. This doesn't apply for objects created on the Transient Store: This is the case you want the object to persist longer that the code which created it !
-6. A function must not use the "delete" operator to any pointer passed to it as argument. 
+6. A function must not use the "delete" operator to any pointer passed to it as argument.
 7. Use "new" and "delete" in place of "malloc()" and "free()".
 8. Any pointer to automatic objects should have the same or a smaller scope than the object it points to.
 
@@ -145,7 +145,7 @@ But it is important to try to get a similar look, for an easier maintenance, as 
 1. Each block is indented by two spaces. It starts by an opening brace on the line of the control statement, and end by a closing brace alone on its line, with optionally a comment indicating which block is closed. In case of "if ( ) {" statement, the closing brace may be followed on the same line by an "else {" or "else if ( ) {" clause.
    if ( 1 < x ) {
      log << MSG::INFO << "x>1" << endmsg;
-   } // x greater than 1 
+   } // x greater than 1
 
 2. One can also put a short single line statement on the same line, like:
 
@@ -170,8 +170,8 @@ Comments should be abundant, and must follow the following rules to allow an aut
 ~~~~
     /** @class ClassName ClassName.h Package/ClassName.h
      *
-     * The first sentence will be used as a summary. The rest of 
-     * the text is a complete, free format description. It      
+     * The first sentence will be used as a summary. The rest of
+     * the text is a complete, free format description. It
      * should end with author and date in the format:
      *
      *   @author Your Name
@@ -198,18 +198,18 @@ Comments should be abundant, and must follow the following rules to allow an aut
 
 ## How to write a safer code ##
 
-1. Comparison between a variable and a constant should have the constant first, the compiler will then spot it if you  forgot one of the equal signs in `if ( 0 == value ) {`. By comparison, `if ( value = 0 ) {` is a valid statement, but is not what you usually want ! 
+1. Comparison between a variable and a constant should have the constant first, the compiler will then spot it if you  forgot one of the equal signs in `if ( 0 == value ) {`. By comparison, `if ( value = 0 ) {` is a valid statement, but is not what you usually want !
 3. Comparison between floating point values should not test for equality. In case this is what you want, test that the difference is smaller than a small number.
 4. To test that a pointer is valid, compare it to the value zero, do not treat it as having a Boolean value:
 
-~~~~ 
+~~~~
     if ( 0 != ptr ) {
 ~~~~
 
 5. In "switch" statements, each choice must have a closing break, or a clear comment indicating that the fall-through is the desired behaviour.
-6. Constants should NOT be defined by #define pre-processor statements. 
+6. Constants should NOT be defined by #define pre-processor statements.
 7. Re-use existing classes, in particular the rich set of STL:
-    - Use std::string instead of  char*. 
+    - Use std::string instead of  char*.
     - Don't use built-in arrays. Use one of the STL containers like std::vector.
     - Do not use struct, use a class to hold your data.
     - Do not use "union" types
@@ -217,16 +217,16 @@ Comments should be abundant, and must follow the following rules to allow an aut
     - Use the "MsgStream" for all your outputs
     - Explicitly put "std::",
 8. Avoid overloading operators, unless there is a clear improvement in the clarity of the code.
-9. Avoid complicated implicit precedence rules, use parentheses to clarify your wishes. 
-10. Use cast operators for data-type conversion . You should use static_cast or dynamic_cast, but not reinterpret_cast or const_cast. The best is to provide the appropriate cast operator inside the class. 
-11. All C++ entities should be defined only in the smallest scope they are needed. 
+9. Avoid complicated implicit precedence rules, use parentheses to clarify your wishes.
+10. Use cast operators for data-type conversion . You should use static_cast or dynamic_cast, but not reinterpret_cast or const_cast. The best is to provide the appropriate cast operator inside the class.
+11. All C++ entities should be defined only in the smallest scope they are needed.
 
 
 ## Readability and maintainability ##
 
 1. User defined operators are discouraged. Their use tends to make the code cryptic for anyone else than the author. Member functions are as good, and carry a description of their purpose in their name. If used, they should behave 'naturally', i.e. as they behave for usual numbers and objects:
-    - The assignment operator function should return a reference to their left operand. 
-    - The "+" operator should do something like an addition. 
+    - The assignment operator function should return a reference to their left operand.
+    - The "+" operator should do something like an addition.
     - The "[]" operator should be an access by a sort of index.
 2. Macros are discouraged for producing code. They make the code more difficult to understand and to maintain, and are impossible to debug.
 3. Use spaces to separate the operators from their operands:
@@ -241,7 +241,3 @@ Comments should be abundant, and must follow the following rules to allow an aut
 ## Build system conventions ##
 
 Add comments about build system.
-
-
-
-

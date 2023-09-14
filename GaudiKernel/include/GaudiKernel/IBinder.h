@@ -43,10 +43,10 @@ namespace Gaudi::Interface::Bind {
     ~Box() {
       if ( m_destruct ) ( *m_destruct )( const_cast<IFace*>( m_ptr ) );
     }
-    Box( const Box& ) = delete;
+    Box( const Box& )            = delete;
     Box& operator=( const Box& ) = delete;
     Box( Box&& rhs )             = delete;
-    Box& operator=( Box&& ) = delete;
+    Box& operator=( Box&& )      = delete;
 
     operator IFace const&() const { return *m_ptr; }
     // operator IFace&() && = delete;
@@ -62,10 +62,10 @@ namespace Gaudi::Interface::Bind {
   struct AlgToolStub : IFace {
 
     using IFace::IFace;
-    AlgToolStub( const AlgToolStub& ) = delete;
+    AlgToolStub( const AlgToolStub& )            = delete;
     AlgToolStub& operator=( const AlgToolStub& ) = delete;
     AlgToolStub( AlgToolStub&& )                 = delete;
-    AlgToolStub& operator=( AlgToolStub&& ) = delete;
+    AlgToolStub& operator=( AlgToolStub&& )      = delete;
 
     const std::string& name() const override {
       static std::string s{ "<STUB>" };

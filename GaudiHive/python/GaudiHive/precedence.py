@@ -24,7 +24,6 @@ from Gaudi.Configuration import INFO
 
 
 def _buildFilePath(filePath):
-
     if not os.path.exists(filePath):
         __fullFilePath__ = os.path.realpath(
             os.path.join(
@@ -62,7 +61,6 @@ class UniformTimeValue(object):
     """A class to manage uniform algorithm timing"""
 
     def __init__(self, avgRuntime, varRuntime=0):
-
         self.avgRuntime = avgRuntime
         self.varRuntime = varRuntime
 
@@ -113,11 +111,9 @@ class RealTimeValue(object):
 
 class UniformBooleanValue(object):
     def __init__(self, value):
-
         self.value = value
 
     def get(self):
-
         return self.value
 
 
@@ -156,16 +152,13 @@ class RndBiasedBooleanValue(object):
         self.generator = self._create_generator(self.pattern)
 
     def _create_generator(self, pattern):
-
         for b in pattern:
             yield b
 
     def get(self):
-
         return next(self.generator)
 
     def get_pattern(self):
-
         return self.pattern
 
 
@@ -255,7 +248,6 @@ class CruncherSequence(object):
             print()
 
     def get(self):
-
         return self.sequencer
 
     def _declare_data_deps(self, algo_name, algo):

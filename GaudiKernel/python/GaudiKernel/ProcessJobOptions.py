@@ -438,7 +438,7 @@ class JobOptsParser:
         if inc == "+":
             if hasattr(cfg, property):
                 prop = getattr(cfg, property)
-                if type(prop) == dict:
+                if isinstance(prop, dict):
                     for k in value:
                         prop[k] = value[k]
                 else:
@@ -448,7 +448,7 @@ class JobOptsParser:
         elif inc == "-":
             if hasattr(cfg, property):
                 prop = getattr(cfg, property)
-                if type(prop) is dict:
+                if isinstance(prop, dict):
                     for k in value:
                         if k in prop:
                             del prop[k]

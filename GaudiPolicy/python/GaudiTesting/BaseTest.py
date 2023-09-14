@@ -102,7 +102,6 @@ def kill_tree(ppid, sig):
 
 
 class BaseTest(object):
-
     _common_tmpdir = None
 
     def __init__(self):
@@ -773,7 +772,6 @@ def which(executable):
 
 
 class Result:
-
     PASS = "PASS"
     FAIL = "FAIL"
     ERROR = "ERROR"

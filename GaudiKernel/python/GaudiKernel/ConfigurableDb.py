@@ -96,7 +96,6 @@ class _CfgDb(dict):
 
 
 class _Singleton(object):
-
     # the object this singleton is holding
     # No other object will be created...
     __obj = _CfgDb()

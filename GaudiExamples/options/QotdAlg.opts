@@ -9,7 +9,7 @@ AuditorSvc.Auditors = { "ChronoAuditor" };
 //--------------------------------------------------------------
 // Private Application Configuration options
 //--------------------------------------------------------------
-ApplicationMgr.TopAlg   = { 
+ApplicationMgr.TopAlg   = {
   "GaudiEx::QotdAlg/Qotd1",
   "GaudiEx::QotdAlg/Qotd2",
   "GaudiEx::QotdAlg/Qotd3"
@@ -17,7 +17,7 @@ ApplicationMgr.TopAlg   = {
 
 // Configure the MessageSvc to (also) output MsgStreams from various
 // sources into additional sinks (than stdout)
-MessageSvc.loggedStreams = { 
+MessageSvc.loggedStreams = {
   'Qotd1' : 'my_qotd1.log',
   'Qotd2' : 'my_qotd2.log',
   // note we redirect the output of Qotd3 in the same file than Qotd1

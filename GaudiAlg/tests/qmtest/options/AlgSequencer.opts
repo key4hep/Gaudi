@@ -40,7 +40,7 @@ Prescaler1.OutputLevel = 4;
 Prescaler2.OutputLevel = 4;
 
 //-----------------------------------------------------------------
-// Testing the new GaudiSequencer 
+// Testing the new GaudiSequencer
 //-----------------------------------------------------------------
 ApplicationMgr.TopAlg  += { "GaudiSequencer/ANDSequence" , "GaudiSequencer/ORSequence" };
 ANDSequence.Members = { "HelloWorld/AND", "EventCounter/ANDCounter"};
@@ -52,4 +52,4 @@ ANDSequence.MeasureTime = 1;
 
 ApplicationMgr.ExtSvc = { "ToolSvc", "AuditorSvc"} ;
 ApplicationMgr.AuditAlgorithms = True ;
-AuditorSvc.Auditors += {"TimingAuditor/TIMER"} ; 
+AuditorSvc.Auditors += {"TimingAuditor/TIMER"} ;

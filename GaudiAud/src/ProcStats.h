@@ -70,7 +70,7 @@ private:
     int m_fd{ -1 };
 
   private:
-    unique_fd( const unique_fd& ) = delete;
+    unique_fd( const unique_fd& )            = delete;
     unique_fd& operator=( const unique_fd& ) = delete;
 
   public:
@@ -104,12 +104,12 @@ private:
     return ::fun( m_fd, std::forward<Args>( args )... );                                                               \
   }
     // clang-format off
-    unique_fd_forward( lseek )      
-    unique_fd_forward( read )   
-    unique_fd_forward( write )  
-    unique_fd_forward( fcntl )  
-    unique_fd_forward( fsync )  
-    unique_fd_forward( fchown ) 
+    unique_fd_forward( lseek )
+    unique_fd_forward( read )
+    unique_fd_forward( write )
+    unique_fd_forward( fcntl )
+    unique_fd_forward( fsync )
+    unique_fd_forward( fchown )
     unique_fd_forward( stat )
     // clang-format on
 #undef unique_fd_forward

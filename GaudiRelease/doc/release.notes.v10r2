@@ -17,7 +17,7 @@
 ! 20020622 - Markus Frank
   - Enable to generate the operator<< for TBlob objects on creating
     the ROOT dictionary
-  - Re-compilation needed for new GaudiDb 
+  - Re-compilation needed for new GaudiDb
     and ROOT version v3.02 (v3.02.07)
 
 ================ RootHistCnv v7r0==========================================

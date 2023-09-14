@@ -67,8 +67,8 @@ public:
 
 public:
   /// Constructors
-  ObjectVector()                            = default;
-  ObjectVector( const ObjectVector<TYPE>& ) = delete;
+  ObjectVector()                                       = default;
+  ObjectVector( const ObjectVector<TYPE>& )            = delete;
   ObjectVector& operator=( const ObjectVector<TYPE>& ) = delete;
   ObjectVector( ObjectVector&& rhs ) : ObjectContainerBase( std::move( rhs ) ), m_vector{ std::move( rhs.m_vector ) } {
     std::for_each( begin(), end(), [this]( TYPE* obj ) { obj->setParent( this ); } );

@@ -37,9 +37,9 @@ protected:
 
 public:
   AnyDataWrapper( T&& data ) : m_data{ std::move( data ) } {};
-  AnyDataWrapper( AnyDataWrapper&& )      = delete;
-  AnyDataWrapper( AnyDataWrapper const& ) = delete;
-  AnyDataWrapper& operator=( AnyDataWrapper&& ) = delete;
+  AnyDataWrapper( AnyDataWrapper&& )                 = delete;
+  AnyDataWrapper( AnyDataWrapper const& )            = delete;
+  AnyDataWrapper& operator=( AnyDataWrapper&& )      = delete;
   AnyDataWrapper& operator=( AnyDataWrapper const& ) = delete;
 
   const T& getData() const { return m_data; }
@@ -59,8 +59,8 @@ public:
   AnyDataWithViewWrapper( OwnedType&& data ) : AnyDataWrapper<ViewType>{ {} }, m_owned{ std::move( data ) } {
     AnyDataWrapper<ViewType>::m_data = ViewType{ std::as_const( m_owned ) };
   }
-  AnyDataWithViewWrapper( AnyDataWithViewWrapper&& )      = delete;
-  AnyDataWithViewWrapper( AnyDataWithViewWrapper const& ) = delete;
-  AnyDataWithViewWrapper& operator=( AnyDataWithViewWrapper&& ) = delete;
+  AnyDataWithViewWrapper( AnyDataWithViewWrapper&& )                 = delete;
+  AnyDataWithViewWrapper( AnyDataWithViewWrapper const& )            = delete;
+  AnyDataWithViewWrapper& operator=( AnyDataWithViewWrapper&& )      = delete;
   AnyDataWithViewWrapper& operator=( AnyDataWithViewWrapper const& ) = delete;
 };

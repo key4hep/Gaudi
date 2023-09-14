@@ -30,8 +30,8 @@ class GAUDI_API ObjectContainerBase : public DataObject {
 
 protected:
   /// Constructor
-  ObjectContainerBase()                        = default;
-  ObjectContainerBase( ObjectContainerBase&& ) = default;
+  ObjectContainerBase()                                   = default;
+  ObjectContainerBase( ObjectContainerBase&& )            = default;
   ObjectContainerBase& operator=( ObjectContainerBase&& ) = default;
   ~ObjectContainerBase() override                         = default;
 

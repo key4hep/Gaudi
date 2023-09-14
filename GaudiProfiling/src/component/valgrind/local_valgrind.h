@@ -338,7 +338,7 @@ static __inline uintptr_t valgrind_do_client_request_expr( uintptr_t _zzq_defaul
 #      define VALGRIND_VEX_INJECT_IR()                                                                                 \
         do {                                                                                                           \
           __asm { __SPECIAL_INSTRUCTION_PREAMBLE                       \
-            __asm xchg edi,edi }                                                 \
+            __asm xchg edi,edi }                                                  \
         } while ( 0 )
 
 #    else

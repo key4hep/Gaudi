@@ -153,7 +153,7 @@ public:
 private:
   // =========================================================================
   /// delete the copy constructor and assignment operators
-  Chrono( const Chrono& ) = delete;
+  Chrono( const Chrono& )            = delete;
   Chrono& operator=( const Chrono& ) = delete;
   // =========================================================================
 private:

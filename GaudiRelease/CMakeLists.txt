@@ -23,7 +23,7 @@ file(WRITE ${rel_notes_main} "Release Notes {#release_notes_main}
 Release notes of the packages:
 ")
 
-# Write all 
+# Write all
 foreach(package IN ITEMS GaudiPluginService GaudiPolicy GaudiKernel GaudiCoreSvc
                          GaudiUtils Gaudi GaudiAlg GaudiAud GaudiCommonSvc
                          GaudiHive GaudiMonitor GaudiMP GaudiPartProp

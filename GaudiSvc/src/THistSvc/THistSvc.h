@@ -25,7 +25,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 
-// ROOT includes:
+//  ROOT includes:
 #include "TEfficiency.h"
 #include "TGraph.h"
 #include "TH1.h"

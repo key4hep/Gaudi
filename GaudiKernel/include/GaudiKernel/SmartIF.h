@@ -72,7 +72,7 @@ public:
   inline bool isValid() const { return m_interface != nullptr; }
 
   inline explicit operator bool() const { return isValid(); }
-  inline bool     operator!() const { return !isValid(); }
+  inline bool operator!() const { return !isValid(); }
 
   // ---------- Pointer access methods ----------
   /// Automatic conversion to pointer.

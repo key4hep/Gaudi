@@ -213,9 +213,8 @@ def _getAllOpts_old(explicit_defaults=False):
         )
         for p, v in items:
             # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
-            if (
-                hasattr(Configurable, "PropertyReference")
-                and type(v) == Configurable.PropertyReference
+            if hasattr(Configurable, "PropertyReference") and isinstance(
+                v, Configurable.PropertyReference
             ):
                 # this is done in "getFullName", but the exception is ignored,
                 # so we do it again to get it

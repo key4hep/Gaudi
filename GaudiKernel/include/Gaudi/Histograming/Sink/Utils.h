@@ -210,9 +210,9 @@ namespace Gaudi::Histograming::Sink {
         // in turn leads to a self-inconsistent TProfile object. The "fix" is to disable sum of squares explicitly.
         this->Sumw2( false );
       }
-      ProfileWrapper( ProfileWrapper const& ) = delete;
-      ProfileWrapper& operator=( ProfileWrapper const& ) = delete;
-      ProfileWrapper( ProfileWrapper const&& )           = delete;
+      ProfileWrapper( ProfileWrapper const& )             = delete;
+      ProfileWrapper& operator=( ProfileWrapper const& )  = delete;
+      ProfileWrapper( ProfileWrapper const&& )            = delete;
       ProfileWrapper& operator=( ProfileWrapper const&& ) = delete;
       void            setBinNEntries( Int_t i, Int_t n ) { this->fBinEntries.fArray[i] = n; }
       void            setBinW2( Int_t i, Double_t v ) { this->fSumw2.fArray[i] = v; }
@@ -240,7 +240,7 @@ namespace Gaudi::Histograming::Sink {
                                         current = nextDir;
                                       }
                                       return current;
-                                             } );
+                                    } );
       if ( !currentDir )
         throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
       // switch to the directory

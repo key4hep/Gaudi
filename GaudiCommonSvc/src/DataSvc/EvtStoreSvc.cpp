@@ -61,10 +61,10 @@ namespace {
       if ( m_data ) m_data->setRegistry( this );
       if ( m_addr ) m_addr->setRegistry( this );
     }
-    Entry( const Entry& ) = delete;
+    Entry( const Entry& )                = delete;
     Entry& operator=( const Entry& rhs ) = delete;
     Entry( Entry&& rhs )                 = delete;
-    Entry& operator=( Entry&& rhs ) = delete;
+    Entry& operator=( Entry&& rhs )      = delete;
 
     // required by IRegistry...
     unsigned long    addRef() override { return -1; }

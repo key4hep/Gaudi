@@ -100,7 +100,7 @@ public:
   /** get the property
    *  @see IProperty
    */
-  StatusCode getProperty( Gaudi::Details::PropertyBase * p ) const override;
+  StatusCode getProperty( Gaudi::Details::PropertyBase* p ) const override;
   // ==========================================================================
   /** get the property by name
    *  @see IProperty
@@ -110,7 +110,7 @@ public:
   /** convert the property to the string
    *  @see IProperty
    */
-  StatusCode getProperty( std::string_view n, std::string & v ) const override;
+  StatusCode getProperty( std::string_view n, std::string& v ) const override;
   // ==========================================================================
   /** get all properties
    *  @see IProperty

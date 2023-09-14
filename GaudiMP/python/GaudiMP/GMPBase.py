@@ -660,7 +660,6 @@ class GMPComponent(object):
         self.StartGaudiPython()
 
         if self.app == "Gauss":
-
             tool = self.a.tool("ToolSvc.EvtCounter")
             self.cntr = InterfaceCast(gbl.IEventCounter)(tool.getInterface())
         else:
@@ -1009,7 +1008,6 @@ class Worker(GMPComponent):
         self.eventOutput = True
 
     def processConfiguration(self):
-
         # Worker :
         #   No input
         #   No output
@@ -1050,7 +1048,6 @@ class Worker(GMPComponent):
                 self.log.warning("Cannot configure EvtCounter")
 
     def Engine(self):
-
         # rename process
         import ctypes
 
@@ -1322,7 +1319,6 @@ class Writer(GMPComponent):
 
 class Coord(object):
     def __init__(self, nWorkers, config, log):
-
         self.log = log
         self.config = config
         # set up Logging
@@ -1396,7 +1392,6 @@ class Coord(object):
         return (eventQ, histQ, fsrQ)
 
     def Go(self):
-
         # Initialise
         self.log.name = "GaudiPython-Parallel-Logger"
         self.log.info("INITIALISING SYSTEM")

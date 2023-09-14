@@ -5,7 +5,7 @@ EventSelector.PrintFreq    = 1;
 ApplicationMgr.EvtSel      = "NONE"; // do not use any event input
 RootDst.ItemList           = { "/Event#999" } ;
 
-RootDst.ItemList           = { 
+RootDst.ItemList           = {
    "/Event",
    "/Event/Collision_0",
    "/Event/Collision_0/MyVertices",
@@ -14,7 +14,7 @@ RootDst.ItemList           = {
    "/Event/Header",
    "/Event/MyTracks"
 };
-RootDst.OptItemList = { 
+RootDst.OptItemList = {
    "/Event/Prev",
    "/Event/Prev/Header",
    "/Event/PrevPrev",

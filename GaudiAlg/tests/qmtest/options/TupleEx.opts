@@ -43,5 +43,5 @@ ApplicationMgr.HistogramPersistency = "ROOT";
 NTupleSvc.Output = { "MYLUN DATAFILE='TupleEx_opts.root'  OPT='NEW' TYP='ROOT'"  };
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

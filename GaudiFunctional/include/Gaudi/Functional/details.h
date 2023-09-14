@@ -331,7 +331,7 @@ namespace Gaudi::Functional::details {
         --m_i;
         return *this;
       }
-      bool     is_null() const { return !*m_i; }
+      bool is_null() const { return !*m_i; }
       explicit operator bool() const { return !is_null(); }
     };
     vector_of_const_() = default;
@@ -510,9 +510,9 @@ namespace Gaudi::Functional::details {
   void updateHandleLocations( DataHandleMixin<Out, In, Tr>& parent, const std::string& prop,
                               const std::vector<std::string>& newLocs ) {
     std::ostringstream ss;
-    GaudiUtils::details::ostream_joiner(
-        ss << '[', newLocs, ", ", []( std::ostream & os, const auto& i ) -> auto& { return os << "'" << i << "'"; } )
-        << ']';
+    GaudiUtils::details::ostream_joiner( ss << '[', newLocs, ", ", []( std::ostream& os, const auto& i ) -> auto& {
+      return os << "'" << i << "'";
+    } ) << ']';
     auto sc = parent.setProperty( prop, ss.str() );
     if ( sc.isFailure() ) throw GaudiException( "Could not set Property", prop + " -> " + ss.str(), sc );
   }

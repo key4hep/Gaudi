@@ -111,7 +111,7 @@ def _ConvertDictToXmlRecurse(parent, dictitem):
     assert not isinstance(dictitem, list)
 
     if isinstance(dictitem, dict):
-        for (tag, child) in dictitem.iteritems():
+        for tag, child in dictitem.iteritems():
             if str(tag) == "_text":
                 parent.text = str(child)
             elif isinstance(child, list):

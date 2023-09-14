@@ -816,7 +816,7 @@ namespace Gaudi::Accumulators {
   public:
     Buffer() = delete;
     Buffer( prime_type& p ) : base_type( construct_empty, p ), m_prime( p ) {}
-    Buffer( const Buffer& ) = delete;
+    Buffer( const Buffer& )         = delete;
     void operator=( const Buffer& ) = delete;
     Buffer( Buffer&& other ) : base_type( other ), m_prime( other.m_prime ) { other.reset(); }
     void push() { m_prime.mergeAndReset( static_cast<base_type&>( *this ) ); }
@@ -876,7 +876,7 @@ namespace Gaudi::Accumulators {
     template <typename OWNER>
     BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, *this ) {}
     Buffer<Accumulator, Atomicity, Args...> buffer() { return { *this }; }
-    BufferableCounter( BufferableCounter const& ) = delete;
+    BufferableCounter( BufferableCounter const& )            = delete;
     BufferableCounter& operator=( BufferableCounter const& ) = delete;
     ~BufferableCounter() {
       if ( m_monitoringHub ) { m_monitoringHub->removeEntity( *this ); }
@@ -1103,12 +1103,12 @@ namespace Gaudi::Accumulators {
     friend void   mergeAndReset( BinomialCounter& c, BinomialCounter& o ) { c.mergeAndReset( o ); }
     friend void   to_json( nlohmann::json& j, BinomialCounter const& c ) {
       j = { { "type", c.typeString },
-            { "empty", c.nEntries() == 0 },
-            { "nEntries", c.nTrueEntries() + c.nFalseEntries() },
-            { "nTrueEntries", c.nTrueEntries() },
-            { "nFalseEntries", c.nFalseEntries() },
-            { "efficiency", c.efficiency() },
-            { "efficiencyErr", c.efficiencyErr() } };
+              { "empty", c.nEntries() == 0 },
+              { "nEntries", c.nTrueEntries() + c.nFalseEntries() },
+              { "nTrueEntries", c.nTrueEntries() },
+              { "nFalseEntries", c.nFalseEntries() },
+              { "efficiency", c.efficiency() },
+              { "efficiencyErr", c.efficiencyErr() } };
     }
     static BinomialCounter fromJSON( const nlohmann::json& j ) {
       return BinomialAccumulator<Atomicity, Arithmetic>::extractJSONData( j, { "nTrueEntries", "nFalseEntries" } );
@@ -1149,7 +1149,7 @@ namespace Gaudi::Accumulators {
       if ( by ) log();
       return *this;
     }
-    MsgCounter( MsgCounter const& ) = delete;
+    MsgCounter( MsgCounter const& )            = delete;
     MsgCounter& operator=( MsgCounter const& ) = delete;
     ~MsgCounter() {
       if ( m_monitoringHub ) m_monitoringHub->removeEntity( *this );
@@ -1166,8 +1166,8 @@ namespace Gaudi::Accumulators {
     friend void   mergeAndReset( MsgCounter& c, MsgCounter& o ) { c.mergeAndReset( o ); }
     friend void   to_json( nlohmann::json& j, MsgCounter const& c ) {
       j = { { "type", c.typeString },  { "empty", c.value() == 0 },
-            { "nEntries", c.value() }, { "level", level },
-            { "max", c.max },          { "msg", c.msg } };
+              { "nEntries", c.value() }, { "level", level },
+              { "max", c.max },          { "msg", c.msg } };
     }
     static MsgCounter fromJSON( const nlohmann::json& j ) {
       return { j.at( "msg" ).get<std::string>(), j.at( "max" ).get<unsigned long>(),

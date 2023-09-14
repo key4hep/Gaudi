@@ -67,8 +67,8 @@ public:
 
 private:
   // default/copy constructor & asignment are deleted
-  AlgContextSvc()                       = delete;
-  AlgContextSvc( const AlgContextSvc& ) = delete;
+  AlgContextSvc()                                  = delete;
+  AlgContextSvc( const AlgContextSvc& )            = delete;
   AlgContextSvc& operator=( const AlgContextSvc& ) = delete;
 
 private:

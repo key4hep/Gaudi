@@ -46,7 +46,7 @@
 // M.Frank
 //
 #define CAST_REGENTRY( x, y ) dynamic_cast<x>( y )
-//#define CAST_REGENTRY(x,y) (x)(y)
+// #define CAST_REGENTRY(x,y) (x)(y)
 constexpr char SEPARATOR{ '/' };
 
 /// Standard Constructor

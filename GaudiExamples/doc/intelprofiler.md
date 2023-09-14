@@ -69,7 +69,7 @@ ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
 Using result path `/data/amazurov/Amplifier/IntelProfilingExample/r050hs`
 ```
-, where ``Using result path `/data/amazurov/Amplifier/IntelProfilingExample/r050hs` `` 
+, where ``Using result path `/data/amazurov/Amplifier/IntelProfilingExample/r050hs` ``
 is our profiling database.
 
 Analyze

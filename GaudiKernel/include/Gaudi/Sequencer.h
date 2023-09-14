@@ -162,7 +162,7 @@ namespace Gaudi {
     StatusCode remove( const std::string& algname, std::vector<Gaudi::Algorithm*>& theAlgs );
 
     // NO COPY / ASSIGNMENT  ALLOWED
-    Sequencer( const Sequencer& a ) = delete;
+    Sequencer( const Sequencer& a )              = delete;
     Sequencer& operator=( const Sequencer& rhs ) = delete;
 
   public:

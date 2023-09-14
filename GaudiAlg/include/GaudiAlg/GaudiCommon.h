@@ -630,8 +630,8 @@ public:
    */
   StatusCode finalize() override;
 
-  GaudiCommon()                     = delete;
-  GaudiCommon( const GaudiCommon& ) = delete;
+  GaudiCommon()                                = delete;
+  GaudiCommon( const GaudiCommon& )            = delete;
   GaudiCommon& operator=( const GaudiCommon& ) = delete;
 
 protected:

@@ -298,7 +298,7 @@ class DotVisitor(object):
         if len(self.stack) != 0:
             mother = self.stack[-1][1]
             for entry in self.stack[::-1]:
-                if type(entry[0]) != thetype:
+                if not isinstance(entry[0], thetype):
                     break
                 mother = entry[1]
             return mother

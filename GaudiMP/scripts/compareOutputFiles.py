@@ -311,7 +311,6 @@ def compareEvents(s, p):
 
 
 def CheckFileRecords(par, ser):
-
     print("Checking File Records")
 
     parFSR = GetFSRdicts(par)
@@ -348,7 +347,6 @@ def CheckFileRecords(par, ser):
 
 
 def LumiFSR(lumi):
-
     runs = []
     files = []
     info = {}
@@ -376,7 +374,6 @@ def LumiFSR(lumi):
 
 
 def GetFSRdict(filename, queue):
-
     FSR = {
         "TimeSpanFSR": {"earliest": 0, "latest": 0},
         "LumiFSRBeamCrossing": {"key": 0, "incr": 0, "integral": 0},
@@ -401,11 +398,9 @@ def GetFSRdict(filename, queue):
 
     if lst:
         for l in lst:
-
             ob = fsr.retrieveObject(l)
 
             if "LumiFSR" in l:
-
                 assert ob.numberOfObjects() == 1
                 k = ob.containedObject(0)
                 runs, files, keys, increment, integral = LumiFSR(k)
@@ -417,12 +412,10 @@ def GetFSRdict(filename, queue):
                 FSR[l[l.rfind("/") + 1 :]]["integral"] = integral
 
             if "TimeSpanFSR" in l:
-
                 FSR["TimeSpanFSR"]["earliest"] = ob.containedObject(0).earliest()
                 FSR["TimeSpanFSR"]["latest"] = ob.containedObject(0).latest()
 
             if "EventCountFSR" in l:
-
                 FSR["EventCountFSR"]["input"] = ob.input()
                 FSR["EventCountFSR"]["output"] = ob.output()
                 FSR["EventCountFSR"]["statusFlag"] = ob.statusFlag()
@@ -434,7 +427,6 @@ def GetFSRdict(filename, queue):
 
 
 def CompareFSR(pout, sout):
-
     parFSR = pout.get()
     serFSR = sout.get()
 
@@ -474,7 +466,6 @@ def CompareFSR(pout, sout):
 
 
 if __name__ == "__main__":
-
     args = sys.argv
     args.pop(0)  # get rid of script name
     if len(args) != 2:
