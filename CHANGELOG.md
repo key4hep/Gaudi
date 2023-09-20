@@ -5,6 +5,70 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v37r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v37r0) - 2023-09-14
+This is the first major release of Gaudi in a while. This was made necessary to be able to incorporate
+a number of backward incompatible changes that have been kept in the backburner until now.
+
+The main (backward incompatible) changes are:
+- clean up and improvements to the new monitoring infrastructure
+  - custom sinks have to be adapted
+- drop of `LIKELY` and `UNLIKELY` preprocessor macros
+  - they have been deprecated for long, but waiting for a major release to effectively
+    remove the implementation
+- make the subdirectory `GaudiAlg` optional
+  - still enabled by default, it's not really backward incompatible, but the refactoring
+    implies that some minor adaptations might be needed in downstream code
+
+Since this a major release we took the occasion to update the versions of the hooks in
+`pre-commit-config.yaml` and that caused some minor changes in the formatting.
+
+In addition we have the usual batch of fixes and some new features.
+
+### Changed
+- Update versions in `pre-commit` hooks (gaudi/Gaudi!1415)
+- Remove old warning message referring to `CMT` (gaudi/Gaudi!1486)
+- Cleanup, fixes and new features around monitoring sinks (gaudi/Gaudi!1439)
+- Reorganize files and refactor code to make GaudiAlg optional (gaudi/Gaudi!1444)
+- Dropped (UN)LIKELY macro (gaudi/Gaudi!1227)
+- Update and simplify gitlab-ci (gaudi/Gaudi!1476)
+
+### Added
+- Added support for the HepPDT vesion 3 (gaudi/Gaudi!1488)
+- Implement helper class for arrays of counters (gaudi/Gaudi!1484)
+- Fire ContextIncident `CONNECTED_NTUPLE_OUTPUT` when opening a ntuple file in RFileCnv (gaudi/Gaudi!1478)
+- Check errors in histograms unit tests on top of bin content (gaudi/Gaudi!1480)
+- Add `GAUDI_PGO` CMake options to enable builds with Profile Guided Optimizations (gaudi/Gaudi!1472)
+
+### Fixed
+- Fix missing Property name in error messages (gaudi/Gaudi#265  gaudi/Gaudi!1468)
+- Fix TTree output reading in tests (gaudi/Gaudi#273  gaudi/Gaudi!1489)
+- Use `inspect.signature` (if possible) instead of the deprecated `getargspec` (gaudi/Gaudi!1485)
+- Never rely on default Gitlab Docker image in gitlab-ci (gaudi/Gaudi!1491)
+- Fix performance of Counter destructor by using appropriate containers in Sink (gaudi/Gaudi!1477)
+- Hide `RdtscClock.h` to non x86_64 builds, needed for aarch64 (gaudi/Gaudi!1479)
+- Minor fix in a CMake error message (gaudi/Gaudi!1481)
+- GaudiMP: few minor fixes for Python3 (gaudi/Gaudi!1473)
+- Fixed clang12 warnings (gaudi/Gaudi!1471)
+- Fix finally helper with C++20 (gaudi/Gaudi!1475)
+- Fix build with GAUDI_USE_AIDA=OFF (gaudi/Gaudi!1474)
+
+
+## [v36r16](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r16) - 2023-07-28
+Release requested by LHCb to backport gaudi/Gaudi!1478
+
+### Added
+- Fire ContextIncident `CONNECTED_NTUPLE_OUTPUT` when opening a ntuple file in
+  RFileCnv (gaudi/Gaudi!1482)
+
+
+## [v36r15](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r15) - 2023-07-24
+This release is needed so that LHCb can pick up a backward compatible version
+of gaudi/Gaudi!1477.
+
+### Fixed
+- Fix performance of Counter destructor by using appropriate containers in Sink
+  (adaptation of gaudi/Gaudi!1477)
+
 
 ## [v36r14](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v36r14) - 2023-06-19
 This release features a number of minor fixes to help downstream projects
