@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: Gaudi
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: LHCb Collaboration
+  - name: ATLAS Collaboration
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.3660963
+repository-code: 'https://gitlab.cern.ch/gaudi/Gaudi'
+url: 'https://cern.ch/gaudi'
+abstract: >-
+  Gaudi is a software architecture and framework that can be
+  used to facilitate the development of data processing
+  applications for High Energy Physics experiments.
+keywords:
+  - Gaudi
+  - LHCb
+  - ATLAS
+  - CERN
+  - HEP
+  - Software Framework
+license: Apache-2.0
+version: v37r0
+date-released: '2023-09-14'
