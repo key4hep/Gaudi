@@ -14,6 +14,7 @@ import re
 import sys
 from collections.abc import Callable, Iterable
 from difflib import unified_diff
+from subprocess import run
 from typing import Union
 
 import click
@@ -89,7 +90,7 @@ class ReplacementRule:
         else:
             self.replace = replace
 
-    def __call__(self, line: str, fields: Fields):
+    def __call__(self, line: str, fields: Fields) -> str:
         if self.pattern.match(line):
             return self.replace(line, fields)
         return line
@@ -104,31 +105,73 @@ class FileUpdater:
             r if isinstance(r, ReplacementRule) else ReplacementRule(*r) for r in rules
         ]
 
-    def _apply_rules(self, line: str, fields: Fields):
+    def _apply_rules(self, line: str, fields: Fields) -> str:
         for rule in self.rules:
             line = rule(line, fields)
         return line
 
-    def __call__(self, fields: Fields, dry_run: bool):
+    def __call__(self, fields: Fields) -> tuple[str, list[str], list[str]]:
         with open(self.filename) as f:
             old = f.readlines()
-        data = [self._apply_rules(line, fields) for line in old]
+        return self.filename, old, [self._apply_rules(line, fields) for line in old]
 
-        if old == data:
-            raise RuntimeError(f"no changes in {self.filename}")
 
-        if dry_run:
-            sys.stdout.writelines(
-                unified_diff(
-                    old,
-                    data,
-                    fromfile=f"a/{self.filename}",
-                    tofile=f"b/{self.filename}",
-                )
-            )
-        else:
-            with open(self.filename, "w") as f:
-                f.writelines(data)
+def update_changelog(fields: Fields) -> tuple[str, list[str], list[str]]:
+    """
+    Special updater to fill draft changelog entry.
+    """
+    latest_tag = run(
+        ["git", "describe", "--tags", "--abbrev=0"], capture_output=True, text=True
+    ).stdout.strip()
+    # This formats the git log as a rough markdown list
+    # - collect the log formatting it such that we can machine parse it
+    changes_txt = run(
+        ["git", "log", "--first-parent", "--format=%s<=>%b|", f"{latest_tag}.."],
+        capture_output=True,
+        text=True,
+    ).stdout
+    # - removing trailing separator and make it a single line
+    changes_txt = " ".join(changes_txt.strip().rstrip("|").splitlines())
+    # - normalize issues and merge requests links
+    changes = (
+        changes_txt.replace("Closes #", "gaudi/Gaudi#")
+        .replace("See merge request ", "")
+        .split("|")
+    )
+    # - split the messages and format the list
+    changes = [
+        f"- {msg.strip()} ({', '.join(refs.split())})\n"
+        if refs.strip()
+        else f"- {msg.strip()}\n"
+        for change in changes
+        for msg, refs in [change.split("<=>", 1)]
+    ]
+
+    filename = "CHANGELOG.md"
+    with open(filename) as f:
+        old = f.readlines()
+    for idx, line in enumerate(old):
+        if line.startswith("## ["):
+            break
+
+    data = old[:idx]
+    data.extend(
+        [
+            "## [{tag_version}](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/{tag_version}) - {date}\n".format(
+                **fields.data
+            ),
+            "\n",
+            "### Changed\n",
+            "### Added\n",
+            "### Fixed\n",
+            "\n",
+        ]
+    )
+    data.extend(changes)
+    data.extend(["\n", "\n"])
+    data.extend(old[idx:])
+
+    return filename, old, data
 
 
 @click.command()
@@ -174,8 +217,24 @@ def update_version(version: str, date: datetime.datetime, dry_run: bool):
                 (r"^release = ", "release = {tag_version}"),
             ],
         ),
+        update_changelog,
     ]:
-        updater(fields, dry_run)
+        filename, old, new = updater(fields)
+
+        if old != new:
+            if dry_run:
+                sys.stdout.writelines(
+                    unified_diff(
+                        old,
+                        new,
+                        fromfile=f"a/{filename}",
+                        tofile=f"b/{filename}",
+                    )
+                )
+            else:
+                click.echo(f"updated {filename}")
+                with open(filename, "w") as f:
+                    f.writelines(new)
 
 
 if __name__ == "__main__":
