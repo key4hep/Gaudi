@@ -1511,6 +1511,11 @@ class JSONOutputValidator:
 
         # piggyback on TestCase dict diff report
         t = TestCase()
+        # sort both lists (these are list of entities) as the order is not supposed to matter
+        # indeed, the JSONSink implementation does not garantee any particular order
+        # but as JSON does not have sets, we get back a sorted list here
+        expected = sorted(expected, key=lambda item: (item["component"], item["name"]))
+        out = sorted(out, key=lambda item: (item["component"], item["name"]))
         try:
             t.assertEqual(expected, out)
         except AssertionError as err:
