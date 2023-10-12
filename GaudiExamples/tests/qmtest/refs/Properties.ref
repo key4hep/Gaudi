@@ -318,8 +318,8 @@ PropertyAlg.DoublePairArray: [ ( 1.1000000 , 2.1000000 ) , ( 2.3000000 , 4.50000
 PropertyAlg.EmptyArray: [  ]
 PropertyAlg.Enable: True
 PropertyAlg.ErrorMax: 1
-PropertyAlg.ExtraInputs: []
-PropertyAlg.ExtraOutputs: []
+PropertyAlg.ExtraInputs: set()
+PropertyAlg.ExtraOutputs: set()
 PropertyAlg.FilterCircularDependencies: True
 PropertyAlg.Int: 101
 PropertyAlg.Int64: 4294967296

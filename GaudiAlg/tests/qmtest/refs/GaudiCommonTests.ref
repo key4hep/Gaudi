@@ -61,8 +61,8 @@ Test1               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
 Test1               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test1               DEBUG Property ['Name': Value] =  'Enable':True
 Test1               DEBUG Property ['Name': Value] =  'OutputLevel':2
-Test1               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-Test1               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+Test1               DEBUG Property ['Name': Value] =  'ExtraOutputs':set()
+Test1               DEBUG Property ['Name': Value] =  'ExtraInputs':set()
 Test1               DEBUG input handles: 0
 Test1               DEBUG output handles: 0
 Test1               DEBUG Data Deps for Test1
@@ -96,8 +96,8 @@ Test2               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
 Test2               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test2               DEBUG Property ['Name': Value] =  'Enable':True
 Test2               DEBUG Property ['Name': Value] =  'OutputLevel':2
-Test2               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-Test2               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+Test2               DEBUG Property ['Name': Value] =  'ExtraOutputs':set()
+Test2               DEBUG Property ['Name': Value] =  'ExtraInputs':set()
 Test2               DEBUG input handles: 0
 Test2               DEBUG output handles: 0
 Test2               DEBUG Data Deps for Test2
@@ -136,8 +136,8 @@ Test3               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
 Test3               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test3               DEBUG Property ['Name': Value] =  'Enable':True
 Test3               DEBUG Property ['Name': Value] =  'OutputLevel':2
-Test3               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-Test3               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+Test3               DEBUG Property ['Name': Value] =  'ExtraOutputs':set()
+Test3               DEBUG Property ['Name': Value] =  'ExtraInputs':set()
 Test3               DEBUG input handles: 0
 Test3               DEBUG output handles: 0
 Test3               DEBUG Data Deps for Test3
@@ -172,8 +172,8 @@ Test4               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
 Test4               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test4               DEBUG Property ['Name': Value] =  'Enable':True
 Test4               DEBUG Property ['Name': Value] =  'OutputLevel':2
-Test4               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-Test4               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+Test4               DEBUG Property ['Name': Value] =  'ExtraOutputs':set()
+Test4               DEBUG Property ['Name': Value] =  'ExtraInputs':set()
 Test4               DEBUG input handles: 0
 Test4               DEBUG output handles: 0
 Test4               DEBUG Data Deps for Test4
