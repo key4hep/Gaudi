@@ -110,7 +110,10 @@ namespace GaudiKernelTest {
       // This should result in non-zero user and kernel times
       t0      = System::getProcessTime();
       float x = 1.5;
-      long  m = 0;
+
+      // this variable is only needed to ensure that the timed loop
+      // takes a measurable time
+      [[maybe_unused]] long m = 0;
       for ( int i = 0; i < 10000; i++ ) {
         x *= sin( x ) / atan( x ) * tanh( x ) * sqrt( x );
         m += System::virtualMemory();

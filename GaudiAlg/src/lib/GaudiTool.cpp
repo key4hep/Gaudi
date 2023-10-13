@@ -49,8 +49,6 @@ template class GaudiCommon<AlgTool>;
  */
 // ============================================================================
 namespace GaudiToolServices {
-  /// the default name for Event Data Service
-  const std::string s_EventDataSvc = "EventDataSvc";
   /// the default name for Detector Data Service
   const std::string s_DetectorDataSvc = "DetectorDataSvc";
   /// the default name for Chrono & Stat Service
