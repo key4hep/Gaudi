@@ -127,16 +127,18 @@ public:
     long             third  = INVALID;
     ContainedLink()         = default;
     ContainedLink( ContainedObject* pObj, long hint, long link ) : first( pObj ), second( hint ), third( link ) {}
+    ContainedLink( const ContainedLink& copy )            = default;
     ContainedLink& operator=( const ContainedLink& copy ) = default;
   };
   /// Definition of the contained link set
   class IdentifiedLink {
   public:
-    DataObject* first                            = nullptr;
-    long        second                           = INVALID;
-    IdentifiedLink()                             = default;
-    IdentifiedLink( const IdentifiedLink& copy ) = default;
+    DataObject* first  = nullptr;
+    long        second = INVALID;
+    IdentifiedLink()   = default;
     IdentifiedLink( DataObject* pObj, long hint ) : first( pObj ), second( hint ) {}
+    IdentifiedLink( const IdentifiedLink& copy )            = default;
+    IdentifiedLink& operator=( const IdentifiedLink& copy ) = default;
   };
 
   typedef std::vector<ContainedLink> ContainedLinks;

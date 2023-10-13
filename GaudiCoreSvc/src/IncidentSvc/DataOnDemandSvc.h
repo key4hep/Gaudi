@@ -141,10 +141,11 @@ public:
     IAlgorithm*   algorithm = nullptr;
     std::string   name;
     std::string   type;
-    unsigned long num       = 0;
-    bool          executing = false;
-    Leaf()                  = default;
-    Leaf( const Leaf& l )   = default;
+    unsigned long num                = 0;
+    bool          executing          = false;
+    Leaf()                           = default;
+    Leaf( const Leaf& l )            = default;
+    Leaf& operator=( const Leaf& l ) = default;
     Leaf( std::string t, std::string n ) : name( std::move( n ) ), type( std::move( t ) ) {}
   };
   // ==========================================================================

@@ -251,8 +251,9 @@ private:
     bool        temp{ true };
     bool        shared{ false };
 
-    THistID()                     = default;
-    THistID( const THistID& rhs ) = default;
+    THistID()                                = default;
+    THistID( const THistID& rhs )            = default;
+    THistID& operator=( const THistID& rhs ) = default;
     THistID( std::string& i, bool& t, TObject* o, TFile* f ) : id( i ), obj( o ), file( f ), temp( t ) {}
     THistID( std::string& i, bool& t, TObject* o, TFile* f, Mode m )
         : id( i ), obj( o ), file( f ), mode( m ), temp( t ) {}
