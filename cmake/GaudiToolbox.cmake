@@ -1136,6 +1136,14 @@ function(gaudi_add_dictionary dictionary)
     _gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:${dictionary}>)
     # Add the path to the merged rootmap file to LD_LIBRARY_PATH
     _gaudi_runtime_prepend(ld_library_path ${CMAKE_BINARY_DIR})
+
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+       AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0
+       AND CMAKE_BUILD_TYPE STREQUAL "FastDebug")
+        # Hide warnings produced by gcc 13 from dictionary code that ends up looking like
+        # https://godbolt.org/z/je7dE3vr1 (only with `-Og`)
+        set_source_files_properties(${gensrcdict} PROPERTIES COMPILE_OPTIONS -Wno-maybe-uninitialized)
+    endif()
 endfunction()
 
 
