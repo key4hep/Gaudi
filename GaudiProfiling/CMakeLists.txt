@@ -87,6 +87,10 @@ if(GAUDI_USE_INTELAMPLIFIER)
                    SOURCES src/component/intel/IntelProfile.cpp
                    LINK GaudiKernel
                         IntelAmplifier::libittnotify)
+  # Avoid warning: ittptmark64.o: missing .note.GNU-stack section implies executable stack
+  # (deprecated behaviour)
+  target_link_options(IntelProfiler PRIVATE -Wl,-z,execstack)
+  target_link_options(GaudiIntelProfiling PRIVATE  -Wl,-z,execstack)
 else()
   message(STATUS "GaudiProfiling: the module Intel VTune profiler is disabled")
 endif()
