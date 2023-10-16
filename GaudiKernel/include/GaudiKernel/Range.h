@@ -223,11 +223,6 @@ namespace Gaudi {
       if ( &right == this ) { return true; } // RETURN
       return right.size() == size() && std::equal( begin(), end(), right.begin() );
     }
-    /// equality with another range type
-    template <class CNT, class IT>
-    bool operator==( const Range_<CNT, IT>& right ) const {
-      return right.size() == size() && std::equal( begin(), end(), right.begin() );
-    }
     /// compare with another container
     template <class ANOTHERCONTAINER>
     bool operator==( const ANOTHERCONTAINER& right ) const {
