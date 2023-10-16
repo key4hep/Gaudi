@@ -90,7 +90,7 @@ StatusCode HiveDataBrokerSvc::initialize() {
       msg << endmsg;
     }
 
-    // populate m_dependencies
+    // populate m_dependencies and set AlgEntry::dependsOn
     m_dependencies = mapProducers( m_algorithms );
   } );
 }
@@ -140,7 +140,8 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
   std::vector<AlgEntry> algorithms;
 
   //= Get the Application manager, to see if algorithm exist
-  auto appMgr = service<IAlgManager>( "ApplicationMgr" );
+  auto   appMgr = service<IAlgManager>( "ApplicationMgr" );
+  size_t index  = 0;
   for ( const Gaudi::Utils::TypeNameString item : names ) {
     const std::string& theName = item.name();
     const std::string& theType = item.type();
@@ -167,7 +168,7 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
                             StatusCode::FAILURE };
     }
 
-    algorithms.emplace_back( std::move( myIAlg ) );
+    algorithms.emplace_back( index++, std::move( myIAlg ) );
   }
 
   return algorithms;
@@ -229,6 +230,26 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
   return producers;
 }
 
+/// Implements DFS topological sorting
+void HiveDataBrokerSvc::visit( AlgEntry const& alg, std::vector<std::string> const& stoppers,
+                               std::vector<Gaudi::Algorithm*>& sorted, std::vector<bool>& visited,
+                               std::vector<bool>& visiting ) const {
+  assert( visited.size() == m_algorithms.size() );
+  assert( visiting.size() == m_algorithms.size() );
+  if ( visited[alg.index] ) { return; }
+  if ( visiting[alg.index] ) { throw GaudiException( "Cycle detected ", __func__, StatusCode::FAILURE ); }
+
+  if ( std::none_of( std::begin( stoppers ), std::end( stoppers ),
+                     [alg]( auto& stopper ) { return alg.alg->name() == stopper; } ) ) {
+    visiting[alg.index] = true;
+    for ( auto* dep : alg.dependsOn ) { visit( *dep, stoppers, sorted, visited, visiting ); }
+    visiting[alg.index] = false;
+  }
+
+  visited[alg.index] = true;
+  sorted.push_back( alg.alg );
+}
+
 std::vector<Gaudi::Algorithm*>
 HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            requested,
                                           const std::vector<std::string>& stoppers ) const {
@@ -249,25 +270,10 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
   std::sort( deps.begin(), deps.end() );
   deps.erase( std::unique( deps.begin(), deps.end() ), deps.end() );
 
-  // insert the (direct) dependencies of 'current' right after 'current', and
-  // interate until done...
-  for ( auto current = deps.begin(); current != deps.end(); ++current ) {
-    if ( std::any_of( std::begin( stoppers ), std::end( stoppers ),
-                      [current]( auto& stopper ) { return ( *current )->alg->name() == stopper; } ) ) {
-      continue;
-    }
-    for ( auto* entry : ( *current )->dependsOn ) {
-      if ( std::find( std::next( current ), deps.end(), entry ) != deps.end() ) continue; // already there downstream...
-
-      auto dup = std::find( deps.begin(), current, entry );
-      // if present upstream, move it downstream. Otherwise, insert
-      // downstream...
-      current = std::prev( dup != current ? std::rotate( dup, std::next( dup ), std::next( current ) )
-                                          : deps.insert( std::next( current ), entry ) );
-    }
-  }
-  auto range = ( deps | ranges::views::transform( []( auto& i ) { return i->alg; } ) | ranges::views::reverse );
-  return { begin( range ), end( range ) };
+  std::vector<bool> visited( m_algorithms.size() );
+  std::vector<bool> visiting( m_algorithms.size() );
+  for ( auto* alg : deps ) { visit( *alg, stoppers, result, visited, visiting ); }
+  return result;
 }
 
 std::vector<Gaudi::Algorithm*>
@@ -288,11 +294,11 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
                           __func__, StatusCode::FAILURE };
   }
   assert( alg->alg != nullptr );
-  if ( std::find_if( std::begin( stoppers ), std::end( stoppers ),
-                     [&requested]( auto& stopper ) { return requested.name() == stopper; } ) == std::end( stoppers ) ) {
-    result = algorithmsRequiredFor( alg->alg->inputDataObjs(), stoppers );
-  }
-  result.push_back( alg->alg );
+
+  std::vector<bool> visited( m_algorithms.size() );
+  std::vector<bool> visiting( m_algorithms.size() );
+  visit( *alg, stoppers, result, visited, visiting );
+
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << std::endl << "requested " << requested << " returning " << std::endl << "  ";
     GaudiUtils::details::ostream_joiner(

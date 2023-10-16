@@ -35,11 +35,13 @@ private:
       this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies" };
 
   struct AlgEntry {
+    size_t              index;
     SmartIF<IAlgorithm> ialg;
     Gaudi::Algorithm*   alg;
     std::set<AlgEntry*> dependsOn;
 
-    AlgEntry( SmartIF<IAlgorithm>&& p ) : ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
+    AlgEntry( size_t i, SmartIF<IAlgorithm>&& p )
+        : index{ i }, ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
       if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
     }
   };
@@ -56,4 +58,7 @@ private:
   std::map<DataObjID, AlgEntry*> mapProducers( std::vector<AlgEntry>& algorithms ) const;
 
   std::map<DataObjID, AlgEntry*> m_dependencies;
+
+  void visit( AlgEntry const& alg, std::vector<std::string> const& stoppers, std::vector<Gaudi::Algorithm*>& sorted,
+              std::vector<bool>& visited, std::vector<bool>& visiting ) const;
 };
