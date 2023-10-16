@@ -38,7 +38,6 @@ private:
     SmartIF<IAlgorithm> ialg;
     Gaudi::Algorithm*   alg;
     std::set<AlgEntry*> dependsOn;
-    int                 requestCount = 0;
 
     AlgEntry( SmartIF<IAlgorithm>&& p ) : ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
       if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
@@ -53,8 +52,6 @@ private:
                                                                                      // dependencies...
 
   std::vector<AlgEntry> m_algorithms;
-
-  mutable std::vector<AlgEntry> m_cfnodes;
 
   std::map<DataObjID, AlgEntry*> mapProducers( std::vector<AlgEntry>& algorithms ) const;
 

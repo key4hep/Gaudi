@@ -108,14 +108,6 @@ StatusCode HiveDataBrokerSvc::start() {
       return ss;
     }
   }
-  // sysStart for m_cfnodes
-  for ( AlgEntry& algEntry : m_cfnodes ) {
-    ss = algEntry.alg->sysStart();
-    if ( ss.isFailure() ) {
-      error() << "Unable to start Algorithm: " << algEntry.alg->name() << endmsg;
-      return ss;
-    }
-  }
   return ss;
 }
 
@@ -125,14 +117,6 @@ StatusCode HiveDataBrokerSvc::stop() {
 
   // sysStart for m_algorithms
   for ( AlgEntry& algEntry : m_algorithms ) {
-    ss = algEntry.alg->sysStop();
-    if ( ss.isFailure() ) {
-      error() << "Unable to stop Algorithm: " << algEntry.alg->name() << endmsg;
-      return ss;
-    }
-  }
-  // sysStart for m_cfnodes
-  for ( AlgEntry& algEntry : m_cfnodes ) {
     ss = algEntry.alg->sysStop();
     if ( ss.isFailure() ) {
       error() << "Unable to stop Algorithm: " << algEntry.alg->name() << endmsg;
@@ -291,20 +275,18 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
                                           const std::vector<std::string>&     stoppers ) const {
   std::vector<Gaudi::Algorithm*> result;
 
-  auto alg = std::find_if( begin( m_cfnodes ), end( m_cfnodes ),
+  auto alg = std::find_if( begin( m_algorithms ), end( m_algorithms ),
                            [&]( const AlgEntry& ae ) { return ae.alg->name() == requested.name(); } );
 
-  if ( alg != end( m_cfnodes ) && alg->alg->type() != requested.type() ) {
+  if ( alg != end( m_algorithms ) && alg->alg->type() != requested.type() ) {
     error() << "requested " << requested << " but have matching name with different type: " << alg->alg->type()
             << endmsg;
   }
-  if ( alg == end( m_cfnodes ) ) {
-    auto av = instantiateAndInitializeAlgorithms( { requested.type() + '/' + requested.name() } );
-    assert( av.size() == 1 );
-    m_cfnodes.push_back( std::move( av.front() ) );
-    alg = std::next( m_cfnodes.rbegin() ).base();
+  if ( alg == end( m_algorithms ) ) {
+    throw GaudiException{ "Algorithm of type " + requested.type() + " with name " + requested.name() +
+                              " not in DataProducers.",
+                          __func__, StatusCode::FAILURE };
   }
-  assert( alg != end( m_cfnodes ) );
   assert( alg->alg != nullptr );
   if ( std::find_if( std::begin( stoppers ), std::end( stoppers ),
                      [&requested]( auto& stopper ) { return requested.name() == stopper; } ) == std::end( stoppers ) ) {
