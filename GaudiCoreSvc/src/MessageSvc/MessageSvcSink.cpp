@@ -19,6 +19,7 @@
 #include <fmt/format.h>
 
 #include <map>
+#include <sstream>
 #include <string_view>
 
 #if FMT_VERSION < 80000
@@ -141,8 +142,7 @@ private:
 
 namespace {
 
-  template <typename Stream>
-  Stream& printCounter( Stream& log, std::string_view id, const nlohmann::json& j ) {
+  void printCounter( std::ostringstream& log, std::string_view id, const nlohmann::json& j ) {
     const auto type = j.at( "type" ).get<std::string>();
     // for backward compatibility, we need to deal with statentity in a special way
     // this block should be dropped when StatEntities are gone
@@ -155,9 +155,9 @@ namespace {
       return printCounter( log, id, nj );
     }
     // binomial counters are slightly different ('*' character)
-    return log << fmt::format( " |{}{:48}|{} |",
-                               ( std::string_view{ type }.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
-                               fmt::format( "\"{}\"", id ), json_fmt_arg{ j } );
+    log << fmt::format( " |{}{:48}|{} |",
+                        ( std::string_view{ type }.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
+                        fmt::format( "\"{}\"", id ), json_fmt_arg{ j } );
   }
 
 } // namespace
@@ -185,25 +185,34 @@ namespace Gaudi::Monitoring {
 } // namespace Gaudi::Monitoring
 
 void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
-  // dump all counters
-  for ( auto& [algoName, entityMap] : sortedEntitiesAsJSON() ) {
-    // check first whether there is any counter to log
-    unsigned int nbCounters =
-        std::accumulate( begin( entityMap ), end( entityMap ), 0, []( const unsigned int& a, const auto& j ) {
-          return a + ( j.second.at( "empty" ).template get<bool>() ? 0 : 1 );
-        } );
-    if ( 0 == nbCounters ) continue;
-    MsgStream log{ msgSvc(), algoName };
-    log << MSG::INFO << "Number of counters : " << nbCounters << "\n"
-        << " |    Counter                                      |     #     |   "
-        << " sum     | mean/eff^* | rms/err^*  |     min     |     max     |";
-    std::for_each( begin( entityMap ), end( entityMap ), [&log]( auto& p ) {
-      // Do not print empty counters
-      if ( !p.second.at( "empty" ).template get<bool>() ) {
-        log << "\n";
-        printCounter( log, p.first, p.second );
-      }
-    } );
-    log << endmsg;
-  }
+  std::string        curAlgo = "";
+  std::ostringstream curLog;
+  unsigned int       nbNonEmptyEntities = 0;
+  auto               dumpAlgoCounters   = [&]() {
+    // Yes, so print header, dump log and reset counters
+    if ( nbNonEmptyEntities > 0 ) {
+      MsgStream log{ msgSvc(), curAlgo };
+      log << MSG::INFO << "Number of counters : " << nbNonEmptyEntities << "\n"
+          << " |    Counter                                      |     #     |   "
+          << " sum     | mean/eff^* | rms/err^*  |     min     |     max     |";
+      log << curLog.str() << endmsg;
+    }
+  };
+  applyToAllSortedEntities( [&]( std::string const& algo, std::string const& entity, nlohmann::json const& j ) {
+    // Did we change to new component ?
+    if ( algo != curAlgo ) {
+      dumpAlgoCounters();
+      curAlgo            = algo;
+      nbNonEmptyEntities = 0;
+      curLog             = std::ostringstream{};
+    }
+    // is current counter empty ?
+    if ( !j.at( "empty" ).template get<bool>() ) {
+      ++nbNonEmptyEntities;
+      curLog << "\n";
+      printCounter( curLog, entity, j );
+    }
+  } );
+  // last component
+  dumpAlgoCounters();
 }

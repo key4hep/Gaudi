@@ -34,10 +34,8 @@ struct EmptyEntity {
 struct TestSelectSink : public Gaudi::Monitoring::BaseSink {
   TestSelectSink( std::ostream& output, ISvcLocator* sl ) : BaseSink( "TestSelectSink", sl ), m_output( output ) {}
   void flush( bool ) override {
-    std::map<std::string, std::map<std::string, nlohmann::json>> const sortedEntities = sortedEntitiesAsJSON();
-    for ( [[maybe_unused]] auto& [component, entityMap] : sortedEntities ) {
-      for ( [[maybe_unused]] auto& [name, j] : entityMap ) { m_output << name << "\n"; }
-    }
+    applyToAllSortedEntities(
+        [this]( std::string const&, std::string const& name, nlohmann::json const& ) { m_output << name << "\n"; } );
   }
   std::ostream& m_output;
 };
