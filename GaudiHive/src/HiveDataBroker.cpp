@@ -75,7 +75,7 @@ StatusCode HiveDataBrokerSvc::initialize() {
     m_algorithms = instantiateAndInitializeAlgorithms( m_producers );
 
     // warn about non-reentrant algorithms
-    ranges::for_each( m_algorithms | ranges::views::transform( []( const auto& entry ) { return entry.alg; } ) |
+    ranges::for_each( m_algorithms | ranges::views::transform( []( const auto& entry ) { return entry.second.alg; } ) |
                           ranges::views::filter( []( const auto* alg ) { return alg->cardinality() > 0; } ),
                       [&]( const Gaudi::Algorithm* alg ) {
                         this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{ *alg } << endmsg;
@@ -85,8 +85,9 @@ StatusCode HiveDataBrokerSvc::initialize() {
       MsgStream& msg = debug();
       msg << "Available DataProducers: ";
       GaudiUtils::details::ostream_joiner(
-          msg, m_algorithms, ", ",
-          []( auto& os, const AlgEntry& e ) -> decltype( auto ) { return os << AlgorithmRepr{ *e.alg }; } );
+          msg, m_algorithms, ", ", []( auto& os, const std::pair<std::string, AlgEntry>& e ) -> decltype( auto ) {
+            return os << AlgorithmRepr{ *e.second.alg };
+          } );
       msg << endmsg;
     }
 
@@ -101,10 +102,10 @@ StatusCode HiveDataBrokerSvc::start() {
   if ( !ss.isSuccess() ) return ss;
 
   // sysStart for m_algorithms
-  for ( AlgEntry& algEntry : m_algorithms ) {
+  for ( auto& [name, algEntry] : m_algorithms ) {
     ss = algEntry.alg->sysStart();
     if ( ss.isFailure() ) {
-      error() << "Unable to start Algorithm: " << algEntry.alg->name() << endmsg;
+      error() << "Unable to start Algorithm: " << name << endmsg;
       return ss;
     }
   }
@@ -116,10 +117,10 @@ StatusCode HiveDataBrokerSvc::stop() {
   if ( !ss.isSuccess() ) return ss;
 
   // sysStart for m_algorithms
-  for ( AlgEntry& algEntry : m_algorithms ) {
+  for ( auto& [name, algEntry] : m_algorithms ) {
     ss = algEntry.alg->sysStop();
     if ( ss.isFailure() ) {
-      error() << "Unable to stop Algorithm: " << algEntry.alg->name() << endmsg;
+      error() << "Unable to stop Algorithm: " << name << endmsg;
       return ss;
     }
   }
@@ -127,17 +128,16 @@ StatusCode HiveDataBrokerSvc::stop() {
 }
 
 StatusCode HiveDataBrokerSvc::finalize() {
-  ranges::for_each( m_algorithms | ranges::views::transform( &AlgEntry::alg ), []( Gaudi::Algorithm* alg ) {
-    alg->sysFinalize().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-  } );
+  for ( auto& [name, algEntry] : m_algorithms ) {
+    algEntry.alg->sysFinalize().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  }
   m_algorithms.clear();
   return Service::finalize();
 }
 
-// populate m_algorithms
-std::vector<HiveDataBrokerSvc::AlgEntry>
+std::map<std::string, HiveDataBrokerSvc::AlgEntry>
 HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const {
-  std::vector<AlgEntry> algorithms;
+  std::map<std::string, AlgEntry> algorithms;
 
   //= Get the Application manager, to see if algorithm exist
   auto   appMgr = service<IAlgManager>( "ApplicationMgr" );
@@ -168,18 +168,18 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
                             StatusCode::FAILURE };
     }
 
-    algorithms.emplace_back( index++, std::move( myIAlg ) );
+    algorithms.emplace( theName, AlgEntry{ index++, std::move( myIAlg ) } );
   }
 
   return algorithms;
 }
 
 std::map<DataObjID, HiveDataBrokerSvc::AlgEntry*>
-HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
+HiveDataBrokerSvc::mapProducers( std::map<std::string, AlgEntry>& algorithms ) const {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "Data Dependencies for Algorithms:";
-    for ( const auto& entry : m_algorithms ) {
-      debug() << "\n " << entry.alg->name() << " :";
+    for ( const auto& [name, entry] : m_algorithms ) {
+      debug() << "\n " << name << " :";
       for ( const auto* id : sortedDataObjIDColl( entry.alg->inputDataObjs() ) ) {
         debug() << "\n    o INPUT  " << id->key();
       }
@@ -192,13 +192,13 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
 
   // figure out all outputs
   std::map<DataObjID, AlgEntry*> producers;
-  for ( AlgEntry& alg : algorithms ) {
+  for ( auto& [name, alg] : algorithms ) {
     const auto& output = alg.alg->outputDataObjs();
     if ( output.empty() ) { continue; }
     for ( auto id : output ) {
       auto r = producers.emplace( id, &alg );
       if ( !r.second ) {
-        throw GaudiException( "multiple algorithms declare " + id.key() + " as output (" + alg.alg->name() + " and " +
+        throw GaudiException( "multiple algorithms declare " + id.key() + " as output (" + name + " and " +
                                   producers[id]->alg->name() + " at least). This is not allowed",
                               __func__, StatusCode::FAILURE );
       }
@@ -206,7 +206,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
   }
 
   // resolve dependencies
-  for ( auto& algEntry : algorithms ) {
+  for ( auto& [name, algEntry] : algorithms ) {
     auto input = sortedDataObjIDColl( algEntry.alg->inputDataObjs() );
     for ( const DataObjID* idp : input ) {
       DataObjID id        = *idp;
@@ -281,23 +281,22 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
                                           const std::vector<std::string>&     stoppers ) const {
   std::vector<Gaudi::Algorithm*> result;
 
-  auto alg = std::find_if( begin( m_algorithms ), end( m_algorithms ),
-                           [&]( const AlgEntry& ae ) { return ae.alg->name() == requested.name(); } );
-
-  if ( alg != end( m_algorithms ) && alg->alg->type() != requested.type() ) {
-    error() << "requested " << requested << " but have matching name with different type: " << alg->alg->type()
-            << endmsg;
-  }
-  if ( alg == end( m_algorithms ) ) {
+  auto it = m_algorithms.find( requested.name() );
+  if ( it == end( m_algorithms ) ) {
     throw GaudiException{ "Algorithm of type " + requested.type() + " with name " + requested.name() +
                               " not in DataProducers.",
                           __func__, StatusCode::FAILURE };
   }
-  assert( alg->alg != nullptr );
+  auto const& alg = it->second;
+  if ( alg.alg->type() != requested.type() ) {
+    error() << "requested " << requested << " but have matching name with different type: " << alg.alg->type()
+            << endmsg;
+  }
+  assert( alg.alg != nullptr );
 
   std::vector<bool> visited( m_algorithms.size() );
   std::vector<bool> visiting( m_algorithms.size() );
-  visit( *alg, stoppers, result, visited, visiting );
+  visit( alg, stoppers, result, visited, visiting );
 
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << std::endl << "requested " << requested << " returning " << std::endl << "  ";

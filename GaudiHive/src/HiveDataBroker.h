@@ -46,16 +46,16 @@ private:
     }
   };
 
-  std::vector<AlgEntry>
+  std::map<std::string, AlgEntry>
   instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const; // algorithms must be fully
                                                                                      // initialized first, as
                                                                                      // doing so may create
                                                                                      // additional data
                                                                                      // dependencies...
 
-  std::vector<AlgEntry> m_algorithms;
+  std::map<std::string, AlgEntry> m_algorithms;
 
-  std::map<DataObjID, AlgEntry*> mapProducers( std::vector<AlgEntry>& algorithms ) const;
+  std::map<DataObjID, AlgEntry*> mapProducers( std::map<std::string, AlgEntry>& algorithms ) const;
 
   std::map<DataObjID, AlgEntry*> m_dependencies;
 
