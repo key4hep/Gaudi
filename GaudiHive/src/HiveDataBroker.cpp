@@ -283,12 +283,12 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
 
   auto it = m_algorithms.find( requested.name() );
   if ( it == end( m_algorithms ) ) {
-    throw GaudiException{ "Algorithm of type " + requested.type() + " with name " + requested.name() +
-                              " not in DataProducers.",
+    throw GaudiException{ "No algorithm with name " + requested.name() + " in DataProducers. Type is " +
+                              ( requested.haveType() ? requested.type() : "not specified" ),
                           __func__, StatusCode::FAILURE };
   }
   auto const& alg = it->second;
-  if ( alg.alg->type() != requested.type() ) {
+  if ( requested.haveType() && alg.alg->type() != requested.type() ) {
     error() << "requested " << requested << " but have matching name with different type: " << alg.alg->type()
             << endmsg;
   }
