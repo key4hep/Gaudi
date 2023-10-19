@@ -55,10 +55,6 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import cppyy
 
-if sys.version_info >= (3,):
-    # Python 2 compatibility
-    long = int
-
 if ROOT6WorkAroundEnabled("ROOT-5478"):
     # Trigger the loading of GaudiKernelDict
     cppyy.gbl.DataObject
@@ -316,8 +312,6 @@ class iProperty(object):
             value = str(value.toStringProperty())
         elif hasattr(value, "toString"):
             value = str(value.toString())
-        elif isinstance(value, long):
-            value = "%d" % value  # prevent pending 'L'
         else:
             value = str(value)
 
@@ -979,8 +973,6 @@ class AppMgr(iService):
                     v = v.__resolve__()
                 if isinstance(v, str):
                     v = repr(v)  # need double quotes
-                if isinstance(v, long):
-                    v = "%d" % v  # prevent pending 'L'
                 gbl.GaudiPython.Helpers.setProperty(
                     self._svcloc, ".".join([n, p]), str(v)
                 )
