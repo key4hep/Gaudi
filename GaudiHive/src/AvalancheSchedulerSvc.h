@@ -117,10 +117,6 @@ public:
   /// Constructor
   using extends::extends;
 
-  /// Destructor. Need to enforce noexcept specification as otherwise the noexcept(false) destructor of the
-  /// tbb::task_group member violates the contract
-  ~AvalancheSchedulerSvc() noexcept override {}
-
   /// Initialise
   StatusCode initialize() override;
 

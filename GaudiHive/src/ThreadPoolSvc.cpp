@@ -13,8 +13,6 @@
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "ThreadInitTask.h"
 
-#include "tbb/task_group.h"
-
 #include <chrono>
 #include <thread>
 
@@ -114,7 +112,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( m_threadPoolSize );
 
     // Create the task arena to run all algorithms
-    m_arena = tbb::task_arena( m_threadPoolSize + 1 );
+    m_arena.initialize( m_threadPoolSize + 1 );
 
     // Create the barrier for task synchronization at termination
     // (here we increase the number of threads by one to account for calling thread)
