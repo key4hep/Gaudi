@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -251,7 +251,7 @@ private:
   void genTrailer( std::ostream& pyOut, std::ostream& dbOut );
 
   /// handle the "marshalling" of Properties
-  void pythonizeValue( const PropertyBase* prop, string& pvalue, string& ptype, string& ptype2 );
+  void pythonizeValue( const PropertyBase* prop, string& pvalue, string& ptype );
 };
 
 int createAppMgr();
@@ -728,11 +728,11 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
       return false;
     }
 
-    string pvalue, ptype, ptype2;
-    pythonizeValue( prop, pvalue, ptype, ptype2 );
-    m_pyBuf << "    '" << pname << "' : " << pvalue << ", # " << ptype << "\n";
+    string pvalue, ptype;
+    pythonizeValue( prop, pvalue, ptype );
+    m_pyBuf << "    '" << pname << "' : " << pvalue << ",\n";
 
-    m_db2Buf << "            '" << pname << "': ('" << ptype2 << "', " << pvalue << ", '''" << prop->documentation()
+    m_db2Buf << "            '" << pname << "': ('" << ptype << "', " << pvalue << ", '''" << prop->documentation()
              << " [" << prop->ownerTypeName() << "]'''";
     auto sem = prop->semantics();
     if ( !sem.empty() ) { m_db2Buf << ", '" << sem << '\''; }
@@ -775,22 +775,20 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
 }
 
 //-----------------------------------------------------------------------------
-void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, string& ptype, string& ptype2 )
+void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, string& ptype )
 //-----------------------------------------------------------------------------
 {
   const std::string     cvalue = p->toString();
   const std::type_index ti     = std::type_index( *p->type_info() );
-  ptype2                       = System::typeinfoName( *p->type_info() );
+  ptype                        = System::typeinfoName( *p->type_info() );
 
   if ( ti == typeIndex<bool>() ) {
     pvalue = ( cvalue == "0" || cvalue == "False" || cvalue == "false" ) ? "False" : "True";
-    ptype  = "bool";
   } else if ( ti == typeIndex<char>() || ti == typeIndex<signed char>() || ti == typeIndex<unsigned char>() ||
               ti == typeIndex<short>() || ti == typeIndex<unsigned short>() || ti == typeIndex<int>() ||
               ti == typeIndex<unsigned int>() || ti == typeIndex<long>() || ti == typeIndex<unsigned long>() ||
               ti == typeIndex<long long>() || ti == typeIndex<unsigned long long>() ) {
     pvalue = cvalue;
-    ptype  = "int";
   } else if ( ti == typeIndex<float>() || ti == typeIndex<double>() ) {
     // forces python to handle this as a float: put a dot in there...
     pvalue = boost::to_lower_copy( cvalue );
@@ -799,39 +797,33 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     } else if ( std::string::npos == pvalue.find( "." ) && std::string::npos == pvalue.find( "e" ) ) {
       pvalue = cvalue + ".0";
     }
-    ptype = "float";
   } else if ( ti == typeIndex<string>() ) {
     pvalue = quote( cvalue );
-    ptype  = "str";
   } else if ( ti == typeIndex<GaudiHandleBase>() ) {
     const GaudiHandleProperty& hdl  = dynamic_cast<const GaudiHandleProperty&>( *p );
     const GaudiHandleBase&     base = hdl.value();
 
     pvalue               = base.pythonRepr();
-    ptype                = "GaudiHandle";
-    ptype2               = base.pythonPropertyClassName();
+    ptype                = base.pythonPropertyClassName();
     m_importGaudiHandles = true;
   } else if ( ti == typeIndex<GaudiHandleArrayBase>() ) {
     const GaudiHandleArrayProperty& hdl  = dynamic_cast<const GaudiHandleArrayProperty&>( *p );
     const GaudiHandleArrayBase&     base = hdl.value();
 
     pvalue               = base.pythonRepr();
-    ptype                = "GaudiHandleArray";
-    ptype2               = base.pythonPropertyClassName();
+    ptype                = base.pythonPropertyClassName();
     m_importGaudiHandles = true;
   } else if ( auto hdl = dynamic_cast<const DataHandleProperty*>( p ); hdl ) {
     // dynamic_cast to support also classes derived from DataHandleProperty
     const Gaudi::DataHandle& base = hdl->value();
 
     pvalue              = base.pythonRepr();
-    ptype               = "DataHandle";
     m_importDataHandles = true;
   } else {
     std::ostringstream v_str;
     v_str.setf( std::ios::showpoint ); // to correctly display floats
     p->toStream( v_str );
     pvalue = v_str.str();
-    ptype  = "list";
   }
 }
 
