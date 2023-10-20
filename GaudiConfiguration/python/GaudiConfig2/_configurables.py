@@ -100,10 +100,8 @@ class ConfigurableMeta(type):
             doc += "\n\nProperties\n----------\n"
             doc += "\n".join(
                 [
-                    "- {name}: {p.cpp_type} ({p.default!r})\n  {p.__doc__}\n".format(
-                        name=n, p=props[n]
-                    )
-                    for n in props
+                    f"- {name}: {p.cpp_type} ({p.default!r})\n  {p.__doc__}\n"
+                    for name, p in props.items()
                 ]
             )
             namespace["__doc__"] = doc
@@ -143,7 +141,7 @@ class Configurable(metaclass=ConfigurableMeta):
                 parent = self.instances[parent]
             if not name:
                 raise TypeError("name is needed when a parent is specified")
-            name = "{}.{}".format(parent.name, name)
+            name = f"{parent.name}.{name}"
         if name:
             self.name = name
         elif not _GLOBAL_INSTANCES:
@@ -159,7 +157,7 @@ class Configurable(metaclass=ConfigurableMeta):
     def name(self):
         if not self._name:
             raise AttributeError(
-                "{!r} instance was not named yet".format(type(self).__name__)
+                f"{repr(type(self).__name__)} instance was not named yet"
             )
         return self._name
 
@@ -168,12 +166,10 @@ class Configurable(metaclass=ConfigurableMeta):
         if value == self._name:
             return  # it's already the name of the instance, nothing to do
         if not isinstance(value, str) or not value:
-            raise TypeError(
-                "expected string, got {} instead".format(type(value).__name__)
-            )
+            raise TypeError(f"expected string, got {type(value).__name__} instead")
         if _GLOBAL_INSTANCES:
             if value in self.instances:
-                raise ValueError("name {!r} already used".format(value))
+                raise ValueError(f"name {repr(value)} already used")
             if self._name in self.instances:
                 del self.instances[self._name]
             self._name = value
@@ -196,7 +192,7 @@ class Configurable(metaclass=ConfigurableMeta):
             args.append(repr(self.name))
         except AttributeError:
             pass  # no name
-        args.extend("{}={!r}".format(*item) for item in self._properties.items())
+        args.extend(f"{k}={repr(v)}" for k, v in self._properties.items())
         return "{}({})".format(type(self).__name__, ", ".join(args))
 
     def __getstate__(self):
@@ -215,7 +211,7 @@ class Configurable(metaclass=ConfigurableMeta):
     def __opt_value__(self):
         if self.__cpp_type__ == self.name:
             return self.__cpp_type__
-        return "{}/{}".format(self.__cpp_type__, self.name)
+        return f"{self.__cpp_type__}/{self.name}"
 
     def __opt_properties__(self, explicit_defaults=False):
         name = self.name
@@ -242,10 +238,10 @@ class Configurable(metaclass=ConfigurableMeta):
         return self.name
 
     def getFullJobOptName(self):
-        return "{}/{}".format(self.__cpp_type__, self.name)
+        return f"{self.__cpp_type__}/{self.name}"
 
     def toStringProperty(self):
-        return "{}/{}".format(self.__cpp_type__, self.name)
+        return f"{self.__cpp_type__}/{self.name}"
 
     @classmethod
     def getDefaultProperties(cls):
@@ -271,17 +267,13 @@ class Configurable(metaclass=ConfigurableMeta):
             return self
         if type(self) is not type(other):
             raise TypeError(
-                "cannot merge instance of {} into an instance of {}".format(
-                    type(other).__name__, type(self).__name__
-                )
+                f"cannot merge instance of {type(other).__name__} into an instance of { type(self).__name__}"
             )
         if hasattr(self, "name") != hasattr(other, "name"):
             raise ValueError("cannot merge a named configurable with an unnamed one")
         if hasattr(self, "name") and (self.name != other.name):
             raise ValueError(
-                "cannot merge configurables with different names ({} and {})".format(
-                    self.name, other.name
-                )
+                f"cannot merge configurables with different names ({self.name} and {other.name})"
             )
 
         for name in other._properties:
@@ -291,12 +283,8 @@ class Configurable(metaclass=ConfigurableMeta):
             ):
                 continue
             try:
-                setattr(
-                    self,
-                    name,
-                    self._descriptors[name].__merge__(
-                        self, type(self), getattr(other, name)
-                    ),
+                self._properties[name] = self._descriptors[name].__merge__(
+                    self, type(self), getattr(other, name)
                 )
             except ValueError as err:
                 raise ValueError(
