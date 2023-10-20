@@ -34,8 +34,6 @@
 #include "boost/algorithm/string.hpp"
 #include "boost/thread.hpp"
 #include "boost/tokenizer.hpp"
-// DP waiting for the TBB service
-#include "tbb/tbb_stddef.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )
