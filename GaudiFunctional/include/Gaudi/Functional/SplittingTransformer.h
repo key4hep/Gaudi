@@ -46,7 +46,7 @@ namespace Gaudi::Functional {
           : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
                 this, outputs.first, details::to_DataObjID( outputs.second ),
-                [=]( Gaudi::Details::PropertyBase& ) {
+                [this]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
                   if constexpr ( details::is_optional_v<Out> ) { // handle constructor does not (yet) allow to
@@ -113,7 +113,7 @@ namespace Gaudi::Functional {
           : base_class( std::move( name ), locator, inputs )
           , m_outputLocations(
                 this, outputs.first, details::to_DataObjID( outputs.second ),
-                [=]( Gaudi::Details::PropertyBase& ) {
+                [this]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
                   if constexpr ( details::is_optional_v<Out> ) { // handle constructor does not (yet) allow to

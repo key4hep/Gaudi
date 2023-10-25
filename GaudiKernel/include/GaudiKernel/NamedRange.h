@@ -105,6 +105,8 @@ namespace Gaudi {
     /// set the name of the range
     void setName( std::string value ) { m_name = std::move( value ); }
     // ========================================================================
+    using Base::operator==;
+
   private:
     // ========================================================================
     /// the name, associated to the range
