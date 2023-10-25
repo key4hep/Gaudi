@@ -149,5 +149,5 @@ def test_merge_fail():
 def testValueSem():
     from GaudiConfig2.semantics import FloatSemantics, SequenceSemantics
 
-    s = SequenceSemantics("std::vector<int>", None, FloatSemantics("float", None))
+    s = SequenceSemantics("std::vector<int>", FloatSemantics("float"))
     assert isinstance(s.value_semantics, FloatSemantics)

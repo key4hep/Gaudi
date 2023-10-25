@@ -27,8 +27,8 @@ class PropertySemantics(object):
 
     __handled_types__ = ()
 
-    def __init__(self, cpp_type, name=None):
-        self._name = name
+    def __init__(self, cpp_type):
+        self._name = None
         self.cpp_type = cpp_type
 
     @property
@@ -211,8 +211,8 @@ class ComponentSemantics(PropertySemantics):
         ),
     )
 
-    def __init__(self, cpp_type, name=None):
-        super(ComponentSemantics, self).__init__(cpp_type, name)
+    def __init__(self, cpp_type):
+        super(ComponentSemantics, self).__init__(cpp_type)
         if ":" in cpp_type:
             self.cpp_type, self.interfaces = cpp_type.split(":", 1)
             self.interfaces = set(self.interfaces.split(","))
@@ -344,12 +344,11 @@ class _ListHelper(MutableSequence):
 class SequenceSemantics(PropertySemantics):
     __handled_types__ = (re.compile(r"(std::)?(vector|list)<.*>$"),)
 
-    def __init__(self, cpp_type, name=None, valueSem=None):
-        super(SequenceSemantics, self).__init__(cpp_type, name)
+    def __init__(self, cpp_type, valueSem=None):
+        super(SequenceSemantics, self).__init__(cpp_type)
         self.value_semantics = valueSem or getSemanticsFor(
             list(extract_template_args(cpp_type))[0]
         )
-        self.value_semantics.name = name
 
     @property
     def name(self):
@@ -392,8 +391,8 @@ class OrderedSetSemantics(SequenceSemantics):
         re.compile(r"^OrderedSet<.*>$"),
     )
 
-    def __init__(self, cpp_type, name=None):
-        super(OrderedSetSemantics, self).__init__(cpp_type, name)
+    def __init__(self, cpp_type):
+        super(OrderedSetSemantics, self).__init__(cpp_type)
 
     def merge(self, bb, aa):
         for b in bb:
@@ -478,13 +477,11 @@ class _DictHelper(MutableMapping):
 class MappingSemantics(PropertySemantics):
     __handled_types__ = (re.compile(r"(std::)?(unordered_)?map<.*>$"),)
 
-    def __init__(self, cpp_type, name=None):
-        super(MappingSemantics, self).__init__(cpp_type, name)
+    def __init__(self, cpp_type):
+        super(MappingSemantics, self).__init__(cpp_type)
         template_args = list(extract_template_args(cpp_type))
         self.key_semantics = getSemanticsFor(template_args[0])
-        self.key_semantics.name = "{} key".format(name)
         self.value_semantics = getSemanticsFor(template_args[1])
-        self.value_semantics.name = "{} value".format(name)
 
     @property
     def name(self):
@@ -524,10 +521,10 @@ SEMANTICS = [
 ]
 
 
-def getSemanticsFor(cpp_type, name=None):
+def getSemanticsFor(cpp_type):
     for semantics in SEMANTICS:
         try:
-            return semantics(cpp_type, name)
+            return semantics(cpp_type)
         except TypeError:
             pass
-    return DefaultSemantics(cpp_type, name)
+    return DefaultSemantics(cpp_type)
