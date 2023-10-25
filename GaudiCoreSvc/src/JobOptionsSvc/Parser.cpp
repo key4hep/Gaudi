@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,6 +19,7 @@
 #include <boost/filesystem.hpp>
 #include <fmt/format.h>
 #include <fstream>
+#include <sstream>
 
 // ============================================================================
 namespace classic = boost::spirit::classic;
@@ -28,28 +29,23 @@ namespace gpu     = Gaudi::Parsers::Utils;
 namespace qi      = boost::spirit::qi;
 // ============================================================================
 namespace {
-  // ============================================================================
-  void GetLastLineAndColumn( std::ifstream& ifs, int& line, int& column ) {
-    int         n = 0;
-    std::string str;
-    while ( !ifs.eof() ) {
-      getline( ifs, str );
-      ++n;
+
+  // Return last line and column number of text in `s` with newline delimiter `delim`
+  std::pair<int, int> GetLastLineAndColumn( std::string_view s, const char delim = '\n' ) {
+    size_t line = 1;
+    for ( size_t p = s.find( delim ); p != s.npos; p = s.find( delim ) ) {
+      s.remove_prefix( p + 1 );
+      ++line;
     }
-    line   = n;
-    column = str.length() + 1;
-    ifs.clear();
-    ifs.seekg( 0, ifs.beg );
+    return { line, s.size() + 1 };
   }
 
   template <typename Grammar>
   bool ParseStream( std::ifstream& stream, const std::string& stream_name, gp::Messages* messages, gp::Node* root ) {
+    // Load input stream
+    const std::string input = ( std::ostringstream{} << stream.rdbuf() ).str();
 
-    int last_line, last_column;
-
-    GetLastLineAndColumn( stream, last_line, last_column );
-
-    std::string input( ( std::istreambuf_iterator<char>( stream ) ), std::istreambuf_iterator<char>() );
+    auto [last_line, last_column] = GetLastLineAndColumn( input );
 
     BaseIterator in_begin( input.begin() );
     // convert input iterator to forward iterator, usable by spirit parser
@@ -57,7 +53,6 @@ namespace {
     ForwardIterator fwd_end;
 
     // wrap forward iterator with position iterator, to record the position
-
     Iterator position_begin( fwd_begin, fwd_end, stream_name );
     Iterator position_end;
 
