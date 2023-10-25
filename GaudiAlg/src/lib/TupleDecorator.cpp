@@ -8,11 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   Coming from ROOT GenVector
-#  pragma warning( disable : 1572 )
-#endif
 // ============================================================================
 // Include files
 // ============================================================================

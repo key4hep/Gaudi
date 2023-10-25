@@ -59,7 +59,7 @@ StatusCode CPUCruncher::initialize() {
   }
 
   // if an algorithm was setup to sleep, for whatever period, it effectively models CPU-blocking behavior
-  if ( m_sleepFraction != 0.0f ) setBlocking( true );
+  if ( abs( m_sleepFraction ) > std::numeric_limits<float>::epsilon() ) setBlocking( true );
 
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
   // we need to wait until initialize when we've read in the input and output key
@@ -140,7 +140,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
       do {
         unif1 = getUnifRandom( seed );
         unif2 = getUnifRandom( seed );
-      } while ( unif1 == 0. );
+      } while ( unif1 < std::numeric_limits<double>::epsilon() );
 
       const double normal = sqrt( -2. * log( unif1 ) ) * cos( 2 * M_PI * unif2 );
 

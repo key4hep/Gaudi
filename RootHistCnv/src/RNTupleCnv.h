@@ -69,7 +69,7 @@ namespace RootHistCnv {
   /// Add an item of a given type to the N tuple
   template <class TYP>
   INTupleItem* createNTupleItem( std::string itemName, std::string blockName, std::string indexName, int indexRange,
-                                 int arraySize, TYP minimum, TYP maximum, INTuple* tuple );
+                                 int arraySize, TYP minimum, TYP maximum, INTuple* tuple, bool hasRange );
 
   bool parseName( const std::string& full, std::string& blk, std::string& var );
 

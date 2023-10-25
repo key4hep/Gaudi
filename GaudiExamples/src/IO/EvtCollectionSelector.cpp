@@ -103,7 +103,9 @@ namespace Gaudi {
         std::cout << std::endl << System::typeinfoName( typeid( *this ) ) << "\t -> Momenta(Fix): ";
         for ( int i = 0; i < std::min( 5, n ); ++i ) { std::cout << "[" << i << "]=" << m_trkMomFixed[i] << " "; }
         for ( int i = 5; i < 99; ++i ) {
-          if ( m_trkMomFixed[i] != 0.f ) { std::cout << "[" << i << "]= Error in Fixed momentum" << std::endl; }
+          if ( abs( m_trkMomFixed[i] ) > std::numeric_limits<float>::epsilon() ) {
+            std::cout << "[" << i << "]= Error in Fixed momentum" << std::endl;
+          }
         }
 #endif
         std::cout << std::endl;

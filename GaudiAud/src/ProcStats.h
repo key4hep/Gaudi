@@ -30,21 +30,6 @@ struct procInfo {
   procInfo() = default;
   procInfo( double sz, double rss_sz ) : vsize( sz ), rss( rss_sz ) {}
 
-  bool operator==( const procInfo& p ) const {
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-#  pragma warning( push )
-#  pragma warning( disable : 1572 )
-#endif
-
-    return ( vsize == p.vsize && rss == p.rss );
-
-#ifdef __ICC
-// re-enable icc remark #1572
-#  pragma warning( pop )
-#endif
-  }
-
   // see proc(4) man pages for units and a description
   double vsize{ 0 }; // in MB (used to be in pages?)
   double rss{ 0 };   // in MB (used to be in pages?)

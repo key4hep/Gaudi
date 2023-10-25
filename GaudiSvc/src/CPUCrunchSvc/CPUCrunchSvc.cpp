@@ -23,6 +23,13 @@ DECLARE_COMPONENT( CPUCrunchSvc )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 #define VERBOSE_MSG ON_VERBOSE verbose()
 
+namespace {
+  // idea coming from The art of computer programming by Knuth
+  constexpr bool essentiallyEqual( double const a, double const b ) {
+    return std::abs( a - b ) <= std::min( std::abs( a ), std::abs( b ) ) * std::numeric_limits<double>::epsilon();
+  }
+} // namespace
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 CPUCrunchSvc::CPUCrunchSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc ) {}
@@ -101,7 +108,7 @@ void CPUCrunchSvc::calibrate() {
       }
     }
   }
-  if ( m_corrFact != 1. ) {
+  if ( essentiallyEqual( m_corrFact, 1. ) ) {
     debug() << "Adjusting times with correction factor " << m_corrFact.value() << endmsg;
     for ( auto& t : m_times_vect ) { t = t * m_corrFact; }
   }

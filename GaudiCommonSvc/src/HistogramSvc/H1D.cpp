@@ -125,22 +125,17 @@ bool Gaudi::Histogram1D::setBinContents( int i, int entries, double height, doub
   return true;
 }
 
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison are meant
-#  pragma warning( push )
-#  pragma warning( disable : 1572 )
-#endif
 bool Gaudi::Histogram1D::setRms( double rms ) {
   m_rep->SetEntries( m_sumEntries );
   std::vector<double> stat( 11 );
   // sum weights
   stat[0] = sumBinHeights();
   stat[1] = 0;
-  if ( equivalentBinEntries() != 0 ) stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
+  if ( abs( equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+    stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
   stat[2]     = m_sumwx;
   double mean = 0;
-  if ( sumBinHeights() != 0 ) mean = m_sumwx / sumBinHeights();
+  if ( abs( sumBinHeights() ) > std::numeric_limits<double>::epsilon() ) mean = m_sumwx / sumBinHeights();
   stat[3] = ( mean * mean + rms * rms ) * sumBinHeights();
   m_rep->PutStats( &stat.front() );
   return true;
@@ -155,7 +150,8 @@ bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, dou
   stat[0] = sumBinHeights();
   // sum weights **2
   stat[1] = 0;
-  if ( eqBinEntries != 0 ) stat[1] = ( sumBinHeights() * sumBinHeights() ) / eqBinEntries;
+  if ( abs( eqBinEntries ) > std::numeric_limits<double>::epsilon() )
+    stat[1] = ( sumBinHeights() * sumBinHeights() ) / eqBinEntries;
   // sum weights * x
   stat[2] = mean * sumBinHeights();
   // sum weight * x **2
@@ -167,7 +163,7 @@ bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, dou
 bool Gaudi::Histogram1D::fill( double x, double weight ) {
   // avoid race conditions when filling the histogram
   auto guard = std::scoped_lock{ m_fillSerialization };
-  ( weight == 1. ) ? m_rep->Fill( x ) : m_rep->Fill( x, weight );
+  m_rep->Fill( x, weight );
   return true;
 }
 
@@ -192,7 +188,8 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h ) {
   double sumw = h.sumBinHeights();
   // sumw2
   double sumw2 = 0;
-  if ( h.equivalentBinEntries() != 0 ) sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
+  if ( abs( h.equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+    sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
 
   double sumwx  = h.mean() * h.sumBinHeights();
   double sumwx2 = ( h.mean() * h.mean() + h.rms() * h.rms() ) * h.sumBinHeights();
@@ -214,11 +211,6 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h ) {
   stat[3] = sumwx2;
   m_rep->PutStats( &stat.front() );
 }
-
-#ifdef __ICC
-// re-enable icc remark #1572
-#  pragma warning( pop )
-#endif
 
 StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s ) {
   // DataObject::serialize(s);

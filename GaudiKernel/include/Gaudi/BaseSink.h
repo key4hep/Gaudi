@@ -74,7 +74,7 @@ namespace Gaudi::Monitoring {
         // promise needs to be recreated in case of a restart
         m_flushThreadStop = std::promise<void>{};
         // enable periodic output file flush if requested
-        if ( m_autoFlushPeriod.value() != 0 ) {
+        if ( m_autoFlushPeriod.value() > std::numeric_limits<double>::epsilon() ) {
           m_flushThread = std::thread{ [this, flushStop = m_flushThreadStop.get_future()]() {
             using namespace std::chrono_literals;
             while ( flushStop.wait_for( m_autoFlushPeriod.value() * 1s ) == std::future_status::timeout ) {

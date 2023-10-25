@@ -12,12 +12,9 @@
 #if __has_include( <catch2/catch.hpp>)
 // Catch2 v2
 #  include <catch2/catch.hpp>
-namespace Catch {
-  using Detail::Approx;
-}
 #else
 // Catch2 v3
-#  include <catch2/catch_approx.hpp>
+#  include <catch2/catch_matchers_floating_point.hpp>
 #  include <catch2/catch_template_test_macros.hpp>
 #  include <catch2/catch_test_macros.hpp>
 #endif
@@ -99,12 +96,12 @@ namespace {
     void check_details( const nlohmann::json& j, bool empty ) const {
       if ( empty ) {
         CHECK( j["nEntries"].get<unsigned long>() == 0 );
-        CHECK( j["sum"].get<double>() == 0 );
-        CHECK( j["mean"].get<double>() == 0 );
+        REQUIRE_THAT( j["sum"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["mean"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
       } else {
         CHECK( j["nEntries"].get<unsigned long>() == 3 );
-        CHECK( j["sum"].get<double>() == 60 );
-        CHECK( j["mean"].get<double>() == 20 );
+        REQUIRE_THAT( j["sum"].get<double>(), Catch::Matchers::WithinRel( 60, 1.e-4 ) );
+        REQUIRE_THAT( j["mean"].get<double>(), Catch::Matchers::WithinRel( 20, 1.e-4 ) );
       }
     }
   };
@@ -118,16 +115,16 @@ namespace {
     void check_details( const nlohmann::json& j, bool empty ) const {
       if ( empty ) {
         CHECK( j["nEntries"].get<unsigned long>() == 0 );
-        CHECK( j["sum"].get<double>() == 0 );
-        CHECK( j["mean"].get<double>() == 0 );
-        CHECK( j["sum2"].get<double>() == 0 );
-        CHECK( j["standard_deviation"].get<double>() == 0 );
+        REQUIRE_THAT( j["sum"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["mean"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["sum2"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["standard_deviation"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
       } else {
         CHECK( j["nEntries"].get<unsigned long>() == 3 );
-        CHECK( j["sum"].get<double>() == 60 );
-        CHECK( j["mean"].get<double>() == 20 );
-        CHECK( j["sum2"].get<double>() == 1400 );
-        CHECK( j["standard_deviation"].get<double>() == Catch::Approx( 8.164966 ) );
+        REQUIRE_THAT( j["sum"].get<double>(), Catch::Matchers::WithinRel( 60, 1.e-4 ) );
+        REQUIRE_THAT( j["mean"].get<double>(), Catch::Matchers::WithinRel( 20, 1.e-4 ) );
+        REQUIRE_THAT( j["sum2"].get<double>(), Catch::Matchers::WithinRel( 1400, 1.e-4 ) );
+        REQUIRE_THAT( j["standard_deviation"].get<double>(), Catch::Matchers::WithinRel( 8.164966, 1.e-4 ) );
       }
     }
   };
@@ -141,20 +138,20 @@ namespace {
     void check_details( const nlohmann::json& j, bool empty ) const {
       if ( empty ) {
         CHECK( j["nEntries"].get<unsigned long>() == 0 );
-        CHECK( j["sum"].get<double>() == 0 );
-        CHECK( j["mean"].get<double>() == 0 );
-        CHECK( j["sum2"].get<double>() == 0 );
-        CHECK( j["standard_deviation"].get<double>() == 0 );
-        // CHECK( j["min"].get<double>() == 0 );
-        // CHECK( j["max"].get<double>() == 0 );
+        REQUIRE_THAT( j["sum"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["mean"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["sum2"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["standard_deviation"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        // REQUIRE_THAT( j["min"].get<double>(), Catch::Matchers::WithinAbs(0, 1.e-4 ) );
+        // REQUIRE_THAT( j["max"].get<double>(), Catch::Matchers::WithinAbs(0, 1.e-4 ) );
       } else {
         CHECK( j["nEntries"].get<unsigned long>() == 3 );
-        CHECK( j["sum"].get<double>() == 60 );
-        CHECK( j["mean"].get<double>() == 20 );
-        CHECK( j["sum2"].get<double>() == 1400 );
-        CHECK( j["standard_deviation"].get<double>() == Catch::Approx( 8.164966 ) );
-        CHECK( j["min"].get<double>() == 10 );
-        CHECK( j["max"].get<double>() == 30 );
+        REQUIRE_THAT( j["sum"].get<double>(), Catch::Matchers::WithinRel( 60, 1.e-4 ) );
+        REQUIRE_THAT( j["mean"].get<double>(), Catch::Matchers::WithinRel( 20, 1.e-4 ) );
+        REQUIRE_THAT( j["sum2"].get<double>(), Catch::Matchers::WithinRel( 1400, 1.e-4 ) );
+        REQUIRE_THAT( j["standard_deviation"].get<double>(), Catch::Matchers::WithinRel( 8.164966, 1.e-4 ) );
+        REQUIRE_THAT( j["min"].get<double>(), Catch::Matchers::WithinRel( 10, 1.e-4 ) );
+        REQUIRE_THAT( j["max"].get<double>(), Catch::Matchers::WithinRel( 30, 1.e-4 ) );
       }
     }
   };
@@ -169,16 +166,16 @@ namespace {
     void check_details( const nlohmann::json& j, bool empty ) const {
       if ( empty ) {
         CHECK( j["nEntries"].get<unsigned long>() == 0 );
-        CHECK( j["nTrueEntries"].get<double>() == 0 );
-        CHECK( j["nFalseEntries"].get<double>() == 0 );
-        // CHECK( j["efficiency"].get<double>() == 0 );
-        // CHECK( j["efficiencyErr"].get<double>() == 0 );
+        REQUIRE_THAT( j["nTrueEntries"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        REQUIRE_THAT( j["nFalseEntries"].get<double>(), Catch::Matchers::WithinAbs( 0, 1.e-4 ) );
+        // REQUIRE_THAT( j["efficiency"].get<double>(), Catch::Matchers::WithinAbs(0, 1.e-4 ) );
+        // REQUIRE_THAT( j["efficiencyErr"].get<double>(), Catch::Matchers::WithinAbs(0, 1.e-4 ) );
       } else {
         CHECK( j["nEntries"].get<unsigned long>() == 10 );
-        CHECK( j["nTrueEntries"].get<double>() == 5 );
-        CHECK( j["nFalseEntries"].get<double>() == 5 );
-        CHECK( j["efficiency"].get<double>() == 0.5 );
-        CHECK( j["efficiencyErr"].get<double>() == Catch::Approx( 0.158114 ) );
+        REQUIRE_THAT( j["nTrueEntries"].get<double>(), Catch::Matchers::WithinRel( 5, 1.e-4 ) );
+        REQUIRE_THAT( j["nFalseEntries"].get<double>(), Catch::Matchers::WithinRel( 5, 1.e-4 ) );
+        REQUIRE_THAT( j["efficiency"].get<double>(), Catch::Matchers::WithinRel( 0.5, 1.e-4 ) );
+        REQUIRE_THAT( j["efficiencyErr"].get<double>(), Catch::Matchers::WithinRel( 0.158114, 1.e-4 ) );
       }
     }
   };

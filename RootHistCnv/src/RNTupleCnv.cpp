@@ -25,12 +25,6 @@
 // Root
 #include "TTree.h"
 
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//     they are intended
-#  pragma warning( disable : 1572 )
-#endif
-
 //-----------------------------------------------------------------------------
 //
 // Implementation of class :  RootHistCnv::RNTupleCnv
@@ -263,13 +257,13 @@ bool RootHistCnv::parseName( const std::string& full, std::string& blk, std::str
 #define INSTANTIATE( TYP )                                                                                             \
   template INTupleItem* createNTupleItem<TYP>( std::string itemName, std::string blockName, std::string index_name,    \
                                                int indexRange, int arraySize, TYP minimum, TYP maximum,                \
-                                               INTuple* tuple )
+                                               INTuple* tuple, bool hasRange )
 
 namespace RootHistCnv {
 
   template <class TYP>
   INTupleItem* createNTupleItem( std::string itemName, std::string blockName, std::string indexName, int indexRange,
-                                 int arraySize, TYP min, TYP max, INTuple* ntup ) {
+                                 int arraySize, TYP min, TYP max, INTuple* ntup, bool hasRange ) {
 
     std::string varName;
     if ( blockName != "" ) {
@@ -281,7 +275,7 @@ namespace RootHistCnv {
     TYP          null = 0;
     INTupleItem* col  = nullptr;
 
-    if ( min == 0 && max == 0 ) {
+    if ( !hasRange ) {
       min = NTuple::Range<TYP>::min();
       max = NTuple::Range<TYP>::max();
     }

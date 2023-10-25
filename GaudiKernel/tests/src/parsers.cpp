@@ -73,20 +73,20 @@ BOOST_AUTO_TEST_CASE( test_RealGrammar ) {
   {
     double result;
     BOOST_CHECK( parse( result, "1.5E2" ) );
-    BOOST_CHECK( result == 150 );
+    BOOST_CHECK_CLOSE( result, 150, 1.e-4 );
   }
 
   {
     float result;
     BOOST_CHECK( parse( result, "1.5E2" ) );
-    BOOST_CHECK( result == 150 );
+    BOOST_CHECK_CLOSE( result, 150, 1.e-4 );
   }
 
   {
     // test bug GAUDI-1121
     float result;
     BOOST_CHECK( parse( result, "-10000000000.0" ) );
-    BOOST_CHECK( result == -1.E10 );
+    BOOST_CHECK_CLOSE( result, -1.E10, 1.e-4 );
   }
 }
 
@@ -114,17 +114,17 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
     std::vector<std::vector<double>> result;
     BOOST_CHECK( parse( result, "[[1, 2]/* Test comments */,[3]]" ) );
     BOOST_CHECK( result.size() == 2 );
-    BOOST_CHECK( result[0][0] == 1 );
-    BOOST_CHECK( result[0][1] == 2 );
-    BOOST_CHECK( result[1][0] == 3 );
+    BOOST_CHECK_CLOSE( result[0][0], 1, 1.e-4 );
+    BOOST_CHECK_CLOSE( result[0][1], 2, 1.e-4 );
+    BOOST_CHECK_CLOSE( result[1][0], 3, 1.e-4 );
   }
 
   {
     std::vector<double> result;
     BOOST_CHECK( parse( result, "[1.1, 2.2 ]" ) );
     BOOST_CHECK( result.size() == 2 );
-    BOOST_CHECK( result[0] == 1.1 );
-    BOOST_CHECK( result[1] == 2.2 );
+    BOOST_CHECK_CLOSE( result[0], 1.1, 1.e-4 );
+    BOOST_CHECK_CLOSE( result[1], 2.2, 1.e-4 );
   }
   /*{
       std::set<double> result;
@@ -146,8 +146,8 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
 BOOST_AUTO_TEST_CASE( test_PairGramar ) {
   std::pair<double, double> result;
   BOOST_CHECK( parse( result, "(10.1, 10)" ) );
-  BOOST_CHECK( result.first == 10.1 );
-  BOOST_CHECK( result.second == 10 );
+  BOOST_CHECK_CLOSE( result.first, 10.1, 1.e-4 );
+  BOOST_CHECK_CLOSE( result.second, 10, 1.e-4 );
 }
 
 BOOST_AUTO_TEST_CASE( test_MapGramar ) {
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
     BOOST_CHECK( parse( result, "{'key':[10.0,20.0]}" ) );
     BOOST_CHECK( result.size() == 1 );
     BOOST_CHECK( result["key"].size() == 2 );
-    BOOST_CHECK( result["key"][0] == 10 );
+    BOOST_CHECK_CLOSE( result["key"][0], 10, 1.e-4 );
   }
 
   {
@@ -186,27 +186,27 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
     BOOST_CHECK( parse( result, "{'key':10, 'key1'=20}" ) );
     BOOST_CHECK( result.size() == 2 );
     Gaudi::StringKey key = std::string( "key" );
-    BOOST_CHECK( result.at( key ) == 10 );
+    BOOST_CHECK_CLOSE( result.at( key ), 10, 1.e-4 );
     key = std::string( "key1" );
-    BOOST_CHECK( result.at( key ) == 20 );
+    BOOST_CHECK_CLOSE( result.at( key ), 20, 1.e-4 );
   }
 }
 
 BOOST_AUTO_TEST_CASE( test_Pnt3DTypes ) {
   Gaudi::XYZPoint result;
   BOOST_CHECK( parse( result, "(px:10.0, py:11.0, pZ:12.0)" ) );
-  BOOST_CHECK( result.X() == 10.0 );
-  BOOST_CHECK( result.Y() == 11.0 );
-  BOOST_CHECK( result.Z() == 12.0 );
+  BOOST_CHECK_CLOSE( result.X(), 10.0, 1.e-4 );
+  BOOST_CHECK_CLOSE( result.Y(), 11.0, 1.e-4 );
+  BOOST_CHECK_CLOSE( result.Z(), 12.0, 1.e-4 );
 }
 
 BOOST_AUTO_TEST_CASE( test_Pnt4DTypes ) {
   Gaudi::LorentzVector result;
   BOOST_CHECK( parse( result, "(px:10.0, py:11.0, pZ:12.0;100.0)" ) );
-  BOOST_CHECK( result.X() == 10.0 );
-  BOOST_CHECK( result.Y() == 11.0 );
-  BOOST_CHECK( result.Z() == 12.0 );
-  BOOST_CHECK( result.T() == 100.0 );
+  BOOST_CHECK_CLOSE( result.X(), 10.0, 1.e-4 );
+  BOOST_CHECK_CLOSE( result.Y(), 11.0, 1.e-4 );
+  BOOST_CHECK_CLOSE( result.Z(), 12.0, 1.e-4 );
+  BOOST_CHECK_CLOSE( result.T(), 100.0, 1.e-4 );
 }
 
 BOOST_AUTO_TEST_CASE( test_HistoTypes ) {
@@ -214,8 +214,8 @@ BOOST_AUTO_TEST_CASE( test_HistoTypes ) {
     Gaudi::Histo1DDef result;
     BOOST_CHECK( parse( result, "('test', 1.0,2.0, 100)" ) );
     BOOST_CHECK( result.title() == "test" );
-    BOOST_CHECK( result.lowEdge() == 1.0 );
-    BOOST_CHECK( result.highEdge() == 2.0 );
+    BOOST_CHECK_CLOSE( result.lowEdge(), 1.0, 1.e-4 );
+    BOOST_CHECK_CLOSE( result.highEdge(), 2.0, 1.e-4 );
     BOOST_CHECK( result.bins() == 100 );
   }
 
@@ -223,8 +223,8 @@ BOOST_AUTO_TEST_CASE( test_HistoTypes ) {
     Gaudi::Histo1DDef result;
     BOOST_CHECK( parse( result, "(1.0,2.0, 'test', 100)" ) );
     BOOST_CHECK( result.title() == "test" );
-    BOOST_CHECK( result.lowEdge() == 1.0 );
-    BOOST_CHECK( result.highEdge() == 2.0 );
+    BOOST_CHECK_CLOSE( result.lowEdge(), 1.0, 1.e-4 );
+    BOOST_CHECK_CLOSE( result.highEdge(), 2.0, 1.e-4 );
     BOOST_CHECK( result.bins() == 100 );
   }
 }

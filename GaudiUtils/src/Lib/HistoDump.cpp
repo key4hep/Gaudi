@@ -12,9 +12,6 @@
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #  pragma warning( disable : 2259 )
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison are meant
-#  pragma warning( disable : 1572 )
 #endif
 #ifdef WIN32
 // Disable warning
@@ -44,6 +41,12 @@
 
 // ============================================================================
 namespace {
+
+  // idea coming from The art of computer programming by Knuth
+  constexpr bool essentiallyEqual( double const a, double const b ) {
+    return std::abs( a - b ) <= std::min( std::abs( a ), std::abs( b ) ) * std::numeric_limits<double>::epsilon();
+  }
+
   // ==========================================================================
   /** @struct Histo
    *  helper structure to keep the representation of the histogram
@@ -255,10 +258,10 @@ namespace {
    *  @date 2009-09-19
    */
   std::pair<double, int> decompose( double v ) {
-    if ( 0 == v ) {
+    if ( abs( v ) < std::numeric_limits<double>::epsilon() ) {
       return { 0.0, 0 };
     } // RETURN
-    else if ( 1 == v ) {
+    else if ( essentiallyEqual( 1.0, v ) ) {
       return { 1.0, 0 };
     } // RETURN
     else if ( 0 > v ) {
@@ -302,12 +305,7 @@ namespace {
    *  @date 2009-09-19
    */
   inline double rValMax( double v ) {
-    if ( 0 == v ) {
-      return 0;
-    } // RETURN
-    else if ( 0 > v ) {
-      return -1 * rValMin( -v );
-    } // RETURN
+    if ( 0 > v ) { return -1 * rValMin( -v ); } // RETURN
     // decompose the double value into decimal significand and mantissa
     std::pair<double, int> r = decompose( v );
     //
@@ -321,12 +319,7 @@ namespace {
    *  @date 2009-09-19
    */
   inline double rValMin( double v ) {
-    if ( 0 == v ) {
-      return 0;
-    } // RETURN
-    else if ( 0 > v ) {
-      return -1 * rValMax( -v );
-    } // RETURN
+    if ( 0 > v ) { return -1 * rValMax( -v ); } // RETURN
     // decompose the double value into decimal significand and mantissa
     std::pair<double, int> r = decompose( v );
     const double           f = std::floor( 20 * r.first ) / 2; // - 1 ;
@@ -373,8 +366,8 @@ namespace {
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  std::ostream& dumpText( const Histo& histo, const std::size_t width, const std::size_t height, const bool errors,
-                          std::ostream& stream ) {
+  std::ostringstream& dumpText( const Histo& histo, const std::size_t width, const std::size_t height,
+                                const bool errors, std::ostringstream& stream ) {
     if ( 40 > width ) { return dumpText( histo, 40, height, errors, stream ); }
     if ( 200 < width ) { return dumpText( histo, 200, height, errors, stream ); }
     if ( 150 < height ) { return dumpText( histo, width, 150, errors, stream ); }
@@ -392,7 +385,7 @@ namespace {
     double yMax = std::max( rValMax( histo.maxY( errors ) ), 0.0 );
     double yMin = std::min( rValMin( histo.minY( errors ) ), 0.0 );
 
-    if ( yMin == yMax ) { yMax = yMin + 1; }
+    if ( essentiallyEqual( yMin, yMax ) ) { yMax = yMin + 1; }
     /// try to define the proper "Y-binning"
     std::pair<double, int> r   = decompose( yMax - yMin );
     double                 _ny = std::ceil( 10 * r.first ); //   1 <= ny < 10
@@ -556,25 +549,27 @@ namespace {
     return stream; // RETURN
   }
 } // namespace
+
 // ============================================================================
 /*  dump the text representation of the histogram
- *  @param histo  (INPUT) the histogram
- *  @param stream (OUTUT) the stream
- *  @param width  (INPUT) the maximal column width
+ *  @param histo the histogram
+ *  @param stream the stream
+ *  @param width  the maximal column width
  *  @param height (INPUT) the proposed coulmn height
  *  @param errors (INPUT) print/plot errors
- *  @return the stream
+ *  @param erorrs print/plot errors
  *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
  *  @date 2009-09-19
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IHistogram1D* histo, std::ostream& stream,
-                                                const std::size_t width, const std::size_t height, const bool errors ) {
+std::string Gaudi::Utils::Histos::histoDump( const AIDA::IHistogram1D* histo, const std::size_t width,
+                                             const std::size_t height, const bool errors ) {
+  std::ostringstream stream;
   stream << std::endl;
-  if ( !histo ) { return stream; } // RETURN
+  if ( !histo ) { return stream.str(); } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
-  if ( sc.isFailure() ) { return stream; } // RETURN
+  if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
   stream << fmt::format( R"( Histo TES   : "{}"
  Histo Title : "{}"
@@ -607,45 +602,25 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IHistogram1D* histo,
     stream << '\n';
   }
 
-  return dumpText( hist, width, height, errors, stream );
+  return dumpText( hist, width, height, errors, stream ).str();
 }
-// ============================================================================
-/*  dump the text representation of the histogram
+
+/*  dump the text representation of the 1D-profile
  *  @param histo the histogram
  *  @param stream the stream
  *  @param width  the maximal column width
  *  @param height (INPUT) the proposed coulmn height
- *  @param errors (INPUT) print/plot errors
- *  @param erorrs print/plot errors
  *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
  *  @date 2009-09-19
  */
-// ============================================================================
-std::string Gaudi::Utils::Histos::histoDump( const AIDA::IHistogram1D* histo, const std::size_t width,
-                                             const std::size_t height, const bool errors ) {
+std::string Gaudi::Utils::Histos::histoDump( const AIDA::IProfile1D* histo, const std::size_t width,
+                                             const std::size_t height, const bool spread ) {
   std::ostringstream stream;
-  histoDump_( histo, stream, width, height, errors );
-  return stream.str();
-}
-// ============================================================================
-/*  dump the text representation of the 1D-profile
- *  @param histo  (INPUT) the profile
- *  @param stream (OUTUT) the stream
- *  @param width  (INPUT) the maximal column width
- *  @param height (INPUT) the proposed coulmn height
- *  @param spread (INPUT) plot spread/error?
- *  @return the stream
- *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
- *  @date 2009-09-19
- */
-// ============================================================================
-std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IProfile1D* histo, std::ostream& stream,
-                                                const std::size_t width, const std::size_t height, const bool spread ) {
   stream << std::endl;
-  if ( !histo ) { return stream; } // RETURN
+  if ( !histo ) { return stream.str(); } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist, spread );
-  if ( sc.isFailure() ) { return stream; } // RETURN
+  if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
   stream << fmt::format( R"( Histo TES   : "{}"
  Histo Title : "{}"
@@ -673,45 +648,28 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IProfile1D* histo, s
     stream << std::endl;
   }
 
-  return dumpText( hist, width, height, true, stream );
+  return dumpText( hist, width, height, true, stream ).str();
 }
-// ============================================================================
-/*  dump the text representation of the 1D-profile
- *  @param histo the histogram
- *  @param stream the stream
- *  @param width  the maximal column width
- *  @param height (INPUT) the proposed coulmn height
- *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
- *  @date 2009-09-19
- */
-// ============================================================================
-std::string Gaudi::Utils::Histos::histoDump( const AIDA::IProfile1D* histo, const std::size_t width,
-                                             const std::size_t height, const bool spread ) {
-  std::ostringstream stream;
-  histoDump_( histo, stream, width, height, spread );
-  return stream.str();
-}
-// ============================================================================
+
 /*  dump the text representation of the histogram
  *  @param histo  (INPUT) the histogram
- *  @param stream (OUTUT) the stream
  *  @param width  (INPUT) the maximal column width
  *  @param errors (INPUT) print/plot errors
- *  @return the stream
+ *  @return string representation of the histogram
  *  @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
  *  @date 2009-09-19
  */
-// ============================================================================
-std::ostream& Gaudi::Utils::Histos::histoDump_( const TH1* histo, std::ostream& stream, const std::size_t width,
-                                                const std::size_t height, const bool errors ) {
+std::string Gaudi::Utils::Histos::histoDump( const TH1* histo, const std::size_t width, const std::size_t height,
+                                             const bool errors ) {
   const TProfile* profile = dynamic_cast<const TProfile*>( histo );
-  if ( profile ) { return histoDump_( profile, stream, width, height ); }
+  if ( profile ) { return histoDump( profile, width, height ); }
   //
+  std::ostringstream stream;
   stream << std::endl;
-  if ( !histo ) { return stream; } // RETURN
+  if ( !histo ) { return stream.str(); } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
-  if ( sc.isFailure() ) { return stream; } // RETURN
+  if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
   stream << fmt::format( R"( Histo Name  : "{}"
  Histo Title : "{}"
@@ -732,26 +690,25 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TH1* histo, std::ostream& 
                          histo->GetBinContent( histo->GetNbinsX() + 1 ), histo->GetEffectiveEntries(),
                          histo->Integral() );
 
-  return dumpText( hist, width, height, errors, stream );
+  return dumpText( hist, width, height, errors, stream ).str();
 }
-// ============================================================================
+
 /*  dump the text representation of the histogram
  *  @param histo  (INPUT) the histogram
- *  @param stream (OUTUT) the stream
  *  @param width  (INPUT) the maximal column width
  *  @param errors (INPUT) print/plot errors
- *  @return the stream
+ *  @return string representation of the histogram
  *  @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
  *  @date 2009-09-19
  */
-// ============================================================================
-std::ostream& Gaudi::Utils::Histos::histoDump_( const TProfile* histo, std::ostream& stream, const std::size_t width,
-                                                const std::size_t height ) {
+std::string Gaudi::Utils::Histos::histoDump( const TProfile* histo, const std::size_t width,
+                                             const std::size_t height ) {
+  std::ostringstream stream;
   stream << std::endl;
-  if ( !histo ) { return stream; } // RETURN
+  if ( !histo ) { return stream.str(); } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist, true );
-  if ( sc.isFailure() ) { return stream; } // RETURN
+  if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
   stream << fmt::format( R"( Profile Name  : "{}"
  Profile Title : "{}"
@@ -769,42 +726,5 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TProfile* histo, std::ostr
                          histo->GetEntries(), histo->GetBinContent( 0 ), histo->GetBinContent( histo->GetNbinsX() + 1 ),
                          histo->Integral() );
 
-  return dumpText( hist, width, height, true, stream );
+  return dumpText( hist, width, height, true, stream ).str();
 }
-// ============================================================================
-/*  dump the text representation of the histogram
- *  @param histo  (INPUT) the histogram
- *  @param width  (INPUT) the maximal column width
- *  @param errors (INPUT) print/plot errors
- *  @return string representation of the histogram
- *  @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
- *  @date 2009-09-19
- */
-// ============================================================================
-std::string Gaudi::Utils::Histos::histoDump( const TH1* histo, const std::size_t width, const std::size_t height,
-                                             const bool errors ) {
-  std::ostringstream stream;
-  histoDump_( histo, stream, width, height, errors );
-  return stream.str();
-}
-// ============================================================================
-/*  dump the text representation of the histogram
- *  @param histo  (INPUT) the histogram
- *  @param width  (INPUT) the maximal column width
- *  @param errors (INPUT) print/plot errors
- *  @return string representation of the histogram
- *  @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
- *  @date 2009-09-19
- */
-// ============================================================================
-std::string Gaudi::Utils::Histos::histoDump( const TProfile* histo, const std::size_t width,
-                                             const std::size_t height ) {
-  std::ostringstream stream;
-  histoDump_( histo, stream, width, height );
-  return stream.str();
-}
-// ============================================================================
-
-// ============================================================================
-// The END
-// ============================================================================

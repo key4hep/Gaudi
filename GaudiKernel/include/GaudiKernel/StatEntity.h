@@ -119,7 +119,8 @@ public:
   template <typename stream>
   stream& printImpl( stream& o, bool tableFormat, std::string_view name, bool flag, std::string_view fmtHead ) const {
     if ( flag && effCounter( name ) && 0 <= eff() && 0 <= effErr() && sum() <= nEntries() &&
-         ( 0 == min() || 1 == min() ) && ( 0 == max() || 1 == max() ) ) {
+         ( essentiallyEqual( min(), 0 ) || essentiallyEqual( min(), 1 ) ) &&
+         ( essentiallyEqual( max(), 0 ) || essentiallyEqual( max(), 1 ) ) ) {
       // efficiency printing
       if ( tableFormat ) {
         if ( name.empty() ) {
@@ -190,5 +191,10 @@ public:
     res.reset( AccParent::extractJSONData(
         j, { { { { "nEntries", "sum" }, "sum2" }, "min", "max" }, { "nTrueEntries", "nFalseEntries" } } ) );
     return res;
+  }
+
+private:
+  static constexpr bool essentiallyEqual( double const a, double const b ) {
+    return std::abs( a - b ) <= std::max( std::abs( a ), std::abs( b ) ) * std::numeric_limits<double>::epsilon();
   }
 };

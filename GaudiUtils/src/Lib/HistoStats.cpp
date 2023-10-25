@@ -8,13 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparisons are meant
-#  pragma warning( disable : 1572 )
-#endif
-// ============================================================================
-// Include files
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -99,7 +92,7 @@ namespace {
       weight += yBin;
       result += yBin * std::pow( xBin - value, order );
     }
-    if ( 0 != weight ) { result /= weight; }
+    if ( weight > std::numeric_limits<double>::epsilon() ) { result /= weight; }
     return result;
   }
   // ============================================================================
@@ -282,9 +275,8 @@ namespace {
   double _overflowIntegralFrac( const HISTO* histo ) {
     if ( !histo ) { return s_bad; } // RETURN
     const auto overflow = histo->binHeight( AIDA::IAxis::OVERFLOW_BIN );
-    if ( 0 == overflow ) { return 0; } // RETURN
-    const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) { return 0; } // "CONVENTION?"  RETURN
+    const auto all      = histo->sumAllBinHeights();
+    if ( all < std::numeric_limits<double>::epsilon() ) { return 0; } // "CONVENTION?"  RETURN
     //
     return (double)overflow / (double)all;
   }
@@ -295,9 +287,8 @@ namespace {
   double _underflowIntegralFrac( const HISTO* histo ) {
     if ( !histo ) { return s_bad; } // RETURN
     const auto underflow = histo->binHeight( AIDA::IAxis::UNDERFLOW_BIN );
-    if ( 0 == underflow ) { return 0; } // RETURN
-    const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) { return 0; } // "CONVENTION?"  RETURN
+    const auto all       = histo->sumAllBinHeights();
+    if ( all < std::numeric_limits<double>::epsilon() ) { return 0; } // "CONVENTION?"  RETURN
     //
     return (double)underflow / (double)all;
   }
@@ -345,7 +336,7 @@ namespace {
     if ( !histo ) { return s_bad; } // RETURN
     //
     const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) { return s_bad; } // RETURN
+    if ( all < std::numeric_limits<double>::epsilon() ) { return s_bad; } // RETURN
     const auto overflow = histo->binHeight( AIDA::IAxis::OVERFLOW_BIN );
     const auto oErr     = histo->binError( AIDA::IAxis::OVERFLOW_BIN );
     if ( 0 > oErr ) { return s_bad; } // RETURN
@@ -366,7 +357,7 @@ namespace {
     if ( !histo ) { return s_bad; } // RETURN
     //
     const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) { return s_bad; } // RETURN
+    if ( all < std::numeric_limits<double>::epsilon() ) { return s_bad; } // RETURN
     const auto underflow = histo->binHeight( AIDA::IAxis::UNDERFLOW_BIN );
     const auto oErr      = histo->binError( AIDA::IAxis::UNDERFLOW_BIN );
     if ( 0 > oErr ) { return s_bad; } // RETURN

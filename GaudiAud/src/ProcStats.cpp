@@ -305,12 +305,11 @@ bool ProcStats::fetch( procInfo& f ) {
 #else
   f.vsize = 0;
   f.rss   = 0;
+  return false;
 #endif // __linux__ or __APPLE__
-
-  const bool rc = !( m_curr == f );
 
   m_curr.rss   = f.rss;
   m_curr.vsize = f.vsize;
 
-  return rc;
+  return true;
 }

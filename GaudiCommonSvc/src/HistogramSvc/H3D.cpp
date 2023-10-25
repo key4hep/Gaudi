@@ -131,34 +131,30 @@ void* Gaudi::Histogram3D::cast( const std::string& className ) const {
   return nullptr;
 }
 
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison are meant
-#  pragma warning( push )
-#  pragma warning( disable : 1572 )
-#endif
 bool Gaudi::Histogram3D::setRms( double rmsX, double rmsY, double rmsZ ) {
   m_rep->SetEntries( m_sumEntries );
   std::vector<double> stat( 11 );
   // sum weights
   stat[0] = sumBinHeights();
   stat[1] = 0;
-  if ( equivalentBinEntries() != 0 ) stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
+  if ( abs( equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+    stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
   stat[2]      = m_sumwx;
-  double meanX = 0;
-  if ( sumBinHeights() != 0 ) meanX = m_sumwx / sumBinHeights();
-  stat[3]      = ( meanX * meanX + rmsX * rmsX ) * sumBinHeights();
   stat[4]      = m_sumwy;
-  double meanY = 0;
-  if ( sumBinHeights() != 0 ) meanY = m_sumwy / sumBinHeights();
-  stat[5]      = ( meanY * meanY + rmsY * rmsY ) * sumBinHeights();
   stat[6]      = 0;
   stat[7]      = m_sumwz;
+  double meanX = 0;
+  double meanY = 0;
   double meanZ = 0;
-  if ( sumBinHeights() != 0 ) meanZ = m_sumwz / sumBinHeights();
+  if ( abs( sumBinHeights() ) > std::numeric_limits<double>::epsilon() ) {
+    meanX = m_sumwx / sumBinHeights();
+    meanY = m_sumwy / sumBinHeights();
+    meanZ = m_sumwz / sumBinHeights();
+  }
+  stat[3] = ( meanX * meanX + rmsX * rmsX ) * sumBinHeights();
+  stat[5] = ( meanY * meanY + rmsY * rmsY ) * sumBinHeights();
   stat[8] = ( meanZ * meanZ + rmsZ * rmsZ ) * sumBinHeights();
   // do not need to use sumwxy sumwxz and sumwyz
-
   m_rep->PutStats( &stat.front() );
   return true;
 }
@@ -198,7 +194,8 @@ void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h ) {
   // statistics
   double sumw  = h.sumBinHeights();
   double sumw2 = 0;
-  if ( h.equivalentBinEntries() != 0 ) sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
+  if ( abs( h.equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+    sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
   double sumwx  = h.meanX() * h.sumBinHeights();
   double sumwx2 = ( h.meanX() * h.meanX() + h.rmsX() * h.rmsX() ) * h.sumBinHeights();
   double sumwy  = h.meanY() * h.sumBinHeights();
@@ -243,8 +240,3 @@ void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h ) {
   stat[10] = sumwyz;
   m_rep->PutStats( &stat.front() );
 }
-
-#ifdef __ICC
-// re-enable icc remark #1572
-#  pragma warning( pop )
-#endif

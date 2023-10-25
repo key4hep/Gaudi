@@ -20,10 +20,12 @@
 
 #include "PropertyAlg.h"
 
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-#  pragma warning( disable : 1572 )
-#endif
+namespace {
+  // idea coming from The art of computer programming by Knuth
+  constexpr bool essentiallyEqual( double const a, double const b ) {
+    return std::abs( a - b ) <= std::min( std::abs( a ), std::abs( b ) ) * std::numeric_limits<double>::epsilon();
+  }
+} // namespace
 
 // Read Handler
 //------------------------------------------------------------------------------
@@ -133,7 +135,7 @@ StatusCode PropertyAlg::initialize() {
   auto& doublearray      = u_doublearray.value();
   for ( unsigned int i = 0; i < doublearrayunits.size(); i++ ) {
 
-    if ( doublearrayunits[i] != doublearray[i] ) {
+    if ( !essentiallyEqual( doublearrayunits[i], doublearray[i] ) ) {
       error() << format( "DoubleArrayWithUnits[%d] = %g and should be %g", i, doublearrayunits[i], doublearray[i] )
               << endmsg;
     } else {
