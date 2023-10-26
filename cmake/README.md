@@ -81,5 +81,3 @@ ctest
 ## Resources
 
 * [CMake documentation](http://www.cmake.org/cmake/help/documentation.html)
-* `FindTBB.cmake` was taken from <https://bitbucket.org/sergiu/tbb-cmake>
-  And should be removed in a near future.

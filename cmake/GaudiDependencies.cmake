@@ -119,8 +119,6 @@ if(NOT GAUDI_DEPENDENCIES_FIND_QUIETLY)
   message(STATUS "Found ROOT: ${ROOT_DIR} (found version ${ROOT_VERSION})")
 endif()
 
-# FIXME: if you are using the normal version of TBB, it has a config file so
-#   remove cmake/FindTBB.cmake and add CONFIG to the next line.
 find_package(TBB 2019.0.11007.2 REQUIRED ${__quiet})
 
 set(_gaudi_ZLIB_MIN_VERSION 1.2.11)
