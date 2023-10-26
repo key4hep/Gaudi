@@ -119,7 +119,7 @@ if(NOT GAUDI_DEPENDENCIES_FIND_QUIETLY)
   message(STATUS "Found ROOT: ${ROOT_DIR} (found version ${ROOT_VERSION})")
 endif()
 
-find_package(TBB 2019.0.11007.2 REQUIRED ${__quiet})
+find_package(TBB 2019.0.11007.2 CONFIG REQUIRED ${__quiet})
 
 set(_gaudi_ZLIB_MIN_VERSION 1.2.11)
 foreach(dep IN ITEMS UUID Threads ZLIB Rangev3 cppgsl fmt nlohmann_json)
