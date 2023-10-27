@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -47,7 +47,10 @@ protected:
 
 public:
   /** virtual destructor so that derived class destructor is called. */
-  virtual ~GaudiHandleInfo() = default;
+  // Don't use =default here.  Otherwise, in c++20 mode, clang will
+  // instantiate the handle virtual functions early, breaking the case
+  // where handles are used with a forward-declared class.
+  virtual ~GaudiHandleInfo() {}
   //
   // Public member functions
   //
