@@ -81,7 +81,7 @@ Maintainer's guide: `<https://twiki.cern.ch/twiki/bin/view/LHCb/MaintainGaudiCMa
 
 cmake_minimum_required(VERSION 3.15)
 
-project(Gaudi VERSION 37.0
+project(Gaudi VERSION 37.1
               LANGUAGES CXX
               DESCRIPTION "Gaudi Software Framework"
               HOMEPAGE_URL "https://cern.ch/gaudi")

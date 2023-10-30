@@ -22,9 +22,9 @@ copyright = "1998-2023, CERN for the benefit of the LHCb and ATLAS collaboration
 author = "The Gaudi Developers"
 
 # The short X.Y version
-version = "37.0"
+version = "37.1"
 # The full version, including alpha/beta/rc tags
-release = "v37r0"
+release = "v37r1"
 
 # -- General configuration ---------------------------------------------------
 

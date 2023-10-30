@@ -213,8 +213,8 @@ def update_version(version: str, date: datetime.datetime, dry_run: bool):
         FileUpdater(
             "docs/source/conf.py",
             [
-                (r"^version = ", "version = {cmake_version}"),
-                (r"^release = ", "release = {tag_version}"),
+                (r"^version = ", 'version = "{cmake_version}"'),
+                (r"^release = ", 'release = "{tag_version}"'),
             ],
         ),
         update_changelog,

@@ -5,6 +5,31 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v37r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v37r1) - 2023-10-30
+This is a minor release meant mostly to address issues with compilation on gcc 13, clang 16 and C++20.
+It features as well a number of other fixes and improvements and some clean up.
+
+As of this release I added machine readable citation instructions (see https://citation-file-format.github.io/).
+
+### Changed
+- Remove `FindTBB.cmake` to rely on the official `TBBConfig.cmake` (gaudi/Gaudi!1510)
+- `genconf`: remove property type comment from Conf files (gaudi/Gaudi!1502)
+
+### Added
+- Add citation instructions and helper to prepare new releases (gaudi/Gaudi!1494)
+
+### Fixed
+- Work around issue with clang implicit instantiation in C++20 mode. (gaudi/Gaudi!1511)
+- `JobOptionSvc`: use stringstream to read job options file (gaudi/Gaudi!1509)
+- Fixes for gcc 13, clang 16 and C++20 (gaudi/Gaudi!1501)
+- Remove name argument from GaudiConfig2 PropertySemantics (gaudi/Gaudi#275, gaudi/Gaudi!1492)
+- Drop a Python 2 compatibility hack and fix handling of bool properties in GaudiPython (gaudi/Gaudi#276, gaudi/Gaudi!1507)
+- Fixed unsafe floating point comparisons (gaudi/Gaudi!1490)
+- `GaudiConfig2`: minor performance optimizations for Configurable (gaudi/Gaudi!1500)
+- Fixed JSON counter dumps validation to ignore changes in order of entries (gaudi/Gaudi!1496)
+- Support oneTBB (gaudi/Gaudi#270, gaudi/Gaudi!1495)
+
+
 ## [v37r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v37r0) - 2023-09-14
 This is the first major release of Gaudi in a while. This was made necessary to be able to incorporate
 a number of backward incompatible changes that have been kept in the backburner until now.
