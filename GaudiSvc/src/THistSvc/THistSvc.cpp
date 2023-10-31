@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -1578,8 +1578,13 @@ StatusCode THistSvc::connect( const std::string& ident ) {
   if ( loc != std::string::npos ) {
     using Parser = Gaudi::Utils::AttribStringParser;
     for ( auto attrib : Parser( ident.substr( loc + 1 ) ) ) {
-      auto TAG = boost::algorithm::to_upper_copy( attrib.tag );
-      auto VAL = boost::algorithm::to_upper_copy( attrib.value );
+      // Don't use to_upper_copy in order to avoid gcc 13.1 bug
+      // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=109703
+      // (Should be fixed in 13.2.)
+      auto TAG = attrib.tag;
+      auto VAL = attrib.value;
+      boost::algorithm::to_upper( TAG );
+      boost::algorithm::to_upper( VAL );
 
       if ( TAG == "FILE" || TAG == "DATAFILE" ) {
         filename = attrib.value;
