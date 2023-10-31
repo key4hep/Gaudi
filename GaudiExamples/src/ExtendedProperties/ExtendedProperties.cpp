@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,6 +17,7 @@
 #include <map>
 #include <string>
 #include <tuple>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -94,6 +95,10 @@ private:
 
   Gaudi::Property<std::tuple<std::string, int, double>> m_22{ this, "TupleStringIntDouble" };
   Gaudi::Property<std::tuple<std::string>>              m_25{ this, "TupleString" };
+
+  Gaudi::Property<std::unordered_set<int>>         m_30{ this, "SetOfInt" };
+  Gaudi::Property<std::unordered_set<std::string>> m_31{ this, "SetOfString" };
+
   // std::array must be explicitly initialized
   Gaudi::Property<std::array<double, 3>> m_23{ this, "StdArrayDouble3", { 0 } };
   Gaudi::Property<std::array<int, 1>>    m_26{ this, "StdArrayInt1", { 0 } };
@@ -195,6 +200,9 @@ StatusCode ExtendedProperties::execute() {
   always() << " \t" << m_26 << endmsg;
 
   always() << " \t" << m_24 << endmsg;
+
+  always() << " \t" << m_30 << endmsg;
+  always() << " \t" << m_31 << endmsg;
 
   // some properties could be created from other (convertible) types:
   Gaudi::Property<short>  m1( "a", 0 );

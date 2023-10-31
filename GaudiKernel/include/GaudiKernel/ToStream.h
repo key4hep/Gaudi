@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -159,11 +159,11 @@ namespace Gaudi {
     }
     // ========================================================================
     /** the partial template specialization of <c>std::unordered_set<TYPE,HASH,CMP,ALLOCATOR></c>
-     *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
+     *  printout. The set is printed a'la Python set: "{ a, b, c }"
      */
     template <class TYPE, class HASH, class CMP, class ALLOCATOR>
     inline std::ostream& toStream( const std::unordered_set<TYPE, HASH, CMP, ALLOCATOR>& obj, std::ostream& s ) {
-      return toStream( obj.begin(), obj.end(), s, "[", "]", " , " );
+      return obj.empty() ? s << "set()" : toStream( obj.begin(), obj.end(), s, "{ ", " }", " , " );
     }
     // ========================================================================
     /** the partial template specialization of

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -58,6 +58,14 @@ _DB = {
                 "std::vector<std::vector<std::string,std::allocator<std::string> >,std::allocator<std::vector<std::string,std::allocator<std::string> > > >",
                 [],
             ),
+        },
+    },
+    "TestConf::AlgWithSets": {
+        "__component_type__": "Algorithm",
+        "__doc__": "configurable for testing set options",
+        "properties": {
+            "SetOfInt": ("std::unordered_set<int>", set()),
+            "SetOfString": ("std::unordered_set<std::string>", set()),
         },
     },
     "TestConf::AlgWithMaps": {

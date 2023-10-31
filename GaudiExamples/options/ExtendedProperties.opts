@@ -114,6 +114,10 @@ xProps.EmptyVector = [];
 
 xProps.TupleStringIntDouble = ("hello", 10, 0.001);
 xProps.TupleString = ("hello");
+
+xProps.SetOfInt = {1, 2};
+xProps.SetOfString = {"a", "b"};
+
 xProps.StdArrayDouble3 = (3.3, 2.2, 1.1);
 xProps.StdArrayInt1 = (42);
 

@@ -57,10 +57,10 @@ def _isCompatible(tp, value):
             return str(value)
         else:
             raise ValueError(errmsg)
-    elif tp in [list, tuple, dict]:
+    elif tp in [list, tuple, dict, set]:
         if type(value) is tp:
-            # We need to check that the types match for lists, tuples and
-            # dictionaries (bug #34769).
+            # We need to check that the types match for lists, tuples,
+            # dictionaries and sets (bug #34769).
             return value
         else:
             raise ValueError(errmsg)

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -279,4 +279,39 @@ BOOST_AUTO_TEST_CASE( test_Array ) {
   BOOST_REQUIRE( Gaudi::Parsers::parse( result, "(1, 2)" ) );
   BOOST_CHECK( result[0] == 1 );
   BOOST_CHECK( result[1] == 2 );
+}
+
+BOOST_AUTO_TEST_CASE( test_Set ) {
+  {
+    std::unordered_set<int> result;
+    BOOST_CHECK( parse( result, "{}" ) ); // accepted but not valid Python syntax
+    BOOST_CHECK( result.empty() );
+  }
+
+  {
+    std::unordered_set<int> result;
+    BOOST_CHECK( parse( result, "set()" ) );
+    BOOST_CHECK( result.empty() );
+  }
+
+  {
+    std::unordered_set<int> result;
+    BOOST_CHECK( parse( result, "{1, 2, 3} // Test comment" ) );
+    BOOST_CHECK( result.size() == 3 );
+    BOOST_CHECK( result == std::unordered_set<int>( { 1, 2, 3 } ) );
+  }
+
+  {
+    std::unordered_set<int> result;
+    BOOST_CHECK( parse( result, "{1, 2, 3,}" ) );
+    BOOST_CHECK( result.size() == 3 );
+    BOOST_CHECK( result == std::unordered_set<int>( { 1, 2, 3 } ) );
+  }
+
+  {
+    std::unordered_set<std::string> result;
+    BOOST_CHECK( parse( result, "{'a', 'b'}" ) );
+    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK( result == std::unordered_set<std::string>( { "a", "b" } ) );
+  }
 }

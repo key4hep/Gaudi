@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -302,13 +302,24 @@ namespace Gaudi {
     struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper> {
       typedef VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper> Grammar;
     };
+
+    //==============================================================================
+    template <typename Iterator, typename SetT, typename Skipper>
+    struct SetGrammar : qi::grammar<Iterator, SetT(), qi::locals<char>, Skipper> {
+      SetGrammar() : SetGrammar::base_type( set ) {
+        // special handling of empty set as "{}" is always a dict
+        set = qi::lit( "set()" ) | grVector;
+      }
+      VectorGrammar<Iterator, SetT, Skipper>                grVector;
+      qi::rule<Iterator, SetT(), qi::locals<char>, Skipper> set;
+    };
     // ----------------------------------------------------------------------------
-    // Register VectorGrammar for std::unordered_set:
+    // Register SetGrammar for std::unordered_set:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename InnerT, typename HashT, typename CompareT, typename AllocatorT,
               typename Skipper>
     struct Grammar_<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> {
-      typedef VectorGrammar<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> Grammar;
+      typedef SetGrammar<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> Grammar;
     };
 
     //==============================================================================
