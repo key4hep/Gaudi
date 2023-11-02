@@ -14,7 +14,11 @@
 #  include <catch2/catch.hpp>
 #else
 // Catch2 v3
-#  include <catch2/catch_matchers_floating_point.hpp>
+#  if __has_include( <catch2/matchers/catch_matchers_floating_point.hpp>)
+#    include <catch2/matchers/catch_matchers_floating_point.hpp>
+#  else
+#    include <catch2/catch_matchers_floating_point.hpp>
+#  endif
 #  include <catch2/catch_template_test_macros.hpp>
 #  include <catch2/catch_test_macros.hpp>
 #endif
