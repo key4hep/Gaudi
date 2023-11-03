@@ -103,9 +103,9 @@ class PropertyProxy(object):
         try:
             return self.descr.__get__(obj, type)
         except AttributeError:
-            # special case for lists and dictionaries:
-            # allow default to work with on += and []
-            if self.__default.__class__ in [list, dict]:
+            # special case for builtin collections
+            # allow default to work with on +=, [], etc.
+            if isinstance(self.__default, (list, dict, set)):
                 self.descr.__set__(obj, self.__default.__class__(self.__default))
                 return self.descr.__get__(obj, type)
             else:
