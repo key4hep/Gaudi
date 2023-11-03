@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,16 +8,19 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-# Prepare dummy configurables
+import pytest
 from GaudiKernel.Configurable import Configurable, ConfigurableAlgorithm
 from GaudiKernel.DataHandle import DataHandle
 
 
+# Prepare dummy configurables
 class MyAlg(ConfigurableAlgorithm):
     __slots__ = {
         "Text": "some text",
         "Int": 23,
         "DataHandle": DataHandle("Location", "R"),
+        "Dict": {},
+        "List": [],
     }
 
     def getDlls(self):
@@ -27,7 +30,10 @@ class MyAlg(ConfigurableAlgorithm):
         return "MyAlg"
 
 
-def _clean_confs():
+@pytest.fixture(autouse=True)
+def clean_confs():
+    """ensure that all tests start from a clean configuration"""
+    MyAlg.configurables.clear()
     Configurable.allConfigurables.clear()
 
 
@@ -41,10 +47,14 @@ def test_correct():
     a.Int = 42
     a.Text = "value"
     a.DataHandle = "/Event/X"
+    a.Dict = {"a": 1}
+    a.List = [1, 2]
     assert a.getValuedProperties() == {
         "Int": 42,
         "Text": "value",
         "DataHandle": DataHandle("/Event/X", "R"),
+        "Dict": {"a": 1},
+        "List": [1, 2],
     }
 
 
@@ -56,51 +66,34 @@ def test_str_from_datahandle():
 
 def test_invalid_value():
     a = MyAlg()
-    try:
+
+    with pytest.raises(ValueError):
         a.Int = "value"
-        assert False, "exception expected"
-    except AssertionError:
-        raise
-    except ValueError:
-        pass
-    except Exception as x:
-        assert False, "ValueError exception expected, got %s" % type(x).__name__
 
-    try:
+    with pytest.raises(ValueError):
         a.Text = [123]
-        assert False, "exception expected"
-    except AssertionError:
-        raise
-    except ValueError:
-        pass
-    except Exception as x:
-        assert False, "ValueError exception expected, got %s" % type(x).__name__
 
-    try:
+    with pytest.raises(ValueError):
         a.DataHandle = [123]
-        assert False, "exception expected"
-    except AssertionError:
-        raise
-    except ValueError:
-        pass
-    except Exception as x:
-        assert False, "ValueError exception expected, got %s" % type(x).__name__
+
+    with pytest.raises(ValueError):
+        a.Dict = []
+
+    with pytest.raises(ValueError):
+        a.List = {}
 
 
 def test_invalid_key():
     a = MyAlg()
-    try:
+
+    with pytest.raises(AttributeError):
         a.Dummy = "abc"
-        assert False, "exception expected"
-    except AssertionError:
-        raise
-    except AttributeError:
-        pass
-    except Exception as x:
-        assert False, "AttributeError exception expected, got %s" % type(x).__name__
 
 
-# ensure that all tests start from clean configuration
-for _f in dir():
-    if _f.startswith("test"):
-        setattr(locals()[_f], "setup", _clean_confs)
+def test_collection_defaults():
+    a = MyAlg()
+    assert a.Dict == {}
+    assert a.List == []
+
+    a.List += [1]
+    assert a.List == [1]
