@@ -400,7 +400,7 @@ if(BUILD_TESTING)
           LABELS "Gaudi.GaudiKernel"
   )
 
-  gaudi_add_pytest(tests/nose)
+  gaudi_add_pytest(tests/pytest)
 
   gaudi_add_module(test_CustomFactory
     SOURCES tests/src/custom_factory.cpp
