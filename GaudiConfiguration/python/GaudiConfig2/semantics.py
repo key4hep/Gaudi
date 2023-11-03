@@ -451,6 +451,12 @@ class SetSemantics(PropertySemantics):
         self.value_semantics.name = "{} element".format(self._name)
 
     def store(self, value):
+        # We support assignment from list for backwards compatibility
+        if not isinstance(value, (set, _SetHelper, list, _ListHelper)):
+            raise TypeError(
+                "set expected, got {!r} in assignment to {}".format(value, self.name)
+            )
+
         new_value = _SetHelper(self.value_semantics)
         new_value |= value
         return new_value

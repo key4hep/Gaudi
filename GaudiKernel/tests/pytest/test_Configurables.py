@@ -21,6 +21,7 @@ class MyAlg(ConfigurableAlgorithm):
         "DataHandle": DataHandle("Location", "R"),
         "Dict": {},
         "List": [],
+        "Set": set(),
     }
 
     def getDlls(self):
@@ -49,12 +50,14 @@ def test_correct():
     a.DataHandle = "/Event/X"
     a.Dict = {"a": 1}
     a.List = [1, 2]
+    a.Set = {1, 2}
     assert a.getValuedProperties() == {
         "Int": 42,
         "Text": "value",
         "DataHandle": DataHandle("/Event/X", "R"),
         "Dict": {"a": 1},
         "List": [1, 2],
+        "Set": {1, 2},
     }
 
 
@@ -82,6 +85,22 @@ def test_invalid_value():
     with pytest.raises(ValueError):
         a.List = {}
 
+    with pytest.raises(ValueError):
+        a.List = set()
+
+    with pytest.raises(ValueError):
+        a.List = "value"
+
+    with pytest.raises(ValueError):
+        a.Set = "value"
+
+
+def test_implicit_conversion():
+    a = MyAlg()
+
+    a.Set = [1, 2]
+    assert a.Set == {1, 2}
+
 
 def test_invalid_key():
     a = MyAlg()
@@ -94,6 +113,10 @@ def test_collection_defaults():
     a = MyAlg()
     assert a.Dict == {}
     assert a.List == []
+    assert a.Set == set()
 
     a.List += [1]
     assert a.List == [1]
+
+    a.Set.add(1)
+    assert a.Set == {1}

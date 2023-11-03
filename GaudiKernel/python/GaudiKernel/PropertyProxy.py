@@ -57,21 +57,23 @@ def _isCompatible(tp, value):
             return str(value)
         else:
             raise ValueError(errmsg)
-    elif tp in [list, tuple, dict, set]:
+    elif tp in (list, tuple, dict, set):
         if type(value) is tp:
-            # We need to check that the types match for lists, tuples,
-            # dictionaries and sets (bug #34769).
+            # Check that the types match for collections (GAUDI-207)
             return value
+        elif tp is set and isinstance(value, list):
+            # Fall-through to implicit conversion for backwards compatibility
+            pass
         else:
             raise ValueError(errmsg)
     elif derives_from(tp, "Configurable"):
         return value
-    else:
-        # all other types: accept if conversion allowed
-        try:
-            dummy = tp(value)
-        except (TypeError, ValueError):
-            raise ValueError(errmsg)
+
+    # all other types: accept if conversion allowed
+    try:
+        dummy = tp(value)
+    except (TypeError, ValueError):
+        raise ValueError(errmsg)
 
     return dummy  # in case of e.g. classes with __int__, __iter__, etc. implemented
 

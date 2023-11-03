@@ -84,6 +84,15 @@ def test_assignment_bad():
     with pytest.raises(TypeError):
         s.store({"a", "b", 1})
 
+    with pytest.raises(TypeError):
+        s.store("ab")
+
+
+def test_implicit_conversion():
+    s = S.getSemanticsFor("std::unordered_set<int>")
+    d = s.store([1, 2, 2])  # for backwards compatibility
+    assert s.opt_value(d) == {1, 2}
+
 
 def test_in_alg():
     from GaudiConfig2.Configurables.TestConf import AlgWithSets
