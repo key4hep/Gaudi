@@ -148,7 +148,7 @@ class FloatSemantics(PropertySemantics):
 
         if not isinstance(value, Number):
             raise TypeError(
-                "number expected, got {!r} in assignemnt to {}".format(value, self.name)
+                "number expected, got {!r} in assignment to {}".format(value, self.name)
             )
         return float(value)
 
@@ -360,6 +360,10 @@ class SequenceSemantics(PropertySemantics):
         self.value_semantics.name = "{} element".format(self._name)
 
     def store(self, value):
+        if not isinstance(value, (list, _ListHelper)):
+            raise TypeError(
+                "list expected, got {!r} in assignment to {}".format(value, self.name)
+            )
         new_value = _ListHelper(self.value_semantics)
         new_value.extend(value)
         return new_value
@@ -494,6 +498,7 @@ class MappingSemantics(PropertySemantics):
         self.value_semantics.name = "{} value".format(self._name)
 
     def store(self, value):
+        # No explicit type checking as anything else than dict fails in update call
         new_value = _DictHelper(self.key_semantics, self.value_semantics)
         new_value.update(value)
         return new_value

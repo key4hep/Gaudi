@@ -95,6 +95,12 @@ def test_access():
     assert d.get("q", "Q") == "Q"
 
 
+def test_assignment_bad_type():
+    s = S.getSemanticsFor("std::map<std::string, std::string>")
+    with pytest.raises(AttributeError):
+        s.store([("a", 1), ("b", 2)])
+
+
 def test_assignment_bad_value():
     s = S.getSemanticsFor("std::map<std::string, std::string>")
     with pytest.raises(TypeError):

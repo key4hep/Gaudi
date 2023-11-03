@@ -89,6 +89,12 @@ def test_assignment_bad():
     with pytest.raises(TypeError):
         s.store(["a", "b", 1])
 
+    with pytest.raises(TypeError):
+        s.store("ab")
+
+    with pytest.raises(TypeError):
+        s.store(set("ab"))
+
 
 def test_in_alg():
     p = AlgWithVectors()
