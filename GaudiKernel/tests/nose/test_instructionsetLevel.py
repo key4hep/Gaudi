@@ -11,16 +11,14 @@
 from platform import processor
 from subprocess import PIPE, Popen
 
-from nose import SkipTest
+import pytest
 
 
+@pytest.mark.skipif(
+    processor() != "x86_64",
+    reason=f"platform {processor()} not supported (instructionsetLevel only works on x86_64)",
+)
 def test():
-    if processor() != "x86_64":
-        raise SkipTest(
-            "platform {} not supported (instructionsetLevel only works on x86_64".format(
-                processor()
-            )
-        )
     out = Popen(["instructionsetLevel", "all"], stdout=PIPE).communicate()[0]
     out = out.decode("utf-8")
     known_flags = set(l.strip() for l in out.splitlines())
