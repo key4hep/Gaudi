@@ -666,7 +666,7 @@ endfunction()
 
   .. code-block:: cmake
 
-    gaudi_add_tests(QMTest|nosetests|pytest [test_directory])
+    gaudi_add_tests(QMTest|pytest [test_directory])
 
   This function adds unit tests of a given test framework to the project.
   Test names will be inferred from the directory name and files names.
@@ -677,11 +677,6 @@ endfunction()
 
     .. warning:
       Each time a new .qmt file is added, it is mandatory to reconfigure the project
-
-  ``nosetests``
-    Adds nosetests tests.
-
-    Default test_directory is ``${CMAKE_CURRENT_SOURCE_DIR}/tests/nose``
 
   ``pytest``
     Adds pytest tests.
@@ -760,16 +755,6 @@ function(gaudi_add_tests type)
         # Include the generated file with the QMTest dependencies
         include(${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake)
 
-    elseif(type STREQUAL "nosetests")
-        _import_nosetests() # creates the imported target nosetests for the
-                            # generator expression $<TARGET_FILE:nosetests>
-        if(NOT test_directory)
-            set(test_directory "${CMAKE_CURRENT_SOURCE_DIR}/tests/nose")
-        endif()
-        get_filename_component(name "${test_directory}" NAME)
-        add_test(NAME ${package_name}.${name}
-                 COMMAND run $<TARGET_FILE:nosetests> -v --with-doctest ${test_directory})
-        set_tests_properties(${package_name}.${name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     elseif(type STREQUAL "pytest")
         _import_pytest() # creates the imported target pytest for the
                          # generator expression $<TARGET_FILE:pytest>
@@ -1491,7 +1476,7 @@ function(_merge_files_confdb2 dependency file_to_merge)
     set_property(TARGET ${merge_target} APPEND PROPERTY fragments "${file_to_merge}")
 endfunction()
 
-# A function to factor out nosetests and pytest lookup
+# A function to factor out pytest lookup
 function(_import_runtime runtime)
     if(TARGET ${runtime}) # this function can be called several times
         return()
@@ -1499,8 +1484,6 @@ function(_import_runtime runtime)
     # Ensure that we can find Python 3 specific verions of the test frameworks
     if (runtime STREQUAL "pytest")
         set(binaryfiles "pytest-3;pytest")
-    elseif(runtime STREQUAL "nosetests")
-        set(binaryfiles "nosetests3;nosetests")
     else()
         set(binaryfiles "${runtime}")
     endif()
@@ -1521,11 +1504,7 @@ function(_import_runtime runtime)
 endfunction()
 
 
-# This functions import nosetests and pytest to be able to use them
-# in gaudi_add_tests(nosetests|pytest)
-function(_import_nosetests)
-    _import_runtime(nosetests)
-endfunction()
+# This function imports pytest to make it usable in gaudi_add_tests(pytest)
 function(_import_pytest)
     _import_runtime(pytest)
 endfunction()
