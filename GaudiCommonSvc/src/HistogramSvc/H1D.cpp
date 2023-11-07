@@ -26,6 +26,8 @@
 #include <GaudiKernel/ObjectFactory.h>
 #include <GaudiKernel/StreamBuffer.h>
 
+#include <cmath>
+
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( ISvcLocator* svcLocator, const std::string& path,
                                                               const std::string& title, int nBins, double xlow,
                                                               double xup ) {
@@ -131,11 +133,11 @@ bool Gaudi::Histogram1D::setRms( double rms ) {
   // sum weights
   stat[0] = sumBinHeights();
   stat[1] = 0;
-  if ( abs( equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+  if ( std::abs( equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
     stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
   stat[2]     = m_sumwx;
   double mean = 0;
-  if ( abs( sumBinHeights() ) > std::numeric_limits<double>::epsilon() ) mean = m_sumwx / sumBinHeights();
+  if ( std::abs( sumBinHeights() ) > std::numeric_limits<double>::epsilon() ) mean = m_sumwx / sumBinHeights();
   stat[3] = ( mean * mean + rms * rms ) * sumBinHeights();
   m_rep->PutStats( &stat.front() );
   return true;
@@ -150,7 +152,7 @@ bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, dou
   stat[0] = sumBinHeights();
   // sum weights **2
   stat[1] = 0;
-  if ( abs( eqBinEntries ) > std::numeric_limits<double>::epsilon() )
+  if ( std::abs( eqBinEntries ) > std::numeric_limits<double>::epsilon() )
     stat[1] = ( sumBinHeights() * sumBinHeights() ) / eqBinEntries;
   // sum weights * x
   stat[2] = mean * sumBinHeights();
@@ -188,7 +190,7 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h ) {
   double sumw = h.sumBinHeights();
   // sumw2
   double sumw2 = 0;
-  if ( abs( h.equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+  if ( std::abs( h.equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
     sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
 
   double sumwx  = h.mean() * h.sumBinHeights();
