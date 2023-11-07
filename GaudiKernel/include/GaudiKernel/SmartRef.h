@@ -73,42 +73,27 @@ class SmartRefMap;
     Version: 1.0
 */
 template <class TYPE>
-class SmartRef {
+class SmartRef final {
   /// The container must be a friend
   friend class SmartRefArray<TYPE>;
   friend class SmartRefList<TYPE>;
   friend class SmartRefMap<TYPE>;
+
+  SmartRefBase m_base;
+  /// Pointer to target data object
+  mutable const TYPE* m_target = nullptr;
 
 public:
   enum { VALID = StreamBuffer::VALID, INVALID = StreamBuffer::INVALID };
   /// Entry type definition
   typedef TYPE entry_type;
 
-protected:
-  SmartRefBase m_base;
-  /// Pointer to target data object
-  mutable const TYPE* m_target = nullptr;
-
-public:
   /// Standard Constructor
-  SmartRef() {
-    m_base.m_hintID = INVALID;
-    m_base.m_linkID = INVALID;
-    _setEnvironment( 0, 0 );
-  }
-  /// Standard Constructor with initialisation
-  SmartRef( TYPE* pObject ) {
+  SmartRef( const TYPE* pObject = nullptr ) {
     m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
     m_target        = pObject;
-    _setEnvironment( 0, 0 );
-  }
-  /// Standard Constructor with initialisation from const object
-  SmartRef( const TYPE* pObject ) {
-    m_base.m_hintID = INVALID;
-    m_base.m_linkID = INVALID;
-    m_target        = const_cast<TYPE*>( pObject );
-    _setEnvironment( 0, 0 );
+    _setEnvironment( nullptr, nullptr );
   }
   /// Copy Constructor
   SmartRef( const SmartRef& copy ) {
@@ -118,42 +103,39 @@ public:
     _setEnvironment( copy.m_base.m_data, copy.m_base.m_contd );
   }
   /// Constructor
-  SmartRef( long hint, long link, TYPE* obj = nullptr ) {
+  SmartRef( long hint, long link, const TYPE* obj = nullptr ) {
     m_base.m_hintID = hint;
     m_base.m_linkID = link;
     m_target        = obj;
-    _setEnvironment( 0, 0 );
+    _setEnvironment( nullptr, nullptr );
   }
   /// Constructor for references to contained objects passing environment
-  SmartRef( const ContainedObject* pObj, long hint, long link, TYPE* obj = nullptr ) {
+  SmartRef( const ContainedObject* pObj, long hint, long link, const TYPE* obj = nullptr ) {
     m_base.m_hintID       = hint;
     m_base.m_linkID       = link;
     m_target              = obj;
-    const DataObject* src = ( 0 == pObj ) ? 0 : pObj->parent();
+    const DataObject* src = ( pObj ? pObj->parent() : nullptr );
     _setEnvironment( src, pObj );
   }
   /// Constructor for references to contained objects passing environment
-  SmartRef( const DataObject* pObj, long hint, long link, TYPE* obj = nullptr ) {
+  SmartRef( const DataObject* pObj, long hint, long link, const TYPE* obj = nullptr ) {
     m_base.m_hintID = hint;
     m_base.m_linkID = link;
     m_target        = obj;
-    _setEnvironment( pObj, 0 );
+    _setEnvironment( pObj, nullptr );
   }
   /// Constructor for references to DataObjects passing environment
-  SmartRef( const DataObject* pObj, long hint, TYPE* obj = nullptr ) {
+  SmartRef( const DataObject* pObj, long hint, const TYPE* obj = nullptr ) {
     m_base.m_hintID = hint;
     m_base.m_linkID = INVALID;
     m_target        = obj;
-    _setEnvironment( pObj, 0 );
+    _setEnvironment( pObj, nullptr );
   }
-  /// Standard destructor
-  // virtual ~SmartRef()                  {
-  //}
   /// Check if link should be followed: link must be valid and object not yet loaded
-  bool shouldFollowLink( const DataObject* /* typ */ ) const { return ( !m_target && m_base.m_hintID != INVALID ); }
+  bool shouldFollowLink( const DataObject* ) const { return !m_target && m_base.m_hintID != INVALID; }
   /// Check if link should be followed: link must be valid and object not yet loaded
-  bool shouldFollowLink( const ContainedObject* /* typ */ ) const {
-    return ( !m_target && m_base.m_hintID != INVALID && m_base.m_linkID != INVALID );
+  bool shouldFollowLink( const ContainedObject* ) const {
+    return !m_target && m_base.m_hintID != INVALID && m_base.m_linkID != INVALID;
   }
   /// Access hint id:
   long hintID() const { return m_base.m_hintID; }
@@ -243,7 +225,7 @@ public:
     return _setEnvironment( c.m_base.m_data, c.m_base.m_contd );
   }
   /// Assignment
-  SmartRef<TYPE>& operator=( TYPE* pObject ) {
+  SmartRef<TYPE>& operator=( const TYPE* pObject ) {
     m_target        = pObject;
     m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
@@ -268,7 +250,7 @@ public:
   }
   /// Read the reference from the stream buffer (needed due to stupid G++ compiler)
   StreamBuffer& readRef( StreamBuffer& s ) {
-    m_target = dynamic_cast<TYPE*>( m_base.readObject( m_target, s ) );
+    m_target = dynamic_cast<const TYPE*>( m_base.readObject( m_target, s ) );
     return s;
   }
   /// Output Streamer operator

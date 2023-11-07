@@ -106,69 +106,69 @@
 #include "GaudiKernel/Incident.h"
 
 namespace GaudiKernelDict {
-  struct __Instantiations : public KeyedObject<int>,
-                            public KeyedObject<unsigned int>,
-                            public KeyedObject<long>,
-                            public KeyedObject<unsigned long>,
-                            public SmartRef<DataObject>,
-                            public SmartRef<ContainedObject>,
-                            public SmartRef<ObjectContainerBase>,
-                            public SmartRef<KeyedObject<int>>,
-                            public SmartRef<KeyedObject<unsigned int>>,
-                            public SmartRef<KeyedObject<long>>,
-                            public SmartRef<KeyedObject<unsigned long>>,
-                            public SmartRefVector<DataObject>,
-                            public SmartRefVector<ContainedObject>,
-                            public SmartRefVector<ObjectContainerBase>,
-                            public SmartRefVector<KeyedObject<int>>,
-                            public SmartRefVector<KeyedObject<unsigned int>>,
-                            public SmartRefVector<KeyedObject<long>>,
-                            public SmartRefVector<KeyedObject<unsigned long>>,
-                            //    public  std::vector<SmartRef<ContainedObject> >,
-                            //    public  std::vector<SmartRef<DataObject> >,
-                            //    public  std::vector<SmartRef<ObjectContainerBase> >,
-                            public std::vector<LinkManager::Link*>,
-                            public std::vector<const ContainedObject*>,
-                            public std::vector<ContainedObject*> {
-    NTuple::Item<bool>               BoolItem;
-    NTuple::Item<char>               CharItem;
-    NTuple::Item<unsigned char>      UCharItem;
-    NTuple::Item<short>              ShortItem;
-    NTuple::Item<unsigned short>     UShortItem;
-    NTuple::Item<long>               LongItem;
-    NTuple::Item<long long>          LongLongItem;
-    NTuple::Item<unsigned long>      ULongItem;
-    NTuple::Item<unsigned long long> ULongLongItem;
-    NTuple::Item<int>                IntItem;
-    NTuple::Item<unsigned int>       UIntItem;
-    NTuple::Item<float>              FloatItem;
-    NTuple::Item<double>             DoubleItem;
-    NTuple::Array<bool>              BoolArray;
-    NTuple::Array<char>              CharArray;
-    NTuple::Array<unsigned char>     UCharArray;
-    NTuple::Array<short>             ShortArray;
-    NTuple::Array<unsigned short>    UShortArray;
-    NTuple::Array<long>              LongArray;
-    NTuple::Array<unsigned long>     ULongArray;
-    NTuple::Array<int>               IntArray;
-    NTuple::Array<unsigned int>      UIntArray;
-    NTuple::Array<float>             FloatArray;
-    NTuple::Array<double>            DoubleArray;
-    NTuple::Matrix<bool>             BoolMatrix;
-    NTuple::Matrix<char>             CharMatrix;
-    NTuple::Matrix<unsigned char>    UCharMatrix;
-    NTuple::Matrix<short>            ShortMatrix;
-    NTuple::Matrix<unsigned short>   UShortMatrix;
-    NTuple::Matrix<long>             LongMatrix;
-    NTuple::Matrix<unsigned long>    ULongMatrix;
-    NTuple::Matrix<int>              IntMatrix;
-    NTuple::Matrix<unsigned int>     UIntMatrix;
-    NTuple::Matrix<float>            FloatMatrix;
-    NTuple::Matrix<double>           DoubleMatrix;
+  struct __Instantiations {
+    KeyedObject<int>                           m_1;
+    KeyedObject<unsigned int>                  m_2;
+    KeyedObject<long>                          m_3;
+    KeyedObject<unsigned long>                 m_4;
+    SmartRef<DataObject>                       m_5;
+    SmartRef<ContainedObject>                  m_6;
+    SmartRef<ObjectContainerBase>              m_7;
+    SmartRef<KeyedObject<int>>                 m_8;
+    SmartRef<KeyedObject<unsigned int>>        m_9;
+    SmartRef<KeyedObject<long>>                m_10;
+    SmartRef<KeyedObject<unsigned long>>       m_11;
+    SmartRefVector<DataObject>                 m_12;
+    SmartRefVector<ContainedObject>            m_13;
+    SmartRefVector<ObjectContainerBase>        m_14;
+    SmartRefVector<KeyedObject<int>>           m_15;
+    SmartRefVector<KeyedObject<unsigned int>>  m_16;
+    SmartRefVector<KeyedObject<long>>          m_17;
+    SmartRefVector<KeyedObject<unsigned long>> m_18;
+    //   std::vector<SmartRef<ContainedObject> > m_19;
+    //   std::vector<SmartRef<DataObject> > m_20;
+    //   std::vector<SmartRef<ObjectContainerBase> > m_21;
+    std::vector<LinkManager::Link*>     m_22;
+    std::vector<const ContainedObject*> m_23;
+    std::vector<ContainedObject*>       m_24;
+    NTuple::Item<bool>                  BoolItem;
+    NTuple::Item<char>                  CharItem;
+    NTuple::Item<unsigned char>         UCharItem;
+    NTuple::Item<short>                 ShortItem;
+    NTuple::Item<unsigned short>        UShortItem;
+    NTuple::Item<long>                  LongItem;
+    NTuple::Item<long long>             LongLongItem;
+    NTuple::Item<unsigned long>         ULongItem;
+    NTuple::Item<unsigned long long>    ULongLongItem;
+    NTuple::Item<int>                   IntItem;
+    NTuple::Item<unsigned int>          UIntItem;
+    NTuple::Item<float>                 FloatItem;
+    NTuple::Item<double>                DoubleItem;
+    NTuple::Array<bool>                 BoolArray;
+    NTuple::Array<char>                 CharArray;
+    NTuple::Array<unsigned char>        UCharArray;
+    NTuple::Array<short>                ShortArray;
+    NTuple::Array<unsigned short>       UShortArray;
+    NTuple::Array<long>                 LongArray;
+    NTuple::Array<unsigned long>        ULongArray;
+    NTuple::Array<int>                  IntArray;
+    NTuple::Array<unsigned int>         UIntArray;
+    NTuple::Array<float>                FloatArray;
+    NTuple::Array<double>               DoubleArray;
+    NTuple::Matrix<bool>                BoolMatrix;
+    NTuple::Matrix<char>                CharMatrix;
+    NTuple::Matrix<unsigned char>       UCharMatrix;
+    NTuple::Matrix<short>               ShortMatrix;
+    NTuple::Matrix<unsigned short>      UShortMatrix;
+    NTuple::Matrix<long>                LongMatrix;
+    NTuple::Matrix<unsigned long>       ULongMatrix;
+    NTuple::Matrix<int>                 IntMatrix;
+    NTuple::Matrix<unsigned int>        UIntMatrix;
+    NTuple::Matrix<float>               FloatMatrix;
+    NTuple::Matrix<double>              DoubleMatrix;
 
-    SmartDataPtr<DataObject>          p1;
-    SmartDataPtr<ObjectContainerBase> p2;
-    __Instantiations() : p1( 0, "" ), p2( 0, "" ) {}
+    SmartDataPtr<DataObject>          p1{ 0, "" };
+    SmartDataPtr<ObjectContainerBase> p2{ 0, "" };
   };
 } // namespace GaudiKernelDict
 
