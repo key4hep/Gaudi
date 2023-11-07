@@ -20,9 +20,7 @@ namespace Gaudi {
         : public Functional::FilterPredicate<bool( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )> {
     public:
       CountSelectedTracks( const std::string& name, ISvcLocator* pSvc )
-          : FilterPredicate( name, pSvc,
-                             { KeyValue{ "InputData", Functional::concat_alternatives( "BogusLocation", "MoreBogus",
-                                                                                       "MyOutTracks" ) } } ) {}
+          : FilterPredicate( name, pSvc, { KeyValue{ "InputData", "MyOutTracks" } } ) {}
 
       StatusCode initialize() override {
         StatusCode sc = FilterPredicate::initialize();

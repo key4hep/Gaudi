@@ -19,13 +19,13 @@
 namespace Gaudi::Functional {
 
   // This utility is needed when the inputs of a functional algorithm may be stored in several locations
-  inline std::string concat_alternatives( std::initializer_list<std::string> c ) {
+  [[deprecated]] inline std::string concat_alternatives( std::initializer_list<std::string> c ) {
     return boost::algorithm::join( c, ":" );
   }
 
   template <typename... Strings>
-  std::string concat_alternatives( const Strings&... s ) {
-    return concat_alternatives( std::initializer_list<std::string>{ s... } );
+  [[deprecated]] std::string concat_alternatives( const Strings&... s ) {
+    return boost::algorithm::join( std::initializer_list<std::string>{ s... }, ":" );
   }
 
   [[deprecated( "please use `updateHandleLocation` instead of `Gaudi::Functional::updateHandleLocation`" )]] inline void
