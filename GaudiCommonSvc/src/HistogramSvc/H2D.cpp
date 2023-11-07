@@ -29,6 +29,7 @@
 #include <TH2D.h>
 #include <TProfile.h>
 #include <array>
+#include <cmath>
 
 namespace {
   using AIDA::IHistogram1D;
@@ -185,13 +186,13 @@ bool Gaudi::Histogram2D::setRms( double rmsX, double rmsY ) {
   std::vector<double> stat( 11 );
   stat[0] = sumBinHeights();
   stat[1] = 0;
-  if ( abs( equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+  if ( std::abs( equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
     stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
   stat[2]      = m_sumwx;
   stat[4]      = m_sumwy;
   double meanX = 0;
   double meanY = 0;
-  if ( abs( sumBinHeights() ) > std::numeric_limits<double>::epsilon() ) {
+  if ( std::abs( sumBinHeights() ) > std::numeric_limits<double>::epsilon() ) {
     meanX = m_sumwx / sumBinHeights();
     meanY = m_sumwy / sumBinHeights();
   }
@@ -228,7 +229,7 @@ void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h ) {
   // statistics
   double sumw  = h.sumBinHeights();
   double sumw2 = 0;
-  if ( abs( h.equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
+  if ( std::abs( h.equivalentBinEntries() ) > std::numeric_limits<double>::epsilon() )
     sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
   double sumwx  = h.meanX() * h.sumBinHeights();
   double sumwx2 = ( h.meanX() * h.meanX() + h.rmsX() * h.rmsX() ) * h.sumBinHeights();

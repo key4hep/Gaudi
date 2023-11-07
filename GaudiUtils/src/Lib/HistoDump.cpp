@@ -258,7 +258,7 @@ namespace {
    *  @date 2009-09-19
    */
   std::pair<double, int> decompose( double v ) {
-    if ( abs( v ) < std::numeric_limits<double>::epsilon() ) {
+    if ( std::abs( v ) < std::numeric_limits<double>::epsilon() ) {
       return { 0.0, 0 };
     } // RETURN
     else if ( essentiallyEqual( 1.0, v ) ) {
