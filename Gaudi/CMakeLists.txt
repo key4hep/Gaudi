@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -24,7 +24,7 @@ gaudi_generate_confuserdb(Gaudi.ConfUser)
 gaudi_add_tests(QMTest)
 
 # Python tests
-gaudi_add_pytest(tests/nose)
+gaudi_add_pytest(tests/pytest)
 gaudi_add_pytest(python/Gaudi/Main.py
     OPTIONS --doctest-modules
     ROOT_DIR python
