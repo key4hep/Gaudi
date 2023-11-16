@@ -360,9 +360,11 @@ class SequenceSemantics(PropertySemantics):
         self.value_semantics.name = "{} element".format(self._name)
 
     def store(self, value):
-        if not isinstance(value, (list, _ListHelper)):
+        if not isinstance(value, (list, _ListHelper, tuple)):
             raise TypeError(
-                "list expected, got {!r} in assignment to {}".format(value, self.name)
+                "list or tuple expected, got {!r} in assignment to {}".format(
+                    value, self.name
+                )
             )
         new_value = _ListHelper(self.value_semantics)
         new_value.extend(value)
