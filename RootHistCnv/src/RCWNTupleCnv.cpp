@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <cstring>
 #include <list>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -121,8 +122,18 @@ namespace {
     }
     if ( it->hasIndex() || it->length() > 1 ) { desc += ']'; }
 
-    lowerRange = it->range().lower();
-    upperRange = it->range().upper();
+    // 0 and -1 are used to mark that the range is not defined
+    lowerRange = 0;
+    upperRange = -1;
+    if constexpr ( std::is_integral_v<T> ) {
+      // An explicit range makes sense only for integral types so we check only in that case if it is defined.
+      // Note that later a range is only taken into account for int32_t.
+      if ( it->range().lower() != it->range().min() && it->range().upper() != it->range().max() ) {
+        lowerRange = it->range().lower();
+        upperRange = it->range().upper();
+      }
+    }
+
     desc += typ;
     size += item_size * dimension;
   }
