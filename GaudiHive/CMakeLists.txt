@@ -17,6 +17,7 @@ gaudi_add_module(GaudiHive
                          src/AvalancheSchedulerSvc.cpp
                          src/ContextEventCounter.cpp
                          src/CPUCruncher.cpp
+                         src/GPUCruncher.cpp
                          src/FetchDataFromFile.cpp
                          src/FetchLeavesFromFile.cpp
                          src/HiveDataBroker.cpp
