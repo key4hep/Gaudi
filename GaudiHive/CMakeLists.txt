@@ -39,6 +39,7 @@ gaudi_add_module(GaudiHive
                       Boost::headers
                       Boost::system
                       Boost::filesystem
+                      Boost::fiber
                       Boost::graph
                       ROOT::Hist
                       ROOT::RIO

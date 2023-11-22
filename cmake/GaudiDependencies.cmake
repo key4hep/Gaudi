@@ -91,7 +91,7 @@ set(THREADS_PREFER_PTHREAD_FLAG YES)
 set(Boost_USE_STATIC_LIBS OFF)
 set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cmake handles Boost_USE_STATIC_LIBS correctly
 set(BUILD_SHARED_LIBS ON)
-find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex
+find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex fiber
   thread python unit_test_framework program_options log log_setup graph)
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables

@@ -35,8 +35,8 @@ namespace Gaudi {
 
 class AlgTask {
 public:
-  AlgTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem, bool blocking = false )
-      : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ), m_blocking( blocking ){};
+  AlgTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem, bool blocking, bool accelerated )
+      : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ), m_blocking( blocking ), m_accelerated( accelerated ){};
 
   void operator()() const {
 
@@ -45,7 +45,7 @@ public:
 
     // Get task specification dynamically if it was not provided statically
     AvalancheSchedulerSvc::TaskSpec ts;
-    if ( !m_scheduler->next( ts, m_blocking ) ) {
+    if ( !m_scheduler->next( ts, m_blocking, m_accelerated ) ) {
       log << MSG::WARNING << "Missing specification while task is running" << endmsg;
       return;
     }
@@ -117,6 +117,8 @@ private:
   SmartIF<ISvcLocator>   m_serviceLocator;
   // Marks the task as CPU-blocking or not
   bool m_blocking{ false };
+  // Marks the task as accelerated or not
+  bool m_accelerated{ false };
 };
 
 #endif

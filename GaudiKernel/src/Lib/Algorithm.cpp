@@ -68,6 +68,12 @@ namespace Gaudi {
     // Set the Algorithm's properties
     bindPropertiesTo( serviceLocator()->getOptsSvc() );
 
+    // Error if we're accelerated and blocking
+    if (m_accelerated.value() && m_blocking.value()) {
+      fatal() << "An algorithm cannot be blocking and accelerated" << endmsg;
+      return StatusCode::FAILURE;
+    }
+
     // Bypass the initialization if the algorithm is disabled.
     // Need to do this after setProperties.
     if ( !isEnabled() ) return StatusCode::SUCCESS;
