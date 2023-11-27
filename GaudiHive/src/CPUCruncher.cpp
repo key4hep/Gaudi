@@ -59,7 +59,7 @@ StatusCode CPUCruncher::initialize() {
   }
 
   // if an algorithm was setup to sleep, for whatever period, it effectively models CPU-blocking behavior
-  if ( abs( m_sleepFraction ) > std::numeric_limits<float>::epsilon() ) setBlocking( true );
+  if ( std::abs( m_sleepFraction ) > std::numeric_limits<float>::epsilon() ) setBlocking( true );
 
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
   // we need to wait until initialize when we've read in the input and output key
@@ -147,12 +147,12 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
       return normal * sigma + mean;
     };
 
-    crunchtime = fabs( getGausRandom( m_avg_runtime * ( 1. - m_sleepFraction ), m_var_runtime ) );
+    crunchtime = std::abs( getGausRandom( m_avg_runtime * ( 1. - m_sleepFraction ), m_var_runtime ) );
     // End Of temp block
   } else {
     // Should be a member.
     HiveRndm::HiveNumbers rndmgaus( randSvc(), Rndm::Gauss( m_avg_runtime * ( 1. - m_sleepFraction ), m_var_runtime ) );
-    crunchtime = std::fabs( rndmgaus() );
+    crunchtime = std::abs( rndmgaus() );
   }
   unsigned int crunchtime_ms = 1000 * crunchtime;
 
