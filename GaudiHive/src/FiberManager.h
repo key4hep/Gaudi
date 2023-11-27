@@ -16,6 +16,8 @@
 #include "boost/fiber/fiber.hpp"
 #include "boost/fiber/mutex.hpp"
 
+#include "fmt/format.h"
+
 /** @class FiberManager FiberManager.h
  *
  * The FiberManager manages a pool of threads used to run boost::fiber fibers.
@@ -43,9 +45,6 @@ public:
         std::unique_lock lck{ m_shuttingDown_mtx };
         m_shuttingDown_cv.wait( lck );
       } ) );
-
-      // Since we never call boost::this_fiber::yield, fibers never actually run on this thread
-      boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>();
     }
   }
 
@@ -65,6 +64,11 @@ public:
    * */
   template <typename F>
   void schedule( F&& func ) {
+    if ( !m_activated ) {
+      // Since we never call boost::this_fiber::yield, fibers never actually run on this thread
+      boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>();
+      m_activated = true;
+    }
     boost::fibers::fiber( boost::fibers::launch::post, std::forward<F>( func ) ).detach();
   }
 
@@ -72,4 +76,5 @@ private:
   boost::fibers::condition_variable m_shuttingDown_cv{};
   boost::fibers::mutex              m_shuttingDown_mtx{};
   std::vector<std::thread>          m_threads;
+  bool                              m_activated = false; // set to true when first fiber is scheduled
 };

@@ -185,7 +185,7 @@ private:
       this, "PreemptiveBlockingTasks", false,
       "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly." };
   Gaudi::Property<int> m_numOffloadThreads{
-      this, "NumOffloadingThreads", 2,
+      this, "NumOffloadThreads", 2,
       "Number of threads to use for CPU portion of accelerated algorithms. Accelerated algorithms must be flagged and "
       "use Boost Fiber functionality to suspend while waiting for offloaded work." };
   Gaudi::Property<bool>                     m_checkDeps{ this, "CheckDependencies", false,

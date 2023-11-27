@@ -45,6 +45,11 @@ public:
 
     // Get task specification dynamically if it was not provided statically
     AvalancheSchedulerSvc::TaskSpec ts;
+    log << MSG::DEBUG << "Getting taskspec for "
+        << ( m_accelerated ? "accelerated"
+             : m_blocking  ? "blocking"
+                           : "standard" )
+        << " algorithm" << endmsg;
     if ( !m_scheduler->next( ts, m_blocking, m_accelerated ) ) {
       log << MSG::WARNING << "Missing specification while task is running" << endmsg;
       return;

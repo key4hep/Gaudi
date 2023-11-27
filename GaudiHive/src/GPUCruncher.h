@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include <GaudiKernel/Algorithm.h>
+#include <Gaudi/AcceleratedAlgorithm.h>
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiKernel/IRndmGenSvc.h>
 #include <GaudiKernel/RegistryEntry.h>
@@ -23,7 +23,7 @@
  *  A test accelerated algorithm. Might eventually run computations on a GPU but for now
  *  it just sleeps for a few seconds.
  */
-class GPUCruncher : public Algorithm {
+class GPUCruncher : virtual public Gaudi::AcceleratedAlgorithm {
 
 public:
   typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;
@@ -31,7 +31,7 @@ public:
   bool isClonable() const override { return true; }
 
   /// the execution of the algorithm
-  StatusCode execute() override;
+  StatusCode execute( const EventContext& ctx ) const override;
   /// Its initialization
   StatusCode initialize() override;
   /// the finalization of the algorithm
@@ -54,11 +54,6 @@ private:
   GPUCruncher& operator=( const GPUCruncher& ); // no assignement
   /// The GPU intensive function
 
-  /// Pick up late-attributed data outputs
-  void                  declareRuntimeRequestedOutputs();
-  bool                  m_declAugmented{ false };
-  Gaudi::Property<bool> m_loader{ this, "Loader", false, "Declare the algorithm to be a data loader" };
-
   Gaudi::Property<std::vector<std::string>> m_inpKeys{ this, "inpKeys", {}, "" };
   Gaudi::Property<std::vector<std::string>> m_outKeys{ this, "outKeys", {}, "" };
 
@@ -66,7 +61,6 @@ private:
   Gaudi::Property<double>       m_var_runtime{ this, "varRuntime", 0.01, "Variance of the runtime of the module." };
   Gaudi::Property<bool>         m_local_rndm_gen{ this, "localRndm", true,
                                           "Decide if the local random generator is to be used" };
-  Gaudi::Property<bool>         m_invertCFD{ this, "InvertDecision", false, "Invert control flow decision." };
 
   // For the concurrency
   const uint MAX_INPUTS  = 40;

@@ -151,6 +151,7 @@ gaudi_add_library(GaudiKernel
   LINK
     PUBLIC GaudiPluginService
            Boost::headers
+           Boost::fiber
            Boost::filesystem
            Boost::thread
            Boost::regex

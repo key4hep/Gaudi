@@ -68,12 +68,6 @@ namespace Gaudi {
     // Set the Algorithm's properties
     bindPropertiesTo( serviceLocator()->getOptsSvc() );
 
-    // Error if we're accelerated and blocking
-    if (m_accelerated.value() && m_blocking.value()) {
-      fatal() << "An algorithm cannot be blocking and accelerated" << endmsg;
-      return StatusCode::FAILURE;
-    }
-
     // Bypass the initialization if the algorithm is disabled.
     // Need to do this after setProperties.
     if ( !isEnabled() ) return StatusCode::SUCCESS;
@@ -116,7 +110,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "(119) Standard std::exception is caught " << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;
@@ -124,6 +118,12 @@ namespace Gaudi {
       fatal() << "UNKNOWN Exception is caught " << endmsg;
       Stat stat( chronoSvc(), "*UNKNOWN Exception*" );
       sc = StatusCode::FAILURE;
+    }
+
+    // Error if we're accelerated and blocking
+    if (m_accelerated.value() && m_blocking.value()) {
+      fatal() << "An algorithm cannot be blocking and accelerated" << endmsg;
+      return StatusCode::FAILURE;
     }
 
     algExecStateSvc()->addAlg( this );
@@ -379,7 +379,7 @@ namespace Gaudi {
       status = exceptionSvc()->handle( *this, Exception );
     } catch ( const std::exception& Exception ) {
 
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "(382) Standard std::exception is caught " << endmsg;
       error() << Exception.what() << endmsg;
       // Stat stat( chronoSvc() , "*std::exception*" ) ;
       status = exceptionSvc()->handle( *this, Exception );
@@ -484,7 +484,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "(487) Standard std::exception is caught " << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;

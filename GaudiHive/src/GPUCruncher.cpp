@@ -11,7 +11,6 @@
 #include "GPUCruncher.h"
 #include "HiveNumbers.h"
 #include <GaudiKernel/ThreadLocalContext.h>
-#include <boost/fiber/operations.hpp>
 #include <ctime>
 #include <sys/resource.h>
 #include <sys/times.h>
@@ -51,9 +50,6 @@ StatusCode GPUCruncher::initialize() {
   auto sc = Algorithm::initialize();
   if ( !sc ) return sc;
 
-  // This is an accelerated algorithm
-  setAccelerated(true);
-
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
   // we need to wait until initialize when we've read in the input and output key
   // properties, and know their size, and then turn them
@@ -80,26 +76,9 @@ StatusCode GPUCruncher::initialize() {
 }
 
 //------------------------------------------------------------------------------
-void GPUCruncher::declareRuntimeRequestedOutputs() {
-  //
-  for ( const auto& k : outputDataObjs() ) {
-    auto outputHandle = new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this );
-    VERBOSE_MSG << "found late-attributed output: " << outputHandle->objKey() << endmsg;
-    m_outputHandles.push_back( outputHandle );
-    declareProperty( "dummy_out_" + outputHandle->objKey(), *( m_outputHandles.back() ) );
-  }
 
-  initDataHandleHolder();
-
-  m_declAugmented = true;
-}
-
-//------------------------------------------------------------------------------
-
-StatusCode GPUCruncher::execute() // the execution of the algorithm
+StatusCode GPUCruncher::execute( const EventContext& ctx ) const // the execution of the algorithm
 {
-
-  if ( m_loader && !m_declAugmented ) declareRuntimeRequestedOutputs();
 
   float crunchtime;
 
@@ -168,7 +147,9 @@ StatusCode GPUCruncher::execute() // the execution of the algorithm
   }
 
   // Use fiber sleep, should eventually be a GPU computation
-  boost::this_fiber::sleep_for(std::chrono::milliseconds(crunchtime_ms));
+  info() << "Sleeping..." << endmsg;
+  sleep_for(std::chrono::milliseconds(crunchtime_ms)).orThrow("SLEEP_FOR");
+  info() << "Slept." << endmsg;
 
   VERBOSE_MSG << "outputs number: " << m_outputHandles.size() << endmsg;
   for ( auto& outputHandle : m_outputHandles ) {
@@ -186,8 +167,6 @@ StatusCode GPUCruncher::execute() // the execution of the algorithm
   DEBUG_MSG << "Timing: ExpectedCrunchtime= " << crunchtime_ms
             << " ms. ActualTotalRuntime= " << int( 1000 * actualRuntime )
             << " ms. Ratio= " << crunchtime / actualRuntime << endmsg;
-
-  setFilterPassed( !m_invertCFD );
 
   return StatusCode::SUCCESS;
 }
