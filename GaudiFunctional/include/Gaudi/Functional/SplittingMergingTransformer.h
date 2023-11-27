@@ -93,7 +93,7 @@ namespace Gaudi::Functional {
           for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }

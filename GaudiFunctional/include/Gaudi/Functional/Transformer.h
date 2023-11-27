@@ -48,7 +48,7 @@ namespace Gaudi ::Functional {
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -74,7 +74,7 @@ namespace Gaudi ::Functional {
           }
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -115,7 +115,7 @@ namespace Gaudi ::Functional {
               this->m_outputs );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -153,7 +153,7 @@ namespace Gaudi ::Functional {
           GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -191,7 +191,7 @@ namespace Gaudi ::Functional {
                      ? FilterDecision::PASSED
                      : FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -223,7 +223,7 @@ namespace Gaudi ::Functional {
                      ? FilterDecision::PASSED
                      : FilterDecision::FAILED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
