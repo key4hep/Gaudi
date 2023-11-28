@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -50,7 +50,7 @@ def test_repr(with_global_instances):
     assert t1.name == orig_name
     assert t1.Bool == t.Bool
 
-    p = AlgWithVectors(VS="abc")
+    p = AlgWithVectors(VS=list("abc"))
     q = eval(repr(p))
     assert list(q.VS) == list("abc")
     assert repr(q) == repr(p)
@@ -88,7 +88,7 @@ def test_pickle(with_global_instances):
     assert t1.name == orig_name
     assert t1.Bool == t.Bool
 
-    p = AlgWithVectors(VS="abc")
+    p = AlgWithVectors(VS=list("abc"))
     q = loads(dumps(p))
     assert list(q.VS) == list("abc")
     assert dumps(q) == dumps(p)
@@ -107,7 +107,7 @@ def test_pickle(with_global_instances):
 def test_full_serialization_repr(with_global_instances):
     MyAlg("Alg1", AnIntProp=1)
     SimpleOptsAlgTool("ToolA", parent=MyAlg("Alg2", AnIntProp=2))
-    AlgWithVectors("AV", VS="abc")
+    AlgWithVectors("AV", VS=list("abc"))
     AlgWithMaps("AM", MSS={"a": "B"})
 
     serial = repr(list(Configurable.instances.values()))
@@ -122,7 +122,7 @@ def test_full_serialization_pickle(with_global_instances):
 
     MyAlg("Alg1", AnIntProp=1)
     SimpleOptsAlgTool("ToolA", parent=MyAlg("Alg2", AnIntProp=2))
-    AlgWithVectors("AV", VS="abc")
+    AlgWithVectors("AV", VS=list("abc"))
     AlgWithMaps("AM", MSS={"a": "B"})
 
     serial = dumps(list(Configurable.instances.values()))

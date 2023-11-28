@@ -84,10 +84,25 @@ def test_opt_value():
     assert s.opt_value(d) == ["a", "b", "c"]
 
 
+def test_implicit_conversion():
+    s = S.getSemanticsFor("std::vector<std::string, alloc<string> >")
+
+    # For backwards-compatibility (i.e. for Property<DataObjIDColl>)
+    # we support assignment from tuple:
+    d = s.store(("a", "b", "c"))
+    assert d == list("abc")
+
+
 def test_assignment_bad():
     s = S.getSemanticsFor("std::vector<std::string, alloc<string> >")
     with pytest.raises(TypeError):
         s.store(["a", "b", 1])
+
+    with pytest.raises(TypeError):
+        s.store("ab")
+
+    with pytest.raises(TypeError):
+        s.store(set("ab"))
 
 
 def test_in_alg():
