@@ -5,6 +5,22 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v37r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v37r2) - 2023-11-28
+Minor fixes in preparation for the next major release.
+
+### Changed
+- Deprecate no longer required `concat_alternatives` (gaudi/Gaudi!1513)
+- Migrate tests to pytest and various fixes (gaudi/Gaudi!1517 gaudi/Gaudi!1519)
+
+### Fixed
+- `GaudiConfig2`: strict type checking for list properties (gaudi/Gaudi!1518)
+- Fix booking of n-tuple columns with and without ranges (gaudi/Gaudi#282 gaudi/Gaudi!1522)
+- Prefer `std::abs` over `abs` (gaudi/Gaudi!1516, gaudi/Gaudi!1524)
+- Fix include for catch2 3.1 and above (gaudi/Gaudi!1515)
+- Cleanup of `SmartRef` (gaudi/Gaudi!1512)
+- Work around libstdc++ bug (gaudi/Gaudi!1514)
+
+
 ## [v37r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v37r1) - 2023-10-30
 This is a minor release meant mostly to address issues with compilation on gcc 13, clang 16 and C++20.
 It features as well a number of other fixes and improvements and some clean up.
