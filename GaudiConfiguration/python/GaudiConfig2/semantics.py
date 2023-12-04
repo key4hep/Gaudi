@@ -427,7 +427,11 @@ class _SetHelper(MutableSet):
         return set(self.value_semantics.opt_value(item) for item in self.data)
 
     def __repr__(self):
-        return repr(self.data)
+        if self.data:
+            # sort into list but print as set to get reproducible repr
+            return "{" + repr(sorted(self.data))[1:-1] + "}"
+        else:
+            return "set()"
 
 
 class SetSemantics(PropertySemantics):

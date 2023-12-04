@@ -163,7 +163,8 @@ namespace Gaudi {
      */
     template <class TYPE, class HASH, class CMP, class ALLOCATOR>
     inline std::ostream& toStream( const std::unordered_set<TYPE, HASH, CMP, ALLOCATOR>& obj, std::ostream& s ) {
-      return obj.empty() ? s << "set()" : toStream( obj.begin(), obj.end(), s, "{ ", " }", " , " );
+      auto ordered = std::set( obj.begin(), obj.end() ); // ensure reproducible printout
+      return obj.empty() ? s << "set()" : toStream( ordered.begin(), ordered.end(), s, "{ ", " }", " , " );
     }
     // ========================================================================
     /** the partial template specialization of

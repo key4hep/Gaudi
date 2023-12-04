@@ -104,6 +104,14 @@ def test_in_alg():
     assert len(p.SetOfString) == 2
     assert p.SetOfString == set("az")
 
+    assert repr(p.SetOfInt) == "set()"
+    assert repr(p.SetOfString) == "{'a', 'z'}"
+
+    p.SetOfString = {"a"}
+    assert repr(p.SetOfString) == "{'a'}"
+    p.SetOfInt = set([3, 1, 2])
+    assert repr(p.SetOfInt) == "{1, 2, 3}"
+
 
 def test_merge():
     s = S.getSemanticsFor("std::unordered_set<int>")

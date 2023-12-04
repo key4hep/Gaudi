@@ -975,6 +975,11 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
 
     def __str__(self, indent=0, headerLastIndentUnit=indentUnit):
         global log  # to print some info depending on output level
+
+        def _sorted_repr_set(value):
+            """Helper to print sorted set representation"""
+            return "{" + repr(sorted(value))[1:-1] + "}" if value else "set()"
+
         indentStr = indent * Configurable.indentUnit
         # print header
         title = self.getPrintTitle()
@@ -1026,6 +1031,9 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
                             strDef = repr(default)
                         if strDef == repr(vv.toStringProperty()):
                             strDef = None
+                    elif isinstance(vv, set):
+                        strVal = _sorted_repr_set(vv)
+                        strDef = _sorted_repr_set(default)
                     else:
                         strVal = repr(vv)
                         strDef = repr(default)
