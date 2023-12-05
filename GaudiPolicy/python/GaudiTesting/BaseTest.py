@@ -19,15 +19,9 @@ import sys
 import tempfile
 import threading
 import time
+from html import escape as escape_for_html
 from subprocess import PIPE, STDOUT, Popen
 from unittest import TestCase
-
-try:
-    from html import escape as escape_for_html
-except ImportError:  # Python2
-    from cgi import escape as escape_for_html
-
-import six
 
 if sys.version_info < (3, 5):
     # backport of 'backslashreplace' handling of UnicodeDecodeError
@@ -789,12 +783,12 @@ class Result:
         self.annotations = annotations.copy()
 
     def __getitem__(self, key):
-        assert isinstance(key, six.string_types)
+        assert isinstance(key, str)
         return self.annotations[key]
 
     def __setitem__(self, key, value):
-        assert isinstance(key, six.string_types)
-        assert isinstance(value, six.string_types), "{!r} is not a string".format(value)
+        assert isinstance(key, str)
+        assert isinstance(value, str), "{!r} is not a string".format(value)
         self.annotations[key] = value
 
     def Quote(self, text):
@@ -877,7 +871,7 @@ class FilePreprocessor:
         return output
 
     def __call__(self, input):
-        if not isinstance(input, six.string_types):
+        if not isinstance(input, str):
             lines = input
             mergeback = False
         else:

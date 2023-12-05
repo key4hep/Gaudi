@@ -13,8 +13,6 @@ import os
 import sys
 from time import time
 
-import six
-
 from Gaudi import Configuration
 
 log = logging.getLogger(__name__)
@@ -279,7 +277,7 @@ def toOpt(value):
     >>> print(toOpt({'a': [1, 2, '3']}))
     {"a": [1, 2, "3"]}
     """
-    if isinstance(value, six.string_types):
+    if isinstance(value, str):
         return '"{0}"'.format(value.replace('"', '\\"'))
     elif isinstance(value, dict):
         return "{{{0}}}".format(
@@ -374,6 +372,7 @@ class gaudimain(object):
         # ---------------------------------------------------
 
     def generatePyOutput(self, all=False):
+        import re
         from collections import defaultdict
         from pprint import pformat
 
@@ -383,14 +382,9 @@ class gaudimain(object):
             c, p = key.rsplit(".", 1)
             optDict[c][p] = parseOpt(allOpts[key])
         formatted = pformat(dict(optDict))
-        # Python 2 compatibility
-        if six.PY2:
-            return formatted
-        else:
-            # undo splitting of strings on multiple lines
-            import re
+        # undo splitting of strings on multiple lines
 
-            return re.sub(r'"\n +"', "", formatted, flags=re.MULTILINE)
+        return re.sub(r'"\n +"', "", formatted, flags=re.MULTILINE)
 
     def generateOptsOutput(self, all=False):
         opts = getAllOpts(all)

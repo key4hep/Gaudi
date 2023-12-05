@@ -18,15 +18,9 @@ to feed the AthenaEmacs module..."""
 
 __all__ = ["CfgDb", "cfgDb", "loadConfigurableDb", "getConfigurable"]
 
-import string
-
-try:
-    _transtable = str.maketrans("<>&*,: ().", "__rp__s___")
-except AttributeError:
-    # Python 2 compatibility
-    _transtable = string.maketrans("<>&*,: ().", "__rp__s___")
-
 import logging
+
+_transtable = str.maketrans("<>&*,: ().", "__rp__s___")
 
 log = logging.getLogger("ConfigurableDb")
 
@@ -162,11 +156,8 @@ def getConfigurable(className, requester="", assumeCxxClass=True):
     confClass = className
     if assumeCxxClass:
         # assume className is C++: --> translate to python
-        try:
-            confClass = str.translate(confClass, _transtable)
-        except AttributeError:
-            # Python 2 compatibility
-            confClass = string.translate(confClass, _transtable)
+        confClass = str.translate(confClass, _transtable)
+
     # see if I have it in my dictionary
     confClassInfo = cfgDb.get(confClass)
     if not confClassInfo:

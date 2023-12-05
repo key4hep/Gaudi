@@ -13,9 +13,6 @@
 """ This Pythonizations module provides a number of useful pythonizations
     of adaptation of some classes.
 """
-from __future__ import print_function
-
-import six
 
 __all__ = []
 
@@ -540,14 +537,7 @@ gbl.Gaudi.Utils.MapBase.__repr__ = __mapbase_str__
 gbl.Gaudi.Utils.MapBase.__setitem__ = __mapbase_setitem__
 gbl.Gaudi.Utils.MapBase.__delitem__ = __mapbase_delitem__
 gbl.Gaudi.Utils.MapBase.__getitem__ = lambda s, key: s.at(key)
-if six.PY2:
-    # Behaviour is like Python 2 dict
-    gbl.Gaudi.Utils.MapBase.iteritems = __mapbase_iteritems__
-    gbl.Gaudi.Utils.MapBase.items = __mapbase_items__
-    gbl.Gaudi.Utils.MapBase.has_key = __mapbase_contains__
-else:
-    # Behaviour is like Python 3+ dict
-    gbl.Gaudi.Utils.MapBase.items = __mapbase_iteritems__
+gbl.Gaudi.Utils.MapBase.items = __mapbase_iteritems__
 
 #############################################################################
 # Helpers for re-entrant interfaces
