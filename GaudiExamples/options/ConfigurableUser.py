@@ -11,7 +11,6 @@
 """
 Example of usage of ConfigurableUser classes (for high level configuration).
 """
-from __future__ import print_function
 
 from Gaudi.Configuration import *
 

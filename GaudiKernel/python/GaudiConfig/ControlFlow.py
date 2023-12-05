@@ -13,7 +13,6 @@ Classes for the implementation of the Control Flow Structure Syntax.
 
 @see: https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
 """
-from __future__ import print_function
 
 
 class ControlFlowNode(object):

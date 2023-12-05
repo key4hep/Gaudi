@@ -8,7 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
 
 from pygraph.algorithms.accessibility import connected_components
 from pygraph.algorithms.critical import critical_path

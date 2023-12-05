@@ -14,7 +14,6 @@ Test that the there is no signature for MsgStream operator<< <char []> in
 GaudiKernel.
 See https://savannah.cern.ch/bugs?87340
 """
-from __future__ import print_function
 
 import os
 import re

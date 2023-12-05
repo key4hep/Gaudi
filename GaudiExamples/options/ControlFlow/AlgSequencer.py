@@ -8,7 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
 
 from Configurables import AlgTimingAuditor, ApplicationMgr, AuditorSvc, EventLoopMgr
 from Configurables import Gaudi__Examples__EventCounter as EventCounter

@@ -12,7 +12,6 @@
 """
 Generate _confDb.py files for ConfigurableUser classes.
 """
-from __future__ import division
 
 import logging
 import os

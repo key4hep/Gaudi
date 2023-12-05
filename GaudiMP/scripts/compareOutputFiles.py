@@ -11,7 +11,6 @@
 
 # flake8: noqa (job options)
 
-from __future__ import print_function
 
 import sys
 from multiprocessing import Process, Queue

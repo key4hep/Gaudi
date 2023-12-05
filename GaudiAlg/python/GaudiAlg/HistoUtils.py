@@ -33,7 +33,6 @@ The module contains following public symbols:
   - dumpHisto  for dumping of the histogram in text format (a'la HBOOK)
 
 """
-from __future__ import print_function
 
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"

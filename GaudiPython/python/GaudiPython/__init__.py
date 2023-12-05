@@ -17,7 +17,6 @@
    Usage:
       import GaudiPython
 """
-from __future__ import absolute_import, print_function
 
 # ensure that we (and the subprocesses) use the C standard localization
 import os

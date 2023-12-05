@@ -8,7 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from __future__ import print_function
 
 # see implementation of Gaudi_Test_MySuperAlg in GaudiExamples/Configuration.py
 from Configurables import AlgTimingAuditor, EventLoopMgr

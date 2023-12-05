@@ -15,7 +15,6 @@
     components to Python. It is itself based on the ROOT cppyy
     Python extension module.
 """
-from __future__ import absolute_import, print_function
 
 __all__ = [
     "gbl",

@@ -43,7 +43,6 @@
 * (3) TupleAlgo - analogue for GaudiTupleAlg  C++ class from GaudiAlg package *
 *******************************************************************************
 """
-from __future__ import print_function
 
 # =============================================================================
 __author__ = "Vanya BELYAEV  Ivan.Belyaev@lapp.in2p3.fr"

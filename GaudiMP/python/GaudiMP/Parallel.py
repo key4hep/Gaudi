@@ -17,7 +17,6 @@
     independent of the underlying implementation package.
     Two main class are defined: Task and WorkManager
 """
-from __future__ import print_function
 
 __all__ = ["Task", "WorkManager"]
 excluded_varnames = ["HOSTNAME", "SSH_CLIENT", "SSH_CONNECTION", "DISPLAY"]

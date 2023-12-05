@@ -20,7 +20,6 @@
 Simple example to illustrate the usage functions from HistoUtils module
 (Gaudi histograms outside of algorithm-scope in 'script-like' environment)
 """
-from __future__ import print_function
 
 # =============================================================================
 __author__ = "Vanya BELYAEV  Ivan.Belyaev@nikhef.nl"

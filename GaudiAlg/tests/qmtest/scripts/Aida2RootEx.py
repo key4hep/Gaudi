@@ -17,7 +17,6 @@
 #  @date 2007-01-24
 # =============================================================================
 " Simple example to illustrate the usage of aida2root converter "
-from __future__ import print_function
 
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@phys.syr.edu"

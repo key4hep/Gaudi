@@ -11,7 +11,6 @@
 # File: AthenaCommon/python/Configurable.py
 # Author: Wim Lavrijsen (WLavrijsen@lbl.gov)
 # Author: Martin Woudstra (Martin.Woudstra@cern.ch)
-from __future__ import absolute_import
 
 import copy
 import os

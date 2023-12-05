@@ -11,7 +11,6 @@
 """
 Hand-written confDb file for tests.
 """
-from __future__ import print_function
 
 
 def _fillCfgDb():
