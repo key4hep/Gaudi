@@ -11,6 +11,7 @@
 import pytest
 from GaudiKernel.Configurable import Configurable, ConfigurableAlgorithm
 from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.GaudiHandles import PublicToolHandleArray
 
 
 # Prepare dummy configurables
@@ -22,6 +23,7 @@ class MyAlg(ConfigurableAlgorithm):
         "Dict": {},
         "List": [],
         "Set": set(),
+        "ToolHandleArray": PublicToolHandleArray(),
     }
 
     def getDlls(self):
@@ -51,6 +53,7 @@ def test_correct():
     a.Dict = {"a": 1}
     a.List = [1, 2]
     a.Set = {1, 2}
+    a.ToolHandleArray = ["foo/bar"]
     assert a.getValuedProperties() == {
         "Int": 42,
         "Text": "value",
@@ -58,6 +61,7 @@ def test_correct():
         "Dict": {"a": 1},
         "List": [1, 2],
         "Set": {1, 2},
+        "ToolHandleArray": PublicToolHandleArray(["foo/bar"]),
     }
 
 
@@ -65,6 +69,12 @@ def test_str_from_datahandle():
     a = MyAlg()
     a.Text = DataHandle("value", "R")
     assert a.getProp("Text") == "value"
+
+
+def test_default_handle_append():
+    a = MyAlg()
+    a.ToolHandleArray += ["foo/bar"]
+    assert a.ToolHandleArray == PublicToolHandleArray(["foo/bar"])
 
 
 def test_invalid_value():
