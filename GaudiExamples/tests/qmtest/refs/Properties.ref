@@ -131,7 +131,6 @@ ApplicationMgr.JobOptionsSvcType: 'JobOptionsSvc'
 ApplicationMgr.JobOptionsType: 'FILE'
 ApplicationMgr.MessageSvcType: 'MessageSvc'
 ApplicationMgr.OutStream: [  ]
-ApplicationMgr.OutStreamType: 'OutputStream'
 ApplicationMgr.OutputLevel: 3
 ApplicationMgr.PluginDebugLevel: 0
 ApplicationMgr.PrintAlgsSequence: False
@@ -213,7 +212,6 @@ EventLoopMgr.CheckToolDeps: True
 EventLoopMgr.EvtSel: ''
 EventLoopMgr.HistogramPersistency: ''
 EventLoopMgr.OutStream: [  ]
-EventLoopMgr.OutStreamType: 'OutputStream'
 EventLoopMgr.OutputLevel: 2
 EventLoopMgr.PrintControlFlowExpression: False
 EventLoopMgr.TopAlg: [ 'PropertyAlg' , 'PropertyProxy' ]

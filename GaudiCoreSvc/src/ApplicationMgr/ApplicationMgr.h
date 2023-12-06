@@ -213,9 +213,6 @@ protected:
                                                               "vector<Algorithm>" };
   Gaudi::Property<std::vector<std::string>> m_outStreamNameList{
       this, "OutStream", {}, &ApplicationMgr::evtLoopPropertyHandler, "List of output stream names" };
-  Gaudi::Property<std::string> m_outStreamType{ this, "OutStreamType", "OutputStream",
-                                                &ApplicationMgr::evtLoopPropertyHandler,
-                                                "[[deprecated]] Output stream type" };
   Gaudi::Property<std::string> m_messageSvcType{ this, "MessageSvcType", "MessageSvc", "MessageSvc type",
                                                  "Service:IMessageSvc" };
   Gaudi::Property<std::string> m_jobOptionsSvcType{ this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type",
