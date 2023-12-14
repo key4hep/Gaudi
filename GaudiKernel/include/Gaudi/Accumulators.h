@@ -333,6 +333,20 @@ namespace Gaudi::Accumulators {
   };
 
   /**
+   * generic fetch_add, also dealing with atomic types with no fetch_add member method
+   */
+  template <typename AtomicType, typename Arithmetic>
+  void fetch_add( AtomicType& atVar, Arithmetic value ) {
+    if constexpr ( has_fetch_add_v<AtomicType> ) {
+      atVar.fetch_add( value, std::memory_order_relaxed );
+    } else {
+      auto current = BaseValueHandler<Arithmetic, atomicity::full>::getValue( atVar );
+      while ( !atVar.compare_exchange_weak( current, current + value ) )
+        ;
+    }
+  }
+
+  /**
    * Adder specialization in the case of atomicity full
    */
   template <typename Arithmetic>
@@ -344,13 +358,7 @@ namespace Gaudi::Accumulators {
       if constexpr ( !std::is_floating_point_v<Arithmetic> ) { // avoid comparisons for floating points
         if ( DefaultValue() == b ) return;                     // avoid atomic operation if b is "0"
       }
-      if constexpr ( has_fetch_add_v<InternalType> ) {
-        a.fetch_add( b, std::memory_order_relaxed );
-      } else {
-        auto current = BaseValueHandler<Arithmetic, atomicity::full>::getValue( a );
-        while ( !a.compare_exchange_weak( current, current + b ) )
-          ;
-      }
+      fetch_add( a, b );
     };
   };
 

@@ -191,6 +191,8 @@ namespace Gaudi::Accumulators {
       }
       return idx < 0 ? 0 : ( (unsigned int)idx > nBins ? nBins + 1 : (unsigned int)idx );
     }
+    /// says whether the given value is within the range of the axis
+    bool inAcceptance( Arithmetic value ) const { return value >= minValue && value <= maxValue; }
   };
 
   /// automatic conversion of the Axis type to json
@@ -212,6 +214,7 @@ namespace Gaudi::Accumulators {
     // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
     using ValueType          = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
     using AxisArithmeticType = Arithmetic;
+    using InternalType       = std::array<Arithmetic, ND>;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       unsigned int index = 0;
       for ( unsigned int j = 0; j < NIndex; j++ ) {
@@ -223,6 +226,12 @@ namespace Gaudi::Accumulators {
         index += localIndex;
       }
       return index;
+    }
+    bool inAcceptance( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
+      for ( unsigned int dim = 0; dim < NIndex; dim++ ) {
+        if ( !axis[dim].inAcceptance( ( *this )[dim] ) ) return false;
+      }
+      return true;
     }
     auto forInternalCounter() { return 1ul; }
     template <typename AxisType, long unsigned NAxis>
@@ -240,9 +249,11 @@ namespace Gaudi::Accumulators {
   public:
     using ValueType          = HistoInputType;
     using AxisArithmeticType = Arithmetic;
+    using InternalType       = Arithmetic;
     HistoInputType( Arithmetic a ) : value( a ) {}
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const { return axis[0].index( value ); }
-    Arithmetic&  operator[]( int ) { return value; }
+    bool inAcceptance( const std::array<Axis<Arithmetic>, 1>& axis ) const { return axis[0].inAcceptance( value ); }
+    Arithmetic& operator[]( int ) { return value; }
     operator Arithmetic() const { return value; }
     auto forInternalCounter() { return 1ul; }
     template <typename AxisType>
@@ -263,6 +274,9 @@ namespace Gaudi::Accumulators {
     using std::pair<HistoInputType<Arithmetic, ND, NIndex>, Arithmetic>::pair;
     unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
       return this->first.computeIndex( axis );
+    }
+    unsigned int inAcceptance( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
+      return this->first.inAcceptance( axis );
     }
     auto forInternalCounter() { return std::pair( this->first.forInternalCounter(), this->second ); }
     template <typename AxisType, long unsigned NAxis>

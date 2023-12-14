@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_CounterHistos
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/RootHistogram.h>
 
 #include "LogHistogram.h"
 
@@ -82,7 +82,6 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
     histo1dw += { -10.0, 0.5 }; // fill the first (non-overflow) bin
     BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.75 );
 #pragma GCC diagnostic pop
-    std::cout << toJSON( histo1dw ) << std::endl;
   }
 
   Gaudi::Accumulators::ProfileHistogram<1u> histo{ &algo, "GaudiP1D", "A Gaudi 1D Profile", { 10, 0, 100 } };
@@ -113,6 +112,71 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
       BOOST_TEST( sumw == w );
       BOOST_TEST( sumw2 == w * w );
     }
+  }
+}
+
+BOOST_AUTO_TEST_CASE( test_counter_root_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
+  Algo algo;
+
+  {
+    Gaudi::Accumulators::RootHistogram<1> histo1d{ &algo, "GaudiH1D", "A Gaudi 1D histogram", { 4, -10, 10, "X" } };
+    ++histo1d[1];
+    BOOST_TEST( toJSON( histo1d ).at( "bins" )[3] == 1 );
+    ++histo1d[2];
+    ++histo1d[-100];
+    BOOST_TEST( toJSON( histo1d ).at( "bins" )[3] == 2 );
+    BOOST_TEST( toJSON( histo1d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( toJSON( histo1d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( toJSON( histo1d ).at( "sum" ) == 3 );
+    BOOST_TEST( toJSON( histo1d ).at( "sum2" ) == 5 );
+    BOOST_TEST( toJSON( histo1d ).at( "mean" ) == 1.5 );
+    BOOST_TEST( toJSON( histo1d ).at( "standard_deviation" ) == 0.5 );
+  }
+  {
+    Gaudi::Accumulators::RootHistogram<2> histo2d{
+        &algo, "GaudiH2D", "A Gaudi 2D histogram", { { 4, -10, 10, "X" }, { 4, -10, 10, "Y" } } };
+    ++histo2d[{ 1, 1 }]; // fill the first (non-overflow) bin
+    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 1 );
+    ++histo2d[{ 2, 3 }]; // fill the first (non-overflow) bin
+    ++histo2d[{ -100, -100 }];
+    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 2 );
+    BOOST_TEST( toJSON( histo2d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( toJSON( histo2d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( toJSON( histo2d ).at( "sumx" ) == 3 );
+    BOOST_TEST( toJSON( histo2d ).at( "sumy" ) == 4 );
+    BOOST_TEST( toJSON( histo2d ).at( "sumx2" ) == 5 );
+    BOOST_TEST( toJSON( histo2d ).at( "sumy2" ) == 10 );
+    BOOST_TEST( toJSON( histo2d ).at( "sumxy" ) == 7 );
+    BOOST_TEST( toJSON( histo2d ).at( "meanx" ) == 1.5 );
+    BOOST_TEST( toJSON( histo2d ).at( "meany" ) == 2 );
+    BOOST_TEST( toJSON( histo2d ).at( "standard_deviationx" ) == .5 );
+    BOOST_TEST( toJSON( histo2d ).at( "standard_deviationy" ) == 1 );
+  }
+  {
+    Gaudi::Accumulators::RootHistogram<3> histo3d{
+        &algo, "GaudiH2D", "A Gaudi 3D histogram", { { 4, -10, 10, "X" }, { 4, -10, 10, "Y" }, { 4, -10, 10, "Z" } } };
+    ++histo3d[{ 1, 1, 1 }]; // fill the first (non-overflow) bin
+    BOOST_TEST( toJSON( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 1 );
+    ++histo3d[{ 2, 3, 2 }]; // fill the first (non-overflow) bin
+    ++histo3d[{ -100, -100, -100 }];
+    BOOST_TEST( toJSON( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 2 );
+    BOOST_TEST( toJSON( histo3d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( toJSON( histo3d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumx" ) == 3 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumy" ) == 4 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumz" ) == 3 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumx2" ) == 5 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumy2" ) == 10 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumz2" ) == 5 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumxy" ) == 7 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumxz" ) == 5 );
+    BOOST_TEST( toJSON( histo3d ).at( "sumyz" ) == 7 );
+    BOOST_TEST( toJSON( histo3d ).at( "meanx" ) == 1.5 );
+    BOOST_TEST( toJSON( histo3d ).at( "meany" ) == 2 );
+    BOOST_TEST( toJSON( histo3d ).at( "meanz" ) == 1.5 );
+    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationx" ) == .5 );
+    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationy" ) == 1 );
+    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationz" ) == .5 );
   }
 }
 
