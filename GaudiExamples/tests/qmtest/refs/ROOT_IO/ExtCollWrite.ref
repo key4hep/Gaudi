@@ -89,8 +89,8 @@ Fill              SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
 Fill              SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Fill              SUCCESS Property ['Name': Value] =  'Enable':True
 Fill              SUCCESS Property ['Name': Value] =  'OutputLevel':3
-Fill              SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
-Fill              SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
+Fill              SUCCESS Property ['Name': Value] =  'ExtraOutputs':set()
+Fill              SUCCESS Property ['Name': Value] =  'ExtraInputs':set()
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully

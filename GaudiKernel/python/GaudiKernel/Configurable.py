@@ -713,7 +713,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
                 value = proxy.__get__(self)
                 if hasattr(value, "getFullName"):
                     value = value.getFullName()
-                elif type(value) in [list, tuple]:
+                elif isinstance(value, (list, set, tuple)):
                     new_value = []
                     for i in value:
                         if hasattr(i, "getFullName"):
@@ -721,7 +721,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
                         else:
                             new_value.append(i)
                     value = type(value)(new_value)
-                elif type(value) is dict:
+                elif isinstance(value, dict):
                     new_value = {}
                     for i in value:
                         if hasattr(value[i], "getFullName"):
@@ -795,7 +795,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
         if not hasattr(self, name):
             return False
         default = self.getDefaultProperty(name)
-        if isinstance(default, (list, dict, DataHandle)):
+        if isinstance(default, (list, dict, set, DataHandle)):
             value = getattr(self, name)
             return value != default
         return True
@@ -854,7 +854,7 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
         for proxy in self._properties.values():
             try:
                 value = proxy.__get__(self)
-                if type(value) in [str, list, dict, tuple]:
+                if isinstance(value, (str, list, dict, tuple, set)):
                     # clone the values of the properties for basic types
                     value = type(value)(value)
                 proxy.__set__(newconf, value)
@@ -975,6 +975,11 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
 
     def __str__(self, indent=0, headerLastIndentUnit=indentUnit):
         global log  # to print some info depending on output level
+
+        def _sorted_repr_set(value):
+            """Helper to print sorted set representation"""
+            return "{" + repr(sorted(value))[1:-1] + "}" if value else "set()"
+
         indentStr = indent * Configurable.indentUnit
         # print header
         title = self.getPrintTitle()
@@ -1026,6 +1031,9 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
                             strDef = repr(default)
                         if strDef == repr(vv.toStringProperty()):
                             strDef = None
+                    elif isinstance(vv, set):
+                        strVal = _sorted_repr_set(vv)
+                        strDef = _sorted_repr_set(default)
                     else:
                         strVal = repr(vv)
                         strDef = repr(default)
@@ -1502,7 +1510,7 @@ class ConfigurableUser(Configurable):
                 if isinstance(other, ConfigurableUser):
                     otherType = type(other._properties[name].getDefault())
                     other._properties[name].setDefault(value)
-                    if otherType in [list, dict]:
+                    if otherType in (list, dict, set):
                         # Special case for list and dictionaries:
                         # also set the property to the same value of the default (copy)
                         other.setProp(name, otherType(value))

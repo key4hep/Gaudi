@@ -12,7 +12,7 @@ import copy
 import logging
 import re
 import sys
-from collections.abc import MutableMapping, MutableSequence
+from collections.abc import MutableMapping, MutableSequence, MutableSet
 
 _log = logging.getLogger(__name__)
 is_64bits = sys.maxsize > 2**32
@@ -384,16 +384,121 @@ class SequenceSemantics(PropertySemantics):
         return value.opt_value()
 
 
+class _SetHelper(MutableSet):
+    def __init__(self, semantics):
+        self.value_semantics = semantics
+        self.default = set()  # cannot use None due to the way __ior__ is implemented
+        self._data = set()
+        self.is_dirty = False
+
+    # Aliases to match builtin `set`
+    union = MutableSet.__ior__
+    update = MutableSet.__ior__
+    intersection = MutableSet.__iand__
+    difference = MutableSet.__isub__
+    symmetric_difference = MutableSet.__ixor__
+
+    @property
+    def data(self):
+        return self._data if self.is_dirty else self.default
+
+    def __len__(self):
+        return len(self.data)
+
+    def __contains__(self, value):
+        return self.value_semantics.store(value) in self.data
+
+    def __eq__(self, other):
+        return self.data == other
+
+    def __iter__(self):
+        for value in self.data:
+            yield self.value_semantics.load(value)
+
+    def add(self, value):
+        self.is_dirty = True
+        self.data.add(self.value_semantics.store(value))
+
+    def discard(self, value):
+        if not self.is_dirty:
+            raise RuntimeError("cannot remove elements from the default value")
+        self.data.discard(value)
+
+    def pop(self):
+        if not self.is_dirty:
+            raise RuntimeError("cannot remove elements from the default value")
+        return self.data.pop()
+
+    def opt_value(self):
+        return set(self.value_semantics.opt_value(item) for item in self.data)
+
+    def __repr__(self):
+        if self.data:
+            # sort into list but print as set to get reproducible repr
+            return "{" + repr(sorted(self.data))[1:-1] + "}"
+        else:
+            return "set()"
+
+
+class SetSemantics(PropertySemantics):
+    """Merge semantics for (unordered) sets."""
+
+    __handled_types__ = (re.compile(r"(std::)?unordered_set<.*>$"),)
+
+    def __init__(self, cpp_type, valueSem=None):
+        super(SetSemantics, self).__init__(cpp_type)
+        self.value_semantics = valueSem or getSemanticsFor(
+            list(extract_template_args(cpp_type))[0]
+        )
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+        self.value_semantics.name = "{} element".format(self._name)
+
+    def store(self, value):
+        # We support assignment from list for backwards compatibility
+        if not isinstance(value, (set, _SetHelper, list, _ListHelper)):
+            raise TypeError(
+                "set expected, got {!r} in assignment to {}".format(value, self.name)
+            )
+
+        new_value = _SetHelper(self.value_semantics)
+        new_value |= value
+        return new_value
+
+    def default(self, value):
+        new_value = _SetHelper(self.value_semantics)
+        new_value.default = value
+        return new_value
+
+    def opt_value(self, value):
+        """
+        Option string version of value.
+        """
+        if not isinstance(value, _SetHelper):
+            value = self.default(value)
+        return value.opt_value()
+
+    def merge(self, bb, aa):
+        aa |= bb
+        return aa
+
+
 class OrderedSetSemantics(SequenceSemantics):
     """
     Extend the sequence-semantics with a merge-method to behave like a
     OrderedSet: Values are unique but the order is maintained.
     Use 'OrderedSet<T>' as fifth parameter of the Gaudi::Property<T> constructor
-    to invoke this merging method. Also applies to std::[unordered_]set.
+    to invoke this merging method. Also applies to std::set.
     """
 
     __handled_types__ = (
-        re.compile(r"(std::)?(unordered_)?set<.*>$"),
+        re.compile(r"(std::)?set<.*>$"),
         re.compile(r"^OrderedSet<.*>$"),
     )
 

@@ -54,6 +54,12 @@ def test_default_read_only():
         del d[1]
 
 
+def test_store_empty():
+    s = S.getSemanticsFor("std::map<std::string, std::string>")
+    d = s.store({})
+    assert d == {}
+
+
 def test_changes():
     s = S.getSemanticsFor("std::map<std::string, std::string>")
     d = s.store({"a": "A", "b": "B", "c": "C"})

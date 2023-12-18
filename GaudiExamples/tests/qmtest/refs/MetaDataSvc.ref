@@ -275,8 +275,8 @@ NTupleAlgorithm.Blocking:False
 NTupleAlgorithm.Cardinality:1
 NTupleAlgorithm.Enable:True
 NTupleAlgorithm.ErrorMax:1
-NTupleAlgorithm.ExtraInputs:[]
-NTupleAlgorithm.ExtraOutputs:[]
+NTupleAlgorithm.ExtraInputs:set()
+NTupleAlgorithm.ExtraOutputs:set()
 NTupleAlgorithm.FilterCircularDependencies:True
 NTupleAlgorithm.MonitorService:'MonitorSvc'
 NTupleAlgorithm.NeededResources:[  ]

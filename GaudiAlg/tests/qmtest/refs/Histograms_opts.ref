@@ -62,8 +62,8 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
-SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':set()
+SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':set()
 HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo-opts.root

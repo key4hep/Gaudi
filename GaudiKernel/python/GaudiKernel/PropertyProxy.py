@@ -57,21 +57,23 @@ def _isCompatible(tp, value):
             return str(value)
         else:
             raise ValueError(errmsg)
-    elif tp in [list, tuple, dict]:
+    elif tp in (list, tuple, dict, set):
         if type(value) is tp:
-            # We need to check that the types match for lists, tuples and
-            # dictionaries (bug #34769).
+            # Check that the types match for collections (GAUDI-207)
             return value
+        elif tp is set and isinstance(value, list):
+            # Fall-through to implicit conversion for backwards compatibility
+            pass
         else:
             raise ValueError(errmsg)
     elif derives_from(tp, "Configurable"):
         return value
-    else:
-        # all other types: accept if conversion allowed
-        try:
-            dummy = tp(value)
-        except (TypeError, ValueError):
-            raise ValueError(errmsg)
+
+    # all other types: accept if conversion allowed
+    try:
+        dummy = tp(value)
+    except (TypeError, ValueError):
+        raise ValueError(errmsg)
 
     return dummy  # in case of e.g. classes with __int__, __iter__, etc. implemented
 
@@ -103,9 +105,9 @@ class PropertyProxy(object):
         try:
             return self.descr.__get__(obj, type)
         except AttributeError:
-            # special case for lists and dictionaries:
-            # allow default to work with on += and []
-            if self.__default.__class__ in [list, dict]:
+            # special case for builtin collections
+            # allow default to work with on +=, [], etc.
+            if isinstance(self.__default, (list, dict, set)):
                 self.descr.__set__(obj, self.__default.__class__(self.__default))
                 return self.descr.__get__(obj, type)
             else:

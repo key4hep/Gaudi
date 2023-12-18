@@ -54,6 +54,12 @@ def test_comparison():
     assert d1 != []
 
 
+def test_store_empty():
+    s = S.getSemanticsFor("std::vector<int>")
+    d = s.store([])
+    assert d == []
+
+
 def test_changes():
     s = S.getSemanticsFor("std::vector<std::string, alloc<string> >")
     d = s.store(["a", "b", "c"])
