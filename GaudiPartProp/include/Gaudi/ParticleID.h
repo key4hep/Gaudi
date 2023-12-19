@@ -8,30 +8,17 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-#ifndef PARTPROP_PARTICLEID_H
-#define PARTPROP_PARTICLEID_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// STD&STL
-// ============================================================================
+#pragma once
+
+#include <Gaudi/Math/Digit.h>
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/Kernel.h>
 #include <cmath>
 #include <iosfwd>
 #include <string>
 #include <tuple>
-// ============================================================================
-// GaudiKernel.
-// ============================================================================
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/Kernel.h"
-// ============================================================================
-// GaudiUtils (originally from LHCbMath)
-// ============================================================================
-#include "Gaudi/Math/Digit.h"
-// ============================================================================
+
 namespace Gaudi {
-  // ==========================================================================
   /** @class ParticleID ParticleID.h
    *
    * Holds PDG + LHCb extension particle code, following the PDG
@@ -46,7 +33,7 @@ namespace Gaudi {
    * ZZZ is Z - the total number of protons,
    * L is the total number of strange quarks, and
    * I is the isomer number where I = 0 corresponds to the ground state.
-   * Backwards compatability with the old heavy ion scheme has also been kept.
+   * Backwards compatibility with the old heavy ion scheme has also been kept.
    *
    * @date 19/02/2002
    * @author Gloria Corti
@@ -55,28 +42,21 @@ namespace Gaudi {
    */
   class GAUDI_API ParticleID final {
   public:
-    // ========================================================================
     /// PDG ID digits (base 10) are: n nr nl nq1 ne2 nq3 nj.
     enum Location { nj = 1, nq3, nq2, nq1, nl, nr, n, n8, n9, n10 };
     /// Quark PDG IDs.
     enum Quark { down = 1, up, strange, charm, bottom, top, bottom_prime, top_prime, first = down, last = top_prime };
-    // ========================================================================
-  public: // Constructors and destructors.
-    // ========================================================================
+
     /// Constructor with PDG code.
     explicit ParticleID( const int pid = 0 ) { setPid( pid ); }
-    // ========================================================================
-  public: // Access the raw PID.
-    // ========================================================================
+
     /// Retrieve the PDG ID.
     int pid() const { return m_pid; }
     /// Absolute value of the PDG ID.
     unsigned int abspid() const { return 0 > m_pid ? -m_pid : m_pid; }
     /// Update the PDG ID.
     void setPid( const int pid ) { m_pid = pid; }
-    // ========================================================================
-  public: // Methods to return particle type properties.
-    // ========================================================================
+
     /// Return if the PID is valid.
     bool isValid() const;
     /// Return if the PID is from the standard model.
@@ -95,9 +75,7 @@ namespace Gaudi {
     bool isNucleus() const;
     /// Return if the PID is for a bare quark.
     bool isQuark() const;
-    // ========================================================================
-  public: // quark content
-    // ========================================================================
+
     /// Return if the PID is a particle with quarks, but not a nucleus.
     bool hasQuarks() const;
     /// Return if the PID is a particle containing a specified quark flavor.
@@ -118,9 +96,7 @@ namespace Gaudi {
     bool hasBottomPrime() const { return hasQuark( bottom_prime ); }
     /// Return if the PID is a particle with a top' quark.
     bool hasTopPrime() const { return hasQuark( top_prime ); }
-    // ========================================================================
-  public: // Methods to return particle spin and charge properties.
-    // ========================================================================
+
     /// Return three times the charge, in units of e+, valid for all particles.
     int threeCharge() const;
     /// Return 2J+1, where J is the total spin, valid for all particles.
@@ -129,26 +105,20 @@ namespace Gaudi {
     int sSpin() const;
     /// Return 2L+1, where L is the orbital angular momentum, valid only for mesons.
     int lSpin() const;
-    // ========================================================================
-  public: // nuclea
-    // ========================================================================
+
     /// Return the atomic number for a nucleus.
     int Z() const;
     /// Return the nucleon number for a nucleus.
     int A() const;
     /// Return the number of strange quarks for a nucleus.
     int nLambda() const;
-    // ========================================================================
-  public: // fundamental particle ?
-    // ========================================================================
-    /** Return the fundemental ID.
-     *  This is 0 for nuclie, mesons, baryons, and di-quarks.
+
+    /** Return the fundamental ID.
+     *  This is 0 for nuclei, mesons, baryons, and di-quarks.
      *  Otherwise, this is the first two digits of the PDG ID
      */
     int fundamentalID() const;
-    // ========================================================================
-  public: // technical methods
-    // ========================================================================
+
     /// Return everything beyond the 7th PDG ID digit.
     int extraBits() const;
     /// Return the digit for a given PDG ID digit location.
@@ -165,9 +135,7 @@ namespace Gaudi {
       Gaudi::Math::Digits<unsigned int, L1 - 1, L2 - 1> _eval;
       return _eval( abspid() );
     }
-    // ========================================================================
-  public: // comparisons (needed e.g. to be used as keys for maps and sets
-    // ========================================================================
+
     /// Equality operator.
     bool operator==( const ParticleID& o ) const { return m_pid == o.m_pid; }
     /// Non-equality operator.
@@ -177,9 +145,7 @@ namespace Gaudi {
       const unsigned int i1( abspid() ), i2( o.abspid() );
       return std::tie( i1, m_pid ) < std::tie( i2, o.m_pid );
     }
-    // ======================================================================
-  public: // prints
-    // ======================================================================
+
     /// Fill a stream with the PID.
     std::ostream& fillStream( std::ostream& s ) const;
     /// Return the PID stream representation as a string.
@@ -192,14 +158,12 @@ namespace Gaudi {
     static std::ostream& printQuark( const long q, std::ostream& s );
     /// Return the PID quark enumeration stream representation as a string.
     static std::string printQuark( const long q );
-    // ========================================================================
-  private: // Internal data members.
-    // ========================================================================
+
+  private:
     /// PDG ID.
     int m_pid{ 0 };
-    // ========================================================================
   };
-  // ==========================================================================
+
   // Inline stream operators.
   /// Stream operator for the PID.
   inline std::ostream& operator<<( std::ostream& s, const Gaudi::ParticleID& o ) { return o.fillStream( s ); }
@@ -211,13 +175,9 @@ namespace Gaudi {
   inline std::ostream& operator<<( std::ostream& s, Gaudi::ParticleID::Quark q ) {
     return Gaudi::ParticleID::printQuark( q, s );
   }
-  // ==========================================================================
 } // namespace Gaudi
-// ============================================================================
-// Hash functions for maps of ParticleIDs.
-// ============================================================================
+
 namespace GaudiUtils {
-  // ==========================================================================
   template <>
   struct Hash<Gaudi::ParticleID> {
     inline size_t operator()( const Gaudi::ParticleID& s ) const { return (size_t)s.pid(); }
@@ -234,15 +194,8 @@ namespace GaudiUtils {
   struct Hash<const Gaudi::ParticleID&> {
     inline size_t operator()( const Gaudi::ParticleID& s ) const { return (size_t)s.pid(); }
   };
-  // ==========================================================================
 } // namespace GaudiUtils
-// ============================================================================
 namespace std {
-  // ==========================================================================
   /// Return the absolute value for a PID.
   inline Gaudi::ParticleID abs( const Gaudi::ParticleID& p ) { return Gaudi::ParticleID( p.abspid() ); }
-  // =========================================================================
 } // namespace std
-// ===========================================================================
-//                                                                     The END
-#endif /// PARTPROP_PARTICLEID_H

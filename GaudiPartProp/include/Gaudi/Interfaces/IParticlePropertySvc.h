@@ -8,29 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef PARTPROP_IPARTICLEPROPERTYSVC_H
-#define PARTPROP_IPARTICLEPROPERTYSVC_H
-// ============================================================================
-// Include Files
-// ============================================================================
-// STD & STL
-// ============================================================================
+#pragma once
+
+#include <GaudiKernel/IInterface.h>
+#include <GaudiKernel/Kernel.h>
 #include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/Kernel.h"
-// ============================================================================
-// forward declarations
-// ============================================================================
+
 namespace Gaudi {
   class ParticleID;
   class ParticleProperty;
 } // namespace Gaudi
-// ============================================================================
+
 namespace Gaudi::Interfaces {
-  // ==========================================================================
   /** @class IParticlePropertySvc Kernel/IParticlePropertySvc.h
    *  The abstract interface to Particle Property Service
    *  @author Iain Last
@@ -38,20 +27,14 @@ namespace Gaudi::Interfaces {
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    */
   class GAUDI_API IParticlePropertySvc : public extend_interfaces<IInterface> {
-    // ========================================================================
-  public: // the  public types
-    // ========================================================================
+  public:
     DeclareInterfaceID( Gaudi::Interfaces::IParticlePropertySvc, 2, 0 );
 
-  public:
-    // ========================================================================
     /// the actual type of (ordered) container of particle properties
     typedef std::vector<const Gaudi::ParticleProperty*> ParticleProperties;
     /// the actual type of iterator over the (ordered) container of properties
     typedef ParticleProperties::const_iterator iterator;
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /** get the begin-iterator for the container of particle properties
      *  It is assumed that the container is properly ordered
      *  @return begin-iterator for the container of particle properties
@@ -94,9 +77,7 @@ namespace Gaudi::Interfaces {
      *  @return pointer to particle property object
      */
     virtual const ParticleProperty* find( const Gaudi::ParticleID& pid ) const = 0; // find by Gaudi::ParticleID
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /** get the properties according to some criteria
      *
      *  e.g. get all leptons:
@@ -131,16 +112,14 @@ namespace Gaudi::Interfaces {
      */
     template <class PREDICATE, class OUTPUT>
     OUTPUT get( const PREDICATE& cut, OUTPUT output ) const;
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /** make the charge conjugation for the string/decay descriptor
      *
      *  @code
      *
      *   std::string decay = "B0 -> pi+ pi-" ;
      *
-     *   Gaudi::IParticleProeprtySvc* svc = ... ;
+     *   Gaudi::IParticlePropertySvc* svc = ... ;
      *
      *   std::string cc = svc -> cc ( decay ) ;
      *
@@ -150,15 +129,11 @@ namespace Gaudi::Interfaces {
      *  @return the charge conjugation for the decay descriptor
      */
     virtual std::string cc( const std::string& decay ) const = 0;
-    // ========================================================================
   };
-  // ==========================================================================
 } // namespace Gaudi::Interfaces
-// ============================================================================
+
 namespace Gaudi {
-  // ==========================================================================
   namespace ParticleProperties {
-    // ========================================================================
     /** helper utility for mapping of Gaudi::ParticleProperty object into
      *  non-negative integral sequential identifier
      *  @code
@@ -189,7 +164,7 @@ namespace Gaudi {
      *  @date   2008-08-03
      */
     size_t index( const Gaudi::ParticleProperty* property, const Gaudi::Interfaces::IParticlePropertySvc* service );
-    // ========================================================================
+
     /** helper utility for mapping of Gaudi::ParticleID object into
      *  non-negative integral sequential identifier
      *  @code
@@ -220,7 +195,7 @@ namespace Gaudi {
      *  @date   2008-08-03
      */
     size_t index( const Gaudi::ParticleID& pid, const Gaudi::Interfaces::IParticlePropertySvc* service );
-    // ========================================================================
+
     /** the inverse mapping of the integer sequential number onto
      *  Gaudi::ParticleID object
      *  @code
@@ -251,7 +226,7 @@ namespace Gaudi {
      */
     const Gaudi::ParticleProperty* particle( const size_t                                   index,
                                              const Gaudi::Interfaces::IParticlePropertySvc* service );
-    // ========================================================================
+
     /** the inverse mapping of the integer sequential number onto
      *  Gaudi::ParticleID object
      *  @code
@@ -281,7 +256,7 @@ namespace Gaudi {
      *  @date   2008-08-03
      */
     const Gaudi::ParticleID particleID( const size_t index, const Gaudi::Interfaces::IParticlePropertySvc* service );
-    // ========================================================================
+
     /** mapping by pythiaID
      *
      *  @code
@@ -303,7 +278,7 @@ namespace Gaudi {
      *  @date   2008-08-03
      */
     const Gaudi::ParticleProperty* byPythiaID( const int pythia, const Gaudi::Interfaces::IParticlePropertySvc* svc );
-    // ========================================================================
+
     /** mapping by EvtGen-name
      *
      *  @code
@@ -326,7 +301,7 @@ namespace Gaudi {
      */
     const Gaudi::ParticleProperty* byEvtGenName( const std::string&                             evtGen,
                                                  const Gaudi::Interfaces::IParticlePropertySvc* svc );
-    // ========================================================================
+
     /** get all particle properties which satisfy the certain criteria
      *
      *  e.g. select all particles with 'invalid' Pythia ID = 0 :
@@ -419,7 +394,7 @@ namespace Gaudi {
       }
       return output;
     }
-    // ========================================================================
+
     /** get all particle properties which satisfy the certain criteria
      *
      *  e.g. select all particles with 'invalid' Pythia ID = 0 :
@@ -502,19 +477,17 @@ namespace Gaudi {
       if ( 0 == service ) { return output; }
       return service->get( cut, output );
     }
-    // ========================================================================
+
     /** get all the properties at once
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date   2008-08-03
      */
     Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties
     allProperties( const Gaudi::Interfaces::IParticlePropertySvc* service );
-    // ========================================================================
   } // namespace ParticleProperties
-  // ==========================================================================
+
   namespace Interfaces {
     // get the properties according to some criteria
-    // ==========================================================================
     template <class PREDICATE, class OUTPUT>
     OUTPUT IParticlePropertySvc::get( const PREDICATE& cut, OUTPUT output ) const {
       iterator first = this->begin();
@@ -522,9 +495,4 @@ namespace Gaudi {
       return Gaudi::ParticleProperties::get( first, last, cut, output );
     }
   } // namespace Interfaces
-  // ==========================================================================
-} //                                                      end of namespace Gaudi
-// ============================================================================
-//                                                                      The END
-// ============================================================================
-#endif // PARTPROP_IPARTICLEPROPERTYSVC_H
+} // namespace Gaudi

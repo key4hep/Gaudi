@@ -8,33 +8,19 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-#ifndef PARTPROP_SYMBOLS_H
-#define PARTPROP_SYMBOLS_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+#pragma once
+
+#include <Decays/Nodes.h>
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/VectorMap.h>
 #include <map>
 #include <string>
 #include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/VectorMap.h"
-// ============================================================================
-// PartProp
-// ============================================================================
-#include "Decays/Nodes.h"
-// ============================================================================
-// Forward declarations
-// ============================================================================
+
 namespace Gaudi {
   class IParticlePropertySvc;
 }
-// ============================================================================
+
 /** @file Kernel/Symbols.h
  *  Helper file with the definition of symbols, used for particles/nodes/decays
  *  @see Gaudi::Interfaces::IParticlePropertySvc
@@ -44,9 +30,7 @@ namespace Gaudi {
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2009-05-07
  */
-// ============================================================================
 namespace Decays {
-  // ==========================================================================
   /** @class Symbols
    *  Helper class to obtain the information about the valid
    *  symbols for particles, decay descriptors and Nodes.
@@ -60,22 +44,15 @@ namespace Decays {
    */
   class GAUDI_API Symbols {
   public:
-    // ========================================================================
     enum { InvalidService = 400, InvalidSymbol, NoParticles, NoSymbols };
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// the actual type for the list of names
     typedef std::vector<std::string>           Names;
     typedef std::map<std::string, std::string> CCMap;
-    // ========================================================================
-  public: // cc
-    // ========================================================================
+
     /// get CC-map
     const CCMap& cc() const;
-    // ========================================================================
-  public: // symbols
-    // ========================================================================
+
     /** valid basic/primitive symbol?
      *  @param sym the symbol
      *  @return true if it is vaild special symbol
@@ -92,7 +69,7 @@ namespace Decays {
      *  @return status code
      */
     StatusCode symbol( std::string sym, Decays::Node& node ) const;
-    // ===================================================================
+
     /** get all known basic primitive special symbols
      *  @param names (OUTOUT) vector of all known special symbols
      *  @return size of the vector
@@ -104,9 +81,7 @@ namespace Decays {
      *  @return status code
      */
     StatusCode particles( const Gaudi::Interfaces::IParticlePropertySvc* svc, Names& parts ) const;
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /** add new symbol to the internal structure
      *  @param sym    the symbol definition
      *  @param node   the actual node
@@ -115,48 +90,36 @@ namespace Decays {
      *  @return true if the symbol is added into the storage
      */
     bool addSymbol( std::string sym, const Decays::iNode& node, const std::string& help, std::string ccsym = "" );
-    // ========================================================================
+
     /** add cc-pair to the internal map
      *  @param sym the symbol
      *  @param ccsym the symbol for charge conjugation
      */
     void addCC( std::string sym, std::string ccsym = "" );
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// static accessor to teh singleton
     static Symbols& instance();
-    // ========================================================================
+
   protected:
-    // ========================================================================
     /// the default constructor is protected:
     Symbols();
     /// the destructor is protected
     virtual ~Symbols() = default;
-    // ========================================================================
+
   private:
-    // ========================================================================
     /// copy constructor is private
     Symbols( const Symbols& );
-    /// assignement operator is private
+    /// assignment operator is private
     Symbols& operator=( const Symbols& );
-    // ========================================================================
-  private:
-    // ========================================================================
+
     typedef GaudiUtils::VectorMap<std::string, Decays::Nodes::_Node> NodeMap;
     typedef std::map<std::string, std::string>                       HelpMap;
-    // ========================================================================
+
     /// the actual map of symbols
     NodeMap m_nodes;
     /// the actual help-map
     HelpMap m_help;
     /// the map of cc-symbols
     CCMap m_cc;
-    // ========================================================================
   };
-  // ==========================================================================
-} //                                                    end of namespace Decays
-// ============================================================================
-//                                                                      The END
-// ============================================================================
-#endif // PARTPROP_SYMBOLS_H
+} // namespace Decays

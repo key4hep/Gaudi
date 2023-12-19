@@ -8,33 +8,21 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-#ifndef PARTPROP_DECAY_H
-#define PARTPROP_DECAY_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+#pragma once
+
+#include <Gaudi/ParticleID.h>
+#include <GaudiKernel/StatusCode.h>
 #include <string>
 #include <vector>
-// ============================================================================
-// Gaudi
-// ============================================================================
-#include "Gaudi/ParticleID.h"
-#include "GaudiKernel/StatusCode.h"
-// ============================================================================
-/// forward decalrations
-// ============================================================================
+
 namespace Gaudi {
   namespace Interfaces {
     class IParticlePropertySvc;
   }
   class ParticleProperty;
 } // namespace Gaudi
-// ============================================================================
+
 namespace Decays {
-  // ==========================================================================
   /** @class Decay Kernel/Decay.h
    *  The simple representation of "simple 1-step" decay (there are no trees!
    *
@@ -43,7 +31,6 @@ namespace Decays {
    */
   class GAUDI_API Decay final {
   public:
-    // ========================================================================
     /** @class Item
      *  the helper representation of the item in the decay chain
      *  @author  Vanya BELYAEV Ivan.Belyaev@nikhef.nl
@@ -51,80 +38,68 @@ namespace Decays {
      */
     class Item final {
     public:
-      // ======================================================================
       /// the constructor from the particle property
       Item( const Gaudi::ParticleProperty* pp = 0 );
       /// the constructor from the particle name
       Item( const std::string& name );
       /// the constructor from the particle PID
       Item( const Gaudi::ParticleID& pid );
-      // ======================================================================
-    public:
-      // ======================================================================
+
       /// get the particle name
       const std::string& name() const { return m_name; }
       /// get the particle PID
       const Gaudi::ParticleID& pid() const { return m_pid; }
       /// get the particle property
       const Gaudi::ParticleProperty* pp() const { return m_pp; }
-      // ======================================================================
-    public:
-      // ======================================================================
+
       /// the default printout
       std::ostream& fillStream( std::ostream& s ) const;
-      // ======================================================================
-    public:
-      // ======================================================================
+
       /// validate the item using the service
       StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const;
       /// validate the item using the particle property object
       StatusCode validate( const Gaudi::ParticleProperty* prop ) const;
-      // ======================================================================
+
     private:
-      // ======================================================================
       /// the particle name
-      mutable std::string m_name; //    the particle name
+      mutable std::string m_name;
       /// the particle PID
-      mutable Gaudi::ParticleID m_pid; //     the particle PID
+      mutable Gaudi::ParticleID m_pid;
       /// the source of properties
-      mutable const Gaudi::ParticleProperty* m_pp = nullptr; //    the property
-      // ======================================================================
+      mutable const Gaudi::ParticleProperty* m_pp = nullptr;
     };
-    // ========================================================================
+
     /// the vector of items (the obvious representation of daughter particles)
     typedef std::vector<Item> Items;
-    // ========================================================================
+
   public:
-    // ========================================================================
-    /// the default constructor
     Decay() = default;
-    // ========================================================================
+
     /** the constructor from mother and daughters
      *  @param mother the mother
      *  @param daughters the daughters
      */
     Decay( const Gaudi::ParticleProperty* mother, const std::vector<const Gaudi::ParticleProperty*>& daughters );
+
     /** the constructor from mother and daughters
      *  @param mother the mother
      *  @param daughters the daughters
      */
-    Decay( const std::string&              mother,      //    the mother
-           const std::vector<std::string>& daughters ); // the daughters
+
+    Decay( const std::string& mother, const std::vector<std::string>& daughters );
     /** the constructor from mother and daughters
      *  @param mother the mother
      *  @param daughters the daughters
      */
-    Decay( const Gaudi::ParticleID&              mother,      //    the mother
-           const std::vector<Gaudi::ParticleID>& daughters ); // the daughters
+
+    Decay( const Gaudi::ParticleID& mother, const std::vector<Gaudi::ParticleID>& daughters );
+
     /** the constructor from mother and daughters
      *  @param mother the mother
      *  @param daughters the daughters
      */
-    Decay( const Item&              mother,      //    the mother
-           const std::vector<Item>& daughters ); // the daughters
-    // ========================================================================
-  public:
-    // ========================================================================
+    Decay( const Item& mother, const std::vector<Item>& daughters );
+
     /// get the mother(head) of the decay
     const Item& mother() const { return m_mother; }
     /// get all daughters
@@ -147,9 +122,7 @@ namespace Decays {
      *  @return the component
      */
     const Item& operator[]( const unsigned int index ) const { return ( *this )( index ); }
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// set the mother
     void setMother( const Item& mom );
     /// set the mother
@@ -174,47 +147,33 @@ namespace Decays {
     void setChildren( const std::vector<std::string>& daugs ) { setDaughters( daugs ); }
     /// set the daughters
     void setChidlren( const std::vector<Gaudi::ParticleID>& daugs ) { setDaughters( daugs ); }
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// add the child
-    Decay& operator+=( const std::string& child ); // add child
+    Decay& operator+=( const std::string& child );
     /// add the child
-    Decay& operator+=( const Gaudi::ParticleID& child ); // add child
+    Decay& operator+=( const Gaudi::ParticleID& child );
     /// add the child
-    Decay& operator+=( const Gaudi::ParticleProperty* child ); // add child
+    Decay& operator+=( const Gaudi::ParticleProperty* child );
     /// add the child
-    Decay& operator+=( const Item& child ); // add child
-    // ========================================================================
-  public:
-    // ========================================================================
+    Decay& operator+=( const Item& child );
+
     /// validate the decay using the service
     StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const;
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// the default printout
     std::ostream& fillStream( std::ostream& s ) const;
     /// the conversion to the string
     std::string toString() const;
-    // ========================================================================
-  private:
-    // ========================================================================
+
     /// the head of the decay
     mutable Item m_mother; // the head of the decay
     /// the daughter particles
     mutable Items m_daughters; // the daughter particles
-    // ========================================================================
   };
-  // ==========================================================================
 } // namespace Decays
-// ============================================================================
+
 /// the printout operator to the stream
 inline std::ostream& operator<<( std::ostream& s, const Decays::Decay& decay ) { return decay.fillStream( s ); }
-// ============================================================================
+
 /// the printout operator to the stream
 inline std::ostream& operator<<( std::ostream& s, const Decays::Decay::Item& item ) { return item.fillStream( s ); }
-// ============================================================================
-//                                                                      The END
-// ============================================================================
-#endif // PARTPROP_DECAY_H

@@ -36,7 +36,6 @@
  *  - Modifies by Vanya BELYAEV to allow readig of additional files to
  *                add/replace/modify the existing particle properties
  */
-// ============================================================================
 namespace {
   std::string defaultFilename() { // the main file with particle properties
     auto* root = getenv( "PARAMFILESROOT" );
@@ -44,7 +43,6 @@ namespace {
   }
 } // namespace
 namespace Gaudi {
-  // ==========================================================================
   /** @class ParticlePropertySvc ParticlePropertySvc.cpp
    *
    *  This service provides access to particle properties.
@@ -92,9 +90,7 @@ namespace Gaudi {
    *
    *  The replaces/modified particles are reported.
    */
-  class ParticlePropertySvc : public extends<Service, Gaudi::Interfaces::IParticlePropertySvc> {
-  public: // Gaudi::Interfaces::IParticlePropertySvc
-    // =========================================================================
+  struct ParticlePropertySvc final : public extends<Service, Gaudi::Interfaces::IParticlePropertySvc> {
     /** get the begin-iterator for the container of particle properties
      *  It is assumed that the container is properly ordered
      *  @return begin-iterator for the container of particle properties
@@ -137,9 +133,7 @@ namespace Gaudi {
      *  @return pointer to particle property object
      */
     const Gaudi::ParticleProperty* find( const Gaudi::ParticleID& pid ) const override { return m_pidMap( pid ); }
-    // =========================================================================
-  public: // CC-ing
-    // =========================================================================
+
     /** make the charge conjugation for the string/decay descriptor
      *
      *  @code
@@ -156,27 +150,18 @@ namespace Gaudi {
      *  @return the charge conjugation for the decay descriptor
      */
     std::string cc( const std::string& decay ) const override;
-    // =========================================================================
-  public: // (I)Service
-    // =========================================================================
+
     /// Initialize the service.
     StatusCode initialize() override;
-    // ========================================================================
-    // technical methods
-    // ========================================================================
+
     /** Standard Constructor.
      *  @param  name   service instance name
      *  @param  pSvc   pointer to service locator `
      */
     ParticlePropertySvc( const std::string& name, // the service instance name
                          ISvcLocator*       pSvc )      // the Service Locator
-        : base_class( name, pSvc ) {
-      //
-      //
-    }
-    // ========================================================================
-  private: // update handler
-    // ========================================================================
+        : base_class( name, pSvc ) {}
+
     /** the action  in the case of interactive manipulation with properties:
      *   - no action if the internal data is not yet build
      *   - else rebuild the internal data
@@ -185,7 +170,7 @@ namespace Gaudi {
      *  @param p the updated property
      */
     void updateHandler( Gaudi::Details::PropertyBase& p );
-    // ========================================================================
+
     /** the action  in the case of interactive manipulation with properties:
      *  of the service
      *  @param p the updated property
@@ -198,9 +183,9 @@ namespace Gaudi {
     void updateCC( Gaudi::Details::PropertyBase& p );
     /// dump the table of particle properties
     void dump();
-    // ========================================================================
+
     /** rebuild the Particle Property Data
-     *   - clear existing conitainers
+     *   - clear existing containers
      *   - parse main file
      *   - parse additional files
      *   - parse the specific options
@@ -208,7 +193,7 @@ namespace Gaudi {
      *   @return status code
      */
     StatusCode rebuild();
-    // ========================================================================
+
     /** parse the file
      *  @param file the file name to be parsed
      *  @return status code
@@ -219,8 +204,8 @@ namespace Gaudi {
      *  @return status code
      */
     StatusCode parseLine( const std::string& line );
-    // ========================================================================
-    /** add new particle (or rdefine the existing one)
+
+    /** add new particle (or redefine the existing one)
      *  @param pname  the particle  name
      *  @param pid    the particle ID
      *  @param charge the particle charge
@@ -233,24 +218,15 @@ namespace Gaudi {
     StatusCode addParticle( const std::string& pname, const Gaudi::ParticleID& pid, const double charge,
                             const double mass, const double tlife, const double maxWidth, const std::string& evtgen,
                             const int pythia );
-    // ========================================================================
+
     /** set properly particle<-->antiparticle relations
      *  @return status code
      */
     StatusCode setAntiParticles();
-    // ========================================================================
+
     /// check the difference of two properties and fill corresponding sets
     bool diff( const Gaudi::ParticleProperty& n, const Gaudi::ParticleProperty& o );
-    // ========================================================================
-  private: // disabled creators
-    // ========================================================================
-    /// the copy constructor is disabled
-    ParticlePropertySvc( const ParticlePropertySvc& ) = delete; // no copy
-    /// the assignement operator is disabled
-    ParticlePropertySvc& operator=( const ParticlePropertySvc& ) = delete; // no =
-    // ========================================================================
-  private: // "vizible" particle data
-    // ========================================================================
+
     /// the actual storage of all properties
     typedef std::set<std::unique_ptr<Gaudi::ParticleProperty>> Set;
     /// the actual type of map: { "name" : "property" }
@@ -259,75 +235,63 @@ namespace Gaudi {
     typedef GaudiUtils::VectorMap<Gaudi::ParticleID, const Gaudi::ParticleProperty*> PidMap;
     typedef Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties              Vector;
     /// the actual storage of all particle properties
-    Set m_set; // the actual storage of all particle properties
-    /// "vizible" data (the ordered container)
-    Vector m_vector; // "vizible" data (the ordered container)
+    Set m_set;
+    /// "visible" data (the ordered container)
+    Vector m_vector;
     /// Map:   { "name" : "property" }
-    NameMap m_nameMap; // Map:   { "name" : "property"}
+    NameMap m_nameMap;
     /// Map:   { "pid"  : "property" }
-    PidMap m_pidMap; // Map:   { "pid"  : "property"}
+    PidMap m_pidMap;
     /// dump the table?
-    Gaudi::Property<bool> m_dump // dump the table?
-        { this, "Dump", false, &Gaudi::ParticlePropertySvc::updateDump, "Dump all properties in a table format" };
-    // ========================================================================
-  private: // service data
-    // ========================================================================
+    Gaudi::Property<bool> m_dump{ this, "Dump", false, &Gaudi::ParticlePropertySvc::updateDump,
+                                  "Dump all properties in a table format" };
+
     /// the actual type for the list of files
-    typedef std::vector<std::string> Files; // list of files
+    typedef std::vector<std::string> Files;
     /// the actual type for the list of particle properties (strings)
     typedef std::vector<std::string> Particles;
     /// the main file with particle properties
-    Gaudi::Property<std::string> m_filename // the main file with particle properties
-        { this, "ParticlePropertiesFile", defaultFilename(), &Gaudi::ParticlePropertySvc::updateHandler,
-          "The name of 'main' particle properties file" };
+    Gaudi::Property<std::string> m_filename{ this, "ParticlePropertiesFile", defaultFilename(),
+                                             &Gaudi::ParticlePropertySvc::updateHandler,
+                                             "The name of 'main' particle properties file" };
     /// additional files
-    Gaudi::Property<Files> m_other // additional file names
-        { this,
-          "OtherFiles",
-          {},
-          &Gaudi::ParticlePropertySvc::updateHandler,
-          "The (optional) list of additional files with the particle data" };
-    /// properties to be redefined  explicitely
-    Gaudi::Property<Particles> m_particles // properties to be redefined  explicitely
-        { this,
-          "Particles",
-          {},
-          &Gaudi::ParticlePropertySvc::updateHandler,
-          "The (optional) list of special particle properties" };
-    // ========================================================================
-  private: // CC-related stuff
-    // ========================================================================
+    Gaudi::Property<Files> m_other{ this,
+                                    "OtherFiles",
+                                    {},
+                                    &Gaudi::ParticlePropertySvc::updateHandler,
+                                    "The (optional) list of additional files with the particle data" };
+    /// properties to be redefined explicitly
+    Gaudi::Property<Particles> m_particles{ this,
+                                            "Particles",
+                                            {},
+                                            &Gaudi::ParticlePropertySvc::updateHandler,
+                                            "The (optional) list of special particle properties" };
+
     /// the CC-map
-    mutable Decays::CC::MapCC m_ccMap; //       the CC-map
+    mutable Decays::CC::MapCC m_ccMap;
     /// CC-map for properties
-    Gaudi::Property<std::map<std::string, std::string>> m_ccmap_ //           CC-map
-        { this, "ChargeConjugations", Decays::Symbols::instance().cc(), &Gaudi::ParticlePropertySvc::updateCC,
-          "The map of charge-conjugation & protected symbols" };
-    // ========================================================================
-  private: // various statistics of modifications
-    // ========================================================================
+    Gaudi::Property<std::map<std::string, std::string>> m_ccmap_{
+        this, "ChargeConjugations", Decays::Symbols::instance().cc(), &Gaudi::ParticlePropertySvc::updateCC,
+        "The map of charge-conjugation & protected symbols" };
+
     typedef std::set<std::string>       NameSet;
     typedef std::set<Gaudi::ParticleID> PidSet;
-    // ========================================================================
+
     NameSet m_by_charge;
     NameSet m_by_mass;
     NameSet m_by_tlife;
     NameSet m_by_width;
     NameSet m_by_evtgen;
     NameSet m_by_pythia;
-    // ========================================================================
+
     NameSet m_replaced_names;
     PidSet  m_replaced_pids;
     NameSet m_no_anti;
-    // ========================================================================
+
     Vector m_modified;
-    // ========================================================================
   };
-  // ==========================================================================
-} // end of namespace Gaudi
-// ============================================================================
-// initialize the service
-// ============================================================================
+} // namespace Gaudi
+
 StatusCode Gaudi::ParticlePropertySvc::initialize() {
   // 1) initialize the base
   StatusCode sc = Service::initialize();
@@ -341,7 +305,7 @@ StatusCode Gaudi::ParticlePropertySvc::initialize() {
     log << MSG::ERROR << " Unable to initialize the internal structures " << endmsg;
     return sc;
   }
-  //
+
   m_by_charge.clear();
   m_by_mass.clear();
   m_by_tlife.clear();
@@ -351,61 +315,60 @@ StatusCode Gaudi::ParticlePropertySvc::initialize() {
   m_replaced_names.clear();
   m_replaced_pids.clear();
   m_no_anti.clear();
-  //
+
   m_ccMap.clear();
-  //
-  if ( m_dump.value() || MSG::DEBUG >= outputLevel() ) { dump(); }
-  //
+
+  if ( m_dump.value() || msgLevel( MSG::DEBUG ) ) { dump(); }
+
   return StatusCode::SUCCESS;
 }
-// ============================================================================
+
 /* rebuild the Particle Property Data
- *   - clear existing conitainers
+ *   - clear existing containers
  *   - parse main file
  *   - parse additional files
  *   - parse the specific options
  *   - set particle<->antiparticle links
  *   @return status code
  */
-// ============================================================================
 StatusCode Gaudi::ParticlePropertySvc::rebuild() {
   // clear all existing containers
   m_nameMap.clear();
   m_pidMap.clear();
   m_vector.clear();
   m_ccMap.clear();
-  // ==========================================================================
+
   // parse the main file
   StatusCode sc = parse( m_filename.value() );
-  if ( sc.isFailure() ) { return sc; } // RETURN
+  if ( sc.isFailure() ) { return sc; }
   // parse the additional files
   for ( const auto& file : m_other.value() ) {
-    if ( sc = parse( file ); sc.isFailure() ) { return sc; } // RETURN
+    if ( sc = parse( file ); sc.isFailure() ) { return sc; }
   }
   // parse the options/lines
   m_modified.clear();
   for ( const auto& line : m_particles.value() ) {
-    if ( sc = parseLine( line ); sc.isFailure() ) { return sc; } // RETURN
+    if ( sc = parseLine( line ); sc.isFailure() ) { return sc; }
   }
   // sort the vector
   std::stable_sort( m_vector.begin(), m_vector.end(), Gaudi::ParticleProperty::Compare() );
   // set particle<-->antiparticle links
   sc = setAntiParticles();
-  if ( sc.isFailure() ) { return sc; } // RETURN
-  /// some debug printout
-  MsgStream log( msgSvc(), name() );
-  if ( log.level() <= MSG::DEBUG ) {
-    log << MSG::DEBUG << " All:   " << m_vector.size() << " By Name: " << m_nameMap.size()
-        << " By PID: " << m_pidMap.size() << " Total: " << m_set.size() << endmsg;
+  if ( sc.isFailure() ) { return sc; }
+  // some debug printout
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << " All:   " << m_vector.size() << " By Name: " << m_nameMap.size() << " By PID: " << m_pidMap.size()
+            << " Total: " << m_set.size() << endmsg;
   }
-  // =========================================================================
+
   if ( !m_modified.empty() ) {
-    log << MSG::ALWAYS << " New/updated particles (from \"Particles\" property)" << std::endl;
+    auto& log = always();
+    log << " New/updated particles (from \"Particles\" property)" << std::endl;
     Gaudi::ParticleProperties::printAsTable( m_modified, log, this );
     log << endmsg;
     m_modified.clear();
   }
-  // ==========================================================================
+
   if ( !m_by_charge.empty() ) {
     info() << " Charge   has beed redefined for " << Gaudi::Utils::toString( m_by_charge ) << endmsg;
   }
@@ -431,20 +394,19 @@ StatusCode Gaudi::ParticlePropertySvc::rebuild() {
     info() << " Replaced PIDs  : " << Gaudi::Utils::toString( m_replaced_pids ) << endmsg;
   }
   if ( !m_no_anti.empty() ) { info() << " No anti particle : " << Gaudi::Utils::toString( m_no_anti ) << endmsg; }
-  //
+
   return StatusCode::SUCCESS;
 }
-// ============================================================================
+
 /*  the action  in the case of interactive manipulation with properties:
  *   - no action if the internal data is not yet build
  *   - else rebuild the internal data
  *  Such action will allow more flexible interactive configuration
  *  of the service
  */
-// ============================================================================
 void Gaudi::ParticlePropertySvc::updateHandler( Gaudi::Details::PropertyBase& p ) {
-  if ( FSMState() < Gaudi::StateMachine::INITIALIZED ) { return; } // RETURN
-  //
+  if ( FSMState() < Gaudi::StateMachine::INITIALIZED ) { return; }
+
   info() << "Property triggers the update of internal Particle Property Data : " << p << endmsg;
   // rebuild the internal data
   StatusCode sc = rebuild();
@@ -454,35 +416,30 @@ void Gaudi::ParticlePropertySvc::updateHandler( Gaudi::Details::PropertyBase& p 
   // clear CC-map
   m_ccMap.clear();
 }
-// ============================================================================
-//  the action  in the case of redefiniiton of "ChargeConjugates"
-// ============================================================================
-void Gaudi::ParticlePropertySvc::updateCC( Gaudi::Details::PropertyBase& /* p */ ) { m_ccMap.clear(); }
-// ============================================================================
+
+//  the action  in the case of redefinition of "ChargeConjugates"
+void Gaudi::ParticlePropertySvc::updateCC( Gaudi::Details::PropertyBase& ) { m_ccMap.clear(); }
+
 /* the action  in the case of interactive manipulation with properties:
  *  of the service
  *  @param p the updated property
  */
-// ============================================================================
-void Gaudi::ParticlePropertySvc::updateDump( Gaudi::Details::PropertyBase& /* p */ ) {
-  if ( FSMState() < Gaudi::StateMachine::INITIALIZED ) { return; } // RETURN
-  // dump the table
+void Gaudi::ParticlePropertySvc::updateDump( Gaudi::Details::PropertyBase& ) {
+  if ( FSMState() < Gaudi::StateMachine::INITIALIZED ) { return; }
   dump();
 }
-// ============================================================================
-// parse the file
-// ============================================================================
+
 StatusCode Gaudi::ParticlePropertySvc::parse( const std::string& file ) {
   auto fileAccess = service<IFileAccess>( "VFSSvc" );
   if ( !fileAccess ) {
     error() << "Unable to locate IFileAccess('VFSSvc') service" << endmsg;
-    return StatusCode::FAILURE; // RETURN
+    return StatusCode::FAILURE;
   }
   // "open" the file
   auto infile = fileAccess->open( file );
   if ( !infile.get() ) {
     error() << "Unable to open file '" << file << "'" << endmsg;
-    return StatusCode::FAILURE; // RETURN
+    return StatusCode::FAILURE;
   }
   info() << "Opened particle properties file : " << file << endmsg;
   bool active = false;
@@ -491,39 +448,38 @@ StatusCode Gaudi::ParticlePropertySvc::parse( const std::string& file ) {
     std::string line;
     std::getline( *infile, line );
     // comment lines start with '#'
-    if ( line[0] == '#' ) { continue; } // CONTINUE
+    if ( line[0] == '#' ) { continue; }
     // skip empty lines:
-    if ( line.empty() ) { continue; } // CONTINUE
+    if ( line.empty() ) { continue; }
     //
     if ( !active ) {
       if ( "PARTICLE" == boost::to_upper_copy( boost::trim_copy( line ) ) ) {
-        active = true; // ACTIVATE!
+        active = true;
         continue;
       }
     } else {
       if ( "END PARTICLE" == boost::to_upper_copy( boost::trim_copy( line ) ) ) {
-        active = false; // DEACTIVATE!
+        active = false;
         continue;
       }
     }
-    //
+
     if ( !active ) { continue; } // skip the lines if not active
     // parse the line
     if ( auto sc = parseLine( line ); sc.isFailure() ) {
       error() << "Unable to parse the file '" << file << "'" << endmsg;
-      return sc; // RETURN
+      return sc;
     }
   }
-  //
-  return StatusCode::SUCCESS; // RETURN
+
+  return StatusCode::SUCCESS;
 }
-// ============================================================================
+
 /*  parse the line
  *  the format of the line is defined by old SICB CDF
  *  @param line the line to be parsed
  *  @return status code
  */
-// ============================================================================
 StatusCode Gaudi::ParticlePropertySvc::parseLine( const std::string& line ) {
   // get the input stream  from the line :
   std::istringstream input( line );
@@ -539,7 +495,7 @@ StatusCode Gaudi::ParticlePropertySvc::parseLine( const std::string& line ) {
   double      p_maxwid;
   // parse the line
   if ( input >> p_name >> p_geant >> p_pdg >> p_charge >> p_mass >> p_ltime >> p_evtgen >> p_pythia >> p_maxwid ) {
-    /// Negative lifetime means the width in GeV-units
+    // Negative lifetime means the width in GeV-units
     if ( 0 > p_ltime ) {
       p_ltime = Gaudi::Units::hbar_Planck / std::abs( p_ltime * Gaudi::Units::GeV ) / Gaudi::Units::s;
     }
@@ -549,25 +505,23 @@ StatusCode Gaudi::ParticlePropertySvc::parseLine( const std::string& line ) {
                                  p_ltime * Gaudi::Units::s,    // rescale from CDF units
                                  p_maxwid * Gaudi::Units::GeV, // rescale from CDF units
                                  p_evtgen, p_pythia );
-    if ( sc.isFailure() ) { return sc; } // RETURN
+    if ( sc.isFailure() ) { return sc; }
   } else {
     MsgStream log( msgSvc(), name() );
     log << MSG::ERROR << " could not parse the line: '" << line << "'" << endmsg;
-    return StatusCode::FAILURE; // RETURN
+    return StatusCode::FAILURE;
   }
-  //
+
   return StatusCode::SUCCESS;
 }
-// ============================================================================
-// Add the particle
-// ============================================================================
+
 StatusCode Gaudi::ParticlePropertySvc::addParticle( const std::string& pname, const Gaudi::ParticleID& pid,
                                                     const double charge, const double mass, const double tlife,
                                                     const double maxWidth, const std::string& evtgen,
                                                     const int pythia ) {
   // create the local object
   const Gaudi::ParticleProperty pp( pname, pid, charge, mass, tlife, maxWidth, evtgen, pythia );
-  //
+
   // 1) find the object with same name & pid in set:
   auto it = std::find_if( m_set.begin(), m_set.end(), [&]( const std::unique_ptr<Gaudi::ParticleProperty>& s ) {
     return s->name() == pp.name() && s->pid() == pp.pid();
@@ -582,7 +536,7 @@ StatusCode Gaudi::ParticlePropertySvc::addParticle( const std::string& pname, co
   } else if ( diff( *newp, pp ) ) {
     *newp = pp; // NB: redefine the properties
   }
-  //
+
   // insert into name map
   {
     auto i1 = m_nameMap.find( newp->name() );
@@ -597,17 +551,13 @@ StatusCode Gaudi::ParticlePropertySvc::addParticle( const std::string& pname, co
   }
   // insert into vector
   if ( m_vector.end() == std::find( m_vector.begin(), m_vector.end(), newp ) ) { m_vector.push_back( newp ); }
-  //
+
   m_modified.push_back( newp );
-  //
+
   return StatusCode::SUCCESS;
 }
-// ============================================================================
-// Set the antiparticle
-// ============================================================================
+
 StatusCode Gaudi::ParticlePropertySvc::setAntiParticles() {
-  MsgStream log( msgSvc(), name() );
-  //
   for ( const Gaudi::ParticleProperty* _pp : m_vector ) {
     Gaudi::ParticleProperty* pp = const_cast<Gaudi::ParticleProperty*>( _pp );
     pp->setAntiParticle( nullptr );
@@ -620,26 +570,24 @@ StatusCode Gaudi::ParticlePropertySvc::setAntiParticles() {
     //
     pp->setAntiParticle( anti );
     if ( pp && pp->antiParticle() ) {
-      if ( log.level() <= MSG::VERBOSE )
-        log << MSG::VERBOSE << "Antiparticle for \n"
-            << ( *pp ) << " is set to be    \n"
-            << ( *( pp->antiParticle() ) ) << endmsg;
+      if ( msgLevel( MSG::VERBOSE ) )
+        verbose() << "Antiparticle for \n" << ( *pp ) << " is set to be    \n" << ( *( pp->antiParticle() ) ) << endmsg;
     }
     if ( ( !pp->antiParticle() ) && ( 0 == pp->pid().extraBits() ) ) { m_no_anti.insert( pp->name() ); }
   }
   return StatusCode::SUCCESS;
 }
-// ============================================================================
+
 namespace {
   inline bool different( const double a, const double b, const double p = 1.e-8 ) {
     return std::abs( a - b ) > ( std::abs( a ) + std::abs( b ) ) * std::abs( p );
   }
   inline bool different( const std::string& a, const std::string& b ) { return a != b; }
 } // namespace
-// ============================================================================
+
 bool Gaudi::ParticlePropertySvc::diff( const Gaudi::ParticleProperty& n, const Gaudi::ParticleProperty& o ) {
   bool d = false;
-  //
+
   if ( different( n.charge(), o.charge() ) ) {
     m_by_charge.insert( n.name() );
     d = true;
@@ -664,7 +612,7 @@ bool Gaudi::ParticlePropertySvc::diff( const Gaudi::ParticleProperty& n, const G
     m_by_pythia.insert( n.name() );
     d = true;
   }
-  //
+
   if ( d ) {
     MsgStream log( msgSvc(), name() );
     if ( log.level() <= MSG::DEBUG )
@@ -674,24 +622,21 @@ bool Gaudi::ParticlePropertySvc::diff( const Gaudi::ParticleProperty& n, const G
   }
   return d;
 }
-// ============================================================================
-// dump the table of particle properties
-// ============================================================================
+
 void Gaudi::ParticlePropertySvc::dump() {
-  MsgStream log( msgSvc(), name() );
-  //
-  log << MSG::ALWAYS << " The Table of Particle Properties " << std::endl;
+  auto& log = always();
+  log << " The Table of Particle Properties " << std::endl;
   Gaudi::ParticleProperties::printAsTable( m_vector, log, this );
   log << endmsg;
 }
-// ============================================================================
+
 /* make the charge conjugation for the string/decay descriptor
  *
  *  @code
  *
  *   std::string decay = "B0 -> pi+ pi-" ;
  *
- *   Gaudi::IParticleProeprtySvc* svc = ... ;
+ *   Gaudi::IParticlePropertySvc* svc = ... ;
  *
  *   std::string cc = svc -> cc ( decay ) ;
  *
@@ -700,7 +645,6 @@ void Gaudi::ParticlePropertySvc::dump() {
  *  @param decay the decay descriptor
  *  @return the charge conjugation for the decay descriptor
  */
-// ============================================================================
 std::string Gaudi::ParticlePropertySvc::cc( const std::string& decay ) const {
   // build the map if not done yet
   if ( m_ccMap.empty() ) {
@@ -724,9 +668,5 @@ std::string Gaudi::ParticlePropertySvc::cc( const std::string& decay ) const {
   // use the map
   return Decays::CC::cc( decay, m_ccMap );
 }
-// ============================================================================
-// Instantiation of a static factory class used by clients to create
+
 DECLARE_COMPONENT( Gaudi::ParticlePropertySvc )
-// ============================================================================
-// The END
-// ============================================================================

@@ -8,10 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef PARTPROP_TRACKDEFAULTPARTICLES_H
-#define PARTPROP_TRACKDEFAULTPARTICLES_H 1
+#pragma once
 
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/StatusCode.h>
 #include <array>
 #include <iomanip>
 #include <stdexcept>
@@ -107,5 +106,3 @@ namespace Gaudi {
     };
   } // namespace Tr
 } // namespace Gaudi
-
-#endif // PARTPROP_TRACKDEFAULTPARTICLES_H

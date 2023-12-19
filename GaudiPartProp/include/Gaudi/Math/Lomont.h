@@ -8,20 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-#ifndef PARTPROP_LOMONT_H
-#define PARTPROP_LOMONT_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/Kernel.h"
-// ============================================================================
+#pragma once
+
+#include <GaudiKernel/Kernel.h>
+
 namespace Gaudi {
-  // ==========================================================================
   namespace Math {
-    // ========================================================================
     /** equality comparison of float numbers using as the metric the maximal
      *  number of Units in the Last Place (ULP).
      *  It is a slightly modified version of very efficient implementation
@@ -71,7 +63,6 @@ namespace Gaudi {
      */
     GAUDI_API
     bool lomont_compare_float( const float af, const float bf, const unsigned short maxULPs );
-    // ========================================================================
     /** equality comparison of double numbers using as the metric the maximal
      *  number of Units in the Last Place (ULP).
      *  It is a slightly modified version of very efficient implementation
@@ -109,7 +100,7 @@ namespace Gaudi {
      */
     GAUDI_API
     bool lomont_compare_double( const double af, const double bf, const unsigned int maxULPs );
-    // ========================================================================
+
     /** @class Lomont
      *  The equality comparison of double numbers using as the metric the maximal
      *  number of Units in the Last Place (ULP).
@@ -130,7 +121,7 @@ namespace Gaudi {
      */
     template <class TYPE>
     class Lomont;
-    // ========================================================================
+
     /** the specialization for float numbers
      *
      *  @code
@@ -152,26 +143,20 @@ namespace Gaudi {
      */
     template <>
     class Lomont<float> {
-      // ======================================================================
     public:
-      // ======================================================================
       /// constructor from ULPS:
       constexpr Lomont( const unsigned short ulps ) : m_ulps( ulps ) {}
-      // ======================================================================
-    public:
-      // ======================================================================
+
       /// the only one important method:
       inline bool operator()( const float a, const float b ) const {
         return Gaudi::Math::lomont_compare_float( a, b, m_ulps );
       }
-      // ======================================================================
+
     private:
-      // ======================================================================
       /// the precision in "units in last place"
-      unsigned short m_ulps; // the precision in "units in last place"
-      // ======================================================================
+      unsigned short m_ulps;
     };
-    // ========================================================================
+
     /** the specialization for double numbers
      *  @see class Gaudi::Math::Lomont
      *  @attention The default precision is not specified!
@@ -193,26 +178,20 @@ namespace Gaudi {
      */
     template <>
     class Lomont<double> {
-      // ======================================================================
     public:
-      // ======================================================================
       /// constructor from ULPS:
       constexpr Lomont( const unsigned int ulps ) : m_ulps( ulps ) {}
-      // ======================================================================
-    public:
-      // ======================================================================
+
       /// the only one important method:
       inline bool operator()( const double a, const double b ) const {
         return Gaudi::Math::lomont_compare_double( a, b, m_ulps );
       }
-      // ======================================================================
+
     private:
-      // ======================================================================
       /// the precision in "units in last place"
-      unsigned int m_ulps; // the precision in "units in last place"
-      // ======================================================================
+      unsigned int m_ulps;
     };
-    // =======================================================================
+
     /** Get the floating number that representation
      *  is different with respect  to the argument for
      *  the certain number of "Units in the Last Position".
@@ -222,7 +201,7 @@ namespace Gaudi {
      *  This routine is very convenient to test the parameter maxULPS for
      *  the routine Gaudi::Math::lomont_compare_float
      *
-     *  @see Ostap:Math::lomont_compare_float
+     *  @see Gaudi::Math::lomont_compare_float
      *  @param af the reference number
      *  @param ulps the bias
      *  @return the biased float number (on distance "ulps")
@@ -231,7 +210,7 @@ namespace Gaudi {
      */
     GAUDI_API
     float next_float( const float af, const short ulps );
-    // ========================================================================
+
     /** Get the floating number that representation
      *  is different with respect  to the argument for
      *  the certain number of "Units in the Last Position".
@@ -250,7 +229,7 @@ namespace Gaudi {
      */
     GAUDI_API
     double next_double( const double af, const short ulps );
-    // ========================================================================
+
     /** "distance" in ULPS between two float values
      *   @param a (INPUT) the first  number
      *   @param b (INPUT) the second number
@@ -258,7 +237,7 @@ namespace Gaudi {
      */
     GAUDI_API
     long ulps_distance_float( const float a, const float b );
-    // ========================================================================
+
     /** "distance" in ULPS between two double values
      *   @param a (INPUT) the first  number
      *   @param b (INPUT) the second number
@@ -266,11 +245,5 @@ namespace Gaudi {
      */
     GAUDI_API
     long ulps_distance_double( const double a, const double b );
-    // ========================================================================
   } // namespace Math
-  // ==========================================================================
-} //                                                      end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
-#endif // PARTPROP_LOMONT_H
+} // namespace Gaudi

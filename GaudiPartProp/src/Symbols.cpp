@@ -8,30 +8,16 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+#include <Decays/CC.h>
+#include <Decays/NodesPIDs.h>
+#include <Decays/Symbols.h>
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
+#include <Gaudi/ParticleProperty.h>
+#include <GaudiKernel/StatusCode.h>
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 #include <map>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/StatusCode.h"
-// ============================================================================
-// PartProp
-// ============================================================================
-#include "Decays/CC.h"
-#include "Decays/NodesPIDs.h"
-#include "Decays/Symbols.h"
-#include "Gaudi/ParticleProperty.h"
-#include <Gaudi/Interfaces/IParticlePropertySvc.h>
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/algorithm/string.hpp"
-// ============================================================================
+
 /** @file
  *  Implementation file for functions form the file Decays/Symbols.h
  *
@@ -40,25 +26,19 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2009-05-07
  */
-// ============================================================================
 namespace {
-  // ==========================================================================
   /** @var s_EMPTY
    *  invalid empty string
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-05-07
    */
   const std::string s_EMPTY = "";
-  // ==========================================================================
 } // namespace
-// ============================================================================
 Decays::Symbols& Decays::Symbols::instance() {
   static Decays::Symbols s_symbols;
   return s_symbols;
 }
-// ============================================================================
 // constructor
-// ============================================================================
 Decays::Symbols::Symbols() {
   addSymbol( "X", Decays::Nodes::Any(), "Any particle" );
   //
@@ -108,9 +88,7 @@ Decays::Symbols::Symbols() {
   addSymbol( "LongLived", Decays::Nodes::LongLived_(), "Any long-lived particle" );
   addSymbol( "Stable", Decays::Nodes::Stable(), "Any 'stable' particle" );
   addSymbol( "StableCharged", Decays::Nodes::StableCharged(), "Any 'trackable' particle: stable & charged" );
-  // ==========================================================================
   // special CC-symbols, protect them...
-  // ==========================================================================
   addCC( "cc" );
   addCC( "CC" );
   addCC( "os" );
@@ -135,14 +113,10 @@ Decays::Symbols::Symbols() {
   addCC( "beauty" );
   addCC( "bottom" );
   addCC( "top" );
-  // ==========================================================================
 }
 
-// ============================================================================
 // get CC-map
-// ============================================================================
 const Decays::Symbols::CCMap& Decays::Symbols::cc() const { return m_cc; }
-// ============================================================================
 /*  add new symbol to the internal structure
  *  @param symbol the symbol definition
  *  @param node   the actual node
@@ -150,82 +124,66 @@ const Decays::Symbols::CCMap& Decays::Symbols::cc() const { return m_cc; }
  *  @param ccsym  the symbol for charge coonjugation
  *  @return true if the symbol is added into the storage
  */
-// ============================================================================
 bool Decays::Symbols::addSymbol( std::string sym, const Decays::iNode& node, const std::string& help,
                                  std::string ccsym ) {
-  // ==========================================================================
   // trim the arguments
   boost::trim( sym );
-  // ==========================================================================
   auto ifind = m_nodes.find( sym );
-  if ( m_nodes.end() != ifind ) { return false; } // RETURN
+  if ( m_nodes.end() != ifind ) { return false; }
   // add the node into the map
   bool inserted = m_nodes.insert( sym, node ).second;
-  if ( !inserted ) { return false; } // RETURN
+  if ( !inserted ) { return false; }
   // add the help-string
   m_help[sym] = help;
   // add cc-symbols
   addCC( sym, ccsym );
   return true;
 }
-// ============================================================================
 /*  add cc-pair to the internal map
  *  @param sym the symbol
  *  @param ccsym the symbol for charge conjugation
  */
-// ============================================================================
 void Decays::Symbols::addCC( std::string sym, std::string ccsym ) {
-  // ==========================================================================
   // trim the arguments
   boost::trim( sym );
   boost::trim( ccsym );
   if ( ccsym.empty() ) { ccsym = sym; }
-  // ==========================================================================
   m_cc[sym] = ccsym;
   if ( ccsym != sym ) { m_cc[ccsym] = sym; }
-  // ==========================================================================
 }
-// ============================================================================
 // valid symbol?
-// ============================================================================
 bool Decays::Symbols::valid( std::string sym ) const {
   // trim the argument
   boost::trim( sym );
   return m_nodes.end() != m_nodes.find( sym );
 }
-// ============================================================================
 // help for the symbol
-// ============================================================================
 const std::string& Decays::Symbols::symbol( std::string sym ) const {
   // trim the argument
   boost::trim( sym );
   NodeMap::const_iterator ifind = m_nodes.find( sym );
-  if ( m_nodes.end() == ifind ) { return s_EMPTY; } // RETURN
+  if ( m_nodes.end() == ifind ) { return s_EMPTY; }
   HelpMap::const_iterator ihelp = m_help.find( sym );
-  if ( m_help.end() == ihelp ) { return s_EMPTY; } // RETURN
+  if ( m_help.end() == ihelp ) { return s_EMPTY; }
   return ihelp->second;
 }
-// ============================================================================
 /*  get the node by symbol
  *  @param (INPUT) sym the symbol name
  *  @param (OUTPUT) the symbol
  *  @return status code
  */
-// ============================================================================
 StatusCode Decays::Symbols::symbol( std::string sym, Decays::Node& node ) const {
   // trim the argument
   boost::trim( sym );
   auto ifind = m_nodes.find( sym );
   if ( m_nodes.end() != ifind ) {
     node = ifind->second;
-    return StatusCode::SUCCESS; // RETURN
+    return StatusCode::SUCCESS;
   }
   node = Decays::Nodes::Invalid();
-  return StatusCode( InvalidSymbol ); // RETURN
+  return StatusCode( InvalidSymbol );
 }
-// ============================================================================
 // get all known symbols
-// ============================================================================
 size_t Decays::Symbols::symbols( Decays::Symbols::Names& names ) const {
   // clear names ;
   names.clear();
@@ -234,20 +192,18 @@ size_t Decays::Symbols::symbols( Decays::Symbols::Names& names ) const {
   std::stable_sort( names.begin(), names.end(), Decays::CC::CmpCC() );
   return names.size();
 }
-// ============================================================================
 /*  get all known particle names
  *  @param service (INPUT)  particle property service
  *  @param parts   (OUTPUT) vector of particle names
  *  @return status code
  */
-// ============================================================================
 StatusCode Decays::Symbols::particles( const Gaudi::Interfaces::IParticlePropertySvc* service,
                                        Decays::Symbols::Names&                        parts ) const {
   // clear the output
   parts.clear();
   // check the service
-  if ( 0 == service ) { return StatusCode( InvalidService ); } // RETURN
-  //
+  if ( 0 == service ) { return StatusCode( InvalidService ); }
+
   auto begin = service->begin();
   auto end   = service->end();
   for ( ; end != begin; ++begin ) {
@@ -257,9 +213,6 @@ StatusCode Decays::Symbols::particles( const Gaudi::Interfaces::IParticlePropert
   }
   // sort it according to CC-criteria                                 ATTENTION!
   std::stable_sort( parts.begin(), parts.end(), Decays::CC::CmpCC() );
-  //
+
   return StatusCode::SUCCESS;
 }
-// ============================================================================
-// The END
-// ============================================================================

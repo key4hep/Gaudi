@@ -8,18 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef PARTPROP_IPOWER_HPP
-#define PARTPROP_IPOWER_HPP 1
-// ============================================================================
-// Include file
-// ============================================================================
-// LHcbMath
-// ============================================================================
-#include "Gaudi/Math/TypeWrapper.h"
-// ============================================================================
+#pragma once
+
+#include <Gaudi/Math/TypeWrapper.h>
+
 namespace Gaudi {
   namespace Math {
-    // ========================================================================
     /** @struct Gaudi::Math::IPower
      *  Template metafunction for compile-time calculation of even, positive
      *  powers of integer numbers.
@@ -49,11 +43,5 @@ namespace Gaudi {
     struct IPower<TYPE, X, 0> {
       enum { value = 1 };
     };
-    // ========================================================================
   } // namespace Math
-  // ==========================================================================
 } // namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
-#endif // PARTPROP_IPOWER_HPP

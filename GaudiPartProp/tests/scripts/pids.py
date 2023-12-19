@@ -15,15 +15,13 @@
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date 2008-12-02
 # =============================================================================
-""" Demo-file for interactive work with new Particle Property Service
 """
-from __future__ import print_function
+Demo-file for interactive work with new Particle Property Service
+"""
 
-# =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 from pathlib import Path
 
-# =============================================================================
 # The following lines are misunderstood by flake8 - the imports are needed as
 # they have necessary side effects
 import PartProp.PartPropAlg  # noqa: F401
@@ -35,7 +33,6 @@ import PartProp.Service  # noqa: F401
 from Configurables import Gaudi__ParticlePropertySvc
 from GaudiPython.Bindings import AppMgr
 
-# =============================================================================
 ## test the nodes
 from PartProp.Nodes import Gaudi
 

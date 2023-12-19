@@ -8,16 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-#ifndef PARTPROP_POWER_H
-#define PARTPROP_POWER_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+#pragma once
+
 #include <cmath>
-// ============================================================================
+
 /** @file
  *
  *  This file was originally taken from the LoKi project -
@@ -26,18 +20,8 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2001-01-23
  */
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace Math {
-    // ========================================================================
-    // using namespace std ; ?
-    // ========================================================================
-#ifdef __INTEL_COMPILER             // Disable ICC remark
-#  pragma warning( disable : 2259 ) //  non-pointer conversion may lose significant bits
-#  pragma warning( push )
-#endif
-    // ========================================================================
     /** Simple utility for efficient "pow".
      *  It works only for positive integer powers.
      *
@@ -65,15 +49,5 @@ namespace Gaudi {
       //
       return __y;
     }
-    // ========================================================================
-#ifdef __INTEL_COMPILER // Disable ICC remark
-#  pragma warning( push )
-#endif
-    // ========================================================================
-  } //                                                    end of namespace Math
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
-#endif // PARTPROP_POWER_H
+  } // namespace Math
+} // namespace Gaudi

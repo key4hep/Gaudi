@@ -8,43 +8,26 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <ostream>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SystemOfUnits.h"
-#include "GaudiKernel/ToStream.h"
-// ============================================================================
-// GaudiPartProp
-// ============================================================================
-#include "Gaudi/ParticleID.h"
-#include "Gaudi/ParticleProperty.h"
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/format.hpp"
-// ============================================================================
+#include <Gaudi/ParticleID.h>
+#include <Gaudi/ParticleProperty.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SystemOfUnits.h>
+#include <GaudiKernel/ToStream.h>
+#include <boost/format.hpp>
+#include <ostream>
+
 /** @file
  *  Implementation file for class Gaudi:::ParticleProperty
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2008-08-03
  */
-// ============================================================================
 /*  standard output operator to the stream
  *  @param stream the stream
  *  @param pp    the particle property object
  *  @return the stream
  */
-// ============================================================================
 std::ostream& operator<<( std::ostream& stream, const Gaudi::ParticleProperty& pp ) { return pp.fillStream( stream ); }
-// ============================================================================
 /*  full constructor, from all data (except the antiparticle )
  *  @param name       the name for the particle
  *  @param pid        the PID for the particle
@@ -55,7 +38,6 @@ std::ostream& operator<<( std::ostream& stream, const Gaudi::ParticleProperty& p
  *  @param pythia     the ID for the particle used in Pythia generator
  *  @param maxWidth   the maximal width of the particle (used in generator)
  */
-// ============================================================================
 Gaudi::ParticleProperty::ParticleProperty( const std::string& name, const Gaudi::ParticleID& pid, const double charge,
                                            const double mass, const double tlife, const double maxWidth,
                                            const std::string& evtgen, const int pythia )
@@ -68,7 +50,6 @@ Gaudi::ParticleProperty::ParticleProperty( const std::string& name, const Gaudi:
     , m_evtgen( evtgen )
     , m_pythia( pythia )
     , m_anti( 0 ) {}
-// ============================================================================
 /*  A bit simplified constructor, from all data (except the antiparticle )
  *
  *    - "evtgen" is set from the regular "name"
@@ -81,7 +62,6 @@ Gaudi::ParticleProperty::ParticleProperty( const std::string& name, const Gaudi:
  *  @param tlife      the nominal lifetime of the particle
  *  @param maxWidth   the maximal width of the particle (used in generator)
  */
-// ============================================================================
 Gaudi::ParticleProperty::ParticleProperty( const std::string& name, const Gaudi::ParticleID& pid, const double charge,
                                            const double mass, const double tlife, const double maxWidth )
     : m_name( name )
@@ -93,12 +73,10 @@ Gaudi::ParticleProperty::ParticleProperty( const std::string& name, const Gaudi:
     , m_evtgen( name )
     , m_pythia( pid.pid() )
     , m_anti( 0 ) {}
-// ============================================================================
 /*  the standard (a'la Gaudi) printout of the object
  *  @param s reference to the output stream
  *  @return reference to the output stream
  */
-// ============================================================================
 std::ostream& Gaudi::ParticleProperty::fillStream( std::ostream& s ) const {
   //
   typedef boost::format BF;
@@ -170,28 +148,21 @@ std::ostream& Gaudi::ParticleProperty::fillStream( std::ostream& s ) const {
   if ( evtGen() != name() ) { s << BF( ", EvtGen: %|-10s|" ) % evtGen(); }
   // pythia ID
   if ( m_pid.pid() != pythia() ) { s << BF( ", Pythia: %|-9d|" ) % pythia(); }
-  //
   return s;
 }
-// ============================================================================
 // simple method for conversion into string
-// ============================================================================
 std::string Gaudi::ParticleProperty::toString() const {
   std::ostringstream s;
   fillStream( s );
   return s.str();
 }
-// ============================================================================
 /*  set the pointer to the antipartice
  *  @attention it is the only one "setter"
  *  @param p pointer to anti-particle
  */
-// ============================================================================
 void Gaudi::ParticleProperty::setAntiParticle( const ParticleProperty* p ) { m_anti = p; }
-// ============================================================================
 
-// ============================================================================
-/*  print a list of propereties in a form of the table
+/*  print a list of properties in a form of the table
  *  @see Gaudi::ParticleProperty
  *  @param particles the list of particle properties
  *  @param stream  the reference to the output stream
@@ -199,7 +170,6 @@ void Gaudi::ParticleProperty::setAntiParticle( const ParticleProperty* p ) { m_a
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date  2008-08-03
  */
-// ============================================================================
 std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<const Gaudi::ParticleProperty*>& particles,
                                                         std::ostream&                                      stream,
                                                         const Gaudi::Interfaces::IParticlePropertySvc*     service ) {
@@ -339,23 +309,20 @@ std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<const 
   }
   return stream << dashes << std::endl;
 }
-// ========================================================================
-/*  print a list of propereties in a form of the table
+/*  print a list of properties in a form of the table
  *  @see Gaudi::ParticleProperty
  *  @param particles the list of particle properties
  *  @param service the service to extract global information
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date  2008-08-03
  */
-// ========================================================================
 std::string Gaudi::ParticleProperties::printAsTable( const std::vector<const Gaudi::ParticleProperty*>& particles,
                                                      const Gaudi::Interfaces::IParticlePropertySvc*     service ) {
   std::ostringstream s;
   printAsTable_( particles, s, service );
   return s.str();
 }
-// ========================================================================
-/*  print a list of propereties in a form of the table
+/*  print a list of properties in a form of the table
  *  @see Gaudi::ParticleProperty
  *  @param particles the list of particle properties
  *  @param stream  the reference to the output stream
@@ -363,14 +330,12 @@ std::string Gaudi::ParticleProperties::printAsTable( const std::vector<const Gau
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date  2008-08-03
  */
-// ========================================================================
 MsgStream& Gaudi::ParticleProperties::printAsTable( const std::vector<const Gaudi::ParticleProperty*>& particles,
                                                     MsgStream&                                         stream,
                                                     const Gaudi::Interfaces::IParticlePropertySvc*     service ) {
   if ( stream.isActive() ) { printAsTable_( particles, stream.stream(), service ); }
   return stream;
 }
-// ============================================================================
 /*  print a list of particle properties as formatted table
  *  @see Gaudi::ParticleProperty
  *  @param particles the list of particle properties
@@ -378,12 +343,10 @@ MsgStream& Gaudi::ParticleProperties::printAsTable( const std::vector<const Gaud
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date  2008-08-03
  */
-// ============================================================================
 std::ostream& Gaudi::Utils::toStream( const std::vector<const Gaudi::ParticleProperty*>& particles,
                                       std::ostream&                                      stream ) {
   return Gaudi::ParticleProperties::printAsTable_( particles, stream );
 }
-// ============================================================================
 /* print properties in a form of the table
  *  @param particles (INPUT) list of particles
  *  @param stream    (UPDATE) the stream
@@ -392,7 +355,6 @@ std::ostream& Gaudi::Utils::toStream( const std::vector<const Gaudi::ParticlePro
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date  2010-01-04
  */
-// ============================================================================
 std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<Gaudi::ParticleID>&          particles,
                                                         std::ostream&                                  stream,
                                                         const Gaudi::Interfaces::IParticlePropertySvc* service ) {
@@ -408,7 +370,6 @@ std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<Gaudi:
   }
   return printAsTable_( props, stream, service );
 }
-// ============================================================================
 /* print properties in a form of the table
  *  @param particles (INPUT) list of particles
  *  @param stream    (UPDATE) the stream
@@ -417,13 +378,11 @@ std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<Gaudi:
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date  2010-01-04
  */
-// ============================================================================
 MsgStream& Gaudi::ParticleProperties::printAsTable( const std::vector<Gaudi::ParticleID>& particles, MsgStream& stream,
                                                     const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   if ( stream.isActive() ) { printAsTable_( particles, stream.stream(), service ); }
   return stream;
 }
-// ============================================================================
 /*  print properties in a form of the table
  *  @param particles (INPUT) list of particles
  *  @param service   (INPUT) pointer to particle property service
@@ -431,14 +390,12 @@ MsgStream& Gaudi::ParticleProperties::printAsTable( const std::vector<Gaudi::Par
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date  2010-01-04
  */
-// ============================================================================
 std::string Gaudi::ParticleProperties::printAsTable( const std::vector<Gaudi::ParticleID>&          particles,
                                                      const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   std::ostringstream s;
   printAsTable_( particles, s, service );
   return s.str();
 }
-// ============================================================================
 const Gaudi::ParticleProperty* std::abs( const Gaudi::ParticleProperty* p ) {
   if ( 0 == p ) { return 0; }
   //
@@ -449,6 +406,3 @@ const Gaudi::ParticleProperty* std::abs( const Gaudi::ParticleProperty* p ) {
   //
   return p; // should it be 0 ?
 }
-// ============================================================================
-// The END
-// ============================================================================
