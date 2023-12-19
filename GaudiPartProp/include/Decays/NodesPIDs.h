@@ -18,8 +18,8 @@
 // ============================================================================
 #include "Decays/Nodes.h"
 #include "Gaudi/ParticleProperty.h"
+#include "Gaudi/cxx/SynchronizedValue.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiPartProp/SynchronizedValue.h"
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
 
 // ============================================================================
