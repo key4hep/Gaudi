@@ -22,18 +22,18 @@
 // ============================================================================
 // PartProp
 // ============================================================================
-#include "GaudiPartProp/CC.h"
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/NodesPIDs.h"
-#include "GaudiPartProp/ParticleProperty.h"
-#include "GaudiPartProp/Symbols.h"
+#include "Decays/CC.h"
+#include "Decays/NodesPIDs.h"
+#include "Decays/Symbols.h"
+#include "Gaudi/ParticleProperty.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 // ============================================================================
 // Boost
 // ============================================================================
 #include "boost/algorithm/string.hpp"
 // ============================================================================
 /** @file
- *  Implementation file for functions form the file GaudiPartProp/Symbols.h
+ *  Implementation file for functions form the file Decays/Symbols.h
  *
  *  Many thanks to Antonio PELLEGRINO for the kind help with regex expressions
  *
@@ -241,8 +241,8 @@ size_t Decays::Symbols::symbols( Decays::Symbols::Names& names ) const {
  *  @return status code
  */
 // ============================================================================
-StatusCode Decays::Symbols::particles( const Gaudi::IParticlePropertySvc* service,
-                                       Decays::Symbols::Names&            parts ) const {
+StatusCode Decays::Symbols::particles( const Gaudi::Interfaces::IParticlePropertySvc* service,
+                                       Decays::Symbols::Names&                        parts ) const {
   // clear the output
   parts.clear();
   // check the service

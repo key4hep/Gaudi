@@ -49,16 +49,16 @@ def _get_all_(self, asList=False):
 
 
 ## decorate service
-Gaudi.IParticlePropertySvc.all = _get_all_
+Gaudi.Interfaces.IParticlePropertySvc.all = _get_all_
 
 
 ## simple "get" method for the service
 def _get_pp_(self, cut, asList=False):
     """
-    Simple 'get' method for Gaudi::IParticlePropertySvc
+    Simple 'get' method for Gaudi::Interfaces::IParticlePropertySvc
     service to extract the properties which satisfy some criteria
 
-    >>> svc = ...  # get service (Gaudi::IParticlePropertySvc) or vector
+    >>> svc = ...  # get service (Gaudi::Interfaces::IParticlePropertySvc) or vector
     >>> leptons   = svc.get ( lambda s : s.pid().isLepton() )  # get all leptons
     >>> longlived = svc.get ( lambda s : s.ctau() > 0.001   )  # get longlived
 
@@ -70,10 +70,10 @@ def _get_pp_(self, cut, asList=False):
 ## simple "get" method for the service
 def _get_ppv_(self, cut, asList=False):
     """
-    Simple 'get' method for Gaudi::IParticlePropertySvc
+    Simple 'get' method for Gaudi::Interfaces::IParticlePropertySvc
     service to extract the properties which satisfy some criteria
 
-    >>> svc = ...  # get service (Gaudi::IParticlePropertySvc) or vector
+    >>> svc = ...  # get service (Gaudi::Interfaces::IParticlePropertySvc) or vector
     >>> leptons   = svc.get ( lambda s : s.pid().isLepton() )  # get all leptons
     >>> longlived = svc.get ( lambda s : s.ctau() > 0.001   )  # get longlived
 
@@ -84,22 +84,24 @@ def _get_ppv_(self, cut, asList=False):
             result.append(pp)
     if asList:
         return result
-    vct = Gaudi.IParticlePropertySvc.ParticleProperties()
+    vct = Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties()
     vct.fromList(result)
     return vct
 
 
 # ## decorate service
-Gaudi.IParticlePropertySvc.get = _get_pp_
-Gaudi.IParticlePropertySvc.ParticleProperties.get = _get_ppv_
-Gaudi.IParticlePropertySvc.__len__ = Gaudi.IParticlePropertySvc.size
+Gaudi.Interfaces.IParticlePropertySvc.get = _get_pp_
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.get = _get_ppv_
+Gaudi.Interfaces.IParticlePropertySvc.__len__ = (
+    Gaudi.Interfaces.IParticlePropertySvc.size
+)
 
 
 # =============================================================================
-## Convert Gaudi::IParticlePropertySvc::ParticleProperties into python list
+## Convert Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties into python list
 def _ppv_2_list_(self):
     """
-    Convert Gaudi::IParticlePropertySvc::ParticleProperties into python list
+    Convert Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties into python list
 
     >>> ppv = ...   # get the vector
     >>> lst = ppv.toList () # convert it to the list
@@ -161,16 +163,18 @@ def _get_attr_from_PID_(self, attr):
 
 
 ## decorate the vector of properties
-Gaudi.IParticlePropertySvc.ParticleProperties.toList = _ppv_2_list_
-Gaudi.IParticlePropertySvc.ParticleProperties.toLst = _ppv_2_list_
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.toList = _ppv_2_list_
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.toLst = _ppv_2_list_
 ## decorate the vector of properties
-Gaudi.IParticlePropertySvc.ParticleProperties.fromList = _ppv_from_lst_
-Gaudi.IParticlePropertySvc.ParticleProperties.fromLst = _ppv_from_lst_
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.fromList = _ppv_from_lst_
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.fromLst = _ppv_from_lst_
 ## decorate the vector of properties
-Gaudi.IParticlePropertySvc.ParticleProperties.__repr__ = lambda s: s.toList().__repr__()
-Gaudi.IParticlePropertySvc.ParticleProperties.__str__ = _prnt_as_table_
-Gaudi.IParticlePropertySvc.ParticleProperties.__len__ = (
-    Gaudi.IParticlePropertySvc.ParticleProperties.size
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.__repr__ = (
+    lambda s: s.toList().__repr__()
+)
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.__str__ = _prnt_as_table_
+Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.__len__ = (
+    Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties.size
 )
 
 ## decorate the printout for Gaudi::ParticleProperty
@@ -294,11 +298,11 @@ _decays.toLst = lambda s: [i for i in s]
 _decays.__str__ = lambda s: s.toList().__str__()
 _decays.__repr__ = lambda s: s.toList().__repr__()
 
-Gaudi.IParticlePropertySvc.ParticleIDs = Gaudi.ParticleIDs
-Gaudi.IParticlePropertySvc.Decays = _decays
-Gaudi.IParticlePropertySvc.Items = _items
-Gaudi.IParticlePropertySvc.Decay = Decays.Decay
-Gaudi.IParticlePropertySvc.Item = Decays.Decay.Item
+Gaudi.Interfaces.IParticlePropertySvc.ParticleIDs = Gaudi.ParticleIDs
+Gaudi.Interfaces.IParticlePropertySvc.Decays = _decays
+Gaudi.Interfaces.IParticlePropertySvc.Items = _items
+Gaudi.Interfaces.IParticlePropertySvc.Decay = Decays.Decay
+Gaudi.Interfaces.IParticlePropertySvc.Item = Decays.Decay.Item
 
 
 def _validate_(self, svc):

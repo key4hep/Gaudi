@@ -16,14 +16,14 @@
 // ============================================================================
 // GaudiPartProp
 // ============================================================================
-#include "GaudiPartProp/Decay.h"
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/Nodes.h"
-#include "GaudiPartProp/NodesPIDs.h"
-#include "GaudiPartProp/ParticleID.h"
-#include "GaudiPartProp/ParticleProperty.h"
-#include "GaudiPartProp/Symbols.h"
-#include "GaudiPartProp/iNode.h"
+#include "Decays/Decay.h"
+#include "Decays/Nodes.h"
+#include "Decays/NodesPIDs.h"
+#include "Decays/Symbols.h"
+#include "Decays/iNode.h"
+#include "Gaudi/ParticleID.h"
+#include "Gaudi/ParticleProperty.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 // ============================================================================
 namespace Decays {
   // ==========================================================================

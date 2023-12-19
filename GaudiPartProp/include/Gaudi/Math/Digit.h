@@ -16,9 +16,9 @@
 // ============================================================================
 // GAUDIUTILS
 // ============================================================================
-#include "GaudiPartProp/IPower.hpp"
-#include "GaudiPartProp/Power.h"
-#include "GaudiPartProp/TypeWrapper.h"
+#include "Gaudi/Math/IPower.hpp"
+#include "Gaudi/Math/Power.h"
+#include "Gaudi/Math/TypeWrapper.h"
 // ============================================================================
 // Boost
 // ============================================================================

@@ -27,7 +27,7 @@
 // ============================================================================
 // PartProp
 // ============================================================================
-#include "GaudiPartProp/Nodes.h"
+#include "Decays/Nodes.h"
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -37,7 +37,7 @@ namespace Gaudi {
 // ============================================================================
 /** @file Kernel/Symbols.h
  *  Helper file with the definition of symbols, used for particles/nodes/decays
- *  @see Gaudi::IParticlePropertySvc
+ *  @see Gaudi::Interfaces::IParticlePropertySvc
  *  @see Gaudi::ParticleProperty
  *  @see Gaudi::ParticleID
  *  Many thanks to Antonio PELLEGRINO for the kind help with regex expressions
@@ -103,7 +103,7 @@ namespace Decays {
      *  @param parts (OUTPUT) vector of particle names
      *  @return status code
      */
-    StatusCode particles( const Gaudi::IParticlePropertySvc* svc, Names& parts ) const;
+    StatusCode particles( const Gaudi::Interfaces::IParticlePropertySvc* svc, Names& parts ) const;
     // ========================================================================
   public:
     // ========================================================================

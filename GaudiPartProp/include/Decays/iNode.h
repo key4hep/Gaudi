@@ -28,7 +28,9 @@
 // forward declarations
 // ============================================================================
 namespace Gaudi {
-  class IParticlePropertySvc;
+  namespace Interfaces {
+    class IParticlePropertySvc;
+  }
   class ParticleID;
 } // namespace Gaudi
 // ============================================================================
@@ -68,7 +70,7 @@ namespace Decays {
      *  @param svc pointer to Particle Property Service
      *  @return StatusCode
      */
-    virtual StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const = 0;
+    virtual StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const = 0;
     // ========================================================================
     /// the string representation of the node
     virtual std::string toString() const;
@@ -99,7 +101,7 @@ namespace Decays {
     /// MANDATORY: check the validity of the node
     bool valid() const override;
     /// MANDATORY: the proper validation of the node
-    StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+    StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
     // ========================================================================
   public:
     // ========================================================================
@@ -182,7 +184,7 @@ namespace Decays {
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-21
    */
-  inline StatusCode operator+( const Decays::iNode& n, const Gaudi::IParticlePropertySvc* svc ) {
+  inline StatusCode operator+( const Decays::iNode& n, const Gaudi::Interfaces::IParticlePropertySvc* svc ) {
     return n.validate( svc );
   }
   // ==========================================================================
@@ -193,7 +195,7 @@ namespace Decays {
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-21
    */
-  inline StatusCode operator*( const Decays::iNode& n, const Gaudi::IParticlePropertySvc* svc ) {
+  inline StatusCode operator*( const Decays::iNode& n, const Gaudi::Interfaces::IParticlePropertySvc* svc ) {
     return n.validate( svc );
   }
   // ==========================================================================

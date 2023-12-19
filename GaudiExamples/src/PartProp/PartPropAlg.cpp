@@ -30,7 +30,7 @@ StatusCode Gaudi::Examples::PartPropAlg::finalize() {
 }
 
 // locate the new particle property service
-const Gaudi::IParticlePropertySvc* Gaudi::Examples::PartPropAlg::ppSvc() const {
+const Gaudi::Interfaces::IParticlePropertySvc* Gaudi::Examples::PartPropAlg::ppSvc() const {
   if ( !m_ppSvc ) {
     m_ppSvc = service( "Gaudi::ParticlePropertySvc", true );
     if ( !m_ppSvc ) {
@@ -43,13 +43,13 @@ const Gaudi::IParticlePropertySvc* Gaudi::Examples::PartPropAlg::ppSvc() const {
 // execute the algorithm
 StatusCode Gaudi::Examples::PartPropAlg::execute( const EventContext& ctx ) const {
   // get the service
-  const Gaudi::IParticlePropertySvc* svc = ppSvc();
+  const Gaudi::Interfaces::IParticlePropertySvc* svc = ppSvc();
 
   if ( !svc ) { return StatusCode::FAILURE; }
   if ( !ctx.valid() ) { return StatusCode::FAILURE; }
 
   // avoid long names
-  typedef Gaudi::IParticlePropertySvc::ParticleProperties PPs;
+  typedef Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties PPs;
 
   MsgStream log( msgSvc(), name() );
 

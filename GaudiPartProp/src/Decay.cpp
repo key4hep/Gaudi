@@ -17,13 +17,13 @@
 // ============================================================================
 // PartProp
 // ============================================================================
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/ParticleID.h"
-#include "GaudiPartProp/ParticleProperty.h"
+#include "Gaudi/ParticleID.h"
+#include "Gaudi/ParticleProperty.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 // ============================================================================
 // GaudiPartProp
 // ============================================================================
-#include "GaudiPartProp/Decay.h"
+#include "Decays/Decay.h"
 // ============================================================================
 /** @file
  *  Implementation file for class Gaudi::Decay
@@ -50,7 +50,7 @@ Decays::Decay::Item::Item( const Gaudi::ParticleID& pid ) : m_pid( pid ) {}
 // ============================================================================
 // validate the item using the service
 // ============================================================================
-StatusCode Decays::Decay::Item::validate( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Decay::Item::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   if ( m_pp ) {
     m_name = m_pp->particle();
     m_pid  = m_pp->particleID();
@@ -123,7 +123,7 @@ Decays::Decay::Decay( const Decays::Decay::Item&              mother,     // the
 // ============================================================================
 // validate the decay using the service
 // ============================================================================
-StatusCode Decays::Decay::validate( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Decay::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   // validate the mother
   StatusCode sc = m_mother.validate( svc );
   if ( sc.isFailure() ) { return sc; }                       // RETURN

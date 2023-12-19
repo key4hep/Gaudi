@@ -16,11 +16,11 @@
 // ============================================================================
 // PartProp
 // ============================================================================
+#include "Decays/Nodes.h"
+#include "Gaudi/ParticleProperty.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/Nodes.h"
-#include "GaudiPartProp/ParticleProperty.h"
 #include "GaudiPartProp/SynchronizedValue.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 
 // ============================================================================
 /** @file  Kernel/NodePIDs.h
@@ -52,7 +52,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     };
     // ========================================================================
@@ -82,7 +82,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     public:
       // ======================================================================
@@ -414,7 +414,7 @@ namespace Decays {
       /// valid only for positive spin-values
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* /* svc */ ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* /* svc */ ) const override;
       // ======================================================================
     public:
       // ======================================================================
@@ -474,7 +474,7 @@ namespace Decays {
     public:
       // ======================================================================
       /// constructor from c-tau range
-      CTau( const double low, const double high, const Gaudi::IParticlePropertySvc* svc = nullptr );
+      CTau( const double low, const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc = nullptr );
       /// MANDATORY: clone method ("virtual constructor")
       CTau* clone() const override;
       // ======================================================================
@@ -487,18 +487,18 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     public:
       // ======================================================================
-      const Gaudi::IParticlePropertySvc* ppSvc() const { return m_ppSvc; }
+      const Gaudi::Interfaces::IParticlePropertySvc* ppSvc() const { return m_ppSvc; }
       // ======================================================================
       /// get low  edge
       double low() const { return m_low; }
       /// get high edge
       double high() const { return m_high; }
       // ======================================================================
-      StatusCode setService( const Gaudi::IParticlePropertySvc* svc ) const;
+      StatusCode setService( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const;
       // ======================================================================
     protected:
       template <typename F, typename = std::is_invocable_r<bool, F, Gaudi::ParticleID>>
@@ -536,7 +536,7 @@ namespace Decays {
       // ======================================================================
     private:
       // ======================================================================
-      typedef SmartIF<Gaudi::IParticlePropertySvc> Service;
+      typedef SmartIF<Gaudi::Interfaces::IParticlePropertySvc> Service;
       /// the service :
       mutable Service m_ppSvc; // the service
       // ======================================================================
@@ -565,9 +565,9 @@ namespace Decays {
     public:
       // ======================================================================
       /// constructor with high edge and service
-      ShortLived_( const double high, const Gaudi::IParticlePropertySvc* svc = 0 );
+      ShortLived_( const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// constructor service
-      ShortLived_( const Gaudi::IParticlePropertySvc* svc = 0 );
+      ShortLived_( const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// MANDATORY: clone method ("virtual constructor")
       ShortLived_* clone() const override;
       /// MANDATORY: the specific printout
@@ -583,9 +583,9 @@ namespace Decays {
     struct GAUDI_API LongLived_ : CTau {
       // ======================================================================
       /// constructor with high edge and service
-      LongLived_( const double high, const Gaudi::IParticlePropertySvc* svc = 0 );
+      LongLived_( const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// constructor service
-      LongLived_( const Gaudi::IParticlePropertySvc* svc = 0 );
+      LongLived_( const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// MANDATORY: clone method ("virtual constructor")
       LongLived_* clone() const override;
       /// MANDATORY: the specific printout
@@ -602,7 +602,7 @@ namespace Decays {
     public:
       // ======================================================================
       /// constructor service
-      Stable( const Gaudi::IParticlePropertySvc* svc = 0 );
+      Stable( const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// MANDATORY: clone method ("virtual constructor")
       Stable* clone() const override;
       /// MANDATORY: the specific printout
@@ -619,7 +619,7 @@ namespace Decays {
     public:
       // ======================================================================
       /// constructor service
-      StableCharged( const Gaudi::IParticlePropertySvc* svc = 0 );
+      StableCharged( const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// MANDATORY: clone method ("virtual constructor")
       StableCharged* clone() const override;
       /// MANDATORY: the only one essential method
@@ -638,7 +638,7 @@ namespace Decays {
     public:
       // ======================================================================
       /// constructor from mass-range
-      Mass( const double low, const double high, const Gaudi::IParticlePropertySvc* svc = 0 );
+      Mass( const double low, const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// MANDATORY: clone method ("virtual constructor")
       Mass* clone() const override;
       // ======================================================================
@@ -664,7 +664,7 @@ namespace Decays {
     public:
       // ======================================================================
       /// constructor from mass-range
-      Light( const double high, const Gaudi::IParticlePropertySvc* svc = 0 );
+      Light( const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// MANDATORY: clone method ("virtual constructor")
       Light* clone() const override;
       // ======================================================================
@@ -688,7 +688,7 @@ namespace Decays {
     public:
       // ======================================================================
       /// constructor from mass-range
-      Heavy( const double low, const Gaudi::IParticlePropertySvc* svc = 0 );
+      Heavy( const double low, const Gaudi::Interfaces::IParticlePropertySvc* svc = 0 );
       /// MANDATORY: clone method ("virtual constructor")
       Heavy* clone() const override;
       // ======================================================================
@@ -723,7 +723,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     };
     // ========================================================================
@@ -747,7 +747,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     };
     // ========================================================================
@@ -769,7 +769,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     private:
       // ======================================================================

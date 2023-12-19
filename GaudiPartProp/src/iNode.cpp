@@ -22,8 +22,8 @@
 // ============================================================================
 // LoKi
 // ============================================================================
-#include "GaudiPartProp/Nodes.h"
-#include "GaudiPartProp/iNode.h"
+#include "Decays/Nodes.h"
+#include "Decays/iNode.h"
 // ============================================================================
 /** @file
  *  Implementation file for class Decays::iNode
@@ -78,7 +78,9 @@ bool Decays::Node::valid() const { return m_node->valid(); }
 // ===========================================================================
 // MANDATORY: the proper validation of the node
 // ===========================================================================
-StatusCode Decays::Node::validate( const Gaudi::IParticlePropertySvc* svc ) const { return m_node->validate( svc ); }
+StatusCode Decays::Node::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
+  return m_node->validate( svc );
+}
 // ===========================================================================
 // assignement operator
 // ===========================================================================

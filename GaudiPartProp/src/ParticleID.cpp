@@ -19,7 +19,7 @@
 // ===========================================================================
 // PartProp
 // ===========================================================================
-#include "GaudiPartProp/ParticleID.h"
+#include "Gaudi/ParticleID.h"
 // ===========================================================================
 /** @file ParticleID.cpp
  *  Implementation file for class ParticleID.

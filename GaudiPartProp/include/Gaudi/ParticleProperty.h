@@ -23,11 +23,15 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "Gaudi/ParticleID.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/PhysicalConstants.h"
-#include "GaudiPartProp/ParticleID.h"
+
 // ============================================================================
 namespace Gaudi {
+  namespace Interfaces {
+    class IParticlePropertySvc;
+  }
   // ==========================================================================
   /** @class ParticleProperty ParticleProperty.h GaudiKernel/ParticleProperty.h
    *
@@ -223,7 +227,7 @@ namespace Gaudi {
      *
      *  @code
      *
-     *    Gaudi::IParticlePropertySvc* svc = ... ;
+     *    Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *    const std::vector<const Gaudi::ParticleProperty*>& props = ... ;
      *
@@ -242,7 +246,7 @@ namespace Gaudi {
      *  #include "boost/lambda/bind.hpp"
      *
      *  typedef std::vector<const Gaudi::IParticleProperty*> Vector ;
-     *  const Gaudi::IParticlePropertySvc* svc = ... ;
+     *  const Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *  // create the output vector:
      *  Vector leptons ;
@@ -261,7 +265,7 @@ namespace Gaudi {
      *  @endcode
      *
      *  @see Gaudi::ParticleProperty
-     *  @see Gaudi::IParticlePropertySvc
+     *  @see Gaudi::Interfaces::IParticlePropertySvc
      *  @see Gaudi::ParticleProperties::get
      *  @param particles the list of particle properties
      *  @param stream  the reference to the output stream
@@ -271,13 +275,13 @@ namespace Gaudi {
      */
     GAUDI_API
     std::ostream& printAsTable_( const std::vector<const Gaudi::ParticleProperty*>& particles, std::ostream& stream,
-                                 const Gaudi::IParticlePropertySvc* service = 0 );
+                                 const Gaudi::Interfaces::IParticlePropertySvc* service = 0 );
     // ========================================================================
     /** print a list of properties in a form of the table
      *
      *  @code
      *
-     *    Gaudi::IParticlePropertySvc* svc = ... ;
+     *    Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *    const std::vector<const Gaudi::ParticleProperty*>& props = ... ;
      *
@@ -296,7 +300,7 @@ namespace Gaudi {
      *  #include "boost/lambda/bind.hpp"
      *
      *  typedef std::vector<const Gaudi::IParticleProperty*> Vector ;
-     *  const Gaudi::IParticlePropertySvc* svc = ... ;
+     *  const Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *  // create the output vector:
      *  Vector leptons ;
@@ -317,7 +321,7 @@ namespace Gaudi {
      *  @endcode
      *
      *  @see Gaudi::ParticleProperty
-     *  @see Gaudi::IParticlePropertySvc
+     *  @see Gaudi::Interfaces::IParticlePropertySvc
      *  @see Gaudi::ParticleProperties::get
      *  @param particles the list of particle properties
      *  @param service the service to extract global information
@@ -327,13 +331,13 @@ namespace Gaudi {
      */
     GAUDI_API
     std::string printAsTable( const std::vector<const Gaudi::ParticleProperty*>& particles,
-                              const Gaudi::IParticlePropertySvc*                 service = 0 );
+                              const Gaudi::Interfaces::IParticlePropertySvc*     service = 0 );
     // ========================================================================
     /** print a list of properties in a form of the table
      *
      *  @code
      *
-     *    Gaudi::IParticlePropertySvc* svc = ... ;
+     *    Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *    const std::vector<const Gaudi::ParticleProperty*>& props = ... ;
      *
@@ -353,7 +357,7 @@ namespace Gaudi {
      *  #include "boost/lambda/bind.hpp"
      *
      *  typedef std::vector<const Gaudi::IParticleProperty*> Vector ;
-     *  const Gaudi::IParticlePropertySvc* svc = ... ;
+     *  const Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *  // create the output vector:
      *  Vector leptons ;
@@ -374,7 +378,7 @@ namespace Gaudi {
      *  @endcode
      *
      *  @see Gaudi::ParticleProperty
-     *  @see Gaudi::IParticlePropertySvc
+     *  @see Gaudi::Interfaces::IParticlePropertySvc
      *  @see Gaudi::ParticleProperties::get
      *  @param particles the list of particle properties
      *  @param stream  the reference to the output stream
@@ -384,7 +388,7 @@ namespace Gaudi {
      */
     GAUDI_API
     MsgStream& printAsTable( const std::vector<const Gaudi::ParticleProperty*>& particles, MsgStream& stream,
-                             const Gaudi::IParticlePropertySvc* service = 0 );
+                             const Gaudi::Interfaces::IParticlePropertySvc* service = 0 );
     // ========================================================================
     /** print properties in a form of the table
      *  @param particles (INPUT) list of particles
@@ -396,11 +400,11 @@ namespace Gaudi {
      */
     GAUDI_API
     std::ostream& printAsTable_( const std::vector<Gaudi::ParticleID>& particles, std::ostream& stream,
-                                 const Gaudi::IParticlePropertySvc* service = 0 );
+                                 const Gaudi::Interfaces::IParticlePropertySvc* service = 0 );
     // ========================================================================
     template <class C_, class A_>
     inline std::ostream& printAsTable_( const std::set<Gaudi::ParticleID, C_, A_>& particles, std::ostream& stream,
-                                        const Gaudi::IParticlePropertySvc* service = 0 ) {
+                                        const Gaudi::Interfaces::IParticlePropertySvc* service = 0 ) {
       return printAsTable_( std::vector<Gaudi::ParticleID>( particles.begin(), particles.end() ), stream, service );
     }
     // ========================================================================
@@ -412,12 +416,12 @@ namespace Gaudi {
      *  @date  2010-01-04
      */
     GAUDI_API
-    std::string printAsTable( const std::vector<Gaudi::ParticleID>& particles,
-                              const Gaudi::IParticlePropertySvc*    service = 0 );
+    std::string printAsTable( const std::vector<Gaudi::ParticleID>&          particles,
+                              const Gaudi::Interfaces::IParticlePropertySvc* service = 0 );
     // ========================================================================
     template <class C_, class A_>
-    inline std::string printAsTable( const std::set<Gaudi::ParticleID, C_, A_>& particles,
-                                     const Gaudi::IParticlePropertySvc*         service = 0 ) {
+    inline std::string printAsTable( const std::set<Gaudi::ParticleID, C_, A_>&     particles,
+                                     const Gaudi::Interfaces::IParticlePropertySvc* service = 0 ) {
       return printAsTable( std::vector<Gaudi::ParticleID>( particles.begin(), particles.end() ), service );
     }
     // ========================================================================
@@ -431,11 +435,11 @@ namespace Gaudi {
      */
     GAUDI_API
     MsgStream& printAsTable( const std::vector<Gaudi::ParticleID>& particles, MsgStream& stream,
-                             const Gaudi::IParticlePropertySvc* service = 0 );
+                             const Gaudi::Interfaces::IParticlePropertySvc* service = 0 );
     // ========================================================================
     template <class C_, class A_>
     inline MsgStream& printAsTable( const std::set<Gaudi::ParticleID, C_, A_>& particles, MsgStream& stream,
-                                    const Gaudi::IParticlePropertySvc* service = 0 ) {
+                                    const Gaudi::Interfaces::IParticlePropertySvc* service = 0 ) {
       return printAsTable( std::vector<Gaudi::ParticleID>( particles.begin(), particles.end() ), stream, service );
     }
     // ========================================================================

@@ -36,7 +36,7 @@ pp2.setAntiParticle(pp1)
 
 lst = [pp3, pp2, pp1]
 
-v1 = Gaudi.IParticlePropertySvc.ParticleProperties()
+v1 = Gaudi.Interfaces.IParticlePropertySvc.ParticleProperties()
 
 v1.fromLst(lst)
 

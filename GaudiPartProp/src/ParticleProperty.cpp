@@ -23,9 +23,9 @@
 // ============================================================================
 // GaudiPartProp
 // ============================================================================
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/ParticleID.h"
-#include "GaudiPartProp/ParticleProperty.h"
+#include "Gaudi/ParticleID.h"
+#include "Gaudi/ParticleProperty.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 // ============================================================================
 // Boost
 // ============================================================================
@@ -202,7 +202,7 @@ void Gaudi::ParticleProperty::setAntiParticle( const ParticleProperty* p ) { m_a
 // ============================================================================
 std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<const Gaudi::ParticleProperty*>& particles,
                                                         std::ostream&                                      stream,
-                                                        const Gaudi::IParticlePropertySvc*                 service ) {
+                                                        const Gaudi::Interfaces::IParticlePropertySvc*     service ) {
   std::string fmt, hdr;
   //
   if ( 0 != service ) {
@@ -349,7 +349,7 @@ std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<const 
  */
 // ========================================================================
 std::string Gaudi::ParticleProperties::printAsTable( const std::vector<const Gaudi::ParticleProperty*>& particles,
-                                                     const Gaudi::IParticlePropertySvc*                 service ) {
+                                                     const Gaudi::Interfaces::IParticlePropertySvc*     service ) {
   std::ostringstream s;
   printAsTable_( particles, s, service );
   return s.str();
@@ -365,7 +365,8 @@ std::string Gaudi::ParticleProperties::printAsTable( const std::vector<const Gau
  */
 // ========================================================================
 MsgStream& Gaudi::ParticleProperties::printAsTable( const std::vector<const Gaudi::ParticleProperty*>& particles,
-                                                    MsgStream& stream, const Gaudi::IParticlePropertySvc* service ) {
+                                                    MsgStream&                                         stream,
+                                                    const Gaudi::Interfaces::IParticlePropertySvc*     service ) {
   if ( stream.isActive() ) { printAsTable_( particles, stream.stream(), service ); }
   return stream;
 }
@@ -392,9 +393,9 @@ std::ostream& Gaudi::Utils::toStream( const std::vector<const Gaudi::ParticlePro
  *  @date  2010-01-04
  */
 // ============================================================================
-std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<Gaudi::ParticleID>& particles,
-                                                        std::ostream&                         stream,
-                                                        const Gaudi::IParticlePropertySvc*    service ) {
+std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<Gaudi::ParticleID>&          particles,
+                                                        std::ostream&                                  stream,
+                                                        const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   //
   if ( 0 == service ) { return Gaudi::Utils::toStream( particles, stream ); }
 
@@ -418,7 +419,7 @@ std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<Gaudi:
  */
 // ============================================================================
 MsgStream& Gaudi::ParticleProperties::printAsTable( const std::vector<Gaudi::ParticleID>& particles, MsgStream& stream,
-                                                    const Gaudi::IParticlePropertySvc* service ) {
+                                                    const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   if ( stream.isActive() ) { printAsTable_( particles, stream.stream(), service ); }
   return stream;
 }
@@ -431,8 +432,8 @@ MsgStream& Gaudi::ParticleProperties::printAsTable( const std::vector<Gaudi::Par
  *  @date  2010-01-04
  */
 // ============================================================================
-std::string Gaudi::ParticleProperties::printAsTable( const std::vector<Gaudi::ParticleID>& particles,
-                                                     const Gaudi::IParticlePropertySvc*    service ) {
+std::string Gaudi::ParticleProperties::printAsTable( const std::vector<Gaudi::ParticleID>&          particles,
+                                                     const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   std::ostringstream s;
   printAsTable_( particles, s, service );
   return s.str();

@@ -8,6 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiPartProp/TrackDefaultParticles.h"
+#include "Gaudi/Tr/TrackDefaultParticles.h"
 
 constexpr std::array<double, 5> Gaudi::Tr::PID::s_mass;

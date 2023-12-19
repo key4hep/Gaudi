@@ -8,6 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include <Decays/CC.h>
+#include <Decays/Symbols.h>
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
+#include <Gaudi/ParticleID.h>
+#include <Gaudi/ParticleProperty.h>
 #include <GaudiKernel/IFileAccess.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
@@ -15,11 +20,6 @@
 #include <GaudiKernel/PhysicalConstants.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/VectorMap.h>
-#include <GaudiPartProp/CC.h>
-#include <GaudiPartProp/IParticlePropertySvc.h>
-#include <GaudiPartProp/ParticleID.h>
-#include <GaudiPartProp/ParticleProperty.h>
-#include <GaudiPartProp/Symbols.h>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <cstdlib>
@@ -92,8 +92,8 @@ namespace Gaudi {
    *
    *  The replaces/modified particles are reported.
    */
-  class ParticlePropertySvc : public extends<Service, Gaudi::IParticlePropertySvc> {
-  public: // Gaudi::IParticlePropertySvc
+  class ParticlePropertySvc : public extends<Service, Gaudi::Interfaces::IParticlePropertySvc> {
+  public: // Gaudi::Interfaces::IParticlePropertySvc
     // =========================================================================
     /** get the begin-iterator for the container of particle properties
      *  It is assumed that the container is properly ordered
@@ -111,7 +111,7 @@ namespace Gaudi {
      *
      *  @code
      *
-     *   Gaudi::IParticlePropertySvc* svc = ... ;
+     *   Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *   const std::string& name = ... ;
      *
@@ -126,7 +126,7 @@ namespace Gaudi {
      *
      *  @code
      *
-     *   Gaudi::IParticlePropertySvc* svc = ... ;
+     *   Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
      *
      *   const Gaudi::ParticleID& pid = ... ;
      *
@@ -257,7 +257,7 @@ namespace Gaudi {
     typedef GaudiUtils::VectorMap<std::string, const Gaudi::ParticleProperty*> NameMap;
     /// the actual type of map: { "pid"  : "property" }
     typedef GaudiUtils::VectorMap<Gaudi::ParticleID, const Gaudi::ParticleProperty*> PidMap;
-    typedef Gaudi::IParticlePropertySvc::ParticleProperties                          Vector;
+    typedef Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties              Vector;
     /// the actual storage of all particle properties
     Set m_set; // the actual storage of all particle properties
     /// "vizible" data (the ordered container)

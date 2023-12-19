@@ -21,8 +21,8 @@
 // ============================================================================
 // PartProp
 // ============================================================================
-#include "GaudiPartProp/Nodes.h"
-#include "GaudiPartProp/ParticleID.h"
+#include "Decays/Nodes.h"
+#include "Gaudi/ParticleID.h"
 // ============================================================================
 /** @file
  *  The implementation file for various decay nodes
@@ -82,7 +82,7 @@ bool Decays::Nodes::Invalid::valid() const { return false; }
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::Invalid::validate( const Gaudi::IParticlePropertySvc* /*svc */ ) const {
+StatusCode Decays::Nodes::Invalid::validate( const Gaudi::Interfaces::IParticlePropertySvc* /*svc */ ) const {
   return StatusCode::FAILURE;
 }
 // ============================================================================
@@ -180,7 +180,7 @@ bool Decays::Nodes::Or::valid() const { return !m_nodes.empty() && Decays::valid
 // ===========================================================================
 // MANDATORY: the proper validation of the node
 // ===========================================================================
-StatusCode Decays::Nodes::Or::validate( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Nodes::Or::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   if ( m_nodes.empty() ) { return StatusCode::FAILURE; }
   return Decays::validate( m_nodes.begin(), m_nodes.end(), svc );
 }
@@ -262,7 +262,7 @@ bool Decays::Nodes::And::valid() const { return !m_nodes.empty() && Decays::vali
 // ===========================================================================
 // MANDATORY: the proper validation of the node
 // ===========================================================================
-StatusCode Decays::Nodes::And::validate( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Nodes::And::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   if ( m_nodes.empty() ) { return StatusCode::FAILURE; }
   return Decays::validate( m_nodes.begin(), m_nodes.end(), svc );
 }
@@ -283,7 +283,7 @@ bool Decays::Nodes::Not::valid() const { return m_node.valid(); }
 // ============================================================================
 bool Decays::Nodes::Not::operator()( const Gaudi::ParticleID& pid ) const { return !m_node.node( pid ); }
 // ============================================================================
-StatusCode Decays::Nodes::Not::validate( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Nodes::Not::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   return m_node.validate( svc );
 }
 // ============================================================================

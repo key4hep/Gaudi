@@ -21,11 +21,11 @@
 // ============================================================================
 // GaudiPartProp
 // ============================================================================
-#include "GaudiPartProp/Decay.h"
-#include "GaudiPartProp/ParticleID.h"
-#include "GaudiPartProp/iNode.h"
+#include "Decays/Decay.h"
+#include "Decays/iNode.h"
+#include "Gaudi/ParticleID.h"
 // ============================================================================
-/** @file GaudiPartProp/Nodes.h
+/** @file Decays/Nodes.h
  *  Helper general purpuse utilities to deal with decay nodes
  *  @see Decays::iNode
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
@@ -59,7 +59,7 @@ namespace Decays {
    *  @date 2008-04-21
    */
   template <class Iterator>
-  StatusCode validate( Iterator begin, Iterator end, const Gaudi::IParticlePropertySvc* svc ) {
+  StatusCode validate( Iterator begin, Iterator end, const Gaudi::Interfaces::IParticlePropertySvc* svc ) {
     for ( ; begin != end; ++begin ) {
       StatusCode sc = begin->validate( svc );
       if ( sc.isFailure() ) { return sc; }
@@ -67,7 +67,7 @@ namespace Decays {
     return StatusCode::SUCCESS;
   }
   template <class TREE>
-  StatusCode validate( TREE const& tree, const Gaudi::IParticlePropertySvc* svc ) {
+  StatusCode validate( TREE const& tree, const Gaudi::Interfaces::IParticlePropertySvc* svc ) {
     return validate( tree.begin(), tree.end(), svc );
   }
   // ==========================================================================
@@ -95,7 +95,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     };
     // ========================================================================
@@ -128,7 +128,7 @@ namespace Decays {
       /// Check the validity
       inline bool valid() const { return m_node.node().valid(); }
       /// The proper validation of the node
-      inline StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const {
+      inline StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
         return m_node.node().validate( svc );
       }
       /// The major method
@@ -298,7 +298,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     protected:
       // ======================================================================
@@ -348,7 +348,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     protected:
       // ======================================================================
@@ -391,7 +391,7 @@ namespace Decays {
       /// MANDATORY: check the validity
       bool valid() const override;
       /// MANDATORY: the proper validation of the node
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const override;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const override;
       // ======================================================================
     public:
       // ======================================================================

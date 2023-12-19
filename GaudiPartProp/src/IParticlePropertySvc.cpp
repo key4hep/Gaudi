@@ -17,12 +17,12 @@
 // ============================================================================
 // GaudiPartProp
 // ============================================================================
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/ParticleID.h"
-#include "GaudiPartProp/ParticleProperty.h"
+#include "Gaudi/ParticleID.h"
+#include "Gaudi/ParticleProperty.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 // ============================================================================
 /** @file
- *  Implementation file for class Gaudi::IParticlePropertySvc
+ *  Implementation file for class Gaudi::Interfaces::IParticlePropertySvc
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2008-08-03
  */
@@ -44,8 +44,8 @@
  *  @date   2008-08-03
  */
 // ============================================================================
-size_t Gaudi::ParticleProperties::index( const Gaudi::ParticleProperty*     property,
-                                         const Gaudi::IParticlePropertySvc* service ) {
+size_t Gaudi::ParticleProperties::index( const Gaudi::ParticleProperty*                 property,
+                                         const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   if ( !property || !service ) { return 0; } // RETURN
   // ==========================================================================
   auto first = service->begin();
@@ -73,7 +73,8 @@ size_t Gaudi::ParticleProperties::index( const Gaudi::ParticleProperty*     prop
  *  @date   2008-08-03
  */
 // ============================================================================
-size_t Gaudi::ParticleProperties::index( const Gaudi::ParticleID& pid, const Gaudi::IParticlePropertySvc* service ) {
+size_t Gaudi::ParticleProperties::index( const Gaudi::ParticleID&                       pid,
+                                         const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   if ( !service ) { return 0; } // RETURN
   // ==========================================================================
   const Gaudi::ParticleProperty* pp = service->find( pid );
@@ -96,8 +97,8 @@ size_t Gaudi::ParticleProperties::index( const Gaudi::ParticleID& pid, const Gau
  *  @date   2008-08-03
  */
 // ============================================================================
-const Gaudi::ParticleProperty* Gaudi::ParticleProperties::particle( const size_t                       index,
-                                                                    const Gaudi::IParticlePropertySvc* service ) {
+const Gaudi::ParticleProperty*
+Gaudi::ParticleProperties::particle( const size_t index, const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   if ( 0 == index || !service ) { return nullptr; } // RETURN
   // get the iterators from the service
   auto first = service->begin();
@@ -123,8 +124,8 @@ const Gaudi::ParticleProperty* Gaudi::ParticleProperties::particle( const size_t
  *  @date   2008-08-03
  */
 // ============================================================================
-const Gaudi::ParticleID Gaudi::ParticleProperties::particleID( const size_t                       index,
-                                                               const Gaudi::IParticlePropertySvc* service ) {
+const Gaudi::ParticleID
+Gaudi::ParticleProperties::particleID( const size_t index, const Gaudi::Interfaces::IParticlePropertySvc* service ) {
   if ( 0 == index || !service ) { return Gaudi::ParticleID(); } // RETURN
   const Gaudi::ParticleProperty* pp = Gaudi::ParticleProperties::particle( index, service );
   return pp ? pp->particleID() : Gaudi::ParticleID();
@@ -136,7 +137,7 @@ const Gaudi::ParticleID Gaudi::ParticleProperties::particleID( const size_t     
  *
  *   const int pythiaID = ... ;
  *
- *   const Gaudi::IParticlePropertySvc* svc = ... ;
+ *   const Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
  *
  *   const Gaudi::ParticleProeprty* pp = byPythiaID( pythiaID , svc ) ;
  *
@@ -151,8 +152,8 @@ const Gaudi::ParticleID Gaudi::ParticleProperties::particleID( const size_t     
  *  @date   2008-08-03
  */
 // ============================================================================
-const Gaudi::ParticleProperty* Gaudi::ParticleProperties::byPythiaID( const int                          pythia,
-                                                                      const Gaudi::IParticlePropertySvc* svc ) {
+const Gaudi::ParticleProperty*
+Gaudi::ParticleProperties::byPythiaID( const int pythia, const Gaudi::Interfaces::IParticlePropertySvc* svc ) {
   if ( !svc ) { return nullptr; }
   // to be efficient
   // 1) try to use PDG-ID (fast, logarithmic search)
@@ -174,7 +175,7 @@ const Gaudi::ParticleProperty* Gaudi::ParticleProperties::byPythiaID( const int 
  *
  *   const std::string& evtGen = ...
  *
- *   const Gaudi::IParticlePropertySvc* svc = ... ;
+ *   const Gaudi::Interfaces::IParticlePropertySvc* svc = ... ;
  *
  *   const Gaudi::ParticleProperty* pp = byEvtGenName ( evtGen , svc ) ;
  *
@@ -189,8 +190,9 @@ const Gaudi::ParticleProperty* Gaudi::ParticleProperties::byPythiaID( const int 
  *  @date   2008-08-03
  */
 // ============================================================================
-const Gaudi::ParticleProperty* Gaudi::ParticleProperties::byEvtGenName( const std::string&                 evtGen,
-                                                                        const Gaudi::IParticlePropertySvc* svc ) {
+const Gaudi::ParticleProperty*
+Gaudi::ParticleProperties::byEvtGenName( const std::string&                             evtGen,
+                                         const Gaudi::Interfaces::IParticlePropertySvc* svc ) {
   if ( !svc ) { return nullptr; }
   // to be more efficient:
   // 1) try to use the regualr name (fast, logarithmic search)
@@ -210,10 +212,10 @@ const Gaudi::ParticleProperty* Gaudi::ParticleProperties::byEvtGenName( const st
  *  @date   2008-08-03
  */
 // ============================================================================
-Gaudi::IParticlePropertySvc::ParticleProperties
-Gaudi::ParticleProperties::allProperties( const Gaudi::IParticlePropertySvc* service ) {
-  return service ? Gaudi::IParticlePropertySvc::ParticleProperties( service->begin(), service->end() )
-                 : Gaudi::IParticlePropertySvc::ParticleProperties();
+Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties
+Gaudi::ParticleProperties::allProperties( const Gaudi::Interfaces::IParticlePropertySvc* service ) {
+  return service ? Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties( service->begin(), service->end() )
+                 : Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties();
 }
 // ============================================================================
 // The END

@@ -26,15 +26,15 @@
 // ============================================================================
 // PartProp
 // ============================================================================
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/NodesPIDs.h"
-#include "GaudiPartProp/ParticleID.h"
-#include "GaudiPartProp/ParticleProperty.h"
-#include "GaudiPartProp/Symbols.h"
+#include "Decays/NodesPIDs.h"
+#include "Decays/Symbols.h"
+#include "Gaudi/ParticleID.h"
+#include "Gaudi/ParticleProperty.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 // ============================================================================
 // Originally from LHCbMath
 // ============================================================================
-#include "GaudiPartProp/Lomont.h"
+#include "Gaudi/Math/Lomont.h"
 // ============================================================================
 /** @file
  *  The implementation file for various decay nodes
@@ -165,7 +165,7 @@ bool Decays::Nodes::Any::valid() const { return true; }
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::Any::validate( const Gaudi::IParticlePropertySvc* /*svc */ ) const {
+StatusCode Decays::Nodes::Any::validate( const Gaudi::Interfaces::IParticlePropertySvc* /*svc */ ) const {
   return StatusCode::SUCCESS;
 }
 // ============================================================================
@@ -190,7 +190,7 @@ bool Decays::Nodes::JSpin::valid() const { return 0 < spin(); }
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::JSpin::validate( const Gaudi::IParticlePropertySvc* /*svc */ ) const {
+StatusCode Decays::Nodes::JSpin::validate( const Gaudi::Interfaces::IParticlePropertySvc* /*svc */ ) const {
   return valid() ? StatusCode::SUCCESS : StatusCode{ InvalidSpin };
 }
 // ============================================================================
@@ -218,7 +218,7 @@ bool Decays::Nodes::Pid::valid() const { return 0 != m_item.pp(); }
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::Pid::validate( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Nodes::Pid::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   return m_item.validate( svc );
 }
 // ============================================================================
@@ -411,9 +411,9 @@ std::ostream& Decays::Nodes::LSpin::fillStream( std::ostream& s ) const { return
 // ============================================================================
 // constructor from c-tau range & Service
 // ============================================================================
-Decays::Nodes::CTau::CTau( const double low, const double high, const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::CTau::CTau( const double low, const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : m_low( low ), m_high( high ) {
-  if ( svc ) { m_ppSvc = const_cast<Gaudi::IParticlePropertySvc*>( svc ); }
+  if ( svc ) { m_ppSvc = const_cast<Gaudi::Interfaces::IParticlePropertySvc*>( svc ); }
 }
 // ============================================================================
 // MANDATORY: clone method ("virtual constructor")
@@ -430,7 +430,9 @@ bool Decays::Nodes::CTau::valid() const { return m_ppSvc.isValid(); }
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::CTau::validate( const Gaudi::IParticlePropertySvc* svc ) const { return setService( svc ); }
+StatusCode Decays::Nodes::CTau::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
+  return setService( svc );
+}
 // ============================================================================
 // MANDATORY: the only one essential method
 // ============================================================================
@@ -460,7 +462,7 @@ bool Decays::Nodes::CTau::add_( Gaudi::ParticleID pid, bool acc ) const {
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::CTau::setService( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Nodes::CTau::setService( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   // if service is substituted, clear the cache
   if ( m_ppSvc != svc ) {
     m_pids.with_lock( []( KnownPids& pids ) {
@@ -470,7 +472,7 @@ StatusCode Decays::Nodes::CTau::setService( const Gaudi::IParticlePropertySvc* s
   }
   //
   if ( svc ) {
-    m_ppSvc = const_cast<Gaudi::IParticlePropertySvc*>( svc );
+    m_ppSvc = const_cast<Gaudi::Interfaces::IParticlePropertySvc*>( svc );
   } else {
     m_ppSvc = nullptr;
   }
@@ -480,7 +482,7 @@ StatusCode Decays::Nodes::CTau::setService( const Gaudi::IParticlePropertySvc* s
 // ============================================================================
 // constructor from c-tau range & Service
 // ============================================================================
-Decays::Nodes::Mass::Mass( const double low, const double high, const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::Mass::Mass( const double low, const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::CTau( low, high, svc ) {}
 // ============================================================================
 // MANDATORY: clone method ("virtual constructor")
@@ -511,12 +513,12 @@ bool Decays::Nodes::Mass::operator()( const Gaudi::ParticleID& pid ) const {
 // ===========================================================================
 // constructor with high edge and service
 // ===========================================================================
-Decays::Nodes::ShortLived_::ShortLived_( const double high, const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::ShortLived_::ShortLived_( const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::CTau( -1 * Gaudi::Units::km, high, svc ) {}
 // ===========================================================================
 // constructor with high edge and service
 // ===========================================================================
-Decays::Nodes::ShortLived_::ShortLived_( const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::ShortLived_::ShortLived_( const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::CTau( -1 * Gaudi::Units::km, s_SHORTLIVED, svc ) {}
 // ===========================================================================
 // MANDATORY: clone method ("virtual constructor")
@@ -536,12 +538,12 @@ std::ostream& Decays::Nodes::ShortLived_::fillStream( std::ostream& s ) const {
 // ===========================================================================
 // constructor with high edge and service
 // ===========================================================================
-Decays::Nodes::LongLived_::LongLived_( const double low, const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::LongLived_::LongLived_( const double low, const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::CTau( low, s_INFINITY, svc ) {}
 // ===========================================================================
 // constructor with high edge and service
 // ===========================================================================
-Decays::Nodes::LongLived_::LongLived_( const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::LongLived_::LongLived_( const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::CTau( s_LONGLIVED, s_INFINITY, svc ) {}
 // ===========================================================================
 // MANDATORY: clone method ("virtual constructor")
@@ -559,7 +561,8 @@ std::ostream& Decays::Nodes::LongLived_::fillStream( std::ostream& s ) const {
 // ===========================================================================
 // constructor with the service
 // ===========================================================================
-Decays::Nodes::Stable::Stable( const Gaudi::IParticlePropertySvc* svc ) : Decays::Nodes::LongLived_( s_STABLE, svc ) {}
+Decays::Nodes::Stable::Stable( const Gaudi::Interfaces::IParticlePropertySvc* svc )
+    : Decays::Nodes::LongLived_( s_STABLE, svc ) {}
 // ===========================================================================
 // MANDATORY: clone method ("virtual constructor")
 // ===========================================================================
@@ -573,7 +576,8 @@ std::ostream& Decays::Nodes::Stable::fillStream( std::ostream& s ) const { retur
 // ===========================================================================
 // constructor with the service
 // ===========================================================================
-Decays::Nodes::StableCharged::StableCharged( const Gaudi::IParticlePropertySvc* svc ) : Decays::Nodes::Stable( svc ) {}
+Decays::Nodes::StableCharged::StableCharged( const Gaudi::Interfaces::IParticlePropertySvc* svc )
+    : Decays::Nodes::Stable( svc ) {}
 // ===========================================================================
 // MANDATORY: clone method ("virtual constructor")
 // ===========================================================================
@@ -603,7 +607,7 @@ bool Decays::Nodes::StableCharged::operator()( const Gaudi::ParticleID& pid ) co
 // ===========================================================================
 // constructor with high edge and service
 // ===========================================================================
-Decays::Nodes::Light::Light( const double high, const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::Light::Light( const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::Mass( -1 * Gaudi::Units::TeV, high, svc ) {}
 // ===========================================================================
 // MANDATORY: clone method ("virtual constructor")
@@ -618,7 +622,7 @@ std::ostream& Decays::Nodes::Light::fillStream( std::ostream& s ) const { return
 // ===========================================================================
 // constructor with high edge and service
 // ===========================================================================
-Decays::Nodes::Heavy::Heavy( const double low, const Gaudi::IParticlePropertySvc* svc )
+Decays::Nodes::Heavy::Heavy( const double low, const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::Mass( low, s_INFINITY, svc ) {}
 // ===========================================================================
 // MANDATORY: clone method ("virtual constructor")
@@ -641,7 +645,7 @@ bool Decays::Nodes::PosID::valid() const { return true; }
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::PosID::validate( const Gaudi::IParticlePropertySvc* /*svc */ ) const {
+StatusCode Decays::Nodes::PosID::validate( const Gaudi::Interfaces::IParticlePropertySvc* /*svc */ ) const {
   return StatusCode::SUCCESS;
 }
 // ============================================================================
@@ -665,7 +669,7 @@ bool Decays::Nodes::NegID::valid() const { return true; }
 // ============================================================================
 // MANDATORY: the proper validation of the node
 // ============================================================================
-StatusCode Decays::Nodes::NegID::validate( const Gaudi::IParticlePropertySvc* /*svc */ ) const {
+StatusCode Decays::Nodes::NegID::validate( const Gaudi::Interfaces::IParticlePropertySvc* /*svc */ ) const {
   return StatusCode::SUCCESS;
 }
 // ============================================================================
@@ -705,7 +709,7 @@ bool Decays::Nodes::Symbol::valid() const { return m_symbol.valid(); }
 // ===========================================================================
 // MANDATORY: validate
 // ===========================================================================
-StatusCode Decays::Nodes::Symbol::validate( const Gaudi::IParticlePropertySvc* svc ) const {
+StatusCode Decays::Nodes::Symbol::validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const {
   return m_symbol.validate( svc );
 }
 // ===========================================================================

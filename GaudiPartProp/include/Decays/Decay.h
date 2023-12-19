@@ -21,13 +21,15 @@
 // ============================================================================
 // Gaudi
 // ============================================================================
+#include "Gaudi/ParticleID.h"
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiPartProp/ParticleID.h"
 // ============================================================================
 /// forward decalrations
 // ============================================================================
 namespace Gaudi {
-  class IParticlePropertySvc;
+  namespace Interfaces {
+    class IParticlePropertySvc;
+  }
   class ParticleProperty;
 } // namespace Gaudi
 // ============================================================================
@@ -74,7 +76,7 @@ namespace Decays {
     public:
       // ======================================================================
       /// validate the item using the service
-      StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const;
+      StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const;
       /// validate the item using the particle property object
       StatusCode validate( const Gaudi::ParticleProperty* prop ) const;
       // ======================================================================
@@ -187,7 +189,7 @@ namespace Decays {
   public:
     // ========================================================================
     /// validate the decay using the service
-    StatusCode validate( const Gaudi::IParticlePropertySvc* svc ) const;
+    StatusCode validate( const Gaudi::Interfaces::IParticlePropertySvc* svc ) const;
     // ========================================================================
   public:
     // ========================================================================

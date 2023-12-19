@@ -13,7 +13,7 @@
 # =============================================================================
 ## @file PartProp/Service.py
 #  Useful decorator for Gaudi::(I)ParticlePropertySvc
-#  @see Gaudi::IParticlePropertySvc
+#  @see Gaudi::Interfaces::IParticlePropertySvc
 #  @see Gaudi::ParticlePropertySvc
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date 2008-12-01
@@ -47,7 +47,7 @@ class iParticlePropertySvc(iService):
     """
     Class iParticlePropertySvc: 'python'-twin for C++ class
 
-    Gaudi::IParticlePropertySvc
+    Gaudi::Interfaces::IParticlePropertySvc
 
     """
 
@@ -56,7 +56,9 @@ class iParticlePropertySvc(iService):
         Constructor from the name and the service
         """
         iService.__init__(self, name, isvc)
-        self.__dict__["_ipps"] = InterfaceCast(Gaudi.IParticlePropertySvc)(isvc)
+        self.__dict__["_ipps"] = InterfaceCast(Gaudi.Interfaces.IParticlePropertySvc)(
+            isvc
+        )
 
     def retrieveInterface(self):
         iService.retrieveInterface(self)
@@ -79,10 +81,10 @@ class iParticlePropertySvc(iService):
     ## get the Particle Properties by particle name or particle ID
     def get(self, cut, asList=False):
         """
-        Simple 'get' method for Gaudi::IParticlePropertySvc
+        Simple 'get' method for Gaudi::Interfaces::IParticlePropertySvc
         service to extract the properties which satisfy some criteria
 
-        >>> svc = ...  # get service (Gaudi::IParticlePropertySvc) or vector
+        >>> svc = ...  # get service (Gaudi::Interfaces::IParticlePropertySvc) or vector
         >>> leptons   = svc.get ( lambda s : s.pid().isLepton() )  # get all leptons
         >>> longlived = svc.get ( lambda s : s.ctau() > 0.001   )  # get longlived
 
@@ -222,11 +224,11 @@ class iParticlePropertySvc(iService):
 
 
 # useful types
-iParticlePropertySvc.ParticleIDs = Gaudi.IParticlePropertySvc.ParticleIDs
-iParticlePropertySvc.Decay = Gaudi.IParticlePropertySvc.Decay
-iParticlePropertySvc.Decays = Gaudi.IParticlePropertySvc.Decays
-iParticlePropertySvc.Item = Gaudi.IParticlePropertySvc.Item
-iParticlePropertySvc.Items = Gaudi.IParticlePropertySvc.Items
+iParticlePropertySvc.ParticleIDs = Gaudi.Interfaces.IParticlePropertySvc.ParticleIDs
+iParticlePropertySvc.Decay = Gaudi.Interfaces.IParticlePropertySvc.Decay
+iParticlePropertySvc.Decays = Gaudi.Interfaces.IParticlePropertySvc.Decays
+iParticlePropertySvc.Item = Gaudi.Interfaces.IParticlePropertySvc.Item
+iParticlePropertySvc.Items = Gaudi.Interfaces.IParticlePropertySvc.Items
 
 
 # =============================================================================

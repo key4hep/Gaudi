@@ -13,9 +13,9 @@
 
 #include <Gaudi/Algorithm.h>
 
-#include "GaudiPartProp/IParticlePropertySvc.h"
-#include "GaudiPartProp/ParticleID.h"
-#include "GaudiPartProp/ParticleProperty.h"
+#include "Gaudi/ParticleID.h"
+#include "Gaudi/ParticleProperty.h"
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 
 namespace Gaudi {
   namespace Examples {
@@ -32,11 +32,11 @@ namespace Gaudi {
       StatusCode execute( const EventContext& ctx ) const override;
       StatusCode finalize() override;
 
-      const Gaudi::IParticlePropertySvc* ppSvc() const;
+      const Gaudi::Interfaces::IParticlePropertySvc* ppSvc() const;
 
     private:
       // the pointer to new particle property service
-      mutable SmartIF<Gaudi::IParticlePropertySvc> m_ppSvc; // new part.property.svc
+      mutable SmartIF<Gaudi::Interfaces::IParticlePropertySvc> m_ppSvc; // new part.property.svc
     };
   } // namespace Examples
 } // namespace Gaudi

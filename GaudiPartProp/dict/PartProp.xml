@@ -23,9 +23,9 @@
 
   <class name = "Gaudi::ParticleID"                />
   <class name = "Gaudi::ParticleProperty"          />
-  <class name = "Gaudi::IParticlePropertySvc"      />
-  <class name = "Gaudi::IParticlePropertySvc::ParticleProperties" />
-  <class name = "Gaudi::IParticlePropertySvc::iterator"           />
+  <class name = "Gaudi::Interfaces::IParticlePropertySvc"      />
+  <class name = "Gaudi::Interfaces::IParticlePropertySvc::ParticleProperties" />
+  <class name = "Gaudi::Interfaces::IParticlePropertySvc::iterator"           />
 
   <class name = "std::vector<Gaudi::ParticleID>"              />
   <class name = "std::vector<const Gaudi::ParticleProperty*>" />
