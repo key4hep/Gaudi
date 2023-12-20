@@ -27,14 +27,14 @@ gaudi_add_library(GaudiPartProp
             Gaudi::GaudiKernel
 )
 
-gaudi_add_module(PartProp
+gaudi_add_module(GaudiPartPropModule
     SOURCES
         src/Module/ParticlePropertySvc.cpp
     LINK
         GaudiPartProp
 )
 
-gaudi_add_dictionary(PartPropDict
+gaudi_add_dictionary(GaudiPartPropDict
     HEADERFILES dict/PartPropDict.h
     SELECTION dict/PartProp.xml
     LINK

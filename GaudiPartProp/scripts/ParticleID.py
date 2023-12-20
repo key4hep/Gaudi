@@ -12,7 +12,7 @@
 # @author Philip Ilten
 # Return the property dictionary for a given Gaudi::ParticleID.
 def properties(pid):
-    from PartProp.decorators import Gaudi
+    from GaudiPartProp.decorators import Gaudi
 
     pid = Gaudi.ParticleID(pid)
     return {

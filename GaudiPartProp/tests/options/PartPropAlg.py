@@ -11,15 +11,15 @@
 #####################################################################################
 # =============================================================================
 ## @file
-#  The configuration file to run QMTest for the package Kernel/PartProp
+#  The configuration file to run QMTest for the package GaudiPartProp
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date   2008-12-02
 # =============================================================================
 """
-The configuration file to run QMTest for the package Kernel/PartProp
+The configuration file to run QMTest for the package GaudiPartProp
 """
 
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 __version__ = ""
 
-import PartProp.PartPropAlg
+import GaudiPartProp.PartPropAlg

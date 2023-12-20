@@ -11,13 +11,13 @@
 #####################################################################################
 # =============================================================================
 # =============================================================================
-## @file PartProp/tests.py
-#  The set of basic tests for objects from Kernel/PartProp package
+## @file GaudiPartProp/tests.py
+#  The set of basic tests for objects from GaudiPartProp package
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date   2008-12-01
 # =============================================================================
 """
-The set of basic decorators for objects from Kernel/PartProp package
+The set of basic decorators for objects from GaudiPartProp package
 """
 
 # =============================================================================
@@ -25,7 +25,7 @@ __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 __version__ = ""
 # =============================================================================
 
-from PartProp.decorators import Gaudi
+from GaudiPartProp.decorators import Gaudi
 
 pp1 = Gaudi.ParticleProperty("NAME1", Gaudi.ParticleID(121), 1.0, 501.0, 0.1, 0.001)
 pp2 = Gaudi.ParticleProperty("NAME2", Gaudi.ParticleID(122), -1, 502.0, 0.1, 0.001)

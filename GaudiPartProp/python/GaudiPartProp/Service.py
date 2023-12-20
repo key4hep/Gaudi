@@ -11,7 +11,7 @@
 #####################################################################################
 # =============================================================================
 # =============================================================================
-## @file PartProp/Service.py
+## @file GaudiPartProp/Service.py
 #  Useful decorator for Gaudi::(I)ParticlePropertySvc
 #  @see Gaudi::Interfaces::IParticlePropertySvc
 #  @see Gaudi::ParticlePropertySvc
@@ -26,12 +26,12 @@ __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 __version__ = ""
 # =============================================================================
 __all__ = ("iParticlePropertySvc",)
-# =============================================================================
-import GaudiPython.Bindings
-
 # The following is misunderstood by flake8 - the import is needed as it
 # has necessary side effects
-import PartProp.decorators  # noqa: F401
+import GaudiPartProp.decorators  # noqa: F401
+
+# =============================================================================
+import GaudiPython.Bindings
 
 cpp = GaudiPython.Bindings.gbl
 iService = GaudiPython.Bindings.iService
@@ -238,12 +238,12 @@ def _ppSvc_(self, name="Gaudi::ParticlePropertySvc"):
     Get particle property service form application manager
 
     >>> gaudi = ...
-    >>> pps = gaudi.ppSvc()
+    >>> pps = gaudi.gaudiPartProp()
 
     """
     svc = Helper.service(self._svcloc, name)
     return iParticlePropertySvc(name, svc)
 
 
-AppMgr.ppSvc = _ppSvc_
-AppMgr.ppsvc = _ppSvc_
+AppMgr.gaudiPartProp = _ppSvc_
+AppMgr.gaudiPartProp = _ppSvc_

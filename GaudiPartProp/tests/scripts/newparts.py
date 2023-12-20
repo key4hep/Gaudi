@@ -22,13 +22,13 @@
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
 from pathlib import Path
 
-import PartProp.decorators
+import GaudiPartProp.decorators
 
 # =============================================================================
 # The following lines are misunderstood by flake8 - the imports are needed as they
 # have necessary side effects
-import PartProp.PartPropAlg  # noqa: F401
-import PartProp.Service  # noqa: F401
+import GaudiPartProp.PartPropAlg  # noqa: F401
+import GaudiPartProp.Service  # noqa: F401
 from Configurables import Gaudi__ParticlePropertySvc
 from GaudiKernel.SystemOfUnits import GeV, second
 from GaudiPython.Bindings import AppMgr
@@ -48,7 +48,7 @@ gaudi.initialize()
 ## simple test-function
 def test():
     """Simple function for the test"""
-    pps = gaudi.ppSvc()
+    pps = gaudi.gaudiPartProp()
 
     try:
         # If we have no ParticleProperties this isn't going to work

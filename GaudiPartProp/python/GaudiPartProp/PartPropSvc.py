@@ -21,19 +21,18 @@
 from builtins import range
 
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
-import PartProp.decorators
+import GaudiPartProp.decorators
 
 # =============================================================================
-import PartProp.PartPropAlg
+import GaudiPartProp.PartPropAlg
 
 # The following is misunderstood by flake8 - the import is needed as it
 # has necessary side effects
-import PartProp.Service  # noqa: F401
-from GaudiPython.Bindings import AppMgr
+import GaudiPartProp.Service  # noqa: F401
 
 # =============================================================================
 ## test the nodes
-from PartProp.Nodes import (
+from GaudiPartProp.Nodes import (
     CC,
     Baryon,
     Bottom,
@@ -47,6 +46,7 @@ from PartProp.Nodes import (
     Tensor,
     ThreeHalf,
 )
+from GaudiPython.Bindings import AppMgr
 
 gaudi = AppMgr()
 gaudi.initialize()
@@ -55,7 +55,7 @@ gaudi.initialize()
 ## simple test-function
 def test():
     """Simple function for the test"""
-    pps = gaudi.ppSvc()
+    pps = gaudi.gaudiPartProp()
 
     for l in range(1, 6):
         # get
@@ -108,7 +108,7 @@ def test():
 
 
 def test2():
-    pps = gaudi.ppSvc()
+    pps = gaudi.gaudiPartProp()
 
     nodes = [
         Lepton & ~Meson,

@@ -10,7 +10,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # =============================================================================
-## @file PartProp/Nodes.py
+## @file GaudiPartProp/Nodes.py
 #  Simple "decorator for nodes"
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date 2008-12-03

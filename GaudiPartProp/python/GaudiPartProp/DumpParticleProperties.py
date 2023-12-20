@@ -25,11 +25,11 @@ __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 
 
 def dump():
-    import PartProp.PartPropAlg
+    import GaudiPartProp.PartPropAlg
 
     # The following is misunderstood by flake8 - the import is needed as it
     # has necessary side effects
-    import PartProp.Service  # noqa: F401
+    import GaudiPartProp.Service  # noqa: F401
     from Configurables import MessageSvc
 
     MessageSvc(OutputLevel=6)
@@ -40,7 +40,7 @@ def dump():
 
     gaudi.initialize()
 
-    pps = gaudi.ppSvc()
+    pps = gaudi.gaudiPartProp()
 
     print(pps.all())
 

@@ -23,11 +23,11 @@ def properties(pid):
 def generate(dat=None):
     # The following is misunderstood by flake8 - the import is needed as it
     # has necessary side effects
-    import PartProp.PartPropSvc  # noqa: F401
+    import GaudiPartProp.PartPropSvc  # noqa: F401
     from GaudiPython.Bindings import AppMgr
 
     gaudi = AppMgr()
-    ppsvc = gaudi.ppSvc()
+    ppsvc = gaudi.gaudiPartProp()
 
     # Loop over the particles and add entries.
     pids = {}

@@ -1,4 +1,4 @@
-#!/usr/bin/env gaudirun.py
+#!/usr/bin/env python3
 #####################################################################################
 # (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
@@ -10,18 +10,18 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # =============================================================================
-## @file
-#  The configuration file to run QMTest for the package Kernel/PartProp
+## @file GaudiPartProp/__init__.py
+#  Helper file/module for GaudiPartProp package
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-#  @date   2008-12-02
+#  date 2008-12-01
 # =============================================================================
-""" The configuration file to run QMTest for the package Kernel/PartProp
+"""
+Helper file/module for GaudiPartProp package
 """
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
+__version__ = ""
 # =============================================================================
-
-from Configurables import ApplicationMgr
-from Configurables import Gaudi__Examples__PartPropAlg as PPA
-
-ApplicationMgr(TopAlg=[PPA()], EvtSel="NONE", EvtMax=1)
+# The following is misunderstood by flake8 - the import is needed as it
+# defines this for module scripts
+from ._default_table import DEFAULT_PARTICLE_PROPERTY_FILE  # noqa: F401

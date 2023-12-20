@@ -11,13 +11,13 @@
 #####################################################################################
 # =============================================================================
 # =============================================================================
-## @file PartProp/decorators.py
-#  The set of basic decorator for objects from Kernel/PartProp package
+## @file GaudiPartProp/decorators.py
+#  The set of basic decorator for objects from GaudiPartProp package
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date   2008-12-01
 # =============================================================================
 """
-The set of basic decorators for objects from Kernel/PartProp package
+The set of basic decorators for objects from GaudiPartProp package
 """
 # =============================================================================
 __author__ = "Vanya BELYAEV <Ivan.Belyaev@nikhef.nl>"
@@ -33,7 +33,7 @@ Decays = GaudiPython.gbl.Gaudi.Decays
 Gaudi = GaudiPython.gbl.Gaudi
 
 
-## get all particle proeprties form the service
+## get all particle properties form the service
 def _get_all_(self, asList=False):
     """
     Get all particle properties from the service

@@ -11,7 +11,7 @@
 #####################################################################################
 # =============================================================================
 # =============================================================================
-## @file PartProp/Check.py
+## @file GaudiPartProp/Check.py
 #  the trivial example to inspect the particle data table from the data base
 #  @author Vanya BELYAEV vanya@nikhef.nl
 #  @date  2009-03-06
@@ -32,7 +32,7 @@ ApplicationMgr().ExtSvc += [Gaudi__ParticlePropertySvc()]
 
 # The following is misunderstood by flake8 - the import is needed as it
 # has necessary side effects
-import PartProp.Service  # noqa: F401
+import GaudiPartProp.Service  # noqa: F401
 from GaudiKernel.SystemOfUnits import micrometer
 
 ## switch to GaudiPython
@@ -48,7 +48,7 @@ gaudi.TopAlg = []
 gaudi.run(1)
 
 # get the actual (C++) particle properties service
-ppsvc = gaudi.ppSvc()
+ppsvc = gaudi.gaudiPartProp()
 
 # finally: play with the service
 

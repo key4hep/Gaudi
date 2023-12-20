@@ -24,17 +24,17 @@ from pathlib import Path
 
 # The following lines are misunderstood by flake8 - the imports are needed as
 # they have necessary side effects
-import PartProp.PartPropAlg  # noqa: F401
-import PartProp.Service  # noqa: F401
+import GaudiPartProp.PartPropAlg  # noqa: F401
+import GaudiPartProp.Service  # noqa: F401
 
 # from DDDB.CheckDD4Hep import UseDD4Hep
 # if UseDD4Hep:
 #     # use a predefined particle table file
 from Configurables import Gaudi__ParticlePropertySvc
-from GaudiPython.Bindings import AppMgr
 
 ## test the nodes
-from PartProp.Nodes import Gaudi
+from GaudiPartProp.Nodes import Gaudi
+from GaudiPython.Bindings import AppMgr
 
 Gaudi__ParticlePropertySvc(
     ParticlePropertiesFile=str(
@@ -49,7 +49,7 @@ gaudi.initialize()
 ## simple test-function
 def test():
     """Simple function for the test"""
-    pps = gaudi.ppSvc()
+    pps = gaudi.gaudiPartProp()
 
     ##  get all known pids
     all = pps.get(lambda x: True)

@@ -23,6 +23,6 @@
 # =============================================================================
 import sys
 
-from PartProp.DumpParticleProperties import dump
+from GaudiPartProp.DumpParticleProperties import dump
 
 dump([a for a in sys.argv[1:] if "--" != a])
