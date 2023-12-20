@@ -26,7 +26,7 @@ namespace Gaudi {
     class IParticlePropertySvc;
   }
 
-  /** @class ParticleProperty ParticleProperty.h GaudiKernel/ParticleProperty.h
+  /** @class ParticleProperty ParticleProperty.h Gaudi/ParticleProperty.h
    *
    *  A trivial class to hold information about a single particle properties.
    *  All particle properties are accessible through accessor functions

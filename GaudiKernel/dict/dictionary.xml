@@ -89,7 +89,6 @@
   <class name="INTupleSvc"/>
   <!--class name="IObjManager"/-->
   <class name="IOpaqueAddress"/>
-  <class name="IParticlePropertySvc"/>
   <class name="IPartPropSvc"/>
   <class name="IPartitionControl"/>
   <class name="IPersistencySvc"/>

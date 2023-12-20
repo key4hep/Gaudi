@@ -51,7 +51,6 @@
   <class pattern = "AIDA::I*"  />
   <class name    = "GaudiPython::PyAlgorithm"/>
   <class name    = "GaudiPython::CallbackStreamBuf"/>
-  <class name    = "ParticleProperty"/>
 
   <class name    = "Gaudi::StringKey" />
   <class name    = "Gaudi::Utils::MapBase" />

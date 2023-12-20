@@ -16,7 +16,6 @@
 #include <GaudiKernel/IFileAccess.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
-#include <GaudiKernel/ParticleProperty.h>
 #include <GaudiKernel/PhysicalConstants.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/VectorMap.h>
