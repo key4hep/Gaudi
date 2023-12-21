@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -60,9 +60,7 @@ protected:
       this, "TopAlg", {}, &MinimalEventLoopMgr::topAlgHandler, "list of top level algorithms names" };
   Gaudi::Property<std::vector<std::string>> m_outStreamNames{
       this, "OutStream", {}, &MinimalEventLoopMgr::outStreamHandler, "list of output stream names" };
-  Gaudi::Property<std::string> m_outStreamType{ this, "OutStreamType", "OutputStream",
-                                                "[[deprecated]] default type for OutputStream instances" };
-  Gaudi::Property<bool>        m_printCFExp{ this, "PrintControlFlowExpression", false,
+  Gaudi::Property<bool> m_printCFExp{ this, "PrintControlFlowExpression", false,
                                       "Print the control flow expression representing the content of TopAlg" };
 
   // enums
