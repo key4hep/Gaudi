@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -51,7 +51,6 @@ What is searched?
 * Threads
 * ZLIB>=1.2.11
 * Rangev3
-* nosetests
 
 Depending on what was used to build Gaudi:
 * AIDA
