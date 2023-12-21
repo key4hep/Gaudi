@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <unordered_set>
