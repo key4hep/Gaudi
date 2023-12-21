@@ -9,6 +9,9 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+import logging
+from collections.abc import MutableSequence
+
 # explicit list for wildcard imports
 __all__ = [
     "GaudiHandle",
@@ -21,6 +24,8 @@ __all__ = [
     "PrivateToolHandleArray",
 ]
 __doc__ = """The python module holding python bindings to XyzHandles"""
+
+_log = logging.getLogger("GaudiHandles")
 
 
 class GaudiHandle(object):
@@ -120,70 +125,93 @@ class ServiceHandle(GaudiHandle):
 #
 
 
-class GaudiHandleArray(list):
-    """A list of GaudiHandles. Only handles of one type are allowed, as specified by self.__class__.handleType"""
+class GaudiHandleArray(MutableSequence):
+    """A unique list of GaudiHandles. Only handles of one type are allowed,
+    as specified by self.__class__.handleType"""
 
+    __slots__ = ("_items",)
     handleType = None  # must be set by derived class to the handle type
 
     def __init__(self, typesAndNames=None):
+        # Use of dictionary as storage for faster duplicate finding
+        self._items = {}  # name : handle
+
+        # check the type
         if typesAndNames is None:
             typesAndNames = []
-        list.__init__(self)
-        # check the type
-        if not isinstance(typesAndNames, list):
+        elif not isinstance(typesAndNames, list):
             raise TypeError(
                 "Argument to %s must be a list. Got a %s instead"
                 % (self.__class__.__name__, type(typesAndNames).__name__)
             )
         # add entries to list
-        for tn in typesAndNames:
-            self.append(tn)
+        self.extend(typesAndNames)
+
+    def __len__(self):
+        return len(self._items)
+
+    def __eq__(self, other):
+        try:
+            return self._items == other._items
+        except AttributeError:
+            # other is e.g. plain list
+            return list(self._items.values()) == other
 
     def __repr__(self):
         """Return class name with list of type/name strings as argument"""
         return (
             self.__class__.__name__
             + "(["
-            + ",".join(repr(h.toStringProperty()) for h in self)
+            + ",".join(repr(h.toStringProperty()) for h in self._items.values())
             + "])"
         )
 
     def __str__(self):
         """Print in a form which can be parsed"""
         return self.toStringProperty()
-        # shortName = self.__class__.__name__
-        # return "%s:%s" % (shortName,
-        #                  linesep + linesep.join([str(s) for s in self]))
+
+    def _indexToKey(self, index):
+        """Convert list index to dictionary key"""
+        return list(self._items.keys())[index]
+
+    def __copy__(self):
+        inst = self.__class__.__new__(self.__class__)
+        inst._items = self._items.copy()
+        return inst
+
+    def __setitem__(self, index, value):
+        self._items[self._indexToKey(index)] = value
 
     def __getitem__(self, index):
         if isinstance(index, str):
-            # seach by instance name
-            for h in self:
-                if h.getName() == index:
-                    return h
-            raise IndexError(
-                "%s does not have a %s with instance name %s"
-                % (self.__class__.__name__, self.handleType.componentType, index)
-            )
+            # search by instance name
+            try:
+                return self._items[index]
+            except KeyError:
+                raise IndexError(
+                    "%s does not have a %s with instance name %s"
+                    % (self.__class__.__name__, self.handleType.componentType, index)
+                )
         else:
-            return list.__getitem__(self, index)
+            return self._items[self._indexToKey(index)]
 
-    def __delitem__(self, key):
-        super(GaudiHandleArray, self).__delitem__(self.index(self[key]))
+    def __iter__(self):
+        yield from self._items.values()
 
-    def __iadd__(self, array):
-        if isinstance(array, (list, type(self))):
-            for v in array:
-                self.append(v)
+    def __delitem__(self, index):
+        self._items.pop(self._indexToKey(index))
+
+    def __contains__(self, value):
+        if isinstance(value, str):
+            return value in self._items
         else:
-            raise TypeError(
-                "Can not add a %s to a %s" % (type(array).__name__, type(self).__name__)
-            )
+            return value.getName() in self._items
 
-        return self
+    def __add__(self, other):
+        return self.__class__(list(self) + list(other))
 
-    def append(self, value):
-        """Only allow appending compatible types. It accepts a string, a handle or a configurable."""
+    def insert(self, index, value):
+        """Only allow inserting compatible types. It accepts a string, a handle or a configurable."""
         if isinstance(value, str):
             # convert string to handle
             value = self.__class__.handleType(value)
@@ -220,15 +248,22 @@ class GaudiHandleArray(list):
                 )
 
         # check that an instance name appears only once in the list
-        try:
-            oldValue = self.__getitem__(value.getName())
-        except IndexError:
-            # not yet there, so add it
-            list.append(self, value)
+        if value.getName() not in self._items:
+            if index == len(self._items):  # append
+                self._items[value.getName()] = value
+            else:
+                # for `insert` we need to rebuild the dictionary in the correct order
+                values = list(self._items.items())
+                values.insert(index, (value.getName(), value))
+                self._items = dict(values)
         else:
-            print(
-                "%s    WARNING %r with instance name %r already in list. Not adding %r"
-                % (self.__class__.__name__, oldValue, oldValue.getName(), value)
+            oldValue = self._items[value.getName()]
+            _log.warning(
+                "%r with instance name %r already in %s. Not adding %r.",
+                oldValue,
+                oldValue.getName(),
+                self.__class__.__name__,
+                value,
             )
 
     def isPublic(self):
@@ -238,7 +273,11 @@ class GaudiHandleArray(list):
     # Member functions which are the same as Configurables
     #
     def toStringProperty(self):
-        return "[" + ",".join(repr(v.toStringProperty()) for v in self) + "]"
+        return (
+            "["
+            + ",".join(repr(v.toStringProperty()) for v in self._items.values())
+            + "]"
+        )
 
 
 class ServiceHandleArray(GaudiHandleArray):

@@ -790,7 +790,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         if not hasattr(self, name):
             return False
         default = self.getDefaultProperty(name)
-        if isinstance(default, (list, dict, set, DataHandle)):
+        if isinstance(default, (list, dict, set, DataHandle, GaudiHandleArray)):
             value = getattr(self, name)
             return value != default
         return True
