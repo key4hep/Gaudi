@@ -207,8 +207,6 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
         self._handleType = handleType
         self._confTypeName = "Configurable" + handleType.componentType
 
-    #      print "%s: %r (%s)" % (self.__class__.__name__,self._handleType,self._confTypeName)
-
     def __get__(self, obj, type=None):
         try:
             return self.descr.__get__(obj, type)
@@ -217,8 +215,9 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
             try:
                 default = obj.__class__.getDefaultProperty(self.descr.__name__)
                 default = self.convertDefaultToBeSet(obj, default)
-                if default:
+                if default is not None:
                     self.__set__(obj, default)
+
             except AttributeError as e:
                 # change type of exception to avoid false error message
                 raise RuntimeError(*e.args)
