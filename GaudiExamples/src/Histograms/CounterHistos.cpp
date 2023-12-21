@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/RootHistogram.h>
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/RndmGenerators.h>
 
@@ -280,6 +281,70 @@ namespace Gaudi {
             this, "/TopDir/SubDir/Gauss", "Gaussian mean=0, sigma=1, atomic", { 100, -5, 5, "X" } };
       };
       DECLARE_COMPONENT( GaudiHistoAlgorithm )
+
+      /// Example of algorithm using root histograms accumulators.
+      class GaudiRootHistoAlgorithm : public Gaudi::Algorithm {
+      public:
+        using Gaudi::Algorithm::Algorithm;
+
+        StatusCode execute( const EventContext& ) const override {
+          // some random number generators, just to provide numbers
+          static Rndm::Numbers Gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
+          static Rndm::Numbers Flat( randSvc(), Rndm::Flat( -10.0, 10.0 ) );
+
+          // cache some numbers
+          const double gauss( Gauss() );
+          const double gauss2( Gauss() );
+          const double flat( Flat() );
+
+          // updating histograms
+          ++m_gauss[gauss];
+          ++m_gaussVflat[{ flat, gauss }];
+          ++m_gaussVflatVgauss[{ flat, gauss, gauss2 }];
+
+          // using buffers
+          auto gauss_buf            = m_gauss_buf.buffer();
+          auto gaussVflat_buf       = m_gaussVflat_buf.buffer();
+          auto gaussVflatVgauss_buf = m_gaussVflatVgauss_buf.buffer();
+          for ( unsigned int i = 0; i < 10; i++ ) {
+            ++gauss_buf[gauss];
+            ++gaussVflat_buf[{ flat, gauss }];
+            ++gaussVflatVgauss_buf[{ flat, gauss, gauss2 }];
+          }
+
+          if ( m_nCalls.nEntries() == 0 ) always() << "Filling Histograms...... Please be patient !" << endmsg;
+          ++m_nCalls;
+          return StatusCode::SUCCESS;
+        }
+
+      private:
+        mutable Gaudi::Accumulators::Counter<> m_nCalls{ this, "calls" };
+
+        // Testing Root histograms in all dimensions
+
+        // "default" case, that is bins containing doubles and atomic
+        mutable Gaudi::Accumulators::RootHistogram<1> m_gauss{
+            this, "Gauss", "Gaussian mean=0, sigma=1, atomic", { 100, -5, 5, "X" } };
+        mutable Gaudi::Accumulators::RootHistogram<2> m_gaussVflat{
+            this, "GaussFlat", "Gaussian V Flat, atomic", { { 50, -5, 5, "X" }, { 50, -5, 5, "Y" } } };
+        mutable Gaudi::Accumulators::RootHistogram<3> m_gaussVflatVgauss{
+            this,
+            "GaussFlatGauss",
+            "Gaussian V Flat V Gaussian, atomic",
+            { { 10, -5, 5, "X" }, { 10, -5, 5, "Y" }, { 10, -5, 5, "Z" } } };
+
+        // "default" case, dedicated to testing buffers
+        mutable Gaudi::Accumulators::RootHistogram<1> m_gauss_buf{
+            this, "GaussBuf", "Gaussian mean=0, sigma=1, buffered", { 100, -5, 5 } };
+        mutable Gaudi::Accumulators::RootHistogram<2> m_gaussVflat_buf{
+            this, "GaussFlatBuf", "Gaussian V Flat, buffered", { { 50, -5, 5 }, { 50, -5, 5 } } };
+        mutable Gaudi::Accumulators::RootHistogram<3> m_gaussVflatVgauss_buf{
+            this,
+            "GaussFlatGaussBuf",
+            "Gaussian V Flat V Gaussian, buffered",
+            { { 10, -5, 5 }, { 10, -5, 5 }, { 10, -5, 5 } } };
+      };
+      DECLARE_COMPONENT( GaudiRootHistoAlgorithm )
     } // namespace Counter
   }   // namespace Examples
 } // namespace Gaudi

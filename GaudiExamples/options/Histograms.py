@@ -18,10 +18,14 @@ RootHistSvc("RootHistSvc").OutputFile = "histo.root"
 from Configurables import (
     Gaudi__Examples__Counter__GaudiHistoAlgorithm as CounterHistoAlg,
 )
+from Configurables import (
+    Gaudi__Examples__Counter__GaudiRootHistoAlgorithm as RootCounterHistoAlg,
+)
 from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 
 algs = [
     CounterHistoAlg("SimpleCounterHistos", OutputLevel=DEBUG),
+    RootCounterHistoAlg("SimpleRootCounterHistos", OutputLevel=DEBUG),
 ]
 
 app = ApplicationMgr(

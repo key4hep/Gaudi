@@ -140,9 +140,38 @@ namespace Gaudi::Histograming::Sink {
 
       // fill Histo
       for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
+      // in case we have sums, overwrite them in the histogram with our more precise values
+      // FIXME This is only supporting regular histograms. It won't work in case of weighted histograms
+      if constexpr ( sizeof...( index ) == 1 ) {
+        if ( j.find( "sum" ) != j.end() ) {
+          double s[13];
+          s[0] = j.at( "nTotEntries" ).get<double>();
+          s[1] = j.at( "nTotEntries" ).get<double>();
+          s[2] = j.at( "sum" ).get<double>();
+          s[3] = j.at( "sum2" ).get<double>();
+          histo.PutStats( s );
+        }
+      } else {
+        if ( j.find( "sumx" ) != j.end() ) {
+          double s[13];
+          s[0] = j.at( "nTotEntries" ).get<double>();
+          s[1] = j.at( "nTotEntries" ).get<double>();
+          s[2] = j.at( "sumx" ).get<double>();
+          s[3] = j.at( "sumx2" ).get<double>();
+          s[4] = j.at( "sumy" ).get<double>();
+          s[5] = j.at( "sumy2" ).get<double>();
+          s[6] = j.at( "sumxy" ).get<double>();
+          if constexpr ( sizeof...( index ) > 2 ) {
+            s[7]  = j.at( "sumz" ).get<double>();
+            s[8]  = j.at( "sumz2" ).get<double>();
+            s[9]  = j.at( "sumxz" ).get<double>();
+            s[10] = j.at( "sumyz" ).get<double>();
+          }
+          histo.PutStats( s );
+        }
+      }
       // fill histo metadata, e.g. bins and number of entries
       Traits::fillMetaData( histo, jsonAxis, nentries );
-
       return { histo, dir };
     }
 
@@ -279,16 +308,42 @@ namespace Gaudi::Histograming::Sink {
     /// automatic translation of Root Histograms to json
     template <typename Histo>
     nlohmann::json rootHistogramToJson( Histo const& h ) {
-      std::string type = std::is_base_of_v<TProfile, Histo> || std::is_base_of_v<TProfile2D, Histo>
-                             ? "histogram:ProfileHistogram:double"
-                             : "histogram:Histogram:double";
-      return nlohmann::json{ { "type", type },
-                             { "title", h.GetTitle() },
-                             { "dimension", h.GetDimension() },
-                             { "empty", (int)h.GetEntries() == 0 },
-                             { "nEntries", (int)h.GetEntries() },
-                             { "axis", allAxisTojson( h ) },
-                             { "bins", binsTojson( h ) } };
+      bool        isProfile = std::is_base_of_v<TProfile, Histo> || std::is_base_of_v<TProfile2D, Histo>;
+      std::string type      = isProfile ? "histogram:ProfileHistogram:double" : "histogram:Histogram:double";
+      auto        j         = nlohmann::json{ { "type", type },
+                                              { "title", h.GetTitle() },
+                                              { "dimension", h.GetDimension() },
+                                              { "empty", (int)h.GetEntries() == 0 },
+                                              { "nEntries", (int)h.GetEntries() },
+                                              { "axis", allAxisTojson( h ) },
+                                              { "bins", binsTojson( h ) } };
+      if ( !isProfile ) {
+        double s[13];
+        h.GetStats( s );
+        if ( h.GetDimension() == 1 ) {
+          j["nTotEntries"] = s[0];
+          j["sum"]         = s[2];
+          j["sum2"]        = s[3];
+          j["mean"]        = s[2] / s[0];
+        } else {
+          j["nTotEntries"] = s[0];
+          j["sumx"]        = s[2];
+          j["sumx2"]       = s[3];
+          j["meanx"]       = s[2] / s[0];
+          j["sumy"]        = s[4];
+          j["sumy2"]       = s[5];
+          j["sumxy"]       = s[6];
+          j["meany"]       = s[4] / s[0];
+          if ( h.GetDimension() >= 3 ) {
+            j["sumz"]  = s[7];
+            j["sumz2"] = s[8];
+            j["sumxz"] = s[9];
+            j["sumyz"] = s[10];
+            j["meanz"] = s[7] / s[0];
+          }
+        }
+      }
+      return j;
     }
 
   } // namespace details
