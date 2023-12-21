@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,11 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-# Python 2 compatibility
-try:
-    long
-except NameError:
-    long = int
 
 # common configuration plus output level threshold
 from Configurables import GaudiExamplesCommonConf
@@ -35,13 +30,13 @@ alg = PropertyAlg(
     OutputLevel=3,
     Int=101,
     Int64=1 << 32,
-    UInt64=long(1 << 32),  # 'long' is used for testing
+    UInt64=int(1 << 32),  # 'int' is used for testing
     Double=101.1e10,
     String='hundred "one"',
     Bool=False,
     IntArray=[1, 2, 3, 5],
     Int64Array=[1 << 32],
-    UInt64Array=[long(1 << 32)],  # 'long' is used for testing
+    UInt64Array=[int(1 << 32)],  # 'int' is used for testing
     DoubleArray=[-11.0, 2.0, 3.3, 0.4e-03, 1.0e-20, 1.0e20],
     StringArray=["one", "two", "four"],
     StringMap={"one": "une"},

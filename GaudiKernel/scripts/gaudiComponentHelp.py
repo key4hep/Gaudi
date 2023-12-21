@@ -12,7 +12,6 @@
 """
 Print help messages for gaudi components
 """
-from __future__ import print_function
 
 import os
 import sys

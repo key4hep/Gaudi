@@ -11,7 +11,6 @@
 # File: AthenaCommon/python/Configurable.py
 # Author: Wim Lavrijsen (WLavrijsen@lbl.gov)
 # Author: Martin Woudstra (Martin.Woudstra@cern.ch)
-from __future__ import absolute_import
 
 import copy
 import os
@@ -20,7 +19,6 @@ import types
 from inspect import isclass
 
 import GaudiKernel.ConfigurableMeta as ConfigurableMeta
-import six
 from GaudiConfig.ControlFlow import (
     AndNode,
     CFFalse,
@@ -147,7 +145,7 @@ class PropertyReference(object):
 # base class for configurable Gaudi algorithms/services/algtools/etc. ======
 
 
-class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)):
+class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
     """Base class for Gaudi components that implement the IProperty interface.
     Provides most of the boilerplate code, but the actual useful classes
     are its derived ConfigurableAlgorithm, ConfigurableService, and
@@ -184,8 +182,8 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
         of a type with the same name will return the same instance."""
 
         global log
-        func_code = six.get_function_code(cls.__init__)
-        func_defaults = six.get_function_defaults(cls.__init__)
+        func_code = cls.__init__.__code__
+        func_defaults = cls.__init__.__defaults__
         # try to get the name of the Configurable (having a name is compulsory)
         if "name" in kwargs:
             # simple keyword (by far the easiest)
@@ -358,15 +356,15 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
 
         for meth, nArgs in meths.items():
             try:
-                f = six.get_unbound_function(getattr(klass, meth))
+                f = getattr(klass, meth)
             except AttributeError:
                 raise NotImplementedError(
                     "%s is missing in class %s" % (meth, str(klass))
                 )
 
             # in addition, verify the number of arguments w/o defaults
-            nargcount = six.get_function_code(f).co_argcount
-            fdefaults = six.get_function_defaults(f)
+            nargcount = f.__code__.co_argcount
+            fdefaults = f.__defaults__
             ndefaults = fdefaults and len(fdefaults) or 0
             if not nargcount - ndefaults <= nArgs <= nargcount:
                 raise TypeError(
@@ -547,9 +545,6 @@ class Configurable(six.with_metaclass(ConfigurableMeta.ConfigurableMeta, object)
 
     def __bool__(self):
         return True
-
-    # Python 2 compatibility
-    __nonzero__ = __bool__
 
     def remove(self, items):
         if not isinstance(items, (list, tuple)):

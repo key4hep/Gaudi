@@ -20,7 +20,6 @@ This module contains set of simple and useful utilities to booking and
 manipulation with N-Tuples (in the spirit of GaudiTuples<TYPE>)
 
 """
-from __future__ import print_function
 
 # =============================================================================
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"

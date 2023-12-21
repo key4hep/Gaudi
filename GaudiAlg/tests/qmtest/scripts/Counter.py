@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -23,9 +23,6 @@
 *                                                                             *
 *******************************************************************************
 """
-from __future__ import print_function
-
-import six
 
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
@@ -91,10 +88,10 @@ class Counter(GaudiAlgo):
         executed = self.counter("executed")
         prnt = int(executed.flag())
         if 0 == prnt % 1000:
-            six.print_(" Event number %s " % prnt, flush=True)
+            print(" Event number %s " % prnt, flush=True)
             bc = self.counter("eff")
             line = "(%.12g += %.12g)%s" % (bc.eff() * 100, bc.effErr() * 100, "%")
-            six.print_(' Efficiency (binomial counter "eff"): %s' % line, flush=True)
+            print(' Efficiency (binomial counter "eff"): %s' % line, flush=True)
 
         return SUCCESS
 

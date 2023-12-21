@@ -10,7 +10,6 @@
 #####################################################################################
 # File: Gaudi/python/Gaudi/Configuration.py
 # Author: Pere Mato (pere.mato@cern.ch)
-from __future__ import absolute_import
 
 import logging
 

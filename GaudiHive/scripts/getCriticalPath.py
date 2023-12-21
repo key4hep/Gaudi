@@ -10,7 +10,6 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 """Determine critical path for a given precedence trace."""
-from __future__ import print_function
 
 __author__ = "Illya Shapoval"
 

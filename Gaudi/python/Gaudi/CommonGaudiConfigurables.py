@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -67,11 +67,10 @@ aliases = {
 }
 
 _gbl = globals()  # optimization
-# This would be nicer with dict comprehension (http://www.python.org/dev/peps/pep-0274)
-# but it is available only in Python 2.7
-aliases = dict(
-    [(new, _gbl[old]) for new, old in aliases.items() if old in _gbl]
-)  # do the aliasing only if the original is available
+
+# do the aliasing only if the original is available
+aliases = {new: _gbl[old] for new, old in aliases.items() if old in _gbl}
+
 # change the default name
 for new in aliases:
     aliases[new].DefaultedName = new
@@ -80,9 +79,7 @@ _gbl.update(aliases)
 __all__.extend(aliases)
 # remove temporaries
 del _gbl
-# The `new` var is only scoped in its `for` loop in Python 3, so we only need
-# to 'worry' about cleanup in Python 2
 try:
-    del new
+    del new  # only available if len(aliases)>0
 except NameError:
     pass

@@ -10,7 +10,6 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 """Plot timeline from TimelineSvc"""
-from __future__ import print_function
 
 __author__ = "Frank Winklmeier"
 
