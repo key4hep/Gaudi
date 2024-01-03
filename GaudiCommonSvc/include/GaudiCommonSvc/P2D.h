@@ -18,6 +18,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <mutex>
+
 namespace Gaudi {
 
   /**@class Profile2D
