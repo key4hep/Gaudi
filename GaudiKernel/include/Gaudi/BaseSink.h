@@ -51,13 +51,13 @@ namespace Gaudi::Monitoring {
     void registerEntity( Hub::Entity ent ) override {
       if ( wanted( ent.type, m_typesToSave ) && wanted( ent.name, m_namesToSave ) &&
            wanted( ent.component, m_componentsToSave ) ) {
-        m_monitoringEntities.emplace( ent.id(), std::move( ent ) );
+        m_monitoringEntities.emplace( std::move( ent ) );
       }
     }
 
     /// handles removal of an entity
     void removeEntity( Hub::Entity const& ent ) override {
-      auto it = m_monitoringEntities.find( ent.id() );
+      auto it = m_monitoringEntities.find( ent );
       if ( it != m_monitoringEntities.end() ) { m_monitoringEntities.erase( it ); }
     }
 
@@ -98,8 +98,7 @@ namespace Gaudi::Monitoring {
      */
     template <typename Callable>
     void applyToAllEntities( Callable func ) const {
-      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ),
-                     [func]( auto& p ) { func( p.second ); } );
+      std::for_each( begin( m_monitoringEntities ), end( m_monitoringEntities ), [func]( auto& p ) { func( p ); } );
     }
 
     /**
@@ -113,18 +112,21 @@ namespace Gaudi::Monitoring {
 
     /// deciding whether a given name matches the list of regexps given
     /// empty list means everything matches
-    bool wanted( std::string name, std::vector<std::string> searchNames ) {
-      if ( searchNames.empty() ) { return true; }
-      for ( const auto& searchName : searchNames ) {
-        const std::regex regex( searchName );
-        if ( std::regex_match( name, regex ) ) { return true; }
-      }
-      return false;
+    bool wanted( std::string const& name, std::vector<std::string> const& searchNames ) {
+      return searchNames.empty() || std::any_of( searchNames.begin(), searchNames.end(), [&]( const auto& searchName ) {
+               const std::regex regex( searchName );
+               return std::regex_match( name, regex );
+             } );
     }
 
     /// list of entities we are dealing with
-    std::map<void*, Gaudi::Monitoring::Hub::Entity> m_monitoringEntities;
-    Gaudi::Property<std::vector<std::string>>       m_namesToSave{
+    struct EntityOrder final {
+      bool operator()( const Gaudi::Monitoring::Hub::Entity& lhs, const Gaudi::Monitoring::Hub::Entity& rhs ) const {
+        return lhs.id() < rhs.id();
+      }
+    };
+    std::set<Gaudi::Monitoring::Hub::Entity, EntityOrder> m_monitoringEntities;
+    Gaudi::Property<std::vector<std::string>>             m_namesToSave{
         this, "NamesToSave", {}, "List of regexps used to match names of entities to save" };
     Gaudi::Property<std::vector<std::string>> m_componentsToSave{
         this, "ComponentsToSave", {}, "List of regexps used to match component names of entities to save" };

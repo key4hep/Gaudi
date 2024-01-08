@@ -36,9 +36,7 @@ namespace Gaudi::Monitoring {
         }
       }
       info() << "Writing JSON file " << m_fileName.value() << endmsg;
-      std::ofstream os( m_fileName, std::ios::out );
-      os << output.dump( 4 );
-      os.close();
+      std::ofstream{ m_fileName, std::ios::out } << output.dump( 4 );
     }
 
   private:
