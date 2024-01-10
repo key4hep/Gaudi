@@ -73,7 +73,7 @@ StatusCode GaudiSequencer::initialize() {
 //=============================================================================
 StatusCode GaudiSequencer::execute( const EventContext& ctx ) const {
 
-  if ( m_measureTime ) m_timerTool->start( m_timer );
+  auto timer = m_timerTool->scopedTimer( m_timer, m_measureTime );
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
@@ -87,10 +87,8 @@ StatusCode GaudiSequencer::execute( const EventContext& ctx ) const {
     Gaudi::Algorithm* myAlg = entry.algorithm();
     if ( !myAlg->isEnabled() ) continue;
     if ( myAlg->execState( ctx ).state() != AlgExecState::State::Done ) {
-
-      if ( m_measureTime ) m_timerTool->start( entry.timer() );
-      result = myAlg->sysExecute( ctx );
-      if ( m_measureTime ) m_timerTool->stop( entry.timer() );
+      auto entry_timer = m_timerTool->scopedTimer( entry.timer(), m_measureTime );
+      result           = myAlg->sysExecute( ctx );
       if ( !result.isSuccess() ) break; //== Abort and return bad status
     }
     //== Check the returned status
@@ -127,8 +125,6 @@ StatusCode GaudiSequencer::execute( const EventContext& ctx ) const {
   auto& state = execState( ctx );
   if ( !m_ignoreFilter && !m_entries.empty() ) state.setFilterPassed( m_invert ? !seqPass : seqPass );
   state.setState( AlgExecState::State::Done );
-
-  if ( m_measureTime ) m_timerTool->stop( m_timer );
 
   return m_returnOK ? ( result.ignore(), StatusCode::SUCCESS ) : result;
 }

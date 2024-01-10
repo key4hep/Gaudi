@@ -61,6 +61,30 @@ public:
 
   /** prepares and saves the timing histograms **/
   virtual void saveHistograms() = 0;
+
+  /**
+   * * @brief Start timer by index. The timer stops on destruction of returned object.
+   *
+   *       * @param index: index in list of timers.
+   *       * @param enable: only if true actually perform any timing
+   *       * @return opaque type whose scope determines what is timed
+   */
+  [[nodiscard]] auto scopedTimer( int index, bool enable = true ) {
+    class Ret {
+      ISequencerTimerTool* tool;
+      int                  index;
+
+    public:
+      Ret( ISequencerTimerTool* tool, int index ) : tool{ tool }, index{ index } {
+        if ( tool ) tool->start( index );
+      }
+      ~Ret() { reset(); }
+      void reset() {
+        if ( tool ) tool->stop( index );
+      }
+    };
+    return Ret{ enable ? this : nullptr, index };
+  }
 };
 
 #endif // ISEQUENCERTIMERTOOL_H
