@@ -22,6 +22,33 @@ namespace Gaudi::Accumulators {
   auto operator*( const std::chrono::duration<Rep1, Period>& lhs, const std::chrono::duration<Rep2, Period>& rhs );
 } // namespace Gaudi::Accumulators
 
+// Fix builds with GCC 11 and C++20
+#if defined( __GNUC__ ) && ( __GNUC__ == 11 ) && !defined( __clang__ ) && __cplusplus >= 202002L
+namespace std::chrono {
+  template <typename Ratio>
+  static constexpr const char* suffix( const Ratio& ) {
+    if constexpr ( std::ratio_equal_v<Ratio, std::ratio<1>> ) {
+      return "s";
+    } else if constexpr ( std::ratio_equal_v<Ratio, std::milli> ) {
+      return "ms";
+    } else if constexpr ( std::ratio_equal_v<Ratio, std::micro> ) {
+      return "us";
+    } else if constexpr ( std::ratio_equal_v<Ratio, std::nano> ) {
+      return "ns";
+    } else if constexpr ( std::ratio_equal_v<Ratio, std::ratio<60>> ) {
+      return "m";
+    } else if constexpr ( std::ratio_equal_v<Ratio, std::ratio<3600>> ) {
+      return "h";
+    }
+    return "";
+  }
+  template <class Rep, class Period>
+  std::ostream& operator<<( std::ostream& os, const std::chrono::duration<Rep, Period>& d ) {
+    return os << d.count() << suffix( Period{} );
+  }
+} // namespace std::chrono
+#endif
+
 /**
  * @namespace Gaudi::Accumulators
  *
