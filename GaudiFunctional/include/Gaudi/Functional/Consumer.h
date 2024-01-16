@@ -33,7 +33,7 @@ namespace Gaudi::Functional {
           filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
@@ -53,7 +53,7 @@ namespace Gaudi::Functional {
           filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs );
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.tag() << " : " << e.message() << endmsg;
+          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
           return e.code();
         }
       }
