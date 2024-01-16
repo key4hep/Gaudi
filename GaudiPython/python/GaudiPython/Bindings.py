@@ -517,6 +517,11 @@ class iDataSvc(iService):
         iService.__init__(self, name, idp)
         self.__dict__["_idp"] = InterfaceCast(gbl.IDataProviderSvc)(idp)
         self.__dict__["_idm"] = InterfaceCast(gbl.IDataManagerSvc)(idp)
+        # do not use InterfaceCast as it prints an error on failure
+        self.__dict__["_ihwb"] = None
+        ip = makeNullPointer(gbl.IHiveWhiteBoard)
+        if idp.queryInterface(gbl.IHiveWhiteBoard.interfaceID(), ip).isSuccess():
+            self.__dict__["_ihwb"] = ip
 
     def registerObject(self, path, obj):
         if not self._idp:
@@ -662,6 +667,23 @@ class iDataSvc(iService):
         if not self._idm:
             raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
         return self._idm.setRoot(name, obj)
+
+    def selectOnlyStore(self):
+        # nothing to do if GaudiHive is not used
+        if not self._ihwb:
+            return
+        # check we have a single store raise an error if it' not the case
+        if self._ihwb.getNumberOfStores() > 1:
+            raise IndexError(
+                "Several stores available in Gaudihive mode, unable to figure out which one to use.\nPlease call selectStore instead of selectSingleStore\nIf you're only using GaudiPython, make sure you configure a single thread"
+            )
+        # select the only store
+        self.selectStore(0)
+
+    def selectStore(self, n):
+        if not self._ihwb:
+            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+        return self._ihwb.selectStore(n)
 
     def clearStore(self):
         if not self._idm:
@@ -1064,7 +1086,9 @@ class AppMgr(iService):
         return iDataSvc(name, svc)
 
     def evtsvc(self):
-        return self.datasvc("EventDataSvc")
+        svc = self.datasvc("EventDataSvc")
+        svc.selectOnlyStore()  # in case of GaudiHive, check there is a single store and selects it
+        return svc
 
     def detsvc(self):
         return self.datasvc("DetectorDataSvc")
