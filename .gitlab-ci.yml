@@ -232,6 +232,24 @@ warnings-check:lcg-view:102b:x86_64-centos7-gcc11-opt:
     - job: "lcg-view:102b:x86_64-centos7-gcc11-opt"
       artifacts: true
 
+lcg-view:105:x86_64-el9-gcc13-opt:
+  <<: *template_lcg_view_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+warnings-check:lcg-view:105:x86_64-el9-gcc13-opt:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg-view:105:x86_64-el9-gcc13-opt"
+      artifacts: true
+
+lcg-view:105:x86_64-el9-clang16-opt:
+  <<: *template_lcg_view_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+warnings-check:lcg-view:105:x86_64-el9-clang16-opt:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg-view:105:x86_64-el9-clang16-opt"
+      artifacts: true
+
 
 ### Misc checks
 check-unused:
