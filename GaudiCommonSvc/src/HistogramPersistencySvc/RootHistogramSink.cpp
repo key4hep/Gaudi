@@ -21,22 +21,25 @@
 
 namespace Gaudi::Histograming::Sink {
 
-  using namespace std::string_literals;
+  namespace {
+    using namespace std::string_literals;
+    Base::HistoRegistry const registry = {
+        { { "histogram:Histogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
+        { { "histogram:WeightedHistogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
+        { { "histogram:Histogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
+        { { "histogram:WeightedHistogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
+        { { "histogram:Histogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
+        { { "histogram:WeightedHistogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
+        { { "histogram:ProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
+        { { "histogram:WeightedProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
+        { { "histogram:ProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
+        { { "histogram:WeightedProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
+        { { "histogram:ProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> },
+        { { "histogram:WeightedProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> } };
+  } // namespace
 
   struct Root : Base {
     using Base::Base;
-    HistoRegistry registry = { { { "histogram:Histogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
-                               { { "histogram:WeightedHistogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
-                               { { "histogram:Histogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
-                               { { "histogram:WeightedHistogram"s, 2 }, &saveRootHisto<2, false, TH2D> },
-                               { { "histogram:Histogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
-                               { { "histogram:WeightedHistogram"s, 3 }, &saveRootHisto<3, false, TH3D> },
-                               { { "histogram:ProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
-                               { { "histogram:WeightedProfileHistogram"s, 1 }, &saveRootHisto<1, true, TProfile> },
-                               { { "histogram:ProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
-                               { { "histogram:WeightedProfileHistogram"s, 2 }, &saveRootHisto<2, true, TProfile2D> },
-                               { { "histogram:ProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> },
-                               { { "histogram:WeightedProfileHistogram"s, 3 }, &saveRootHisto<3, true, TProfile3D> } };
 
     StatusCode initialize() override {
       return Base::initialize().andThen( [&] {
