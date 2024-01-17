@@ -114,15 +114,20 @@ string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_ENABLE_GAUDIALG ${GAUDI_ENA
 
 # The C++ standard used must be the same as ROOT's
 if(NOT GAUDI_CXX_STANDARD)
-  # FIXME: the day ROOT_CXX_STANDARD is provided by ROOTConfig.cmake, remove this lookup
-  set(ROOT_CXX_STANDARD ${ROOT_CXX_FLAGS}) # try to parse ROOT compile flags
-  separate_arguments(ROOT_CXX_STANDARD)
-  list(FILTER ROOT_CXX_STANDARD INCLUDE REGEX "-std=(c|gnu)\\+\\+[0-9]+")
-  list(TRANSFORM ROOT_CXX_STANDARD REPLACE "-std=(c|gnu)\\+\\+([0-9]+)" "\\2")
-  if(NOT ROOT_CXX_STANDARD)
-    message(FATAL_ERROR "Cannot find the C++ standard of ROOT")
+  # Check if ROOT_CXX_STANDARD is already defined
+  if(DEFINED ROOT_CXX_STANDARD)
+    message(STATUS "ROOT_CXX_STANDARD is already defined by ROOT. Using it...")
+  else()
+    # Deduce CXX_STANDARD from ROOT_CXX_FLAGS
+    set(ROOT_CXX_FLAGS_TEMP ${ROOT_CXX_FLAGS}) # Use a temporary variable to avoid modifying the original
+    separate_arguments(ROOT_CXX_FLAGS_TEMP)
+    list(FILTER ROOT_CXX_FLAGS_TEMP INCLUDE REGEX "-std=(c|gnu)\\+\\+[0-9]+")
+    list(TRANSFORM ROOT_CXX_FLAGS_TEMP REPLACE "-std=(c|gnu)\\+\\+([0-9]+)" "\\2")
+    if(NOT ROOT_CXX_FLAGS_TEMP)
+      message(FATAL_ERROR "Cannot find the C++ standard of ROOT")
+    endif()
+    list(GET ROOT_CXX_FLAGS_TEMP 0 ROOT_CXX_STANDARD)
   endif()
-  list(GET ROOT_CXX_STANDARD 0 ROOT_CXX_STANDARD)
   set(GAUDI_CXX_STANDARD ${ROOT_CXX_STANDARD} CACHE STRING "The version of C++ used to compile Gaudi")
 endif()
 message(STATUS "Gaudi will be built using C++${GAUDI_CXX_STANDARD} standard.")
