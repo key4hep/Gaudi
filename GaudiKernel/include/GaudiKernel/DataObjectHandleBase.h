@@ -72,19 +72,6 @@ protected:
 
   bool m_init     = false;
   bool m_optional = false;
-
-  /**
-   * Whether the search part of the fetch method (so dealing with alt names
-   * was already executed or not. On subsequent calls (when this is true),
-   * it will be skipped.
-   */
-  mutable std::atomic<bool> m_searchDone = false; // TODO: optimize it so that it is std::any_of( objKey, ":" )
-
-  /**
-   * A Mutex protecting the calls to the search part of the fetch method,
-   * so that we are sure that we only call it once
-   */
-  mutable std::mutex m_searchMutex;
 };
 
 #endif

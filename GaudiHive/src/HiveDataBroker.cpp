@@ -211,11 +211,6 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
     const auto& output = alg.alg->outputDataObjs();
     if ( output.empty() ) { continue; }
     for ( auto id : output ) {
-      if ( id.key().find( ":" ) != std::string::npos ) {
-        error() << " in Alg " << AlgorithmRepr{ *alg.alg } << " alternatives are NOT allowed for outputs! id: " << id
-                << endmsg;
-      }
-
       auto r = producers.emplace( id, &alg );
       if ( !r.second ) {
         throw GaudiException( "multiple algorithms declare " + id.key() + " as output (" + alg.alg->name() + " and " +
@@ -229,11 +224,8 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
   for ( auto& algEntry : algorithms ) {
     auto input = sortedDataObjIDColl( algEntry.alg->inputDataObjs() );
     for ( const DataObjID* idp : input ) {
-      DataObjID id = *idp;
-      if ( id.key().find( ":" ) != std::string::npos ) {
-        throw GaudiException( "id '" + id.key() + "' contains a ':' which is no longer allowed",__func__, StatusCode::FAILURE);
-      }
-      auto iproducer = producers.find( id );
+      DataObjID id        = *idp;
+      auto      iproducer = producers.find( id );
       if ( iproducer != producers.end() ) {
         algEntry.dependsOn.insert( iproducer->second );
       } else {
@@ -264,10 +256,7 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
   // start with seeding from the initial request
   for ( const auto& req : requested ) {
     DataObjID id = req;
-    if ( id.key().find( ":" ) != std::string::npos ) {
-      throw GaudiException( "id '" + id.key() + "' contains a ':' which is no longer allowed",__func__, StatusCode::FAILURE);
-    }
-    auto i = m_dependencies.find( id );
+    auto      i  = m_dependencies.find( id );
     if ( i == m_dependencies.end() )
       throw GaudiException( "unknown requested input: " + id.key(), __func__, StatusCode::FAILURE );
     deps.push_back( i->second );

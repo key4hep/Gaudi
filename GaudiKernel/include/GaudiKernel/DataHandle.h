@@ -54,8 +54,8 @@ namespace Gaudi {
 
     virtual Mode mode() const { return m_mode; }
 
-    virtual void setKey( DataObjID key ) const { m_key = std::move( key ); }
-    virtual void updateKey( std::string key ) const { m_key.updateKey( std::move( key ) ); }
+    virtual void setKey( DataObjID key ) { m_key = std::move( key ); }
+    virtual void updateKey( std::string key ) { m_key.updateKey( std::move( key ) ); }
 
     virtual const std::string& objKey() const { return m_key.key(); }
     virtual const DataObjID&   fullKey() const { return m_key; }
@@ -77,7 +77,7 @@ namespace Gaudi {
      * change in case the object had alternative names, and it should not
      * be visible to the end user, for which the Handle is still the same
      */
-    mutable DataObjID  m_key   = { "NONE" };
+    DataObjID          m_key   = { "NONE" };
     IDataHandleHolder* m_owner = nullptr;
 
     static const std::string default_type;

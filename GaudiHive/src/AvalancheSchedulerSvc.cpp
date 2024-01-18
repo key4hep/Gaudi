@@ -206,9 +206,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
         DataObjID id = *idp;
         ostdd << "\n    o INPUT  " << id;
         write_owners( id );
-        if ( id.key().find( ":" ) != std::string::npos ) {
-          throw GaudiException( "id '" + id.key() + "' contains a ':' which is no longer allowed",__func__, StatusCode::FAILURE);
-        }
         algoDependencies.insert( id );
         globalInp.insert( id );
       }

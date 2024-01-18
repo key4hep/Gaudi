@@ -18,7 +18,6 @@
 
 namespace Gaudi::Functional {
 
-
   namespace Traits {
 
     // traits classes used to customize Transformer and FilterPredicate
