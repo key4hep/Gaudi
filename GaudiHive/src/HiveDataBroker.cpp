@@ -231,20 +231,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
     for ( const DataObjID* idp : input ) {
       DataObjID id = *idp;
       if ( id.key().find( ":" ) != std::string::npos ) {
-        warning() << AlgorithmRepr{ *( algEntry.alg ) } << " contains alternatives which require resolution...\n";
-        auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
-        auto itok   = std::find_if( tokens.begin(), tokens.end(),
-                                    [&]( DataObjID t ) { return producers.find( t ) != producers.end(); } );
-        if ( itok != tokens.end() ) {
-          warning() << "found matching output for " << *itok << " -- updating info\n";
-          id.updateKey( *itok );
-          warning() << "Please update input to not require alternatives, and "
-                       "instead properly configure the dataloader"
-                    << endmsg;
-        } else {
-          error() << "failed to find alternate in global output list"
-                  << " for id: " << id << " in Alg " << algEntry.alg << endmsg;
-        }
+        throw GaudiException( "id '" + id.key() + "' contains a ':' which is no longer allowed",__func__, StatusCode::FAILURE);
       }
       auto iproducer = producers.find( id );
       if ( iproducer != producers.end() ) {
@@ -278,20 +265,7 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
   for ( const auto& req : requested ) {
     DataObjID id = req;
     if ( id.key().find( ":" ) != std::string::npos ) {
-      warning() << req.key() << " contains alternatives which require resolution...\n";
-      auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
-      auto itok   = std::find_if( tokens.begin(), tokens.end(),
-                                  [&]( DataObjID t ) { return m_dependencies.find( t ) != m_dependencies.end(); } );
-      if ( itok != tokens.end() ) {
-        warning() << "found matching output for " << *itok << " -- updating info\n";
-        id.updateKey( *itok );
-        warning() << "Please update input to not require alternatives, and "
-                     "instead properly configure the dataloader"
-                  << endmsg;
-      } else {
-        error() << "failed to find alternate in global output list"
-                << " for id: " << id << endmsg;
-      }
+      throw GaudiException( "id '" + id.key() + "' contains a ':' which is no longer allowed",__func__, StatusCode::FAILURE);
     }
     auto i = m_dependencies.find( id );
     if ( i == m_dependencies.end() )
