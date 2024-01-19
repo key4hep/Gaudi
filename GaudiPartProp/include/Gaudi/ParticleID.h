@@ -10,10 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Gaudi/Math/Digit.h>
 #include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/Kernel.h>
 #include <cmath>
+#include <cstdint>
 #include <iosfwd>
 #include <string>
 #include <tuple>
@@ -53,7 +53,7 @@ namespace Gaudi {
     /// Retrieve the PDG ID.
     int pid() const { return m_pid; }
     /// Absolute value of the PDG ID.
-    unsigned int abspid() const { return 0 > m_pid ? -m_pid : m_pid; }
+    constexpr unsigned int abspid() const { return 0 > m_pid ? -m_pid : m_pid; }
     /// Update the PDG ID.
     void setPid( const int pid ) { m_pid = pid; }
 
@@ -122,18 +122,9 @@ namespace Gaudi {
     /// Return everything beyond the 7th PDG ID digit.
     int extraBits() const;
     /// Return the digit for a given PDG ID digit location.
-    unsigned short digit( const Location& loc ) const { return Gaudi::Math::digit( abspid(), loc - 1 ); }
-    /// Return the digit for a given PDG ID digit location.
-    template <Location L>
-    int digit_() const {
-      Gaudi::Math::Digit<unsigned int, L - 1> _eval;
-      return _eval( abspid() );
-    }
-    /// Return the digits between two PDG ID digit locations.
-    template <Location L1, Location L2>
-    int digits_() const {
-      Gaudi::Math::Digits<unsigned int, L1 - 1, L2 - 1> _eval;
-      return _eval( abspid() );
+    constexpr unsigned short digit( const Location& loc ) const {
+      constexpr std::uint32_t pows[10] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
+      return ( abspid() / pows[loc - 1] ) % 10;
     }
 
     /// Equality operator.

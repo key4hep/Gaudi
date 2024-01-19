@@ -20,7 +20,6 @@
 
 <lcgdict>
 
-
   <class name = "Gaudi::ParticleID"                />
   <class name = "Gaudi::ParticleProperty"          />
   <class name = "Gaudi::Interfaces::IParticlePropertySvc"      />
@@ -55,13 +54,5 @@
   <class name    = "Decays::Dict::NodeOps" />
   <class name    = "Decays::NodeList" />
   <class name    = "std::vector<Decays::Nodes::_Node>" />
-
-
-  <exclusion>
-    <class name = "Gaudi::ParticleID">
-      <method name="digit_"/>
-      <method name="digits_"/>
-    </class>
-  </exclusion>
 
 </lcgdict>

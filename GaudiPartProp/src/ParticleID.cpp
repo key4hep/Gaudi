@@ -25,13 +25,13 @@ namespace {
   typedef std::array<unsigned int, 8> DATA;
   inline DATA                         decode( const Gaudi::ParticleID& pid ) {
     unsigned int m_extra = pid.abspid() / 10000000;
-    unsigned int m_n     = pid.digit_<Gaudi::ParticleID::n>();
-    unsigned int m_nr    = pid.digit_<Gaudi::ParticleID::nr>();
-    unsigned int m_nl    = pid.digit_<Gaudi::ParticleID::nl>();
-    unsigned int m_nq1   = pid.digit_<Gaudi::ParticleID::nq1>();
-    unsigned int m_nq2   = pid.digit_<Gaudi::ParticleID::nq2>();
-    unsigned int m_nq3   = pid.digit_<Gaudi::ParticleID::nq3>();
-    unsigned int m_nj    = pid.digit_<Gaudi::ParticleID::nj>();
+    unsigned int m_n     = pid.digit( Gaudi::ParticleID::n );
+    unsigned int m_nr    = pid.digit( Gaudi::ParticleID::nr );
+    unsigned int m_nl    = pid.digit( Gaudi::ParticleID::nl );
+    unsigned int m_nq1   = pid.digit( Gaudi::ParticleID::nq1 );
+    unsigned int m_nq2   = pid.digit( Gaudi::ParticleID::nq2 );
+    unsigned int m_nq3   = pid.digit( Gaudi::ParticleID::nq3 );
+    unsigned int m_nj    = pid.digit( Gaudi::ParticleID::nj );
     unsigned int aid     = pid.abspid();
 
     // Switch gluons to 0.
