@@ -22,7 +22,6 @@ gaudi_add_library(GaudiPartProp
         src/Symbols.cpp
         src/TrackDefaultParticles.cpp
         src/iNode.cpp
-        src/Lomont.cpp
     LINK
         PUBLIC
             Gaudi::GaudiKernel

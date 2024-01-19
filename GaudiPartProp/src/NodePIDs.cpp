@@ -11,7 +11,6 @@
 #include <Decays/NodesPIDs.h>
 #include <Decays/Symbols.h>
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
-#include <Gaudi/Math/Lomont.h>
 #include <Gaudi/ParticleID.h>
 #include <Gaudi/ParticleProperty.h>
 #include <GaudiKernel/SmartIF.h>
@@ -32,28 +31,28 @@ namespace {
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-12
    */
-  const double s_SHORTLIVED = 0.1 * Gaudi::Units::micrometer;
+  constexpr double s_SHORTLIVED = 0.1 * Gaudi::Units::micrometer;
   /** @var s_LONGLIVED
    *  The default low-edge for c*tau for particle to be considered
-   *  as "short-lived" particles
+   *  as "long-lived" particles
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-12
    */
-  const double s_LONGLIVED = s_SHORTLIVED;
+  constexpr double s_LONGLIVED = s_SHORTLIVED;
   /** @var s_STABLE
    *  The default low-edge for c*tau for particle to be considered
    *  as "stable" particle
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-12
    */
-  const double s_STABLE = 1 * Gaudi::Units::meter;
+  constexpr double s_STABLE = 1 * Gaudi::Units::meter;
   /** @var s_INFINITY
    *  The default low-edge for c*tau for particle to be considered
    *  as "stable" particle
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-12
    */
-  const double s_INFINITY = 0.5 * std::numeric_limits<double>::max();
+  constexpr double s_INFINITY = 0.5 * std::numeric_limits<double>::max();
 } // namespace
 namespace Decays {
   /*  Create the "OR" of two nodes
@@ -342,6 +341,13 @@ bool Decays::Nodes::Mass::operator()( const Gaudi::ParticleID& pid ) const {
   } );
 }
 
+namespace {
+  // idea coming from The art of computer programming by Knuth
+  constexpr bool essentiallyEqual( double const a, double const b ) {
+    return std::abs( a - b ) <= std::min( std::abs( a ), std::abs( b ) ) * std::numeric_limits<double>::epsilon();
+  }
+} // namespace
+
 // constructor with high edge and service
 Decays::Nodes::ShortLived_::ShortLived_( const double high, const Gaudi::Interfaces::IParticlePropertySvc* svc )
     : Decays::Nodes::CTau( -1 * Gaudi::Units::km, high, svc ) {}
@@ -354,7 +360,7 @@ Decays::Nodes::ShortLived_* Decays::Nodes::ShortLived_::clone() const {
 }
 // MANDATORY: the specific printout
 std::ostream& Decays::Nodes::ShortLived_::fillStream( std::ostream& s ) const {
-  if ( Gaudi::Math::lomont_compare_double( s_SHORTLIVED, high(), 1000 ) ) { return s << " ShortLived "; }
+  if ( essentiallyEqual( high(), s_SHORTLIVED ) ) { return s << " ShortLived "; }
   return s << " ShortLived_( " << high() << ") ";
 }
 
@@ -368,7 +374,7 @@ Decays::Nodes::LongLived_::LongLived_( const Gaudi::Interfaces::IParticlePropert
 Decays::Nodes::LongLived_* Decays::Nodes::LongLived_::clone() const { return new Decays::Nodes::LongLived_( *this ); }
 // MANDATORY: the specific printout
 std::ostream& Decays::Nodes::LongLived_::fillStream( std::ostream& s ) const {
-  if ( Gaudi::Math::lomont_compare_double( s_LONGLIVED, low(), 1000 ) ) { return s << " LongLived "; }
+  if ( essentiallyEqual( low(), s_LONGLIVED ) ) { return s << " LongLived "; }
   return s << " LongLived_( " << low() << ") ";
 }
 
