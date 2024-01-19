@@ -10,8 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Decays/Decay.h>
-#include <Decays/iNode.h>
+#include <Gaudi/Decays/Decay.h>
+#include <Gaudi/Decays/iNode.h>
 #include <Gaudi/ParticleID.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/SmartIF.h>
@@ -23,7 +23,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2008-04-21
  */
-namespace Decays {
+namespace Gaudi::Decays {
   /** check the validness of the trees or nodes
    *  @param begin begin-iterator for the sequence of trees/nodes
    *  @param end end-iterator for the sequence of trees/nodes
@@ -489,4 +489,4 @@ namespace Decays {
   GAUDI_API
   Decays::Nodes::And operator&&( const Gaudi::ParticleProperty* o2, const Decays::iNode& o1 );
 
-} // namespace Decays
+} // namespace Gaudi::Decays

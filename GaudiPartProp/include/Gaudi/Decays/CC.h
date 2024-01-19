@@ -14,7 +14,7 @@
 #include <set>
 #include <string>
 
-namespace Decays {
+namespace Gaudi::Decays {
   namespace CC {
     /** @struct CmpCC
      *  a bit specific comparison of strings, useful for
@@ -55,4 +55,4 @@ namespace Decays {
      */
     std::string cc( const std::string& decay, const std::map<std::string, std::string>& map_ );
   } // namespace CC
-} // namespace Decays
+} // namespace Gaudi::Decays

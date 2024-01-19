@@ -8,11 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Decays/Decay.h>
+#include <Gaudi/Decays/Decay.h>
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
 #include <Gaudi/ParticleID.h>
 #include <Gaudi/ParticleProperty.h>
 #include <sstream>
+
+namespace Decays = Gaudi::Decays;
 
 /** @file
  *  Implementation file for class Decays::Decay
@@ -101,11 +103,11 @@ StatusCode Decays::Decay::validate( const Gaudi::Interfaces::IParticlePropertySv
 }
 
 std::ostream& Decays::Decay::fillStream( std::ostream& s ) const {
-  s << m_mother;
+  m_mother.fillStream( s );
   if ( m_daughters.empty() ) { return s; }
   s << "->";
   // loop over daughters
-  for ( const auto& dau : m_daughters ) { s << dau; }
+  for ( const auto& dau : m_daughters ) { dau.fillStream( s ); }
   return s;
 }
 

@@ -29,7 +29,7 @@ import GaudiPython
 # namespaces shortcuts
 cpp = GaudiPython.gbl
 std = GaudiPython.gbl.std
-Decays = GaudiPython.gbl.Decays
+Decays = GaudiPython.gbl.Gaudi.Decays
 Gaudi = GaudiPython.gbl.Gaudi
 
 

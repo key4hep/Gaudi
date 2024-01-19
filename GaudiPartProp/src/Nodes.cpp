@@ -8,11 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Decays/Nodes.h>
+#include <Gaudi/Decays/Nodes.h>
 #include <Gaudi/ParticleID.h>
 #include <GaudiKernel/SerializeSTL.h>
 #include <algorithm>
 #include <functional>
+
+namespace Decays = Gaudi::Decays;
 
 /** @file
  *  The implementation file for various decay nodes

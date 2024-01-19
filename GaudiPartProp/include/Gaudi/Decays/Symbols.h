@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Decays/Nodes.h>
+#include <Gaudi/Decays/Nodes.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/VectorMap.h>
 #include <map>
@@ -30,7 +30,7 @@ namespace Gaudi {
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2009-05-07
  */
-namespace Decays {
+namespace Gaudi::Decays {
   /** @class Symbols
    *  Helper class to obtain the information about the valid
    *  symbols for particles, decay descriptors and Nodes.
@@ -122,4 +122,4 @@ namespace Decays {
     /// the map of cc-symbols
     CCMap m_cc;
   };
-} // namespace Decays
+} // namespace Gaudi::Decays

@@ -22,7 +22,7 @@ namespace Gaudi {
   class ParticleProperty;
 } // namespace Gaudi
 
-namespace Decays {
+namespace Gaudi::Decays {
   /** @class Decay Kernel/Decay.h
    *  The simple representation of "simple 1-step" decay (there are no trees!
    *
@@ -170,10 +170,12 @@ namespace Decays {
     /// the daughter particles
     mutable Items m_daughters; // the daughter particles
   };
-} // namespace Decays
+} // namespace Gaudi::Decays
 
 /// the printout operator to the stream
-inline std::ostream& operator<<( std::ostream& s, const Decays::Decay& decay ) { return decay.fillStream( s ); }
+inline std::ostream& operator<<( std::ostream& s, const Gaudi::Decays::Decay& decay ) { return decay.fillStream( s ); }
 
 /// the printout operator to the stream
-inline std::ostream& operator<<( std::ostream& s, const Decays::Decay::Item& item ) { return item.fillStream( s ); }
+inline std::ostream& operator<<( std::ostream& s, const Gaudi::Decays::Decay::Item& item ) {
+  return item.fillStream( s );
+}

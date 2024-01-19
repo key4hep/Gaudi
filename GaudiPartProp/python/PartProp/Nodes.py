@@ -35,7 +35,7 @@ with warnings.catch_warnings():
 import GaudiPython
 
 # namespaces shortcuts
-Decays = cppyy.gbl.Decays
+Decays = cppyy.gbl.Gaudi.Decays
 std = cppyy.gbl.std
 Gaudi = GaudiPython.gbl.Gaudi
 

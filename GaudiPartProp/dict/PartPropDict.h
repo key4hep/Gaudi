@@ -8,16 +8,16 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Decays/Decay.h>
-#include <Decays/Nodes.h>
-#include <Decays/NodesPIDs.h>
-#include <Decays/Symbols.h>
-#include <Decays/iNode.h>
+#include <Gaudi/Decays/Decay.h>
+#include <Gaudi/Decays/Nodes.h>
+#include <Gaudi/Decays/NodesPIDs.h>
+#include <Gaudi/Decays/Symbols.h>
+#include <Gaudi/Decays/iNode.h>
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
 #include <Gaudi/ParticleID.h>
 #include <Gaudi/ParticleProperty.h>
 
-namespace Decays {
+namespace Gaudi::Decays {
   namespace Dict {
     struct NodeOps {
       typedef Decays::iNode iNode;
@@ -52,14 +52,14 @@ namespace Decays {
       static Node __invert__( const iNode& n1 ) { return ~n1; }
     };
   } // namespace Dict
-} // namespace Decays
+} // namespace Gaudi::Decays
 
 namespace {
   struct PartProp_Instantiations {
     std::vector<Gaudi::ParticleID>              m_pidv;
     std::vector<const Gaudi::ParticleProperty*> m_ppv;
 
-    std::vector<Decays::Decay>       m_vd;
-    std::vector<Decays::Decay::Item> m_vi;
+    std::vector<Gaudi::Decays::Decay>       m_vd;
+    std::vector<Gaudi::Decays::Decay::Item> m_vi;
   };
 } // namespace

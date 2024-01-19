@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Decays/Nodes.h>
+#include <Gaudi/Decays/Nodes.h>
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
 #include <Gaudi/ParticleProperty.h>
 #include <Gaudi/cxx/SynchronizedValue.h>
@@ -22,7 +22,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2008-04-21
  */
-namespace Decays {
+namespace Gaudi::Decays {
   namespace Nodes {
     /** @class Any
      *  the most simple node in the decay tree:
@@ -661,4 +661,4 @@ namespace Decays {
       Decays::Node m_symbol;
     };
   } // namespace Nodes
-} // namespace Decays
+} // namespace Gaudi::Decays

@@ -41,18 +41,18 @@
   <function name = "Gaudi::ParticleProperties::allProperties"  />
   <function name = "Gaudi::ParticleProperties::index"          />
 
-  <class name = "Decays::Symbols"/>
+  <class name = "Gaudi::Decays::Symbols"/>
 
-  <class name = "Decays::Decay"       />
-  <class name = "Decays::Decay::Item" />
-  <class name = "std::vector<Decays::Decay>"       />
-  <class name = "std::vector<Decays::Decay::Item>" />
+  <class name = "Gaudi::Decays::Decay"       />
+  <class name = "Gaudi::Decays::Decay::Item" />
+  <class name = "std::vector<Gaudi::Decays::Decay>"       />
+  <class name = "std::vector<Gaudi::Decays::Decay::Item>" />
 
-  <class name    = "Decays::iNode"    />
-  <class name    = "Decays::Node"     />
-  <class pattern = "Decays::Nodes::*" />
-  <class name    = "Decays::Dict::NodeOps" />
-  <class name    = "Decays::NodeList" />
-  <class name    = "std::vector<Decays::Nodes::_Node>" />
+  <class name    = "Gaudi::Decays::iNode"    />
+  <class name    = "Gaudi::Decays::Node"     />
+  <class pattern = "Gaudi::Decays::Nodes::*" />
+  <class name    = "Gaudi::Decays::Dict::NodeOps" />
+  <class name    = "Gaudi::Decays::NodeList" />
+  <class name    = "std::vector<Gaudi::Decays::Nodes::_Node>" />
 
 </lcgdict>

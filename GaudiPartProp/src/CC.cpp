@@ -8,7 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Decays/CC.h>
+#include <Gaudi/Decays/CC.h>
+
+namespace Decays = Gaudi::Decays;
 
 /** @file
  *  Implementation file for namespace Decays::CC

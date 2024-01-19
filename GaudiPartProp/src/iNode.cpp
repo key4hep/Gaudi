@@ -8,11 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Decays/Nodes.h>
-#include <Decays/iNode.h>
+#include <Gaudi/Decays/Nodes.h>
+#include <Gaudi/Decays/iNode.h>
 #include <GaudiKernel/StatusCode.h>
 #include <sstream>
 #include <typeinfo>
+
+namespace Decays = Gaudi::Decays;
 
 /** @file
  *  Implementation file for class Decays::iNode

@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Decays/NodesPIDs.h>
-#include <Decays/Symbols.h>
+#include <Gaudi/Decays/NodesPIDs.h>
+#include <Gaudi/Decays/Symbols.h>
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
 #include <Gaudi/ParticleID.h>
 #include <Gaudi/ParticleProperty.h>
@@ -18,6 +18,8 @@
 #include <algorithm>
 #include <climits>
 #include <functional>
+
+namespace Decays = Gaudi::Decays;
 
 /** @file
  *  The implementation file for various decay nodes
@@ -54,7 +56,7 @@ namespace {
    */
   constexpr double s_INFINITY = 0.5 * std::numeric_limits<double>::max();
 } // namespace
-namespace Decays {
+namespace Gaudi::Decays {
   /*  Create the "OR" of two nodes
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-12
@@ -111,7 +113,7 @@ namespace Decays {
   Decays::Nodes::And operator&&( const Gaudi::ParticleProperty* o2, const Decays::iNode& o1 ) {
     return Decays::Nodes::Pid( o2 ) && o1;
   }
-} // namespace Decays
+} // namespace Gaudi::Decays
 // MANDATORY: clone method ("virtual constructor")
 Decays::Nodes::Any* Decays::Nodes::Any::clone() const { return new Any( *this ); }
 // MANDATORY: check the validity

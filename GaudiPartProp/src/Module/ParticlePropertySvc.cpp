@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Decays/CC.h>
-#include <Decays/Symbols.h>
+#include <Gaudi/Decays/CC.h>
+#include <Gaudi/Decays/Symbols.h>
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
 #include <Gaudi/ParticleID.h>
 #include <Gaudi/ParticleProperty.h>

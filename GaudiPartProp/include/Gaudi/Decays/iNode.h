@@ -23,7 +23,7 @@ namespace Gaudi {
   class ParticleID;
 } // namespace Gaudi
 
-namespace Decays {
+namespace Gaudi::Decays {
   /** @class iNode Decays/iNode.h
    *  The abstract class which represents the single "node" of decay tree
    *
@@ -169,4 +169,4 @@ namespace Decays {
   inline StatusCode operator*( const Decays::iNode& n, const Gaudi::Interfaces::IParticlePropertySvc* svc ) {
     return n.validate( svc );
   }
-} // namespace Decays
+} // namespace Gaudi::Decays
