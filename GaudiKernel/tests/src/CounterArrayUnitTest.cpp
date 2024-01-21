@@ -106,5 +106,11 @@ BOOST_AUTO_TEST_CASE( test_counter_array ) {
     }
     // check json output
     for ( unsigned int i = 0; i < 5; i++ ) { BOOST_TEST( toJSON( counters[i] ).at( "nEntries" ) == 1 ); }
+    // test buffer method
+    {
+      auto cbuffer = counters.buffer();
+      for ( unsigned int i = 0; i < 5; i++ ) { ++cbuffer[i]; } // increment counter buffers
+    }
+    for ( unsigned int i = 0; i < 5; i++ ) { BOOST_TEST( counters[i].nEntries() == 2 ); }
   }
 }

@@ -11,6 +11,8 @@
 #pragma once
 
 #include <Gaudi/Accumulators.h>
+#include <array>
+#include <string>
 #include <utility>
 
 namespace Gaudi::Accumulators {
@@ -48,6 +50,11 @@ namespace Gaudi::Accumulators {
         static_assert( sizeof...( Ns ) < 1000, "Using CounterArray with 1000 arrays or more is prohibited. This "
                                                "would lead to very long compilation times" );
       }
+      /// Method to form an array of buffers
+      template <std::size_t... Ns>
+      auto buffer( std::integer_sequence<std::size_t, Ns...> ) {
+        return std::array{ ( *this )[Ns].buffer()... };
+      }
     };
   } // namespace details
 
@@ -69,18 +76,24 @@ namespace Gaudi::Accumulators {
    *    // Array of 5 averaging counters with same simple names
    *    CounterArray<AveragingCounter<>, 5> avgCounters{ &algo, "MyCounter-{}" };
    *    avgCounters[2] += 3.14;
-   *    // Array of 5 cimple counters with custom names. Names will be "0^2=0", "1^2=1", "2^2=4", ...
+   *    // Array of 5 simple counters with custom names. Names will be "0^2=0", "1^2=1", "2^2=4", ...
    *    CounterArray<Counter<>, 5> customCounters{
    *      &algo,
    *      []( int n ) { return fmt::format( "{}^2={}", n, n*n ); }
    *    }
    *    ++customCounters[3];
+   *    // increment via local buffer object
+   *    auto cbuffer = counters.buffer();
+   *    ++cbuffer[4];
    */
   template <typename Counter, std::size_t N>
   struct CounterArray : details::CounterArrayInternal<Counter, N> {
     template <typename OWNER, typename FormatName>
     CounterArray( OWNER* owner, FormatName&& fname )
         : details::CounterArrayInternal<Counter, N>( owner, fname, std::make_integer_sequence<std::size_t, N>{} ) {}
+    auto buffer() {
+      return details::CounterArrayInternal<Counter, N>::buffer( std::make_integer_sequence<std::size_t, N>{} );
+    }
   };
 
 } // namespace Gaudi::Accumulators
