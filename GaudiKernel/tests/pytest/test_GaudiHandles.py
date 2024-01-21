@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -141,6 +141,19 @@ def test_array_iter():
     h = ServiceHandleArray(["foo", "bar"])
     l = [s.getName() for s in h]
     assert l == ["foo", "bar"]
+
+
+def test_array_slice():
+    h = ServiceHandleArray(["foo", "bar", "abc"])
+    assert h[1:] == [ServiceHandle("bar"), ServiceHandle("abc")]
+    assert h[1:2] == [ServiceHandle("bar")]
+    assert h[0:3:2] == [ServiceHandle("foo"), ServiceHandle("abc")]
+
+    with pytest.raises(TypeError):
+        h[1:] = ["x", "y"]
+
+    del h[1:]
+    assert h == [ServiceHandle("foo")]
 
 
 def test_array_insert():

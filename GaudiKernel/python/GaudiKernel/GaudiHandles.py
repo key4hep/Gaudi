@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -180,7 +180,16 @@ class GaudiHandleArray(MutableSequence):
         return inst
 
     def __setitem__(self, index, value):
-        self._items[self._indexToKey(index)] = value
+        try:
+            self._items[self._indexToKey(index)] = value
+        except TypeError as e:
+            if isinstance(index, slice):
+                raise TypeError(
+                    "Setting elements of %s via slice is not supported"
+                    % self.__class__.__name__
+                )
+            else:
+                raise e
 
     def __getitem__(self, index):
         if isinstance(index, str):
@@ -193,13 +202,20 @@ class GaudiHandleArray(MutableSequence):
                     % (self.__class__.__name__, self.handleType.componentType, index)
                 )
         else:
-            return self._items[self._indexToKey(index)]
+            if isinstance(index, slice):
+                return [self._items[k] for k in self._indexToKey(index)]
+            else:
+                return self._items[self._indexToKey(index)]
 
     def __iter__(self):
         yield from self._items.values()
 
     def __delitem__(self, index):
-        self._items.pop(self._indexToKey(index))
+        if isinstance(index, slice):
+            for k in self._indexToKey(index):
+                self._items.pop(k)
+        else:
+            self._items.pop(self._indexToKey(index))
 
     def __contains__(self, value):
         if isinstance(value, str):
