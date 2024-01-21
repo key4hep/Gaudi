@@ -53,17 +53,16 @@ namespace Gaudi::Histograming::Sink {
       // run may be mixed with new one
       TFile histoFile( m_fileName.value().c_str(), "UPDATE" );
       // get all entities, sorted by component and name
-      for ( auto& [component, entityMap] : sortedEntitiesAsJSON() ) {
-        for ( auto& [name, j] : entityMap ) {
-          auto dim  = j.at( "dimension" ).template get<unsigned int>();
-          auto type = j.at( "type" ).template get<std::string>();
-          // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
-          // as ROOT anyway treats everything as doubles in histograms
-          type       = type.substr( 0, type.find_last_of( ':' ) );
-          auto saver = m_registry.find( { type, dim } );
-          if ( saver != m_registry.end() ) ( saver->second )( histoFile, component, name, j );
-        }
-      }
+      applyToAllSortedEntities(
+          [this, &histoFile]( std::string const& component, std::string const& name, nlohmann::json const& j ) {
+            auto dim  = j.at( "dimension" ).template get<unsigned int>();
+            auto type = j.at( "type" ).template get<std::string>();
+            // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
+            // as ROOT anyway treats everything as doubles in histograms
+            type       = type.substr( 0, type.find_last_of( ':' ) );
+            auto saver = m_registry.find( { type, dim } );
+            if ( saver != m_registry.end() ) ( saver->second )( histoFile, component, name, j );
+          } );
       info() << "Completed update of ROOT histograms in: " << m_fileName.value() << endmsg;
     }
 

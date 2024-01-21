@@ -26,15 +26,14 @@ namespace Gaudi::Monitoring {
     void flush( bool ) override {
       if ( m_fileName.empty() ) { return; }
       nlohmann::json output;
-      for ( auto& [component, entityMap] : sortedEntitiesAsJSON() ) {
-        for ( auto& [name, j] : entityMap ) {
-          output.emplace_back( nlohmann::json{
-              { "name", name },
-              { "component", component },
-              { "entity", j },
+      applyToAllSortedEntities(
+          [&output]( std::string const& component, std::string const& name, nlohmann::json const& j ) {
+            output.emplace_back( nlohmann::json{
+                { "name", name },
+                { "component", component },
+                { "entity", j },
+            } );
           } );
-        }
-      }
       info() << "Writing JSON file " << m_fileName.value() << endmsg;
       std::ofstream{ m_fileName, std::ios::out } << output.dump( 4 );
     }

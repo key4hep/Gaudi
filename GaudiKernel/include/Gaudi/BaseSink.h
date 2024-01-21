@@ -102,12 +102,18 @@ namespace Gaudi::Monitoring {
     }
 
     /**
-     * returns all entities in JSON format, grouped by component first and then name
+     * applies a callable to all monitoring entities ordered by component
+     * the callable will be called once per entity and should have a signature
+     *   ( std::string const&, std::string const&, nlohmann::json const& )
      */
-    std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntitiesAsJSON() const {
-      std::map<std::string, std::map<std::string, nlohmann::json>> sortedEntities;
-      applyToAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities[ent.component][ent.name] = ent; } );
-      return sortedEntities;
+    template <typename Callable>
+    void applyToAllSortedEntities( Callable func ) const {
+      std::vector<Hub::Entity const*> sortedEntities;
+      applyToAllEntities( [&sortedEntities]( auto& ent ) { sortedEntities.emplace_back( &ent ); } );
+      std::sort( sortedEntities.begin(), sortedEntities.end(), []( const auto* lhs, const auto* rhs ) {
+        return std::tie( lhs->component, lhs->name ) < std::tie( rhs->component, rhs->name );
+      } );
+      for ( auto const* ent : sortedEntities ) { func( ent->component, ent->name, *ent ); }
     }
 
     /// deciding whether a given name matches the list of regexps given
