@@ -33,17 +33,22 @@ AlgorithmManager::AlgorithmManager( IInterface* application ) : base_class( appl
 // addAlgorithm
 StatusCode AlgorithmManager::addAlgorithm( IAlgorithm* alg ) {
   m_algs.push_back( alg );
+  m_algsMap.emplace( alg->name(), alg );
   return StatusCode::SUCCESS;
 }
 
 // removeAlgorithm
 StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
   auto it = std::find( m_algs.begin(), m_algs.end(), alg );
-  if ( it != m_algs.end() ) {
-    m_algs.erase( it );
-    return StatusCode::SUCCESS;
-  }
-  return StatusCode::FAILURE;
+  if ( it == m_algs.end() ) { return StatusCode::FAILURE; }
+
+  auto range = m_algsMap.equal_range( alg->name() );
+  auto itm   = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second == alg; } );
+  if ( itm == range.second ) { return StatusCode::FAILURE; }
+
+  m_algs.erase( it );
+  m_algsMap.erase( itm );
+  return StatusCode::SUCCESS;
 }
 
 // createService
@@ -83,6 +88,7 @@ StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string a
     return StatusCode::FAILURE;
   }
   m_algs.emplace_back( algorithm, managed );
+  m_algsMap.emplace( algorithm->name(), algorithm );
   // let the algorithm know its type
   algorithm->setType( std::move( actualalgtype ) );
   // this is needed to keep the reference count correct, since isValidInterface(algorithm)
@@ -101,9 +107,9 @@ StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string a
 }
 
 SmartIF<IAlgorithm>& AlgorithmManager::algorithm( const Gaudi::Utils::TypeNameString& typeName, const bool createIf ) {
-  auto it = std::find( m_algs.begin(), m_algs.end(), typeName.name() );
-  if ( it != m_algs.end() ) { // found
-    return it->algorithm;
+  auto it = m_algsMap.find( typeName.name() );
+  if ( it != m_algsMap.end() ) { // found
+    return it->second;
   }
   if ( createIf ) {
     IAlgorithm* alg;
@@ -116,7 +122,7 @@ SmartIF<IAlgorithm>& AlgorithmManager::algorithm( const Gaudi::Utils::TypeNameSt
 
 // existsAlgorithm
 bool AlgorithmManager::existsAlgorithm( std::string_view name ) const {
-  return m_algs.end() != std::find( m_algs.begin(), m_algs.end(), name );
+  return m_algsMap.find( name ) != m_algsMap.end();
 }
 
 // Return the list of Algorithms
@@ -124,7 +130,7 @@ const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const {
   m_listOfPtrs.clear();
   m_listOfPtrs.reserve( m_algs.size() );
   std::transform( std::begin( m_algs ), std::end( m_algs ), std::back_inserter( m_listOfPtrs ),
-                  []( const AlgorithmItem& alg ) { return alg.algorithm.get(); } );
+                  []( const AlgorithmItem& alg ) { return alg.algorithm; } );
   return m_listOfPtrs;
 }
 
@@ -163,9 +169,15 @@ StatusCode AlgorithmManager::finalize() {
   auto       it = m_algs.begin();
   while ( it != m_algs.end() ) { // finalize and remove from the list the managed algorithms
     if ( it->managed ) {
+      auto range = m_algsMap.equal_range( it->algorithm->name() );
+      auto itm = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second == it->algorithm; } );
+      if ( itm == range.second ) { return StatusCode::FAILURE; }
+
       rc = it->algorithm->sysFinalize();
       if ( rc.isFailure() ) return rc;
+
       it = m_algs.erase( it );
+      m_algsMap.erase( itm );
     } else {
       ++it;
     }
@@ -211,7 +223,7 @@ StatusCode AlgorithmManager::restart() {
 void AlgorithmManager::outputLevelUpdate() {
   resetMessaging();
   for ( auto& algItem : m_algs ) {
-    const auto alg = dynamic_cast<Gaudi::Algorithm*>( algItem.algorithm.get() );
+    const auto alg = dynamic_cast<Gaudi::Algorithm*>( algItem.algorithm );
     if ( alg ) alg->resetMessaging();
   }
 }

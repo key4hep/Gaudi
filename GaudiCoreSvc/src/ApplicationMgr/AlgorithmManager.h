@@ -20,6 +20,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 // Forward declarations
@@ -42,10 +43,9 @@ class AlgorithmManager : public extends<ComponentManager, IAlgManager> {
 public:
   struct AlgorithmItem final {
     AlgorithmItem( IAlgorithm* s, bool managed = false ) : algorithm( s ), managed( managed ) {}
-    SmartIF<IAlgorithm> algorithm;
-    bool                managed;
-    bool                operator==( std::string_view name ) const { return algorithm->name() == name; }
-    bool                operator==( const IAlgorithm* ptr ) const { return algorithm.get() == ptr; }
+    IAlgorithm* algorithm;
+    bool        managed;
+    bool        operator==( const IAlgorithm* ptr ) const { return algorithm == ptr; }
   };
 
   /// typedefs and classes
@@ -96,7 +96,9 @@ public:
   void outputLevelUpdate() override;
 
 private:
-  std::vector<AlgorithmItem> m_algs; ///< algorithms maintained by AlgorithmManager
+  std::vector<AlgorithmItem>                                     m_algs; ///< algorithms maintained by AlgorithmManager
+  std::unordered_multimap<std::string_view, SmartIF<IAlgorithm>> m_algsMap; ///< algorithms maintained by
+                                                                            ///< AlgorithmManager
 
   /// List of pointers to the know services used to implement getAlgorithms()
   mutable std::vector<IAlgorithm*> m_listOfPtrs;
