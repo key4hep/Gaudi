@@ -15,6 +15,7 @@
 #include "GaudiKernel/IHistorySvc.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/Service.h"
+#include <map>
 #include <mutex>
 #include <vector>
 
@@ -76,7 +77,7 @@ public:
   StatusCode create( const std::string& type, const std::string& name, const IInterface* parent, IAlgTool*& tool );
 
   /// Check if the tool instance exists
-  bool existsTool( std::string_view toolname ) const;
+  bool existsTool( std::string_view fullname ) const;
 
   /// Get Tool full name by combining nameByUser and "parent" part
   std::string nameTool( std::string_view nameByUser, const IInterface* parent );
@@ -102,7 +103,8 @@ private: // data
   Gaudi::Property<bool> m_showToolDataDeps{ this, "ShowDataDeps", false, "show the data dependencies of AlgTools" };
 
   /// Common Tools
-  std::vector<IAlgTool*> m_instancesTools; // List of all instances of tools
+  std::vector<IAlgTool*>                               m_instancesTools; // List of all instances of tools
+  std::unordered_multimap<std::string_view, IAlgTool*> m_instancesToolsMap;
 
   /// Pointer to HistorySvc
   IHistorySvc* m_pHistorySvc = nullptr;

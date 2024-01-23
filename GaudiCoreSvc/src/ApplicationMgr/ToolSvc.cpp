@@ -46,6 +46,17 @@ namespace {
   void remove( C& c, typename C::const_reference i ) {
     c.erase( std::remove( std::begin( c ), std::end( c ), i ), std::end( c ) );
   }
+
+  void remove( std::unordered_multimap<std::string_view, IAlgTool*>& c, IAlgTool const* tool ) {
+    auto range = c.equal_range( tool->name() );
+    auto itm   = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second == tool; } );
+    if ( itm == range.second ) {
+      throw GaudiException( "Inconsistency between tool vector and tool map", __PRETTY_FUNCTION__,
+                            StatusCode::FAILURE );
+    }
+    c.erase( itm );
+  }
+
 } // namespace
 
 // Instantiation of a static factory class used by clients to create
@@ -270,11 +281,11 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
 
   // Find tool in list of those already existing, and tell its
   // interface that it has been used one more time
-  auto it = std::find_if( std::begin( m_instancesTools ), std::end( m_instancesTools ),
-                          [&]( const IAlgTool* i ) { return i->name() == fullname && i->parent() == parent; } );
-  if ( it != std::end( m_instancesTools ) ) {
+  auto range = m_instancesToolsMap.equal_range( fullname );
+  auto it    = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second->parent() == parent; } );
+  if ( it != range.second ) {
     ON_DEBUG debug() << "Retrieved tool " << toolname << " with parent " << parent << endmsg;
-    itool = *it;
+    itool = it->second;
   }
 
   if ( !itool ) {
@@ -355,6 +366,7 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
       }
       sc = finalizeTool( tool );
       // remove from known tools...
+      remove( m_instancesToolsMap, tool );
       remove( m_instancesTools, tool );
     }
     tool->release();
@@ -373,15 +385,16 @@ StatusCode ToolSvc::create( const std::string& tooltype, const IInterface* paren
 namespace {
   /// Small class to allow a safe roll-back if the tool is not
   /// correctly initialized or there are problems.
-  template <typename T>
+  template <typename T, typename TM>
   class ToolCreateGuard {
     /// list of tools
-    T& m_tools;
+    T&  m_tools;
+    TM& m_toolsMap;
     /// pointer to be set
     std::unique_ptr<IAlgTool> m_tool;
 
   public:
-    explicit ToolCreateGuard( T& tools ) : m_tools( tools ) {}
+    explicit ToolCreateGuard( T& tools, TM& toolsMap ) : m_tools( tools ), m_toolsMap( toolsMap ) {}
     // we don't get a move constructor by default because we
     // have a non-trivial destructor... However, the default
     // one is just fine...
@@ -389,10 +402,16 @@ namespace {
     /// Set the internal pointer (delete any previous one). Get ownership of the tool.
     void create( const std::string& tooltype, const std::string& fullname, const IInterface* parent ) {
       // remove previous content
-      if ( m_tool ) remove( m_tools, m_tool.get() );
+      if ( m_tool ) {
+        remove( m_toolsMap, m_tool.get() );
+        remove( m_tools, m_tool.get() );
+      };
       m_tool = AlgTool::Factory::create( tooltype, tooltype, fullname, parent );
       // set new content
-      if ( m_tool ) m_tools.push_back( m_tool.get() );
+      if ( m_tool ) {
+        m_tools.push_back( m_tool.get() );
+        m_toolsMap.emplace( m_tool->name(), m_tool.get() );
+      }
     }
     /// Get the internal pointer
     IAlgTool* get() { return m_tool.get(); }
@@ -408,9 +427,9 @@ namespace {
     }
   };
 
-  template <typename C>
-  ToolCreateGuard<C> make_toolCreateGuard( C& c ) {
-    return ToolCreateGuard<C>{ c };
+  template <typename C, typename CM>
+  ToolCreateGuard<C, CM> make_toolCreateGuard( C& c, CM& cm ) {
+    return ToolCreateGuard<C, CM>{ c, cm };
   }
 } // namespace
 
@@ -440,7 +459,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   tool = nullptr;
   // Automatically deletes the tool if not explicitly kept (i.e. on success).
   // The tool is removed from the list of known tools too.
-  auto toolguard = make_toolCreateGuard( m_instancesTools );
+  auto toolguard = make_toolCreateGuard( m_instancesTools, m_instancesToolsMap );
 
   // Check if the tool already exist : this could happen with clones
   std::string fullname = nameTool( toolname, parent );
@@ -587,9 +606,7 @@ bool ToolSvc::existsTool( std::string_view fullname ) const
 //------------------------------------------------------------------------------
 {
   auto lock = std::scoped_lock{ m_mut };
-  auto i    = std::find_if( std::begin( m_instancesTools ), std::end( m_instancesTools ),
-                            [&]( const IAlgTool* tool ) { return tool->name() == fullname; } );
-  return i != std::end( m_instancesTools );
+  return m_instancesToolsMap.find( fullname ) != std::end( m_instancesToolsMap );
 }
 
 //------------------------------------------------------------------------------
