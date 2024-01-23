@@ -10,6 +10,10 @@
 #####################################################################################
 # GaudiPartProp subdirectory
 
+if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
+   return()
+endif()
+
 gaudi_add_library(GaudiPartProp
     SOURCES
         src/CC.cpp
