@@ -157,7 +157,7 @@ namespace {
     // binomial counters are slightly different ('*' character)
     log << fmt::format( " |{}{:48}|{} |",
                         ( std::string_view{ type }.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
-                        fmt::format( "\"{}\"", id ), json_fmt_arg{ j } );
+                        fmt::format( fmt::runtime( "\"{}\"" ), id ), json_fmt_arg{ j } );
   }
 
 } // namespace
