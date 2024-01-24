@@ -18,33 +18,6 @@
 
 namespace Gaudi::Functional {
 
-  // This utility is needed when the inputs of a functional algorithm may be stored in several locations
-  [[deprecated]] inline std::string concat_alternatives( std::initializer_list<std::string> c ) {
-    return boost::algorithm::join( c, ":" );
-  }
-
-  template <typename... Strings>
-  [[deprecated]] std::string concat_alternatives( const Strings&... s ) {
-    return boost::algorithm::join( std::initializer_list<std::string>{ s... }, ":" );
-  }
-
-  [[deprecated( "please use `updateHandleLocation` instead of `Gaudi::Functional::updateHandleLocation`" )]] inline void
-  updateHandleLocation( IProperty& parent, const std::string& prop, const std::string& newLoc ) {
-    auto sc = parent.setProperty( prop, newLoc );
-    if ( sc.isFailure() ) throw GaudiException( "Could not set Property", prop + " -> " + newLoc, sc );
-  }
-
-  [[deprecated(
-      "please use `updateHandleLocations` instead of `Gaudi::Functional::updateHandleLocations`" )]] inline void
-  updateHandleLocations( IProperty& parent, const std::string& prop, const std::vector<std::string>& newLocs ) {
-    std::ostringstream ss;
-    GaudiUtils::details::ostream_joiner( ss << '[', newLocs, ", ", []( std::ostream& os, const auto& i ) -> auto& {
-      return os << "'" << i << "'";
-    } ) << ']';
-    auto sc = parent.setProperty( prop, ss.str() );
-    if ( sc.isFailure() ) throw GaudiException( "Could not set Property", prop + " -> " + ss.str(), sc );
-  }
-
   namespace Traits {
 
     // traits classes used to customize Transformer and FilterPredicate

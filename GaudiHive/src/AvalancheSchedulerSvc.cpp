@@ -206,21 +206,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
         DataObjID id = *idp;
         ostdd << "\n    o INPUT  " << id;
         write_owners( id );
-        if ( id.key().find( ":" ) != std::string::npos ) {
-          ostdd << " contains alternatives which require resolution...\n";
-          auto tokens = boost::tokenizer<boost::char_separator<char>>{ id.key(), boost::char_separator<char>{ ":" } };
-          auto itok   = std::find_if( tokens.begin(), tokens.end(), [&]( const std::string& t ) {
-            return globalOutp.find( DataObjID{ t } ) != globalOutp.end();
-          } );
-          if ( itok != tokens.end() ) {
-            ostdd << "found matching output for " << *itok << " -- updating scheduler info\n";
-            id.updateKey( *itok );
-          } else {
-            error() << "failed to find alternate in global output list"
-                    << " for id: " << id << " in Alg " << algoPtr->name() << endmsg;
-            m_showDataDeps = true;
-          }
-        }
         algoDependencies.insert( id );
         globalInp.insert( id );
       }

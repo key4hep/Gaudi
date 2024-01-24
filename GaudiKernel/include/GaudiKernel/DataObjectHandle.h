@@ -162,7 +162,7 @@ T* DataObjectHandle<T>::get( bool mustExist ) const {
   auto dataObj = fetch();
   if ( !dataObj ) {
     if ( mustExist ) { // Problems in getting from the store
-      throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+      throw GaudiException( "Cannot retrieve \'" + objKey() + "\' from transient store.",
                             m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
     }
     return nullptr;
@@ -217,7 +217,7 @@ template <typename ValueType>
 auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range {
   auto dataObj = fetch();
   if ( !dataObj ) {
-    throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+    throw GaudiException( "Cannot retrieve \'" + objKey() + "\' from transient store.",
                           m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
   if ( !m_converter ) {
@@ -262,7 +262,7 @@ template <typename ValueType>
 auto DataObjectHandle<Gaudi::NamedRange_<ValueType>>::get() const -> Range {
   auto dataObj = fetch();
   if ( !dataObj ) {
-    throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+    throw GaudiException( "Cannot retrieve \'" + objKey() + "\' from transient store.",
                           m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
   if ( !m_converter ) {
@@ -321,7 +321,7 @@ private:
     auto obj = fetch();
     if ( !obj ) {
       if ( mustExist ) {
-        throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+        throw GaudiException( "Cannot retrieve \'" + objKey() + "\' from transient store.",
                               m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
 
       } else {
@@ -380,7 +380,7 @@ private:
     auto obj = fetch();
     if ( !obj ) {
       if ( mustExist ) {
-        throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+        throw GaudiException( "Cannot retrieve \'" + objKey() + "\' from transient store.",
                               m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
 
       } else {
