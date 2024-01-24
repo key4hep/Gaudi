@@ -83,7 +83,6 @@
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IPartPropSvc.h"
-#include "GaudiKernel/IParticlePropertySvc.h"
 #include "GaudiKernel/IPartitionControl.h"
 #include "GaudiKernel/IPersistencySvc.h"
 #include "GaudiKernel/IProperty.h"

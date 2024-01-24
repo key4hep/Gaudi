@@ -21,7 +21,6 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/ChronoEntity.h"
-#include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/Range.h"
 #include "GaudiKernel/SerializeSTL.h"
 #include "GaudiKernel/Stat.h"

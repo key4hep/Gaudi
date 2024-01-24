@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -127,8 +127,7 @@ if(GAUDI_USE_AIDA)
     target_link_libraries(GaudiExamples PRIVATE AIDA::aida)
 endif()
 if(GAUDI_USE_HEPPDT)
-    target_sources(GaudiExamples PRIVATE src/PartProp/GaudiPPS.cpp
-                                         src/PartProp/PartPropExa.cpp)
+    target_sources(GaudiExamples PRIVATE src/PartProp/PartPropExa.cpp)
     target_link_libraries(GaudiExamples PRIVATE HepPDT::heppdt)
 endif()
 if(TARGET RootCnvLib)
@@ -136,6 +135,13 @@ if(TARGET RootCnvLib)
                                          src/MultiInput/MIReadAlg.cpp
                                          src/MultiInput/MIWriteAlg.cpp)
     target_link_libraries(GaudiExamples PRIVATE RootCnvLib)
+endif()
+if(GAUDI_ENABLE_GAUDIPARTPROP)
+    target_sources(GaudiExamples PRIVATE
+        src/PartProp/GaudiPPS.cpp
+        src/PartProp/PartPropAlg.cpp
+    )
+    target_link_libraries(GaudiExamples PRIVATE Gaudi::GaudiPartProp)
 endif()
 
 # Build the executable
@@ -185,6 +191,12 @@ if(BUILD_TESTING)
     # these tests are for features available in GaudiAlg, but depend on a fixture in GaudiExamples tests
     set_tests_properties(
       GaudiExamples.root_io.extcoll.write GaudiExamples.root_io.extcoll.read
+      PROPERTIES DISABLED TRUE
+    )
+  endif()
+  if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
+    set_tests_properties(
+      GaudiExamples.particlepropsvc
       PROPERTIES DISABLED TRUE
     )
   endif()

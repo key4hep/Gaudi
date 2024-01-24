@@ -25,7 +25,6 @@
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/MapBase.h"
-#include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/Range.h"
 #include "GaudiKernel/SerializeSTL.h"
 #include "GaudiKernel/Stat.h"

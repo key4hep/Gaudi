@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,45 +8,29 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
-// from Gaudi
-#include "GaudiKernel/IParticlePropertySvc.h"
+#include <Gaudi/Functional/Consumer.h>
+#include <Gaudi/Interfaces/IParticlePropertySvc.h>
 
-// local
-#include "GaudiPPS.h"
-
-//-----------------------------------------------------------------------------
-// Implementation file for class : GaudiPPS
-//
-// 2008-05-23 : Marco CLEMENCIC
-//-----------------------------------------------------------------------------
 namespace GaudiExamples {
-  // Declaration of the Algorithm Factory
+  /** Small algorithm using Gaudi::ParticlePropertySvc.
+   *
+   *  @author Marco CLEMENCIC
+   *  @date   2008-05-23
+   */
+  struct GaudiPPS : public Gaudi::Functional::Consumer<void()> {
+    using Consumer::Consumer;
+
+    StatusCode initialize() override {
+      return Consumer::initialize().andThen( [&] {
+        using Gaudi::Interfaces::IParticlePropertySvc;
+        if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
+        auto pps = service<IParticlePropertySvc>( "Gaudi::ParticlePropertySvc", true );
+      } );
+    }
+    void operator()() const override {
+      if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
+    }
+  };
+
   DECLARE_COMPONENT( GaudiPPS )
-
-  //=============================================================================
-  // Initialization
-  //=============================================================================
-  StatusCode GaudiPPS::initialize() {
-    StatusCode sc = Algorithm::initialize(); // must be executed first
-    if ( sc.isFailure() ) return sc;         // error printed already by Algorithm
-
-    if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
-
-    auto pps = service<IParticlePropertySvc>( "Gaudi::ParticlePropertySvc", true );
-
-    return StatusCode::SUCCESS;
-  }
-
-  //=============================================================================
-  // Main execution
-  //=============================================================================
-  StatusCode GaudiPPS::execute() {
-
-    if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
-
-    return StatusCode::SUCCESS;
-  }
-
 } // namespace GaudiExamples
-//=============================================================================
