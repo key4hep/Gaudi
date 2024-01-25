@@ -5,6 +5,46 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v38r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r0) - 2024-01-25
+This new major release includes a number of small/technical backward incompatible changes
+(meaning that you may or may not be affected by them depending of which parts of Gaudi you use),
+but also a couple of more visible changes:
+
+- GaudiAlg is not built anymore by default, but still present and will be removed in a future release
+- GaudiPartProp has been updated backporting the changes developed in the LHCb fork (optional and enabled by default)
+
+This release also features a number of speed and memory improvements, fixes and some clean up.
+
+### Changed
+- Remove the code which allows to specify 'alternate' TES locations to be resolved at runtime (gaudi/Gaudi!1543)
+- Reorganize Gitlab-CI jobs and update LCG baseline versions (gaudi/Gaudi!1539)
+- Avoid warnings for "non-failure" exceptions in functional algorithms (gaudi/Gaudi!1523)
+- Streamline MonitoringHub and Sink implementations (gaudi/Gaudi!1535)
+- GaudiHandles: use dict as storage for GaudiHandleArray (gaudi/Gaudi!1532)
+- Disable GaudiAlg by default (gaudi/Gaudi!1531)
+- Remove deprecated OutStreamType property (gaudi/Gaudi!1528)
+- Remove remaining Python2 compatibility code (gaudi/Gaudi!1527)
+- Remove support of and dependency on nosetests (gaudi/Gaudi!1520)
+- Add support for unordered set properties (gaudi/Gaudi!1503)
+
+### Added
+- New version of PartProp service (gaudi/Gaudi!1493)
+- Add buffer method for CounterArray (gaudi/Gaudi!1544)
+- GaudiHandleArray: support for slice-based access (gaudi/Gaudi!1541)
+- Add `ISequencerTimerTool::scopedTimer` to get an RAII wrapper which starts&stops a timer (gaudi/Gaudi!1536)
+- Implemented Root like histograms (gaudi/Gaudi#281, gaudi/Gaudi!1530)
+
+### Fixed
+- Speed up and clean up HiveDataBrokerSvc, AlgorithmMgr and ToolSvc (gaudi/Gaudi!1508)
+- Fix builds with GCC 11 and C++20 (gaudi/Gaudi!1537)
+- Improved interface of BaseSink to lower memory usage (gaudi/Gaudi#279, gaudi/Gaudi!1505)
+- Use ROOT_CXX_STANDARD if it is already defined by ROOT, otherwise preserve previous behaviour (gaudi/Gaudi!1538)
+- Add missing include mutex (gaudi/Gaudi!1534)
+- Support GaudiHive in GaudiPython (gaudi/Gaudi!1526)
+- Add missing include for gcc14 (gaudi/Gaudi!1533)
+- PropertyProxy: fix append to empty default HandleArray (gaudi/Gaudi!1529)
+
+
 ## [v37r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v37r2) - 2023-11-28
 Minor fixes in preparation for the next major release.
 
