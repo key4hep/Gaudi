@@ -35,28 +35,30 @@ private:
       this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies" };
 
   struct AlgEntry {
+    size_t              index;
     SmartIF<IAlgorithm> ialg;
     Gaudi::Algorithm*   alg;
     std::set<AlgEntry*> dependsOn;
-    int                 requestCount = 0;
 
-    AlgEntry( SmartIF<IAlgorithm>&& p ) : ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
+    AlgEntry( size_t i, SmartIF<IAlgorithm>&& p )
+        : index{ i }, ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
       if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
     }
   };
 
-  std::vector<AlgEntry>
+  std::map<std::string, AlgEntry>
   instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const; // algorithms must be fully
                                                                                      // initialized first, as
                                                                                      // doing so may create
                                                                                      // additional data
                                                                                      // dependencies...
 
-  std::vector<AlgEntry> m_algorithms;
+  std::map<std::string, AlgEntry> m_algorithms;
 
-  mutable std::vector<AlgEntry> m_cfnodes;
-
-  std::map<DataObjID, AlgEntry*> mapProducers( std::vector<AlgEntry>& algorithms ) const;
+  std::map<DataObjID, AlgEntry*> mapProducers( std::map<std::string, AlgEntry>& algorithms ) const;
 
   std::map<DataObjID, AlgEntry*> m_dependencies;
+
+  void visit( AlgEntry const& alg, std::vector<std::string> const& stoppers, std::vector<Gaudi::Algorithm*>& sorted,
+              std::vector<bool>& visited, std::vector<bool>& visiting ) const;
 };
