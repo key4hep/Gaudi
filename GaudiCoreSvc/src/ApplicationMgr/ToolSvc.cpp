@@ -8,13 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include Files
-#include "ToolSvc.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IHistorySvc.h"
 #include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 #include "boost/algorithm/string/erase.hpp"
@@ -24,32 +23,178 @@
 #include <cassert>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <numeric>
 #include <string>
+#include <vector>
 namespace ba = boost::algorithm;
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
+/** @class ToolSvc ToolSvc.h
+ *  This service manages tools.
+ *  Tools can be common, in which case a single instance
+ *  can be shared by different algorithms, or private
+ *  in which case it is necessary to specify the parent
+ *  when requesting it.
+ *  The parent of a tool can be an algortihm or a Service
+ *  The environment of a tool is set by using that of the
+ *  parent. A common tool is considered to belong to the
+ *  ToolSvc itself.
+ *
+ *  @author G. Corti, P. Mato
+ */
+class ToolSvc : public extends<Service, IToolSvc> {
+
+public:
+  /// Standard Constructor.
+  using extends::extends;
+
+  /// Destructor.
+  ~ToolSvc() override;
+
+  /// Finalize the service.
+  StatusCode finalize() override;
+
+  // Start transition for tools
+  StatusCode start() override;
+
+  // Stop transition for tools
+  StatusCode stop() override;
+
+  /// Retrieve tool, create it by default as common tool if it does not already exist
+  StatusCode retrieve( std::string_view type, const InterfaceID& iid, IAlgTool*& tool, const IInterface* parent,
+                       bool createIf ) override;
+
+  /// Retrieve tool, create it by default as common tool if it does not already exist
+  StatusCode retrieve( std::string_view tooltype, std::string_view toolname, const InterfaceID& iid, IAlgTool*& tool,
+                       const IInterface* parent, bool createIf ) override;
+
+  /// Get names of all tool instances of a given type
+  std::vector<std::string> getInstances( std::string_view toolType ) override;
+
+  /// Get names of all tool instances
+  std::vector<std::string> getInstances() const override;
+
+  /// Get pointers to all tool instances
+  std::vector<IAlgTool*> getTools() const override;
+
+  /// Release tool
+  StatusCode releaseTool( IAlgTool* tool ) override;
+
+  /// Create Tool standard way with automatically assigned name
+  StatusCode create( const std::string& type, const IInterface* parent, IAlgTool*& tool );
+
+  /// Create Tool standard way with specified name
+  StatusCode create( const std::string& type, const std::string& name, const IInterface* parent, IAlgTool*& tool );
+
+  /// Check if the tool instance exists
+  bool existsTool( std::string_view fullname ) const;
+
+  /// Get Tool full name by combining nameByUser and "parent" part
+  std::string nameTool( std::string_view nameByUser, const IInterface* parent );
+
+  void registerObserver( IToolSvc::Observer* obs ) override;
+
+private: // methods
+  /// Finalize the given tool, with exception handling
+  StatusCode finalizeTool( IAlgTool* itool ) const;
+
+private: // data
+  Gaudi::Property<bool> m_checkNamedToolsConfigured{
+      this, "CheckedNamedToolsConfigured", false,
+      "Check that tools which do not have the default name have some explicit configuration." };
+
+  Gaudi::Property<bool> m_showToolDataDeps{ this, "ShowDataDeps", false, "show the data dependencies of AlgTools" };
+
+  /// Common Tools
+  class ToolList {
+    std::vector<IAlgTool*> m_tools; // List of all instances of tools
+#ifdef __cpp_lib_generic_unordered_lookup
+    struct Hash {
+      using is_transparent = void;
+      std::size_t operator()( IAlgTool const* s ) const noexcept { return std::hash<std::string_view>{}( s->name() ); }
+      std::size_t operator()( std::string_view s ) const noexcept { return std::hash<std::string_view>{}( s ); }
+    };
+    struct Equal {
+      using is_transparent = void;
+      bool operator()( IAlgTool const* lhs, IAlgTool const* rhs ) const { return lhs->name() == rhs->name(); }
+      bool operator()( IAlgTool const* lhs, std::string_view rhs ) const { return lhs->name() == rhs; }
+      bool operator()( std::string_view lhs, IAlgTool const* rhs ) const { return lhs == rhs->name(); }
+    };
+    std::unordered_multiset<IAlgTool*, Hash, Equal> m_map;
+#else
+    std::unordered_multimap<std::string_view, IAlgTool*> m_map;
+#endif
+
+  public:
+    void remove( IAlgTool* tool ) {
+      m_tools.erase( std::remove( std::begin( m_tools ), std::end( m_tools ), tool ), std::end( m_tools ) );
+      auto range = m_map.equal_range( tool->name() );
+#ifdef __cpp_lib_generic_unordered_lookup
+      auto itm = std::find_if( range.first, range.second, [&]( auto const& p ) { return p == tool; } );
+#else
+      auto itm = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second == tool; } );
+#endif
+      if ( itm != range.second ) m_map.erase( itm );
+    }
+    void push_back( IAlgTool* tool ) {
+      m_tools.push_back( tool );
+#ifdef __cpp_lib_generic_unordered_lookup
+      m_map.emplace( tool );
+#else
+      m_map.emplace( tool->name(), tool );
+#endif
+    }
+
+    bool contains( std::string_view name ) const { return m_map.find( name ) != m_map.end(); }
+    bool contains( IAlgTool const* tool ) const {
+      return m_tools.rend() != std::find( m_tools.rbegin(), m_tools.rend(), tool );
+      // return tool == find( tool->name(), tool->parent() ); //FIXME: is this faster?
+    }
+    auto size() const { return m_tools.size(); }
+    auto begin() const { return m_tools.begin(); }
+    auto end() const { return m_tools.end(); }
+    auto find( std::string_view name, const IInterface* parent ) const {
+      auto range = m_map.equal_range( name );
+#ifdef __cpp_lib_generic_unordered_lookup
+      auto it = std::find_if( range.first, range.second, [&]( auto const& p ) { return p->parent() == parent; } );
+      return it != range.second ? *it : nullptr;
+#else
+      auto it =
+          std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second->parent() == parent; } );
+      return it != range.second ? it->second : nullptr;
+#endif
+    }
+    std::vector<IAlgTool*> grab() && {
+      m_map.clear();
+      auto tools = std::move( m_tools );
+      return tools;
+    }
+  };
+  mutable std::recursive_mutex m_mut; // protect m_instancesTools
+  ToolList                     m_instancesTools;
+
+  /// Pointer to HistorySvc
+  IHistorySvc* m_pHistorySvc = nullptr;
+
+  std::vector<IToolSvc::Observer*> m_observers;
+};
+
 namespace {
-  //------------------------------------------------------------------------------
+  /** The total number of refCounts on all tools in the instancesTools list */
   template <typename C>
-  unsigned long totalRefCount( const C& toolList )
-  //------------------------------------------------------------------------------
-  {
-    return std::accumulate( std::begin( toolList ), std::end( toolList ), 0ul,
+  unsigned long totalRefCount( const C& toolList ) {
+    return std::accumulate( begin( toolList ), end( toolList ), 0ul,
                             [&]( unsigned long count, const IAlgTool* tool ) { return count + tool->refCount(); } );
   }
 
-  /** The total number of refCounts on all tools in the instancesTools list */
   /** The minimum number of refCounts of all tools */
   template <typename C>
   unsigned long minimumRefCount( const C& toolList ) {
-    auto i =
-        std::min_element( std::begin( toolList ), std::end( toolList ), []( const IAlgTool* lhs, const IAlgTool* rhs ) {
-          return lhs->refCount() < rhs->refCount();
-        } );
-    return i != std::end( toolList ) ? ( *i )->refCount() : 0;
+    return std::accumulate( begin( toolList ), end( toolList ), ~0ul,
+                            []( unsigned long c, const IAlgTool* tool ) { return std::min( c, tool->refCount() ); } );
   }
 
 } // namespace
@@ -264,9 +409,6 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
     return retrieve( tooltype, toolname, iid, tool, this, createIf );
   }
 
-  auto lock = std::scoped_lock{ m_mut };
-
-  IAlgTool*  itool = nullptr;
   StatusCode sc( StatusCode::FAILURE );
 
   tool = nullptr;
@@ -277,20 +419,9 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
 
   // Find tool in list of those already existing, and tell its
   // interface that it has been used one more time
-  auto range = m_instancesTools.equal_range( fullname );
-#ifdef __cpp_lib_generic_unordered_lookup
-  auto it = std::find_if( range.first, range.second, [&]( auto const& p ) { return p->parent() == parent; } );
-#else
-  auto it = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second->parent() == parent; } );
-#endif
-  if ( it != range.second ) {
-    ON_DEBUG debug() << "Retrieved tool " << toolname << " with parent " << parent << endmsg;
-#ifdef __cpp_lib_generic_unordered_lookup
-    itool = *it;
-#else
-    itool = it->second;
-#endif
-  }
+  auto      lock  = std::scoped_lock{ m_mut };
+  IAlgTool* itool = m_instancesTools.find( fullname, parent );
+  if ( itool ) { ON_DEBUG debug() << "Retrieved tool " << toolname << " with parent " << parent << endmsg; }
 
   if ( !itool ) {
     // Instances of this tool do not exist, create an instance if desired
@@ -323,8 +454,8 @@ std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
 //------------------------------------------------------------------------------
 {
 
-  auto                     lock = std::scoped_lock{ m_mut };
   std::vector<std::string> tools;
+  auto                     lock = std::scoped_lock{ m_mut };
   for ( const auto& tool : m_instancesTools ) {
     if ( tool->type() == toolType ) tools.push_back( tool->name() );
   }
@@ -345,7 +476,7 @@ std::vector<IAlgTool*> ToolSvc::getTools() const
 //------------------------------------------------------------------------------
 {
   auto lock = std::scoped_lock{ m_mut };
-  return std::vector<IAlgTool*>{ std::begin( m_instancesTools ), std::end( m_instancesTools ) };
+  return { std::begin( m_instancesTools ), std::end( m_instancesTools ) };
 }
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::releaseTool( IAlgTool* tool )
@@ -354,7 +485,7 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
   auto       lock = std::scoped_lock{ m_mut };
   StatusCode sc( StatusCode::SUCCESS );
   // test if tool is in known list (protect trying to access a previously deleted tool)
-  if ( m_instancesTools.rend() != std::find( m_instancesTools.rbegin(), m_instancesTools.rend(), tool ) ) {
+  if ( m_instancesTools.contains( tool ) ) {
     unsigned long count = tool->refCount();
     if ( count == 1 ) {
       // finalize the tool
@@ -442,7 +573,6 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
 //------------------------------------------------------------------------------
 {
 
-  auto lock = std::scoped_lock{ m_mut };
   // protect against empty type
   if ( tooltype.empty() ) {
     error() << "create(): No Tool Type given" << endmsg;
@@ -455,6 +585,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   tool = nullptr;
   // Automatically deletes the tool if not explicitly kept (i.e. on success).
   // The tool is removed from the list of known tools too.
+  auto lock      = std::scoped_lock{ m_mut };
   auto toolguard = make_toolCreateGuard( m_instancesTools );
 
   // Check if the tool already exist : this could happen with clones
@@ -602,7 +733,7 @@ bool ToolSvc::existsTool( std::string_view fullname ) const
 //------------------------------------------------------------------------------
 {
   auto lock = std::scoped_lock{ m_mut };
-  return m_instancesTools.exists( fullname );
+  return m_instancesTools.contains( fullname );
 }
 
 //------------------------------------------------------------------------------
