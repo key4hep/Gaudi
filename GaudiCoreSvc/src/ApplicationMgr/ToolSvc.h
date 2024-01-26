@@ -85,13 +85,6 @@ public:
   void registerObserver( IToolSvc::Observer* obs ) override;
 
 private: // methods
-  // helper functions
-  //
-  /** The total number of refCounts on all tools in the instancesTools list */
-  unsigned long totalToolRefCount() const;
-  /** The minimum number of refCounts of all tools */
-  unsigned long minimumToolRefCount() const;
-
   /// Finalize the given tool, with exception handling
   StatusCode finalizeTool( IAlgTool* itool ) const;
 
@@ -103,8 +96,60 @@ private: // data
   Gaudi::Property<bool> m_showToolDataDeps{ this, "ShowDataDeps", false, "show the data dependencies of AlgTools" };
 
   /// Common Tools
-  std::vector<IAlgTool*>                               m_instancesTools; // List of all instances of tools
-  std::unordered_multimap<std::string_view, IAlgTool*> m_instancesToolsMap;
+  class ToolsList {
+    std::vector<IAlgTool*> m_instancesTools; // List of all instances of tools
+#ifdef __cpp_lib_generic_unordered_lookup
+    struct Hash {
+      using is_transparent = void;
+      std::size_t operator()( IAlgTool const* s ) const noexcept { return std::hash<std::string_view>{}( s->name() ); }
+      std::size_t operator()( std::string_view s ) const noexcept { return std::hash<std::string_view>{}( s ); }
+    };
+    struct Equal {
+      using is_transparent = void;
+      bool operator()( IAlgTool const* lhs, IAlgTool const* rhs ) const { return lhs->name() == rhs->name(); }
+      bool operator()( IAlgTool const* lhs, std::string_view rhs ) const { return lhs->name() == rhs; }
+      bool operator()( std::string_view lhs, IAlgTool const* rhs ) const { return lhs == rhs->name(); }
+    };
+    std::unordered_multiset<IAlgTool*, Hash, Equal> m_instancesToolsMap;
+#else
+    std::unordered_multimap<std::string_view, IAlgTool*> m_instancesToolsMap;
+#endif
+
+  public:
+    void remove( IAlgTool* tool ) {
+      m_instancesTools.erase( std::remove( std::begin( m_instancesTools ), std::end( m_instancesTools ), tool ),
+                              std::end( m_instancesTools ) );
+      auto range = m_instancesToolsMap.equal_range( tool->name() );
+#ifdef __cpp_lib_generic_unordered_lookup
+      auto itm = std::find_if( range.first, range.second, [&]( auto const& p ) { return p == tool; } );
+#else
+      auto itm = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second == tool; } );
+#endif
+      if ( itm != range.second ) m_instancesToolsMap.erase( itm );
+    }
+    void push_back( IAlgTool* tool ) {
+      m_instancesTools.push_back( tool );
+#ifdef __cpp_lib_generic_unordered_lookup
+      m_instancesToolsMap.emplace( tool );
+#else
+      m_instancesToolsMap.emplace( tool->name(), tool );
+#endif
+    }
+
+    auto exists( std::string_view name ) const { return m_instancesToolsMap.find( name ) != m_instancesToolsMap.end(); }
+    auto size() const { return m_instancesTools.size(); }
+    auto begin() const { return m_instancesTools.begin(); }
+    auto end() const { return m_instancesTools.end(); }
+    auto rbegin() const { return m_instancesTools.rbegin(); }
+    auto rend() const { return m_instancesTools.rend(); }
+    auto equal_range( std::string_view name ) const { return m_instancesToolsMap.equal_range( name ); }
+    auto grab() && {
+      m_instancesToolsMap.clear();
+      auto tools = std::move( m_instancesTools );
+      return tools;
+    }
+  };
+  ToolsList m_instancesTools;
 
   /// Pointer to HistorySvc
   IHistorySvc* m_pHistorySvc = nullptr;

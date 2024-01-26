@@ -41,20 +41,15 @@ namespace {
                             [&]( unsigned long count, const IAlgTool* tool ) { return count + tool->refCount(); } );
   }
 
-  /// small helper functions
+  /** The total number of refCounts on all tools in the instancesTools list */
+  /** The minimum number of refCounts of all tools */
   template <typename C>
-  void remove( C& c, typename C::const_reference i ) {
-    c.erase( std::remove( std::begin( c ), std::end( c ), i ), std::end( c ) );
-  }
-
-  void remove( std::unordered_multimap<std::string_view, IAlgTool*>& c, IAlgTool const* tool ) {
-    auto range = c.equal_range( tool->name() );
-    auto itm   = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second == tool; } );
-    if ( itm == range.second ) {
-      throw GaudiException( "Inconsistency between tool vector and tool map", __PRETTY_FUNCTION__,
-                            StatusCode::FAILURE );
-    }
-    c.erase( itm );
+  unsigned long minimumRefCount( const C& toolList ) {
+    auto i =
+        std::min_element( std::begin( toolList ), std::end( toolList ), []( const IAlgTool* lhs, const IAlgTool* rhs ) {
+          return lhs->refCount() < rhs->refCount();
+        } );
+    return i != std::end( toolList ) ? ( *i )->refCount() : 0;
   }
 
 } // namespace
@@ -99,12 +94,13 @@ StatusCode ToolSvc::finalize()
         -> tools are deleted in the order of increasing number of refCounts.
   */
   info() << "Removing all tools created by ToolSvc" << endmsg;
+  auto tools = std::move( m_instancesTools ).grab();
 
   // Print out list of tools
   ON_DEBUG {
     auto& log = debug();
     log << "  Tool List : ";
-    for ( const auto& iTool : m_instancesTools ) { log << iTool->name() << ":" << iTool->refCount() << " "; }
+    for ( const auto& iTool : tools ) { log << iTool->name() << ":" << iTool->refCount() << " "; }
     log << endmsg;
   }
 
@@ -123,13 +119,13 @@ StatusCode ToolSvc::finalize()
         + total number of refcounts
         + minimum number of refcounts
   */
-  boost::circular_buffer<IAlgTool*> finalizedTools( m_instancesTools.size() ); // list of tools that have been finalized
+  boost::circular_buffer<IAlgTool*> finalizedTools( tools.size() ); // list of tools that have been finalized
   bool                              fail( false );
-  size_t                            toolCount        = m_instancesTools.size();
+  size_t                            toolCount        = tools.size();
   unsigned long                     startRefCount    = 0;
-  unsigned long                     endRefCount      = totalToolRefCount();
+  unsigned long                     endRefCount      = totalRefCount( tools );
   unsigned long                     startMinRefCount = 0;
-  unsigned long                     endMinRefCount   = minimumToolRefCount();
+  unsigned long                     endMinRefCount   = minimumRefCount( tools );
   while ( toolCount > 0 && endRefCount > 0 && ( endRefCount != startRefCount || endMinRefCount != startMinRefCount ) ) {
     ON_DEBUG if ( endMinRefCount != startMinRefCount ) {
       debug() << toolCount << " tools left to finalize. Summed refCounts: " << endRefCount << endmsg;
@@ -138,10 +134,10 @@ StatusCode ToolSvc::finalize()
     startMinRefCount      = endMinRefCount;
     startRefCount         = endRefCount;
     unsigned long maxLoop = toolCount + 1;
-    while ( --maxLoop > 0 && !m_instancesTools.empty() ) {
-      IAlgTool* pTool = m_instancesTools.back();
+    while ( --maxLoop > 0 && !tools.empty() ) {
+      IAlgTool* pTool = tools.back();
       // removing tool from list makes ToolSvc::releaseTool( IAlgTool* ) a noop
-      m_instancesTools.pop_back();
+      tools.pop_back();
       unsigned long count = pTool->refCount();
       // cache tool name
       const std::string& toolName = pTool->name();
@@ -159,12 +155,12 @@ StatusCode ToolSvc::finalize()
         // Place back at the front of the list to try again later
         // ToolSvc::releaseTool( IAlgTool* ) remains active for this tool
         ON_DEBUG debug() << "  Delaying   finalization of " << toolName << " (refCount " << count << ")" << endmsg;
-        m_instancesTools.insert( std::begin( m_instancesTools ), pTool );
+        tools.insert( std::begin( tools ), pTool );
       }
     } // end of inner loop
-    toolCount      = m_instancesTools.size();
-    endRefCount    = totalToolRefCount();
-    endMinRefCount = minimumToolRefCount();
+    toolCount      = tools.size();
+    endRefCount    = totalRefCount( tools );
+    endMinRefCount = minimumRefCount( tools );
   }; // end of outer loop
 
   //
@@ -197,9 +193,9 @@ StatusCode ToolSvc::finalize()
   }
 
   // Error if by now not all tools are properly finalised
-  if ( !m_instancesTools.empty() ) {
+  if ( !tools.empty() ) {
     error() << "Unable to finalize and delete the following tools : ";
-    for ( const auto& iTool : m_instancesTools ) { error() << iTool->name() << ": " << iTool->refCount() << " "; }
+    for ( const auto& iTool : tools ) { error() << iTool->name() << ": " << iTool->refCount() << " "; }
     error() << endmsg;
   }
 
@@ -281,11 +277,19 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
 
   // Find tool in list of those already existing, and tell its
   // interface that it has been used one more time
-  auto range = m_instancesToolsMap.equal_range( fullname );
-  auto it    = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second->parent() == parent; } );
+  auto range = m_instancesTools.equal_range( fullname );
+#ifdef __cpp_lib_generic_unordered_lookup
+  auto it = std::find_if( range.first, range.second, [&]( auto const& p ) { return p->parent() == parent; } );
+#else
+  auto it = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second->parent() == parent; } );
+#endif
   if ( it != range.second ) {
     ON_DEBUG debug() << "Retrieved tool " << toolname << " with parent " << parent << endmsg;
+#ifdef __cpp_lib_generic_unordered_lookup
+    itool = *it;
+#else
     itool = it->second;
+#endif
   }
 
   if ( !itool ) {
@@ -366,8 +370,7 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
       }
       sc = finalizeTool( tool );
       // remove from known tools...
-      remove( m_instancesToolsMap, tool );
-      remove( m_instancesTools, tool );
+      m_instancesTools.remove( tool );
     }
     tool->release();
   }
@@ -385,16 +388,15 @@ StatusCode ToolSvc::create( const std::string& tooltype, const IInterface* paren
 namespace {
   /// Small class to allow a safe roll-back if the tool is not
   /// correctly initialized or there are problems.
-  template <typename T, typename TM>
+  template <typename T>
   class ToolCreateGuard {
     /// list of tools
-    T&  m_tools;
-    TM& m_toolsMap;
+    T& m_tools;
     /// pointer to be set
     std::unique_ptr<IAlgTool> m_tool;
 
   public:
-    explicit ToolCreateGuard( T& tools, TM& toolsMap ) : m_tools( tools ), m_toolsMap( toolsMap ) {}
+    explicit ToolCreateGuard( T& tools ) : m_tools( tools ) {}
     // we don't get a move constructor by default because we
     // have a non-trivial destructor... However, the default
     // one is just fine...
@@ -402,16 +404,10 @@ namespace {
     /// Set the internal pointer (delete any previous one). Get ownership of the tool.
     void create( const std::string& tooltype, const std::string& fullname, const IInterface* parent ) {
       // remove previous content
-      if ( m_tool ) {
-        remove( m_toolsMap, m_tool.get() );
-        remove( m_tools, m_tool.get() );
-      };
+      if ( m_tool ) { m_tools.remove( m_tool.get() ); };
       m_tool = AlgTool::Factory::create( tooltype, tooltype, fullname, parent );
       // set new content
-      if ( m_tool ) {
-        m_tools.push_back( m_tool.get() );
-        m_toolsMap.emplace( m_tool->name(), m_tool.get() );
-      }
+      if ( m_tool ) { m_tools.push_back( m_tool.get() ); }
     }
     /// Get the internal pointer
     IAlgTool* get() { return m_tool.get(); }
@@ -423,13 +419,13 @@ namespace {
     IAlgTool* release() { return m_tool.release(); }
     /// remove it from the list.
     ~ToolCreateGuard() {
-      if ( m_tool ) remove( m_tools, m_tool.get() );
+      if ( m_tool ) m_tools.remove( m_tool.get() );
     }
   };
 
-  template <typename C, typename CM>
-  ToolCreateGuard<C, CM> make_toolCreateGuard( C& c, CM& cm ) {
-    return ToolCreateGuard<C, CM>{ c, cm };
+  template <typename C>
+  ToolCreateGuard<C> make_toolCreateGuard( C& c ) {
+    return ToolCreateGuard<C>{ c };
   }
 } // namespace
 
@@ -459,7 +455,7 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   tool = nullptr;
   // Automatically deletes the tool if not explicitly kept (i.e. on success).
   // The tool is removed from the list of known tools too.
-  auto toolguard = make_toolCreateGuard( m_instancesTools, m_instancesToolsMap );
+  auto toolguard = make_toolCreateGuard( m_instancesTools );
 
   // Check if the tool already exist : this could happen with clones
   std::string fullname = nameTool( toolname, parent );
@@ -606,7 +602,7 @@ bool ToolSvc::existsTool( std::string_view fullname ) const
 //------------------------------------------------------------------------------
 {
   auto lock = std::scoped_lock{ m_mut };
-  return m_instancesToolsMap.find( fullname ) != std::end( m_instancesToolsMap );
+  return m_instancesTools.exists( fullname );
 }
 
 //------------------------------------------------------------------------------
@@ -637,22 +633,6 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
   }
 
   return sc;
-}
-
-//------------------------------------------------------------------------------
-unsigned long ToolSvc::totalToolRefCount() const
-//------------------------------------------------------------------------------
-{
-  return totalRefCount( m_instancesTools );
-}
-//------------------------------------------------------------------------------
-unsigned long ToolSvc::minimumToolRefCount() const
-//------------------------------------------------------------------------------
-{
-  auto i =
-      std::min_element( std::begin( m_instancesTools ), std::end( m_instancesTools ),
-                        []( const IAlgTool* lhs, const IAlgTool* rhs ) { return lhs->refCount() < rhs->refCount(); } );
-  return i != std::end( m_instancesTools ) ? ( *i )->refCount() : 0;
 }
 
 //------------------------------------------------------------------------------
