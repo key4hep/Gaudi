@@ -818,6 +818,15 @@ endfunction()
 
   ``DEPENDS target1 target2...``
     list of targets that have to be built before we run pytest to collect the tests
+
+  ``COVERAGE module ...``
+    generate coverage reports from the tests, equivalent to pass
+    ``--cov=<module>`` for all modules listed. A special test is added
+    with the summary report of the coverage
+
+  ``COVERAGE_OPTIONS coverage_option_1 coverage_option_2``
+    options to pass to the ``coverage report`` utility, for example
+    ``--fail-under=100`` to enforce full coverage
 #]========================================================================]
 function(gaudi_add_pytest)
     if(NOT BUILD_TESTING)
@@ -831,7 +840,7 @@ function(gaudi_add_pytest)
         ARG
         ""
         "PREFIX;ROOT_DIR;WORKING_DIRECTORY"
-        "LABELS;OPTIONS;PROPERTIES;DEPENDS"
+        "LABELS;OPTIONS;PROPERTIES;DEPENDS;COVERAGE;COVERAGE_OPTIONS"
         ${ARGN}
     )
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -903,6 +912,11 @@ function(gaudi_add_pytest)
     string(JOIN " " ARG_OPTIONS_CMD ${ARG_OPTIONS})
     string(JOIN "\\ " ARG_OPTIONS_ESC ${ARG_OPTIONS})
     string(JOIN "\\ " ARG_PROPERTIES_ESC WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY} ${ARG_PROPERTIES})
+    if(ARG_COVERAGE)
+        _import_runtime(coverage)
+        string(JOIN "," ARG_COVERAGE ${ARG_COVERAGE})
+        string(JOIN "\\ " ARG_COVERAGE_OPTIONS_ESC report ${ARG_COVERAGE_OPTIONS})
+    endif()
     file(GENERATE OUTPUT ${base_filename}.cmake
         CONTENT "
 set(files_to_hash \${CMAKE_CURRENT_LIST_FILE})
@@ -943,6 +957,10 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
             --ctest-label=${package_name}
             --ctest-properties=${ARG_PROPERTIES_ESC}
             --ctest-binary-dir=${CMAKE_CURRENT_BINARY_DIR}
+            $<$<BOOL:${ARG_COVERAGE}>:
+              --ctest-coverage=${ARG_COVERAGE}
+              --ctest-coverage-command=$<TARGET_FILE:run>\\ $<TARGET_FILE:coverage>\\ ${ARG_COVERAGE_OPTIONS_ESC}
+            >
             ${ARG_LABELS}
             ${collect_roots}
         WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}

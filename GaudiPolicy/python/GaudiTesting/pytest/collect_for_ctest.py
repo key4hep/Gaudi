@@ -59,6 +59,16 @@ def pytest_addoption(parser, pluginmanager):
         default=None,
         help="value of CMAKE_CURRENT_BINARY_DIR from which gaudi_add_pytest was invoked",
     )
+    parser.addoption(
+        "--ctest-coverage",
+        default="",
+        help="select modules for which produce coverage reports",
+    )
+    parser.addoption(
+        "--ctest-coverage-command",
+        default="coverage report",
+        help="how coverage should be invoked to produce the final report",
+    )
 
 
 def pytest_collectstart(collector):
@@ -104,22 +114,36 @@ def pytest_collection_finish(session):
         # nothing to do if no output file is specified
         return
 
+    coverage = args["coverage"].split(",") if args["coverage"] else []
+    if coverage:
+        args["pytest_command"] += " --cov-append --cov-report= " + " ".join(
+            f"--cov={module}" for module in coverage
+        )
+
     properties = 'LABELS "{}" '.format(";".join(args["label"]))
     if args.get("binary_dir"):
         properties += f'ENVIRONMENT "CMAKE_CURRENT_BINARY_DIR={args["binary_dir"]}" '
     properties += " ".join(args["properties"])
 
+    names = []
     for path in sorted(session.ctest_files):
         name = (
             args["prefix"] + os.path.relpath(path, args["pytest_root_dir"])
         ).replace("/", ".")
         if name.endswith(".py"):
             name = name[:-3]
+        pytest_cmd = args["pytest_command"]
+
+        if coverage and not names:
+            # do not use --cov-append for the first test so that it resets the
+            # stats
+            pytest_cmd = pytest_cmd.replace("--cov-append", "")
+
         output.write(
             TEST_DESC_TEMPLATE.format(
                 name=name,
                 path=path,
-                pytest_cmd=args["pytest_command"],
+                pytest_cmd=pytest_cmd,
                 properties=properties,
             )
         )
@@ -135,6 +159,32 @@ def pytest_collection_finish(session):
                 'set_tests_properties('
                 f'{name} PROPERTIES FIXTURES_REQUIRED "{";".join(session.ctest_fixture_required[path])}")\n'
             )
+
+        # we force one test to be run one by one
+        if coverage and names:
+            if names:
+                output.write(
+                    f"set_tests_properties({name} PROPERTIES DEPENDS {names[-1]})\n"
+                )
+                output.write(
+                    f"set_tests_properties({name} PROPERTIES FIXTURES_SETUP {name})\n"
+                )
+        names.append(name)
+
+    if coverage and names:
+        name = (args["prefix"] + "coverage_report").replace("/", ".")
+        output.write(
+            TEST_DESC_TEMPLATE.format(
+                name=name,
+                path="",
+                pytest_cmd=f"{args['coverage_command']}",
+                properties=properties + " LABELS coverage",
+            )
+        )
+        # coverage reports require all related tests to be run first
+        output.write(
+            f"set_tests_properties({name} PROPERTIES FIXTURES_REQUIRED \"{';'.join(names)}\")\n"
+        )
 
     output.close()
 
