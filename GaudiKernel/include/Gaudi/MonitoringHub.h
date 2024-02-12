@@ -14,6 +14,7 @@
 
 #include <deque>
 #include <functional>
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <typeindex>
@@ -23,60 +24,24 @@ namespace Gaudi::Monitoring {
 
   namespace details {
 
-    template <typename T>
-    using has_merge_and_reset_ = decltype( std::declval<T>().mergeAndReset( std::declval<T&&>() ) );
-    template <typename T>
-    inline constexpr bool has_merge_and_reset_v = Gaudi::cpp17::is_detected_v<has_merge_and_reset_, T>;
-    template <typename T>
-    using has_merge_from_json_ = decltype( std::declval<T>().mergeAndReset( nlohmann::json{} ) );
-    template <typename T>
-    inline constexpr bool has_merge_from_json_v = Gaudi::cpp17::is_detected_v<has_merge_from_json_, T>;
-    template <typename T>
-    using has_from_json_ = decltype( T::fromJSON( nlohmann::json{} ) );
-    template <typename T>
-    inline constexpr bool has_from_json_v = Gaudi::cpp17::is_detected_v<has_from_json_, T>;
+    // type trait checking whether a given type has a friend method reset
+    template <typename Arg, typename = void> // this 3rd parameter defaults to void
+    struct has_reset_method : std::false_type {};
+    template <typename Arg>
+    struct has_reset_method<Arg, std::void_t<decltype( reset( std::declval<Arg&>() ) )>> : std::true_type {};
+    template <typename Arg>
+    constexpr bool has_reset_method_v = has_reset_method<Arg>::value;
 
-    using MergeAndReset_t = void ( * )( void*, void* );
-
-    template <typename T>
-    MergeAndReset_t makeMergeAndResetFor() {
-      if constexpr ( has_merge_and_reset_v<T> ) {
-        return []( void* ptr, void* other ) {
-          reinterpret_cast<T*>( ptr )->mergeAndReset( std::move( *reinterpret_cast<T*>( other ) ) );
-        };
-      } else {
-        return []( void*, void* ) {};
-      }
-    }
-
-    using MergeAndResetFromJSON_t = void ( * )( void*, const nlohmann::json& );
-
-    template <typename T>
-    MergeAndResetFromJSON_t makeMergeAndResetFromJSONFor() {
-      if constexpr ( has_merge_from_json_v<T> ) {
-        return []( void* ptr, const nlohmann::json& other ) { reinterpret_cast<T*>( ptr )->mergeAndReset( other ); };
-      } else if constexpr ( has_merge_and_reset_v<T> && has_from_json_v<T> ) {
-        return []( void* ptr, const nlohmann::json& other ) {
-          reinterpret_cast<T*>( ptr )->mergeAndReset( T::fromJSON( other ) );
-        };
-      } else {
-        return nullptr;
-      }
-    }
+    // type trait checking whether a given type has a friend method mergeAndReset
+    template <typename Arg, typename = void> // this 3rd parameter defaults to void
+    struct has_mergeAndReset_method : std::false_type {};
+    template <typename Arg>
+    struct has_mergeAndReset_method<
+        Arg, std::void_t<decltype( mergeAndReset( std::declval<Arg&>(), std::declval<Arg&>() ) )>> : std::true_type {};
+    template <typename Arg>
+    constexpr bool has_mergeAndReset_method_v = has_mergeAndReset_method<Arg>::value;
 
   } // namespace details
-
-  struct ClashingEntityName : std::logic_error {
-    using logic_error::logic_error;
-  };
-
-  /// default (empty) implementation of reset method for types stored into an entity
-  template <typename T>
-  void reset( T& ) {}
-
-  /// default (empty) implementation of mergeAndReset method for types stored into an entity
-  template <typename T>
-  void mergeAndReset( T&, T& ) {}
 
   /// Central entity in a Gaudi application that manages monitoring objects (i.e. counters, histograms, etc.).
   ///
@@ -107,9 +72,14 @@ namespace Gaudi::Monitoring {
           , m_ptr{ &ent }
           , m_typeIndex{ typeid( T ) }
           , m_getJSON{ []( void const* ptr ) -> nlohmann::json { return *reinterpret_cast<const T*>( ptr ); } }
-          , m_reset{ []( void* ptr ) { reset( *reinterpret_cast<T*>( ptr ) ); } }
-          , m_mergeAndReset{
-                []( void* e, void* o ) { mergeAndReset( *reinterpret_cast<T*>( e ), *reinterpret_cast<T*>( o ) ); } } {}
+          , m_reset{ []( void* ptr ) {
+            if constexpr ( details::has_reset_method_v<T> ) { reset( *reinterpret_cast<T*>( ptr ) ); }
+          } }
+          , m_mergeAndReset{ []( void* e, void* o ) {
+            if constexpr ( details::has_mergeAndReset_method_v<T> ) {
+              mergeAndReset( *reinterpret_cast<T*>( e ), *reinterpret_cast<T*>( o ) );
+            }
+          } } {}
       /// name of the component owning the Entity
       std::string component;
       /// name of the entity
@@ -123,14 +93,14 @@ namespace Gaudi::Monitoring {
         j = std::invoke( e.m_getJSON, e.m_ptr );
       }
       /// function resetting internal data
-      friend void reset( Entity& e ) { std::invoke( e.m_reset, e.m_ptr ); }
+      friend void reset( Entity const& e ) { std::invoke( e.m_reset, e.m_ptr ); }
       /**
        * function calling merge and reset on internal data with the internal data of another entity
        *
        * This function does not protect against usage with entities with different internal types
        * The user should ensure that entities are compatible before calling this function
        */
-      friend void mergeAndReset( Entity& ent, Entity& other ) {
+      friend void mergeAndReset( Entity const& ent, Entity const& other ) {
         if ( ent.typeIndex() != other.typeIndex() ) {
           throw std::runtime_error( std::string( "Entity: mergeAndReset called on different types: " ) +
                                     ent.typeIndex().name() + " and " + other.typeIndex().name() );
