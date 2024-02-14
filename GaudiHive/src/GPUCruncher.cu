@@ -11,7 +11,7 @@ __global__ void makeGrid( const double* input, double* workspace ) {
 
 StatusCode GPUCruncher::gpuExecute( const std::pmr::vector<double>& in, std::vector<double>& out ) const {
   // Create the stream
-  Gaudi::CUDA::CUDAStream stream( dynamic_cast<const Gaudi::AcceleratedAlgorithm*>( this ) );
+  Gaudi::CUDA::CUDAStream stream( dynamic_cast<const Gaudi::AsynchronousAlgorithm*>( this ) );
 
   // Allocate device memory
   double* d_input = stream.malloc<double>( in.size() );

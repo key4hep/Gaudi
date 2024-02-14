@@ -23,7 +23,7 @@
  * The FiberManager manages a pool of threads used to run boost::fiber fibers.
  *
  * These fibers can be suspended while waiting for GPU operations (with CUDA and HIP support
- * built-in), remote I/O operations, and the like, providing a base for accelerated algorithm
+ * built-in), remote I/O operations, and the like, providing a base for asynchronous algorithm
  * support.
  *
  * @author Beojan Stanislaus
@@ -35,7 +35,7 @@ class FiberManager {
 public:
   /** FiberManager constructor
    *
-   * @param n_threads Number of threads for CPU portion of accelerated algorithms.
+   * @param n_threads Number of threads for CPU portion of asynchronous algorithms.
    *                  These are *in addition* to the TBB worker threads used for CPU algorithms.
    *    * */
   FiberManager( int n_threads ) {
@@ -54,9 +54,9 @@ public:
     for ( std::thread& t : m_threads ) { t.join(); }
   }
 
-  /** Schedule work to run on the accelerated pool.
+  /** Schedule work to run on the asynchronous pool.
    *
-   * AcceleratedAlgorithms should use a relatively small amount of CPU time,
+   * AsynchronousAlgorithms should use a relatively small amount of CPU time,
    * and should use boost::fiber functionality to yield while waiting for offloaded
    * work to complete.
    *

@@ -395,10 +395,10 @@ namespace Gaudi {
     // Set the blocking flag
     void setBlocking( bool value ) { m_blocking = value; }
 
-    // Return the accelerated flag
-    bool isAccelerated() const { return m_accelerated; }
-    // Set the accelerated flag
-    void setAccelerated( bool value ) { m_accelerated = value; }
+    // Return the asynchronous flag
+    bool isAsynchronous() const { return m_asynchronous; }
+    // Set the asynchronous flag
+    void setAsynchronous( bool value ) { m_asynchronous = value; }
   protected:
     std::vector<IAlgTool*>& tools();
 
@@ -522,10 +522,10 @@ namespace Gaudi {
         "if algorithm invokes CPU-blocking system calls (offloads computations to accelerators or "
         "quantum processors, performs disk or network I/O, is bound by resource synchronization, etc)" };
 
-    Gaudi::Property<bool> m_accelerated{
-        this, "Accelerated", false,
-        "whether algorithm is GPU / FPGA / Triton etc. accelerated and uses Boost Fiber to suspend "
-        "while offloaded code is running. An accelerated algorithm must not also be blocking." };
+    Gaudi::Property<bool> m_asynchronous{
+        this, "Asynchronous", false,
+        "whether algorithm is asynchronous and uses Boost Fiber to suspend "
+        "while offloaded code is running. An asynchronous algorithm must not also be blocking." };
     // The default should be changed to "false" for v29
     Gaudi::Property<bool> m_filterCircDeps{ this, "FilterCircularDependencies", true,
                                             "filter out circular data dependencies" };

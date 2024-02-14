@@ -1,4 +1,4 @@
-#include <Gaudi/AcceleratedAlgorithm.h>
+#include <Gaudi/AsynchronousAlgorithm.h>
 
 #include <boost/fiber/cuda/waitfor.hpp>
 
@@ -47,6 +47,12 @@ namespace Gaudi {
 
     namespace Detail {
       void* PinnedMemoryResource::do_allocate( std::size_t bytes, std::size_t /* alignment */ ) {
+        cudaError_t firstErr = cudaGetLastError();
+        if ( firstErr != cudaSuccess ) {
+          // throw GaudiException(
+          //     fmt::format( "First error {} ({}): {}", cudaGetErrorName( firstErr ), int( firstErr ), cudaGetErrorString( firstErr ) ),
+          //     "CUDA_ERROR", StatusCode::FAILURE );
+        }
         num_allocs.fetch_add( 1 );
         void*       ptr = nullptr;
         cudaError_t err = cudaMallocHost( &ptr, bytes );
@@ -54,7 +60,8 @@ namespace Gaudi {
         if ( err == cudaErrorInvalidValue || err == cudaErrorMemoryAllocation ) {
           throw std::bad_alloc();
         } else {
-          throw GaudiException( fmt::format( "CUDA ERROR {}: {}", cudaGetErrorName( err ), cudaGetErrorString( err ) ),
+          throw GaudiException( fmt::format( "in cudaMallocHost({}, /**/) {} ({}): {}", bytes, cudaGetErrorName( err ),
+                                             int( err ), cudaGetErrorString( err ) ),
                                 "CUDA_ERROR", StatusCode::FAILURE );
         }
       }
@@ -81,7 +88,7 @@ namespace Gaudi {
       return dynamic_cast<std::pmr::memory_resource*>( res.get() );
     }
 
-    CUDAStream::CUDAStream( const Gaudi::AcceleratedAlgorithm* parent, std::string file, int line )
+    CUDAStream::CUDAStream( const Gaudi::AsynchronousAlgorithm* parent, std::string file, int line )
         : stream( nullptr ), parent( parent ) {
       nth_stream = running_streams.fetch_add( 1 ) + 1;
       fmt::print( "Starting {}th concurrent stream\n", nth_stream );

@@ -1,4 +1,4 @@
-#include "Gaudi/CUDAAcceleratedAlgHelper.cuh"
+#include "Gaudi/CUDAAsynchronousAlgHelper.cuh"
 #include <boost/fiber/cuda/waitfor.hpp>
 
 #include <cstdio>

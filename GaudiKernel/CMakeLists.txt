@@ -40,7 +40,7 @@ endif()
 
 # Build the library
 gaudi_add_library(GaudiKernel
-  SOURCES src/Lib/CUDAAcceleratedAlgHelper.cu
+  SOURCES src/Lib/CUDAAsynchronousAlgHelper.cu
           src/Lib/AlgContext.cpp
           src/Lib/Algorithm.cpp
           src/Lib/AlgorithmHistory.cpp

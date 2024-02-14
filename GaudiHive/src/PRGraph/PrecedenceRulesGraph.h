@@ -71,7 +71,7 @@ namespace precedence {
         , m_algoIndex( algoIndex )
         , m_algorithm( algo )
         , m_isBlocking( algo->isBlocking() )
-        , m_isAccelerated( algo->isAccelerated() ) {}
+        , m_isAsynchronous( algo->isAsynchronous() ) {}
 
     std::string m_name{ "" };
     int         m_nodeIndex{ -1 };
@@ -81,8 +81,8 @@ namespace precedence {
     Gaudi::Algorithm* m_algorithm{ nullptr };
     /// If an algorithm is blocking
     bool m_isBlocking{ false };
-    /// If an algorithm is accelerated
-    bool m_isAccelerated{ false };
+    /// If an algorithm is asynchronous
+    bool m_isAsynchronous{ false };
   };
 
   struct DecisionHubProps {
@@ -492,7 +492,7 @@ namespace concurrency {
         , m_algoIndex( algoIndex )
         , m_algoName( algoPtr->name() )
         , m_isBlocking( algoPtr->isBlocking() )
-        , m_isAccelerated( algoPtr->isAccelerated() ){};
+        , m_isAsynchronous( algoPtr->isAsynchronous() ){};
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -525,10 +525,10 @@ namespace concurrency {
     void setBlocking( bool value ) { m_isBlocking = value; }
     /// Check if algorithm is CPU-blocking
     bool isBlocking() const { return m_isBlocking; }
-    /// Set the accelerated flag
-    void setAccelerated( bool value ) { m_isAccelerated = value; }
-    /// Check if algorithm is accelerated
-    bool isAccelerated() const { return m_isAccelerated; }
+    /// Set the asynchronous flag
+    void setAsynchronous( bool value ) { m_isAsynchronous = value; }
+    /// Check if algorithm is asynchronous
+    bool isAsynchronous() const { return m_isAsynchronous; }
 
     /// Print a string representing the control flow state
     void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const override;
@@ -548,8 +548,8 @@ namespace concurrency {
     float m_rank = -1;
     /// If an algorithm is CPU-blocking
     bool m_isBlocking;
-    /// If an algorithm is accelerated
-    bool m_isAccelerated;
+    /// If an algorithm is asynchronous
+    bool m_isAsynchronous;
 
     /// Algorithm outputs (DataNodes)
     std::vector<DataNode*> m_outputs;

@@ -15,7 +15,7 @@
 // ============================================================================
 // Gaudi
 #include "Gaudi/Algorithm.h"
-#include "Gaudi/CUDAAcceleratedAlgHelper.cuh"
+#include "Gaudi/CUDAAsynchronousAlgHelper.cuh"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 // Others
 #include "fmt/format.h"
@@ -25,7 +25,7 @@
 #include <chrono>
 
 namespace Gaudi {
-  /** Base class for accelerated algorithms.
+  /** Base class for asynchronous algorithms.
    *
    *  Augments Gaudi::Algorithm by saving and restoring current slot whenever
    *  fiber is suspended and resumed. This requires using the member functions for
@@ -45,20 +45,20 @@ namespace Gaudi {
     return StatusCode::FAILURE;                                                                                        \
   }
 
-  class GAUDI_API AcceleratedAlgorithm : virtual public Gaudi::Algorithm {
+  class GAUDI_API AsynchronousAlgorithm : virtual public Gaudi::Algorithm {
   protected:
     /// Contains current slot
     boost::fibers::fiber_specific_ptr<std::size_t> s_currentSlot{};
 
   public:
     StatusCode sysInitialize() override {
-      setAccelerated( true );
-      msg() << MSG::INFO << "Starting sysInitialize for AcceleratedAlgorithm" << endmsg;
+      setAsynchronous( true );
+      msg() << MSG::INFO << "Starting sysInitialize for AsynchronousAlgorithm" << endmsg;
       return Gaudi::Algorithm::sysInitialize();
     }
 
     StatusCode sysExecute( const EventContext& ctx ) override {
-      msg() << MSG::INFO << "Starting sysExecute for AcceleratedAlgorithm on slot " << ctx.slot()
+      msg() << MSG::INFO << "Starting sysExecute for AsynchronousAlgorithm on slot " << ctx.slot()
             << "with s_currentSlot = " << fmt::to_string( fmt::ptr( s_currentSlot.get() ) ) << endmsg;
       if ( s_currentSlot.get() == nullptr ) {
         s_currentSlot.reset( new std::size_t( ctx.slot() ) );
@@ -109,12 +109,12 @@ namespace Gaudi {
     class CUDAStream {
     private:
       cudaStream_t                       stream;
-      const Gaudi::AcceleratedAlgorithm* parent;
+      const Gaudi::AsynchronousAlgorithm* parent;
       int                                nth_stream = 0;
       boost::unordered_flat_set<void*>   allocations{};
 
     public:
-      CUDAStream( const Gaudi::AcceleratedAlgorithm* parent, std::string file = __FILE__, int line = __LINE__ );
+      CUDAStream( const Gaudi::AsynchronousAlgorithm* parent, std::string file = __FILE__, int line = __LINE__ );
 
       operator cudaStream_t() { return stream; }
 

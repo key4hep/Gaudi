@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include <Gaudi/AcceleratedAlgorithm.h>
+#include <Gaudi/AsynchronousAlgorithm.h>
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiKernel/IRndmGenSvc.h>
 #include <GaudiKernel/RegistryEntry.h>
@@ -20,10 +20,10 @@
 
 /** @class GPUCruncher
  *
- *  A test accelerated algorithm. Might eventually run computations on a GPU but for now
+ *  A test asynchronous algorithm. Might eventually run computations on a GPU but for now
  *  it just sleeps for a few seconds.
  */
-class GPUCruncher : virtual public Gaudi::AcceleratedAlgorithm {
+class GPUCruncher : virtual public Gaudi::AsynchronousAlgorithm {
 
 public:
   typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;
