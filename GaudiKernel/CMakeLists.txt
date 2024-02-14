@@ -40,7 +40,8 @@ endif()
 
 # Build the library
 gaudi_add_library(GaudiKernel
-  SOURCES src/Lib/AlgContext.cpp
+  SOURCES src/Lib/CUDAAcceleratedAlgHelper.cu
+          src/Lib/AlgContext.cpp
           src/Lib/Algorithm.cpp
           src/Lib/AlgorithmHistory.cpp
           src/Lib/AlgTool.cpp
@@ -157,6 +158,7 @@ gaudi_add_library(GaudiKernel
            Boost::regex
            Boost::system
            Boost::chrono
+           vecmem::core
            TBB::tbb
            ${CMAKE_DL_LIBS}
            ROOT::Core
@@ -171,6 +173,7 @@ gaudi_generate_version_header_file(GaudiKernel)
 target_include_directories(GaudiKernel
   PRIVATE ${VectorClass_INCLUDE_DIR}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
+         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} # for CUDA runtime
   )
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h

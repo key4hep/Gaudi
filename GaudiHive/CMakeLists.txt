@@ -18,6 +18,7 @@ gaudi_add_module(GaudiHive
                          src/ContextEventCounter.cpp
                          src/CPUCruncher.cpp
                          src/GPUCruncher.cpp
+                         src/GPUCruncher.cu
                          src/FetchDataFromFile.cpp
                          src/FetchLeavesFromFile.cpp
                          src/HiveDataBroker.cpp

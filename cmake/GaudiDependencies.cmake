@@ -93,6 +93,7 @@ set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cma
 set(BUILD_SHARED_LIBS ON)
 find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex fiber
   thread python unit_test_framework program_options log log_setup graph)
+find_package(vecmem 1.1.0 CONFIG REQUIRED core)
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables
 foreach(component IN ITEMS system filesystem regex thread python unit_test_framework

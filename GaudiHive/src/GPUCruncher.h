@@ -43,7 +43,7 @@ public:
                ISvcLocator*       pSvc );     // the Service Locator
 
   /// virtual & protected desctrustor
-  virtual ~GPUCruncher(); // virtual & protected desctrustor
+  virtual ~GPUCruncher(); // virtual & protected destructor
 
 private:
   /// the default constructor is disabled
@@ -53,14 +53,18 @@ private:
   /// the assignement operator is disabled
   GPUCruncher& operator=( const GPUCruncher& ); // no assignement
   /// The GPU intensive function
+  StatusCode gpuExecute( const std::pmr::vector<double>& in, std::vector<double>& out ) const;
 
   Gaudi::Property<std::vector<std::string>> m_inpKeys{ this, "inpKeys", {}, "" };
   Gaudi::Property<std::vector<std::string>> m_outKeys{ this, "outKeys", {}, "" };
 
-  Gaudi::Property<double>       m_avg_runtime{ this, "avgRuntime", 1., "Average runtime of the module." };
-  Gaudi::Property<double>       m_var_runtime{ this, "varRuntime", 0.01, "Variance of the runtime of the module." };
-  Gaudi::Property<bool>         m_local_rndm_gen{ this, "localRndm", true,
+  Gaudi::Property<double> m_avg_runtime{ this, "avgRuntime", 1., "Average runtime of the module." };
+  Gaudi::Property<double> m_var_runtime{ this, "varRuntime", 0.01, "Variance of the runtime of the module." };
+  Gaudi::Property<bool>   m_local_rndm_gen{ this, "localRndm", true,
                                           "Decide if the local random generator is to be used" };
+
+  // For allocating CUDA pinned memory
+  std::pmr::memory_resource* pinned;
 
   // For the concurrency
   const uint MAX_INPUTS  = 40;
