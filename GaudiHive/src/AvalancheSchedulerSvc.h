@@ -186,7 +186,8 @@ private:
       "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly." };
   Gaudi::Property<int> m_numOffloadThreads{
       this, "NumOffloadThreads", 2,
-      "Number of threads to use for CPU portion of asynchronous algorithms. Asynchronous algorithms must be flagged and "
+      "Number of threads to use for CPU portion of asynchronous algorithms. Asynchronous algorithms must be flagged "
+      "and "
       "use Boost Fiber functionality to suspend while waiting for offloaded work." };
   Gaudi::Property<bool>                     m_checkDeps{ this, "CheckDependencies", false,
                                      "Runtime check of Algorithm Input Data Dependencies" };
@@ -310,7 +311,7 @@ private:
         , algName( algName )
         , algRank( algRank )
         , blocking( blocking )
-        , asynchronous ( asynchronous )
+        , asynchronous( asynchronous )
         , slotIndex( slotIndex )
         , contextPtr( eventContext ){};
     /// Copy constructor (to keep a lambda capturing a TaskSpec storable as a std::function value)
@@ -353,8 +354,8 @@ private:
   tbb::task_arena*        m_arena{ nullptr };
   FiberManager*           m_fiberManager{ nullptr };
 
-  size_t                  m_maxEventsInFlight{ 0 };
-  size_t                  m_maxAlgosInFlight{ 1 };
+  size_t m_maxEventsInFlight{ 0 };
+  size_t m_maxAlgosInFlight{ 1 };
 
 public:
   // get next schedule-able TaskSpec

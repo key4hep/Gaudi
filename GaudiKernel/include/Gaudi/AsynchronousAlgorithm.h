@@ -108,10 +108,10 @@ namespace Gaudi {
 
     class CUDAStream {
     private:
-      cudaStream_t                       stream;
+      cudaStream_t                        stream;
       const Gaudi::AsynchronousAlgorithm* parent;
-      int                                nth_stream = 0;
-      boost::unordered_flat_set<void*>   allocations{};
+      int                                 nth_stream = 0;
+      boost::unordered_flat_set<void*>    allocations{};
 
     public:
       CUDAStream( const Gaudi::AsynchronousAlgorithm* parent, std::string file = __FILE__, int line = __LINE__ );

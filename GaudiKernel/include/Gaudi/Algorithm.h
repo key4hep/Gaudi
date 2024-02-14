@@ -399,6 +399,7 @@ namespace Gaudi {
     bool isAsynchronous() const { return m_asynchronous; }
     // Set the asynchronous flag
     void setAsynchronous( bool value ) { m_asynchronous = value; }
+
   protected:
     std::vector<IAlgTool*>& tools();
 

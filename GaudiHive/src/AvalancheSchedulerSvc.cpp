@@ -95,7 +95,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   }
 
   // Initialize FiberManager
-  m_fiberManager = new FiberManager(m_numOffloadThreads.value());
+  m_fiberManager = new FiberManager( m_numOffloadThreads.value() );
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
@@ -707,8 +707,8 @@ StatusCode AvalancheSchedulerSvc::iterate() {
       bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
       bool               asynchronous{ m_precSvc->isAsynchronous( algName ) };
 
-      partial_sc =
-          schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, asynchronous, iSlot, thisSlot.eventContext.get() ) );
+      partial_sc = schedule(
+          TaskSpec( nullptr, algIndex, algName, rank, blocking, asynchronous, iSlot, thisSlot.eventContext.get() ) );
 
       ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
           << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << algName
@@ -723,8 +723,8 @@ StatusCode AvalancheSchedulerSvc::iterate() {
         unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
         bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
         bool               asynchronous{ m_precSvc->isAsynchronous( algName ) };
-        partial_sc =
-            schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, asynchronous, iSlot, subslot.eventContext.get() ) );
+        partial_sc = schedule(
+            TaskSpec( nullptr, algIndex, algName, rank, blocking, asynchronous, iSlot, subslot.eventContext.get() ) );
       }
     }
 
@@ -1031,20 +1031,20 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
       int              slotIndex{ ts.slotIndex };
       EventContext*    contextPtr{ ts.contextPtr };
 
-      if (asynchronous && blocking) {
+      if ( asynchronous && blocking ) {
         error() << "Algorithm is both asynchronous and blocking. This should not happen." << endmsg;
         return StatusCode::FAILURE;
       }
 
-      if (asynchronous) {
+      if ( asynchronous ) {
         // Add to asynchronous scheduled queue
-        m_scheduledAsynchronousQueue.push (std::move(ts));
+        m_scheduledAsynchronousQueue.push( std::move( ts ) );
 
         // Schedule task
-        m_fiberManager->schedule(AlgTask(this, serviceLocator(), m_algExecStateSvc, blocking, asynchronous));
+        m_fiberManager->schedule( AlgTask( this, serviceLocator(), m_algExecStateSvc, blocking, asynchronous ) );
       }
 
-      if (blocking) {
+      if ( blocking ) {
         m_scheduledBlockingQueue.push( std::move( ts ) );
 
         // Schedule the blocking task in an independent thread
@@ -1075,7 +1075,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
       // Beojan: I don't think this bit works. ts hasn't been pushed into any queue so AlgTask won't retrieve it
       ++m_algosInFlight;
       sc = revise( ts.algIndex, ts.contextPtr, AState::SCHEDULED );
-      AlgTask( this, serviceLocator(), m_algExecStateSvc, false, ts.asynchronous)();
+      AlgTask( this, serviceLocator(), m_algExecStateSvc, false, ts.asynchronous )();
       --m_algosInFlight;
     }
   } else { // if no Algorithm instance available, retry later

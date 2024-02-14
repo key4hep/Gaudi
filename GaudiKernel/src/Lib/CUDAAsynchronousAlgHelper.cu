@@ -50,8 +50,8 @@ namespace Gaudi {
         cudaError_t firstErr = cudaGetLastError();
         if ( firstErr != cudaSuccess ) {
           // throw GaudiException(
-          //     fmt::format( "First error {} ({}): {}", cudaGetErrorName( firstErr ), int( firstErr ), cudaGetErrorString( firstErr ) ),
-          //     "CUDA_ERROR", StatusCode::FAILURE );
+          //     fmt::format( "First error {} ({}): {}", cudaGetErrorName( firstErr ), int( firstErr ),
+          //     cudaGetErrorString( firstErr ) ), "CUDA_ERROR", StatusCode::FAILURE );
         }
         num_allocs.fetch_add( 1 );
         void*       ptr = nullptr;

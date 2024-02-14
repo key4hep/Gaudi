@@ -35,8 +35,13 @@ namespace Gaudi {
 
 class AlgTask {
 public:
-  AlgTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem, bool blocking, bool asynchronous )
-      : m_scheduler( scheduler ), m_aess( aem ), m_serviceLocator( svcLocator ), m_blocking( blocking ), m_asynchronous( asynchronous ){};
+  AlgTask( AvalancheSchedulerSvc* scheduler, ISvcLocator* svcLocator, IAlgExecStateSvc* aem, bool blocking,
+           bool asynchronous )
+      : m_scheduler( scheduler )
+      , m_aess( aem )
+      , m_serviceLocator( svcLocator )
+      , m_blocking( blocking )
+      , m_asynchronous( asynchronous ){};
 
   void operator()() const {
 
@@ -47,8 +52,8 @@ public:
     AvalancheSchedulerSvc::TaskSpec ts;
     log << MSG::DEBUG << "Getting taskspec for "
         << ( m_asynchronous ? "asynchronous"
-             : m_blocking  ? "blocking"
-                           : "standard" )
+             : m_blocking   ? "blocking"
+                            : "standard" )
         << " algorithm" << endmsg;
     if ( !m_scheduler->next( ts, m_blocking, m_asynchronous ) ) {
       log << MSG::WARNING << "Missing specification while task is running" << endmsg;
