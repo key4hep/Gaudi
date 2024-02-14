@@ -47,12 +47,6 @@ namespace Gaudi {
 
     namespace Detail {
       void* PinnedMemoryResource::do_allocate( std::size_t bytes, std::size_t /* alignment */ ) {
-        cudaError_t firstErr = cudaGetLastError();
-        if ( firstErr != cudaSuccess ) {
-          // throw GaudiException(
-          //     fmt::format( "First error {} ({}): {}", cudaGetErrorName( firstErr ), int( firstErr ),
-          //     cudaGetErrorString( firstErr ) ), "CUDA_ERROR", StatusCode::FAILURE );
-        }
         num_allocs.fetch_add( 1 );
         void*       ptr = nullptr;
         cudaError_t err = cudaMallocHost( &ptr, bytes );
