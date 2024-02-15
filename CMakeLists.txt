@@ -88,10 +88,10 @@ include(CheckLanguage)
 if(CMAKE_CUDA_COMPILER)
   set(GAUDI_HAVE_CUDA ON)
 else()
-  set(HAVE_CUDA OFF)
+  set(GAUDI_HAVE_CUDA OFF)
 endif()
 
-if(HAVE_CUDA)
+if(GAUDI_HAVE_CUDA)
   project(Gaudi VERSION 39.0
                 LANGUAGES CXX CUDA
                 DESCRIPTION "Gaudi Software Framework"
