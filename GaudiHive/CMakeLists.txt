@@ -17,8 +17,6 @@ gaudi_add_module(GaudiHive
                          src/AvalancheSchedulerSvc.cpp
                          src/ContextEventCounter.cpp
                          src/CPUCruncher.cpp
-                         src/GPUCruncher.cpp
-                         src/GPUCruncher.cu
                          src/FetchDataFromFile.cpp
                          src/FetchLeavesFromFile.cpp
                          src/HiveDataBroker.cpp
@@ -51,6 +49,11 @@ gaudi_add_module(GaudiHive
                       ${rt_LIBRARY}
                       ${GAUDI_ATOMIC_LIBS})
 
+if (GAUDI_HAVE_CUDA)
+  target_sources(GaudiHive PRIVATE
+                         src/GPUCruncher.cpp
+                         src/GPUCruncher.cu )
+endif()
 # Build executable
 gaudi_add_executable(makeThesis
                      SOURCES src/bin/makeThesis.cpp)
