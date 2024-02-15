@@ -83,10 +83,25 @@ Maintainer's guide: `<https://twiki.cern.ch/twiki/bin/view/LHCb/MaintainGaudiCMa
 
 cmake_minimum_required(VERSION 3.19)
 
-project(Gaudi VERSION 39.0
-              LANGUAGES CXX CUDA
-              DESCRIPTION "Gaudi Software Framework"
-              HOMEPAGE_URL "https://cern.ch/gaudi")
+# Optional CUDA
+include(CheckLanguage)
+if(CMAKE_CUDA_COMPILER)
+  set(GAUDI_HAVE_CUDA ON)
+else()
+  set(HAVE_CUDA OFF)
+endif()
+
+if(HAVE_CUDA)
+  project(Gaudi VERSION 39.0
+                LANGUAGES CXX CUDA
+                DESCRIPTION "Gaudi Software Framework"
+                HOMEPAGE_URL "https://cern.ch/gaudi")
+else()
+  project(Gaudi VERSION 39.0
+                LANGUAGES CXX
+                DESCRIPTION "Gaudi Software Framework"
+                HOMEPAGE_URL "https://cern.ch/gaudi")
+endif()
 
 # Add the "Developer" build type
 include(cmake/DeveloperBuildType.cmake)
