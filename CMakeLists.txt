@@ -85,9 +85,12 @@ cmake_minimum_required(VERSION 3.19)
 
 # Optional CUDA
 include(CheckLanguage)
+check_language( CUDA )
 if(CMAKE_CUDA_COMPILER)
+  message(STATUS "Have CUDA")
   set(GAUDI_HAVE_CUDA ON)
 else()
+  message(STATUS "No CUDA")
   set(GAUDI_HAVE_CUDA OFF)
 endif()
 
