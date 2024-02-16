@@ -95,7 +95,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   }
 
   // Initialize FiberManager
-  m_fiberManager = new FiberManager( m_numOffloadThreads.value() );
+  m_fiberManager = std::make_unique<FiberManager>( m_numOffloadThreads.value() );
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
@@ -413,8 +413,7 @@ StatusCode AvalancheSchedulerSvc::finalize() {
   if ( sc.isFailure() ) warning() << "Scheduler could not be deactivated" << endmsg;
 
   info() << "Deleting FiberManager" << endmsg;
-  delete m_fiberManager;
-  m_fiberManager = nullptr;
+  m_fiberManager.reset();
 
   info() << "Joining Scheduler thread" << endmsg;
   m_thread.join();

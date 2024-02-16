@@ -29,6 +29,7 @@
 
 // C++ include files
 #include <functional>
+#include <memory>
 #include <queue>
 #include <string>
 #include <string_view>
@@ -350,9 +351,9 @@ private:
   // ------------------------------------------------------------------------
 
   // Service for thread pool initialization
-  SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  tbb::task_arena*        m_arena{ nullptr };
-  FiberManager*           m_fiberManager{ nullptr };
+  SmartIF<IThreadPoolSvc>       m_threadPoolSvc;
+  tbb::task_arena*              m_arena{ nullptr };
+  std::unique_ptr<FiberManager> m_fiberManager{ nullptr };
 
   size_t m_maxEventsInFlight{ 0 };
   size_t m_maxAlgosInFlight{ 1 };
