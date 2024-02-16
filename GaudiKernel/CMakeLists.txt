@@ -157,7 +157,6 @@ gaudi_add_library(GaudiKernel
            Boost::regex
            Boost::system
            Boost::chrono
-           vecmem::core
            TBB::tbb
            ${CMAKE_DL_LIBS}
            ROOT::Core
@@ -179,6 +178,7 @@ if (GAUDI_HAVE_CUDA)
   target_include_directories(GaudiKernel PUBLIC
          ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} # for CUDA runtime
          )
+  target_link_libraries(GaudiKernel PUBLIC vecmem::core)
 endif()
 
 if(APPLE)
