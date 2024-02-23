@@ -110,7 +110,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << "(119) Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;
@@ -379,7 +379,7 @@ namespace Gaudi {
       status = exceptionSvc()->handle( *this, Exception );
     } catch ( const std::exception& Exception ) {
 
-      fatal() << "(382) Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       // Stat stat( chronoSvc() , "*std::exception*" ) ;
       status = exceptionSvc()->handle( *this, Exception );
@@ -484,7 +484,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << "(487) Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;
