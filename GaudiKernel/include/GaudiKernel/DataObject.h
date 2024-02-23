@@ -91,7 +91,7 @@ public:
   unsigned long refCount() const { return m_refCount; }
   /// Fill the output stream (ASCII)
   virtual std::ostream& fillStream( std::ostream& s ) const {
-    s << "DataObject at " << std::hex << this;
+    s << "DataObject at " << std::hex << this << std::dec;
     return s;
   }
   /// Output operator (ASCII)
