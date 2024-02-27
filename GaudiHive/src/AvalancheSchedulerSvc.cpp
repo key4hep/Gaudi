@@ -703,11 +703,10 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     for ( uint algIndex : drAlgs ) {
       const std::string& algName{ index2algname( algIndex ) };
       unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
-      bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
       bool               asynchronous{ m_precSvc->isAsynchronous( algName ) };
 
-      partial_sc = schedule(
-          TaskSpec( nullptr, algIndex, algName, rank, blocking, asynchronous, iSlot, thisSlot.eventContext.get() ) );
+      partial_sc =
+          schedule( TaskSpec( nullptr, algIndex, algName, rank, asynchronous, iSlot, thisSlot.eventContext.get() ) );
 
       ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
           << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << algName
@@ -720,10 +719,9 @@ StatusCode AvalancheSchedulerSvc::iterate() {
       for ( uint algIndex : drAlgsSubSlot ) {
         const std::string& algName{ index2algname( algIndex ) };
         unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
-        bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
         bool               asynchronous{ m_precSvc->isAsynchronous( algName ) };
-        partial_sc = schedule(
-            TaskSpec( nullptr, algIndex, algName, rank, blocking, asynchronous, iSlot, subslot.eventContext.get() ) );
+        partial_sc =
+            schedule( TaskSpec( nullptr, algIndex, algName, rank, asynchronous, iSlot, subslot.eventContext.get() ) );
       }
     }
 
@@ -1006,11 +1004,6 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
 StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
 
-  if ( ts.blocking && m_blockingAlgosInFlight == m_maxBlockingAlgosInFlight ) {
-    m_retryQueue.push( std::move( ts ) );
-    return StatusCode::SUCCESS;
-  }
-
   // Check if a free Algorithm instance is available
   StatusCode getAlgSC( m_algResourcePool->acquireAlgorithm( ts.algName, ts.algPtr ) );
 
@@ -1025,45 +1018,30 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
       unsigned int     algIndex{ ts.algIndex };
       std::string_view algName( ts.algName );
       unsigned int     algRank{ ts.algRank };
-      bool             blocking{ ts.blocking };
       bool             asynchronous{ ts.asynchronous };
       int              slotIndex{ ts.slotIndex };
       EventContext*    contextPtr{ ts.contextPtr };
-
-      if ( asynchronous && blocking ) {
-        error() << "Algorithm is both asynchronous and blocking. This should not happen." << endmsg;
-        return StatusCode::FAILURE;
-      }
 
       if ( asynchronous ) {
         // Add to asynchronous scheduled queue
         m_scheduledAsynchronousQueue.push( std::move( ts ) );
 
         // Schedule task
-        m_fiberManager->schedule( AlgTask( this, serviceLocator(), m_algExecStateSvc, blocking, asynchronous ) );
+        m_fiberManager->schedule( AlgTask( this, serviceLocator(), m_algExecStateSvc, asynchronous ) );
       }
 
-      if ( blocking ) {
-        m_scheduledBlockingQueue.push( std::move( ts ) );
-
-        // Schedule the blocking task in an independent thread
-        ++m_blockingAlgosInFlight;
-        std::thread _t( AlgTask( this, serviceLocator(), m_algExecStateSvc, blocking, asynchronous ) );
-        _t.detach();
-      } // end scheduling blocking Algorithm
-
-      if ( !asynchronous && !blocking ) {
+      if ( !asynchronous ) {
         // Add the algorithm to the scheduled queue
         m_scheduledQueue.push( std::move( ts ) );
 
         // Prepare a TBB task that will execute the Algorithm according to the above queued specs
-        m_arena->enqueue( AlgTask( this, serviceLocator(), m_algExecStateSvc, blocking, asynchronous ) );
+        m_arena->enqueue( AlgTask( this, serviceLocator(), m_algExecStateSvc, asynchronous ) );
         ++m_algosInFlight;
       }
       sc = revise( algIndex, contextPtr, AState::SCHEDULED );
 
       ON_DEBUG debug() << "Scheduled " << algName << " [slot:" << slotIndex << ", event:" << contextPtr->evt()
-                       << ", rank:" << algRank << ", blocking:" << ( blocking ? "yes" : "no" )
+                       << ", rank:" << algRank << ", asynchronous:" << ( asynchronous ? "yes" : "no" )
                        << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
                        << ( m_enablePreemptiveBlockingTasks
                                 ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
@@ -1074,7 +1052,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
       // Beojan: I don't think this bit works. ts hasn't been pushed into any queue so AlgTask won't retrieve it
       ++m_algosInFlight;
       sc = revise( ts.algIndex, ts.contextPtr, AState::SCHEDULED );
-      AlgTask( this, serviceLocator(), m_algExecStateSvc, false, ts.asynchronous )();
+      AlgTask( this, serviceLocator(), m_algExecStateSvc, ts.asynchronous )();
       --m_algosInFlight;
     }
   } else { // if no Algorithm instance available, retry later
@@ -1098,10 +1076,7 @@ StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
 
   Gaudi::Hive::setCurrentContext( ts.contextPtr );
 
-  if ( !ts.blocking )
-    --m_algosInFlight;
-  else
-    --m_blockingAlgosInFlight;
+  --m_algosInFlight;
 
   const AlgExecState& algstate = m_algExecStateSvc->algExecState( ts.algPtr, *( ts.contextPtr ) );
   AState              state    = algstate.execStatus().isSuccess()
@@ -1112,7 +1087,7 @@ StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
   auto sc = revise( ts.algIndex, ts.contextPtr, state, true );
 
   ON_DEBUG debug() << "Executed " << ts.algName << " [slot:" << ts.slotIndex << ", event:" << ts.contextPtr->evt()
-                   << ", rank:" << ts.algRank << ", blocking:" << ( ts.blocking ? "yes" : "no" )
+                   << ", rank:" << ts.algRank << ", asynchronous:" << ( ts.asynchronous ? "yes" : "no" )
                    << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
                    << ( m_enablePreemptiveBlockingTasks
                             ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"

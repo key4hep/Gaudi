@@ -54,9 +54,6 @@ public:
     return (int)m_PRGraph.getAlgorithmNode( name )->getRank();
   }
 
-  /// Check if a task is CPU-blocking
-  bool isBlocking( const std::string& name ) const override { return m_PRGraph.getAlgorithmNode( name )->isBlocking(); }
-
   /// Check if a task is asynchronous
   bool isAsynchronous( const std::string& name ) const override {
     return m_PRGraph.getAlgorithmNode( name )->isAsynchronous();

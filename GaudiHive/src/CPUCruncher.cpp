@@ -58,9 +58,6 @@ StatusCode CPUCruncher::initialize() {
     return StatusCode::FAILURE;
   }
 
-  // if an algorithm was setup to sleep, for whatever period, it effectively models CPU-blocking behavior
-  if ( std::abs( m_sleepFraction ) > std::numeric_limits<double>::epsilon() ) setBlocking( true );
-
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
   // we need to wait until initialize when we've read in the input and output key
   // properties, and know their size, and then turn them
@@ -166,23 +163,6 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
   // Start to measure the total time here, together with the dreaming process straight ahead
   tbb::tick_count starttbb = tbb::tick_count::now();
-
-  // If the algorithm was declared as CPU-blocking, we will replace requested part of crunching with plain sleeping
-  if ( isBlocking() ) {
-    // in this block (and not in other places around) msgLevel is checked for the same reason as above, when
-    // preparing to sleep several lines above: to reduce as much as possible the overhead around sleeping
-    DEBUG_MSG << "Dreaming time will be: " << int( 1000 * dreamtime ) << " ms" << endmsg;
-
-    ON_DEBUG startSleeptbb = tbb::tick_count::now();
-    std::this_thread::sleep_for( dreamtime_duration );
-    ON_DEBUG endSleeptbb = tbb::tick_count::now();
-
-    // actual sleeping time can be longer due to scheduling or resource contention delays
-    ON_DEBUG {
-      const double actualDreamTime = ( endSleeptbb - startSleeptbb ).seconds();
-      debug() << "Actual dreaming time was: " << int( 1000 * actualDreamTime ) << "ms" << endmsg;
-    }
-  } // end of "sleeping block"
 
   DEBUG_MSG << "Crunching time will be: " << crunchtime_ms << " ms" << endmsg;
   const EventContext& context = Gaudi::Hive::currentContext();

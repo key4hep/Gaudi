@@ -306,12 +306,11 @@ private:
     /// Default constructor
     TaskSpec(){};
     TaskSpec( IAlgorithm* algPtr, unsigned int algIndex, const std::string& algName, unsigned int algRank,
-              bool blocking, bool asynchronous, int slotIndex, EventContext* eventContext )
+              bool asynchronous, int slotIndex, EventContext* eventContext )
         : algPtr( algPtr )
         , algIndex( algIndex )
         , algName( algName )
         , algRank( algRank )
-        , blocking( blocking )
         , asynchronous( asynchronous )
         , slotIndex( slotIndex )
         , contextPtr( eventContext ){};
@@ -328,7 +327,6 @@ private:
     unsigned int     algIndex{ 0 };
     std::string_view algName;
     unsigned int     algRank{ 0 };
-    bool             blocking{ false };
     bool             asynchronous{ false };
     int              slotIndex{ 0 };
     EventContext*    contextPtr{ nullptr };
@@ -341,7 +339,6 @@ private:
 
   /// Queues for scheduled algorithms
   tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledQueue;
-  tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledBlockingQueue;
   tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledAsynchronousQueue;
   std::queue<TaskSpec>                                   m_retryQueue;
 
@@ -360,9 +357,8 @@ private:
 
 public:
   // get next schedule-able TaskSpec
-  bool next( TaskSpec& ts, bool blocking, bool asynchronous ) {
+  bool next( TaskSpec& ts, bool asynchronous ) {
     if ( asynchronous ) { return m_scheduledAsynchronousQueue.try_pop( ts ); }
-    if ( blocking ) { return m_scheduledBlockingQueue.try_pop( ts ); }
     return m_scheduledQueue.try_pop( ts );
   };
 };

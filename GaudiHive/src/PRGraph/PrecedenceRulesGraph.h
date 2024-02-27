@@ -70,7 +70,6 @@ namespace precedence {
         , m_nodeIndex( nodeIndex )
         , m_algoIndex( algoIndex )
         , m_algorithm( algo )
-        , m_isBlocking( algo->isBlocking() )
         , m_isAsynchronous( algo->isAsynchronous() ) {}
 
     std::string m_name{ "" };
@@ -79,8 +78,6 @@ namespace precedence {
     int         m_rank{ -1 };
     /// Algorithm representative behind the AlgorithmNode
     Gaudi::Algorithm* m_algorithm{ nullptr };
-    /// If an algorithm is blocking
-    bool m_isBlocking{ false };
     /// If an algorithm is asynchronous
     bool m_isAsynchronous{ false };
   };
@@ -374,7 +371,7 @@ namespace precedence {
   };
 
   struct Operations {
-    std::string operator()( const AlgoProps& props ) const { return props.m_isBlocking ? "Blocking" : "CPU-bound"; }
+    std::string operator()( const AlgoProps& props ) const { return props.m_isAsynchronous ? "Asynchronous" : "CPU-bound"; }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
 
@@ -491,7 +488,6 @@ namespace concurrency {
         , m_algorithm( algoPtr )
         , m_algoIndex( algoIndex )
         , m_algoName( algoPtr->name() )
-        , m_isBlocking( algoPtr->isBlocking() )
         , m_isAsynchronous( algoPtr->isAsynchronous() ){};
 
     /// Visitor entry point
@@ -521,10 +517,6 @@ namespace concurrency {
     /// Get algorithm index
     unsigned int getAlgoIndex() const { return m_algoIndex; }
 
-    /// Set the CPU-blocking flag
-    void setBlocking( bool value ) { m_isBlocking = value; }
-    /// Check if algorithm is CPU-blocking
-    bool isBlocking() const { return m_isBlocking; }
     /// Set the asynchronous flag
     void setAsynchronous( bool value ) { m_isAsynchronous = value; }
     /// Check if algorithm is asynchronous
@@ -546,8 +538,6 @@ namespace concurrency {
     std::string m_algoName;
     /// Algorithm rank of any kind
     float m_rank = -1;
-    /// If an algorithm is CPU-blocking
-    bool m_isBlocking;
     /// If an algorithm is asynchronous
     bool m_isAsynchronous;
 

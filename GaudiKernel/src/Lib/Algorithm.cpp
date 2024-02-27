@@ -120,12 +120,6 @@ namespace Gaudi {
       sc = StatusCode::FAILURE;
     }
 
-    // Error if we're asynchronous and blocking
-    if ( m_asynchronous.value() && m_blocking.value() ) {
-      fatal() << "An algorithm cannot be blocking and asynchronous" << endmsg;
-      return StatusCode::FAILURE;
-    }
-
     algExecStateSvc()->addAlg( this );
 
     //
