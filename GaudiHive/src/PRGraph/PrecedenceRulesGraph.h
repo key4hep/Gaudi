@@ -371,7 +371,9 @@ namespace precedence {
   };
 
   struct Operations {
-    std::string operator()( const AlgoProps& props ) const { return props.m_isAsynchronous ? "Asynchronous" : "CPU-bound"; }
+    std::string operator()( const AlgoProps& props ) const {
+      return props.m_isAsynchronous ? "Asynchronous" : "CPU-bound";
+    }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
 

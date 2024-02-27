@@ -513,10 +513,9 @@ namespace Gaudi {
     Gaudi::Property<std::vector<std::string>> m_neededResources{
         this, "NeededResources", {}, "named resources needed during event looping" };
 
-    Gaudi::Property<bool> m_asynchronous{
-        this, "Asynchronous", false,
-        "whether algorithm is asynchronous and uses Boost Fiber to suspend "
-        "while offloaded code is running." };
+    Gaudi::Property<bool> m_asynchronous{ this, "Asynchronous", false,
+                                          "whether algorithm is asynchronous and uses Boost Fiber to suspend "
+                                          "while offloaded code is running." };
     // The default should be changed to "false" for v29
     Gaudi::Property<bool> m_filterCircDeps{ this, "FilterCircularDependencies", true,
                                             "filter out circular data dependencies" };
