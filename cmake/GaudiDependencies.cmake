@@ -93,12 +93,8 @@ set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cma
 set(BUILD_SHARED_LIBS ON)
 find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex fiber
   thread python unit_test_framework program_options log log_setup graph)
-if (GAUDI_HAVE_CUDA)
-  find_package(vecmem 1.1.0)
-  if (NOT vecmem_FOUND)
-    message(STATUS "Have CUDA but no vecmem. Resetting GAUDI_HAVE_CUDA")
-    set(GAUDI_HAVE_CUDA OFF)
-  endif()
+if (GAUDI_USE_CUDA)
+  find_package(vecmem 1.1.0 ${__quiet} REQUIRED)
 endif()
 
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})

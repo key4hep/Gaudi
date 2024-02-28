@@ -173,7 +173,8 @@ target_include_directories(GaudiKernel
   PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
   )
 
-if (GAUDI_HAVE_CUDA)
+if (GAUDI_USE_CUDA)
+  add_compile_definitions(GAUDI_USE_CUDA)
   target_sources(GaudiKernel PRIVATE src/Lib/CUDAAsynchronousAlgHelper.cu)
   target_include_directories(GaudiKernel PUBLIC
          ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} # for CUDA runtime

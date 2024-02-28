@@ -43,6 +43,7 @@ after the configuration or use ccmake or cmake-gui.
   * GAUDI_USE_DOXYGEN
   * GAUDI_USE_INTELAMPLIFIER
   * GAUDI_USE_JEMALLOC
+  * GAUDI_USE_CUDA
 * Install options
   * GAUDI_INSTALL_OPTIONAL
 * Install layout variables
@@ -84,17 +85,18 @@ Maintainer's guide: `<https://twiki.cern.ch/twiki/bin/view/LHCb/MaintainGaudiCMa
 cmake_minimum_required(VERSION 3.19)
 
 # Optional CUDA
-include(CheckLanguage)
-check_language( CUDA )
-if(CMAKE_CUDA_COMPILER)
-  message(STATUS "Have CUDA")
-  set(GAUDI_HAVE_CUDA ON)
-else()
-  message(STATUS "No CUDA")
-  set(GAUDI_HAVE_CUDA OFF)
+option(GAUDI_USE_CUDA "Build AsynchronousAlgorithm features that require CUDA")
+if(GAUDI_USE_CUDA)
+  include(CheckLanguage)
+  check_language( CUDA )
+  if(CMAKE_CUDA_COMPILER)
+    message(STATUS "Found CUDA")
+  else()
+    message(SEND_ERROR "CUDA requested but not found")
+  endif()
 endif()
 
-if(GAUDI_HAVE_CUDA)
+if(GAUDI_USE_CUDA)
   project(Gaudi VERSION 39.0
                 LANGUAGES CXX CUDA
                 DESCRIPTION "Gaudi Software Framework"

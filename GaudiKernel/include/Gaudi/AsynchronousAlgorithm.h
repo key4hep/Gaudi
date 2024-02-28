@@ -15,8 +15,11 @@
 // ============================================================================
 // Gaudi
 #include "Gaudi/Algorithm.h"
-#include "Gaudi/CUDAAsynchronousAlgHelper.cuh"
 #include "GaudiKernel/IHiveWhiteBoard.h"
+// Gaudi CUDA
+#ifdef GAUDI_USE_CUDA
+#  include "Gaudi/CUDAAsynchronousAlgHelper.cuh"
+#endif
 // Others
 #include "fmt/format.h"
 #include <atomic>
@@ -89,6 +92,7 @@ namespace Gaudi {
       return whiteboard()->selectStore( *s_currentSlot );
     }
 
+#ifdef GAUDI_USE_CUDA
     /// Wrapper for CUDA stream await
     StatusCode cuda_stream_await( cudaStream_t cudaStream ) const {
       CUDA_CHECK( Gaudi::CUDA::cuda_stream_await( cudaStream ) );
@@ -101,8 +105,10 @@ namespace Gaudi {
       msg() << MSG::ERROR << msg_ << endmsg;
       throw GaudiException( msg_, "CUDA_EXCEPTION", StatusCode::FAILURE );
     }
+#endif
   };
 
+#ifdef GAUDI_USE_CUDA
   namespace CUDA {
     using namespace std::chrono_literals;
 
@@ -155,4 +161,5 @@ namespace Gaudi {
       ~CUDAStream();
     };
   } // namespace CUDA
+#endif
 } // namespace Gaudi
