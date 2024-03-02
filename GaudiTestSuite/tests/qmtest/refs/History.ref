@@ -1,0 +1,180 @@
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiTestSuite/options/Services.opts
+JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiTestSuite/options/Common.opts
+JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiTestSuite/options/History.opts
+JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["History"]
+JobOptionsSvc        INFO # (11,1): ApplicationMgr.ActivateHistory = 1
+JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (17,1): MessageSvc.useColors = 1
+JobOptionsSvc        INFO # (19,1): MessageSvc.setVerbose += ["HistorySvc"]
+JobOptionsSvc        INFO # (20,1): MessageSvc.setDebug += ["FastHistorySvc"]
+JobOptionsSvc        INFO # (21,1): MessageSvc.setDebug += ["StatusCodeSvc", "IncidentSvc"]
+JobOptionsSvc        INFO # (23,1): HistorySvc.Dump = 0
+JobOptionsSvc        INFO # (24,1): HistorySvc.OutputFile = "history.dat"
+JobOptionsSvc        INFO # (25,1): HistorySvc.OutputLevel = 0
+JobOptionsSvc        INFO # (27,1): FastHistorySvc.Dump = 1
+JobOptionsSvc        INFO # (28,1): FastHistorySvc.OutputFile = "history.dat"
+JobOptionsSvc        INFO # (35,1): ApplicationMgr.EvtMax = 2
+JobOptionsSvc        INFO # (36,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/leggett/Gaudi/GaudiTestSuite/options/History.opts
+MessageSvc          DEBUG Service base class initialized successfully[m
+ApplicationMgr      DEBUG Getting my own properties[m
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
+                                          running on pcphlbc16 on Sat Oct  7 10:18:11 2017
+====================================================================================================================================[m
+ApplicationMgr       INFO Application Manager Configured successfully[m
+ServiceManager      DEBUG Initializing service AppMgrRunable[m
+AppMgrRunable       DEBUG Service base class initialized successfully[m
+ServiceManager      DEBUG Initializing service EventLoopMgr[m
+EventLoopMgr        DEBUG Service base class initialized successfully[m
+IncidentSvc         DEBUG Service base class initialized successfully[m
+IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0[m
+EventDataSvc        DEBUG Service base class initialized successfully[m
+EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+EventPersistenc...  DEBUG Service base class initialized successfully[m
+EventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
+EventLoopMgr        DEBUG Creating Top Algorithm History with name History[m
+History           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
+TimelineSvc         DEBUG Service base class initialized successfully[m
+TimelineSvc         DEBUG initialize[m
+History           VERBOSE ServiceLocatorHelper::service: found service TimelineSvc[m
+History           VERBOSE ServiceLocatorHelper::service: found service HistorySvc[m
+History              INFO got historySvc: HistorySvc[m
+AlgExecStateSvc     DEBUG Service base class initialized successfully[m
+History           VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc[m
+AlgExecStateSvc     DEBUG preInit: will add Alg History later[m
+History             DEBUG input handles: 0[m
+History             DEBUG output handles: 0[m
+History             DEBUG Data Deps for History[m
+[93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
+[93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
+HistogramDataSvc    DEBUG Service base class initialized successfully[m
+HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+HistogramPersis...  DEBUG Service base class initialized successfully[m
+[93;1mHistogramPersis...WARNING Histograms saving not required.[m
+HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
+ServiceManager      DEBUG Initializing service HistorySvc[m
+HistorySvc          DEBUG Service base class initialized successfully[m
+HistorySvc          DEBUG Initializing HistorySvc[m
+AlgContextSvc       DEBUG Service base class initialized successfully[m
+AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0[m
+IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0[m
+HistorySvc        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc[m
+HistorySvc        VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+ToolSvc             DEBUG Service base class initialized successfully[m
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'HistorySvc' with priority -9223372036854775808[m
+ApplicationMgr       INFO Application Manager Initialized successfully[m
+ServiceManager      DEBUG Starting service AppMgrRunable[m
+ServiceManager      DEBUG Starting service IncidentSvc[m
+ServiceManager      DEBUG Starting service EventPersistencySvc[m
+ServiceManager      DEBUG Starting service EventDataSvc[m
+ServiceManager      DEBUG Starting service TimelineSvc[m
+ServiceManager      DEBUG Starting service AlgExecStateSvc[m
+ServiceManager      DEBUG Starting service HistogramPersistencySvc[m
+ServiceManager      DEBUG Starting service HistogramDataSvc[m
+ServiceManager      DEBUG Starting service AlgContextSvc[m
+ServiceManager      DEBUG Starting service ToolSvc[m
+ToolSvc             DEBUG START transition for AlgTools[m
+ServiceManager      DEBUG Starting service EventLoopMgr[m
+ServiceManager      DEBUG Starting service HistorySvc[m
+ApplicationMgr       INFO Application Manager Started successfully[m
+HistorySvc          DEBUG Registering algorithm: [96;1mHistory[m
+HistorySvc           INFO [mRegistered 1 Algorithms[m
+HistorySvc           INFO Registered 0 AlgTools[m
+HistorySvc          DEBUG Registering Service: [96;1mMessageSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mJobOptionsSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mAppMgrRunable[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mIncidentSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventPersistencySvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventDataSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mTimelineSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mAlgExecStateSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistogramPersistencySvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistogramDataSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mAlgContextSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
+HistorySvc           INFO [mRegistered 14 Services[m
+AlgExecStateSvc   VERBOSE reset(0)[m
+AlgExecStateSvc     DEBUG resizing state containers to : 1[m
+AlgExecStateSvc     DEBUG adding alg History to 1 slots[m
+AlgExecStateSvc   VERBOSE dumping state:
+  [slot: 0, incident: Invalid]:
+
+  + History  e: n
+[m
+AlgExecStateSvc   VERBOSE reset(0)[m
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 46.0273 | total time (skipping 1st evt) 31410 ns[m
+ServiceManager      DEBUG Stopping service HistorySvc[m
+HistorySvc        VERBOSE AlgContextSvc is Service[m
+HistorySvc        VERBOSE AlgExecStateSvc is Service[m
+HistorySvc        VERBOSE AppMgrRunable is Service[m
+HistorySvc        VERBOSE EventDataSvc is Service[m
+HistorySvc        VERBOSE EventLoopMgr is Service[m
+HistorySvc        VERBOSE EventPersistencySvc is Service[m
+HistorySvc        VERBOSE HistogramDataSvc is Service[m
+HistorySvc        VERBOSE HistogramPersistencySvc is Service[m
+HistorySvc        VERBOSE HistorySvc is Service[m
+HistorySvc        VERBOSE IncidentSvc is Service[m
+HistorySvc        VERBOSE JobOptionsSvc is Service[m
+HistorySvc        VERBOSE MessageSvc is Service[m
+HistorySvc        VERBOSE TimelineSvc is Service[m
+HistorySvc        VERBOSE ToolSvc is Service[m
+HistorySvc        VERBOSE History is Alg[m
+ServiceManager      DEBUG Stopping service EventLoopMgr[m
+ServiceManager      DEBUG Stopping service ToolSvc[m
+ToolSvc             DEBUG STOP transition for AlgTools[m
+ServiceManager      DEBUG Stopping service AlgContextSvc[m
+ServiceManager      DEBUG Stopping service HistogramDataSvc[m
+ServiceManager      DEBUG Stopping service HistogramPersistencySvc[m
+ServiceManager      DEBUG Stopping service AlgExecStateSvc[m
+ServiceManager      DEBUG Stopping service TimelineSvc[m
+ServiceManager      DEBUG Stopping service EventDataSvc[m
+ServiceManager      DEBUG Stopping service EventPersistencySvc[m
+ServiceManager      DEBUG Stopping service IncidentSvc[m
+ServiceManager      DEBUG Stopping service AppMgrRunable[m
+ApplicationMgr       INFO Application Manager Stopped successfully[m
+ServiceManager      DEBUG Finalizing service EventLoopMgr[m
+IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'[m
+EventLoopMgr         INFO Histograms converted successfully according to request.[m
+ServiceManager      DEBUG Finalizing service ToolSvc[m
+ToolSvc              INFO Removing all tools created by ToolSvc[m
+ToolSvc             DEBUG   Tool List : [m
+ToolSvc             DEBUG Deleting 0 finalized tools[m
+ServiceManager      DEBUG Finalizing service AlgContextSvc[m
+IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'[m
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'[m
+ServiceManager      DEBUG Finalizing service AlgExecStateSvc[m
+ServiceManager      DEBUG Finalizing service TimelineSvc[m
+ServiceManager      DEBUG Finalizing service EventDataSvc[m
+ServiceManager      DEBUG Finalizing service EventPersistencySvc[m
+ServiceManager      DEBUG Finalizing service IncidentSvc[m
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s][m
+ServiceManager      DEBUG Finalizing service AppMgrRunable[m
+ServiceManager      DEBUG Finalizing service HistogramDataSvc[m
+ServiceManager      DEBUG Finalizing service HistogramPersistencySvc[m
+ServiceManager      DEBUG Finalizing service HistorySvc[m
+HistorySvc        VERBOSE HistorySvc::finalize()[m
+HistorySvc           INFO Service finalised successfully[m
+ServiceManager      DEBUG Looping over all active services...[m
+ServiceManager      DEBUG ---- MessageSvc (refCount = 21)[m
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)[m
+ServiceManager      DEBUG ---- HistorySvc (refCount = 3)[m
+ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m
+ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- AppMgrRunable (refCount = 4)[m
+ServiceManager      DEBUG ---- IncidentSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 3)[m
+ServiceManager      DEBUG ---- EventDataSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- TimelineSvc (refCount = 3)[m
+ServiceManager      DEBUG ---- AlgExecStateSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- AlgContextSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- ToolSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- EventLoopMgr (refCount = 4)[m
+ApplicationMgr       INFO Application Manager Finalized successfully[m
+ApplicationMgr       INFO Application Manager Terminated successfully[m

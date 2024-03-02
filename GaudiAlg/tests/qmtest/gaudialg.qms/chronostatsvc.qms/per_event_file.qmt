@@ -15,10 +15,10 @@
 <argument name="options"><text>
 from Configurables import ChronoStatSvc, ApplicationMgr
 from Configurables import AuditorSvc, TimingAuditor
-from Configurables import GaudiExamplesCommonConf
+from Configurables import GaudiTestSuiteCommonConf
 from Gaudi.Configuration import DEBUG
 
-GaudiExamplesCommonConf()
+GaudiTestSuiteCommonConf()
 
 logfile = "timing_data.log"
 
@@ -33,7 +33,7 @@ auditSvc = AuditorSvc()
 auditSvc.Auditors.append(TimingAuditor("TIMER"))
 
 app = ApplicationMgr()
-app.TopAlg = ["GaudiExamples::TimingAlg/Timing"]
+app.TopAlg = ["GaudiTestSuite::TimingAlg/Timing"]
 app.EvtSel = "NONE"  # do not use any event input
 app.EvtMax = 400
 app.ExtSvc.extend(['ToolSvc', auditSvc])

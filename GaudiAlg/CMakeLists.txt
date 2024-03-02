@@ -98,7 +98,7 @@ if(BUILD_TESTING)
          src/examples/SelFilter.cpp
       LINK
          GaudiAlgLib
-         Gaudi::GaudiExamplesLib
+         Gaudi::GaudiTestSuiteLib
    )
 
    if(GAUDI_USE_AIDA)

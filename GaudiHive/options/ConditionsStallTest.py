@@ -71,7 +71,7 @@ AlgResourcePool(OutputLevel=INFO)
 # Conditions service -----------------------------------------------------------
 # This declares algorithms or data to be part of the "conditions realm"
 # They are detached from the regular CF graph
-from Configurables import Gaudi__Examples__Conditions__CondSvc as CS
+from Configurables import Gaudi__TestSuite__Conditions__CondSvc as CS
 
 condSvc = CS(name="CondSvc", Algs=["AlgA"], Data=["/Event/A1"])
 

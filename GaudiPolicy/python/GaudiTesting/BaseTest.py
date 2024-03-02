@@ -548,7 +548,7 @@ class BaseTest(object):
 
         # set the default output preprocessor
         if preproc is None:
-            preproc = normalizeExamples
+            preproc = normalizeTestSuite
         # check standard output
         lreference = self._expandReferenceFileName(self.reference)
         # call the validator if the file exists
@@ -1011,8 +1011,8 @@ class SortGroupOfLines(FilePreprocessor):
         return output
 
 
-# Preprocessors for GaudiExamples
-normalizeExamples = maskPointers + normalizeDate
+# Preprocessors for GaudiTestSuite
+normalizeTestSuite = maskPointers + normalizeDate
 for w, o, r in [
     ("TIMER", r"\s+[+-]?[0-9]+[0-9.e+-]*", " 0"),  # Normalize time output
     ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
@@ -1049,7 +1049,7 @@ for w, o, r in [
     ("TimelineSvc", "to file  'TimelineFile':", "to file "),
     ("DataObjectHandleBase", r'DataObjectHandleBase\("([^"]*)"\)', r"'\1'"),
 ]:
-    normalizeExamples += RegexpReplacer(o, r, w)
+    normalizeTestSuite += RegexpReplacer(o, r, w)
 
 lineSkipper = LineSkipper(
     [
@@ -1154,9 +1154,9 @@ if ROOT6WorkAroundEnabled("ReadRootmapCheck"):
         ]
     )
 
-normalizeExamples = (
+normalizeTestSuite = (
     lineSkipper
-    + normalizeExamples
+    + normalizeTestSuite
     + skipEmptyLines
     + normalizeEOL
     + LineSorter("Services to release : ")
@@ -1167,7 +1167,7 @@ normalizeExamples = (
 
 
 class ReferenceFileValidator:
-    def __init__(self, reffile, cause, result_key, preproc=normalizeExamples):
+    def __init__(self, reffile, cause, result_key, preproc=normalizeTestSuite):
         self.reffile = os.path.expandvars(reffile)
         self.cause = cause
         self.result_key = result_key

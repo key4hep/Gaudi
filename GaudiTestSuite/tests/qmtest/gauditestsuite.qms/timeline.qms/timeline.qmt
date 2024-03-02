@@ -1,0 +1,30 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<!--
+    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set><text>../../options/Timeline.py</text></set></argument>
+<argument name="reference"><text>refs/Timeline.ref</text></argument>
+<argument name="validator"><text>
+# Default validation, but validating the timeline file rather that the output
+
+def replacer(inp):
+    # since time and time difference will be different each time we test
+    # let's at least check that the numbers we expect to get are all non zero
+    def zeroIsErr(x):
+        return '-' if int(x) > 0 else 'err'
+    return zeroIsErr(inp.group(1)) + ' ' + zeroIsErr(inp.group(2)) + ' ' + inp.group(3) + ' ' + zeroIsErr(inp.group(4))
+
+preproc = (normalizeTestSuite +
+           RegexpReplacer(r'^([0-9]+) ([0-9]+) ([^ ]+) ([0-9]+)', replacer))
+validateWithReference(stdout=open('myTimeline.csv').read(), stderr='', preproc=preproc)
+</text></argument>
+</extension>

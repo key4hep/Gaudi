@@ -22,7 +22,7 @@
 // ============================================================================
 // Local
 // ============================================================================
-#include "GaudiExamples/MyTrack.h"
+#include "GaudiTestSuite/MyTrack.h"
 // ============================================================================
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "double" to "float" may lose significant bits
@@ -34,14 +34,14 @@
 #endif
 
 namespace Gaudi {
-  namespace Examples {
+  namespace TestSuite {
     /** @class SelCreate
      *  Simple class to create few "containers" in TES
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2008-07-23
      */
     class SelCreate : public GaudiAlgorithm {
-      using Container = Gaudi::Examples::MyTrack::Container;
+      using Container = Gaudi::TestSuite::MyTrack::Container;
       DataObjectWriteHandle<Container> m_output{ this, "Output", this->name(), "TES location of output container" };
 
     public:
@@ -58,11 +58,11 @@ namespace Gaudi {
         static Rndm::Numbers flat( randSvc(), Rndm::Flat( 20.0, 100.0 ) );
 
         // create the data
-        auto tracks = std::make_unique<Gaudi::Examples::MyTrack::Container>();
+        auto tracks = std::make_unique<Gaudi::TestSuite::MyTrack::Container>();
 
         for ( int i = 0; i < 100; ++i ) {
           // create new track
-          auto track = std::make_unique<Gaudi::Examples::MyTrack>();
+          auto track = std::make_unique<Gaudi::TestSuite::MyTrack>();
 
           // fill it with some "data"
           track->setPx( gauss() );
@@ -76,26 +76,26 @@ namespace Gaudi {
         // register the container in TES
         m_output.put( std::move( tracks ) );
 
-        typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;
+        typedef Gaudi::NamedRange_<Gaudi::TestSuite::MyTrack::ConstVector> Range;
         if ( !exist<Range>( name() ) ) { err() << "No Range is available at location " << name() << endmsg; }
 
         // test "get-or-create":
 
-        getOrCreate<Range, Gaudi::Examples::MyTrack::Container>( name() + "_1" );
-        getOrCreate<Range, Gaudi::Examples::MyTrack::Selection>( name() + "_2" );
+        getOrCreate<Range, Gaudi::TestSuite::MyTrack::Container>( name() + "_1" );
+        getOrCreate<Range, Gaudi::TestSuite::MyTrack::Selection>( name() + "_2" );
 
-        getOrCreate<Gaudi::Examples::MyTrack::Container, Gaudi::Examples::MyTrack::Container>( name() + "_3" );
-        getOrCreate<Gaudi::Examples::MyTrack::Selection, Gaudi::Examples::MyTrack::Selection>( name() + "_4" );
+        getOrCreate<Gaudi::TestSuite::MyTrack::Container, Gaudi::TestSuite::MyTrack::Container>( name() + "_3" );
+        getOrCreate<Gaudi::TestSuite::MyTrack::Selection, Gaudi::TestSuite::MyTrack::Selection>( name() + "_4" );
 
         return StatusCode::SUCCESS;
       }
     };
     // ========================================================================
-  } // namespace Examples
+  } // namespace TestSuite
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)
-using Gaudi::Examples::SelCreate;
+using Gaudi::TestSuite::SelCreate;
 DECLARE_COMPONENT( SelCreate )
 // ============================================================================
 // The END

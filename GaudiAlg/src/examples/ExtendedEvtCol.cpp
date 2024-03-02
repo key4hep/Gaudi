@@ -29,11 +29,11 @@
 // =============================================================================
 // Local
 // =============================================================================
-#include "GaudiExamples/Event.h"
-#include "GaudiExamples/MyTrack.h"
+#include "GaudiTestSuite/Event.h"
+#include "GaudiTestSuite/MyTrack.h"
 // =============================================================================
 namespace Gaudi {
-  namespace Examples {
+  namespace TestSuite {
     /** @class ExtendedEvtCol
      *  Simple class to illustrate the usage of extended event
      *  tag collections: storing "Arbitrary" objects in N-tuples.
@@ -66,19 +66,19 @@ namespace Gaudi {
     private:
       Gaudi::Property<std::string> m_tracks{ this, "Tracks", "MyTracks" };
     };
-  } // end of namespace Examples
+  } // end of namespace TestSuite
 } // end of namespace Gaudi
 // ============================================================================
 /// MANDATORY factory for instantiation
 // ============================================================================
-using Gaudi::Examples::ExtendedEvtCol;
+using Gaudi::TestSuite::ExtendedEvtCol;
 DECLARE_COMPONENT( ExtendedEvtCol )
 // ============================================================================
 /// local anonymous namespace to hide some technicalities
 // ============================================================================
 namespace {
   /// local function for evaluation of Tracks's momentum
-  inline double trkMomentum( const Gaudi::Examples::MyTrack* track ) {
+  inline double trkMomentum( const Gaudi::TestSuite::MyTrack* track ) {
     if ( !track ) { return 0; }
     return ::sqrt( track->px() * track->px() + track->py() * track->py() + track->pz() * track->pz() );
   }
@@ -86,7 +86,7 @@ namespace {
 // ============================================================================
 /// the only one essential method: execute the algorithm
 // ============================================================================
-StatusCode Gaudi::Examples::ExtendedEvtCol::execute() {
+StatusCode Gaudi::TestSuite::ExtendedEvtCol::execute() {
   // get the event
   auto event = get<DataObject>( "/Event" );
   // get the tracks
@@ -107,7 +107,7 @@ StatusCode Gaudi::Examples::ExtendedEvtCol::execute() {
   // evaluate the total energy of all tracks:
   double energy =
       std::accumulate( tracks->begin(), tracks->end(), 0.0,
-                       [&]( double e, const Gaudi::Examples::MyTrack* track ) { return e + trkMomentum( track ); } );
+                       [&]( double e, const Gaudi::TestSuite::MyTrack* track ) { return e + trkMomentum( track ); } );
 
   tuple->column( "Energy", energy ).ignore();
 

@@ -1,0 +1,212 @@
+# --> Including file '/project/bfys/graven/stack/Gaudi/GaudiTestSuite/options/FunctionalAlgorithms/ProduceConsume.py'
+---
+# List of input and output types by class
+"Gaudi::TestSuite::ContextConsumer":
+"Gaudi::TestSuite::ContextIntConsumer":
+  InputLocation: "int"
+"Gaudi::TestSuite::CountingConsumer":
+"Gaudi::TestSuite::FloatDataConsumer":
+  InputLocation: "float"
+"Gaudi::TestSuite::FrExpTransformer":
+  InputDoubles: "std::vector<double,std::allocator<double> >"
+  OutputFractions: "std::vector<double,std::allocator<double> >"
+  OutputIntegers: "std::vector<int,std::allocator<int> >"
+"Gaudi::TestSuite::IntDataConsumer":
+  InputLocation: "int"
+"Gaudi::TestSuite::IntDataProducer":
+  OutputLocation: "int"
+"Gaudi::TestSuite::IntIntToFloatFloatData":
+  InputLocation1: "int"
+  InputLocation2: "int"
+  OutputLocation1: "float"
+  OutputLocation2: "float"
+"Gaudi::TestSuite::IntToFloatData":
+  InputLocation: "int"
+  OutputLocation: "float"
+"Gaudi::TestSuite::IntVectorsToIntVector":
+  OutputLocation: "std::vector<int,std::allocator<int> >"
+"Gaudi::TestSuite::LdExpTransformer":
+  InputFractions: "std::vector<double,std::allocator<double> >"
+  InputIntegers: "std::vector<int,std::allocator<int> >"
+  OutputDoubles: "std::vector<double,std::allocator<double> >"
+"Gaudi::TestSuite::OptFrExpTransformer":
+  InputDoubles: "std::vector<double,std::allocator<double> >"
+  OutputFractions: "std::vector<double,std::allocator<double> >"
+  OutputIntegers: "std::vector<int,std::allocator<int> >"
+"Gaudi::TestSuite::OptLdExpTransformer":
+  InputFractions: "std::vector<double,std::allocator<double> >"
+  InputIntegers: "std::vector<int,std::allocator<int> >"
+  OutputDoubles: "std::vector<double,std::allocator<double> >"
+"Gaudi::TestSuite::ShrdPtrConsumer":
+  InputLocation: "std::shared_ptr<Gaudi::TestSuite::Foo>"
+"Gaudi::TestSuite::ShrdPtrProducer":
+  OutputLocation: "std::shared_ptr<Gaudi::TestSuite::Foo>"
+"Gaudi::TestSuite::ToolConsumer":
+"Gaudi::TestSuite::VectorDataProducer":
+  OutputLocation: "std::vector<int,std::allocator<int> >"
+"Gaudi::TestSuite::VectorDoubleProducer":
+  OutputLocation: "std::vector<double,std::allocator<double> >"
+---
+# <-- End of file '/project/bfys/graven/stack/Gaudi/GaudiTestSuite/options/FunctionalAlgorithms/ProduceConsume.py'
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v36r5)
+                                          running on stbc-i1.nikhef.nl on Wed Mar 30 10:45:04 2022
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
+OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
+IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
+MyToolConsumer....SUCCESS Hello World!!!
+MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
+IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat
+IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
+IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
+IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
+FloatDataConsumer    INFO executing FloatDataConsumer: 7
+ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 0
+ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 7
+VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector1
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector2
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
+FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
+FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
+FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7
+FrExpTransformer     INFO Converting 34.56 -> 0.54, 6
+FrExpTransformer     INFO Converting 78.9 -> 0.616406, 7
+LdExpTransfomer      INFO Converting 4, 0.77125 -> 12.34
+LdExpTransfomer      INFO Converting 6, 0.887188 -> 56.78
+LdExpTransfomer      INFO Converting 7, 0.704063 -> 90.12
+LdExpTransfomer      INFO Converting 6, 0.54 -> 34.56
+LdExpTransfomer      INFO Converting 7, 0.616406 -> 78.9
+OptFrExpTransfo...   INFO Skipping 12.34
+OptFrExpTransfo...   INFO Converting 56.78 -> 0.887188, 6
+OptFrExpTransfo...   INFO Converting 90.12 -> 0.704063, 7
+OptFrExpTransfo...   INFO Converting 34.56 -> 0.54, 6
+OptFrExpTransfo...   INFO Converting 78.9 -> 0.616406, 7
+OptLdExpTransfo...   INFO Converting 4, 0.77125 -> 12.34
+OptLdExpTransfo...   INFO Converting 6, 0.887188 -> 56.78
+OptLdExpTransfo...   INFO Skipping 90.12
+OptLdExpTransfo...   INFO Converting 6, 0.54 -> 34.56
+OptLdExpTransfo...   INFO Skipping 78.9
+CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not an error" twice
+CountingConsumer    ERROR This is not an error...
+CountingConsumer    ERROR This is not an error...
+CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not a warning" twice
+CountingConsumer  WARNING This is not a warning...
+CountingConsumer  WARNING Suppressing message: 'This is not a warning...'
+CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not info" twice
+CountingConsumer     INFO Suppressing message: 'This is not info...'
+SDataProducer1       INFO storing KeyedContainer of size 3 into /Event/S1
+SDataProducer2       INFO storing KeyedContainer of size 10 into /Event/S2
+SRangesToIntVector   INFO Concatening range of size 3
+SRangesToIntVector   INFO Concatening range of size 10
+SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
+IntVectorsMerger     INFO sum of input sizes: 8
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO sum of input sizes: 8
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+TwoDMerger        SUCCESS  accumulated: [12, 12]
+TwoDMerger        SUCCESS  accumulated: [103.68]
+OpaqueProducer    SUCCESS creating Eventually
+SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x1197420 and value  7 into /Event/MySharedFoo
+SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x1197420 with value  7 from /Event/MySharedFoo
+IntProducer0         INFO executing VectorDataProducer, storing [0, 2, 4] into /Event/EventInts
+IntProducer1         INFO executing VectorDataProducer, storing [1, 3, 5, 7] into /Event/OddInt
+IntProducer2         INFO executing VectorDataProducer, storing [1, 1, 2, 3, 5, 8, 13] into /Event/Fib7
+IntVectorsToInts     INFO loaded [0, 2, 4] from /Event/EventInts
+IntVectorsToInts     INFO loaded [1, 3, 5, 7] from /Event/OddInt
+IntVectorsToInts     INFO loaded [1, 1, 2, 3, 5, 8, 13] from /Event/Fib7
+IntVectorsToInts     INFO storing 55 in /Event/EvenOddFib
+IntVectorsToInts     INFO storing 49 in /Event/OddFib
+EvenOddFibConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 55
+OddFibConsumer       INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 49
+OpaqueProducer    SUCCESS My Eventually is about to be destroyed
+IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
+OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
+IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
+MyToolConsumer....SUCCESS Hello World!!!
+MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
+IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat
+IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
+IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
+IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
+FloatDataConsumer    INFO executing FloatDataConsumer: 7
+ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 1
+ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 7
+VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector1
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector2
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
+FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
+FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
+FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7
+FrExpTransformer     INFO Converting 34.56 -> 0.54, 6
+FrExpTransformer     INFO Converting 78.9 -> 0.616406, 7
+LdExpTransfomer      INFO Converting 4, 0.77125 -> 12.34
+LdExpTransfomer      INFO Converting 6, 0.887188 -> 56.78
+LdExpTransfomer      INFO Converting 7, 0.704063 -> 90.12
+LdExpTransfomer      INFO Converting 6, 0.54 -> 34.56
+LdExpTransfomer      INFO Converting 7, 0.616406 -> 78.9
+OptFrExpTransfo...   INFO Skipping 12.34
+OptFrExpTransfo...   INFO Converting 56.78 -> 0.887188, 6
+OptFrExpTransfo...   INFO Converting 90.12 -> 0.704063, 7
+OptFrExpTransfo...   INFO Converting 34.56 -> 0.54, 6
+OptFrExpTransfo...   INFO Converting 78.9 -> 0.616406, 7
+OptLdExpTransfo...   INFO Converting 4, 0.77125 -> 12.34
+OptLdExpTransfo...   INFO Converting 6, 0.887188 -> 56.78
+OptLdExpTransfo...   INFO Skipping 90.12
+OptLdExpTransfo...   INFO Converting 6, 0.54 -> 34.56
+OptLdExpTransfo...   INFO Skipping 78.9
+CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not an error" twice
+CountingConsumer    ERROR Suppressing message: 'This is not an error...'
+CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not a warning" twice
+CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not info" twice
+SDataProducer1       INFO storing KeyedContainer of size 3 into /Event/S1
+SDataProducer2       INFO storing KeyedContainer of size 10 into /Event/S2
+SRangesToIntVector   INFO Concatening range of size 3
+SRangesToIntVector   INFO Concatening range of size 10
+SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
+IntVectorsMerger     INFO sum of input sizes: 8
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO sum of input sizes: 8
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+IntVectorsMergi...   INFO Consuming vector [3, 3, 3, 3]
+TwoDMerger        SUCCESS  accumulated: [12, 12]
+TwoDMerger        SUCCESS  accumulated: [103.68]
+OpaqueProducer    SUCCESS creating Eventually
+SharedPtrProducer    INFO executing ShrdPtrProducer, storing shared_ptr<Foo> with payload at 0x119aa70 and value  7 into /Event/MySharedFoo
+SharedPtrConsumer    INFO executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at 0x119aa70 with value  7 from /Event/MySharedFoo
+IntProducer0         INFO executing VectorDataProducer, storing [0, 2, 4] into /Event/EventInts
+IntProducer1         INFO executing VectorDataProducer, storing [1, 3, 5, 7] into /Event/OddInt
+IntProducer2         INFO executing VectorDataProducer, storing [1, 1, 2, 3, 5, 8, 13] into /Event/Fib7
+IntVectorsToInts     INFO loaded [0, 2, 4] from /Event/EventInts
+IntVectorsToInts     INFO loaded [1, 3, 5, 7] from /Event/OddInt
+IntVectorsToInts     INFO loaded [1, 1, 2, 3, 5, 8, 13] from /Event/Fib7
+IntVectorsToInts     INFO storing 55 in /Event/EvenOddFib
+IntVectorsToInts     INFO storing 49 in /Event/OddFib
+EvenOddFibConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 55
+OddFibConsumer       INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 49
+OpaqueProducer    SUCCESS My Eventually is about to be destroyed
+CountingConsumer     INFO Number of counters : 3
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "This is not a warning..."                      |         4 |
+ | "This is not an error..."                       |         4 |
+ | "This is not info..."                           |         4 |
+ApplicationMgr       INFO Application Manager Stopped successfully
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ToolSvc              INFO Removing all tools created by ToolSvc
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

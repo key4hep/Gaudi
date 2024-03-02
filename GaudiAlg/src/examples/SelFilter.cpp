@@ -23,10 +23,10 @@
 // ============================================================================
 // Local
 // ============================================================================
-#include "GaudiExamples/MyTrack.h"
+#include "GaudiTestSuite/MyTrack.h"
 // ============================================================================
 namespace Gaudi {
-  namespace Examples {
+  namespace TestSuite {
     /** @class SelFilter
      *  Simple class to create few "containers" in TES
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
@@ -34,8 +34,8 @@ namespace Gaudi {
      */
     class SelFilter : public GaudiAlgorithm {
       // ======================================================================
-      using Range     = Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>;
-      using Selection = Gaudi::Examples::MyTrack::Selection;
+      using Range     = Gaudi::Range_<Gaudi::TestSuite::MyTrack::ConstVector>;
+      using Selection = Gaudi::TestSuite::MyTrack::Selection;
 
       DataObjectReadHandle<Range>      m_input{ this, "Input", "", "TES location of input container" };
       DataObjectWriteHandle<Selection> m_output{ this, "Output", this->name(), "TES location of output container" };
@@ -52,9 +52,9 @@ namespace Gaudi {
 
         static Rndm::Numbers flat( randSvc(), Rndm::Flat( -1, 1 ) );
 
-        if ( exist<Gaudi::Examples::MyTrack::Selection>( m_input.objKey() ) ) {
+        if ( exist<Gaudi::TestSuite::MyTrack::Selection>( m_input.objKey() ) ) {
           info() << "Selection at '" << m_input.objKey() << "'" << endmsg;
-        } else if ( exist<Gaudi::Examples::MyTrack::Container>( m_input.objKey() ) ) {
+        } else if ( exist<Gaudi::TestSuite::MyTrack::Container>( m_input.objKey() ) ) {
           info() << "Container at '" << m_input.objKey() << "'" << endmsg;
         }
 
@@ -66,19 +66,19 @@ namespace Gaudi {
         const auto& range = m_input.get();
 
         // create new selection
-        auto sample = std::make_unique<Gaudi::Examples::MyTrack::Selection>();
+        auto sample = std::make_unique<Gaudi::TestSuite::MyTrack::Selection>();
 
         const double pxCut = flat();
         const double pyCut = flat();
 
         // select particles with 'large' px
         sample->insert( range.begin(), range.end(),
-                        [pxCut]( const Gaudi::Examples::MyTrack* track ) { return track->px() > pxCut; } );
+                        [pxCut]( const Gaudi::TestSuite::MyTrack* track ) { return track->px() > pxCut; } );
 
         const size_t size = sample->size();
 
         // remove the particles with 'small' py
-        sample->erase( [pyCut]( const Gaudi::Examples::MyTrack* track ) { return track->py() < pyCut; } );
+        sample->erase( [pyCut]( const Gaudi::TestSuite::MyTrack* track ) { return track->py() < pyCut; } );
 
         info() << "Sample size is " << range.size() << "/" << size << "/" << sample->size() << endmsg;
 
@@ -89,11 +89,11 @@ namespace Gaudi {
       }
     };
     // ========================================================================
-  } // namespace Examples
+  } // namespace TestSuite
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)
-using Gaudi::Examples::SelFilter;
+using Gaudi::TestSuite::SelFilter;
 DECLARE_COMPONENT( SelFilter )
 // ============================================================================
 // The END

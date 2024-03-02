@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<!--
+    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>-T</text>
+  <text>-v</text>
+</set></argument>
+<argument name="environment"><set><text>HEAPCHECK=local</text></set></argument>
+<argument name="options"><text>
+# Skip test when running inside GitLab-CI (no ptrace capabilities)
+import os
+import sys
+if 'CI' in os.environ:
+    sys.exit(77)
+
+# Options of the test job
+from Gaudi.Configuration import *
+from Configurables import GaudiTestSuiteCommonConf, HelloWorld
+from Configurables import Google__HeapChecker as GoogleAuditor
+
+GaudiTestSuiteCommonConf()
+AuditorSvc().Auditors.append(GoogleAuditor(OutputLevel=INFO))
+ApplicationMgr(EvtMax=10,
+               EvtSel="NONE",
+               TopAlg=[HelloWorld()],
+               AuditAlgorithms=True)
+
+</text></argument>
+<argument name="reference"><text>refs/google_auditors/heap_checker.ref</text></argument>
+<argument name="error_reference"><text>refs/google_auditors/heap_checker_err.ref</text></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="unsupported_platforms"><set>
+  <text>i686</text>
+  <text>asan</text>
+  <text>lsan</text>
+  <text>ubsan</text>
+  <text>tsan</text>
+  <text>^arm</text>
+  <text>^aarch</text>
+</set></argument>
+<argument name="validator"><text>
+# hide a difference between JobOptionsSvc and Configurables
+preprocessor = (normalizeTestSuite +
+    LineSkipper(["Turning perftools heap leak checking off",
+                 "Perftools heap leak checker is active",
+                 "Have memory regions w/o callers"]) +
+    RegexpReplacer(r"found \d+ reachable heap objects of \d+ bytes",
+                    "found XXX reachable heap objects of YYY bytes"))
+validateWithReference(preproc = preprocessor)
+</text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
+</extension>

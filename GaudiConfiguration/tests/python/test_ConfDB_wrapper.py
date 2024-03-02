@@ -23,8 +23,8 @@ def test_entries():
     from GaudiConfig2 import Configurables as C
 
     assert set(C.__all__) == set(["MyAlgorithm", "MyOtherAlg", "Gaudi", "TestConf"])
-    assert set(C.Gaudi.__all__) == set(["SomeAlg", "Examples", "Foundation"])
-    assert set(C.Gaudi.Examples.__all__) == set(["Test1"])
+    assert set(C.Gaudi.__all__) == set(["SomeAlg", "TestSuite", "Foundation"])
+    assert set(C.Gaudi.TestSuite.__all__) == set(["Test1"])
     assert set(C.Gaudi.Foundation.__all__) == set(["Service"])
 
     try:

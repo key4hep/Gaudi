@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiTestSuite/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiTestSuite/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
+JobOptionsSvc        INFO # =======> /builds/gaudi/Gaudi/GaudiTestSuite/options/GaudiCommonTests.opts
 JobOptionsSvc        INFO # (9,1): EventDataSvc.ForceLeaves = 1
 JobOptionsSvc        INFO # (10,1): EventDataSvc.RootCLID = 1
 JobOptionsSvc        INFO # (17,1): MessageSvc.OutputLevel = 3
@@ -23,7 +23,7 @@ JobOptionsSvc        INFO # (35,1): Seq2.RootInTES = "microDST"
 JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtMax = 1
 JobOptionsSvc        INFO # (41,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (42,1): ApplicationMgr.HistogramPersistency = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /builds/gaudi/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
+JobOptionsSvc        INFO Job options successfully read in from /builds/gaudi/Gaudi/GaudiTestSuite/options/GaudiCommonTests.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v34r1)
@@ -182,14 +182,14 @@ EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 Test1                INFO Execute
-Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks1'
-Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks2'
-Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test1/Tracks3'
-Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test1/Tracks4'
-Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks1'
-Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks2'
-Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test1/Tracks3'
-Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test1/Tracks4'
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks1'
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks2'
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test1/Tracks3'
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test1/Tracks4'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks1'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks2'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test1/Tracks3'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test1/Tracks4'
 Test1               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
 Test1               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
 Test1               DEBUG The object of type 'DataObject*' has been retrieved from TS at address ''
@@ -203,17 +203,17 @@ Test1                INFO /Event
 Test1                INFO /Event
 Test1                INFO /Event
 Test1                INFO /Event
-Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks1'
-Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'Nowhere/To/Be/Found'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks1'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'Nowhere/To/Be/Found'
 Test2                INFO Execute
-Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test2/Tracks1'
-Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test2/Tracks2'
-Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test2/Tracks3'
-Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test2/Tracks4'
-Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
-Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test2/Tracks2'
-Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks3'
-Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test2/Tracks4'
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test2/Tracks1'
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test2/Tracks2'
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test2/Tracks3'
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test2/Tracks4'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test2/Tracks2'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks3'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test2/Tracks4'
 Test2               DEBUG The object of type 'DataObject*' has been retrieved from TS at address 'microDST'
 Test2               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
 Test2               DEBUG The object of type 'DataObject*' has been retrieved from TS at address 'microDST'
@@ -227,17 +227,17 @@ Test2                INFO /Event/microDST
 Test2                INFO /Event
 Test2                INFO /Event/microDST
 Test2                INFO /Event
-Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
-Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
 Test3                INFO Execute
-Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test3/Tracks1'
-Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test3/Tracks2'
-Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test3/Tracks3'
-Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test3/Tracks4'
-Test3               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test3/Tracks1'
-Test3               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test3/Tracks2'
-Test3               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test3/Tracks3'
-Test3               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test3/Tracks4'
+Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test3/Tracks1'
+Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test3/Tracks2'
+Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test3/Tracks3'
+Test3               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test3/Tracks4'
+Test3               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test3/Tracks1'
+Test3               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test3/Tracks2'
+Test3               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test3/Tracks3'
+Test3               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test3/Tracks4'
 Test3               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
 Test3               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
 Test3               DEBUG The object of type 'DataObject*' has been retrieved from TS at address ''
@@ -251,17 +251,17 @@ Test3                INFO /Event
 Test3                INFO /Event
 Test3                INFO /Event
 Test3                INFO /Event
-Test3               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test3/Tracks1'
-Test3               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'Nowhere/To/Be/Found'
+Test3               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test3/Tracks1'
+Test3               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'Nowhere/To/Be/Found'
 Test4                INFO Execute
-Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test4/Tracks1'
-Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test4/Tracks2'
-Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test4/Tracks3'
-Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test4/Tracks4'
-Test4               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test4/Tracks1'
-Test4               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test4/Tracks2'
-Test4               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test4/Tracks3'
-Test4               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test4/Tracks4'
+Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test4/Tracks1'
+Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test4/Tracks2'
+Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test4/Tracks3'
+Test4               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test4/Tracks4'
+Test4               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test4/Tracks1'
+Test4               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test4/Tracks2'
+Test4               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test4/Tracks3'
+Test4               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test4/Tracks4'
 Test4               DEBUG The object of type 'DataObject*' has been retrieved from TS at address 'microDST'
 Test4               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
 Test4               DEBUG The object of type 'DataObject*' has been retrieved from TS at address 'microDST'
@@ -275,8 +275,8 @@ Test4                INFO /Event/microDST
 Test4                INFO /Event
 Test4                INFO /Event/microDST
 Test4                INFO /Event
-Test4               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test4/Tracks1'
-Test4               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
+Test4               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test4/Tracks1'
+Test4               DEBUG The object of type 'KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
 ApplicationMgr       INFO Application Manager Stopped successfully
 Test1               DEBUG Finalize base class GaudiAlgorithm
 Test1               DEBUG Tools to release :

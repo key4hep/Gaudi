@@ -1,0 +1,384 @@
+JobOptionsSvc        INFO Job options successfully file Properties.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventLoopMgr        DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
+PropertyAlg          INFO Before Initialization......
+PropertyAlg          INFO Int    = 100
+PropertyAlg          INFO Int64  = 100
+PropertyAlg          INFO UInt64 = 100
+PropertyAlg          INFO Double = 100
+PropertyAlg          INFO String = hundred
+PropertyAlg          INFO Bool   = 1
+PropertyAlg          INFO IntArray    = []
+PropertyAlg          INFO Int64Array  = []
+PropertyAlg          INFO UInt64Array = []
+PropertyAlg          INFO DoubleArray = []
+PropertyAlg          INFO StringArray = []
+PropertyAlg          INFO BoolArray   = []
+PropertyAlg          INFO EmptyArray  = []
+PropertyAlg          INFO IntPairArray  = []
+PropertyAlg          INFO DoublePairArray  = []
+PropertyAlg          INFO PInt    =  'PInt':100
+PropertyAlg          INFO Read handler called for property:  'PDouble':100.00000
+PropertyAlg          INFO PDouble =  'PDouble':100.00000
+PropertyAlg          INFO PString =  'PString':'hundred'
+PropertyAlg          INFO PBool   =  'PBool':False
+PropertyAlg          INFO PIntArray    =  'PIntArray':[  ]
+PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[  ]
+PropertyAlg          INFO PStringArray =  'PStringArray':[  ]
+PropertyAlg          INFO PBoolArray   =  'PBoolArray':[  ]
+EventLoopMgr        DEBUG Creating Top Algorithm PropertyProxy with name PropertyProxy
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
+PropertyAlg          INFO Update handler called for property:  'PDouble':10100000.
+PropertyAlg          INFO After Initialization having read the JobOptions file...
+PropertyAlg          INFO Int    = 101
+PropertyAlg          INFO Int64  = 4294967296
+PropertyAlg          INFO UInt64 = 4294967296
+PropertyAlg          INFO Double = 1.011e+12
+PropertyAlg          INFO String = hundred "one"
+PropertyAlg          INFO Bool   = 0
+PropertyAlg          INFO IntArray    = [1, 2, 3, 5]
+PropertyAlg          INFO Int64Array  = [4294967296]
+PropertyAlg          INFO UInt64Array = [4294967296]
+PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004]
+PropertyAlg          INFO StringArray = [one, two, four]
+PropertyAlg          INFO BoolArray   = [0, 1, 0]
+PropertyAlg          INFO EmptyArray  = []
+PropertyAlg          INFO IntPairArray  = [(1, 2), (3, 4), (5, 6)]
+PropertyAlg          INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)]
+PropertyAlg          INFO StringMap =  'StringMap':{ 'one' : 'une' }
+PropertyAlg          INFO PInt    =  'PInt':101
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
+PropertyAlg          INFO PDouble =  'PDouble':10100000.
+PropertyAlg          INFO PString =  'PString':'hundred \'one\''
+PropertyAlg          INFO PBool   =  'PBool':True
+PropertyAlg          INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
+PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[ 1.1000000 , 2.0000000 , 3.3000000 ]
+PropertyAlg          INFO PStringArray =  'PStringArray':[ 'one' , 'two' , 'four' ]
+PropertyAlg          INFO PBoolArray   =  'PBoolArray':[ True , False , True , False ]
+PropertyAlg          INFO DoubleArrayWithUnits[0] = 1.1e+06
+PropertyAlg          INFO DoubleArrayWithUnits[1] = -20
+PropertyAlg          INFO DoubleArrayWithUnits[2] = 33
+PropertyAlg          INFO DoubleArrayWithUnits[3] = 0.4
+PropertyAlg          INFO ===============Checking Property Verifier ===============
+PropertyAlg          INFO Playing with PropertyVerifiers...
+PropertyAlg          INFO PInt= 155 [should be 155, bounds are 0, 200]
+PropertyAlg          INFO Got an exception when setting a value outside bounds
+PropertyAlg          INFO PInt=  'PInt':155 [should be 155]
+PropertyAlg          INFO ===============Checking Property CallBaks ===============
+PropertyAlg          INFO Accessing PDouble ...
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
+PropertyAlg          INFO Value obtained is: 1.01e+07
+PropertyAlg          INFO Updating PDouble ...
+PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
+PropertyAlg          INFO Update handler called for property:  'PDouble':999.00000
+PropertyAlg          INFO ==========Checking Accesing Properties by string=========
+PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [  ];
+DetectorDataSvc      INFO Detector description not requested to be loaded
+PropertyAlg          INFO  Set property ApplicationMgr.ExtSvc =  ["EvtDataSvc/EventDataSvc", "DetDataSvc/DetectorDataSvc"];
+PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' ];
+PropertyAlg          INFO  Set property ApplicationMgr.ExtSvc =  [ 'EventDataSvc', 'DetectorDataSvc'];
+PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [ 'EventDataSvc' , 'DetectorDataSvc' ];
+PropertyAlg         ERROR PBool can not be set to T
+PropertyAlg         ERROR Bool can not be set to T
+PropertyAlg         ERROR PBool can not be set to F
+PropertyAlg         ERROR Bool can not be set to F
+PropertyAlg         ERROR PBool can not be set to 10
+PropertyAlg         ERROR Bool can not be set to 10
+MsgTest           WARNING This should be printed if threshold is WARNING
+MsgTest             ERROR This should be printed if threshold is ERROR
+MsgTest             FATAL This should be printed if threshold is FATAL
+MsgTest           SUCCESS This should be printed ALWAYS
+PropertyAlg          INFO =================================================
+PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
+PropertyAlg          INFO Dump of the property catalogue:
+AppMgrRunable.AuditFinalize: False
+AppMgrRunable.AuditInitialize: False
+AppMgrRunable.AuditReinitialize: False
+AppMgrRunable.AuditRestart: False
+AppMgrRunable.AuditServices: False
+AppMgrRunable.AuditStart: False
+AppMgrRunable.AuditStop: False
+AppMgrRunable.AutoRetrieveTools: True
+AppMgrRunable.CheckToolDeps: True
+AppMgrRunable.EvtMax: 1
+AppMgrRunable.OutputLevel: 3
+ApplicationMgr.ActivateHistory: False
+ApplicationMgr.AlgTypeAliases: {  }
+ApplicationMgr.AppName: 'ApplicationMgr'
+ApplicationMgr.AppVersion: ''
+ApplicationMgr.AuditAlgorithms: False
+ApplicationMgr.AuditServices: False
+ApplicationMgr.AuditTools: False
+ApplicationMgr.CreateSvc: [  ]
+ApplicationMgr.Dlls: [  ]
+ApplicationMgr.Environment: {  }
+ApplicationMgr.EventLoop: 'EventLoopMgr'
+ApplicationMgr.EvtMax: 1
+ApplicationMgr.EvtSel: 'NONE'
+ApplicationMgr.Exit: 0
+ApplicationMgr.ExtSvc: [ 'EventDataSvc' , 'DetectorDataSvc' ]
+ApplicationMgr.ExtSvcCreates: True
+ApplicationMgr.Go: 0
+ApplicationMgr.HistogramPersistency: 'NONE'
+ApplicationMgr.InitializationLoopCheck: True
+ApplicationMgr.JobOptionsPath: '...'
+ApplicationMgr.JobOptionsPostAction: ''
+ApplicationMgr.JobOptionsPreAction: ''
+ApplicationMgr.JobOptionsSvcType: 'JobOptionsSvc'
+ApplicationMgr.JobOptionsType: 'FILE'
+ApplicationMgr.MessageSvcType: 'MessageSvc'
+ApplicationMgr.OutStream: [  ]
+ApplicationMgr.OutputLevel: 3
+ApplicationMgr.PluginDebugLevel: 0
+ApplicationMgr.PrintAlgsSequence: False
+ApplicationMgr.PropertiesPrint: False
+ApplicationMgr.ReturnCode: 0
+ApplicationMgr.Runable: 'AppMgrRunable'
+ApplicationMgr.StalledEventMonitoring: False
+ApplicationMgr.StatusCodeCheck: True
+ApplicationMgr.StopOnSignal: False
+ApplicationMgr.SvcMapping: [ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' , 'HistogramSvc/HistogramDataSvc' , 'HbookCnv::PersSvc/HbookHistSvc' , 'RootHistCnv::PersSvc/RootHistSvc' , 'EvtPersistencySvc/EventPersistencySvc' , 'DetPersistencySvc/DetectorPersistencySvc' , 'HistogramPersistencySvc/HistogramPersistencySvc' ]
+ApplicationMgr.SvcOptMapping: [  ]
+ApplicationMgr.TopAlg: [ 'PropertyAlg' , 'PropertyProxy' ]
+ApplicationMgr.UseMessageSvcForROOTMessages: True
+AuditorSvc.Auditors: ["ChronoAuditor"]
+DetectorDataSvc.AllowLoadInRunning: True
+DetectorDataSvc.AuditFinalize: False
+DetectorDataSvc.AuditInitialize: False
+DetectorDataSvc.AuditReinitialize: False
+DetectorDataSvc.AuditRestart: False
+DetectorDataSvc.AuditServices: False
+DetectorDataSvc.AuditStart: False
+DetectorDataSvc.AuditStop: False
+DetectorDataSvc.AutoRetrieveTools: True
+DetectorDataSvc.CheckToolDeps: True
+DetectorDataSvc.DataAccessName: 'DataAccess'
+DetectorDataSvc.DataFaultName: 'DataFault'
+DetectorDataSvc.DetDbLocation: 'empty'
+DetectorDataSvc.DetDbRootName: 'dd'
+DetectorDataSvc.DetStorageType: 7
+DetectorDataSvc.EnableAccessHandler: False
+DetectorDataSvc.EnableFaultHandler: False
+DetectorDataSvc.ForceLeaves: False
+DetectorDataSvc.InhibitPathes: [  ]
+DetectorDataSvc.OutputLevel: 3
+DetectorDataSvc.PersistencySvc: 'DetectorPersistencySvc'
+DetectorDataSvc.RootCLID: 3
+DetectorDataSvc.RootName: '/dd'
+DetectorDataSvc.UsePersistency: False
+DetectorPersistencySvc.AuditFinalize: False
+DetectorPersistencySvc.AuditInitialize: False
+DetectorPersistencySvc.AuditReinitialize: False
+DetectorPersistencySvc.AuditRestart: False
+DetectorPersistencySvc.AuditServices: False
+DetectorPersistencySvc.AuditStart: False
+DetectorPersistencySvc.AuditStop: False
+DetectorPersistencySvc.AutoRetrieveTools: True
+DetectorPersistencySvc.CheckToolDeps: True
+DetectorPersistencySvc.CnvServices: [  ]
+DetectorPersistencySvc.OutputLevel: 3
+Dummy1.Property: 1
+Dummy2.Property: 1
+EventDataSvc.AuditFinalize: False
+EventDataSvc.AuditInitialize: False
+EventDataSvc.AuditReinitialize: False
+EventDataSvc.AuditRestart: False
+EventDataSvc.AuditServices: False
+EventDataSvc.AuditStart: False
+EventDataSvc.AuditStop: False
+EventDataSvc.AutoRetrieveTools: True
+EventDataSvc.CheckToolDeps: True
+EventDataSvc.DataAccessName: 'DataAccess'
+EventDataSvc.DataFaultName: 'DataFault'
+EventDataSvc.EnableAccessHandler: False
+EventDataSvc.EnableFaultHandler: False
+EventDataSvc.ForceLeaves: False
+EventDataSvc.InhibitPathes: [  ]
+EventDataSvc.OutputLevel: 3
+EventDataSvc.RootCLID: 110
+EventDataSvc.RootName: '/Event'
+EventLoopMgr.AuditFinalize: False
+EventLoopMgr.AuditInitialize: False
+EventLoopMgr.AuditReinitialize: False
+EventLoopMgr.AuditRestart: False
+EventLoopMgr.AuditServices: False
+EventLoopMgr.AuditStart: False
+EventLoopMgr.AuditStop: False
+EventLoopMgr.AutoRetrieveTools: True
+EventLoopMgr.CheckToolDeps: True
+EventLoopMgr.EvtSel: ''
+EventLoopMgr.HistogramPersistency: ''
+EventLoopMgr.OutStream: [  ]
+EventLoopMgr.OutputLevel: 2
+EventLoopMgr.PrintControlFlowExpression: False
+EventLoopMgr.TopAlg: [ 'PropertyAlg' , 'PropertyProxy' ]
+EventLoopMgr.Warnings: True
+EventPersistencySvc.AuditFinalize: False
+EventPersistencySvc.AuditInitialize: False
+EventPersistencySvc.AuditReinitialize: False
+EventPersistencySvc.AuditRestart: False
+EventPersistencySvc.AuditServices: False
+EventPersistencySvc.AuditStart: False
+EventPersistencySvc.AuditStop: False
+EventPersistencySvc.AutoRetrieveTools: True
+EventPersistencySvc.CheckToolDeps: True
+EventPersistencySvc.CnvServices: [  ]
+EventPersistencySvc.OutputLevel: 3
+IncidentSvc.AuditFinalize: False
+IncidentSvc.AuditInitialize: False
+IncidentSvc.AuditReinitialize: False
+IncidentSvc.AuditRestart: False
+IncidentSvc.AuditServices: False
+IncidentSvc.AuditStart: False
+IncidentSvc.AuditStop: False
+IncidentSvc.AutoRetrieveTools: True
+IncidentSvc.CheckToolDeps: True
+IncidentSvc.OutputLevel: 3
+JobOptionsSvc.AuditFinalize: False
+JobOptionsSvc.AuditInitialize: False
+JobOptionsSvc.AuditReinitialize: False
+JobOptionsSvc.AuditRestart: False
+JobOptionsSvc.AuditServices: False
+JobOptionsSvc.AuditStart: False
+JobOptionsSvc.AuditStop: False
+JobOptionsSvc.AutoRetrieveTools: True
+JobOptionsSvc.CheckToolDeps: True
+JobOptionsSvc.DUMPFILE: 'gauditestsuite.properties.all.joboptsdump'
+JobOptionsSvc.GlobalDefaults: [  ]
+JobOptionsSvc.OutputLevel: 3
+JobOptionsSvc.PATH: '...'
+JobOptionsSvc.PYTHONACTION: ''
+JobOptionsSvc.PYTHONPARAMS: ''
+JobOptionsSvc.ReportUnused: False
+JobOptionsSvc.SEARCHPATH: '...'
+JobOptionsSvc.TYPE: 'FILE'
+MessageSvc.AuditFinalize: False
+MessageSvc.AuditInitialize: False
+MessageSvc.AuditReinitialize: False
+MessageSvc.AuditRestart: False
+MessageSvc.AuditServices: False
+MessageSvc.AuditStart: False
+MessageSvc.AuditStop: False
+MessageSvc.AutoRetrieveTools: True
+MessageSvc.CheckToolDeps: True
+MessageSvc.Format: '% F%18W%S%7W%R%T %0W%M'
+MessageSvc.OutputLevel: 3
+MessageSvc.alwaysColorCode: [  ]
+MessageSvc.alwaysLimit: 0
+MessageSvc.countInactive: False
+MessageSvc.debugColorCode: [  ]
+MessageSvc.debugLimit: 500
+MessageSvc.defaultLimit: 500
+MessageSvc.enableSuppression: False
+MessageSvc.errorColorCode: [ 'white' , 'red' ]
+MessageSvc.errorLimit: 500
+MessageSvc.fatalColorCode: [ 'blue' , 'red' ]
+MessageSvc.fatalLimit: 500
+MessageSvc.infoColorCode: [  ]
+MessageSvc.infoLimit: 500
+MessageSvc.loggedStreams: {  }
+MessageSvc.setAlways: [  ]
+MessageSvc.setDebug: [ 'EventLoopMgr' ]
+MessageSvc.setError: [  ]
+MessageSvc.setFatal: [  ]
+MessageSvc.setInfo: [  ]
+MessageSvc.setVerbose: [ 'MsgTest' ]
+MessageSvc.setWarning: [ 'MsgTest' ]
+MessageSvc.showStats: False
+MessageSvc.statLevel: 0
+MessageSvc.timeFormat: '%Y-%m-%d %H:%M:%S,%f'
+MessageSvc.tracedInactiveSources: [  ]
+MessageSvc.useColors: False
+MessageSvc.verboseColorCode: [  ]
+MessageSvc.verboseLimit: 500
+MessageSvc.warningColorCode: [ 'yellow' ]
+MessageSvc.warningLimit: 500
+PropertyAlg.AuditAlgorithms: False
+PropertyAlg.AuditExecute: False
+PropertyAlg.AuditFinalize: False
+PropertyAlg.AuditInitialize: False
+PropertyAlg.AuditReinitialize: False
+PropertyAlg.AuditRestart: False
+PropertyAlg.AuditStart: False
+PropertyAlg.AuditStop: False
+PropertyAlg.Blocking: False
+PropertyAlg.Bool: False
+PropertyAlg.BoolArray: [ False , True , False ]
+PropertyAlg.Cardinality: 1
+PropertyAlg.Double: 1.0110000e+12
+PropertyAlg.DoubleArray: [ -11.000000 , 2.0000000 , 3.3000000 , 0.00040000000 ]
+PropertyAlg.DoubleArrayWithUnits: [ 1100000.0 , -20.000000 , 33.000000 , 0.40000000 ]
+PropertyAlg.DoubleArrayWithoutUnits: [ 1100000.0 , -20.000000 , 33.000000 , 0.40000000 ]
+PropertyAlg.DoublePairArray: [ ( 1.1000000 , 2.1000000 ) , ( 2.3000000 , 4.5000000 ) , ( 5.6000000 , 6.7000000 ) ]
+PropertyAlg.EmptyArray: [  ]
+PropertyAlg.Enable: True
+PropertyAlg.ErrorMax: 1
+PropertyAlg.ExtraInputs: set()
+PropertyAlg.ExtraOutputs: set()
+PropertyAlg.FilterCircularDependencies: True
+PropertyAlg.Int: 101
+PropertyAlg.Int64: 4294967296
+PropertyAlg.Int64Array: [ 4294967296 ]
+PropertyAlg.IntArray: [ 1 , 2 , 3 , 5 ]
+PropertyAlg.IntPairArray: [ ( 1 , 2 ) , ( 3 , 4 ) , ( 5 , 6 ) ]
+PropertyAlg.MonitorService: 'MonitorSvc'
+PropertyAlg.NeededResources: [  ]
+PropertyAlg.OutputLevel: 3
+PropertyAlg.PBool: False
+PropertyAlg.PBoolArray: [ True , False , True , False ]
+PropertyAlg.PDouble: 999.00000
+PropertyAlg.PDoubleArray: [ 1.1000000 , 2.0000000 , 3.3000000 ]
+PropertyAlg.PInt: 155
+PropertyAlg.PIntArray: [ 1 , 2 , 3 , 5 ]
+PropertyAlg.PString: 'hundred \'one\''
+PropertyAlg.PStringArray: [ 'one' , 'two' , 'four' ]
+PropertyAlg.RegisterForContextService: False
+PropertyAlg.String: 'hundred "one"'
+PropertyAlg.StringArray: [ 'one' , 'two' , 'four' ]
+PropertyAlg.StringMap: { 'one' : 'une' }
+PropertyAlg.Timeline: False
+PropertyAlg.UInt64: 4294967296
+PropertyAlg.UInt64Array: [ 4294967296 ]
+PropertyProxy.String: "This is set by the proxy"
+TimelineSvc.AuditFinalize: False
+TimelineSvc.AuditInitialize: False
+TimelineSvc.AuditReinitialize: False
+TimelineSvc.AuditRestart: False
+TimelineSvc.AuditServices: False
+TimelineSvc.AuditStart: False
+TimelineSvc.AuditStop: False
+TimelineSvc.AutoRetrieveTools: True
+TimelineSvc.CheckToolDeps: True
+TimelineSvc.DumpTimeline: False
+TimelineSvc.OutputLevel: 3
+TimelineSvc.Partial: False
+TimelineSvc.RecordTimeline: False
+TimelineSvc.TimelineFile: 'timeline.csv'
+PropertyAlg          INFO =================================================
+PropertyAlg          INFO PInt=  'PInt':154 [should be 154]
+PropertyAlg          INFO Try to assign invalid value to DoubleArray
+PropertyAlg         ERROR got exception: Cannot convert '{"12.12", "13.13"}' for property 'DoubleArray' in class 'PropertyAlg': std::invalid_argument, cannot parse '{"12.12", "13.13"}' to std::vector<double,std::allocator<double> >
+PropertyAlg          INFO Try to assign invalid value to StringMap
+PropertyAlg         ERROR got exception: Cannot convert '{"one", {"une", "eins"}}' for property 'StringMap' in class 'PropertyAlg': boost::wrapexcept<boost::spirit::qi::expectation_failure<__gnu_cxx::__normal_iterator<char const*,std::string> > >, boost::spirit::qi::expectation_failure
+PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004]
+PropertyAlg          INFO =================================================
+PropertyProxy        INFO  Got property this.RInt = 101;
+PropertyProxy        INFO  Set property this.RInt = 1001;
+PropertyProxy        INFO  Got property this.RInt = 1001;
+PropertyProxy        INFO  Got property this.String = This is set by the proxy;
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+ApplicationMgr       INFO Application Manager Initialized successfully
+PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
+ApplicationMgr       INFO Application Manager Started successfully
+PropertyAlg          INFO executing....
+PropertyProxy        INFO executing....
+ApplicationMgr       INFO Application Manager Stopped successfully
+PropertyAlg          INFO finalizing....
+PropertyProxy        INFO finalizing....
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

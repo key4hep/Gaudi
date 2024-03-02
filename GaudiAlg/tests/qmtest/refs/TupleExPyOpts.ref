@@ -1,5 +1,5 @@
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/TupleEx.py'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/TupleEx.py'
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiTestSuite/options/TupleEx.py'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiTestSuite/options/TupleEx.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v1r6)

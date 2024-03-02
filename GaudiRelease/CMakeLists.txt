@@ -28,7 +28,7 @@ foreach(package IN ITEMS GaudiPluginService GaudiPolicy GaudiKernel GaudiCoreSvc
                          GaudiUtils Gaudi GaudiAlg GaudiAud GaudiCommonSvc
                          GaudiHive GaudiMonitor GaudiMP GaudiPartProp
                          GaudiProfiling GaudiPython GaudiRelease GaudiSvc
-                         PartPropSvc RootCnv RootHistCnv GaudiExamples)
+                         PartPropSvc RootCnv RootHistCnv GaudiTestSuite)
   if(EXISTS ${PROJECT_SOURCE_DIR}/${package}/doc/release.notes)
     file(APPEND ${rel_notes_main} "* @subpage ${package}-notes\n")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${package}-notes.md

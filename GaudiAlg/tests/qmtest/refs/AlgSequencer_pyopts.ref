@@ -1,11 +1,11 @@
 # setting LC_ALL to "C"
-# --> Including file '/bld2/leggett/work/BeginRun/gaudi_g/Gaudi/GaudiExamples/options/AlgSequencer.py'
-# <-- End of file '/bld2/leggett/work/BeginRun/gaudi_g/Gaudi/GaudiExamples/options/AlgSequencer.py'
-# applying configuration of GaudiExamplesCommonConf
-# /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
+# --> Including file '/bld2/leggett/work/BeginRun/gaudi_g/Gaudi/GaudiTestSuite/options/AlgSequencer.py'
+# <-- End of file '/bld2/leggett/work/BeginRun/gaudi_g/Gaudi/GaudiTestSuite/options/AlgSequencer.py'
+# applying configuration of GaudiTestSuiteCommonConf
+# /***** User GaudiTestSuiteCommonConf/GaudiTestSuiteCommonConf ****************************************
 # |-OutputLevel = 3
 # |-DummyEvents = -1
-# \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
+# \----- (End of User GaudiTestSuiteCommonConf/GaudiTestSuiteCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v30r0)

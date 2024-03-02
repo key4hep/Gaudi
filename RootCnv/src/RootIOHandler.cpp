@@ -220,7 +220,7 @@ namespace GaudiRoot {
       gInterpreter->AutoLoad( "DataObject" );
       gInterpreter->AutoLoad( "PoolDbLinkManager" );
       gSystem->Load( "libGaudiKernelDict" );
-      gSystem->Load( "libGaudiExamplesDict" );
+      gSystem->Load( "libGaudiTestSuiteDict" );
 #else
 #  if ROOT_VERSION_CODE < ROOT_VERSION( 6, 19, 0 )
       gInterpreter->EnableAutoLoading();

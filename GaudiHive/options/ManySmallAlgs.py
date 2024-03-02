@@ -19,9 +19,9 @@ Those nodes are then given 2 different CF node parents (20 in total) which inclu
 
 In sequential mode (sequence=True) the prescale algorithms will randomly deactivate CF nodes at a frequency given by filterPass
 """
-from Configurables import AlgResourcePool, AvalancheSchedulerSvc
-from Configurables import Gaudi__Examples__Prescaler as Prescaler
-from Configurables import Gaudi__Sequencer, HiveSlimEventLoopMgr, HiveWhiteBoard
+from Configurables import AlgResourcePool, AvalancheSchedulerSvc, Gaudi__Sequencer
+from Configurables import Gaudi__TestSuite__Prescaler as Prescaler
+from Configurables import HiveSlimEventLoopMgr, HiveWhiteBoard
 from Gaudi.Configuration import *
 
 # metaconfig -------------------------------------------------------------------

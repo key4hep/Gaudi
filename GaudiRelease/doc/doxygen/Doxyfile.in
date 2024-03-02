@@ -788,7 +788,7 @@ RECURSIVE              = YES
 EXCLUDE                = @PROJECT_SOURCE_DIR@/GaudiRelease/doc/GaudiHive-release-notes.md
 EXCLUDE               += @PROJECT_SOURCE_DIR@/ReleaseNotes
 EXCLUDE               += @PROJECT_SOURCE_DIR@/InstallArea
-#EXCLUDE               += @PROJECT_SOURCE_DIR@/GaudiExamples
+#EXCLUDE               += @PROJECT_SOURCE_DIR@/GaudiTestSuite
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

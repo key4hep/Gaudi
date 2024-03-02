@@ -382,9 +382,9 @@ Commit Id: $Format:%H$
    See merge request !76
 
    Conflicts:
-   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
-   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
-   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiTestSuite/tests/qmtest/refs/AlgTools2.ref
+   GaudiTestSuite/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiTestSuite/tests/qmtest/refs/conditional_output/write.ref
    GaudiKernel/GaudiKernel/AlgTool.h
    GaudiKernel/GaudiKernel/Algorithm.h
    GaudiKernel/GaudiKernel/Service.h
@@ -414,7 +414,7 @@ Commit Id: $Format:%H$
 
    - renamed IDataHandleHolder::accept to acceptDHVisitor to avoid build time
    warnings in LHCb
-   - fixed reference file for GaudiExamples.thistwrite
+   - fixed reference file for GaudiTestSuite.thistwrite
 
    See merge request !104
 

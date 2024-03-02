@@ -1,15 +1,15 @@
 # setting LC_ALL to "C"
-# --> Including file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/Selections.py'
-# <-- End of file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/Selections.py'
+# --> Including file '/project/bfys/graven/master/Gaudi/GaudiTestSuite/options/Selections.py'
+# <-- End of file '/project/bfys/graven/master/Gaudi/GaudiTestSuite/options/Selections.py'
 # Dumping all configurables and properties (different from default)
 {'ApplicationMgr': {'EvtMax': 20,
                     'EvtSel': 'NONE',
-                    'TopAlg': ['Gaudi::Examples::SelCreate/Create1',
-                               'Gaudi::Examples::SelFilter/Filter1',
-                               'Gaudi::Examples::SelFilter/Filter2',
-                               'Gaudi::Examples::SelFilter/Filter3',
-                               'Gaudi::Examples::SelFilter/Filter4',
-                               'Gaudi::Examples::SelFilter/Filter5']},
+                    'TopAlg': ['Gaudi::TestSuite::SelCreate/Create1',
+                               'Gaudi::TestSuite::SelFilter/Filter1',
+                               'Gaudi::TestSuite::SelFilter/Filter2',
+                               'Gaudi::TestSuite::SelFilter/Filter3',
+                               'Gaudi::TestSuite::SelFilter/Filter4',
+                               'Gaudi::TestSuite::SelFilter/Filter5']},
  'Filter1': {'Input': 'Create1'},
  'Filter2': {'Input': 'Filter1'},
  'Filter3': {'Input': 'Filter2'},

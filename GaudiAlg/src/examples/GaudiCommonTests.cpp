@@ -18,7 +18,7 @@
 // local
 #include "GaudiCommonTests.h"
 
-using namespace Gaudi::Examples;
+using namespace Gaudi::TestSuite;
 
 //-----------------------------------------------------------------------------
 // Implementation file for class : GaudiHistoAlgorithm

@@ -437,7 +437,7 @@ int merge( const char* target, const char* source, bool fixup = false, bool dbg 
     gSystem->Load("libCintex");
     gInterpreter->ProcessLine("Cintex::Enable()");
     //gSystem->Load("libGaudiKernelDict");
-    //gSystem->Load("libGaudiExamplesDict");
+    //gSystem->Load("libGaudiTestSuiteDict");
   }
 #endif
   // printf("+++ Target:%s\n+++ Source file:%s Fixup:%s Dbg:%s\n",

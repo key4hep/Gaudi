@@ -10,8 +10,8 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # =============================================================================
-from Configurables import Gaudi__Examples__SelCreate as SelCreate
-from Configurables import Gaudi__Examples__SelFilter as SelFilter
+from Configurables import Gaudi__TestSuite__SelCreate as SelCreate
+from Configurables import Gaudi__TestSuite__SelFilter as SelFilter
 from Gaudi.Configuration import ApplicationMgr
 
 ApplicationMgr(

@@ -14,7 +14,7 @@
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/Aida2Root.ref</text></argument>
 <argument name="validator"><text>
-preprocessor = normalizeExamples + \
+preprocessor = normalizeTestSuite + \
     RegexpReplacer(when = "^Aida2Root",
         orig = r"(INFO.*'(skewness|kurtosis)(Err)?'.*)\|([0-9.e+\- ]*\|){2}",
         repl = r"\1| ### | ### |")
