@@ -15,7 +15,6 @@ This plugin is not meant to be used directly, but it is invoked by the
 CMake function `gaudi_add_pytest()`
 """
 
-import argparse
 import os
 import re
 from collections import defaultdict
@@ -25,7 +24,6 @@ from pathlib import Path
 def pytest_addoption(parser, pluginmanager):
     parser.addoption(
         "--ctest-output-file",
-        type=argparse.FileType("w"),
         help="name of the file to write to communicate to ctest the discovered tests",
     )
     parser.addoption(
@@ -110,10 +108,12 @@ set_tests_properties({name} PROPERTIES {properties})
 
 def pytest_collection_finish(session):
     args = session.ctest_args
-    output = args.get("output_file")
-    if not output:
+    output_filename = args.get("output_file")
+    if not output_filename:
         # nothing to do if no output file is specified
         return
+    output = open(output_filename, "w")
+    output_rootdir = Path(output_filename).parent
 
     coverage = args["coverage"].split(",") if args["coverage"] else []
     if coverage:
@@ -160,7 +160,7 @@ def pytest_collection_finish(session):
         if coverage:
             # generate one coverage file per test
             output.write(
-                f"set_tests_properties({name} PROPERTIES ENVIRONMENT COVERAGE_FILE=.coverage.{name})\n"
+                f"set_tests_properties({name} PROPERTIES ENVIRONMENT COVERAGE_FILE={output_rootdir}/.coverage.{name})\n"
                 f"set_tests_properties({name} PROPERTIES FIXTURES_SETUP {name})\n"
             )
         names.append(name)
@@ -169,7 +169,7 @@ def pytest_collection_finish(session):
         combine_test = (args["prefix"] + "coverage_combine").replace("/", ".")
         combine_command = re.sub(
             r" report .*",
-            f" combine {' '.join(f'.coverage.{n}' for n in names)}",
+            f" combine {' '.join(f'{output_rootdir}/.coverage.{n}' for n in names)}",
             args["coverage_command"],
         )
         output.write(
@@ -181,7 +181,7 @@ def pytest_collection_finish(session):
             )
         )
         output.write(
-            f"set_tests_properties({combine_test} PROPERTIES ENVIRONMENT COVERAGE_FILE=.coverage)\n"
+            f"set_tests_properties({combine_test} PROPERTIES ENVIRONMENT COVERAGE_FILE={output_rootdir}/.coverage)\n"
             f"set_tests_properties({combine_test} PROPERTIES FIXTURES_REQUIRED \"{';'.join(names)}\")\n"
             f"set_tests_properties({combine_test} PROPERTIES FIXTURES_SETUP {combine_test})\n"
         )
@@ -197,7 +197,7 @@ def pytest_collection_finish(session):
         )
         # coverage reports require all related tests to be run first
         output.write(
-            f"set_tests_properties({name} PROPERTIES ENVIRONMENT COVERAGE_FILE=.coverage)\n"
+            f"set_tests_properties({name} PROPERTIES ENVIRONMENT COVERAGE_FILE={output_rootdir}/.coverage)\n"
             f"set_tests_properties({name} PROPERTIES FIXTURES_REQUIRED {combine_test})\n"
         )
 
