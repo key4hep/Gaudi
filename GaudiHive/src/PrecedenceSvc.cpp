@@ -156,7 +156,7 @@ StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::st
 
   if ( !algo->isSequence() ) {
     ON_DEBUG debug() << std::string( recursionDepth, ' ' ) << "Algorithm '" << algo->name() << "' discovered" << endmsg;
-    sc = m_PRGraph.addAlgorithmNode( algo, parentName, false, false );
+    sc = m_PRGraph.addAlgorithmNode( algo, parentName );
     return sc;
   } else {
     if ( algo->hasProperty( "ShortCircuit" ) )

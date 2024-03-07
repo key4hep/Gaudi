@@ -65,13 +65,11 @@ namespace precedence {
   // Precedence rules utilities ==============================================
   struct AlgoProps {
     AlgoProps() {}
-    AlgoProps( Gaudi::Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass )
+    AlgoProps( Gaudi::Algorithm* algo, uint nodeIndex, uint algoIndex )
         : m_name( algo->name() )
         , m_nodeIndex( nodeIndex )
         , m_algoIndex( algoIndex )
         , m_algorithm( algo )
-        , m_inverted( inverted )
-        , m_allPass( allPass )
         , m_isBlocking( algo->isBlocking() ) {}
 
     std::string m_name{ "" };
@@ -80,11 +78,6 @@ namespace precedence {
     int         m_rank{ -1 };
     /// Algorithm representative behind the AlgorithmNode
     Gaudi::Algorithm* m_algorithm{ nullptr };
-
-    /// Whether the selection result is negated or not
-    bool m_inverted{ false };
-    /// Whether the selection result is relevant or always "pass"
-    bool m_allPass{ false };
     /// If an algorithm is blocking
     bool m_isBlocking{ false };
   };
@@ -166,15 +159,17 @@ namespace precedence {
   };
 
   struct DecisionNegation {
-    std::string operator()( const AlgoProps& props ) const { return props.m_inverted ? "Inverted" : "Non-inverted"; }
+    std::string operator()( const AlgoProps& ) const { return ""; }
 
-    std::string operator()( const DecisionHubProps& ) const { return ""; }
+    std::string operator()( const DecisionHubProps& props ) const {
+      return props.m_inverted ? "Inverted" : "Non-inverted";
+    }
 
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
   struct AllPass {
-    std::string operator()( const AlgoProps& props ) const { return props.m_allPass ? "Optimist" : "Realist"; }
+    std::string operator()( const AlgoProps& ) const { return ""; }
 
     std::string operator()( const DecisionHubProps& props ) const { return props.m_allPass ? "Optimist" : "Realist"; }
 
@@ -488,13 +483,11 @@ namespace concurrency {
   public:
     /// Constructor
     AlgorithmNode( PrecedenceRulesGraph& graph, Gaudi::Algorithm* algoPtr, unsigned int nodeIndex,
-                   unsigned int algoIndex, bool inverted, bool allPass )
+                   unsigned int algoIndex )
         : ControlFlowNode( graph, nodeIndex, algoPtr->name() )
         , m_algorithm( algoPtr )
         , m_algoIndex( algoIndex )
         , m_algoName( algoPtr->name() )
-        , m_inverted( inverted )
-        , m_allPass( allPass )
         , m_isBlocking( algoPtr->isBlocking() ){};
 
     /// Visitor entry point
@@ -529,11 +522,6 @@ namespace concurrency {
     /// Check if algorithm is CPU-blocking
     bool isBlocking() const { return m_isBlocking; }
 
-    /// Check if positive control flow decision is enforced
-    bool isOptimist() const { return m_allPass; };
-    /// Check if control flow logic is always inverted
-    bool isLiar() const { return m_inverted; };
-
     /// Print a string representing the control flow state
     void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const override;
 
@@ -548,10 +536,6 @@ namespace concurrency {
     unsigned int m_algoIndex;
     /// The name of the algorithm
     std::string m_algoName;
-    /// Whether the selection result is negated or not
-    bool m_inverted;
-    /// Whether the selection result is relevant or always "pass"
-    bool m_allPass;
     /// Algorithm rank of any kind
     float m_rank = -1;
     /// If an algorithm is CPU-blocking
@@ -660,8 +644,7 @@ namespace concurrency {
     /// Get head node
     DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
-    StatusCode addAlgorithmNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName, bool inverted,
-                                 bool allPass );
+    StatusCode addAlgorithmNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName );
     /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const {
       return m_algoNameToAlgoNodeMap.at( algoName ).get();
