@@ -47,7 +47,7 @@ def read(f, regex=".*", skipevents=0):
 def findEvents(data):
     """Find event start/stop times"""
 
-    t = defaultdict(lambda: [sys.maxint, 0, -1])  # start,stop,slot
+    t = defaultdict(lambda: [sys.maxsize, 0, -1])  # start,stop,slot
     nbslots = 0
     for d in data:
         if d.start < t[d.event][0]:
@@ -66,9 +66,9 @@ def setPalette(nevts, nevtcolors):
 
     from ROOT import TColor
 
-    algcolors = range(2, 10) + [20, 28, 29, 30, 33, 38, 40] + range(41, 50)
+    algcolors = list(range(2, 10)) + [20, 28, 29, 30, 33, 38, 40] + list(range(41, 50))
     evtcolors = [
-        TColor.GetColor(0, 255 - g, g) for g in range(20, 255, (255 - 20) / nevtcolors)
+        TColor.GetColor(0, 255 - g, g) for g in range(20, 255, (255 - 20) // nevtcolors)
     ]
 
 
@@ -129,7 +129,7 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
     # Global event timeline
     tevt, nbslots = findEvents(data)
     bheight = 0.1
-    for k, v in tevt.iteritems():
+    for k, v in tevt.items():
         y = ymax + bheight * v[2]
         l = ROOT.TBox(v[0] - tmin, y + 0.2 * bheight, v[1] - tmin, y + bheight)
         l.SetFillColor(evtcolors[k % nevtcolors])
@@ -138,7 +138,7 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
 
     # Alg legend
     c.leg = ROOT.TLegend(0.8, 0.4, 0.98, 0.9)
-    for alg, cl in sorted(colors.iteritems(), key=operator.itemgetter(1)):
+    for alg, cl in sorted(colors.items(), key=operator.itemgetter(1)):
         e = c.leg.AddEntry("", alg, "F")
         e.SetLineColor(cl)
         e.SetFillColor(cl)
@@ -175,7 +175,7 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
     c.leg.Draw()
     c.Update()
     if not batch:
-        input()
+        eval(input())
     return c
 
 
