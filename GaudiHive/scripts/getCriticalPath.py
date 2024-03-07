@@ -35,25 +35,26 @@ def get_critical_path(path_to_trace_file):
     trace = nx.read_graphml(path_to_trace_file)
 
     for inNode, outNode, edge_attrs in trace.in_edges(data=True):
-        edge_attrs["Runtime"] = nx.get_node_attributes(trace, "Runtime")[outNode]
+        edge_attrs["Runtime"] = nx.get_node_attributes(trace, "Run Time (us)")[outNode]
 
     cpath = nx.algorithms.dag.dag_longest_path(trace, weight="Runtime")
 
     print("Algorithms on the critical path (%i): " % len(cpath))
 
-    print("  {:<40} Runtime (ns)".format("Name"))
+    print("  {:<40} Runtime (us)".format("Name"))
     print("  -----------------------------------------------------")
     for node_id in cpath:
         print(
             "  {:<40}: {}".format(
-                trace.node[node_id].get("Name"), trace.node[node_id].get("Runtime")
+                trace.nodes[node_id].get("Name"),
+                trace.nodes[node_id].get("Run Time (us)"),
             )
         )
 
     print(
         "\nTotal critical path time: ",
         nx.algorithms.dag.dag_longest_path_length(trace, weight="Runtime"),
-        "ns",
+        "us",
     )
 
 
