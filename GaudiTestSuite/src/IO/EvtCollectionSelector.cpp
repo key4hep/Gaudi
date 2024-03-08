@@ -119,3 +119,10 @@ namespace Gaudi {
     DECLARE_OBJECT_FACTORY( EvtCollectionSelector )
   } // namespace TestSuite
 } // end of namespace Gaudi
+
+namespace Gaudi::Examples {
+  struct EvtCollectionSelector : Gaudi::TestSuite::EvtCollectionSelector {
+    using Gaudi::TestSuite::EvtCollectionSelector::EvtCollectionSelector;
+  };
+  DECLARE_OBJECT_FACTORY( EvtCollectionSelector )
+} // namespace Gaudi::Examples

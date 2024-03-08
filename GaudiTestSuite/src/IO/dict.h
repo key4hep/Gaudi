@@ -19,6 +19,12 @@
 #include "GaudiTestSuite/MyTrack.h"
 #include "GaudiTestSuite/MyVertex.h"
 
+#include "GaudiExamples/Collision.h"
+#include "GaudiExamples/Counter.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
+#include "GaudiExamples/MyVertex.h"
+
 // template ObjectVector<MyTrack>;
 // template ObjectVector<MyVertex>;
 // template std::vector<MyTrack*>;
@@ -42,6 +48,15 @@ struct POOLIOTestDict__Instantiations {
   std::vector<KeyedObject<int>*>                    i10;
   // KeyedObject<long> i11;
   // std::vector<KeyedObject<long int>* > i12;
+
+  ObjectVector<Gaudi::Examples::MyTrack>           e1;
+  ObjectVector<Gaudi::Examples::MyVertex>          e2;
+  std::vector<Gaudi::Examples::MyTrack*>           e3;
+  std::vector<Gaudi::Examples::MyVertex*>          e4;
+  std::vector<SmartRef<Gaudi::Examples::MyTrack>>  e5;
+  std::vector<SmartRef<Gaudi::Examples::MyVertex>> e6;
+  KeyedContainer<Gaudi::Examples::MyTrack>         e7;
+  KeyedContainer<Gaudi::Examples::MyVertex>        e8;
 };
 
 #ifdef __ICC

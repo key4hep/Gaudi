@@ -59,3 +59,10 @@ namespace Gaudi {
     DECLARE_COMPONENT( THDataConsumer )
   } // namespace TestSuite
 } // namespace Gaudi
+
+namespace Gaudi::Examples {
+  struct THDataConsumer : Gaudi::TestSuite::THDataConsumer {
+    using Gaudi::TestSuite::THDataConsumer::THDataConsumer;
+  };
+  DECLARE_COMPONENT( THDataConsumer )
+} // namespace Gaudi::Examples

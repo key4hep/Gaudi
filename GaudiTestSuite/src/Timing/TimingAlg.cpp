@@ -102,3 +102,10 @@ namespace GaudiTestSuite {
 
   DECLARE_COMPONENT( TimingAlg )
 } // end of namespace GaudiTestSuite
+
+namespace GaudiExamples {
+  struct TimingAlg : GaudiTestSuite::TimingAlg {
+    using GaudiTestSuite::TimingAlg::TimingAlg;
+  };
+  DECLARE_COMPONENT( TimingAlg )
+} // namespace GaudiExamples

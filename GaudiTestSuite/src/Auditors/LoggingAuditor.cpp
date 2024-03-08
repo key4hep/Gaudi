@@ -73,3 +73,10 @@ namespace GaudiTestSuite {
 
   DECLARE_COMPONENT( LoggingAuditor )
 } // namespace GaudiTestSuite
+
+namespace GaudiExamples {
+  struct LoggingAuditor : GaudiTestSuite::LoggingAuditor {
+    using GaudiTestSuite::LoggingAuditor::LoggingAuditor;
+  };
+  DECLARE_COMPONENT( LoggingAuditor )
+} // namespace GaudiExamples

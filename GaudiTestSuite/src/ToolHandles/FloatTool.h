@@ -27,3 +27,15 @@ namespace Gaudi {
     };
   } // namespace TestSuite
 } // namespace Gaudi
+
+namespace Gaudi::Examples {
+  struct FloatTool : public AlgTool {
+
+    FloatTool( const std::string& type, const std::string& name, const IInterface* parent )
+        : AlgTool( type, name, parent ) {}
+
+    float getFloat() const;
+
+    DataObjectReadHandle<float> m_float{ this, "Input", "/Event/MyFloat" };
+  };
+} // namespace Gaudi::Examples

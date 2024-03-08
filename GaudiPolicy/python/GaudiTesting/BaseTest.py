@@ -1162,6 +1162,8 @@ normalizeTestSuite = (
     + LineSorter("Services to release : ")
     + SortGroupOfLines(r"^\S+\s+(DEBUG|SUCCESS) Property \[\'Name\':")
 )
+# for backward compatibility
+normalizeExamples = normalizeTestSuite
 
 # --------------------- Validation functions/classes ---------------------#
 

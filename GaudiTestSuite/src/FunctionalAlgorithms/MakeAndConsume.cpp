@@ -628,3 +628,9 @@ namespace Gaudi::TestSuite {
   DECLARE_COMPONENT( OpaqueProducer )
 
 } // namespace Gaudi::TestSuite
+
+#ifndef TestSuite
+// include ourself replacing "TestSuite" with "Examples"
+#  define TestSuite Examples
+#  include "MakeAndConsume.cpp"
+#endif

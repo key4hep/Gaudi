@@ -33,3 +33,12 @@ namespace Gaudi {
     DECLARE_COMPONENT( SelectTracks )
   } // namespace TestSuite
 } // namespace Gaudi
+
+#ifndef TestSuite
+// include ourself replacing "TestSuite" with "Examples"
+namespace Gaudi::Examples {
+  using Gaudi::TestSuite::MyTrack;
+}
+#  define TestSuite Examples
+#  include "transformer.cpp"
+#endif

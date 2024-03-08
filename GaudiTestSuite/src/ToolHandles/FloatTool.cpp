@@ -13,3 +13,7 @@
 float Gaudi::TestSuite::FloatTool::getFloat() const { return *m_float.get(); }
 
 DECLARE_COMPONENT( Gaudi::TestSuite::FloatTool )
+
+float Gaudi::Examples::FloatTool::getFloat() const { return *m_float.get(); }
+
+DECLARE_COMPONENT( Gaudi::Examples::FloatTool )

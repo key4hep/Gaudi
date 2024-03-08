@@ -49,3 +49,12 @@ namespace Gaudi {
     DECLARE_COMPONENT( CountSelectedTracks )
   } // namespace TestSuite
 } // namespace Gaudi
+
+#ifndef TestSuite
+// include ourself replacing "TestSuite" with "Examples"
+namespace Gaudi::Examples {
+  using Gaudi::TestSuite::MyTrack;
+}
+#  define TestSuite Examples
+#  include "selector.cpp"
+#endif
