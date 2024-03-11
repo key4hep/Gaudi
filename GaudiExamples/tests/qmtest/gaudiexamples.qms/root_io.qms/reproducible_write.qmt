@@ -1,6 +1,6 @@
 <?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
 <!--
-    (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations
+    (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations
 
     This software is distributed under the terms of the Apache version 2 licence,
     copied verbatim in the file "LICENSE".
@@ -43,4 +43,8 @@ for name in ["ROOTIO.dst", "ROOTIO.mdst"]:
         causes.append(f"File {name} was not reproduced")
 
 </text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
 </extension>
