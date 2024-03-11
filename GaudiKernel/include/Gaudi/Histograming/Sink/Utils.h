@@ -199,27 +199,29 @@ namespace Gaudi::Histograming::Sink {
       // Generic fill of the metadata of the Root histogram from json data
       static void fillMetaData( RootHisto& histo, nlohmann::json const& jsonAxis, unsigned int nentries ) {
         auto try_set_bin_labels = [&histo, &jsonAxis]( auto idx ) {
-          if ( jsonAxis[idx].contains( "labels" ) ) {
-            TAxis* axis = nullptr;
-            switch ( idx ) {
-            case 0:
-              axis = histo.GetXaxis();
-              break;
-            case 1:
-              axis = histo.GetYaxis();
-              break;
-            case 2:
-              axis = histo.GetZaxis();
-              break;
-            default:
-              break;
+          TAxis* axis = nullptr;
+          switch ( idx ) {
+          case 0:
+            axis = histo.GetXaxis();
+            break;
+          case 1:
+            axis = histo.GetYaxis();
+            break;
+          case 2:
+            axis = histo.GetZaxis();
+            break;
+          default:
+            break;
+          }
+          if ( axis && jsonAxis[idx].contains( "labels" ) ) {
+            const auto labels = jsonAxis[idx].at( "labels" );
+            for ( unsigned int i = 0; i < labels.size(); i++ ) {
+              axis->SetBinLabel( i + 1, labels[i].template get<std::string>().c_str() );
             }
-            if ( axis ) {
-              const auto labels = jsonAxis[idx].at( "labels" );
-              for ( unsigned int i = 0; i < labels.size(); i++ ) {
-                axis->SetBinLabel( i + 1, labels[i].template get<std::string>().c_str() );
-              }
-            }
+          }
+          if ( axis && jsonAxis[idx].contains( "xbins" ) ) {
+            const auto xbins = jsonAxis[idx].at( "xbins" );
+            axis->Set( xbins.size() - 1, xbins.template get<std::vector<double>>().data() );
           }
         };
         for ( unsigned int i = 0; i < jsonAxis.size(); i++ ) try_set_bin_labels( i );
