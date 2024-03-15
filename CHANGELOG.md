@@ -5,6 +5,35 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v38r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1) - 2024-03-15
+This backward compatible release of Gaudi features a few fixes and improvements, and a
+major step towards some proper polishing an refreshing of the examples.
+
+The `GaudiExamples` directory started as a place to host examples, but evolved in a
+collection of tests. Examples should be tested, of course, but we ended up keeping
+there tests for backward compatibility with legacy code that were not meant to be
+used as examples (see gaudi/Gaudi#254). With this release `GaudiExamples` becomes
+`GaudiTestSuite`, leaving the room for development of proper examples. For backward
+compatibility we kept some of the exported classes, which are considered deprecated
+and will be removed in v39r0 (see gaudi/Gaudi#293).
+
+### Changed
+- Rename (Gaudi)Examples to (Gaudi)TestSuite (gaudi/Gaudi!1557)
+- Fix node properties in `PrecedenceGraph`, update precedence related scripts (gaudi/Gaudi!1560)
+- GaudiPython: sort `set` properties before storing in catalogue (gaudi/Gaudi!1549)
+
+### Added
+- Add the possibility to have variable bin size in Monitoring histograms (gaudi/Gaudi!1564)
+- Add a `.git-blame-ignore-revs` file with a few formatting commits (gaudi/Gaudi!1558)
+
+### Fixed
+- More reliable handling of `\n` in test stdout diff (gaudi/Gaudi#291, gaudi/Gaudi!1563)
+- Reset `std::hex` immediately (gaudi/Gaudi!1555)
+- Use `fmt::runtime` when compiling with GCC 11 (gaudi/Gaudi!1559)
+- Make reproducible_write test work when `GAUDIAPPNAME` is set (gaudi/Gaudi#290, gaudi/Gaudi!1562)
+- Fixed behavior of `reset` in Monitoring Hub (gaudi/Gaudi!1552)
+
+
 ## [v38r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r0) - 2024-01-25
 This new major release includes a number of small/technical backward incompatible changes
 (meaning that you may or may not be affected by them depending of which parts of Gaudi you use),
