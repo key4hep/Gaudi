@@ -15,7 +15,7 @@
   <argument name="options"><text>
 from Gaudi.Configuration import *
 
-from Configurables import AuditorTestAlg, GaudiExamples__LoggingAuditor as LoggingAuditor
+from Configurables import AuditorTestAlg, GaudiTestSuite__LoggingAuditor as LoggingAuditor
 
 AuditorSvc().Auditors += [ TimingAuditor("TIMER"),
                            LoggingAuditor("LoggingAuditor") ]

@@ -294,7 +294,7 @@ worked) for Gaudi, as far as python is not included. This is due to the fact
 that we actually don't have any clash in any symbol anywhere, as far as python
 is not loaded. Actually, even the previous example, where Gaudi is loaded from
 python worked. The problem is when we launch python from Gaudi, as in the
-GPython example of the GaudiExamples. Then the structure is the following :
+GPython example of the GaudiTestSuite. Then the structure is the following :
 
                       GaudiModule   GaudiSvc
                       -----------   --------

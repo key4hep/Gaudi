@@ -12,7 +12,7 @@
 Create an Event Tag Collection based from the DST file prepared by the
 "Prepare.py" options.
 """
-from Configurables import Gaudi__Examples__EvtColAlg as EvtColAlg
+from Configurables import Gaudi__TestSuite__EvtColAlg as EvtColAlg
 from Configurables import GaudiPersistency, RndmGenSvc, TagCollectionSvc
 from Gaudi.Configuration import *
 

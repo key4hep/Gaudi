@@ -15,7 +15,7 @@
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/Aida2RootEx.ref</text></argument>
   <argument name="validator"><text>
-preprocessor = (normalizeExamples +
+preprocessor = (normalizeTestSuite +
      LineSkipper(regexps = [r'INFO png file .* has been created']))
 
 validateWithReference(preproc = preprocessor)

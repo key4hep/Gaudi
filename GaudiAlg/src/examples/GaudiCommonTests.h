@@ -16,8 +16,8 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 // Event Model related classes
-#include "GaudiExamples/Event.h"
-#include "GaudiExamples/MyTrack.h"
+#include "GaudiTestSuite/Event.h"
+#include "GaudiTestSuite/MyTrack.h"
 
 /** @class GaudiCommonTests GaudiCommonTests.h
  *

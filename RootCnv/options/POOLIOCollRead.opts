@@ -5,7 +5,7 @@ EventSelector.PrintFreq    = 100;
 ApplicationMgr.EvtMax       = -1 ;
 ApplicationMgr.Histogrampersistency = "NONE";
 EventSelector.Input = {
-  "COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:data/POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>10)' FUN='Gaudi::Examples::EvtCollectionSelector'"
+  "COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:data/POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>10)' FUN='Gaudi::TestSuite::EvtCollectionSelector'"
 };
 
 ApplicationMgr.TopAlg      = { "ReadAlg"};

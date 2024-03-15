@@ -1,0 +1,119 @@
+<!--
+    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<lcgdict>
+
+  <class name="Gaudi::TestSuite::Counter"     id="0000006D-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::TestSuite::Event"       id="0000006E-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::TestSuite::Collision"   id="0000006F-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::TestSuite::MyTrack"     id="00000163-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::TestSuite::MyVertex"    id="00000164-0000-0000-0000-000000000000"/>
+
+  <class name="SmartRef<Gaudi::TestSuite::Event>">
+    <field name="m_target" transient="true"/>
+  </class>
+
+  <class name="SmartRef<Gaudi::TestSuite::Collision>">
+    <field name="m_target" transient="true"/>
+  </class>
+  <class name="SmartRefVector<Gaudi::TestSuite::Collision>">
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
+  </class>
+  <class name="std::vector<SmartRef<Gaudi::TestSuite::Collision> >"/>
+
+  <class name="SmartRef<Gaudi::TestSuite::MyTrack>">
+    <field name="m_target" transient="true"/>
+  </class>
+  <class name="SmartRefVector<Gaudi::TestSuite::MyTrack>">
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
+  </class>
+  <class name="std::vector<SmartRef<Gaudi::TestSuite::MyTrack> >"/>
+
+  <class name="SmartRef<Gaudi::TestSuite::MyVertex>">
+    <field name="m_target" transient="true"/>
+  </class>
+  <class name="SmartRefVector<Gaudi::TestSuite::MyVertex>">
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
+  </class>
+  <class name="std::vector<SmartRef<Gaudi::TestSuite::MyVertex> >"/>
+
+  <class name="ObjectVector<Gaudi::TestSuite::MyTrack>"     id="00020163-0000-0000-0000-000000000000"/>
+  <class name="std::vector<Gaudi::TestSuite::MyTrack*>"/>
+  <class name="ObjectVector<Gaudi::TestSuite::MyVertex>"    id="00020164-0000-0000-0000-000000000000"/>
+  <class name="std::vector<Gaudi::TestSuite::MyVertex*>"/>
+
+  <class name="std::vector<KeyedObject<int>* >"/>
+  <!-- <class name="std::vector<KeyedObject<long int>* >"/> -->
+
+  <class name="KeyedContainer<Gaudi::TestSuite::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >" id="00060163-0000-0000-0000-000000000000">
+    <field name="m_cont" transient="true"/>
+    <field name="m_random" transient="true"/>
+  </class>
+  <class name="KeyedContainer<Gaudi::TestSuite::MyVertex,Containers::KeyedObjectManager<Containers::hashmap> >" id="00060164-0000-0000-0000-000000000000">
+    <field name="m_cont" transient="true"/>
+    <field name="m_random" transient="true"/>
+  </class>
+
+
+  <class name="Gaudi::Examples::Counter"     id="00000455-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::Examples::Event"       id="00000456-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::Examples::Collision"   id="00000457-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::Examples::MyTrack"     id="0000054B-0000-0000-0000-000000000000"/>
+  <class name="Gaudi::Examples::MyVertex"    id="0000054C-0000-0000-0000-000000000000"/>
+
+  <class name="SmartRef<Gaudi::Examples::Event>">
+    <field name="m_target" transient="true"/>
+  </class>
+
+  <class name="SmartRef<Gaudi::Examples::Collision>">
+    <field name="m_target" transient="true"/>
+  </class>
+  <class name="SmartRefVector<Gaudi::Examples::Collision>">
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
+  </class>
+  <class name="std::vector<SmartRef<Gaudi::Examples::Collision> >"/>
+
+  <class name="SmartRef<Gaudi::Examples::MyTrack>">
+    <field name="m_target" transient="true"/>
+  </class>
+  <class name="SmartRefVector<Gaudi::Examples::MyTrack>">
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
+  </class>
+  <class name="std::vector<SmartRef<Gaudi::Examples::MyTrack> >"/>
+
+  <class name="SmartRef<Gaudi::Examples::MyVertex>">
+    <field name="m_target" transient="true"/>
+  </class>
+  <class name="SmartRefVector<Gaudi::Examples::MyVertex>">
+    <field name="m_data" transient="true"/>
+    <field name="m_contd" transient="true"/>
+  </class>
+  <class name="std::vector<SmartRef<Gaudi::Examples::MyVertex> >"/>
+
+  <class name="ObjectVector<Gaudi::Examples::MyTrack>"     id="0002054B-0000-0000-0000-000000000000"/>
+  <class name="std::vector<Gaudi::Examples::MyTrack*>"/>
+  <class name="ObjectVector<Gaudi::Examples::MyVertex>"    id="0002054C-0000-0000-0000-000000000000"/>
+  <class name="std::vector<Gaudi::Examples::MyVertex*>"/>
+
+  <class name="KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >" id="0006054B-0000-0000-0000-000000000000">
+    <field name="m_cont" transient="true"/>
+    <field name="m_random" transient="true"/>
+  </class>
+  <class name="KeyedContainer<Gaudi::Examples::MyVertex,Containers::KeyedObjectManager<Containers::hashmap> >" id="0006054C-0000-0000-0000-000000000000">
+    <field name="m_cont" transient="true"/>
+    <field name="m_random" transient="true"/>
+  </class>
+
+</lcgdict>

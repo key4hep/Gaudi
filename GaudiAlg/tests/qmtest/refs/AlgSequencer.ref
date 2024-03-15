@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiTestSuite/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiTestSuite/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgSequencer.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiTestSuite/options/AlgSequencer.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.TopAlg = ["ParentAlg"]
 JobOptionsSvc        INFO # (12,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (17,1): ApplicationMgr.EvtMax = 10
@@ -28,7 +28,7 @@ JobOptionsSvc        INFO # (50,1): ANDSequence.MeasureTime = 1
 JobOptionsSvc        INFO # (53,1): ApplicationMgr.ExtSvc = ["ToolSvc", "AuditorSvc"]
 JobOptionsSvc        INFO # (54,1): ApplicationMgr.AuditAlgorithms = 1
 JobOptionsSvc        INFO # (55,1): AuditorSvc.Auditors += ["TimingAuditor/TIMER"]
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgSequencer.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiTestSuite/options/AlgSequencer.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)

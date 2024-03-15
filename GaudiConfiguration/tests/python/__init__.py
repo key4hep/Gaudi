@@ -18,7 +18,7 @@ _DB = {
     "MyAlgorithm": {},
     "MyOtherAlg": {},
     "Gaudi::SomeAlg": {},
-    "Gaudi::Examples::Test1": {},
+    "Gaudi::TestSuite::Test1": {},
     "Gaudi::Foundation::Service": {},
     "TestConf::MyAlg": {
         "__component_type__": "Algorithm",

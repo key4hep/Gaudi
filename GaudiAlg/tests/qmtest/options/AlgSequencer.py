@@ -13,7 +13,7 @@
 # ==============================================================
 
 from Configurables import (
-    GaudiExamplesCommonConf,
+    GaudiTestSuiteCommonConf,
     HelloWorld,
     ParentAlg,
     Prescaler,
@@ -22,7 +22,7 @@ from Configurables import (
 )
 from Gaudi.Configuration import *
 
-GaudiExamplesCommonConf()
+GaudiTestSuiteCommonConf()
 
 # --------------------------------------------------------------
 # Testing Sequencers

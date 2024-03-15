@@ -13,7 +13,7 @@
   <argument name="program"><text>scripts/HistoEx2.py</text></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="validator"><text>
-preprocessor = normalizeExamples + \
+preprocessor = normalizeTestSuite + \
     RegexpReplacer(when = "AIDA",
         orig = r"ROOT\.AIDA::IProfile1D",
         repl = r"cppyy.gbl.AIDA.IProfile1D")

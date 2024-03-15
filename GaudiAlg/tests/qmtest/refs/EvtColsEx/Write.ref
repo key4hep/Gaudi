@@ -1,6 +1,6 @@
 # setting LC_ALL to "C"
-# --> Including file '/builds/gaudi/Gaudi/GaudiExamples/options/EvtColsEx/Write.py'
-# <-- End of file '/builds/gaudi/Gaudi/GaudiExamples/options/EvtColsEx/Write.py'
+# --> Including file '/builds/gaudi/Gaudi/GaudiTestSuite/options/EvtColsEx/Write.py'
+# <-- End of file '/builds/gaudi/Gaudi/GaudiTestSuite/options/EvtColsEx/Write.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -13,7 +13,7 @@
                     'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
-                    'TopAlg': ['Gaudi::Examples::EvtColAlg/Fill']},
+                    'TopAlg': ['Gaudi::TestSuite::EvtColAlg/Fill']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'EventSelector': {'Input': ["DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"],
                    'PrintFreq': 1000},
@@ -31,7 +31,7 @@ RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 EvtTupleSvc          INFO Added stream file:PFN:EvtColsEx.tags as EVTCOLS
-Fill              SUCCESS List of ALL properties of Gaudi::Examples::EvtColAlg/Fill  #properties = 57
+Fill              SUCCESS List of ALL properties of Gaudi::TestSuite::EvtColAlg/Fill  #properties = 57
 Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':'Fill'
 Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':''
 Fill              SUCCESS Property ['Name': Value] =  'EvtColLUN':'EVTCOLS'

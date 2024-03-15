@@ -74,7 +74,7 @@ StatusCode GaudiHistoAlgorithm::execute() {
   const double poisson( Poisson() );
   const double binom( Binom() );
 
-  // =============== Histogramming Examples =================================
+  // =============== Histogramming TestSuite =================================
 
   // 1D plots with auto ID
   plot1D( gauss, "Gaussian mean=0, sigma=1", -5, 5, 100 );

@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/TupleEx.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiTestSuite/options/TupleEx.opts)
 JobOptionsSvc        INFO # (14,1): ApplicationMgr.StatusCodeCheck = 0
 JobOptionsSvc        INFO # (20,1): ApplicationMgr.ExtSvc += ["RndmGenSvc"]
 JobOptionsSvc        INFO # (21,1): ApplicationMgr.TopAlg = ["TupleAlg/Tuple"]
@@ -12,7 +12,7 @@ JobOptionsSvc        INFO # (35,1): ApplicationMgr.EvtMax = 10000
 JobOptionsSvc        INFO # (36,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (46,1): ApplicationMgr.HistogramPersistency = "ROOT"
 JobOptionsSvc        INFO # (47,1): NTupleSvc.Output = ["MYLUN DATAFILE='TupleEx_opts.root'  OPT='NEW' TYP='ROOT'"]
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/TupleEx.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiTestSuite/options/TupleEx.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $

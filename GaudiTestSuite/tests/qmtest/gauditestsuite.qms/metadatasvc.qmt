@@ -1,0 +1,55 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<!--
+    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>../../options/NTuples.opts</text>
+  <text>--option</text>
+  <text>ApplicationMgr(EvtMax=10).ExtSvc.append('Gaudi::MetaDataSvc')</text>
+  <text>--option</text>
+  <text>ApplicationMgr().ExtSvc.append('Gaudi::Monitoring::MessageSvcSink')</text>
+  <text>--option</text>
+  <text>from Configurables import Gaudi__MetaDataSvc; Gaudi__MetaDataSvc(OutputLevel=DEBUG)</text>
+  <text>--option</text>
+  <text>NTupleSvc().Output = ["MyTuples DATAFILE='ntuple_with_metadata.root' OPT='NEW' TYP='ROOT'"]</text>
+</set></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="prerequisites"><set>
+    <tuple><text>gauditestsuite.ntuples</text><enumeral>PASS</enumeral></tuple>
+  </set></argument>
+<argument name="reference"><text>refs/MetaDataSvc.ref</text></argument>
+<argument name="validator"><text>
+preprocessor = (normalizeTestSuite +
+     RegexpReplacer(r'JobOptionsSvc\.SEARCHPATH:.*', r'JobOptionsSvc\.SEARCHPATH:...'))
+validateWithReference(preproc=preprocessor)
+
+from itertools import takewhile, islice, dropwhile
+stdout = filter(lambda x: x.strip(),
+                takewhile(lambda x: x.strip(),
+                          islice(dropwhile(lambda l: 'Metadata collected:' not in l,
+                                 stdout.splitlines()), 1, None)))
+stdout = sorted(stdout)
+from subprocess import check_output, CalledProcessError
+try:
+    info = eval(check_output(['dumpMetaData', 'ntuple_with_metadata.root']))
+    info = [':'.join(item) for item in info.items()]
+    info.sort()
+    if stdout != info:
+    	causes.append('metadata content')
+except CalledProcessError as e:
+    causes.append('dump metadata script failure')
+</text></argument>
+<argument name="environment"><set>
+<text>GAUDIAPPNAME=</text>
+<text>GAUDIAPPVERSION=</text>
+</set></argument>
+</extension>

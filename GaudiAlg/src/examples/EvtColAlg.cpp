@@ -37,7 +37,7 @@
  */
 // ============================================================================
 namespace Gaudi {
-  namespace Examples {
+  namespace TestSuite {
     /** @class EvtColAlg
      *  Example of usage GaudiTupleAlg base class
      *  @attention the action of Tuples::TupleObg::write uis restored again!
@@ -83,12 +83,12 @@ namespace Gaudi {
       EvtColAlg& operator=( const EvtColAlg& );
     };
     // ========================================================================
-  } // namespace Examples
+  } // namespace TestSuite
 } // end of namespace Gaudi
 // ============================================================================
 /// the only one real method - algorithm execution
 // ============================================================================
-StatusCode Gaudi::Examples::EvtColAlg::execute() {
+StatusCode Gaudi::TestSuite::EvtColAlg::execute() {
   static int s_nEvt = 0;
   static int s_nRun = 0;
 
@@ -129,7 +129,7 @@ StatusCode Gaudi::Examples::EvtColAlg::execute() {
   return tuple->write();
 }
 // ============================================================================
-using Gaudi::Examples::EvtColAlg;
+using Gaudi::TestSuite::EvtColAlg;
 DECLARE_COMPONENT( EvtColAlg )
 // ============================================================================
 // The END

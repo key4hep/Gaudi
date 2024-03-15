@@ -22,6 +22,6 @@ __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 # =============================================================================
 
 from Configurables import ApplicationMgr
-from Configurables import Gaudi__Examples__PartPropAlg as PPA
+from Configurables import Gaudi__TestSuite__PartPropAlg as PPA
 
 ApplicationMgr(TopAlg=[PPA()], EvtSel="NONE", EvtMax=1)

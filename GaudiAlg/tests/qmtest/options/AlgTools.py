@@ -11,10 +11,10 @@
 ###############################################################
 # Job options file
 # ==============================================================
-from Configurables import GaudiExamplesCommonConf, MyGaudiAlgorithm, MyGaudiTool
+from Configurables import GaudiTestSuiteCommonConf, MyGaudiAlgorithm, MyGaudiTool
 from Gaudi.Configuration import *
 
-GaudiExamplesCommonConf()
+GaudiTestSuiteCommonConf()
 
 myalg = MyGaudiAlgorithm("MyAlg")
 

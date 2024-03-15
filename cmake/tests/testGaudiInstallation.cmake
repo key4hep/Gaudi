@@ -119,9 +119,9 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Include directory not installed correctly,"
             " RootAddress.h not found in include/RootCnv/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiExamples/Event.h)
+    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiTestSuite/Event.h)
         message(FATAL_ERROR "Include directory not installed correctly,"
-            " Event.h not found in include/GaudiExamples/")
+            " Event.h not found in include/GaudiTestSuite/")
     endif()
     # -- check GAUDI_VERSION.h
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GAUDI_VERSION.h)
@@ -191,9 +191,9 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
             " Run.py not found in python/GaudiTesting/")
     endif()
     # -- check binary python modules
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiExamples/PyExample.so)
+    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiTestSuite/PyExample.so)
         message(FATAL_ERROR "Binary python modules not installed correctly,"
-            " PyExample.so not found in python/GaudiExamples/")
+            " PyExample.so not found in python/GaudiTestSuite/")
     endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiProfiling/PyCPUFamily.so)
         message(FATAL_ERROR "Binary python modules not installed correctly,"

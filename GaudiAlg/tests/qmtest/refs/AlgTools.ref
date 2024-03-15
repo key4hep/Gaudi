@@ -1,11 +1,11 @@
 # setting LC_ALL to "C"
 # --> Including file '/home/marcocle/stacks/master/Gaudi/GaudiAlg/tests/qmtest/options/AlgTools.py'
 # <-- End of file '/home/marcocle/stacks/master/Gaudi/GaudiAlg/tests/qmtest/options/AlgTools.py'
-# applying configuration of GaudiExamplesCommonConf
-# /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
+# applying configuration of GaudiTestSuiteCommonConf
+# /***** User GaudiTestSuiteCommonConf/GaudiTestSuiteCommonConf ****************************************
 # |-OutputLevel = 3
 # |-DummyEvents = -1
-# \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
+# \----- (End of User GaudiTestSuiteCommonConf/GaudiTestSuiteCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v36r12)
