@@ -155,7 +155,9 @@ namespace {
       return printCounter( log, id, nj );
     }
     // binomial counters are slightly different ('*' character)
-    log << fmt::format( " |{}{:48}|{} |",
+    // fmt::runtime is required when compiling with GCC 11 but
+    // can be dropped when GCC 11 is no longer supported
+    log << fmt::format( fmt::runtime( " |{}{:48}|{} |" ),
                         ( std::string_view{ type }.substr( 0, 23 ) == "counter:BinomialCounter" ? '*' : ' ' ),
                         fmt::format( fmt::runtime( "\"{}\"" ), id ), json_fmt_arg{ j } );
   }
