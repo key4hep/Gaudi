@@ -369,8 +369,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Gaudi::Algorithm* algo, const std::string& parentName,
-                                                     bool inverted, bool allPass ) {
+  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Gaudi::Algorithm* algo, const std::string& parentName ) {
 
     StatusCode sc = StatusCode::SUCCESS;
 
@@ -385,14 +384,11 @@ namespace concurrency {
       algoNode = itA->second.get();
     } else {
       auto r = m_algoNameToAlgoNodeMap.emplace(
-          algoName, std::make_unique<concurrency::AlgorithmNode>( *this, algo, m_nodeCounter, m_algoCounter, inverted,
-                                                                  allPass ) );
+          algoName, std::make_unique<concurrency::AlgorithmNode>( *this, algo, m_nodeCounter, m_algoCounter ) );
       algoNode = r.first->second.get();
 
       // Mirror AlgorithmNode in the BGL-based graph
-      if ( m_enableAnalysis ) {
-        boost::add_vertex( AlgoProps( algo, m_nodeCounter, m_algoCounter, inverted, allPass ), m_PRGraph );
-      }
+      if ( m_enableAnalysis ) { boost::add_vertex( AlgoProps( algo, m_nodeCounter, m_algoCounter ), m_PRGraph ); }
       ++m_nodeCounter;
       ++m_algoCounter;
       ON_VERBOSE verbose() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;

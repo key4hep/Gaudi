@@ -105,48 +105,47 @@ namespace concurrency {
 
     auto&         states   = m_slot->algsStates;
     const AState& state    = states[node.getAlgoIndex()];
-    int           decision = -1;
+    const int     decision = [state]() {
+      switch ( state ) {
+      case AState::EVTACCEPTED:
+        return 1;
+      case AState::EVTREJECTED:
+        return 0;
+      default:
+        return -1;
+      };
+    }();
 
-    if ( true == node.isOptimist() )
-      decision = 1;
-    else if ( AState::EVTACCEPTED == state )
-      decision = !node.isLiar();
-    else if ( AState::EVTREJECTED == state )
-      decision = node.isLiar();
+    if ( -1 == decision ) { return false; }
 
-    if ( -1 != decision ) {
+    m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
-      m_slot->controlFlowState[node.getNodeIndex()] = decision;
+    auto promoter = DataReadyPromoter( *m_slot, m_cause, m_trace );
+    for ( const auto& output : node.getOutputDataNodes() )
+      for ( auto& consumer : output->getConsumers() ) consumer->accept( promoter );
 
-      auto promoter = DataReadyPromoter( *m_slot, m_cause, m_trace );
-      for ( const auto& output : node.getOutputDataNodes() )
-        for ( auto& consumer : output->getConsumers() ) consumer->accept( promoter );
-
-      // propagate decision upward to active regions of the graph
-      auto  vis     = concurrency::Supervisor( *m_slot, m_cause, m_trace );
-      auto& parents = node.getParentDecisionHubs();
-      if ( parents.size() == 1 ) {
-        parents[0]->accept( vis );
-      } else if ( m_slot->parentSlot ) {
-        auto scout = SubSlotScout( m_slot, node );
-        for ( auto& p : parents ) {
-          p->accept( scout );
-          if ( scout.reply() ) p->accept( vis );
-          scout.reset();
-        }
-      } else {
-        auto scout = ActiveLineageScout( m_slot, node );
-        for ( auto& p : parents ) {
-          p->accept( scout );
-          if ( scout.reply() ) p->accept( vis );
-          scout.reset();
-        }
+    // propagate decision upward to active regions of the graph
+    auto  vis     = concurrency::Supervisor( *m_slot, m_cause, m_trace );
+    auto& parents = node.getParentDecisionHubs();
+    if ( parents.size() == 1 ) {
+      parents[0]->accept( vis );
+    } else if ( m_slot->parentSlot ) {
+      auto scout = SubSlotScout( m_slot, node );
+      for ( auto& p : parents ) {
+        p->accept( scout );
+        if ( scout.reply() ) p->accept( vis );
+        scout.reset();
       }
-
-      return true; // return true only if the algorithm produced a decision
+    } else {
+      auto scout = ActiveLineageScout( m_slot, node );
+      for ( auto& p : parents ) {
+        p->accept( scout );
+        if ( scout.reply() ) p->accept( vis );
+        scout.reset();
+      }
     }
 
-    return false;
+    return true; // return true only if the algorithm produced a decision
   }
 
   //---------------------------------------------------------------------------
