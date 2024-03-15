@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -1188,13 +1188,19 @@ class ReferenceFileValidator:
         if self.preproc:
             new = self.preproc(new)
 
+        # Note: we have to make sure that we do not have `\n` in the comparison
         filterdiffs = list(
             difflib.unified_diff(
-                orig, new, n=1, fromfile="Reference file", tofile="Actual output"
+                [l.rstrip() for l in orig],
+                [l.rstrip() for l in new],
+                n=1,
+                fromfile="Reference file",
+                tofile="Actual output",
+                lineterm="",
             )
         )
         if filterdiffs:
-            result[self.result_key] = result.Quote("".join(filterdiffs))
+            result[self.result_key] = result.Quote("\n".join(filterdiffs))
             result[self.result_key + ".preproc.new"] = result.Quote(
                 "\n".join(map(str.strip, new))
             )
