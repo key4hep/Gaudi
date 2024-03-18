@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2023-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -144,7 +144,7 @@ def update_changelog(fields: Fields) -> tuple[str, list[str], list[str]]:
         if refs.strip()
         else f"- {msg.strip()}\n"
         for change in changes
-        for msg, refs in [change.split("<=>", 1)]
+        for msg, refs in ([change.split("<=>", 1)] if "<=>" in change else [])
     ]
 
     filename = "CHANGELOG.md"
