@@ -412,7 +412,7 @@ StatusCode AvalancheSchedulerSvc::finalize() {
   sc = deactivate();
   if ( sc.isFailure() ) warning() << "Scheduler could not be deactivated" << endmsg;
 
-  info() << "Deleting FiberManager" << endmsg;
+  debug() << "Deleting FiberManager" << endmsg;
   m_fiberManager.reset();
 
   info() << "Joining Scheduler thread" << endmsg;
