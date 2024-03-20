@@ -435,7 +435,7 @@ void AvalancheSchedulerSvc::activate() {
 
   ON_DEBUG debug() << "AvalancheSchedulerSvc::activate()" << endmsg;
 
-  if ( m_threadPoolSvc->initPool( m_threadPoolSize ).isFailure() ) {
+  if ( m_threadPoolSvc->initPool( m_threadPoolSize, m_maxParallelismExtra ).isFailure() ) {
     error() << "problems initializing ThreadPoolSvc" << endmsg;
     m_isActive = FAILURE;
     return;

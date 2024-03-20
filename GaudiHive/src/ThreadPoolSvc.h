@@ -47,7 +47,7 @@ public:
   StatusCode finalize() override final;
 
   /// Initialize the thread pool and launch the ThreadInitTasks.
-  StatusCode initPool( const int& poolSize ) override final;
+  StatusCode initPool( const int& poolSize, const int& maxParallelismExtra ) override final;
 
   /// Terminate the thread pool and launch thread termination tasks.
   StatusCode terminatePool() override final;
