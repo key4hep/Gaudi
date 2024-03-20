@@ -70,8 +70,8 @@ private:
   Gaudi::Property<bool>         m_local_rndm_gen{ this, "localRndm", true,
                                           "Decide if the local random generator is to be used" };
   Gaudi::Property<unsigned int> m_rwRepetitions{ this, "RwRepetitions", 1, "Increase access to the WB" };
-  Gaudi::Property<float>        m_sleepFraction{
-      this, "SleepFraction", 0.0f,
+  Gaudi::Property<double>       m_sleepFraction{
+      this, "SleepFraction", 0.0,
       "Fraction of time, between 0 and 1, when an algorithm is actually sleeping instead of crunching" };
   Gaudi::Property<bool>         m_invertCFD{ this, "InvertDecision", false, "Invert control flow decision." };
   Gaudi::Property<unsigned int> m_failNEvents{ this, "FailNEvents", 0, "Return FAILURE on every Nth event" };
