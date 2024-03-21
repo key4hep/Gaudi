@@ -43,15 +43,21 @@ namespace Gaudi {
 ///
 #define ACCALG_AWAIT( stmt )                                                                                           \
   stmt;                                                                                                                \
-  if ( !whiteboard()->selectStore( *s_currentSlot ).isSuccess() ) {                                                    \
-    msg() << MSG::ERROR << "Resetting slot from fiber_specific_ptr failed" << endmsg;                                  \
-    return StatusCode::FAILURE;                                                                                        \
-  }
+  if ( restoreAfterSuspend().isFailure() ) return StatusCode::FAILURE;
 
   class GAUDI_API AsynchronousAlgorithm : virtual public Gaudi::Algorithm {
   protected:
     /// Contains current slot
     boost::fibers::fiber_specific_ptr<std::size_t> s_currentSlot{};
+
+    /// Restore after suspend
+    virtual StatusCode restoreAfterSuspend() const {
+      if ( !whiteboard()->selectStore( *s_currentSlot ).isSuccess() ) {
+        msg() << MSG::ERROR << "Resetting slot from fiber_specific_ptr failed" << endmsg;
+        return StatusCode::FAILURE;
+      }
+      return StatusCode::SUCCESS;
+    }
 
   public:
     StatusCode sysInitialize() override {
@@ -75,29 +81,28 @@ namespace Gaudi {
     /// Forwards to boost::this_fiber::yield
     StatusCode yield() const {
       boost::this_fiber::yield();
-      return whiteboard()->selectStore( *s_currentSlot );
+      return restoreAfterSuspend();
     }
 
     /// Forwards to boost::this_fiber::sleep_until
     template <typename Clock, typename Duration>
     StatusCode sleep_until( std::chrono::time_point<Clock, Duration> const& sleep_time ) const {
       boost::this_fiber::sleep_until( sleep_time );
-      return whiteboard()->selectStore( *s_currentSlot );
+      return restoreAfterSuspend();
     }
 
     /// Forwards to boost::this_fiber::sleep_for
     template <typename Rep, typename Period>
     StatusCode sleep_for( std::chrono::duration<Rep, Period> const& dur ) const {
       boost::this_fiber::sleep_for( dur );
-      return whiteboard()->selectStore( *s_currentSlot );
+      return restoreAfterSuspend();
     }
 
 #ifdef GAUDI_USE_CUDA
     /// Wrapper for CUDA stream await
     StatusCode cuda_stream_await( cudaStream_t cudaStream ) const {
       CUDA_CHECK( Gaudi::CUDA::cuda_stream_await( cudaStream ) );
-      return whiteboard()->selectStore( *s_currentSlot );
-      return StatusCode::SUCCESS;
+      return restoreAfterSuspend();
     }
 
     /// Helper to allow other classes to print error messages
