@@ -62,12 +62,12 @@ namespace Gaudi {
   public:
     StatusCode sysInitialize() override {
       setAsynchronous( true );
-      msg() << MSG::INFO << "Starting sysInitialize for AsynchronousAlgorithm" << endmsg;
+      msg() << MSG::DEBUG << "Starting sysInitialize for AsynchronousAlgorithm" << endmsg;
       return Gaudi::Algorithm::sysInitialize();
     }
 
     StatusCode sysExecute( const EventContext& ctx ) override {
-      msg() << MSG::INFO << "Starting sysExecute for AsynchronousAlgorithm on slot " << ctx.slot()
+      msg() << MSG::DEBUG << "Starting sysExecute for AsynchronousAlgorithm on slot " << ctx.slot()
             << "with s_currentSlot = " << fmt::to_string( fmt::ptr( s_currentSlot.get() ) ) << endmsg;
       if ( s_currentSlot.get() == nullptr ) {
         s_currentSlot.reset( new std::size_t( ctx.slot() ) );
