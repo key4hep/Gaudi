@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "RootCnv/PoolClasses.h"
+#include <GaudiKernel/Incident.h>
 #include <algorithm>
 /*
  *  Gaudi namespace declaration
@@ -106,6 +107,7 @@ namespace Gaudi {
           sections()[std::string{ branch_name }] = t;
           return b;
         }
+        incidentSvc()->fireIncident( Incident( c->pfn(), IncidentType::CorruptedInputFile ) );
         msgSvc() << MSG::ERROR << "Failed to access POOL branch:" << branch_name << " [" << tname << "]" << endmsg;
         t->Print();
       }
