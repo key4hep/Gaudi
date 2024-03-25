@@ -8,6 +8,10 @@ repos:
         exclude: "\\.clang-format$"
     -   id: check-toml
     -   id: check-added-large-files
+-   repo: https://gitlab.cern.ch/lhcb-core/dev-tools/check-include-convention.git
+    rev: 0.1.0
+    hooks:
+    -   id: check-include-convention
 -   repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v16.0.6
     hooks:
