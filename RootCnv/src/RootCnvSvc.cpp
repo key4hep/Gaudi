@@ -70,6 +70,9 @@ RootCnvSvc::RootCnvSvc( CSTR nam, ISvcLocator* svc )
 
   declareProperty( m_setup->produceReproducibleFiles );
   m_setup->produceReproducibleFiles.setOwnerType<RootCnvSvc>();
+
+  declareProperty( m_setup->root630ForwardCompatibility );
+  m_setup->root630ForwardCompatibility.setOwnerType<RootCnvSvc>();
 }
 
 // Small routine to issue exceptions

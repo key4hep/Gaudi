@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIROOT_ROOTDATACONNECTION_H
-#define GAUDIROOT_ROOTDATACONNECTION_H
+#pragma once
 
 // Framework include files
 #include "Gaudi/Property.h"
@@ -77,6 +76,12 @@ namespace Gaudi {
     Gaudi::Property<bool> produceReproducibleFiles{ "ProduceReproducibleFiles", true,
                                                     "configure output files to be more reproducible" };
 
+    Gaudi::Property<bool> root630ForwardCompatibility{
+        "ROOT630ForwardCompatibility", false,
+        "When opening a file for CREATE or RECREATE, enable ROOT 6.30 forward compatibility "
+        "(i.e. write a file that is readable with ROOT 6.24). Requires ROOT >= 6.30.06, see "
+        "<https://github.com/root-project/root/issues/14793>." };
+
     /// Standard constructor
     RootConnectionSetup() = default;
 
@@ -111,7 +116,7 @@ namespace Gaudi {
     /** @class ContainerSection RootDataConnection.h GaudiRootCnv/RootDataConnection.h
      *
      *  Internal helper class, which described a TBranch section in a ROOT file.
-     *  TBranch sections (ie. an intervall of events) are used to describe
+     *  TBranch sections (ie. an interval of events) are used to describe
      *  files using the ROOT fast merge mechanism.
      *
      *  @author  M.Frank
@@ -348,5 +353,3 @@ namespace Gaudi {
 } // End namespace Gaudi
 
 STATUSCODE_ENUM_DECL( Gaudi::RootDataConnection::Status )
-
-#endif // GAUDIROOT_ROOTDATACONNECTION_H
