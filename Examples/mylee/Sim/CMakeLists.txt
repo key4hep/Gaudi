@@ -8,6 +8,26 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-# Build all projects of the experiment software example
-add_subdirectory(Core)
-add_subdirectory(Sim)
+cmake_minimum_required(VERSION 3.19)
+
+project(mylee_sim
+    VERSION 0.1.0
+    DESCRIPTION "My Little Example Experiment - simulation application"
+    LANGUAGES CXX
+)
+
+# Usually we get Gaudi as a dependency via `find_package(Gaudi)`,
+# but this example code might be built as part of the Gaudi project,
+# so we check if the targets we need are already defined before trying
+# a lookup.
+if(NOT TARGET Gaudi::GaudiKernel)
+    find_package(Gaudi REQUIRED)
+endif()
+if(NOT TARGET mylee_core::mylee_em)
+    find_package(mylee REQUIRED)
+endif()
+find_package(fmt REQUIRED)
+
+include(CTest)
+
+add_subdirectory(Gen)

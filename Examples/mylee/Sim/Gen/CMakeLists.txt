@@ -8,6 +8,13 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-# Build all projects of the experiment software example
-add_subdirectory(Core)
-add_subdirectory(Sim)
+
+gaudi_add_module(mylee_gen_components
+    SOURCES
+        src/init.cpp
+        src/elastic.cpp
+    LINK
+        Gaudi::Functional
+        mylee_core::mylee_em
+        fmt::fmt
+)
