@@ -189,6 +189,8 @@ add_subdirectory(RootHistCnv)
 add_subdirectory(GaudiTestSuite)
 add_subdirectory(GaudiExamples)
 
+add_subdirectory(Examples)
+
 # Generate GAUDI_VERSION.h
 gaudi_generate_version_header_file()
 
@@ -199,6 +201,7 @@ gaudi_add_pytest(cmake/extract_qmtest_metadata.py
   ROOT_DIR cmake
   OPTIONS --doctest-modules
 )
+
 
 if(NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME) # If we are building the full stack as one project
   # we do not install nor package nor register CMake tests
