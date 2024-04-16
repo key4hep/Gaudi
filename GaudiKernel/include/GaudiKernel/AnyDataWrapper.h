@@ -28,6 +28,7 @@ namespace details {
 // ugly hack to circumvent the usage of std::any
 struct GAUDI_API AnyDataWrapperBase : DataObject {
   virtual std::optional<std::size_t> size() const = 0;
+  virtual void*                      voidp()      = 0;
 };
 
 template <typename T>
@@ -49,6 +50,8 @@ public:
     using ::details::size;
     return size( getData() );
   }
+
+  virtual void* voidp() override { return &m_data; }
 };
 
 template <typename ViewType, typename OwnedType>
