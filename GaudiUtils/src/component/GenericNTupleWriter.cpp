@@ -157,3 +157,145 @@ namespace Gaudi::NTuple {
 
   DECLARE_COMPONENT( GenericWriter )
 } // namespace Gaudi::NTuple
+
+#ifdef UNIT_TESTS
+
+#  define BOOST_TEST_MODULE test_GenericNTupleWriter
+#  include <boost/test/unit_test.hpp>
+
+/**
+ * @class MockISvcLocator
+ * @brief Mock implementation of ISvcLocator interface for unit testing.
+ */
+class MockISvcLocator : public ISvcLocator {
+public:
+  virtual StatusCode getService( const Gaudi::Utils::TypeNameString&, const InterfaceID&, IInterface*& ) override {
+    return StatusCode::SUCCESS;
+  }
+
+  virtual StatusCode getService( const Gaudi::Utils::TypeNameString&, IService*&, const bool ) override {
+    return StatusCode::SUCCESS;
+  }
+
+  virtual const std::list<IService*>& getServices() const override {
+    static std::list<IService*> dummyServices;
+    return dummyServices;
+  }
+
+  virtual bool existsService( std::string_view ) const override { return false; }
+
+  virtual SmartIF<IService>& service( const Gaudi::Utils::TypeNameString&, const bool ) override {
+    static SmartIF<IService> dummyService;
+    return dummyService;
+  }
+
+  virtual unsigned long addRef() override { return 0; }
+
+  virtual unsigned long release() override { return 0; }
+
+  virtual StatusCode queryInterface( const InterfaceID&, void** ) override { return StatusCode::SUCCESS; }
+
+  virtual std::vector<std::string> getInterfaceNames() const override { return {}; }
+
+  virtual void* i_cast( const InterfaceID& ) const override { return nullptr; }
+
+  virtual unsigned long refCount() const override { return 1; }
+};
+
+// Utility function tests
+BOOST_AUTO_TEST_CASE( testGetTypeName ) {
+  // Test type name extraction from various formats
+  BOOST_CHECK_EQUAL( getTypeName( "MyClass" ), "MyClass" );
+  BOOST_CHECK_EQUAL( getTypeName( "std::vector<double>" ), "std::vector<double>" );
+  BOOST_CHECK_EQUAL( getTypeName( "UNKNOWN_CLASS:MyCustomClass" ), "MyCustomClass" );
+}
+
+BOOST_AUTO_TEST_CASE( testGetNameFromLoc ) {
+  // Test name extraction from location strings
+  BOOST_CHECK_EQUAL( getNameFromLoc( "/Event/MyAlg/MyData" ), "MyData" );
+  BOOST_CHECK_EQUAL( getNameFromLoc( "MyAlg/MyData" ), "MyData" );
+  BOOST_CHECK_EQUAL( getNameFromLoc( "MyData" ), "MyData" );
+  BOOST_CHECK_EQUAL( getNameFromLoc( "" ), "" );
+}
+
+// Test instantiation of the GenericWriter
+BOOST_AUTO_TEST_CASE( testInit ) {
+  MockISvcLocator              mockLocator;
+  Gaudi::NTuple::GenericWriter writer( "test_writer", &mockLocator );
+
+  // Verify we can instanciate a writer
+  BOOST_CHECK_EQUAL( writer.name(), "test_writer" );
+}
+
+// Test branch creation with empty dependencies
+BOOST_AUTO_TEST_CASE( testCreateBranches_EmptyDeps ) {
+  MockISvcLocator              mockLocator;
+  Gaudi::NTuple::GenericWriter writer( "test_writer", &mockLocator );
+
+  // Expect an exception when no dependencies are provided
+  BOOST_CHECK_EXCEPTION( writer.initialize().ignore(), GaudiException, []( const GaudiException& e ) {
+    return e.message() == "No extra inputs locations specified. Please define extra inputs for the NTuple writer.";
+  } );
+}
+
+// Test branch creation with an invalid type
+BOOST_AUTO_TEST_CASE( testCreateBranches_InvalidType ) {
+  MockISvcLocator              mockLocator;
+  auto                         tree = std::make_unique<TTree>( "testTree", "test tree" );
+  Gaudi::NTuple::GenericWriter writer( "test_writer", &mockLocator );
+  writer.setTree( tree.get() );
+
+  DataObjIDColl invalidDeps{ { "InvalidType", "loc" } };
+
+  // Expect an exception when an invalid type is provided
+  BOOST_CHECK_EXCEPTION( writer.createBranches( invalidDeps ), GaudiException, []( const GaudiException& e ) {
+    return e.message() == "Cannot create branch loc for unknown class: InvalidType. Provide a dictionary please.";
+  } );
+}
+
+// Test branch creation for fundamental types
+BOOST_AUTO_TEST_CASE( testCreateBranches_BasicTypes ) {
+  MockISvcLocator              mockLocator;
+  auto                         tree = std::make_unique<TTree>( "testTree", "test tree" );
+  Gaudi::NTuple::GenericWriter writer( "test_writer", &mockLocator );
+  writer.setTree( tree.get() );
+
+  DataObjIDColl                   dependencies{ { "int", "loc1" }, { "double", "loc2" }, { "std::string", "loc3" } };
+  std::unordered_set<std::string> expectedTypes{ "int", "double", "std::string" };
+  writer.createBranches( dependencies );
+
+  // Verify that the branch wrappers' class names match the expected types
+  BOOST_CHECK_EQUAL( writer.getBranchWrappersSize(), expectedTypes.size() );
+  BOOST_CHECK( expectedTypes == writer.getBranchesClassNames() );
+}
+
+// Test branch creation for ROOT-known non-fundamental types
+BOOST_AUTO_TEST_CASE( testCreateBranches_ROOTKnownTypes ) {
+  MockISvcLocator              mockLocator;
+  auto                         tree = std::make_unique<TTree>( "testTree", "test tree" );
+  Gaudi::NTuple::GenericWriter writer( "test_writer", &mockLocator );
+  writer.setTree( tree.get() );
+
+  DataObjIDColl                   dependencies{ { "std::vector<double>", "vectorDoubleLoc" }, { "TH1D", "hist1DLoc" } };
+  std::unordered_set<std::string> expectedTypes{ "std::vector<double>", "TH1D" };
+  writer.createBranches( dependencies );
+
+  // Verify that the branch wrappers' class names match the expected types
+  BOOST_CHECK_EQUAL( writer.getBranchWrappersSize(), expectedTypes.size() );
+  BOOST_CHECK( expectedTypes == writer.getBranchesClassNames() );
+}
+
+// Test for GaudiException when the file cannot be opened
+BOOST_AUTO_TEST_CASE( testFileOpenException ) {
+  MockISvcLocator              mockLocator;
+  Gaudi::NTuple::GenericWriter writer( "test_writer", &mockLocator );
+  DataObjIDColl                dependencies{ { "float", "loc" } };
+
+  BOOST_CHECK( writer.setProperty( "ExtraInputs", dependencies ).isSuccess() );
+  BOOST_CHECK( writer.setProperty( "TreeFilename", "/invalid/path/to/file.root" ).isSuccess() );
+  BOOST_CHECK_EXCEPTION( writer.initialize().ignore(), GaudiException, []( const GaudiException& e ) {
+    return e.message() == "Failed to open file '/invalid/path/to/file.root'. Check file path and permissions.";
+  } );
+}
+
+#endif

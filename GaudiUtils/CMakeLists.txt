@@ -96,4 +96,17 @@ if(BUILD_TESTING)
       PROPERTY DEPENDS ${package_name}.testXMLFileCatalogWrite)
   endif()
 
+  gaudi_add_executable(test_GenericNTupleWriter
+        SOURCES
+            src/component/GenericNTupleWriter.cpp
+        LINK
+            GaudiUtilsLib
+            Boost::headers
+            Boost::unit_test_framework
+            fmt::fmt
+            Gaudi::GaudiKernel
+            ROOT::Tree
+        TEST
+    )
+    target_compile_definitions(test_GenericNTupleWriter PRIVATE UNIT_TESTS)
 endif()
