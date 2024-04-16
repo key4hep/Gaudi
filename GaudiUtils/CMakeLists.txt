@@ -16,6 +16,7 @@ gaudi_add_library(GaudiUtilsLib
                   src/Lib/BranchWrapper.cpp
                   LINK
                     PUBLIC GaudiKernel
+                           Gaudi::Functional
                            ROOT::RIO
                            ROOT::Hist
                            ROOT::Thread
