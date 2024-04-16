@@ -498,26 +498,28 @@ namespace Gaudi::Accumulators {
     friend void mergeAndReset( HistogramingCounterBaseInternal& h, HistogramingCounterBaseInternal& o ) {
       h.mergeAndReset( o );
     }
-    friend void to_json( nlohmann::json& j, HistogramingCounterBaseInternal const& h ) {
+    friend void  to_json( nlohmann::json& j, HistogramingCounterBaseInternal const& h ) { h.to_json( j ); }
+    virtual void to_json( nlohmann::json& j ) const {
       // get all bin values and compute total nbEntries
       std::vector<typename AccumulatorType::BaseAccumulator::OutputType> bins;
-      bins.reserve( h.totNBins() );
+      bins.reserve( this->totNBins() );
       unsigned long totNEntries{ 0 };
-      for ( unsigned int i = 0; i < h.totNBins(); i++ ) {
-        bins.push_back( h.binValue( i ) );
-        totNEntries += h.nEntries( i );
+      for ( unsigned int i = 0; i < this->totNBins(); i++ ) {
+        bins.push_back( this->binValue( i ) );
+        totNEntries += this->nEntries( i );
       }
       // build json
       j = { { "type", std::string( Type ) + ":" + typeid( Arithmetic ).name() },
-            { "title", h.m_title },
+            { "title", m_title },
             { "dimension", ND },
             { "empty", totNEntries == 0 },
             { "nEntries", totNEntries },
-            { "axis", h.axis() },
+            { "axis", this->axis() },
             { "bins", bins } };
     }
+    std::string const& title() const { return m_title; }
 
-  private:
+  protected:
     std::string const m_title;
   };
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,

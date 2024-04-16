@@ -108,7 +108,7 @@ namespace Gaudi::Monitoring {
         std::invoke( ent.m_mergeAndReset, ent.m_ptr, other.m_ptr );
       }
       /// operator== for comparison with an entity
-      bool operator==( Entity const& ent ) { return id() == ent.id(); }
+      bool operator==( Entity const& ent ) const { return id() == ent.id(); }
       /// unique identifier, actually mapped to internal pointer
       void* id() const { return m_ptr; }
 
