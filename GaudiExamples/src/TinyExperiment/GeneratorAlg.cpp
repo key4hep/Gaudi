@@ -35,18 +35,17 @@ namespace Gaudi::Example::TinyExperiment {
       auto                     engine = m_rndSvc->getEngine( ctx.evt() );
       for ( unsigned int i = 0; i < m_nbTracksToGenerate; i++ ) {
         auto theta = dist( engine );
-        ++m_thetas[theta];
+        m_thetas += theta;
         tracks.emplace_back( theta );
       }
       return tracks;
     };
 
   private:
-    ServiceHandle<IRandomGenSvc>  m_rndSvc{ this, "RandomGenSvc", "RandomGenSvc",
+    ServiceHandle<IRandomGenSvc>                    m_rndSvc{ this, "RandomGenSvc", "RandomGenSvc",
                                            "A service providing a thread safe random number generator" };
-    Gaudi::Property<unsigned int> m_nbTracksToGenerate{ this, "NbTracksToGenerate", 10 };
-    mutable Gaudi::Accumulators::Histogram<1, Accumulators::atomicity::full, float> m_thetas{
-        this, "Theta values", "Theta", { 40, -1.57, 1.57 } };
+    Gaudi::Property<unsigned int>                   m_nbTracksToGenerate{ this, "NbTracksToGenerate", 10 };
+    mutable Gaudi::Accumulators::AveragingCounter<> m_thetas{ this, "Theta values" };
   };
 
   DECLARE_COMPONENT_WITH_ID( GeneratorAlg, "GeneratorAlg" )

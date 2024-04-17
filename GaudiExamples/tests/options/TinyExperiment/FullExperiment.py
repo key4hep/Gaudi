@@ -8,12 +8,32 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from Configurables import ApplicationMgr, CheckerAlg, DigitizationAlg
+from Configurables import (
+    ApplicationMgr,
+    AvalancheSchedulerSvc,
+    CheckerAlg,
+    DigitizationAlg,
+)
 from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
-from Configurables import GeneratorAlg, RandomGenSvc, SimulationAlg, TrackingAlg
+from Configurables import (
+    GeneratorAlg,
+    HiveSlimEventLoopMgr,
+    HiveWhiteBoard,
+    RandomGenSvc,
+    SimulationAlg,
+    TrackingAlg,
+)
+
+evtslots = 12
+threads = 10
+
+# infrastructure and services
+RandomGenSvc(RandomSeed=1234)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
+slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc")
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads)
 
 # - Algorithms
-RandomGenSvc(RandomSeed=1234)
 gen = GeneratorAlg(NbTracksToGenerate=10)
 sim = SimulationAlg(NbHitsPerTrack=15, MCTracksLocation=gen.MCTracksLocation)
 digi = DigitizationAlg(SigmaNoise=0.1, MCHitsLocation=sim.MCHitsLocation)
@@ -26,8 +46,9 @@ for configurable in [gen, sim, digi, track, check]:
 
 # Application setup
 app = ApplicationMgr(
-    ExtSvc=[MessageSvcSink()],
+    ExtSvc=[MessageSvcSink(), whiteboard],
     TopAlg=[gen, sim, digi, track, check],
-    EvtMax=100,
+    EvtMax=10000,
     EvtSel="NONE",
+    EventLoop=slimeventloopmgr,
 )
