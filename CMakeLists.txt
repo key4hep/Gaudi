@@ -172,6 +172,7 @@ add_subdirectory(PartPropSvc)
 add_subdirectory(RootCnv)
 add_subdirectory(RootHistCnv)
 add_subdirectory(GaudiTestSuite)
+add_subdirectory(GaudiExamples)
 
 # Generate GAUDI_VERSION.h
 gaudi_generate_version_header_file()
