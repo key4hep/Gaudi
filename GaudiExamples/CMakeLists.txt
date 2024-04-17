@@ -16,6 +16,7 @@ gaudi_add_module(GaudiExampleTinyExperiment
                           src/TinyExperiment/DigitizationAlg.cpp
                           src/TinyExperiment/TrackingAlg.cpp
                           src/TinyExperiment/CheckerAlg.cpp
+                          src/TinyExperiment/RandomGenSvc.cpp
                   LINK PUBLIC GaudiKernel
                               Gaudi::Functional)
 

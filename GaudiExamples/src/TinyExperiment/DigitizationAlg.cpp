@@ -10,6 +10,7 @@
 \***********************************************************************************/
 
 #include "Hit.h"
+#include "IRandomGenSvc.h"
 #include "MCHit.h"
 
 #include <Gaudi/Accumulators.h>
@@ -22,22 +23,20 @@ namespace Gaudi::Example::TinyExperiment {
   /**
    * Digitization algorithm returning a set of hits from MCHits, basically adding noise
    */
-  class DigitizationAlg : public Functional::Transformer<Hits( MCHits const& )> {
+  class DigitizationAlg : public Functional::Transformer<Hits( EventContext const&, MCHits const& )> {
   public:
     DigitizationAlg( const std::string& name, ISvcLocator* pSvcLocator )
         : Transformer( name, pSvcLocator, { { "MCHitsLocation", "/Event/MCHits" } },
                        { "HitsLocation", "/Event/Hits" } ) {}
 
-    StatusCode initialize() override {
-      return Transformer::initialize().andThen( [&] { m_engine = std::default_random_engine( m_randomSeed ); } );
-    }
-    Hits operator()( MCHits const& mcHits ) const override {
+    Hits operator()( const EventContext& ctx, MCHits const& mcHits ) const override {
       Hits hits;
       hits.reserve( mcHits.size() );
       std::normal_distribution dist( 0.0f, m_sigmaNoise.value() ); // µ, σ
+      auto                     engine = m_rndSvc->getEngine( ctx.evt() );
       for ( auto const& mcHit : mcHits ) {
-        auto nx = mcHit.x + dist( m_engine );
-        auto ny = mcHit.y + dist( m_engine );
+        auto nx = mcHit.x + dist( engine );
+        auto ny = mcHit.y + dist( engine );
         // ignore negative axis.
         // Simplifies reconstruction and simulate the apperture of the detector
         if ( nx > 0 ) {
@@ -49,10 +48,10 @@ namespace Gaudi::Example::TinyExperiment {
     };
 
   private:
-    mutable std::default_random_engine     m_engine; // FIXME this is not thread safe !
+    ServiceHandle<IRandomGenSvc>           m_rndSvc{ this, "RandomGenSvc", "RandomGenSvc",
+                                           "A service providing a thread safe random number generator" };
     Gaudi::Property<float>                 m_sigmaNoise{ this, "SigmaNoise", 1.f,
                                          "Sigma of the noise (a normal distribution centered on 0)" };
-    Gaudi::Property<unsigned long>         m_randomSeed{ this, "RandomSeed", 0 };
     mutable Gaudi::Accumulators::Counter<> n_hits{ this, "Number of Hits" };
   };
 

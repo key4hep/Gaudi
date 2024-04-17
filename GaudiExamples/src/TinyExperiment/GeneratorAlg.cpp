@@ -9,10 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
+#include "IRandomGenSvc.h"
 #include "MCTrack.h"
 
 #include <Gaudi/Accumulators/Histogram.h>
-#include <Gaudi/Functional/Producer.h>
+#include <Gaudi/Functional/Transformer.h>
 
 #include <cmath>
 #include <random>
@@ -22,23 +23,18 @@ namespace Gaudi::Example::TinyExperiment {
   /**
    * Generator algorithm returning a set of random tracks
    */
-  class GeneratorAlg : public Functional::Producer<MCTracks()> {
+  class GeneratorAlg : public Functional::Transformer<MCTracks( EventContext const& )> {
   public:
     GeneratorAlg( const std::string& name, ISvcLocator* pSvcLocator )
-        : Producer( name, pSvcLocator, { "MCTracksLocation", "/Event/MCTracks" } ) {}
+        : Transformer( name, pSvcLocator, { "MCTracksLocation", "/Event/MCTracks" } ) {}
 
-    StatusCode initialize() override {
-      return Producer::initialize().andThen( [&] { m_engine = std::default_random_engine( m_randomSeed ); } );
-    }
-
-    MCTracks operator()() const override {
-      // FIXME, we should use ranges here, something like
-      // std::views::repeat(void) | std::views::transform(...) | std::ranges::take_view( m_nbTracksToGenerate )
+    MCTracks operator()( EventContext const& ctx ) const override {
       MCTracks tracks;
       tracks.reserve( m_nbTracksToGenerate );
       std::normal_distribution dist( 0.0f, (float)M_PI / 4 ); // µ, σ
+      auto                     engine = m_rndSvc->getEngine( ctx.evt() );
       for ( unsigned int i = 0; i < m_nbTracksToGenerate; i++ ) {
-        auto theta = dist( m_engine );
+        auto theta = dist( engine );
         ++m_thetas[theta];
         tracks.emplace_back( theta );
       }
@@ -46,9 +42,9 @@ namespace Gaudi::Example::TinyExperiment {
     };
 
   private:
-    mutable std::default_random_engine m_engine; // FIXME this is not thread safe !
-    Gaudi::Property<unsigned int>      m_nbTracksToGenerate{ this, "NbTracksToGenerate", 10 };
-    Gaudi::Property<unsigned long>     m_randomSeed{ this, "RandomSeed", 0 };
+    ServiceHandle<IRandomGenSvc>  m_rndSvc{ this, "RandomGenSvc", "RandomGenSvc",
+                                           "A service providing a thread safe random number generator" };
+    Gaudi::Property<unsigned int> m_nbTracksToGenerate{ this, "NbTracksToGenerate", 10 };
     mutable Gaudi::Accumulators::Histogram<1, Accumulators::atomicity::full, float> m_thetas{
         this, "Theta values", "Theta", { 40, -1.57, 1.57 } };
   };

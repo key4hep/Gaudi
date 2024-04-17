@@ -10,14 +10,13 @@
 #####################################################################################
 from Configurables import ApplicationMgr, CheckerAlg, DigitizationAlg
 from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
-from Configurables import GeneratorAlg, SimulationAlg, TrackingAlg
+from Configurables import GeneratorAlg, RandomGenSvc, SimulationAlg, TrackingAlg
 
 # - Algorithms
-gen = GeneratorAlg(NbTracksToGenerate=10, RandomSeed=1234)
+RandomGenSvc(RandomSeed=1234)
+gen = GeneratorAlg(NbTracksToGenerate=10)
 sim = SimulationAlg(NbHitsPerTrack=15, MCTracksLocation=gen.MCTracksLocation)
-digi = DigitizationAlg(
-    SigmaNoise=0.1, RandomSeed=3456, MCHitsLocation=sim.MCHitsLocation
-)
+digi = DigitizationAlg(SigmaNoise=0.1, MCHitsLocation=sim.MCHitsLocation)
 track = TrackingAlg(NumberBins=100, Sensibility=6, HitsLocation=digi.HitsLocation)
 check = CheckerAlg(DeltaThetaMax=0.01, TracksLocation=track.TracksLocation)
 
