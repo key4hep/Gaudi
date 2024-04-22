@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,12 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Experiment specific include files
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IInspector.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/LinkManager.h"
-#include "GaudiKernel/StreamBuffer.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IInspector.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/LinkManager.h>
+#include <GaudiKernel/StreamBuffer.h>
+#include <boost/io/ios_state.hpp>
 #include <memory>
 #include <vector>
 
@@ -73,6 +73,11 @@ const std::string& DataObject::name() const { return m_pRegistry ? m_pRegistry->
 
 /// Provide empty placeholder for internal object reconfiguration callback
 StatusCode DataObject::update() { return StatusCode::SUCCESS; }
+
+std::ostream& DataObject::fillStream( std::ostream& s ) const {
+  boost::io::ios_flags_saver _{ s };
+  return s << "DataObject at " << std::hex << this;
+}
 
 static DataObject*  s_objPtr  = nullptr;
 static DataObject** s_currObj = &s_objPtr;
