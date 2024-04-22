@@ -18,6 +18,7 @@
 // Framework include files
 #include "RootCnv/RootDataConnection.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IRegistry.h"
@@ -42,6 +43,7 @@ static int s_compressionLevel = 1;
 #endif
 
 // C/C++ include files
+#include <fmt/format.h>
 #include <limits>
 #include <numeric>
 #include <stdexcept>
@@ -434,6 +436,14 @@ TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
         }
       }
       m_sections[std::string{ section }] = t;
+    } else {
+      // in some rare cases we do have the entry we expect, but we cannot read it
+      // https://gitlab.cern.ch/gaudi/Gaudi/-/issues/301
+      auto key = m_file->GetKey( std::string{ section }.c_str() );
+      if ( key ) {
+        incidentSvc()->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
+        msgSvc() << MSG::ERROR << fmt::format( "failed to get TTree '{}' in {}", section, pfn() ) << endmsg;
+      }
     }
   }
   return t;

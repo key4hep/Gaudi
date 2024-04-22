@@ -155,7 +155,8 @@ namespace Gaudi {
     typedef std::set<const IInterface*> Clients;
 
     /// Allow access to printer service
-    MsgStream& msgSvc() const { return m_setup->msgSvc(); }
+    MsgStream&    msgSvc() const { return m_setup->msgSvc(); }
+    IIncidentSvc* incidentSvc() const { return m_setup->incidentSvc(); }
 
   protected:
     /// Reference to the setup structure
@@ -223,6 +224,7 @@ namespace Gaudi {
       StringVec&         links() const { return c->m_links; }
       ParamMap&          params() const { return c->m_params; }
       MsgStream&         msgSvc() const { return c->msgSvc(); }
+      IIncidentSvc*      incidentSvc() const { return c->incidentSvc(); }
       const std::string& name() const { return c->m_name; }
       Sections&          sections() const { return c->m_sections; }
       LinkSections&      linkSections() const { return c->m_linkSects; }
