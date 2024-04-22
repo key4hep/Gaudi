@@ -396,7 +396,7 @@ public:
   }
   StatusCode finalize() override {
     if ( m_printPoolStats ) {
-      info() << "Mean memory pool usage: " << float( 1e-3f * m_usedPoolSize.mean() ) << " KiB serving "
+      info() << "Mean memory pool usage: " << float( 1e-3f * float( m_usedPoolSize.mean() ) ) << " KiB serving "
              << float( m_servedPoolAllocations.mean() ) << " allocations from " << float( m_usedPoolAllocations.mean() )
              << " to produce " << float( m_storeEntries.mean() ) << " entries in " << float( m_storeBuckets.mean() )
              << " buckets" << endmsg;

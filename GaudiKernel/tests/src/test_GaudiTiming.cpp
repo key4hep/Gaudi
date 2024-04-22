@@ -108,8 +108,8 @@ namespace GaudiKernelTest {
       CPPUNIT_ASSERT_EQUAL( ( t1 - t0 ).elapsedTime<System::Sec>(), 1LL );
 
       // This should result in non-zero user and kernel times
-      t0      = System::getProcessTime();
-      float x = 1.5;
+      t0       = System::getProcessTime();
+      double x = 1.5;
 
       // this variable is only needed to ensure that the timed loop
       // takes a measurable time
