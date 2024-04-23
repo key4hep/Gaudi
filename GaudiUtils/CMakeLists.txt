@@ -55,10 +55,10 @@ gaudi_add_module(GaudiUtils
                     src/component/GenericNTupleWriter.cpp
                   LINK
                     GaudiUtilsLib
-                    Gaudi::Functional
+                    ROOT::Tree
                     UUID::uuid
                     Rangev3::rangev3
-                    ROOT::Tree)
+                    Gaudi::Functional)
 
 if(GAUDI_USE_XERCESC)
   target_sources(GaudiUtils PRIVATE src/component/XMLCatalogTest.cpp

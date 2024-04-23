@@ -55,6 +55,8 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/ExtendedProperties/ExtendedProperties.cpp
                          src/ExtendedProperties/ExtendedProperties2.cpp
                          src/FileMgr/FileMgrTest.cpp
+                         src/FileSvc/HistogramWriterAlg.cpp
+                         src/FileSvc/NTupleWriterAlg.cpp
                          src/FSMCallback/FSMCallbackTestAlgo.cpp
                          src/FunctionalAlgorithms/EventCounter.cpp
                          src/FunctionalAlgorithms/MakeAndConsume.cpp
