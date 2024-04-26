@@ -11,7 +11,7 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>../options/TinyExperiment/FullExperiment.py</text></set></argument>
+<argument name="args"><set><text>GaudiExamples.TinyExperiment.FullExperiment:config</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../refs/TinyExperiment/FullExperiment.ref</text></argument>
+  <argument name="reference"><text>../refs/FullExperiment.ref</text></argument>
 </extension>
