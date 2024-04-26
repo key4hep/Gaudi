@@ -48,6 +48,6 @@ namespace Gaudi::Example::TinyExperiment {
     mutable Gaudi::Accumulators::AveragingCounter<> m_thetas{ this, "Theta values" };
   };
 
-  DECLARE_COMPONENT_WITH_ID( GeneratorAlg, "GeneratorAlg" )
+  DECLARE_COMPONENT( GeneratorAlg )
 
 } // namespace Gaudi::Example::TinyExperiment

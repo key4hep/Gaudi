@@ -57,6 +57,6 @@ namespace Gaudi::Example::TinyExperiment {
     mutable Gaudi::Accumulators::Counter<> n_tracks{ this, "Number of Tracks" };
   };
 
-  DECLARE_COMPONENT_WITH_ID( TrackingAlg, "TrackingAlg" )
+  DECLARE_COMPONENT( TrackingAlg )
 
 } // namespace Gaudi::Example::TinyExperiment

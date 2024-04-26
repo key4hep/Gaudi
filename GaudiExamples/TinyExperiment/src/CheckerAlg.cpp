@@ -65,6 +65,6 @@ namespace Gaudi::Example::TinyExperiment {
     mutable Gaudi::Accumulators::Counter<> n_lostTracks{ this, "Number of Tracks missing after reconstruction" };
   };
 
-  DECLARE_COMPONENT_WITH_ID( CheckerAlg, "CheckerAlg" )
+  DECLARE_COMPONENT( CheckerAlg )
 
 } // namespace Gaudi::Example::TinyExperiment

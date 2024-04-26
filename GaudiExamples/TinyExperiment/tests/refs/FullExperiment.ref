@@ -1,6 +1,5 @@
 # setting LC_ALL to "C"
-# --> Including file '/home/sponce/master/Gaudi/GaudiExamples/tests/options/TinyExperiment/FullExperiment.py'
-/***** Algorithm GeneratorAlg/GeneratorAlg *********************************************************
+/***** Algorithm Gaudi::Example::TinyExperiment::GeneratorAlg/GeneratorAlg *************************
 |-OutputLevel                = 0
 |-Enable                     = True
 |-ErrorMax                   = 1
@@ -25,8 +24,8 @@
 |-MCTracksLocation           = DataHandle('/Event/MCTracks','W','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
 |-RandomGenSvc               = ServiceHandle('RandomGenSvc')
 |-NbTracksToGenerate         = 10  (default: 10)
-\----- (End of Algorithm GeneratorAlg/GeneratorAlg) ------------------------------------------------
-/***** Algorithm SimulationAlg/SimulationAlg *******************************************************
+\----- (End of Algorithm Gaudi::Example::TinyExperiment::GeneratorAlg/GeneratorAlg) ----------------
+/***** Algorithm Gaudi::Example::TinyExperiment::SimulationAlg/SimulationAlg ***********************
 |-OutputLevel                = 0
 |-Enable                     = True
 |-ErrorMax                   = 1
@@ -51,8 +50,8 @@
 |-MCTracksLocation           = DataHandle('/Event/MCTracks','R','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
 |-MCHitsLocation             = DataHandle('/Event/MCHits','W','std::vector<Gaudi::Example::TinyExperiment::MCHit,std::allocator<Gaudi::Example::TinyExperiment::MCHit> >')
 |-NbHitsPerTrack             = 15  (default: 10)
-\----- (End of Algorithm SimulationAlg/SimulationAlg) ----------------------------------------------
-/***** Algorithm DigitizationAlg/DigitizationAlg ***************************************************
+\----- (End of Algorithm Gaudi::Example::TinyExperiment::SimulationAlg/SimulationAlg) --------------
+/***** Algorithm Gaudi::Example::TinyExperiment::DigitizationAlg/DigitizationAlg *******************
 |-OutputLevel                = 0
 |-Enable                     = True
 |-ErrorMax                   = 1
@@ -78,8 +77,8 @@
 |-HitsLocation               = DataHandle('/Event/Hits','W','std::vector<Gaudi::Example::TinyExperiment::Hit,std::allocator<Gaudi::Example::TinyExperiment::Hit> >')
 |-RandomGenSvc               = ServiceHandle('RandomGenSvc')
 |-SigmaNoise                 = 0.1  (default: 1.0)
-\----- (End of Algorithm DigitizationAlg/DigitizationAlg) ------------------------------------------
-/***** Algorithm TrackingAlg/TrackingAlg ***********************************************************
+\----- (End of Algorithm Gaudi::Example::TinyExperiment::DigitizationAlg/DigitizationAlg) ----------
+/***** Algorithm Gaudi::Example::TinyExperiment::TrackingAlg/TrackingAlg ***************************
 |-OutputLevel                = 0
 |-Enable                     = True
 |-ErrorMax                   = 1
@@ -105,8 +104,8 @@
 |-TracksLocation             = DataHandle('/Event/Tracks','W','std::vector<Gaudi::Example::TinyExperiment::Track,std::allocator<Gaudi::Example::TinyExperiment::Track> >')
 |-NumberBins                 = 100  (default: 180)
 |-Sensibility                = 6  (default: 6)
-\----- (End of Algorithm TrackingAlg/TrackingAlg) --------------------------------------------------
-/***** Algorithm CheckerAlg/CheckerAlg *************************************************************
+\----- (End of Algorithm Gaudi::Example::TinyExperiment::TrackingAlg/TrackingAlg) ------------------
+/***** Algorithm Gaudi::Example::TinyExperiment::CheckerAlg/CheckerAlg *****************************
 |-OutputLevel                = 0
 |-Enable                     = True
 |-ErrorMax                   = 1
@@ -131,8 +130,7 @@
 |-TracksLocation             = DataHandle('/Event/Tracks','R','std::vector<Gaudi::Example::TinyExperiment::Track,std::allocator<Gaudi::Example::TinyExperiment::Track> >')
 |-MCTracksLocation           = DataHandle('/Event/MCTracks','R','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
 |-DeltaThetaMax              = 0.01  (default: 0.001)
-\----- (End of Algorithm CheckerAlg/CheckerAlg) ----------------------------------------------------
-# <-- End of file '/home/sponce/master/Gaudi/GaudiExamples/tests/options/TinyExperiment/FullExperiment.py'
+\----- (End of Algorithm Gaudi::Example::TinyExperiment::CheckerAlg/CheckerAlg) --------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v38r2)

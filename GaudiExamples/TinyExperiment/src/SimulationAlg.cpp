@@ -50,6 +50,6 @@ namespace Gaudi::Example::TinyExperiment {
     mutable Gaudi::Accumulators::Counter<> n_hits{ this, "Number of MCHits" };
   };
 
-  DECLARE_COMPONENT_WITH_ID( SimulationAlg, "SimulationAlg" )
+  DECLARE_COMPONENT( SimulationAlg )
 
 } // namespace Gaudi::Example::TinyExperiment

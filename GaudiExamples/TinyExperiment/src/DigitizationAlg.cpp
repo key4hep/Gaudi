@@ -55,6 +55,6 @@ namespace Gaudi::Example::TinyExperiment {
     mutable Gaudi::Accumulators::Counter<> n_hits{ this, "Number of Hits" };
   };
 
-  DECLARE_COMPONENT_WITH_ID( DigitizationAlg, "DigitizationAlg" )
+  DECLARE_COMPONENT( DigitizationAlg )
 
 } // namespace Gaudi::Example::TinyExperiment

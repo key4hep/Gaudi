@@ -12,21 +12,20 @@ import sys
 
 
 def config(evtslots=12, threads=10):
+    from Configurables import ApplicationMgr, AvalancheSchedulerSvc
+    from Configurables import Gaudi__Example__TinyExperiment__CheckerAlg as CheckerAlg
     from Configurables import (
-        ApplicationMgr,
-        AvalancheSchedulerSvc,
-        CheckerAlg,
-        DigitizationAlg,
+        Gaudi__Example__TinyExperiment__DigitizationAlg as DigitizationAlg,
     )
+    from Configurables import (
+        Gaudi__Example__TinyExperiment__GeneratorAlg as GeneratorAlg,
+    )
+    from Configurables import (
+        Gaudi__Example__TinyExperiment__SimulationAlg as SimulationAlg,
+    )
+    from Configurables import Gaudi__Example__TinyExperiment__TrackingAlg as TrackingAlg
     from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
-    from Configurables import (
-        GeneratorAlg,
-        HiveSlimEventLoopMgr,
-        HiveWhiteBoard,
-        RandomGenSvc,
-        SimulationAlg,
-        TrackingAlg,
-    )
+    from Configurables import HiveSlimEventLoopMgr, HiveWhiteBoard, RandomGenSvc
 
     evtslots = 12
     threads = 10
@@ -38,11 +37,19 @@ def config(evtslots=12, threads=10):
     slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName=scheduler.name())
 
     # - Algorithms
-    gen = GeneratorAlg(NbTracksToGenerate=10)
-    sim = SimulationAlg(NbHitsPerTrack=15, MCTracksLocation=gen.MCTracksLocation)
-    digi = DigitizationAlg(SigmaNoise=0.1, MCHitsLocation=sim.MCHitsLocation)
-    track = TrackingAlg(NumberBins=100, Sensibility=6, HitsLocation=digi.HitsLocation)
-    check = CheckerAlg(DeltaThetaMax=0.01, TracksLocation=track.TracksLocation)
+    gen = GeneratorAlg("GeneratorAlg", NbTracksToGenerate=10)
+    sim = SimulationAlg(
+        "SimulationAlg", NbHitsPerTrack=15, MCTracksLocation=gen.MCTracksLocation
+    )
+    digi = DigitizationAlg(
+        "DigitizationAlg", SigmaNoise=0.1, MCHitsLocation=sim.MCHitsLocation
+    )
+    track = TrackingAlg(
+        "TrackingAlg", NumberBins=100, Sensibility=6, HitsLocation=digi.HitsLocation
+    )
+    check = CheckerAlg(
+        "CheckerAlg", DeltaThetaMax=0.01, TracksLocation=track.TracksLocation
+    )
 
     # this printout is useful to check that the type information is passed to python correctly
     for configurable in [gen, sim, digi, track, check]:
