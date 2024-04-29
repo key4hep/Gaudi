@@ -179,7 +179,7 @@ WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the m
 
 ---------------------------- Task/CF/FSM Mapping [target slot] --------------------------
 
-[ slot: 0  event: 0 ]:
+[ slot: 0, event: 0 ]:
 
 RootDecisionHub (0), w/ decision: UNDEFINED(-1)
   createViewSeq (1), w/ decision: UNDEFINED(-1)
