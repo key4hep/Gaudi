@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#include <algorithm>
 #include <Gaudi/Decays/Decay.h>
 #include <Gaudi/Decays/iNode.h>
 #include <Gaudi/ParticleID.h>

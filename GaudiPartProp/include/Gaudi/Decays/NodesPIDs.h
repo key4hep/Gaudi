@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#include <algorithm>
 #include <Gaudi/Decays/Nodes.h>
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
 #include <Gaudi/ParticleProperty.h>
