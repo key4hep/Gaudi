@@ -140,6 +140,7 @@ set(gperftools_pkgconfig_module "libprofiler>=2.7.0")
 
 option(GAUDI_ENABLE_GAUDIALG "Build the subdirectory GaudiAlg" NO)
 option(GAUDI_ENABLE_GAUDIPARTPROP "Build the subdirectory GaudiPartProp" YES)
+option(GAUDI_BUILD_EXAMPLES "Build the directory GaudiExamples" YES)
 
 foreach(dep IN LISTS deps)
   string(TOUPPER ${dep} DEP)
