@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
+#include <algorithm>
 #include <functional>
 #include <mutex>
 #include <shared_mutex>
