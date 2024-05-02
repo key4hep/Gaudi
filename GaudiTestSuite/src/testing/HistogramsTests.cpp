@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2021-2023 CERN for the benefit of the LHCb and ATLAS collaborations S*
+* (c) Copyright 2021-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,16 +15,33 @@
 
 namespace Gaudi::Tests::Histograms::CustomAxis {
   enum class Category { Simple, Complex, Bad, Wrong };
-}
+  std::ostream& operator<<( std::ostream& o, Category v ) {
+    switch ( v ) {
+    case Category::Simple:
+      o << "Simple";
+      break;
+    case Category::Complex:
+      o << "Complex";
+      break;
+    case Category::Bad:
+      o << "Bad";
+      break;
+    case Category::Wrong:
+      o << "Wrong";
+      break;
+    }
+    return o;
+  }
+} // namespace Gaudi::Tests::Histograms::CustomAxis
 
 namespace Gaudi::Accumulators {
-  template <>
-  struct Axis<Gaudi::Tests::Histograms::CustomAxis::Category> {
-    using Category = Gaudi::Tests::Histograms::CustomAxis::Category;
+  struct CustomAxis {
+    using Category       = Gaudi::Tests::Histograms::CustomAxis::Category;
+    using ArithmeticType = Category;
 
-    Axis() = default;
+    CustomAxis() = default;
     /// number of bins for this Axis
-    unsigned int nBins = 4;
+    unsigned int numBins() const { return 4; }
     /// min and max values on this axis
     std::underlying_type_t<Category> minValue = 0, maxValue = 4;
     /// title of this axis
@@ -32,8 +49,18 @@ namespace Gaudi::Accumulators {
     /// labels for the bins
     std::vector<std::string> labels{ "Simple", "Complex", "Bad", "Wrong" };
 
-    unsigned int index( Category value ) const { return static_cast<unsigned int>( value ) + 1; }
+    unsigned int         index( Category value ) const { return static_cast<unsigned int>( value ) + 1; }
+    friend std::ostream& operator<<( std::ostream& o, CustomAxis const& axis ) {
+      return o << axis.numBins() << " " << axis.minValue << " " << axis.maxValue;
+    }
   };
+  void to_json( nlohmann::json& j, const CustomAxis& axis ) {
+    j           = nlohmann::json{ { "nBins", axis.numBins() },
+                                  { "minValue", axis.minValue },
+                                  { "maxValue", axis.maxValue },
+                                  { "title", axis.title } };
+    j["labels"] = axis.labels;
+  }
 } // namespace Gaudi::Accumulators
 
 namespace Gaudi::Tests::Histograms {
@@ -99,8 +126,9 @@ namespace Gaudi::Tests::Histograms {
       using Base = Gaudi::Functional::Consumer<void()>;
       using Base::Base;
 
-      mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, Category> m_hist{
-          this, "Categories", "", Gaudi::Accumulators::Axis<Category>{} };
+      mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, Category,
+                                             std::tuple<Gaudi::Accumulators::CustomAxis>>
+          m_hist{ this, "Categories", "", Gaudi::Accumulators::CustomAxis{} };
 
       void operator()() const override {
         ++m_hist[Category::Simple];

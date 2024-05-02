@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -37,21 +37,21 @@ namespace Gaudi::Accumulators {
     template <typename Histo, std::size_t N>
     struct HistogramArrayInternal : std::array<Histo, N> {
       /// constructor with callables for FormatName and FormatTitle
-      template <typename OWNER, typename FormatName, typename FormatTitle, std::size_t... Ns, typename... Axis,
+      template <typename OWNER, typename FormatName, typename FormatTitle, std::size_t... Ns,
                 typename = typename std::enable_if_t<std::is_invocable_v<FormatName, int>>,
                 typename = typename std::enable_if_t<std::is_invocable_v<FormatTitle, int>>>
       HistogramArrayInternal( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle,
-                              std::integer_sequence<std::size_t, Ns...>, Axis&&... allAxis )
-          : std::array<Histo, N>{ Histo{ owner, fname( Ns ), ftitle( Ns ), allAxis... }... } {
+                              std::integer_sequence<std::size_t, Ns...>, typename Histo::AxisTupleType&& allAxis )
+          : std::array<Histo, N>{ Histo{ owner, fname( Ns ), ftitle( Ns ), allAxis }... } {
         static_assert( sizeof...( Ns ) < 1000, "Using HistogramArray with 1000 arrays or more is prohibited. This "
                                                "would lead to very long compilation times" );
       }
       /// constructor for strings, FormatHistDefault is used as the default callable
-      template <typename OWNER, std::size_t... Ns, typename... Axis>
+      template <typename OWNER, std::size_t... Ns>
       HistogramArrayInternal( OWNER* owner, std::string_view name, std::string_view title,
-                              std::integer_sequence<std::size_t, Ns...>, Axis&&... allAxis )
+                              std::integer_sequence<std::size_t, Ns...>, typename Histo::AxisTupleType&& allAxis )
           : std::array<Histo, N>{
-                Histo{ owner, FormatHistDefault{ name }( Ns ), FormatHistDefault{ title }( Ns ), allAxis... }... } {
+                Histo{ owner, FormatHistDefault{ name }( Ns ), FormatHistDefault{ title }( Ns ), allAxis }... } {
         static_assert( sizeof...( Ns ) < 1000, "Using HistogramArray with 1000 arrays or more is prohibited. This "
                                                "would lead to very long compilation times" );
       }
@@ -93,17 +93,23 @@ namespace Gaudi::Accumulators {
    *     { 21, -10.5, 10.5, "X" } };
    *   ++histoCustom[2][-10.0];
    */
-  template <typename Histo, std::size_t N, typename Seq>
-  struct HistogramArrayBase;
-  template <typename Histo, std::size_t N, std::size_t... NDs>
-  struct HistogramArrayBase<Histo, N, std::index_sequence<NDs...>> : details::HistogramArrayInternal<Histo, N> {
+  template <typename Histo, std::size_t N,
+            typename Seq = std::make_integer_sequence<unsigned int, std::tuple_size_v<typename Histo::AxisTupleType>>>
+  struct HistogramArray;
+  template <typename Histo, std::size_t N, unsigned int... ND>
+  struct HistogramArray<Histo, N, std::integer_sequence<unsigned int, ND...>>
+      : details::HistogramArrayInternal<Histo, N> {
     template <typename OWNER, typename FormatName, typename FormatTitle>
-    HistogramArrayBase( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle,
-                        details::alwaysT<NDs, typename Histo::AxisType>&&... allAxis )
+    HistogramArray( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle, typename Histo::AxisTupleType&& allAxis )
         : details::HistogramArrayInternal<Histo, N>( owner, fname, ftitle, std::make_integer_sequence<std::size_t, N>{},
-                                                     allAxis... ) {}
+                                                     std::forward<typename Histo::AxisTupleType>( allAxis ) ) {}
+
+    template <unsigned int I>
+    using AxisType = std::tuple_element_t<I, typename Histo::AxisTupleType>;
+
+    template <typename OWNER, typename FormatName, typename FormatTitle>
+    HistogramArray( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle, AxisType<ND>... allAxis )
+        : HistogramArray( owner, fname, ftitle, std::make_tuple( allAxis... ) ) {}
   };
-  template <typename Histo, std::size_t N>
-  using HistogramArray = HistogramArrayBase<Histo, N, std::make_index_sequence<Histo::NumberDimensions::value>>;
 
 } // namespace Gaudi::Accumulators

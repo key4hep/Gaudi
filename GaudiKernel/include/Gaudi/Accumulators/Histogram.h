@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,26 +23,47 @@
 #include <utility>
 #include <vector>
 
+namespace {
+  // Helper class creating a "subtuple" type from a tuple type by keeping only
+  // the first N items.
+  template <typename Tuple, typename Seq>
+  struct SubTuple;
+  template <typename Tuple, size_t... I>
+  struct SubTuple<Tuple, std::index_sequence<I...>> {
+    using type = decltype( std::make_tuple( std::get<I>( std::declval<Tuple>() )... ) );
+  };
+  template <typename Tuple, unsigned int N>
+  using SubTuple_t = typename SubTuple<Tuple, std::make_index_sequence<N>>::type;
+
+  /// helper class to create a tuple of N identical types
+  template <typename T, unsigned int ND, typename = std::make_integer_sequence<unsigned int, ND>>
+  struct make_tuple;
+  template <typename T, unsigned int ND, unsigned int... S>
+  struct make_tuple<T, ND, std::integer_sequence<unsigned int, S...>> {
+    template <unsigned int>
+    using typeMap = T;
+    using type    = std::tuple<typeMap<S>...>;
+  };
+  template <typename T, unsigned int ND>
+  using make_tuple_t = typename make_tuple<T, ND>::type;
+
+  /// template magic converting a tuple of Axis into the tuple of corresponding Arithmetic types
+  template <typename AxisTupleType>
+  struct AxisToArithmetic;
+  template <typename... Axis>
+  struct AxisToArithmetic<std::tuple<Axis...>> {
+    using type = std::tuple<typename Axis::ArithmeticType...>;
+  };
+  template <typename AxisTupleType>
+  using AxisToArithmetic_t = typename AxisToArithmetic<AxisTupleType>::type;
+  template <typename ProfArithmetic, typename AxisTupleType>
+  using ProfileAxisToArithmetic_t = decltype( std::tuple_cat( std::declval<AxisToArithmetic_t<AxisTupleType>>(),
+                                                              std::declval<std::tuple<ProfArithmetic>>() ) );
+} // namespace
+
 namespace Gaudi::Accumulators {
 
   namespace details {
-    template <std::size_t, typename T>
-    using alwaysT = T;
-    // get a tuple of n types the given Type, or directly the type for n = 1
-    template <typename Type, unsigned int ND>
-    struct GetTuple;
-    template <typename Type, unsigned int ND>
-    using GetTuple_t = typename GetTuple<Type, ND>::type;
-    template <typename Type, unsigned int ND>
-    struct GetTuple {
-      using type =
-          decltype( std::tuple_cat( std::declval<std::tuple<Type>>(), std::declval<GetTuple_t<Type, ND - 1>>() ) );
-    };
-    template <typename Type>
-    struct GetTuple<Type, 1> {
-      using type = std::tuple<Type>;
-    };
-
     inline void requireValidTitle( std::string_view sv ) {
       if ( !sv.empty() && ( std::isspace( sv.back() ) || std::isspace( sv.front() ) ) ) {
         throw GaudiException(
@@ -188,36 +209,28 @@ namespace Gaudi::Accumulators {
       SigmaAccumulatorBase<Atomicity, Arithmetic, WeightedAveragingAccumulator, WeightedSquareAccumulator>;
 
   /**
-   * Definition of an Histogram Axis
+   * Definition of a default type of Histogram Axis
+   * It contains number of bins, min and max value plus a title
+   * and defines the basic type of Axis (non log)
+   * It may also contain labels for the bins
    */
   template <typename Arithmetic>
-  struct Axis {
-    Axis( unsigned int _nBins, Arithmetic _minValue, Arithmetic _maxValue, std::string _title = {},
-          std::vector<std::string> _labels = {} )
-        : nBins( _nBins )
-        , minValue( _minValue )
-        , maxValue( _maxValue )
-        , title( std::move( _title ) )
-        , labels( std::move( _labels ) )
-        , ratio( _nBins / ( _maxValue - _minValue ) ) {
-      details::requireValidTitle( title );
-      for ( const auto& s : labels ) details::requireValidTitle( s );
+  class Axis {
+  public:
+    using ArithmeticType = Arithmetic;
+    Axis( unsigned int nBins = 0, Arithmetic minValue = Arithmetic{}, Arithmetic maxValue = Arithmetic{},
+          std::string title = {}, std::vector<std::string> labels = {} )
+        : m_title( std::move( title ) )
+        , nBins( nBins )
+        , m_minValue( minValue )
+        , m_maxValue( maxValue )
+        , m_labels( std::move( labels ) ) {
+      details::requireValidTitle( m_title );
+      recomputeRatio();
+      for ( const auto& s : m_labels ) details::requireValidTitle( s );
     };
     explicit Axis( Gaudi::Histo1DDef const& def )
         : Axis( (unsigned int)def.bins(), def.lowEdge(), def.highEdge(), def.title() ){};
-    /// number of bins for this Axis
-    unsigned int nBins;
-    /// min and max values on this axis
-    Arithmetic minValue, maxValue;
-    /// title of this axis
-    std::string title;
-    /// labels for the bins
-    std::vector<std::string> labels;
-    /**
-     * precomputed ratio to convert a value into bin number
-     * equal to nBins/(maxValue-minValue). Only used for floating Arithmetic
-     */
-    Arithmetic ratio;
 
     /// returns the bin number for a given value, ranging from 0 (underflow) to nBins+1 (overflow)
     unsigned int index( Arithmetic value ) const {
@@ -225,133 +238,225 @@ namespace Gaudi::Accumulators {
       // as ratios < 1.0 will simply be 0, so we have to pay the division in such a case
       int idx;
       if constexpr ( std::is_integral_v<Arithmetic> ) {
-        idx = ( ( value - minValue ) * nBins / ( maxValue - minValue ) ) + 1;
+        idx = ( ( value - m_minValue ) * nBins / ( m_maxValue - m_minValue ) ) + 1;
       } else {
-        idx = std::floor( ( value - minValue ) * ratio ) + 1;
+        idx = std::floor( ( value - m_minValue ) * m_ratio ) + 1;
       }
-      return idx < 0 ? 0 : ( (unsigned int)idx > nBins ? nBins + 1 : (unsigned int)idx );
+      return idx < 0 ? 0 : ( (unsigned int)idx > numBins() ? numBins() + 1 : (unsigned int)idx );
     }
+
+    friend std::ostream& operator<<( std::ostream& o, Axis const& axis ) {
+      return o << axis.numBins() << " " << axis.minValue() << " " << axis.maxValue();
+    }
+
     /// says whether the given value is within the range of the axis
-    bool inAcceptance( Arithmetic value ) const { return value >= minValue && value <= maxValue; }
+    bool inAcceptance( Arithmetic value ) const { return value >= m_minValue && value <= m_maxValue; }
+
+    // accessors
+    unsigned int numBins() const { return nBins; };
+    void         setNumBins( unsigned int n ) {
+      nBins = n;
+      recomputeRatio();
+    }
+    Arithmetic minValue() const { return m_minValue; };
+    void       setMinValue( Arithmetic v ) {
+      m_minValue = v;
+      recomputeRatio();
+    }
+    Arithmetic maxValue() const { return m_maxValue; };
+    void       setMaxValue( Arithmetic v ) {
+      m_maxValue = v;
+      recomputeRatio();
+    }
+    std::string const&             title() const { return m_title; }
+    void                           setTitle( std::string const& t ) { m_title = t; };
+    std::vector<std::string> const labels() const { return m_labels; }
+
+  private:
+    /// title of this axis
+    std::string m_title;
+
+  public:
+    /// number of bins for this Axis
+    /// FIXME : should be private and called m_nBins but will break backward compatibility with previous implementation.
+    unsigned int nBins;
+
+  private:
+    /// min and max values on this axis
+    Arithmetic m_minValue, m_maxValue;
+    /**
+     * precomputed ratio to convert a value into bin number
+     * equal to nBins/(maxValue-minValue). Only used for floating Arithmetic
+     */
+    Arithmetic m_ratio;
+    /// labels for the bins
+    std::vector<std::string> m_labels;
+
+    void recomputeRatio() {
+      m_ratio = ( m_maxValue == m_minValue ) ? Arithmetic{} : nBins / ( m_maxValue - m_minValue );
+    }
   };
 
   /// automatic conversion of the Axis type to json
   template <typename Arithmetic>
   void to_json( nlohmann::json& j, const Axis<Arithmetic>& axis ) {
-    j = nlohmann::json{ { "nBins", axis.nBins },
-                        { "minValue", axis.minValue },
-                        { "maxValue", axis.maxValue },
-                        { "title", axis.title } };
-    if ( !axis.labels.empty() ) { j["labels"] = axis.labels; }
+    j = nlohmann::json{ { "nBins", axis.numBins() },
+                        { "minValue", axis.minValue() },
+                        { "maxValue", axis.maxValue() },
+                        { "title", axis.title() } };
+    if ( !axis.labels().empty() ) { j["labels"] = axis.labels(); }
   }
 
-  /// small class used as InputType for regular Histograms
-  template <typename Arithmetic, unsigned int ND, unsigned int NIndex = ND>
-  struct HistoInputType : std::array<Arithmetic, ND> {
-    // allow construction from set of values
-    template <class... ARGS, typename = typename std::enable_if_t<( sizeof...( ARGS ) == NIndex )>>
-    HistoInputType( ARGS... args ) : std::array<Arithmetic, ND>{ static_cast<Arithmetic>( args )... } {}
-    // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
-    using ValueType          = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
-    using AxisArithmeticType = Arithmetic;
-    using InternalType       = std::array<Arithmetic, ND>;
-    unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
-      unsigned int index = 0;
-      for ( unsigned int j = 0; j < NIndex; j++ ) {
-        unsigned int dim = NIndex - j - 1;
-        // compute local index for a given dimension
-        int localIndex = axis[dim].index( ( *this )[dim] );
-        // compute global index. Bins are stored in a column first manner
-        index *= ( axis[dim].nBins + 2 );
-        index += localIndex;
-      }
-      return index;
-    }
-    bool inAcceptance( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
-      for ( unsigned int dim = 0; dim < NIndex; dim++ ) {
-        if ( !axis[dim].inAcceptance( ( *this )[dim] ) ) return false;
-      }
-      return true;
-    }
-    auto forInternalCounter() { return 1ul; }
-    template <typename AxisType, long unsigned NAxis>
-    static unsigned int computeTotNBins( std::array<AxisType, NAxis> axis ) {
-      unsigned int nTotBins = 1;
-      for ( unsigned int i = 0; i < NAxis; i++ ) { nTotBins *= ( axis[i].nBins + 2 ); }
-      return nTotBins;
-    }
+  /**
+   * small class used as InputType for regular Histograms
+   * basically a tuple of the given values, specialized in case of a single
+   * entry so that the syntax is more natural.
+   * NIndex should be lower than number of Arithmetic types and denotes the
+   * number of items used as index. There can typically be one more type in
+   * the list for profile histograms, not use as index on an axis
+   * ValueType is the actual type used to fill the histogram, that is
+   * the ArithmeticTuple reduced to NIndex items
+   *
+   * Note : the specialization is only needed to ensure backward compatibility
+   * with previous implementation where there was only one Arithmetic type common
+   * to all axis. It should in principal be the one and only implementation
+   * FIXME : remove specialization when client code was adapted
+   */
+  template <typename Arithmetic, unsigned int NIndex>
+  struct HistoInputType : HistoInputType<make_tuple_t<Arithmetic, NIndex>, NIndex> {
+    using HistoInputType<make_tuple_t<Arithmetic, NIndex>, NIndex>::HistoInputType;
   };
-
-  /// specialization of HistoInputType for ND == 1 in order to have simpler syntax
-  /// that is, no tuple of one item
-  template <typename Arithmetic>
-  class HistoInputType<Arithmetic, 1> {
-  public:
-    using ValueType          = HistoInputType;
-    using AxisArithmeticType = Arithmetic;
-    using InternalType       = Arithmetic;
-    HistoInputType( Arithmetic a ) : value( a ) {}
-    unsigned int computeIndex( const std::array<Axis<Arithmetic>, 1>& axis ) const { return axis[0].index( value ); }
-    bool inAcceptance( const std::array<Axis<Arithmetic>, 1>& axis ) const { return axis[0].inAcceptance( value ); }
-    Arithmetic& operator[]( int ) { return value; }
-    operator Arithmetic() const { return value; }
-    auto forInternalCounter() { return 1ul; }
-    template <typename AxisType>
-    static unsigned int computeTotNBins( std::array<AxisType, 1> axis ) {
-      return axis[0].nBins + 2;
+  template <unsigned int NIndex, typename... Elements>
+  struct HistoInputType<std::tuple<Elements...>, NIndex> : std::tuple<Elements...> {
+    using InternalType = std::tuple<Elements...>;
+    using ValueType    = HistoInputType<SubTuple_t<InternalType, NIndex>, NIndex>;
+    using std::tuple<Elements...>::tuple;
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    unsigned int computeIndex( std::tuple<AxisType...> const& axis ) const {
+      return computeIndexInternal<0, std::tuple<AxisType...>>( axis );
+    }
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    static unsigned int computeTotNBins( std::tuple<AxisType...> const& axis ) {
+      return computeTotNBinsInternal<0, std::tuple<AxisType...>>( axis );
+    }
+    auto forInternalCounter() const { return 1ul; }
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    bool inAcceptance( std::tuple<AxisType...> const& axis ) const {
+      return inAcceptanceInternal<0, std::tuple<AxisType...>>( axis );
     }
 
   private:
-    Arithmetic value;
+    template <int N, class Tuple>
+    unsigned int computeIndexInternal( Tuple const& allAxis ) const {
+      // compute global index. Bins are stored in a column first manner
+      auto const&  axis       = std::get<N>( allAxis );
+      unsigned int localIndex = axis.index( std::get<N>( *this ) );
+      if constexpr ( N + 1 == NIndex )
+        return localIndex;
+      else
+        return localIndex + ( axis.numBins() + 2 ) * computeIndexInternal<N + 1, Tuple>( allAxis );
+    }
+    template <int N, class Tuple>
+    static unsigned int computeTotNBinsInternal( Tuple const& allAxis ) {
+      auto const&  axis       = std::get<N>( allAxis );
+      unsigned int localNBins = axis.numBins() + 2;
+      if constexpr ( N + 1 == NIndex )
+        return localNBins;
+      else
+        return localNBins * computeTotNBinsInternal<N + 1, Tuple>( allAxis );
+    }
+    template <int N, class Tuple>
+    bool inAcceptanceInternal( Tuple const& allAxis ) const {
+      auto const& axis        = std::get<N>( allAxis );
+      bool        localAnswer = axis.inAcceptance( std::get<N>( *this ) );
+      if constexpr ( N + 1 == NIndex )
+        return localAnswer;
+      else
+        return localAnswer || inAcceptanceInternal<N + 1, Tuple>( allAxis );
+    }
   };
 
-  /// small class used as InputType for weighted Histograms
-  template <typename Arithmetic, unsigned int ND, unsigned int NIndex = ND>
-  struct WeightedHistoInputType : std::pair<HistoInputType<Arithmetic, ND, NIndex>, Arithmetic> {
-    // The change on NIndex == 1 allow to have simpler syntax in that case, that is no tuple of one item
-    using ValueType          = HistoInputType<Arithmetic, NIndex == 1 ? 1 : ND, NIndex>;
-    using AxisArithmeticType = Arithmetic;
-    using std::pair<HistoInputType<Arithmetic, ND, NIndex>, Arithmetic>::pair;
-    unsigned int computeIndex( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
+  /**
+   * small class used as InputType for weighted Histograms
+   * only a pair of the InnerType and the weight.
+   * See description of HistoInputType for more details
+   */
+  template <typename ArithmeticTuple, unsigned int NIndex, typename WArithmetic>
+  struct WeightedHistoInputType : std::pair<HistoInputType<ArithmeticTuple, NIndex>, WArithmetic> {
+    using ValueType = typename HistoInputType<ArithmeticTuple, NIndex>::ValueType;
+    using std::pair<HistoInputType<ArithmeticTuple, NIndex>, WArithmetic>::pair;
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    unsigned int computeIndex( std::tuple<AxisType...> const& axis ) const {
       return this->first.computeIndex( axis );
     }
-    unsigned int inAcceptance( const std::array<Axis<Arithmetic>, NIndex>& axis ) const {
-      return this->first.inAcceptance( axis );
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    static unsigned int computeTotNBins( std::tuple<AxisType...> const& axis ) {
+      return HistoInputType<ArithmeticTuple, NIndex>::computeTotNBins( axis );
     }
-    auto forInternalCounter() { return std::pair( this->first.forInternalCounter(), this->second ); }
-    template <typename AxisType, long unsigned NAxis>
-    static unsigned int computeTotNBins( std::array<AxisType, NAxis> axis ) {
-      return HistoInputType<Arithmetic, ND, NIndex>::computeTotNBins( axis );
+    auto forInternalCounter() const { return std::pair( this->first.forInternalCounter(), this->second ); }
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    bool inAcceptance( std::tuple<AxisType...> const& axis ) const {
+      return this->first.inAcceptance( axis );
     }
   };
 
   /**
    * Internal Accumulator class dealing with Histograming. Templates parameters are :
    *  - Atomicity : none or full
-   *  - Arithmetic : the arithmetic type used for values filled into the histogram
-   *  - ND : the number of dimensions of the histogram.
-   *    Note that ND is given as an integral_constant as it needs to be a type for the internal template
-   *    business of the Counter (more precisely the Buffer class)
-   *  - InputType : the type given as input of the Histogram. Typically (Weighted)HistoInputType
+   *  - InputType : a class holding a value given as input of the Histogram,
+   *    and able to answer questions on this value given a number of axis matching
+   *    the type of value.
+   *    e.g. it would hold a pair of double for a non weighted 2D histogram or
+   *    a pair of triplet of doubles and double for the weighted 3D histogram.
+   *    Example implementations are (Weighted)HistoInputType.
+   *    This class must define :
+   *      + a constructor taking a set of value to build the InputType
+   *      + a static method `unsigned int computeTotNBins( std::tuple<AxisType...> const& )`
+   *        able to compute the total number of bins needed with this input type and
+   *        these axis. It will typically be the product of the number of bins for each
+   *        dimension, potentially increased by 2 for each if underflow and overflow
+   *        is supported
+   *      + a type ValueType alias defining the type of the input values to give to InputType
+   *        This type needs to implement :
+   *        * a method
+   *          `unsigned int computeIndex( std::tuple<AxisType...> const& ) const`
+   *          able to compute the bin corresponding to a given value
+   *        * a method `auto forInternalCounter() const` returning the value to be used to
+   *          inscrease the accumulator dealing with the bin associated with the current value.
+   *          In most simple cases, it return `Arithmetic{}` or even `1` but for weighted
+   *          histograms, it returns a pair with the weight as second item
+   *        * in case of usage within a RootHistogram, it should also define a method
+   *          `bool inAcceptance( std::tuple<AxisType...> const& )` checking whether a given
+   *          value in within the range of the accumulator
+   *  - Arithmetic : the arithmetic type used for values stored inside the histogram
+   *    e.g. unsigned int for regular histogram as we only count entries, or float/double
+   *    for weighted histograms, as we store actual sums of original values
    *  - BaseAccumulator : the underlying accumulator used in each bin
-   *
-   * This accumulator is simply an array of BaseAccumulator, one per bin. The number of bins is
-   * the product of the number of bins for each dimension, each of them increased by 2 for storing
-   * the values under min and above max
+   *  - AxisTupleType : the types of the axis as a tuple. Its length defines the dimension
+   *    of the Histogram this accumulator handles.
+   *    The constraints on the AxisType are : FIXME use concepts when available
+   *      + that they can be copied
+   *      + that they have a ArithmeticType type alias
+   *      + that they have a `unsigned int numBins() const` method
+   *      + that they have a friend operator<< using std::ostream for printing
+   *      + that they have a friend to_json method using nlohmann library
+   *      + that they implement whatever is needed by the computeIndex and computeTotNBins methods
+   *         of the InputType used. Plus the inAcceptance one if Roothistograms are used
+   *    A default Axis class is provided for most cases
+   * This accumulator is simply an array of BaseAccumulator, one per bin.
    */
-  template <atomicity Atomicity, typename InputType, typename Arithmetic, typename ND,
-            template <atomicity Ato, typename Arith> typename BaseAccumulatorT>
+  template <atomicity Atomicity, typename InputType, typename Arithmetic,
+            template <atomicity Ato, typename Arith> typename BaseAccumulatorT, typename AxisTupleType>
   class HistogramingAccumulatorInternal {
-    template <atomicity, typename, typename, typename, template <atomicity, typename> typename>
+    template <atomicity, typename, typename, template <atomicity, typename> typename, typename>
     friend class HistogramingAccumulatorInternal;
 
   public:
-    using BaseAccumulator    = BaseAccumulatorT<Atomicity, Arithmetic>;
-    using AxisArithmeticType = typename InputType::AxisArithmeticType;
-    using AxisType           = Axis<AxisArithmeticType>;
-    template <std::size_t... Is>
-    HistogramingAccumulatorInternal( details::GetTuple_t<AxisType, ND::value> axis, std::index_sequence<Is...> )
-        : m_axis{ std::get<Is>( axis )... }
+    using ND                      = std::integral_constant<unsigned int, std::tuple_size_v<AxisTupleType>>;
+    using BaseAccumulator         = BaseAccumulatorT<Atomicity, Arithmetic>;
+    using AxisTupleArithmeticType = typename InputType::ValueType;
+    HistogramingAccumulatorInternal( AxisTupleType axis )
+        : m_axis{ axis }
         , m_totNBins{ InputType::computeTotNBins( m_axis ) }
         , m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
@@ -359,10 +464,8 @@ namespace Gaudi::Accumulators {
     template <atomicity ato>
     HistogramingAccumulatorInternal(
         construct_empty_t,
-        const HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other )
-        : m_axis( other.m_axis )
-        , m_totNBins{ InputType::computeTotNBins( m_axis ) }
-        , m_value( new BaseAccumulator[m_totNBins] ) {
+        const HistogramingAccumulatorInternal<ato, InputType, Arithmetic, BaseAccumulatorT, AxisTupleType>& other )
+        : m_axis( other.m_axis ), m_totNBins{ other.m_totNBins }, m_value( new BaseAccumulator[m_totNBins] ) {
       reset();
     }
     [[deprecated( "Use `++h1[x]`, `++h2[{x,y}]`, etc. instead." )]] HistogramingAccumulatorInternal&
@@ -374,7 +477,8 @@ namespace Gaudi::Accumulators {
       for ( unsigned int index = 0; index < m_totNBins; index++ ) accumulator( index ).reset();
     }
     template <atomicity ato>
-    void mergeAndReset( HistogramingAccumulatorInternal<ato, InputType, Arithmetic, ND, BaseAccumulatorT>& other ) {
+    void mergeAndReset(
+        HistogramingAccumulatorInternal<ato, InputType, Arithmetic, BaseAccumulatorT, AxisTupleType>& other ) {
       assert( m_totNBins == other.m_totNBins );
       for ( unsigned int index = 0; index < m_totNBins; index++ ) {
         accumulator( index ).mergeAndReset( other.accumulator( index ) );
@@ -384,21 +488,43 @@ namespace Gaudi::Accumulators {
       return Buffer<BaseAccumulatorT, Atomicity, Arithmetic>{ accumulator( v.computeIndex( m_axis ) ) };
     }
 
+    template <unsigned int N>
+    auto& axis() const {
+      return std::get<N>( m_axis );
+    }
     auto& axis() const { return m_axis; }
-    auto  nBins( unsigned int i ) const { return m_axis[i].nBins; }
-    auto  minValue( unsigned int i ) const { return m_axis[i].minValue; }
-    auto  maxValue( unsigned int i ) const { return m_axis[i].maxValue; }
     auto  binValue( unsigned int i ) const { return accumulator( i ).value(); }
     auto  nEntries( unsigned int i ) const { return accumulator( i ).nEntries(); }
     auto  totNBins() const { return m_totNBins; }
+
+    // FIXME These methods are there for backwrad compatibility with previous implementation
+    // where all Axis had to be of type Axis<...> and were stored in an array
+    // Newer code should call axis<N>().foo for whatever foo is defined in that axis type
+    auto nBins( unsigned int i ) const { return _getAxis( i, std::integral_constant<size_t, 0>() ).numBins(); }
+    auto minValue( unsigned int i ) const { return _getAxis( i, std::integral_constant<size_t, 0>() ).minValue(); }
+    auto maxValue( unsigned int i ) const { return _getAxis( i, std::integral_constant<size_t, 0>() ).maxValue(); }
 
   private:
     BaseAccumulator& accumulator( unsigned int index ) const {
       assert( index < m_totNBins );
       return m_value[index];
     }
+
+    // FIXME Only used for backward compatibility. should be dropped at some stage
+    // Can only work if all axis have same type, which is no more the case
+    std::tuple_element_t<0, AxisTupleType> const& _getAxis( size_t i,
+                                                            typename std::tuple_size<AxisTupleType>::type ) const {
+      throw std::logic_error(
+          fmt::format( "Retrieving axis {} in Histogram of dimension {}", i, std::tuple_size_v<AxisTupleType> ) );
+    }
+    template <size_t N, typename = std::enable_if_t<std::tuple_size_v<AxisTupleType> != N>>
+    auto& _getAxis( size_t i, std::integral_constant<size_t, N> ) const {
+      if ( i == N ) return std::get<N>( m_axis );
+      return _getAxis( i, std::integral_constant<size_t, N + 1>() );
+    }
+
     /// set of Axis of this Histogram
-    std::array<AxisType, ND::value> m_axis;
+    AxisTupleType m_axis;
     /// total number of bins in this histogram, under and overflow included
     unsigned int m_totNBins;
     /// Histogram content
@@ -410,54 +536,58 @@ namespace Gaudi::Accumulators {
    *
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
-  template <atomicity Atomicity, typename Arithmetic, typename ND>
-  using HistogramingAccumulator = HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value>,
-                                                                  unsigned long, ND, IntegralAccumulator>;
+  template <atomicity Atomicity, typename Arithmetic, typename ND, typename AxisTupleType>
+  using HistogramingAccumulator =
+      HistogramingAccumulatorInternal<Atomicity, HistoInputType<AxisToArithmetic_t<AxisTupleType>, ND::value>,
+                                      unsigned long, IntegralAccumulator, AxisTupleType>;
 
   /**
    * Class implementing a weighted histogram accumulator
    *
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
-  template <atomicity Atomicity, typename Arithmetic, typename ND>
+  template <atomicity Atomicity, typename Arithmetic, typename ND, typename AxisTupleType>
   using WeightedHistogramingAccumulator =
-      HistogramingAccumulatorInternal<Atomicity, WeightedHistoInputType<Arithmetic, ND::value>, Arithmetic, ND,
-                                      WeightedCountAccumulator>;
+      HistogramingAccumulatorInternal<Atomicity,
+                                      WeightedHistoInputType<AxisToArithmetic_t<AxisTupleType>, ND::value, Arithmetic>,
+                                      Arithmetic, WeightedCountAccumulator, AxisTupleType>;
 
   /**
    * Class implementing a profile histogram accumulator
    *
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
-  template <atomicity Atomicity, typename Arithmetic, typename ND>
+  template <atomicity Atomicity, typename Arithmetic, typename ND, typename AxisTupleType>
   using ProfileHistogramingAccumulator =
-      HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND::value + 1, ND::value>, Arithmetic, ND,
-                                      SigmaAccumulator>;
+      HistogramingAccumulatorInternal<Atomicity,
+                                      HistoInputType<ProfileAxisToArithmetic_t<Arithmetic, AxisTupleType>, ND::value>,
+                                      Arithmetic, SigmaAccumulator, AxisTupleType>;
 
   /**
    * Class implementing a weighted profile histogram accumulator
    *
    * Actually only an alias to HistogramingAccumulatorInternal with proper template parameters
    */
-  template <atomicity Atomicity, typename Arithmetic, typename ND>
-  using WeightedProfileHistogramingAccumulator =
-      HistogramingAccumulatorInternal<Atomicity, WeightedHistoInputType<Arithmetic, ND::value + 1, ND::value>,
-                                      Arithmetic, ND, WeightedSigmaAccumulator>;
+  template <atomicity Atomicity, typename Arithmetic, typename ND, typename AxisTupleType>
+  using WeightedProfileHistogramingAccumulator = HistogramingAccumulatorInternal<
+      Atomicity, WeightedHistoInputType<ProfileAxisToArithmetic_t<Arithmetic, AxisTupleType>, ND::value, Arithmetic>,
+      Arithmetic, WeightedSigmaAccumulator, AxisTupleType>;
 
   /**
    * A base counter dealing with Histograms
    *
    * Main features of that Counter :
    *  - can be any number of dimensions. The dimension is its first template parameter
-   *  - for each dimension, a triplet of values have to be given at
-   *    construction : nbins, minValue, maxValue. These triplets have to be
-   *    embedded into braces, as the constructor takes an array of them
+   *  - for each dimension, an Axis is associated. Axis can be of any type depending
+   *    on the underlying accumulator
+   *  - the constructor expects one extra argument per axis, typically a tuple
+   *    of values allowing to create the Axis objects in the back
    *  - the operator+= takes either an array of values (one per dimension)
    *    or a tuple<array of values, weight>. The value inside the bin
    *    corresponding to the given values is then increased by 1 or weight
    *  - the prefered syntax is to avoid operator+= and use operator[] to get a
    *    buffer on the bin you're updating. Syntax becomes :
-   *        ++counter[{x,y}]   or   wcounter[{x,y]] += w
+   *        ++counter[{x,y}]   or   wcounter[{x,y}] += w
    *  - the Counter is templated by the types of the values given to
    *    operator+ and also by the type stored into the bins
    *  - the counter can be atomic or not and supports buffering. Note that
@@ -468,20 +598,22 @@ namespace Gaudi::Accumulators {
    *    value in the array of values in that case
    *
    * This base class is then aliases for the 4 standard cases of Histogram,
-   * WeightedHistogram, ProfileHistogram and WeightedProfileHistogram
+   * WeightedHistogram, ProfileHistogram and WeightedProfileHistogram.
+   * For all predefined Histogram types, the axis type is a simple triplet
+   * of values nbins, minValue, maxValue plus a title.
    *
    * Typical usage :
    * \code
    * Histogram<2, double, atomicity::full>
-   *   counter{owner, "CounterName", "HistoTitle", {{nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}}};
+   *   counter{owner, "CounterName", "HistoTitle", {{nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2,
+   * "AxisTitle"}}};
    * ++counter[{val1, val2}];    // prefered syntax
    * counter += {val1, val2};    // original syntax inherited from counters
    *
    * WeightedHistogram<2, double, atomicity::full>
-   *   wcounter{owner, "CounterName", "HistoTitle", {{nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2}}};
-   * wcounter[{val1, val2}] += w;    // prefered syntax
-   * wcounter += {{val1, val2}, w};  // original syntax inherited from counters
-   * \endcode
+   *   wcounter{owner, "CounterName", "HistoTitle", {{nBins1, minVal1, maxVal1}, {nBins2, minVal2, maxVal2,
+   * "AxisTitle"}}}; wcounter[{val1, val2}] += w;    // prefered syntax wcounter += {{val1, val2}, w};  // original
+   * syntax inherited from counters \endcode
    *
    * When serialized to json, this counter uses new types histogram:Histogram:<prec>, histogram:ProfileHistogram:<prec>,
    * histogram:WeightedHistogram:<prec> and histrogram:WeightedProfileHistogram:<prec>
@@ -490,7 +622,7 @@ namespace Gaudi::Accumulators {
    *   dimension(integer), title(string), empty(bool), nEntries(integer), axis(array), bins(array)
    * where :
    *     + axis is an array of tuples, one per dimension, with content (nBins(integer), minValue(number),
-   * maxValue(number), title(string))
+   * maxValue(number), title(string)) for the default type of Axis
    *     + bins is an array of values
    *       - The length of the array is the product of (nBins+2) for all axis
    *       - the +2 is because the bin 0 is the one for values below minValue and bin nBins+1 is the one for values
@@ -500,45 +632,46 @@ namespace Gaudi::Accumulators {
    *         Note the pair with a pair as first entry
    */
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
-            template <atomicity, typename, typename> typename Accumulator, typename Seq>
-  class HistogramingCounterBaseInternal;
+            template <atomicity, typename, typename, typename> typename Accumulator, typename AxisTupleType>
+  class HistogramingCounterBase;
   template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
-            template <atomicity, typename, typename> typename Accumulator, std::size_t... NDs>
-  class HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::index_sequence<NDs...>>
-      : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>> {
+            template <atomicity, typename, typename, typename> typename Accumulator, typename... AxisTypes>
+  class HistogramingCounterBase<ND, Atomicity, Arithmetic, Type, Accumulator, std::tuple<AxisTypes...>>
+      : public BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<unsigned int, ND>,
+                                 std::tuple<AxisTypes...>> {
   public:
-    using Parent           = BufferableCounter<Atomicity, Accumulator, Arithmetic, std::integral_constant<int, ND>>;
-    using AccumulatorType  = Accumulator<Atomicity, Arithmetic, std::integral_constant<int, ND>>;
+    using AxisTupleType    = std::tuple<AxisTypes...>;
     using NumberDimensions = std::integral_constant<unsigned int, ND>;
+    using Parent           = BufferableCounter<Atomicity, Accumulator, Arithmetic, NumberDimensions, AxisTupleType>;
+    using AccumulatorType  = Accumulator<Atomicity, Arithmetic, NumberDimensions, AxisTupleType>;
+    using AxisTupleArithmeticType = typename AccumulatorType::AxisTupleArithmeticType;
+    /// for backward compatibility with previous implementation, should not be used FIXME
+    using AxisArithmeticType = typename std::tuple_element<0, AxisTupleType>::type::ArithmeticType;
     inline static const std::string typeString{ std::string{ Type } + ':' + typeid( Arithmetic ).name() };
+    /// This constructor takes the axis as a tuple
     template <typename OWNER>
-    HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
-                                     details::GetTuple_t<typename AccumulatorType::AxisType, ND> axis )
-        : Parent( owner, name, *this, axis, std::make_index_sequence<ND>{} ), m_title( title ) {
+    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title, AxisTupleType axis )
+        : Parent( owner, name, *this, axis ), m_title( title ) {
       details::requireValidTitle( m_title );
     }
+    /// This constructor takes the axis one by one, when ND >= 2. If ND = 1, the other one can be used
     template <typename OWNER>
-    HistogramingCounterBaseInternal( OWNER* owner, std::string const& name, std::string const& title,
-                                     details::alwaysT<NDs, typename AccumulatorType::AxisType>... allAxis )
-        : HistogramingCounterBaseInternal( owner, name, title, std::make_tuple( allAxis... ) ) {}
+    HistogramingCounterBase( OWNER* owner, std::string const& name, std::string const& title, AxisTypes... allAxis )
+        : HistogramingCounterBase( owner, name, title, std::make_tuple( allAxis... ) ) {}
     using Parent::print;
     template <typename stream>
     stream& printImpl( stream& o, bool /*tableFormat*/ ) const {
       o << ND << "D Histogram with config ";
-      for ( unsigned int i = 0; i < ND; i++ ) {
-        o << this->nBins( i ) << " " << this->minValue( i ) << " " << this->maxValue( i ) << " ";
-      }
+      std::apply( [&o]( auto&&... args ) { ( ( o << args << "\n" ), ... ); }, this->axis() );
       return o;
     }
     std::ostream& print( std::ostream& o, bool tableFormat = false ) const override {
       return printImpl( o, tableFormat );
     }
-    MsgStream&  print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
-    friend void reset( HistogramingCounterBaseInternal& c ) { c.reset(); }
-    friend void mergeAndReset( HistogramingCounterBaseInternal& h, HistogramingCounterBaseInternal& o ) {
-      h.mergeAndReset( o );
-    }
-    friend void  to_json( nlohmann::json& j, HistogramingCounterBaseInternal const& h ) { h.to_json( j ); }
+    MsgStream&   print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
+    friend void  reset( HistogramingCounterBase& c ) { c.reset(); }
+    friend void  mergeAndReset( HistogramingCounterBase& h, HistogramingCounterBase& o ) { h.mergeAndReset( o ); }
+    friend void  to_json( nlohmann::json& j, HistogramingCounterBase const& h ) { h.to_json( j ); }
     virtual void to_json( nlohmann::json& j ) const {
       // get all bin values and compute total nbEntries
       std::vector<typename AccumulatorType::BaseAccumulator::OutputType> bins;
@@ -562,10 +695,6 @@ namespace Gaudi::Accumulators {
   protected:
     std::string const m_title;
   };
-  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type,
-            template <atomicity, typename, typename> typename Accumulator>
-  using HistogramingCounterBase =
-      HistogramingCounterBaseInternal<ND, Atomicity, Arithmetic, Type, Accumulator, std::make_index_sequence<ND>>;
 
   namespace naming {
     inline constexpr char histogramString[]                = "histogram:Histogram";
@@ -573,25 +702,30 @@ namespace Gaudi::Accumulators {
     inline constexpr char profilehistogramString[]         = "histogram:ProfileHistogram";
     inline constexpr char weightedProfilehistogramString[] = "histogram:WeightedProfileHistogram";
   } // namespace naming
+
   /// standard histograming counter. See HistogramingCounterBase for details
-  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using Histogram =
-      HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::histogramString, HistogramingAccumulator>;
+  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double,
+            typename AxisTupleType = make_tuple_t<Axis<Arithmetic>, ND>>
+  using Histogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::histogramString, HistogramingAccumulator,
+                                            AxisTupleType>;
 
   /// standard histograming counter with weight. See HistogramingCounterBase for details
-  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
+  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double,
+            typename AxisTupleType = make_tuple_t<Axis<Arithmetic>, ND>>
   using WeightedHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::weightedHistogramString,
-                                                    WeightedHistogramingAccumulator>;
+                                                    WeightedHistogramingAccumulator, AxisTupleType>;
 
   /// profile histograming counter. See HistogramingCounterBase for details
-  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
+  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double,
+            typename AxisTupleType = make_tuple_t<Axis<Arithmetic>, ND>>
   using ProfileHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::profilehistogramString,
-                                                   ProfileHistogramingAccumulator>;
+                                                   ProfileHistogramingAccumulator, AxisTupleType>;
 
   /// weighted profile histograming counter. See HistogramingCounterBase for details
-  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
+  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double,
+            typename AxisTupleType = make_tuple_t<Axis<Arithmetic>, ND>>
   using WeightedProfileHistogram =
       HistogramingCounterBase<ND, Atomicity, Arithmetic, naming::weightedProfilehistogramString,
-                              WeightedProfileHistogramingAccumulator>;
+                              WeightedProfileHistogramingAccumulator, AxisTupleType>;
 
 } // namespace Gaudi::Accumulators

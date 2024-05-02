@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -208,31 +208,57 @@ BOOST_AUTO_TEST_CASE( test_integer_histos_small_ratio ) {
 }
 
 enum class TestEnum { A, B, C, D };
+std::ostream& operator<<( std::ostream& o, TestEnum v ) {
+  switch ( v ) {
+  case TestEnum::A:
+    o << 'A';
+    break;
+  case TestEnum::B:
+    o << 'B';
+    break;
+  case TestEnum::C:
+    o << 'C';
+    break;
+  case TestEnum::D:
+    o << 'D';
+    break;
+  }
+  return o;
+}
 
 namespace Gaudi::Accumulators {
-  template <>
-  struct Axis<TestEnum> {
+  struct EnumAxis {
+    using ArithmeticType = TestEnum;
     // helper to make the code less verbose
     using storage_t = std::underlying_type_t<TestEnum>;
     // nothing to specify in the constructor as everything is fixed in the enum
-    Axis() = default;
+    EnumAxis() = default;
 
-    unsigned int nBins    = 4;
+    unsigned int numBins() const { return 4; }
     storage_t    minValue = static_cast<storage_t>( TestEnum::A ), maxValue = static_cast<storage_t>( TestEnum::D );
     std::string  title              = "TestEnum";
     std::vector<std::string> labels = { "A", "B", "C", "D" };
     // convert the enum value to the index in the bins, taking into account the underflow bin
-    unsigned int index( TestEnum val ) const { return static_cast<storage_t>( val ) + 1; }
+    unsigned int         index( TestEnum val ) const { return static_cast<storage_t>( val ) + 1; }
+    friend std::ostream& operator<<( std::ostream& o, EnumAxis const& axis ) {
+      return o << axis.numBins() << " " << axis.minValue << " " << axis.maxValue;
+    }
   };
+  void to_json( nlohmann::json& j, const EnumAxis& axis ) {
+    j           = nlohmann::json{ { "nBins", axis.numBins() },
+                                  { "minValue", axis.minValue },
+                                  { "maxValue", axis.maxValue },
+                                  { "title", axis.title } };
+    j["labels"] = axis.labels;
+  }
 } // namespace Gaudi::Accumulators
 
 BOOST_AUTO_TEST_CASE( test_custom_axis ) {
   using namespace Gaudi::Accumulators;
   Algo algo;
 
-  // note that for default constructible axis, we have to specify {{}} otherwise
-  // it is interpreted as an empty array of axes (instead of using the constructor for a single axis)
-  Histogram<1, atomicity::full, TestEnum> hist{ &algo, "TestEnumHist", "TestEnum histogram", Axis<TestEnum>{} };
+  Histogram<1, atomicity::full, TestEnum, std::tuple<EnumAxis>> hist{ &algo, "TestEnumHist", "TestEnum histogram",
+                                                                      EnumAxis{} };
 
   hist[TestEnum::A] += 1;
   ++hist[TestEnum::B];
@@ -250,6 +276,34 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
 
   BOOST_TEST( j["axis"][0]["nBins"] == 4 );
   BOOST_TEST( j["axis"][0]["title"] == "TestEnum" );
+
+  nlohmann::json expected_labels = { "A", "B", "C", "D" };
+  BOOST_TEST( j["axis"][0]["labels"] == expected_labels );
+}
+
+BOOST_AUTO_TEST_CASE( test_mixed_axis ) {
+  using namespace Gaudi::Accumulators;
+  Algo algo;
+
+  Histogram<2, atomicity::full, float, std::tuple<EnumAxis, Axis<float>>> hist{
+      &algo, "TestEnumHist", "TestEnum histogram", EnumAxis{}, { 3, 0, 3, "Value" } };
+
+  hist[{ TestEnum::A, 0.5 }] += 1;
+  ++hist[{ TestEnum::B, 1.5 }];
+  hist[{ TestEnum::C, 2.5 }] += 2;
+
+  auto j = toJSON( hist );
+
+  auto bins = j["bins"];
+  BOOST_TEST( bins[6 + 1] == 1 );
+  BOOST_TEST( bins[6 * 2 + 2] == 1 );
+  BOOST_TEST( bins[6 * 3 + 3] == 2 );
+  BOOST_TEST( bins[6 * 3 + 3] == 2 );
+
+  BOOST_TEST( j["axis"][0]["nBins"] == 4 );
+  BOOST_TEST( j["axis"][0]["title"] == "TestEnum" );
+  BOOST_TEST( j["axis"][1]["nBins"] == 3 );
+  BOOST_TEST( j["axis"][1]["title"] == "Value" );
 
   nlohmann::json expected_labels = { "A", "B", "C", "D" };
   BOOST_TEST( j["axis"][0]["labels"] == expected_labels );

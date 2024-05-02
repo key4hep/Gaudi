@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -411,23 +411,23 @@ namespace Gaudi::Histograming::Sink {
     saveRootHisto<Traits<isProfile, ROOTHisto, N>>( file, std::move( dir ), std::move( name ), j );
   }
 
-  /// Direct conversion of 1D histograms form Gaudi to ROOT format
+  /// Direct conversion of 1D histograms from Gaudi to ROOT format
   template <Accumulators::atomicity Atomicity = Accumulators::atomicity::full, typename Arithmetic = double>
   details::ProfileWrapper<TProfile> profileHisto1DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
     // get original histogram from the Entity
     auto const& gaudiHisto =
         *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<1, Atomicity, Arithmetic>*>( ent.id() );
     // convert to Root
-    auto const&                       gaudiAxis = gaudiHisto.axis()[0];
-    details::ProfileWrapper<TProfile> histo{ name.c_str(), gaudiHisto.title().c_str(), gaudiAxis.nBins,
-                                             gaudiAxis.minValue, gaudiAxis.maxValue };
+    auto const&                       gaudiAxis = gaudiHisto.template axis<0>();
+    details::ProfileWrapper<TProfile> histo{ name.c_str(), gaudiHisto.title().c_str(), gaudiAxis.numBins(),
+                                             gaudiAxis.minValue(), gaudiAxis.maxValue() };
     histo.Sumw2();
     unsigned long totNEntries{ 0 };
     for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) { totNEntries += gaudiHisto.nEntries( i ); }
-    if ( !gaudiAxis.labels.empty() ) {
+    if ( !gaudiAxis.labels().empty() ) {
       auto& axis = *histo.GetXaxis();
-      for ( unsigned int i = 0; i < gaudiAxis.labels.size(); i++ ) {
-        axis.SetBinLabel( i + 1, gaudiAxis.labels[i].c_str() );
+      for ( unsigned int i = 0; i < gaudiAxis.labels().size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiAxis.labels()[i].c_str() );
       }
     }
     for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) {
@@ -441,29 +441,29 @@ namespace Gaudi::Histograming::Sink {
     return histo;
   }
 
-  /// Direct conversion of 2D histograms form Gaudi to ROOT format
+  /// Direct conversion of 2D histograms from Gaudi to ROOT format
   template <Accumulators::atomicity Atomicity = Accumulators::atomicity::full, typename Arithmetic = double>
   details::ProfileWrapper<TProfile2D> profileHisto2DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
     // get original histogram from the Entity
     auto const& gaudiHisto =
         *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<2, Atomicity, Arithmetic>*>( ent.id() );
     // convert to Root
-    auto const&                         gaudiXAxis = gaudiHisto.axis()[0];
-    auto const&                         gaudiYAxis = gaudiHisto.axis()[1];
-    details::ProfileWrapper<TProfile2D> histo{ name.c_str(),        gaudiHisto.title().c_str(), gaudiXAxis.nBins,
-                                               gaudiXAxis.minValue, gaudiXAxis.maxValue,        gaudiYAxis.nBins,
-                                               gaudiYAxis.minValue, gaudiYAxis.maxValue };
+    auto const&                         gaudiXAxis = gaudiHisto.template axis<0>();
+    auto const&                         gaudiYAxis = gaudiHisto.template axis<1>();
+    details::ProfileWrapper<TProfile2D> histo{ name.c_str(),          gaudiHisto.title().c_str(), gaudiXAxis.numBins(),
+                                               gaudiXAxis.minValue(), gaudiXAxis.maxValue(),      gaudiYAxis.numBins(),
+                                               gaudiYAxis.minValue(), gaudiYAxis.maxValue() };
     histo.Sumw2();
-    if ( !gaudiXAxis.labels.empty() ) {
+    if ( !gaudiXAxis.labels().empty() ) {
       auto& axis = *histo.GetXaxis();
-      for ( unsigned int i = 0; i < gaudiXAxis.labels.size(); i++ ) {
-        axis.SetBinLabel( i + 1, gaudiXAxis.labels[i].c_str() );
+      for ( unsigned int i = 0; i < gaudiXAxis.labels().size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiXAxis.labels()[i].c_str() );
       }
     }
-    if ( !gaudiYAxis.labels.empty() ) {
+    if ( !gaudiYAxis.labels().empty() ) {
       auto& axis = *histo.GetYaxis();
-      for ( unsigned int i = 0; i < gaudiYAxis.labels.size(); i++ ) {
-        axis.SetBinLabel( i + 1, gaudiYAxis.labels[i].c_str() );
+      for ( unsigned int i = 0; i < gaudiYAxis.labels().size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiYAxis.labels()[i].c_str() );
       }
     }
     for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) {
@@ -479,37 +479,37 @@ namespace Gaudi::Histograming::Sink {
     return histo;
   }
 
-  /// Direct conversion of 3D histograms form Gaudi to ROOT format
+  /// Direct conversion of 3D histograms from Gaudi to ROOT format
   template <Accumulators::atomicity Atomicity = Accumulators::atomicity::full, typename Arithmetic = double>
   details::ProfileWrapper<TProfile3D> profileHisto3DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
     // get original histogram from the Entity
     auto const& gaudiHisto =
         *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<3, Atomicity, Arithmetic>*>( ent.id() );
     // convert to Root
-    auto const&                         gaudiXAxis = gaudiHisto.axis()[0];
-    auto const&                         gaudiYAxis = gaudiHisto.axis()[1];
-    auto const&                         gaudiZAxis = gaudiHisto.axis()[2];
-    details::ProfileWrapper<TProfile3D> histo{ name.c_str(),        gaudiHisto.title().c_str(), gaudiXAxis.nBins,
-                                               gaudiXAxis.minValue, gaudiXAxis.maxValue,        gaudiYAxis.nBins,
-                                               gaudiYAxis.minValue, gaudiYAxis.maxValue,        gaudiZAxis.nBins,
-                                               gaudiZAxis.minValue, gaudiZAxis.maxValue };
+    auto const&                         gaudiXAxis = gaudiHisto.template axis<0>();
+    auto const&                         gaudiYAxis = gaudiHisto.template axis<1>();
+    auto const&                         gaudiZAxis = gaudiHisto.template axis<2>();
+    details::ProfileWrapper<TProfile3D> histo{ name.c_str(),          gaudiHisto.title().c_str(), gaudiXAxis.numBins(),
+                                               gaudiXAxis.minValue(), gaudiXAxis.maxValue(),      gaudiYAxis.numBins(),
+                                               gaudiYAxis.minValue(), gaudiYAxis.maxValue(),      gaudiZAxis.numBins(),
+                                               gaudiZAxis.minValue(), gaudiZAxis.maxValue() };
     histo.Sumw2();
-    if ( !gaudiXAxis.labels.empty() ) {
+    if ( !gaudiXAxis.labels().empty() ) {
       auto& axis = *histo.GetXaxis();
-      for ( unsigned int i = 0; i < gaudiXAxis.labels.size(); i++ ) {
-        axis.SetBinLabel( i + 1, gaudiXAxis.labels[i].c_str() );
+      for ( unsigned int i = 0; i < gaudiXAxis.labels().size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiXAxis.labels()[i].c_str() );
       }
     }
-    if ( !gaudiYAxis.labels.empty() ) {
+    if ( !gaudiYAxis.labels().empty() ) {
       auto& axis = *histo.GetYaxis();
-      for ( unsigned int i = 0; i < gaudiYAxis.labels.size(); i++ ) {
-        axis.SetBinLabel( i + 1, gaudiYAxis.labels[i].c_str() );
+      for ( unsigned int i = 0; i < gaudiYAxis.labels().size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiYAxis.labels()[i].c_str() );
       }
     }
-    if ( !gaudiZAxis.labels.empty() ) {
+    if ( !gaudiZAxis.labels().empty() ) {
       auto& axis = *histo.GetZaxis();
-      for ( unsigned int i = 0; i < gaudiZAxis.labels.size(); i++ ) {
-        axis.SetBinLabel( i + 1, gaudiZAxis.labels[i].c_str() );
+      for ( unsigned int i = 0; i < gaudiZAxis.labels().size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiZAxis.labels()[i].c_str() );
       }
     }
     for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) {

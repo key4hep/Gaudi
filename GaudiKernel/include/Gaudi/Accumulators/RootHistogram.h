@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,6 +13,14 @@
 #include <Gaudi/Accumulators/Histogram.h>
 
 #include <type_traits>
+
+namespace {
+  template <typename tuple_t>
+  constexpr auto get_array_from_tuple( tuple_t&& tuple ) {
+    constexpr auto get_array = []( auto&&... x ) { return std::array{ std::forward<decltype( x )>( x )... }; };
+    return std::apply( get_array, std::forward<tuple_t>( tuple ) );
+  }
+} // namespace
 
 namespace Gaudi::Accumulators {
 
@@ -111,16 +119,16 @@ namespace Gaudi::Accumulators {
    * Actually a simple extention on top of RootHistograming with an
    * extra SigmaCounter embeded
    */
-  template <atomicity Atomicity, typename Arithmetic, unsigned int ND>
+  template <atomicity Atomicity, typename Arithmetic, unsigned int ND, typename AxisTupleType>
   class RootHistogramingAccumulatorInternal
-      : public HistogramingAccumulatorInternal<Atomicity, HistoInputType<Arithmetic, ND>, unsigned long,
-                                               std::integral_constant<int, ND>, IntegralAccumulator> {
+      : public HistogramingAccumulatorInternal<Atomicity, HistoInputType<AxisToArithmetic_t<AxisTupleType>, ND>,
+                                               unsigned long, IntegralAccumulator, AxisTupleType> {
 
-    using InputType = HistoInputType<Arithmetic, ND>;
-    using Parent = HistogramingAccumulatorInternal<Atomicity, InputType, unsigned long, std::integral_constant<int, ND>,
-                                                   IntegralAccumulator>;
+    using InputType = HistoInputType<AxisToArithmetic_t<AxisTupleType>, ND>;
+    using Parent =
+        HistogramingAccumulatorInternal<Atomicity, InputType, unsigned long, IntegralAccumulator, AxisTupleType>;
 
-    template <atomicity, typename, unsigned int>
+    template <atomicity, typename, unsigned int, typename>
     friend class RootHistogramingAccumulatorInternal;
 
     static_assert( ND <= 3, "Root on supports histogrmas with dimension <= 3" );
@@ -142,7 +150,7 @@ namespace Gaudi::Accumulators {
     friend struct Proxy;
 
     [[deprecated( "Use `++h1[x]`, `++h2[{x,y}]`, etc. instead." )]] RootHistogramingAccumulatorInternal&
-    operator+=( InputType v ) {
+    operator+=( typename InputType::ValueType v ) {
       update( v );
       return *this;
     }
@@ -151,14 +159,14 @@ namespace Gaudi::Accumulators {
       Parent::reset();
     }
     template <atomicity ato>
-    void mergeAndReset( RootHistogramingAccumulatorInternal<ato, Arithmetic, ND>& other ) {
+    void mergeAndReset( RootHistogramingAccumulatorInternal<ato, Arithmetic, ND, AxisTupleType>& other ) {
       m_accumulator.mergeAndReset( other.m_accumulator );
       Parent::mergeAndReset( other );
     }
     [[nodiscard]] auto operator[]( typename InputType::ValueType v ) { return Proxy( *this, v ); }
 
     /// returns the nbentries, sums and "squared sums" of the inputs
-    /// Practically we have first th enumber of entries, then the simple sums of each
+    /// Practically we have first the number of entries, then the simple sums of each
     /// input dimension followed by all combinasions of product of 2 inputs, in "alphabetical" order,
     /// e.g. for ND=3 we have sums of n, x, y, z, x^2, xy, xz, y^2, yz, z^2
     auto sums2() const { return m_accumulator.sums(); }
@@ -167,7 +175,13 @@ namespace Gaudi::Accumulators {
     void update( typename InputType::ValueType v ) {
       // Do not accumulate in m_accumulator if we are outside the histo range
       // We mimic here the behavior of ROOT
-      if ( v.inAcceptance( this->axis() ) ) { m_accumulator += static_cast<typename InputType::InternalType>( v ); }
+      if ( v.inAcceptance( this->axis() ) ) {
+        if constexpr ( ND == 1 ) {
+          m_accumulator += std::get<0>( v );
+        } else {
+          m_accumulator += get_array_from_tuple( static_cast<typename InputType::InternalType>( v ) );
+        }
+      }
       ++Parent::operator[]( v );
     }
     // Accumulator for keeping squared sum of value stored in the histogram and correlation values
@@ -189,14 +203,15 @@ namespace Gaudi::Accumulators {
   /**
    * Class implementing a root histogram accumulator
    */
-  template <atomicity Atomicity, typename Arithmetic, typename ND>
+  template <atomicity Atomicity, typename Arithmetic, typename ND, typename AxisTupleType>
   struct RootHistogramingAccumulator;
 
-  template <atomicity Atomicity, typename Arithmetic>
-  struct RootHistogramingAccumulator<Atomicity, Arithmetic, std::integral_constant<int, 1>>
-      : RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 1> {
-    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 1>::RootHistogramingAccumulatorInternal;
-    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 1>::nEntries;
+  template <atomicity Atomicity, typename Arithmetic, typename AxisTupleType>
+  struct RootHistogramingAccumulator<Atomicity, Arithmetic, std::integral_constant<unsigned int, 1>, AxisTupleType>
+      : RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 1, AxisTupleType> {
+    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 1,
+                                              AxisTupleType>::RootHistogramingAccumulatorInternal;
+    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 1, AxisTupleType>::nEntries;
     Arithmetic nEntries() const { return this->sums2()[0]; }
     Arithmetic sum() const { return this->sums2()[1]; }
     Arithmetic sum2() const { return this->sums2()[2]; }
@@ -204,11 +219,12 @@ namespace Gaudi::Accumulators {
     Arithmetic standard_deviation() const { return stddev( nEntries(), sum(), sum2() ); }
   };
 
-  template <atomicity Atomicity, typename Arithmetic>
-  struct RootHistogramingAccumulator<Atomicity, Arithmetic, std::integral_constant<int, 2>>
-      : RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 2> {
-    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 2>::RootHistogramingAccumulatorInternal;
-    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 2>::nEntries;
+  template <atomicity Atomicity, typename Arithmetic, typename AxisTupleType>
+  struct RootHistogramingAccumulator<Atomicity, Arithmetic, std::integral_constant<unsigned int, 2>, AxisTupleType>
+      : RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 2, AxisTupleType> {
+    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 2,
+                                              AxisTupleType>::RootHistogramingAccumulatorInternal;
+    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 2, AxisTupleType>::nEntries;
     Arithmetic nEntries() const { return this->sums2()[0]; }
     Arithmetic sumx() const { return this->sums2()[1]; }
     Arithmetic sumy() const { return this->sums2()[2]; }
@@ -221,11 +237,12 @@ namespace Gaudi::Accumulators {
     Arithmetic standard_deviationy() const { return stddev( nEntries(), sumy(), sumy2() ); }
   };
 
-  template <atomicity Atomicity, typename Arithmetic>
-  struct RootHistogramingAccumulator<Atomicity, Arithmetic, std::integral_constant<int, 3>>
-      : RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 3> {
-    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 3>::RootHistogramingAccumulatorInternal;
-    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 3>::nEntries;
+  template <atomicity Atomicity, typename Arithmetic, typename AxisTupleType>
+  struct RootHistogramingAccumulator<Atomicity, Arithmetic, std::integral_constant<unsigned int, 3>, AxisTupleType>
+      : RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 3, AxisTupleType> {
+    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 3,
+                                              AxisTupleType>::RootHistogramingAccumulatorInternal;
+    using RootHistogramingAccumulatorInternal<Atomicity, Arithmetic, 3, AxisTupleType>::nEntries;
     Arithmetic nEntries() const { return this->sums2()[0]; }
     Arithmetic sumx() const { return this->sums2()[1]; }
     Arithmetic sumy() const { return this->sums2()[2]; }
@@ -254,27 +271,26 @@ namespace Gaudi::Accumulators {
    * When using pure Gaudi Histograms, and converting to ROOT, ROOT automatically
    * recomputed average and sigma form the bins, but the value is not the expected one
    *
-   * Usage is similar to HistogramingCounterBaseInternal so see the documentation there
+   * Usage is similar to HistogramingCounterBase so see the documentation there
    * Serialization has the following extra fields :
    *   - nTotEntries, sum, sum2, mean in 1D
    *   - nTotEntries, sumx, sumy, sumx2, sumy2, sumxy, meanx, meany in 2D
    *   - nTotEntries, sumx, sumy, sumz, sumx2, sumy2, sumz2, sumxy, sumxz, sumyz, meanx, meany, meanz in 3D
-   * and uses same types as HistogramingCounterBaseInternal
+   * and uses same types as HistogramingCounterBase
    *
    */
-  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type>
+  template <unsigned int ND, atomicity Atomicity, typename Arithmetic, const char* Type, typename AxisTupleType>
   class RootHistogramingCounterBase;
 
-  template <atomicity Atomicity, typename Arithmetic, const char* Type>
-  class RootHistogramingCounterBase<1, Atomicity, Arithmetic, Type>
-      : public HistogramingCounterBaseInternal<1, Atomicity, Arithmetic, Type, RootHistogramingAccumulator,
-                                               std::make_index_sequence<1>> {
+  template <atomicity Atomicity, typename Arithmetic, const char* Type, typename AxisTupleType>
+  class RootHistogramingCounterBase<1, Atomicity, Arithmetic, Type, AxisTupleType>
+      : public HistogramingCounterBase<1, Atomicity, Arithmetic, Type, RootHistogramingAccumulator, AxisTupleType> {
   public:
-    using Parent = HistogramingCounterBaseInternal<1, Atomicity, Arithmetic, Type, RootHistogramingAccumulator,
-                                                   std::make_index_sequence<1>>;
+    using Parent = HistogramingCounterBase<1, Atomicity, Arithmetic, Type, RootHistogramingAccumulator, AxisTupleType>;
     using Parent::Parent;
 
-    friend void to_json( nlohmann::json& j, RootHistogramingCounterBase<1, Atomicity, Arithmetic, Type> const& h ) {
+    friend void to_json( nlohmann::json&                                                                   j,
+                         RootHistogramingCounterBase<1, Atomicity, Arithmetic, Type, AxisTupleType> const& h ) {
       to_json( j, static_cast<Parent const&>( h ) );
       j["nTotEntries"]        = h.nEntries();
       j["sum"]                = h.sum();
@@ -284,16 +300,15 @@ namespace Gaudi::Accumulators {
     }
   };
 
-  template <atomicity Atomicity, typename Arithmetic, const char* Type>
-  class RootHistogramingCounterBase<2, Atomicity, Arithmetic, Type>
-      : public HistogramingCounterBaseInternal<2, Atomicity, Arithmetic, Type, RootHistogramingAccumulator,
-                                               std::make_index_sequence<2>> {
+  template <atomicity Atomicity, typename Arithmetic, const char* Type, typename AxisTupleType>
+  class RootHistogramingCounterBase<2, Atomicity, Arithmetic, Type, AxisTupleType>
+      : public HistogramingCounterBase<2, Atomicity, Arithmetic, Type, RootHistogramingAccumulator, AxisTupleType> {
   public:
-    using Parent = HistogramingCounterBaseInternal<2, Atomicity, Arithmetic, Type, RootHistogramingAccumulator,
-                                                   std::make_index_sequence<2>>;
+    using Parent = HistogramingCounterBase<2, Atomicity, Arithmetic, Type, RootHistogramingAccumulator, AxisTupleType>;
     using Parent::Parent;
 
-    friend void to_json( nlohmann::json& j, RootHistogramingCounterBase<2, Atomicity, Arithmetic, Type> const& h ) {
+    friend void to_json( nlohmann::json&                                                                   j,
+                         RootHistogramingCounterBase<2, Atomicity, Arithmetic, Type, AxisTupleType> const& h ) {
       to_json( j, static_cast<Parent const&>( h ) );
       j["nTotEntries"]         = h.nEntries();
       j["sumx"]                = h.sumx();
@@ -308,16 +323,15 @@ namespace Gaudi::Accumulators {
     }
   };
 
-  template <atomicity Atomicity, typename Arithmetic, const char* Type>
-  class RootHistogramingCounterBase<3, Atomicity, Arithmetic, Type>
-      : public HistogramingCounterBaseInternal<3, Atomicity, Arithmetic, Type, RootHistogramingAccumulator,
-                                               std::make_index_sequence<3>> {
+  template <atomicity Atomicity, typename Arithmetic, const char* Type, typename AxisTupleType>
+  class RootHistogramingCounterBase<3, Atomicity, Arithmetic, Type, AxisTupleType>
+      : public HistogramingCounterBase<3, Atomicity, Arithmetic, Type, RootHistogramingAccumulator, AxisTupleType> {
   public:
-    using Parent = HistogramingCounterBaseInternal<3, Atomicity, Arithmetic, Type, RootHistogramingAccumulator,
-                                                   std::make_index_sequence<3>>;
+    using Parent = HistogramingCounterBase<3, Atomicity, Arithmetic, Type, RootHistogramingAccumulator, AxisTupleType>;
     using Parent::Parent;
 
-    friend void to_json( nlohmann::json& j, RootHistogramingCounterBase<3, Atomicity, Arithmetic, Type> const& h ) {
+    friend void to_json( nlohmann::json&                                                                   j,
+                         RootHistogramingCounterBase<3, Atomicity, Arithmetic, Type, AxisTupleType> const& h ) {
       to_json( j, static_cast<Parent const&>( h ) );
       j["nTotEntries"]         = h.nEntries();
       j["sumx"]                = h.sumx();
@@ -339,7 +353,8 @@ namespace Gaudi::Accumulators {
   };
 
   /// Root histograming counter. See RootHistogramingCounterBase for details
-  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using RootHistogram = RootHistogramingCounterBase<ND, Atomicity, Arithmetic, naming::histogramString>;
+  template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double,
+            typename AxisTupleType = make_tuple_t<Axis<Arithmetic>, ND>>
+  using RootHistogram = RootHistogramingCounterBase<ND, Atomicity, Arithmetic, naming::histogramString, AxisTupleType>;
 
 } // namespace Gaudi::Accumulators
