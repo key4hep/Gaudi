@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,6 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include <Gaudi/Accumulators/CustomHistogram.h>
+#include <Gaudi/Accumulators/CustomRootHistogram.h>
 #include <Gaudi/Accumulators/Histogram.h>
 #include <Gaudi/Accumulators/RootHistogram.h>
 #include <Gaudi/Algorithm.h>
@@ -77,6 +79,10 @@ namespace Gaudi {
       public:
         using Gaudi::Algorithm::Algorithm;
 
+        StatusCode initialize() override {
+          return Algorithm::initialize().andThen( [&] { m_custom_gauss_noinit.createHistogram( *this ); } );
+        }
+
         StatusCode execute( const EventContext& ) const override {
           // some random number generators, just to provide numbers
           static Rndm::Numbers Gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
@@ -145,6 +151,22 @@ namespace Gaudi {
           // using CaloHistogram
           m_log_gauss[gauss]++;
           m_log_gaussVflat[{ flat, gauss }]++;
+
+          // using Custom histograms, with title and axis defined in python
+          ++m_custom_gauss_noprop[gauss];
+          ++m_custom_gauss[gauss];
+          ++m_custom_gaussVflat[{ flat, gauss }];
+          ++m_custom_gaussVflatVgauss[{ flat, gauss, gauss2 }];
+          m_custom_gauss_w[gauss] += .5;
+          m_custom_gaussVflat_w[{ flat, gauss }] += .5;
+          m_custom_gaussVflatVgauss_w[{ flat, gauss, gauss2 }] += .5;
+          m_custom_prof_gauss[gauss] += gauss3;
+          m_custom_prof_gaussVflat[{ flat, gauss }] += gauss3;
+          m_custom_prof_gaussVflatVgauss[{ flat, gauss, gauss2 }] += gauss3;
+          m_custom_prof_gauss_w[gauss] += { gauss3, .5 };
+          m_custom_prof_gaussVflat_w[{ flat, gauss }] += { gauss3, .5 };
+          m_custom_prof_gaussVflatVgauss_w[{ flat, gauss, gauss2 }] += { gauss3, .5 };
+          ++m_custom_gauss_noinit[gauss];
 
           if ( m_nCalls.nEntries() == 0 ) always() << "Filling Histograms...... Please be patient !" << endmsg;
           ++m_nCalls;
@@ -279,6 +301,34 @@ namespace Gaudi {
         // Histogram in an absolute location
         mutable Gaudi::Accumulators::Histogram<1> m_gaussAbsName{
             this, "/TopDir/SubDir/Gauss", "Gaussian mean=0, sigma=1, atomic", { 100, -5, 5, "X" } };
+
+        // Custom histograms, specifying title and axis in python
+        mutable Gaudi::Accumulators::CustomHistogram<1> m_custom_gauss_noprop{
+            this, "CustomGaussNoProp", "Gaussian mean=0, sigma=1, atomic", { 100, -5, 5, "X" } };
+        mutable Gaudi::Accumulators::CustomHistogram<1> m_custom_gauss{ this, "CustomGauss" };
+        mutable Gaudi::Accumulators::CustomHistogram<2> m_custom_gaussVflat{ this, "CustomGaussFlat" };
+        mutable Gaudi::Accumulators::CustomHistogram<3> m_custom_gaussVflatVgauss{ this, "CustomGaussFlatGauss" };
+
+        mutable Gaudi::Accumulators::CustomWeightedHistogram<1> m_custom_gauss_w{ this, "CustomGaussW" };
+        mutable Gaudi::Accumulators::CustomWeightedHistogram<2> m_custom_gaussVflat_w{ this, "CustomGaussFlatW" };
+        mutable Gaudi::Accumulators::CustomWeightedHistogram<3> m_custom_gaussVflatVgauss_w{ this,
+                                                                                             "CustomGaussFlatGaussW" };
+
+        mutable Gaudi::Accumulators::CustomProfileHistogram<1> m_custom_prof_gauss{ this, "CustomProfGauss" };
+        mutable Gaudi::Accumulators::CustomProfileHistogram<2> m_custom_prof_gaussVflat{ this, "CustomProfGaussFlat" };
+        mutable Gaudi::Accumulators::CustomProfileHistogram<3> m_custom_prof_gaussVflatVgauss{
+            this, "CustomProfGaussFlatGauss" };
+
+        mutable Gaudi::Accumulators::CustomWeightedProfileHistogram<1> m_custom_prof_gauss_w{ this,
+                                                                                              "CustomProfGaussW" };
+        mutable Gaudi::Accumulators::CustomWeightedProfileHistogram<2> m_custom_prof_gaussVflat_w{
+            this, "CustomProfGaussFlatW" };
+        mutable Gaudi::Accumulators::CustomWeightedProfileHistogram<3> m_custom_prof_gaussVflatVgauss_w{
+            this, "CustomProfGaussFlatGaussW" };
+
+        // Checking DoNotInitialize property of CustomHistogram
+        mutable Gaudi::Accumulators::CustomHistogram<1> m_custom_gauss_noinit{
+            this, "CustomGaussNoInit", "", {}, true };
       };
       DECLARE_COMPONENT( GaudiHistoAlgorithm )
 
@@ -312,6 +362,11 @@ namespace Gaudi {
             ++gaussVflatVgauss_buf[{ flat, gauss, gauss2 }];
           }
 
+          // custom histograms, with title and axis defined in python
+          ++m_custom_gauss[gauss];
+          ++m_custom_gaussVflat[{ flat, gauss }];
+          ++m_custom_gaussVflatVgauss[{ flat, gauss, gauss2 }];
+
           if ( m_nCalls.nEntries() == 0 ) always() << "Filling Histograms...... Please be patient !" << endmsg;
           ++m_nCalls;
           return StatusCode::SUCCESS;
@@ -343,6 +398,14 @@ namespace Gaudi {
             "GaussFlatGaussBuf",
             "Gaussian V Flat V Gaussian, buffered",
             { { 10, -5, 5 }, { 10, -5, 5 }, { 10, -5, 5 } } };
+
+        // Custom histogram cases, specifying title and axis in python
+        mutable Gaudi::Accumulators::CustomRootHistogram<1> m_custom_gauss{ this, "CustomGauss",
+                                                                            "Gaussian mean=0, sigma=1, atomic" };
+        mutable Gaudi::Accumulators::CustomRootHistogram<2> m_custom_gaussVflat{ this, "CustomGaussFlat",
+                                                                                 "Gaussian V Flat, atomic" };
+        mutable Gaudi::Accumulators::CustomRootHistogram<3> m_custom_gaussVflatVgauss{
+            this, "CustomGaussFlatGauss", "Gaussian V Flat V Gaussian, atomic" };
       };
       DECLARE_COMPONENT( GaudiRootHistoAlgorithm )
     } // namespace Counter
