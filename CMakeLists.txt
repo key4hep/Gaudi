@@ -55,6 +55,7 @@ after the configuration or use ccmake or cmake-gui.
 * For sanitized build
   * GAUDI_GENCONF_NO_FAIL
 * Compile options
+  * GAUDI_BUILD_EXAMPLES
   * GAUDI_ENABLE_GAUDIALG
   * GAUDI_ENABLE_GAUDIPARTPROP
   * GAUDI_REFLEX_COMPONENT_ALIASES
@@ -112,6 +113,7 @@ list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules") # (Find*.c
 include(cmake/GaudiDependencies.cmake)
 
 string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "
+set(GAUDI_BUILD_EXAMPLES ${GAUDI_BUILD_EXAMPLES})
 set(GAUDI_ENABLE_GAUDIALG ${GAUDI_ENABLE_GAUDIALG})
 set(GAUDI_ENABLE_GAUDIPARTPROP ${GAUDI_ENABLE_GAUDIPARTPROP})
 ")
@@ -172,6 +174,7 @@ add_subdirectory(PartPropSvc)
 add_subdirectory(RootCnv)
 add_subdirectory(RootHistCnv)
 add_subdirectory(GaudiTestSuite)
+add_subdirectory(GaudiExamples)
 
 # Generate GAUDI_VERSION.h
 gaudi_generate_version_header_file()
