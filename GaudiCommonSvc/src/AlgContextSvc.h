@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -49,7 +49,13 @@ public:
   /// accessor to current algorithm: @see IAlgContextSvc
   IAlgorithm* currentAlg() const override;
   /// get the stack of executed algorithms @see IAlgContextSvc
-  const IAlgContextSvc::Algorithms& algorithms() const override { return *m_algorithms; }
+  const IAlgContextSvc::Algorithms& algorithms() const override {
+    if ( !m_algorithms.get() ) {
+      static IAlgContextSvc::Algorithms empty;
+      return empty;
+    }
+    return *m_algorithms;
+  }
 
 public:
   /// handle incident @see IIncidentListener
