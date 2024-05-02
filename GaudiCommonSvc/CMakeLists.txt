@@ -70,3 +70,22 @@ if(GAUDI_USE_AIDA)
                                         src/HistogramPersistencySvc/HistogramPersistencySvc.cpp)
   target_link_libraries(GaudiCommonSvc PRIVATE AIDA::aida GaudiCommonSvcLib)
 endif()
+
+if(BUILD_TESTING)
+    gaudi_add_executable(test_AlgContextSvc
+        SOURCES
+            src/AlgContextSvc.cpp
+        LINK
+            Boost::headers
+            Catch2::Catch2WithMain
+            Gaudi::GaudiKernel
+        TEST
+    )
+    target_compile_definitions(test_AlgContextSvc PRIVATE BUILD_UNIT_TESTS)
+    catch_discover_tests(test_AlgContextSvc
+        TEST_PREFIX GaudiCommonSvc.
+        PROPERTIES
+            LABELS "Gaudi"
+            LABELS "Gaudi.GaudiCommonSvc"
+    )
+endif()

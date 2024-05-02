@@ -205,3 +205,71 @@ void AlgContextSvc::handle( const Incident& inc ) {
   //   }
   // }
 }
+
+// From here on, we have unit tests.
+#if defined( BUILD_UNIT_TESTS )
+#  if __has_include( <catch2/catch.hpp>)
+// Catch2 v2
+#    include <catch2/catch.hpp>
+#  else
+// Catch2 v3
+#    include <catch2/catch_test_macros.hpp>
+#  endif
+
+#  include <Gaudi/Algorithm.h>
+
+namespace mock {
+  struct ServiceLocator : implements<ISvcLocator> {
+    std::list<IService*> m_services;
+    SmartIF<IService>    m_null_svc;
+
+    const std::list<IService*>& getServices() const override { return m_services; }
+    bool                        existsService( std::string_view /* name */ ) const override { return false; }
+    SmartIF<IService>&          service( const Gaudi::Utils::TypeNameString& /* typeName */,
+                                         const bool /* createIf */ ) override {
+      return m_null_svc;
+    }
+  };
+  struct Algorithm : Gaudi::Algorithm {
+    using Gaudi::Algorithm::Algorithm;
+    StatusCode execute( const EventContext& ) const override { return StatusCode::SUCCESS; }
+  };
+} // namespace mock
+
+TEST_CASE( "AlgContextSvc basic operations" ) {
+  SmartIF<ISvcLocator> svcLoc{ new mock::ServiceLocator };
+  AlgContextSvc        acs{ "AlgContextSvc", svcLoc };
+  REQUIRE( acs.setProperty( "BypassIncidents", true ).isSuccess() ); // do not try to invoke incident svc
+
+  // check that algorithms() never returns a nullptr
+  // (see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/304)
+  auto empty_algorithms = &acs.algorithms();
+  REQUIRE( empty_algorithms != nullptr );
+  CHECK( empty_algorithms->empty() );
+
+  mock::Algorithm alg{ "dummy", svcLoc };
+  EventContext    ctx;
+
+  // add an algorithm
+  REQUIRE( acs.setCurrentAlg( &alg, ctx ).isSuccess() );
+  {
+    auto algorithms = &acs.algorithms();
+
+    // what we get before adding the first algorithm is a dummy static instance
+    // see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/304#note_7930366
+    CHECK( empty_algorithms != algorithms );
+
+    REQUIRE( algorithms != nullptr );
+    REQUIRE( algorithms->size() == 1 );
+    CHECK( algorithms->at( 0 ) == &alg );
+  }
+
+  // removing the algorithm results in a an empty list
+  REQUIRE( acs.unSetCurrentAlg( &alg, ctx ).isSuccess() );
+  {
+    auto algorithms = &acs.algorithms();
+    REQUIRE( algorithms != nullptr );
+    REQUIRE( algorithms->empty() );
+  }
+}
+#endif
