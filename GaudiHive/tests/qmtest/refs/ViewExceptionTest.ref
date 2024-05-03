@@ -107,7 +107,7 @@ WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the m
 
 ---------------------------- Task/CF/FSM Mapping [target slot] --------------------------
 
-[ slot: 0  event: 1 ]:
+[ slot: 0, event: 1 ]:
 
 ERROR alg(s): in subslot(s)
 

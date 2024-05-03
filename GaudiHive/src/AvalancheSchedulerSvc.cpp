@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -591,6 +591,10 @@ StatusCode AvalancheSchedulerSvc::pushNewEvents( std::vector<EventContext*>& eve
 unsigned int AvalancheSchedulerSvc::freeSlots() { return std::max( m_freeSlots.load(), 0 ); }
 
 //---------------------------------------------------------------------------
+
+void AvalancheSchedulerSvc::dumpState() { dumpSchedulerState( -1 ); }
+
+//---------------------------------------------------------------------------
 /**
  * Get a finished event or block until one becomes available.
  */
@@ -927,9 +931,11 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
     outputMS << "[ slot: "
              << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]" )
-             << "  event: "
-             << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->evt() ) : "[ctx invalid]" )
-             << " ]:\n\n";
+             << ", event: "
+             << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->evt() ) : "[ctx invalid]" );
+
+    if ( slot.eventContext->eventID().isValid() ) { outputMS << ", eventID: " << slot.eventContext->eventID(); }
+    outputMS << " ]:\n\n";
 
     if ( 0 > iSlot || iSlot == slotCount ) {
 
