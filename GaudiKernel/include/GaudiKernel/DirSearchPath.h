@@ -18,8 +18,10 @@
 #include "boost/filesystem/exception.hpp" /*filesystem_error*/
 #include "boost/filesystem/path.hpp"
 #include <functional> /* binary_function */
+#include <list>
 #include <string>
 #include <vector>
+
 /** @class DirSearchPath
  * @brief search for files in a list of directories
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
