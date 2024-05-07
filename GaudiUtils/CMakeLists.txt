@@ -13,8 +13,10 @@
 # Build libraries
 gaudi_add_library(GaudiUtilsLib
                   SOURCES src/Lib/QuasiRandom.cpp
+                  src/Lib/BranchWrapper.cpp
                   LINK
                     PUBLIC GaudiKernel
+                           Gaudi::Functional
                            ROOT::RIO
                            ROOT::Hist
                            ROOT::Thread
@@ -44,9 +46,12 @@ gaudi_add_module(GaudiUtils
                     src/component/MultiFileCatalog.cpp
                     src/component/VFSSvc.cpp
                     src/component/createGuidAsString.cpp
+                    src/component/GenericNTupleWriter.cpp
                   LINK
                     GaudiUtilsLib
-                    UUID::uuid)
+                    Gaudi::Functional
+                    UUID::uuid
+                    ROOT::Tree)
 
 if(GAUDI_USE_XERCESC)
   target_sources(GaudiUtils PRIVATE src/component/XMLCatalogTest.cpp
@@ -55,37 +60,53 @@ if(GAUDI_USE_XERCESC)
 endif()
 
 # Build and register tests
-if(BUILD_TESTING AND GAUDI_USE_CPPUNIT AND GAUDI_USE_XERCESC)
-  get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  gaudi_add_executable(testXMLFileCatalogWrite
-                        SOURCES
-                          src/component/createGuidAsString.cpp
-                          src/component/XMLCatalogTest.cpp
-                          src/component/XMLFileCatalog.cpp
-                        LINK
-                          GaudiUtilsLib
-                          GaudiKernel
-                          UUID::uuid
-                          XercesC::XercesC)
-  set_property(TARGET testXMLFileCatalogWrite
-    APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
-  add_test(NAME ${package_name}.testXMLFileCatalogWrite
-           COMMAND run $<TARGET_FILE:testXMLFileCatalogWrite>)
+if(BUILD_TESTING)
+  if(GAUDI_USE_CPPUNIT AND GAUDI_USE_XERCESC)
+    get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+    gaudi_add_executable(testXMLFileCatalogWrite
+                          SOURCES
+                            src/component/createGuidAsString.cpp
+                            src/component/XMLCatalogTest.cpp
+                            src/component/XMLFileCatalog.cpp
+                          LINK
+                            GaudiUtilsLib
+                            GaudiKernel
+                            UUID::uuid
+                            XercesC::XercesC)
+    set_property(TARGET testXMLFileCatalogWrite
+      APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
+    add_test(NAME ${package_name}.testXMLFileCatalogWrite
+            COMMAND run $<TARGET_FILE:testXMLFileCatalogWrite>)
 
-  gaudi_add_executable(testXMLFileCatalogRead
-                        SOURCES
-                          src/component/createGuidAsString.cpp
-                          src/component/XMLCatalogTest.cpp
-                          src/component/XMLFileCatalog.cpp
-                        LINK
-                          GaudiUtilsLib
-                          GaudiKernel
-                          UUID::uuid
-                          XercesC::XercesC)
-  set_property(TARGET testXMLFileCatalogRead
-    APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogRead=main)
-  add_test(NAME ${package_name}.testXMLFileCatalogRead
-           COMMAND run $<TARGET_FILE:testXMLFileCatalogRead>)
-  set_property(TEST ${package_name}.testXMLFileCatalogRead
-    PROPERTY DEPENDS ${package_name}.testXMLFileCatalogWrite)
+    gaudi_add_executable(testXMLFileCatalogRead
+                          SOURCES
+                            src/component/createGuidAsString.cpp
+                            src/component/XMLCatalogTest.cpp
+                            src/component/XMLFileCatalog.cpp
+                          LINK
+                            GaudiUtilsLib
+                            GaudiKernel
+                            UUID::uuid
+                            XercesC::XercesC)
+    set_property(TARGET testXMLFileCatalogRead
+      APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogRead=main)
+    add_test(NAME ${package_name}.testXMLFileCatalogRead
+            COMMAND run $<TARGET_FILE:testXMLFileCatalogRead>)
+    set_property(TEST ${package_name}.testXMLFileCatalogRead
+      PROPERTY DEPENDS ${package_name}.testXMLFileCatalogWrite)
+  endif()
+
+  gaudi_add_executable(test_GenericNTupleWriter
+        SOURCES
+            src/component/GenericNTupleWriter.cpp
+        LINK
+            GaudiUtilsLib
+            Boost::headers
+            Boost::unit_test_framework
+            fmt::fmt
+            Gaudi::GaudiKernel
+            ROOT::Tree
+        TEST
+    )
+    target_compile_definitions(test_GenericNTupleWriter PRIVATE UNIT_TESTS)
 endif()
