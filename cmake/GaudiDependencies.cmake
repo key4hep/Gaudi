@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -97,7 +97,7 @@ set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables
 foreach(component IN ITEMS system filesystem regex thread python unit_test_framework
                            program_options log log_setup graph atomic chrono
-                           date_time headers)
+                           date_time headers chrono)
   mark_as_advanced(boost_${component}_DIR)
 endforeach()
 
