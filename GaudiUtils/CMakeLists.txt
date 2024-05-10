@@ -12,8 +12,10 @@
 
 # Build libraries
 gaudi_add_library(GaudiUtilsLib
-                  SOURCES src/Lib/QuasiRandom.cpp
-                  src/Lib/BranchWrapper.cpp
+                  SOURCES
+                      src/Lib/QuasiRandom.cpp
+                      src/Lib/BranchWrapper.cpp
+                      src/Lib/PeriodicAction.cpp
                   LINK
                     PUBLIC GaudiKernel
                            Gaudi::Functional
@@ -23,7 +25,9 @@ gaudi_add_library(GaudiUtilsLib
                            ROOT::Matrix
                            ROOT::MathCore
                            ROOT::Tree
-                           ROOT::XMLIO)
+                           ROOT::XMLIO
+                           Threads::Threads
+)
 if(GAUDI_USE_AIDA)
   target_sources(GaudiUtilsLib PRIVATE
                   src/Lib/Aida2ROOT.cpp
@@ -110,4 +114,20 @@ if(BUILD_TESTING)
         TEST
     )
     target_compile_definitions(test_GenericNTupleWriter PRIVATE UNIT_TESTS)
+
+  gaudi_add_executable(GaudiUtilsTests
+      SOURCES
+          src/tests/PeriodicAction.cpp
+      LINK
+          Catch2::Catch2WithMain
+          GaudiUtilsLib
+  )
+  target_include_directories(GaudiUtilsTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  target_compile_definitions(GaudiUtilsTests PRIVATE BUILD_UNIT_TESTS)
+  catch_discover_tests(GaudiUtilsTests
+      TEST_PREFIX GaudiUtils.
+      PROPERTIES
+          LABELS "Gaudi"
+          LABELS "Gaudi.GaudiUtils"
+  )
 endif()
