@@ -44,6 +44,7 @@ endif()
 
 gaudi_add_module(GaudiUtils
                   SOURCES
+                    src/component/EventWatchdogAlg.cpp
                     src/component/FileReadTool.cpp
                     src/component/SignalMonitorSvc.cpp
                     src/component/IODataManager.cpp
