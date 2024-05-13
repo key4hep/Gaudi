@@ -89,6 +89,8 @@ StatusCode StalledEventMonitor::initialize() {
   StatusCode sc = base_class::initialize();
   if ( sc.isFailure() ) return sc;
 
+  warning() << "the service StalledEventMonitor is deprecated, please use Gaudi::EventWatchdogAlg" << endmsg;
+
   if ( m_eventTimeout ) {
     // create the watchdog thread
     m_watchdog = std::make_unique<EventWatchdog>(

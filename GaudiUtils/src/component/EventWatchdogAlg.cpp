@@ -48,6 +48,22 @@ namespace Gaudi {
       m_eventTimeout.verifier().setLower( 1 );
     }
 
+    StatusCode initialize() override {
+      return Transformer::initialize().andThen( [this] {
+        if ( !service( "StalledEventMonitor", false, true ) ) {
+          // StalledEventMonitor was not instantiated, so we try to steal its options
+          auto& opts = serviceLocator()->getOptsSvc();
+          opts.bind( "StalledEventMonitor", &m_eventTimeout );
+          opts.bind( "StalledEventMonitor", &m_stackTrace );
+          if ( opts.isSet( "StalledEventMonitor.MaxTimeoutCount" ) ) {
+            Gaudi::Property<int> maxCount{ "MaxTimeoutCount", 0 };
+            opts.bind( "StalledEventMonitor", &maxCount );
+            m_abortOnTimeout = maxCount.value() >= 0;
+          }
+        }
+      } );
+    }
+
     PeriodicAction operator()( EventContext const& ) const override {
       using namespace std::chrono_literals;
       // we use a functor because we cannot pass mutable states to a lambda

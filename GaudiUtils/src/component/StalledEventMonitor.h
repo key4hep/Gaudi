@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -58,11 +58,15 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<unsigned int> m_eventTimeout{
-      this, "EventTimeout", 600, "Number of seconds allowed to process a single event (0 to disable the check)." };
-  Gaudi::Property<int>  m_maxTimeoutCount{ this, "MaxTimeoutCount", 0,
-                                          "Number timeouts before aborting the execution (0 means never abort)." };
-  Gaudi::Property<bool> m_stackTrace{ this, "StackTrace", false, "Whether to print the stack-trace on timeout." };
+  Gaudi::Property<unsigned int> m_eventTimeout{ this, "EventTimeout", 600,
+                                                "[[deprecated]] **use Gaudi::EventWatchdogAlg** - Number of seconds "
+                                                "allowed to process a single event (0 to disable the check)." };
+  Gaudi::Property<int>          m_maxTimeoutCount{ this, "MaxTimeoutCount", 0,
+                                          "[[deprecated]] **use Gaudi::EventWatchdogAlg** - Number timeouts before "
+                                                   "aborting the execution (0 means never abort)." };
+  Gaudi::Property<bool>         m_stackTrace{
+      this, "StackTrace", false,
+      "[[deprecated]] **use Gaudi::EventWatchdogAlg** - Whether to print the stack-trace on timeout." };
 
   /// Pointer to the watchdog thread that checks for the event timeout.
   std::unique_ptr<WatchdogThread> m_watchdog;
