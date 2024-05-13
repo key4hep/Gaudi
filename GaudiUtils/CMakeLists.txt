@@ -48,7 +48,6 @@ gaudi_add_module(GaudiUtils
                     src/component/FileReadTool.cpp
                     src/component/SignalMonitorSvc.cpp
                     src/component/IODataManager.cpp
-                    src/component/StalledEventMonitor.cpp
                     src/component/MultiFileCatalog.cpp
                     src/component/VFSSvc.cpp
                     src/component/createGuidAsString.cpp

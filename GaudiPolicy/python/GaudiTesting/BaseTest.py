@@ -1196,6 +1196,7 @@ lineSkipper = LineSkipper(
         # ignore uninteresting/obsolete messages
         r"Property update for OutputLevel : new value =",
         r"EventLoopMgr\s*DEBUG Creating OutputStream",
+        r".*StalledEventMonitoring.*",
     ],
 )
 
