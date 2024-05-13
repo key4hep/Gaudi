@@ -17,7 +17,8 @@
 #include <chrono>
 #include <csignal>
 #include <fmt/format.h>
-#include <iostream>
+#include <fmt/ostream.h>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -34,6 +35,10 @@ namespace {
   // for example requiring a stack trace while already producing one
   std::mutex s_watchdogReportMutex;
 } // namespace
+
+// make EventContext formattable via fmt
+template <>
+struct fmt::formatter<EventContext> : ostream_formatter {};
 
 using Gaudi::Utils::PeriodicAction;
 
@@ -64,7 +69,7 @@ namespace Gaudi {
       } );
     }
 
-    PeriodicAction operator()( EventContext const& ) const override {
+    PeriodicAction operator()( EventContext const& ctx ) const override {
       using namespace std::chrono_literals;
       // we use a functor because we cannot pass mutable states to a lambda
       struct Action {
@@ -72,16 +77,19 @@ namespace Gaudi {
         const bool         doStackTrace;
         const bool         abortOnTimeout;
         const unsigned int timeout;
-        int                counter{ 0 };
+        const EventContext ctx;
+
+        int counter{ 0 };
 
         const std::chrono::steady_clock::time_point eventStart{ std::chrono::steady_clock::now() };
 
         void operator()() {
           ++counter;
           if ( counter == 1 ) {
-            log << MSG::WARNING << fmt::format( "More than {}s since the beginning of the event", timeout ) << endmsg;
+            log << MSG::WARNING << fmt::format( "More than {}s since the beginning of the event ({})", timeout, ctx )
+                << endmsg;
           } else {
-            log << MSG::WARNING << fmt::format( "Another {}s passed since last timeout", timeout ) << endmsg;
+            log << MSG::WARNING << fmt::format( "Another {}s passed since last timeout ({})", timeout, ctx ) << endmsg;
           }
           if ( log.level() <= MSG::INFO ) {
             log << MSG::INFO
@@ -93,11 +101,11 @@ namespace Gaudi {
           std::scoped_lock protectReport( s_watchdogReportMutex );
           if ( doStackTrace && gSystem ) {
             // TSystem::StackTrace() prints on the standard error, so we do the same
-            std::cerr << "=== Stalled event: current stack trace ===" << std::endl;
+            fmt::print( stderr, "=== Stalled event: current stack trace ({}) ===\n", ctx );
             gSystem->StackTrace();
           }
           if ( abortOnTimeout ) {
-            log << MSG::FATAL << "too much time on a single event: aborting process" << endmsg;
+            log << MSG::FATAL << fmt::format( "too much time on a single event ({}): aborting process", ctx ) << endmsg;
             std::raise( SIGQUIT );
           }
         }
@@ -106,11 +114,13 @@ namespace Gaudi {
           if ( counter ) {
             const std::chrono::duration<float, std::chrono::seconds::period> duration =
                 std::chrono::steady_clock::now() - eventStart;
-            log << MSG::INFO << fmt::format( "The last event took {:.3f}s", duration.count() ) << endmsg;
+            log << MSG::INFO << fmt::format( "An event ({}) took {:.3f}s", ctx, duration.count() ) << endmsg;
           }
         }
       };
-      Action action{ MsgStream{ msgSvc(), "EventWatchdog" }, m_stackTrace, m_abortOnTimeout, m_eventTimeout };
+      Action action{ MsgStream{ msgSvc(), "EventWatchdog" }, m_stackTrace, m_abortOnTimeout, m_eventTimeout,
+                     // use a partial copy of the context to avoid copying the optional extension
+                     EventContext{ ctx.evt(), ctx.slot(), ctx.subSlot() } };
       return PeriodicAction( std::move( action ), std::chrono::seconds{ m_eventTimeout } );
     }
 
