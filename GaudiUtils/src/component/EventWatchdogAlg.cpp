@@ -36,9 +36,11 @@ namespace {
   std::mutex s_watchdogReportMutex;
 } // namespace
 
+#if FMT_VERSION >= 90000
 // make EventContext formattable via fmt
 template <>
 struct fmt::formatter<EventContext> : ostream_formatter {};
+#endif
 
 using Gaudi::Utils::PeriodicAction;
 
