@@ -47,7 +47,7 @@ def _isCompatible(tp, value):
         # TODO: implement type checking for references
         return value  # references are valid
     if tp is str:
-        if (type(value) is str) or derives_from(value, "Configurable"):
+        if isinstance(value, str) or derives_from(value, "Configurable"):
             # we can set string properties only from strings or configurables
             return value
         elif isinstance(value, DataHandle):

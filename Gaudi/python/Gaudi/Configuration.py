@@ -121,7 +121,7 @@ def getConfigurable(name, defaultType=None):
         if defaultType is None:
             # try to use the name of the configurable as default type
             defaultType = name
-        if type(defaultType) is str:
+        if isinstance(defaultType, str):
             # we need to convert from string to actual class
             if defaultType in globals():
                 # We the type is defined in the global namespace

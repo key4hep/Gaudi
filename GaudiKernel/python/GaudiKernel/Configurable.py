@@ -455,7 +455,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
 
     # hierarchy building, and ownership rules of children
     def __iadd__(self, configs, descr=None):
-        if not type(configs) in (list, tuple):
+        if not isinstance(configs, (list, tuple)):
             configs = (configs,)
 
         joname = self.getJobOptName()
@@ -1398,12 +1398,12 @@ class ConfigurableUser(Configurable):
             # for the used configurables
             used_name = Configurable.DefaultName
             # If the entry in the list is a tuple, we need a named instance
-            if type(used) is tuple:
+            if isinstance(used, tuple):
                 used, used_name = used  # we re-set used to re-use the code below
                 if not used_name:
                     used_name = self._instanceName(used)
             # Check is 'used' is a string or not
-            if type(used) is str:
+            if isinstance(used, str):
                 used_class = confDbGetConfigurable(used)
             else:
                 used_class = used
@@ -1418,7 +1418,7 @@ class ConfigurableUser(Configurable):
             self.__addActiveUseOf(inst)
         for queried in self.__queried_configurables__:
             try:
-                if type(queried) is str:
+                if isinstance(queried, str):
                     queried = confDbGetConfigurable(queried)
                 inst = queried(_enabled=False)
             except AttributeError:
@@ -1548,7 +1548,7 @@ class ConfigurableUser(Configurable):
         This method is used when the __used_configurables_property__ declares the
         need of a private used configurable without specifying the name.
         """
-        if type(cls) is str:
+        if isinstance(cls, str):
             clName = cls
         else:
             clName = cls.__name__

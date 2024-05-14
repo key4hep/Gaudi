@@ -105,7 +105,7 @@ class Task(object):
             else:
                 raise TypeError("result cannot be added")
         # --Dictionary---
-        elif type(result) is dict:
+        elif isinstance(result, dict):
             for key in result.keys():
                 if key in self.output:
                     if hasattr(self.output[key], "Add"):
@@ -131,7 +131,7 @@ class Task(object):
                     raise TypeError("result cannot be added")
 
     def _resetOutput(self):
-        output = (type(self.output) is dict) and self.output.values() or self.output
+        output = isinstance(self.output, dict) and self.output.values() or self.output
         for o in output:
             if hasattr(o, "Reset"):
                 o.Reset()
