@@ -10,10 +10,10 @@
 #####################################################################################
 # File: GaudiPython/Bindings.py
 # Author: Pere Mato (pere.mato@cern.ch)
-""" GaudiPython.Bindings module.
-    This module provides the basic bindings of the main Gaudi
-    components to Python. It is itself based on the ROOT cppyy
-    Python extension module.
+"""GaudiPython.Bindings module.
+This module provides the basic bindings of the main Gaudi
+components to Python. It is itself based on the ROOT cppyy
+Python extension module.
 """
 
 __all__ = [

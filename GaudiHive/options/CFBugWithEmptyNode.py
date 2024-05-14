@@ -18,6 +18,7 @@ evaluation within that parent - see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/
 
 In this test, A2 will run unless the bug has been fixed
 """
+
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,

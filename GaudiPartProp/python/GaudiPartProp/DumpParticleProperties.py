@@ -16,8 +16,7 @@
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date 2010-10-22
 # =============================================================================
-"""Trivial script to dump the table of Particle Properties
-"""
+"""Trivial script to dump the table of Particle Properties"""
 
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"

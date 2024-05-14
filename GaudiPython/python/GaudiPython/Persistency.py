@@ -11,6 +11,7 @@
 """
 Module to configure the persistency type in GaudiPython.
 """
+
 __author__ = "Marco Clemencic <marco.clemencic@cern.ch>"
 
 

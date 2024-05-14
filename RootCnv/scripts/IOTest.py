@@ -10,16 +10,17 @@
 #####################################################################################
 """
 
-   Simple test application to read LHCb dst files
-   For reading other root files: change the data access
-   if '/Event/Rec/Header' is not present.
+Simple test application to read LHCb dst files
+For reading other root files: change the data access
+if '/Event/Rec/Header' is not present.
 
-   Requires: 'SetupProject LHCb'
+Requires: 'SetupProject LHCb'
 
-   Script inherited from T.Ruf
-   M.Frank  CERN/LHCb
+Script inherited from T.Ruf
+M.Frank  CERN/LHCb
 
 """
+
 import sys
 import time
 

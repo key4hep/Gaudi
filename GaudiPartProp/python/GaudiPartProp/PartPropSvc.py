@@ -15,8 +15,8 @@
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date 2008-12-02
 # =============================================================================
-""" Demo-file for interactive work with new Particle Property Service
-"""
+"""Demo-file for interactive work with new Particle Property Service"""
+
 # =============================================================================
 from builtins import range
 

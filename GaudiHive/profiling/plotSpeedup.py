@@ -14,6 +14,7 @@ Script that fetches all the logfiles from disk and reads the timings.
 Parameters can be changed according to the working points considered.
 Some parameters of the plots are hardcoded.
 """
+
 import ROOT
 
 n_algos_in_flight_l = [1, 2, 5, 7, 10, 16, 20, 22]

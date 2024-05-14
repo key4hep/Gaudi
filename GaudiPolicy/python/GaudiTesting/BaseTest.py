@@ -51,7 +51,7 @@ def sanitize_for_xml(data):
     >>> sanitize_for_xml('this is \x1b')
     'this is [NON-XML-CHAR-0x1B]'
     """
-    bad_chars = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]")
+    bad_chars = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]")
 
     def quote(match):
         "helper function"

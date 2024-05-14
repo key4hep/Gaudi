@@ -10,12 +10,12 @@
 #####################################################################################
 # File: GaudiMP/Parallel.py
 # Author: Pere Mato (pere.mato@cern.ch)
-""" GaudiMP.Parallel module.
-    This module provides 'parallel' processing support for GaudiPyhton.
-    It is adding some sugar on top of public domain packages such as
-    the 'multiprocessing' or the 'pp' packages. The interface can be made
-    independent of the underlying implementation package.
-    Two main class are defined: Task and WorkManager
+"""GaudiMP.Parallel module.
+This module provides 'parallel' processing support for GaudiPyhton.
+It is adding some sugar on top of public domain packages such as
+the 'multiprocessing' or the 'pp' packages. The interface can be made
+independent of the underlying implementation package.
+Two main class are defined: Task and WorkManager
 """
 
 __all__ = ["Task", "WorkManager"]

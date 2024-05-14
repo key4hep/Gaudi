@@ -406,7 +406,7 @@ def fill(
     data,  # input data
     fun=lambda x: x,  # function to be used
     cut=lambda x: True,  # cut to be applied
-    **kwargs
+    **kwargs,
 ):  # optional extra arguments
     """
 

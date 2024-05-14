@@ -24,6 +24,7 @@ Six instances of ViewTester are used as follows:
  - Algorithm A4 runs in the whole event context, after the sub-events
 
 """
+
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,

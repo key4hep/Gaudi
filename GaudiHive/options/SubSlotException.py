@@ -22,6 +22,7 @@ So, it is possible to have a failed event, without any algorihms in ERROR state.
 The scheduler does not have handling for this, and hangs.
 
 """
+
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,

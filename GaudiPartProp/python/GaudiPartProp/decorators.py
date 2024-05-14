@@ -19,6 +19,7 @@
 """
 The set of basic decorators for objects from GaudiPartProp package
 """
+
 # =============================================================================
 __author__ = "Vanya BELYAEV <Ivan.Belyaev@nikhef.nl>"
 __version__ = ""

@@ -169,7 +169,7 @@ class ConfigurablesDB(object):
                 __module__=self.__name__,
                 __qualname__=name,
                 __cpp_type__=fullname,
-                **_DB[fullname]
+                **_DB[fullname],
             )
         elif name.replace(" ", "") in self._alt_names:
             entry = getattr(self, self._alt_names[name.replace(" ", "")])

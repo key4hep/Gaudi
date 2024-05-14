@@ -15,8 +15,7 @@
 #  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
 #  @date 2018-07-12
 # =============================================================================
-""" Simple test for adding new particle
-"""
+"""Simple test for adding new particle"""
 
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
