@@ -12,6 +12,7 @@
 # ====================================================================
 from Configurables import bug_34121__MyAlgorithm as MyAlgorithm
 from Configurables import bug_34121__Tool as Tool
+
 from Gaudi.Configuration import ApplicationMgr
 
 tool = Tool(Double=-1)

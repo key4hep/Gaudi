@@ -22,6 +22,8 @@
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
 from pathlib import Path
 
+from Configurables import Gaudi__ParticlePropertySvc
+
 import GaudiPartProp.decorators
 
 # =============================================================================
@@ -29,7 +31,6 @@ import GaudiPartProp.decorators
 # have necessary side effects
 import GaudiPartProp.PartPropAlg  # noqa: F401
 import GaudiPartProp.Service  # noqa: F401
-from Configurables import Gaudi__ParticlePropertySvc
 from GaudiKernel.SystemOfUnits import GeV, second
 from GaudiPython.Bindings import AppMgr
 

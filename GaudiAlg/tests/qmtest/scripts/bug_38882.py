@@ -16,9 +16,8 @@
 __author__ = "Marco Clemencic"
 # =============================================================================
 
-from GaudiAlg.Algs import GaudiAlgo
-
 import GaudiPython
+from GaudiAlg.Algs import GaudiAlgo
 
 SUCCESS = GaudiPython.SUCCESS
 

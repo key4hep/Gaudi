@@ -52,9 +52,9 @@ __all__ = (
 # =============================================================================
 # import core of Gaudi
 import ROOT
-from GaudiPython.Bindings import AppMgr
+
+from GaudiPython.Bindings import AppMgr, iHistogramSvc
 from GaudiPython.Bindings import gbl as cpp
-from GaudiPython.Bindings import iHistogramSvc
 
 HID = cpp.GaudiAlg.ID
 

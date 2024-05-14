@@ -26,6 +26,7 @@ __date__ = "2010-04-24"
 import sys
 
 from Configurables import AuditorSvc, GaudiSequencer, HelloWorld
+
 from Gaudi.Configuration import ApplicationMgr
 from GaudiAlg.Algs import SUCCESS, GaudiAlgo
 from GaudiPython.Bindings import AppMgr

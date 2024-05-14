@@ -12,7 +12,13 @@ import sys
 
 
 def config(evtslots=12, threads=10):
-    from Configurables import ApplicationMgr, AvalancheSchedulerSvc
+    from Configurables import (
+        ApplicationMgr,
+        AvalancheSchedulerSvc,
+        HiveSlimEventLoopMgr,
+        HiveWhiteBoard,
+        RandomGenSvc,
+    )
     from Configurables import Gaudi__Example__TinyExperiment__CheckerAlg as CheckerAlg
     from Configurables import (
         Gaudi__Example__TinyExperiment__DigitizationAlg as DigitizationAlg,
@@ -25,7 +31,6 @@ def config(evtslots=12, threads=10):
     )
     from Configurables import Gaudi__Example__TinyExperiment__TrackingAlg as TrackingAlg
     from Configurables import Gaudi__Monitoring__MessageSvcSink as MessageSvcSink
-    from Configurables import HiveSlimEventLoopMgr, HiveWhiteBoard, RandomGenSvc
 
     evtslots = 12
     threads = 10

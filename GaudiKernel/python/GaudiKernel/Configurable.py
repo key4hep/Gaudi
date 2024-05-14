@@ -18,7 +18,6 @@ import sys
 import types
 from inspect import isclass
 
-import GaudiKernel.ConfigurableMeta as ConfigurableMeta
 from GaudiConfig.ControlFlow import (
     AndNode,
     CFFalse,
@@ -30,6 +29,8 @@ from GaudiConfig.ControlFlow import (
     OrNode,
     ignore,
 )
+
+import GaudiKernel.ConfigurableMeta as ConfigurableMeta
 from GaudiKernel.Constants import (
     DEBUG,
     ERROR,

@@ -24,6 +24,7 @@ import sys
 import time
 
 from Configurables import ApplicationMgr, EventSelector, Gaudi__RootCnvSvc
+
 from Gaudi.Configuration import INFO, EventDataSvc, EventPersistencySvc, MessageSvc
 
 input_file = "castor://castorlhcb.cern.ch//castor/cern.ch/grid/lhcb/LHCb/Collision11/SEMILEPTONIC.DST/00012569/0000/00012569_00000004_1.semileptonic.dst?svcClass=lhcbdisk"

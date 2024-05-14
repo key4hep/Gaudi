@@ -18,10 +18,9 @@ __all__ = ["PropertyProxy", "GaudiHandlePropertyProxy", "GaudiHandleArrayPropert
 import logging
 import os
 
+from GaudiKernel import ConfigurableDb
 from GaudiKernel.DataHandle import DataHandle
 from GaudiKernel.GaudiHandles import GaudiHandle, GaudiHandleArray
-
-from GaudiKernel import ConfigurableDb
 
 log = logging.getLogger("PropertyProxy")
 

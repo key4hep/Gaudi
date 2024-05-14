@@ -25,12 +25,13 @@ __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 
 
 def dump():
+    from Configurables import MessageSvc
+
     import GaudiPartProp.PartPropAlg
 
     # The following is misunderstood by flake8 - the import is needed as it
     # has necessary side effects
     import GaudiPartProp.Service  # noqa: F401
-    from Configurables import MessageSvc
 
     MessageSvc(OutputLevel=6)
 
