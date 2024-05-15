@@ -11,6 +11,7 @@
 #include <Gaudi/Functional/Transformer.h>
 #include <Gaudi/Utils/PeriodicAction.h>
 #include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/IScheduler.h>
 #include <GaudiKernel/Memory.h>
 #include <TSystem.h>
 #include <algorithm>
@@ -19,9 +20,13 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <mutex>
+#include <range/v3/range/conversion.hpp>
+#include <range/v3/view/remove.hpp>
+#include <range/v3/view/transform.hpp>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 namespace {
   /// replace occurrences of `:` with `_` in a string
@@ -81,6 +86,8 @@ namespace Gaudi {
         const unsigned int timeout;
         const EventContext ctx;
 
+        const std::vector<IScheduler*> schedulers;
+
         int counter{ 0 };
 
         const std::chrono::steady_clock::time_point eventStart{ std::chrono::steady_clock::now() };
@@ -101,10 +108,13 @@ namespace Gaudi {
           }
 
           std::scoped_lock protectReport( s_watchdogReportMutex );
-          if ( doStackTrace && gSystem ) {
-            // TSystem::StackTrace() prints on the standard error, so we do the same
-            fmt::print( stderr, "=== Stalled event: current stack trace ({}) ===\n", ctx );
-            gSystem->StackTrace();
+          if ( doStackTrace ) {
+            for ( auto scheduler : schedulers ) { scheduler->dumpState(); }
+            if ( gSystem ) {
+              // TSystem::StackTrace() prints on the standard error, so we do the same
+              fmt::print( stderr, "=== Stalled event: current stack trace ({}) ===\n", ctx );
+              gSystem->StackTrace();
+            }
           }
           if ( abortOnTimeout ) {
             log << MSG::FATAL << fmt::format( "too much time on a single event ({}): aborting process", ctx ) << endmsg;
@@ -120,9 +130,19 @@ namespace Gaudi {
           }
         }
       };
+
+      std::vector<IScheduler*> schedulers;
+      if ( m_stackTrace ) {
+        using namespace ranges;
+        // if we ask for the stack trace we are also interested in the state of the scheduler
+        schedulers = svcLoc()->getServices() |
+                     views::transform( []( auto svc ) { return Gaudi::Cast<IScheduler>( svc ); } ) |
+                     views::remove( nullptr ) | to<std::vector>();
+      }
+
       Action action{ MsgStream{ msgSvc(), "EventWatchdog" }, m_stackTrace, m_abortOnTimeout, m_eventTimeout,
                      // use a partial copy of the context to avoid copying the optional extension
-                     EventContext{ ctx.evt(), ctx.slot(), ctx.subSlot() } };
+                     EventContext{ ctx.evt(), ctx.slot(), ctx.subSlot() }, std::move( schedulers ) };
       return PeriodicAction( std::move( action ), std::chrono::seconds{ m_eventTimeout } );
     }
 

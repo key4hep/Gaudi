@@ -57,6 +57,7 @@ gaudi_add_module(GaudiUtils
                     GaudiUtilsLib
                     Gaudi::Functional
                     UUID::uuid
+                    Rangev3::rangev3
                     ROOT::Tree)
 
 if(GAUDI_USE_XERCESC)
