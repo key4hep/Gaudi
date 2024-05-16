@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -293,9 +293,8 @@ protected:
       this, "StopOnSignal", false, "Flag to enable/disable the signal handler that schedule a stop of the event loop" };
 
   /// Property to enable/disable the monitoring and reporting of stalled events.
-  /// @see StalledEventMonitor
-  Gaudi::Property<bool> m_stalledEventMonitoring{
-      this, "StalledEventMonitoring", false, "Flag to enable/disable the monitoring and reporting of stalled events" };
+  Gaudi::Property<bool> m_stalledEventMonitoring{ this, "StalledEventMonitoring", false,
+                                                  "[[deprecated]] use directly Gaudi::EventWatchdogAlg" };
 
   Gaudi::Property<bool> m_propertiesPrint{ this, "PropertiesPrint", false,
                                            "Flag to activate the printout of properties" };

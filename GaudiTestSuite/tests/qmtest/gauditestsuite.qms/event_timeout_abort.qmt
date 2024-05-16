@@ -26,13 +26,12 @@ from Configurables import Gaudi__EventWatchdogAlg as EventWatchdogAlg
 importOptions("Common.opts")
 
 alg = SleepyAlg("Sleepy", SleepTime = 30)
-sem = EventWatchdogAlg(EventTimeout = 5,
+ewa = EventWatchdogAlg(EventTimeout = 5,
                        AbortOnTimeout = True,
                        StackTrace = True)
 
-app = ApplicationMgr(TopAlg = [alg],
-                     EvtSel = "NONE", EvtMax = 2,
-                     StalledEventMonitoring = True)
+app = ApplicationMgr(TopAlg = [ewa, alg],
+                     EvtSel = "NONE", EvtMax = 2)
 
 </text></argument>
 <argument name="environment"><set>
