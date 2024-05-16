@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -508,14 +508,14 @@ namespace concurrency {
     const std::vector<DataNode*>& getInputDataNodes() const { return m_inputs; }
 
     /// Set Algorithm rank
-    void setRank( float& rank ) { m_rank = rank; }
+    void setRank( float rank ) { m_rank = rank; }
     /// Get Algorithm rank
-    const float& getRank() const { return m_rank; }
+    float getRank() const { return m_rank; }
 
     /// get Algorithm representatives
     Gaudi::Algorithm* getAlgorithm() const { return m_algorithm; }
     /// Get algorithm index
-    const unsigned int& getAlgoIndex() const { return m_algoIndex; }
+    unsigned int getAlgoIndex() const { return m_algoIndex; }
 
     /// Set the CPU-blocking flag
     void setBlocking( bool value ) { m_isBlocking = value; }
