@@ -19,4 +19,5 @@ if stdout.find(expected_string) == -1:
     result[&apos;GaudiTest.expected_string&apos;] = result.Quote(expected_string)
 </text></argument>
 <argument name="timeout"><integer>60</integer></argument>
++<argument name="exit_code"><integer>1</integer></argument>
 </extension>

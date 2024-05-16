@@ -11,12 +11,10 @@
 -->
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
-<argument name="args"><set><text>../../options/ToolHandles.py</text></set></argument>
-<argument name="reference"><text>refs/ToolHandles.ref</text></argument>
-<argument name="exit_code"><integer>0</integer></argument>
-<argument name="validator"><text>
-# ignore order of lines printed during execution
-preprocessor = normalizeTestSuite + SortGroupOfLines(r"^THData.*INFO executing")
-validateWithReference(preproc = preprocessor)
-</text></argument>
+<argument name="args"><set>
+  <text>../../options/SlimExitWithFailure.py</text>
+</set></argument>
+<argument name="timeout"><integer>30</integer></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="exit_code"><integer>1</integer></argument>
 </extension>

@@ -10,6 +10,7 @@
 \***********************************************************************************/
 // Local includes
 #include "HiveSlimEventLoopMgr.h"
+#include "GaudiKernel/StatusCode.h"
 #include "HistogramAgent.h"
 
 // Framework includes
@@ -376,8 +377,9 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
 
   constexpr double oneOver1024 = 1. / 1024.;
 
-  uint iteration  = 0;
-  auto start_time = Clock::now();
+  uint       iteration  = 0;
+  auto       start_time = Clock::now();
+  StatusCode finalSC;
   while ( !loop_ended && ( maxevt < 0 || ( finishedEvts + skippedEvts ) < maxevt ) ) {
     DEBUG_MSG << "work loop iteration " << iteration++ << endmsg;
     // if the created events did not reach maxevt, create an event
@@ -428,7 +430,10 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
       DEBUG_MSG << "Draining the scheduler" << endmsg;
 
       // Pull out of the scheduler the finished events
-      if ( drainScheduler( finishedEvts ).isFailure() ) loop_ended = true;
+      if ( drainScheduler( finishedEvts ).isFailure() ) {
+        loop_ended = true;
+        finalSC    = StatusCode::FAILURE;
+      }
       newEvtAllowed = true;
     }
   } // end main loop on finished events
@@ -439,7 +444,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
          << std::chrono::duration_cast<std::chrono::nanoseconds>( end_time - start_time ).count() << endmsg;
   info() << skippedEvts << " events were SKIPed" << endmsg;
 
-  return StatusCode::SUCCESS;
+  return finalSC;
 }
 
 //---------------------------------------------------------------------------
