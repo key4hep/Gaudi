@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
+#include <Gaudi/Accumulators/StaticHistogram.h>
 #include <Gaudi/Histograming/Sink/Base.h>
 #include <Gaudi/Histograming/Sink/Utils.h>
 #include <GaudiKernel/Service.h>
@@ -24,29 +25,29 @@ namespace Gaudi::Histograming::Sink {
   namespace {
     using namespace std::string_literals;
     Base::HistoBinRegistry const binRegistry = {
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::full, double> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<1u, Accumulators::atomicity::full, double> ) ),
           &saveProfileHisto<1, Accumulators::atomicity::full, double> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::none, double> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<1u, Accumulators::atomicity::none, double> ) ),
           &saveProfileHisto<1, Accumulators::atomicity::none, double> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::full, float> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<1u, Accumulators::atomicity::full, float> ) ),
           &saveProfileHisto<1, Accumulators::atomicity::full, float> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::none, float> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<1u, Accumulators::atomicity::none, float> ) ),
           &saveProfileHisto<1, Accumulators::atomicity::none, float> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::full, double> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<2u, Accumulators::atomicity::full, double> ) ),
           &saveProfileHisto<2, Accumulators::atomicity::full, double> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::none, double> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<2u, Accumulators::atomicity::none, double> ) ),
           &saveProfileHisto<2, Accumulators::atomicity::none, double> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::full, float> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<2u, Accumulators::atomicity::full, float> ) ),
           &saveProfileHisto<2, Accumulators::atomicity::full, float> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::none, float> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<2u, Accumulators::atomicity::none, float> ) ),
           &saveProfileHisto<2, Accumulators::atomicity::none, float> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::full, double> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<3u, Accumulators::atomicity::full, double> ) ),
           &saveProfileHisto<3, Accumulators::atomicity::full, double> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::none, double> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<3u, Accumulators::atomicity::none, double> ) ),
           &saveProfileHisto<3, Accumulators::atomicity::none, double> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::full, float> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<3u, Accumulators::atomicity::full, float> ) ),
           &saveProfileHisto<3, Accumulators::atomicity::full, float> },
-        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::none, float> ) ),
+        { std::type_index( typeid( Accumulators::StaticProfileHistogram<3u, Accumulators::atomicity::none, float> ) ),
           &saveProfileHisto<3, Accumulators::atomicity::none, float> },
     };
     Base::HistoRegistry const registry = {

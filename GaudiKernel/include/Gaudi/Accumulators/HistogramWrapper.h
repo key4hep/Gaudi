@@ -10,14 +10,14 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/StaticHistogram.h>
 
 namespace Gaudi::Accumulators {
 
   /**
-   * A Wrapper of an Histogram base class using Properties to define title and axis
+   * A Wrapper of a static Histogram base class using Properties to define title and axis
    *
-   * Practically, this is an optional of the underlying Histogram with creation
+   * Practically, this is an optional of the underlying static Histogram with creation
    * on demand, via the createHistogram method so one can wait that properties' values
    * are known.
    * By default creation will happen at initialization of the owner, but this can be
@@ -38,17 +38,19 @@ namespace Gaudi::Accumulators {
   template <typename HistogramType,
             typename Seq =
                 std::make_integer_sequence<unsigned int, std::tuple_size_v<typename HistogramType::AxisTupleType>>>
-  class CustomHistogramWrapperInternal;
+  class HistogramWrapperInternal;
   template <typename HistogramType, unsigned int... ND>
-  class CustomHistogramWrapperInternal<HistogramType, std::integer_sequence<unsigned int, ND...>> {
+  class HistogramWrapperInternal<HistogramType, std::integer_sequence<unsigned int, ND...>> {
   public:
+    using AxisTupleType      = typename HistogramType::AxisTupleType;
+    using AxisArithmeticType = typename HistogramType::AxisArithmeticType;
     template <unsigned int I>
-    using AxisType = std::tuple_element_t<I, typename HistogramType::AxisTupleType>;
+    using AxisType = std::tuple_element_t<I, AxisTupleType>;
 
     /// constructor, only creates a set of Properties
     template <typename OWNER>
-    CustomHistogramWrapperInternal( OWNER* owner, std::string const& name, std::string const& title = "",
-                                    typename HistogramType::AxisTupleType axis = {}, bool doNotInitialize = false )
+    HistogramWrapperInternal( OWNER* owner, std::string const& name, std::string const& title = "",
+                              typename HistogramType::AxisTupleType axis = {}, bool doNotInitialize = false )
         : m_name{ name }, m_title{ title }, m_axis{ axis } {
       // Create associated properties
       owner->declareProperty( titlePropertyName(), m_title, fmt::format( "Title of histogram {}", name ) )
@@ -65,9 +67,8 @@ namespace Gaudi::Accumulators {
     }
     /// constructor with more natural syntax for axis
     template <typename OWNER>
-    CustomHistogramWrapperInternal( OWNER* owner, std::string const& name, std::string const& title,
-                                    AxisType<ND>... allAxis )
-        : CustomHistogramWrapperInternal( owner, name, title, std::make_tuple( allAxis... ) ) {}
+    HistogramWrapperInternal( OWNER* owner, std::string const& name, std::string const& title, AxisType<ND>... allAxis )
+        : HistogramWrapperInternal( owner, name, title, std::make_tuple( allAxis... ) ) {}
 
     /// override of operator[] with extra checking that initialization happened
     [[nodiscard]] auto operator[]( typename HistogramType::AxisTupleArithmeticType&& v ) {
@@ -83,7 +84,7 @@ namespace Gaudi::Accumulators {
       m_histo.emplace( &owner, m_name, m_title, m_axis );
     }
 
-    friend void to_json( nlohmann::json& j, CustomHistogramWrapperInternal const& h ) {
+    friend void to_json( nlohmann::json& j, HistogramWrapperInternal const& h ) {
       if ( !h.m_histo ) {
         throw std::logic_error( fmt::format( "Histogram {} is converted to json before being initialized", h.m_name ) );
       }
@@ -107,6 +108,13 @@ namespace Gaudi::Accumulators {
 
     void reset() { m_histo.reset(); }
 
+    // wrapping some methods of the underlyoing histogram
+    auto buffer() {
+      if ( !m_histo )
+        throw std::logic_error( fmt::format( "`buffer()` called on histogram {} before being initialized", m_name ) );
+      return m_histo->buffer();
+    }
+
   private:
     std::string titlePropertyName() const { return fmt::format( "{}_Title", m_name ); }
     template <unsigned int N>
@@ -122,6 +130,6 @@ namespace Gaudi::Accumulators {
   };
 
   template <typename HistogramType>
-  using CustomHistogramWrapper = CustomHistogramWrapperInternal<HistogramType>;
+  using HistogramWrapper = HistogramWrapperInternal<HistogramType>;
 
 } // namespace Gaudi::Accumulators

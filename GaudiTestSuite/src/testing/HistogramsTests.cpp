@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/StaticHistogram.h>
 #include <Gaudi/Functional/Consumer.h>
 #include <GaudiKernel/AlgTool.h>
 #include <type_traits>
@@ -65,7 +65,7 @@ namespace Gaudi::Accumulators {
 
 namespace Gaudi::Tests::Histograms {
   namespace Directories {
-    using MyHist_t = Gaudi::Accumulators::Histogram<1>;
+    using MyHist_t = Gaudi::Accumulators::StaticHistogram<1>;
 
     struct HistoGroupsTool : AlgTool {
       using AlgTool::AlgTool;
@@ -108,7 +108,7 @@ namespace Gaudi::Tests::Histograms {
   namespace AxesLabels {
     struct HistWithLabelsAlg : Gaudi::Functional::Consumer<void()> {
       using Base     = Gaudi::Functional::Consumer<void()>;
-      using MyHist_t = Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, int>;
+      using MyHist_t = Gaudi::Accumulators::StaticHistogram<1, Gaudi::Accumulators::atomicity::full, int>;
 
       using Base::Base;
 
@@ -126,8 +126,8 @@ namespace Gaudi::Tests::Histograms {
       using Base = Gaudi::Functional::Consumer<void()>;
       using Base::Base;
 
-      mutable Gaudi::Accumulators::Histogram<1, Gaudi::Accumulators::atomicity::full, Category,
-                                             std::tuple<Gaudi::Accumulators::CustomAxis>>
+      mutable Gaudi::Accumulators::StaticHistogram<1, Gaudi::Accumulators::atomicity::full, Category,
+                                                   std::tuple<Gaudi::Accumulators::CustomAxis>>
           m_hist{ this, "Categories", "", Gaudi::Accumulators::CustomAxis{} };
 
       void operator()() const override {
@@ -145,9 +145,10 @@ namespace Gaudi::Tests::Histograms {
       using Base = Gaudi::Functional::Consumer<void()>;
       using Base::Base;
 
-      mutable Gaudi::Accumulators::Histogram<1> m_h1{ this, "h1", "", { 10, 0, 10 } };
-      mutable Gaudi::Accumulators::Histogram<2> m_h2{ this, "h2", "", { 10, 0, 10 }, { 10, 0, 10 } };
-      mutable Gaudi::Accumulators::Histogram<3> m_h3{ this, "h3", "", { 10, 0, 10 }, { 10, 0, 10 }, { 10, 0, 10 } };
+      mutable Gaudi::Accumulators::StaticHistogram<1> m_h1{ this, "h1", "", { 10, 0, 10 } };
+      mutable Gaudi::Accumulators::StaticHistogram<2> m_h2{ this, "h2", "", { 10, 0, 10 }, { 10, 0, 10 } };
+      mutable Gaudi::Accumulators::StaticHistogram<3> m_h3{ this,          "h3",          "",
+                                                            { 10, 0, 10 }, { 10, 0, 10 }, { 10, 0, 10 } };
 
       void operator()() const override {
         int value = 0;

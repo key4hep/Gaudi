@@ -32,6 +32,8 @@ namespace Gaudi {
   namespace TestSuite {
     /** @class HistoProps
      *  simple example, which illustrates the usage of "histogram properties"
+     *  DO NOT USE. This is legacy code, Gaudi::Accumulatos::Histogram support
+     *  properties natively.
      *  @author Vanay BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-18
      */

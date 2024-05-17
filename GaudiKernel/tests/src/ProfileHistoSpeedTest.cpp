@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,7 +11,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_ProfileHistoSpeed
 
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/StaticHistogram.h>
 #include <Gaudi/Histograming/Sink/Utils.h>
 
 #include <boost/test/unit_test.hpp>
@@ -54,8 +54,8 @@ BOOST_AUTO_TEST_CASE( test_profile_histo_speed, *boost::unit_test::tolerance( 1e
   Algo algo;
   std::cout << "Elapsed time (us) :\n";
   // create a large profile (1M bins) histogram and fill it with 10 million items
-  auto                                      startTime = std::chrono::steady_clock::now();
-  Gaudi::Accumulators::ProfileHistogram<1u> histo{
+  auto                                            startTime = std::chrono::steady_clock::now();
+  Gaudi::Accumulators::StaticProfileHistogram<1u> histo{
       &algo, "GaudiP1D", "A Large Gaudi 1D Profile", { 1000000, 0, 1000000 } };
   for ( int i = 0; i < 10000000; i++ ) { histo[0.1 * double( i ) + 0.05] += double( i * 0.01 ); }
   auto filledTime = std::chrono::steady_clock::now();
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE( test_profile_histo_speed, *boost::unit_test::tolerance( 1e
             << "\n";
 
   // test fast conversion of 2D histos
-  Gaudi::Accumulators::ProfileHistogram<2u> histo2d{
+  Gaudi::Accumulators::StaticProfileHistogram<2u> histo2d{
       &algo, "GaudiP3D", "A Large Gaudi 2D Profile", { 1000, 0, 1000 }, { 1000, 0, 1000 } };
   for ( int i = 0; i < 1000; i++ ) {
     for ( int j = 0; j < 1000; j++ ) {
@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE( test_profile_histo_speed, *boost::unit_test::tolerance( 1e
             << "\n";
 
   // test fast conversion of 3D histos
-  Gaudi::Accumulators::ProfileHistogram<3u> histo3d{ &algo,           "GaudiP3D",      "A Large Gaudi 3D Profile",
-                                                     { 100, 0, 100 }, { 100, 0, 100 }, { 100, 0, 100 } };
+  Gaudi::Accumulators::StaticProfileHistogram<3u> histo3d{ &algo,           "GaudiP3D",      "A Large Gaudi 3D Profile",
+                                                           { 100, 0, 100 }, { 100, 0, 100 }, { 100, 0, 100 } };
   for ( int i = 0; i < 100; i++ ) {
     for ( int j = 0; j < 100; j++ ) {
       for ( int k = 0; k < 100; k++ ) {

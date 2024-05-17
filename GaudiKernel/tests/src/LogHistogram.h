@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/StaticHistogram.h>
 
 namespace Gaudi::Accumulators {
 

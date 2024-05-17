@@ -12,7 +12,7 @@
 #include "IRandomGenSvc.h"
 #include "MCTrack.h"
 
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators.h>
 #include <Gaudi/Functional/Transformer.h>
 
 #include <cmath>

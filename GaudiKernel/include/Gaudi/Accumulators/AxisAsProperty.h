@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/StaticHistogram.h>
 
 #include <Gaudi/Parsers/Factory.h>
 #include <GaudiKernel/ToStream.h>
@@ -78,19 +78,4 @@ namespace Gaudi {
 
   } // namespace Parsers
 
-  // We also need to be able to print an Axis object as a string that both
-  // Python and our parser can understand,
-  namespace Utils {
-    template <typename Arithmetic>
-    std::ostream& toStream( Accumulators::Axis<Arithmetic> const& m, std::ostream& s ) {
-      s << '(';
-      toStream( m.numBins(), s ) << ", ";
-      toStream( m.minValue(), s ) << ", ";
-      toStream( m.maxValue(), s ) << ", ";
-      toStream( m.title(), s ) << ", ";
-      toStream( m.labels(), s );
-      s << ')';
-      return s;
-    }
-  } // namespace Utils
 } // namespace Gaudi

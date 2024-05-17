@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/StaticHistogram.h>
 #include <Gaudi/MonitoringHub.h>
 #include <GaudiKernel/GaudiException.h>
 #include <TDirectory.h>
@@ -416,7 +416,7 @@ namespace Gaudi::Histograming::Sink {
   details::ProfileWrapper<TProfile> profileHisto1DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
     // get original histogram from the Entity
     auto const& gaudiHisto =
-        *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<1, Atomicity, Arithmetic>*>( ent.id() );
+        *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<1, Atomicity, Arithmetic>*>( ent.id() );
     // convert to Root
     auto const&                       gaudiAxis = gaudiHisto.template axis<0>();
     details::ProfileWrapper<TProfile> histo{ name.c_str(), gaudiHisto.title().c_str(), gaudiAxis.numBins(),
@@ -446,7 +446,7 @@ namespace Gaudi::Histograming::Sink {
   details::ProfileWrapper<TProfile2D> profileHisto2DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
     // get original histogram from the Entity
     auto const& gaudiHisto =
-        *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<2, Atomicity, Arithmetic>*>( ent.id() );
+        *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<2, Atomicity, Arithmetic>*>( ent.id() );
     // convert to Root
     auto const&                         gaudiXAxis = gaudiHisto.template axis<0>();
     auto const&                         gaudiYAxis = gaudiHisto.template axis<1>();
@@ -484,7 +484,7 @@ namespace Gaudi::Histograming::Sink {
   details::ProfileWrapper<TProfile3D> profileHisto3DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
     // get original histogram from the Entity
     auto const& gaudiHisto =
-        *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<3, Atomicity, Arithmetic>*>( ent.id() );
+        *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<3, Atomicity, Arithmetic>*>( ent.id() );
     // convert to Root
     auto const&                         gaudiXAxis = gaudiHisto.template axis<0>();
     auto const&                         gaudiYAxis = gaudiHisto.template axis<1>();
