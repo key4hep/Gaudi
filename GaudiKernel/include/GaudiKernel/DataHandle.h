@@ -88,7 +88,7 @@ namespace Gaudi {
   };
 
   namespace Parsers {
-    StatusCode parse( DataHandle&, const std::string& );
+    StatusCode parse( DataHandle&, std::string_view );
   }
   namespace Utils {
     GAUDI_API std::ostream& toStream( const DataHandle& v, std::ostream& o );

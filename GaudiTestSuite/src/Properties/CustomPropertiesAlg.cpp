@@ -34,7 +34,7 @@ namespace Gaudi {
     };
 
     // Parse function... nothing special, but it must be done explicitely.
-    StatusCode parse( MyCustomType& result, const std::string& input ) { return parse_( result, input ); }
+    StatusCode parse( MyCustomType& result, std::string_view input ) { return parse_( result, input ); }
   } // namespace Parsers
 } // namespace Gaudi
 

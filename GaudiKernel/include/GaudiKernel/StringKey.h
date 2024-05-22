@@ -224,7 +224,7 @@ namespace Gaudi {
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse( Gaudi::StringKey& result, const std::string& input );
+    GAUDI_API StatusCode parse( Gaudi::StringKey& result, std::string_view input );
     // ========================================================================
     /** parse the vector of keys from the string
      *  @see Gaudi::Parsers
@@ -235,7 +235,7 @@ namespace Gaudi {
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse( std::vector<Gaudi::StringKey>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<Gaudi::StringKey>& result, std::string_view input );
     // ========================================================================
   } // namespace Parsers
   // ==========================================================================

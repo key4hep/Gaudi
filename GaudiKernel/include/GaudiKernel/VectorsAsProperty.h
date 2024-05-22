@@ -75,7 +75,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    GAUDI_API StatusCode parse( Gaudi::XYZPoint& result, const std::string& input );
+    GAUDI_API StatusCode parse( Gaudi::XYZPoint& result, std::string_view input );
     // ========================================================================
     /** parse 3D-vector
      *
@@ -112,7 +112,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    GAUDI_API StatusCode parse( Gaudi::XYZVector& result, const std::string& input );
+    GAUDI_API StatusCode parse( Gaudi::XYZVector& result, std::string_view input );
     // ========================================================================
     /** parse LorentzVector
      *
@@ -182,7 +182,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    GAUDI_API StatusCode parse( Gaudi::LorentzVector& result, const std::string& input );
+    GAUDI_API StatusCode parse( Gaudi::LorentzVector& result, std::string_view input );
     // ========================================================================
     /** parse the vector of points
      *  @param resut (OUTPUT) the parser vector
@@ -190,7 +190,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    GAUDI_API StatusCode parse( std::vector<Gaudi::XYZPoint>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<Gaudi::XYZPoint>& result, std::string_view input );
     // ========================================================================
     /** parse the vector of vectors
      *  @param resut (OUTPUT) the parser vector
@@ -198,7 +198,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    GAUDI_API StatusCode parse( std::vector<Gaudi::XYZVector>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<Gaudi::XYZVector>& result, std::string_view input );
     // ========================================================================
     /** parse the vector of vectors
      *  @param resut (OUTPUT) the parser vector
@@ -206,7 +206,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    GAUDI_API StatusCode parse( std::vector<Gaudi::LorentzVector>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<Gaudi::LorentzVector>& result, std::string_view input );
     // ========================================================================
   } // namespace Parsers
   // ==========================================================================

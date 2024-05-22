@@ -74,7 +74,7 @@ std::ostream& Gaudi::Utils::toStream( const Gaudi::StringKey& key, std::ostream&
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, std::string_view input ) {
   std::string _result;
   StatusCode  sc = parse( _result, input );
   result         = Gaudi::StringKey( _result );
@@ -91,7 +91,7 @@ StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& i
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( std::vector<Gaudi::StringKey>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::vector<Gaudi::StringKey>& result, std::string_view input ) {
   result.clear();
   typedef std::vector<std::string> Strings;
   Strings                          _result;

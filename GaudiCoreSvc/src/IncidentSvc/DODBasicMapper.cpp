@@ -18,7 +18,7 @@ namespace Gaudi {
     /// Basic parser for the types of HashMap used in DODBasicMapper.
     /// Delegates to the parser of map<string,string>.
     template <typename K, typename V>
-    StatusCode parse( GaudiUtils::HashMap<K, V>& result, const std::string& input ) {
+    StatusCode parse( GaudiUtils::HashMap<K, V>& result, std::string_view input ) {
       std::map<std::string, std::string> tmp;
       StatusCode                         sc = parse( tmp, input );
       if ( sc.isSuccess() ) {
