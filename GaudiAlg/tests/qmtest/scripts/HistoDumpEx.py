@@ -14,6 +14,7 @@
 import random
 
 import ROOT
+
 from GaudiPython.HistoUtils import histoDump
 
 r = random.Random()

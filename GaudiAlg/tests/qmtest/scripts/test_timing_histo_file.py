@@ -59,21 +59,23 @@ def test():
         h = d.Get(name)
         assert h, "Missing histogram %r" % name
         l = list(h.GetXaxis().GetLabels())
-        assert len(l) == len(
-            labels
-        ), "Wrong number of labels in histogram %r (found: %d, exp: %d)" % (
-            name,
-            len(l),
-            len(labels),
+        assert len(l) == len(labels), (
+            "Wrong number of labels in histogram %r (found: %d, exp: %d)"
+            % (
+                name,
+                len(l),
+                len(labels),
+            )
         )
         for i, (expected, found) in enumerate(zip(labels, l)):
-            assert (
-                found == expected
-            ), "Wrong label at position %d in histogram %r (found: %r, exp: %r)" % (
-                i,
-                name,
-                found,
-                expected,
+            assert found == expected, (
+                "Wrong label at position %d in histogram %r (found: %r, exp: %r)"
+                % (
+                    i,
+                    name,
+                    found,
+                    expected,
+                )
             )
 
 

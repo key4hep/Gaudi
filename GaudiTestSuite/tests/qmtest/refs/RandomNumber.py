@@ -11,7 +11,7 @@
 # ///////////////////////////////////////////////////////////
 # Job Options File in Python
 
-# flake8: noqa
+# ruff: noqa
 
 theApp.DLLs = ["RootHistCnv", "HbookCnv", "GaudiAlg", "GaudiAud"]
 theApp.TopAlg = ["RandomNumberAlg"]

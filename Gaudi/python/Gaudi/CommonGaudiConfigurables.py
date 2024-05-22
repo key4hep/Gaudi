@@ -11,9 +11,9 @@
 # File: Gaudi/CommonGaudiConfigurables.py
 # Author: Pere Mato (pere.mato@cern.ch)
 """
-  This module would scan all known Gaudi configurable modules for
-  'Configurable' classes and fill __all__ such that it can be imported
-  by any module requiring it.
+This module would scan all known Gaudi configurable modules for
+'Configurable' classes and fill __all__ such that it can be imported
+by any module requiring it.
 """
 
 from GaudiKernel.Configurable import Configurable

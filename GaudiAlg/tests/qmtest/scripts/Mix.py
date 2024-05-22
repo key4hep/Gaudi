@@ -19,6 +19,7 @@
 Simple example to illustrate the problem for task #13911
 https://savannah.cern.ch/task/?13911
 """
+
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
 __date__ = "2010-04-24"
@@ -26,6 +27,7 @@ __date__ = "2010-04-24"
 import sys
 
 from Configurables import AuditorSvc, GaudiSequencer, HelloWorld
+
 from Gaudi.Configuration import ApplicationMgr
 from GaudiAlg.Algs import SUCCESS, GaudiAlgo
 from GaudiPython.Bindings import AppMgr

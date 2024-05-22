@@ -534,8 +534,9 @@ if __name__ == "__main__":
             self.config = {} if initial_config is None else initial_config
 
         def __call__(self, arg):
-            from Gaudi.Configuration import importOptions
             from GaudiConfig2 import CALLABLE_FORMAT, invokeConfig, mergeConfigs
+
+            from Gaudi.Configuration import importOptions
 
             if CALLABLE_FORMAT.match(arg):
                 self.config = mergeConfigs(self.config, invokeConfig(arg))

@@ -11,6 +11,7 @@
 """
 Module to configure the persistency type in GaudiPython.
 """
+
 __author__ = "Marco Clemencic <marco.clemencic@cern.ch>"
 
 
@@ -152,7 +153,7 @@ class RootPersistency(PersistencyHelper):
         """
         if not self.configured:
             raise PersistencyError("Persistency not configured")
-        if type(filenames) is str:
+        if isinstance(filenames, str):
             filenames = [filenames]
         fileargs = {}
         # check if we are accessing a collection

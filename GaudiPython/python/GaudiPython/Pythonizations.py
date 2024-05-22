@@ -10,8 +10,8 @@
 #####################################################################################
 # File: GaudiPython/Pythonizations.py
 # Author: Pere Mato (pere.mato@cern.ch)
-""" This Pythonizations module provides a number of useful pythonizations
-    of adaptation of some classes.
+"""This Pythonizations module provides a number of useful pythonizations
+of adaptation of some classes.
 """
 
 __all__ = []

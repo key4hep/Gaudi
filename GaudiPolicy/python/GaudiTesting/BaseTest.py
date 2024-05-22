@@ -51,7 +51,7 @@ def sanitize_for_xml(data):
     >>> sanitize_for_xml('this is \x1b')
     'this is [NON-XML-CHAR-0x1B]'
     """
-    bad_chars = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]")
+    bad_chars = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]")
 
     def quote(match):
         "helper function"
@@ -1249,7 +1249,7 @@ def cmpTreesDicts(reference, to_check, ignore=None):
     # loop over the keys (not ignored) in the reference dictionary
     for k in keys:
         if k in to_check:  # the key must be in the dictionary to_check
-            if (type(reference[k]) is dict) and (type(to_check[k]) is dict):
+            if isinstance(reference[k], dict) and isinstance(to_check[k], dict):
                 # if both reference and to_check values are dictionaries,
                 # recurse
                 failed = fail_keys = cmpTreesDicts(reference[k], to_check[k], ignore)

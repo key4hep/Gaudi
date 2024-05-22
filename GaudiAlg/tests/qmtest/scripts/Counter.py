@@ -28,9 +28,8 @@
 __author__ = "Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr"
 # =============================================================================
 
-from GaudiAlg.Algs import GaudiAlgo
-
 import GaudiPython
+from GaudiAlg.Algs import GaudiAlgo
 
 Rndm = GaudiPython.gbl.Rndm
 Numbers = Rndm.Numbers

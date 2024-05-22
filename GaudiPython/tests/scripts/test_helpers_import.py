@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 """Load the GaudiPython::Helper struct to check for Cling warnings."""
+
 # Workaround for ROOT-10769
 import warnings
 

@@ -25,6 +25,7 @@ Seven instances of ViewTester are used as follows:
 
 The test should stall if isolation is working
 """
+
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,

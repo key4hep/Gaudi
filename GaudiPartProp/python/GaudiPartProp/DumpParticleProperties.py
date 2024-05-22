@@ -16,8 +16,7 @@
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date 2010-10-22
 # =============================================================================
-"""Trivial script to dump the table of Particle Properties
-"""
+"""Trivial script to dump the table of Particle Properties"""
 
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
@@ -25,12 +24,13 @@ __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 
 
 def dump():
+    from Configurables import MessageSvc
+
     import GaudiPartProp.PartPropAlg
 
     # The following is misunderstood by flake8 - the import is needed as it
     # has necessary side effects
     import GaudiPartProp.Service  # noqa: F401
-    from Configurables import MessageSvc
 
     MessageSvc(OutputLevel=6)
 

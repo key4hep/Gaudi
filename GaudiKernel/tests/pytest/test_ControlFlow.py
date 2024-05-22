@@ -8,8 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiKernel.Configurable import Configurable
 from test_Configurables import MyAlg
+
+from GaudiKernel.Configurable import Configurable
 
 
 def test_unique_getFullName():

@@ -20,6 +20,7 @@ warnings.filterwarnings("ignore", message='"is" with a literal', category=Syntax
 
 import networkx as nx
 from Configurables import CPUCruncher, Gaudi__Sequencer
+
 from Gaudi.Configuration import INFO
 
 

@@ -67,15 +67,16 @@ iAlgorithm = GaudiPython.Bindings.iAlgorithm  # Algorithm interface
 iAlgTool = GaudiPython.Bindings.iAlgTool  # Tool interface
 
 from GaudiAlg.HistoUtils import aida2root  # AIDA -> ROOT converter
-from GaudiPython.Bindings import SUCCESS  # status code
-from GaudiPython.Bindings import AppMgr  # Application Manager
-from GaudiPython.Bindings import InterfaceCast  # "queryInterface"
-from GaudiPython.Bindings import iDataSvc  # Data Service
-from GaudiPython.Bindings import iHistogramSvc  # Histogram Service
-from GaudiPython.Bindings import iNTupleSvc  # N-Tuple service
-from GaudiPython.Bindings import gbl as cpp  # global C++ namespace
-
 from GaudiKernel import ROOT6WorkAroundEnabled
+from GaudiPython.Bindings import (
+    SUCCESS,  # status code
+    AppMgr,  # Application Manager
+    InterfaceCast,  # "queryInterface"
+    iDataSvc,  # Data Service
+    iHistogramSvc,  # Histogram Service
+    iNTupleSvc,  # N-Tuple service
+)
+from GaudiPython.Bindings import gbl as cpp  # global C++ namespace
 
 # =============================================================================
 # std C++ namespace

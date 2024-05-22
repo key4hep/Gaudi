@@ -15,12 +15,13 @@
 #  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
 #  @date 2018-07-12
 # =============================================================================
-""" Simple test for adding new particle
-"""
+"""Simple test for adding new particle"""
 
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
 from pathlib import Path
+
+from Configurables import Gaudi__ParticlePropertySvc
 
 import GaudiPartProp.decorators
 
@@ -29,7 +30,6 @@ import GaudiPartProp.decorators
 # have necessary side effects
 import GaudiPartProp.PartPropAlg  # noqa: F401
 import GaudiPartProp.Service  # noqa: F401
-from Configurables import Gaudi__ParticlePropertySvc
 from GaudiKernel.SystemOfUnits import GeV, second
 from GaudiPython.Bindings import AppMgr
 

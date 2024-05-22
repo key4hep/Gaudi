@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import pytest
+
 from GaudiKernel.Configurable import Configurable, ConfigurableAlgorithm
 from GaudiKernel.DataHandle import DataHandle
 from GaudiKernel.GaudiHandles import PublicToolHandleArray

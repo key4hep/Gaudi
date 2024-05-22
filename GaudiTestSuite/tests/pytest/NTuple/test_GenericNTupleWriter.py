@@ -47,9 +47,9 @@ def config_st():
     """
     Configuration function for the Gaudi application. Sets up components, services, and producers
     """
-    from Configurables import ApplicationMgr, Gaudi__NTuple__GenericWriter
-    from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
     from Configurables import (
+        ApplicationMgr,
+        Gaudi__NTuple__GenericWriter,
         Gaudi__TestSuite__NTuple__FloatDataProducer,
         Gaudi__TestSuite__NTuple__IntVectorDataProducer,
         Gaudi__TestSuite__NTuple__StrDataProducer,
@@ -57,6 +57,8 @@ def config_st():
         IncidentSvc,
         MessageSvc,
     )
+    from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
+
     from Gaudi.Configuration import DEBUG, INFO
 
     # Output Levels
@@ -114,6 +116,7 @@ def config_mt():
         HiveSlimEventLoopMgr,
         HiveWhiteBoard,
     )
+
     from Gaudi.Configuration import DEBUG, WARNING
 
     # Configuration parameters for the multithreaded environment

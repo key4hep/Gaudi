@@ -11,6 +11,7 @@
 """
 Read the Event Tag Collection
 """
+
 from Configurables import GaudiPersistency, TagCollectionSvc
 from Gaudi.Configuration import *
 

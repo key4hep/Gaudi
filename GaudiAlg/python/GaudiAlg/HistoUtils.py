@@ -52,9 +52,9 @@ __all__ = (
 # =============================================================================
 # import core of Gaudi
 import ROOT
-from GaudiPython.Bindings import AppMgr
+
+from GaudiPython.Bindings import AppMgr, iHistogramSvc
 from GaudiPython.Bindings import gbl as cpp
-from GaudiPython.Bindings import iHistogramSvc
 
 HID = cpp.GaudiAlg.ID
 
@@ -406,7 +406,7 @@ def fill(
     data,  # input data
     fun=lambda x: x,  # function to be used
     cut=lambda x: True,  # cut to be applied
-    **kwargs
+    **kwargs,
 ):  # optional extra arguments
     """
 

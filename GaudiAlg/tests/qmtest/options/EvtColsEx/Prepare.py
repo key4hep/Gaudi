@@ -11,6 +11,7 @@
 """
 Prepare DST file to be used by EvtColsEx examples.
 """
+
 from Configurables import GaudiPersistency
 from Gaudi.Configuration import *
 
