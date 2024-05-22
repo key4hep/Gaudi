@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,22 +17,19 @@
 
 // Include files
 #include "StalledEventMonitor.h"
-
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/Memory.h"
-#include "GaudiKernel/WatchdogThread.h"
-
-#include "TSystem.h"
-
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/Memory.h>
+#include <GaudiKernel/WatchdogThread.h>
+#include <TSystem.h>
+#include <chrono>
 #include <csignal>
 
 namespace {
   /// Specialized watchdog to monitor the event loop and spot possible infinite loops.
   class EventWatchdog : public WatchdogThread {
   public:
-    EventWatchdog( const SmartIF<IMessageSvc>& msgSvc, const std::string& name,
-                   boost::posix_time::time_duration timeout, bool stackTrace = false, long maxCount = 0,
-                   bool autostart = false )
+    EventWatchdog( const SmartIF<IMessageSvc>& msgSvc, const std::string& name, std::chrono::seconds timeout,
+                   bool stackTrace = false, long maxCount = 0, bool autostart = false )
         : WatchdogThread( timeout, autostart )
         , log( msgSvc, name )
         , m_maxCount( maxCount )
@@ -50,10 +47,10 @@ namespace {
     /// main watchdog function
     void action() override {
       if ( !m_counter ) {
-        log << MSG::WARNING << "More than " << getTimeout().total_seconds() << "s since the last "
-            << IncidentType::BeginEvent << endmsg;
+        log << MSG::WARNING << "More than " << getTimeout().count() << "s since the last " << IncidentType::BeginEvent
+            << endmsg;
       } else {
-        log << MSG::WARNING << "Other " << getTimeout().total_seconds() << "s passed" << endmsg;
+        log << MSG::WARNING << "Other " << getTimeout().count() << "s passed" << endmsg;
       }
       log << MSG::INFO
           << "Current memory usage is"
@@ -76,14 +73,13 @@ namespace {
     void onPing() override {
       if ( m_counter ) {
         if ( m_counter >= 3 )
-          log << MSG::INFO << "Starting a new event after ~" << m_counter * getTimeout().total_seconds() << "s"
-              << endmsg;
+          log << MSG::INFO << "Starting a new event after ~" << m_counter * getTimeout().count() << "s" << endmsg;
         m_counter = 0;
       }
     }
     void onStop() override {
       if ( m_counter >= 3 )
-        log << MSG::INFO << "The last event took ~" << m_counter * getTimeout().total_seconds() << "s" << endmsg;
+        log << MSG::INFO << "The last event took ~" << m_counter * getTimeout().count() << "s" << endmsg;
     }
   };
 } // namespace
@@ -93,11 +89,12 @@ StatusCode StalledEventMonitor::initialize() {
   StatusCode sc = base_class::initialize();
   if ( sc.isFailure() ) return sc;
 
+  warning() << "the service StalledEventMonitor is deprecated, please use Gaudi::EventWatchdogAlg" << endmsg;
+
   if ( m_eventTimeout ) {
     // create the watchdog thread
-    m_watchdog = std::make_unique<EventWatchdog>( msgSvc(), "EventWatchdog",
-                                                  boost::posix_time::seconds( m_eventTimeout.value() ), m_stackTrace,
-                                                  m_maxTimeoutCount );
+    m_watchdog = std::make_unique<EventWatchdog>(
+        msgSvc(), "EventWatchdog", std::chrono::seconds( m_eventTimeout.value() ), m_stackTrace, m_maxTimeoutCount );
 
     // register to the incident service
     static const std::string serviceName = "IncidentSvc";

@@ -8,7 +8,18 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-if(GAUDI_BUILD_EXAMPLES)
-    add_subdirectory(TinyExperiment)
-    add_subdirectory(Features)
-endif()
+# Add tests to check that we can run the examples.
+
+set(prefix GaudiExamples.Features)
+
+add_test(
+    NAME ${prefix}.event_timeout_check
+    COMMAND ${CMAKE_COMMAND} -E env $<TARGET_FILE:run> gaudirun.py ${CMAKE_CURRENT_SOURCE_DIR}/event_timeout_check.py:config
+)
+set_tests_properties(
+    ${prefix}.event_timeout_check
+    PROPERTIES
+        LABELS "GaudiExamples;GaudiExamples.Features"
+        PASS_REGULAR_EXPRESSION "More than 2s since the beginning of the event.*=== Stalled event: current stack trace"
+        TIMEOUT 120
+)
