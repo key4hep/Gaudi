@@ -26,5 +26,12 @@ if(BUILD_TESTING)
             ENVIRONMENT TESTENV=à
     )
 
+    # the default stdout limit is 100MB, but for to test the check we can use a smaller limit (1KB)
+    set_tests_properties(GaudiPolicy.stdout_cutoff
+        PROPERTIES
+            ENVIRONMENT GAUDI_TEST_STDOUT_LIMIT=1024
+            PASS_REGULAR_EXPRESSION "unexpected too big stdout"
+    )
+
     gaudi_add_tests(pytest ${CMAKE_CURRENT_SOURCE_DIR}/python/GaudiTesting)
 endif()
