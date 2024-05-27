@@ -16,10 +16,15 @@ gaudi_install(PYTHON)
 gaudi_install(SCRIPTS)
 
 if(BUILD_TESTING)
-    # QMTest
+    gaudi_add_tests(QMTest)
+
     # GAUDI-976: make GaudiTest.py more resilient towards unicode-ascii conversion failure
+    # We inject unicode in the environment to make sure it's handles correctly
     # https://its.cern.ch/jira/browse/GAUDI-976
-    gaudi_add_tests(QMTest ${CMAKE_CURRENT_SOURCE_DIR}/tests/GAUDI-976)
+    set_tests_properties(GaudiPolicy.jira_gaudi_976
+        PROPERTIES
+            ENVIRONMENT TESTENV=à
+    )
 
     gaudi_add_tests(pytest ${CMAKE_CURRENT_SOURCE_DIR}/python/GaudiTesting)
 endif()
