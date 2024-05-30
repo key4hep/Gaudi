@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <iterator>
 #include <optional>
+#include <typeindex>
 #include <utility>
 
 namespace details {
@@ -28,7 +29,26 @@ namespace details {
 // ugly hack to circumvent the usage of std::any
 struct GAUDI_API AnyDataWrapperBase : DataObject {
   virtual std::optional<std::size_t> size() const = 0;
-  virtual void*                      voidp()      = 0;
+
+  class Ptr {
+    void const*     m_ptr  = nullptr;
+    std::type_index m_type = typeid( void );
+
+  public:
+    template <typename T>
+    Ptr( T const* t ) : m_ptr{ t }, m_type{ typeid( T ) } {}
+
+    operator void const*() const { return m_ptr; }
+    std::type_index type() const { return m_type; }
+
+    template <typename T>
+    T const* get() const {
+      if ( std::is_void_v<T> || m_type == std::type_index( typeid( T ) ) ) return static_cast<T const*>( m_ptr );
+      struct bad_AnyDataWrapper_Ptr_cast : std::bad_cast {};
+      throw bad_AnyDataWrapper_Ptr_cast{};
+    }
+  };
+  virtual Ptr payload() const = 0;
 };
 
 template <typename T>
@@ -51,7 +71,7 @@ public:
     return size( getData() );
   }
 
-  virtual void* voidp() override { return &m_data; }
+  Ptr payload() const override { return &m_data; }
 };
 
 template <typename ViewType, typename OwnedType>
