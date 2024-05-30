@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<!--
+    (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<!--
+  Make sure we do not produce too much stdout.
+  https://gitlab.cern.ch/gaudi/Gaudi/-/issues/313
+
+  This test is supposed to fail at the QMTest level, but CTest should accept it.
+-->
+<argument name="program"><text>python3</text></argument>
+<argument name="args"><set>
+  <text>-c</text>
+<!-- for the test we do not need to print much, just enough for the custom cutoff and then we wait to be killed -->
+<text>
+import time
+import sys
+print(
+  ("Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+  "sed do eiusmod tempor incididunt ut labore et dolore magna "
+  "aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
+  "ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+  "Duis aute irure dolor in reprehenderit in voluptate velit "
+  "esse cillum dolore eu fugiat nulla pariatur. Excepteur sint "
+  "occaecat cupidatat non proident, sunt in culpa qui officia "
+  "deserunt mollit anim id est laborum.\n") * 5,
+  flush=True,
+)
+time.sleep(5)
+</text>
+</set></argument>
+</extension>
