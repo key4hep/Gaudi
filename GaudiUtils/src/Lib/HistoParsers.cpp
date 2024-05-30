@@ -204,7 +204,7 @@ namespace Gaudi {
 namespace {
   // ==========================================================================
   /// parse the histogram
-  StatusCode _parse( H1& h1, const std::string& input ) {
+  StatusCode _parse( H1& h1, std::string_view input ) {
     // check the parsing
     StatusCode sc = Gaudi::Parsers::parse_( h1, input );
     if ( sc.isFailure() ) { return sc; } // RETURN
@@ -212,7 +212,7 @@ namespace {
   }
   // ==========================================================================
   /// parse the histogram
-  StatusCode _parse( H2& h2, const std::string& input ) {
+  StatusCode _parse( H2& h2, std::string_view input ) {
     // check the parsing
     StatusCode sc = Gaudi::Parsers::parse_( h2, input );
     if ( sc.isFailure() ) { return sc; } // RETURN
@@ -220,7 +220,7 @@ namespace {
   }
   // ==========================================================================
   /// parse the histogram
-  StatusCode _parse( H3& h3, const std::string& input ) {
+  StatusCode _parse( H3& h3, std::string_view input ) {
     // check the parsing
     StatusCode sc = Gaudi::Parsers::parse_( h3, input );
     if ( sc.isFailure() ) { return sc; } // RETURN
@@ -228,7 +228,7 @@ namespace {
   }
   // ==========================================================================
   template <class HISTO1>
-  std::unique_ptr<HISTO1> _parse_1D( const std::string& input, std::string& name ) {
+  std::unique_ptr<HISTO1> _parse_1D( std::string_view input, std::string& name ) {
     //
     typedef std::unique_ptr<HISTO1> H1P;
     // ==========================================================================
@@ -264,7 +264,7 @@ namespace {
   }
   // ==========================================================================
   template <class HISTO2>
-  std::unique_ptr<HISTO2> _parse_2D( const std::string& input, std::string& name ) {
+  std::unique_ptr<HISTO2> _parse_2D( std::string_view input, std::string& name ) {
     //
     typedef std::unique_ptr<HISTO2> H2P;
     // 1) parse the custom format
@@ -328,7 +328,7 @@ namespace {
   }
   // ==========================================================================
   template <class HISTO3>
-  std::unique_ptr<HISTO3> _parse_3D( const std::string& input, std::string& name ) {
+  std::unique_ptr<HISTO3> _parse_3D( std::string_view input, std::string& name ) {
     //
     typedef std::unique_ptr<HISTO3> H3P;
     // 1) parse the custom format
@@ -388,7 +388,7 @@ namespace {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH1D& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH1D& result, std::string_view input ) {
   // 1) check the parsing
   std::string name;
   //
@@ -411,7 +411,7 @@ StatusCode Gaudi::Parsers::parse( TH1D& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH1F& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH1F& result, std::string_view input ) {
   // 1) check the parsing
   std::string name;
   //
@@ -434,7 +434,7 @@ StatusCode Gaudi::Parsers::parse( TH1F& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH2D& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH2D& result, std::string_view input ) {
   // 1) check the parsing
   std::string name;
   auto        h2 = _parse_2D<TH2D>( input, name );
@@ -456,7 +456,7 @@ StatusCode Gaudi::Parsers::parse( TH2D& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH2F& result, std::string_view input ) {
   // 1) check the parsing
   std::string name;
   auto        h2 = _parse_2D<TH2F>( input, name );
@@ -479,7 +479,7 @@ StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH3D& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH3D& result, std::string_view input ) {
   // 1) check the parsing
   std::string name;
   auto        h3 = _parse_3D<TH3D>( input, name );
@@ -501,7 +501,7 @@ StatusCode Gaudi::Parsers::parse( TH3D& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH3F& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH3F& result, std::string_view input ) {
   // 1) check the parsing
   std::string name;
   auto        h3 = _parse_3D<TH3F>( input, name );
@@ -524,7 +524,7 @@ StatusCode Gaudi::Parsers::parse( TH3F& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH1D*& result, std::string_view input ) {
   if ( result ) { return parse( *result, input ); } // RETURN
 
   // 1) check the parsing
@@ -547,7 +547,7 @@ StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH2D*& result, std::string_view input ) {
   if ( result ) { return parse( *result, input ); } // RETURN
 
   // 1) check the parsing
@@ -570,7 +570,7 @@ StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH3D*& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( TH3D*& result, std::string_view input ) {
   if ( result ) { return parse( *result, input ); } // RETURN
 
   // 1) check the parsing
@@ -593,7 +593,7 @@ StatusCode Gaudi::Parsers::parse( TH3D*& result, const std::string& input ) {
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, std::string_view input ) {
   // 1) convert to ROOT
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram
@@ -606,7 +606,7 @@ StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, const std::string&
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( AIDA::IHistogram2D& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram2D& result, std::string_view input ) {
   // 1) convert to ROOT
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram
@@ -619,7 +619,7 @@ StatusCode Gaudi::Parsers::parse( AIDA::IHistogram2D& result, const std::string&
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( AIDA::IHistogram3D& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram3D& result, std::string_view input ) {
   // 1) convert to ROOT
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram

@@ -812,7 +812,7 @@ namespace Gaudi {
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<std::string, double>& result, const std::string& input );
+    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<std::string, double>& result, std::string_view input );
     // ========================================================================
     /** parse the vector of keys from the string
      *  @see Gaudi::Parsers
@@ -824,7 +824,7 @@ namespace Gaudi {
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<Gaudi::StringKey, double>& result, const std::string& input );
+    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<Gaudi::StringKey, double>& result, std::string_view input );
     // ========================================================================
   } // namespace Parsers
   // ==========================================================================

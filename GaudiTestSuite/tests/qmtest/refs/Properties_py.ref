@@ -360,7 +360,7 @@ PropertyAlg          INFO PInt=  'PInt':154 [should be 154]
 PropertyAlg          INFO Try to assign invalid value to DoubleArray
 PropertyAlg         ERROR got exception: Cannot convert '{"12.12", "13.13"}' for property 'DoubleArray' in class 'PropertyAlg': std::invalid_argument, cannot parse '{"12.12", "13.13"}' to std::vector<double,std::allocator<double> >
 PropertyAlg          INFO Try to assign invalid value to StringMap
-PropertyAlg         ERROR got exception: Cannot convert '{"one", {"une", "eins"}}' for property 'StringMap' in class 'PropertyAlg': boost::wrapexcept<boost::spirit::qi::expectation_failure<__gnu_cxx::__normal_iterator<char const*,std::string> > >, boost::spirit::qi::expectation_failure
+PropertyAlg         ERROR got exception: Cannot convert '{"one", {"une", "eins"}}' for property 'StringMap' in class 'PropertyAlg': boost::wrapexcept<boost::spirit::qi::expectation_failure<char const*> >, boost::spirit::qi::expectation_failure
 PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004, 1e-20, 1e+20]
 PropertyAlg          INFO =================================================
 PropertyProxy        INFO  Got property this.RInt = 101;
