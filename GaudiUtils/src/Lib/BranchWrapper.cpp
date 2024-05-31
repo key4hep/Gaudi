@@ -41,12 +41,16 @@ namespace Gaudi::details {
       // Create a branch for fundamental types using the leaflist
       m_branch         = tree->Branch( m_branchName.c_str(), &m_dataBuffer,
                                        ( fmt::format( "{}/{}", m_className, leafListTag ) ).c_str() );
-      setBranchAddress = []( gsl::not_null<TBranch*> br, void** wrappedDataPtr ) { br->SetAddress( *wrappedDataPtr ); };
+      setBranchAddress = []( gsl::not_null<TBranch*> br, const void** wrappedDataPtr ) {
+        br->SetAddress( const_cast<void*>( *wrappedDataPtr ) );
+      };
 
     } else if ( TClass::GetClass( m_className.c_str() ) ) {
       // Create a branch for object types using the classname string
       m_branch         = tree->Branch( m_branchName.c_str(), m_className.c_str(), &m_dataBuffer );
-      setBranchAddress = []( gsl::not_null<TBranch*> br, void** wrappedDataPtr ) { br->SetAddress( wrappedDataPtr ); };
+      setBranchAddress = []( gsl::not_null<TBranch*> br, const void** wrappedDataPtr ) {
+        br->SetAddress( wrappedDataPtr );
+      };
 
     } else {
       throw GaudiException( fmt::format( "Cannot create branch {} for unknown class: {}. Provide a dictionary please.",
@@ -62,7 +66,7 @@ namespace Gaudi::details {
 
   // Set the data pointer for the branch from a given address
   // Used by Gaudi::NTuple::Writer
-  void BranchWrapper::setDataPtr( void* dataPtr ) {
+  void BranchWrapper::setDataPtr( void const* dataPtr ) {
     m_dataBuffer = dataPtr;
     setBranchAddress( m_branch, &m_dataBuffer );
   }
@@ -76,7 +80,7 @@ namespace Gaudi::details {
                             StatusCode::FAILURE );
     }
 
-    m_dataBuffer = baseWrapper->voidp();
+    m_dataBuffer = baseWrapper->payload();
     setBranchAddress( m_branch, &m_dataBuffer );
   }
 

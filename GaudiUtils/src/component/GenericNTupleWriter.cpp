@@ -21,7 +21,7 @@
 
 namespace {
   // Extract the type name from a string, handles types marked as UNKNOWN_CLASS
-  auto getTypeName( const std::string_view& dependency ) {
+  auto getTypeName( std::string_view dependency ) {
     auto unknownClassPos = dependency.find( "UNKNOWN_CLASS:" );
     return ( unknownClassPos != std::string::npos )
                ? std::string( dependency.substr( unknownClassPos + std::string( "UNKNOWN_CLASS:" ).length() ) )
@@ -29,9 +29,9 @@ namespace {
   }
 
   // Extract the name from a path in the TES string by returning the last part after a slash
-  auto getNameFromLoc( const std::string_view& loc ) {
+  auto getNameFromLoc( std::string_view loc ) {
     auto lastSlashPos = loc.find_last_of( '/' );
-    return ( lastSlashPos != std::string::npos ) ? std::string( loc.substr( lastSlashPos + 1 ) ) : std::string( loc );
+    return std::string{ lastSlashPos != loc.npos ? loc.substr( lastSlashPos + 1 ) : loc };
   }
 } // namespace
 

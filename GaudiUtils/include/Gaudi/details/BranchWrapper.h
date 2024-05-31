@@ -25,7 +25,7 @@ namespace Gaudi {
     struct BranchWrapper {
 
     private:
-      void*                   m_dataBuffer = nullptr; // Data buffer for branch creation
+      void const*             m_dataBuffer = nullptr; // Data buffer for branch creation
       AnyDataWrapperBase*     baseWrapper  = nullptr; // Pointer to the base wrapper for type-safe access to data
       TBranch*                m_branch     = nullptr; // TBranch object
       std::string             m_className;            // Class name of the data
@@ -33,14 +33,14 @@ namespace Gaudi {
       std::string             m_location;             // Location of the data in the data store
       const Gaudi::Algorithm& m_algRef;               // Reference to the Gaudi algorithm using this wrapper
       void ( *setBranchAddress )( gsl::not_null<TBranch*>,
-                                  void** ); // Function pointer for the method used to set the address of the data
-                                            // buffer
+                                  const void** ); // Function pointer for the method used to set the address of the data
+                                                  // buffer
 
     public:
       BranchWrapper( const gsl::not_null<TTree*> tree, const std::string& className, const std::string& branchName,
                      const std::string& location, const Gaudi::Algorithm& algRef );
 
-      void setDataPtr( void* dataPtr );
+      void setDataPtr( void const* dataPtr );
 
       void setBranchData( const gsl::not_null<DataObject*> pObj );
 

@@ -76,10 +76,9 @@ namespace Gaudi::NTuple {
     template <std::size_t... Is>
     void createBranchesForOutputs( const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames,
                                    const std::index_sequence<Is...>, const Gaudi::Algorithm& algRef ) const {
-      ( ...,
-        m_branchWrappers.emplace_back(
-            m_tree, System::typeinfoName( typeid( typename std::tuple_element<Is, std::tuple<OUTPUTs...>>::type ) ),
-            branchNames[Is], "", algRef ) );
+      ( ..., m_branchWrappers.emplace_back(
+                 m_tree, System::typeinfoName( typeid( std::tuple_element_t<Is, std::tuple<OUTPUTs...>> ) ),
+                 branchNames[Is], "", algRef ) );
     }
 
     // Fill the TTree with transformed data from the input
