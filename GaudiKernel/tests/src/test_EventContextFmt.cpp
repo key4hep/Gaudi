@@ -9,13 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <GaudiKernel/EventContext.h>
-#include <fmt/ostream.h>
-
-#if FMT_VERSION >= 90000
-// make EventContext formattable via fmt
-template <>
-struct fmt::formatter<EventContext> : ostream_formatter {};
-#endif
 
 #if __has_include( <catch2/catch.hpp>)
 // Catch2 v2

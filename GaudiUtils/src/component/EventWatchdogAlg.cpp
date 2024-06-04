@@ -18,7 +18,6 @@
 #include <chrono>
 #include <csignal>
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <mutex>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/remove.hpp>
@@ -40,12 +39,6 @@ namespace {
   // for example requiring a stack trace while already producing one
   std::mutex s_watchdogReportMutex;
 } // namespace
-
-#if FMT_VERSION >= 90000
-// make EventContext formattable via fmt
-template <>
-struct fmt::formatter<EventContext> : ostream_formatter {};
-#endif
 
 using Gaudi::Utils::PeriodicAction;
 

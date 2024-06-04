@@ -13,6 +13,7 @@
 #include <GaudiKernel/EventIDBase.h>
 #include <any>
 #include <cstddef>
+#include <fmt/format.h>
 #include <iostream>
 #include <limits>
 
@@ -137,20 +138,26 @@ private:
   std::any m_extension;
 };
 
-inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx ) {
-  if ( ctx.valid() ) {
-    os << "s: " << ctx.slot() << "  e: " << ctx.evt();
-    if ( ctx.usesSubSlot() ) os << " sub: " << ctx.subSlot();
-    return os;
-  } else {
-    return os << "INVALID";
+template <>
+struct fmt::formatter<EventContext> : formatter<string_view> {
+  auto format( const EventContext& ec, format_context& ctx ) const {
+    if ( ec.valid() ) {
+      std::string out;
+      if ( ec.usesSubSlot() ) {
+        out = fmt::format( "s: {}  e: {} sub: {}", ec.slot(), ec.evt(), ec.subSlot() );
+      } else {
+        out = fmt::format( "s: {}  e: {}", ec.slot(), ec.evt() );
+      }
+      return formatter<string_view>::format( out, ctx );
+    } else {
+      return formatter<string_view>::format( "INVALID", ctx );
+    }
   }
-}
+};
+
+inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx ) { return os << fmt::format( "{}", ctx ); }
 
 inline std::ostream& operator<<( std::ostream& os, const EventContext* c ) {
-  if ( c ) {
-    return os << *c;
-  } else {
-    return os << "INVALID";
-  }
+  if ( c ) { return os << fmt::format( "{}", *c ); }
+  return os << "INVALID";
 }
