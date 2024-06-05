@@ -79,10 +79,25 @@ if(BUILD_TESTING)
             Boost::headers
             Catch2::Catch2WithMain
             Gaudi::GaudiKernel
-        TEST
     )
     target_compile_definitions(test_AlgContextSvc PRIVATE BUILD_UNIT_TESTS)
     catch_discover_tests(test_AlgContextSvc
+        TEST_PREFIX GaudiCommonSvc.
+        PROPERTIES
+            LABELS "Gaudi"
+            LABELS "Gaudi.GaudiCommonSvc"
+    )
+
+    gaudi_add_executable(GaudiCommonSvc_tests
+        SOURCES
+            tests/src/test_PersistencySvc.cpp
+            src/PersistencySvc/PersistencySvc.cpp
+        LINK
+            Boost::headers
+            Catch2::Catch2WithMain
+            Gaudi::GaudiKernel
+    )
+    catch_discover_tests(GaudiCommonSvc_tests
         TEST_PREFIX GaudiCommonSvc.
         PROPERTIES
             LABELS "Gaudi"
