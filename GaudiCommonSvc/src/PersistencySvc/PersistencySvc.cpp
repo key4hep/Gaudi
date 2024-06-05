@@ -8,42 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//  PersistencySvc.cpp
-//--------------------------------------------------------------------
-//
-//  Package    : System ( The LHCb Offline System)
-//
-//  Description: implementation of the PersistencySvc
-//
-//  Author     : M.Frank
-//  History    :
-// +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who
-// +---------+----------------------------------------------+---------
-// | 29/10/98| Initial version                              | MF
-// +---------+----------------------------------------------+---------
-//
-//====================================================================
-#define PERSISTENCYSVC_PERSISTENCYSVC_CPP
-
-// Interface definitions
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IConverter.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IDataSelector.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/TypeNameString.h"
-#include "GaudiKernel/strcasecmp.h"
-
-// Implementation specific definitions
 #include "PersistencySvc.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IConverter.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IDataSelector.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/TypeNameString.h>
+#include <GaudiKernel/strcasecmp.h>
 
-// Instantiation of a static factory class used by clients to create
-// instances of this service
 DECLARE_COMPONENT( PersistencySvc )
 
 enum CnvSvcAction {
@@ -312,8 +288,8 @@ StatusCode PersistencySvc::createAddress( long svc_type, const CLID& clid, const
 
 /// Convert an address to string form
 StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::string& refAddress ) {
-  // Assumuption is that the Persistency service prepends a header
-  // and requests the conversion service refered to by the service
+  // Assumption is that the Persistency service prepends a header
+  // and requests the conversion service referred to by the service
   // type to encode the rest
   long svc_type = 0;
   CLID clid     = 0;
@@ -403,7 +379,7 @@ void PersistencySvc::decodeAddrHdr( const std::string& address, long& service_ty
 
 /// Set address creator facility
 StatusCode PersistencySvc::setAddressCreator( IAddressCreator* ) {
-  // The persistency service is a address creation dispatcher istelf.
+  // The persistency service is an address creation dispatcher itself.
   // The persistency service can NEVER create addresses itself.
   // The entry point must only be provided in order to fulfill the needs of the
   // implementing interfaces.

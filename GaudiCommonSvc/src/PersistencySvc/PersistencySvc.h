@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,17 +18,13 @@
 //	Author    : Markus Frank
 //
 //	===========================================================
-#ifndef PERSISTENCYSVC_PERSISTENCYSVC_H
-#define PERSISTENCYSVC_PERSISTENCYSVC_H 1
+#pragma once
 
-// Framework include files
-#include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IPersistencySvc.h"
-#include "GaudiKernel/Service.h"
-
-// STL include files
+#include <GaudiKernel/IAddressCreator.h>
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IPersistencySvc.h>
+#include <GaudiKernel/Service.h>
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -85,18 +81,7 @@ protected:
     long                      svcType() const { return m_serviceType; }
   };
   typedef std::map<long, ServiceEntry> Services;
-  /*
-    class SvcTest final {
-    public:
-      SvcTest(long test) : m_test(test)    {
-      }
-      bool operator()( const ServiceEntry& testee ) const {
-          return m_test == testee.svcType();
-      }
-    private:
-         long m_test;
-    };
-  */
+
 public:
   /**@name IPersistencySvc Interface implementation */
   //@{
@@ -237,9 +222,9 @@ protected:
 
   /// Default service type
   long m_cnvDefType = TEST_StorageType;
-  /// Pointer to datma provider service
+  /// Pointer to data provider service
   mutable SmartIF<IDataProviderSvc> m_dataSvc;
-  /// List of convermsion workers
+  /// List of conversion workers
   Services m_cnvServices;
   /// Default output service
   mutable SmartIF<IConversionSvc> m_cnvDefault;
@@ -260,4 +245,3 @@ protected:
   /// Pointer to the IAddressCreator interface of this, for addressCreator().
   mutable SmartIF<IAddressCreator> m_addrCreator;
 };
-#endif // PERSISTENCYSVC_PERSISTENCYSVC_H
