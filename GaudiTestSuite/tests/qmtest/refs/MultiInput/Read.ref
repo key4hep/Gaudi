@@ -33,7 +33,7 @@ Gaudi::TestSuit...  DEBUG Read 100 addresses
 Gaudi::TestSuit...  DEBUG input handles: 0
 Gaudi::TestSuit...  DEBUG output handles: 0
 Gaudi::TestSuit...  DEBUG Data Deps for Gaudi::TestSuite::MultiInput::ReadAlg
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

@@ -210,7 +210,7 @@ EventPersistenc...VERBOSE service_i: found service JobOptionsSvc
 EventPersistenc...   INFO "CnvServices": ["RootEvtCnvSvc"]
 EventPersistenc...  DEBUG Service base class initialized successfully
 EventPersistenc...VERBOSE service_i: found service RootEvtCnvSvc
-EventPersistenc...   INFO Added successfully Conversion service:RootEvtCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootEvtCnvSvc
 RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
 RootDst              INFO Data source: EventDataSvc
 RootDst              INFO Data output: DATAFILE='RootDst.root' TYP='ROOT' OPT='RECREATE'

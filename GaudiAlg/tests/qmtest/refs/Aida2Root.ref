@@ -71,7 +71,7 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':set()
 HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo-aida2root.root
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'
 SimpleHistos        DEBUG input handles: 0
 SimpleHistos        DEBUG output handles: 0

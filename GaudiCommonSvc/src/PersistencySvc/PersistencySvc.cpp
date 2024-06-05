@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -222,7 +222,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam ) {
     return service( nam ); // now it is in the list
   }
 
-  info() << "Cannot access Conversion service:" << nam << endmsg;
+  error() << "Cannot access Conversion service " << nam << endmsg;
   static SmartIF<IConversionSvc> no_svc;
   return no_svc;
 }
@@ -259,16 +259,16 @@ StatusCode PersistencySvc::addCnvService( IConversionSvc* servc ) {
       if ( cnv_svc ) removeCnvService( type ).ignore();
       auto p = m_cnvServices.emplace( type, ServiceEntry( type, isvc, iservc, icr ) );
       if ( !p.second ) {
-        info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
+        error() << "Cannot add Conversion service " << isvc->name() << endmsg;
         return StatusCode::FAILURE;
       }
-      info() << "Added successfully Conversion service:" << isvc->name() << endmsg;
+      info() << "Added successfully Conversion service " << isvc->name() << endmsg;
       iservc->setAddressCreator( this ).ignore();
       iservc->setDataProvider( m_dataSvc ).ignore();
       return StatusCode::SUCCESS;
     }
   }
-  info() << "Cannot add Conversion service of type " << type << endmsg;
+  error() << "Cannot add Conversion service for type " << type << endmsg;
   return StatusCode::FAILURE;
 }
 

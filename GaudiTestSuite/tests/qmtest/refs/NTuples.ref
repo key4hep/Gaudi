@@ -24,7 +24,7 @@ NTupleAlgorithm      INFO Finished booking NTuples
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 RRWNTupleCnv         INFO ID 1: added branch: Ntrack / Ntrack/I

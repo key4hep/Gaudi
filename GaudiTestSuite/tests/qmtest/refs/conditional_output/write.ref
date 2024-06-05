@@ -89,7 +89,7 @@ OutputStream      VERBOSE ServiceLocatorHelper::service: found service TimelineS
 IODataManager       DEBUG Service base class initialized successfully
 FileCatalog         DEBUG Service base class initialized successfully
 EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 OutputStream        DEBUG ItemList    : []
 OutputStream        DEBUG OptItemList : []
 OutputStream        DEBUG AlgDependentItemList : {EvenEvents: [/Event/A#1, /Event/C#1], OddEvents: [/Event/A#1, /Event/B#1]}

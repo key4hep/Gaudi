@@ -22,7 +22,7 @@ NTupleAlgorithm      INFO Finished booking NTuples
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 ApplicationMgr       INFO Application Manager Initialized successfully
 JobOptionsSvc        INFO Properties are dumped into "gauditestsuite.metadatasvc.joboptsdump"
 Gaudi::MetaDataSvc  DEBUG started
