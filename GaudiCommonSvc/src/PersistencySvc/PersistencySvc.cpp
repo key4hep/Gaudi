@@ -129,6 +129,8 @@ StatusCode PersistencySvc::updateRepRefs( IOpaqueAddress* pAddr, DataObject* pOb
 
 /// Retrieve address creator service from list
 SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type ) {
+  std::scoped_lock _{ m_servicesMutex };
+
   long typ = type;
   auto it  = m_cnvServices.find( typ );
   if ( it == m_cnvServices.end() ) {
@@ -145,6 +147,7 @@ SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type ) {
 
 /// Define transient data store
 StatusCode PersistencySvc::setDataProvider( IDataProviderSvc* pDataSvc ) {
+  std::scoped_lock _{ m_servicesMutex };
   m_dataSvc = pDataSvc;
   for ( auto& i : m_cnvServices ) { i.second.conversionSvc()->setDataProvider( m_dataSvc ).ignore(); }
   return StatusCode::SUCCESS;
@@ -174,6 +177,7 @@ StatusCode PersistencySvc::addConverter( IConverter* pConverter ) {
 
 /// Remove converter object from conversion service (if present).
 StatusCode PersistencySvc::removeConverter( const CLID& clid ) {
+  std::scoped_lock _{ m_servicesMutex };
   // Remove converter type from all services
   StatusCode status = Status::NO_CONVERTER, iret = StatusCode::SUCCESS;
   for ( auto& i : m_cnvServices ) {
@@ -189,8 +193,11 @@ IConverter* PersistencySvc::converter( const CLID& /*clid*/ ) { return nullptr; 
 /// Retrieve conversion service by name
 SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam ) {
   Gaudi::Utils::TypeNameString tn( nam );
-  auto                         it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
-                                                  [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
+
+  std::scoped_lock _{ m_servicesMutex };
+
+  auto it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
+                          [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
 
   auto svc = Service::service<IConversionSvc>( nam, true );
@@ -205,6 +212,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam ) {
 
 /// Retrieve conversion service from list
 SmartIF<IConversionSvc>& PersistencySvc::service( long type ) {
+  std::scoped_lock _{ m_servicesMutex };
   // Check wether this is already an active service
   auto it = m_cnvServices.find( type );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
@@ -219,6 +227,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service( long type ) {
 
 /// Add data service
 StatusCode PersistencySvc::addCnvService( IConversionSvc* servc ) {
+  std::scoped_lock _{ m_servicesMutex };
   if ( !servc ) return Status::BAD_STORAGE_TYPE;
   long type    = servc->repSvcType();
   long def_typ = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
@@ -250,6 +259,8 @@ StatusCode PersistencySvc::addCnvService( IConversionSvc* servc ) {
 
 /// Remove conversion service
 StatusCode PersistencySvc::removeCnvService( long svctype ) {
+  std::scoped_lock _{ m_servicesMutex };
+
   auto it = m_cnvServices.find( svctype );
   if ( it == m_cnvServices.end() ) return Status::BAD_STORAGE_TYPE;
   it->second.service()->release();
@@ -438,6 +449,7 @@ StatusCode PersistencySvc::getService( const std::string& service_type, IConvers
   else if ( ::strncasecmp( imp, "POOL", 4 ) == 0 )
     return getService( POOL_StorageType, refpSvc );
 
+  std::scoped_lock _{ m_servicesMutex };
   for ( const auto& i : m_cnvServices ) {
     SmartIF<IService> svc( i.second.conversionSvc() );
     if ( svc ) {
@@ -482,6 +494,7 @@ StatusCode PersistencySvc::initialize() {
 
 /// stop the service.
 StatusCode PersistencySvc::finalize() {
+  std::scoped_lock _{ m_servicesMutex };
   // Release all workers
   m_cnvServices.clear();
   // Release references to this to avoid loops

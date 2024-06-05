@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <functional>
 #include <map>
+#include <mutex>
 
 /** PersistencySvc class implementation definition.
 
@@ -226,6 +227,9 @@ protected:
   mutable SmartIF<IDataProviderSvc> m_dataSvc;
   /// List of conversion workers
   Services m_cnvServices;
+  /// Mutex to protect accesses to m_cnvServices
+  mutable std::recursive_mutex m_servicesMutex;
+
   /// Default output service
   mutable SmartIF<IConversionSvc> m_cnvDefault;
 
