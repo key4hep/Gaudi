@@ -140,7 +140,11 @@ private:
 
 template <>
 struct fmt::formatter<EventContext> : formatter<string_view> {
-  auto format( const EventContext& ec, format_context& ctx ) const {
+  auto format( const EventContext& ec, format_context& ctx )
+#if FMT_VERSION >= 80000
+      const
+#endif
+  {
     if ( ec.valid() ) {
       std::string out;
       if ( ec.usesSubSlot() ) {
