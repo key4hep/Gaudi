@@ -31,7 +31,7 @@ HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 EventSelector     SUCCESS Reading Event record 2. Record number within stream 1: 2
 EventSelector     SUCCESS Reading Event record 3. Record number within stream 1: 3
 EventSelector     SUCCESS Reading Event record 4. Record number within stream 1: 4

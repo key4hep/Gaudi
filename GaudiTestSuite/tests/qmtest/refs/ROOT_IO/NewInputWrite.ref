@@ -69,7 +69,7 @@ NewRootDst        VERBOSE ServiceLocatorHelper::service: found service TimelineS
 IODataManager       DEBUG Service base class initialized successfully
 FileCatalog         DEBUG Service base class initialized successfully
 EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 NewRootDst          DEBUG ItemList    : []
 NewRootDst          DEBUG OptItemList : []
 NewRootDst          DEBUG AlgDependentItemList : {}

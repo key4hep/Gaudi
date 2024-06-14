@@ -91,11 +91,11 @@ Fill              SUCCESS Property ['Name': Value] =  'Enable':True
 Fill              SUCCESS Property ['Name': Value] =  'OutputLevel':3
 Fill              SUCCESS Property ['Name': Value] =  'ExtraOutputs':set()
 Fill              SUCCESS Property ['Name': Value] =  'ExtraInputs':set()
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
+FileRecordPersi...   INFO Added successfully Conversion service RootCnvSvc
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
 Gaudi::RootData...   INFO Recreate Database file:PFN:ROOT_IO.etags as /EXTEVT
 EventSelector     SUCCESS Reading Event record 101. Record number within stream 1: 101

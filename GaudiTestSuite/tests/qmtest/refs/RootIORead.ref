@@ -206,7 +206,7 @@ EventDataSvc        DEBUG Service base class initialized successfully
 EventPersistenc...   INFO "CnvServices": ["RootEvtCnvSvc"]
 EventPersistenc...  DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Service base class initialized successfully
-EventPersistenc...   INFO Added successfully Conversion service:RootEvtCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootEvtCnvSvc
 EventSelector_1     DEBUG Service base class initialized successfully
 EventSelector_1      INFO Selection root:/Event CLID:110
 ROOT                 INFO --> Access   DbDataBase    Mode:READ     RootDst.root
@@ -220,7 +220,7 @@ HistogramPersis...   INFO "CnvServices": ["HbookHistSvc", "RootHistSvc"]
 HistogramPersis...  DEBUG Service base class initialized successfully
 HbookHistSvc        DEBUG Service base class initialized successfully
 HbookHistSvc         INFO Setting /PAWC/ common block size to 250000
-HistogramPersis...   INFO Added successfully Conversion service:HbookHistSvc
+HistogramPersis...   INFO Added successfully Conversion service HbookHistSvc
 ApplicationMgr       INFO Application Manager Initialized successfully
 AuditorSvc          DEBUG Service base class initialized successfully
 ChronoStatSvc       DEBUG Service base class initialized successfully

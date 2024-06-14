@@ -56,7 +56,7 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
 SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':set()
 SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':set()
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'
 SimpleHistos        DEBUG input handles: 0
 SimpleHistos        DEBUG output handles: 0

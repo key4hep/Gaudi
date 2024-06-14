@@ -21,12 +21,12 @@ EvtTupleSvc         DEBUG Service base class initialized successfully
 EvtTupleSvc          INFO Added stream file:PFN:EvtTags1.root as EVTTAGS
 DetectorDataSvc      INFO Detector description not requested to be loaded
 RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 TagsWriter           INFO Adding OutputStream item /NTUPLES/EVTTAGS/Fill/COL1 with 0 level(s).
 TagsWriter           INFO Data source:             EvtTupleSvc
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='EvtColsEx.dst' OPT='READ' SVC='Gaudi::RootEvtSelector'
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
 IODataManager        INFO Referring to dataset EvtTags1.root by its file ID:34A61DA7-DB24-E111-ACE0-B499BAF088DC

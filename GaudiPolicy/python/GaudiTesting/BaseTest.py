@@ -1096,6 +1096,12 @@ for w, o, r in [
     (r"Property \['Name': Value\]", r"( =  '[^']+':)'(.*)'", r"\1\2"),
     ("TimelineSvc", "to file  'TimelineFile':", "to file "),
     ("DataObjectHandleBase", r'DataObjectHandleBase\("([^"]*)"\)', r"'\1'"),
+    # Output line changes in Gaudi v38r3
+    (
+        "Added successfully Conversion service:",
+        "Added successfully Conversion service:",
+        "Added successfully Conversion service ",
+    ),
 ]:
     normalizeTestSuite += RegexpReplacer(o, r, w)
 

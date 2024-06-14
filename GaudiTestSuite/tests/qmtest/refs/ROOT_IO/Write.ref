@@ -85,7 +85,7 @@ RootDst           VERBOSE ServiceLocatorHelper::service: found service TimelineS
 IODataManager       DEBUG Service base class initialized successfully
 FileCatalog         DEBUG Service base class initialized successfully
 EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 RootDst             DEBUG ItemList    : [/Event#999]
 RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
 RootDst             DEBUG OptItemList : []
@@ -109,7 +109,7 @@ RootMini            DEBUG Data Deps for RootMini
 FileRecords       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 FileRecords       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 FileRecordPersi...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
-FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
+FileRecordPersi...   INFO Added successfully Conversion service RootCnvSvc
 FileRecords         DEBUG ItemList    : [/FileRecords#999]
 FileRecords         DEBUG Adding OutputStream item /FileRecords with 999 level(s).
 FileRecords         DEBUG OptItemList : []
