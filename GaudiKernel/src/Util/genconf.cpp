@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -58,6 +58,7 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
+#include <boost/tokenizer.hpp>
 
 #include <exception>
 #include <fmt/format.h>
@@ -121,6 +122,11 @@ namespace {
     Converter,
     DataObject,
     Unknown
+  };
+
+  enum class conf_t {
+    CONF, // legacy configurables
+    CONF2 // GaudiConfig2 configurables
   };
 
   const std::map<std::string, component_t> allowedFactories{
@@ -187,12 +193,16 @@ class configGenerator {
   bool m_importGaudiHandles = false;
   bool m_importDataHandles  = false;
 
+  /// Types of configurables to generate
+  std::set<conf_t> m_confTypes;
+
   /// buffer of generated configurables informations for the "Db" file
   /// The "Db" file is holding informations about the generated configurables
   /// This file is later one used by the PropertyProxy.py to locate
   /// Configurables and know their default values, host module,...
   stringstream m_dbBuf;
 
+  /// buffer of generated GaudiConfig2 configurables
   stringstream m_db2Buf;
 
   /// Configurable customization. Contains customization for:
@@ -211,6 +221,9 @@ public:
   ///  - for each module extract component informations
   ///  - eventually generate the header/body/trailer python file and "Db" file
   int genConfig( const Strings_t& modules, const string& userModule );
+
+  /// customize configurable types to generate
+  void setConfigurableTypes( const std::set<conf_t>& types ) { m_confTypes = types; }
 
   /// customize the Module name where configurable base classes are defined
   void setConfigurableModule( const std::string& moduleName ) { m_configurable[component_t::Module] = moduleName; }
@@ -239,8 +252,13 @@ public:
 
 private:
   bool genComponent( const std::string& libName, const std::string& componentName, component_t componentType,
-                     const vector<PropertyBase*>& properties, const std::vector<std::string>& interfaces,
+                     const vector<PropertyBase*>&                                properties,
                      const Gaudi::PluginService::Details::Registry::FactoryInfo& info );
+
+  bool genComponent2( const std::string& componentName, component_t componentType,
+                      const vector<PropertyBase*>& properties, const std::vector<std::string>& interfaces,
+                      const Gaudi::PluginService::Details::Registry::FactoryInfo& info );
+
   void genImport( std::ostream& s, std::string_view frmt, std::string indent );
   void genHeader( std::ostream& pyOut, std::ostream& dbOut );
   void genBody( std::ostream& pyOut, std::ostream& dbOut ) {
@@ -293,7 +311,8 @@ int main( int argc, char** argv )
       "output directory for genconf files." )( "debug-level,d", po::value<int>()->default_value( 0 ), "debug level" )(
       "load-library,l", po::value<Strings_t>()->composing(), "preloading library" )(
       "user-module,m", po::value<string>(), "user-defined module to be imported by the genConf-generated one" )(
-      "no-init", "do not generate the (empty) __init__.py" );
+      "no-init", "do not generate the (empty) __init__.py" )(
+      "type", po::value<string>()->default_value( "conf,conf2" ), "comma-separate types of configurables to generate" );
 
   // declare a group of options that will be allowed both on command line
   // _and_ in configuration file
@@ -386,6 +405,21 @@ int main( int argc, char** argv )
     }
   }
 
+  std::set<conf_t> confTypes;
+  if ( vm.count( "type" ) ) {
+    for ( const std::string& type : boost::tokenizer{ vm["type"].as<std::string>(), boost::char_separator{ "," } } ) {
+      if ( type == "conf" ) {
+        confTypes.insert( conf_t::CONF );
+      } else if ( type == "conf2" ) {
+        confTypes.insert( conf_t::CONF2 );
+      } else {
+        LOG_ERROR << "unknown configurable type: " << type;
+        cout << visible << endl;
+        return EXIT_FAILURE;
+      }
+    }
+  }
+
   if ( !fs::exists( out ) ) {
     try {
       fs::create_directory( out );
@@ -405,6 +439,7 @@ int main( int argc, char** argv )
 
   configGenerator py( pkgName, out.string() );
   py.setConfigurableModule( vm["configurable-module"].as<string>() );
+  py.setConfigurableTypes( confTypes );
   py.setConfigurableDefaultName( vm["configurable-default-name"].as<string>() );
   py.setConfigurableAlgorithm( vm["configurable-algorithm"].as<string>() );
   py.setConfigurableAlgTool( vm["configurable-algtool"].as<string>() );
@@ -573,7 +608,11 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
       if ( prop ) {
-        if ( !genComponent( lib, name, type, prop->getProperties(), prop->getInterfaceNames(), info ) ) {
+        if ( m_confTypes.count( conf_t::CONF ) && !genComponent( lib, name, type, prop->getProperties(), info ) ) {
+          allGood = false;
+        }
+        if ( m_confTypes.count( conf_t::CONF2 ) &&
+             !genComponent2( name, type, prop->getProperties(), prop->getInterfaceNames(), info ) ) {
           allGood = false;
         }
         prop.reset();
@@ -587,18 +626,19 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     ///
     /// write-out files for this library
     ///
-    const std::string pyName = ( fs::path( m_outputDirName ) / fs::path( lib + "Conf.py" ) ).string();
-    const std::string dbName = ( fs::path( m_outputDirName ) / fs::path( lib + ".confdb" ) ).string();
+    if ( m_confTypes.count( conf_t::CONF ) ) {
+      const std::string pyName = ( fs::path( m_outputDirName ) / fs::path( lib + "Conf.py" ) ).string();
+      const std::string dbName = ( fs::path( m_outputDirName ) / fs::path( lib + ".confdb" ) ).string();
 
-    std::fstream py( pyName, std::ios_base::out | std::ios_base::trunc );
-    std::fstream db( dbName, std::ios_base::out | std::ios_base::trunc );
+      std::fstream py( pyName, std::ios_base::out | std::ios_base::trunc );
+      std::fstream db( dbName, std::ios_base::out | std::ios_base::trunc );
 
-    genHeader( py, db );
-    if ( !userModule.empty() ) py << "from " << userModule << " import *" << endl;
-    genBody( py, db );
-    genTrailer( py, db );
-
-    {
+      genHeader( py, db );
+      if ( !userModule.empty() ) py << "from " << userModule << " import *" << endl;
+      genBody( py, db );
+      genTrailer( py, db );
+    }
+    if ( m_confTypes.count( conf_t::CONF2 ) ) {
       const std::string db2Name = ( fs::path( m_outputDirName ) / fs::path( lib + ".confdb2_part" ) ).string();
       std::fstream      db2( db2Name, std::ios_base::out | std::ios_base::trunc );
       db2 << "{\n" << m_db2Buf.str() << "}\n";
@@ -677,7 +717,6 @@ void configGenerator::genTrailer( std::ostream& /*py*/, std::ostream& db )
 //-----------------------------------------------------------------------------
 bool configGenerator::genComponent( const std::string& libName, const std::string& componentName,
                                     component_t componentType, const vector<PropertyBase*>& properties,
-                                    const vector<std::string>&                                  interfaces,
                                     const Gaudi::PluginService::Details::Registry::FactoryInfo& info )
 //-----------------------------------------------------------------------------
 {
@@ -687,40 +726,14 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
   std::vector<std::pair<std::string, std::string>> propDoc;
   propDoc.reserve( properties.size() );
 
-  m_db2Buf << "    '" << componentName << "': {\n";
-  m_db2Buf << "        '__component_type__': '";
-  switch ( componentType ) {
-  case component_t::Algorithm:
-    m_db2Buf << "Algorithm";
-    break;
-  case component_t::AlgTool:
-    m_db2Buf << "AlgTool";
-    break;
-  case component_t::ApplicationMgr: // FALLTROUGH
-  case component_t::Service:
-    m_db2Buf << "Service";
-    break;
-  case component_t::Auditor:
-    m_db2Buf << "Auditor";
-    break;
-  default:
-    m_db2Buf << "Unknown";
-  }
-  if ( !decl_loc.empty() ) { m_db2Buf << "',\n        '__declaration_location__': '" << decl_loc; }
-  m_db2Buf << "',\n        '__interfaces__': (";
-  for ( const auto& intf : std::set<std::string>{ begin( interfaces ), end( interfaces ) } ) {
-    if ( ignored_interfaces.find( intf ) == end( ignored_interfaces ) ) { m_db2Buf << '\'' << intf << "', "; }
-  }
-  m_db2Buf << "),\n        'properties': {\n";
-
   m_pyBuf << "\nclass " << cname << "( " << m_configurable[componentType] << " ) :\n";
   m_pyBuf << "  __slots__ = { \n";
   for ( const auto& prop : properties ) {
     const string& pname = prop->name();
     // Validate property name (it must be a valid Python identifier)
     if ( !boost::regex_match( pname, pythonIdentifier ) ) {
-      std::cout << "ERROR: invalid property name \"" << pname << "\" in component " << cname
-                << " (invalid Python identifier)" << std::endl;
+      LOG_ERROR << "invalid property name \"" << pname << "\" in component " << cname << " (invalid Python identifier)"
+                << std::endl;
       // try to make the buffer at least more or less valid python code.
       m_pyBuf << " #ERROR-invalid identifier '" << pname << "'\n"
               << "  }\n";
@@ -730,12 +743,6 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
     string pvalue, ptype;
     pythonizeValue( prop, pvalue, ptype );
     m_pyBuf << "    '" << pname << "' : " << pvalue << ",\n";
-
-    m_db2Buf << "            '" << pname << "': ('" << ptype << "', " << pvalue << ", '''" << prop->documentation()
-             << " [" << prop->ownerTypeName() << "]'''";
-    auto sem = prop->semantics();
-    if ( !sem.empty() ) { m_db2Buf << ", '" << sem << '\''; }
-    m_db2Buf << "),\n";
 
     if ( prop->documentation() != "none" ) {
       propDoc.emplace_back( pname, prop->documentation() + " [" + prop->ownerTypeName() + "]" );
@@ -765,12 +772,72 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
   const string pyName  = ( fs::path( m_outputDirName ) / fs::path( libName + "Conf.py" ) ).string();
   const string modName = fs::path( pyName ).filename().stem().string();
 
-  m_db2Buf << "        },\n    },\n";
-
   // now the db part
   m_dbBuf << m_pkgName << "." << modName << " " << libName << " " << cname << "\n" << flush;
 
   return true;
+}
+
+//-----------------------------------------------------------------------------
+bool configGenerator::genComponent2( const std::string& componentName, component_t componentType,
+                                     const vector<PropertyBase*>& properties, const vector<std::string>& interfaces,
+                                     const Gaudi::PluginService::Details::Registry::FactoryInfo& info )
+//-----------------------------------------------------------------------------
+{
+  m_db2Buf << "    '" << componentName << "': {\n";
+  m_db2Buf << "        '__component_type__': '";
+  switch ( componentType ) {
+  case component_t::Algorithm:
+    m_db2Buf << "Algorithm";
+    break;
+  case component_t::AlgTool:
+    m_db2Buf << "AlgTool";
+    break;
+  case component_t::ApplicationMgr: // FALLTROUGH
+  case component_t::Service:
+    m_db2Buf << "Service";
+    break;
+  case component_t::Auditor:
+    m_db2Buf << "Auditor";
+    break;
+  default:
+    m_db2Buf << "Unknown";
+  }
+
+  const auto decl_loc = info.getprop( "declaration_location" );
+  if ( !decl_loc.empty() ) { m_db2Buf << "',\n        '__declaration_location__': '" << decl_loc; }
+
+  m_db2Buf << "',\n        '__interfaces__': (";
+  for ( const auto& intf : std::set<std::string>{ begin( interfaces ), end( interfaces ) } ) {
+    if ( ignored_interfaces.find( intf ) == end( ignored_interfaces ) ) { m_db2Buf << '\'' << intf << "', "; }
+  }
+  m_db2Buf << "),\n        'properties': {\n";
+
+  bool success = true;
+  for ( const auto& prop : properties ) {
+    const string& pname = prop->name();
+    // Validate property name (it must be a valid Python identifier)
+    if ( !boost::regex_match( pname, pythonIdentifier ) ) {
+      LOG_ERROR << "invalid property name \"" << pname << "\" in component " << componentName
+                << " (invalid Python identifier)" << std::endl;
+      m_db2Buf << " #ERROR-invalid identifier '" << pname << "'\n";
+      success = false;
+      break;
+    }
+
+    string pvalue, ptype;
+    pythonizeValue( prop, pvalue, ptype );
+
+    m_db2Buf << "            '" << pname << "': ('" << ptype << "', " << pvalue << ", '''" << prop->documentation()
+             << " [" << prop->ownerTypeName() << "]'''";
+    auto sem = prop->semantics();
+    if ( !sem.empty() ) { m_db2Buf << ", '" << sem << '\''; }
+    m_db2Buf << "),\n";
+  }
+
+  m_db2Buf << "        },\n    },\n";
+
+  return success;
 }
 
 //-----------------------------------------------------------------------------
