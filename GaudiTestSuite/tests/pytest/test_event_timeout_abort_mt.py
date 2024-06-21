@@ -21,8 +21,9 @@ def config(event_slots=2, events=3, threads=6):
 
     See https://gitlab.cern.ch/gaudi/Gaudi/-/issues/287
     """
-    from Gaudi.Configuration import DEBUG, INFO
     from GaudiConfig2 import Configurables as C
+
+    from Gaudi.Configuration import DEBUG, INFO
 
     whiteboard = C.HiveWhiteBoard("EventDataSvc", EventSlots=event_slots)
     scheduler = C.AvalancheSchedulerSvc(
