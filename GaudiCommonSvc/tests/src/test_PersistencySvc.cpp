@@ -27,6 +27,7 @@ using Catch::Matchers::Contains;
 #else
 // Catch2 v3
 #  include <catch2/catch_test_macros.hpp>
+#  include <catch2/generators/catch_generators_adapters.hpp>
 #  include <catch2/matchers/catch_matchers_string.hpp>
 using Catch::Matchers::ContainsSubstring;
 #endif
