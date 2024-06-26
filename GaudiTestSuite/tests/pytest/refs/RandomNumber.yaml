@@ -1,0 +1,126 @@
+stdout: |-
+  JobOptionsSvc        INFO Job options successfully file RandomNumber.opts
+  ApplicationMgr      DEBUG Getting my own properties
+  ApplicationMgr    SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr       INFO Application Manager Configured successfully
+  ServiceManager      DEBUG Initializing service AppMgrRunable
+  ServiceManager      DEBUG Initializing service EventLoopMgr
+  EventLoopMgr        DEBUG Creating Top Algorithm RandomNumberAlg with name RandomNumberAlg
+  TimelineSvc         DEBUG initialize
+  RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+  RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+  RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+  HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
+  NTupleSvc            INFO Added stream file:NTuple.root as FILE1
+  RFileCnv             INFO opening Root file "NTuple.root" for writing
+  RFileCnv            DEBUG creating ROOT file NTuple.root
+  AlgExecStateSvc     DEBUG preInit: will add Alg RandomNumberAlg later
+  RandomNumberAlg     DEBUG input handles: 0
+  RandomNumberAlg     DEBUG output handles: 0
+  EventLoopMgr      WARNING Unable to locate service "EventSelector"
+  EventLoopMgr      WARNING No events will be processed from external input.
+  ApplicationMgr       INFO Application Manager Initialized successfully
+  ServiceManager      DEBUG Starting service AppMgrRunable
+  ServiceManager      DEBUG Starting service IncidentSvc
+  ServiceManager      DEBUG Starting service EventPersistencySvc
+  ServiceManager      DEBUG Starting service EventDataSvc
+  ServiceManager      DEBUG Starting service TimelineSvc
+  ServiceManager      DEBUG Starting service RndmGenSvc
+  ServiceManager      DEBUG Starting service RootHistSvc
+  ServiceManager      DEBUG Starting service HistogramPersistencySvc
+  ServiceManager      DEBUG Starting service HistogramDataSvc
+  ServiceManager      DEBUG Starting service NTupleSvc
+  ServiceManager      DEBUG Starting service AlgExecStateSvc
+  ServiceManager      DEBUG Starting service EventLoopMgr
+  ApplicationMgr       INFO Application Manager Started successfully
+  AlgExecStateSvc     DEBUG resizing state containers to : 1
+  AlgExecStateSvc     DEBUG adding alg RandomNumberAlg to 1 slots
+  RRWNTupleCnv         INFO ID 100: added branch: Event# / Event#/I
+  RRWNTupleCnv         INFO ID 100: added branch: DeterInt / DeterInt/i
+  RRWNTupleCnv         INFO ID 100: added branch: Gauss / Gauss/F
+  RRWNTupleCnv         INFO ID 100: added branch: Exp / Exp/F
+  RRWNTupleCnv         INFO ID 100: added branch: Poisson / Poisson/F
+  RRWNTupleCnv         INFO Booked TTree with ID:100 "Hello World"
+  ServiceManager      DEBUG Stopping service EventLoopMgr
+  ServiceManager      DEBUG Stopping service AlgExecStateSvc
+  ServiceManager      DEBUG Stopping service NTupleSvc
+  ServiceManager      DEBUG Stopping service HistogramDataSvc
+  ServiceManager      DEBUG Stopping service HistogramPersistencySvc
+  ServiceManager      DEBUG Stopping service RootHistSvc
+  ServiceManager      DEBUG Stopping service RndmGenSvc
+  ServiceManager      DEBUG Stopping service TimelineSvc
+  ServiceManager      DEBUG Stopping service EventDataSvc
+  ServiceManager      DEBUG Stopping service EventPersistencySvc
+  ServiceManager      DEBUG Stopping service IncidentSvc
+  ServiceManager      DEBUG Stopping service AppMgrRunable
+  ApplicationMgr       INFO Application Manager Stopped successfully
+  ServiceManager      DEBUG Finalizing service EventLoopMgr
+  Destructor Called for RandomNumberAlg
+  EventLoopMgr         INFO Histograms converted successfully according to request.
+  ServiceManager      DEBUG Finalizing service AlgExecStateSvc
+  ServiceManager      DEBUG Finalizing service NTupleSvc
+  RFileCnv             INFO dumping contents of /NTUPLES/FILE1
+  TFile: name=NTuple.root, title=Gaudi Trees, option=CREATE
+  NTupleSvc            INFO NTuples saved successfully
+  ServiceManager      DEBUG Finalizing service HistogramDataSvc
+  ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
+  HistogramPersis...  DEBUG Converted Histos : #4
+    '/stat/1'
+    '/stat/2'
+    '/stat/3'
+    '/stat/4'
+  ServiceManager      DEBUG Finalizing service RootHistSvc
+  RootHistSvc         DEBUG RootHistCnv::PersSvc::finalize()
+  ServiceManager      DEBUG Finalizing service RndmGenSvc
+  ServiceManager      DEBUG Finalizing service TimelineSvc
+  ServiceManager      DEBUG Finalizing service EventDataSvc
+  ServiceManager      DEBUG Finalizing service EventPersistencySvc
+  ServiceManager      DEBUG Finalizing service IncidentSvc
+  ServiceManager      DEBUG Finalizing service AppMgrRunable
+  ServiceManager      DEBUG Looping over all active services...
+  ServiceManager      DEBUG ---- MessageSvc (refCount = 21)
+  ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
+  ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
+  ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
+  ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
+  ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
+  ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
+  ServiceManager      DEBUG ---- TimelineSvc (refCount = 2)
+  ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
+  ServiceManager      DEBUG ---- RootHistSvc (refCount = 3)
+  ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
+  ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
+  ServiceManager      DEBUG ---- NTupleSvc (refCount = 2)
+  ServiceManager      DEBUG ---- AlgExecStateSvc (refCount = 3)
+  ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
+  ApplicationMgr       INFO Application Manager Finalized successfully
+  ApplicationMgr       INFO Application Manager Terminated successfully
+histos: {}
+ttrees:
+  '100':
+    Name: '100'
+    Title: Hello World
+    Entries: 1000
+    Branches:
+      Event#:
+        Name: Event#
+        Title: Event#/I
+        Entries: 1000
+      DeterInt:
+        Name: DeterInt
+        Title: DeterInt/i
+        Entries: 1000
+      Gauss:
+        Name: Gauss
+        Title: Gauss/F
+        Entries: 1000
+      Exp:
+        Name: Exp
+        Title: Exp/F
+        Entries: 1000
+      Poisson:
+        Name: Poisson
+        Title: Poisson/F
+        Entries: 1000

@@ -1,0 +1,107 @@
+stdout: "JobOptionsSvc        INFO Job options successfully file History.opts\nApplicationMgr\
+  \      DEBUG Getting my own properties\e[m\nApplicationMgr    SUCCESS\n====================================================================================================================================\n\
+  ====================================================================================================================================\e\
+  [m\nApplicationMgr       INFO Application Manager Configured successfully\e[m\n\
+  ServiceManager      DEBUG Initializing service AppMgrRunable\e[m\nServiceManager\
+  \      DEBUG Initializing service EventLoopMgr\e[m\nEventDataSvc      VERBOSE ServiceLocatorHelper::service:\
+  \ found service IncidentSvc\e[m\nEventLoopMgr      VERBOSE ServiceLocatorHelper::service:\
+  \ found service EventDataSvc\e[m\nEventLoopMgr        DEBUG Creating Top Algorithm\
+  \ History with name History\e[m\nHistory           VERBOSE ServiceLocatorHelper::service:\
+  \ found service EventDataSvc\e[m\nTimelineSvc         DEBUG initialize\e[m\nHistory\
+  \           VERBOSE ServiceLocatorHelper::service: found service TimelineSvc\e[m\n\
+  History           VERBOSE ServiceLocatorHelper::service: found service HistorySvc\e\
+  [m\nHistory              INFO got historySvc: HistorySvc\e[m\nHistory          \
+  \ VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc\e[m\nAlgExecStateSvc\
+  \     DEBUG preInit: will add Alg History later\e[m\nHistory             DEBUG input\
+  \ handles: 0\e[m\nHistory             DEBUG output handles: 0\e[m\n\e[93;1mEventLoopMgr\
+  \      WARNING Unable to locate service \"EventSelector\" \e[m\n\e[93;1mEventLoopMgr\
+  \      WARNING No events will be processed from external input.\e[m\nHistogramDataSvc\
+  \  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc\e[m\nHistogramDataSvc\
+  \  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc\e\
+  [m\nServiceManager      DEBUG Initializing service HistorySvc\e[m\nHistorySvc  \
+  \        DEBUG Initializing HistorySvc\e[m\nAlgContextSvc     VERBOSE ServiceLocatorHelper::service:\
+  \ found service IncidentSvc\e[m\nHistorySvc        VERBOSE ServiceLocatorHelper::service:\
+  \ found service AlgContextSvc\e[m\nHistorySvc        VERBOSE ServiceLocatorHelper::service:\
+  \ found service IncidentSvc\e[m\nApplicationMgr       INFO Application Manager Initialized\
+  \ successfully\e[m\nServiceManager      DEBUG Starting service AppMgrRunable\e[m\n\
+  ServiceManager      DEBUG Starting service IncidentSvc\e[m\nServiceManager     \
+  \ DEBUG Starting service EventPersistencySvc\e[m\nServiceManager      DEBUG Starting\
+  \ service EventDataSvc\e[m\nServiceManager      DEBUG Starting service TimelineSvc\e\
+  [m\nServiceManager      DEBUG Starting service AlgExecStateSvc\e[m\nServiceManager\
+  \      DEBUG Starting service HistogramPersistencySvc\e[m\nServiceManager      DEBUG\
+  \ Starting service HistogramDataSvc\e[m\nServiceManager      DEBUG Starting service\
+  \ AlgContextSvc\e[m\nServiceManager      DEBUG Starting service ToolSvc\e[m\nToolSvc\
+  \             DEBUG START transition for AlgTools\e[m\nServiceManager      DEBUG\
+  \ Starting service EventLoopMgr\e[m\nServiceManager      DEBUG Starting service\
+  \ HistorySvc\e[m\nApplicationMgr       INFO Application Manager Started successfully\e\
+  [m\nHistorySvc          DEBUG Registering algorithm: \e[96;1mHistory\e[m\nHistorySvc\
+  \           INFO \e[mRegistered 1 Algorithms\e[m\nHistorySvc           INFO Registered\
+  \ 0 AlgTools\e[m\nHistorySvc          DEBUG Registering Service: \e[96;1mMessageSvc\e\
+  [m\nHistorySvc          DEBUG \e[mRegistering Service: \e[96;1mJobOptionsSvc\e[m\n\
+  HistorySvc          DEBUG \e[mRegistering Service: \e[96;1mAppMgrRunable\e[m\nHistorySvc\
+  \          DEBUG \e[mRegistering Service: \e[96;1mIncidentSvc\e[m\nHistorySvc  \
+  \        DEBUG \e[mRegistering Service: \e[96;1mEventPersistencySvc\e[m\nHistorySvc\
+  \          DEBUG \e[mRegistering Service: \e[96;1mEventDataSvc\e[m\nHistorySvc \
+  \         DEBUG \e[mRegistering Service: \e[96;1mTimelineSvc\e[m\nHistorySvc   \
+  \       DEBUG \e[mRegistering Service: \e[96;1mAlgExecStateSvc\e[m\nHistorySvc \
+  \         DEBUG \e[mRegistering Service: \e[96;1mHistogramPersistencySvc\e[m\nHistorySvc\
+  \          DEBUG \e[mRegistering Service: \e[96;1mHistogramDataSvc\e[m\nHistorySvc\
+  \          DEBUG \e[mRegistering Service: \e[96;1mAlgContextSvc\e[m\nHistorySvc\
+  \          DEBUG \e[mRegistering Service: \e[96;1mToolSvc\e[m\nHistorySvc      \
+  \    DEBUG \e[mRegistering Service: \e[96;1mEventLoopMgr\e[m\nHistorySvc       \
+  \   DEBUG \e[mRegistering Service: \e[96;1mHistorySvc\e[m\nHistorySvc          \
+  \ INFO \e[mRegistered 14 Services\e[m\nAlgExecStateSvc   VERBOSE reset(0)\e[m\n\
+  AlgExecStateSvc     DEBUG resizing state containers to : 1\e[m\nAlgExecStateSvc\
+  \     DEBUG adding alg History to 1 slots\e[m\nAlgExecStateSvc   VERBOSE dumping\
+  \ state:\n  [slot: 0, incident: Invalid]:\n  + History  e: n\n\e[m\nAlgExecStateSvc\
+  \   VERBOSE reset(0)\e[m\nServiceManager      DEBUG Stopping service HistorySvc\e\
+  [m\nHistorySvc        VERBOSE AlgContextSvc is Service\e[m\nHistorySvc        VERBOSE\
+  \ AlgExecStateSvc is Service\e[m\nHistorySvc        VERBOSE AppMgrRunable is Service\e\
+  [m\nHistorySvc        VERBOSE EventDataSvc is Service\e[m\nHistorySvc        VERBOSE\
+  \ EventLoopMgr is Service\e[m\nHistorySvc        VERBOSE EventPersistencySvc is\
+  \ Service\e[m\nHistorySvc        VERBOSE HistogramDataSvc is Service\e[m\nHistorySvc\
+  \        VERBOSE HistogramPersistencySvc is Service\e[m\nHistorySvc        VERBOSE\
+  \ HistorySvc is Service\e[m\nHistorySvc        VERBOSE IncidentSvc is Service\e\
+  [m\nHistorySvc        VERBOSE JobOptionsSvc is Service\e[m\nHistorySvc        VERBOSE\
+  \ MessageSvc is Service\e[m\nHistorySvc        VERBOSE TimelineSvc is Service\e\
+  [m\nHistorySvc        VERBOSE ToolSvc is Service\e[m\nHistorySvc        VERBOSE\
+  \ History is Alg\e[m\nServiceManager      DEBUG Stopping service EventLoopMgr\e\
+  [m\nServiceManager      DEBUG Stopping service ToolSvc\e[m\nToolSvc            \
+  \ DEBUG STOP transition for AlgTools\e[m\nServiceManager      DEBUG Stopping service\
+  \ AlgContextSvc\e[m\nServiceManager      DEBUG Stopping service HistogramDataSvc\e\
+  [m\nServiceManager      DEBUG Stopping service HistogramPersistencySvc\e[m\nServiceManager\
+  \      DEBUG Stopping service AlgExecStateSvc\e[m\nServiceManager      DEBUG Stopping\
+  \ service TimelineSvc\e[m\nServiceManager      DEBUG Stopping service EventDataSvc\e\
+  [m\nServiceManager      DEBUG Stopping service EventPersistencySvc\e[m\nServiceManager\
+  \      DEBUG Stopping service IncidentSvc\e[m\nServiceManager      DEBUG Stopping\
+  \ service AppMgrRunable\e[m\nApplicationMgr       INFO Application Manager Stopped\
+  \ successfully\e[m\nServiceManager      DEBUG Finalizing service EventLoopMgr\e\
+  [m\nEventLoopMgr         INFO Histograms converted successfully according to request.\e\
+  [m\nServiceManager      DEBUG Finalizing service ToolSvc\e[m\nToolSvc          \
+  \    INFO Removing all tools created by ToolSvc\e[m\nToolSvc             DEBUG \
+  \  Tool List : \e[m\nToolSvc             DEBUG Deleting 0 finalized tools\e[m\n\
+  ServiceManager      DEBUG Finalizing service AlgContextSvc\e[m\nServiceManager \
+  \     DEBUG Finalizing service AlgExecStateSvc\e[m\nServiceManager      DEBUG Finalizing\
+  \ service TimelineSvc\e[m\nServiceManager      DEBUG Finalizing service EventDataSvc\e\
+  [m\nServiceManager      DEBUG Finalizing service EventPersistencySvc\e[m\nServiceManager\
+  \      DEBUG Finalizing service IncidentSvc\e[m\nServiceManager      DEBUG Finalizing\
+  \ service AppMgrRunable\e[m\nServiceManager      DEBUG Finalizing service HistogramDataSvc\e\
+  [m\nServiceManager      DEBUG Finalizing service HistogramPersistencySvc\e[m\nServiceManager\
+  \      DEBUG Finalizing service HistorySvc\e[m\nHistorySvc        VERBOSE HistorySvc::finalize()\e\
+  [m\nHistorySvc           INFO Service finalised successfully\e[m\nServiceManager\
+  \      DEBUG Looping over all active services...\e[m\nServiceManager      DEBUG\
+  \ ---- MessageSvc (refCount = 21)\e[m\nServiceManager      DEBUG ---- JobOptionsSvc\
+  \ (refCount = 3)\e[m\nServiceManager      DEBUG ---- HistorySvc (refCount = 3)\e\
+  [m\nServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)\e[m\n\
+  ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)\e[m\nServiceManager\
+  \      DEBUG ---- AppMgrRunable (refCount = 4)\e[m\nServiceManager      DEBUG ----\
+  \ IncidentSvc (refCount = 4)\e[m\nServiceManager      DEBUG ---- EventPersistencySvc\
+  \ (refCount = 3)\e[m\nServiceManager      DEBUG ---- EventDataSvc (refCount = 4)\e\
+  [m\nServiceManager      DEBUG ---- TimelineSvc (refCount = 3)\e[m\nServiceManager\
+  \      DEBUG ---- AlgExecStateSvc (refCount = 4)\e[m\nServiceManager      DEBUG\
+  \ ---- AlgContextSvc (refCount = 4)\e[m\nServiceManager      DEBUG ---- ToolSvc\
+  \ (refCount = 4)\e[m\nServiceManager      DEBUG ---- EventLoopMgr (refCount = 4)\e\
+  [m\nApplicationMgr       INFO Application Manager Finalized successfully\e[m\nApplicationMgr\
+  \       INFO Application Manager Terminated successfully\e[m"
+histos: {}
+ttrees: {}

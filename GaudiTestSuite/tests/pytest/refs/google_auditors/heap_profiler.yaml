@@ -1,0 +1,75 @@
+stdout: |-
+  {'ApplicationMgr': {'AuditAlgorithms': True,
+                      'EvtMax': 10,
+                      'EvtSel': 'NONE',
+                      'TopAlg': ['HelloWorld/HelloWorld']},
+   'AuditorSvc': {'Auditors': ['Google::HeapProfiler/Google::HeapProfiler',
+                               'ChronoAuditor/ChronoAuditor']},
+   'Google::HeapProfiler': {'OutputLevel': 3},
+   'MessageSvc': {'OutputLevel': 3}}
+  ApplicationMgr    SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr       INFO Application Manager Configured successfully
+  Google::HeapPro...   INFO Initialised
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Initialize
+  HelloWorld           INFO initializing....
+  EventLoopMgr      WARNING Unable to locate service "EventSelector"
+  EventLoopMgr      WARNING No events will be processed from external input.
+  ApplicationMgr       INFO Application Manager Initialized successfully
+  ApplicationMgr       INFO Application Manager Started successfully
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
+  HelloWorld           INFO executing....
+  ApplicationMgr       INFO Application Manager Stopped successfully
+  Google::HeapPro...   INFO Starting Auditor for HelloWorld:Finalize
+  HelloWorld           INFO finalizing....
+  EventLoopMgr         INFO Histograms converted successfully according to request.
+  *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
+  ChronoStatSvc.f...   INFO  Service finalized successfully
+  ApplicationMgr       INFO Application Manager Finalized successfully
+  ApplicationMgr       INFO Application Manager Terminated successfully
+histos: {}
+ttrees: {}
+stderr: |-
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Initialize.0001.heap (HelloWorld-Initialize)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event1.0002.heap (HelloWorld-Execute-Event1)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event2.0003.heap (HelloWorld-Execute-Event2)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event3.0004.heap (HelloWorld-Execute-Event3)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event4.0005.heap (HelloWorld-Execute-Event4)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event5.0006.heap (HelloWorld-Execute-Event5)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event6.0007.heap (HelloWorld-Execute-Event6)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event7.0008.heap (HelloWorld-Execute-Event7)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event8.0009.heap (HelloWorld-Execute-Event8)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event9.0010.heap (HelloWorld-Execute-Event9)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Execute-Event10.0011.heap (HelloWorld-Execute-Event10)
+  Starting tracking the heap
+  Dumping heap profile to HelloWorld-Finalize.0012.heap (HelloWorld-Finalize)

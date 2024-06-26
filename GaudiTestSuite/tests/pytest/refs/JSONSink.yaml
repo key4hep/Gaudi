@@ -1,0 +1,22 @@
+stdout: |-
+  ApplicationMgr    SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr       INFO Application Manager Configured successfully
+  EventLoopMgr      WARNING Unable to locate service "EventSelector"
+  EventLoopMgr      WARNING No events will be processed from external input.
+  ApplicationMgr       INFO Application Manager Initialized successfully
+  ApplicationMgr       INFO Application Manager Started successfully
+  CounterAlg           INFO Super nice message, max 5 times
+  CounterAlg           INFO Super nice message, max 5 times
+  CounterAlg           INFO Super nice message, max 5 times
+  CounterAlg           INFO Super nice message, max 5 times
+  CounterAlg           INFO Suppressing message: 'Super nice message, max 5 times'
+  Gaudi::Monitori...   INFO Writing JSON file CounterAlg.json
+  CounterAlg           INFO Number of counters : 18
+  ApplicationMgr       INFO Application Manager Stopped successfully
+  EventLoopMgr         INFO Histograms converted successfully according to request.
+  ApplicationMgr       INFO Application Manager Finalized successfully
+  ApplicationMgr       INFO Application Manager Terminated successfully
+histos: {}
+ttrees: {}

@@ -1,0 +1,2 @@
+OtherAlg.OtherOpt = 1;
+MyAlg.MyOpt = @OtherAlg.OtherOpt;
