@@ -5,6 +5,24 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v38r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r3) - 2024-06-28
+This is a minor release to collect all pending backward compatible changes and fixes
+before integrating the backward incompatible changes scheduled for v39r0.
+
+### Changed
+- Use `string_view` consistently in parse methods (gaudi/Gaudi!1594)
+- Add hard limit on test stdout/err size (gaudi/Gaudi#313, gaudi/Gaudi!1595)
+- Introduce a new way to check timeout on events (gaudi/Gaudi#287, gaudi/Gaudi!1589)
+- Use Ruff for Python linting and formatting (gaudi/Gaudi#298, gaudi/Gaudi!1591)
+
+### Fixed
+- `listcomponents`: skip factories from other libraries (gaudi/Gaudi!1603)
+- Fix building with Catch2 v3 (gaudi/Gaudi!1600)
+- `GaudiTestSuite`: pre-commit fixes (gaudi/Gaudi!1602)
+- Fix race condition in `PersistencySvc::addCnvService` (gaudi/Gaudi#314, gaudi/Gaudi!1598)
+- Improve `BranchWrapper` implementation (gaudi/Gaudi!1596)
+
+
 ## [v38r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r2) - 2024-05-16
 A minor release with a number of fixes and some new features.
 
