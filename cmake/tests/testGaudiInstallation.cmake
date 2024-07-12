@@ -199,14 +199,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Binary python modules not installed correctly,"
             " PyCPUFamily.so not found in python/GaudiProfiling/")
     endif()
-    # -- check every python package has a __init__.py file
-    file(GLOB python_packages LIST_DIRECTORIES TRUE ${GAUDI_INSTALL_DIR}/python/*)
-    foreach(dir IN LISTS python_packages)
-        if(IS_DIRECTORY ${dir} AND NOT ${dir} MATCHES "__pycache__" AND NOT EXISTS ${dir}/__init__.py)
-            message(FATAL_ERROR "Python packages are not installed correctly,"
-            " __init__.py is missing inside ${dir}")
-        endif()
-    endforeach()
     # Check config files
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/lib/cmake/Gaudi/GaudiConfig.cmake)
         message(FATAL_ERROR "Config not installed correctly,"

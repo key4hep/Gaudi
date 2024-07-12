@@ -574,10 +574,6 @@ function(gaudi_add_python_module module_name)
         get_filename_component(package_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
         set(package_path "${CMAKE_CURRENT_SOURCE_DIR}/python/${package_name}")
     endif()
-    if(NOT EXISTS "${package_path}/__init__.py")
-        message(FATAL_ERROR "${package_path}/__init__.py"
-            " must exist and the package must be installed (see gaudi_install(PYTHON)).")
-    endif()
 
     # make the module accessible from the build tree
     add_custom_command(TARGET ${module_name} POST_BUILD
