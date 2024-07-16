@@ -347,7 +347,7 @@ int main( int argc, char** argv )
     po::notify( vm );
 
     // try to read configuration from the optionally given configuration file
-    if ( vm.count( "input-cfg" ) ) {
+    if ( vm.contains( "input-cfg" ) ) {
       string cfgFileName = vm["input-cfg"].as<string>();
       cfgFileName        = fs::system_complete( fs::path( cfgFileName ) ).string();
       std::ifstream ifs( cfgFileName );
@@ -361,12 +361,12 @@ int main( int argc, char** argv )
   }
 
   //--- Process command options -----------------------------------------------
-  if ( vm.count( "help" ) ) {
+  if ( vm.contains( "help" ) ) {
     cout << visible << endl;
     return EXIT_FAILURE;
   }
 
-  if ( vm.count( "package-name" ) ) {
+  if ( vm.contains( "package-name" ) ) {
     pkgName = vm["package-name"].as<string>();
   } else {
     LOG_ERROR << "'package-name' required";
@@ -374,12 +374,12 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  if ( vm.count( "user-module" ) ) {
+  if ( vm.contains( "user-module" ) ) {
     userModule = vm["user-module"].as<string>();
     LOG_INFO << "INFO: will import user module " << userModule;
   }
 
-  if ( vm.count( "input-libraries" ) ) {
+  if ( vm.contains( "input-libraries" ) ) {
     // re-shape the input arguments:
     //  - removes spurious spaces,
     //  - split into tokens.
@@ -392,11 +392,11 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  if ( vm.count( "output-dir" ) ) { out = fs::system_complete( fs::path( vm["output-dir"].as<string>() ) ); }
+  if ( vm.contains( "output-dir" ) ) { out = fs::system_complete( fs::path( vm["output-dir"].as<string>() ) ); }
 
-  if ( vm.count( "debug-level" ) ) { Gaudi::PluginService::SetDebug( vm["debug-level"].as<int>() ); }
+  if ( vm.contains( "debug-level" ) ) { Gaudi::PluginService::SetDebug( vm["debug-level"].as<int>() ); }
 
-  if ( vm.count( "load-library" ) ) {
+  if ( vm.contains( "load-library" ) ) {
     for ( const auto& lLib : vm["load-library"].as<Strings_t>() ) {
       // load done through Gaudi helper class
       System::ImageHandle tmp; // we ignore the library handle
@@ -406,7 +406,7 @@ int main( int argc, char** argv )
   }
 
   std::set<conf_t> confTypes;
-  if ( vm.count( "type" ) ) {
+  if ( vm.contains( "type" ) ) {
     for ( const std::string& type : boost::tokenizer{ vm["type"].as<std::string>(), boost::char_separator{ "," } } ) {
       if ( type == "conf" ) {
         confTypes.insert( conf_t::CONF );
@@ -455,7 +455,7 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  if ( EXIT_SUCCESS == sc && !vm.count( "no-init" ) ) {
+  if ( EXIT_SUCCESS == sc && !vm.contains( "no-init" ) ) {
     // create an empty __init__.py file in the output dir
     std::fstream initPy( ( out / fs::path( "__init__.py" ) ).string(), std::ios_base::out | std::ios_base::trunc );
     initPy << "## Hook for " << pkgName << " genConf module\n" << flush;
@@ -608,10 +608,10 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
       if ( prop ) {
-        if ( m_confTypes.count( conf_t::CONF ) && !genComponent( lib, name, type, prop->getProperties(), info ) ) {
+        if ( m_confTypes.contains( conf_t::CONF ) && !genComponent( lib, name, type, prop->getProperties(), info ) ) {
           allGood = false;
         }
-        if ( m_confTypes.count( conf_t::CONF2 ) &&
+        if ( m_confTypes.contains( conf_t::CONF2 ) &&
              !genComponent2( name, type, prop->getProperties(), prop->getInterfaceNames(), info ) ) {
           allGood = false;
         }
@@ -626,7 +626,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     ///
     /// write-out files for this library
     ///
-    if ( m_confTypes.count( conf_t::CONF ) ) {
+    if ( m_confTypes.contains( conf_t::CONF ) ) {
       const std::string pyName = ( fs::path( m_outputDirName ) / fs::path( lib + "Conf.py" ) ).string();
       const std::string dbName = ( fs::path( m_outputDirName ) / fs::path( lib + ".confdb" ) ).string();
 
@@ -638,7 +638,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       genBody( py, db );
       genTrailer( py, db );
     }
-    if ( m_confTypes.count( conf_t::CONF2 ) ) {
+    if ( m_confTypes.contains( conf_t::CONF2 ) ) {
       const std::string db2Name = ( fs::path( m_outputDirName ) / fs::path( lib + ".confdb2_part" ) ).string();
       std::fstream      db2( db2Name, std::ios_base::out | std::ios_base::trunc );
       db2 << "{\n" << m_db2Buf.str() << "}\n";
