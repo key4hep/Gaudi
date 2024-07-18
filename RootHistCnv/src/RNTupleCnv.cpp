@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -239,7 +239,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType( int type ) {
 //-----------------------------------------------------------------------------
 bool RootHistCnv::parseName( const std::string& full, std::string& blk, std::string& var ) {
   //-----------------------------------------------------------------------------
-  int sp;
+  int sp = -1;
   if ( ( sp = full.find( "/" ) ) != -1 ) {
     blk = full.substr( 0, sp );
     var = full.substr( sp + 1 );
