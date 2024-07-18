@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -46,7 +46,7 @@ namespace Gaudi {
 
       constexpr explicit PID( validated_pid_t pid ) : m_value( pid ) {}
 
-      PID() = default;
+      PID() = delete;
       // Make the creation of thes PID objects expressive in user code
       // by calling Gaudi::Tr::PID::Electron()
       static constexpr PID Electron() { return PID{ validated_pid_t::Electron }; }
