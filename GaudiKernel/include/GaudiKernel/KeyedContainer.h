@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -639,7 +639,7 @@ inline void KeyedContainer<DATATYPE, MAPPING>::erase( iterator start_pos, iterat
   std::vector<void*>*          v    = (std::vector<void*>*)sptr;
   std::vector<void*>::iterator i1   = v->begin() + std::distance( m_sequential.begin(), start_pos );
   std::vector<void*>::iterator i2   = v->begin() + std::distance( m_sequential.begin(), stop_pos );
-  m_cont.erase( i1, i2 );
+  m_cont.erase( i1, i2 ); // cppcheck-suppress iterators1
 }
 
 #undef FORCE_INLINE

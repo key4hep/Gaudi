@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -255,6 +255,8 @@ unsigned long System::getProcedureByName( ImageHandle handle, const std::string&
     }
   }
   return 0;
+#else
+  return 0;
 #endif
 }
 
@@ -445,14 +447,14 @@ int System::backTrace( [[maybe_unused]] void** addresses, [[maybe_unused]] const
 bool System::backTrace( std::string& btrace, const int depth, const int offset ) {
   try {
     // Always hide the first two levels of the stack trace (that's us)
-    const int totalOffset = offset + 2;
-    const int totalDepth  = depth + totalOffset;
+    const size_t totalOffset = offset + 2;
+    const size_t totalDepth  = depth + totalOffset;
 
     std::string fnc, lib;
 
     std::vector<void*> addresses( totalDepth, nullptr );
-    int                count = System::backTrace( addresses.data(), totalDepth );
-    for ( int i = totalOffset; i < count; ++i ) {
+    const size_t       count = System::backTrace( addresses.data(), totalDepth );
+    for ( size_t i = totalOffset; i < count; ++i ) {
       void* addr = nullptr;
 
       if ( System::getStackLevel( addresses[i], addr, fnc, lib ) ) {
