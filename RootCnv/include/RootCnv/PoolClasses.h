@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -33,13 +33,13 @@ namespace pool {
    */
   class Token {
   public:
-    int                 m_refCount;   //! transient (a streamer is used to read it)
-    int                 m_technology; //! transient (a streamer is used to read it)
-    std::string         m_dbID;       //! transient (a streamer is used to read it)
-    std::string         m_cntID;      //! transient (a streamer is used to read it)
-    Guid                m_classID;    //! Object global identifier
-    std::pair<int, int> m_oid;        //! POOL OID data member: transient (a streamer is used to read it)
-    int                 m_type;       //! transient (a streamer is used to read it)
+    int                 m_refCount{};   //! transient (a streamer is used to read it)
+    int                 m_technology{}; //! transient (a streamer is used to read it)
+    std::string         m_dbID;         //! transient (a streamer is used to read it)
+    std::string         m_cntID;        //! transient (a streamer is used to read it)
+    Guid                m_classID{};    //! Object global identifier
+    std::pair<int, int> m_oid;          //! POOL OID data member: transient (a streamer is used to read it)
+    int                 m_type{};       //! transient (a streamer is used to read it)
   public:
     Token()          = default;
     virtual ~Token() = default;
