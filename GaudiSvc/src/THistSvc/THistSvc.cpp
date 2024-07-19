@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -336,12 +336,6 @@ StatusCode THistSvc::regHist( const std::string& id ) {
 }
 
 StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist ) {
-  return regHist_i( std::move( hist ), id, false );
-}
-
-StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist, TH1* hist_ptr ) {
-  // This is only to support a common use case where the histogram is used after its registration
-  if ( hist_ptr != nullptr ) { hist_ptr = hist.get(); }
   return regHist_i( std::move( hist ), id, false );
 }
 

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -99,14 +99,6 @@ StatusCode THistWrite::initialize()
     error() << "Couldn't use TempHist5 afterwards. getName = " << h5->GetName() << endmsg;
   }
 
-  TH1D* h6 = new TH1D( "TempHist6", "Temporary Tree 6", 100, 0., 100. );
-  if ( m_ths->regHist( "TempHist6", std::unique_ptr<TH1D>( h6 ), h6 ).isFailure() ) {
-    error() << "Couldn't register TempHist6" << endmsg;
-  }
-  if ( strcmp( h6->GetName(), "TempHist6" ) ) {
-    error() << "Couldn't use TempHist6 afterwards. getName = " << h6->GetName() << endmsg;
-  }
-
   TH1D* h7 = new TH1D( "TempHist7", "Temporary Tree 7", 100, 0., 100. );
   if ( m_ths->regHist( "TempHist7", h7 ).isFailure() ) { error() << "Couldn't register TempHist7" << endmsg; }
   if ( strcmp( h7->GetName(), "TempHist7" ) ) {
@@ -203,12 +195,6 @@ StatusCode THistWrite::execute()
     error() << "Couldn't retrieve TempHist 5" << endmsg;
   }
 
-  if ( m_ths->getHist( "TempHist6", h ).isSuccess() ) {
-    h->Fill( x );
-  } else {
-    error() << "Couldn't retrieve TempHist 6" << endmsg;
-  }
-
   LockedHandle<TH1> lh1( nullptr, nullptr );
   if ( m_ths->getShared( "/upd/xxx/gauss1d_shared", lh1 ).isSuccess() ) {
     for ( int i = 0; i < 1000; ++i ) { lh1->Fill( gauss(), 1. ); }
@@ -280,10 +266,6 @@ StatusCode THistWrite::finalize()
 //------------------------------------------------------------------------------
 {
   info() << "Finalizing..." << endmsg;
-
-  if ( m_ths->deReg( "/temp/TempHist6" ).isFailure() ) {
-    error() << "Failed to deregister histogram TempHist6" << endmsg;
-  }
 
   TH1* h7 = nullptr;
   if ( m_ths->getHist( "TempHist7", h7 ).isFailure() ) { error() << "Couldn't retrieve TempHist7" << endmsg; }
