@@ -12,6 +12,7 @@
 
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Functional/Consumer.h>
+#include <Gaudi/Interfaces/IFileSvc.h>
 #include <Gaudi/details/BranchWrapper.h>
 #include <GaudiKernel/StdArrayAsProperty.h>
 #include <TFile.h>
@@ -60,14 +61,10 @@ namespace Gaudi::NTuple {
     virtual std::tuple<OUTPUTs...> transform( const INPUTs&... inputs ) const = 0;
 
     // Initialize the TTree and creates branches
-    void initTree( const std::unique_ptr<TFile>& file, const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames,
+    void initTree( const std::shared_ptr<TFile>& file, const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames,
                    const Gaudi::Algorithm& algRef ) {
       file->cd();
       m_tree = std::make_unique<TTree>( "WriterTree", "Tree of Writer Algorithm" ).release();
-      if ( !m_tree ) {
-        throw GaudiException( "Failed to create TTree. Ensure sufficient resources and permissions.", algRef.name(),
-                              StatusCode::FAILURE );
-      }
       m_branchWrappers.reserve( m_branchWrappers.size() + sizeof...( OUTPUTs ) );
       createBranchesForOutputs( branchNames, std::make_index_sequence<sizeof...( OUTPUTs )>{}, algRef );
     }
@@ -94,7 +91,7 @@ namespace Gaudi::NTuple {
     }
 
     // Write the TTree to the associated ROOT file
-    void writeTree( const std::unique_ptr<TFile>& file, const Gaudi::Algorithm& algRef ) {
+    void writeTree( const std::shared_ptr<TFile>& file, const Gaudi::Algorithm& algRef ) {
       file->cd();
       if ( m_tree->Write() <= 0 ) {
         throw GaudiException( "Failed to write TTree to ROOT file.", algRef.name(), StatusCode::FAILURE );
@@ -132,21 +129,26 @@ namespace Gaudi::NTuple {
     using Consumer_t = Gaudi::Functional::Consumer<void( const INPUTs&... ), Traits_>;
     using Consumer_t::Consumer_t;
 
-    Gaudi::Property<std::string> m_filename{ this, "TreeFilename", "ntuple_writer_ts_tree.root",
-                                             "Filename for the TTree." }; // Filename for the TTree
+    Gaudi::Property<std::string> m_fileId{ this, "OutputFile", "NTuple", "Identifier for the TFile to write to." };
     Gaudi::Property<std::array<std::string, sizeof...( OUTPUTs )>> m_branchNames{
         this, "BranchNames", {}, "Names of the tree branches." }; // Names for the tree branches
-    std::unique_ptr<TFile> m_file = nullptr;                      // Pointer to the ROOT file
-    mutable std::mutex     m_mtx;                                 // Mutex for thread-safe operations
+    std::shared_ptr<TFile>       m_file = nullptr;                // Pointer to the ROOT file
+    Gaudi::Interfaces::IFileSvc* m_fileSvc;
+    mutable std::mutex           m_mtx; // Mutex for thread-safe operations
 
     // Initialize the algorithm, set up the ROOT file and a TTree branch for each input location
     virtual StatusCode initialize() override {
       return Consumer_t::initialize().andThen( [this]() {
-        m_file = std::make_unique<TFile>( m_filename.value().c_str(), "RECREATE" );
-        if ( !m_file || m_file->IsZombie() ) {
-          throw GaudiException(
-              fmt::format( "Failed to open file '{}'. Check file path and permissions.", m_filename.value() ),
-              this->name(), StatusCode::FAILURE );
+        m_fileSvc = this->template service<Gaudi::Interfaces::IFileSvc>( "FileSvc" );
+        if ( !m_fileSvc ) {
+          this->error() << "Failed to retrieve FileSvc." << endmsg;
+          return StatusCode::FAILURE;
+        }
+
+        m_file = m_fileSvc->getFile( m_fileId );
+        if ( !m_file ) {
+          this->error() << "Failed to retrieve TFile." << endmsg;
+          return StatusCode::FAILURE;
         }
 
         this->initTree( m_file, m_branchNames.value(), *this );
