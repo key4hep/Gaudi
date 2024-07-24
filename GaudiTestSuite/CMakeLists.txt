@@ -205,6 +205,13 @@ if(BUILD_TESTING)
       PROPERTIES DISABLED TRUE
     )
   endif()
+  if(gperftools_VERSION STREQUAL "2.15")
+    # FIXME We get a segfault in tcmalloc when we use gperftools 2.15 from LCG 106
+    set_tests_properties(
+      GaudiTestSuite.google_auditors.heapchecker
+      PROPERTIES DISABLED TRUE
+    )
+  endif()
 endif()
 
 gaudi_add_pytest(tests/pytest)

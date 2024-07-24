@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -145,117 +145,108 @@ variables:
 
 
 ### Regular builds
-lcg:103:x86_64-centos9-gcc12-opt:
+lcg:105c:x86_64-el9-gcc13-opt:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:103:x86_64-centos9-gcc12-opt:
+warnings-check:lcg:105c:x86_64-el9-gcc13-opt:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:103:x86_64-centos9-gcc12-opt"
+    - job: "lcg:105c:x86_64-el9-gcc13-opt"
       artifacts: true
 
-lcg:103:x86_64-centos9-gcc12-dbg:
+lcg:105c:x86_64-el9-gcc13-dbg:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:103:x86_64-centos9-gcc12-dbg:
+warnings-check:lcg:105c:x86_64-el9-gcc13-dbg:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:103:x86_64-centos9-gcc12-dbg"
-      artifacts: true
-
-lcg:104:x86_64-el9-gcc13-opt:
-  <<: *template_build
-  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:104:x86_64-el9-gcc13-opt:
-  <<: *template_warnings_check
-  needs:
-    - job: "lcg:104:x86_64-el9-gcc13-opt"
-      artifacts: true
-
-lcg:104:x86_64-el9-gcc13-dbg:
-  <<: *template_build
-  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:104:x86_64-el9-gcc13-dbg:
-  <<: *template_warnings_check
-  needs:
-    - job: "lcg:104:x86_64-el9-gcc13-dbg"
+    - job: "lcg:105c:x86_64-el9-gcc13-dbg"
       artifacts: true
 
 
 ### Special builds
-lcg:104:x86_64-el9-gcc13-opt:minimal:
+lcg:105c:x86_64-el9-gcc13-opt:minimal:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:104:x86_64-el9-gcc13-opt:minimal:
+warnings-check:lcg:105c:x86_64-el9-gcc13-opt:minimal:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:104:x86_64-el9-gcc13-opt:minimal"
+    - job: "lcg:105c:x86_64-el9-gcc13-opt:minimal"
       artifacts: true
 
-lcg:104:x86_64-el9-gcc13-opt:no-AIDA:
+lcg:105c:x86_64-el9-gcc13-opt:no-AIDA:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:104:x86_64-el9-gcc13-opt:no-AIDA:
+warnings-check:lcg:105c:x86_64-el9-gcc13-opt:no-AIDA:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:104:x86_64-el9-gcc13-opt:no-AIDA"
+    - job: "lcg:105c:x86_64-el9-gcc13-opt:no-AIDA"
       artifacts: true
 
-lcg:104:x86_64-el9-gcc13-opt:no-GaudiAlg:
+lcg:105c:x86_64-el9-gcc13-opt:no-GaudiAlg:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:104:x86_64-el9-gcc13-opt:no-GaudiAlg:
+warnings-check:lcg:105c:x86_64-el9-gcc13-opt:no-GaudiAlg:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:104:x86_64-el9-gcc13-opt:no-GaudiAlg"
+    - job: "lcg:105c:x86_64-el9-gcc13-opt:no-GaudiAlg"
       artifacts: true
 
-lcg:105a:x86_64-el9-gcc13-opt:no-examples:
+lcg:105c:x86_64-el9-gcc13-opt:no-examples:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:105a:x86_64-el9-gcc13-opt:no-examples:
+warnings-check:lcg:105c:x86_64-el9-gcc13-opt:no-examples:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:105a:x86_64-el9-gcc13-opt:no-examples"
+    - job: "lcg:105c:x86_64-el9-gcc13-opt:no-examples"
       artifacts: true
 
 # LHCb-style build
-lhcb:104:x86_64_v3-el9-gcc13-opt+g:
+lhcb:105c:x86_64_v3-el9-gcc13-opt+g:
   <<: *template_lhcb_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lhcb:104:x86_64_v3-el9-gcc13-opt+g:
+warnings-check:lhcb:105c:x86_64_v3-el9-gcc13-opt+g:
   <<: *template_warnings_check
   needs:
-    - job: "lhcb:104:x86_64_v3-el9-gcc13-opt+g"
+    - job: "lhcb:105c:x86_64_v3-el9-gcc13-opt+g"
       artifacts: true
-
 
 # Build on LCG View
-lcg-view:102b:x86_64-centos7-gcc11-opt:
-  <<: *template_lcg_view_build
-  image: gitlab-registry.cern.ch/lhcb-docker/os-base/centos7-devel:latest
-warnings-check:lcg-view:102b:x86_64-centos7-gcc11-opt:
-  <<: *template_warnings_check
-  needs:
-    - job: "lcg-view:102b:x86_64-centos7-gcc11-opt"
-      artifacts: true
-
-lcg-view:105:x86_64-el9-gcc13-opt:
+lcg-view:105c:x86_64-el9-gcc13-opt:
   <<: *template_lcg_view_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg-view:105:x86_64-el9-gcc13-opt:
+warnings-check:lcg-view:105c:x86_64-el9-gcc13-opt:
   <<: *template_warnings_check
   needs:
-    - job: "lcg-view:105:x86_64-el9-gcc13-opt"
+    - job: "lcg-view:105c:x86_64-el9-gcc13-opt"
       artifacts: true
 
-lcg-view:105:x86_64-el9-clang16-opt:
+# Compatibility
+lcg-view:105c:x86_64-el9-clang16-opt:
   <<: *template_lcg_view_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg-view:105:x86_64-el9-clang16-opt:
+warnings-check:lcg-view:105c:x86_64-el9-clang16-opt:
   <<: *template_warnings_check
   needs:
-    - job: "lcg-view:105:x86_64-el9-clang16-opt"
+    - job: "lcg-view:105c:x86_64-el9-clang16-opt"
+      artifacts: true
+
+lcg-view:106:x86_64-el9-gcc13-opt:
+  <<: *template_lcg_view_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+warnings-check:lcg-view:106:x86_64-el9-gcc13-opt:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg-view:106:x86_64-el9-gcc13-opt"
+      artifacts: true
+
+lcg-view:104:x86_64-el9-gcc13-opt:
+  <<: *template_lcg_view_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+warnings-check:lcg-view:104:x86_64-el9-gcc13-opt:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg-view:104:x86_64-el9-gcc13-opt"
       artifacts: true
 
 
@@ -263,7 +254,7 @@ warnings-check:lcg-view:105:x86_64-el9-clang16-opt:
 check-unused:
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   needs:
-    - job: "lcg:104:x86_64-el9-gcc13-opt"
+    - job: "lcg:105c:x86_64-el9-gcc13-opt"
       artifacts: true
   script:
     - ci-utils/check-sources compile_commands.json
@@ -340,9 +331,9 @@ website:
       - public
     expire_in: 1 day
 
-doxygen:103:x86_64-centos7-gcc12-opt:
+doxygen:105c:x86_64-el9-gcc13-opt:
   <<: *template_build
-  image: gitlab-registry.cern.ch/lhcb-docker/os-base/centos7-devel:latest
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -363,7 +354,7 @@ deploy-website:
   needs:
     - job: "website"
       artifacts: true
-    - job: "doxygen:103:x86_64-centos7-gcc12-opt"
+    - job: "doxygen:105c:x86_64-el9-gcc13-opt"
       artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
