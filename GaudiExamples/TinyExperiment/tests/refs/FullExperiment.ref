@@ -19,7 +19,7 @@
 |-RegisterForContextService  = False
 |-Cardinality                = 0
 |-NeededResources            = []  (default: [])
-|-Blocking                   = False
+|-Asynchronous               = False
 |-FilterCircularDependencies = True
 |-MCTracksLocation           = DataHandle('/Event/MCTracks','W','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
 |-RandomGenSvc               = ServiceHandle('RandomGenSvc')
@@ -45,7 +45,7 @@
 |-RegisterForContextService  = False
 |-Cardinality                = 0
 |-NeededResources            = []  (default: [])
-|-Blocking                   = False
+|-Asynchronous               = False
 |-FilterCircularDependencies = True
 |-MCTracksLocation           = DataHandle('/Event/MCTracks','R','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
 |-MCHitsLocation             = DataHandle('/Event/MCHits','W','std::vector<Gaudi::Example::TinyExperiment::MCHit,std::allocator<Gaudi::Example::TinyExperiment::MCHit> >')
@@ -71,7 +71,7 @@
 |-RegisterForContextService  = False
 |-Cardinality                = 0
 |-NeededResources            = []  (default: [])
-|-Blocking                   = False
+|-Asynchronous               = False
 |-FilterCircularDependencies = True
 |-MCHitsLocation             = DataHandle('/Event/MCHits','R','std::vector<Gaudi::Example::TinyExperiment::MCHit,std::allocator<Gaudi::Example::TinyExperiment::MCHit> >')
 |-HitsLocation               = DataHandle('/Event/Hits','W','std::vector<Gaudi::Example::TinyExperiment::Hit,std::allocator<Gaudi::Example::TinyExperiment::Hit> >')
@@ -98,7 +98,7 @@
 |-RegisterForContextService  = False
 |-Cardinality                = 0
 |-NeededResources            = []  (default: [])
-|-Blocking                   = False
+|-Asynchronous               = False
 |-FilterCircularDependencies = True
 |-HitsLocation               = DataHandle('/Event/Hits','R','std::vector<Gaudi::Example::TinyExperiment::Hit,std::allocator<Gaudi::Example::TinyExperiment::Hit> >')
 |-TracksLocation             = DataHandle('/Event/Tracks','W','std::vector<Gaudi::Example::TinyExperiment::Track,std::allocator<Gaudi::Example::TinyExperiment::Track> >')
@@ -125,7 +125,7 @@
 |-RegisterForContextService  = False
 |-Cardinality                = 0
 |-NeededResources            = []  (default: [])
-|-Blocking                   = False
+|-Asynchronous               = False
 |-FilterCircularDependencies = True
 |-TracksLocation             = DataHandle('/Event/Tracks','R','std::vector<Gaudi::Example::TinyExperiment::Track,std::allocator<Gaudi::Example::TinyExperiment::Track> >')
 |-MCTracksLocation           = DataHandle('/Event/MCTracks','R','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')

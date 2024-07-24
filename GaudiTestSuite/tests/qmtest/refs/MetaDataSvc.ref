@@ -261,6 +261,7 @@ MessageSvc.verboseColorCode:[  ]
 MessageSvc.verboseLimit:500
 MessageSvc.warningColorCode:[ 'yellow' ]
 MessageSvc.warningLimit:500
+NTupleAlgorithm.Asynchronous:False
 NTupleAlgorithm.AuditAlgorithms:False
 NTupleAlgorithm.AuditExecute:False
 NTupleAlgorithm.AuditFinalize:False
@@ -269,7 +270,6 @@ NTupleAlgorithm.AuditReinitialize:False
 NTupleAlgorithm.AuditRestart:False
 NTupleAlgorithm.AuditStart:False
 NTupleAlgorithm.AuditStop:False
-NTupleAlgorithm.Blocking:False
 NTupleAlgorithm.Cardinality:1
 NTupleAlgorithm.Enable:True
 NTupleAlgorithm.ErrorMax:1
