@@ -94,19 +94,15 @@ if(GAUDI_USE_CUDA)
   else()
     message(SEND_ERROR "CUDA requested but not found")
   endif()
+  set(optional_CUDA CUDA)
+else()
+  set(optional_CUDA)
 endif()
 
-if(GAUDI_USE_CUDA)
-  project(Gaudi VERSION 39.0
-                LANGUAGES CXX CUDA
-                DESCRIPTION "Gaudi Software Framework"
-                HOMEPAGE_URL "https://cern.ch/gaudi")
-else()
-  project(Gaudi VERSION 39.0
-                LANGUAGES CXX
-                DESCRIPTION "Gaudi Software Framework"
-                HOMEPAGE_URL "https://cern.ch/gaudi")
-endif()
+project(Gaudi VERSION 39.0
+              LANGUAGES CXX ${optional_CUDA}
+              DESCRIPTION "Gaudi Software Framework"
+              HOMEPAGE_URL "https://cern.ch/gaudi")
 
 # Add the "Developer" build type
 include(cmake/DeveloperBuildType.cmake)
