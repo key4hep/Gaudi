@@ -39,7 +39,7 @@ public:
    *                  These are *in addition* to the TBB worker threads used for CPU algorithms.
    *    * */
   FiberManager( int n_threads ) {
-    for ( std::size_t i = 0; i < n_threads; ++i ) {
+    for ( int i = 0; i < n_threads; ++i ) {
       m_threads.emplace_back( std::thread( [this]() {
         boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>();
         std::unique_lock lck{ m_shuttingDown_mtx };
