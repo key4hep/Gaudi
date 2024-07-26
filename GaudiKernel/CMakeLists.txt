@@ -151,6 +151,7 @@ gaudi_add_library(GaudiKernel
   LINK
     PUBLIC GaudiPluginService
            Boost::headers
+           Boost::fiber
            Boost::filesystem
            Boost::thread
            Boost::regex
@@ -171,6 +172,16 @@ target_include_directories(GaudiKernel
   PRIVATE ${VectorClass_INCLUDE_DIR}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
   )
+
+if (GAUDI_USE_CUDA)
+  add_compile_definitions(GAUDI_USE_CUDA)
+  target_sources(GaudiKernel PRIVATE src/Lib/CUDAAsynchronousAlgHelper.cu)
+  target_include_directories(GaudiKernel PUBLIC
+         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} # for CUDA runtime
+         )
+  target_link_libraries(GaudiKernel PUBLIC vecmem::core)
+endif()
+
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
                                      src/Lib/Platform/SystemMacOS.mm)

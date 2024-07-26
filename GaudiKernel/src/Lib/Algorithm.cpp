@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -110,7 +110,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;
@@ -373,7 +373,7 @@ namespace Gaudi {
       status = exceptionSvc()->handle( *this, Exception );
     } catch ( const std::exception& Exception ) {
 
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       // Stat stat( chronoSvc() , "*std::exception*" ) ;
       status = exceptionSvc()->handle( *this, Exception );
@@ -478,7 +478,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;

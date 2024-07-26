@@ -48,8 +48,8 @@ public:
   /// Get task priority
   virtual uint getPriority( const std::string& ) const = 0;
 
-  /// Check if a task is CPU-blocking
-  virtual bool isBlocking( const std::string& ) const = 0;
+  /// Check if a task is asynchronous
+  virtual bool isAsynchronous( const std::string& ) const = 0;
 
   /// Dump precedence rules
   virtual void              dumpControlFlow() const        = 0;

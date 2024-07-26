@@ -390,10 +390,10 @@ namespace Gaudi {
 
     const std::vector<IAlgTool*>& tools() const;
 
-    // Return the blocking flag
-    bool isBlocking() const { return m_blocking; }
-    // Set the blocking flag
-    void setBlocking( bool value ) { m_blocking = value; }
+    // Return the asynchronous flag
+    bool isAsynchronous() const { return m_asynchronous; }
+    // Set the asynchronous flag
+    void setAsynchronous( bool value ) { m_asynchronous = value; }
 
   protected:
     std::vector<IAlgTool*>& tools();
@@ -513,11 +513,9 @@ namespace Gaudi {
     Gaudi::Property<std::vector<std::string>> m_neededResources{
         this, "NeededResources", {}, "named resources needed during event looping" };
 
-    Gaudi::Property<bool> m_blocking{
-        this, "Blocking", false,
-        "if algorithm invokes CPU-blocking system calls (offloads computations to accelerators or "
-        "quantum processors, performs disk or network I/O, is bound by resource synchronization, etc)" };
-
+    Gaudi::Property<bool> m_asynchronous{ this, "Asynchronous", false,
+                                          "whether algorithm is asynchronous and uses Boost Fiber to suspend "
+                                          "while offloaded code is running." };
     // The default should be changed to "false" for v29
     Gaudi::Property<bool> m_filterCircDeps{ this, "FilterCircularDependencies", true,
                                             "filter out circular data dependencies" };

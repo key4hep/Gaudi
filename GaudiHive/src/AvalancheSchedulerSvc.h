@@ -14,6 +14,7 @@
 // Local includes
 #include "AlgsExecutionStates.h"
 #include "EventSlot.h"
+#include "FiberManager.h"
 #include "PrecedenceSvc.h"
 
 // Framework include files
@@ -28,6 +29,7 @@
 
 // C++ include files
 #include <functional>
+#include <memory>
 #include <queue>
 #include <string>
 #include <string_view>
@@ -183,6 +185,11 @@ private:
   Gaudi::Property<bool>        m_enablePreemptiveBlockingTasks{
       this, "PreemptiveBlockingTasks", false,
       "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly." };
+  Gaudi::Property<int> m_numOffloadThreads{
+      this, "NumOffloadThreads", 2,
+      "Number of threads to use for CPU portion of asynchronous algorithms. Asynchronous algorithms must be flagged "
+      "and "
+      "use Boost Fiber functionality to suspend while waiting for offloaded work." };
   Gaudi::Property<bool>                     m_checkDeps{ this, "CheckDependencies", false,
                                      "Runtime check of Algorithm Input Data Dependencies" };
   Gaudi::Property<bool>                     m_checkOutput{ this, "CheckOutputUsage", false,
@@ -299,12 +306,12 @@ private:
     /// Default constructor
     TaskSpec(){};
     TaskSpec( IAlgorithm* algPtr, unsigned int algIndex, const std::string& algName, unsigned int algRank,
-              bool blocking, int slotIndex, EventContext* eventContext )
+              bool asynchronous, int slotIndex, EventContext* eventContext )
         : algPtr( algPtr )
         , algIndex( algIndex )
         , algName( algName )
         , algRank( algRank )
-        , blocking( blocking )
+        , asynchronous( asynchronous )
         , slotIndex( slotIndex )
         , contextPtr( eventContext ){};
     /// Copy constructor (to keep a lambda capturing a TaskSpec storable as a std::function value)
@@ -320,7 +327,7 @@ private:
     unsigned int     algIndex{ 0 };
     std::string_view algName;
     unsigned int     algRank{ 0 };
-    bool             blocking{ false };
+    bool             asynchronous{ false };
     int              slotIndex{ 0 };
     EventContext*    contextPtr{ nullptr };
   };
@@ -332,7 +339,7 @@ private:
 
   /// Queues for scheduled algorithms
   tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledQueue;
-  tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledBlockingQueue;
+  tbb::concurrent_priority_queue<TaskSpec, AlgQueueSort> m_scheduledAsynchronousQueue;
   std::queue<TaskSpec>                                   m_retryQueue;
 
   // Prompt the scheduler to call updateStates
@@ -341,15 +348,18 @@ private:
   // ------------------------------------------------------------------------
 
   // Service for thread pool initialization
-  SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  tbb::task_arena*        m_arena{ nullptr };
-  size_t                  m_maxEventsInFlight{ 0 };
-  size_t                  m_maxAlgosInFlight{ 1 };
+  SmartIF<IThreadPoolSvc>       m_threadPoolSvc;
+  tbb::task_arena*              m_arena{ nullptr };
+  std::unique_ptr<FiberManager> m_fiberManager{ nullptr };
+
+  size_t m_maxEventsInFlight{ 0 };
+  size_t m_maxAlgosInFlight{ 1 };
 
 public:
   // get next schedule-able TaskSpec
-  bool next( TaskSpec& ts, bool blocking = false ) {
-    return blocking ? m_scheduledBlockingQueue.try_pop( ts ) : m_scheduledQueue.try_pop( ts );
+  bool next( TaskSpec& ts, bool asynchronous ) {
+    if ( asynchronous ) { return m_scheduledAsynchronousQueue.try_pop( ts ); }
+    return m_scheduledQueue.try_pop( ts );
   };
 };
 

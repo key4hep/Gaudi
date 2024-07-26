@@ -39,6 +39,7 @@ gaudi_add_module(GaudiHive
                       Boost::headers
                       Boost::system
                       Boost::filesystem
+                      Boost::fiber
                       Boost::graph
                       ROOT::Hist
                       ROOT::RIO
@@ -48,6 +49,12 @@ gaudi_add_module(GaudiHive
                       ${rt_LIBRARY}
                       ${GAUDI_ATOMIC_LIBS})
 
+if (GAUDI_USE_CUDA)
+  add_compile_definitions(GAUDI_USE_CUDA)
+  target_sources(GaudiHive PRIVATE
+                         src/GPUCruncher.cpp
+                         src/GPUCruncher.cu )
+endif()
 # Build executable
 gaudi_add_executable(makeThesis
                      SOURCES src/bin/makeThesis.cpp)
