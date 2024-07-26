@@ -44,9 +44,10 @@ namespace {
     std::string              m_name{};
   };
   struct Algo : PropertyHolder<BaseAlgo> {
-    ServiceLocator* serviceLocator() { return &m_serviceLocator; }
-    ServiceLocator  m_serviceLocator{};
-    void            registerCallBack( Gaudi::StateMachine::Transition, std::function<void()> ){};
+    ServiceLocator*            serviceLocator() { return &m_serviceLocator; }
+    ServiceLocator             m_serviceLocator{};
+    void                       registerCallBack( Gaudi::StateMachine::Transition, std::function<void()> ) {}
+    Gaudi::StateMachine::State FSMState() const { return Gaudi::StateMachine::CONFIGURED; }
   };
   struct HistSink : public Gaudi::Monitoring::Hub::Sink {
     virtual void registerEntity( Gaudi::Monitoring::Hub::Entity ent ) override { m_entities.push_back( ent ); }

@@ -40,9 +40,10 @@ namespace {
     std::string              m_name{};
   };
   struct Algo : PropertyHolder<BaseAlgo> {
-    ServiceLocator* serviceLocator() { return &m_serviceLocator; }
-    ServiceLocator  m_serviceLocator{};
-    void            registerCallBack( Gaudi::StateMachine::Transition, std::function<void()> ){};
+    ServiceLocator*            serviceLocator() { return &m_serviceLocator; }
+    ServiceLocator             m_serviceLocator{};
+    void                       registerCallBack( Gaudi::StateMachine::Transition, std::function<void()> ) {}
+    Gaudi::StateMachine::State FSMState() const { return Gaudi::StateMachine::CONFIGURED; }
   };
 
   // Little helper for using automatic nlohmann conversion mechanism

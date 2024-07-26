@@ -62,8 +62,22 @@ namespace Gaudi::Accumulators {
         ... );
       // register creation of the Histogram at initialization time
       if ( !doNotInitialize ) {
-        owner->registerCallBack( StateMachine::INITIALIZE, [this, owner]() { createHistogram( *owner ); } );
+        if ( owner->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+          // if the owner is already initialized (e.g. the histogram is being created during `start()`)
+          // it is too late to register the callback
+          createHistogram( *owner );
+        } else {
+          owner->registerCallBack( StateMachine::INITIALIZE, [this, owner]() { createHistogram( *owner ); } );
+        }
       }
+    }
+    /// constructor with const owner (i.e. outside of constructor or initialize), equivalent to
+    /// the StaticHistogram case (create immediately)
+    template <typename OWNER>
+    HistogramWrapperInternal( OWNER const* owner, std::string const& name, std::string const& title = "",
+                              typename HistogramType::AxisTupleType axis = {} )
+        : m_name{ name }, m_title{ title }, m_axis{ axis } {
+      createHistogram( *owner );
     }
     /// constructor with more natural syntax for axis
     template <typename OWNER>
