@@ -339,12 +339,6 @@ StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist )
   return regHist_i( std::move( hist ), id, false );
 }
 
-StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist, TH1* hist_ptr ) {
-  // This is only to support a common use case where the histogram is used after its registration
-  if ( hist_ptr != nullptr ) { hist_ptr = hist.get(); }
-  return regHist_i( std::move( hist ), id, false );
-}
-
 StatusCode THistSvc::regHist( const std::string& id, TH1* hist_ptr ) {
   std::unique_ptr<TH1> hist( hist_ptr );
   return regHist_i( std::move( hist ), id, false );

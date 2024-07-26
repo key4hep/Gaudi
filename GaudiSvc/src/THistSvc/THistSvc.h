@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -57,11 +57,6 @@ public:
   /// @param [in] name      defines the histogram id/name under which it is recorded
   /// @param [in] hist      transfers ownership of the histogram to the THistSvc
   StatusCode regHist( const std::string& name, std::unique_ptr<TH1> hist ) override;
-  /// Register an existing ROOT histogram TH*X with name and moved unique_ptr
-  /// @param [in] name      defines the histogram id/name under which it is recorded
-  /// @param [in] hist      transfers ownership of the histogram to the THistSvc
-  /// @param [out] hist_ptr for compatibility: return raw pointer to managed object to support common usage in Athena
-  StatusCode regHist( const std::string& name, std::unique_ptr<TH1> hist, TH1* hist_ptr ) override;
   /// @deprecated {Just for compatibility purposes. Ownership should be clearly managed.}
   /// Register an existing ROOT histogram TH*X with name and pointer
   StatusCode regHist( const std::string& name, TH1* ) override;
