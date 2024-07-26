@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -36,6 +36,7 @@ int GaudiPython::call_python_method( PyObject* self, const char* method, char* b
 // ============================================================================
 /// CallbackStreamBuf constructor
 // ============================================================================
+// cppcheck-suppress uninitMemberVar; do not initialize large m_callbackBuff
 GaudiPython::CallbackStreamBuf::CallbackStreamBuf( PyObject* self ) : m_self( self ) {}
 
 // ============================================================================

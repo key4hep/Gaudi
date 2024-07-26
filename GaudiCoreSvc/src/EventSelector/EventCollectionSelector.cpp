@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -49,6 +49,10 @@ public:
   EventCollectionContext( const EventCollectionSelector* pSelector );
   /// Standard destructor
   ~EventCollectionContext() override;
+  /// No copy
+  EventCollectionContext( const EventCollectionContext& )            = delete;
+  EventCollectionContext& operator=( const EventCollectionContext& ) = delete;
+
   const std::string&       currentInput() const { return m_currentInput; }
   void                     setCurrentInput( const std::string& v ) { m_currentInput = v; }
   ListName&                files() { return m_files; }

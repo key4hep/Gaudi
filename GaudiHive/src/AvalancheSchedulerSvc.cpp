@@ -699,7 +699,7 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     }
 
     // Perform DR->SCHEDULED
-    auto& drAlgs = thisAlgsStates.algsInState( AState::DATAREADY );
+    const auto& drAlgs = thisAlgsStates.algsInState( AState::DATAREADY );
     for ( uint algIndex : drAlgs ) {
       const std::string& algName{ index2algname( algIndex ) };
       unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
@@ -715,7 +715,7 @@ StatusCode AvalancheSchedulerSvc::iterate() {
 
     // Check for algorithms ready in sub-slots
     for ( auto& subslot : thisSlot.allSubSlots ) {
-      auto& drAlgsSubSlot = subslot.algsStates.algsInState( AState::DATAREADY );
+      const auto& drAlgsSubSlot = subslot.algsStates.algsInState( AState::DATAREADY );
       for ( uint algIndex : drAlgsSubSlot ) {
         const std::string& algName{ index2algname( algIndex ) };
         unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
@@ -885,7 +885,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
     size_t indt( 0 );
     for ( auto& slot : m_eventSlots ) {
 
-      auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
+      const auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
       for ( uint algIndex : schedAlgs ) {
         if ( index2algname( algIndex ).length() > indt ) indt = index2algname( algIndex ).length();
       }
@@ -894,7 +894,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
     // Figure the last running schedule across all slots
     for ( auto& slot : m_eventSlots ) {
 
-      auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
+      const auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
       for ( uint algIndex : schedAlgs ) {
 
         const std::string& algoName{ index2algname( algIndex ) };
@@ -949,8 +949,8 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
       // If an alg has thrown an error then it's not a failure of the CF/DF graph
       if ( wasAlgError ) {
         outputMS << "ERROR alg(s):";
-        int   errorCount = 0;
-        auto& errorAlgs  = slot.algsStates.algsInState( AState::ERROR );
+        int         errorCount = 0;
+        const auto& errorAlgs  = slot.algsStates.algsInState( AState::ERROR );
         for ( uint algIndex : errorAlgs ) {
           outputMS << " " << index2algname( algIndex );
           ++errorCount;
@@ -974,7 +974,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
                    << " ]:\n\n";
           if ( wasAlgError ) {
             outputMS << "ERROR alg(s):";
-            auto& errorAlgs = ss.algsStates.algsInState( AState::ERROR );
+            const auto& errorAlgs = ss.algsStates.algsInState( AState::ERROR );
             for ( uint algIndex : errorAlgs ) { outputMS << " " << index2algname( algIndex ); }
             outputMS << "\n\n";
           } else {
@@ -1145,7 +1145,7 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( const EventContext* sourceC
 
 void AvalancheSchedulerSvc::recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) {
 
-  auto action = [this, samplePeriod, callback{ std::move( callback ) }]() -> StatusCode {
+  auto action = [this, samplePeriod, callback = std::move( callback )]() -> StatusCode {
     if ( samplePeriod < 0 ) {
       this->m_snapshotInterval = std::chrono::duration<int64_t, std::milli>::min();
     } else {

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -639,8 +639,8 @@ StatusCode THistSvc::deReg( TObject* obj ) {
       delete vhid;
 
     } else if ( vhid->size() > 1 ) {
-      m_tobjs.erase( obj_itr );
       vhid->erase( vhid->begin() + obj_itr->second.second );
+      m_tobjs.erase( obj_itr );
 
       // vector of THistID is still not empty (i.e. other instances with same name registered)
     } else {

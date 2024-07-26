@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,7 +26,7 @@ namespace {
 GaudiException::GaudiException( std::string Message, std::string Tag, StatusCode Code )
     : m_message( std::move( Message ) ), m_tag( std::move( Tag ) ), m_code( std::move( Code ) ) {
   s_proc      = true;
-  m_backTrace = captureBacktrace( Code );
+  m_backTrace = captureBacktrace( m_code );
 }
 
 GaudiException::GaudiException( std::string Message, std::string Tag, StatusCode Code, const GaudiException& Exception )
@@ -41,7 +41,7 @@ GaudiException::GaudiException( std::string Message, std::string Tag, StatusCode
     : m_message( std::move( Message ) ), m_tag( std::move( Tag ) ), m_code( std::move( Code ) ) {
   s_proc = true;
   m_message += ": " + System::typeinfoName( typeid( Exception ) ) + ", " + Exception.what();
-  m_backTrace = captureBacktrace( Code );
+  m_backTrace = captureBacktrace( m_code );
 }
 
 GaudiException::GaudiException( const GaudiException& Exception )

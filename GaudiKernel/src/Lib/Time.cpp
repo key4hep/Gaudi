@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -307,7 +307,7 @@ std::string Time::nanoformat( size_t minwidth /* = 1 */, size_t maxwidth /* = 9 
   int value = (int)( m_nsecs % SEC_NSECS );
 
   std::ostringstream buf;
-  buf.fill( '0' );
+  (void)buf.fill( '0' );
   buf.width( 9 );
   buf << value;
   std::string out = buf.str();

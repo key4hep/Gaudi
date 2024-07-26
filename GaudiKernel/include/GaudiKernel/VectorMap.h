@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -654,8 +654,8 @@ namespace GaudiUtils {
      */
     const mapped_type& at( const key_type& key ) const {
       iterator res = find( key );
-      if ( end() == res ) { this->throw_out_of_range_exception(); }
-      return res->second;
+      if ( end() == res ) this->throw_out_of_range_exception();
+      return res->second; // cppcheck-suppress derefInvalidIteratorRedundantCheck; the above throws
     }
     // ========================================================================
   public:

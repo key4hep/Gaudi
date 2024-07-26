@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -524,7 +524,6 @@ namespace Gaudi {
 
     Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
     Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
-    bool                       m_isFinalized;                                   ///< Algorithm has been finalized flag
 
     /// implementation of service method
     StatusCode service_i( std::string_view svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
