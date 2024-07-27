@@ -158,8 +158,6 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   // trying to achieve uniform distribution of algorithm timings.
   const double                        dreamtime = m_avg_runtime * m_sleepFraction;
   const std::chrono::duration<double> dreamtime_duration( dreamtime );
-  tbb::tick_count                     startSleeptbb;
-  tbb::tick_count                     endSleeptbb;
 
   // Start to measure the total time here, together with the dreaming process straight ahead
   tbb::tick_count starttbb = tbb::tick_count::now();
