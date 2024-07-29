@@ -168,22 +168,16 @@ public:
     if ( !m_target && c.m_target ) return c.m_base.isEqualEx( c.m_target, m_base );
     return false;
   }
-  /*[[deprecated]]*/ friend bool operator==( const SmartRef<TYPE>& ref, int ) { return ref.target() == nullptr; }
   friend bool operator==( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() == nullptr; }
 
   /// Friend helper to check for object existence (will load object)
-  /*[[deprecated]]*/ friend bool operator==( int, const SmartRef<TYPE>& ref ) { return ref.target() == nullptr; }
   friend bool operator==( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() == nullptr; }
   /// NON-Equality operator
   bool operator!=( const SmartRef<TYPE>& c ) const { return !( this->operator==( c ) ); }
 
-  /*[[deprecated]]*/ friend bool operator!=( const SmartRef<TYPE>& ref, int ) { return ref.target() != nullptr; }
-
   friend bool operator!=( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() != nullptr; }
 
   /// Friend helper to check for object existence (will load object)
-  /*[[deprecated]]*/ friend bool operator!=( int, const SmartRef<TYPE>& ref ) { return ref.target() != nullptr; }
-
   friend bool operator!=( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() != nullptr; }
 
   /// explicit conversion to bool to check for object existence (will load object)
