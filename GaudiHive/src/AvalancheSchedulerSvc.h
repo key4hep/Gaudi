@@ -153,6 +153,10 @@ public:
   virtual void recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) override;
 
 private:
+  StatusCode dumpGraphFile( const std::map<std::string, DataObjIDColl>& inDeps,
+                            const std::map<std::string, DataObjIDColl>& outDeps ) const;
+
+private:
   using AState = AlgsExecutionStates::State;
   using action = std::function<StatusCode()>;
 
@@ -216,6 +220,20 @@ private:
                                            "Show the configuration of all Algorithms and Sequences" };
 
   Gaudi::Property<bool> m_verboseSubSlots{ this, "VerboseSubSlots", false, "Dump algorithm states for all sub-slots" };
+
+  Gaudi::Property<std::string> m_dataDepsGraphFile{
+      this, "DataDepsGraphFile", "",
+      "Name of the output file (.dot or .md extensions allowed) containing the data dependency graph for some selected "
+      "Algorithms" };
+
+  Gaudi::Property<std::string> m_dataDepsGraphAlgoPattern{
+      this, "DataDepsGraphAlgPattern", ".*",
+      "Regex pattern for selecting desired Algorithms by name, whose data dependency has to be included in the data "
+      "deps graph" };
+
+  Gaudi::Property<std::string> m_dataDepsGraphObjectPattern{
+      this, "DataDepsGraphObjectPattern", ".*",
+      "Regex pattern for selecting desired input or output by their full key" };
 
   // Utils and shortcuts ----------------------------------------------------
 
