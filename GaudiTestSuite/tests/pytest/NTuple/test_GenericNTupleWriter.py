@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import os
+from contextlib import contextmanager
 
 import pytest
 import ROOT
@@ -23,6 +24,16 @@ EXPECTED_STRING_VALUE = "hello world"
 NUM_PRODUCERS = 1
 
 
+@contextmanager
+def temp_chdir(path):
+    curdir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(curdir)
+
+
 @pytest.fixture(scope="module", params=["st", "mt"])
 def setup_file_tree(tmp_path_factory, request):
     """
@@ -33,12 +44,12 @@ def setup_file_tree(tmp_path_factory, request):
     Yields:
         Tuple of (ROOT file, ROOT TTree) for use in tests.
     """
-    os.chdir(tmp_path_factory.mktemp(request.param))
-    if os.path.exists(OUTPUT_FILE_NAME):
-        os.remove(OUTPUT_FILE_NAME)
-    run_gaudi(f"{__file__}:config_{request.param}", check=True)
-    file = ROOT.TFile.Open(OUTPUT_FILE_NAME)
-    tree = file.Get("GenericWriterTree")
+    with temp_chdir(tmp_path_factory.mktemp(request.param)):
+        if os.path.exists(OUTPUT_FILE_NAME):
+            os.remove(OUTPUT_FILE_NAME)
+        run_gaudi(f"{__file__}:config_{request.param}", check=True)
+        file = ROOT.TFile.Open(OUTPUT_FILE_NAME)
+        tree = file.Get("GenericWriterTree")
     yield file, tree
     file.Close()
 
@@ -49,6 +60,7 @@ def config_st():
     """
     from Configurables import (
         ApplicationMgr,
+        FileSvc,
         Gaudi__NTuple__GenericWriter,
         Gaudi__TestSuite__NTuple__FloatDataProducer,
         Gaudi__TestSuite__NTuple__IntVectorDataProducer,
@@ -78,7 +90,7 @@ def config_st():
 
     # Configure the NTupleWriter
     NTupleWriter = Gaudi__NTuple__GenericWriter(
-        "NTupleWriter", OutputLevel=DEBUG, TreeFilename=OUTPUT_FILE_NAME
+        "NTupleWriter", OutputLevel=DEBUG, OutputFile="NTuple"
     )
     NTupleWriter.ExtraInputs = [
         ("float", "MyFloat"),
@@ -91,12 +103,19 @@ def config_st():
     #     for alg in producers
     # ]
 
+    fileSvc = FileSvc(
+        Config={
+            "NTuple": f"{OUTPUT_FILE_NAME}?mode=create",
+        }
+    )
+
     # Application setup
     ApplicationMgr(
         TopAlg=producers + [NTupleWriter],
         EvtMax=EXPECTED_ENTRIES,
         EvtSel="NONE",
         HistogramPersistency="NONE",
+        ExtSvc=[fileSvc],
     )
 
 
@@ -108,6 +127,7 @@ def config_mt():
         AlgResourcePool,
         ApplicationMgr,
         AvalancheSchedulerSvc,
+        FileSvc,
         Gaudi__NTuple__GenericWriter,
         Gaudi__TestSuite__NTuple__FloatDataProducer,
         Gaudi__TestSuite__NTuple__IntVectorDataProducer,
@@ -150,7 +170,7 @@ def config_mt():
 
     # NTupleWriter configuration
     NTupleWriter = Gaudi__NTuple__GenericWriter(
-        "NTupleWriter", OutputLevel=DEBUG, TreeFilename=OUTPUT_FILE_NAME
+        "NTupleWriter", OutputLevel=DEBUG, OutputFile="NTuple"
     )
     NTupleWriter.ExtraInputs = [
         ("float", "MyFloat"),
@@ -163,11 +183,17 @@ def config_mt():
     #     for alg in producers
     # ]
 
+    fileSvc = FileSvc(
+        Config={
+            "NTuple": f"{OUTPUT_FILE_NAME}?mode=create",
+        }
+    )
+
     # Application setup
     ApplicationMgr(
         EvtMax=evtMax,
         EvtSel="NONE",
-        ExtSvc=[whiteboard],
+        ExtSvc=[whiteboard, fileSvc],
         EventLoop=slimeventloopmgr,
         TopAlg=producers + [NTupleWriter],
         MessageSvcType="InertMessageSvc",

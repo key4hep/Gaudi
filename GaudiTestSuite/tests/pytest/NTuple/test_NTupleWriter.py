@@ -52,14 +52,20 @@ def config():
         E.TestSuite.NTuple.IntVectorDataProducer("IntVectorDataProducer"),
         E.TestSuite.NTuple.NTupleWriter_V(
             "NTupleWriter_V",
-            TreeFilename=OUTPUT_FILE_NAME,
+            OutputFile="NTuple",
             BranchNames=["Branch1", "Branch2", "Branch3"],
         ),
     ]
 
+    fileSvc = C.FileSvc(
+        Config={
+            "NTuple": f"{OUTPUT_FILE_NAME}?mode=recreate",
+        }
+    )
+
     loopmgr = C.HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc")
     whiteboard = C.HiveWhiteBoard("EventDataSvc", EventSlots=5)
-    svcs = [whiteboard, C.AlgResourcePool()]
+    svcs = [fileSvc, whiteboard, C.AlgResourcePool()]
     return (
         [
             C.ApplicationMgr(
@@ -73,6 +79,7 @@ def config():
         ]
         + algs
         + svcs
+        + [fileSvc]
     )
 
 
