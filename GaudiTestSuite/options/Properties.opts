@@ -47,6 +47,9 @@ PropertyAlg.DoubleArray = { -11.0 , 2., 3.3, 0.4e-03 };
 PropertyAlg.StringArray = {"one", "two", "four" };
 PropertyAlg.BoolArray   = {false, true, false };
 PropertyAlg.EmptyArray  = { };
+PropertyAlg.IntSet      = { 1, 1, 2 };
+PropertyAlg.StringSet   = { "one" , "two"};
+PropertyAlg.FloatUnorderedSet = { 1.1, 2.2 };
 PropertyAlg.StringMap  = { "one" : "une" };
 
 

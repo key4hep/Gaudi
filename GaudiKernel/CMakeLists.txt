@@ -108,6 +108,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/ParsersStandardList2.cpp
           src/Lib/ParsersStandardList3.cpp
           src/Lib/ParsersStandardList4.cpp
+          src/Lib/ParsersStandardSet.cpp
           src/Lib/ParsersStandardMisc1.cpp
           src/Lib/ParsersStandardMisc2.cpp
           src/Lib/ParsersStandardMisc3.cpp
