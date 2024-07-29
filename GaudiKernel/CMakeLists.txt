@@ -401,6 +401,7 @@ if(BUILD_TESTING)
     SOURCES
       tests/src/CounterSerializationTest.cpp
       tests/src/MonitoringEntityUnitTest.cpp
+      tests/src/test_EventContextFmt.cpp
       tests/src/test_PropertyFmt.cpp
       tests/src/test_finally.cpp
     LINK
