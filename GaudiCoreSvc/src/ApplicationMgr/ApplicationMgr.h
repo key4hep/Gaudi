@@ -251,8 +251,9 @@ protected:
       this, "JobOptionsPostAction", {}, "additional command to run on config" };
   Gaudi::Property<std::string> m_jobOptionsPostAction{
       this, "JobOptionsPreAction", {}, "additional command to run on config" };
-  Gaudi::Property<std::string> m_runableType{ this, "Runable", "AppMgrRunable", "Runable type" };
-  Gaudi::Property<std::string> m_eventLoopMgr{ this, "EventLoop", "EventLoopMgr", "Processing manager type" };
+  Gaudi::Property<std::string> m_runableType{ this, "Runable", "AppMgrRunable", "Runable type", "Service:IRunable" };
+  Gaudi::Property<std::string> m_eventLoopMgr{ this, "EventLoop", "EventLoopMgr", "Processing manager type",
+                                               "Service:IEventProcessor" };
   Gaudi::Property<std::string> m_evtsel{ this, "EvtSel", {}, "Event selection" };
   Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", "NONE", "Name of the Hist Pers Svc" };
   Gaudi::Property<int>         m_outputLevel{ this, "OutputLevel", MSG::INFO, "Message output level" };
