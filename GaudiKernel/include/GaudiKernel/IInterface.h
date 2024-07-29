@@ -163,11 +163,6 @@ namespace Gaudi {
     return { Is::name()... };
   }
 
-  // gcc9 has a false positive warning -- see  https://godbolt.org/z/cyjtrr -- gcc10,clang are happy...
-#if defined( __GNUC__ ) && __GNUC__ < 10
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wparentheses"
-#endif
   template <typename... Is, typename P>
   void* iid_cast( const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr ) {
     const void* target = nullptr;
@@ -176,9 +171,6 @@ namespace Gaudi {
       ... );
     return const_cast<void*>( target );
   }
-#if defined( __GNUC__ ) && __GNUC__ < 10
-#  pragma GCC diagnostic pop
-#endif
 
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
