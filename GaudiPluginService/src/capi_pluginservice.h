@@ -19,9 +19,7 @@
 extern "C" {
 #endif
 
-#if __GNUC__ >= 4
-#  define CGAUDI_HASCLASSVISIBILITY
-#endif
+#define CGAUDI_HASCLASSVISIBILITY
 
 #if defined( CGAUDI_HASCLASSVISIBILITY )
 #  define CGAUDI_IMPORT __attribute__( ( visibility( "default" ) ) )

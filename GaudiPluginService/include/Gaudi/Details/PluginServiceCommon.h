@@ -24,9 +24,7 @@
 #    endif
 #  endif
 
-#  if __GNUC__ >= 4
-#    define GAUDIPS_HASCLASSVISIBILITY
-#  endif
+#  define GAUDIPS_HASCLASSVISIBILITY
 
 #  if defined( GAUDIPS_HASCLASSVISIBILITY )
 #    define GAUDIPS_IMPORT __attribute__( ( visibility( "default" ) ) )

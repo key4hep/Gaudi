@@ -32,7 +32,8 @@
 // Disable warnings on gcc
 // ============================================================================
 #if defined( __GNUC__ )
-#  pragma GCC diagnostic push ignored "-Wdeprecated-declarations"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #endif
 // ============================================================================
 /** @file
