@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,8 +23,10 @@
 
 // C++
 #include <algorithm>
+#include <fstream>
 #include <map>
 #include <queue>
+#include <regex>
 #include <sstream>
 #include <string_view>
 #include <thread>
@@ -225,6 +227,13 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   }
 
   if ( m_showDataDeps ) { info() << ostdd.str() << endmsg; }
+
+  // If requested, dump a graph of the data dependencies in a .dot or .md file
+  if ( not m_dataDepsGraphFile.empty() ) {
+    if ( dumpGraphFile( algosInputDependenciesMap, algosOutputDependenciesMap ).isFailure() ) {
+      return StatusCode::FAILURE;
+    }
+  }
 
   // Check if we have unmet global input dependencies, and, optionally, heal them
   // WARNING: this step must be done BEFORE the Precedence Service is initialized
@@ -1152,4 +1161,124 @@ void AvalancheSchedulerSvc::recordOccupancy( int samplePeriod, std::function<voi
   };
 
   m_actionsQueue.push( std::move( action ) );
+}
+
+StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, DataObjIDColl>& inDeps,
+                                                 const std::map<std::string, DataObjIDColl>& outDeps ) const {
+  // Both maps should have the same algorithm entries
+  assert( inDeps.size() == outDeps.size() );
+
+  // Check file extension
+  enum class FileType : short { UNKNOWN, DOT, MD };
+  std::regex fileExtensionRegexDot( ".dot$" );
+  std::regex fileExtensionRegexMd( ".md$" );
+
+  std::string fileName      = m_dataDepsGraphFile.value();
+  FileType    fileExtension = FileType::UNKNOWN;
+  if ( std::regex_search( m_dataDepsGraphFile.value(), fileExtensionRegexDot ) ) {
+    fileExtension = FileType::DOT;
+  } else if ( std::regex_search( m_dataDepsGraphFile.value(), fileExtensionRegexMd ) ) {
+    fileExtension = FileType::MD;
+  } else {
+    fileExtension = FileType::DOT;
+    fileName      = fileName + ".dot";
+  }
+  info() << "Dumping data dependencies graph to file: " << fileName << endmsg;
+
+  std::string startGraph = "";
+  std::string stopGraph  = "";
+  // define functions
+  std::function<std::string( const std::string&, const std::string& )> defineAlg;
+  std::function<std::string( const DataObjID& )>                       defineObj;
+  std::function<std::string( const DataObjID&, const std::string& )>   defineInput;
+  std::function<std::string( const std::string&, const DataObjID& )>   defineOutput;
+
+  if ( fileExtension == FileType::DOT ) {
+    // .dot file
+    startGraph = "digraph datadeps {\nrankdir=\"LR\";\n\n";
+    stopGraph  = "\n}\n";
+
+    defineAlg = []( const std::string& alg, const std::string& idx ) -> std::string {
+      return "Alg_" + idx + " [label=\"" + alg + "\";shape=box];\n";
+    };
+
+    defineObj = []( const DataObjID& obj ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + " [label=\"" + obj.key() + "\"];\n";
+    };
+
+    defineInput = []( const DataObjID& obj, const std::string& alg ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + " -> " + "Alg_" + alg + ";\n";
+    };
+
+    defineOutput = []( const std::string& alg, const DataObjID& obj ) -> std::string {
+      return "Alg_" + alg + " -> " + "obj_" + std::to_string( obj.hash() ) + ";\n";
+    };
+  } else {
+    // .md file
+    startGraph = "```mermaid\ngraph LR;\n\n";
+    stopGraph  = "\n```\n";
+
+    defineAlg = []( const std::string& alg, const std::string& idx ) -> std::string {
+      return "Alg_" + idx + "{{" + alg + "}}\n";
+    };
+
+    defineObj = []( const DataObjID& obj ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + ">" + obj.key() + "]\n";
+    };
+
+    defineInput = []( const DataObjID& obj, const std::string& alg ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + " --> " + "Alg_" + alg + "\n";
+    };
+
+    defineOutput = []( const std::string& alg, const DataObjID& obj ) -> std::string {
+      return "Alg_" + alg + " --> " + "obj_" + std::to_string( obj.hash() ) + "\n";
+    };
+  } // fileExtension
+
+  std::ofstream dataDepthGraphFile( m_dataDepsGraphFile.value(), std::ofstream::out );
+  dataDepthGraphFile << startGraph;
+
+  // define algs and objects
+  std::set<std::size_t> definedObjects;
+
+  // Regex for selection of algs and objects
+  std::regex algNameRegex( m_dataDepsGraphAlgoPattern.value() );
+  std::regex objNameRegex( m_dataDepsGraphObjectPattern.value() );
+
+  // inDeps and outDeps should have the same entries
+  std::size_t algoIndex = 0ul;
+  for ( const auto& [name, ideps] : inDeps ) {
+    if ( not std::regex_search( name, algNameRegex ) ) continue;
+    dataDepthGraphFile << defineAlg( name, std::to_string( algoIndex ) );
+
+    // inputs
+    for ( const auto& dep : ideps ) {
+      if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
+
+      if ( definedObjects.find( dep.hash() ) == definedObjects.end() ) {
+        definedObjects.insert( dep.hash() );
+        dataDepthGraphFile << defineObj( dep );
+      }
+      dataDepthGraphFile << defineInput( dep, std::to_string( algoIndex ) );
+    } // loop on ideps
+
+    const auto& odeps = outDeps.at( name );
+    for ( const auto& dep : odeps ) {
+      if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
+
+      if ( definedObjects.find( dep.hash() ) == definedObjects.end() ) {
+        definedObjects.insert( dep.hash() );
+        dataDepthGraphFile << defineObj( dep );
+      }
+      dataDepthGraphFile << defineOutput( std::to_string( algoIndex ), dep );
+    } // loop on odeps
+
+    ++algoIndex;
+  } // loop on inDeps
+
+  // end the file
+  dataDepthGraphFile << stopGraph;
+  dataDepthGraphFile.close();
+
+  return StatusCode::SUCCESS;
 }
