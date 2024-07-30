@@ -10,11 +10,11 @@
 \***********************************************************************************/
 #pragma once
 
-#include "TFile.h"
 #include <GaudiKernel/IInterface.h>
 #include <memory>
-#include <optional>
 #include <string>
+
+class TFile;
 
 namespace Gaudi {
   namespace Interfaces {
