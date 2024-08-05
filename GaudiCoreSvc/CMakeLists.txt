@@ -52,7 +52,7 @@ gaudi_add_module(GaudiCoreSvc
                    src/FileSvc/FileSvc.cpp
                  LINK
                    GaudiKernel
-                   GaudiUtilsLib
+                   ROOT::RIO
                    Python::Python
                    Boost::headers
                    Boost::filesystem
