@@ -92,7 +92,10 @@ def config_st():
 
     # Configure the NTupleWriter
     NTupleWriter = Gaudi__NTuple__GenericWriter(
-        "NTupleWriter", OutputLevel=DEBUG, OutputFile="NTuple"
+        "NTupleWriter",
+        OutputLevel=DEBUG,
+        OutputFile="NTuple",
+        NTupleName="GenericWriterTree",
     )
     NTupleWriter.ExtraInputs = [
         ("float", "MyFloat"),
@@ -175,7 +178,10 @@ def config_mt():
 
     # NTupleWriter configuration
     NTupleWriter = Gaudi__NTuple__GenericWriter(
-        "NTupleWriter", OutputLevel=DEBUG, OutputFile="NTuple"
+        "NTupleWriter",
+        OutputLevel=DEBUG,
+        OutputFile="NTuple",
+        NTupleName="GenericWriterTree",
     )
     NTupleWriter.ExtraInputs = [
         ("float", "MyFloat"),

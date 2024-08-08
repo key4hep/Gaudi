@@ -130,8 +130,11 @@ namespace Gaudi::NTuple {
     using Consumer_t::Consumer_t;
 
     Gaudi::Property<std::string> m_fileId{ this, "OutputFile", "NTuple", "Identifier for the TFile to write to." };
-    Gaudi::Property<std::string> m_ntupleName{ this, "NTupleName", "WriterTree",
-                                               "Name of the n-tuple (TTree) object in the output file." };
+    Gaudi::Property<std::string> m_ntupleName{
+        this,
+        "NTupleName",
+        {},
+        "Name of the n-tuple (TTree) object in the output file [default: name of the instance]." };
     Gaudi::Property<std::array<std::string, sizeof...( OUTPUTs )>> m_branchNames{
         this, "BranchNames", {}, "Names of the tree branches." }; // Names for the tree branches
     std::shared_ptr<TFile>       m_file = nullptr;                // Pointer to the ROOT file
@@ -153,7 +156,8 @@ namespace Gaudi::NTuple {
           return StatusCode::FAILURE;
         }
 
-        this->initTree( m_file, m_ntupleName, m_branchNames.value(), *this );
+        this->initTree( m_file, m_ntupleName.empty() ? this->name() : m_ntupleName.value(), m_branchNames.value(),
+                        *this );
 
         return StatusCode::SUCCESS;
       } );

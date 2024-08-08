@@ -70,7 +70,8 @@ namespace Gaudi::NTuple {
           return StatusCode::FAILURE;
         }
 
-        m_tree = std::make_unique<TTree>( m_ntupleName.value().c_str(), "" ).release();
+        m_tree =
+            std::make_unique<TTree>( ( m_ntupleName.empty() ? name() : m_ntupleName.value() ).c_str(), "" ).release();
 
         createBranches( extraInputs );
 
@@ -137,8 +138,11 @@ namespace Gaudi::NTuple {
 
   private:
     Gaudi::Property<std::string> m_fileId{ this, "OutputFile", "NTuple", "Identifier for the TFile to write to." };
-    Gaudi::Property<std::string> m_ntupleName{ this, "NTupleName", "GenericWriterTree",
-                                               "Name of the n-tuple (TTree) object in the output file." };
+    Gaudi::Property<std::string> m_ntupleName{
+        this,
+        "NTupleName",
+        {},
+        "Name of the n-tuple (TTree) object in the output file [default: name of the instance]." };
     std::shared_ptr<TFile>       m_file     = nullptr; // Smart pointer to the ROOT TFile object
     TTree*                       m_tree     = nullptr; // Pointer to the ROOT TTree object
     IDataProviderSvc*            m_eventSvc = nullptr; // Pointer to the event service interface for data retrieval

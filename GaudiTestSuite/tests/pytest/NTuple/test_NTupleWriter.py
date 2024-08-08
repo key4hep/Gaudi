@@ -53,6 +53,7 @@ def config():
         E.TestSuite.NTuple.NTupleWriter_V(
             "NTupleWriter_V",
             OutputFile="NTuple",
+            NTupleName="WriterTree",
             BranchNames=["Branch1", "Branch2", "Branch3"],
         ),
     ]
