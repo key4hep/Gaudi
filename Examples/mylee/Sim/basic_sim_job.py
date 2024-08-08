@@ -12,7 +12,19 @@ def gen_elastic(nevt):
     """
     Configure a simple job to generate `nevt` elastic scattering events.
     """
-    from GaudiConfig2.Configurables import ApplicationMgr, EvtDataSvc, mylee
+    from GaudiConfig2.Configurables import (
+        ApplicationMgr,
+        EvtDataSvc,
+        FileSvc,
+        Gaudi,
+        mylee,
+    )
+
+    files = FileSvc(
+        Config={
+            "NTuple": "sim_output.root?mode=create",
+        },
+    )
 
     # define nodes od data flow graph
     gen = mylee.mc.gen.elastic(
@@ -24,9 +36,15 @@ def gen_elastic(nevt):
         BaseSeed=1234,
     )
     # define edges of data flow graph
-    gen.header = gen_init.header.Path
+    gen.header = gen_init.header.path()
 
-    algorithms = [gen_init, gen]
+    writer = Gaudi.NTuple.GenericWriter(
+        OutputFile="NTuple",
+        NTupleName="events",
+        ExtraInputs=[(obj.type(), obj.path()) for obj in [gen_init.header, gen.event]],
+    )
+
+    algorithms = [gen_init, gen, writer]
 
     # application configuration
     app = ApplicationMgr(
@@ -45,7 +63,7 @@ def gen_elastic(nevt):
     tes.ForceLeaves = True
 
     # we have to return all objects we configured
-    return [app, tes] + algorithms
+    return [app, tes, files] + algorithms
 
 
 def gen_1000_elastic():

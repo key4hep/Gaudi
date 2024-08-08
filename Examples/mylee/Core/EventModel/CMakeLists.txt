@@ -25,3 +25,18 @@ gaudi_add_library(mylee_em
         PRIVATE
             Rangev3::rangev3
 )
+
+# `gaudi_add_dictionary` is used to create a ROOT dictionary plugin library
+# that instructs ROOT about the layout of event model classes we want to
+# persistify.
+gaudi_add_dictionary(mylee_em_dict
+    # the header file provided should include a number of public headers
+    # that declare the classes we need to persistify
+    HEADERFILES src/dict.h
+    # not all classes from the header are included in the dictionary, so
+    # we pass a list of classes to use by means of a selection XML file
+    SELECTION src/dict.xml
+    # private dependency that make sure symbols used by the included headers
+    # are correctly resolved
+    LINK mylee_em
+)
