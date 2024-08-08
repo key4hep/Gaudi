@@ -61,10 +61,10 @@ namespace Gaudi::NTuple {
     virtual std::tuple<OUTPUTs...> transform( const INPUTs&... inputs ) const = 0;
 
     // Initialize the TTree and creates branches
-    void initTree( const std::shared_ptr<TFile>& file, const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames,
-                   const Gaudi::Algorithm& algRef ) {
+    void initTree( const std::shared_ptr<TFile>& file, const std::string& name,
+                   const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames, const Gaudi::Algorithm& algRef ) {
       file->cd();
-      m_tree = std::make_unique<TTree>( "WriterTree", "Tree of Writer Algorithm" ).release();
+      m_tree = std::make_unique<TTree>( name.c_str(), "" ).release();
       m_branchWrappers.reserve( m_branchWrappers.size() + sizeof...( OUTPUTs ) );
       createBranchesForOutputs( branchNames, std::make_index_sequence<sizeof...( OUTPUTs )>{}, algRef );
     }
@@ -130,6 +130,8 @@ namespace Gaudi::NTuple {
     using Consumer_t::Consumer_t;
 
     Gaudi::Property<std::string> m_fileId{ this, "OutputFile", "NTuple", "Identifier for the TFile to write to." };
+    Gaudi::Property<std::string> m_ntupleName{ this, "NTupleName", "WriterTree",
+                                               "Name of the n-tuple (TTree) object in the output file." };
     Gaudi::Property<std::array<std::string, sizeof...( OUTPUTs )>> m_branchNames{
         this, "BranchNames", {}, "Names of the tree branches." }; // Names for the tree branches
     std::shared_ptr<TFile>       m_file = nullptr;                // Pointer to the ROOT file
@@ -151,7 +153,7 @@ namespace Gaudi::NTuple {
           return StatusCode::FAILURE;
         }
 
-        this->initTree( m_file, m_branchNames.value(), *this );
+        this->initTree( m_file, m_ntupleName, m_branchNames.value(), *this );
 
         return StatusCode::SUCCESS;
       } );
