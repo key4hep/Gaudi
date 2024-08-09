@@ -17,6 +17,7 @@
 
 #include <algorithm> /* find */
 #include <iostream>
+#include <list>
 #ifdef __ICC
 // disable icc warning #279: controlling expression is constant
 // ... a lot of noise produced by the boost/filesystem/operations.hpp
