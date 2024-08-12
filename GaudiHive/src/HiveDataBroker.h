@@ -35,10 +35,14 @@ private:
       this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies" };
 
   struct AlgEntry {
-    size_t              index;
-    SmartIF<IAlgorithm> ialg;
-    Gaudi::Algorithm*   alg;
-    std::set<AlgEntry*> dependsOn;
+    size_t                    index;
+    SmartIF<IAlgorithm>       ialg;
+    Gaudi::Algorithm*         alg;
+    std::set<AlgEntry const*> dependsOn;
+
+    friend bool operator<( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index < rhs.index; }
+
+    friend bool operator==( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index == rhs.index; }
 
     AlgEntry( size_t i, SmartIF<IAlgorithm>&& p )
         : index{ i }, ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
@@ -55,9 +59,9 @@ private:
 
   std::map<std::string, AlgEntry> m_algorithms;
 
-  std::map<DataObjID, AlgEntry*> mapProducers( std::map<std::string, AlgEntry>& algorithms ) const;
+  std::map<DataObjID, AlgEntry const*> mapProducers( std::map<std::string, AlgEntry>& algorithms ) const;
 
-  std::map<DataObjID, AlgEntry*> m_dependencies;
+  std::map<DataObjID, AlgEntry const*> m_dependencies;
 
   void visit( AlgEntry const& alg, std::vector<std::string> const& stoppers, std::vector<Gaudi::Algorithm*>& sorted,
               std::vector<bool>& visited, std::vector<bool>& visiting ) const;
