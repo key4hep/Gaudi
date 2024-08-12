@@ -8,15 +8,17 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "HiveDataBroker.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
+#include "GaudiKernel/IDataBroker.h"
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/System.h"
 #include "boost/lexical_cast.hpp"
 #include "boost/tokenizer.hpp"
 #include <Gaudi/Algorithm.h>
 #include <algorithm>
 #include <iomanip>
+#include <stdexcept>
 #ifdef __cpp_lib_ranges
 #  include <ranges>
 namespace ranges = std::ranges;
@@ -33,6 +35,59 @@ namespace ranges::views {
 #  endif
 #endif
 
+class HiveDataBrokerSvc final : public extends<Service, IDataBroker> {
+public:
+  using extends::extends;
+
+  std::vector<Gaudi::Algorithm*> algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                                        const std::vector<std::string>& stoppers = {} ) const override;
+  std::vector<Gaudi::Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg,
+                                                        const std::vector<std::string>& stoppers = {} ) const override;
+
+  StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode stop() override;
+  StatusCode finalize() override;
+
+private:
+  Gaudi::Property<std::string>              m_dataLoader{ this, "DataLoader", "",
+                                             "Attribute any unmet input dependencies to this Algorithm" };
+  Gaudi::Property<std::vector<std::string>> m_producers{
+      this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies" };
+
+  struct AlgEntry {
+    size_t                    index;
+    SmartIF<IAlgorithm>       ialg;
+    Gaudi::Algorithm*         alg;
+    std::set<AlgEntry const*> dependsOn;
+
+    friend bool operator<( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index < rhs.index; }
+
+    friend bool operator==( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index == rhs.index; }
+
+    AlgEntry( size_t i, SmartIF<IAlgorithm>&& p )
+        : index{ i }, ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
+      if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
+    }
+  };
+
+  std::map<std::string, AlgEntry>
+  instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const; // algorithms must be fully
+                                                                                     // initialized first, as
+                                                                                     // doing so may create
+                                                                                     // additional data
+                                                                                     // dependencies...
+
+  std::map<std::string, AlgEntry> m_algorithms;
+
+  std::map<DataObjID, AlgEntry const*> mapProducers( std::map<std::string, AlgEntry>& algorithms ) const;
+
+  std::map<DataObjID, AlgEntry const*> m_dependencies;
+
+  void visit( AlgEntry const& alg, std::vector<std::string> const& stoppers, std::vector<Gaudi::Algorithm*>& sorted,
+              std::vector<bool>& visited, std::vector<bool>& visiting ) const;
+};
+
 DECLARE_COMPONENT( HiveDataBrokerSvc )
 
 namespace {
@@ -47,17 +102,14 @@ namespace {
     }
   };
 
-  struct DataObjIDSorter {
-    bool operator()( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); }
-  };
-
   // Sort a DataObjIDColl in a well-defined, reproducible manner.
   // Used for making debugging dumps.
   std::vector<const DataObjID*> sorted_( const DataObjIDColl& coll ) {
     std::vector<const DataObjID*> v;
     v.reserve( coll.size() );
     for ( const DataObjID& id : coll ) v.push_back( &id );
-    std::sort( v.begin(), v.end(), DataObjIDSorter() );
+    std::sort( v.begin(), v.end(),
+               []( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); } );
     return v;
   }
 
