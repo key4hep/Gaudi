@@ -17,6 +17,9 @@
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Sequence.h>
 
+// C++
+#include <fstream>
+
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
