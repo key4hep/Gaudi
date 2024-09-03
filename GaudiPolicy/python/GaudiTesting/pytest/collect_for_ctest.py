@@ -53,18 +53,31 @@ def pytest_addoption(parser, pluginmanager):
         action="append",
         help="test properties to set for all discovered tests",
     )
+    parser.addoption(
+        "--ctest-binary-dir",
+        default=None,
+        help="value of CMAKE_CURRENT_BINARY_DIR from which gaudi_add_pytest was invoked",
+    )
 
 
-def pytest_collection_modifyitems(session, config, items):
+def pytest_collectstart(collector):
+    session, config = collector.session, collector.config
     args = {
         name[6:]: getattr(config.option, name)
         for name in dir(config.option)
         if name.startswith("ctest_")
     }
+
+    if args.get("binary_dir"):
+        # $CMAKE_CURRENT_BINARY_DIR will be set by CTest when the test is run
+        # so, for consistency, we set it at collection time too
+        os.environ["CMAKE_CURRENT_BINARY_DIR"] = args["binary_dir"]
+
     session.ctest_args = args
-    session.ctest_files = set(
-        item.path if hasattr(item, "path") else Path(item.fspath) for item in items
-    )
+
+
+def pytest_collection_modifyitems(session, config, items):
+    session.ctest_files = set(item.path for item in items)
 
 
 TEST_DESC_TEMPLATE = """
@@ -81,6 +94,8 @@ def pytest_collection_finish(session):
         return
 
     properties = 'LABELS "{}" '.format(";".join(args["label"]))
+    if args.get("binary_dir"):
+        properties += f'ENVIRONMENT "CMAKE_CURRENT_BINARY_DIR={args["binary_dir"]}" '
     properties += " ".join(args["properties"])
 
     for path in sorted(session.ctest_files):

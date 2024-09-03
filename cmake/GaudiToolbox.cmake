@@ -938,6 +938,7 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
             --ctest-label=${PROJECT_NAME}
             --ctest-label=${package_name}
             --ctest-properties=${ARG_PROPERTIES_ESC}
+            --ctest-binary-dir=${CMAKE_CURRENT_BINARY_DIR}
             ${ARG_LABELS}
             ${collect_roots}
         WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
