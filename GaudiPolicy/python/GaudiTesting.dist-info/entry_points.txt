@@ -1,0 +1,2 @@
+[pytest11]
+collect_for_ctest = GaudiTesting.pytest.collect_for_ctest

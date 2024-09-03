@@ -1,5 +1,5 @@
 ###############################################################################
-# (c) Copyright 2023 CERN for the benefit of the LHCb Collaboration           #
+# (c) Copyright 2024 CERN for the benefit of the LHCb Collaboration           #
 #                                                                             #
 # This software is distributed under the terms of the GNU General Public      #
 # Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   #
@@ -77,6 +77,10 @@ def pytest_collectstart(collector):
 
 
 def pytest_collection_modifyitems(session, config, items):
+    if not session.ctest_args.get("output_file"):
+        # nothing to do if no output file is specified
+        return
+
     session.ctest_files = set(item.path for item in items)
 
 

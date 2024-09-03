@@ -935,7 +935,6 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
         COMMAND $<TARGET_FILE:run> $<TARGET_FILE:pytest>
             --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
-            -p GaudiTesting.pytest.collect_for_ctest
             --ctest-output-file=${base_filename}.tests.cmake
             --ctest-pytest-command=$<TARGET_FILE:run>\\ $<TARGET_FILE:pytest>\\ ${ARG_OPTIONS_ESC}
             --ctest-pytest-root-dir=${ARG_ROOT_DIR}
