@@ -17,6 +17,7 @@ CMake function `gaudi_add_pytest()`
 
 import argparse
 import os
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -82,6 +83,12 @@ def pytest_collection_modifyitems(session, config, items):
         return
 
     session.ctest_files = set(item.path for item in items)
+    session.ctest_fixture_setup = defaultdict(set)
+    session.ctest_fixture_required = defaultdict(set)
+    for item in items:
+        for marker in ("ctest_fixture_setup", "ctest_fixture_required"):
+            for mark in item.iter_markers(name=marker):
+                getattr(session, marker)[item.path].update(mark.args)
 
 
 TEST_DESC_TEMPLATE = """
@@ -117,4 +124,27 @@ def pytest_collection_finish(session):
             )
         )
 
+        if session.ctest_fixture_setup.get(path):
+            output.write(
+                'set_tests_properties('
+                f'{name} PROPERTIES FIXTURES_SETUP "{";".join(session.ctest_fixture_setup[path])}")\n'
+            )
+
+        if session.ctest_fixture_required.get(path):
+            output.write(
+                'set_tests_properties('
+                f'{name} PROPERTIES FIXTURES_REQUIRED "{";".join(session.ctest_fixture_required[path])}")\n'
+            )
+
     output.close()
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "ctest_fixture_setup(name): mark test to set up a fixture needed by another test",
+    )
+    config.addinivalue_line(
+        "markers",
+        "ctest_fixture_required(name): mark test to require a fixture set up by another test",
+    )
