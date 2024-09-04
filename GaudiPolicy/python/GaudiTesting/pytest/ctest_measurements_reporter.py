@@ -103,4 +103,6 @@ def pytest_sessionfinish(session, exitstatus):
     ]
     for key, value in to_print:
         sanitized_value = XSS.escape(sanitize_for_xml(str(value)))
+        # workaround for a limitation of CTestXML2HTML
+        key = key.replace("/", "_")
         print(template.format(name=key, value=sanitized_value), end="")
