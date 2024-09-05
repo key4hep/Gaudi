@@ -892,6 +892,7 @@ function(gaudi_add_pytest)
     endif()
 
     list(TRANSFORM ARG_LABELS PREPEND --ctest-label=)
+    list(PREPEND ARG_OPTIONS "--override-ini" "cache_dir=${CMAKE_CURRENT_BINARY_DIR}/pytest_cache")
 
     set(base_filename ${CMAKE_CURRENT_BINARY_DIR}/pytest/collect_${ARG_PREFIX}${CMAKE_BUILD_TYPE})
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pytest)
