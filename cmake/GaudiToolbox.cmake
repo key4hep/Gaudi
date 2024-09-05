@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -900,7 +900,7 @@ function(gaudi_add_pytest)
     string(JOIN "\\ " ARG_PROPERTIES_ESC WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY} ${ARG_PROPERTIES})
     file(GENERATE OUTPUT ${base_filename}.cmake
         CONTENT "
-set(files_to_hash)
+set(files_to_hash \${CMAKE_CURRENT_LIST_FILE})
 foreach(file IN ITEMS ${collect_roots})
     if(NOT IS_ABSOLUTE \${file})
         string(PREPEND file ${CMAKE_CURRENT_SOURCE_DIR}/)
@@ -928,7 +928,7 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
     endif()
     execute_process(
         COMMAND $<TARGET_FILE:run> $<TARGET_FILE:pytest>
-            --collect-only --quiet --no-header --no-summary
+            --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
             -p GaudiTesting.pytest.collect_for_ctest
             --ctest-output-file=${base_filename}.tests.cmake
@@ -942,8 +942,13 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
             ${ARG_LABELS}
             ${collect_roots}
         WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
-        OUTPUT_QUIET
+        RESULT_VARIABLE pytest_result
+        OUTPUT_VARIABLE pytest_output
     )
+    if(NOT pytest_result EQUAL 0)
+        message(\"\${pytest_output}\")
+        message(FATAL_ERROR \"pytest invocation failed!\")
+    endif()
     file(WRITE ${base_filename}.tests.checksum \${hash})
 endif()
 if(NOT DEFINED PREFECTH_PYTEST_TESTS)
