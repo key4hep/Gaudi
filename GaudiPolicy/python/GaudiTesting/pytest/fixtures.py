@@ -230,6 +230,10 @@ def reference(request):
             cnt += 1
             newrefname = f"{reference_path}.~{cnt}~.new"
 
+        if os.environ.get("GAUDI_TEST_IGNORE_STDOUT_VALIDATION") == "1":
+            # when we ignore stdout validation we just overwrite the reference file
+            newrefname = reference_path
+
         os.makedirs(os.path.dirname(newrefname), exist_ok=True)
         with open(newrefname, "w") as f:
             yaml.safe_dump(current_reference_data, f, sort_keys=False)

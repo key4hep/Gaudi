@@ -138,6 +138,8 @@ class GaudiExeTest(SubprocessBaseTest):
                     ),
                 )
                 reference[key] = data
+                if os.environ.get("GAUDI_TEST_IGNORE_STDOUT_VALIDATION") == "1":
+                    pytest.xfail("Ignoring stdout validation")
                 raise
         else:
             pytest.skip("No reference file provided")
@@ -279,6 +281,8 @@ class GaudiExeTest(SubprocessBaseTest):
             assert ttrees == reference["ttrees"]
         except AssertionError:
             reference["ttrees"] = ttrees
+            if os.environ.get("GAUDI_TEST_IGNORE_STDOUT_VALIDATION") == "1":
+                pytest.xfail("Ignoring stdout validation")
             raise
 
     @pytest.mark.do_not_collect_source
@@ -299,6 +303,8 @@ class GaudiExeTest(SubprocessBaseTest):
             assert histos == reference["histos"]
         except AssertionError:
             reference["histos"] = histos
+            if os.environ.get("GAUDI_TEST_IGNORE_STDOUT_VALIDATION") == "1":
+                pytest.xfail("Ignoring stdout validation")
             raise
 
     @pytest.mark.do_not_collect_source

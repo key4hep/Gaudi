@@ -39,6 +39,7 @@ TEMPLATE_HEADER = f"""##########################################################
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import os
 import pytest
 from GaudiTesting import GaudiExeTest, platform_matches
 """
@@ -52,6 +53,8 @@ class Test(GaudiExeTest):
 TEMPLATE_VALIDATOR_TEST = """
     def test_stdout(self, stdout: bytes):
         # FIXME implement validation of stdout
+        if os.environ.get("GAUDI_TEST_IGNORE_STDOUT_VALIDATION") == "1":
+            pytest.xfail("Ignoring stdout validation")
         raise NotImplementedError("stdout validation not implemented")
         {validator_code}
 """
