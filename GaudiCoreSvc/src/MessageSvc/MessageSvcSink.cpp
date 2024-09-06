@@ -91,7 +91,7 @@ public:
     return fmt_end;
   }
   template <typename FormatContext>
-  auto format( const json_fmt_arg& json_arg, FormatContext& ctx ) {
+  auto format( const json_fmt_arg& json_arg, FormatContext& ctx ) const {
     const auto& j = json_arg.payload;
     if ( currentFormat.size() == 0 ) {
       // dealing with {} format, let's find entry for our type in registry
