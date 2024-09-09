@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -76,7 +76,7 @@ def invokeConfig(func, *args, **kwargs):
             if m and m.group("module"):
                 func = getattr(import_module(m.group("module")), m.group("callable"))
             elif m and m.group("path"):
-                globals = {}
+                globals = {"__file__": m.group("path")}
                 exec(
                     compile(
                         open(m.group("path"), "rb").read(), m.group("path"), "exec"
