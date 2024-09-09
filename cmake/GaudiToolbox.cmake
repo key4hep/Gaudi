@@ -779,6 +779,7 @@ endfunction()
         [OPTIONS pytest_option_1 pytest_option_2]
         [WORKING_DIRECTORY path]
         [PROPERTIES name value...]
+        [DEPENDS target1 target2...]
     )
 
   This function is used to declare a directories and/or files with pytest tests.
@@ -814,6 +815,9 @@ endfunction()
 
   ``PROPERTIES name value...``
     list of properties to set on the discovered tests
+
+  ``DEPENDS target1 target2...``
+    list of targets that have to be built before we run pytest to collect the tests
 #]========================================================================]
 function(gaudi_add_pytest)
     if(NOT BUILD_TESTING)
@@ -827,7 +831,7 @@ function(gaudi_add_pytest)
         ARG
         ""
         "PREFIX;ROOT_DIR;WORKING_DIRECTORY"
-        "LABELS;OPTIONS;PROPERTIES"
+        "LABELS;OPTIONS;PROPERTIES;DEPENDS"
         ${ARGN}
     )
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -965,10 +969,14 @@ endif()
     while(TARGET "pytest-prefetch-${package_name}-${target_name}")
         string(APPEND target_name ".")
     endwhile()
+    if(ARG_DEPENDS)
+        list(PREPEND ARG_DEPENDS DEPENDS)
+    endif()
     add_custom_target(pytest-prefetch-${package_name}-${target_name}
         ALL
         COMMAND ${CMAKE_COMMAND} -DPREFECTH_PYTEST_TESTS=TRUE -P ${base_filename}.cmake
         COMMENT "Collecting pytest tests for ${package_name}:${target_name}"
+        ${ARG_DEPENDS}
     )
 endfunction()
 
