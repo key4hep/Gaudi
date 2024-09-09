@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 // ============================================================================
@@ -32,6 +33,11 @@
 
 #define PARSERS_DECL_FOR_LIST( InnerType )                                                                             \
   GAUDI_API StatusCode parse( std::vector<InnerType>& result, std::string_view input );
+
+#define PARSERS_DECL_FOR_SET( InnerType )                                                                              \
+  GAUDI_API StatusCode parse( std::set<InnerType>& result, std::string_view input );                                   \
+  GAUDI_API StatusCode parse( std::unordered_set<InnerType>& result, std::string_view input );
+
 // ============================================================================
 /** @file
  *  The declaration of major parsing functions used e.g
@@ -177,6 +183,29 @@ namespace Gaudi {
     PARSERS_DECL_FOR_LIST( long double )
 
     PARSERS_DECL_FOR_LIST( std::string )
+
+    // ========================================================================
+
+    PARSERS_DECL_FOR_SET( bool )
+    PARSERS_DECL_FOR_SET( char )
+    PARSERS_DECL_FOR_SET( unsigned char )
+    PARSERS_DECL_FOR_SET( signed char )
+
+    PARSERS_DECL_FOR_SET( int )
+    PARSERS_DECL_FOR_SET( short )
+    PARSERS_DECL_FOR_SET( unsigned short )
+    PARSERS_DECL_FOR_SET( unsigned int )
+    PARSERS_DECL_FOR_SET( long )
+    PARSERS_DECL_FOR_SET( unsigned long )
+    PARSERS_DECL_FOR_SET( long long )
+    PARSERS_DECL_FOR_SET( unsigned long long )
+
+    PARSERS_DECL_FOR_SET( double )
+    PARSERS_DECL_FOR_SET( float )
+    PARSERS_DECL_FOR_SET( long double )
+
+    PARSERS_DECL_FOR_SET( std::string )
+
     // ========================================================================
     // Advanced parses
     // ========================================================================

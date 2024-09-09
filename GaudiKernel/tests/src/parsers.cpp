@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -126,21 +126,23 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
     BOOST_CHECK_CLOSE( result[0], 1.1, 1.e-4 );
     BOOST_CHECK_CLOSE( result[1], 2.2, 1.e-4 );
   }
-  /*{
-      std::set<double> result;
-      BOOST_CHECK(parse(result, "[1.1, 2.2 ]"));
-      BOOST_CHECK(result.size()==2);
-      BOOST_CHECK(result.count(1.1)==1);
-      BOOST_CHECK(result.count(2.2)==1);
+  {
+    std::set<double> result;
+    BOOST_CHECK( parse( result, "[1.1, 2.2 ]" ) );
+    BOOST_CHECK( result.size() == 2 );
+    auto it = result.begin();
+    BOOST_CHECK_CLOSE( *it, 1.1, 1.e-4 );
+    BOOST_CHECK_CLOSE( *( ++it ), 2.2, 1.e-4 );
   }
 
   {
     std::list<double> result;
-    BOOST_CHECK(parse(result, "[1.1, 2.2 ]"));
-    BOOST_CHECK(result.size()==2);
-    BOOST_CHECK(result.front()==1.1);
-    BOOST_CHECK(result.back()==2.2);
-  }*/
+    BOOST_CHECK( parse( result, "[1.1, 2.2 ]" ) );
+    BOOST_CHECK( result.size() == 2 );
+    auto it = result.begin();
+    BOOST_CHECK_CLOSE( *it, 1.1, 1.e-4 );
+    BOOST_CHECK_CLOSE( *( ++it ), 2.2, 1.e-4 );
+  }
 }
 
 BOOST_AUTO_TEST_CASE( test_PairGramar ) {
@@ -306,6 +308,14 @@ BOOST_AUTO_TEST_CASE( test_Set ) {
     BOOST_CHECK( parse( result, "{1, 2, 3,}" ) );
     BOOST_CHECK( result.size() == 3 );
     BOOST_CHECK( result == std::unordered_set<int>( { 1, 2, 3 } ) );
+  }
+
+  {
+    std::unordered_set<double> result;
+    BOOST_CHECK( parse( result, "{1.1, 2.2, 3.3}" ) );
+    BOOST_CHECK( result.size() == 3 );
+    const double sum = std::accumulate( result.begin(), result.end(), 0.0 );
+    BOOST_CHECK_CLOSE( sum, 6.6, 1.e-4 );
   }
 
   {

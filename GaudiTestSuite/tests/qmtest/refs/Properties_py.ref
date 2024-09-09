@@ -19,6 +19,9 @@ PropertyAlg          INFO BoolArray   = []
 PropertyAlg          INFO EmptyArray  = []
 PropertyAlg          INFO IntPairArray  = []
 PropertyAlg          INFO DoublePairArray  = []
+PropertyAlg          INFO IntSet = []
+PropertyAlg          INFO StringSet = []
+PropertyAlg          INFO FloatUnorderedSet = []
 PropertyAlg          INFO PInt    =  'PInt':100
 PropertyAlg          INFO Read handler called for property:  'PDouble':100.00000
 PropertyAlg          INFO PDouble =  'PDouble':100.00000
@@ -47,6 +50,9 @@ PropertyAlg          INFO BoolArray   = [0, 1, 0]
 PropertyAlg          INFO EmptyArray  = []
 PropertyAlg          INFO IntPairArray  = [(1, 2), (3, 4), (5, 6)]
 PropertyAlg          INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)]
+PropertyAlg          INFO IntSet = [1, 2]
+PropertyAlg          INFO StringSet = [one, two]
+PropertyAlg          INFO FloatUnorderedSet = [1.1, 2.2]
 PropertyAlg          INFO StringMap =  'StringMap':{ 'one' : 'une' }
 PropertyAlg          INFO PInt    =  'PInt':101
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
@@ -318,11 +324,13 @@ PropertyAlg.ErrorMax: 1
 PropertyAlg.ExtraInputs: set()
 PropertyAlg.ExtraOutputs: set()
 PropertyAlg.FilterCircularDependencies: True
+PropertyAlg.FloatUnorderedSet: { 1.10000 , 2.20000 }
 PropertyAlg.Int: 101
 PropertyAlg.Int64: 4294967296
 PropertyAlg.Int64Array: [ 4294967296 ]
 PropertyAlg.IntArray: [ 1 , 2 , 3 , 5 ]
 PropertyAlg.IntPairArray: [ ( 1 , 2 ) , ( 3 , 4 ) , ( 5 , 6 ) ]
+PropertyAlg.IntSet: [ 1 , 2 ]
 PropertyAlg.MonitorService: 'MonitorSvc'
 PropertyAlg.NeededResources: [  ]
 PropertyAlg.OutputLevel: 3
@@ -338,6 +346,7 @@ PropertyAlg.RegisterForContextService: False
 PropertyAlg.String: 'hundred "one"'
 PropertyAlg.StringArray: [ 'one' , 'two' , 'four' ]
 PropertyAlg.StringMap: { 'one' : 'une' }
+PropertyAlg.StringSet: [ 'one' , 'two' ]
 PropertyAlg.Timeline: False
 PropertyAlg.UInt64: 4294967296
 PropertyAlg.UInt64Array: [ 4294967296 ]
