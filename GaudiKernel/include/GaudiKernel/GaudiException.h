@@ -109,6 +109,18 @@ public:
   /// method from std::exception
   const char* what() const throw() override { return message().c_str(); }
 
+  /// overloaded printout to std::ostream
+  friend std::ostream& operator<<( std::ostream& os, const GaudiException& ge );
+
+  /// overloaded printout to std::ostream
+  friend std::ostream& operator<<( std::ostream& os, const GaudiException* pge );
+
+  /// overloaded printout to MsgStream
+  friend MsgStream& operator<<( MsgStream& os, const GaudiException& ge );
+
+  /// overloaded printout to MsgStream
+  friend MsgStream& operator<<( MsgStream& os, const GaudiException* pge );
+
 protected:
   std::string                     m_message;   /// error message
   std::string                     m_tag;       /// exception tag
@@ -117,17 +129,5 @@ protected:
   std::unique_ptr<GaudiException> m_previous;  /// "previous" element in the linked list
   static bool                     s_proc;
 };
-
-/// overloaded printout to std::ostream
-std::ostream& operator<<( std::ostream& os, const GaudiException& ge );
-
-/// overloaded printout to std::ostream
-std::ostream& operator<<( std::ostream& os, const GaudiException* pge );
-
-/// overloaded printout to MsgStream
-MsgStream& operator<<( MsgStream& os, const GaudiException& ge );
-
-/// overloaded printout to MsgStream
-MsgStream& operator<<( MsgStream& os, const GaudiException* pge );
 
 #endif // GAUDIKERNEL_GAUDIEXCEPTION_H

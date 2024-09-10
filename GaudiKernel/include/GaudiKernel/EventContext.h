@@ -128,6 +128,9 @@ public:
 
   const std::type_info& getExtensionType() const { return m_extension.type(); }
 
+  friend std::ostream& operator<<( std::ostream& os, const EventContext& ctx );
+  friend std::ostream& operator<<( std::ostream& os, const EventContext* ctx );
+
 private:
   EventIDBase  m_eid{};
   ContextEvt_t m_evt_num{ INVALID_CONTEXT_EVT };
@@ -158,10 +161,3 @@ struct fmt::formatter<EventContext> : formatter<string_view> {
     }
   }
 };
-
-inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx ) { return os << fmt::format( "{}", ctx ); }
-
-inline std::ostream& operator<<( std::ostream& os, const EventContext* c ) {
-  if ( c ) { return os << fmt::format( "{}", *c ); }
-  return os << "INVALID";
-}

@@ -76,6 +76,10 @@ public:
       To be implemented in derived class. */
   virtual std::string pythonRepr() const = 0;
 
+  // Easy printing out of Handles and HandleArrays
+  // It prints <propertyName> = <HandleType>( <HandleType(s)AndName(s)> )
+  friend std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle );
+
 protected:
   /** The component type */
   void setComponentType( std::string componentType ) { m_componentType = std::move( componentType ); }
@@ -539,9 +543,5 @@ private:
   HandleVector m_handleArray;
   bool         m_retrieved{ false };
 };
-
-// Easy printing out of Handles and HandleArrays
-// It prints <propertyName> = <HandleType>( <HandleType(s)AndName(s)> )
-std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle );
 
 #endif // ! GAUDIKERNEL_GAUDIHANDLE_H
