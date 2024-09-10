@@ -34,32 +34,44 @@ def sanitize_for_xml(data):
     return bad_chars.sub(quote, data)
 
 
-def pytest_configure(config):
-    config._testsuite_properties = {}
+def pytest_sessionstart(session):
+    # list passed, failed and skipped tests
+    session.results = {"pass": set(), "fail": set(), "skip": set()}
+    # make sure CTest does not drop output lines on successful tests
+    print("CTEST_FULL_OUTPUT")
+
+
+def _skipped_item(item):
+    if any(item.iter_markers(name="skip")):
+        return True
+    if any(mark.args[0] for mark in item.iter_markers(name="skipif")):
+        return True
+    return False
 
 
 def pytest_runtest_makereport(item, call):
-    if (
-        call.when == "call"
-        and call.excinfo is not None
-        and call.excinfo.typename != "Skipped"
-    ):
-        if hasattr(item, "cls") and item.cls is not None:
-            full_test_name = f"{item.cls.__name__}.{item.name}"
-            property_name = f"{item.cls.__name__}.failing_tests"
+    name = (
+        f"{item.cls.__name__}.{item.name}"
+        if hasattr(item, "cls") and item.cls is not None
+        else item.name
+    )
+    result = None
+
+    if call.when == "setup":
+        if _skipped_item(item):
+            result = "skip"
+    elif call.when == "call":
+        if call.excinfo is not None:
+            if call.excinfo.typename == "Skipped":
+                result = "skip"
+            else:
+                result = "fail"
+                item.user_properties.append(("exception_info", str(call.excinfo.value)))
         else:
-            full_test_name = item.name
-            property_name = "failing_tests"
+            result = "pass"
 
-        item.session.config._testsuite_properties.setdefault(property_name, []).append(
-            full_test_name
-        )
-        item.user_properties.append(("exception_info", str(call.excinfo.value)))
-
-
-def pytest_sessionstart(session):
-    # make sure CTest does not drop output lines on successful tests
-    print("CTEST_FULL_OUTPUT")
+    if result is not None:
+        item.session.results[result].add(name)
 
 
 def pytest_sessionfinish(session, exitstatus):
@@ -70,10 +82,9 @@ def pytest_sessionfinish(session, exitstatus):
         # user requested to disable CTest measurements printouts
         return
 
-    testsuite_properties = session.config._testsuite_properties
-    results = list(testsuite_properties.items())
-    prefix = ""
+    results = list((name, sorted(value)) for name, value in session.results.items())
 
+    prefix = ""
     for item in session.items:
         prefix = (
             f"{item.cls.__name__}.{item.name}"
