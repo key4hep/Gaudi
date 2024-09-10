@@ -251,6 +251,7 @@ class GaudiExeTest(SubprocessBaseTest):
         for e in errors:
             assert len(errors[e]) == expected[e]
 
+    @pytest.mark.do_not_collect_source
     def test_stdout(
         self, stdout: bytes, record_property: Callable, reference: Dict
     ) -> None:
@@ -260,6 +261,7 @@ class GaudiExeTest(SubprocessBaseTest):
         out = self.preprocessor(stdout.decode("utf-8", errors="backslashreplace"))
         self.validate_with_reference(out, "stdout", reference, record_property)
 
+    @pytest.mark.do_not_collect_source
     def test_ttrees(
         self, stdout: bytes, record_property: Callable, reference: Dict
     ) -> None:
@@ -279,6 +281,7 @@ class GaudiExeTest(SubprocessBaseTest):
             reference["ttrees"] = ttrees
             raise
 
+    @pytest.mark.do_not_collect_source
     def test_histos(
         self, stdout: bytes, record_property: Callable, reference: Dict
     ) -> None:
@@ -298,6 +301,7 @@ class GaudiExeTest(SubprocessBaseTest):
             reference["histos"] = histos
             raise
 
+    @pytest.mark.do_not_collect_source
     def test_stderr(
         self, stderr: bytes, record_property: Callable, reference: Dict
     ) -> None:
@@ -311,6 +315,7 @@ class GaudiExeTest(SubprocessBaseTest):
         else:
             assert not err.strip(), "Expected no standard error output, but got some."
 
+    @pytest.mark.do_not_collect_source
     def test_record_options(self, record_property: Callable):
         if self.options_code:
             record_property("options", self.options_code)

@@ -214,6 +214,7 @@ class SubprocessBaseTest:
             cwd=cls.popen_kwargs["cwd"],
         )
 
+    @pytest.mark.do_not_collect_source
     def test_fixture_setup(
         self,
         record_property: Callable[[str, str], None],
@@ -229,6 +230,7 @@ class SubprocessBaseTest:
         if fixture_result.failure:
             pytest.fail(f"{fixture_result.failure}")
 
+    @pytest.mark.do_not_collect_source
     def test_returncode(self, returncode: int) -> None:
         """
         Test that the return code matches the expected value.

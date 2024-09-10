@@ -37,6 +37,7 @@ class OptParseTest(GaudiExeTest):
         )
         return command
 
+    @pytest.mark.do_not_collect_source
     def test_options(self, options_dump):
         assert (
             self.expected_dump is not None

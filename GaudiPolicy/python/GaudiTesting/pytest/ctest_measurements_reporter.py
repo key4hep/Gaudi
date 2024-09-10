@@ -74,7 +74,6 @@ def pytest_sessionfinish(session, exitstatus):
     results = list(testsuite_properties.items())
     prefix = ""
 
-    sources = {}
     for item in session.items:
         prefix = (
             f"{item.cls.__name__}.{item.name}"
@@ -82,14 +81,12 @@ def pytest_sessionfinish(session, exitstatus):
             else item.name
         )
         for name, value in item.user_properties:
-            if name == "source_code":
-                # strip the suffix with the parameters from the test name
-                # before recording the source code
-                base_name = re.sub(r"\[[^[]*\]$", "", prefix)
-                sources[f"{base_name}.{name}"] = value
-            else:
-                results.append((f"{prefix}.{name}", value))
-    results.extend(sources.items())
+            results.append((f"{prefix}.{name}", value))
+
+    if hasattr(session, "sources"):
+        results.extend(
+            (f"{name}.source_code", value) for name, value in session.sources.items()
+        )
 
     if hasattr(session, "docstrings"):
         results.extend(

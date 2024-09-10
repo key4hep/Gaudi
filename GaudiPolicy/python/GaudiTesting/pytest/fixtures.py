@@ -52,7 +52,6 @@ yaml.representer.SafeRepresenter.add_representer(
 # - cwd: Captures the directory in which the program was executed.
 # - check_for_exceptions: Skips the test if exceptions are found in the result.
 # - capture_validation_time: Captures the validation time for each test function.
-# - capture_test_source: Captures the source code of each test function.
 # - capture_class_docstring: Captures the docstring of the test class.
 # - reference: Creates a .new file if the output data is different from the reference.
 
@@ -62,10 +61,32 @@ def pytest_configure(config):
         "markers",
         "shared_cwd(id): make SubprocessBaseTest tests share a working directory",
     )
+    config.addinivalue_line(
+        "markers",
+        "do_not_collect_source: flag the test code as not to be collected",
+    )
 
 
 def pytest_sessionstart(session):
+    session.sources = {}
     session.docstrings = {}
+
+
+def pytest_collection_modifyitems(config, items):
+    """
+    Record source code of tests.
+    """
+    for item in items:
+        if isinstance(item, pytest.Function) and not item.get_closest_marker(
+            "do_not_collect_source"
+        ):
+            name = (
+                f"{item.parent.name}.{item.originalname}"
+                if isinstance(item.parent, pytest.Class)
+                else item.originalname
+            )
+            source_code = CodeWrapper(inspect.getsource(item.function), "python")
+            item.session.sources[name] = source_code
 
 
 def _get_shared_cwd_id(cls: type) -> Optional[str]:
@@ -166,21 +187,6 @@ def capture_validation_time(
     val_start_time = time.perf_counter()
     yield
     record_property("validate_time", round(time.perf_counter() - val_start_time, 2))
-
-
-@pytest.fixture(scope="function", autouse=True)
-def capture_test_source(
-    request: pytest.FixtureRequest, record_property: Callable[[str, str], None]
-) -> None:
-    if not any(
-        keyword in request.keywords
-        for keyword in ["test_fixture_setup", "test_record_options"]
-    ):
-        test_func = request.function
-        source_code = (
-            CodeWrapper(inspect.getsource(test_func), "python") if test_func else None
-        )
-        record_property("source_code", source_code)
 
 
 @pytest.fixture(scope="class", autouse=True)
