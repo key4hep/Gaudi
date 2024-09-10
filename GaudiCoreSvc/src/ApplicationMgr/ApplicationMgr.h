@@ -293,10 +293,6 @@ protected:
   Gaudi::Property<bool> m_stopOnSignal{
       this, "StopOnSignal", false, "Flag to enable/disable the signal handler that schedule a stop of the event loop" };
 
-  /// Property to enable/disable the monitoring and reporting of stalled events.
-  Gaudi::Property<bool> m_stalledEventMonitoring{ this, "StalledEventMonitoring", false,
-                                                  "[[deprecated]] use directly Gaudi::EventWatchdogAlg" };
-
   Gaudi::Property<bool> m_propertiesPrint{ this, "PropertiesPrint", false,
                                            "Flag to activate the printout of properties" };
 

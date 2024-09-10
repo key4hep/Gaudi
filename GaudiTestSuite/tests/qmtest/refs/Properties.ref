@@ -143,8 +143,6 @@ ApplicationMgr.PrintAlgsSequence: False
 ApplicationMgr.PropertiesPrint: False
 ApplicationMgr.ReturnCode: 0
 ApplicationMgr.Runable: 'AppMgrRunable'
-ApplicationMgr.StalledEventMonitoring: False
-ApplicationMgr.StatusCodeCheck: True
 ApplicationMgr.StopOnSignal: False
 ApplicationMgr.SvcMapping: [ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' , 'HistogramSvc/HistogramDataSvc' , 'HbookCnv::PersSvc/HbookHistSvc' , 'RootHistCnv::PersSvc/RootHistSvc' , 'EvtPersistencySvc/EventPersistencySvc' , 'DetPersistencySvc/DetectorPersistencySvc' , 'HistogramPersistencySvc/HistogramPersistencySvc' ]
 ApplicationMgr.SvcOptMapping: [  ]

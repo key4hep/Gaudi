@@ -456,12 +456,6 @@ StatusCode ApplicationMgr::initialize() {
     }
   }
 
-  if ( m_stalledEventMonitoring ) {
-    // to monitor for stalled events we inject EventWatchdogAlg as first algorithm in TopAlg
-    auto& topAlg = m_topAlgNameList.value();
-    topAlg.insert( topAlg.begin(), "Gaudi::EventWatchdogAlg" );
-  }
-
   if ( m_state == Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::INFO << "Already Initialized!" << endmsg;
     return StatusCode::SUCCESS;
