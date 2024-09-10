@@ -8,15 +8,17 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "HiveDataBroker.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
+#include "GaudiKernel/IDataBroker.h"
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/System.h"
 #include "boost/lexical_cast.hpp"
 #include "boost/tokenizer.hpp"
 #include <Gaudi/Algorithm.h>
 #include <algorithm>
 #include <iomanip>
+#include <stdexcept>
 #ifdef __cpp_lib_ranges
 #  include <ranges>
 namespace ranges = std::ranges;
@@ -33,6 +35,59 @@ namespace ranges::views {
 #  endif
 #endif
 
+class HiveDataBrokerSvc final : public extends<Service, IDataBroker> {
+public:
+  using extends::extends;
+
+  std::vector<Gaudi::Algorithm*> algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                                        const std::vector<std::string>& stoppers = {} ) const override;
+  std::vector<Gaudi::Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg,
+                                                        const std::vector<std::string>& stoppers = {} ) const override;
+
+  StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode stop() override;
+  StatusCode finalize() override;
+
+private:
+  Gaudi::Property<std::string>              m_dataLoader{ this, "DataLoader", "",
+                                             "Attribute any unmet input dependencies to this Algorithm" };
+  Gaudi::Property<std::vector<std::string>> m_producers{
+      this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies" };
+
+  struct AlgEntry {
+    size_t                    index;
+    SmartIF<IAlgorithm>       ialg;
+    Gaudi::Algorithm*         alg;
+    std::set<AlgEntry const*> dependsOn;
+
+    friend bool operator<( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index < rhs.index; }
+
+    friend bool operator==( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index == rhs.index; }
+
+    AlgEntry( size_t i, SmartIF<IAlgorithm>&& p )
+        : index{ i }, ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
+      if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
+    }
+  };
+
+  std::map<std::string, AlgEntry>
+  instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const; // algorithms must be fully
+                                                                                     // initialized first, as
+                                                                                     // doing so may create
+                                                                                     // additional data
+                                                                                     // dependencies...
+
+  std::map<std::string, AlgEntry> m_algorithms;
+
+  std::map<DataObjID, AlgEntry const*> mapProducers( std::map<std::string, AlgEntry>& algorithms ) const;
+
+  std::map<DataObjID, AlgEntry const*> m_dependencies;
+
+  void visit( AlgEntry const& alg, std::vector<std::string> const& stoppers, std::vector<Gaudi::Algorithm*>& sorted,
+              std::vector<bool>& visited, std::vector<bool>& visiting ) const;
+};
+
 DECLARE_COMPONENT( HiveDataBrokerSvc )
 
 namespace {
@@ -47,17 +102,21 @@ namespace {
     }
   };
 
-  struct DataObjIDSorter {
-    bool operator()( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); }
-  };
-
   // Sort a DataObjIDColl in a well-defined, reproducible manner.
   // Used for making debugging dumps.
-  std::vector<const DataObjID*> sortedDataObjIDColl( const DataObjIDColl& coll ) {
+  std::vector<const DataObjID*> sorted_( const DataObjIDColl& coll ) {
     std::vector<const DataObjID*> v;
     v.reserve( coll.size() );
     for ( const DataObjID& id : coll ) v.push_back( &id );
-    std::sort( v.begin(), v.end(), DataObjIDSorter() );
+    std::sort( v.begin(), v.end(),
+               []( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); } );
+    return v;
+  }
+
+  template <typename T>
+  std::vector<const T*> sorted_( const std::set<T*>& s ) {
+    std::vector<const T*> v{ s.begin(), s.end() };
+    std::sort( v.begin(), v.end(), []( const auto* lhs, const auto* rhs ) { return *lhs < *rhs; } );
     return v;
   }
 
@@ -174,24 +233,20 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
   return algorithms;
 }
 
-std::map<DataObjID, HiveDataBrokerSvc::AlgEntry*>
+std::map<DataObjID, HiveDataBrokerSvc::AlgEntry const*>
 HiveDataBrokerSvc::mapProducers( std::map<std::string, AlgEntry>& algorithms ) const {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "Data Dependencies for Algorithms:";
     for ( const auto& [name, entry] : m_algorithms ) {
       debug() << "\n " << name << " :";
-      for ( const auto* id : sortedDataObjIDColl( entry.alg->inputDataObjs() ) ) {
-        debug() << "\n    o INPUT  " << id->key();
-      }
-      for ( const auto* id : sortedDataObjIDColl( entry.alg->outputDataObjs() ) ) {
-        debug() << "\n    o OUTPUT " << id->key();
-      }
+      for ( const auto* id : sorted_( entry.alg->inputDataObjs() ) ) { debug() << "\n    o INPUT  " << id->key(); }
+      for ( const auto* id : sorted_( entry.alg->outputDataObjs() ) ) { debug() << "\n    o OUTPUT " << id->key(); }
     }
     debug() << endmsg;
   }
 
   // figure out all outputs
-  std::map<DataObjID, AlgEntry*> producers;
+  std::map<DataObjID, const AlgEntry*> producers;
   for ( auto& [name, alg] : algorithms ) {
     const auto& output = alg.alg->outputDataObjs();
     if ( output.empty() ) { continue; }
@@ -207,7 +262,7 @@ HiveDataBrokerSvc::mapProducers( std::map<std::string, AlgEntry>& algorithms ) c
 
   // resolve dependencies
   for ( auto& [name, algEntry] : algorithms ) {
-    auto input = sortedDataObjIDColl( algEntry.alg->inputDataObjs() );
+    auto input = sorted_( algEntry.alg->inputDataObjs() );
     for ( const DataObjID* idp : input ) {
       DataObjID id        = *idp;
       auto      iproducer = producers.find( id );
@@ -242,7 +297,7 @@ void HiveDataBrokerSvc::visit( AlgEntry const& alg, std::vector<std::string> con
   if ( std::none_of( std::begin( stoppers ), std::end( stoppers ),
                      [alg]( auto& stopper ) { return alg.alg->name() == stopper; } ) ) {
     visiting[alg.index] = true;
-    for ( auto* dep : alg.dependsOn ) { visit( *dep, stoppers, sorted, visited, visiting ); }
+    for ( auto* dep : sorted_( alg.dependsOn ) ) { visit( *dep, stoppers, sorted, visited, visiting ); }
     visiting[alg.index] = false;
   }
 
@@ -259,16 +314,16 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
   deps.reserve( requested.size() );
 
   // start with seeding from the initial request
-  for ( const auto& req : requested ) {
-    DataObjID id = req;
-    auto      i  = m_dependencies.find( id );
+  for ( const auto& id : requested ) {
+    auto i = m_dependencies.find( id );
     if ( i == m_dependencies.end() )
       throw GaudiException( "unknown requested input: " + id.key(), __func__, StatusCode::FAILURE );
     deps.push_back( i->second );
   }
   // producers may be responsible for multiple requested DataObjID -- make sure they are only mentioned once
-  std::sort( deps.begin(), deps.end() );
-  deps.erase( std::unique( deps.begin(), deps.end() ), deps.end() );
+  std::sort( deps.begin(), deps.end(), []( auto const* lhs, auto const* rhs ) { return *lhs < *rhs; } );
+  deps.erase( std::unique( deps.begin(), deps.end(), []( auto const& lhs, auto const& rhs ) { return *lhs == *rhs; } ),
+              deps.end() );
 
   std::vector<bool> visited( m_algorithms.size() );
   std::vector<bool> visiting( m_algorithms.size() );
