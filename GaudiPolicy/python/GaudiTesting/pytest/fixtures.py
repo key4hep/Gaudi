@@ -64,6 +64,10 @@ def pytest_configure(config):
     )
 
 
+def pytest_sessionstart(session):
+    session.docstrings = {}
+
+
 def _get_shared_cwd_id(cls: type) -> Optional[str]:
     """
     Extract the id of the shared cwd directory needed by the class, if any.
@@ -182,11 +186,10 @@ def capture_test_source(
 @pytest.fixture(scope="class", autouse=True)
 def capture_class_docstring(
     request: pytest.FixtureRequest,
-    record_testsuite_property: Callable[[str, str], None],
 ) -> None:
     cls = request.cls
     if cls and cls.__doc__:
-        record_testsuite_property("description", inspect.getdoc(cls))
+        request.session.docstrings[cls.__name__] = inspect.getdoc(cls)
 
 
 @pytest.fixture(scope="class")

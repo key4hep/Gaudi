@@ -91,6 +91,11 @@ def pytest_sessionfinish(session, exitstatus):
                 results.append((f"{prefix}.{name}", value))
     results.extend(sources.items())
 
+    if hasattr(session, "docstrings"):
+        results.extend(
+            (f"{name}.doc", value) for name, value in session.docstrings.items()
+        )
+
     ignore_keys = {"test_fixture_setup.completed_process"}
     template = (
         '<DartMeasurement type="text/string" name="{name}">{value}</DartMeasurement>'
