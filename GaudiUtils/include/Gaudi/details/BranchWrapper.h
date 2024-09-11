@@ -26,7 +26,6 @@ namespace Gaudi {
 
     private:
       void const*             m_dataBuffer = nullptr; // Data buffer for branch creation
-      AnyDataWrapperBase*     baseWrapper  = nullptr; // Pointer to the base wrapper for type-safe access to data
       TBranch*                m_branch     = nullptr; // TBranch object
       std::string             m_className;            // Class name of the data
       std::string             m_branchName;           // Branch name in the TTree
