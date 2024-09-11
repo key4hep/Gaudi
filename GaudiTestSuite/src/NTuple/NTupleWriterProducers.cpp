@@ -11,6 +11,7 @@
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Functional/Producer.h>
 #include <Gaudi/TestSuite/NTuple/MyStruct.h>
+#include <GaudiTestSuite/Counter.h>
 #include <string>
 #include <vector>
 
@@ -61,5 +62,15 @@ namespace Gaudi::TestSuite::NTuple {
   };
 
   DECLARE_COMPONENT( StructDataProducer )
+
+  struct CounterDataProducer final
+      : Gaudi::Functional::Producer<Gaudi::TestSuite::Counter(),
+                                    Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
+    CounterDataProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Producer( name, svcLoc, KeyValue( "OutputLocation", "MyCounter" ) ) {}
+
+    Counter operator()() const override { return Counter(); }
+  };
+  DECLARE_COMPONENT( CounterDataProducer )
 
 } // namespace Gaudi::TestSuite::NTuple
