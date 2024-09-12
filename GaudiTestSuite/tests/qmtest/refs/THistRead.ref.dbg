@@ -43,25 +43,25 @@ THistSvc            DEBUG regHist_i obj: 0  id: /read1/xxx/1Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH1F  "1Dgauss" from file tuple2.rt[m
 TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19982
 THistSvc            DEBUG Registering TH1F title: "1D Gaussian"  id: "/read1/xxx/1Dgauss"  dir: tuple2.rt:/xxx  file: tuple2.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 0 TH1F[m
+THistSvc            DEBUG regHist_i  THistID: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 1 TH1F[m
 THistRead            INFO 1Dgauss: 20000[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/2Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH2F  "2Dgauss" from file tuple3.rt[m
 TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19974
 THistSvc            DEBUG Registering TH2F title: "2D Gaussian"  id: "/read2/2Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 0 TH2F[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 1 TH2F[m
 THistRead            INFO 2Dgauss: 20000[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/3Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH3F  "3Dgauss" from file tuple3.rt[m
 TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19947
 THistSvc            DEBUG Registering TH3F title: "3D Gaussian"  id: "/read2/3Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 0 TH3F[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 1 TH3F[m
 THistRead            INFO 3Dgauss: 20000[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/profile  s: 0[m
 THistSvc            DEBUG Read in TProfile  "profile" from file tuple3.rt[m
 TH1.Print Name  = profile, Entries= 0, Total sum= 0
 THistSvc            DEBUG Registering TProfile title: "profile"  id: "/read2/profile"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 0 TProfile[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 1 TProfile[m
 THistRead            INFO profile: 0[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/trees/stuff/treename  s: 0[m
 THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
@@ -83,7 +83,7 @@ THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
 *Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
 *............................................................................*
 THistSvc            DEBUG Registering TTree title: "tree title"  id: "/read2/trees/stuff/treename"  dir: tuple3.rt:/trees/stuff  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 0 TTree[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 2 TTree[m
 THistRead            INFO treename: 1000[m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
@@ -133,11 +133,11 @@ ApplicationMgr       INFO Application Manager Stopped successfully[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG dumping THistSvc contents
 m_hlist:  size: 5
- - id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 0 TH1F :: [0x1faa550] 1 {[0x44647e0]}
- - id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 0 TH2F :: [0x44a8350] 1 {[0x4476600]}
- - id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 0 TH3F :: [0x48dee30] 1 {[0x44754f0]}
- - id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 0 TProfile :: [0x44d29e0] 1 {[0x4497a50]}
- - id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 0 TTree :: [0x45abac0] 1 {[0x4465f20]}
+ - id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 1 TH1F :: [0x1faa550] 1 {[0x44647e0]}
+ - id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 1 TH2F :: [0x44a8350] 1 {[0x4476600]}
+ - id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 1 TH3F :: [0x48dee30] 1 {[0x44754f0]}
+ - id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 1 TProfile :: [0x44d29e0] 1 {[0x4497a50]}
+ - id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 2 TTree :: [0x45abac0] 1 {[0x4465f20]}
 
 m_uids: 5
  - /read2/trees/stuff/treename  [0x45abac0]
@@ -154,18 +154,18 @@ m_ids: 5
  - xxx/1Dgauss  [0x1faa550]
 
 m_tobjs: 5
- - 0x4465f20 -> id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 0 TTree
- - 0x4497a50 -> id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 0 TProfile
- - 0x44754f0 -> id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 0 TH3F
- - 0x4476600 -> id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 0 TH2F
- - 0x44647e0 -> id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 0 TH1F
+ - 0x4465f20 -> id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 2 TTree
+ - 0x4497a50 -> id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 1 TProfile
+ - 0x44754f0 -> id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 1 TH3F
+ - 0x4476600 -> id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 1 TH2F
+ - 0x44647e0 -> id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 1 TH1F
 [m
 THistSvc            DEBUG THistSvc::finalize[m
-THistSvc            DEBUG finalize: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 0 TH1F[m
-THistSvc            DEBUG finalize: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 0 TH2F[m
-THistSvc            DEBUG finalize: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 0 TH3F[m
-THistSvc            DEBUG finalize: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 0 TProfile[m
-THistSvc            DEBUG finalize: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 0 TTree[m
+THistSvc            DEBUG finalize: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44647e0 T: 1 TH1F[m
+THistSvc            DEBUG finalize: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x4476600 T: 1 TH2F[m
+THistSvc            DEBUG finalize: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x44754f0 T: 1 TH3F[m
+THistSvc            DEBUG finalize: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x4497a50 T: 1 TProfile[m
+THistSvc            DEBUG finalize: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x4465f20 T: 2 TTree[m
 THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT [m
 THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT: "tuple2.rt"[m
 THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT: "tuple3.rt"[m
