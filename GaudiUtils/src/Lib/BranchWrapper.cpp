@@ -74,13 +74,8 @@ namespace Gaudi::details {
   // Set the data for the branch from a given DataObject
   // Used by Gaudi::NTuple::GenericWriter
   void BranchWrapper::setBranchData( const gsl::not_null<DataObject*> pObj ) {
-    baseWrapper = dynamic_cast<AnyDataWrapperBase*>( pObj.get() );
-    if ( !baseWrapper ) {
-      throw GaudiException( "Failed to cast DataObject to AnyDataWrapperBase type.", m_algRef.name(),
-                            StatusCode::FAILURE );
-    }
-
-    m_dataBuffer = baseWrapper->payload();
+    auto baseWrapper = dynamic_cast<AnyDataWrapperBase*>( pObj.get() );
+    m_dataBuffer     = baseWrapper ? baseWrapper->payload() : pObj.get();
     setBranchAddress( m_branch, &m_dataBuffer );
   }
 

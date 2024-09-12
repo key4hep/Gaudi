@@ -17,7 +17,7 @@ from GaudiTests import run_gaudi
 
 # Constants for the output file name and expected values for verification
 OUTPUT_FILE_NAME = "generic_ntuple_writer_tree.root"
-EXPECTED_ENTRIES = 10
+EXPECTED_ENTRIES = 100
 EXPECTED_FLOAT_VALUE = 2.5
 EXPECTED_VECTOR_CONTENT = [0, 1, 2, 3, 4]
 EXPECTED_STRING_VALUE = "hello world"
@@ -62,6 +62,7 @@ def config_st():
         ApplicationMgr,
         FileSvc,
         Gaudi__NTuple__GenericWriter,
+        Gaudi__TestSuite__NTuple__CounterDataProducer,
         Gaudi__TestSuite__NTuple__FloatDataProducer,
         Gaudi__TestSuite__NTuple__IntVectorDataProducer,
         Gaudi__TestSuite__NTuple__StrDataProducer,
@@ -86,6 +87,7 @@ def config_st():
             "SProducer", OutputLevel=DEBUG, StringValue=EXPECTED_STRING_VALUE
         ),
         Gaudi__TestSuite__NTuple__StructDataProducer("STProducer", OutputLevel=DEBUG),
+        Gaudi__TestSuite__NTuple__CounterDataProducer("CounterDataProducer"),
     ]
 
     # Configure the NTupleWriter
@@ -97,6 +99,7 @@ def config_st():
         ("std::vector<int>", "MyVector"),
         ("std::string", "MyString"),
         ("Gaudi::TestSuite::NTuple::MyStruct", "MyStruct"),
+        ("Gaudi::TestSuite::Counter", "MyCounter"),
     ]
     # NTupleWriter.ExtraInputs = [
     #     (alg.Output.Type, str(alg.Output))
@@ -129,6 +132,7 @@ def config_mt():
         AvalancheSchedulerSvc,
         FileSvc,
         Gaudi__NTuple__GenericWriter,
+        Gaudi__TestSuite__NTuple__CounterDataProducer,
         Gaudi__TestSuite__NTuple__FloatDataProducer,
         Gaudi__TestSuite__NTuple__IntVectorDataProducer,
         Gaudi__TestSuite__NTuple__StrDataProducer,
@@ -166,6 +170,7 @@ def config_mt():
             "SProducer", OutputLevel=DEBUG, StringValue=EXPECTED_STRING_VALUE
         ),
         Gaudi__TestSuite__NTuple__StructDataProducer("STProducer", OutputLevel=DEBUG),
+        Gaudi__TestSuite__NTuple__CounterDataProducer("CounterDataProducer"),
     ]
 
     # NTupleWriter configuration
@@ -177,6 +182,7 @@ def config_mt():
         ("std::vector<int>", "MyVector"),
         ("std::string", "MyString"),
         ("Gaudi::TestSuite::NTuple::MyStruct", "MyStruct"),
+        ("Gaudi::TestSuite::Counter", "MyCounter"),
     ]
     # NTupleWriter.ExtraInputs = [
     #     (alg.Output.Type, str(alg.Output))
@@ -218,6 +224,7 @@ def test_branch_creation(setup_file_tree):
     assert tree.GetBranch("MyVector") is not None, "Vector<int> branch was not created."
     assert tree.GetBranch("MyString") is not None, "String branch was not created."
     assert tree.GetBranch("MyStruct") is not None, "MyStruct branch was not created."
+    assert tree.GetBranch("MyCounter") is not None, "MyCounter branch was not created."
 
 
 def test_float_branch_content(setup_file_tree):
