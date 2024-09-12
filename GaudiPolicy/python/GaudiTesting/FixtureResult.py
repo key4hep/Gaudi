@@ -35,7 +35,7 @@ class FixtureResult:
         completed_process: subprocess.CompletedProcess,
         start_time: datetime,
         end_time: datetime,
-        failure: Union[ProcessTimeoutError, ExceededStreamError, None],
+        run_exception: Union[ProcessTimeoutError, ExceededStreamError, None],
         command: List[str],
         expanded_command: List[str],
         env: dict,
@@ -44,7 +44,7 @@ class FixtureResult:
         self.completed_process = completed_process
         self.start_time = start_time
         self.end_time = end_time
-        self.failure = failure
+        self.run_exception = run_exception
         self.command = command
         self.expanded_command = expanded_command
         self.runtime_environment = env
@@ -84,13 +84,12 @@ class FixtureResult:
                 "return_code": self.completed_process.returncode
                 if self.completed_process.returncode
                 else None,
-                "run_exception": str(self.failure) if self.failure else None,
                 "elapsed_time": self.elapsed_time(),
-                "stack_trace": self.failure.stack_trace
-                if hasattr(self.failure, "stack_trace")
+                "stack_trace": self.run_exception.stack_trace
+                if hasattr(self.run_exception, "stack_trace")
                 else None,
-                "stream_exceeded": self.failure.exceeded_stream
-                if hasattr(self.failure, "exceeded_stream")
+                "stream_exceeded": self.run_exception.exceeded_stream
+                if hasattr(self.run_exception, "exceeded_stream")
                 else None,
             }
         )

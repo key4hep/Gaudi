@@ -11,7 +11,6 @@
 import inspect
 import os
 import subprocess
-import time
 from collections import defaultdict
 from pathlib import Path
 from typing import Callable, Generator, Optional
@@ -19,6 +18,7 @@ from typing import Callable, Generator, Optional
 import pytest
 import yaml
 from GaudiTesting.FixtureResult import FixtureResult
+from GaudiTesting.pytest.ctest_measurements_reporter import results
 from GaudiTesting.SubprocessBaseTest import SubprocessBaseTest
 from GaudiTesting.utils import (
     CodeWrapper,
@@ -51,7 +51,6 @@ yaml.representer.SafeRepresenter.add_representer(
 # - returncode: Captures the return code of the subprocess.
 # - cwd: Captures the directory in which the program was executed.
 # - check_for_exceptions: Skips the test if exceptions are found in the result.
-# - capture_validation_time: Captures the validation time for each test function.
 # - capture_class_docstring: Captures the docstring of the test class.
 # - reference: Creates a .new file if the output data is different from the reference.
 
@@ -65,11 +64,6 @@ def pytest_configure(config):
         "markers",
         "do_not_collect_source: flag the test code as not to be collected",
     )
-
-
-def pytest_sessionstart(session):
-    session.sources = {}
-    session.docstrings = {}
 
 
 def pytest_collection_modifyitems(config, items):
@@ -86,7 +80,7 @@ def pytest_collection_modifyitems(config, items):
                 else item.originalname
             )
             source_code = CodeWrapper(inspect.getsource(item.function), "python")
-            item.session.sources[name] = source_code
+            results[f"{name}.source_code"] = source_code
 
 
 def _get_shared_cwd_id(cls: type) -> Optional[str]:
@@ -174,19 +168,10 @@ def check_for_exceptions(
 ) -> None:
     if (
         fixture_result
-        and fixture_result.failure is not None
+        and fixture_result.run_exception is not None
         and "test_fixture_setup" not in request.keywords
     ):
-        pytest.skip(f"{fixture_result.failure}")
-
-
-@pytest.fixture(scope="function", autouse=True)
-def capture_validation_time(
-    record_property: Callable[[str, str], None],
-) -> Generator[None, None, None]:
-    val_start_time = time.perf_counter()
-    yield
-    record_property("validate_time", round(time.perf_counter() - val_start_time, 2))
+        pytest.skip(f"{fixture_result.run_exception}")
 
 
 @pytest.fixture(scope="class", autouse=True)
@@ -195,7 +180,7 @@ def capture_class_docstring(
 ) -> None:
     cls = request.cls
     if cls and cls.__doc__:
-        request.session.docstrings[cls.__name__] = inspect.getdoc(cls)
+        results[f"{cls.__name__}.doc"] = inspect.getdoc(cls)
 
 
 @pytest.fixture(scope="class")

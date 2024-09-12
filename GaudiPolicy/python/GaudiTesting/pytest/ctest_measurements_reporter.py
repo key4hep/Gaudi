@@ -11,17 +11,18 @@
 import os
 import re
 import xml.sax.saxutils as XSS
+from collections import defaultdict
 
 # This plugin integrates with pytest to capture and report test results
 # in a format compatible with CTest using DartMeasurement tags
-
 # Key functions and hooks include:
-# - sanitize_for_xml: Sanitizes a string by escaping non-XML characters.
-# - pytest_configure: Initializes a dictionary to store test suite properties.
-# - pytest_runtest_makereport: Collects information about failing tests and
-# exceptions during test execution.
-# - pytest_sessionfinish: Outputs the collected test information in a format
+# - sanitize_for_xml: Sanitize a string by escaping non-XML characters.
+# - pytest_report_header: Add strings to the pytest header.
+# - pytest_runtest_logreport: Collect test results and durations.
+# - pytest_sessionfinish: Output the collected test information in a format
 # suitable for CTest.
+
+results = {}
 
 
 def sanitize_for_xml(data):
@@ -34,44 +35,31 @@ def sanitize_for_xml(data):
     return bad_chars.sub(quote, data)
 
 
-def pytest_sessionstart(session):
-    # list passed, failed and skipped tests
-    session.results = {"pass": set(), "fail": set(), "skip": set()}
+def pytest_report_header(config, start_path, startdir):
     # make sure CTest does not drop output lines on successful tests
-    print("CTEST_FULL_OUTPUT")
+    return "CTEST_FULL_OUTPUT"
 
 
-def _skipped_item(item):
-    if any(item.iter_markers(name="skip")):
-        return True
-    if any(mark.args[0] for mark in item.iter_markers(name="skipif")):
-        return True
-    return False
-
-
-def pytest_runtest_makereport(item, call):
-    name = (
-        f"{item.cls.__name__}.{item.name}"
-        if hasattr(item, "cls") and item.cls is not None
-        else item.name
+def pytest_runtest_logreport(report):
+    # collect user properties
+    head_line = report.head_line
+    results.update(
+        {
+            f"{head_line}.{k}": v
+            for k, v in report.user_properties
+            if f"{head_line}.{k}" not in results
+        }
     )
-    result = None
 
-    if call.when == "setup":
-        if _skipped_item(item):
-            result = "skip"
-    elif call.when == "call":
-        if call.excinfo is not None:
-            if call.excinfo.typename == "Skipped":
-                result = "skip"
-            else:
-                result = "fail"
-                item.user_properties.append(("exception_info", str(call.excinfo.value)))
-        else:
-            result = "pass"
+    # collect test outcome
+    if not report.passed:
+        results[f"{report.head_line}.outcome"] = report.outcome
+    else:
+        results.setdefault(f"{report.head_line}.outcome", "passed")
 
-    if result is not None:
-        item.session.results[result].add(name)
+    # collect test duration
+    if report.when == "call":
+        results[f"{report.head_line}.duration"] = round(report.duration, 2)
 
 
 def pytest_sessionfinish(session, exitstatus):
@@ -82,27 +70,13 @@ def pytest_sessionfinish(session, exitstatus):
         # user requested to disable CTest measurements printouts
         return
 
-    results = list((name, sorted(value)) for name, value in session.results.items())
-
-    prefix = ""
-    for item in session.items:
-        prefix = (
-            f"{item.cls.__name__}.{item.name}"
-            if hasattr(item, "cls") and item.cls is not None
-            else item.name
-        )
-        for name, value in item.user_properties:
-            results.append((f"{prefix}.{name}", value))
-
-    if hasattr(session, "sources"):
-        results.extend(
-            (f"{name}.source_code", value) for name, value in session.sources.items()
-        )
-
-    if hasattr(session, "docstrings"):
-        results.extend(
-            (f"{name}.doc", value) for name, value in session.docstrings.items()
-        )
+    outcomes = defaultdict(list)
+    for key in results:
+        if key.endswith(".outcome"):
+            outcomes[results[key]].append(key[:-8])
+    results.update(
+        (f"outcome.{outcome}", sorted(tests)) for outcome, tests in outcomes.items()
+    )
 
     ignore_keys = {"test_fixture_setup.completed_process"}
     template = (
@@ -111,9 +85,10 @@ def pytest_sessionfinish(session, exitstatus):
 
     to_print = [
         (key, value)
-        for key, value in results
+        for key, value in results.items()
         if not any(key.endswith(ignore_key) for ignore_key in ignore_keys) and value
     ]
+    to_print.sort()
     for key, value in to_print:
         sanitized_value = XSS.escape(sanitize_for_xml(str(value)))
         # workaround for a limitation of CTestXML2HTML
