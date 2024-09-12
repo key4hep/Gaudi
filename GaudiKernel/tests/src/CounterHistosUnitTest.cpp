@@ -77,10 +77,12 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
     Gaudi::Accumulators::WeightedHistogram<1> histo1dw{ &algo, "", "", { 21, -10.5, 10.5, "X" } };
     histo1dw[-10.0] += 0.25; // fill the first (non-overflow) bin
     BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.25 );
+    BOOST_TEST( toJSON( histo1dw ).at( "nEntries" ).get<unsigned long>() == 1 );
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     histo1dw += { -10.0, 0.5 }; // fill the first (non-overflow) bin
     BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.75 );
+    BOOST_TEST( toJSON( histo1dw ).at( "nEntries" ).get<unsigned long>() == 2 );
 #pragma GCC diagnostic pop
   }
 
