@@ -154,8 +154,10 @@ class BaseTest(object):
                 suffix, lang = ".py", "python"
             else:
                 suffix, lang = ".opts", "c++"
-            self.result["Options"] = '<code lang="{}"><pre>{}</pre></code>'.format(
-                lang, escape_for_html(self.options)
+            self.result["Options"] = (
+                '<pre><code class="language-{}">{}</code></pre>'.format(
+                    lang, escape_for_html(self.options)
+                )
             )
             optionFile = NamedTemporaryFile(suffix=suffix)
             optionFile.file.write(self.options.encode("utf-8"))
@@ -372,8 +374,10 @@ class BaseTest(object):
 
         # Special cases
         if "Validator" in resultDict:
-            resultDict["Validator"] = '<code lang="{}"><pre>{}</pre></code>'.format(
-                "python", escape_for_html(resultDict["Validator"])
+            resultDict["Validator"] = (
+                '<pre><code class="language-{}">{}</code></pre>'.format(
+                    "python", escape_for_html(resultDict["Validator"])
+                )
             )
         return resultDict
 

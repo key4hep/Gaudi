@@ -1,0 +1,64 @@
+stdout: |-
+  ApplicationMgr    SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr       INFO Application Manager Configured successfully
+  ThreadPoolSvc        INFO no thread init tools attached
+  AvalancheSchedu...   INFO Activating scheduler in a separate thread
+  AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
+  THDataProducer      DEBUG input handles: 0
+  THDataProducer      DEBUG output handles: 1
+    + OUTPUT '/Event/MyInt'
+  THDataProducer2     DEBUG input handles: 0
+  THDataProducer2     DEBUG output handles: 1
+    + OUTPUT '/Event/MyFloat'
+  THDataConsumer      DEBUG input handles: 1
+  THDataConsumer      DEBUG output handles: 0
+  THDataConsumer      DEBUG Adding private ToolHandle tool THDataConsumer.Gaudi::TestSuite::FloatTool (Gaudi::TestSuite::FloatTool)
+    + INPUT  '/Event/MyFloat' [THDataConsumer.Gaudi::TestSuite::FloatTool]
+    + INPUT  '/Event/MyInt'
+  AvalancheSchedu...   INFO Found 3 algorithms
+  AvalancheSchedu...   INFO Data Dependencies for Algorithms:
+    THDataProducer
+      o OUTPUT '/Event/MyInt'
+    THDataProducer2
+      o OUTPUT '/Event/MyFloat'
+    THDataConsumer
+      o INPUT  '/Event/MyFloat' [THDataConsumer.Gaudi::TestSuite::FloatTool]
+      o INPUT  '/Event/MyInt'
+  PrecedenceSvc        INFO Assembling CF and DF task precedence rules
+  PrecedenceSvc        INFO PrecedenceSvc initialized successfully
+  AvalancheSchedu...   INFO Concurrency level information:
+  AvalancheSchedu...   INFO  o Number of events in flight: 2
+  AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':2
+  AvalancheSchedu...   INFO Task scheduling settings:
+  AvalancheSchedu...   INFO  o Avalanche generation mode: disabled
+  AvalancheSchedu...   INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
+  AvalancheSchedu...   INFO  o Scheduling of condition tasks: disabled
+  HiveSlimEventLo...WARNING Unable to locate service "EventSelector"
+  HiveSlimEventLo...WARNING No events will be processed from external input.
+  HiveSlimEventLo...   INFO Found 0 events in black list
+  ApplicationMgr       INFO Application Manager Initialized successfully
+  ApplicationMgr       INFO Application Manager Started successfully
+  HiveSlimEventLo...   INFO Starting loop on events
+  THDataConsumer       INFO executing IntDataConsumer, checking 7 from /Event/MyInt and 7 from FloatTool are matching
+  THDataConsumer       INFO executing IntDataConsumer, checking 7 from /Event/MyInt and 7 from FloatTool are matching
+  THDataConsumer       INFO executing IntDataConsumer, checking 7 from /Event/MyInt and 7 from FloatTool are matching
+  THDataConsumer       INFO executing IntDataConsumer, checking 7 from /Event/MyInt and 7 from FloatTool are matching
+  THDataProducer       INFO executing IntDataProducer, storing 7 into /Event/MyInt
+  THDataProducer       INFO executing IntDataProducer, storing 7 into /Event/MyInt
+  THDataProducer       INFO executing IntDataProducer, storing 7 into /Event/MyInt
+  THDataProducer       INFO executing IntDataProducer, storing 7 into /Event/MyInt
+  THDataProducer2      INFO executing IntDataProducer, storing 7.0 into /Event/MyFloat
+  THDataProducer2      INFO executing IntDataProducer, storing 7.0 into /Event/MyFloat
+  THDataProducer2      INFO executing IntDataProducer, storing 7.0 into /Event/MyFloat
+  THDataProducer2      INFO executing IntDataProducer, storing 7.0 into /Event/MyFloat
+  HiveSlimEventLo...   INFO 0 events were SKIPed
+  ApplicationMgr       INFO Application Manager Stopped successfully
+  HiveSlimEventLo...   INFO Histograms converted successfully according to request.
+  AvalancheSchedu...   INFO Joining Scheduler thread
+  ToolSvc              INFO Removing all tools created by ToolSvc
+  ApplicationMgr       INFO Application Manager Finalized successfully
+  ApplicationMgr       INFO Application Manager Terminated successfully
+histos: {}
+ttrees: {}

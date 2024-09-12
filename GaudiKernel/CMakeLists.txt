@@ -430,7 +430,4 @@ if(BUILD_TESTING)
             -p CustomFactoryTest
             -i test_CustomFactory
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
-
-  # QMTest
-  gaudi_add_tests(QMTest)
 endif()

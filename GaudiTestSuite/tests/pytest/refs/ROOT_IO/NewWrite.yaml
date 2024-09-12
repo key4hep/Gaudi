@@ -1,0 +1,132 @@
+stdout: |-
+  {'AlgExecStateSvc': {'OutputLevel': 3},
+   'ApplicationMgr': {'EvtMax': 10,
+                      'EvtSel': 'NONE',
+                      'ExtSvc': ['FileRecordDataSvc/FileRecordDataSvc'],
+                      'HistogramPersistency': 'NONE',
+                      'OutStream': ['OutputStream/RootDst'],
+                      'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
+                                        'Gaudi::IODataManager/IODataManager',
+                                        'Gaudi::RootCnvSvc/RootCnvSvc'],
+                      'TopAlg': ['WriteAlg']},
+   'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+   'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.2.xml']},
+   'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+   'IncidentSvc': {'OutputLevel': 2},
+   'MessageSvc': {'OutputLevel': 1},
+   'RootCnvSvc': {'OutputLevel': 3},
+   'RootDst': {'ItemList': ['/Event#999'],
+               'Output': "DATAFILE='PFN:ROOTIO.2.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"}}
+  ApplicationMgr    SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr       INFO Application Manager Configured successfully
+  ServiceManager      DEBUG Initializing service FileRecordDataSvc
+  FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+  FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service PersistencySvc/FileRecordPersistencySvc
+  ServiceManager      DEBUG Initializing service AppMgrRunable
+  ServiceManager      DEBUG Initializing service EventLoopMgr
+  EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+  EventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  EventLoopMgr        DEBUG Creating Output Stream OutputStream/RootDst
+  EventLoopMgr        DEBUG Creating Top Algorithm WriteAlg with name WriteAlg
+  WriteAlg          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  TimelineSvc         DEBUG initialize
+  WriteAlg          VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+  WriteAlg          VERBOSE ServiceLocatorHelper::service: found service FileRecordDataSvc
+  WriteAlg          VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+  WriteAlg            DEBUG input handles: 0
+  WriteAlg            DEBUG output handles: 0
+  RootDst           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  RootDst           VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+  EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
+  EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
+  RootDst             DEBUG ItemList    : [/Event#999]
+  RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
+  RootDst             DEBUG OptItemList : []
+  RootDst             DEBUG AlgDependentItemList : {}
+  RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.2.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+  RootDst           VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+  RootDst             DEBUG input handles: 0
+  RootDst             DEBUG output handles: 0
+  EventLoopMgr      WARNING Unable to locate service "EventSelector"
+  EventLoopMgr      WARNING No events will be processed from external input.
+  HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+  HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
+  ApplicationMgr       INFO Application Manager Initialized successfully
+  ServiceManager      DEBUG Starting service FileRecordDataSvc
+  ServiceManager      DEBUG Starting service AppMgrRunable
+  ServiceManager      DEBUG Starting service IncidentSvc
+  ServiceManager      DEBUG Starting service FileRecordPersistencySvc
+  ServiceManager      DEBUG Starting service EventPersistencySvc
+  ServiceManager      DEBUG Starting service EventDataSvc
+  ServiceManager      DEBUG Starting service TimelineSvc
+  ServiceManager      DEBUG Starting service AlgExecStateSvc
+  ServiceManager      DEBUG Starting service FileCatalog
+  ServiceManager      DEBUG Starting service IODataManager
+  ServiceManager      DEBUG Starting service RootCnvSvc
+  ServiceManager      DEBUG Starting service HistogramPersistencySvc
+  ServiceManager      DEBUG Starting service HistogramDataSvc
+  ServiceManager      DEBUG Starting service EventLoopMgr
+  ApplicationMgr       INFO Application Manager Started successfully
+  RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+  RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+  RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+  WriteAlg          VERBOSE ServiceLocatorHelper::service: found service RndmGenSvc
+  WriteAlg          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  ServiceManager      DEBUG Stopping service EventLoopMgr
+  ServiceManager      DEBUG Stopping service RndmGenSvc
+  ServiceManager      DEBUG Stopping service HistogramDataSvc
+  ServiceManager      DEBUG Stopping service HistogramPersistencySvc
+  ServiceManager      DEBUG Stopping service RootCnvSvc
+  ServiceManager      DEBUG Stopping service IODataManager
+  ServiceManager      DEBUG Stopping service FileCatalog
+  ServiceManager      DEBUG Stopping service AlgExecStateSvc
+  ServiceManager      DEBUG Stopping service TimelineSvc
+  ServiceManager      DEBUG Stopping service EventDataSvc
+  ServiceManager      DEBUG Stopping service EventPersistencySvc
+  ServiceManager      DEBUG Stopping service FileRecordPersistencySvc
+  ServiceManager      DEBUG Stopping service IncidentSvc
+  ServiceManager      DEBUG Stopping service AppMgrRunable
+  ServiceManager      DEBUG Stopping service FileRecordDataSvc
+  ApplicationMgr       INFO Application Manager Stopped successfully
+  ServiceManager      DEBUG Finalizing service EventLoopMgr
+  RootDst              INFO Events output: 10
+  EventLoopMgr         INFO Histograms converted successfully according to request.
+  ServiceManager      DEBUG Finalizing service RndmGenSvc
+  ServiceManager      DEBUG Finalizing service HistogramDataSvc
+  ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
+  ServiceManager      DEBUG Finalizing service RootCnvSvc
+  ServiceManager      DEBUG Finalizing service IODataManager
+  ServiceManager      DEBUG Finalizing service FileCatalog
+  ServiceManager      DEBUG Finalizing service AlgExecStateSvc
+  ServiceManager      DEBUG Finalizing service TimelineSvc
+  ServiceManager      DEBUG Finalizing service EventDataSvc
+  ServiceManager      DEBUG Finalizing service EventPersistencySvc
+  ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
+  ServiceManager      DEBUG Finalizing service IncidentSvc
+  ServiceManager      DEBUG Finalizing service AppMgrRunable
+  ServiceManager      DEBUG Finalizing service FileRecordDataSvc
+  ServiceManager      DEBUG Looping over all active services...
+  ServiceManager      DEBUG ---- MessageSvc (refCount = 25)
+  ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
+  ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
+  ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
+  ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
+  ServiceManager      DEBUG ---- IncidentSvc (refCount = 3)
+  ServiceManager      DEBUG ---- FileRecordPersistencySvc (refCount = 2)
+  ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
+  ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
+  ServiceManager      DEBUG ---- TimelineSvc (refCount = 3)
+  ServiceManager      DEBUG ---- AlgExecStateSvc (refCount = 4)
+  ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
+  ServiceManager      DEBUG ---- IODataManager (refCount = 2)
+  ServiceManager      DEBUG ---- RootCnvSvc (refCount = 2)
+  ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
+  ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
+  ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
+  ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
+  ApplicationMgr       INFO Application Manager Finalized successfully
+  ApplicationMgr       INFO Application Manager Terminated successfully
+histos: {}
+ttrees: {}

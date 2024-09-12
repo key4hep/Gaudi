@@ -1,0 +1,189 @@
+stdout: "# --> Including file '/workspace/build/Gaudi/GaudiTestSuite/options/ROOT_IO/ExtCollRead.py'\n\
+  # <-- End of file '/workspace/build/Gaudi/GaudiTestSuite/options/ROOT_IO/ExtCollRead.py'\n\
+  # applying configuration of GaudiPersistency\n# /***** User GaudiPersistency/GaudiPersistency\
+  \ ******************************************************\n# |-<no properties>\n\
+  # \\----- (End of User GaudiPersistency/GaudiPersistency) ---------------------------------------------\n\
+  # Dumping all configurables and properties (different from default)\n{'ApplicationMgr':\
+  \ {'EvtMax': -1,\n                    'ExtSvc': ['TagCollectionSvc/EvtTupleSvc',\n\
+  \                               'FileRecordDataSvc/FileRecordDataSvc'],\n      \
+  \              'HistogramPersistency': 'NONE',\n                    'SvcOptMapping':\
+  \ ['Gaudi::MultiFileCatalog/FileCatalog',\n                                    \
+  \  'Gaudi::IODataManager/IODataManager',\n                                     \
+  \ 'Gaudi::RootCnvSvc/RootCnvSvc'],\n                    'TopAlg': ['ReadAlg/ReadAlg']},\n\
+  \ 'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},\n 'EventSelector':\
+  \ {'Input': [\"COLLECTION='Fill/MyCOL1' DATAFILE='PFN:ROOT_IO.etags' SVC='Gaudi::RootCnvSvc'\
+  \ SEL='(Ntrack>9 && Ntrack<20 && Energy<180)' FUN='Gaudi::TestSuite::EvtExtCollectionSelector'\"\
+  ,\n                             \"COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:ROOT_IO.tags'\
+  \ SVC='Gaudi::RootCnvSvc' SEL='(Ntrack>15)' FUN='Gaudi::TestSuite::EvtCollectionSelector'\"\
+  ],\n                   'PrintFreq': 100},\n 'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},\n\
+  \ 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']}}\n\
+  ApplicationMgr    SUCCESS\n====================================================================================================================================\n\
+  \                                                   Welcome to ApplicationMgr (GaudiCoreSvc\
+  \ v999r999)\n                                          running on lblhcbpr13.cern.ch\
+  \ on Mon Sep 14 04:21:05 2020\n====================================================================================================================================\n\
+  ApplicationMgr       INFO Application Manager Configured successfully\nEvtTupleSvc\
+  \          INFO Added stream file:PFN:ROOT_IO.etags as EventSelector.DataStreamTool_1\n\
+  Gaudi::RootData...   INFO Connect to existing Database file:PFN:ROOT_IO.etags as\
+  \ /EventSelector.DataStreamTool_1 for READ\nEventSelector        INFO Stream:EventSelector.DataStreamTool_1\
+  \ Def:COLLECTION='Fill/MyCOL1' DATAFILE='PFN:ROOT_IO.etags' SVC='Gaudi::RootCnvSvc'\
+  \ SEL='(Ntrack>9 && Ntrack<20 && Energy<180)' FUN='Gaudi::TestSuite::EvtExtCollectionSelector'\n\
+  ApplicationMgr       INFO Application Manager Initialized successfully\nApplicationMgr\
+  \       INFO Application Manager Started successfully\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> #tracks : 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var):\
+  \ [0]=19.2008 [1]=19.1516 [2]=17.2588 [3]=16.57 [4]=18.6667\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.5523 py=12.6316 pz=10.8566\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=18.3411\
+  \ [1]=17.7319 [2]=17.1315 [3]=15.7644 [4]=18.5614\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.54872 py=12.0203 pz=10.0364\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=17.0667\
+  \ [1]=18.9315 [2]=16.8813 [3]=16.6494 [4]=16.4271\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=10.4154 py=9.30093 pz=9.81248\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=16.4162\
+  \ [1]=17.1642 [2]=17.9171 [3]=16.9433 [4]=16.6012\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.51818 py=8.95899 pz=9.93137\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=15.7486\
+  \ [1]=16.3605 [2]=16.5288 [3]=18.57 [4]=17.2386\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.27853 py=8.87215 pz=9.12209\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=17.0099\
+  \ [1]=14.2612 [2]=18.6538 [3]=18.3596 [4]=16.5182\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=8.47111 py=11.4375 pz=9.31466\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=18.3956\
+  \ [1]=17.8812 [2]=17.4812 [3]=16.5806 [4]=17.2316\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=12.15 py=9.06596 pz=10.4205\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=19.2008\
+  \ [1]=19.1516 [2]=17.2588 [3]=16.57 [4]=18.6667\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.5523 py=12.6316 pz=10.8566\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=18.3411\
+  \ [1]=17.7319 [2]=17.1315 [3]=15.7644 [4]=18.5614\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.54872 py=12.0203 pz=10.0364\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=17.0667\
+  \ [1]=18.9315 [2]=16.8813 [3]=16.6494 [4]=16.4271\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=10.4154 py=9.30093 pz=9.81248\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=16.4162\
+  \ [1]=17.1642 [2]=17.9171 [3]=16.9433 [4]=16.6012\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.51818 py=8.95899 pz=9.93137\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=15.7486\
+  \ [1]=16.3605 [2]=16.5288 [3]=18.57 [4]=17.2386\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=9.27853 py=8.87215 pz=9.12209\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=17.0099\
+  \ [1]=14.2612 [2]=18.6538 [3]=18.3596 [4]=16.5182\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=8.47111 py=11.4375 pz=9.31466\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::TestSuite::EvtExtCollectionSelector\t -> #tracks :\
+  \ 10\nGaudi::TestSuite::EvtExtCollectionSelector\t -> Momenta(Var): [0]=18.3956\
+  \ [1]=17.8812 [2]=17.4812 [3]=16.5806 [4]=17.2316\nGaudi::TestSuite::EvtExtCollectionSelector\t\
+  \ -> Track :  px=12.15 py=9.06596 pz=10.4205\nGaudi::TestSuite::EvtExtCollectionSelector\
+  \   SELECTED : False\nGaudi::RootNTup...   INFO End of input Ntuple.\nEvtTupleSvc\
+  \          INFO Added stream file:PFN:ROOT_IO.tags as EventSelector.DataStreamTool_2\n\
+  Gaudi::RootData...   INFO Connect to existing Database file:PFN:ROOT_IO.tags as\
+  \ /EventSelector.DataStreamTool_2 for READ\nEventSelector        INFO Stream:EventSelector.DataStreamTool_2\
+  \ Def:COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:ROOT_IO.tags' SVC='Gaudi::RootCnvSvc'\
+  \ SEL='(Ntrack>15)' FUN='Gaudi::TestSuite::EvtCollectionSelector'\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> #tracks : 93\nGaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=16.6809\
+  \ [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=16.6809 [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=10.1578 py=9.51566 pz=9.19358\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nEventSelector     SUCCESS\
+  \ Reading Event record 1. Record number within stream 2: 1\nEventPersistenc... \
+  \  INFO Added successfully Conversion service RootCnvSvc\nFileRecordPersi...   INFO\
+  \ Added successfully Conversion service RootCnvSvc\nReadAlg           SUCCESS Got\
+  \ incident: NEW_FILE_RECORD Source:/FileRecords/21C0F51C-F62E-11EA-8278-A4BF012CBB19\n\
+  ReadAlg           SUCCESS Received incident:NEW_FILE_RECORD: /FileRecords/21C0F51C-F62E-11EA-8278-A4BF012CBB19\n\
+  ReadAlg           SUCCESS Incident: FileInfo record: /FileRecords/21C0F51C-F62E-11EA-8278-A4BF012CBB19/EvtCount=1000\n\
+  ReadAlg           SUCCESS Incident: FileInfo record: /FileRecords/21C0F51C-F62E-11EA-8278-A4BF012CBB19/SumCount=123456\n\
+  ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1600048866.683004 0 (0)\
+  \ 1 (1) 2 (2)\nReadAlg           SUCCESS FileInfo record: 21C0F51C-F62E-11EA-8278-A4BF012CBB19/EvtCount=1000\n\
+  ReadAlg           SUCCESS FileInfo record: 21C0F51C-F62E-11EA-8278-A4BF012CBB19/SumCount=123456\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> #tracks : 76\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Var): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Fix): [0]=17.7422 [1]=16.7922\
+  \ [2]=17.6961 [3]=16.0612 [4]=15.7365\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Track :  px=10.4989 py=10.4342 pz=9.78193\nGaudi::TestSuite::EvtCollectionSelector\
+  \   SELECTED : True\nReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1600048866.684815\
+  \ 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t -> #tracks : 93\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=16.7554 [1]=16.91\
+  \ [2]=17.424 [3]=17.0529 [4]=16.2021\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=16.7554 [1]=16.91 [2]=17.424 [3]=17.0529 [4]=16.2021\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Track :  px=8.95659 py=9.22111 pz=10.7468\nGaudi::TestSuite::EvtCollectionSelector\
+  \   SELECTED : True\nReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1600048866.685914\
+  \ 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t -> #tracks : 54\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=18.3973 [1]=15.7355\
+  \ [2]=17.3919 [3]=17.6139 [4]=15.3032\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=18.3973 [1]=15.7355 [2]=17.3919 [3]=17.6139 [4]=15.3032\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=10.7592 py=9.68162 pz=11.3563\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nReadAlg             \
+  \ INFO ========= EVENT:6 RUN:999 TIME:1600048866.6908 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> #tracks : 52\nGaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=16.7278\
+  \ [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=16.7278 [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=9.79151 py=8.83918 pz=10.2866\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nReadAlg             \
+  \ INFO ========= EVENT:500 RUN:999 TIME:1600048868.619916 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> #tracks : 55\nGaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=17.3344\
+  \ [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=17.3344 [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=10.7646 py=8.89134 pz=10.2737\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nReadAlg             \
+  \ INFO ========= EVENT:1000 RUN:999 TIME:1600048870.242935 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> #tracks : 93\nGaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=16.6809\
+  \ [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=16.6809 [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=10.1578 py=9.51566 pz=9.19358\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nIODataManager       \
+  \ INFO Disconnect from dataset ROOT_IO.etags [C4A90F4C-F630-11EA-993F-A4BF012CBB19]\n\
+  ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1600048866.683004 0 (0)\
+  \ 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t -> #tracks : 76\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Var): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Fix): [0]=17.7422 [1]=16.7922\
+  \ [2]=17.6961 [3]=16.0612 [4]=15.7365\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Track :  px=10.4989 py=10.4342 pz=9.78193\nGaudi::TestSuite::EvtCollectionSelector\
+  \   SELECTED : True\nReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1600048866.684815\
+  \ 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t -> #tracks : 93\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=16.7554 [1]=16.91\
+  \ [2]=17.424 [3]=17.0529 [4]=16.2021\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=16.7554 [1]=16.91 [2]=17.424 [3]=17.0529 [4]=16.2021\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Track :  px=8.95659 py=9.22111 pz=10.7468\nGaudi::TestSuite::EvtCollectionSelector\
+  \   SELECTED : True\nReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1600048866.685914\
+  \ 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t -> #tracks : 54\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=18.3973 [1]=15.7355\
+  \ [2]=17.3919 [3]=17.6139 [4]=15.3032\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=18.3973 [1]=15.7355 [2]=17.3919 [3]=17.6139 [4]=15.3032\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=10.7592 py=9.68162 pz=11.3563\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nReadAlg             \
+  \ INFO ========= EVENT:6 RUN:999 TIME:1600048866.6908 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> #tracks : 52\nGaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=16.7278\
+  \ [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=16.7278 [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=9.79151 py=8.83918 pz=10.2866\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nReadAlg             \
+  \ INFO ========= EVENT:500 RUN:999 TIME:1600048868.619916 0 (0) 1 (1) 2 (2)\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> #tracks : 55\nGaudi::TestSuite::EvtCollectionSelector\t -> Momenta(Var): [0]=17.3344\
+  \ [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094\nGaudi::TestSuite::EvtCollectionSelector\t\
+  \ -> Momenta(Fix): [0]=17.3344 [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094\n\
+  Gaudi::TestSuite::EvtCollectionSelector\t -> Track :  px=10.7646 py=8.89134 pz=10.2737\n\
+  Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True\nReadAlg             \
+  \ INFO ========= EVENT:1000 RUN:999 TIME:1600048870.242935 0 (0) 1 (1) 2 (2)\nGaudi::RootNTup...\
+  \   INFO End of input Ntuple.\nEventLoopMgr         INFO No more events in event\
+  \ selection\nApplicationMgr       INFO Application Manager Stopped successfully\n\
+  EventLoopMgr         INFO Histograms converted successfully according to request.\n\
+  RootCnvSvc           INFO Disconnected data IO:21C0F51C-F62E-11EA-8278-A4BF012CBB19\
+  \ [ROOTIO.dst]\nRootCnvSvc           INFO Disconnected data IO:25323562-F62E-11EA-8278-A4BF012CBB19\
+  \ [ROOTIO.mdst]\nToolSvc              INFO Removing all tools created by ToolSvc\n\
+  EvtTupleSvc.Eve...   INFO Disconnected data IO:C4A90F4C-F630-11EA-993F-A4BF012CBB19\
+  \ [ROOT_IO.etags]\nEvtTupleSvc.Eve...   INFO Disconnected data IO:287D3E22-F630-11EA-9EAF-A4BF012CBB19\
+  \ [ROOT_IO.tags]\nApplicationMgr       INFO Application Manager Finalized successfully\n\
+  ApplicationMgr       INFO Application Manager Terminated successfully\nNumber of\
+  \ MyTrack instances:2\n"
+histos: {}
+ttrees: {}

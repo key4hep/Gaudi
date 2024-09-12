@@ -1,0 +1,71 @@
+stdout: |-
+  {'ApplicationMgr': {'EvtMax': 1000,
+                      'EvtSel': 'NONE',
+                      'ExtSvc': ['FileRecordDataSvc/FileRecordDataSvc'],
+                      'HistogramPersistency': 'NONE',
+                      'OutStream': ['OutputStream/RootDst',
+                                    'OutputStream/RootMini',
+                                    'RecordStream/FileRecords'],
+                      'OutputLevel': 3,
+                      'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
+                                        'Gaudi::IODataManager/IODataManager',
+                                        'Gaudi::RootCnvSvc/RootCnvSvc'],
+                      'TopAlg': ['WriteAlg', 'ReadAlg']},
+   'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+   'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO_630fwd.xml']},
+   'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+   'FileRecords': {'EvtConversionSvc': 'PersistencySvc/FileRecordPersistencySvc',
+                   'EvtDataSvc': 'FileRecordDataSvc/FileRecordDataSvc',
+                   'ItemList': ['/FileRecords#999'],
+                   'Output': "DATAFILE='PFN:ROOTIO_630fwd.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
+   'RootCnvSvc': {'ROOT630ForwardCompatibility': True},
+   'RootDst': {'ItemList': ['/Event#999'],
+               'Output': "DATAFILE='PFN:ROOTIO_630fwd.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
+   'RootMini': {'ItemList': ['/Event#1'],
+                'Output': "DATAFILE='PFN:ROOTIO_630fwd.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"}}
+  ApplicationMgr    SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr       INFO Application Manager Configured successfully
+  EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
+  RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO_630fwd.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+  RootMini             INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO_630fwd.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+  FileRecordPersi...   INFO Added successfully Conversion service RootCnvSvc
+  FileRecords          INFO Data source: FileRecordDataSvc/FileRecordDataSvc output: DATAFILE='PFN:ROOTIO_630fwd.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+  EventLoopMgr      WARNING Unable to locate service "EventSelector"
+  EventLoopMgr      WARNING No events will be processed from external input.
+  ApplicationMgr       INFO Application Manager Initialized successfully
+  ApplicationMgr       INFO Application Manager Started successfully
+  RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+  RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+  RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+  ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1577836801.001 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1577836802.002 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1577836803.003 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1577836804.004 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:5 RUN:999 TIME:1577836805.005 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1577836806.006 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:7 RUN:999 TIME:1577836807.007 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:8 RUN:999 TIME:1577836808.008 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:9 RUN:999 TIME:1577836809.009 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:10 RUN:999 TIME:1577836810.01 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:100 RUN:999 TIME:1577836900.1 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:200 RUN:999 TIME:1577837000.2 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:300 RUN:999 TIME:1577837100.3 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:400 RUN:999 TIME:1577837200.4 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1577837300.5 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:600 RUN:999 TIME:1577837400.6 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:700 RUN:999 TIME:1577837500.7 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:800 RUN:999 TIME:1577837600.8 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:900 RUN:999 TIME:1577837700.9 0 (-1) 1 (-1) 2 (-1)
+  ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1577837801.0 0 (-1) 1 (-1) 2 (-1)
+  ApplicationMgr       INFO Application Manager Stopped successfully
+  RootDst              INFO Events output: 1000
+  RootMini             INFO Events output: 1000
+  FileRecords          INFO Set up File Summary Record
+  FileRecords          INFO Events output: 1
+  EventLoopMgr         INFO Histograms converted successfully according to request.
+  ApplicationMgr       INFO Application Manager Finalized successfully
+  ApplicationMgr       INFO Application Manager Terminated successfully
+histos: {}
+ttrees: {}

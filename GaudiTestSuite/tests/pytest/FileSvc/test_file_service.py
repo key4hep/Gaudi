@@ -12,7 +12,6 @@ import os
 
 import pytest
 import ROOT
-from GaudiConfig2 import Configurables as C
 from GaudiTests import run_gaudi
 
 OUTPUT_FILE_NAME = "file_svc_shared.root"
@@ -37,6 +36,8 @@ def setup_file_tree(tmp_path_factory):
 
 
 def config():
+    from GaudiConfig2 import Configurables as C
+
     E = C.Gaudi.TestSuite.FileSvc
 
     algs = [
