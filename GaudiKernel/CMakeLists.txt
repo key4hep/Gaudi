@@ -71,6 +71,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/Dictionary.cpp
           src/Lib/DirSearchPath.cpp
           src/Lib/Environment.cpp
+          src/Lib/EventContext.cpp
           src/Lib/EventIDBase.cpp
           src/Lib/EventIDRange.cpp
           src/Lib/EventSelectorDataStream.cpp

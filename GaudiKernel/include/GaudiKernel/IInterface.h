@@ -85,6 +85,14 @@ public:
     return hash;
   }
 
+  // #ifdef GAUDI_V20_COMPAT
+  /// ostream operator for InterfaceID. Needed by PluginSvc
+  friend std::ostream& operator<<( std::ostream& s, const InterfaceID& id ) {
+    s << "IID_" << id.id();
+    return s;
+  }
+  // #endif
+
 private:
   unsigned long m_id;
   unsigned long m_major_ver;
@@ -327,14 +335,6 @@ bool isValidInterface( IFace* i ) {
   void* ii = nullptr;
   return i->queryInterface( IFace::interfaceID(), &ii ).isSuccess();
 }
-
-// #ifdef GAUDI_V20_COMPAT
-/// ostream operator for InterfaceID. Needed by PluginSvc
-inline std::ostream& operator<<( std::ostream& s, const InterfaceID& id ) {
-  s << "IID_" << id.id();
-  return s;
-}
-// #endif
 
 /// Small function to be used instead of the construct (void**)&pointer, which
 /// produces, on gcc 4.1 optimized, the warning

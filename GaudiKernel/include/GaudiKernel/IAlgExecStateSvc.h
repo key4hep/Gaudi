@@ -51,23 +51,23 @@ public:
   void setExecStatus( const StatusCode& sc = StatusCode::SUCCESS ) { m_execStatus = sc; }
   void reset() { *this = AlgExecState{}; }
 
+  friend std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
+    ost << "e: ";
+    switch ( s.state() ) {
+    case AlgExecState::State::None:
+      return ost << "n";
+    case AlgExecState::State::Executing:
+      return ost << "e";
+    default:
+      return ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
+    }
+  }
+
 private:
   bool       m_filterPassed{ true };
   State      m_state{ State::None };
   StatusCode m_execStatus{ StatusCode::FAILURE };
 };
-
-inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
-  ost << "e: ";
-  switch ( s.state() ) {
-  case AlgExecState::State::None:
-    return ost << "n";
-  case AlgExecState::State::Executing:
-    return ost << "e";
-  default:
-    return ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
-  }
-}
 
 namespace EventStatus {
   enum Status { Invalid = 0, Success = 1, AlgFail = 2, AlgStall = 3, Other = 4 };
