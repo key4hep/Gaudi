@@ -99,13 +99,13 @@ def get_platform():
         "Debug",
         "FastDebug",
         "Developer",
+        "",
     ):
         arch = "unknown-dbg"
     elif os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in (
         "Release",
         "MinSizeRel",
         "RelWithDebInfo",
-        "",
     ):  # RelWithDebInfo == -O2 -g -DNDEBUG
         arch = "unknown-opt"
     return arch
