@@ -78,7 +78,7 @@ namespace Gaudi::Accumulators {
    */
   struct ExtractWeight {
     template <typename Arithmetic>
-    constexpr decltype( auto ) operator()( const std::pair<Arithmetic, Arithmetic>& v ) const noexcept {
+    constexpr decltype( auto ) operator()( const std::pair<unsigned long, Arithmetic>& v ) const noexcept {
       return v.second;
     }
   };
@@ -104,23 +104,63 @@ namespace Gaudi::Accumulators {
   };
 
   /**
+   * An Adder ValueHandler, taking weight into account and computing a count plus the sum of the weights
+   * In case of full atomicity, fetch_add or compare_exchange_weak are used for each element,
+   * that is we do not have full atomicity accross the two elements
+   */
+  template <typename Arithmetic, atomicity Atomicity>
+  struct WeightedAdder {
+    using RegularType              = std::pair<unsigned long, Arithmetic>;
+    using AtomicType               = std::pair<std::atomic<unsigned long>, std::atomic<Arithmetic>>;
+    using OutputType               = RegularType;
+    static constexpr bool isAtomic = Atomicity == atomicity::full;
+    using InternalType             = std::conditional_t<isAtomic, AtomicType, OutputType>;
+    static constexpr OutputType getValue( const InternalType& v ) noexcept {
+      if constexpr ( isAtomic ) {
+        return { v.first.load( std::memory_order_relaxed ), v.second.load( std::memory_order_relaxed ) };
+      } else {
+        return v;
+      }
+    };
+    static RegularType exchange( InternalType& v, RegularType newv ) noexcept {
+      if constexpr ( isAtomic ) {
+        return { v.first.exchange( newv.first ), v.second.exchange( newv.second ) };
+      } else {
+        return { std::exchange( v.first, newv.first ), std::exchange( v.second, newv.second ) };
+      }
+    }
+    static constexpr OutputType DefaultValue() { return { 0, Arithmetic{} }; }
+    static void                 merge( InternalType& a, RegularType b ) noexcept {
+      if constexpr ( isAtomic ) {
+        fetch_add( a.first, b.first );
+        fetch_add( a.second, b.second );
+      } else {
+        a.first += b.first;
+        a.second += b.second;
+      }
+    };
+  };
+
+  /**
    * WeightedCountAccumulator. A WeightedCountAccumulator is an Accumulator storing the number of provided values,
-   * weighted. It basically sums the weights and thus is similar to the SumAccumulator except that it takes
-   * a pair (valueTuple, weight) as input
+   * as well as the weighted version of it, aka. the sum of weights. It takes a pair (valueTuple, weight) as input
    * @see Gaudi::Accumulators for detailed documentation
    */
   template <atomicity Atomicity, typename Arithmetic>
   struct WeightedCountAccumulator
-      : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight> {
-    using Base = GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, ExtractWeight>;
+      : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, std::pair<unsigned long, Arithmetic>, Atomicity, Identity,
+                           ExtractWeight, WeightedAdder<Arithmetic, Atomicity>> {
+    using Base = GenericAccumulator<std::pair<Arithmetic, Arithmetic>, std::pair<unsigned long, Arithmetic>, Atomicity,
+                                    Identity, ExtractWeight, WeightedAdder<Arithmetic, Atomicity>>;
     using Base::Base;
     using Base::operator+=;
-    //// overload of operator+= to be able to only give weight and no value
+    /// overload of operator+= to be able to only give weight and no value
     WeightedCountAccumulator operator+=( const Arithmetic weight ) {
-      *this += { Arithmetic{}, weight };
+      *this += { 1ul, weight };
       return *this;
     }
-    Arithmetic nEntries() const { return this->value(); }
+    unsigned long nEntries() const { return this->rawValue().first; }
+    Arithmetic    sumOfWeights() const { return this->rawValue().second; }
   };
 
   /**
@@ -151,7 +191,7 @@ namespace Gaudi::Accumulators {
   };
 
   /**
-   * WeightedAveragingAccumulator. An AveragingAccumulator is an Accumulator able to compute an average
+   * WeightedAveragingAccumulator. An WeightedAveragingAccumulator is an Accumulator able to compute an average
    * This implementation takes a pair (value, weight) as input
    * @see Gaudi::Accumulators for detailed documentation
    */
@@ -160,7 +200,7 @@ namespace Gaudi::Accumulators {
       AveragingAccumulatorBase<Atomicity, Arithmetic, WeightedCountAccumulator, WeightedSumAccumulator>;
 
   /**
-   * WeightedSigmaAccumulator. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
+   * WeightedSigmaAccumulator. A WeightedSigmaAccumulator is an Accumulator able to compute an average and variance/rms
    * This implementation takes a pair (value, weight) as input
    * @see Gaudi::Accumulators for detailed documentation
    */
