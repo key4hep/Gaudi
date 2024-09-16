@@ -15,8 +15,8 @@ This plugin is not meant to be used directly, but it is invoked by the
 CMake function `gaudi_add_pytest()`
 """
 
-import argparse
 import os
+import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -24,7 +24,6 @@ from pathlib import Path
 def pytest_addoption(parser, pluginmanager):
     parser.addoption(
         "--ctest-output-file",
-        type=argparse.FileType("w"),
         help="name of the file to write to communicate to ctest the discovered tests",
     )
     parser.addoption(
@@ -58,6 +57,16 @@ def pytest_addoption(parser, pluginmanager):
         "--ctest-binary-dir",
         default=None,
         help="value of CMAKE_CURRENT_BINARY_DIR from which gaudi_add_pytest was invoked",
+    )
+    parser.addoption(
+        "--ctest-coverage",
+        default="",
+        help="select modules for which produce coverage reports",
+    )
+    parser.addoption(
+        "--ctest-coverage-command",
+        default="coverage report",
+        help="how coverage should be invoked to produce the final report",
     )
 
 
@@ -99,27 +108,38 @@ set_tests_properties({name} PROPERTIES {properties})
 
 def pytest_collection_finish(session):
     args = session.ctest_args
-    output = args.get("output_file")
-    if not output:
+    output_filename = args.get("output_file")
+    if not output_filename:
         # nothing to do if no output file is specified
         return
+    output = open(output_filename, "w")
+    output_rootdir = Path(output_filename).parent
+
+    coverage = args["coverage"].split(",") if args["coverage"] else []
+    if coverage:
+        args["pytest_command"] += " --cov-report= " + " ".join(
+            f"--cov={module}" for module in coverage
+        )
 
     properties = 'LABELS "{}" '.format(";".join(args["label"]))
     if args.get("binary_dir"):
         properties += f'ENVIRONMENT "CMAKE_CURRENT_BINARY_DIR={args["binary_dir"]}" '
     properties += " ".join(args["properties"])
 
+    names = []
     for path in sorted(session.ctest_files):
         name = (
             args["prefix"] + os.path.relpath(path, args["pytest_root_dir"])
         ).replace("/", ".")
         if name.endswith(".py"):
             name = name[:-3]
+        pytest_cmd = args["pytest_command"]
+
         output.write(
             TEST_DESC_TEMPLATE.format(
                 name=name,
                 path=path,
-                pytest_cmd=args["pytest_command"],
+                pytest_cmd=pytest_cmd,
                 properties=properties,
             )
         )
@@ -135,6 +155,51 @@ def pytest_collection_finish(session):
                 'set_tests_properties('
                 f'{name} PROPERTIES FIXTURES_REQUIRED "{";".join(session.ctest_fixture_required[path])}")\n'
             )
+
+        # we force one test to be run one by one
+        if coverage:
+            # generate one coverage file per test
+            output.write(
+                f"set_tests_properties({name} PROPERTIES ENVIRONMENT COVERAGE_FILE={output_rootdir}/.coverage.{name})\n"
+                f"set_tests_properties({name} PROPERTIES FIXTURES_SETUP {name})\n"
+            )
+        names.append(name)
+
+    if coverage and names:
+        combine_test = (args["prefix"] + "coverage_combine").replace("/", ".")
+        combine_command = re.sub(
+            r" report .*",
+            f" combine {' '.join(f'{output_rootdir}/.coverage.{n}' for n in names)}",
+            args["coverage_command"],
+        )
+        output.write(
+            TEST_DESC_TEMPLATE.format(
+                name=combine_test,
+                path="",
+                pytest_cmd=combine_command,
+                properties=properties,
+            )
+        )
+        output.write(
+            f"set_tests_properties({combine_test} PROPERTIES ENVIRONMENT COVERAGE_FILE={output_rootdir}/.coverage)\n"
+            f"set_tests_properties({combine_test} PROPERTIES FIXTURES_REQUIRED \"{';'.join(names)}\")\n"
+            f"set_tests_properties({combine_test} PROPERTIES FIXTURES_SETUP {combine_test})\n"
+        )
+
+        name = (args["prefix"] + "coverage_report").replace("/", ".")
+        output.write(
+            TEST_DESC_TEMPLATE.format(
+                name=name,
+                path="",
+                pytest_cmd=f"{args['coverage_command']}",
+                properties=properties + " LABELS coverage",
+            )
+        )
+        # coverage reports require all related tests to be run first
+        output.write(
+            f"set_tests_properties({name} PROPERTIES ENVIRONMENT COVERAGE_FILE={output_rootdir}/.coverage)\n"
+            f"set_tests_properties({name} PROPERTIES FIXTURES_REQUIRED {combine_test})\n"
+        )
 
     output.close()
 
