@@ -130,10 +130,18 @@ namespace Gaudi::Accumulators {
     }
 
   private:
-    std::string titlePropertyName() const { return fmt::format( "{}_Title", m_name ); }
+    std::string basePropertyName() const {
+      // properties are used as identifiers in python and thus cannot anything alse than _, letters and numbers
+      // we thus replace anything else with '_' in the property names
+      std::string name = m_name;
+      std::replace_if(
+          begin( name ), end( name ), []( auto& c ) { return !std::isalnum( c ); }, '_' );
+      return name;
+    }
+    std::string titlePropertyName() const { return fmt::format( "{}_Title", basePropertyName() ); }
     template <unsigned int N>
     std::string axisPropertyName() const {
-      return fmt::format( "{}_Axis{}", m_name, N );
+      return fmt::format( "{}_Axis{}", basePropertyName(), N );
     }
 
     // Members of the custom histogrem

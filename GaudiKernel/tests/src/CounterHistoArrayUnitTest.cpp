@@ -103,9 +103,9 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
     Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::Histogram<1>, 5> histo1d{
         &algo, "GaudiH1D-{}", "WRONG TITLE !", { 1, -1, 1, "WRONG" } };
     for ( unsigned int i = 0; i < 5; i++ ) {
-      algo.setProperty( fmt::format( "GaudiH1D-{}_Title", i ), fmt::format( "A Gaudi 1D histogram - number {}", i ) )
+      algo.setProperty( fmt::format( "GaudiH1D_{}_Title", i ), fmt::format( "A Gaudi 1D histogram - number {}", i ) )
           .ignore();
-      algo.setProperty( fmt::format( "GaudiH1D-{}_Axis0", i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
+      algo.setProperty( fmt::format( "GaudiH1D_{}_Axis0", i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
     }
     for ( unsigned int i = 0; i < 5; i++ ) { histo1d[i].createHistogram( algo ); }
     for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
         },
         { 1, -1, 1, "WRONG" } };
     for ( unsigned int i = 0; i < 5; i++ ) {
-      algo.setProperty( fmt::format( "GaudiH1D-{}-{}_Axis0", i, i * i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
+      algo.setProperty( fmt::format( "GaudiH1D_{}_{}_Axis0", i, i * i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
     }
     for ( unsigned int i = 0; i < 5; i++ ) { histo1d[i].createHistogram( algo ); }
     for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
