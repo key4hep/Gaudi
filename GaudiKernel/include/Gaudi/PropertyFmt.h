@@ -73,11 +73,7 @@ struct fmt::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
     }
     return formatter<T>::parse( ctx );
   }
-  auto format( const Gaudi::Property<T, V, H>& p, format_context& ctx )
-#if FMT_VERSION >= 90000
-      const
-#endif
-  {
+  auto format( const Gaudi::Property<T, V, H>& p, format_context& ctx ) const {
     if ( debug ) {
       if constexpr ( std::is_same_v<T, std::string> ) {
         std::stringstream s;
