@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -99,10 +99,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Include directory not installed correctly,"
             " Aida2ROOT.h not found in include/GaudiUtils/")
     endif()
-    if(WITH_GAUDIALG AND NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiAlg/Fill.h)
-        message(FATAL_ERROR "Include directory not installed correctly,"
-            " Fill.h not found in include/GaudiAlg/")
-    endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiCommonSvc/Axis.h)
         message(FATAL_ERROR "Include directory not installed correctly,"
             " Axis.h not found in include/GaudiCommonSvc/")
@@ -110,10 +106,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiMP/TESSerializer.h)
         message(FATAL_ERROR "Include directory not installed correctly,"
             " TESSerializer.h not found in include/GaudiMP/")
-    endif()
-    if(WITH_GAUDIALG AND NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiPython/AlgDecorators.h)
-        message(FATAL_ERROR "Include directory not installed correctly,"
-            " AlgDecorators.h not found in include/GaudiPython/")
     endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/RootCnv/RootAddress.h)
         message(FATAL_ERROR "Include directory not installed correctly,"
@@ -177,10 +169,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiProfiling/GenerateGaudiOpts.py)
         message(FATAL_ERROR "Python modules not installed correctly,"
             " GenerateGaudiOpts.py not found in python/GaudiProfiling/")
-    endif()
-    if(WITH_GAUDIALG AND NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiAlg/HistoUtils.py)
-        message(FATAL_ERROR "Python modules not installed correctly,"
-            " HistoUtils.py not found in python/GaudiAlg/")
     endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiSvc/ExtraModules.py)
         message(FATAL_ERROR "Python modules not installed correctly,"
@@ -258,7 +246,6 @@ else()
     add_test(NAME cmake.test_gaudi_install_check
              COMMAND ${CMAKE_COMMAND} -D TEST_GAUDI_INSTALL_FILES_EXIST:BOOL=TRUE
                                       -D GAUDI_INSTALL_DIR=${tmpInstallDest}
-                                      -D WITH_GAUDIALG=${GAUDI_ENABLE_GAUDIALG}
                                       -P ${CMAKE_CURRENT_LIST_FILE})
     set_tests_properties(cmake.test_gaudi_install_check PROPERTIES
         DEPENDS cmake.test_gaudi_install

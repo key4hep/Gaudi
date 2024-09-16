@@ -8,7 +8,6 @@
  *  @see GaudiUtils::Map
  *  @see GaudiUtils::HashMap
  *
- *  @see GaudiAlgorithm
  *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *  @date 2005-08-06
  */

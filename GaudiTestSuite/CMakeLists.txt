@@ -183,12 +183,6 @@ gaudi_add_pytest(tests/pytest)
 
 # Some tests depend on configuration options
 set(tests_to_disable)
-if(NOT GAUDI_ENABLE_GAUDIALG)
-    list(APPEND tests_to_disable
-        GaudiTestSuite.pytest.root_io.extcoll.test_extcoll_write
-        GaudiTestSuite.pytest.root_io.extcoll.test_extcoll_read
-    )
-endif()
 if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
     list(APPEND tests_to_disable
         GaudiTestSuite.pytest.test_particlepropsvc

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -220,10 +220,10 @@ StatusCode ToolSvc::finalize()
   // 1) Simple dependencies: no circular dependencies between tools,
   //    and tools not using other tools
   // 2) Tools-using-tools (but no circular dependencies)
-  //   a) release() is called in the tool::finalize() (e.g. via GaudiAlgorithm)
+  //   a) release() is called in the tool::finalize() (e.g. via base class)
   //   b) release() is called in the tool destructor  (e.g. via ToolHandle)
   // 3) Circular dependencies between tools
-  //   a) release() is called in the tool::finalize() (e.g. via GaudiAlgorithm)
+  //   a) release() is called in the tool::finalize() (e.g. via base class)
   //   b) release() is called in the tool destructor  (e.g. via ToolHandle)
   // 4) In addition to each of the above cases, refCounting of a particular tool
   //    might not have been done correctly in the code. Typically release()
