@@ -194,7 +194,9 @@ if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
         GaudiTestSuite.pytest.test_particlepropsvc
     )
 endif()
-if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+if(NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "")
+    # the messages expected by this test are printed only if NDEBUG is not defined
+    # (i.e. in release builds or with empty build type)
     list(APPEND tests_to_disable
         GaudiTestSuite.pytest.jira.test_gaudi_1174
     )
