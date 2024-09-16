@@ -18,7 +18,7 @@
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "Gaudi/Accumulators/Histogram.h"
+#include "Gaudi/Accumulators/StaticHistogram.h"
 #include "GaudiKernel/Algorithm.h"
 #include <fmt/format.h>
 // ============================================================================
@@ -32,7 +32,7 @@ namespace Gaudi {
   namespace TestSuite {
     /** @class HistoProps
      *  simple example, which illustrates the usage of "histogram properties"
-     *  DO NOT USE. This is legacy code, Gaudi::Accumulatos::Histogram support
+     *  DO NOT USE. This is legacy code, Gaudi::Accumulatos::StaticHistogram support
      *  properties natively.
      *  @author Vanay BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-18
@@ -43,7 +43,7 @@ namespace Gaudi {
 
       StatusCode initialize() override {
         return Algorithm::initialize().andThen( [&] {
-          using hist_t = Gaudi::Accumulators::Histogram<1>;
+          using hist_t = Gaudi::Accumulators::StaticHistogram<1>;
           using axis_t = Gaudi::Accumulators::Axis<double>;
           m_hist1      = std::make_unique<hist_t>( this, "Histo1", "Histogram 1", axis_t{ m_hist1def.value() } );
           m_hist2      = std::make_unique<hist_t>( this, "Histo2", "Histogram 2", axis_t( m_hist2def.value() ) );
@@ -74,8 +74,8 @@ namespace Gaudi {
       Gaudi::Property<Gaudi::Histo1DDef> m_hist2def{
           this, "Histo2", { "Histogram2", -5, 5, 200 }, "The parameters for the second histogram" };
 
-      std::unique_ptr<Gaudi::Accumulators::Histogram<1>> m_hist1;
-      std::unique_ptr<Gaudi::Accumulators::Histogram<1>> m_hist2;
+      std::unique_ptr<Gaudi::Accumulators::StaticHistogram<1>> m_hist1;
+      std::unique_ptr<Gaudi::Accumulators::StaticHistogram<1>> m_hist2;
     };
   } // namespace TestSuite
 } // end of namespace Gaudi

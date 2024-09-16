@@ -17,8 +17,8 @@ stdout: |-
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
   SimpleCounterHi...SUCCESS Filling Histograms...... Please be patient !
   SimpleRootCount...SUCCESS Filling Histograms...... Please be patient !
-  SimpleCounterHi...   INFO Number of counters : 1
-  SimpleRootCount...   INFO Number of counters : 1
+  SimpleCounterHi...   INFO Number of counters : 48
+  SimpleRootCount...   INFO Number of counters : 10
   ApplicationMgr       INFO Application Manager Stopped successfully
   EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
