@@ -123,10 +123,6 @@ class GaudiExeTest(SubprocessBaseTest):
         """
         if cls.reference:
             try:
-                record_property(
-                    f"{key}_reference_file", cls.resolve_path(cls.reference)
-                )
-
                 if key in reference:
                     assert data == reference[key]
             except AssertionError:

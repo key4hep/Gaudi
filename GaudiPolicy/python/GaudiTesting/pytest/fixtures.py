@@ -199,27 +199,35 @@ def capture_class_docstring(
 
 
 @pytest.fixture(scope="class")
-def reference(request):
+def reference_path(request) -> Generator[Optional[Path], None, None]:
+    cls = request.cls
+    path = None
+    if hasattr(cls, "reference") and cls.reference:
+        path = cls.reference
+        if hasattr(cls, "resolve_path"):
+            path = cls.resolve_path(path)
+
+    path = expand_reference_file_name(path)
+    yield Path(path) if path else None
+
+
+@pytest.fixture(scope="class")
+def reference(request, reference_path: Optional[Path]):
     cls = request.cls
     original_reference_data = None
     current_reference_data = None
 
-    if cls and issubclass(cls, SubprocessBaseTest):
-        if cls.reference:
-            reference_path = expand_reference_file_name(cls.resolve_path(cls.reference))
-            if os.path.exists(reference_path) and os.path.getsize(reference_path) > 0:
-                with open(reference_path, "r") as f:
-                    original_reference_data = yaml.safe_load(f)
-            else:
-                # if the file does not exist we may have a relative path, so
-                # we have to resolve it wrt the file containing the test class
-                reference_path = os.path.join(
-                    file_path_for_class(cls).parent, reference_path
-                )
-                original_reference_data = AlwaysTrueDefaultDict(lambda: None)
-            current_reference_data = original_reference_data.copy()
-    else:
-        raise ValueError("Missing reference data.")
+    if reference_path:
+        if reference_path.exists() and reference_path.stat().st_size > 0:
+            with open(reference_path, "r") as f:
+                original_reference_data = yaml.safe_load(f)
+        else:
+            # if the file does not exist we may have a relative path, so
+            # we have to resolve it wrt the file containing the test class
+            reference_path = file_path_for_class(cls).parent / reference_path
+            original_reference_data = AlwaysTrueDefaultDict(lambda: None)
+
+        current_reference_data = original_reference_data.copy()
 
     yield current_reference_data
 
