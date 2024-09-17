@@ -11,6 +11,7 @@
 #include <Gaudi/Accumulators/Histogram.h>
 #include <Gaudi/Accumulators/RootHistogram.h>
 #include <Gaudi/Algorithm.h>
+#include <Gaudi/FSMCallbackHolder.h>
 #include <GaudiKernel/RndmGenerators.h>
 
 #include "../../../GaudiKernel/tests/src/LogHistogram.h"
@@ -73,12 +74,13 @@ namespace Gaudi {
       DECLARE_COMPONENT_WITH_ID( HistoTimingAlgI, "HistoTimingAlgI" )
 
       /// Example of algorithm using histograms accumulators.
-      class GaudiHistoAlgorithm : public Gaudi::Algorithm {
+      class GaudiHistoAlgorithm : public FSMCallbackHolder<Gaudi::Algorithm> {
       public:
-        using Gaudi::Algorithm::Algorithm;
+        using Base = FSMCallbackHolder<Gaudi::Algorithm>;
+        using Base::Base;
 
         StatusCode initialize() override {
-          return Algorithm::initialize().andThen( [&] { m_custom_gauss_noinit.createHistogram( *this ); } );
+          return Base::initialize().andThen( [&] { m_custom_gauss_noinit.createHistogram( *this ); } );
         }
 
         StatusCode execute( const EventContext& ) const override {
@@ -330,9 +332,10 @@ namespace Gaudi {
       DECLARE_COMPONENT( GaudiHistoAlgorithm )
 
       /// Example of algorithm using root histograms accumulators.
-      class GaudiRootHistoAlgorithm : public Gaudi::Algorithm {
+      class GaudiRootHistoAlgorithm : public FSMCallbackHolder<Gaudi::Algorithm> {
       public:
-        using Gaudi::Algorithm::Algorithm;
+        using Base = FSMCallbackHolder<Gaudi::Algorithm>;
+        using Base::Base;
 
         StatusCode execute( const EventContext& ) const override {
           // some random number generators, just to provide numbers
