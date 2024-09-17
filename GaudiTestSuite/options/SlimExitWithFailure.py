@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -13,12 +13,12 @@
 # ==============================================================
 from Configurables import ApplicationMgr, AvalancheSchedulerSvc
 from Configurables import Gaudi__TestSuite__IntDataConsumer as IntDataConsumer
-from Configurables import GaudiExamplesCommonConf, HiveSlimEventLoopMgr, HiveWhiteBoard
+from Configurables import GaudiTestSuiteCommonConf, HiveSlimEventLoopMgr, HiveWhiteBoard
 from Gaudi.Configuration import ERROR, WARNING
 
 threads = 1
 
-GaudiExamplesCommonConf()
+GaudiTestSuiteCommonConf()
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
     SchedulerName="AvalancheSchedulerSvc", OutputLevel=ERROR

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -32,10 +32,6 @@ class GaudiTestSuiteCommonConf(ConfigurableUser):
         if self.getProp("DummyEvents") >= 0:
             appmgr.EvtMax = self.getProp("DummyEvents")
             appmgr.EvtSel = "NONE"
-
-
-class GaudiExamplesCommonConf(GaudiTestSuiteCommonConf):
-    pass
 
 
 class Gaudi_Test_MySuperAlg(SuperAlgorithm):

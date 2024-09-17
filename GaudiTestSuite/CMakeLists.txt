@@ -10,7 +10,7 @@
 #####################################################################################
 # GaudiTestSuite subdirectory
 if(NOT BUILD_TESTING)
-  return()
+    return()
 endif()
 
 # Build the library
@@ -118,11 +118,6 @@ gaudi_add_module(GaudiTestSuiteComponents
                       ROOT::Hist
                       ROOT::Net
                       ${GAUDI_ATOMIC_LIBS})
-
-target_sources(GaudiTestSuiteLib PRIVATE src/Lib/legacy_examples.cpp)
-target_sources(GaudiTestSuiteComponents PRIVATE src/IO/ExamplesHandleAlgs.cpp)
-add_library(GaudiExamplesLib ALIAS GaudiTestSuiteLib)
-add_library(${PROJECT_NAME}::GaudiExamplesLib ALIAS GaudiTestSuiteLib)
 
 if(GAUDI_USE_AIDA)
     target_sources(GaudiTestSuiteComponents PRIVATE
