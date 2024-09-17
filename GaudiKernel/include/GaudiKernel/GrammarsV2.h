@@ -10,4 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#ifndef GAUDI_TEST_PUBLIC_HEADERS_BUILD
+#  warning "obsolete header, use Gaudi/Parsers/Grammars.h instead"
+#endif
 #include <Gaudi/Parsers/Grammars.h>

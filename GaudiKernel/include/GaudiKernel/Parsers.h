@@ -10,4 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#ifndef GAUDI_TEST_PUBLIC_HEADERS_BUILD
+#  warning "obsolete header, use Gaudi/Parsers/CommonParsers.h instead"
+#endif
 #include <Gaudi/Parsers/CommonParsers.h>
