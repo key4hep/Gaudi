@@ -8,11 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import os
-
 import pytest
 import ROOT
-from GaudiTests import run_gaudi
+from GaudiTesting import GaudiExeTest
 
 # Constants for the output file name
 OUTPUT_FILE_NAME = "ntuple_writer_tree.root"
@@ -21,23 +19,58 @@ EXPECTED_VECTOR_SUM = 10
 EXPECTED_VECTOR_SIZE = 5
 
 
-@pytest.fixture(scope="module")
-def setup_file_tree(tmp_path_factory):
-    """
-    PyTest fixture that prepares a ROOT file and tree for testing
-    Args:
-        tmp_path_factory: Factory for creating temporary directories provided by pytest
-    Yields:
-        Tuple of (ROOT file, ROOT TTree) for use in tests
-    """
-    os.chdir(tmp_path_factory.getbasetemp())
-    if os.path.exists(OUTPUT_FILE_NAME):
-        os.remove(OUTPUT_FILE_NAME)
-    run_gaudi(f"{__file__}:config", check=True)
-    file = ROOT.TFile.Open(OUTPUT_FILE_NAME)
-    tree = file.Get("WriterTree")
-    yield file, tree
-    file.Close()
+class Test(GaudiExeTest):
+    command = ["gaudirun.py", f"{__file__}:config"]
+
+    @pytest.fixture(scope="class")
+    def setup_file_tree(self, cwd):
+        """
+        Fixture to yield the ROOT file and tree for testing with the given configuration.
+        Args:
+            cwd: Fixture returning the execution directory for the test.
+        Yields:
+            Tuple of the produced (ROOT file, ROOT TTree).
+        """
+        file = ROOT.TFile.Open(str(cwd / OUTPUT_FILE_NAME))
+        tree = file.Get("WriterTree")
+        yield file, tree
+        file.Close()
+
+    def test_branch_creation(self, setup_file_tree):
+        """
+        Test to ensure that all expected branches are correctly created in the ROOT file.
+        """
+        _, tree = setup_file_tree
+        assert tree.GetBranch("Branch1"), "Branch1 should exist in WriterTree."
+        assert tree.GetBranch("Branch2"), "Branch2 should exist in WriterTree."
+        assert tree.GetBranch("Branch3"), "Branch3 should exist in WriterTree."
+
+    def test_data_types(self, setup_file_tree):
+        """
+        Verify the data within the branches to ensure they match expected transformations.
+        """
+        _, tree = setup_file_tree
+        for entry in tree:
+            assert isinstance(
+                entry.Branch1, int
+            ), "Branch1 does not contain int values as expected."
+            assert isinstance(
+                entry.Branch2, int
+            ), "Branch2 does not contain int values as expected."
+            assert isinstance(
+                entry.Branch3, float
+            ), "Branch3 does not contain float values as expected."
+
+    def test_data_values(self, setup_file_tree):
+        """ """
+        _, tree = setup_file_tree
+        for entry in tree:
+            assert (
+                entry.Branch1 == EXPECTED_VECTOR_SUM
+            ), "Branch1 does not contain the correct value."
+            assert (
+                entry.Branch2 == EXPECTED_VECTOR_SIZE
+            ), "Branch2 does not contain the correct value."
 
 
 def config():
@@ -81,42 +114,3 @@ def config():
         + svcs
         + [fileSvc]
     )
-
-
-def test_branch_creation(setup_file_tree):
-    """
-    Test to ensure that all expected branches are correctly created in the ROOT file.
-    """
-    _, tree = setup_file_tree
-    assert tree.GetBranch("Branch1"), "Branch1 should exist in WriterTree."
-    assert tree.GetBranch("Branch2"), "Branch2 should exist in WriterTree."
-    assert tree.GetBranch("Branch3"), "Branch3 should exist in WriterTree."
-
-
-def test_data_types(setup_file_tree):
-    """
-    Verify the data within the branches to ensure they match expected transformations.
-    """
-    _, tree = setup_file_tree
-    for entry in tree:
-        assert isinstance(
-            entry.Branch1, int
-        ), "Branch1 does not contain int values as expected."
-        assert isinstance(
-            entry.Branch2, int
-        ), "Branch2 does not contain int values as expected."
-        assert isinstance(
-            entry.Branch3, float
-        ), "Branch3 does not contain float values as expected."
-
-
-def test_data_values(setup_file_tree):
-    """ """
-    _, tree = setup_file_tree
-    for entry in tree:
-        assert (
-            entry.Branch1 == EXPECTED_VECTOR_SUM
-        ), "Branch1 does not contain the correct value."
-        assert (
-            entry.Branch2 == EXPECTED_VECTOR_SIZE
-        ), "Branch2 does not contain the correct value."

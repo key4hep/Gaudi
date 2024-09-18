@@ -8,7 +8,8 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiTests import run_gaudi
+import pytest
+from GaudiTesting import GaudiExeTest
 
 
 # Note: we need at least 3 events to have multiple event in flight as
@@ -51,24 +52,19 @@ def config(event_slots=2, events=3, threads=6):
     return [app] + list(app.TopAlg) + list(app.ExtSvc) + [scheduler, slimeventloopmgr]
 
 
-def test():
-    proc = run_gaudi(f"{__file__}:config", capture_output=True, text=True)
-    assert proc.returncode == -3
+class Test(GaudiExeTest):
+    command = ["gaudirun.py", f"{__file__}:config"]
+    returncode = -3
 
     expected_messages = [
-        "More than 2s since the beginning of the event (s: 0  e: 0)",
-        "Dumping scheduler state",
-        "[ slot: 0, event: 0 ]:",
+        b"More than 2s since the beginning of the event (s: 0  e: 0)",
+        b"Dumping scheduler state",
+        b"[ slot: 0, event: 0 ]:",
     ]
-    missing_in_stdout = [
-        message for message in expected_messages if message not in proc.stdout
-    ]
-    assert not missing_in_stdout
 
-    expected_messages = [
-        "=== Stalled event: current stack trace (s: 0  e: 0) ===",
-    ]
-    missing_in_stderr = [
-        message for message in expected_messages if message not in proc.stderr
-    ]
-    assert not missing_in_stderr
+    @pytest.mark.parametrize("message", expected_messages)
+    def test_stdout(self, stdout, message):
+        assert message in stdout
+
+    def test_stderr(self, stderr):
+        assert b"=== Stalled event: current stack trace (s: 0  e: 0) ===" in stderr
