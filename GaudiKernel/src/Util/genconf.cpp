@@ -69,15 +69,6 @@
 #include <type_traits>
 #include <vector>
 
-#if FMT_VERSION < 80000
-namespace fmt {
-  template <typename T>
-  const T& runtime( const T& v ) {
-    return v;
-  }
-} // namespace fmt
-#endif
-
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 

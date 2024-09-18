@@ -11,15 +11,6 @@
 #include <Gaudi/Accumulators/CounterArray.h>
 #include <fmt/format.h>
 
-#if FMT_VERSION < 80000
-namespace fmt {
-  template <typename T>
-  const T& runtime( const T& v ) {
-    return v;
-  }
-} // namespace fmt
-#endif
-
 std::string Gaudi::Accumulators::details::FormatCounterDefault::operator()( size_t n ) {
   return fmt::format( fmt::runtime( text ), n );
 }
