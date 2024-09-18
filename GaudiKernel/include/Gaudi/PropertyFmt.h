@@ -60,15 +60,16 @@ template <typename T, typename V, typename H>
 struct fmt::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
   bool           debug = false;
   constexpr auto parse( format_parse_context& ctx ) -> format_parse_context::iterator {
-#if FMT_VERSION < 100100
-    // throw_format_error is part of the public API of fmtlib as of 10.1.0
-    using detail::throw_format_error;
-#endif
     auto it = ctx.begin(), end = ctx.end();
     if ( it != end && *it == '?' ) {
       debug = true;
       ++it;
-      if ( it != end && *it != '}' ) throw_format_error( "invalid format" );
+      if ( it != end && *it != '}' )
+#if FMT_VERSION >= 110000
+        report_error( "invalid format" );
+#else
+        detail::throw_format_error( "invalid format" );
+#endif
       return it;
     }
     return formatter<T>::parse( ctx );
