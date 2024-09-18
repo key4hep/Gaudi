@@ -96,17 +96,17 @@ def get_platform():
     elif "SCRAM_ARCH" in os.environ:
         arch = os.environ["SCRAM_ARCH"]
     elif os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in (
-        "Debug",
-        "FastDebug",
-        "Developer",
+        "Debug",  # -O0 -g
+        "FastDebug",  # -Og -g (LHCb only)
+        "Developer",  # same as Debug, but with many warnings enabled
+        "",  # no options (equivalent to -O0)
     ):
         arch = "unknown-dbg"
     elif os.environ.get("ENV_CMAKE_BUILD_TYPE", "") in (
-        "Release",
-        "MinSizeRel",
-        "RelWithDebInfo",
-        "",
-    ):  # RelWithDebInfo == -O2 -g -DNDEBUG
+        "Release",  # -O3 -DNDEBUG
+        "MinSizeRel",  # -Os -DNDEBUG
+        "RelWithDebInfo",  # -O2 -g -DNDEBUG (-O3 for LHCb)
+    ):
         arch = "unknown-opt"
     return arch
 

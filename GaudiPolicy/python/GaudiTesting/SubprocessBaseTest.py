@@ -219,6 +219,7 @@ class SubprocessBaseTest:
         self,
         record_property: Callable[[str, str], None],
         fixture_result: FixtureResult,
+        reference_path: Optional[Path],
     ) -> None:
         """
         Record properties and handle any failures during fixture setup.
@@ -226,6 +227,8 @@ class SubprocessBaseTest:
         for key, value in fixture_result.to_dict().items():
             if value is not None:
                 record_property(key, value)
+        if reference_path:
+            record_property("reference_file", str(reference_path))
 
         if fixture_result.failure:
             pytest.fail(f"{fixture_result.failure}")
