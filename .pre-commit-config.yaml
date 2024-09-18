@@ -26,3 +26,17 @@ repos:
         exclude: "^.*/options/.*$"
     # Run the formatter.
     -   id: ruff-format
+-   repo: local
+    hooks:
+    -   id: copyright-year
+        name: update copyright year
+        language: script
+        entry: utils/update_copyright_year.py
+        types_or: [c++, c, python, cmake, xml, yaml]
+        exclude: |
+            (?x)(
+                ci-utils/preset-.*\.cmake|
+                lhcbproject\.yml|
+                tests/.*\.yaml|
+                \.clang-format
+            )
