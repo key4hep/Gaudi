@@ -297,6 +297,16 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode parse( std::vector<std::vector<double>>& result, std::string_view input );
     // ========================================================================
+    /** parse the <c>std::vector\<std::vector\<int\> \></c> value
+     *
+     *  @see Gaudi::Parsers::VectorGrammar
+     *  @see Gaudi::Parsers::IntGrammar
+     *  @param result (output) vector with vectors of ints
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     */
+    GAUDI_API StatusCode parse( std::vector<std::vector<int>>& result, std::string_view input );
+    // ========================================================================
     // map< TYPE, TYPE >
     // ========================================================================
     /** parse the <c>std::map\<int , int\></c> value
