@@ -120,6 +120,15 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
   }
 
   {
+    std::vector<std::vector<int>> result;
+    BOOST_CHECK( parse( result, "[[1, 2]/* Test comments */,[3]]" ) );
+    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK( result[0][0] == 1 );
+    BOOST_CHECK( result[0][1] == 2 );
+    BOOST_CHECK( result[1][0] == 3 );
+  }
+
+  {
     std::vector<double> result;
     BOOST_CHECK( parse( result, "[1.1, 2.2 ]" ) );
     BOOST_CHECK( result.size() == 2 );
