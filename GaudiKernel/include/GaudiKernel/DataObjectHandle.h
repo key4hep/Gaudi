@@ -82,6 +82,10 @@ namespace details {
   struct Payload_helper<Gaudi::DataHandle::Reader, Gaudi::NamedRange_<T>, U> {
     using type = Gaudi::NamedRange_<T>;
   };
+  template <typename T, typename U>
+  struct Payload_helper<Gaudi::DataHandle::Reader, std::optional<Gaudi::NamedRange_<T>>, U> {
+    using type = std::optional<Gaudi::NamedRange_<T>>;
+  };
 
   template <Gaudi::DataHandle::Mode mode, typename T, typename U = T>
   using Payload_t = typename Payload_helper<mode, T, U>::type;
@@ -265,6 +269,49 @@ auto DataObjectHandle<Gaudi::NamedRange_<ValueType>>::get() const -> Range {
     throw GaudiException( "Cannot retrieve \'" + objKey() + "\' from transient store.",
                           m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
+  if ( !m_converter ) {
+    m_converter = ::details::select_range_converter<ValueType, Range>( dataObj );
+    if ( !m_converter ) {
+      throw GaudiException( "The type requested for " + objKey() + " (" + System::typeinfoName( typeid( ValueType ) ) +
+                                ")" + " cannot be obtained from object in event store" + " (" +
+                                System::typeinfoName( typeid( *dataObj ) ) + ").",
+                            "Wrong DataObjectType", StatusCode::FAILURE );
+    }
+  }
+  return ( *m_converter )( dataObj );
+}
+
+//
+//---------------------------------------------------------------------------
+/// specialization for optional<NamedRange_>
+
+template <typename T>
+class DataObjectHandle<std::optional<Gaudi::NamedRange_<T>>> : public DataObjectHandleBase {
+public:
+  using ValueType = std::remove_cv_t<std::remove_pointer_t<typename T::value_type>>;
+  using Range     = Gaudi::NamedRange_<typename ValueType::ConstVector>;
+
+  using DataObjectHandleBase::DataObjectHandleBase;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  std::optional<Range> get() const;
+
+  std::string pythonRepr() const override {
+    auto repr = DataObjectHandleBase::pythonRepr();
+    boost::replace_all( repr, default_type, System::typeinfoName( typeid( std::optional<Gaudi::NamedRange_<T>> ) ) );
+    return repr;
+  }
+
+private:
+  mutable ::details::Converter_t<Range> m_converter = nullptr;
+};
+
+template <typename ValueType>
+auto DataObjectHandle<std::optional<Gaudi::NamedRange_<ValueType>>>::get() const -> std::optional<Range> {
+  auto dataObj = fetch();
+  if ( !dataObj ) return std::nullopt;
   if ( !m_converter ) {
     m_converter = ::details::select_range_converter<ValueType, Range>( dataObj );
     if ( !m_converter ) {
