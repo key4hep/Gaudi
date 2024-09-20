@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/Accumulators/StaticHistogram.h>
 
 namespace Gaudi::Accumulators {
 
@@ -28,38 +28,50 @@ namespace Gaudi::Accumulators {
    */
   template <typename Arithmetic, unsigned int ND>
   struct LogInputType : std::array<Arithmetic, ND> {
+    using ArithmeticType = Arithmetic;
     // allow construction from set of values
     template <class... ARGS>
     LogInputType( ARGS... args ) : std::array<Arithmetic, ND>{ static_cast<Arithmetic>( args )... } {}
-    using ValueType          = LogInputType<Arithmetic, ND>;
-    using AxisArithmeticType = Arithmetic;
-    unsigned int computeIndex( const std::array<Axis<Arithmetic>, ND>& axis ) const {
-      unsigned int index = 0;
-      for ( unsigned int j = 0; j < ND; j++ ) {
-        unsigned int dim = ND - j - 1;
-        // compute local index for a given dimension
-        int localIndex = axis[dim].index( log( ( *this )[dim] ) );
-        // compute global index. Bins are stored in a column first manner
-        index *= ( axis[dim].nBins + 2 );
-        index += localIndex;
-      }
-      return index;
+    using ValueType = LogInputType<Arithmetic, ND>;
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == ND )>>
+    unsigned int computeIndex( std::tuple<AxisType...> const& axis ) const {
+      return computeIndexInternal<0, std::tuple<AxisType...>>( axis );
     }
     auto forInternalCounter() { return 1ul; }
-    template <typename AxisType, long unsigned NAxis>
-    static unsigned int computeTotNBins( std::array<AxisType, NAxis> axis ) {
-      unsigned int nTotBins = 1;
-      for ( unsigned int i = 0; i < NAxis; i++ ) { nTotBins *= ( axis[i].nBins + 2 ); }
-      return nTotBins;
+    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == ND )>>
+    static unsigned int computeTotNBins( std::tuple<AxisType...> const& axis ) {
+      return computeTotNBinsInternal<0, std::tuple<AxisType...>>( axis );
+    }
+
+  private:
+    template <int N, class Tuple>
+    unsigned int computeIndexInternal( Tuple const& allAxis ) const {
+      // compute global index. Bins are stored in a column first manner
+      auto const&  axis       = std::get<N>( allAxis );
+      unsigned int localIndex = axis.index( log( std::get<N>( *this ) ) );
+      if constexpr ( N + 1 == ND )
+        return localIndex;
+      else
+        return localIndex + ( axis.numBins() + 2 ) * computeIndexInternal<N + 1, Tuple>( allAxis );
+    }
+    template <int N, class Tuple>
+    static unsigned int computeTotNBinsInternal( Tuple const& allAxis ) {
+      auto const&  axis       = std::get<N>( allAxis );
+      unsigned int localNBins = axis.numBins() + 2;
+      if constexpr ( N + 1 == ND )
+        return localNBins;
+      else
+        return localNBins * computeTotNBinsInternal<N + 1, Tuple>( allAxis );
     }
   };
 
-  template <atomicity Atomicity, typename Arithmetic, typename ND>
+  template <atomicity Atomicity, typename Arithmetic, typename ND, typename AxisType>
   using LogAccumulator = HistogramingAccumulatorInternal<Atomicity, LogInputType<Arithmetic, ND::value>, unsigned long,
-                                                         ND, CountAccumulator>;
+                                                         CountAccumulator, AxisType>;
 
   constexpr char logHistogramString[] = "histogram:Histogram";
   template <unsigned int ND, atomicity Atomicity = atomicity::full, typename Arithmetic = double>
-  using LogHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, logHistogramString, LogAccumulator>;
+  using LogHistogram = HistogramingCounterBase<ND, Atomicity, Arithmetic, logHistogramString, LogAccumulator,
+                                               make_tuple_t<Axis<Arithmetic>, ND>>;
 
 } // namespace Gaudi::Accumulators
