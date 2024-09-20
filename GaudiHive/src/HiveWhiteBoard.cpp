@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,32 +14,32 @@
 //
 //====================================================================
 // Include files
-#include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/TypeNameString.h"
-#include "Rtypes.h"
-#include "ThreadLocalStorage.h"
-#include "boost/callable_traits.hpp"
-#include "tbb/concurrent_queue.h"
+#include <GaudiKernel/ConcurrencyFlags.h>
+#include <GaudiKernel/DataObjID.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/TypeNameString.h>
+#include <Rtypes.h>
+#include <ThreadLocalStorage.h>
+#include <boost/callable_traits.hpp>
 #include <mutex>
+#include <tbb/concurrent_queue.h>
 #include <utility>
 
 // Interfaces
-#include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IDataStoreAgent.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ISvcManager.h"
+#include <GaudiKernel/IAddressCreator.h>
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IDataStoreAgent.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/ISvcManager.h>
 
 namespace {
   struct Partition final {

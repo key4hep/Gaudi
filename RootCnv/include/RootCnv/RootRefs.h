@@ -19,7 +19,7 @@
 #define GAUDIROOTCNV_ROOTREFS_H
 
 // Framework include files
-#include "GaudiKernel/Kernel.h"
+#include <GaudiKernel/Kernel.h>
 
 // C++ include files
 #include <string>

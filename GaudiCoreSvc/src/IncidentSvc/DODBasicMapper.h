@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,12 +12,12 @@
 #define INCIDENTSVC_DODBASICMAPPER_H 1
 // Include files
 // from Gaudi
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/HashMap.h"
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/HashMap.h>
 
 // Implemented interfaces
-#include "GaudiKernel/IDODAlgMapper.h"
-#include "GaudiKernel/IDODNodeMapper.h"
+#include <GaudiKernel/IDODAlgMapper.h>
+#include <GaudiKernel/IDODNodeMapper.h>
 
 /** @class DODBasicMapper DODBasicMapper.h IncidentSvc/DODBasicMapper.h
  *

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,23 +9,23 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Python must always be the first.
-#include "Python.h"
+#include <Python.h>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IHistogramSvc.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/SmartIF.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IAlgTool.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IHistogramSvc.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/SmartIF.h>
 // ============================================================================
 // GaudiPython
 // ============================================================================
-#include "GaudiPython/Helpers.h"
+#include <GaudiPython/Helpers.h>
 // ============================================================================
 /** @file
  *  Implementation file for some functions from class GaudiPython::Helpers

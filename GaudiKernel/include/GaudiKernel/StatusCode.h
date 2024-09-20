@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,13 +11,13 @@
 #ifndef GAUDIKERNEL_STATUSCODE_H
 #define GAUDIKERNEL_STATUSCODE_H
 
-#include "boost/preprocessor/facilities/overload.hpp"
+#include <boost/preprocessor/facilities/overload.hpp>
 #include <functional>
 #include <ostream>
 #include <type_traits>
 #include <utility>
 
-#include "GaudiKernel/Kernel.h"
+#include <GaudiKernel/Kernel.h>
 
 template <typename T>
 struct is_StatusCode_enum : std::false_type {};

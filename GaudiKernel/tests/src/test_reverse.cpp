@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <array>
 
-#include "GaudiKernel/reverse.h"
+#include <GaudiKernel/reverse.h>
 
 template <typename R1, typename R2>
 void copy( R1&& r1, R2& r2 ) {

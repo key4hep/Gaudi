@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #include "Analyzer.h"
 #include "Catalog.h"
-#include "GaudiKernel/Environment.h"
 #include "IncludedFiles.h"
 #include "Messages.h"
 #include "Node.h"
@@ -19,6 +18,7 @@
 #include "PropertyName.h"
 #include "PropertyValue.h"
 #include "Units.h"
+#include <GaudiKernel/Environment.h>
 #include <fmt/format.h>
 #include <iostream>
 #include <memory>

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,14 +28,14 @@
 #include <cfloat>
 
 // Framework include files
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
 #include "RndmEngine.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
 
 /** IRndmEngine interface implementation  */
 /// Input serialization from stream buffer. Restores the status of the generator engine.

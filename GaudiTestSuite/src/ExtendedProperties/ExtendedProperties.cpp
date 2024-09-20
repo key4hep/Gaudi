@@ -21,15 +21,15 @@
 #include <utility>
 #include <vector>
 
-#include "GaudiKernel/Map.h"
+#include <GaudiKernel/Map.h>
 
 // ============================================================================
 // Include parsers for creating parser that handles tuple
 // ============================================================================
-#include "GaudiKernel/StdArrayAsProperty.h"
 #include <Gaudi/Parsers/Factory.h>
+#include <GaudiKernel/StdArrayAsProperty.h>
 
-#include "GaudiKernel/Algorithm.h"
+#include <GaudiKernel/Algorithm.h>
 // ============================================================================
 
 #ifdef __ICC

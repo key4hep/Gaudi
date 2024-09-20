@@ -15,8 +15,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/StatusCode.h>
 
 // Define my own error enum/category
 enum class MyErr : StatusCode::code_t {

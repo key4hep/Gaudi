@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,19 +15,19 @@
 //  Description: Generate TClassStreamers for special Gaudi classes
 //  @author      M.Frank
 //====================================================================
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/LinkManager.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ObjectContainerBase.h"
-#include "GaudiKernel/SmartRef.h"
-#include "GaudiKernel/System.h"
-#include "RootCnv/PoolClasses.h"
-#include "RootCnv/RootRefs.h"
-#include "TClass.h"
-#include "TClassStreamer.h"
-#include "TInterpreter.h"
-#include "TROOT.h"
-#include "TSystem.h"
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/LinkManager.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/ObjectContainerBase.h>
+#include <GaudiKernel/SmartRef.h>
+#include <GaudiKernel/System.h>
+#include <RootCnv/PoolClasses.h>
+#include <RootCnv/RootRefs.h>
+#include <TClass.h>
+#include <TClassStreamer.h>
+#include <TInterpreter.h>
+#include <TROOT.h>
+#include <TSystem.h>
 #include <iostream>
 #include <memory>
 #include <stdexcept>

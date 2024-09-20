@@ -9,17 +9,17 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Include files
-#include "GaudiKernel/EventSelectorDataStream.h"
-#include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/IDataSourceMgr.h"
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/ISelectStatement.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/NTuple.h"
-#include "GaudiKernel/ObjectFactory.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/EventSelectorDataStream.h>
+#include <GaudiKernel/GenericAddress.h>
+#include <GaudiKernel/IAddressCreator.h>
+#include <GaudiKernel/IDataSourceMgr.h>
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/ISelectStatement.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/NTuple.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiKernel/SmartIF.h>
 
 #include "EventCollectionSelector.h"
 

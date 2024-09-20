@@ -24,8 +24,8 @@
 // ... a lot of noise produced by the boost/filesystem/operations.hpp
 #  pragma warning( disable : 279 )
 #endif
-#include "GaudiKernel/DirSearchPath.h"
-#include "boost/filesystem/operations.hpp"
+#include <GaudiKernel/DirSearchPath.h>
+#include <boost/filesystem/operations.hpp>
 
 using namespace std;
 using namespace boost::filesystem;

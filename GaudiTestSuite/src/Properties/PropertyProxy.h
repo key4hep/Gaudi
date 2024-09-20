@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,9 +12,9 @@
 #define GAUDIEXAMPLE_PropertyProxy_H
 
 // Include files
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/MsgStream.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/MsgStream.h>
 
 /** @class PropertyProxy
     Trivial Algorithm for tutotial purposes

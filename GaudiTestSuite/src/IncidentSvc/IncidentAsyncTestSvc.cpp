@@ -10,17 +10,17 @@
 \***********************************************************************************/
 #include "IncidentAsyncTestSvc.h"
 
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/ISvcLocator.h"
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/ISvcLocator.h>
 
-#include "GaudiKernel/MsgStream.h"
+#include <GaudiKernel/MsgStream.h>
 
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ThreadLocalContext.h"
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 
 DECLARE_COMPONENT( IncidentAsyncTestSvc )
 

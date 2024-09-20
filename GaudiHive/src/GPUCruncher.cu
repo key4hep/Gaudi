@@ -14,7 +14,7 @@
 #include <cstdio>
 #include <memory_resource>
 
-#include "cub/cub.cuh"
+#include <cub/cub.cuh>
 __global__ void makeGrid( const double* input, double* workspace ) {
   double at                                        = threadIdx.x * input[blockIdx.x];
   workspace[blockIdx.x * blockDim.x + threadIdx.x] = at;

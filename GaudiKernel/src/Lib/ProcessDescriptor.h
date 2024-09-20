@@ -12,8 +12,8 @@
 #define GAUDIKERNEL_PROCESS_H
 
 // Framework include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/SystemBase.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/SystemBase.h>
 
 namespace System {
   // Forward declarations

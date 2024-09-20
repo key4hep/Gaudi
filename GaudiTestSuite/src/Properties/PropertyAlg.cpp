@@ -9,14 +9,14 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Include files
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IChronoStatSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IChronoStatSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartIF.h>
 #include <sstream>
 
-#include "GaudiKernel/SerializeSTL.h"
+#include <GaudiKernel/SerializeSTL.h>
 
 #include "PropertyAlg.h"
 

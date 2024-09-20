@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,10 +11,10 @@
 #ifndef __PARTPROPSVC_H__
 #define __PARTPROPSVC_H__
 
-#include "GaudiKernel/IPartPropSvc.h"
-#include "GaudiKernel/Service.h"
-#include "HepPDT/ParticleDataTable.hh"
-#include "HepPDT/TableBuilder.hh"
+#include <GaudiKernel/IPartPropSvc.h>
+#include <GaudiKernel/Service.h>
+#include <HepPDT/ParticleDataTable.hh>
+#include <HepPDT/TableBuilder.hh>
 
 #include <iostream>
 #include <optional>

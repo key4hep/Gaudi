@@ -8,9 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/GaudiException.h"
+#include <GaudiKernel/GaudiException.h>
 
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/System.h>
 
 bool              GaudiException::s_proc( false );
 static const bool enableBacktrace = System::isEnvSet( "ENABLE_BACKTRACE" );

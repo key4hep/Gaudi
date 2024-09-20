@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "Gaudi/CUDAAsynchronousAlgHelper.cuh"
+#include <Gaudi/CUDAAsynchronousAlgHelper.cuh>
 #include <boost/fiber/cuda/waitfor.hpp>
 
 #include <cstdio>

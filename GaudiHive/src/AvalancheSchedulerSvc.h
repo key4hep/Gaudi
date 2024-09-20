@@ -18,14 +18,14 @@
 #include "PrecedenceSvc.h"
 
 // Framework include files
-#include "GaudiKernel/IAlgExecStateSvc.h"
-#include "GaudiKernel/IAlgResourcePool.h"
-#include "GaudiKernel/ICondSvc.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/IRunable.h"
-#include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IThreadPoolSvc.h"
-#include "GaudiKernel/Service.h"
+#include <GaudiKernel/IAlgExecStateSvc.h>
+#include <GaudiKernel/IAlgResourcePool.h>
+#include <GaudiKernel/ICondSvc.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/IRunable.h>
+#include <GaudiKernel/IScheduler.h>
+#include <GaudiKernel/IThreadPoolSvc.h>
+#include <GaudiKernel/Service.h>
 
 // C++ include files
 #include <functional>
@@ -38,9 +38,9 @@
 #include <vector>
 
 // External libs
-#include "tbb/concurrent_priority_queue.h"
-#include "tbb/concurrent_queue.h"
-#include "tbb/task_arena.h"
+#include <tbb/concurrent_priority_queue.h>
+#include <tbb/concurrent_queue.h>
+#include <tbb/task_arena.h>
 
 class IAlgorithm;
 

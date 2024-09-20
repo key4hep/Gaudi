@@ -14,32 +14,32 @@
 #include <numeric>
 #include <set>
 
-#include "GaudiKernel/FunctionalFilterDecision.h"
-#include "GaudiKernel/IAlgContextSvc.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAuditorSvc.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IExceptionSvc.h"
-#include "GaudiKernel/IHistogramSvc.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IRndmGenSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/Kernel.h"
+#include <GaudiKernel/FunctionalFilterDecision.h>
+#include <GaudiKernel/IAlgContextSvc.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAuditorSvc.h>
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IExceptionSvc.h>
+#include <GaudiKernel/IHistogramSvc.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IRndmGenSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/Kernel.h>
 
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Chrono.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/Guards.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ServiceLocatorHelper.h"
-#include "GaudiKernel/Stat.h"
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/ToolHandle.h"
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/Chrono.h>
+#include <GaudiKernel/DataHandleHolderVisitor.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/Guards.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/ServiceLocatorHelper.h>
+#include <GaudiKernel/Stat.h>
+#include <GaudiKernel/StringKey.h>
+#include <GaudiKernel/ToolHandle.h>
 
 namespace Gaudi {
   namespace Details {

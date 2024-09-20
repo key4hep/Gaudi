@@ -11,20 +11,20 @@
 #pragma once
 
 // Framework include files
-#include "Gaudi/Property.h"
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiUtils/IIODataManager.h"
+#include <Gaudi/Property.h>
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiUtils/IIODataManager.h>
 #include <map>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "RootCnv/RootRefs.h"
-#include "TFile.h"
-#include "TTreePerfStats.h"
+#include <RootCnv/RootRefs.h>
+#include <TFile.h>
+#include <TTreePerfStats.h>
 
 // Forward declarations
 class TTree;

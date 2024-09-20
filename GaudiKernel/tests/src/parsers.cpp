@@ -8,16 +8,16 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/StdArrayAsProperty.h"
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/VectorMap.h"
-#include "GaudiKernel/VectorsAsProperty.h"
+#include <GaudiKernel/StdArrayAsProperty.h>
+#include <GaudiKernel/StringKey.h>
+#include <GaudiKernel/VectorMap.h>
+#include <GaudiKernel/VectorsAsProperty.h>
 
 #define BOOST_TEST_MODULE Parsers_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "GaudiKernel/ToStream.h"
 #include <Gaudi/Parsers/Factory.h>
+#include <GaudiKernel/ToStream.h>
 
 using namespace Gaudi::Parsers;
 

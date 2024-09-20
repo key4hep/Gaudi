@@ -1,6 +1,6 @@
 
 /***********************************************************************************\
-* (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2023-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,18 +14,18 @@
 // Include files
 // ============================================================================
 // Gaudi
-#include "Gaudi/Algorithm.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
+#include <Gaudi/Algorithm.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
 // Gaudi CUDA
 #ifdef GAUDI_USE_CUDA
-#  include "Gaudi/CUDAAsynchronousAlgHelper.cuh"
+#  include <Gaudi/CUDAAsynchronousAlgHelper.cuh>
 #endif
 // Others
-#include "fmt/format.h"
 #include <atomic>
 #include <boost/fiber/all.hpp>
 #include <boost/unordered/unordered_flat_set.hpp>
 #include <chrono>
+#include <fmt/format.h>
 
 namespace Gaudi {
   /** Base class for asynchronous algorithms.

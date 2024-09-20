@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,18 +18,18 @@
 #  include <Python.h>
 #endif // not __APPLE__
 
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/Chrono.h"
-#include "GaudiKernel/ChronoEntity.h"
-#include "GaudiKernel/Range.h"
-#include "GaudiKernel/SerializeSTL.h"
-#include "GaudiKernel/Stat.h"
-#include "GaudiKernel/StatEntity.h"
-#include "GaudiKernel/StringKey.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/Chrono.h>
+#include <GaudiKernel/ChronoEntity.h>
+#include <GaudiKernel/Range.h>
+#include <GaudiKernel/SerializeSTL.h>
+#include <GaudiKernel/Stat.h>
+#include <GaudiKernel/StatEntity.h>
+#include <GaudiKernel/StringKey.h>
 
 #ifdef _WIN32
-#  include "GaudiKernel/GaudiHandle.h"
+#  include <GaudiKernel/GaudiHandle.h>
 #endif
 
 #ifdef __ICC
@@ -39,8 +39,8 @@
 #  pragma warning( disable : 1125 )
 #endif
 
-#include "GaudiMP/PyROOTPickle.h"
-#include "GaudiMP/TESSerializer.h"
+#include <GaudiMP/PyROOTPickle.h>
+#include <GaudiMP/TESSerializer.h>
 
 #ifdef _WIN32
 #  pragma warning( disable : 4345 )

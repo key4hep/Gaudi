@@ -12,7 +12,7 @@
 #define GAUDIEXAMPLE_IMYTOOL_H 1
 
 // Include files
-#include "GaudiKernel/IAlgTool.h"
+#include <GaudiKernel/IAlgTool.h>
 
 /** @class IMyTool IMyTool.h
  *  Example of an Interface of a Algorithm Tool

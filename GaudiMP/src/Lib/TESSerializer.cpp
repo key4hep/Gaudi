@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,30 +8,30 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiMP/TESSerializer.h"
+#include <GaudiMP/TESSerializer.h>
 
 // Framework include files
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/DataStoreItem.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/LinkManager.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataStoreItem.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/LinkManager.h>
+#include <GaudiKernel/System.h>
 
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/KeyedContainer.h"
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/GenericAddress.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/KeyedContainer.h>
 
-#include "GaudiKernel/MsgStream.h"
+#include <GaudiKernel/MsgStream.h>
 
 // ROOT include files
-#include "TBufferFile.h"
-#include "TClass.h"
-#include "TInterpreter.h"
-#include "TROOT.h"
+#include <TBufferFile.h>
+#include <TClass.h>
+#include <TInterpreter.h>
+#include <TROOT.h>
 
 #include <map>
 

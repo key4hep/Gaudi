@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,9 +12,9 @@
 #define ROOTHISTCNV_RFILECNV_H 1
 
 // Include files
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/NTuple.h"
 #include "RDirectoryCnv.h"
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/NTuple.h>
 
 class TFile;
 

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,14 +12,14 @@
 #define GAUDIKERNEL_AUDITOR_H
 
 // Include files
-#include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/IAuditor.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/ISvcLocator.h" /*used by service(..)*/
-#include "GaudiKernel/PropertyHolder.h"
 #include <Gaudi/PluginService.h>
 #include <Gaudi/PropertyFwd.h>
+#include <GaudiKernel/CommonMessaging.h>
+#include <GaudiKernel/IAuditor.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/ISvcLocator.h> /*used by service(..)*/
+#include <GaudiKernel/PropertyHolder.h>
 #include <string>
 #include <vector>
 

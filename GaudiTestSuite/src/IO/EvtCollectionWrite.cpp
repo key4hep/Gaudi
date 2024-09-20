@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,15 +18,15 @@
 #define EVTCOLLECTION_WRITE_CPP
 
 // Framework include files
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartDataPtr.h"
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartDataPtr.h>
 
 // Example related include files
 #include "EvtCollectionWrite.h"
-#include "GaudiTestSuite/Event.h"
-#include "GaudiTestSuite/MyTrack.h"
+#include <GaudiTestSuite/Event.h>
+#include <GaudiTestSuite/MyTrack.h>
 
 #include <cmath>
 

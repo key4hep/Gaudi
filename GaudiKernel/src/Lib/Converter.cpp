@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,15 +9,15 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Include Files
-#include "GaudiKernel/Converter.h"
-#include "GaudiKernel/ConversionSvc.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ServiceLocatorHelper.h"
+#include <GaudiKernel/ConversionSvc.h>
+#include <GaudiKernel/Converter.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/INamedInterface.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/ServiceLocatorHelper.h>
 
 /// Retrieve the class type of objects the converter produces.
 const CLID& Converter::objType() const { return m_classType; }

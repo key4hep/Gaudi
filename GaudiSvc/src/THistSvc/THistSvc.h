@@ -18,22 +18,22 @@
 #include <vector>
 
 // Gaudi includes:
-#include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIoComponent.h"
-#include "GaudiKernel/ITHistSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Service.h"
+#include <GaudiKernel/IFileMgr.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIoComponent.h>
+#include <GaudiKernel/ITHistSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/Service.h>
 
 //  ROOT includes:
-#include "TEfficiency.h"
-#include "TGraph.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TH3.h"
-#include "TList.h"
-#include "TObject.h"
-#include "TTree.h"
+#include <TEfficiency.h>
+#include <TGraph.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TH3.h>
+#include <TList.h>
+#include <TObject.h>
+#include <TTree.h>
 
 class IIncidentSvc;
 class TClass;

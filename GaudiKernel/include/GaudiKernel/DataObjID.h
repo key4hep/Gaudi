@@ -11,8 +11,8 @@
 #ifndef GAUDIKERNEL_DATAOBJID
 #define GAUDIKERNEL_DATAOBJID 1
 
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/StatusCode.h>
 
 #include <iostream>
 #include <mutex>

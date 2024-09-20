@@ -12,18 +12,18 @@
 #include "RNTupleCnv.h"
 #include "RootObjAddress.h"
 
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/NTuple.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/NTuple.h>
+#include <GaudiKernel/SmartIF.h>
 
 // Root
-#include "TTree.h"
+#include <TTree.h>
 
 //-----------------------------------------------------------------------------
 //

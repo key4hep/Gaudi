@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,16 +21,16 @@
 #endif
 
 // local
-#include "GaudiUtils/HistoLabels.h"
-#include "GaudiUtils/Aida2ROOT.h"
+#include <GaudiUtils/Aida2ROOT.h>
+#include <GaudiUtils/HistoLabels.h>
 
 // ============================================================================
 // ROOT
 // ============================================================================
-#include "TH1D.h"
-#include "TH2D.h"
-#include "TProfile.h"
-#include "TProfile2D.h"
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TProfile.h>
+#include <TProfile2D.h>
 
 // Private namespace
 namespace {

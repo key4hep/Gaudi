@@ -9,9 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // ============================================================================
-#include "GaudiPython/CallbackStreamBuf.h" // this one first, so Python.h is first
+#include <GaudiPython/CallbackStreamBuf.h> // this one first, so Python.h is first
 // ============================================================================
-#include "GaudiKernel/Bootstrap.h"
+#include <GaudiKernel/Bootstrap.h>
 // ============================================================================
 #include <algorithm>
 // ============================================================================

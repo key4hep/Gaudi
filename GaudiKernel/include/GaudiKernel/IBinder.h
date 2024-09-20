@@ -1,5 +1,5 @@
 /*****************************************************************************\
-* (c) Copyright 2021 CERN for the benefit of the LHCb Collaboration           *
+* (c) Copyright 2021-2024 CERN for the benefit of the LHCb Collaboration      *
 *                                                                             *
 * This software is distributed under the terms of the GNU General Public      *
 * Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   *
@@ -9,8 +9,8 @@
 * or submit itself to any jurisdiction.                                       *
 \*****************************************************************************/
 #pragma once
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IInterface.h"
+#include <GaudiKernel/IAlgTool.h>
+#include <GaudiKernel/IInterface.h>
 #include <type_traits>
 #include <utility>
 

@@ -12,9 +12,9 @@
 #define GAUDIKERNEL_CONTAINEDOBJECT_H
 
 // Include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/ObjectContainerBase.h"
-#include "GaudiKernel/StreamBuffer.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/ObjectContainerBase.h>
+#include <GaudiKernel/StreamBuffer.h>
 #include <iostream>
 
 // Forward declarations

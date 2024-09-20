@@ -25,11 +25,11 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/MapBase.h"
+#include <GaudiKernel/MapBase.h>
 
 // For parsers
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/StringKey.h"
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/StringKey.h>
 // ============================================================================
 namespace GaudiUtils {
   // ==========================================================================

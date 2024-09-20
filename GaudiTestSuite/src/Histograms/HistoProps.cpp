@@ -13,11 +13,11 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/IRndmGenSvc.h"
-#include "GaudiKernel/RndmGenerators.h"
+#include <GaudiKernel/IRndmGenSvc.h>
+#include <GaudiKernel/RndmGenerators.h>
 // ============================================================================
-#include "Gaudi/Accumulators/StaticHistogram.h"
-#include "GaudiKernel/Algorithm.h"
+#include <Gaudi/Accumulators/StaticHistogram.h>
+#include <GaudiKernel/Algorithm.h>
 #include <fmt/format.h>
 // ============================================================================
 /** @file

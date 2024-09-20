@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,12 +26,12 @@
 #include <vector>
 
 // FrameWork includes
-#include "GaudiKernel/Service.h"
+#include <GaudiKernel/Service.h>
 
 // GaudiKernel
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIoComponent.h"
-#include "GaudiKernel/IIoComponentMgr.h"
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIoComponent.h>
+#include <GaudiKernel/IIoComponentMgr.h>
 
 // Forward declaration
 class ISvcLocator;
