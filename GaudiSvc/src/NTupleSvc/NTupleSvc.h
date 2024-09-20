@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,9 +12,9 @@
 #define GAUDI_NTUPLESVC_H 1
 
 // Framework include files
-#include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/IDataSourceMgr.h"
-#include "GaudiKernel/INTupleSvc.h"
+#include <GaudiKernel/DataSvc.h>
+#include <GaudiKernel/IDataSourceMgr.h>
+#include <GaudiKernel/INTupleSvc.h>
 
 // STL include files
 #include <map>

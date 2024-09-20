@@ -12,43 +12,43 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/IStateful.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ITimelineSvc.h"
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/IStateful.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/ITimelineSvc.h>
 
 #include <string>
 #include <vector>
 
 // Extra include files (forward declarations should be sufficient)
-#include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/DataObjID.h" // must be include before Property.h, which is included in PropertyHolder.h
-#include "GaudiKernel/IAlgContextSvc.h"
-#include "GaudiKernel/IAuditorSvc.h"
-#include "GaudiKernel/IChronoStatSvc.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IExceptionSvc.h"
-#include "GaudiKernel/IHistogramSvc.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/IMonitorSvc.h"
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IRndmGenSvc.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/PropertyHolder.h"
-#include "GaudiKernel/System.h"
-#include "GaudiKernel/ToolHandle.h"
 #include <Gaudi/PluginService.h>
 #include <Gaudi/Property.h>
+#include <GaudiKernel/CommonMessaging.h>
+#include <GaudiKernel/DataObjID.h> // must be include before Property.h, which is included in PropertyHolder.h
+#include <GaudiKernel/IAlgContextSvc.h>
+#include <GaudiKernel/IAuditorSvc.h>
+#include <GaudiKernel/IChronoStatSvc.h>
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IExceptionSvc.h>
+#include <GaudiKernel/IHistogramSvc.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/IMonitorSvc.h>
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IRndmGenSvc.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/PropertyHolder.h>
+#include <GaudiKernel/System.h>
+#include <GaudiKernel/ToolHandle.h>
 
 // For concurrency
-#include "GaudiKernel/DataHandle.h"
-#include "GaudiKernel/DataHandleHolderBase.h"
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/IAlgExecStateSvc.h"
+#include <GaudiKernel/DataHandle.h>
+#include <GaudiKernel/DataHandleHolderBase.h>
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/IAlgExecStateSvc.h>
 
 class IAlgTool;
 class ToolHandleInfo;

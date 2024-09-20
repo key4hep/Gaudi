@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -30,10 +30,10 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/Map.h"
-#include "GaudiKernel/SerializeSTL.h"
-#include "GaudiKernel/VectorMap.h"
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/Map.h>
+#include <GaudiKernel/SerializeSTL.h>
+#include <GaudiKernel/VectorMap.h>
 // ============================================================================
 /** @file GaudiKernel/ToStream.h
  *  implementation of various functions for streaming.

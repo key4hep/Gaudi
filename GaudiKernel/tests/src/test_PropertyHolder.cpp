@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,8 +12,8 @@
 #define BOOST_TEST_MODULE test_PropertyHolder
 #include <boost/test/unit_test.hpp>
 
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/PropertyHolder.h"
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/PropertyHolder.h>
 
 namespace {
   const std::string emptyName{};

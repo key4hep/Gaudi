@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,10 +18,10 @@
 #define GAUDIROOTCNV_GAUDIROOTCNVSVC_H
 
 // Framework include files
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/ConversionSvc.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiUtils/IIODataManager.h"
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/ConversionSvc.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiUtils/IIODataManager.h>
 
 // C++ include files
 #include <set>
@@ -32,10 +32,10 @@ class IIncidentSvc;
 class TClass;
 
 // ROOT include files
-#include "TBranch.h"
-#include "TClass.h"
-#include "TROOT.h"
-#include "TTree.h"
+#include <TBranch.h>
+#include <TClass.h>
+#include <TROOT.h>
+#include <TTree.h>
 
 // #include "RootCnv/RootPerfMonSvc.h"
 

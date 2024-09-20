@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,9 +12,9 @@
 #define GAUDIKERNEL_IINTERFACE_H
 
 // Include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/System.h>
 #include <ostream>
 #include <type_traits>
 #include <typeinfo>
@@ -351,8 +351,8 @@ inline DEST** pp_cast( SRC** ptr ) {
   return reinterpret_cast<DEST**>( ptr );
 }
 
-#include "GaudiKernel/extend_interfaces.h"
-#include "GaudiKernel/extends.h"
-#include "GaudiKernel/implements.h"
+#include <GaudiKernel/extend_interfaces.h>
+#include <GaudiKernel/extends.h>
+#include <GaudiKernel/implements.h>
 
 #endif // GAUDIKERNEL_IINTERFACE_H

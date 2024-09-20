@@ -15,8 +15,8 @@
 #include <string>
 
 // Framework include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/StatusCode.h>
 
 // Forward declarations
 class SmartDataObjectPtr;

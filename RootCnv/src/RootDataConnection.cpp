@@ -16,27 +16,27 @@
 //====================================================================
 
 // Framework include files
-#include "RootCnv/RootDataConnection.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/Incident.h"
-#include "GaudiKernel/LinkManager.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/strcasecmp.h"
 #include "RootUtils.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/Incident.h>
+#include <GaudiKernel/LinkManager.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/strcasecmp.h>
+#include <RootCnv/RootDataConnection.h>
 // ROOT include files
-#include "TBranch.h"
-#include "TClass.h"
-#include "TFile.h"
-#include "TLeaf.h"
-#include "TMemFile.h"
-#include "TROOT.h"
-#include "TTree.h"
+#include <TBranch.h>
+#include <TClass.h>
+#include <TFile.h>
+#include <TLeaf.h>
+#include <TMemFile.h>
+#include <TROOT.h>
+#include <TTree.h>
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-#  include "Compression.h"
+#  include <Compression.h>
 static int s_compressionLevel = ROOT::CompressionSettings( ROOT::kLZMA, 4 );
 #else
 static int s_compressionLevel = 1;

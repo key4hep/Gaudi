@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,8 +23,8 @@
 //====================================================================
 #define GAUDI_NTUPLEITEMS_CPP 1
 
-#include "GaudiKernel/Selector.h"
-#include "GaudiKernel/NTuple.h"
+#include <GaudiKernel/NTuple.h>
+#include <GaudiKernel/Selector.h>
 
 /// Selector Initialisation
 StatusCode NTuple::Selector::initialize( NTuple::Tuple* /* nt */ ) { return StatusCode::SUCCESS; }

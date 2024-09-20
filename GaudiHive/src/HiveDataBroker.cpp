@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,25 +8,25 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IDataBroker.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/System.h"
-#include "boost/lexical_cast.hpp"
-#include "boost/tokenizer.hpp"
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IDataBroker.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/System.h>
 #include <algorithm>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
 #include <iomanip>
 #include <stdexcept>
 #ifdef __cpp_lib_ranges
 #  include <ranges>
 namespace ranges = std::ranges;
 #else
-#  include "range/v3/algorithm/for_each.hpp"
-#  include "range/v3/view/filter.hpp"
-#  include "range/v3/view/reverse.hpp"
-#  include "range/v3/view/transform.hpp"
+#  include <range/v3/algorithm/for_each.hpp>
+#  include <range/v3/view/filter.hpp>
+#  include <range/v3/view/reverse.hpp>
+#  include <range/v3/view/transform.hpp>
 // upstream has renamed namespace ranges::view ranges::views
 #  if RANGE_V3_VERSION < 900
 namespace ranges::views {

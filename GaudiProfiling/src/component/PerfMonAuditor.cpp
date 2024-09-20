@@ -8,13 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/Auditor.h"
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/VectorMap.h"
+#include <GaudiKernel/Auditor.h>
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/VectorMap.h>
 
 /*BEGIN: perfmon*/
 #include <cstring>

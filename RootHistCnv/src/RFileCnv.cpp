@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,19 +9,19 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Include files
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/DataIncident.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
+#include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/DataIncident.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
 
-#include "Gaudi/Interfaces/IOptionsSvc.h"
+#include <Gaudi/Interfaces/IOptionsSvc.h>
 
 // ROOT
 #include "RFileCnv.h"
-#include "TFile.h"
-#include "TROOT.h"
+#include <TFile.h>
+#include <TROOT.h>
 
 // local
 #include "RootCompressionSettings.h"

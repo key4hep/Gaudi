@@ -29,17 +29,17 @@
 #define DATASVC_DATASVC_CPP
 
 // Framework include files
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IConverter.h"
-#include "GaudiKernel/IOpaqueAddress.h"
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IConverter.h>
+#include <GaudiKernel/IOpaqueAddress.h>
 
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/GaudiException.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/GaudiException.h>
 
-#include "GaudiKernel/DataIncident.h"
-#include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/RegistryEntry.h"
+#include <GaudiKernel/DataIncident.h>
+#include <GaudiKernel/DataSvc.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/RegistryEntry.h>
 
 // Include files
 #include <algorithm>

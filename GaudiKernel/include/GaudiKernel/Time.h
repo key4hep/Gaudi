@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,9 +13,9 @@
 
 // Include files
 //   for the architecture independent int64 definition (long long)
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/StreamBuffer.h"
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/StreamBuffer.h>
 
 /** @class TimeException Time.h GaudiKernel/Time.h
  *
@@ -344,6 +344,6 @@ namespace Gaudi {
   };
 } // namespace Gaudi
 
-#include "GaudiKernel/Time.icpp"
+#include <GaudiKernel/Time.icpp>
 
 #endif // GAUDIKERNEL_TIME_H

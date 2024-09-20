@@ -11,8 +11,8 @@
 #ifndef GAUDIKERNEL_MESSAGE_H
 #define GAUDIKERNEL_MESSAGE_H
 
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/Kernel.h" // for GAUDI_API
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/Kernel.h> // for GAUDI_API
 #include <iostream>
 #include <string>
 

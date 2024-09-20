@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/Message.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/ThreadLocalContext.h"
-#include "GaudiKernel/Time.h"
-#include "GaudiKernel/Timing.h"
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/Message.h>
+#include <GaudiKernel/ThreadLocalContext.h>
+#include <GaudiKernel/Time.h>
+#include <GaudiKernel/Timing.h>
 #include <algorithm>
 #include <cctype>
 #include <cstdio>

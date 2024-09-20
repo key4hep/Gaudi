@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,14 +11,14 @@
 #ifndef GAUDIEXAMPLES_INCIDENTASYNCTESTSVC_H_
 #define GAUDIEXAMPLES_INCIDENTASYNCTESTSVC_H_
 
-#include "GaudiKernel/EventContextHash.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/SmartIF.h"
 #include "IIncidentAsyncTestSvc.h"
-#include "tbb/concurrent_unordered_map.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/EventContextHash.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/SmartIF.h>
 #include <mutex>
+#include <tbb/concurrent_unordered_map.h>
 class ISvcLocator;
 class IMessageSvc;
 class IIncidentSvc;

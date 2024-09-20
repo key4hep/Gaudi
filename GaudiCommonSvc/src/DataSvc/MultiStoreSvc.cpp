@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,21 +28,21 @@
 #define DATASVC_MULTISTORESVC_CPP
 
 // Include files
-#include "GaudiKernel/AttribStringParser.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IPartitionControl.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ISvcManager.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/TypeNameString.h"
-#include "GaudiKernel/compose.h"
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IAddressCreator.h>
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IPartitionControl.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/ISvcManager.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/TypeNameString.h>
+#include <GaudiKernel/compose.h>
 #include <map>
 #include <variant>
 

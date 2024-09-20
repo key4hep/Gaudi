@@ -8,8 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "Gaudi/Interfaces/IFileSvc.h"
 #include <Gaudi/Algorithm.h>
+#include <Gaudi/Interfaces/IFileSvc.h>
 #include <TH1F.h>
 
 namespace Gaudi::TestSuite::FileSvc {

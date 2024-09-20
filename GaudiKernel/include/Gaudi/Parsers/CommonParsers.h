@@ -22,9 +22,9 @@
 #include <vector>
 
 // ============================================================================
-#include "GaudiKernel/HistoDef.h"
-#include "GaudiKernel/Map.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/HistoDef.h>
+#include <GaudiKernel/Map.h>
+#include <GaudiKernel/StatusCode.h>
 // ============================================================================
 #define PARSERS_DECL_FOR_SINGLE( Type ) GAUDI_API StatusCode parse( Type& result, std::string_view input );
 

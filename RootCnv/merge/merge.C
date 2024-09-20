@@ -93,18 +93,18 @@ namespace Gaudi {
 #endif // GAUDIROOTCNV_ROOTDATABASEMERGER_H
 
 #ifndef GAUDIROOTCNV_ROOTDATABASEMERGER_H
-#  include "RootDatabaseMerger.h"
+#  include <RootDatabaseMerger.h>
 #endif // GAUDIROOTCNV_ROOTDATABASEMERGER_H
-#include "TBranch.h"
-#include "TFile.h"
-#include "TInterpreter.h"
-#include "TKey.h"
-#include "TLeaf.h"
-#include "TROOT.h"
-#include "TSystem.h"
-#include "TTree.h"
-#include "TTreeCloner.h"
-#include "TUUID.h"
+#include <TBranch.h>
+#include <TFile.h>
+#include <TInterpreter.h>
+#include <TKey.h>
+#include <TLeaf.h>
+#include <TROOT.h>
+#include <TSystem.h>
+#include <TTree.h>
+#include <TTreeCloner.h>
+#include <TUUID.h>
 #ifdef _WIN32
 #else
 #  include <libgen.h>

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,10 +9,10 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // ========== header
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/IDataStoreLeaves.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/IDataStoreLeaves.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/SmartIF.h>
 
 class IIncidentSvc;
 struct IDataManagerSvc;
@@ -93,15 +93,15 @@ private:
 };
 
 // ========== implementation
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/DataStoreItem.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataStoreItem.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
 
-#include "GaudiKernel/GaudiException.h"
+#include <GaudiKernel/GaudiException.h>
 
 StatusCode DataSvcFileEntriesTool::initialize() {
   StatusCode sc = AlgTool::initialize();

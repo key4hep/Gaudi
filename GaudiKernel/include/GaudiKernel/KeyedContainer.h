@@ -21,9 +21,9 @@ namespace GaudiDict {
 }
 
 // Framework include files
-#include "GaudiKernel/KeyedObject.h"
-#include "GaudiKernel/KeyedObjectManager.h"
-#include "GaudiKernel/ObjectContainerBase.h"
+#include <GaudiKernel/KeyedObject.h>
+#include <GaudiKernel/KeyedObjectManager.h>
+#include <GaudiKernel/ObjectContainerBase.h>
 
 // Forward declarations
 // template <class T, class M> class KeyedContainer;

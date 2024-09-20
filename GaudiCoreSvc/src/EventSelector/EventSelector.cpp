@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,17 +9,17 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Include files
-#include "GaudiKernel/EventSelectorDataStream.h"
-#include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/IDataStreamTool.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ISvcManager.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/Incident.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/PropertyHolder.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/EventSelectorDataStream.h>
+#include <GaudiKernel/IAddressCreator.h>
+#include <GaudiKernel/IDataStreamTool.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/ISvcManager.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/Incident.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/PropertyHolder.h>
+#include <GaudiKernel/SmartIF.h>
 
 #include "EventIterator.h"
 #include "EventSelector.h"

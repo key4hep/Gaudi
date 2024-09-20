@@ -13,15 +13,15 @@
 // ============================================================================
 // from GaudiKernel
 // ============================================================================
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/IRndmGenSvc.h"
-#include "GaudiKernel/Map.h"
-#include "GaudiKernel/RndmGenerators.h"
-#include "GaudiKernel/System.h"
-#include "GaudiKernel/ToStream.h"
-#include "GaudiKernel/VectorMap.h"
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/IRndmGenSvc.h>
+#include <GaudiKernel/Map.h>
+#include <GaudiKernel/RndmGenerators.h>
+#include <GaudiKernel/System.h>
+#include <GaudiKernel/ToStream.h>
+#include <GaudiKernel/VectorMap.h>
 // ============================================================================
-#include "GaudiKernel/Algorithm.h"
+#include <GaudiKernel/Algorithm.h>
 // ============================================================================
 /** @file
  *

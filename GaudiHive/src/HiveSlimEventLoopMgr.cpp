@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,15 +10,15 @@
 \***********************************************************************************/
 // Local includes
 #include "HiveSlimEventLoopMgr.h"
-#include "GaudiKernel/StatusCode.h"
 #include "HistogramAgent.h"
+#include <GaudiKernel/StatusCode.h>
 
 // Framework includes
-#include "GaudiKernel/AppReturnCode.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/Incident.h"
+#include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataSvc.h>
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/Incident.h>
 
 // External libraries
 #include <chrono>
@@ -357,7 +357,7 @@ StatusCode HiveSlimEventLoopMgr::stopRun() {
 // Here the loop on the events takes place.
 // This is also the natural place to put the preparation of the algorithms
 // contexts, which contain the event specific data.
-#include "GaudiKernel/Memory.h"
+#include <GaudiKernel/Memory.h>
 StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
 
   // Calculate runtime

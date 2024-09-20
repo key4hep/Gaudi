@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -40,7 +40,7 @@ namespace Gaudi {
 
 // We also need to be able to print an object of our type as a string that both
 // Python and our parser can understand,
-#include "GaudiKernel/ToStream.h"
+#include <GaudiKernel/ToStream.h>
 #include <map>
 namespace std {
   // This is an example valid for any mapping type.

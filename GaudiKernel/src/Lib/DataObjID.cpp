@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/IClassIDSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
 #include <Gaudi/Parsers/Factory.h>
+#include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/DataObjID.h>
+#include <GaudiKernel/IClassIDSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -89,7 +89,7 @@ void DataObjID::hashGen() {
   }
 }
 
-#include "GaudiKernel/ToStream.h"
+#include <GaudiKernel/ToStream.h>
 std::ostream& toStream( const DataObjID& d, std::ostream& os ) {
   using Gaudi::Utils::toStream;
   return ( d.m_clid != 0 || !d.m_className.empty() ) ? toStream( std::tie( d.m_className, d.m_key ), os )

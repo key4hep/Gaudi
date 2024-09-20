@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,17 +20,17 @@
 #  pragma warning( disable : 4996 )
 #endif
 
-#include "GaudiUtils/HistoDump.h"
-#include "AIDA/IAnnotation.h"
-#include "AIDA/IAxis.h"
-#include "AIDA/IHistogram1D.h"
-#include "AIDA/IProfile1D.h"
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiUtils/HistoStats.h"
-#include "GaudiUtils/HistoTableFormat.h"
-#include "TAxis.h"
-#include "TH1.h"
-#include "TProfile.h"
+#include <AIDA/IAnnotation.h>
+#include <AIDA/IAxis.h>
+#include <AIDA/IHistogram1D.h>
+#include <AIDA/IProfile1D.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiUtils/HistoDump.h>
+#include <GaudiUtils/HistoStats.h>
+#include <GaudiUtils/HistoTableFormat.h>
+#include <TAxis.h>
+#include <TH1.h>
+#include <TProfile.h>
 #include <cmath>
 #include <fmt/format.h>
 #include <iostream>

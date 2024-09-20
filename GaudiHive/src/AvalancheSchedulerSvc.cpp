@@ -14,13 +14,13 @@
 #include "ThreadPoolSvc.h"
 
 // Framework includes
-#include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/ThreadLocalContext.h"
 #include <Gaudi/Algorithm.h> // can be removed ASA dynamic casts to Algorithm are removed
+#include <GaudiKernel/ConcurrencyFlags.h>
+#include <GaudiKernel/DataHandleHolderVisitor.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IDataManagerSvc.h>
 #include <GaudiKernel/SerializeSTL.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 
 // C++
 #include <algorithm>
@@ -34,9 +34,9 @@
 #include <unordered_set>
 
 // External libs
-#include "boost/algorithm/string.hpp"
-#include "boost/thread.hpp"
-#include "boost/tokenizer.hpp"
+#include <boost/algorithm/string.hpp>
+#include <boost/thread.hpp>
+#include <boost/tokenizer.hpp>
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )

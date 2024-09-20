@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,8 +11,8 @@
 #ifndef GAUDIHIVE_RETCODEGUARD_H
 #define GAUDIHIVE_RETCODEGUARD_H
 
-#include "GaudiKernel/AppReturnCode.h"
-#include "GaudiKernel/IProperty.h"
+#include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/IProperty.h>
 
 /// Helper class to set the application return code in case of early exit
 /// (e.g. exception).

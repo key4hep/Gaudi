@@ -13,11 +13,11 @@
 // ============================================================================
 // Framework include files
 // ============================================================================
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/DataTypeInfo.h"
-#include "GaudiKernel/INTuple.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/SmartDataPtr.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataTypeInfo.h>
+#include <GaudiKernel/INTuple.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/SmartDataPtr.h>
 // ============================================================================
 // STL include files
 // ============================================================================

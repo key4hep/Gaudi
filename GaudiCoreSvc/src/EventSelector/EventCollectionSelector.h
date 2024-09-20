@@ -22,10 +22,10 @@
 #define GAUDISVC_EventCollectionSelector_EventCollectionSelector_H 1
 
 // Include files
-#include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/IEvtSelector.h"
-#include "GaudiKernel/NTuple.h"
-#include "GaudiKernel/Service.h"
+#include <GaudiKernel/GenericAddress.h>
+#include <GaudiKernel/IEvtSelector.h>
+#include <GaudiKernel/NTuple.h>
+#include <GaudiKernel/Service.h>
 
 // Forward declarations
 class INTuple;

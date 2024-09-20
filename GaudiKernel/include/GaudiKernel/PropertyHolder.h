@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -25,16 +25,16 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/DataHandleProperty.h"
-#include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/detected.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/DataHandleProperty.h>
+#include <GaudiKernel/INamedInterface.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/detected.h>
 
-#include "Gaudi/Interfaces/IOptionsSvc.h"
+#include <Gaudi/Interfaces/IOptionsSvc.h>
 // ============================================================================
 namespace Gaudi {
   namespace Details {

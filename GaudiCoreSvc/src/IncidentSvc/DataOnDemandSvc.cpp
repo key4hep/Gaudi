@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,21 +9,21 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "DataOnDemandSvc.h"
-#include "GaudiKernel/AttribStringParser.h"
-#include "GaudiKernel/Chrono.h"
-#include "GaudiKernel/DataIncident.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/LockedChrono.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ThreadLocalContext.h"
-#include "GaudiKernel/ToStream.h"
-#include "GaudiKernel/TypeNameString.h"
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/Chrono.h>
+#include <GaudiKernel/DataIncident.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/LockedChrono.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/ThreadLocalContext.h>
+#include <GaudiKernel/ToStream.h>
+#include <GaudiKernel/TypeNameString.h>
 #include <fmt/format.h>
 #include <map>
 #include <math.h>

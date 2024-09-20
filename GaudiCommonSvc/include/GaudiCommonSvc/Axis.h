@@ -12,9 +12,9 @@
 //  This library is free software and under the terms of the
 //  GNU Library General Public License described in the LGPL.txt
 
-#include "AIDA/IAxis.h"
+#include <AIDA/IAxis.h>
 
-#include "TAxis.h"
+#include <TAxis.h>
 
 namespace Gaudi {
 

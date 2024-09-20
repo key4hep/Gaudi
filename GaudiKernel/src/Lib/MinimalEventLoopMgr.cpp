@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,19 +10,19 @@
 \***********************************************************************************/
 #define GAUDIKERNEL_MINIMALEVENTLOOPMGR_CPP
 
-#include "GaudiKernel/AppReturnCode.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/Incident.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/ThreadLocalContext.h"
-#include "GaudiKernel/TypeNameString.h"
+#include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/Incident.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/ThreadLocalContext.h>
+#include <GaudiKernel/TypeNameString.h>
 
-#include "GaudiKernel/MinimalEventLoopMgr.h"
+#include <GaudiKernel/MinimalEventLoopMgr.h>
 
 #include <algorithm>
 

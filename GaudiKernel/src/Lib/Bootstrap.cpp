@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,25 +10,25 @@
 \***********************************************************************************/
 #include <iostream>
 
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/System.h>
 
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IClassManager.h"
-#include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/ISvcLocator.h"
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IAppMgrUI.h>
+#include <GaudiKernel/IClassManager.h>
+#include <GaudiKernel/IInterface.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/ISvcLocator.h>
 
-#include "GaudiKernel/ObjectFactory.h"
-#include "GaudiKernel/Service.h"
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiKernel/Service.h>
 
-#include "GaudiKernel/IEventProcessor.h"
+#include <GaudiKernel/IEventProcessor.h>
 
-#include "RVersion.h"
+#include <RVersion.h>
 
-#include "Python.h"
+#include <Python.h>
 
 namespace Gaudi {
 

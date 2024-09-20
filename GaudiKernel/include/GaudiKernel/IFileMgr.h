@@ -17,8 +17,8 @@
 #ifndef GAUDIKERNEL_IFILEMGR_H
 #define GAUDIKERNEL_IFILEMGR_H 1
 
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/IService.h"
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/IService.h>
 
 #include <bitset>
 #include <fcntl.h>

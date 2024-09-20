@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -39,8 +39,8 @@ namespace Win {
 #      define NOGDI
 #    endif
 #  endif
-#  include "process.h"
-#  include "windows.h"
+#  include <process.h>
+#  include <windows.h>
 
 #  if _MSC_VER < 1500
 }; // namespace Win
@@ -51,7 +51,7 @@ namespace Win {
 #endif
 
 // Framework include files
-#include "GaudiKernel/Debugger.h"
+#include <GaudiKernel/Debugger.h>
 
 /// Break the execution of the application and invoke the debugger
 long System::breakExecution() {

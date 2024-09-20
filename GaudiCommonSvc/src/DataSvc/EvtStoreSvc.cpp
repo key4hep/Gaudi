@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,22 +8,22 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "Gaudi/Accumulators.h"
-#include "Gaudi/Arena/Monotonic.h"
-#include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/System.h"
-#include "tbb/concurrent_queue.h"
+#include <Gaudi/Accumulators.h>
+#include <Gaudi/Arena/Monotonic.h>
+#include <GaudiKernel/ConcurrencyFlags.h>
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/System.h>
+#include <tbb/concurrent_queue.h>
 
-#include "ThreadLocalStorage.h"
+#include <ThreadLocalStorage.h>
 
-#include "boost/algorithm/string/predicate.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 #include <algorithm>
 #include <iomanip>

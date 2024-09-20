@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -31,9 +31,9 @@
 #define DLL_DECL_CONTAINERDICT( x )
 #define DLL_DECL_OBJECTDICT( x )
 
-#include "GaudiKernel/ObjectFactory.h"
-#include "GaudiKernel/ObjectList.h"
-#include "GaudiKernel/ObjectVector.h"
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiKernel/ObjectList.h>
+#include <GaudiKernel/ObjectVector.h>
 
 #define _ImplementContainedFactories( x )                                                                              \
   _ImplementContainerDictionaryFactory( x ) _ImplementContainedObjectFactory( x )                                      \

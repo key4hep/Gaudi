@@ -15,27 +15,27 @@
 #include <streambuf>
 
 // boost headers
-#include "boost/algorithm/string/case_conv.hpp"
+#include <boost/algorithm/string/case_conv.hpp>
 
 // ROOT headers
-#include "TClass.h"
-#include "TDirectory.h"
-#include "TError.h"
-#include "TFile.h"
-#include "TGraph.h"
-#include "TKey.h"
-#include "TROOT.h"
+#include <TClass.h>
+#include <TDirectory.h>
+#include <TError.h>
+#include <TFile.h>
+#include <TGraph.h>
+#include <TKey.h>
+#include <TROOT.h>
 
 // Gaudi headers
-#include "GaudiKernel/AttribStringParser.h"
-#include "GaudiKernel/FileIncident.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IEventProcessor.h"
-#include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IIoComponentMgr.h"
-#include "GaudiKernel/ISvcLocator.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/FileIncident.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IEventProcessor.h>
+#include <GaudiKernel/IFileMgr.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IIoComponentMgr.h>
+#include <GaudiKernel/ISvcLocator.h>
 
 // local headers
 #include "THistSvc.h"

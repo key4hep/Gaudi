@@ -11,7 +11,7 @@
 #ifndef GAUDIKERNEL_IMPLEMENTS_H
 #define GAUDIKERNEL_IMPLEMENTS_H
 
-#include "GaudiKernel/IInterface.h"
+#include <GaudiKernel/IInterface.h>
 #include <atomic>
 
 /// Base class used to implement the interfaces.

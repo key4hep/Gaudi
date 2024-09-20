@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,24 +18,24 @@
 
 #define ALLOW_ALL_TYPES
 // Include files
-#include "RootCnv/RootNTupleCnv.h"
-#include "RootCnv/RootAddress.h"
-#include "RootCnv/RootDataConnection.h"
-#include "RootCnv/RootRefs.h"
+#include <RootCnv/RootAddress.h>
+#include <RootCnv/RootDataConnection.h>
+#include <RootCnv/RootNTupleCnv.h>
+#include <RootCnv/RootRefs.h>
 
-#include "GaudiKernel/ContainedObject.h"
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/ISelectStatement.h"
-#include "GaudiKernel/NTuple.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SmartRef.h"
-#include "GaudiKernel/StreamBuffer.h"
+#include <GaudiKernel/ContainedObject.h>
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/ISelectStatement.h>
+#include <GaudiKernel/NTuple.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/SmartRef.h>
+#include <GaudiKernel/StreamBuffer.h>
 
 // ROOT include files
-#include "TBranch.h"
-#include "TROOT.h"
-#include "TTree.h"
+#include <TBranch.h>
+#include <TROOT.h>
+#include <TTree.h>
 
 #include <limits>
 #include <memory>
@@ -651,7 +651,7 @@ StatusCode RootNTupleCnv::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
 }
 
 #ifdef __POOL_COMPATIBILITY
-#  include "RootCnv/PoolClasses.h"
+#  include <RootCnv/PoolClasses.h>
 
 // Compatibility code to access ETCs, which were written using POOL
 

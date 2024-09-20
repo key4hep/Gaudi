@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,12 +12,12 @@
 #ifndef GAUDIHIVE_TIMELINESVC_H
 #define GAUDIHIVE_TIMELINESVC_H
 
-#include "GaudiKernel/ITimelineSvc.h"
-#include "GaudiKernel/Service.h"
+#include <GaudiKernel/ITimelineSvc.h>
+#include <GaudiKernel/Service.h>
 
 #include <string>
 
-#include "tbb/concurrent_vector.h"
+#include <tbb/concurrent_vector.h>
 
 class TimelineSvc : public extends<Service, ITimelineSvc> {
 public:

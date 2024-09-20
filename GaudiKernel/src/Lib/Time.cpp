@@ -9,9 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Include files
-#include "GaudiKernel/Time.h"
+#include <GaudiKernel/Time.h>
 
-#include "GaudiKernel/time_r.h"
+#include <GaudiKernel/time_r.h>
 
 #include <cerrno>
 #include <cstdio>

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,8 +28,8 @@
 // #include <iostream>
 // #include <typeinfo>
 
-#include "GaudiKernel/ModuleInfo.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/ModuleInfo.h>
+#include <GaudiKernel/System.h>
 
 #ifdef _WIN32
 #  define NOMSG
@@ -37,8 +37,8 @@
 #  define strcasecmp _stricmp
 #  define strncasecmp _strnicmp
 #  include "Win32PsApi.h"
-#  include "process.h"
-#  include "windows.h"
+#  include <process.h>
+#  include <windows.h>
 static PsApiFunctions _psApi;
 #  define getpid _getpid
 #  undef NOMSG
@@ -47,14 +47,14 @@ static PsApiFunctions _psApi;
 #    define PATH_MAX 1024
 #  endif
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
-#  include "libgen.h"
-#  include "sys/param.h"
-#  include "sys/times.h"
-#  include "unistd.h"
 #  include <cstdio>
 #  include <dlfcn.h>
 #  include <errno.h>
+#  include <libgen.h>
 #  include <string.h>
+#  include <sys/param.h>
+#  include <sys/times.h>
+#  include <unistd.h>
 #endif
 
 static System::ImageHandle      ModuleHandle = nullptr;

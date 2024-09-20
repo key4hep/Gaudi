@@ -15,11 +15,11 @@
 #endif
 
 #include "MessageSvc.h"
-#include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/Message.h"
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/IAppMgrUI.h>
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/Message.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/System.h>
 
 #include <fstream>
 #include <iostream>

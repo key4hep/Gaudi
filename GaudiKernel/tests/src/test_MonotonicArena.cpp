@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_MonotonicArena
-#include "Gaudi/Arena/Monotonic.h"
+#include <Gaudi/Arena/Monotonic.h>
 #include <boost/align/align_up.hpp>
 #include <boost/test/unit_test.hpp>
 

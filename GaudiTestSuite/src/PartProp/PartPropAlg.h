@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2023-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,9 +13,9 @@
 
 #include <Gaudi/Algorithm.h>
 
-#include "Gaudi/ParticleID.h"
-#include "Gaudi/ParticleProperty.h"
 #include <Gaudi/Interfaces/IParticlePropertySvc.h>
+#include <Gaudi/ParticleID.h>
+#include <Gaudi/ParticleProperty.h>
 
 namespace Gaudi {
   namespace TestSuite {

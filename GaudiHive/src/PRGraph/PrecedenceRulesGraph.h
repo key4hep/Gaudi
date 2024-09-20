@@ -26,14 +26,14 @@
 // fwk includes
 #include "../AlgsExecutionStates.h"
 #include "../EventSlot.h"
-#include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/ICondSvc.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/ITimelineSvc.h"
-#include "GaudiKernel/TaggedBool.h"
 #include "Visitors/IGraphVisitor.h"
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/CommonMessaging.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/ICondSvc.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/ITimelineSvc.h>
+#include <GaudiKernel/TaggedBool.h>
 
 namespace concurrency {
   using Concurrent     = Gaudi::tagged_bool<class Concurrent_tag>;

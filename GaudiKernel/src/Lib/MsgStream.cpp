@@ -27,10 +27,10 @@
 //====================================================================
 #define KERNEL_MSGSTREAM_CPP
 
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/Message.h"
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/Message.h>
+#include <GaudiKernel/MsgStream.h>
 
 #include <cstdarg>
 #include <cstdio>

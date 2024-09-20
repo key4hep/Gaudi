@@ -12,9 +12,9 @@
 #define GAUDIEXAMPLE_PROPERTYALG_H
 
 // Include files
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/MsgStream.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/MsgStream.h>
 
 #include <map>
 #include <set>

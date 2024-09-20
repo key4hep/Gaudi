@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,11 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "AlgExecStateSvc.h"
-#include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/ThreadLocalContext.h"
+#include <GaudiKernel/ConcurrencyFlags.h>
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 
 DECLARE_COMPONENT( AlgExecStateSvc )
 

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,28 +13,28 @@
 // ============================================================================
 // ROOT
 // ============================================================================
-#include "TH1D.h"
-#include "TH1F.h"
-#include "TH2D.h"
-#include "TH2F.h"
-#include "TH3D.h"
-#include "TH3F.h"
+#include <TH1D.h>
+#include <TH1F.h>
+#include <TH2D.h>
+#include <TH2F.h>
+#include <TH3D.h>
+#include <TH3F.h>
 // ============================================================================
 // AIDA
 // ============================================================================
-#include "AIDA/IHistogram1D.h"
-#include "AIDA/IHistogram2D.h"
-#include "AIDA/IHistogram3D.h"
+#include <AIDA/IHistogram1D.h>
+#include <AIDA/IHistogram2D.h>
+#include <AIDA/IHistogram3D.h>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/ToStream.h"
+#include <GaudiKernel/ToStream.h>
 // ============================================================================
 // local
 // ============================================================================
-#include "GaudiUtils/Aida2ROOT.h"
-#include "GaudiUtils/Histo2String.h"
-#include "GaudiUtils/HistoXML.h"
+#include <GaudiUtils/Aida2ROOT.h>
+#include <GaudiUtils/Histo2String.h>
+#include <GaudiUtils/HistoXML.h>
 // ============================================================================
 /** @file
  *  Implementation file for utilities Histo -> string

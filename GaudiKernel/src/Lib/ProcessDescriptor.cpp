@@ -62,8 +62,8 @@ namespace System {
 #  define strncasecmp _strnicmp
 #  define NOMSG
 #  define NOGDI
-#  include "process.h"
-#  include "windows.h"
+#  include <process.h>
+#  include <windows.h>
 #  define getpid _getpid
 namespace NtApi {
   //__declspec(dllimport) long __stdcall NtQueryInformationProcess(
@@ -78,17 +78,16 @@ namespace NtApi {
 };    // namespace NtApi
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
 #  define WINVER 0
-#  include "libgen.h"
-#  include "sys/times.h"
-#  include "unistd.h"
 #  include <cstdio>
 #  include <errno.h>
 #  include <fcntl.h>
 #  include <iostream>
+#  include <libgen.h>
 #  include <sstream>
 #  include <string>
 #  include <sys/signal.h>
 #  include <sys/syscall.h>
+#  include <sys/times.h>
 #  include <sys/types.h>
 #  include <unistd.h>
 #  ifndef __APPLE__
@@ -357,9 +356,9 @@ static inline long processID( long pid ) { return ( pid > 0 ) ? pid : ( ::getpid
 #endif // not __APPLE__
 
 // Framework include files
-#include "GaudiKernel/ModuleInfo.h"
-#include "GaudiKernel/System.h"
 #include "ProcessDescriptor.h"
+#include <GaudiKernel/ModuleInfo.h>
+#include <GaudiKernel/System.h>
 
 System::ProcessDescriptor::ProcessHandle::ProcessHandle( long pid ) {
   if ( pid > 0 ) {

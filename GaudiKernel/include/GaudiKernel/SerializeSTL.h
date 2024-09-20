@@ -22,8 +22,8 @@
 #ifndef GAUDIKERNEL_SERIALIZESTL_H_
 #define GAUDIKERNEL_SERIALIZESTL_H_
 
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/Map.h"
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/Map.h>
 #include <array>
 #include <list>
 #include <map>

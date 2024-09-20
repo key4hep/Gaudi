@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -25,7 +25,7 @@
 #define HEPRNDM_HEPRNDMGENSVC_CPP
 
 // Framework include files
-#include "GaudiKernel/ObjectFactory.h"
+#include <GaudiKernel/ObjectFactory.h>
 
 // STL include files
 #include <cfloat>
@@ -34,23 +34,23 @@
 #include <memory>
 
 // The order of the following two include files is significant due to template specialisation
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/RndmGenerators.h"
 #include "HepRndmGenerator.h"
 #include "RndmGen.h"
 #include "RndmGenSvc.h"
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/RndmGenerators.h>
 
-#include "CLHEP/Random/RandBinomial.h"
-#include "CLHEP/Random/RandBreitWigner.h"
-#include "CLHEP/Random/RandChiSquare.h"
-#include "CLHEP/Random/RandExponential.h"
-#include "CLHEP/Random/RandFlat.h"
-#include "CLHEP/Random/RandGamma.h"
-#include "CLHEP/Random/RandGaussQ.h"
-#include "CLHEP/Random/RandGeneral.h"
-#include "CLHEP/Random/RandPoisson.h"
-#include "CLHEP/Random/RandStudentT.h"
-#include "CLHEP/Random/RandomEngine.h"
+#include <CLHEP/Random/RandBinomial.h>
+#include <CLHEP/Random/RandBreitWigner.h>
+#include <CLHEP/Random/RandChiSquare.h>
+#include <CLHEP/Random/RandExponential.h>
+#include <CLHEP/Random/RandFlat.h>
+#include <CLHEP/Random/RandGamma.h>
+#include <CLHEP/Random/RandGaussQ.h>
+#include <CLHEP/Random/RandGeneral.h>
+#include <CLHEP/Random/RandPoisson.h>
+#include <CLHEP/Random/RandStudentT.h>
+#include <CLHEP/Random/RandomEngine.h>
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
 namespace CLHEP {}

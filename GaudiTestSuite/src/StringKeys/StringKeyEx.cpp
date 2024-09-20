@@ -17,10 +17,10 @@
 // ===========================================================================
 // GaudiKernel
 // ===========================================================================
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/Map.h"
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/StringKey.h"
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/Map.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/StringKey.h>
 // ===========================================================================
 #include <Gaudi/TestSuite/TestAlg.h>
 // ===========================================================================

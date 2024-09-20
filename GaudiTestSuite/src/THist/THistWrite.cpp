@@ -11,20 +11,20 @@
 // Include files
 #include "THistWrite.h"
 
-#include "GaudiKernel/ITHistSvc.h"
-#include "GaudiKernel/LockedHandle.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/RndmGenerators.h"
+#include <GaudiKernel/ITHistSvc.h>
+#include <GaudiKernel/LockedHandle.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/RndmGenerators.h>
 #include <math.h>
 
-#include "TDirectory.h"
-#include "TError.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TH3F.h"
-#include "TKey.h"
-#include "TProfile.h"
-#include "TTree.h"
+#include <TDirectory.h>
+#include <TError.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TH3F.h>
+#include <TKey.h>
+#include <TProfile.h>
+#include <TTree.h>
 
 DECLARE_COMPONENT( THistWrite )
 

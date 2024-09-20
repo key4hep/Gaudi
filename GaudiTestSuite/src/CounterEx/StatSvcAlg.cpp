@@ -17,10 +17,10 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/IStatSvc.h"
-#include "GaudiKernel/Stat.h"
+#include <GaudiKernel/IStatSvc.h>
+#include <GaudiKernel/Stat.h>
 
-#include "GaudiKernel/Algorithm.h"
+#include <GaudiKernel/Algorithm.h>
 // ============================================================================
 /** @file
  *  Simple example to illustrate the statistical abilities of

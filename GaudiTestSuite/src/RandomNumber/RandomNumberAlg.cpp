@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,20 +9,20 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Framework include files
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IHistogramSvc.h"
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IRndmGen.h"
-#include "GaudiKernel/IRndmGenSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IHistogramSvc.h>
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IRndmGen.h>
+#include <GaudiKernel/IRndmGenSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartDataPtr.h>
+#include <GaudiKernel/SmartIF.h>
 
-#include "GaudiUtils/QuasiRandom.h"
+#include <GaudiUtils/QuasiRandom.h>
 
-#include "AIDA/IHistogram1D.h"
+#include <AIDA/IHistogram1D.h>
 using AIDA::IHistogram1D;
 
 // Example related include files

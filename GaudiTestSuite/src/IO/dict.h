@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,24 +8,24 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/ContainedObject.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/ObjectVector.h"
-#include "GaudiKernel/SmartRef.h"
+#include <GaudiKernel/ContainedObject.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/ObjectVector.h>
+#include <GaudiKernel/SmartRef.h>
 
-#include "GaudiTestSuite/Collision.h"
-#include "GaudiTestSuite/Counter.h"
-#include "GaudiTestSuite/Event.h"
-#include "GaudiTestSuite/MyTrack.h"
-#include "GaudiTestSuite/MyVertex.h"
+#include <GaudiTestSuite/Collision.h>
+#include <GaudiTestSuite/Counter.h>
+#include <GaudiTestSuite/Event.h>
+#include <GaudiTestSuite/MyTrack.h>
+#include <GaudiTestSuite/MyVertex.h>
 
 #include <Gaudi/TestSuite/NTuple/MyStruct.h>
 
-#include "GaudiExamples/Collision.h"
-#include "GaudiExamples/Counter.h"
-#include "GaudiExamples/Event.h"
-#include "GaudiExamples/MyTrack.h"
-#include "GaudiExamples/MyVertex.h"
+#include <GaudiExamples/Collision.h>
+#include <GaudiExamples/Counter.h>
+#include <GaudiExamples/Event.h>
+#include <GaudiExamples/MyTrack.h>
+#include <GaudiExamples/MyVertex.h>
 
 // template ObjectVector<MyTrack>;
 // template ObjectVector<MyVertex>;

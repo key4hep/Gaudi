@@ -16,7 +16,7 @@
 #include <typeinfo>
 
 // Framework Include files
-#include "GaudiKernel/IInterface.h"
+#include <GaudiKernel/IInterface.h>
 
 /** @class IInspector IInspector.h GaudiKernel/IInspector.h
 

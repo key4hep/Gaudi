@@ -8,18 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IHistorySvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Service.h"
-#include "boost/algorithm/string/erase.hpp"
-#include "boost/algorithm/string/predicate.hpp"
-#include "boost/circular_buffer.hpp"
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IHistorySvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/Service.h>
 #include <algorithm>
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/circular_buffer.hpp>
 #include <cassert>
 #include <functional>
 #include <map>

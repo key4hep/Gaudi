@@ -16,10 +16,10 @@
 #include <vector>
 
 #ifndef GAUDIKERNEL_ISERVICE_H
-#  include "GaudiKernel/IService.h"
+#  include <GaudiKernel/IService.h>
 #endif
 
-#include "GaudiKernel/LockedHandle.h"
+#include <GaudiKernel/LockedHandle.h>
 
 class TObject;
 class TH1;

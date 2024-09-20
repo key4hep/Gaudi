@@ -10,7 +10,7 @@
 \***********************************************************************************/
 
 // The following two classes are the interfaces to facilitate reading POOL formatted ROOT files:
-#include "GaudiKernel/Kernel.h" // GAUDI_API
+#include <GaudiKernel/Kernel.h> // GAUDI_API
 #include <string>
 #include <utility>
 #include <vector>

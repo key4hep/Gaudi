@@ -8,10 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiExamples/Counter.h"
-#include "GaudiExamples/Event.h"
-#include "GaudiExamples/MyTrack.h"
-#include "GaudiExamples/MyVertex.h"
+#include <GaudiExamples/Counter.h>
+#include <GaudiExamples/Event.h>
+#include <GaudiExamples/MyTrack.h>
+#include <GaudiExamples/MyVertex.h>
 
 using namespace Gaudi::Examples;
 

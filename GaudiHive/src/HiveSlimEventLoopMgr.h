@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,16 +12,16 @@
 #define GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H 1
 
 // Framework include files
-#include "GaudiKernel/IAlgExecStateSvc.h"
-#include "GaudiKernel/IAlgResourcePool.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IEvtSelector.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/MinimalEventLoopMgr.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/IAlgExecStateSvc.h>
+#include <GaudiKernel/IAlgResourcePool.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IEvtSelector.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IScheduler.h>
+#include <GaudiKernel/MinimalEventLoopMgr.h>
+#include <GaudiKernel/SmartIF.h>
 
 // External Libraries
 #include <boost/dynamic_bitset.hpp>
