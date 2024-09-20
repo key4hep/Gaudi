@@ -40,7 +40,7 @@ class GAUDI_API InterfaceID final {
 public:
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
   /// constructor from a pack long
-  constexpr InterfaceID( unsigned long lid )
+  [[deprecated( "use InterfaceID(id, major, minor) instead" )]] constexpr InterfaceID( unsigned long lid )
       : m_id( lid & 0xFFFF ), m_major_ver( ( lid & 0xFF000000 ) >> 24 ), m_minor_ver( ( lid & 0xFF0000 ) >> 16 ) {}
 #endif
   /// constructor from components
@@ -51,7 +51,9 @@ public:
       : m_id( hash32( name ) ), m_major_ver( major ), m_minor_ver( minor ) {}
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
   /// conversion to unsigned long
-  constexpr operator unsigned long() const { return ( m_major_ver << 24 ) + ( m_minor_ver << 16 ) + m_id; }
+  [[deprecated]] constexpr operator unsigned long() const {
+    return ( m_major_ver << 24 ) + ( m_minor_ver << 16 ) + m_id;
+  }
 #endif
   /// get the interface identifier
   constexpr unsigned long id() const { return m_id; }
