@@ -22,6 +22,10 @@
 //
 //====================================================================
 
+#ifndef GAUDI_TEST_PUBLIC_HEADERS_BUILD
+#  warning "deprecated header file, not to be used"
+#endif
+
 // DllMain entry point
 #include <GaudiKernel/DllMain.icpp>
 
