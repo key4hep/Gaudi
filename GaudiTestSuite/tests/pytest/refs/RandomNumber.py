@@ -13,7 +13,7 @@
 
 # ruff: noqa
 
-theApp.DLLs = ["RootHistCnv", "HbookCnv", "GaudiAlg", "GaudiAud"]
+theApp.DLLs = ["RootHistCnv", "HbookCnv", "GaudiAud"]
 theApp.TopAlg = ["RandomNumberAlg"]
 
 # Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )

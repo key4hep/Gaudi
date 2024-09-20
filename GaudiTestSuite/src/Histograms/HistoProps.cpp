@@ -16,8 +16,6 @@
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 // ============================================================================
-// GaudiAlg
-// ============================================================================
 #include "Gaudi/Accumulators/StaticHistogram.h"
 #include "GaudiKernel/Algorithm.h"
 #include <fmt/format.h>

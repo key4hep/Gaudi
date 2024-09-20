@@ -16,28 +16,17 @@ class TestAlgorithmDestructor(GaudiExeTest):
     command = ["gaudirun.py", "-v"]
 
     def options(self):
-        # FIXME: drop when we drop GAUDI_ENABLE_GAUDIALG
-        import Configurables
         from Configurables import ApplicationMgr
+        from Configurables import Gaudi__Sequencer as Sequencer
         from Configurables import GaudiTesting__DestructorCheckAlg as dca
-
-        if hasattr(Configurables, "GaudiSequencer"):
-            # GaudiAlg available
-            Sequencer = Configurables.Sequencer
-            GaudiSequencer = Configurables.GaudiSequencer
-        else:
-            # GaudiAlg not available
-            Sequencer = Configurables.Gaudi__Sequencer
-            GaudiSequencer = Configurables.Gaudi__Sequencer
 
         ApplicationMgr(
             TopAlg=[
                 dca("TopAlg"),
                 Sequencer("seq1", Members=[dca("SequencerAlg"), dca("SharedAlg")]),
-                GaudiSequencer(
+                Sequencer(
                     "seq2",
                     Members=[
-                        dca("GaudiSequencerAlg"),
                         dca("SharedAlg"),
                         dca("SharedAlg2"),
                     ],
@@ -51,7 +40,6 @@ class TestAlgorithmDestructor(GaudiExeTest):
     blocks = [
         "Destructor of TopAlg",
         "Destructor of SequencerAlg",
-        "Destructor of GaudiSequencerAlg",
         "Destructor of SharedAlg",
         "Destructor of SharedAlg2",
     ]

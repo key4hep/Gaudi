@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -57,7 +57,6 @@ after the configuration or use ccmake or cmake-gui.
   * GAUDI_GENCONF_NO_FAIL
 * Compile options
   * GAUDI_BUILD_EXAMPLES
-  * GAUDI_ENABLE_GAUDIALG
   * GAUDI_ENABLE_GAUDIPARTPROP
   * GAUDI_REFLEX_COMPONENT_ALIASES
 * Doxygen
@@ -130,7 +129,6 @@ include(cmake/GaudiDependencies.cmake)
 
 string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "
 set(GAUDI_BUILD_EXAMPLES ${GAUDI_BUILD_EXAMPLES})
-set(GAUDI_ENABLE_GAUDIALG ${GAUDI_ENABLE_GAUDIALG})
 set(GAUDI_ENABLE_GAUDIPARTPROP ${GAUDI_ENABLE_GAUDIPARTPROP})
 ")
 
@@ -174,7 +172,6 @@ add_subdirectory(GaudiConfiguration)
 add_subdirectory(GaudiCoreSvc)
 add_subdirectory(GaudiUtils)
 add_subdirectory(Gaudi)
-add_subdirectory(GaudiAlg)
 add_subdirectory(GaudiFunctional)
 add_subdirectory(GaudiAud)
 add_subdirectory(GaudiCommonSvc)

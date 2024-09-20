@@ -93,7 +93,7 @@
       <data key="d2">TrackCollection</data>
     </node>
     <node id="ThinNegativeEnergyNCHSeutralPFOsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a10tcemsubFS">
       <data key="d1">DataObject</data>
@@ -112,7 +112,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="MuonSegmentMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigBphysContainer_MERGER_SG_HLT_xAOD__TrigBphysContainer_L2DiMuXFex">
       <data key="d1">DataObject</data>
@@ -127,14 +127,14 @@
       <data key="d2">xAOD_RoiDescriptorStore</data>
     </node>
     <node id="InDetCaloClusterROISelectorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SCT_CablingData_MERGER_CS_SCT_CablingData">
       <data key="d1">DataObject</data>
       <data key="d2">SCT_CablingData</data>
     </node>
     <node id="SCT_CablingCondAlgFromCoraCoolAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_ONL01_CALIB_EMS">
       <data key="d1">DataObject</data>
@@ -165,14 +165,14 @@
       <data key="d2">xAOD_HIEventShapeAuxContainer</data>
     </node>
     <node id="ThinNegLCOriginTopoClustersAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_RoiDescriptorStore_MERGER_SG_HLT_xAOD__RoiDescriptorStore_TrigT2CosmicJet">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_RoiDescriptorStore</data>
     </node>
     <node id="MuonCaloTagAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigOperationalInfoCollection_MERGER_SG_HLT_TrigOperationalInfoCollection_OPI_EF">
       <data key="d1">DataObject</data>
@@ -187,17 +187,17 @@
       <data key="d2">TileCalibData&lt;TileCalibDrawerFlt&gt;</data>
     </node>
     <node id="TileTMDBTMFCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="btagging_antikt4emtopoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETContainer_MERGER_SG_MET_Reference_AntiKt4LCTopo">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_MissingETContainer</data>
     </node>
     <node id="LArFebErrorSummaryMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TTrainedNetworkCollection_MERGER_CS_PixelClusterNNWithTrack">
       <data key="d1">DataObject</data>
@@ -220,10 +220,10 @@
       <data key="d2">TrackCollection</data>
     </node>
     <node id="TileBadChannelsCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="IsolationBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_OFL02_TIME_CHANNELOFFSET_PHY">
       <data key="d1">DataObject</data>
@@ -238,7 +238,7 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="EMBremCollectionBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_EgammaContainer_MERGER_SG_eflowRec_selectedElectrons">
       <data key="d1">DataObject</data>
@@ -257,14 +257,14 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="StauCreatorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a10ttclcwjesFS">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="xAODRingSetConfWriterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Photons.topoetcone40ptCorrection">
       <data key="d1">DataObject</data>
@@ -275,7 +275,7 @@
       <data key="d2">xAOD_PFOContainer</data>
     </node>
     <node id="EmTowerBldrAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArADC2MeV_MERGER_CS_LArADC2MeV">
       <data key="d1">DataObject</data>
@@ -298,7 +298,7 @@
       <data key="d2">xAOD_PFOContainer</data>
     </node>
     <node id="InDetAmbiguitySolverAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArFebHeaderContainer_MERGER_SG_LArFebHeader">
       <data key="d1">DataObject</data>
@@ -361,7 +361,7 @@
       <data key="d2">xAOD_PhotonContainer</data>
     </node>
     <node id="InDetRecStatisticsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigElectronContainer_MERGER_SG_HLT_xAOD__TrigElectronContainer_L2ElectronFex">
       <data key="d1">DataObject</data>
@@ -388,7 +388,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="JetTrackAlg_forTausAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a4tcemnojcalibPS">
       <data key="d1">DataObject</data>
@@ -415,10 +415,10 @@
       <data key="d2">xAOD_L2CombinedMuonContainer</data>
     </node>
     <node id="SCT_ReadCalibDataCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="PixelOfflineCalibCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SCT_FlaggedCondData_MERGER_SG_SCT_FlaggedCondData">
       <data key="d1">DataObject</data>
@@ -433,7 +433,7 @@
       <data key="d2">DataHeader</data>
     </node>
     <node id="TileRChMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_EmTauRoIAuxContainer_MERGER_SG_HLT_xAOD__EmTauRoIContainer_L1TopoEM">
       <data key="d1">DataObject</data>
@@ -456,7 +456,7 @@
       <data key="d2">xAOD_PFOContainer</data>
     </node>
     <node id="LArClusterCollisionTimeAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigNavigationAuxInfo_MERGER_SG_TrigNavigation">
       <data key="d1">DataObject</data>
@@ -467,7 +467,7 @@
       <data key="d2">xAOD_BTagVertexContainer</data>
     </node>
     <node id="InDetPixelClusterizationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDet_SiClusterContainer_MERGER_SG_PixelClusters">
       <data key="d1">DataObject</data>
@@ -502,10 +502,10 @@
       <data key="d2">AlignableTransformContainer</data>
     </node>
     <node id="TileTMDBThresholdCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigNavigationSlimmer_StreamAODAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AthenaAttributeList_MERGER_SG_SimpleTag">
       <data key="d1">DataObject</data>
@@ -528,14 +528,14 @@
       <data key="d2">TrackCollection</data>
     </node>
     <node id="MuonAlignmentErrorDbAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloClusterCellLinkContainer_MERGER_SG_TileTopoCluster">
       <data key="d1">DataObject</data>
       <data key="d2">CaloClusterCellLinkContainer</data>
     </node>
     <node id="LArFebRodMappingAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_EventShape_MERGER_SG_NeutralParticleFlowIsoForwardEventShape">
       <data key="d1">DataObject</data>
@@ -574,7 +574,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="EventCounterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETAuxContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_EFMissingET_Fex_2sidednoiseSupp_PUC">
       <data key="d1">DataObject</data>
@@ -589,7 +589,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="MuGirlStauAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_VertexContainer_MERGER_SG_MSDisplacedVertex.nTGC">
       <data key="d1">DataObject</data>
@@ -620,7 +620,7 @@
       <data key="d2">xAOD_TrigEMClusterContainer</data>
     </node>
     <node id="MuonMDT_CablingAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="PixelRDO_Container_MERGER_SG_PixelRDOs">
       <data key="d1">DataObject</data>
@@ -635,14 +635,14 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="METMakerAlg_AntiKt4EMTopoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_trktcFTK">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrigMissingETContainer</data>
     </node>
     <node id="edalg_Kt4LCTopoOriginEventShapeAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SG_AuxElement_MERGER_SG_NeutralParticleFlowIsoCentralEventShape">
       <data key="d1">DataObject</data>
@@ -661,7 +661,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="CTPSimulationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TauTrackContainer_MERGER_SG_TauTracks">
       <data key="d1">DataObject</data>
@@ -680,7 +680,7 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="TileOnlineSampleNoiseCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetRoIContainer_MERGER_SG_LVL1JetRoIs">
       <data key="d1">DataObject</data>
@@ -747,17 +747,17 @@
       <data key="d2">xAOD_CaloClusterContainer</data>
     </node>
     <node id="EventInfoTagBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_L2StandAloneMuonContainer_MERGER_SG_HLT_xAOD__L2StandAloneMuonContainer_MuonL2SAInfo">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_L2StandAloneMuonContainer</data>
     </node>
     <node id="InDetPixelMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="ZdcRecV3Alg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="std_vector&lt;int&gt;_MERGER_SG_L1CaloRODErrorVector">
       <data key="d1">DataObject</data>
@@ -784,7 +784,7 @@
       <data key="d2">RawInfoSummaryForTag</data>
     </node>
     <node id="InDet__SiDetElementsRoadCondAlg_xkAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigBphysContainer_MERGER_SG_HLT_xAOD__TrigBphysContainer_L2BMuMuFex">
       <data key="d1">DataObject</data>
@@ -799,20 +799,20 @@
       <data key="d2">std_vector&lt;int&gt;</data>
     </node>
     <node id="TileDQstatusAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LAr7_11NocorrClusterMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileTowerBldrAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_ONL01_CALIB_CES">
       <data key="d1">DataObject</data>
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="LArBadFebCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="EgammaRecContainer_MERGER_SG_egammaRecCollection">
       <data key="d1">DataObject</data>
@@ -867,14 +867,14 @@
       <data key="d2">Muon_TgcCoinDataContainer</data>
     </node>
     <node id="photonSuperClusterBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloCellContainer_MERGER_SG_HLT_CaloCellContainer_TrigCaloCellMaker_tau">
       <data key="d1">DataObject</data>
       <data key="d2">CaloCellContainer</data>
     </node>
     <node id="egammaSelectedTrackCopyAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleAuxContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Bjet_FTK_IDTrig">
       <data key="d1">DataObject</data>
@@ -889,20 +889,20 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="TileDigitsFilterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArFlatConditionsAlg_LArRampFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="EMGSFCaloExtensionBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_EgammaContainer_MERGER_SG_Electrons">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_EgammaContainer</data>
     </node>
     <node id="CaloCellMakerFromClusterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_AntiKt4EMTopoJets.btaggingLink">
       <data key="d1">DataObject</data>
@@ -929,14 +929,14 @@
       <data key="d2">xAOD_TrigDecision</data>
     </node>
     <node id="EMVertexBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_MuTagIMO_EF_ExtrapTrackParticles">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="CaloBCIDAvgAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MuonContainer_MERGER_SG_HLT_xAOD__MuonContainer_eMuonEFInfo">
       <data key="d1">DataObject</data>
@@ -959,10 +959,10 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="InDetPRD_AssociationForwardTracksAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondInputLoaderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArBadChannelCont_MERGER_CS_LArBadChannel">
       <data key="d1">DataObject</data>
@@ -973,7 +973,7 @@
       <data key="d2">xAOD_TrigMissingETContainer</data>
     </node>
     <node id="TgcRdoToTgcPrepDataAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_TrigTauJet">
       <data key="d1">DataObject</data>
@@ -988,10 +988,10 @@
       <data key="d2">xAOD_TrigT2MbtsBitsAuxContainer</data>
     </node>
     <node id="CaloTopoClusterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetSiElementPropertiesTableCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.topoetconeCorrBitset">
       <data key="d1">DataObject</data>
@@ -1002,7 +1002,7 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="InDetSiDetElementBoundaryLinksCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="DataHeader_MERGER_SG_StreamESD_Input">
       <data key="d1">DataObject</data>
@@ -1025,7 +1025,7 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="InDetExtensionProcessorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_RoiDescriptorStoreAuxInfo_MERGER_SG_HLT_xAOD__RoiDescriptorStore_TrigJetRec">
       <data key="d1">DataObject</data>
@@ -1044,7 +1044,7 @@
       <data key="d2">TrackCollection</data>
     </node>
     <node id="BeamBackgroundFillerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TDAQ_Resources_ATLAS_SCT_Robins">
       <data key="d1">DataObject</data>
@@ -1163,7 +1163,7 @@
       <data key="d2">TRT_BSIdErrContainer</data>
     </node>
     <node id="CscRdoBsRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="EgammaRecContainer_MERGER_SG_PhotonSuperRecCollection">
       <data key="d1">DataObject</data>
@@ -1174,7 +1174,7 @@
       <data key="d2">xAOD_TriggerTowerContainer</data>
     </node>
     <node id="PFTrackSelectorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileRawChannelContainer_MERGER_SG_TileRawChannelFlt">
       <data key="d1">DataObject</data>
@@ -1193,7 +1193,7 @@
       <data key="d2">std_vector&lt;int&gt;</data>
     </node>
     <node id="SCT_SiliconHVCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a4tcemsubjesISFS">
       <data key="d1">DataObject</data>
@@ -1212,7 +1212,7 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="SCT_DCSConditionsTempCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_VertexContainer_MERGER_SG_HLT_xAOD__VertexContainer_EFHistoPrmVtx">
       <data key="d1">DataObject</data>
@@ -1239,7 +1239,7 @@
       <data key="d2">xAOD_RoiDescriptorStore</data>
     </node>
     <node id="TileTMDBCalibCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArShapeFlat_MERGER_CS_LArShape">
       <data key="d1">DataObject</data>
@@ -1254,14 +1254,14 @@
       <data key="d2">xAOD_VertexContainer</data>
     </node>
     <node id="TileTimingCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="Muon_TgcPrepDataContainer_MERGER_SG_TGC_Measurements">
       <data key="d1">DataObject</data>
       <data key="d2">Muon_TgcPrepDataContainer</data>
     </node>
     <node id="PFLeptonSelectorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.ptcone30">
       <data key="d1">DataObject</data>
@@ -1296,7 +1296,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="SCT_AlignCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TauTrackContainer_MERGER_SG_HLT_xAOD__TauTrackContainer_TrigTauRecMergedTracks">
       <data key="d1">DataObject</data>
@@ -1327,14 +1327,14 @@
       <data key="d2">xAOD_RoiDescriptorStore</data>
     </node>
     <node id="TRTAlignCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigEMClusterAuxContainer_MERGER_SG_HLT_xAOD__TrigEMClusterContainer_TrigT2CaloEgamma">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrigEMClusterAuxContainer</data>
     </node>
     <node id="BeamSpotCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_topocltrk_PUC_nojcalib">
       <data key="d1">DataObject</data>
@@ -1365,7 +1365,7 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="InDetPriVxFinderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_CaloClusterContainer_MERGER_SG_PhotonSuperClusters">
       <data key="d1">DataObject</data>
@@ -1384,7 +1384,7 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="SCT_DCSConditionsStatCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigRoiDescriptorCollection_MERGER_SG_HLT_TrigRoiDescriptorCollection_initialRoI">
       <data key="d1">DataObject</data>
@@ -1419,7 +1419,7 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="PFOChargedCreatorAlgorithmAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_ONL01_STATUS_ADC">
       <data key="d1">DataObject</data>
@@ -1430,16 +1430,16 @@
       <data key="d2">LArCalibLineMapping</data>
     </node>
     <node id="JobInfoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="BackgroundWordFillerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="PixelClusterNnWithTrackCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="EgammaMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LVL1_MbtsCTP_MERGER_SG_L1MBTSCtoCTPLocation">
       <data key="d1">DataObject</data>
@@ -1454,7 +1454,7 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="EventDataModelMonitorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileCalibData&lt;TileCalibDrawerFlt&gt;_MERGER_CS_TileTiming">
       <data key="d1">DataObject</data>
@@ -1497,10 +1497,10 @@
       <data key="d2">SG_AuxElement</data>
     </node>
     <node id="PFAlgorithmAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AllExecutedEventsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrackExtensionMap_MERGER_SG_ExtendedTracksMap">
       <data key="d1">DataObject</data>
@@ -1511,7 +1511,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="TrigT1CTMonitoring::DeriveSimulationInputsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_AntiKt4LCTopoJets">
       <data key="d1">DataObject</data>
@@ -1530,14 +1530,14 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="TgcRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LVL1CTP_CTPSLink_MERGER_SG_CTPSLinkLocation_Rerun">
       <data key="d1">DataObject</data>
       <data key="d2">LVL1CTP_CTPSLink</data>
     </node>
     <node id="RpcRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_FullScan_EFID">
       <data key="d1">DataObject</data>
@@ -1576,7 +1576,7 @@
       <data key="d2">xAOD_ElectronTrigAuxContainer</data>
     </node>
     <node id="AppStopAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_topocl">
       <data key="d1">DataObject</data>
@@ -1599,7 +1599,7 @@
       <data key="d2">IsoMuonFeatureContainer</data>
     </node>
     <node id="EDnpfIsoForwardAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileCalibData&lt;TileCalibDrawerFlt&gt;_MERGER_CS_TileTMDBDelay">
       <data key="d1">DataObject</data>
@@ -1638,7 +1638,7 @@
       <data key="d2">LArFebRodMapping</data>
     </node>
     <node id="pjalg_EMTopoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_CaloClusterContainer_MERGER_SG_HLT_xAOD__CaloClusterContainer_TrigEFCaloCalibFex">
       <data key="d1">DataObject</data>
@@ -1657,7 +1657,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="PixelClusterNnCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_CaloTopoCluster">
       <data key="d1">DataObject</data>
@@ -1672,21 +1672,21 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="LArHVCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_RoiDescriptorStore_MERGER_SG_HLT_xAOD__RoiDescriptorStore_SplitJet">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_RoiDescriptorStore</data>
     </node>
     <node id="LArFlatConditionsAlg_LArShapeFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleAuxContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Bphysics_EFID">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="RpcLv1RawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETContainer_MERGER_SG_MET_LocHadTopo">
       <data key="d1">DataObject</data>
@@ -1757,13 +1757,13 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="ZdcByteStreamRawDataV2Alg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="PixelConfigCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetTRT_TrackSegmentsFinderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__EXT_DCS_MAGNETS_SENSORDATA">
       <data key="d1">DataObject</data>
@@ -1774,7 +1774,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="CscPrdRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AthenaAttributeList_MERGER_CS__LAR_Identifier_CalibIdMap">
       <data key="d1">DataObject</data>
@@ -1801,7 +1801,7 @@
       <data key="d2">TrackCollection</data>
     </node>
     <node id="InDetDiMuMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileCalibData&lt;TileCalibDrawerFlt&gt;_MERGER_CS_TileOnlineTiming">
       <data key="d1">DataObject</data>
@@ -1852,7 +1852,7 @@
       <data key="d2">AthenaAttributeList</data>
     </node>
     <node id="CreateLumiBlockCollectionFromFileAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigBphysAuxContainer_MERGER_SG_HLT_xAOD__TrigBphysContainer_EFBMuMuXFex">
       <data key="d1">DataObject</data>
@@ -1875,7 +1875,7 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="InDetLowBetaTrkAlgorithmAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigMonEventCollection_MERGER_SG_HLT_TrigMonEventCollection_OPI_L2_monitoring_event">
       <data key="d1">DataObject</data>
@@ -1894,10 +1894,10 @@
       <data key="d2">xAOD_TrigRingerRingsContainer</data>
     </node>
     <node id="AthenaMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="egammaTrackSlimmerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonFeatureContainer_MERGER_SG_HLT_MuonFeatureContainer">
       <data key="d1">DataObject</data>
@@ -1912,7 +1912,7 @@
       <data key="d2">xAOD_MissingETAssociationMap</data>
     </node>
     <node id="RIO_OnTrackErrorScalingCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="GeoAlignmentStore_MERGER_CS_SCTAlignmentStore">
       <data key="d1">DataObject</data>
@@ -1967,7 +1967,7 @@
       <data key="d2">xAOD_CaloClusterTrigAuxContainer</data>
     </node>
     <node id="LArMCSymCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDet_SiliconPropertiesVector_MERGER_CS_PixelSiliconPropertiesVector">
       <data key="d1">DataObject</data>
@@ -1978,30 +1978,30 @@
       <data key="d2">eflowRecClusterContainer</data>
     </node>
     <node id="IncidentProcAlg1Alg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloCluster2xAODAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="std_vector&lt;int&gt;_MERGER_SG_L1CaloCPMMismatchVector">
       <data key="d1">DataObject</data>
       <data key="d2">std_vector&lt;int&gt;</data>
     </node>
     <node id="MdtRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="EDpfIsoForwardAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="edalg_Kt4EMTopoOriginEventShapeAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_TauChargedParticleFlowObjects">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="L1MonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_RingSetContainer_MERGER_SG_ElectronRingSets">
       <data key="d1">DataObject</data>
@@ -2012,13 +2012,13 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="CTMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetGlobalManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="RpcRdoToRpcPrepDataAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.ptconecoreTrackPtrCorrection">
       <data key="d1">DataObject</data>
@@ -2033,7 +2033,7 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="LArFlatConditionsAlg_LArMphysOverMcalFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileCalibData&lt;TileCalibDrawerOfc&gt;_MERGER_CS_TileOfcOf1">
       <data key="d1">DataObject</data>
@@ -2060,14 +2060,14 @@
       <data key="d2">Trk_SegmentCollection</data>
     </node>
     <node id="MuonInsideOutRecoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetElementContainer_MERGER_SG_JetElementsOverlap">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_JetElementContainer</data>
     </node>
     <node id="SCT_DCSConditionsHVCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigVertexCountsCollection_MERGER_SG_HLT_TrigVertexCountsCollection_vertexcounts">
       <data key="d1">DataObject</data>
@@ -2082,19 +2082,19 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="StreamESDAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CscSegmEsdMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="jetalgAntiKt4EMTopoJetsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetPixelPrdAssociationTrackParticlesAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArCollisionTimeAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigInDetTrackCollection_MERGER_SG_HLT_TrigInDetTrackCollection">
       <data key="d1">DataObject</data>
@@ -2105,7 +2105,7 @@
       <data key="d2">xAOD_VertexAuxContainer</data>
     </node>
     <node id="ThinNegativeEnergyNeutralPFOsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__SCT_DCS_CHANSTAT">
       <data key="d1">DataObject</data>
@@ -2120,10 +2120,10 @@
       <data key="d2">LVL1_FrontPanelCTP</data>
     </node>
     <node id="CscClusterEsdRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="jetalgAntiKt10LCTopoJetsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Bjet_FTKRefit">
       <data key="d1">DataObject</data>
@@ -2142,24 +2142,24 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="electronSuperClusterBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Photons.etcone30ptCorrection">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="InDetSiSpTrackFinderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MainCaloRingerAlgorithmAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigTrackCountsCollection_MERGER_SG_HLT_TrigTrackCountsCollection_trackcounts">
       <data key="d1">DataObject</data>
       <data key="d2">TrigTrackCountsCollection</data>
     </node>
     <node id="InitializeMuonCaloEnergyAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloCellContainer_MERGER_SG_HLT_CaloCellContainer_TrigCaloCellLoF">
       <data key="d1">DataObject</data>
@@ -2174,27 +2174,27 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="TrackParticleCellAssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrackCollection_MERGER_SG_HLT_TrackCollection_InDetTrigTrackSlimmer_Bjet_EFID">
       <data key="d1">DataObject</data>
       <data key="d2">TrackCollection</data>
     </node>
     <node id="InDetSCTMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetSCTRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SCT_MonitorCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SG_AuxElement_MERGER_SG_Kt4EMPFlowEventShape">
       <data key="d1">DataObject</data>
       <data key="d2">SG_AuxElement</data>
     </node>
     <node id="TauRecRunnerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigBphysAuxContainer_MERGER_SG_HLT_xAOD__TrigBphysContainer_L2BMuMuXFex">
       <data key="d1">DataObject</data>
@@ -2225,7 +2225,7 @@
       <data key="d2">xAOD_TrigMissingETAuxContainer</data>
     </node>
     <node id="PixelSiPropertiesCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="Analysis_JetTagCalibCondData_MERGER_CS_JetTagCalibHistosKey">
       <data key="d1">DataObject</data>
@@ -2308,7 +2308,7 @@
       <data key="d2">ILArMinBiasAverage</data>
     </node>
     <node id="InDetTrackParticlesAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigT2ZdcSignalsContainer_MERGER_SG_HLT_xAOD__TrigT2ZdcSignalsContainer_zdcsignals">
       <data key="d1">DataObject</data>
@@ -2319,14 +2319,14 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="MBTSTimeDiffEventInfoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SG_AuxElement_MERGER_SG_Kt4EMTopoOriginEventShape">
       <data key="d1">DataObject</data>
       <data key="d2">SG_AuxElement</data>
     </node>
     <node id="InDetTRT_SeededTrackFinderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MuonRoIAuxContainer_MERGER_SG_HLT_xAOD__MuonRoIContainer_L1TopoMuon">
       <data key="d1">DataObject</data>
@@ -2357,34 +2357,34 @@
       <data key="d2">xAOD_MissingETAssociationMap</data>
     </node>
     <node id="InDetSiTrackerSpacePointFinderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigElectronAuxContainer_MERGER_SG_HLT_xAOD__TrigElectronContainer_L2IDCaloFex">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrigElectronAuxContainer</data>
     </node>
     <node id="MuonCombinedAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetExtensionProcessorPixelPrdAssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetTRT_StandaloneTrackFinderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_topocl_PS">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrigMissingETContainer</data>
     </node>
     <node id="EndIncFiringAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.topoetconecoreConeEnergyCorrection">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="LumiBlockMuWriterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETContainer_MERGER_SG_MET_Core_AntiKt4EMTopo">
       <data key="d1">DataObject</data>
@@ -2399,7 +2399,7 @@
       <data key="d2">MuonSegmentCombinationCollection</data>
     </node>
     <node id="MuonRpcRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_ForwardElectronClusters">
       <data key="d1">DataObject</data>
@@ -2414,17 +2414,17 @@
       <data key="d2">xAOD_EventInfo</data>
     </node>
     <node id="MuonMdtRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_CaloClusterContainer_MERGER_SG_TauNeutralParticleFlowObjects">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_CaloClusterContainer</data>
     </node>
     <node id="egammaForwardAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="StreamAODAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="std_vector&lt;int&gt;_MERGER_SG_L1CaloJEMMismatchVector">
       <data key="d1">DataObject</data>
@@ -2451,16 +2451,16 @@
       <data key="d2">ILArShape</data>
     </node>
     <node id="LArFlatConditionsAlg_LAruA2MeVFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="pjalg_EMPFlowAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="JetMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="edalg_Kt4EMPFlowEventShapeAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigBphysContainer_MERGER_SG_HLT_xAOD__TrigBphysContainer_EFBMuMuXFex_X">
       <data key="d1">DataObject</data>
@@ -2491,7 +2491,7 @@
       <data key="d2">xAOD_TrigBphysAuxContainer</data>
     </node>
     <node id="InDetBCMRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Electron_L2ID">
       <data key="d1">DataObject</data>
@@ -2506,17 +2506,17 @@
       <data key="d2">xAOD_VertexContainer</data>
     </node>
     <node id="InDetPriVxFinderNoBeamConstraintAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a10r_tcemsubjesISFS">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="LArHVScaleCorrCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="pjalg_LCTopoOriginAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_DCS_HVSET">
       <data key="d1">DataObject</data>
@@ -2535,10 +2535,10 @@
       <data key="d2">TrigVertexCollection</data>
     </node>
     <node id="L1CaloMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetForwardTrackParticlesAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonCombined_InDetCandidateToTagMap_MERGER_SG_caloTagMap">
       <data key="d1">DataObject</data>
@@ -2561,13 +2561,13 @@
       <data key="d2">xAOD_MuonContainer</data>
     </node>
     <node id="InDetAmbiguitySolverPixelPrdAssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="jetalgAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigBSExtractionAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_CaloClusterContainer_MERGER_SG_PFCaloCluster">
       <data key="d1">DataObject</data>
@@ -2590,7 +2590,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="TileTopoClusterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigRoiDescriptorCollection_MERGER_SG_HLT_TrigRoiDescriptorCollection_SuperRoi">
       <data key="d1">DataObject</data>
@@ -2633,14 +2633,14 @@
       <data key="d2">PixelDCSConditionsData</data>
     </node>
     <node id="RecoMemoryBeginAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_tmp_egammaTopoCluster">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="InDetTRTonly_PRD_AssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="fastjet_ClusterSequence_MERGER_SG_ClusterSequence_JetFinder_jetalgAntiKt4LCTopoJets.AntiKt4LCTopoJets.AntiKt4LCTopoJetsFinder">
       <data key="d1">DataObject</data>
@@ -2667,10 +2667,10 @@
       <data key="d2">xAOD_JetEtRoI</data>
     </node>
     <node id="LArFlatConditionsAlg_LArPedestalFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="METAssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListVec_MERGER_CS__SCT_DAQ_Config_MUR">
       <data key="d1">DataObject</data>
@@ -2681,7 +2681,7 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="InDetPRD_AssociationPixelPrdAssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__LAR_ElecCalibFlat_DAC2uA">
       <data key="d1">DataObject</data>
@@ -2744,10 +2744,10 @@
       <data key="d2">xAOD_VertexAuxContainer</data>
     </node>
     <node id="EDpfIsoCentralAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="RecoTimerBeforeOutputAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AthenaAttributeList_MERGER_CS__LAR_BadChannels_KnownMNBFEBs">
       <data key="d1">DataObject</data>
@@ -2778,7 +2778,7 @@
       <data key="d2">xAOD_JetElementContainer</data>
     </node>
     <node id="InDetPixelRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SCT_ConfigurationCondData_MERGER_CS_SCT_ConfigurationCondData">
       <data key="d1">DataObject</data>
@@ -2809,7 +2809,7 @@
       <data key="d2">SCT_DCSFloatCondData</data>
     </node>
     <node id="TileLookForMuAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrackCollection_MERGER_SG_MSOnlyExtrapolatedMuonTracks">
       <data key="d1">DataObject</data>
@@ -2840,7 +2840,7 @@
       <data key="d2">SpacePointContainer</data>
     </node>
     <node id="LUCID_ByteStreamRawDataCnvAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Photons.ptvarcone20">
       <data key="d1">DataObject</data>
@@ -2859,7 +2859,7 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="ThinTrkTrackAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__MUONALIGN_ERRS">
       <data key="d1">DataObject</data>
@@ -2950,7 +2950,7 @@
       <data key="d2">xAOD_TrigBphysContainer</data>
     </node>
     <node id="TileTMDBDelayCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_OFL02_FILTER_OF2_PHY">
       <data key="d1">DataObject</data>
@@ -2969,7 +2969,7 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="jetalgCHSPFlowAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArMphysOverMcalFlat_MERGER_CS_LArMphysOverMcal">
       <data key="d1">DataObject</data>
@@ -2980,7 +2980,7 @@
       <data key="d2">xAOD_CaloClusterContainer</data>
     </node>
     <node id="LArDigitThinnerFromEMClustAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a4tclcwnojcalibPS">
       <data key="d1">DataObject</data>
@@ -2991,10 +2991,10 @@
       <data key="d2">PixelDCSConditionsData</data>
     </node>
     <node id="LArKnownMNBFebAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetAmbiguitySolverForwardTracksAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_RoiDescriptorStoreAuxInfo_MERGER_SG_HLT_xAOD__RoiDescriptorStore_initialRoI">
       <data key="d1">DataObject</data>
@@ -3021,7 +3021,7 @@
       <data key="d2">LVL1_LucidCTP</data>
     </node>
     <node id="TileOfcOf2CondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AthenaAttributeList_MERGER_CS__TDAQ_RunCtrl_DataTakingMode">
       <data key="d1">DataObject</data>
@@ -3036,7 +3036,7 @@
       <data key="d2">TrigRoiDescriptorCollection</data>
     </node>
     <node id="xAODMaker::TrigNavigationCnvAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_DiTauJets">
       <data key="d1">DataObject</data>
@@ -3063,7 +3063,7 @@
       <data key="d2">TrigMuonEFInfoContainer</data>
     </node>
     <node id="RawInfoSummaryForTagWriterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArRawChannelContainer_MERGER_SG_LArRawChannels">
       <data key="d1">DataObject</data>
@@ -3074,20 +3074,20 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="TrigNavigationSlimmer_StreamESDAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonCombinedMuonCandidateAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Photons.neflowisol40ptCorrection">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="PFONeutralCreatorAlgorithmAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="JetTrackAlg_forDiTausAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuCTPI_RIO_MERGER_SG_MUCTPI_RIO">
       <data key="d1">DataObject</data>
@@ -3098,7 +3098,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="InDetTRTRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_ZdcModuleContainer_MERGER_SG_ZdcSums">
       <data key="d1">DataObject</data>
@@ -3125,14 +3125,14 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="InDetTRT_SeededAmbiguitySolverAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETContainer_MERGER_SG_MET_Core_AntiKt4EMPFlow">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_MissingETContainer</data>
     </node>
     <node id="TileOnlineTimingCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETContainer_MERGER_SG_MET_Track">
       <data key="d1">DataObject</data>
@@ -3143,7 +3143,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="jetalgConstituentsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETContainer_MERGER_SG_MET_Core_AntiKt4LCTopo">
       <data key="d1">DataObject</data>
@@ -3162,7 +3162,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="InDetCopyAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LVL1_NimCTP_MERGER_SG_L1NIMtoCTPLocation">
       <data key="d1">DataObject</data>
@@ -3173,7 +3173,7 @@
       <data key="d2">SCT_DCSFloatCondData</data>
     </node>
     <node id="MuonTrackMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETAuxContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_trkmhtFTK">
       <data key="d1">DataObject</data>
@@ -3204,10 +3204,10 @@
       <data key="d2">Muon_TgcPrepDataContainer</data>
     </node>
     <node id="LArFlatConditionsAlg_LArHVScaleCorrFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="jetalgAntiKt4LCTopoJetsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArBadFebCont_MERGER_CS_LArKnownBadFEBs">
       <data key="d1">DataObject</data>
@@ -3242,7 +3242,7 @@
       <data key="d2">xAOD_MuonAuxContainer</data>
     </node>
     <node id="L1Muctpi_on_DataAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TRTCond_StrawStatusMultChanContainer_MERGER_CS__TRT_Cond_StatusPermanent">
       <data key="d1">DataObject</data>
@@ -3269,7 +3269,7 @@
       <data key="d2">eflowCaloObjectContainer</data>
     </node>
     <node id="TauPi0SubtractedClusterMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AthenaAttributeList_MERGER_CS__LAR_IdentifierOfl_HVLineToElectrodeMap">
       <data key="d1">DataObject</data>
@@ -3284,10 +3284,10 @@
       <data key="d2">xAOD_MuonContainer</data>
     </node>
     <node id="MuonCreatorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="egammaRecBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a10TThadnojcalibFS">
       <data key="d1">DataObject</data>
@@ -3350,13 +3350,13 @@
       <data key="d2">xAOD_TrigVertexCountsAuxContainer</data>
     </node>
     <node id="JpsiAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="RpcLv1SLRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonStandaloneTrackParticleCnvAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigBphysContainer_MERGER_SG_HLT_xAOD__TrigBphysContainer_EFMultiMuFex">
       <data key="d1">DataObject</data>
@@ -3407,7 +3407,7 @@
       <data key="d2">xAOD_EventShape</data>
     </node>
     <node id="EDtpIsoForwardAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_ElectronContainer_MERGER_SG_HLT_xAOD__ElectronContainer_egamma_SC_Electrons">
       <data key="d1">DataObject</data>
@@ -3418,7 +3418,7 @@
       <data key="d2">xAOD_PhotonTrigAuxContainer</data>
     </node>
     <node id="RoiWriterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_L2IsoMuonContainer_MERGER_SG_HLT_xAOD__L2IsoMuonContainer_MuonL2ISInfo">
       <data key="d1">DataObject</data>
@@ -3449,7 +3449,7 @@
       <data key="d2">TRTCond_StrawStatusMultChanContainer</data>
     </node>
     <node id="RecoTimerBeginAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CTP_RDO_MERGER_SG_CTP_RDO_Rerun">
       <data key="d1">DataObject</data>
@@ -3464,14 +3464,14 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="CaloCellMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArBadFebCont_MERGER_CS_LArBadFeb">
       <data key="d1">DataObject</data>
       <data key="d2">LArBadFebCont</data>
     </node>
     <node id="RoIBResultToxAODAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_CaloClusterContainer_MERGER_SG_HLT_xAOD__CaloClusterContainer_TrigCaloClusterMaker_topo">
       <data key="d1">DataObject</data>
@@ -3494,7 +3494,7 @@
       <data key="d2">std_vector&lt;int&gt;</data>
     </node>
     <node id="LArMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_FEB">
       <data key="d1">DataObject</data>
@@ -3505,10 +3505,10 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="IDPerfMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="DQBadLBFilterAlg_LArBadLBFilterToolAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__LAR_ElecCalibFlat_MphysOverMcal">
       <data key="d1">DataObject</data>
@@ -3555,7 +3555,7 @@
       <data key="d2">LVL1_MbtsCTP</data>
     </node>
     <node id="MdtVsTgcRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a10TTemnojcalibFS">
       <data key="d1">DataObject</data>
@@ -3566,7 +3566,7 @@
       <data key="d2">PseudoJetContainer</data>
     </node>
     <node id="LArFlatConditionsAlg_LArDAC2uAFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigRoiDescriptorCollection_MERGER_SG_HLT_TrigRoiDescriptorCollection_forMS">
       <data key="d1">DataObject</data>
@@ -3581,10 +3581,10 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="DiTauBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SCT_SiliconTempCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MuonAuxContainer_MERGER_SG_HLT_xAOD__MuonContainer_eMuonEFInfo">
       <data key="d1">DataObject</data>
@@ -3595,14 +3595,14 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="SCTSiLorentzAngleCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a10tclcwjesPS">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="jetalgAntiKt4EMPFlowJetsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloClusterCellLinkContainer_MERGER_SG_TauPi0SubtractedClusters">
       <data key="d1">DataObject</data>
@@ -3621,10 +3621,10 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="ThinNegativeEnergyCaloClustersAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonSegmentCnvAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_VertexContainer_MERGER_SG_HLT_xAOD__VertexContainer_SecondaryVertex">
       <data key="d1">DataObject</data>
@@ -3647,7 +3647,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="EDtpIsoVeryForwardAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Bphysics_EFID">
       <data key="d1">DataObject</data>
@@ -3682,7 +3682,7 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="LArADC2MeVCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AlignableTransformContainer_MERGER_CS__Indet_AlignL3">
       <data key="d1">DataObject</data>
@@ -3693,7 +3693,7 @@
       <data key="d2">xAOD_CaloClusterContainer</data>
     </node>
     <node id="InDetTrackCollectionMerger_pixAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Muon_IDTrig">
       <data key="d1">DataObject</data>
@@ -3720,10 +3720,10 @@
       <data key="d2">Trk_SegmentCollection</data>
     </node>
     <node id="EDtpIsoCentralAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArHVPathologyDbCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__SCT_DCS_MODTEMP">
       <data key="d1">DataObject</data>
@@ -3734,7 +3734,7 @@
       <data key="d2">PseudoJetContainer</data>
     </node>
     <node id="LArHVIdMappingAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_CaloClusterContainer_MERGER_SG_EMTopoCluster430">
       <data key="d1">DataObject</data>
@@ -3745,7 +3745,7 @@
       <data key="d2">LArOFCFlat</data>
     </node>
     <node id="InDetTRT_RIO_MakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetRoIContainer_MERGER_SG_HLT_xAOD__JetRoIContainer_L1TopoJet">
       <data key="d1">DataObject</data>
@@ -3768,7 +3768,7 @@
       <data key="d2">xAOD_RODHeaderContainer</data>
     </node>
     <node id="topoEgammaBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_ExtrapolatedMuonTrackParticles">
       <data key="d1">DataObject</data>
@@ -3815,14 +3815,14 @@
       <data key="d2">TrigMissingETContainer</data>
     </node>
     <node id="MuonCombinedInDetCandidateAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigSpacePointCountsContainer_MERGER_SG_HLT_xAOD__TrigSpacePointCountsContainer_spacepoints">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrigSpacePointCountsContainer</data>
     </node>
     <node id="JetTagCalibCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="fastjet_ClusterSequence_MERGER_SG_ClusterSequence_JetFinder_jetalgAntiKt4EMPFlowJets.AntiKt4EMPFlowJets.AntiKt4EMPFlowJetsFinder">
       <data key="d1">DataObject</data>
@@ -3833,7 +3833,7 @@
       <data key="d2">CondAttrListVec</data>
     </node>
     <node id="MuonTCLinksAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a4tcemsubFS">
       <data key="d1">DataObject</data>
@@ -3860,7 +3860,7 @@
       <data key="d2">xAOD_MuonSegmentContainer</data>
     </node>
     <node id="SCT_ConfigurationCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__SCT_DAQ_Calibration_NPtGainDefects">
       <data key="d1">DataObject</data>
@@ -3871,14 +3871,14 @@
       <data key="d2">xAOD_MissingETAssociationMap</data>
     </node>
     <node id="TrigConf::xAODMenuWriterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_EventShape_MERGER_SG_TopoClusterIsoForwardEventShape">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_EventShape</data>
     </node>
     <node id="LArRawChannelBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloClusterCellLinkContainer_MERGER_SG_InDetTrackParticlesAssociatedClusters">
       <data key="d1">DataObject</data>
@@ -3897,7 +3897,7 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="pjalg_EMNPFlowAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a4tclcwjesFS">
       <data key="d1">DataObject</data>
@@ -3908,17 +3908,17 @@
       <data key="d2">xAOD_TrigMissingETContainer</data>
     </node>
     <node id="egammaTopoClusterCopierAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a4TTemnojcalibFS">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="pjalg_GhostMuonSegmentAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="PixelDCSCondTempAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigTrackCountsContainer_MERGER_SG_HLT_xAOD__TrigTrackCountsContainer_trackcounts">
       <data key="d1">DataObject</data>
@@ -3957,7 +3957,7 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="TrigDecMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="Trk_SegmentCollection_MERGER_SG_MuGirlSegments">
       <data key="d1">DataObject</data>
@@ -3992,7 +3992,7 @@
       <data key="d2">TileCalibData&lt;TileCalibDrawerFlt&gt;</data>
     </node>
     <node id="MdtVsRpcRawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_BTaggingTrigAuxContainer_MERGER_SG_HLT_xAOD__BTaggingContainer_HLTBjetFex">
       <data key="d1">DataObject</data>
@@ -4007,7 +4007,7 @@
       <data key="d2">SCT_CalibDefectData</data>
     </node>
     <node id="TileDSP_ThresholdCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Muon_FTKRefit">
       <data key="d1">DataObject</data>
@@ -4022,7 +4022,7 @@
       <data key="d2">ComTime</data>
     </node>
     <node id="MuonSegmentTagAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_EventInfo_MERGER_SG_EventInfo">
       <data key="d1">DataObject</data>
@@ -4033,10 +4033,10 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="MakeInputDataHeaderESDAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArBadChannelCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETAuxContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_mht">
       <data key="d1">DataObject</data>
@@ -4067,7 +4067,7 @@
       <data key="d2">xAOD_RoiDescriptorStore</data>
     </node>
     <node id="TrigConfDataIOVChangerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.topoetcone20">
       <data key="d1">DataObject</data>
@@ -4098,10 +4098,10 @@
       <data key="d2">xAOD_MuonContainer</data>
     </node>
     <node id="LArTimeVetoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetSegmentPRD_AssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloCellContainer_MERGER_SG_eflowRec_leptonCellContainer">
       <data key="d1">DataObject</data>
@@ -4124,7 +4124,7 @@
       <data key="d2">xAOD_PhotonContainer</data>
     </node>
     <node id="SCT_DetectorElementCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.neflowisolcoreConeEnergyCorrection">
       <data key="d1">DataObject</data>
@@ -4139,7 +4139,7 @@
       <data key="d2">CaloClusterROI_Collection</data>
     </node>
     <node id="MdtRdoToMdtPrepDataAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloCellContainer_MERGER_SG_HLT_CaloCellContainer_TrigCaloCellMaker_eGamma">
       <data key="d1">DataObject</data>
@@ -4154,7 +4154,7 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="LArNoisyROAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="Muon_sTgcPrepDataContainer_MERGER_SG_STGC_Measurements">
       <data key="d1">DataObject</data>
@@ -4237,7 +4237,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="MSVertexRecoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleAuxContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_FullScan_EFID">
       <data key="d1">DataObject</data>
@@ -4272,14 +4272,14 @@
       <data key="d2">xAOD_TauTrackAuxContainer</data>
     </node>
     <node id="TileOfcOf1CondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonFeatureDetailsContainer_MERGER_SG_HLT_MuonFeatureDetailsContainer">
       <data key="d1">DataObject</data>
       <data key="d2">MuonFeatureDetailsContainer</data>
     </node>
     <node id="ThinNegEMOriginTopoClustersAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileL2Container_MERGER_SG_TileL2Cnt">
       <data key="d1">DataObject</data>
@@ -4314,31 +4314,31 @@
       <data key="d2">PseudoJetContainer</data>
     </node>
     <node id="LArDigitThinnerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TruthParticleContainer_MERGER_SG_TruthParticles">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TruthParticleContainer</data>
     </node>
     <node id="ThinNegativeEnergyCHSNeutralPFOsAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigRNNOutputContainer_MERGER_SG_HLT_xAOD__TrigRNNOutputContainer_TrigRingerNeuralFex">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrigRNNOutputContainer</data>
     </node>
     <node id="LArKnownBadFebAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonTgcRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArNoisyROSummary_MERGER_SG_LArNoisyROSummary">
       <data key="d1">DataObject</data>
       <data key="d2">LArNoisyROSummary</data>
     </node>
     <node id="InDetTRT_ExtensionAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETComponentMap_MERGER_SG_METMap_EMTopo">
       <data key="d1">DataObject</data>
@@ -4353,7 +4353,7 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="InDetTrackSlimmerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonAlignmentErrorData_MERGER_CS_MuonAlignmentErrorData">
       <data key="d1">DataObject</data>
@@ -4376,7 +4376,7 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="pjalg_GhostTrackAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_ONL01_TMDB_THRESHOLD_PHY">
       <data key="d1">DataObject</data>
@@ -4395,7 +4395,7 @@
       <data key="d2">CaloCellContainer</data>
     </node>
     <node id="tauMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.topoetcone30ptCorrection">
       <data key="d1">DataObject</data>
@@ -4414,14 +4414,14 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="CaloMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="Muon_RpcPrepDataContainer_MERGER_SG_rpcClusters">
       <data key="d1">DataObject</data>
       <data key="d2">Muon_RpcPrepDataContainer</data>
     </node>
     <node id="EDnpfIsoCentralAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_MissingETComponentMap_MERGER_SG_METMap_LocHadTopoRegions">
       <data key="d1">DataObject</data>
@@ -4456,14 +4456,14 @@
       <data key="d2">LArFebErrorSummary</data>
     </node>
     <node id="MuonSegmentMaker_NCBAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Electrons.topoetcone20ptCorrection">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="xAODMaker::L1TopoValDataCnvAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_TrigTauJet">
       <data key="d1">DataObject</data>
@@ -4482,7 +4482,7 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="InDetSiSpTrackFinderPixelPrdAssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_PhotonTrigAuxContainer_MERGER_SG_HLT_xAOD__PhotonContainer_egamma_Iso_Photons">
       <data key="d1">DataObject</data>
@@ -4493,7 +4493,7 @@
       <data key="d2">xAOD_TrigBphysAuxContainer</data>
     </node>
     <node id="RpcTrackMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a10TTemnojcalibFS">
       <data key="d1">DataObject</data>
@@ -4508,7 +4508,7 @@
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="LucidMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="RecoTimingObj_MERGER_SG_RAWtoALL_mems">
       <data key="d1">DataObject</data>
@@ -4567,7 +4567,7 @@
       <data key="d2">CondAttrListVec</data>
     </node>
     <node id="rpcLv1RawEfficiencyMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigMissingETContainer_MERGER_SG_HLT_TrigMissingETContainer_L2MissingET_FEB">
       <data key="d1">DataObject</data>
@@ -4578,7 +4578,7 @@
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="CscRdoToCscPrepDataAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_FullScan_FTK">
       <data key="d1">DataObject</data>
@@ -4601,7 +4601,7 @@
       <data key="d2">xAOD_TrigCompositeAuxContainer</data>
     </node>
     <node id="GlobalMonPhysicsManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_ElectronTrigAuxContainer_MERGER_SG_HLT_xAOD__ElectronContainer_egamma_SC_Electrons">
       <data key="d1">DataObject</data>
@@ -4632,7 +4632,7 @@
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="InDetSCT_ClusterizationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAODTruthParticleLinkVector_MERGER_SG_xAODTruthLinks">
       <data key="d1">DataObject</data>
@@ -4651,7 +4651,7 @@
       <data key="d2">LArHVPathology</data>
     </node>
     <node id="RpcClusterBuilderPRDAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="AthenaAttributeList_MERGER_CS__LAR_BadChannels_KnownBADFEBs">
       <data key="d1">DataObject</data>
@@ -4670,10 +4670,10 @@
       <data key="d2">TrigMuonEFInfoContainer</data>
     </node>
     <node id="xAODMaker::EventInfoCnvAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="JetTagMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigMissingETContainer_MERGER_SG_HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_mht_em">
       <data key="d1">DataObject</data>
@@ -4684,7 +4684,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="LArFlatConditionsAlg_LArOFCFlatAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_GSCJet">
       <data key="d1">DataObject</data>
@@ -4707,7 +4707,7 @@
       <data key="d2">xAOD_MissingETContainer</data>
     </node>
     <node id="PixelDCSCondHVAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CondAttrListCollection_MERGER_CS__TILE_ONL01_TMDB_DELAY_PHY">
       <data key="d1">DataObject</data>
@@ -4774,7 +4774,7 @@
       <data key="d2">LAruA2MeVFlat</data>
     </node>
     <node id="PixelDCSCondStateAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="PseudoJetContainer_MERGER_SG_PseudoJetEMNPFlow">
       <data key="d1">DataObject</data>
@@ -4849,24 +4849,24 @@
       <data key="d2">LUCID_RawDataContainer</data>
     </node>
     <node id="TgcLv1RawMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileTrackMuFeatureContainer_MERGER_SG_HLT_TileTrackMuFeatureContainer">
       <data key="d1">DataObject</data>
       <data key="d2">TileTrackMuFeatureContainer</data>
     </node>
     <node id="BcmCollisionTimeAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="RecoMemoryBeforeOutputAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a10tclcwnojcalibPS">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="HLTMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_RoiDescriptorStore_MERGER_SG_HLT_xAOD__RoiDescriptorStore_secondaryRoI_L2">
       <data key="d1">DataObject</data>
@@ -4885,7 +4885,7 @@
       <data key="d2">LArDigitContainer</data>
     </node>
     <node id="InDetSCTEventFlagWriterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TRTCond_RtRelationMultChanContainer_MERGER_CS__TRT_Calib_errors2d">
       <data key="d1">DataObject</data>
@@ -4908,7 +4908,7 @@
       <data key="d2">CondAttrListCollection</data>
     </node>
     <node id="BphysTrigDecoratorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a10r_tcemsubjesFS">
       <data key="d1">DataObject</data>
@@ -4947,7 +4947,7 @@
       <data key="d2">xAOD_RoiDescriptorStoreAuxInfo</data>
     </node>
     <node id="METMakerAlg_AntiKt4LCTopoAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_EgammaContainer_MERGER_SG_ForwardElectrons">
       <data key="d1">DataObject</data>
@@ -4958,10 +4958,10 @@
       <data key="d2">xAOD_CaloClusterContainer</data>
     </node>
     <node id="CscThresholdClusterBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="METReconstructionAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetContainer_MERGER_SG_HLT_xAOD__JetContainer_a4tcemsubFS">
       <data key="d1">DataObject</data>
@@ -4976,10 +4976,10 @@
       <data key="d2">ILArMphysOverMcal</data>
     </node>
     <node id="SCT_TdaqEnabledCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="ManagedAthenaTileMonAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonSegmentCombinationCollection_MERGER_SG_MooreSegmentCombinations">
       <data key="d1">DataObject</data>
@@ -4998,17 +4998,17 @@
       <data key="d2">RIO_OnTrackErrorScaling</data>
     </node>
     <node id="METMakerAlg_AntiKt4EMPFlowAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="InDetSiSpTrackFinderForwardTracksAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_CombinedMuonTrackParticles">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_IParticleContainer</data>
     </node>
     <node id="BeginIncFiringAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_JetETMissChargedParticleFlowObjects">
       <data key="d1">DataObject</data>
@@ -5023,7 +5023,7 @@
       <data key="d2">TrigPassFlagsCollection</data>
     </node>
     <node id="ETmissMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_MSOnlyExtrapolatedStauTrackParticles">
       <data key="d1">DataObject</data>
@@ -5074,7 +5074,7 @@
       <data key="d2">xAOD_MuonRoIContainer</data>
     </node>
     <node id="MuonCscRawDataProviderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrigCompositeContainer_MERGER_SG_HLT_xAOD__TrigCompositeContainer_MuonCalibrationStream">
       <data key="d1">DataObject</data>
@@ -5085,7 +5085,7 @@
       <data key="d2">EventInfo</data>
     </node>
     <node id="TileSampleNoiseCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrackCollection_MERGER_SG_SiSpSeededForwardTracks">
       <data key="d1">DataObject</data>
@@ -5148,7 +5148,7 @@
       <data key="d2">xAOD_RoiDescriptorStore</data>
     </node>
     <node id="InDetAlignMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LArHVIdMapping_MERGER_CS_LArHVIdMap">
       <data key="d1">DataObject</data>
@@ -5199,10 +5199,10 @@
       <data key="d2">xAOD_MissingETContainer</data>
     </node>
     <node id="InDetTRT_ExtensionPixelPrdAssociationAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuPatTrackBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrackCollection_MERGER_SG_SiSPSeededPixelTracks">
       <data key="d1">DataObject</data>
@@ -5249,31 +5249,31 @@
       <data key="d2">xAOD_TrigCompositeContainer</data>
     </node>
     <node id="IncidentProcAlg2Alg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_JetSelectedTracks_LooseTrackJets">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_TrackParticleContainer</data>
     </node>
     <node id="CSCVetoForCaloMonAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_JetTrigAuxContainer_MERGER_SG_HLT_xAOD__JetContainer_a4tcemsubjesISFS">
       <data key="d1">DataObject</data>
       <data key="d2">xAOD_JetTrigAuxContainer</data>
     </node>
     <node id="InDetTrackCollectionMergerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LVL1::L1CaloTriggerTowerDecoratorAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="SpacePointOverlapCollection_MERGER_SG_OverlapSpacePoints">
       <data key="d1">DataObject</data>
       <data key="d2">SpacePointOverlapCollection</data>
     </node>
     <node id="xAODMaker::TrigDecisionCnvAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleAuxContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Tau_IDTrig">
       <data key="d1">DataObject</data>
@@ -5284,7 +5284,7 @@
       <data key="d2">InDetTimeCollection</data>
     </node>
     <node id="TileEMScaleCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_CaloClusterTrigAuxContainer_MERGER_SG_HLT_xAOD__CaloClusterContainer_TrigCaloClusterMaker">
       <data key="d1">DataObject</data>
@@ -5307,7 +5307,7 @@
       <data key="d2">xAOD_TrigCompositeAuxContainer</data>
     </node>
     <node id="MuonSegmentCnvAlg_NCBAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="MuonCombined_InDetCandidateToTagMap_MERGER_SG_muGirlTagMap">
       <data key="d1">DataObject</data>
@@ -5334,7 +5334,7 @@
       <data key="d2">SCT_DCSStatCondData</data>
     </node>
     <node id="GlobalMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_AntiKt4EMTopoJets">
       <data key="d1">DataObject</data>
@@ -5345,7 +5345,7 @@
       <data key="d2">TrigRoiDescriptorCollection</data>
     </node>
     <node id="LArClusterMakerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TileRawChannelContainer_MERGER_SG_TileRawChannelFixed">
       <data key="d1">DataObject</data>
@@ -5360,7 +5360,7 @@
       <data key="d2">SG_AuxElement</data>
     </node>
     <node id="CaloClusterTopoEM430GetterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrackCollection_MERGER_SG_HLT_TrackCollection_InDetTrigTrackSlimmer_Bphysics_EFID">
       <data key="d1">DataObject</data>
@@ -5371,21 +5371,21 @@
       <data key="d2">CaloLocalHadCoeff</data>
     </node>
     <node id="LArOnOffMappingAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigMonEventCollection_MERGER_SG_HLT_TrigMonEventCollection_OPI_EF_monitoring_event">
       <data key="d1">DataObject</data>
       <data key="d2">TrigMonEventCollection</data>
     </node>
     <node id="InDetPriVxFinderSplitAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrackCollection_MERGER_SG_ResolvedPixelPrdAssociationTracks">
       <data key="d1">DataObject</data>
       <data key="d2">TrackCollection</data>
     </node>
     <node id="InDetBCM_ZeroSuppressionAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleAuxContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Bjet_FTK">
       <data key="d1">DataObject</data>
@@ -5396,7 +5396,7 @@
       <data key="d2">xAOD_VertexAuxContainer</data>
     </node>
     <node id="TileDCSCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleAuxContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Bjet_FTF">
       <data key="d1">DataObject</data>
@@ -5419,7 +5419,7 @@
       <data key="d2">xAOD_MissingETComponentMap</data>
     </node>
     <node id="LArCalibLineMappingAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_TrackParticleContainer_MERGER_SG_HLT_xAOD__TrackParticleContainer_InDetTrigTrackingxAODCnv_Tau_IDTrig">
       <data key="d1">DataObject</data>
@@ -5434,7 +5434,7 @@
       <data key="d2">xAOD_JetContainer</data>
     </node>
     <node id="PixelSiLorentzAngleCondAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="xAOD_IParticleContainer_MERGER_SG_Photons.neflowisol30ptCorrection">
       <data key="d1">DataObject</data>
@@ -5449,7 +5449,7 @@
       <data key="d2">xAOD_TrackParticleAuxContainer</data>
     </node>
     <node id="TRTMonManagerAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="LVL1_BcmCTP_MERGER_SG_L1BCMtoCTPLocation">
       <data key="d1">DataObject</data>
@@ -5539,7 +5539,7 @@
       <data key="d2">InDetCandidateCollection</data>
     </node>
     <node id="CaloClusterCellLinksUpdaterAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="CaloAffectedRegionInfoVec_MERGER_CS_LArAffectedRegionInfo">
       <data key="d1">DataObject</data>
@@ -5570,7 +5570,7 @@
       <data key="d2">xAOD_TriggerTowerContainer</data>
     </node>
     <node id="TauCoreBuilderAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <node id="TrigT2MbtsBitsContainer_MERGER_SG_HLT_TrigT2MbtsBitsContainer_T2Mbts">
       <data key="d1">DataObject</data>
@@ -5609,7 +5609,7 @@
       <data key="d2">DataVector&lt;INavigable4Momentum&gt;</data>
     </node>
     <node id="pjalg_EMTopoOriginAlg">
-      <data key="d1">GaudiAlgorithm</data>
+      <data key="d1">Algorithm</data>
     </node>
     <edge source="TrigRoiDescriptorCollection_MERGER_SG_HLT_TrigRoiDescriptorCollection_TrigT2CaloJet" target="StreamESDAlg">
       <data key="d0">Exact</data>
