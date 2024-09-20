@@ -86,7 +86,7 @@ public:
   inline TYPE* get() const { return m_interface; }
 #if !defined( GAUDI_V22_API ) && !defined( NEW_SMARTIF )
   /// Get reference to the pointer
-  inline TYPE*& pRef() { return m_interface; }
+  [[deprecated]] inline TYPE*& pRef() { return m_interface; }
 #endif
 
   // ---------- Cast methods ----------

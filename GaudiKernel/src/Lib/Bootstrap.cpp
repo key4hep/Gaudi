@@ -197,6 +197,8 @@ static SmartIF<IInterface>  s_bootInterface;
 using Gaudi::BootSvcLocator;
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
                                               IInterface*& pinterface ) {
   StatusCode sc = StatusCode::FAILURE;
@@ -217,6 +219,7 @@ StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString
   }
   return sc;
 }
+#  pragma GCC diagnostic pop
 #endif
 
 const std::list<IService*>& Gaudi::BootSvcLocator::getServices() const {

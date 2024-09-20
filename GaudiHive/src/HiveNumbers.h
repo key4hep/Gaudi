@@ -59,9 +59,9 @@ namespace HiveRndm {
     virtual StatusCode initialize( const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par );
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
     /// Initializing constructor
-    HiveNumbers( IRndmGenSvc* svc, const IRndmGen::Param& par );
+    [[deprecated]] HiveNumbers( IRndmGenSvc* svc, const IRndmGen::Param& par );
     /// Initialization
-    virtual StatusCode initialize( IRndmGenSvc* svc, const IRndmGen::Param& par );
+    [[deprecated]] virtual StatusCode initialize( IRndmGenSvc* svc, const IRndmGen::Param& par );
 #endif
     /// Finalization
     virtual StatusCode finalize();
