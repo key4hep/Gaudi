@@ -10,6 +10,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import datetime
+import os
 import re
 import sys
 from collections.abc import Callable, Iterable
@@ -18,6 +19,8 @@ from subprocess import run
 from typing import Union
 
 import click
+
+GITLAB_TOKEN = os.environ.get("GITLAB_TOKEN")
 
 
 def normalize_version(version: str) -> tuple[str, str]:
@@ -146,6 +149,17 @@ def update_changelog(fields: Fields) -> tuple[str, list[str], list[str]]:
         for change in changes
         for msg, refs in ([change.split("<=>", 1)] if "<=>" in change else [])
     ]
+    # Now we get the list of contributors
+    contributors = sorted(
+        contributor_handle(name)
+        for name in set(
+            run(
+                ["git", "log", "--format=%an", f"{latest_tag}...HEAD"],
+                capture_output=True,
+                text=True,
+            ).stdout.splitlines()
+        )
+    )
 
     filename = "CHANGELOG.md"
     with open(filename) as f:
@@ -160,7 +174,9 @@ def update_changelog(fields: Fields) -> tuple[str, list[str], list[str]]:
             "## [{tag_version}](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/{tag_version}) - {date}\n".format(
                 **fields.data
             ),
-            "\n",
+            "\nA special thanks to all the people that contributed to this release:\n",
+            ",\n".join(contributors),
+            ".\n\n",
             "### Changed\n",
             "### Added\n",
             "### Fixed\n",
@@ -172,6 +188,20 @@ def update_changelog(fields: Fields) -> tuple[str, list[str], list[str]]:
     data.extend(old[idx:])
 
     return filename, old, data
+
+
+def contributor_handle(name: str) -> str:
+    if GITLAB_TOKEN:
+        from requests import get
+
+        users = get(
+            "https://gitlab.cern.ch/api/v4/users",
+            headers={"PRIVATE-TOKEN": GITLAB_TOKEN},
+            params={"search": name},
+        ).json()
+        if users:
+            return f'@{users[0]["username"]}'
+    return name
 
 
 @click.command()
