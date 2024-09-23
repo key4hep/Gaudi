@@ -139,7 +139,7 @@ stdout: |-
   Gaudi::Monitoring::MessageSvcSink.ComponentsToSave:[  ]
   Gaudi::Monitoring::MessageSvcSink.NamesToSave:[  ]
   Gaudi::Monitoring::MessageSvcSink.OutputLevel:3
-  Gaudi::Monitoring::MessageSvcSink.TypesToSave:[ 'counter:.*' , 'statentity' , 'histogram:' ]
+  Gaudi::Monitoring::MessageSvcSink.TypesToSave:[ 'counter:.*' , 'statentity' , 'histogram:.*' ]
   HistogramDataSvc.AuditFinalize:False
   HistogramDataSvc.AuditInitialize:False
   HistogramDataSvc.AuditReinitialize:False

@@ -12,6 +12,7 @@ stdout: |-
   RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
   RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+  Histos2              INFO Number of counters : 2
   ApplicationMgr       INFO Application Manager Stopped successfully
   Histos2           SUCCESS Histograms report
   EventLoopMgr         INFO Histograms converted successfully according to request.

@@ -167,7 +167,7 @@ namespace Gaudi::Monitoring {
   struct MessageSvcSink : BaseSink {
     MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
       // only deal with counters, statentity and histograms
-      setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:" } )
+      setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:.*" } )
           .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
     }
     /// stop method, handles the printing
