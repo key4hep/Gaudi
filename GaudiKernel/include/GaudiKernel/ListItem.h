@@ -13,10 +13,13 @@
 
 // Include files
 #if !defined( GAUDI_V22_API ) || defined( G22_NO_DEPRECATED )
+#  ifndef GAUDI_TEST_PUBLIC_HEADERS_BUILD
+#    warning "Deprecated header file, use GaudiKernel/TypeNameString.h instead"
+#  endif
 #  include <GaudiKernel/TypeNameString.h>
 typedef Gaudi::Utils::TypeNameString ListItem;
 #else
-#  error "Deprecated header file, use TypeNameString.h instead"
+#  error "Deprecated header file, use GaudiKernel/TypeNameString.h instead"
 #endif
 
 #endif /* GAUDIKERNEL_LISTITEM_H */
