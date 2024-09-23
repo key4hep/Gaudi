@@ -8,8 +8,13 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-# Allow building of example code as part of the Gaudi project
-if(BUILD_TESTING OR GAUDI_BUILD_EXAMPLES)
-    add_subdirectory(mylee)
-    add_subdirectory(rust)
-endif()
+gaudi_add_module(example_invoke_rust_function
+    SOURCES
+        src/RustyAlg.cpp
+    LINK
+        Gaudi::GaudiKernel
+)
+
+gaudi_install(PYTHON)
+
+gaudi_add_pytest(tests/pytest)
