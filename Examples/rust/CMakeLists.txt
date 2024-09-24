@@ -8,7 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-
+if(NOT GAUDI_RUST_EXAMPLES)
+    return()
+endif()
 
 # FIXME These are settings needed in LHCb builds to avoid warnings
 set(Rust_TOOLCHAIN 1.80.0-x86_64-unknown-linux-gnu)

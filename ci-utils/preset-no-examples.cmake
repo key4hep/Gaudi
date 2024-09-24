@@ -10,5 +10,6 @@
 # set(GAUDI_USE_INTELAMPLIFIER   OFF CACHE BOOL "")
 # set(GAUDI_USE_JEMALLOC         ON  CACHE BOOL "")
 set(GAUDI_BUILD_EXAMPLES       OFF CACHE BOOL "")
+# set(GAUDI_RUST_EXAMPLES        ON  CACHE BOOL "") # ignored as no examples are built
 # set(GAUDI_ENABLE_GAUDIPARTPROP ON  CACHE BOOL "")
 # set(BUILD_TESTING              ON  CACHE BOOL "")
