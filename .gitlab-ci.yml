@@ -19,6 +19,7 @@ variables:
   before_script:
     # Add Ninja and CMake to the PATH
     - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.20.0/Linux-$(uname -m)/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.11.1/Linux-$(uname -m)/bin:$PATH"
+    - . /cvmfs/lhcbdev.cern.ch/tools/rust/env
     - export CCACHE_DIR=$PWD/.ccache
     - "export LCG_VERSION=$(cut -d: -f2 <<< $CI_JOB_NAME)"
     - "export platform=$(cut -d: -f3 <<< $CI_JOB_NAME)"
@@ -27,6 +28,7 @@ variables:
   script:
     - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
     - cmake --version
+    - rustc --version
     - cmake -S . -B build -Wno-dev -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DGAUDI_TEST_PUBLIC_HEADERS_BUILD=yes -C ci-utils/preset-${PRESET}.cmake
     - ccache -z
     # pre-heat ccache cache for GaudiKernel
@@ -71,6 +73,7 @@ variables:
     - shopt -s expand_aliases
     - . /cvmfs/lhcb.cern.ch/lib/LbEnv
     - cmake --version
+    - rustc --version
     - lb-set-platform $platform
     - lb-project-init --overwrite
     - ccache -z
@@ -111,8 +114,11 @@ variables:
   <<: *template_build
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
+    # FIXME use LHCb Rust installation instead of that coming from the view
+    - . /cvmfs/lhcbdev.cern.ch/tools/rust/env
     - export CONFIGURABLE_DB_IGNORE=/cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/lib/Gaudi.confdb
     - cmake --version
+    - rustc --version
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     - ccache -z
     # pre-heat ccache cache for GaudiKernel
