@@ -18,17 +18,25 @@ namespace Gaudi {
     public:
       using Algorithm::Algorithm;
 
-      StatusCode initialize() override { return Algorithm::initialize(); }
+      StatusCode initialize() override {
+        return Algorithm::initialize().andThen( [this] { info() << "RustyAlg::initialize()" << endmsg; } );
+      }
 
       StatusCode execute( EventContext const& ) const override {
         info() << "entering RustyAlg::execute()" << endmsg;
-        auto result = add( 40, 2 ); // some_rust_function();
-        info() << "some_rust_function returned " << result << endmsg;
+        m_stats->increment();                                  // Rust function
+        info() << "event count -> " << m_stats->events_count() /* Rust function */
+               << endmsg;
         info() << "leaving RustyAlg::execute()" << endmsg;
         return StatusCode::SUCCESS;
       }
 
-      StatusCode finalize() override { return Algorithm::finalize(); }
+      StatusCode finalize() override {
+        info() << "total event count -> " << m_stats->events_count() /* Rust function */ << endmsg;
+        return Algorithm::finalize();
+      }
+
+      rust::Box<JobStats> m_stats = init_job_stats(); // Rust function
     };
     DECLARE_COMPONENT( RustyAlg )
   } // namespace Examples
