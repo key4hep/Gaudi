@@ -12,7 +12,7 @@ from GaudiTesting import GaudiExeTest
 
 
 class TestRustInvocation(GaudiExeTest):
-    command = ["gaudirun.py", "GaudiExamples.invoke_rust_function:config"]
+    command = ["gaudirun.py", "GaudiRustExamples.invoke_rust_function:config"]
 
     def test_stdout(self, stdout):
         # get only the message part of RustyAlg "INFO" lines
