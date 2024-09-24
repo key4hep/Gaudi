@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -42,6 +42,9 @@ from Configurables import Gaudi__TestSuite__SDataProducer as SDataProducer
 from Configurables import Gaudi__TestSuite__ShrdPtrConsumer as ShrdPtrConsumer
 from Configurables import Gaudi__TestSuite__ShrdPtrProducer as ShrdPtrProducer
 from Configurables import Gaudi__TestSuite__SRangesToIntVector as SRangesToIntVector
+from Configurables import (
+    Gaudi__TestSuite__OptionalSRangesMerger as OptionalSRangesMerger,
+)
 from Configurables import Gaudi__TestSuite__ToolConsumer as ToolConsumer
 from Configurables import Gaudi__TestSuite__TwoDMerger as TwoDMerger
 from Configurables import Gaudi__TestSuite__VectorDataProducer as VectorDataProducer
@@ -135,6 +138,19 @@ app.TopAlg = [
         InputRanges=[
             str(SDataProducer1.OutputLocation),
             str(SDataProducer2.OutputLocation),
+        ],
+    ),
+    OptionalSRangesMerger(
+        "OptionalSRangesMerger",
+        InputRanges=[
+            str(SDataProducer1.OutputLocation),
+            str(SDataProducer2.OutputLocation),
+        ],
+    ),
+    OptionalSRangesMerger(
+        "OptionalSRangesMerger_EmptyInput",
+        InputRanges=[
+            "/Event/NonExistent",
         ],
     ),
     IntVectorsMerger(
