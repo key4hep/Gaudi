@@ -7,7 +7,9 @@ some existing Rust crate.
 
 ### Implementation
 For Rust (or any other language) we can use C bindings or C++ bindings if the
-language supports them. The easiest option is the [cxx project](https://cxx.rs/).
+language supports them. The easiest option is to use
+[Corrosion](https://corrosion-rs.github.io/corrosion) and
+[cxx](https://cxx.rs/).
 
-In this example we declare an algorithm that invokes some Rust code, but the
+In this example we use an algorithm to invoke some Rust code, but the
 procedure is applicable to services or tools.

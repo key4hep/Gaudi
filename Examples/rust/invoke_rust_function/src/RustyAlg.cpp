@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <Gaudi/Algorithm.h>
+#include <example_rust_lib_bridge/lib.h>
 
 namespace Gaudi {
   namespace Examples {
@@ -21,7 +22,7 @@ namespace Gaudi {
 
       StatusCode execute( EventContext const& ) const override {
         info() << "entering RustyAlg::execute()" << endmsg;
-        auto result = 42; // some_rust_function();
+        auto result = add( 40, 2 ); // some_rust_function();
         info() << "some_rust_function returned " << result << endmsg;
         info() << "leaving RustyAlg::execute()" << endmsg;
         return StatusCode::SUCCESS;

@@ -13,6 +13,17 @@ gaudi_add_module(example_invoke_rust_function
         src/RustyAlg.cpp
     LINK
         Gaudi::GaudiKernel
+        example_rust_lib_bridge
+)
+
+corrosion_import_crate(
+    MANIFEST_PATH example_rust_lib/Cargo.toml
+    LOCKED
+)
+corrosion_add_cxxbridge(
+    example_rust_lib_bridge
+    CRATE example_rust_lib
+    FILES lib.rs
 )
 
 gaudi_install(PYTHON)
