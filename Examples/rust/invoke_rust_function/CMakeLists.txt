@@ -8,27 +8,36 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+
+# --- Gaudi related settings ---
+# Declare a Gaudi plugin library (module)
 gaudi_add_module(example_invoke_rust_function
     SOURCES
         src/RustyAlg.cpp
     LINK
         Gaudi::GaudiKernel
-        example_rust_lib_bridge
+        example_rust_lib_bridge # Rust bridge library (defined later)
 )
 
+# Declare Python modules and tests
+gaudi_install(PYTHON)
+gaudi_add_pytest(tests/pytest)
+
+
+# --- Rust related settings ---
+
+# Instruct CMake to build the Rust library
 corrosion_import_crate(
     MANIFEST_PATH example_rust_lib/Cargo.toml
     LOCKED
 )
+# Instruct CMake to build the bridge code and build the library that
+# we use from C++ to invoke Rust code
 corrosion_add_cxxbridge(
     example_rust_lib_bridge
     CRATE example_rust_lib
     FILES lib.rs
 )
-
-gaudi_install(PYTHON)
-
-gaudi_add_pytest(tests/pytest)
 
 
 if(BUILD_TESTING)

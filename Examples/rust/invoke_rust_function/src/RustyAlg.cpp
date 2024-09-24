@@ -14,16 +14,29 @@
 namespace Gaudi {
   namespace Examples {
     /// @brief Simple algorithm that invokes Rust code
+    ///
+    /// This algorithm initialized a data member with an opaque data type from Rust,
+    /// invokes methods during event loop to finally print the final result.
+    ///
+    /// The Rust object is just a simple thread safe counter, which is more than enough
+    /// to show case how to invoke Rust code from C++.
     class RustyAlg : public Gaudi::Algorithm {
     public:
       using Algorithm::Algorithm;
 
       StatusCode initialize() override {
-        return Algorithm::initialize().andThen( [this] { info() << "RustyAlg::initialize()" << endmsg; } );
+        return Algorithm::initialize().andThen( [this] {
+          info() << "RustyAlg::initialize()" << endmsg;
+          // m_stats is already initialized in the constructor because rust::Box<T> cannot be default initialized,
+          // but here we show that if we want we can override the default value.
+          m_stats = init_job_stats(); // Rust function
+        } );
       }
 
       StatusCode execute( EventContext const& ) const override {
         info() << "entering RustyAlg::execute()" << endmsg;
+        // increment() is a const method but it increments the internal counter
+        // in a thread safe way.
         m_stats->increment();                                  // Rust function
         info() << "event count -> " << m_stats->events_count() /* Rust function */
                << endmsg;
@@ -36,8 +49,12 @@ namespace Gaudi {
         return Algorithm::finalize();
       }
 
+    private:
+      // rust::Box<T> is similar to C++ unique_ptr, but it cannot be null, so it
+      // has to be initialized at construction time
       rust::Box<JobStats> m_stats = init_job_stats(); // Rust function
     };
+
     DECLARE_COMPONENT( RustyAlg )
   } // namespace Examples
 } // namespace Gaudi

@@ -10,7 +10,7 @@ cxx = { version = "1.0.128", features = ["c++20"]}
 cxx-build = { version = "1.0.128", optional = true }
 
 [lib]
-crate-type = ["rlib", "staticlib"]
+crate-type = ["staticlib"]
 
 [features]
 default = []
