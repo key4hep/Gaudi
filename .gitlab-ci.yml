@@ -219,10 +219,10 @@ warnings-check:lcg-view:105c:x86_64-el9-gcc13-opt:
       artifacts: true
 
 # Compatibility
-lcg-view:105c:x86_64-el9-clang16-opt:
+.lcg-view:105c:x86_64-el9-clang16-opt:
   <<: *template_lcg_view_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg-view:105c:x86_64-el9-clang16-opt:
+.warnings-check:lcg-view:105c:x86_64-el9-clang16-opt:
   <<: *template_warnings_check
   needs:
     - job: "lcg-view:105c:x86_64-el9-clang16-opt"
