@@ -20,7 +20,7 @@ gaudi_add_module(example_rust_service_module
     SOURCES
         src/CppKeyValueStore.cpp
         src/KVSTestAlg.cpp
-        src/RustServiceBridge.cpp
+        src/RustKeyValueStore.cpp
     LINK
         example_rust_service_headers
         example_rust_service_bridge
