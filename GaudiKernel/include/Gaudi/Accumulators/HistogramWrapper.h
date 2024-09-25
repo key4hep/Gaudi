@@ -120,6 +120,21 @@ namespace Gaudi::Accumulators {
       std::get<N>( m_axis ) = axis;
     }
 
+    template <unsigned int N>
+    auto& axis() const {
+      if ( !m_histo )
+        throw std::logic_error(
+            fmt::format( "Cannot get axis {} of histogram {} before it has been initialized", N, m_name ) );
+      return m_histo->template axis<N>();
+    }
+
+    auto& axis() const {
+      if ( !m_histo )
+        throw std::logic_error(
+            fmt::format( "Cannot get axis of histogram {} before it has been initialized", m_name ) );
+      return m_histo->axis();
+    }
+
     void reset() { m_histo.reset(); }
 
     // wrapping some methods of the underlyoing histogram
