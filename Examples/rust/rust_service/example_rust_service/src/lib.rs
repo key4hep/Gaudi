@@ -9,15 +9,11 @@
 // # or submit itself to any jurisdiction.                                             #
 // #####################################################################################
 
+/// Dummy KeyValueStore implementation
 struct DummyKvs;
 
+/// Implement the methods required for IStateful
 impl DummyKvs {
-    fn get_wrapper(&self, key: &str) -> ffi::KvsReturnValue {
-        ffi::KvsReturnValue {
-            found: true,
-            value: format!("{0}-{0}", key),
-        }
-    }
     fn initialize(&mut self) -> Result<(), String> {
         Ok(())
     }
@@ -32,13 +28,35 @@ impl DummyKvs {
     }
 }
 
+/// Implement the methods required for Gaudi::Examples::IKeyValueStore
+impl DummyKvs {
+    // Since cxx::bridge does not support std::optional<T> or Option<T>,
+    // we use a helper shared struct (OptString)
+    fn get(&self, key: &str) -> ffi::OptString {
+        self.get_internal(key).into()
+    }
+    // This is the actual implementation we would like to have
+    fn get_internal(&self, key: &str) -> Option<String> {
+        Some(format!("{0}-{0}", key))
+    }
+}
+
+impl From<&ffi::Service> for DummyKvs {
+    fn from(_service: &ffi::Service) -> Self {
+        Self
+    }
+}
+
 #[cxx::bridge]
 mod ffi {
-    struct KvsReturnValue {
-        found: bool,
+    // Helper to convert a Option<String> to an std::optional<std::string>
+    // (implemented in the C++ bridge)
+    struct OptString {
         value: String,
+        is_set: bool,
     }
 
+    // from C++ we get the opaque Service type and the name method
     unsafe extern "C++" {
         include!("GaudiKernel/Service.h");
         type Service;
@@ -46,19 +64,31 @@ mod ffi {
     }
 
     extern "Rust" {
-        type DummyKvs;
-        fn make_kvs(wrapper: &Service) -> Box<DummyKvs>;
-        fn get_wrapper(&self, key: &str) -> KvsReturnValue;
+        // factory function to instantiate a DummyKvs
+        fn make_dummy_kvs(service: &Service) -> Box<DummyKvs>;
 
+        // opaque type for the KeyValueStore
+        type DummyKvs;
+        // IKeyValueStore methods
+        fn get(&self, key: &str) -> OptString;
+        // IStateful methods
         fn initialize(&mut self) -> Result<()>;
         fn start(&mut self) -> Result<()>;
         fn stop(&mut self) -> Result<()>;
         fn finalize(&mut self) -> Result<()>;
     }
 }
-// declare_component!(RustKeyValueStore);
 
-fn make_kvs(_wrapper: &ffi::Service) -> Box<DummyKvs> {
-    // println!("{}", wrapper.name());
-    Box::new(DummyKvs)
+impl From<Option<String>> for ffi::OptString {
+    fn from(value: Option<String>) -> Self {
+        let is_set = value.is_some();
+        ffi::OptString {
+            value: value.unwrap_or_default(),
+            is_set,
+        }
+    }
+}
+
+fn make_dummy_kvs(service: &ffi::Service) -> Box<DummyKvs> {
+    Box::new(service.into())
 }

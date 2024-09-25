@@ -13,14 +13,22 @@
 #include <example_rust_service_bridge/lib.h>
 
 namespace {
+  /// Helper to simplify the conversion from OptString to std::optional<std::string>
+  std::optional<std::string> to_optional( const OptString& value ) {
+    if ( value.is_set ) {
+      return std::string( value.value );
+    } else {
+      return std::nullopt;
+    }
+  }
+
+  /// Helper class to wrap a Rust implementation of IKeyValueStore interface
   template <typename T>
-  class RustServiceBridge : public extends<Service, Gaudi::Examples::IKeyValueStore> {
+  class IKeyValueStoreBridge : public extends<Service, Gaudi::Examples::IKeyValueStore> {
   public:
     using extends::extends;
-    // RustServiceBridge(const std::string& name, ISvcLocator* svcLoc ) : extends(name, svcLoc) {
-    //     m_impl->set_name(name);
-    // }
 
+    // delegation of IStateful methods
     StatusCode initialize() override {
       return extends::initialize().andThen( [this] { m_impl->initialize(); } );
     }
@@ -36,18 +44,18 @@ namespace {
       return extends::finalize();
     }
 
+    // delegation ot IKeyValueStore methods
+    // taking in to account the custom wrapping of std::optional
     std::optional<std::string> get( std::string_view key ) const override {
-      auto result = m_impl->get_wrapper( rust::Str( key.data(), key.size() ) );
-      if ( result.found ) {
-        return std::string( result.value );
-      } else {
-        return std::nullopt;
-      }
+      return to_optional( m_impl->get( rust::Str( key.data(), key.size() ) ) );
     }
 
   private:
-    rust::Box<T> m_impl = make_kvs( *this );
+    // The implementation from rust is initialized from the C++ service instance to have
+    // access to the C++ service methods (like name, etc.)
+    rust::Box<T> m_impl = make_dummy_kvs( *this );
   };
 } // namespace
 
-DECLARE_COMPONENT_WITH_ID( RustServiceBridge<DummyKvs>, "Gaudi::Examples::Rust::KeyValueStore" )
+// Make the bridge class available to Gaudi as a component
+DECLARE_COMPONENT_WITH_ID( IKeyValueStoreBridge<DummyKvs>, "Gaudi::Examples::Rust::KeyValueStore" )
