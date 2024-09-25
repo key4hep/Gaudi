@@ -20,16 +20,17 @@ class TestRustInvocation(GaudiExeTest):
 
         cfg = config()
         app = next(c for c in cfg if c.name == "ApplicationMgr")
+        evt_max = app.EvtMax
 
         # get only the message part of RustyAlg "INFO" lines
-        rustyalg_messages = [
+        alg_messages = [
             line.split("INFO", 1)[1].strip()
             for line in stdout.decode().splitlines()
             if line.startswith("RustyAlg") and "INFO" in line
         ]
 
         expected = ["RustyAlg::initialize()"]
-        for i in range(app.EvtMax):
+        for i in range(evt_max):
             expected.extend(
                 [
                     "entering RustyAlg::execute()",
@@ -37,5 +38,5 @@ class TestRustInvocation(GaudiExeTest):
                     "leaving RustyAlg::execute()",
                 ]
             )
-        expected.append(f"total event count -> {app.EvtMax}")
-        assert rustyalg_messages == expected
+        expected.append(f"total event count -> {evt_max}")
+        assert alg_messages == expected
