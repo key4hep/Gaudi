@@ -16,7 +16,8 @@ def config():
     from GaudiConfig2.Configurables.Gaudi import Examples as E
 
     alg = E.KVSTestAlg("KVSTestAlg")
-    alg.KVStore = E.Cpp.KeyValueStore("KVStore")
+    # alg.KVStore = E.Cpp.KeyValueStore("KVStore")
+    alg.KVStore = E.Rust.KeyValueStore("KVStore")
     app = C.ApplicationMgr(
         TopAlg=[alg],
         EvtMax=3,
