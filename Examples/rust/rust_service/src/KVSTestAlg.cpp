@@ -16,8 +16,12 @@ namespace Gaudi::Examples {
   class KVSTestAlg : public Gaudi::Algorithm {
     using Algorithm::Algorithm;
 
+    StatusCode initialize() override {
+      return Algorithm::initialize().andThen( [this] { return m_kvstore.retrieve(); } );
+    }
+
     StatusCode execute( EventContext const& ) const override {
-      info() << "entering KVSTestAlg::execute()" << endmsg;
+      info() << "entering " << name() << "::execute()" << endmsg;
       std::string_view key   = "abc";
       auto             value = m_kvstore->get( key );
       if ( !value ) {
@@ -25,7 +29,7 @@ namespace Gaudi::Examples {
       } else {
         info() << key << " -> " << *value << endmsg;
       }
-      info() << "leaving KVSTestAlg::execute()" << endmsg;
+      info() << "leaving " << name() << "::execute()" << endmsg;
       return StatusCode::SUCCESS;
     }
 

@@ -16,6 +16,9 @@ namespace Gaudi::Examples::Cpp {
   class KeyValueStore : public extends<Service, IKeyValueStore> {
     using extends::extends;
 
+    StatusCode initialize() override {
+      return extends::initialize().andThen( [this] { info() << "Initialize " << name() << " (C++)" << endmsg; } );
+    }
     std::optional<std::string> get( std::string_view key ) const override { return fmt::format( "{0}-{0}", key ); }
   };
 

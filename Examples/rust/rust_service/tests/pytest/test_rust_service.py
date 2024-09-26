@@ -8,6 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import pytest
 from GaudiTesting import GaudiExeTest
 
 
@@ -15,21 +16,26 @@ def config():
     from GaudiConfig2 import Configurables as C
     from GaudiConfig2.Configurables.Gaudi import Examples as E
 
-    alg = E.KVSTestAlg("KVSTestAlg")
-    # alg.KVStore = E.Cpp.KeyValueStore("KVStore")
-    alg.KVStore = E.Rust.KeyValueStore("KVStore")
+    cxx_alg = E.KVSTestAlg("KVSTestC++")
+    cxx_alg.KVStore = E.Cpp.KeyValueStore("KVStoreC++")
+
+    rust_alg = E.KVSTestAlg("KVSTestRust")
+    rust_alg.KVStore = E.Rust.KeyValueStore("KVStoreRust")
+
     app = C.ApplicationMgr(
-        TopAlg=[alg],
+        TopAlg=[cxx_alg, rust_alg],
         EvtMax=3,
         EvtSel="NONE",
     )
-    return [app, alg, alg.KVStore]
+
+    return [app, cxx_alg, cxx_alg.KVStore, rust_alg, rust_alg.KVStore]
 
 
 class TestRustInvocation(GaudiExeTest):
     command = ["gaudirun.py", f"{__file__}:config"]
 
-    def test_stdout(self, stdout):
+    @pytest.mark.parametrize("language", ["C++", "Rust"])
+    def test_stdout(self, stdout, language):
         # extract the number of events processed from the options
         cfg = config()
         app = next(c for c in cfg if c.name == "ApplicationMgr")
@@ -39,13 +45,21 @@ class TestRustInvocation(GaudiExeTest):
         alg_messages = [
             line.split("INFO", 1)[1].strip()
             for line in stdout.decode().splitlines()
-            if line.startswith("KVSTestAlg") and "INFO" in line
+            if (
+                line.startswith(f"KVSTest{language}")
+                or line.startswith(f"KVStore{language}")
+            )
+            and "INFO" in line
         ]
 
-        expected = [
-            "entering KVSTestAlg::execute()",
-            "abc -> abc-abc",
-            "leaving KVSTestAlg::execute()",
-        ] * evt_max
+        expected = [f"Initialize KVStore{language} ({language})"]
+        expected.extend(
+            [
+                f"entering KVSTest{language}::execute()",
+                "abc -> abc-abc",
+                f"leaving KVSTest{language}::execute()",
+            ]
+            * evt_max
+        )
 
         assert alg_messages == expected
