@@ -33,10 +33,10 @@ namespace Gaudi::Rust {
   /// @brief Wrapper around MessageSvc to simplify reporting from Rust components
   class Logger {
   public:
-    Logger( const std::string& name, ISvcLocator* svcLoc ) : m_name( name ), m_msgSvc( svcLoc ) {}
+    Logger( const CommonMessagingBase& component ) : m_component( component ) {}
 
     void report( MSG::Level level, rust::Str msg ) const {
-      msgStream() << level << std::string_view( msg.data(), msg.size() ) << endmsg;
+      m_component.msgStream( level ) << std::string_view( msg.data(), msg.size() ) << endmsg;
     }
 
     void verbose( rust::Str msg ) const { report( MSG::VERBOSE, msg ); }
@@ -48,19 +48,9 @@ namespace Gaudi::Rust {
     void always( rust::Str msg ) const { report( MSG::ALWAYS, msg ); }
 
   private:
-    MsgStream& msgStream() const {
-      if ( !m_msgStream.get() ) { m_msgStream.reset( new MsgStream( m_msgSvc, m_name ) ); }
-      return *m_msgStream;
-    }
-
-    std::string          m_name;
-    SmartIF<IMessageSvc> m_msgSvc;
-
-    mutable boost::thread_specific_ptr<MsgStream> m_msgStream;
+    const CommonMessagingBase& m_component;
   };
 
   /// Factory function used by Rust components to create an instance of Logger
-  inline std::unique_ptr<Logger> make_logger( const Service& svc ) {
-    return std::make_unique<Logger>( svc.name(), svc.serviceLocator() );
-  }
+  inline std::unique_ptr<Logger> make_logger( const Service& svc ) { return std::make_unique<Logger>( svc ); }
 } // namespace Gaudi::Rust
