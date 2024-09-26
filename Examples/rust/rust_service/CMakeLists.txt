@@ -46,7 +46,13 @@ corrosion_add_cxxbridge(
     CRATE example_rust_service
     FILES lib.rs
 )
-target_link_libraries(example_rust_service_bridge PRIVATE Gaudi::GaudiKernel)
-set_target_properties(example_rust_service_bridge PROPERTIES
-                        POSITION_INDEPENDENT_CODE YES
-                        )
+target_link_libraries(example_rust_service_bridge
+    PRIVATE
+        Gaudi::GaudiKernel
+)
+# We are building a static library that we want to link into a
+# shared library so we need generate position independent code (-fPIC)
+set_target_properties(example_rust_service_bridge
+    PROPERTIES
+        POSITION_INDEPENDENT_CODE YES
+)
