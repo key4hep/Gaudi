@@ -33,12 +33,31 @@
 #include <string>
 #include <vector>
 
+#include <fmt/format.h>
+
 // upstream has renamed namespace ranges::view -> ranges::views
 #if RANGE_V3_VERSION < 900
 namespace ranges::views {
   using namespace ranges::view;
 }
 #endif
+
+namespace {
+  std::string formatTitle( std::string_view title, unsigned int width ) {
+    if ( title.size() > width ) {
+      return fmt::format( "\"{:.{}s}...\"", title, width - 3 );
+    } else {
+      return fmt::format( "\"{:.{}s}\"", title, width );
+    }
+  }
+  constexpr std::string_view histo1DFormatting =
+      " | {:{}.{}s} | {:{}s} | {:7d} |{:11.5g} | {:<#11.5g}|{:11.5g} |{:11.5g} |";
+  constexpr std::string_view histo2DFormatting =
+      " ID={:{}.{}s}  {:{}s}  Ents/All={:>5.0f}/{:<5.0f}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g}";
+  constexpr std::string_view histo3DFormatting =
+      " ID={:{}.{}s}  {:{}s}  "
+      "Ents/All={:>5.0f}/{:<5.0f}<X>/sX={:.5g}/{:<.5g},<Y>/sY={:.5g}/{:<.5g},<Z>/sZ={:.5g}/{:<.5g}";
+} // namespace
 
 namespace Gaudi::Histograming::Sink {
 
@@ -542,6 +561,338 @@ namespace Gaudi::Histograming::Sink {
     }
     // switch back to the previous directory
     previousDir->cd();
+  }
+
+  template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
+            typename Arithmetic                      = double>
+  std::string printProfileHisto1D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
+                                   unsigned int stringsWidth = 45 ) {
+    // get original histogram from the Entity
+    auto const& gaudiHisto =
+        *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<1, Atomicity, Arithmetic>*>( ent.id() );
+    // compute min and max values, we actually display the axis limits
+    auto const&  gaudiAxisX = gaudiHisto.template axis<0>();
+    Arithmetic   minValueX  = gaudiAxisX.minValue();
+    Arithmetic   maxValueX  = gaudiAxisX.maxValue();
+    unsigned int nBinsX     = gaudiAxisX.numBins();
+    // Compute fist and second momenta for normal dimenstion
+    // Compute 1st and 2nd momenta for the profile dimension
+    unsigned int nEntries{ 0 }, nAllEntries{ 0 };
+    Arithmetic   sumX{};
+    Arithmetic   sum2X{};
+    Arithmetic   sum3X{};
+    Arithmetic   sum4X{};
+    Arithmetic   binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    Arithmetic   binXValue = minValueX - binXSize / 2;
+    for ( unsigned int nx = 0; nx <= nBinsX + 1; nx++ ) {
+      auto const& [tmp, sumw2] = gaudiHisto.binValue( nx );
+      auto const& [nent, sumw] = tmp;
+      nAllEntries += nent;
+      if ( nx > 0 && nx <= nBinsX ) {
+        nEntries += nent;
+        auto val = binXValue * nent;
+        sumX += val;
+        val *= binXValue;
+        sum2X += val;
+        val *= binXValue;
+        sum3X += val;
+        val *= binXValue;
+        sum4X += val;
+        binXValue += binXSize;
+      }
+    }
+    std::string ftitle = formatTitle( gaudiHisto.title(), stringsWidth - 2 );
+    if ( nEntries == 0 ) {
+      return fmt::format( fmt::runtime( histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth, 0,
+                          0.0, 0.0, 0.0, 0.0 );
+    }
+    Arithmetic meanX     = sumX / nEntries;
+    Arithmetic sigmaX2   = sum2X / nEntries - meanX * meanX;
+    Arithmetic stddevX   = sqrt( sigmaX2 );
+    Arithmetic EX3       = sum3X / nEntries;
+    Arithmetic skewnessX = EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX;
+    Arithmetic kurtosisX = sum4X / nEntries - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) );
+    skewnessX /= sigmaX2 * stddevX;
+    kurtosisX /= sigmaX2 * sigmaX2;
+    // print
+    return fmt::format( fmt::runtime( histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth,
+                        nEntries, meanX, stddevX, skewnessX, kurtosisX - Arithmetic{ 3.0 } );
+  }
+
+  template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
+            typename Arithmetic                      = double>
+  std::string printProfileHisto2D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
+                                   unsigned int stringsWidth = 45 ) {
+    // get original histogram from the Entity
+    auto const& gaudiHisto =
+        *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<2, Atomicity, Arithmetic>*>( ent.id() );
+    // compute min and max values, we actually display the axis limits
+    auto const&  gaudiAxisX = gaudiHisto.template axis<0>();
+    Arithmetic   minValueX  = gaudiAxisX.minValue();
+    Arithmetic   maxValueX  = gaudiAxisX.maxValue();
+    unsigned int nBinsX     = gaudiAxisX.numBins();
+    auto const&  gaudiAxisY = gaudiHisto.template axis<1>();
+    Arithmetic   minValueY  = gaudiAxisY.minValue();
+    Arithmetic   maxValueY  = gaudiAxisY.maxValue();
+    unsigned int nBinsY     = gaudiAxisY.numBins();
+    // Compute fist and second momenta for normal dimenstion
+    // Compute 1st and 2nd momenta for the profile dimension
+    Arithmetic nEntries{ 0 }, nAllEntries{ 0 };
+    Arithmetic sumX{}, sumY{};
+    Arithmetic sum2X{}, sum2Y{};
+    Arithmetic binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    Arithmetic binYSize  = ( maxValueY - minValueY ) / nBinsY;
+    Arithmetic binYValue = minValueY - binYSize / 2;
+    for ( unsigned int ny = 0; ny <= nBinsY + 1; ny++ ) {
+      Arithmetic binXValue = minValueX - binXSize / 2;
+      auto       offset    = ny * ( nBinsX + 2 );
+      for ( unsigned int nx = 0; nx <= nBinsX + 1; nx++ ) {
+        auto const& [tmp, sumw2] = gaudiHisto.binValue( nx + offset );
+        auto const& [nent, sumw] = tmp;
+        nAllEntries += nent;
+        if ( nx > 0 && ny > 0 && nx <= nBinsX && ny <= nBinsY ) {
+          nEntries += nent;
+          sumX += binXValue * nent;
+          sum2X += binXValue * binXValue * nent;
+          sumY += binYValue * nent;
+          sum2Y += binYValue * binYValue * nent;
+          binXValue += binXSize;
+        }
+      }
+      binYValue += binYSize;
+    }
+    Arithmetic meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
+    Arithmetic stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    Arithmetic meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
+    Arithmetic stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+    // print
+    std::string ftitle = formatTitle( gaudiHisto.title(), stringsWidth - 2 );
+    return fmt::format( fmt::runtime( histo2DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth,
+                        nEntries, nAllEntries, meanX, stddevX, meanY, stddevY );
+  }
+
+  template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
+            typename Arithmetic                      = double>
+  std::string printProfileHisto3D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
+                                   unsigned int stringsWidth = 45 ) {
+    // get original histogram from the Entity
+    auto const& gaudiHisto =
+        *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<3, Atomicity, Arithmetic>*>( ent.id() );
+    // compute min and max values, we actually display the axis limits
+    auto const&  gaudiAxisX = gaudiHisto.template axis<0>();
+    Arithmetic   minValueX  = gaudiAxisX.minValue();
+    Arithmetic   maxValueX  = gaudiAxisX.maxValue();
+    unsigned int nBinsX     = gaudiAxisX.numBins();
+    auto const&  gaudiAxisY = gaudiHisto.template axis<1>();
+    Arithmetic   minValueY  = gaudiAxisY.minValue();
+    Arithmetic   maxValueY  = gaudiAxisY.maxValue();
+    unsigned int nBinsY     = gaudiAxisY.numBins();
+    auto const&  gaudiAxisZ = gaudiHisto.template axis<2>();
+    Arithmetic   minValueZ  = gaudiAxisZ.minValue();
+    Arithmetic   maxValueZ  = gaudiAxisZ.maxValue();
+    unsigned int nBinsZ     = gaudiAxisZ.numBins();
+    // Compute fist and second momenta for normal dimenstion
+    // Compute 1st and 2nd momenta for the profile dimension
+    Arithmetic nEntries{ 0 }, nAllEntries{ 0 };
+    Arithmetic sumX{}, sumY{}, sumZ{};
+    Arithmetic sum2X{}, sum2Y{}, sum2Z{};
+    Arithmetic binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    Arithmetic binYSize  = ( maxValueY - minValueY ) / nBinsY;
+    Arithmetic binZSize  = ( maxValueZ - minValueZ ) / nBinsZ;
+    Arithmetic binZValue = minValueZ - binZSize / 2;
+    for ( unsigned int nz = 0; nz <= nBinsZ + 1; nz++ ) {
+      Arithmetic binYValue = minValueY - binYSize / 2;
+      auto       offsetz   = nz * ( nBinsY + 2 );
+      for ( unsigned int ny = 0; ny <= nBinsY; ny++ ) {
+        Arithmetic binXValue = minValueX - binXSize / 2;
+        auto       offset    = ( offsetz + ny ) * ( nBinsX + 2 );
+        for ( unsigned int nx = 0; nx <= nBinsX; nx++ ) {
+          auto const& [tmp, sumw2] = gaudiHisto.binValue( nx + offset );
+          auto const& [nent, sumw] = tmp;
+          nAllEntries += nent;
+          if ( nx > 0 && ny > 0 && nz > 0 && nx <= nBinsX && ny <= nBinsY && nz <= nBinsZ ) {
+            nEntries += nent;
+            sumX += binXValue * nent;
+            sum2X += binXValue * binXValue * nent;
+            sumY += binYValue * nent;
+            sum2Y += binYValue * binYValue * nent;
+            sumZ += binZValue * nent;
+            sum2Z += binZValue * binZValue * nent;
+            binXValue += binXSize;
+          }
+        }
+        binYValue += binYSize;
+      }
+      binZValue += binZSize;
+    }
+    Arithmetic meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
+    Arithmetic stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    Arithmetic meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
+    Arithmetic stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+    Arithmetic meanZ   = nEntries > 0 ? sumZ / nEntries : 0.0;
+    Arithmetic stddevZ = nEntries > 0 ? sqrt( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
+    // print
+    std::string ftitle = formatTitle( gaudiHisto.title(), stringsWidth - 2 );
+    return fmt::format( fmt::runtime( histo3DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth,
+                        nEntries, nAllEntries, meanX, stddevX, meanY, stddevY, meanZ, stddevZ );
+  }
+
+  struct BinAccessor {
+    std::function<double( unsigned int )> m_get;
+    BinAccessor( std::string_view type, const nlohmann::json& j ) {
+      auto subtype = std::string_view( type ).substr( 10 ); // remove "histogram:" in front
+      if ( subtype.substr( 0, 15 ) == "WeightedProfile" || subtype.substr( 0, 7 ) == "Profile" ) {
+        m_get = [bins = j.at( "bins" ).get<std::vector<std::tuple<std::tuple<unsigned int, double>, double>>>()](
+                    unsigned int nx ) {
+          auto [c, sumWeight2] = bins[nx];
+          auto [n, sumWeight]  = c;
+          return n;
+        };
+      } else {
+        m_get = [bins = j.at( "bins" ).get<std::vector<double>>()]( unsigned int nx ) { return bins[nx]; };
+      }
+    }
+    auto operator[]( unsigned int n ) const { return m_get( n ); }
+  };
+
+  inline std::string printHistogram1D( std::string_view type, std::string_view name, std::string_view title,
+                                       const nlohmann::json& j, unsigned int stringsWidth = 45 ) {
+    auto& jaxis       = j.at( "axis" );
+    auto  minValueX   = jaxis[0].at( "minValue" ).get<double>();
+    auto  maxValueX   = jaxis[0].at( "maxValue" ).get<double>();
+    auto  nBinsX      = jaxis[0].at( "nBins" ).get<unsigned int>();
+    auto  nAllEntries = j.at( "nEntries" ).get<unsigned int>();
+    // compute the various momenta
+    BinAccessor ba{ type, j };
+    double      sumX{}, sum2X{}, sum3X{}, sum4X{}, nEntries{ 0 };
+    double      binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    double      binXValue = minValueX + binXSize / 2;
+    for ( unsigned int nx = 1; nx <= nBinsX; nx++ ) {
+      auto n = ba[nx];
+      nEntries += n;
+      auto val = binXValue * n;
+      sumX += val;
+      val *= binXValue;
+      sum2X += val;
+      val *= binXValue;
+      sum3X += val;
+      val *= binXValue;
+      sum4X += val;
+      binXValue += binXSize;
+    }
+    std::string ftitle = formatTitle( title, stringsWidth - 2 );
+    if ( nEntries == 0 ) {
+      return fmt::format( fmt::runtime( histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth, 0,
+                          0.0, 0.0, 0.0, 0.0 );
+    }
+    double meanX     = sumX / nEntries;
+    double sigmaX2   = sum2X / nEntries - meanX * meanX;
+    double stddevX   = sqrt( sigmaX2 );
+    double EX3       = sum3X / nEntries;
+    double skewnessX = EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX;
+    double kurtosisX = sum4X / nEntries - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) );
+    skewnessX /= sigmaX2 * stddevX;
+    kurtosisX /= sigmaX2 * sigmaX2;
+    // print
+    return fmt::format( fmt::runtime( histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth,
+                        nAllEntries, meanX, stddevX, skewnessX, kurtosisX - 3.0 );
+  }
+
+  inline std::string printHistogram2D( std::string_view type, std::string_view name, std::string_view title,
+                                       const nlohmann::json& j, unsigned int stringsWidth = 45 ) {
+    auto& jaxis       = j.at( "axis" );
+    auto  minValueX   = jaxis[0].at( "minValue" ).get<double>();
+    auto  maxValueX   = jaxis[0].at( "maxValue" ).get<double>();
+    auto  nBinsX      = jaxis[0].at( "nBins" ).get<unsigned int>();
+    auto  minValueY   = jaxis[1].at( "minValue" ).get<double>();
+    auto  maxValueY   = jaxis[1].at( "maxValue" ).get<double>();
+    auto  nBinsY      = jaxis[1].at( "nBins" ).get<unsigned int>();
+    auto  nAllEntries = j.at( "nEntries" ).get<double>();
+    // compute the various memneta
+    BinAccessor ba{ type, j };
+    double      nEntries{};
+    double      sumX{}, sumY{};
+    double      sum2X{}, sum2Y{};
+    double      binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    double      binYSize  = ( maxValueY - minValueY ) / nBinsY;
+    double      binYValue = minValueY + binYSize / 2;
+    for ( unsigned int ny = 1; ny <= nBinsY; ny++ ) {
+      double binXValue = minValueX + binXSize / 2;
+      auto   offset    = ny * ( nBinsX + 2 );
+      for ( unsigned int nx = 1; nx <= nBinsX; nx++ ) {
+        auto n = ba[offset + nx];
+        nEntries += n;
+        sumX += n * binXValue;
+        sum2X += n * binXValue * binXValue;
+        sumY += n * binYValue;
+        sum2Y += n * binYValue * binYValue;
+        binXValue += binXSize;
+      }
+      binYValue += binYSize;
+    }
+    double meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
+    double stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    double meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
+    double stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+    // print
+    std::string ftitle = formatTitle( title, stringsWidth - 2 );
+    return fmt::format( fmt::runtime( histo2DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth,
+                        nEntries, nAllEntries, meanX, stddevX, meanY, stddevY );
+  }
+
+  inline std::string printHistogram3D( std::string_view type, std::string_view name, std::string_view title,
+                                       const nlohmann::json& j, unsigned int stringsWidth = 45 ) {
+    auto& jaxis       = j.at( "axis" );
+    auto  minValueX   = jaxis[0].at( "minValue" ).get<double>();
+    auto  maxValueX   = jaxis[0].at( "maxValue" ).get<double>();
+    auto  nBinsX      = jaxis[0].at( "nBins" ).get<unsigned int>();
+    auto  minValueY   = jaxis[1].at( "minValue" ).get<double>();
+    auto  maxValueY   = jaxis[1].at( "maxValue" ).get<double>();
+    auto  nBinsY      = jaxis[1].at( "nBins" ).get<unsigned int>();
+    auto  minValueZ   = jaxis[2].at( "minValue" ).get<double>();
+    auto  maxValueZ   = jaxis[2].at( "maxValue" ).get<double>();
+    auto  nBinsZ      = jaxis[2].at( "nBins" ).get<unsigned int>();
+    auto  nAllEntries = j.at( "nEntries" ).get<double>();
+    // compute the various memneta
+    BinAccessor ba{ type, j };
+    double      nEntries{};
+    double      sumX{}, sumY{}, sumZ{};
+    double      sum2X{}, sum2Y{}, sum2Z{};
+    double      binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    double      binYSize  = ( maxValueY - minValueY ) / nBinsY;
+    double      binZSize  = ( maxValueZ - minValueZ ) / nBinsZ;
+    double      binZValue = minValueZ + binZSize / 2;
+    for ( unsigned int nz = 1; nz <= nBinsZ; nz++ ) {
+      double binYValue = minValueY + binYSize / 2;
+      auto   offsetz   = nz * ( nBinsY + 2 );
+      for ( unsigned int ny = 1; ny <= nBinsY; ny++ ) {
+        double binXValue = minValueX + binXSize / 2;
+        auto   offset    = ( offsetz + ny ) * ( nBinsX + 2 );
+        for ( unsigned int nx = 1; nx <= nBinsX; nx++ ) {
+          auto n = ba[offset + nx];
+          nEntries += n;
+          sumX += n * binXValue;
+          sum2X += n * binXValue * binXValue;
+          sumY += n * binYValue;
+          sum2Y += n * binYValue * binYValue;
+          sumZ += n * binZValue;
+          sum2Z += n * binZValue * binZValue;
+          binXValue += binXSize;
+        }
+        binYValue += binYSize;
+      }
+      binZValue += binZSize;
+    }
+    double meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
+    double stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    double meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
+    double stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+    double meanZ   = nEntries > 0 ? sumZ / nEntries : 0.0;
+    double stddevZ = nEntries > 0 ? sqrt( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
+    // print
+    std::string ftitle = formatTitle( title, stringsWidth - 2 );
+    return fmt::format( fmt::runtime( histo3DFormatting ), name, stringsWidth, stringsWidth, ftitle, stringsWidth,
+                        nEntries, nAllEntries, meanX, stddevX, meanY, stddevY, meanZ, stddevZ );
   }
 
 } // namespace Gaudi::Histograming::Sink

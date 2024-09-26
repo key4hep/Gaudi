@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE( test_profile_histo_speed, *boost::unit_test::tolerance( 1e
 
   // test fast conversion of 2D histos
   Gaudi::Accumulators::StaticProfileHistogram<2u> histo2d{
-      &algo, "GaudiP3D", "A Large Gaudi 2D Profile", { 1000, 0, 1000 }, { 1000, 0, 1000 } };
+      &algo, "GaudiP2D", "A Large Gaudi 2D Profile", { 1000, 0, 1000 }, { 1000, 0, 1000 } };
   for ( int i = 0; i < 1000; i++ ) {
     for ( int j = 0; j < 1000; j++ ) {
       for ( int l = 0; l < 10; l++ ) { histo2d[{ i + 0.5, j + 0.5 }] += double( l ); }

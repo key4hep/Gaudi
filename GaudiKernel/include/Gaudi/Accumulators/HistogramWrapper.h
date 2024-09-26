@@ -86,11 +86,11 @@ namespace Gaudi::Accumulators {
         : HistogramWrapperInternal( owner, name, title, std::make_tuple( allAxis... ) ) {}
 
     /// override of operator[] with extra checking that initialization happened
-    [[nodiscard]] auto operator[]( typename HistogramType::AxisTupleArithmeticType&& v ) {
+    [[nodiscard]] auto operator[]( typename HistogramType::AxisTupleArithmeticType v ) {
       if ( !m_histo ) {
         throw std::logic_error( fmt::format( "Histogram {} is used before being initialized", m_name ) );
       }
-      return m_histo.value()[std::forward<typename HistogramType::AxisTupleArithmeticType>( v )];
+      return m_histo.value()[v];
     }
 
     /// creation of the internal histogram, from the properties
