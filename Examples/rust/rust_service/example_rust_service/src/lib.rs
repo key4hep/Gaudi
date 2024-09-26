@@ -8,13 +8,23 @@
 // # granted to it by virtue of its status as an Intergovernmental Organization        #
 // # or submit itself to any jurisdiction.                                             #
 // #####################################################################################
+use std::ops::Deref;
 
 /// Dummy KeyValueStore implementation
-struct DummyKvs;
+struct DummyKvs<'a> {
+    service: &'a ffi::Service,
+    logger: cxx::UniquePtr<ffi::Logger>,
+}
 
 /// Implement the methods required for IStateful
-impl DummyKvs {
+impl DummyKvs<'_> {
+    fn info(&self, msg: &str) {
+        self.logger.deref().info(msg);
+    }
+
     fn initialize(&mut self) -> Result<(), String> {
+        self.logger = ffi::make_logger(self.service);
+        self.info(&format!("Initialize {} (Rust)", self.service.name()));
         Ok(())
     }
     fn start(&mut self) -> Result<(), String> {
@@ -29,7 +39,7 @@ impl DummyKvs {
 }
 
 /// Implement the methods required for Gaudi::Examples::IKeyValueStore
-impl DummyKvs {
+impl DummyKvs<'_> {
     // Since cxx::bridge does not support std::optional<T> or Option<T>,
     // we use a helper shared struct (OptString)
     fn get(&self, key: &str) -> ffi::OptString {
@@ -41,10 +51,17 @@ impl DummyKvs {
     }
 }
 
-impl From<&ffi::Service> for DummyKvs {
-    fn from(_service: &ffi::Service) -> Self {
-        Self
+impl<'a> From<&'a ffi::Service> for DummyKvs<'a> {
+    fn from(service: &'a ffi::Service) -> Self {
+        Self {
+            service,
+            logger: cxx::UniquePtr::null(),
+        }
     }
+}
+
+fn make_dummy_kvs(service: &ffi::Service) -> Box<DummyKvs> {
+    Box::new(service.into())
 }
 
 #[cxx::bridge]
@@ -63,12 +80,21 @@ mod ffi {
         fn name(&self) -> &CxxString;
     }
 
+    #[namespace = "Gaudi::Rust"]
+    unsafe extern "C++" {
+        include!("Gaudi/Rust/Logger.h");
+        type Logger;
+
+        fn make_logger(service: &Service) -> UniquePtr<Logger>;
+        fn info(&self, msg: &str);
+    }
+
     extern "Rust" {
         // factory function to instantiate a DummyKvs
         fn make_dummy_kvs(service: &Service) -> Box<DummyKvs>;
 
         // opaque type for the KeyValueStore
-        type DummyKvs;
+        type DummyKvs<'a>;
         // IKeyValueStore methods
         fn get(&self, key: &str) -> OptString;
         // IStateful methods
@@ -87,8 +113,4 @@ impl From<Option<String>> for ffi::OptString {
             is_set,
         }
     }
-}
-
-fn make_dummy_kvs(service: &ffi::Service) -> Box<DummyKvs> {
-    Box::new(service.into())
 }

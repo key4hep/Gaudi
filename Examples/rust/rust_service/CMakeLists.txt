@@ -13,6 +13,7 @@
 gaudi_add_header_only_library(example_rust_service_headers
     LINK
         Gaudi::GaudiKernel
+        Boost::headers
 )
 
 # Declare a Gaudi plugin library (module)
@@ -49,6 +50,7 @@ corrosion_add_cxxbridge(
 target_link_libraries(example_rust_service_bridge
     PRIVATE
         Gaudi::GaudiKernel
+        example_rust_service_headers
 )
 # We are building a static library that we want to link into a
 # shared library so we need generate position independent code (-fPIC)
