@@ -21,7 +21,7 @@ namespace rust {
 
 namespace Gaudi::Rust {
   template <typename T>
-  struct Builder {
+  struct ServiceBuilder {
     static rust::Box<T> make( Service const& service ) { static_assert( false, "No builder for this type" ); }
   };
 
@@ -49,6 +49,6 @@ namespace Gaudi::Rust {
   protected:
     // The implementation from Rust is initialized from the C++ service instance to have
     // access to the C++ service methods (like name, etc.)
-    rust::Box<T> m_impl = Builder<T>::make( *this );
+    rust::Box<T> m_impl = ServiceBuilder<T>::make( *this );
   };
 } // namespace Gaudi::Rust

@@ -13,7 +13,7 @@
 
 namespace Gaudi::Rust {
   template <>
-  struct Builder<DummyKvs> {
+  struct ServiceBuilder<DummyKvs> {
     static rust::Box<DummyKvs> make( Service const& service ) { return make_dummy_kvs( service ); }
   };
 } // namespace Gaudi::Rust
