@@ -194,7 +194,9 @@ def compare_dicts(d1: Dict[str, Any], d2: Dict[str, Any], ignore_re: str = None)
 
 
 # signature of the print-out of the histograms
-h_count_re = re.compile(r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+([\s\w=-]*)")
+h_count_re = re.compile(
+    r"^(.*)(?:SUCCESS|INFO)\s+Booked (\d+) Histogram\(s\) :\s+([\s\w=-]*)"
+)
 
 
 def _parse_ttree_summary(lines, pos):
@@ -285,9 +287,9 @@ def _parse_histos_summary(lines, pos):
     """
     global h_count_re
     h_table_head = re.compile(
-        r'SUCCESS\s+(1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"'
+        r'(?:SUCCESS|INFO)\s+(1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"'
     )
-    h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]+)\"\s+(.*)")
+    h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]*)\"\s+(.*)")
 
     nlines = len(lines)
 

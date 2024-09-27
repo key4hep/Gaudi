@@ -1434,9 +1434,9 @@ def parseHistosSummary(lines, pos):
     """
     global h_count_re
     h_table_head = re.compile(
-        r'SUCCESS\s+(1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"'
+        r'(?:INFO|SUCCESS)\s+(1D|2D|3D|1D profile|2D profile|3d profile) histograms in directory\s+"(\w*)"'
     )
-    h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]+)\"\s+(.*)")
+    h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]*)\"\s+(.*)")
 
     nlines = len(lines)
 
