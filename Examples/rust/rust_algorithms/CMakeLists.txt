@@ -8,21 +8,13 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-set(BUILD_TESTING false)
-# --- Gaudi related settings ---
-gaudi_add_header_only_library(example_rust_algorithm_headers
-    LINK
-        Gaudi::GaudiKernel
-        Gaudi::example_rust_service_headers
-)
-set(BUILD_TESTING true)
 
 # Declare a Gaudi plugin library (module)
 gaudi_add_module(example_rust_algorithm_module
     SOURCES
         src/RustAlgWrappers.cpp
     LINK
-        example_rust_algorithm_headers
+        Gaudi::GaudiRustBindings
         example_rust_algorithm_bridge
         Gaudi::GaudiKernel
 )
@@ -48,7 +40,7 @@ corrosion_add_cxxbridge(
 target_link_libraries(example_rust_algorithm_bridge
     PRIVATE
         Gaudi::GaudiKernel
-        example_rust_algorithm_headers
+        Gaudi::GaudiRustBindings
 )
 # We are building a static library that we want to link into a
 # shared library so we need generate position independent code (-fPIC)

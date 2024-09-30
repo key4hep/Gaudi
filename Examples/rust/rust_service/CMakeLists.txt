@@ -13,6 +13,7 @@
 gaudi_add_header_only_library(example_rust_service_headers
     LINK
         Gaudi::GaudiKernel
+        Gaudi::GaudiRustBindings
         Boost::headers
 )
 

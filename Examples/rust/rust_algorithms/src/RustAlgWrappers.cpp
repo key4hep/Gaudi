@@ -10,13 +10,14 @@
 \***********************************************************************************/
 
 #include <Gaudi/Rust/AlgWrapper.h>
+#include <example_rust_algorithm_bridge/lib.h>
 
 namespace Gaudi::Examples {
   // Wrap a Rust algorithm with Gaudi::Rust::AlgWrapper
   struct MyRustCountingAlg : public Gaudi::Rust::AlgWrapper {
-    MyRustCountingAlg( const std::string& name, ISvcLocator* svc ) : Gaudi::Rust::AlgWrapper( name, svc ) {
-      m_impl = my_rust_counting_alg_factory( *this );
-    }
+    using AlgWrapper::AlgWrapper;
+
+    virtual impl_t* factory() const override { return new impl_t{ my_rust_counting_alg_factory( *this ) }; }
   };
   DECLARE_COMPONENT( MyRustCountingAlg )
 } // namespace Gaudi::Examples

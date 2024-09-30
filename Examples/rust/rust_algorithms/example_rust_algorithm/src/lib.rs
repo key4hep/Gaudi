@@ -32,21 +32,21 @@ mod gaudi {
     }
 }
 
-type DynAlg<'a> = Box<dyn gaudi::Algorithm + 'a>;
+type WrappedAlg<'a> = Box<dyn gaudi::Algorithm + 'a>;
 
-fn dynalg_initialize(alg: &mut Box<DynAlg>) -> Result<(), String> {
+fn alg_initialize(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
     alg.initialize()
 }
-fn dynalg_start(alg: &mut Box<DynAlg>) -> Result<(), String> {
+fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
     alg.start()
 }
-fn dynalg_stop(alg: &mut Box<DynAlg>) -> Result<(), String> {
+fn alg_stop(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
     alg.stop()
 }
-fn dynalg_finalize(alg: &mut Box<DynAlg>) -> Result<(), String> {
+fn alg_finalize(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
     alg.finalize()
 }
-fn dynalg_execute(alg: &Box<DynAlg>, ctx: &crate::ffi::EventContext) -> Result<(), String> {
+fn alg_execute(alg: &Box<WrappedAlg>, ctx: &crate::ffi::EventContext) -> Result<(), String> {
     alg.execute(ctx)
 }
 
@@ -96,7 +96,7 @@ impl gaudi::Algorithm for MyAlg<'_> {
     }
 }
 
-fn my_rust_counting_alg_factory<'a>(wrapper: &'a ffi::Algorithm) -> Box<DynAlg<'a>> {
+fn my_rust_counting_alg_factory<'a>(wrapper: &'a ffi::Algorithm) -> Box<WrappedAlg<'a>> {
     Box::new(Box::new(MyAlg::from(wrapper)))
 }
 
@@ -123,17 +123,17 @@ mod ffi {
         fn info(&self, msg: &str);
     }
 
-    #[namespace = "Gaudi::Rust"]
+    #[namespace = "Gaudi::Rust::details"]
     extern "Rust" {
-        type DynAlg<'a>;
+        type WrappedAlg<'a>;
 
-        fn dynalg_initialize(alg: &mut Box<DynAlg>) -> Result<()>;
-        fn dynalg_start(alg: &mut Box<DynAlg>) -> Result<()>;
-        fn dynalg_stop(alg: &mut Box<DynAlg>) -> Result<()>;
-        fn dynalg_finalize(alg: &mut Box<DynAlg>) -> Result<()>;
+        fn alg_initialize(alg: &mut Box<WrappedAlg>) -> Result<()>;
+        fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<()>;
+        fn alg_stop(alg: &mut Box<WrappedAlg>) -> Result<()>;
+        fn alg_finalize(alg: &mut Box<WrappedAlg>) -> Result<()>;
 
-        fn dynalg_execute(alg: &Box<DynAlg>, ctx: &EventContext) -> Result<()>;
+        fn alg_execute(alg: &Box<WrappedAlg>, ctx: &EventContext) -> Result<()>;
 
-        fn my_rust_counting_alg_factory(wrapper: &Algorithm) -> Box<DynAlg>;
+        fn my_rust_counting_alg_factory(wrapper: &Algorithm) -> Box<WrappedAlg>;
     }
 }
