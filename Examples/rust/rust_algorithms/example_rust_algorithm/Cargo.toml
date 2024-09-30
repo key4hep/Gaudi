@@ -1,0 +1,10 @@
+[package]
+name = "example_rust_algorithm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cxx = { version = "1.0.128", features = ["c++20"] }
+
+[lib]
+crate-type = ["staticlib"]

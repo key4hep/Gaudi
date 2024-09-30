@@ -32,3 +32,4 @@ FetchContent_MakeAvailable(Corrosion)
 
 add_subdirectory(invoke_rust_function)
 add_subdirectory(rust_service)
+add_subdirectory(rust_algorithms)
