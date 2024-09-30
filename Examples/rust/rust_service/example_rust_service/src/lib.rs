@@ -23,7 +23,7 @@ impl DummyKvs<'_> {
     }
 
     fn initialize(&mut self) -> Result<(), String> {
-        self.logger = ffi::make_logger(self.service);
+        self.logger = ffi::make_svc_logger(self.service);
         self.info(&format!("Initialize {} (Rust)", self.service.name()));
         Ok(())
     }
@@ -85,7 +85,7 @@ mod ffi {
         include!("Gaudi/Rust/Logger.h");
         type Logger;
 
-        fn make_logger(service: &Service) -> UniquePtr<Logger>;
+        fn make_svc_logger(service: &Service) -> UniquePtr<Logger>;
         fn info(&self, msg: &str);
     }
 

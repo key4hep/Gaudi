@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#include <Gaudi/Algorithm.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/Service.h>
@@ -52,5 +53,8 @@ namespace Gaudi::Rust {
   };
 
   /// Factory function used by Rust components to create an instance of Logger
-  inline std::unique_ptr<Logger> make_logger( const Service& svc ) { return std::make_unique<Logger>( svc ); }
+  inline std::unique_ptr<Logger> make_svc_logger( const Service& svc ) { return std::make_unique<Logger>( svc ); }
+  inline std::unique_ptr<Logger> make_alg_logger( const Gaudi::Algorithm& svc ) {
+    return std::make_unique<Logger>( svc );
+  }
 } // namespace Gaudi::Rust
