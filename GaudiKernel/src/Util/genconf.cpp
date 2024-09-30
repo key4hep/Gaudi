@@ -680,11 +680,7 @@ void configGenerator::genHeader( std::ostream& py, std::ostream& db )
   // python file part
   std::string now = Gaudi::Time::current().format( true );
   py << "#" << now //<< "\n"
-     << "\"\"\"Automatically generated. DO NOT EDIT please\"\"\"\n"
-     << "import sys\n"
-     << "if sys.version_info >= (3,):\n"
-     << "    # Python 2 compatibility\n"
-     << "    long = int\n";
+     << "\"\"\"Automatically generated. DO NOT EDIT please\"\"\"\n";
 
   if ( m_importGaudiHandles ) { py << "from GaudiKernel.GaudiHandles import *\n"; }
 
