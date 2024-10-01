@@ -103,24 +103,39 @@ pub mod gaudi {
     }
 
     impl<State> AlgorithmBuilder<State> {
-        pub fn add_initialize_action(mut self, action: Action<State>) -> Self {
-            self.algorithm.initialize_actions.push(action);
+        pub fn add_initialize_action(
+            mut self,
+            action: impl FnMut(&mut State, Host) -> Result<(), String> + 'static,
+        ) -> Self {
+            self.algorithm.initialize_actions.push(Box::new(action));
             self
         }
-        pub fn add_start_action(mut self, action: Action<State>) -> Self {
-            self.algorithm.start_actions.push(action);
+        pub fn add_start_action(
+            mut self,
+            action: impl FnMut(&mut State, Host) -> Result<(), String> + 'static,
+        ) -> Self {
+            self.algorithm.start_actions.push(Box::new(action));
             self
         }
-        pub fn add_stop_action(mut self, action: Action<State>) -> Self {
-            self.algorithm.stop_actions.push(action);
+        pub fn add_stop_action(
+            mut self,
+            action: impl FnMut(&mut State, Host) -> Result<(), String> + 'static,
+        ) -> Self {
+            self.algorithm.stop_actions.push(Box::new(action));
             self
         }
-        pub fn add_finalize_action(mut self, action: Action<State>) -> Self {
-            self.algorithm.finalize_actions.push(action);
+        pub fn add_finalize_action(
+            mut self,
+            action: impl FnMut(&mut State, Host) -> Result<(), String> + 'static,
+        ) -> Self {
+            self.algorithm.finalize_actions.push(Box::new(action));
             self
         }
-        pub fn set_execute_action(mut self, action: ExecuteAction<State>) -> Self {
-            self.algorithm.execute_action = action;
+        pub fn set_execute_action(
+            mut self,
+            action: impl Fn(&State, Host, &EventContext) -> Result<(), String> + 'static,
+        ) -> Self {
+            self.algorithm.execute_action = Box::new(action);
             self
         }
         pub fn build(self) -> Algorithm<State> {
@@ -157,7 +172,7 @@ fn alg_initialize(alg: &mut Box<WrappedAlg>, host: &ffi::Algorithm) -> Result<()
 // }
 
 #[cxx::bridge]
-mod ffi {
+pub mod ffi {
     extern "C++" {
         include!("GaudiKernel/EventContext.h");
         type EventContext;

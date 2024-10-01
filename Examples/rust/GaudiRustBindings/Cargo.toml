@@ -7,4 +7,4 @@ edition = "2021"
 cxx = { version = "1.0.128", features = ["c++20"] }
 
 [lib]
-crate-type = ["staticlib"]
+crate-type = ["staticlib", "rlib"]

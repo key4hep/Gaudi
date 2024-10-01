@@ -8,26 +8,25 @@
 // # granted to it by virtue of its status as an Intergovernmental Organization        #
 // # or submit itself to any jurisdiction.                                             #
 // #####################################################################################
-extern crate gaudi_rust_bindings;
 use gaudi_rust_bindings::*;
-use std::ops::Deref;
 use std::sync::atomic::{AtomicUsize, Ordering::Relaxed};
 
+#[derive(Default)]
 struct CounterAlg {
     counter: AtomicUsize,
 }
 
-// type WrappedAlg = gaudi_rust_bindings::
-
 fn my_rust_counting_alg_factory() -> Box<WrappedAlg> {
     Box::new(Box::new(
-        gaudi::AlgorithmBuilder::new()
+        gaudi::AlgorithmBuilder::<CounterAlg>::new()
             .add_initialize_action(|data, host| {
                 println!("Initialize {}", host.instance_name());
                 data.counter.store(0, Relaxed);
+                Ok(())
             })
             .set_execute_action(|data, _host, _ctx| {
                 data.counter.fetch_add(1, Relaxed);
+                Ok(())
             })
             .add_finalize_action(|data, host| {
                 println!(
@@ -35,6 +34,7 @@ fn my_rust_counting_alg_factory() -> Box<WrappedAlg> {
                     host.instance_name(),
                     data.counter.load(Relaxed)
                 );
+                Ok(())
             })
             .build(),
     ))
@@ -42,14 +42,9 @@ fn my_rust_counting_alg_factory() -> Box<WrappedAlg> {
 
 #[cxx::bridge]
 mod ffi {
-    unsafe extern "C++" {
-        type Algorithm = gaudi_rust_bindings::ffi::Algorithm;
-        fn name(&self) -> &CxxString;
-    }
-
     #[namespace = "Gaudi::Rust::details"]
     extern "Rust" {
-        type WrappedAlg<'a>;
+        type WrappedAlg;
         fn my_rust_counting_alg_factory() -> Box<WrappedAlg>;
     }
 }

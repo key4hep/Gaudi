@@ -12,7 +12,7 @@
 # Declare a Gaudi plugin library (module)
 gaudi_add_module(example_rust_algorithm_module
     SOURCES
-        src/RustAlgWrappers.cpp
+        src/RustAlgFactories.cpp
     LINK
         Gaudi::GaudiRustBindings
         example_rust_algorithm_bridge
