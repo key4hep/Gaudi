@@ -26,11 +26,11 @@ namespace Gaudi::Rust {
   namespace details {
     // forward declarations
     struct WrappedAlg;
-    void alg_initialize( ::rust::Box<WrappedAlg>& alg );
-    void alg_start( ::rust::Box<WrappedAlg>& alg );
-    void alg_stop( ::rust::Box<WrappedAlg>& alg );
-    void alg_finalize( ::rust::Box<WrappedAlg>& alg );
-    void alg_execute( ::rust::Box<WrappedAlg> const& alg, EventContext const& ctx );
+    void alg_initialize( ::rust::Box<WrappedAlg>& alg, Gaudi::Algorithm const& host );
+    void alg_start( ::rust::Box<WrappedAlg>& alg, Gaudi::Algorithm const& host );
+    void alg_stop( ::rust::Box<WrappedAlg>& alg, Gaudi::Algorithm const& host );
+    void alg_finalize( ::rust::Box<WrappedAlg>& alg, Gaudi::Algorithm const& host );
+    void alg_execute( ::rust::Box<WrappedAlg> const& alg, Gaudi::Algorithm const& host, EventContext const& ctx );
 
     /// Gaudi::Algorithm specialization that wraps an algorithm implemented in Rust.
     ///
@@ -40,48 +40,31 @@ namespace Gaudi::Rust {
     template <typename = void>
     class AlgWrapper : public Gaudi::Algorithm {
     public:
-      using impl_t = rust::Box<WrappedAlg>;
+      using impl_t = ::rust::Box<WrappedAlg>;
 
-      using Algorithm::Algorithm;
-      ~AlgWrapper() {
-        if ( m_impl ) delete m_impl;
-      }
+      AlgWrapper( std::string const& name, ISvcLocator* svcLoc, impl_t&& impl ) : m_impl( std::move( impl ) ) {}
 
       StatusCode initialize() override {
-        return Algorithm::initialize().andThen( [&]() { alg_initialize( impl() ); } );
+        return Algorithm::initialize().andThen( [&]() { alg_initialize( m_impl, *this ); } );
       }
       StatusCode start() override {
-        return Algorithm::start().andThen( [&]() { alg_start( impl() ); } );
+        return Algorithm::start().andThen( [&]() { alg_start( m_impl, *this ); } );
       }
       StatusCode execute( const EventContext& ctx ) const override {
-        alg_execute( impl(), ctx );
-        return StatusCode::SUCCESS; // alg_execute(impl()) throws on error
+        alg_execute( m_impl, *this, ctx );
+        return StatusCode::SUCCESS; // alg_execute(...) throws on error
       }
       StatusCode stop() override {
-        alg_stop( impl() );
+        alg_stop( m_impl, *this );
         return Algorithm::stop();
       }
       StatusCode finalize() override {
-        alg_finalize( impl() );
+        alg_finalize( m_impl, *this );
         return Algorithm::finalize();
       }
 
-    protected:
-      virtual impl_t* factory() const = 0;
-
-      impl_t& impl() {
-        std::lock_guard<std::mutex> lock( m_impl_mutex );
-        if ( !m_impl ) {
-          m_impl = factory();
-          if ( !m_impl ) { throw std::runtime_error( "Failed to instantiate algorithm" ); }
-        }
-        return *m_impl;
-      }
-      impl_t const& impl() const { return const_cast<AlgWrapper*>( this )->impl(); }
-
     private:
-      mutable std::mutex m_impl_mutex;
-      impl_t*            m_impl{ nullptr };
+      impl_t m_impl;
     };
   } // namespace details
   using AlgWrapper = details::AlgWrapper<>;

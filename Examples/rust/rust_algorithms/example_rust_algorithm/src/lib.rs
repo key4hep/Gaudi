@@ -8,132 +8,48 @@
 // # granted to it by virtue of its status as an Intergovernmental Organization        #
 // # or submit itself to any jurisdiction.                                             #
 // #####################################################################################
-
-mod gaudi {
-    pub trait Stateful {
-        fn initialize(&mut self) -> Result<(), String> {
-            Ok(())
-        }
-        fn start(&mut self) -> Result<(), String> {
-            Ok(())
-        }
-        fn stop(&mut self) -> Result<(), String> {
-            Ok(())
-        }
-        fn finalize(&mut self) -> Result<(), String> {
-            Ok(())
-        }
-    }
-    pub trait Algorithm
-    where
-        Self: Stateful,
-    {
-        fn execute(&self, ctx: &crate::ffi::EventContext) -> Result<(), String>;
-    }
-}
-
-type WrappedAlg<'a> = Box<dyn gaudi::Algorithm + 'a>;
-
-fn alg_initialize(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
-    alg.initialize()
-}
-fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
-    alg.start()
-}
-fn alg_stop(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
-    alg.stop()
-}
-fn alg_finalize(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
-    alg.finalize()
-}
-fn alg_execute(alg: &Box<WrappedAlg>, ctx: &crate::ffi::EventContext) -> Result<(), String> {
-    alg.execute(ctx)
-}
-
+extern crate gaudi_rust_bindings;
+use gaudi_rust_bindings::*;
 use std::ops::Deref;
 use std::sync::atomic::{AtomicUsize, Ordering::Relaxed};
 
-// This should be done with a derive macro
-// ```rs
-// #[derive(gaudi::Algorithm)]
-// struct MyAlg {
-//     counter: AtomicUsize,
-// }
-// ```
-// possibly with parameters that state which methods to leave out and which not
-struct MyAlg<'a> {
-    wrapper: &'a ffi::Algorithm,
+struct CounterAlg {
     counter: AtomicUsize,
-    logger: cxx::UniquePtr<ffi::Logger>,
-}
-impl<'a> From<&'a ffi::Algorithm> for MyAlg<'a> {
-    fn from(wrapper: &'a ffi::Algorithm) -> Self {
-        Self {
-            wrapper,
-            counter: Default::default(),
-            logger: cxx::UniquePtr::null(),
-        }
-    }
 }
 
-impl gaudi::Stateful for MyAlg<'_> {
-    fn initialize(&mut self) -> Result<(), String> {
-        self.logger = ffi::make_alg_logger(self.wrapper);
-        self.logger
-            .deref()
-            .info(&format!("Initialize {} (Rust)", self.wrapper.name()));
-        Ok(())
-    }
-}
+// type WrappedAlg = gaudi_rust_bindings::
 
-impl gaudi::Algorithm for MyAlg<'_> {
-    fn execute(&self, _ctx: &crate::ffi::EventContext) -> Result<(), String> {
-        self.counter.fetch_add(1, Relaxed);
-        self.logger
-            .deref()
-            .info(&format!("counted {} events", self.counter.load(Relaxed)));
-        Ok(())
-    }
-}
-
-fn my_rust_counting_alg_factory<'a>(wrapper: &'a ffi::Algorithm) -> Box<WrappedAlg<'a>> {
-    Box::new(Box::new(MyAlg::from(wrapper)))
+fn my_rust_counting_alg_factory() -> Box<WrappedAlg> {
+    Box::new(Box::new(
+        gaudi::AlgorithmBuilder::new()
+            .add_initialize_action(|data, host| {
+                println!("Initialize {}", host.instance_name());
+                data.counter.store(0, Relaxed);
+            })
+            .set_execute_action(|data, _host, _ctx| {
+                data.counter.fetch_add(1, Relaxed);
+            })
+            .add_finalize_action(|data, host| {
+                println!(
+                    "Finalize {}: count = {}",
+                    host.instance_name(),
+                    data.counter.load(Relaxed)
+                );
+            })
+            .build(),
+    ))
 }
 
 #[cxx::bridge]
 mod ffi {
-    extern "C++" {
-        include!("GaudiKernel/EventContext.h");
-        type EventContext;
-    }
-
     unsafe extern "C++" {
-        include!("Gaudi/Algorithm.h");
-        #[namespace = "Gaudi"]
-        type Algorithm;
+        type Algorithm = gaudi_rust_bindings::ffi::Algorithm;
         fn name(&self) -> &CxxString;
-    }
-
-    #[namespace = "Gaudi::Rust"]
-    unsafe extern "C++" {
-        include!("Gaudi/Rust/Logger.h");
-        type Logger;
-
-        fn make_alg_logger(wrapper: &Algorithm) -> UniquePtr<Logger>;
-        fn info(&self, msg: &str);
     }
 
     #[namespace = "Gaudi::Rust::details"]
     extern "Rust" {
         type WrappedAlg<'a>;
-
-        fn alg_initialize(alg: &mut Box<WrappedAlg>) -> Result<()>;
-        fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<()>;
-        fn alg_stop(alg: &mut Box<WrappedAlg>) -> Result<()>;
-        fn alg_finalize(alg: &mut Box<WrappedAlg>) -> Result<()>;
-
-        fn alg_execute(alg: &Box<WrappedAlg>, ctx: &EventContext) -> Result<()>;
-
-        fn my_rust_counting_alg_factory(wrapper: &Algorithm) -> Box<WrappedAlg>;
+        fn my_rust_counting_alg_factory() -> Box<WrappedAlg>;
     }
 }
