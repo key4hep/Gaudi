@@ -17,6 +17,7 @@
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/IHiveWhiteBoard.h>
 // Gaudi CUDA
+#cmakedefine GAUDI_USE_CUDA
 #ifdef GAUDI_USE_CUDA
 #  include <Gaudi/CUDAAsynchronousAlgHelper.cuh>
 #endif

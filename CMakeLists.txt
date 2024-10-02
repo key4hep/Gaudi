@@ -86,20 +86,13 @@ cmake_minimum_required(VERSION 3.19)
 # Optional CUDA
 option(GAUDI_USE_CUDA "Build AsynchronousAlgorithm features that require CUDA")
 if(GAUDI_USE_CUDA)
-  include(CheckLanguage)
-  check_language( CUDA )
-  if(CMAKE_CUDA_COMPILER)
-    message(STATUS "Found CUDA")
-  else()
-    message(SEND_ERROR "CUDA requested but not found")
-  endif()
-  set(optional_CUDA CUDA)
+  set(optionalCUDA CUDA)
 else()
-  set(optional_CUDA)
+    set(optionalCUDA)
 endif()
 
 project(Gaudi VERSION 39.0
-              LANGUAGES CXX ${optional_CUDA}
+              LANGUAGES CXX ${optionalCUDA}
               DESCRIPTION "Gaudi Software Framework"
               HOMEPAGE_URL "https://cern.ch/gaudi")
 
