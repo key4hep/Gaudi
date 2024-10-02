@@ -90,15 +90,14 @@ pub mod gaudi {
         }
     }
 
+    #[derive(Default)]
     pub struct AlgorithmBuilder<State> {
         algorithm: Algorithm<State>,
     }
 
     impl<State: Default> AlgorithmBuilder<State> {
         pub fn new() -> AlgorithmBuilder<State> {
-            AlgorithmBuilder {
-                algorithm: Algorithm::default(),
-            }
+            Default::default()
         }
     }
 
@@ -151,34 +150,61 @@ pub mod gaudi {
             Self { inner: ctx }
         }
     }
+    impl EventContext<'_> {
+        pub fn evt(&self) -> usize {
+            self.inner.evt()
+        }
+        pub fn slot(&self) -> usize {
+            self.inner.slot()
+        }
+        pub fn sub_slot(&self) -> Option<usize> {
+            if self.inner.usesSubSlot() {
+                Some(self.inner.subSlot())
+            } else {
+                None
+            }
+        }
+        pub fn is_valid(&self) -> bool {
+            self.inner.valid()
+        }
+    }
 }
 
 pub type WrappedAlg = Box<dyn gaudi::AlgorithmTrait>;
 
 unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
-    alg.as_mut().unwrap().initialize(gaudi::Host { alg: host })
+    (*alg).initialize(gaudi::Host { alg: host })
 }
-// fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
-//     alg.start()
-// }
-// fn alg_stop(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
-//     alg.stop()
-// }
-// fn alg_finalize(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
-//     alg.finalize()
-// }
-// fn alg_execute(alg: &Box<WrappedAlg>, ctx: &crate::ffi::EventContext) -> Result<(), String> {
-//     alg.execute(ctx)
-// }
+unsafe fn alg_start(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+    (*alg).start(gaudi::Host { alg: host })
+}
+unsafe fn alg_stop(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+    (*alg).stop(gaudi::Host { alg: host })
+}
+unsafe fn alg_finalize(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+    (*alg).finalize(gaudi::Host { alg: host })
+}
+unsafe fn alg_execute(
+    alg: *const WrappedAlg,
+    host: &ffi::Algorithm,
+    ctx: &crate::ffi::EventContext,
+) -> Result<(), String> {
+    (*alg).execute(gaudi::Host { alg: host }, &gaudi::EventContext::from(ctx))
+}
 unsafe fn alg_drop(alg: *mut WrappedAlg) {
+    let _ = Box::from_raw(alg);
 }
-
 
 #[cxx::bridge]
 pub mod ffi {
-    extern "C++" {
+    unsafe extern "C++" {
         include!("GaudiKernel/EventContext.h");
         type EventContext;
+        fn evt(&self) -> usize;
+        fn slot(&self) -> usize;
+        fn subSlot(&self) -> usize;
+        fn usesSubSlot(&self) -> bool;
+        fn valid(&self) -> bool;
     }
 
     unsafe extern "C++" {
@@ -202,12 +228,15 @@ pub mod ffi {
         type WrappedAlg;
 
         unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
-        // fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<()>;
-        //         fn alg_stop(alg: &mut Box<WrappedAlg>) -> Result<()>;
-        //         fn alg_finalize(alg: &mut Box<WrappedAlg>) -> Result<()>;
-
-        //         fn alg_execute(alg: &Box<WrappedAlg>, ctx: &EventContext) -> Result<()>;
-            unsafe fn alg_drop(alg: *mut WrappedAlg);
+        unsafe fn alg_start(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
+        unsafe fn alg_stop(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
+        unsafe fn alg_finalize(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
+        unsafe fn alg_execute(
+            alg: *const WrappedAlg,
+            host: &Algorithm,
+            ctx: &EventContext,
+        ) -> Result<()>;
+        unsafe fn alg_drop(alg: *mut WrappedAlg);
 
     }
 }

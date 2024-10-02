@@ -14,9 +14,9 @@ gaudi_add_module(example_rust_algorithm_module
     SOURCES
         src/RustAlgFactories.cpp
     LINK
-        Gaudi::GaudiRustBindings
-        example_rust_algorithm_bridge
         Gaudi::GaudiKernel
+        Gaudi::GaudiRustBindings
+        example_rust_algorithm
 )
 
 # Declare tests
@@ -30,17 +30,10 @@ corrosion_import_crate(
     MANIFEST_PATH example_rust_algorithm/Cargo.toml
     LOCKED
 )
-# Instruct CMake to build the bridge code and build the library that
-# we use from C++ to invoke Rust code
-corrosion_add_cxxbridge(
-    example_rust_algorithm_bridge
-    CRATE example_rust_algorithm
-    FILES lib.rs
-)
 
 # We are building a static library that we want to link into a
 # shared library so we need generate position independent code (-fPIC)
-set_target_properties(example_rust_algorithm_bridge
-    PROPERTIES
-        POSITION_INDEPENDENT_CODE YES
-)
+# set_target_properties(example_rust_algorithm_bridge
+#     PROPERTIES
+#         POSITION_INDEPENDENT_CODE YES
+# )

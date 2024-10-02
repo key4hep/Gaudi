@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-cxx = { version = "1.0.128", features = ["c++20"] }
 gaudi_rust_bindings = { version = "0.1.0", path = "../../GaudiRustBindings" }
 
 [lib]

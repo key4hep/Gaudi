@@ -16,29 +16,51 @@ namespace Gaudi::Rust {
   namespace details {
     // forward declarations
     struct WrappedAlg;
-
-    /// Gaudi::Algorithm specialization that wraps an algorithm implemented in Rust.
-    ///
-    /// An algorithm implemented in Rust will have to provide a specialization of
-    /// this class that implements the `instantiate_alg` method so that it calls
-    /// the appropriate factory function from Rust.
-    // template <typename = void>
-    class AlgWrapper : public Gaudi::Algorithm {
-    public:
-      AlgWrapper( std::string const& name, ISvcLocator* svcLoc, WrappedAlg* dyn_alg_ptr );
-      ~AlgWrapper();
-
-      StatusCode initialize() override;
-      // StatusCode start() override;
-      StatusCode execute( const EventContext& ctx ) const override;
-
-      // StatusCode execute( const EventContext& ctx ) const override;
-      // StatusCode stop() override;
-      // StatusCode finalize() override;
-
-    private:
-      WrappedAlg* m_dyn_alg_ptr;
-    };
   } // namespace details
-  using AlgWrapper = details::AlgWrapper;
+  /// Gaudi::Algorithm specialization that wraps an algorithm implemented in Rust.
+  ///
+  /// An algorithm implemented in Rust will have to provide a factory function (in Rust)
+  /// with signature `#[no_mangle] extern "C" fn my_alg_factory() -> *mut WrappedAlg` and
+  /// add to a C++ file compiled in a Gaudi module library the following line:
+  /// ```cpp
+  /// DECLARE_RUST_ALG(my_alg_factory, "Some::Name::Space::MyAlg")
+  /// ```
+  class AlgWrapper : public Gaudi::Algorithm {
+  public:
+    AlgWrapper( std::string const& name, ISvcLocator* svcLoc, details::WrappedAlg* dyn_alg_ptr );
+    ~AlgWrapper();
+
+    StatusCode initialize() override;
+    StatusCode start() override;
+    StatusCode execute( const EventContext& ctx ) const override;
+    StatusCode stop() override;
+    StatusCode finalize() override;
+
+  private:
+    details::WrappedAlg* m_dyn_alg_ptr;
+  };
 } // namespace Gaudi::Rust
+
+#define DECLARE_RUST_ALG( factory_function, id )                                                                       \
+  extern "C" Gaudi::Rust::details::WrappedAlg* factory_function();                                                     \
+  namespace {                                                                                                          \
+    struct factory_function##_class : Gaudi::Rust::AlgWrapper {                                                        \
+      using AlgWrapper::AlgWrapper;                                                                                    \
+    };                                                                                                                 \
+  }                                                                                                                    \
+  namespace Gaudi {                                                                                                    \
+    namespace PluginService {                                                                                          \
+      GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2 {                                                                    \
+        namespace Details {                                                                                            \
+          template <>                                                                                                  \
+          struct DefaultFactory<factory_function##_class, Gaudi::Algorithm::Factory> {                                 \
+            inline typename Gaudi::Algorithm::Factory::ReturnType operator()( const std::string& name,                 \
+                                                                              ISvcLocator*       svcLoc ) {                  \
+              return std::make_unique<factory_function##_class>( name, svcLoc, factory_function() );                   \
+            }                                                                                                          \
+          };                                                                                                           \
+        }                                                                                                              \
+      }                                                                                                                \
+    }                                                                                                                  \
+  }                                                                                                                    \
+  DECLARE_COMPONENT_WITH_ID( factory_function##_class, id )

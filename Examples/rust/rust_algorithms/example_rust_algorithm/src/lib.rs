@@ -17,7 +17,7 @@ struct CounterAlg {
 }
 
 #[no_mangle]
-extern "C" fn my_rust_counting_alg_factory() -> *mut Box<dyn gaudi::AlgorithmTrait> {
+extern "C" fn my_rust_counting_alg_factory() -> *mut WrappedAlg {
     Box::into_raw(Box::new(Box::new(
         gaudi::AlgorithmBuilder::<CounterAlg>::new()
             .add_initialize_action(|data, host| {
@@ -39,9 +39,4 @@ extern "C" fn my_rust_counting_alg_factory() -> *mut Box<dyn gaudi::AlgorithmTra
             })
             .build(),
     )))
-}
-
-#[cxx::bridge]
-mod ffi {
-
 }
