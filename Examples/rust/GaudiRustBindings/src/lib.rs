@@ -155,8 +155,8 @@ pub mod gaudi {
 
 pub type WrappedAlg = Box<dyn gaudi::AlgorithmTrait>;
 
-fn alg_initialize(alg: &mut Box<WrappedAlg>, host: &ffi::Algorithm) -> Result<(), String> {
-    alg.initialize(gaudi::Host { alg: host })
+unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+    alg.as_mut().unwrap().initialize(gaudi::Host { alg: host })
 }
 // fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<(), String> {
 //     alg.start()
@@ -170,6 +170,9 @@ fn alg_initialize(alg: &mut Box<WrappedAlg>, host: &ffi::Algorithm) -> Result<()
 // fn alg_execute(alg: &Box<WrappedAlg>, ctx: &crate::ffi::EventContext) -> Result<(), String> {
 //     alg.execute(ctx)
 // }
+unsafe fn alg_drop(alg: *mut WrappedAlg) {
+}
+
 
 #[cxx::bridge]
 pub mod ffi {
@@ -198,11 +201,13 @@ pub mod ffi {
     extern "Rust" {
         type WrappedAlg;
 
-        fn alg_initialize(alg: &mut Box<WrappedAlg>, host: &Algorithm) -> Result<()>;
+        unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
         // fn alg_start(alg: &mut Box<WrappedAlg>) -> Result<()>;
         //         fn alg_stop(alg: &mut Box<WrappedAlg>) -> Result<()>;
         //         fn alg_finalize(alg: &mut Box<WrappedAlg>) -> Result<()>;
 
         //         fn alg_execute(alg: &Box<WrappedAlg>, ctx: &EventContext) -> Result<()>;
+            unsafe fn alg_drop(alg: *mut WrappedAlg);
+
     }
 }

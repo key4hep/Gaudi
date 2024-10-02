@@ -11,7 +11,7 @@
 # --- Gaudi related settings ---
 gaudi_add_library(GaudiRustBindings
     SOURCES
-        src/lib.cpp
+        src/AlgWrapper.cpp
     LINK
         PUBLIC
             Gaudi::GaudiKernel

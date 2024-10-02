@@ -16,8 +16,9 @@ struct CounterAlg {
     counter: AtomicUsize,
 }
 
-fn my_rust_counting_alg_factory() -> Box<WrappedAlg> {
-    Box::new(Box::new(
+#[no_mangle]
+extern "C" fn my_rust_counting_alg_factory() -> *mut Box<dyn gaudi::AlgorithmTrait> {
+    Box::into_raw(Box::new(Box::new(
         gaudi::AlgorithmBuilder::<CounterAlg>::new()
             .add_initialize_action(|data, host| {
                 println!("Initialize {}", host.instance_name());
@@ -37,14 +38,10 @@ fn my_rust_counting_alg_factory() -> Box<WrappedAlg> {
                 Ok(())
             })
             .build(),
-    ))
+    )))
 }
 
 #[cxx::bridge]
 mod ffi {
-    #[namespace = "Gaudi::Rust::details"]
-    extern "Rust" {
-        type WrappedAlg;
-        fn my_rust_counting_alg_factory() -> Box<WrappedAlg>;
-    }
+
 }

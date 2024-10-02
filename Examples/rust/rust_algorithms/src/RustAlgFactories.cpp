@@ -10,10 +10,26 @@
 \***********************************************************************************/
 
 #include <Gaudi/Rust/AlgWrapper.h>
-#include <example_rust_algorithm_bridge/lib.h>
 
-DECLARE_FACTORY_WITH_ID( Gaudi::Rust::AlgWrapper, "Gaudi::Examples::MyRustCountingAlg",
-                         ( []( std::string const& name, ISvcLocator* svcLoc ) -> auto {
-                           return std::make_unique<Gaudi::Rust::AlgWrapper>( name, svcLoc,
-                                                                             my_rust_counting_alg_factory() );
-                         } ) )
+extern "C" Gaudi::Rust::details::WrappedAlg* my_rust_counting_alg_factory();
+
+namespace Gaudi {
+  namespace PluginService {
+    GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2 {
+      namespace Details {
+        template <>
+        struct DefaultFactory<Gaudi::Rust::AlgWrapper, Gaudi::Algorithm::Factory> {
+          inline typename Gaudi::Algorithm::Factory::ReturnType operator()( const std::string& name,
+                                                                            ISvcLocator*       svcLoc ) {
+            return std::make_unique<Gaudi::Rust::AlgWrapper>( name, svcLoc, my_rust_counting_alg_factory() );
+          }
+        };
+      } // namespace Details
+    }
+  } // namespace PluginService
+} // namespace Gaudi
+
+DECLARE_COMPONENT_WITH_ID( Gaudi::Rust::AlgWrapper, "Gaudi::Examples::MyRustCountingAlg" )
+
+// namespace { ::Gaudi::PluginService::v2::DeclareFactory<Gaudi::Rust::AlgWrapper, RustFactory> _register_25{
+// ::Gaudi::PluginService::v2::Details::stringify_id( "Gaudi::Examples::MyRustCountingAlg" ) }; }
