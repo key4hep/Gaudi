@@ -21,20 +21,21 @@ extern "C" fn my_rust_counting_alg_factory() -> *mut WrappedAlg {
     Box::into_raw(Box::new(Box::new(
         gaudi::AlgorithmBuilder::<CounterAlg>::new()
             .add_initialize_action(|data, host| {
-                println!("Initialize {}", host.instance_name());
+                host.info(&format!("Initialize {} (Rust)", host.instance_name()));
                 data.counter.store(0, Relaxed);
                 Ok(())
             })
-            .set_execute_action(|data, _host, _ctx| {
+            .set_execute_action(|data, host, _ctx| {
                 data.counter.fetch_add(1, Relaxed);
+                host.info(&format!("counted {} events", data.counter.load(Relaxed)));
                 Ok(())
             })
             .add_finalize_action(|data, host| {
-                println!(
+                host.info(&format!(
                     "Finalize {}: count = {}",
                     host.instance_name(),
                     data.counter.load(Relaxed)
-                );
+                ));
                 Ok(())
             })
             .build(),

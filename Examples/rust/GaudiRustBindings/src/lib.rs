@@ -12,11 +12,15 @@ pub mod gaudi {
     // bridge to the C++ object wrapping the Rust algorithm
     #[derive(Clone, Copy)]
     pub struct Host<'a> {
-        pub alg: &'a super::ffi::Algorithm,
+        pub alg: &'a super::ffi::AlgWrapper,
     }
     impl Host<'_> {
         pub fn instance_name(&self) -> &str {
             self.alg.name().to_str().expect("Invalid UTF-8 string")
+        }
+        pub fn info(&self, msg: &str) {
+            cxx::let_cxx_string!(msg = msg);
+            self.alg.info(&msg);
         }
     }
 
@@ -172,21 +176,21 @@ pub mod gaudi {
 
 pub type WrappedAlg = Box<dyn gaudi::AlgorithmTrait>;
 
-unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &ffi::AlgWrapper) -> Result<(), String> {
     (*alg).initialize(gaudi::Host { alg: host })
 }
-unsafe fn alg_start(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+unsafe fn alg_start(alg: *mut WrappedAlg, host: &ffi::AlgWrapper) -> Result<(), String> {
     (*alg).start(gaudi::Host { alg: host })
 }
-unsafe fn alg_stop(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+unsafe fn alg_stop(alg: *mut WrappedAlg, host: &ffi::AlgWrapper) -> Result<(), String> {
     (*alg).stop(gaudi::Host { alg: host })
 }
-unsafe fn alg_finalize(alg: *mut WrappedAlg, host: &ffi::Algorithm) -> Result<(), String> {
+unsafe fn alg_finalize(alg: *mut WrappedAlg, host: &ffi::AlgWrapper) -> Result<(), String> {
     (*alg).finalize(gaudi::Host { alg: host })
 }
 unsafe fn alg_execute(
     alg: *const WrappedAlg,
-    host: &ffi::Algorithm,
+    host: &ffi::AlgWrapper,
     ctx: &crate::ffi::EventContext,
 ) -> Result<(), String> {
     (*alg).execute(gaudi::Host { alg: host }, &gaudi::EventContext::from(ctx))
@@ -208,32 +212,24 @@ pub mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("Gaudi/Algorithm.h");
-        #[namespace = "Gaudi"]
-        type Algorithm;
+        include!("Gaudi/Rust/AlgWrapper.h");
+        #[namespace = "Gaudi::Rust"]
+        type AlgWrapper;
         fn name(&self) -> &CxxString;
+        fn info(&self, msg: &CxxString);
     }
-
-    //     #[namespace = "Gaudi::Rust"]
-    //     unsafe extern "C++" {
-    //         include!("Gaudi/Rust/Logger.h");
-    //         type Logger;
-
-    //         fn make_alg_logger(wrapper: &Algorithm) -> UniquePtr<Logger>;
-    //         fn info(&self, msg: &str);
-    //     }
 
     #[namespace = "Gaudi::Rust::details"]
     extern "Rust" {
         type WrappedAlg;
 
-        unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
-        unsafe fn alg_start(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
-        unsafe fn alg_stop(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
-        unsafe fn alg_finalize(alg: *mut WrappedAlg, host: &Algorithm) -> Result<()>;
+        unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;
+        unsafe fn alg_start(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;
+        unsafe fn alg_stop(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;
+        unsafe fn alg_finalize(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;
         unsafe fn alg_execute(
             alg: *const WrappedAlg,
-            host: &Algorithm,
+            host: &AlgWrapper,
             ctx: &EventContext,
         ) -> Result<()>;
         unsafe fn alg_drop(alg: *mut WrappedAlg);

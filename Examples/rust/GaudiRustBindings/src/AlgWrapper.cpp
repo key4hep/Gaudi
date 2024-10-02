@@ -10,9 +10,9 @@
 \***********************************************************************************/
 #include <Gaudi/Rust/AlgWrapper.h>
 #include <gaudi_rust_bindings_bridge/lib.h>
+#include <string_view>
 
 namespace Gaudi::Rust {
-
   AlgWrapper::AlgWrapper( std::string const& name, ISvcLocator* svcLoc, details::WrappedAlg* dyn_alg_ptr )
       : Algorithm( name, svcLoc ), m_dyn_alg_ptr( dyn_alg_ptr ) {}
   AlgWrapper::~AlgWrapper() {
@@ -37,5 +37,4 @@ namespace Gaudi::Rust {
     alg_finalize( m_dyn_alg_ptr, *this );
     return Algorithm::finalize();
   }
-
 } // namespace Gaudi::Rust

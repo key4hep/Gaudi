@@ -36,6 +36,18 @@ namespace Gaudi::Rust {
     StatusCode stop() override;
     StatusCode finalize() override;
 
+#define common_msg_forward( level )                                                                                    \
+  using Algorithm::level;                                                                                              \
+  void level( std::string const& msg ) const { level() << msg << endmsg; }
+    common_msg_forward( verbose );
+    common_msg_forward( debug );
+    common_msg_forward( info );
+    common_msg_forward( warning );
+    common_msg_forward( error );
+    common_msg_forward( fatal );
+#undef common_msg_forward
+    void trace( std::string const& msg ) const { verbose( msg ); }
+
   private:
     details::WrappedAlg* m_dyn_alg_ptr;
   };

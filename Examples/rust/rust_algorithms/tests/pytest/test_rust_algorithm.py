@@ -42,7 +42,9 @@ class TestRustInvocation(GaudiExeTest):
             if line.startswith("MyRustCountingAlg") and "INFO" in line
         ]
 
-        expected = ["Initialize MyRustCountingAlg (Rust)"]
+        alg_name = "MyRustCountingAlg"
+        expected = [f"Initialize {alg_name} (Rust)"]
         expected.extend(f"counted {i} events" for i in range(1, evt_max + 1))
+        expected.append(f"Finalize {alg_name}: count = {evt_max}")
 
         assert alg_messages == expected
