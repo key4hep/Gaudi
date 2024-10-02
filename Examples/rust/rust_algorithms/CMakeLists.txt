@@ -13,6 +13,7 @@
 gaudi_add_module(example_rust_algorithm_module
     SOURCES
         src/RustAlgFactories.cpp
+        src/MyCppCountingAlg.cpp
     LINK
         Gaudi::GaudiKernel
         Gaudi::GaudiRustBindings
