@@ -8,19 +8,34 @@
 // # granted to it by virtue of its status as an Intergovernmental Organization        #
 // # or submit itself to any jurisdiction.                                             #
 // #####################################################################################
+
 pub mod gaudi {
     // bridge to the C++ object wrapping the Rust algorithm
     #[derive(Clone, Copy)]
     pub struct Host<'a> {
         pub alg: &'a super::ffi::AlgWrapper,
     }
+
+    macro_rules! common_msg_forward {
+        ($level:ident) => {
+            pub fn $level(&self, msg: &str) {
+                cxx::let_cxx_string!(msg = msg);
+                self.alg.$level(&msg);
+            }
+        };
+    }
     impl Host<'_> {
         pub fn instance_name(&self) -> &str {
             self.alg.name().to_str().expect("Invalid UTF-8 string")
         }
-        pub fn info(&self, msg: &str) {
-            cxx::let_cxx_string!(msg = msg);
-            self.alg.info(&msg);
+        common_msg_forward! { verbose }
+        common_msg_forward! { debug }
+        common_msg_forward! { info }
+        common_msg_forward! { warning }
+        common_msg_forward! { error }
+        common_msg_forward! { fatal }
+        pub fn trace(&self, msg: &str) {
+            self.verbose(msg);
         }
     }
 
@@ -216,7 +231,12 @@ pub mod ffi {
         #[namespace = "Gaudi::Rust"]
         type AlgWrapper;
         fn name(&self) -> &CxxString;
+        fn verbose(&self, msg: &CxxString);
+        fn debug(&self, msg: &CxxString);
         fn info(&self, msg: &CxxString);
+        fn warning(&self, msg: &CxxString);
+        fn error(&self, msg: &CxxString);
+        fn fatal(&self, msg: &CxxString);
     }
 
     #[namespace = "Gaudi::Rust::details"]
@@ -233,6 +253,5 @@ pub mod ffi {
             ctx: &EventContext,
         ) -> Result<()>;
         unsafe fn alg_drop(alg: *mut WrappedAlg);
-
     }
 }

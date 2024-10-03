@@ -46,7 +46,6 @@ namespace Gaudi::Rust {
     common_msg_forward( error );
     common_msg_forward( fatal );
 #undef common_msg_forward
-    void trace( std::string const& msg ) const { verbose( msg ); }
 
   private:
     details::WrappedAlg* m_dyn_alg_ptr;
