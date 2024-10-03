@@ -37,9 +37,24 @@ pub mod gaudi {
         pub fn trace(&self, msg: &str) {
             self.verbose(msg);
         }
+
+        pub fn add_property(&self, semantics: &str, name: &str, default: &str, doc: Option<&str>) {
+            use cxx::let_cxx_string;
+            let_cxx_string!(semantics = semantics);
+            let_cxx_string!(name = name);
+            let_cxx_string!(default = default);
+            let_cxx_string!(doc = doc.unwrap_or(""));
+            self.alg.addProperty(&semantics, &name, &default, &doc);
+        }
+
+        pub fn get_property(&self, name: &str) -> Option<String> {
+            cxx::let_cxx_string!(name = name);
+            crate::ffi::getPropertyValueHelper(self.alg, &name).ok()
+        }
     }
 
     pub trait AlgorithmTrait {
+        fn bind_host(&mut self, host: Host) -> Result<(), String>;
         fn initialize(&mut self, host: Host) -> Result<(), String>;
         fn start(&mut self, host: Host) -> Result<(), String>;
         fn stop(&mut self, host: Host) -> Result<(), String>;
@@ -52,6 +67,7 @@ pub mod gaudi {
     pub type Actions<State> = Vec<Action<State>>;
 
     pub struct Algorithm<State> {
+        bind_host_actions: Actions<State>,
         initialize_actions: Actions<State>,
         start_actions: Actions<State>,
         stop_actions: Actions<State>,
@@ -63,6 +79,7 @@ pub mod gaudi {
     impl<State: Default> Default for Algorithm<State> {
         fn default() -> Self {
             Self {
+                bind_host_actions: vec![],
                 initialize_actions: vec![],
                 start_actions: vec![],
                 stop_actions: vec![],
@@ -76,6 +93,12 @@ pub mod gaudi {
     }
 
     impl<State> AlgorithmTrait for Algorithm<State> {
+        fn bind_host(&mut self, host: Host) -> Result<(), String> {
+            for action in self.bind_host_actions.iter_mut() {
+                action(&mut self.state, host)?;
+            }
+            Ok(())
+        }
         fn initialize(&mut self, host: Host) -> Result<(), String> {
             for action in self.initialize_actions.iter_mut() {
                 action(&mut self.state, host)?;
@@ -121,6 +144,13 @@ pub mod gaudi {
     }
 
     impl<State> AlgorithmBuilder<State> {
+        pub fn add_bind_host_action(
+            mut self,
+            action: impl FnMut(&mut State, Host) -> Result<(), String> + 'static,
+        ) -> Self {
+            self.algorithm.bind_host_actions.push(Box::new(action));
+            self
+        }
         pub fn add_initialize_action(
             mut self,
             action: impl FnMut(&mut State, Host) -> Result<(), String> + 'static,
@@ -191,6 +221,10 @@ pub mod gaudi {
 
 pub type WrappedAlg = Box<dyn gaudi::AlgorithmTrait>;
 
+unsafe fn alg_bind_host(alg: *mut WrappedAlg, host: &ffi::AlgWrapper) -> Result<(), String> {
+    (*alg).bind_host(gaudi::Host { alg: host })
+}
+
 unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &ffi::AlgWrapper) -> Result<(), String> {
     (*alg).initialize(gaudi::Host { alg: host })
 }
@@ -228,6 +262,7 @@ pub mod ffi {
 
     unsafe extern "C++" {
         include!("Gaudi/Rust/AlgWrapper.h");
+        include!("rust_helpers.h");
         #[namespace = "Gaudi::Rust"]
         type AlgWrapper;
         fn name(&self) -> &CxxString;
@@ -237,12 +272,22 @@ pub mod ffi {
         fn warning(&self, msg: &CxxString);
         fn error(&self, msg: &CxxString);
         fn fatal(&self, msg: &CxxString);
+        fn addProperty(
+            &self,
+            semantics: &CxxString,
+            name: &CxxString,
+            default_value: &CxxString,
+            doc: &CxxString,
+        );
+        #[namespace = "Gaudi::Rust::helpers"]
+        fn getPropertyValueHelper(alg: &AlgWrapper, name: &CxxString) -> Result<String>;
     }
 
     #[namespace = "Gaudi::Rust::details"]
     extern "Rust" {
         type WrappedAlg;
 
+        unsafe fn alg_bind_host(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;
         unsafe fn alg_initialize(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;
         unsafe fn alg_start(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;
         unsafe fn alg_stop(alg: *mut WrappedAlg, host: &AlgWrapper) -> Result<()>;

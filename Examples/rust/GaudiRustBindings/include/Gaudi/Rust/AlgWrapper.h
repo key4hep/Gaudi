@@ -11,12 +11,14 @@
 #pragma once
 
 #include <Gaudi/Algorithm.h>
+#include <vector>
 
 namespace Gaudi::Rust {
   namespace details {
     // forward declarations
     struct WrappedAlg;
   } // namespace details
+
   /// Gaudi::Algorithm specialization that wraps an algorithm implemented in Rust.
   ///
   /// An algorithm implemented in Rust will have to provide a factory function (in Rust)
@@ -47,8 +49,13 @@ namespace Gaudi::Rust {
     common_msg_forward( fatal );
 #undef common_msg_forward
 
+    void        addProperty( std::string const& semantics, std::string const& name, std::string const& repr,
+                             std::string const& doc ) const;
+    std::string getPropertyValue( std::string const& name ) const;
+
   private:
-    details::WrappedAlg* m_dyn_alg_ptr;
+    details::WrappedAlg*                                m_dyn_alg_ptr;
+    std::vector<std::unique_ptr<Details::PropertyBase>> m_genProperties;
   };
 } // namespace Gaudi::Rust
 

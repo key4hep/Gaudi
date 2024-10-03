@@ -40,7 +40,7 @@ target_link_libraries(gaudi_rust_bindings_bridge
     PUBLIC
         Gaudi::GaudiKernel
 )
-target_include_directories(gaudi_rust_bindings_bridge PRIVATE include)
+target_include_directories(gaudi_rust_bindings_bridge PRIVATE include  PUBLIC src)
 
 # We are building a static library that we want to link into a
 # shared library so we need generate position independent code (-fPIC)
