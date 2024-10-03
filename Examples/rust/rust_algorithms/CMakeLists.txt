@@ -38,3 +38,12 @@ corrosion_import_crate(
 #     PROPERTIES
 #         POSITION_INDEPENDENT_CODE YES
 # )
+
+
+# --- Benchmarking ---
+gaudi_add_executable(rust_algorithm_benchmark
+    SOURCES
+        src/rust_algorithm_benchmark.cpp
+    LINK
+        Gaudi::GaudiKernel
+)
