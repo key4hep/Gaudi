@@ -151,6 +151,27 @@ pub mod gaudi {
             self.algorithm.bind_host_actions.push(Box::new(action));
             self
         }
+        pub fn add_property(
+            self,
+            semantics: &str,
+            name: &str,
+            default: &str,
+            doc: Option<&str>,
+        ) -> Self {
+            let semantics = semantics.to_string();
+            let name = name.to_string();
+            let default = default.to_string();
+            let doc = doc.map(|s| s.to_string());
+            self.add_bind_host_action(move |_state, host| {
+                host.add_property(
+                    &semantics,
+                    &name,
+                    &default,
+                    doc.as_deref(),
+                );
+                Ok(())
+            })
+        }
         pub fn add_initialize_action(
             mut self,
             action: impl FnMut(&mut State, Host) -> Result<(), String> + 'static,

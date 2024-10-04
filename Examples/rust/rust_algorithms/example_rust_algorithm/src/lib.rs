@@ -20,10 +20,7 @@ struct CounterAlg {
 extern "C" fn my_rust_counting_alg_factory() -> *mut WrappedAlg {
     Box::into_raw(Box::new(Box::new(
         gaudi::AlgorithmBuilder::<CounterAlg>::new()
-            .add_bind_host_action(|_data, host| {
-                host.add_property("std::string", "Text", "\"lorem ipsum\"", None);
-                Ok(())
-            })
+            .add_property("std::string", "Text", "\"lorem ipsum\"", None)
             .add_initialize_action(|data, host| {
                 host.info(&format!("Initialize {} (Rust)", host.instance_name()));
                 host.debug(&format!("property Text -> {:?}", host.get_property("Text")));
