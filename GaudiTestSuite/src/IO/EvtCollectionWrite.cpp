@@ -35,9 +35,9 @@ using namespace Gaudi::TestSuite;
 DECLARE_COMPONENT( EvtCollectionWrite )
 
 StatusCode EvtCollectionWrite::initialize() {
-  StatusCode status = service( "EvtTupleSvc", m_evtTupleSvc );
+  StatusCode status = m_evtTupleSvc.retrieve();
   if ( status.isSuccess() ) {
-    NTuplePtr nt( m_evtTupleSvc, "/NTUPLES/EvtColl/Dir1/Dir2/Dir3/Collection" );
+    NTuplePtr nt( m_evtTupleSvc.get(), "/NTUPLES/EvtColl/Dir1/Dir2/Dir3/Collection" );
     if ( !nt ) { // Check if already booked
       nt = m_evtTupleSvc->book( "/NTUPLES/EvtColl/Dir1/Dir2/Dir3/Collection", CLID_ColumnWiseTuple, "Hello World" );
       if ( nt ) {

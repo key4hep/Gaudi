@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,7 +15,6 @@ DECLARE_COMPONENT( ServiceA )
 
 StatusCode ServiceA::initialize() {
   Service::initialize().ignore();
-  IService*  pService = nullptr;
-  const bool CREATENOW( true );
-  return service( "ServiceB", pService, CREATENOW );
+  auto pService = service<IService>( "ServiceB", true );
+  return pService.isValid() ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }

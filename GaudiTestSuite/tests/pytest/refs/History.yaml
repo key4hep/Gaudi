@@ -20,7 +20,7 @@ stdout: "JobOptionsSvc        INFO Job options successfully file History.opts\nA
   \  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc\e\
   [m\nServiceManager      DEBUG Initializing service HistorySvc\e[m\nHistorySvc  \
   \        DEBUG Initializing HistorySvc\e[m\nAlgContextSvc     VERBOSE ServiceLocatorHelper::service:\
-  \ found service IncidentSvc\e[m\nHistorySvc        VERBOSE ServiceLocatorHelper::service:\
+  \ found service IncidentSvc\e[m\nHistorySvc.AlgC...VERBOSE ServiceLocatorHelper::service:\
   \ found service AlgContextSvc\e[m\nHistorySvc        VERBOSE ServiceLocatorHelper::service:\
   \ found service IncidentSvc\e[m\nApplicationMgr       INFO Application Manager Initialized\
   \ successfully\e[m\nServiceManager      DEBUG Starting service AppMgrRunable\e[m\n\
@@ -95,7 +95,7 @@ stdout: "JobOptionsSvc        INFO Job options successfully file History.opts\nA
   [m\nServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)\e[m\n\
   ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)\e[m\nServiceManager\
   \      DEBUG ---- AppMgrRunable (refCount = 4)\e[m\nServiceManager      DEBUG ----\
-  \ IncidentSvc (refCount = 4)\e[m\nServiceManager      DEBUG ---- EventPersistencySvc\
+  \ IncidentSvc (refCount = 3)\e[m\nServiceManager      DEBUG ---- EventPersistencySvc\
   \ (refCount = 3)\e[m\nServiceManager      DEBUG ---- EventDataSvc (refCount = 4)\e\
   [m\nServiceManager      DEBUG ---- TimelineSvc (refCount = 3)\e[m\nServiceManager\
   \      DEBUG ---- AlgExecStateSvc (refCount = 4)\e[m\nServiceManager      DEBUG\
