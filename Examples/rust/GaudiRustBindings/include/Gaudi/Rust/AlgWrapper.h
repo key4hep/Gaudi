@@ -11,12 +11,40 @@
 #pragma once
 
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataObjectHandle.h>
+#include <boost/algorithm/string/replace.hpp>
+#include <map>
+#include <string>
 #include <vector>
 
 namespace Gaudi::Rust {
   namespace details {
     // forward declarations
     struct WrappedAlg;
+
+    class DynDataHandle : public DataObjectHandle<DataObject> {
+    public:
+      using DataObjectHandle<DataObject>::DataObjectHandle;
+
+      /// Autodeclaring constructor with property name, mode, key and documentation.
+      /// @note the use std::enable_if is required to avoid ambiguities
+      template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+      inline DynDataHandle( OWNER* owner, Gaudi::DataHandle::Mode m, std::string type_name, std::string name,
+                            K key = {}, std::string doc = {} )
+          : DataObjectHandle<DataObject>( std::move( key ), m, owner ), m_type( std::move( type_name ) ) {
+        auto p = owner->declareProperty( std::move( name ), *this, std::move( doc ) );
+        p->template setOwnerType<OWNER>();
+      }
+      std::string pythonRepr() const override {
+        auto repr = DataObjectHandleBase::pythonRepr();
+        boost::replace_all( repr, default_type, m_type );
+        return repr;
+      }
+
+    private:
+      std::string m_type;
+    };
   } // namespace details
 
   /// Gaudi::Algorithm specialization that wraps an algorithm implemented in Rust.
@@ -53,9 +81,15 @@ namespace Gaudi::Rust {
                              std::string const& doc ) const;
     std::string getPropertyValue( std::string const& name ) const;
 
+    void addInputHandle( std::string const& type_name, std::string const& name, std::string const& location,
+                         std::string const& doc ) const;
+    void addOutputHandle( std::string const& type_name, std::string const& name, std::string const& location,
+                          std::string const& doc ) const;
+
   private:
     details::WrappedAlg*                                m_dyn_alg_ptr;
     std::vector<std::unique_ptr<Details::PropertyBase>> m_genProperties;
+    std::map<std::string, details::DynDataHandle>       m_dataHandles;
   };
 } // namespace Gaudi::Rust
 

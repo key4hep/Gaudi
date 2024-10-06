@@ -15,6 +15,7 @@ from GaudiTesting import GaudiExeTest
 def config(events=3):
     from GaudiConfig2 import Configurables as C
     from GaudiConfig2.Configurables.Gaudi import TestSuite as T
+    from GaudiConfig2.Configurables.Gaudi.Examples import RustAlgorithms as R
 
     i_prod = T.IntDataProducer("IntDataProducer", OutputLocation="/Event/Int")
     i2f = T.IntToFloatData(
@@ -22,8 +23,12 @@ def config(events=3):
     )
     f_consumer = T.FloatDataConsumer("FloatDataConsumer", InputLocation="/Event/Float")
 
+    r_i_prod = R.IntDataProducer(
+        "R_IntDataProd", OutputLocation="/Event/IntR", Value=10
+    )
+
     app = C.ApplicationMgr(
-        TopAlg=[i_prod, i2f, f_consumer],
+        TopAlg=[i_prod, r_i_prod, i2f, f_consumer],
         EvtMax=events,
         EvtSel="NONE",
     )
@@ -84,6 +89,10 @@ class Test(GaudiExeTest):
                 ["Converting: 7 from /Event/Int and storing it into /Event/Float"],
             ),
             ("FloatDataConsumer", ["executing FloatDataConsumer: 7"]),
+            (
+                "R_IntDataProd",
+                ["executing R_IntDataProd, storing 10 into /Event/IntR"],
+            ),
         ],
     )
     def test_stdout(self, stdout: bytes, alg: str, messages: list[str]) -> None:

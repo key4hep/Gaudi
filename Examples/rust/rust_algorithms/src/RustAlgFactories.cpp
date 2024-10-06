@@ -12,3 +12,5 @@
 #include <Gaudi/Rust/AlgWrapper.h>
 
 DECLARE_RUST_ALG( my_rust_counting_alg_factory, "Gaudi::Examples::MyRustCountingAlg" )
+
+DECLARE_RUST_ALG( int_producer_factory, "Gaudi::Examples::RustAlgorithms::IntDataProducer" )

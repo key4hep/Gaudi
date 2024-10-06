@@ -89,4 +89,19 @@ namespace Gaudi::Rust {
         std::make_unique<GenericProperty>( semantics, name, defaultValue, doc ) ) );
   }
   std::string AlgWrapper::getPropertyValue( std::string const& name ) const { return getProperty( name ).toString(); }
+
+  void AlgWrapper::addInputHandle( std::string const& type_name, std::string const& name, std::string const& location,
+                                   std::string const& doc ) const {
+    auto mut_self = const_cast<AlgWrapper*>( this );
+    mut_self->m_dataHandles.emplace(
+        std::piecewise_construct, std::forward_as_tuple( name ),
+        std::forward_as_tuple( mut_self, Gaudi::DataHandle::Reader, type_name, name, location, doc ) );
+  }
+  void AlgWrapper::addOutputHandle( std::string const& type_name, std::string const& name, std::string const& location,
+                                    std::string const& doc ) const {
+    auto mut_self = const_cast<AlgWrapper*>( this );
+    mut_self->m_dataHandles.emplace(
+        std::piecewise_construct, std::forward_as_tuple( name ),
+        std::forward_as_tuple( mut_self, Gaudi::DataHandle::Writer, type_name, name, location, doc ) );
+  }
 } // namespace Gaudi::Rust

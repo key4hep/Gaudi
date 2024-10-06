@@ -47,3 +47,39 @@ extern "C" fn my_rust_counting_alg_factory() -> *mut WrappedAlg {
             .build(),
     )))
 }
+
+#[derive(Default)]
+struct IntProducer {
+    value: i32,
+    output_location: String,
+}
+
+#[no_mangle]
+extern "C" fn int_producer_factory() -> *mut WrappedAlg {
+    Box::into_raw(Box::new(Box::new(
+        gaudi::AlgorithmBuilder::<IntProducer>::new()
+            .add_property("int", "Value", "7", Some("The integer value to produce."))
+            .add_output("int", "OutputLocation", "\"/Event/Int\"", None)
+            .add_initialize_action(|data, host| {
+                data.value = host.get_property("Value").unwrap().parse().map_err(|e| {
+                    format!("{}.Value is not an integer: {}", host.instance_name(), e)
+                })?;
+                data.output_location = host
+                    .get_property("OutputLocation")
+                    .unwrap()
+                    .trim_matches('"')
+                    .to_string();
+                Ok(())
+            })
+            .set_execute_action(|data, host, _ctx| {
+                host.info(&format!(
+                    "executing {}, storing {} into {}",
+                    host.instance_name(),
+                    data.value,
+                    data.output_location
+                ));
+                Ok(())
+            })
+            .build(),
+    )))
+}

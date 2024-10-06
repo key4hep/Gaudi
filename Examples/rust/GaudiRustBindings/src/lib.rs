@@ -10,6 +10,8 @@
 // #####################################################################################
 
 pub mod gaudi {
+    use cxx::let_cxx_string;
+
     // bridge to the C++ object wrapping the Rust algorithm
     #[derive(Clone, Copy)]
     pub struct Host<'a> {
@@ -39,7 +41,6 @@ pub mod gaudi {
         }
 
         pub fn add_property(&self, semantics: &str, name: &str, default: &str, doc: Option<&str>) {
-            use cxx::let_cxx_string;
             let_cxx_string!(semantics = semantics);
             let_cxx_string!(name = name);
             let_cxx_string!(default = default);
@@ -48,8 +49,23 @@ pub mod gaudi {
         }
 
         pub fn get_property(&self, name: &str) -> Option<String> {
-            cxx::let_cxx_string!(name = name);
+            let_cxx_string!(name = name);
             crate::ffi::getPropertyValueHelper(self.alg, &name).ok()
+        }
+
+        pub fn add_input(&self, type_name: &str, name: &str, location: &str, doc: Option<&str>) {
+            let_cxx_string!(name = name);
+            let_cxx_string!(type_name = type_name);
+            let_cxx_string!(location = location);
+            let_cxx_string!(doc = doc.unwrap_or(""));
+            self.alg.addInputHandle(&type_name, &name, &location, &doc);
+        }
+        pub fn add_output(&self, type_name: &str, name: &str, location: &str, doc: Option<&str>) {
+            let_cxx_string!(name = name);
+            let_cxx_string!(type_name = type_name);
+            let_cxx_string!(location = location);
+            let_cxx_string!(doc = doc.unwrap_or(""));
+            self.alg.addOutputHandle(&type_name, &name, &location, &doc);
         }
     }
 
@@ -163,12 +179,39 @@ pub mod gaudi {
             let default = default.to_string();
             let doc = doc.map(|s| s.to_string());
             self.add_bind_host_action(move |_state, host| {
-                host.add_property(
-                    &semantics,
-                    &name,
-                    &default,
-                    doc.as_deref(),
-                );
+                host.add_property(&semantics, &name, &default, doc.as_deref());
+                Ok(())
+            })
+        }
+        pub fn add_input(
+            self,
+            type_name: &str,
+            name: &str,
+            location: &str,
+            doc: Option<&str>,
+        ) -> Self {
+            let type_name = type_name.to_string();
+            let name = name.to_string();
+            let location = location.to_string();
+            let doc = doc.map(|s| s.to_string());
+            self.add_bind_host_action(move |_state, host| {
+                host.add_input(&type_name, &name, &location, doc.as_deref());
+                Ok(())
+            })
+        }
+        pub fn add_output(
+            self,
+            type_name: &str,
+            name: &str,
+            location: &str,
+            doc: Option<&str>,
+        ) -> Self {
+            let type_name = type_name.to_string();
+            let name = name.to_string();
+            let location = location.to_string();
+            let doc = doc.map(|s| s.to_string());
+            self.add_bind_host_action(move |_state, host| {
+                host.add_output(&type_name, &name, &location, doc.as_deref());
                 Ok(())
             })
         }
@@ -298,6 +341,20 @@ pub mod ffi {
             semantics: &CxxString,
             name: &CxxString,
             default_value: &CxxString,
+            doc: &CxxString,
+        );
+        fn addInputHandle(
+            &self,
+            name: &CxxString,
+            type_name: &CxxString,
+            location: &CxxString,
+            doc: &CxxString,
+        );
+        fn addOutputHandle(
+            &self,
+            name: &CxxString,
+            type_name: &CxxString,
+            location: &CxxString,
             doc: &CxxString,
         );
         #[namespace = "Gaudi::Rust::helpers"]
