@@ -202,13 +202,15 @@ namespace Gaudi {
 
     /// Access a service by name, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( std::string_view name, T*& psvc, bool createIf = true ) const {
+    [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+    service( std::string_view name, T*& psvc, bool createIf = true ) const {
       return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
     }
 
     /// Access a service by name and type, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( std::string_view svcType, std::string_view svcName, T*& psvc ) const {
+    [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+    service( std::string_view svcType, std::string_view svcName, T*& psvc ) const {
       return service_i( svcType, svcName, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
     }
 
@@ -525,10 +527,11 @@ namespace Gaudi {
     Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
     Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
 
-    /// implementation of service method
-    StatusCode service_i( std::string_view svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
-    StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
-                          void** ppSvc ) const;
+    /// implementation of legacy service method
+    [[deprecated]] StatusCode service_i( std::string_view svcName, bool createIf, const InterfaceID& iid,
+                                         void** ppSvc ) const;
+    [[deprecated]] StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
+                                         void** ppSvc ) const;
 
     /// delete copy constructor: NO COPY ALLOWED
     Algorithm( const Algorithm& ) = delete;

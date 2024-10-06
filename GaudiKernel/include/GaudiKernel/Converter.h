@@ -95,13 +95,15 @@ public:
 
   /// Access a service by name, creating it if it doesn't already exist.
   template <class T>
-  StatusCode service( const std::string& name, T*& psvc, bool createIf = false ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+  service( const std::string& name, T*& psvc, bool createIf = false ) const {
     return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
   }
 
   /// Access a service by name, type creating it if it doesn't already exist.
   template <class T>
-  StatusCode service( const std::string& type, const std::string& name, T*& psvc ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+  service( const std::string& type, const std::string& name, T*& psvc ) const {
     return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
   }
 
@@ -134,10 +136,11 @@ private:
   /// MessageSvc reference
   mutable SmartIF<IMessageSvc> m_messageSvc;
 
-  /** implementation of service method */
-  StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
-  StatusCode service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
-                        void** ppSvc ) const;
+  /** implementation of legacy service method */
+  [[deprecated]] StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid,
+                                       void** ppSvc ) const;
+  [[deprecated]] StatusCode service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+                                       void** ppSvc ) const;
 };
 
 // Identified class for converters' factories
