@@ -36,11 +36,7 @@ namespace Gaudi::Rust {
         auto p = owner->declareProperty( std::move( name ), *this, std::move( doc ) );
         p->template setOwnerType<OWNER>();
       }
-      std::string pythonRepr() const override {
-        auto repr = DataObjectHandleBase::pythonRepr();
-        boost::replace_all( repr, default_type, m_type );
-        return repr;
-      }
+      std::string pythonRepr() const override;
 
     private:
       std::string m_type;
@@ -62,7 +58,7 @@ namespace Gaudi::Rust {
 
     StatusCode initialize() override;
     StatusCode start() override;
-    StatusCode execute( const EventContext& ctx ) const override;
+    StatusCode execute( EventContext const& ctx ) const override;
     StatusCode stop() override;
     StatusCode finalize() override;
 

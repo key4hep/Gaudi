@@ -54,6 +54,14 @@ namespace {
 } // namespace
 
 namespace Gaudi::Rust {
+  namespace details {
+    std::string DynDataHandle::pythonRepr() const {
+      auto repr = DataObjectHandleBase::pythonRepr();
+      boost::replace_all( repr, default_type, m_type );
+      return repr;
+    }
+  } // namespace details
+
   AlgWrapper::AlgWrapper( std::string const& name, ISvcLocator* svcLoc, details::WrappedAlg* dyn_alg_ptr )
       : Algorithm( name, svcLoc ), m_dyn_alg_ptr( dyn_alg_ptr ) {
     if ( m_dyn_alg_ptr ) alg_bind_host( m_dyn_alg_ptr, *this );
