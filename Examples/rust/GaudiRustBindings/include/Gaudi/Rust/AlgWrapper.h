@@ -82,6 +82,8 @@ namespace Gaudi::Rust {
     void addOutputHandle( std::string const& type_name, std::string const& name, std::string const& location,
                           std::string const& doc ) const;
 
+    void putInt( EventContext const& ctx, std::string const& name, int value ) const;
+
   private:
     details::WrappedAlg*                                m_dyn_alg_ptr;
     std::vector<std::unique_ptr<Details::PropertyBase>> m_genProperties;

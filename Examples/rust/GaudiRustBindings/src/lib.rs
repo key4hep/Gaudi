@@ -67,6 +67,11 @@ pub mod gaudi {
             let_cxx_string!(doc = doc.unwrap_or(""));
             self.alg.addOutputHandle(&type_name, &name, &location, &doc);
         }
+
+        pub fn put_int(&self, ctx: &EventContext, key: &str, value: i32) {
+            let_cxx_string!(key = key);
+            self.alg.putInt(ctx.inner, &key, value);
+        }
     }
 
     pub trait AlgorithmTrait {
@@ -359,6 +364,8 @@ pub mod ffi {
         );
         #[namespace = "Gaudi::Rust::helpers"]
         fn getPropertyValueHelper(alg: &AlgWrapper, name: &CxxString) -> Result<String>;
+
+        fn putInt(&self, ctx: &EventContext, name: &CxxString, value: i32);
     }
 
     #[namespace = "Gaudi::Rust::details"]

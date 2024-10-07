@@ -71,13 +71,14 @@ extern "C" fn int_producer_factory() -> *mut WrappedAlg {
                     .to_string();
                 Ok(())
             })
-            .set_execute_action(|data, host, _ctx| {
+            .set_execute_action(|data, host, ctx| {
                 host.info(&format!(
                     "executing {}, storing {} into {}",
                     host.instance_name(),
                     data.value,
                     data.output_location
                 ));
+                host.put_int(ctx, "OutputLocation", data.value);
                 Ok(())
             })
             .build(),
