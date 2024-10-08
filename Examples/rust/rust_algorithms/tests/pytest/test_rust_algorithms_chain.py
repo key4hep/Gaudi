@@ -26,9 +26,15 @@ def config(events=3):
     r_i_prod = R.IntDataProducer(
         "R_IntDataProd", OutputLocation="/Event/IntR", Value=10
     )
+    r_i2f = R.IntToFloatData(
+        "R_IntToFloatData", InputLocation="/Event/IntR", OutputLocation="/Event/FloatR"
+    )
+    r_f_consumer = R.FloatDataConsumer(
+        "R_FloatDataConsumer", InputLocation="/Event/FloatR"
+    )
 
     app = C.ApplicationMgr(
-        TopAlg=[i_prod, r_i_prod, i2f, f_consumer],
+        TopAlg=[i_prod, r_i_prod, i2f, r_i2f, f_consumer, r_f_consumer],
         EvtMax=events,
         EvtSel="NONE",
     )
@@ -91,8 +97,15 @@ class Test(GaudiExeTest):
             ("FloatDataConsumer", ["executing FloatDataConsumer: 7"]),
             (
                 "R_IntDataProd",
-                ["executing R_IntDataProd, storing 10 into /Event/IntR"],
+                ["executing R_IntDataProd, storing 10 into /Event/IntR (Rust)"],
             ),
+            (
+                "R_IntToFloatData",
+                [
+                    "Converting: 10 from /Event/IntR and storing it into /Event/FloatR (Rust)"
+                ],
+            ),
+            ("R_FloatDataCons...", ["executing R_FloatDataConsumer: 10 (Rust)"]),
         ],
     )
     def test_stdout(self, stdout: bytes, alg: str, messages: list[str]) -> None:

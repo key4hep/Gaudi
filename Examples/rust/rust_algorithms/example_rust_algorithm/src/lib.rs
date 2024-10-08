@@ -73,12 +73,69 @@ extern "C" fn int_producer_factory() -> *mut WrappedAlg {
             })
             .set_execute_action(|data, host, ctx| {
                 host.info(&format!(
-                    "executing {}, storing {} into {}",
+                    "executing {}, storing {} into {} (Rust)",
                     host.instance_name(),
                     data.value,
                     data.output_location
                 ));
                 host.put(ctx, "OutputLocation", data.value);
+                Ok(())
+            })
+            .build(),
+    )))
+}
+
+#[derive(Default)]
+struct I2FAlg {
+    input_location: String,
+    output_location: String,
+}
+#[no_mangle]
+extern "C" fn i2f_factory() -> *mut WrappedAlg {
+    Box::into_raw(Box::new(Box::new(
+        gaudi::AlgorithmBuilder::<I2FAlg>::new()
+            .add_input("int", "InputLocation", "\"/Event/Int\"", None)
+            .add_output("float", "OutputLocation", "\"/Event/Float\"", None)
+            .add_initialize_action(|data, host| {
+                data.input_location = host
+                    .get_property("InputLocation")
+                    .unwrap()
+                    .trim_matches('"')
+                    .to_string();
+                data.output_location = host
+                    .get_property("OutputLocation")
+                    .unwrap()
+                    .trim_matches('"')
+                    .to_string();
+                Ok(())
+            })
+            .set_execute_action(|data, host, ctx| {
+                let value: i32 = *host.get(ctx, "InputLocation");
+                host.info(&format!(
+                    "Converting: {} from {} and storing it into {} (Rust)",
+                    value, data.input_location, data.output_location,
+                ));
+                host.put(ctx, "OutputLocation", value as f32);
+                Ok(())
+            })
+            .build(),
+    )))
+}
+
+#[derive(Default)]
+struct FloatConsumer;
+#[no_mangle]
+extern "C" fn float_consumer_factory() -> *mut WrappedAlg {
+    Box::into_raw(Box::new(Box::new(
+        gaudi::AlgorithmBuilder::<FloatConsumer>::new()
+            .add_input("float", "InputLocation", "\"/Event/Float\"", None)
+            .set_execute_action(|_data, host, ctx| {
+                let value: f32 = *host.get(ctx, "InputLocation");
+                host.info(&format!(
+                    "executing {}: {} (Rust)",
+                    host.instance_name(),
+                    value
+                ));
                 Ok(())
             })
             .build(),

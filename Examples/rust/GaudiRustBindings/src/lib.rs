@@ -72,22 +72,38 @@ pub mod gaudi {
             let_cxx_string!(key = key);
             self.alg.put(ctx.inner, &key, value.into().0);
         }
+
+        pub fn get<'a, T>(&self, ctx: &EventContext, key: &str) -> &'a T
+        where
+            &'a T: From<DataObjectRef<'a>>,
+        {
+            let_cxx_string!(key = key);
+            let obj = DataObjectRef(self.alg.get(ctx.inner, &key));
+            obj.into()
+        }
     }
 
-    /// Helper wrapping a C++ `std::unique_ptr<DataObject>` to implement conversion traits.
+    /// Helper wrapping a C++ `std::unique_ptr<DataObject>` to implement conversion to DataObject.
     pub struct BoxedDataObject(cxx::UniquePtr<crate::ffi::DataObject>);
+    /// Helper wrapping a C++ `DataObject const&` to implement conversion from DataObject.
+    pub struct DataObjectRef<'a>(pub &'a crate::ffi::DataObject);
 
     macro_rules! dobj_conversion {
-        ($type:ty, $dobj_from:ident) => {
+        ($type:ty, $dobj_from:ident, $from_dobj:ident) => {
             impl From<$type> for BoxedDataObject {
                 fn from(value: $type) -> Self {
                     Self(crate::ffi::$dobj_from(value))
                 }
             }
+            impl<'a> From<DataObjectRef<'a>> for &'a $type {
+                fn from(value: DataObjectRef<'a>) -> Self {
+                    crate::ffi::$from_dobj(value.0)
+                }
+            }
         };
     }
-    dobj_conversion! {i32, dobj_from_i32}
-    dobj_conversion! {f32, dobj_from_f32}
+    dobj_conversion! {i32, dobj_from_i32, i32_from_dobj}
+    dobj_conversion! {f32, dobj_from_f32, f32_from_dobj}
 
     pub trait AlgorithmTrait {
         fn bind_host(&mut self, host: Host) -> Result<(), String>;
@@ -384,6 +400,7 @@ pub mod ffi {
         );
 
         fn put(&self, ctx: &EventContext, name: &CxxString, value: UniquePtr<DataObject>);
+        fn get<'a>(&self, ctx: &EventContext, name: &CxxString) -> &'a DataObject;
 
         #[namespace = "Gaudi::Rust::helpers"]
         fn getPropertyValueHelper(alg: &AlgWrapper, name: &CxxString) -> Result<String>;

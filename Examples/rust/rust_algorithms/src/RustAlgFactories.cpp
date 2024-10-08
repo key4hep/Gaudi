@@ -14,3 +14,7 @@
 DECLARE_RUST_ALG( my_rust_counting_alg_factory, "Gaudi::Examples::MyRustCountingAlg" )
 
 DECLARE_RUST_ALG( int_producer_factory, "Gaudi::Examples::RustAlgorithms::IntDataProducer" )
+
+DECLARE_RUST_ALG( i2f_factory, "Gaudi::Examples::RustAlgorithms::IntToFloatData" )
+
+DECLARE_RUST_ALG( float_consumer_factory, "Gaudi::Examples::RustAlgorithms::FloatDataConsumer" )

@@ -121,4 +121,14 @@ namespace Gaudi::Rust {
       throw std::logic_error( "AlgWrapper::put: No output handle with name " + name );
     }
   }
+
+  DataObject const& AlgWrapper::get( EventContext const&, std::string const& name ) const {
+    if ( auto handle = m_dataHandles.find( name );
+         handle != m_dataHandles.end() && ( handle->second.mode() & Gaudi::DataHandle::Reader ) ) {
+      return *handle->second.get();
+    } else {
+      throw std::logic_error( "AlgWrapper::get: No input handle with name " + name );
+    }
+  }
+
 } // namespace Gaudi::Rust

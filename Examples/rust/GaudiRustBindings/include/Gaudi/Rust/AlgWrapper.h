@@ -83,7 +83,8 @@ namespace Gaudi::Rust {
     void addOutputHandle( std::string const& type_name, std::string const& name, std::string const& location,
                           std::string const& doc ) const;
 
-    void put( EventContext const& ctx, std::string const& name, std::unique_ptr<DataObject> value ) const;
+    void              put( EventContext const& ctx, std::string const& name, std::unique_ptr<DataObject> value ) const;
+    DataObject const& get( EventContext const& ctx, std::string const& name ) const;
 
   private:
     details::WrappedAlg*                                m_dyn_alg_ptr;
