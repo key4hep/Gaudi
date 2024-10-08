@@ -247,7 +247,8 @@ void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
       if ( nbNonEmptyEntities[1] > 0 ) {
         log << MSG::INFO << "1D histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[1] << "\n"
             << fmt::format(
-                   fmt::runtime( " | {:{}s} | {:{}s} |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |" ),
+                   fmt::runtime(
+                       " | {:{}s} | {:{}s} |      #     |     Mean   |    RMS     |  Skewness  |  Kurtosis  |" ),
                    "ID", m_histoStringsWidth.value(), "Title", m_histoStringsWidth.value() )
             << curLog[1].str() << endmsg;
       }
@@ -263,7 +264,8 @@ void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
         log << MSG::INFO << "1D profile histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[4]
             << "\n"
             << fmt::format(
-                   fmt::runtime( " | {:{}s} | {:{}s} |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |" ),
+                   fmt::runtime(
+                       " | {:{}s} | {:{}s} |      #     |     Mean   |    RMS     |  Skewness  |  Kurtosis  |" ),
                    "ID", m_histoStringsWidth.value(), "Title", m_histoStringsWidth.value() )
             << curLog[4].str() << endmsg;
       }
