@@ -68,11 +68,26 @@ pub mod gaudi {
             self.alg.addOutputHandle(&type_name, &name, &location, &doc);
         }
 
-        pub fn put_int(&self, ctx: &EventContext, key: &str, value: i32) {
+        pub fn put<T: Into<BoxedDataObject>>(&self, ctx: &EventContext, key: &str, value: T) {
             let_cxx_string!(key = key);
-            self.alg.putInt(ctx.inner, &key, value);
+            self.alg.put(ctx.inner, &key, value.into().0);
         }
     }
+
+    /// Helper wrapping a C++ `std::unique_ptr<DataObject>` to implement conversion traits.
+    pub struct BoxedDataObject(cxx::UniquePtr<crate::ffi::DataObject>);
+
+    macro_rules! dobj_conversion {
+        ($type:ty, $dobj_from:ident) => {
+            impl From<$type> for BoxedDataObject {
+                fn from(value: $type) -> Self {
+                    Self(crate::ffi::$dobj_from(value))
+                }
+            }
+        };
+    }
+    dobj_conversion! {i32, dobj_from_i32}
+    dobj_conversion! {f32, dobj_from_f32}
 
     pub trait AlgorithmTrait {
         fn bind_host(&mut self, host: Host) -> Result<(), String>;
@@ -329,6 +344,11 @@ pub mod ffi {
         fn valid(&self) -> bool;
     }
 
+    extern "C++" {
+        include!("GaudiKernel/DataObject.h");
+        type DataObject;
+    }
+
     unsafe extern "C++" {
         include!("Gaudi/Rust/AlgWrapper.h");
         include!("rust_helpers.h");
@@ -362,10 +382,20 @@ pub mod ffi {
             location: &CxxString,
             doc: &CxxString,
         );
+
+        fn put(&self, ctx: &EventContext, name: &CxxString, value: UniquePtr<DataObject>);
+
         #[namespace = "Gaudi::Rust::helpers"]
         fn getPropertyValueHelper(alg: &AlgWrapper, name: &CxxString) -> Result<String>;
+    }
 
-        fn putInt(&self, ctx: &EventContext, name: &CxxString, value: i32);
+    #[namespace = "Gaudi::Rust::helpers"]
+    unsafe extern "C++" {
+        fn dobj_from_i32(value: i32) -> UniquePtr<DataObject>;
+        fn i32_from_dobj<'a>(value: &'a DataObject) -> &'a i32;
+
+        fn dobj_from_f32(value: f32) -> UniquePtr<DataObject>;
+        fn f32_from_dobj<'a>(value: &'a DataObject) -> &'a f32;
     }
 
     #[namespace = "Gaudi::Rust::details"]

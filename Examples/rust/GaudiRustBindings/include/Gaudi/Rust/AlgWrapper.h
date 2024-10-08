@@ -15,6 +15,7 @@
 #include <GaudiKernel/DataObjectHandle.h>
 #include <boost/algorithm/string/replace.hpp>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -82,7 +83,7 @@ namespace Gaudi::Rust {
     void addOutputHandle( std::string const& type_name, std::string const& name, std::string const& location,
                           std::string const& doc ) const;
 
-    void putInt( EventContext const& ctx, std::string const& name, int value ) const;
+    void put( EventContext const& ctx, std::string const& name, std::unique_ptr<DataObject> value ) const;
 
   private:
     details::WrappedAlg*                                m_dyn_alg_ptr;

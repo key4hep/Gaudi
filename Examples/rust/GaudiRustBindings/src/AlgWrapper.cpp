@@ -113,12 +113,12 @@ namespace Gaudi::Rust {
         std::forward_as_tuple( mut_self, Gaudi::DataHandle::Writer, type_name, name, location, doc ) );
   }
 
-  void AlgWrapper::putInt( EventContext const&, std::string const& name, int value ) const {
+  void AlgWrapper::put( EventContext const&, std::string const& name, std::unique_ptr<DataObject> value ) const {
     if ( auto handle = m_dataHandles.find( name );
          handle != m_dataHandles.end() && ( handle->second.mode() & Gaudi::DataHandle::Writer ) ) {
-      handle->second.put( std::make_unique<AnyDataWrapper<int>>( std::move( value ) ) );
+      handle->second.put( std::move( value ) );
     } else {
-      throw std::logic_error( "AlgWrapper::putInt: No output handle with name " + name );
+      throw std::logic_error( "AlgWrapper::put: No output handle with name " + name );
     }
   }
 } // namespace Gaudi::Rust

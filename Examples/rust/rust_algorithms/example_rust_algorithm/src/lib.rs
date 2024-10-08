@@ -78,7 +78,7 @@ extern "C" fn int_producer_factory() -> *mut WrappedAlg {
                     data.value,
                     data.output_location
                 ));
-                host.put_int(ctx, "OutputLocation", data.value);
+                host.put(ctx, "OutputLocation", data.value);
                 Ok(())
             })
             .build(),
