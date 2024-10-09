@@ -255,6 +255,48 @@ extern "C" fn points_diff_factory() -> *mut WrappedAlg {
     )))
 }
 
+#[derive(Default)]
+struct TestVectorAlg {
+    input_location: String,
+}
+
+#[no_mangle]
+extern "C" fn test_vector_consumer_factory() -> *mut WrappedAlg {
+    Box::into_raw(Box::new(Box::new(
+        gaudi::AlgorithmBuilder::<TestVectorAlg>::new()
+            .add_input(
+                "Gaudi::Examples::TestVector",
+                "InputLocation",
+                "\"/Event/TestVector\"",
+                None,
+            )
+            .add_initialize_action(|data, host| {
+                data.input_location = host
+                    .get_property("InputLocation")
+                    .unwrap()
+                    .trim_matches('"')
+                    .to_string();
+                Ok(())
+            })
+            .set_execute_action(|data, host, ctx| {
+                let vector: &ffi::TestVector = host.get(ctx, "InputLocation");
+                host.info(&format!(
+                    "got vector from {}: {:?}",
+                    data.input_location,
+                    (vector.x(), vector.y(), vector.z())
+                ));
+                Ok(())
+            })
+            .build(),
+    )))
+}
+
+impl<'a> From<gaudi::DataObjectRef<'a>> for &'a ffi::TestVector {
+    fn from(value: gaudi::DataObjectRef<'a>) -> Self {
+        ffi::cast_to_testvector(value.0)
+    }
+}
+
 #[cxx::bridge]
 mod ffi {
     extern "Rust" {
@@ -267,5 +309,19 @@ mod ffi {
         // C++ function to create a DataObject from a Point (Rust opaque type)
         fn wrap_point(point: Box<Point>) -> UniquePtr<DataObject>;
         fn unwrap_point<'a>(value: &'a DataObject) -> &'a Box<Point>;
+    }
+
+    unsafe extern "C++" {
+        include!("Gaudi/Examples/TestVector.h");
+        #[namespace = "Gaudi::Examples"]
+        type TestVector;
+        fn x(&self) -> f64;
+        fn y(&self) -> f64;
+        fn z(&self) -> f64;
+        // fn SetX(&mut self, value: f64);
+        // fn SetY(&mut self, value: f64);
+        // fn SetZ(&mut self, value: f64);
+
+        fn cast_to_testvector<'a>(value: &'a DataObject) -> &'a TestVector;
     }
 }

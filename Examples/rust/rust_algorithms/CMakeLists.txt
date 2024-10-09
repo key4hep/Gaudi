@@ -9,15 +9,27 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
+# Declare a Gaudi library
+gaudi_add_library(example_rust_algorithm_lib
+    SOURCES
+        src/TestVector.cpp
+    LINK
+        PUBLIC
+            Gaudi::GaudiKernel
+)
+
 # Declare a Gaudi plugin library (module)
 gaudi_add_module(example_rust_algorithm_module
     SOURCES
         src/RustAlgFactories.cpp
         src/MyCppCountingAlg.cpp
         src/helpers.cpp
+        src/TestVectorProducer.cpp
     LINK
         Gaudi::GaudiKernel
         Gaudi::GaudiRustBindings
+        Gaudi::Functional
+        example_rust_algorithm_lib
         example_rust_algorithm_bridge
 )
 
@@ -33,12 +45,6 @@ corrosion_import_crate(
     LOCKED
 )
 
-# We are building a static library that we want to link into a
-# shared library so we need generate position independent code (-fPIC)
-# set_target_properties(example_rust_algorithm_bridge
-#     PROPERTIES
-#         POSITION_INDEPENDENT_CODE YES
-# )
 # Instruct CMake to build the bridge code and build the library that
 # we use from C++ to invoke Rust code
 corrosion_add_cxxbridge(
@@ -49,6 +55,7 @@ corrosion_add_cxxbridge(
 target_link_libraries(example_rust_algorithm_bridge
     PUBLIC
         Gaudi::GaudiKernel
+        example_rust_algorithm_lib
 )
 target_include_directories(example_rust_algorithm_bridge PRIVATE src)
 

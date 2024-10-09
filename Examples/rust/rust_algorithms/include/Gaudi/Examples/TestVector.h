@@ -8,25 +8,28 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "helpers.h"
-#include <GaudiKernel/AnyDataWrapper.h>
-#include <memory>
-#include <rust/cxx.h>
+#pragma once
 
-using Point_t = rust::Box<Gaudi::Examples::Rust::Point>;
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/Vector3DTypes.h>
 
-std::unique_ptr<DataObject> wrap_point( Point_t point ) {
-  return std::make_unique<AnyDataWrapper<Point_t>>( std::move( point ) );
-}
+namespace Gaudi::Examples {
+  class TestVector : public DataObject {
+  public:
+    TestVector()                    = default;
+    TestVector( const TestVector& ) = delete;
+    TestVector( TestVector&& )      = default;
+    ~TestVector()                   = default;
 
-Point_t const& unwrap_point( DataObject const& obj ) {
-  return static_cast<AnyDataWrapper<Point_t> const&>( obj ).getData();
-}
+    double x() const;
+    double y() const;
+    double z() const;
 
-Gaudi::Examples::TestVector const& cast_to_testvector( DataObject const& value ) {
-  using TestVector = Gaudi::Examples::TestVector;
+    void setX( double x );
+    void setY( double y );
+    void setZ( double z );
 
-  TestVector const* ptr = dynamic_cast<TestVector const*>( &value );
-  if ( !ptr ) { throw std::runtime_error( "Cannot dynamic_cast DataObject to TestVector" ); }
-  return *ptr;
-}
+  private:
+    Gaudi::XYZVector m_data;
+  };
+} // namespace Gaudi::Examples

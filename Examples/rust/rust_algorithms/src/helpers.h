@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#include <Gaudi/Examples/TestVector.h>
 #include <GaudiKernel/DataObject.h>
 #include <memory>
 #include <rust/cxx.h>
@@ -21,3 +22,5 @@ namespace Gaudi::Examples::Rust {
 std::unique_ptr<DataObject> wrap_point( rust::Box<Gaudi::Examples::Rust::Point> point );
 
 rust::Box<Gaudi::Examples::Rust::Point> const& unwrap_point( DataObject const& obj );
+
+Gaudi::Examples::TestVector const& cast_to_testvector( DataObject const& value );

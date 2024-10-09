@@ -15,6 +15,7 @@ from GaudiTesting import GaudiExeTest
 def config(events=3):
     from GaudiConfig2 import Configurables as C
     from GaudiConfig2.Configurables.Gaudi.Examples import RustAlgorithms as R
+    from GaudiConfig2.Configurables.Gaudi.Examples import TestAlgorithms as E
 
     make_point_1 = R.PointProducer(
         "MakePoint1", OutputLocation="/Event/Point1", X=8, Y=7, Z=6
@@ -27,8 +28,13 @@ def config(events=3):
         "DiffPoints", InputLocation1="/Event/Point1", InputLocation2="/Event/Point2"
     )
 
+    vec_prod = E.TestVectorProducer(
+        "TestVectorProducer", OutputLocation="/Event/Vector"
+    )
+    vec_cons = R.TestVectorConsumer("TestVectorConsumer", InputLocation="/Event/Vector")
+
     app = C.ApplicationMgr(
-        TopAlg=[make_point_1, make_point_2, diff_points],
+        TopAlg=[make_point_1, make_point_2, diff_points, vec_prod, vec_cons],
         EvtMax=events,
         EvtSel="NONE",
     )
@@ -97,6 +103,14 @@ class Test(GaudiExeTest):
                 [
                     "Point { x: 8.0, y: 7.0, z: 6.0 } - Point { x: 1.0, y: 2.0, z: 3.0 } = Point { x: 7.0, y: 5.0, z: 3.0 }"
                 ],
+            ),
+            (
+                "TestVectorProducer",
+                ["putting vector (1, 2, 3) into /Event/Vector"],
+            ),
+            (
+                "TestVectorConsumer",
+                ["got vector from /Event/Vector: (1.0, 2.0, 3.0)"],
             ),
         ],
     )

@@ -22,3 +22,5 @@ DECLARE_RUST_ALG( float_consumer_factory, "Gaudi::Examples::RustAlgorithms::Floa
 DECLARE_RUST_ALG( point_producer_factory, "Gaudi::Examples::RustAlgorithms::PointProducer" )
 
 DECLARE_RUST_ALG( points_diff_factory, "Gaudi::Examples::RustAlgorithms::PointsDiff" )
+
+DECLARE_RUST_ALG( test_vector_consumer_factory, "Gaudi::Examples::RustAlgorithms::TestVectorConsumer" )
