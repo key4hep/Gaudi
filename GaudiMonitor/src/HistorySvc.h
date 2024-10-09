@@ -18,6 +18,7 @@
 #include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IVersHistoryObj.h>
 #include <GaudiKernel/Service.h>
+#include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/StatusCode.h>
 
 #include <GaudiKernel/ClassID.h>
@@ -91,15 +92,14 @@ private:
   typedef DataHistMap::iterator            DHMitr;
   typedef DataHistMap::const_iterator      DHMCitr;
 
-  Gaudi::Property<bool>        m_dump{ this, "Dump", false };
-  Gaudi::Property<bool>        m_activate{ this, "Activate", true };
-  Gaudi::Property<std::string> m_outputFile{ this, "OutputFile" };
+  Gaudi::Property<bool>         m_dump{ this, "Dump", false };
+  Gaudi::Property<bool>         m_activate{ this, "Activate", true };
+  Gaudi::Property<std::string>  m_outputFile{ this, "OutputFile" };
+  ServiceHandle<IAlgContextSvc> p_algCtxSvc{ this, "AlgContextSvc", "AlgContextSvc" };
 
   void clearState();
 
   bool m_isInitialized = false;
-
-  IAlgContextSvc* p_algCtxSvc = nullptr;
 
   std::map<const Gaudi::Algorithm*, AlgorithmHistory*> m_algmap;
 
@@ -123,7 +123,6 @@ private:
 
   IAlgorithm* getCurrentIAlg() const;
 
-  IIncidentSvc*     m_incidentSvc = nullptr;
   SmartIF<IToolSvc> m_toolSvc;
 
   bool m_outputFileTypeXML = false;

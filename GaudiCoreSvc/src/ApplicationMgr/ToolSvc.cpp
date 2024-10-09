@@ -177,7 +177,7 @@ private: // data
   ToolList                     m_instancesTools;
 
   /// Pointer to HistorySvc
-  IHistorySvc* m_pHistorySvc = nullptr;
+  SmartIF<IHistorySvc> m_pHistorySvc;
 
   std::vector<IToolSvc::Observer*> m_observers;
 };
@@ -351,8 +351,6 @@ StatusCode ToolSvc::finalize()
     for ( const auto& iTool : finalizedTools ) { error() << iTool->name() << ": " << iTool->refCount() << " "; }
     error() << endmsg;
   }
-
-  if ( m_pHistorySvc ) m_pHistorySvc->release();
 
   // Finalize this specific service
   return ( Service::finalize().isSuccess() && !fail ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
@@ -703,9 +701,8 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   std::for_each( m_observers.begin(), m_observers.end(), [&]( IToolSvc::Observer* obs ) { obs->onCreate( tool ); } );
   // TODO: replace by generic callback
   // Register the tool with the HistorySvc
-  if ( m_pHistorySvc || service( "HistorySvc", m_pHistorySvc, false ).isSuccess() ) {
-    m_pHistorySvc->registerAlgTool( *tool ).ignore();
-  }
+  m_pHistorySvc = service( "HistorySvc", false );
+  if ( m_pHistorySvc ) { m_pHistorySvc->registerAlgTool( *tool ).ignore(); }
   return StatusCode::SUCCESS;
 }
 

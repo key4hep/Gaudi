@@ -38,7 +38,6 @@
 #include <GaudiKernel/GaudiException.h>
 
 #include <GaudiKernel/DataIncident.h>
-#include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/RegistryEntry.h>
 #include <GaudiKernel/TsDataSvc.h>
 
@@ -81,6 +80,10 @@ typedef DataSvcHelpers::RegistryEntry RegEntry;
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
+
+/// constructor
+TsDataSvc::TsDataSvc( const std::string& name, ISvcLocator* svc )
+    : base_class( name, svc ), m_incidentSvc( "IncidentSvc", name ) {}
 
 /** IDataManagerSvc: Remove all data objects below the sub tree
  *  identified by its full path name.
@@ -814,7 +817,7 @@ StatusCode TsDataSvc::initialize() {
   // Nothing to do: just call base class initialisation
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() ) return sc;
-  sc = service( "IncidentSvc", m_incidentSvc, true );
+  sc = m_incidentSvc.retrieve();
   if ( !sc.isSuccess() ) { error() << "Failed to access incident service." << endmsg; }
   return sc;
 }
@@ -826,10 +829,6 @@ StatusCode TsDataSvc::reinitialize() {
   setDataLoader( nullptr ).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
-  if ( m_incidentSvc ) {
-    m_incidentSvc->release();
-    m_incidentSvc = nullptr;
-  }
   // re-initialize the base class
   sc = Service::reinitialize();
   if ( !sc.isSuccess() ) {
@@ -837,7 +836,7 @@ StatusCode TsDataSvc::reinitialize() {
     return sc;
   }
   // the initialize part is copied here
-  sc = service( "IncidentSvc", m_incidentSvc, true );
+  sc = m_incidentSvc.retrieve();
   if ( !sc.isSuccess() ) {
     error() << "Failed to access incident service." << endmsg;
     return sc;
@@ -852,10 +851,6 @@ StatusCode TsDataSvc::finalize() {
   setDataLoader( nullptr ).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
-  if ( m_incidentSvc ) {
-    m_incidentSvc->release();
-    m_incidentSvc = nullptr;
-  }
   return Service::finalize();
 }
 
