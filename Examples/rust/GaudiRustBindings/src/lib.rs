@@ -84,7 +84,7 @@ pub mod gaudi {
     }
 
     /// Helper wrapping a C++ `std::unique_ptr<DataObject>` to implement conversion to DataObject.
-    pub struct BoxedDataObject(cxx::UniquePtr<crate::ffi::DataObject>);
+    pub struct BoxedDataObject(pub cxx::UniquePtr<crate::ffi::DataObject>);
     /// Helper wrapping a C++ `DataObject const&` to implement conversion from DataObject.
     pub struct DataObjectRef<'a>(pub &'a crate::ffi::DataObject);
 
@@ -362,7 +362,7 @@ pub mod ffi {
 
     extern "C++" {
         include!("GaudiKernel/DataObject.h");
-        type DataObject;
+        pub type DataObject;
     }
 
     unsafe extern "C++" {

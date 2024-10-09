@@ -8,17 +8,17 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include "helpers.h"
+#include <GaudiKernel/AnyDataWrapper.h>
+#include <memory>
+#include <rust/cxx.h>
 
-#include <Gaudi/Rust/AlgWrapper.h>
+using Point_t = rust::Box<Gaudi::Examples::Rust::Point>;
 
-DECLARE_RUST_ALG( my_rust_counting_alg_factory, "Gaudi::Examples::MyRustCountingAlg" )
+std::unique_ptr<DataObject> wrap_point( Point_t point ) {
+  return std::make_unique<AnyDataWrapper<Point_t>>( std::move( point ) );
+}
 
-DECLARE_RUST_ALG( int_producer_factory, "Gaudi::Examples::RustAlgorithms::IntDataProducer" )
-
-DECLARE_RUST_ALG( i2f_factory, "Gaudi::Examples::RustAlgorithms::IntToFloatData" )
-
-DECLARE_RUST_ALG( float_consumer_factory, "Gaudi::Examples::RustAlgorithms::FloatDataConsumer" )
-
-DECLARE_RUST_ALG( point_producer_factory, "Gaudi::Examples::RustAlgorithms::PointProducer" )
-
-DECLARE_RUST_ALG( points_diff_factory, "Gaudi::Examples::RustAlgorithms::PointsDiff" )
+Point_t const& unwrap_point( DataObject const& obj ) {
+  return static_cast<AnyDataWrapper<Point_t> const&>( obj ).getData();
+}

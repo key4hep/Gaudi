@@ -141,3 +141,131 @@ extern "C" fn float_consumer_factory() -> *mut WrappedAlg {
             .build(),
     )))
 }
+
+#[derive(Default, Debug, Clone)]
+struct Point {
+    x: f32,
+    y: f32,
+    z: f32,
+}
+
+impl From<Point> for gaudi::BoxedDataObject {
+    fn from(point: Point) -> Self {
+        Self(ffi::wrap_point(Box::new(point)))
+    }
+}
+impl<'a> From<gaudi::DataObjectRef<'a>> for &'a Point {
+    fn from(value: gaudi::DataObjectRef<'a>) -> Self {
+        ffi::unwrap_point(value.0).as_ref()
+    }
+}
+
+impl std::ops::Sub for &Point {
+    type Output = Point;
+    fn sub(self, rhs: Self) -> Point {
+        Point {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+        }
+    }
+}
+
+#[derive(Default)]
+struct PointProducer {
+    point: Point,
+    output_location: String,
+}
+
+#[no_mangle]
+extern "C" fn point_producer_factory() -> *mut WrappedAlg {
+    Box::into_raw(Box::new(Box::new(
+        gaudi::AlgorithmBuilder::<PointProducer>::new()
+            .add_property("float", "X", "1.0", None)
+            .add_property("float", "Y", "2.0", None)
+            .add_property("float", "Z", "3.0", None)
+            .add_output(
+                "rust::Box<Gaudi::Examples::Rust::Point>",
+                "OutputLocation",
+                "\"/Event/Point\"",
+                None,
+            )
+            .add_initialize_action(|data, host| {
+                let get_property = |name: &str| -> Result<f32, String> {
+                    host.get_property(name).unwrap().parse().map_err(|e| {
+                        format!("{}.{} is not a float: {}", host.instance_name(), name, e)
+                    })
+                };
+                let x = get_property("X")?;
+                let y = get_property("Y")?;
+                let z = get_property("Z")?;
+                data.point = Point { x, y, z };
+                data.output_location = host
+                    .get_property("OutputLocation")
+                    .unwrap()
+                    .trim_matches('"')
+                    .to_string();
+                Ok(())
+            })
+            .set_execute_action(|data, host, ctx| {
+                host.info(&format!(
+                    "executing {}, storing {:?} into {} (Rust)",
+                    host.instance_name(),
+                    data.point,
+                    data.output_location
+                ));
+                host.put(ctx, "OutputLocation", data.point.clone());
+                Ok(())
+            })
+            .build(),
+    )))
+}
+
+#[derive(Default)]
+struct PointDiff;
+
+#[no_mangle]
+extern "C" fn points_diff_factory() -> *mut WrappedAlg {
+    Box::into_raw(Box::new(Box::new(
+        gaudi::AlgorithmBuilder::<PointDiff>::new()
+            .add_input(
+                "rust::Box<Gaudi::Examples::Rust::Point>",
+                "InputLocation1",
+                "\"/Event/Point1\"",
+                None,
+            )
+            .add_input(
+                "rust::Box<Gaudi::Examples::Rust::Point>",
+                "InputLocation2",
+                "\"/Event/Point2\"",
+                None,
+            )
+            .set_execute_action(|_data, host, ctx| {
+                let point1: &Point = host.get(ctx, "InputLocation1");
+                let point2: &Point = host.get(ctx, "InputLocation2");
+                host.info(&format!(
+                    "{:?} - {:?} = {:?}",
+                    point1,
+                    point2,
+                    point1 - point2
+                ));
+                Ok(())
+            })
+            .build(),
+    )))
+}
+
+#[cxx::bridge]
+mod ffi {
+    extern "Rust" {
+        #[namespace = "Gaudi::Examples::Rust"]
+        type Point;
+    }
+    unsafe extern "C++" {
+        include!("helpers.h");
+        type DataObject = gaudi_rust_bindings::ffi::DataObject;
+        // C++ function to create a DataObject from a Point (Rust opaque type)
+        fn wrap_point(point: Box<Point>) -> UniquePtr<DataObject>;
+        fn unwrap_point<'a>(value: &'a DataObject) -> &'a Box<Point>;
+    }
+}

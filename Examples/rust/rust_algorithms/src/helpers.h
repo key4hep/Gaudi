@@ -8,17 +8,16 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#pragma once
 
-#include <Gaudi/Rust/AlgWrapper.h>
+#include <GaudiKernel/DataObject.h>
+#include <memory>
+#include <rust/cxx.h>
 
-DECLARE_RUST_ALG( my_rust_counting_alg_factory, "Gaudi::Examples::MyRustCountingAlg" )
+namespace Gaudi::Examples::Rust {
+  struct Point;
+}
 
-DECLARE_RUST_ALG( int_producer_factory, "Gaudi::Examples::RustAlgorithms::IntDataProducer" )
+std::unique_ptr<DataObject> wrap_point( rust::Box<Gaudi::Examples::Rust::Point> point );
 
-DECLARE_RUST_ALG( i2f_factory, "Gaudi::Examples::RustAlgorithms::IntToFloatData" )
-
-DECLARE_RUST_ALG( float_consumer_factory, "Gaudi::Examples::RustAlgorithms::FloatDataConsumer" )
-
-DECLARE_RUST_ALG( point_producer_factory, "Gaudi::Examples::RustAlgorithms::PointProducer" )
-
-DECLARE_RUST_ALG( points_diff_factory, "Gaudi::Examples::RustAlgorithms::PointsDiff" )
+rust::Box<Gaudi::Examples::Rust::Point> const& unwrap_point( DataObject const& obj );
