@@ -53,6 +53,8 @@ namespace Gaudi::NTuple {
     // Initialize the algorithm, set up the ROOT file and a TTree branch for each input location
     StatusCode initialize() override {
       return Gaudi::Algorithm::initialize().andThen( [this]() {
+        if ( m_ntupleTname.empty() ) m_ntupleTname = name();
+
         const auto& extraInputs = extraInputDeps();
         if ( extraInputs.empty() ) {
           error() << "No extra inputs locations specified. Please define extra inputs for the NTuple writer." << endmsg;
@@ -71,7 +73,7 @@ namespace Gaudi::NTuple {
           return StatusCode::FAILURE;
         }
 
-        m_tree = std::make_unique<TTree>( "GenericWriterTree", "Tree of GenericWriter Algorithm" ).release();
+        m_tree = std::make_unique<TTree>( m_ntupleTname.value().c_str(), "Tree of GenericWriter Algorithm" ).release();
 
         createBranches( extraInputs );
 
@@ -138,8 +140,10 @@ namespace Gaudi::NTuple {
 
   private:
     Gaudi::Property<std::string> m_fileId; // Property to hold the the identifier of where the TTree will be saved
-    std::shared_ptr<TFile>       m_file     = nullptr; // Smart pointer to the ROOT TFile object
-    TTree*                       m_tree     = nullptr; // Pointer to the ROOT TTree object
+    Gaudi::Property<std::string> m_ntupleTname{ this, "NTupleName", "",
+                                                "Name of the TTree" }; // Property to hold the name of the TTree
+    std::shared_ptr<TFile>       m_file     = nullptr;                 // Smart pointer to the ROOT TFile object
+    TTree*                       m_tree     = nullptr;                 // Pointer to the ROOT TTree object
     IDataProviderSvc*            m_eventSvc = nullptr; // Pointer to the event service interface for data retrieval
     Gaudi::Interfaces::IFileSvc* m_fileSvc;
     mutable std::mutex           m_mtx; // Mutex for thread-safe operations on the GenericWriter object

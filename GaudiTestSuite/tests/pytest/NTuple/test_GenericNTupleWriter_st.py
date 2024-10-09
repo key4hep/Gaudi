@@ -14,6 +14,7 @@ import sys
 sys.path.append(os.path.dirname(__file__))
 
 from NTpleWriterTestBase import (
+    ALG_NAME,
     EXPECTED_ENTRIES,
     EXPECTED_STRING_VALUE,
     OUTPUT_FILE_NAME,
@@ -63,7 +64,7 @@ def config_st():
 
     # Configure the NTupleWriter
     NTupleWriter = Gaudi__NTuple__GenericWriter(
-        "NTupleWriter", OutputLevel=DEBUG, OutputFile="NTuple"
+        ALG_NAME, OutputLevel=DEBUG, OutputFile="NTuple"
     )
     NTupleWriter.ExtraInputs = [
         ("float", "MyFloat"),

@@ -18,6 +18,7 @@ EXPECTED_ENTRIES = 100
 EXPECTED_FLOAT_VALUE = 2.5
 EXPECTED_VECTOR_CONTENT = [0, 1, 2, 3, 4]
 EXPECTED_STRING_VALUE = "hello world"
+ALG_NAME = "WriterAlg"
 
 
 class NTpleWriterTestBase(GaudiExeTest):
@@ -31,7 +32,7 @@ class NTpleWriterTestBase(GaudiExeTest):
             Tuple of the produced (ROOT file, ROOT TTree).
         """
         file = ROOT.TFile.Open(str(cwd / OUTPUT_FILE_NAME))
-        tree = file.Get("GenericWriterTree")
+        tree = file.Get(ALG_NAME)
         yield file, tree
         file.Close()
 
