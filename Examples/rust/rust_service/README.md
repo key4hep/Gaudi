@@ -63,13 +63,13 @@ C++ component used to construct the `Logger` (in this case the `Service`
 instance the wraps the Rust service implementation).
 
 ### The Rust library (AKA crate)
-The crate used in this example defines a struct `DummyKvs` that holds a
-reference to the C++ `Service` instance that wraps the `DummyKvs` instance (this
+The crate used in this example defines a struct `RustKvs` that holds a
+reference to the C++ `Service` instance that wraps the `RustKvs` instance (this
 is a bit unsafe, but the borrow checker cannot really trace life time boundaries
 through the C++ interface) and a `UniquePtr<Logger>` (Rust wrapper around
 `std::unique_ptr`).
 
-We implement `DummyKvs` methods `initialize`, `start`, `stop` and `finalize`
+We implement `RustKvs` methods `initialize`, `start`, `stop` and `finalize`
 that are invoked by `ServiceBridge<T>`, as well as `get` for
 `IKeyValueStoreBridge<T>`. We also implement `info` to streamline invocation of
 `Logger::info` and `get_internal` that returns `Option<String>` and is wrapped
@@ -77,7 +77,7 @@ by `get` to convert the returned value to `OptString`.
 
 In the `cxx::bridge` we declare `OptString` as a shared type and the functions
 that will work as bridge between C++ and Rust, such as `Logger::info` or
-`DummyKvs::initialize`.
+`RustKvs::initialize`.
 
 It would be nice to use traits and blanket implementations (Rust way to provide
 a functionality equivalent to C++ base classes) to help developing custom

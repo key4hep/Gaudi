@@ -8,18 +8,16 @@
 // # granted to it by virtue of its status as an Intergovernmental Organization        #
 // # or submit itself to any jurisdiction.                                             #
 // #####################################################################################
-use std::ops::Deref;
-
 /// Dummy KeyValueStore implementation
-struct DummyKvs<'a> {
+struct RustKvs<'a> {
     service: &'a ffi::Service,
     logger: cxx::UniquePtr<ffi::Logger>,
 }
 
 /// Implement the methods required for IStateful
-impl DummyKvs<'_> {
+impl RustKvs<'_> {
     fn info(&self, msg: &str) {
-        self.logger.deref().info(msg);
+        self.logger.info(msg);
     }
 
     fn initialize(&mut self) -> Result<(), String> {
@@ -39,7 +37,7 @@ impl DummyKvs<'_> {
 }
 
 /// Implement the methods required for Gaudi::Examples::IKeyValueStore
-impl DummyKvs<'_> {
+impl RustKvs<'_> {
     // Since cxx::bridge does not support std::optional<T> or Option<T>,
     // we use a helper shared struct (OptString)
     fn get(&self, key: &str) -> ffi::OptString {
@@ -51,7 +49,7 @@ impl DummyKvs<'_> {
     }
 }
 
-impl<'a> From<&'a ffi::Service> for DummyKvs<'a> {
+impl<'a> From<&'a ffi::Service> for RustKvs<'a> {
     fn from(service: &'a ffi::Service) -> Self {
         Self {
             service,
@@ -60,7 +58,7 @@ impl<'a> From<&'a ffi::Service> for DummyKvs<'a> {
     }
 }
 
-fn make_dummy_kvs(service: &ffi::Service) -> Box<DummyKvs> {
+fn make_rust_kvs(service: &ffi::Service) -> Box<RustKvs> {
     Box::new(service.into())
 }
 
@@ -90,11 +88,11 @@ mod ffi {
     }
 
     extern "Rust" {
-        // factory function to instantiate a DummyKvs
-        fn make_dummy_kvs(service: &Service) -> Box<DummyKvs>;
+        // factory function to instantiate a RustKvs
+        fn make_rust_kvs(service: &Service) -> Box<RustKvs>;
 
         // opaque type for the KeyValueStore
-        type DummyKvs<'a>;
+        type RustKvs<'a>;
         // IKeyValueStore methods
         fn get(&self, key: &str) -> OptString;
         // IStateful methods

@@ -13,10 +13,10 @@
 
 namespace Gaudi::Rust {
   template <>
-  struct ServiceBuilder<DummyKvs> {
-    static rust::Box<DummyKvs> make( Service const& service ) { return make_dummy_kvs( service ); }
+  struct ServiceBuilder<RustKvs> {
+    static rust::Box<RustKvs> make( Service const& service ) { return make_rust_kvs( service ); }
   };
 } // namespace Gaudi::Rust
 
 // Make the bridge class available to Gaudi as a component
-DECLARE_COMPONENT_WITH_ID( Gaudi::Rust::IKeyValueStoreBridge<DummyKvs>, "Gaudi::Examples::Rust::KeyValueStore" )
+DECLARE_COMPONENT_WITH_ID( Gaudi::Rust::IKeyValueStoreBridge<RustKvs>, "Gaudi::Examples::Rust::KeyValueStore" )
