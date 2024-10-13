@@ -29,7 +29,7 @@ namespace Gaudi {
           info() << "RustyAlg::initialize()" << endmsg;
           // m_stats is already initialized in the constructor because rust::Box<T> cannot be default initialized,
           // but here we show that if we want we can override the default value.
-          m_stats = init_job_stats(); // Rust function
+          m_stats = new_job_stats(); // Rust function
         } );
       }
 
@@ -37,22 +37,23 @@ namespace Gaudi {
         info() << "entering RustyAlg::execute()" << endmsg;
         // increment() is a const method but it increments the internal counter
         // in a thread safe way.
-        m_stats->increment();                                  // Rust function
-        info() << "event count -> " << m_stats->events_count() /* Rust function */
+        m_stats->add_event();                                  // Rust function
+        info() << "event count -> " << m_stats->events_count() // Rust function
                << endmsg;
         info() << "leaving RustyAlg::execute()" << endmsg;
         return StatusCode::SUCCESS;
       }
 
       StatusCode finalize() override {
-        info() << "total event count -> " << m_stats->events_count() /* Rust function */ << endmsg;
+        info() << "total event count -> " << m_stats->events_count() // Rust function
+               << endmsg;
         return Algorithm::finalize();
       }
 
     private:
       // rust::Box<T> is similar to C++ unique_ptr, but it cannot be null, so it
       // has to be initialized at construction time
-      rust::Box<JobStats> m_stats = init_job_stats(); // Rust function
+      rust::Box<JobStats> m_stats = new_job_stats(); // Rust function
     };
 
     DECLARE_COMPONENT( RustyAlg )

@@ -10,22 +10,8 @@
 // #####################################################################################
 use std::sync::atomic::{AtomicUsize, Ordering::Relaxed};
 
-#[cxx::bridge]
-mod ffi {
-    extern "Rust" {
-        type JobStats;
-        fn init_job_stats() -> Box<JobStats>;
-        fn increment(&self);
-        fn events_count(&self) -> usize;
-    }
-}
-
 struct JobStats {
     events_count: AtomicUsize,
-}
-
-fn init_job_stats() -> Box<JobStats> {
-    Box::new(JobStats::new())
 }
 
 impl JobStats {
@@ -34,12 +20,26 @@ impl JobStats {
             events_count: AtomicUsize::new(0),
         }
     }
-    pub fn increment(&self) {
+    pub fn add_event(&self) {
         self.events_count.fetch_add(1, Relaxed);
     }
     pub fn events_count(&self) -> usize {
         self.events_count.load(Relaxed)
     }
+}
+
+#[cxx::bridge]
+mod ffi {
+    extern "Rust" {
+        type JobStats;
+        fn add_event(&self);
+        fn events_count(&self) -> usize;
+        fn new_job_stats() -> Box<JobStats>;
+    }
+}
+
+fn new_job_stats() -> Box<JobStats> {
+    Box::new(JobStats::new())
 }
 
 #[cfg(test)]
@@ -48,9 +48,9 @@ mod tests {
 
     #[test]
     fn test_job_stats() {
-        let stats = init_job_stats();
+        let stats = new_job_stats();
         assert_eq!(stats.events_count(), 0);
-        stats.increment();
+        stats.add_event();
         assert_eq!(stats.events_count(), 1);
     }
 }
