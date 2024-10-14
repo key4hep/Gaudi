@@ -13,9 +13,9 @@ if(NOT GAUDI_RUST_EXAMPLES)
 endif()
 
 # FIXME These are settings needed in LHCb builds to avoid warnings
-set(Rust_TOOLCHAIN 1.80.0-x86_64-unknown-linux-gnu)
-set(Rust_CARGO_TARGET x86_64-unknown-linux-gnu)
+#set(Rust_TOOLCHAIN 1.80.0-x86_64-unknown-linux-gnu)
 set(Rust_RESOLVE_RUSTUP_TOOLCHAINS NO)
+set(Rust_CARGO_TARGET x86_64-unknown-linux-gnu)
 set(CMAKE_CONFIGURATION_TYPES)
 #
 
