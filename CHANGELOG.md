@@ -5,6 +5,15 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+
+## [v38r1p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1p1) - 2024-10-18
+This patch release is needed by LHCb to pick up a small extension to `NTupleSvc`
+so that we can fine tune the basket size of the `TTree`s we produce.
+
+### Added
+- Add `NTupleSvc.BasketSize` property and forward in RCWNTupleCnv Branch creation (gaudi/Gaudi!1648)
+
+
 ## [v38r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1) - 2024-03-15
 This backward compatible release of Gaudi features a few fixes and improvements, and a
 major step towards some proper polishing an refreshing of the examples.
