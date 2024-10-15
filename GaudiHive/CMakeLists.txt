@@ -50,7 +50,6 @@ gaudi_add_module(GaudiHive
                       ${GAUDI_ATOMIC_LIBS})
 
 if (GAUDI_USE_CUDA)
-  add_compile_definitions(GAUDI_USE_CUDA)
   target_sources(GaudiHive PRIVATE
                          src/GPUCruncher.cpp
                          src/GPUCruncher.cu )

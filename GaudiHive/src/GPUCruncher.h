@@ -23,7 +23,7 @@
  *  A test asynchronous algorithm. Might eventually run computations on a GPU but for now
  *  it just sleeps for a few seconds.
  */
-class GPUCruncher : virtual public Gaudi::AsynchronousAlgorithm {
+class GPUCruncher : public Gaudi::AsynchronousAlgorithm {
 
 public:
   typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;

@@ -46,7 +46,7 @@ namespace Gaudi {
   stmt;                                                                                                                \
   if ( restoreAfterSuspend().isFailure() ) return StatusCode::FAILURE;
 
-  class GAUDI_API AsynchronousAlgorithm : virtual public Gaudi::Algorithm {
+  class GAUDI_API AsynchronousAlgorithm : public Gaudi::Algorithm {
   protected:
     /// Contains current slot
     boost::fibers::fiber_specific_ptr<std::size_t> s_currentSlot{};
@@ -61,6 +61,7 @@ namespace Gaudi {
     }
 
   public:
+    using Gaudi::Algorithm::Algorithm;
     StatusCode sysInitialize() override {
       setAsynchronous( true );
       msg() << MSG::DEBUG << "Starting sysInitialize for AsynchronousAlgorithm" << endmsg;
