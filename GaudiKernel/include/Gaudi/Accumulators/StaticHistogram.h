@@ -104,6 +104,16 @@ namespace Gaudi::Accumulators {
   };
 
   /**
+   * An inputTransform for WeightedProfile histograms, keeping weight and replacing value by 1
+   */
+  struct WeightedProfileTransform {
+    template <typename Arithmetic>
+    constexpr decltype( auto ) operator()( const std::pair<Arithmetic, Arithmetic>& v ) const noexcept {
+      return std::pair<unsigned int, Arithmetic>{ 1ul, v.second };
+    }
+  };
+
+  /**
    * An Adder ValueHandler, taking weight into account and computing a count plus the sum of the weights
    * In case of full atomicity, fetch_add or compare_exchange_weak are used for each element,
    * that is we do not have full atomicity accross the two elements
@@ -148,10 +158,10 @@ namespace Gaudi::Accumulators {
    */
   template <atomicity Atomicity, typename Arithmetic>
   struct WeightedCountAccumulator
-      : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, std::pair<unsigned long, Arithmetic>, Atomicity, Identity,
-                           ExtractWeight, WeightedAdder<Arithmetic, Atomicity>> {
+      : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, std::pair<unsigned long, Arithmetic>, Atomicity,
+                           WeightedProfileTransform, ExtractWeight, WeightedAdder<Arithmetic, Atomicity>> {
     using Base = GenericAccumulator<std::pair<Arithmetic, Arithmetic>, std::pair<unsigned long, Arithmetic>, Atomicity,
-                                    Identity, ExtractWeight, WeightedAdder<Arithmetic, Atomicity>>;
+                                    WeightedProfileTransform, ExtractWeight, WeightedAdder<Arithmetic, Atomicity>>;
     using Base::Base;
     using Base::operator+=;
     /// overload of operator+= to be able to only give weight and no value
