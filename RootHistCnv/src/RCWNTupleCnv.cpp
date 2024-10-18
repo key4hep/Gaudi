@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -198,6 +198,10 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
 
   // Loop over items, creating a new branch for each one;
   unsigned int i_item = 0;
+
+  Gaudi::Property<int> basket_size( "BasketSize", 32000 );
+  m_ntupleSvc.as<IProperty>()->getProperty( &basket_size ).ignore();
+
   for ( auto itr = item_name.cbegin(); itr != end; ++itr, ++i_item ) {
 
     buf_pos = buff + item_buf_pos[i_item];
@@ -214,8 +218,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
 #else
     TBranch* br = new TBranch(
 #endif
-                           item_fullname[i_item].c_str(), buf_pos, itr->second.c_str() );
-
+                           item_fullname[i_item].c_str(), buf_pos, itr->second.c_str(), basket_size );
     if ( itr->first != "AUTO_BLK" ) {
       std::string title = itr->first;
       title             = itr->first + "::" + br->GetTitle();
