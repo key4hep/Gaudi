@@ -54,7 +54,9 @@ namespace Gaudi {
 
       public:
         ~PinnedMemoryResource() {
+#ifndef NDEBUG
           fmt::print( "Allocated {} times and deallocated {} times\n", num_allocs.load(), num_deallocs.load() );
+#endif
         }
       };
     } // namespace Detail
