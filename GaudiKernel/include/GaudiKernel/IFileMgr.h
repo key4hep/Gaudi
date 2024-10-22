@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,8 +17,8 @@
 #ifndef GAUDIKERNEL_IFILEMGR_H
 #define GAUDIKERNEL_IFILEMGR_H 1
 
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/IService.h"
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/IService.h>
 
 #include <bitset>
 #include <fcntl.h>
@@ -33,7 +33,7 @@ namespace Io {
   // Io modes
   //
 
-  enum IoFlag {
+  enum IoFlag : unsigned {
     READ  = O_RDONLY,
     WRITE = O_WRONLY,
     RDWR  = O_RDWR,
@@ -44,23 +44,23 @@ namespace Io {
 
     APPEND = O_APPEND,
 
-    INVALID = 1 << 31
+    INVALID = 1u << 31
   };
 
   class IoFlags final {
   public:
     IoFlags() = default;
-    IoFlags( int i ) : _f( i ){};
+    IoFlags( unsigned i ) : _f( i ){};
 
-    int f() const { return _f; }
+    unsigned f() const { return _f; }
 
     bool operator==( const IoFlags& fa ) const { return ( _f == fa.f() ); }
-    bool operator==( const int& fa ) const { return ( _f == fa ); }
+    bool operator==( const unsigned& fa ) const { return ( _f == fa ); }
 
     IoFlags operator|( const IoFlags& fa ) const { return ( _f | fa.f() ); }
-    IoFlags operator|( const int& fa ) const { return ( _f | fa ); }
+    IoFlags operator|( const unsigned& fa ) const { return ( _f | fa ); }
 
-    operator int() const { return _f; }
+    operator unsigned() const { return _f; }
 
     bool isRead() const { return ( _f == READ ); }
     bool isWrite() const { return ( ( _f & WRITE ) != 0 ); }
@@ -75,11 +75,11 @@ namespace Io {
 
     std::string bits() const {
       std::string    s;
-      int            f( _f );
-      const int      SHIFT = 8 * sizeof( int ) - 1;
-      const unsigned MASK  = 1 << SHIFT;
+      unsigned       f( _f );
+      const unsigned SHIFT = 8 * sizeof( unsigned ) - 1;
+      const unsigned MASK  = 1u << SHIFT;
 
-      for ( int i = 1; i <= SHIFT + 1; ++i ) {
+      for ( unsigned i = 1; i <= SHIFT + 1; ++i ) {
         s += ( f & MASK ? '1' : '0' );
         f <<= 1;
         if ( i % 8 == 0 ) s += ' ';
@@ -88,7 +88,7 @@ namespace Io {
     }
 
   private:
-    int _f = INVALID;
+    unsigned _f = INVALID;
   };
 
   static std::string IoFlagName( IoFlags f ) {
@@ -103,8 +103,8 @@ namespace Io {
     if ( f.isRead() ) return s_names.at( READ );
 
     std::string ff;
-    for ( int i = 0; i < 32; ++i ) {
-      auto b = ( 1 << i );
+    for ( unsigned i = 0; i < 32; ++i ) {
+      auto b = ( 1u << i );
       if ( b & f ) ff += s_names.at( (IoFlag)( b ) ) + "|";
     }
     ff.erase( ff.length() - 1 );

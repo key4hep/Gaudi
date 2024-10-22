@@ -64,16 +64,17 @@ struct fmt::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
     if ( it != end && *it == '?' ) {
       debug = true;
       ++it;
-      if ( it != end && *it != '}' ) detail::error_handler().on_error( "invalid format" );
+      if ( it != end && *it != '}' )
+#if FMT_VERSION >= 110000
+        report_error( "invalid format" );
+#else
+        detail::throw_format_error( "invalid format" );
+#endif
       return it;
     }
     return formatter<T>::parse( ctx );
   }
-  auto format( const Gaudi::Property<T, V, H>& p, format_context& ctx )
-#if FMT_VERSION >= 90000
-      const
-#endif
-  {
+  auto format( const Gaudi::Property<T, V, H>& p, format_context& ctx ) const {
     if ( debug ) {
       if constexpr ( std::is_same_v<T, std::string> ) {
         std::stringstream s;

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,11 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/ThreadLocalContext.h"
-#include "GaudiKernel/EventContext.h"
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 
-#include "Rtypes.h"
-#include "ThreadLocalStorage.h"
+#include <Rtypes.h>
+#include <ThreadLocalStorage.h>
 
 namespace {
   // MacOS X's clang doesn't provide thread_local. So we need to use ROOT's

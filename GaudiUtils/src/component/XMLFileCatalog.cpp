@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,22 +8,22 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "xercesc/dom/DOM.hpp"
-#include "xercesc/framework/LocalFileFormatTarget.hpp"
-#include "xercesc/framework/MemBufInputSource.hpp"
-#include "xercesc/parsers/XercesDOMParser.hpp"
-#include "xercesc/sax/EntityResolver.hpp"
-#include "xercesc/sax/InputSource.hpp"
-#include "xercesc/sax/SAXParseException.hpp"
-#include "xercesc/util/PlatformUtils.hpp"
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/util/XMLURL.hpp"
-#include "xercesc/util/XMLUni.hpp"
-#include "xercesc/util/XercesDefs.hpp"
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/framework/LocalFileFormatTarget.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/sax/EntityResolver.hpp>
+#include <xercesc/sax/InputSource.hpp>
+#include <xercesc/sax/SAXParseException.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/XMLURL.hpp>
+#include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/XercesDefs.hpp>
 
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Service.h"
 #include <Gaudi/PluginService.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/Service.h>
 
 #include "XMLFileCatalog.h"
 #include "createGuidAsString.h"

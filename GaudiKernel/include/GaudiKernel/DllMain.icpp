@@ -25,6 +25,12 @@
 #ifndef SYSTEM_DLLMAIN_ICPP
 #define SYSTEM_DLLMAIN_ICPP 1
 
+// this header is only used by the deprecated GaudiKernel/LoadFactoryEntries.h
+// but we want to make sure nobody else is using it
+#if !defined( GAUDIKERNEL_LOADFACTORYENTRIES_H )
+#  warning "deprecated header file, not to be used"
+#endif
+
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/System.h"
 

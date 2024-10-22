@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,8 +10,8 @@
 \***********************************************************************************/
 #include "ThreadPoolSvc.h"
 
-#include "GaudiKernel/ConcurrencyFlags.h"
 #include "ThreadInitTask.h"
+#include <GaudiKernel/ConcurrencyFlags.h>
 
 #include <chrono>
 #include <thread>
@@ -70,7 +70,7 @@ StatusCode ThreadPoolSvc::finalize() {
 
 //-----------------------------------------------------------------------------
 
-StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
+StatusCode ThreadPoolSvc::initPool( const int& poolSize, const int& maxParallelismExtra ) {
 
   tbb::spin_mutex::scoped_lock lock( m_initMutex );
 
@@ -106,8 +106,8 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
     // to get the number of threads we need, request one thread more to account for how TBB calculates
     // its soft limit of the number of threads for the global thread pool
-    m_tbbgc =
-        std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism, m_threadPoolSize + 1 );
+    m_tbbgc = std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism,
+                                                     m_threadPoolSize + maxParallelismExtra + 1 );
 
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( m_threadPoolSize );
 

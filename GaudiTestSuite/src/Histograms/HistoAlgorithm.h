@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,15 +12,15 @@
 #define HISTOGRAMS_HISTOALGORITHM_H 1
 
 // Include files
-#include "GaudiKernel/Algorithm.h"
+#include <GaudiKernel/Algorithm.h>
 
-#include "AIDA/IAxis.h"
-#include "AIDA/IHistogram1D.h"
-#include "AIDA/IHistogram2D.h"
-#include "AIDA/IHistogram3D.h"
-#include "AIDA/IHistogramFactory.h"
-#include "AIDA/IProfile1D.h"
-#include "AIDA/IProfile2D.h"
+#include <AIDA/IAxis.h>
+#include <AIDA/IHistogram1D.h>
+#include <AIDA/IHistogram2D.h>
+#include <AIDA/IHistogram3D.h>
+#include <AIDA/IHistogramFactory.h>
+#include <AIDA/IProfile1D.h>
+#include <AIDA/IProfile2D.h>
 
 using namespace AIDA;
 // Forward declarations

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,12 +14,14 @@
  * @brief search for files in a list of directories
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
  */
-#include "GaudiKernel/Kernel.h"           /* GAUDI_API */
-#include "boost/filesystem/exception.hpp" /*filesystem_error*/
-#include "boost/filesystem/path.hpp"
+#include <GaudiKernel/Kernel.h>           /* GAUDI_API */
+#include <boost/filesystem/exception.hpp> /*filesystem_error*/
+#include <boost/filesystem/path.hpp>
 #include <functional> /* binary_function */
+#include <list>
 #include <string>
 #include <vector>
+
 /** @class DirSearchPath
  * @brief search for files in a list of directories
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -25,11 +25,11 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/MapBase.h"
+#include <GaudiKernel/MapBase.h>
 
 // For parsers
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/StringKey.h"
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/StringKey.h>
 // ============================================================================
 namespace GaudiUtils {
   // ==========================================================================
@@ -654,8 +654,8 @@ namespace GaudiUtils {
      */
     const mapped_type& at( const key_type& key ) const {
       iterator res = find( key );
-      if ( end() == res ) { this->throw_out_of_range_exception(); }
-      return res->second;
+      if ( end() == res ) this->throw_out_of_range_exception();
+      return res->second; // cppcheck-suppress derefInvalidIteratorRedundantCheck; the above throws
     }
     // ========================================================================
   public:
@@ -812,7 +812,7 @@ namespace Gaudi {
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<std::string, double>& result, const std::string& input );
+    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<std::string, double>& result, std::string_view input );
     // ========================================================================
     /** parse the vector of keys from the string
      *  @see Gaudi::Parsers
@@ -824,7 +824,7 @@ namespace Gaudi {
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<Gaudi::StringKey, double>& result, const std::string& input );
+    GAUDI_API StatusCode parse( GaudiUtils::VectorMap<Gaudi::StringKey, double>& result, std::string_view input );
     // ========================================================================
   } // namespace Parsers
   // ==========================================================================

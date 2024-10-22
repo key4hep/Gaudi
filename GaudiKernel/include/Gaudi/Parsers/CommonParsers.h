@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,27 +18,33 @@
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 // ============================================================================
-#include "GaudiKernel/HistoDef.h"
-#include "GaudiKernel/Map.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/HistoDef.h>
+#include <GaudiKernel/Map.h>
+#include <GaudiKernel/StatusCode.h>
 // ============================================================================
-#define PARSERS_DECL_FOR_SINGLE( Type ) GAUDI_API StatusCode parse( Type& result, const std::string& input );
+#define PARSERS_DECL_FOR_SINGLE( Type ) GAUDI_API StatusCode parse( Type& result, std::string_view input );
 
 #define PARSERS_DECL_FOR_PAIR( FirstType, SecondType )                                                                 \
-  GAUDI_API StatusCode parse( std::pair<FirstType, SecondType>& result, const std::string& input );
+  GAUDI_API StatusCode parse( std::pair<FirstType, SecondType>& result, std::string_view input );
 
 #define PARSERS_DECL_FOR_LIST( InnerType )                                                                             \
-  GAUDI_API StatusCode parse( std::vector<InnerType>& result, const std::string& input );
+  GAUDI_API StatusCode parse( std::vector<InnerType>& result, std::string_view input );
+
+#define PARSERS_DECL_FOR_SET( InnerType )                                                                              \
+  GAUDI_API StatusCode parse( std::set<InnerType>& result, std::string_view input );                                   \
+  GAUDI_API StatusCode parse( std::unordered_set<InnerType>& result, std::string_view input );
+
 // ============================================================================
 /** @file
  *  The declaration of major parsing functions used e.g
  *  for (re)implementation of new extended properties see class Property
  *  These function also could be used in a different, much wider contex.
  *  all of them have the semantic:
- *  <c>StatusCode parse ( TYPE& result , const std::string& input )</c>
+ *  <c>StatusCode parse ( TYPE& result , std::string_view input )</c>
  *  where <c>input</c> is the input string to be parsed,
  *  and <c>result</c> is the the result of parsing
  *
@@ -177,6 +183,29 @@ namespace Gaudi {
     PARSERS_DECL_FOR_LIST( long double )
 
     PARSERS_DECL_FOR_LIST( std::string )
+
+    // ========================================================================
+
+    PARSERS_DECL_FOR_SET( bool )
+    PARSERS_DECL_FOR_SET( char )
+    PARSERS_DECL_FOR_SET( unsigned char )
+    PARSERS_DECL_FOR_SET( signed char )
+
+    PARSERS_DECL_FOR_SET( int )
+    PARSERS_DECL_FOR_SET( short )
+    PARSERS_DECL_FOR_SET( unsigned short )
+    PARSERS_DECL_FOR_SET( unsigned int )
+    PARSERS_DECL_FOR_SET( long )
+    PARSERS_DECL_FOR_SET( unsigned long )
+    PARSERS_DECL_FOR_SET( long long )
+    PARSERS_DECL_FOR_SET( unsigned long long )
+
+    PARSERS_DECL_FOR_SET( double )
+    PARSERS_DECL_FOR_SET( float )
+    PARSERS_DECL_FOR_SET( long double )
+
+    PARSERS_DECL_FOR_SET( std::string )
+
     // ========================================================================
     // Advanced parses
     // ========================================================================
@@ -221,7 +250,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::vector<std::pair<double, double>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<std::pair<double, double>>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::vector\<std::pair\<int,int\> \></c> value
      *
@@ -236,7 +265,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::vector<std::pair<int, int>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<std::pair<int, int>>& result, std::string_view input );
     // ========================================================================
     // vector< vector< TYPE > >
     // ========================================================================
@@ -252,7 +281,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::vector<std::vector<std::string>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<std::vector<std::string>>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::vector\<std::vector\<double\> \></c> value
      *
@@ -266,7 +295,17 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::vector<std::vector<double>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::vector<std::vector<double>>& result, std::string_view input );
+    // ========================================================================
+    /** parse the <c>std::vector\<std::vector\<int\> \></c> value
+     *
+     *  @see Gaudi::Parsers::VectorGrammar
+     *  @see Gaudi::Parsers::IntGrammar
+     *  @param result (output) vector with vectors of ints
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     */
+    GAUDI_API StatusCode parse( std::vector<std::vector<int>>& result, std::string_view input );
     // ========================================================================
     // map< TYPE, TYPE >
     // ========================================================================
@@ -282,7 +321,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<int, int>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<int, int>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<int , double\></c> value
      *
@@ -297,7 +336,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<int, double>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<int, double>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::string\></c> value
      *
@@ -311,8 +350,8 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<std::string, std::string>& result, const std::string& input );
-    GAUDI_API StatusCode parse( std::map<std::string, std::string, std::less<>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, std::string>& result, std::string_view input );
+    GAUDI_API StatusCode parse( std::map<std::string, std::string, std::less<>>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<std::string , int\></c> value
      *
@@ -327,7 +366,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<std::string, int>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, int>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<std::string , double\></c> value
      *
@@ -342,7 +381,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<std::string, double>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, double>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::vector\<std::string\> \></c>
      *  value
@@ -359,7 +398,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<std::string, std::vector<std::string>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, std::vector<std::string>>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::vector\<int\> \></c> value
      *
@@ -376,7 +415,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<std::string, std::vector<int>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, std::vector<int>>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::vector\<double\> \></c> value
      *
@@ -393,7 +432,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse( std::map<std::string, std::vector<double>>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, std::vector<double>>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<int,std::string\> \></c> objects
      *
@@ -402,7 +441,7 @@ namespace Gaudi {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-12-06
      */
-    GAUDI_API StatusCode parse( std::map<int, std::string>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<int, std::string>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<unsigned int,std::string\> \></c> objects
      *
@@ -411,20 +450,20 @@ namespace Gaudi {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-12-06
      */
-    GAUDI_API StatusCode parse( std::map<unsigned int, std::string>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<unsigned int, std::string>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>std::map\<unsigned int,std::string\> \></c> objects
      *
      *  @see Gaudi::Parsers::MapGrammar
      */
-    GAUDI_API StatusCode parse( std::map<std::string, unsigned int>& result, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, unsigned int>& result, std::string_view input );
     // ========================================================================
     /** parse the <c>GaudiUtils::Map\<K, V, M\></c> objects
      *
      *  @see Gaudi::Parsers::MapGrammar
      */
     template <typename K, typename V, typename M>
-    GAUDI_API StatusCode parse( GaudiUtils::Map<K, V, M>& result, const std::string& input ) {
+    GAUDI_API StatusCode parse( GaudiUtils::Map<K, V, M>& result, std::string_view input ) {
       return parse( (M&)result, input );
     }
     // ========================================================================
@@ -454,7 +493,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-12
      */
-    GAUDI_API StatusCode parse( std::string& name, std::string& value, const std::string& input );
+    GAUDI_API StatusCode parse( std::string& name, std::string& value, std::string_view input );
     // ========================================================================
     /** helper function, needed for implementation of "Histogram Property"
      *  @param histo  the histogram description (output)
@@ -464,7 +503,7 @@ namespace Gaudi {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-09-17
      */
-    GAUDI_API StatusCode parse( Gaudi::Histo1DDef& histo, const std::string& input );
+    GAUDI_API StatusCode parse( Gaudi::Histo1DDef& histo, std::string_view input );
     // ========================================================================
     /** helper function, needed for implementation of "Histogram Property"
      *  @param histos the map of the histogram descriptions (output)
@@ -474,7 +513,7 @@ namespace Gaudi {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-09-17
      */
-    GAUDI_API StatusCode parse( std::map<std::string, Gaudi::Histo1DDef>& histos, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, Gaudi::Histo1DDef>& histos, std::string_view input );
     // ========================================================================
     /** helper function, needed for implementation of map of pairs
      *  It is very useful construction for monitoring to
@@ -487,7 +526,7 @@ namespace Gaudi {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2009-05-19
      */
-    GAUDI_API StatusCode parse( std::map<std::string, std::pair<double, double>>& params, const std::string& input );
+    GAUDI_API StatusCode parse( std::map<std::string, std::pair<double, double>>& params, std::string_view input );
     // ========================================================================
     /** parser function for C-arrays
      *  @param params C-array
@@ -497,7 +536,7 @@ namespace Gaudi {
      *  @date 2009-09-15
      */
     template <class T, unsigned int N>
-    StatusCode parse( T ( &result )[N], const std::string& input ) {
+    StatusCode parse( T ( &result )[N], std::string_view input ) {
       typedef std::vector<T> _Vct;
       // create the temporary vector
       _Vct       tmp;
@@ -518,7 +557,7 @@ namespace Gaudi {
      *  @date 2009-09-15
      */
     template <unsigned int N>
-    StatusCode parse( char ( &result )[N], const std::string& input ) {
+    StatusCode parse( char ( &result )[N], std::string_view input ) {
       // clear the string
       std::fill_n( result, N, ' ' );
       // create the temporary string

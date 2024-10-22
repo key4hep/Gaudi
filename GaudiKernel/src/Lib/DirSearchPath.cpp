@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,14 +17,15 @@
 
 #include <algorithm> /* find */
 #include <iostream>
+#include <list>
 #ifdef __ICC
 // disable icc warning #279: controlling expression is constant
 // ... a lot of noise produced by the boost/filesystem/operations.hpp
 #  pragma warning( disable : 279 )
 #endif
-#include "GaudiKernel/DirSearchPath.h"
-#include "boost/filesystem/operations.hpp"
-#include "boost/tokenizer.hpp"
+#include <GaudiKernel/DirSearchPath.h>
+#include <boost/filesystem/operations.hpp>
+#include <boost/tokenizer.hpp>
 
 using namespace std;
 

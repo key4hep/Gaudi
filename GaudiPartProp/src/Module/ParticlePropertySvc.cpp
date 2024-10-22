@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -446,10 +446,10 @@ StatusCode Gaudi::ParticlePropertySvc::parse( const std::string& file ) {
   while ( *infile ) {
     std::string line;
     std::getline( *infile, line );
-    // comment lines start with '#'
-    if ( line[0] == '#' ) { continue; }
     // skip empty lines:
     if ( line.empty() ) { continue; }
+    // comment lines start with '#'
+    if ( line[0] == '#' ) { continue; }
     //
     if ( !active ) {
       if ( "PARTICLE" == boost::to_upper_copy( boost::trim_copy( line ) ) ) {
@@ -568,7 +568,7 @@ StatusCode Gaudi::ParticlePropertySvc::setAntiParticles() {
     if ( !anti && 0 < pp->particleID().pid() && !pp->particleID().isNucleus() ) { anti = _pp; }
     //
     pp->setAntiParticle( anti );
-    if ( pp && pp->antiParticle() ) {
+    if ( pp->antiParticle() ) {
       if ( msgLevel( MSG::VERBOSE ) )
         verbose() << "Antiparticle for \n" << ( *pp ) << " is set to be    \n" << ( *( pp->antiParticle() ) ) << endmsg;
     }

@@ -31,6 +31,11 @@ namespace Gaudi::Histograming::Sink {
     using HistoHandler        = std::function<void( TFile& file, std::string, std::string, nlohmann::json const& )>;
     using HistoRegistry       = std::map<HistoIdentification, HistoHandler>;
 
+    using HistoBinIdentification = std::type_index;
+    using HistoBinHandler =
+        std::function<void( TFile& file, std::string, std::string, Monitoring::Hub::Entity const& )>;
+    using HistoBinRegistry = std::map<HistoBinIdentification, HistoBinHandler>;
+
     Base( std::string name, ISvcLocator* svcloc ) : Monitoring::BaseSink( name, svcloc ) {
       // only deal with histograms
       setProperty( "TypesToSave", std::vector<std::string>{ "histogram:.*" } )
@@ -53,17 +58,30 @@ namespace Gaudi::Histograming::Sink {
       // run may be mixed with new one
       TFile histoFile( m_fileName.value().c_str(), "UPDATE" );
       // get all entities, sorted by component and name
-      applyToAllSortedEntities(
-          [this, &histoFile]( std::string const& component, std::string const& name, nlohmann::json const& j ) {
-            auto dim  = j.at( "dimension" ).template get<unsigned int>();
-            auto type = j.at( "type" ).template get<std::string>();
-            // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
-            // as ROOT anyway treats everything as doubles in histograms
-            type       = type.substr( 0, type.find_last_of( ':' ) );
-            auto saver = m_registry.find( { type, dim } );
-            if ( saver != m_registry.end() ) ( saver->second )( histoFile, component, name, j );
-          } );
+      applyToAllSortedEntities( [this, &histoFile]( std::string const& component, std::string const& name,
+                                                    Monitoring::Hub::Entity const& ent ) {
+        // try first a dedicated flush, bypassing json (more efficient)
+        auto typeIndex = ent.typeIndex();
+        auto binSaver  = m_binRegistry.find( typeIndex );
+        if ( binSaver != m_binRegistry.end() ) {
+          binSaver->second( histoFile, component, name, ent );
+          return;
+        }
+        // no fast track, let's use json intermediate format
+        nlohmann::json j    = ent;
+        auto           dim  = j.at( "dimension" ).template get<unsigned int>();
+        auto           type = j.at( "type" ).template get<std::string>();
+        // cut type after last ':' if there is one. The rest is precision parameter that we do not need here
+        // as ROOT anyway treats everything as doubles in histograms
+        type       = type.substr( 0, type.find_last_of( ':' ) );
+        auto saver = m_registry.find( { type, dim } );
+        if ( saver != m_registry.end() ) ( saver->second )( histoFile, component, name, j );
+      } );
       info() << "Completed update of ROOT histograms in: " << m_fileName.value() << endmsg;
+    }
+
+    void registerHandler( HistoBinIdentification const& id, HistoBinHandler const& func ) {
+      m_binRegistry.emplace( std::piecewise_construct, std::make_tuple( id ), std::make_tuple( func ) );
     }
 
     void registerHandler( HistoIdentification const& id, HistoHandler const& func ) {
@@ -71,6 +89,8 @@ namespace Gaudi::Histograming::Sink {
     }
 
   private:
+    /// map of supported type and the way to handle them
+    HistoBinRegistry m_binRegistry{};
     /// map of supported type and the way to handle them
     HistoRegistry m_registry{};
 

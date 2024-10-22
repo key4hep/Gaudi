@@ -1,0 +1,4 @@
+Metadata-Version: 2.1
+Name: GaudiTesting
+Version: 1.0.0
+Summary: Utilities and pytest plugins (fixtures and reporters) for the Gaudi testing framework

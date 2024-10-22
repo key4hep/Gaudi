@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -24,20 +24,20 @@
 #define GAUDIKERNEL_MEMORY_CPP
 
 #ifdef _WIN32
-#  include "process.h"
+#  include <process.h>
 #  define getpid _getpid
 #else
-#  include "libgen.h"
-#  include "sys/times.h"
-#  include "unistd.h"
 #  include <cstdio>
 #  include <errno.h>
+#  include <libgen.h>
 #  include <string.h>
+#  include <sys/times.h>
+#  include <unistd.h>
 #endif
 
 // Framework include files
-#include "GaudiKernel/Memory.h"
 #include "ProcessDescriptor.h"
+#include <GaudiKernel/Memory.h>
 #include <limits.h>
 
 /// Convert requested memory value from kByte to requested value

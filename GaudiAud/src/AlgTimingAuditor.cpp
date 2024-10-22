@@ -89,7 +89,7 @@ struct AlgTimingAuditor final : extends<Auditor, IIncidentListener> {
       const auto count      = m_eventLoopStats.count;
       const auto total_time = m_eventLoopStats.total_time;
       info() << fmt::format( "{:<30.30} | {:9.4} | {:9} | {:9.4}", "EVENT LOOP",
-                             count ? ms( total_time ).count() / count : 0., count, s( total_time ).count() )
+                             count ? ms( total_time ).count() / count : 0.f, count, s( total_time ).count() )
              << endmsg;
     }
     std::vector<std::pair<std::string, std::size_t>> offsets{ begin( m_offsets ), end( m_offsets ) };
@@ -99,7 +99,7 @@ struct AlgTimingAuditor final : extends<Auditor, IIncidentListener> {
       const auto  count         = m_stats[offset].count;
       const auto  total_time    = m_stats[offset].total_time;
       info() << fmt::format( "{:<30.30} | {:9.4} | {:9} | {:9.4}", indented_name,
-                             count ? ms( total_time ).count() / count : 0., count, s( total_time ).count() )
+                             count ? ms( total_time ).count() / count : 0.f, count, s( total_time ).count() )
              << endmsg;
     }
     info() << "-------------------------------------------------------------------" << endmsg;

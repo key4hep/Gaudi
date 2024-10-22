@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,14 +26,14 @@
 // fwk includes
 #include "../AlgsExecutionStates.h"
 #include "../EventSlot.h"
-#include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/ICondSvc.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/ITimelineSvc.h"
-#include "GaudiKernel/TaggedBool.h"
 #include "Visitors/IGraphVisitor.h"
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/CommonMessaging.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/ICondSvc.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/ITimelineSvc.h>
+#include <GaudiKernel/TaggedBool.h>
 
 namespace concurrency {
   using Concurrent     = Gaudi::tagged_bool<class Concurrent_tag>;
@@ -70,7 +70,7 @@ namespace precedence {
         , m_nodeIndex( nodeIndex )
         , m_algoIndex( algoIndex )
         , m_algorithm( algo )
-        , m_isBlocking( algo->isBlocking() ) {}
+        , m_isAsynchronous( algo->isAsynchronous() ) {}
 
     std::string m_name{ "" };
     int         m_nodeIndex{ -1 };
@@ -78,8 +78,8 @@ namespace precedence {
     int         m_rank{ -1 };
     /// Algorithm representative behind the AlgorithmNode
     Gaudi::Algorithm* m_algorithm{ nullptr };
-    /// If an algorithm is blocking
-    bool m_isBlocking{ false };
+    /// If an algorithm is asynchronous
+    bool m_isAsynchronous{ false };
   };
 
   struct DecisionHubProps {
@@ -371,7 +371,9 @@ namespace precedence {
   };
 
   struct Operations {
-    std::string operator()( const AlgoProps& props ) const { return props.m_isBlocking ? "Blocking" : "CPU-bound"; }
+    std::string operator()( const AlgoProps& props ) const {
+      return props.m_isAsynchronous ? "Asynchronous" : "CPU-bound";
+    }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
 
@@ -488,7 +490,7 @@ namespace concurrency {
         , m_algorithm( algoPtr )
         , m_algoIndex( algoIndex )
         , m_algoName( algoPtr->name() )
-        , m_isBlocking( algoPtr->isBlocking() ){};
+        , m_isAsynchronous( algoPtr->isAsynchronous() ){};
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -508,19 +510,19 @@ namespace concurrency {
     const std::vector<DataNode*>& getInputDataNodes() const { return m_inputs; }
 
     /// Set Algorithm rank
-    void setRank( float& rank ) { m_rank = rank; }
+    void setRank( float rank ) { m_rank = rank; }
     /// Get Algorithm rank
-    const float& getRank() const { return m_rank; }
+    float getRank() const { return m_rank; }
 
     /// get Algorithm representatives
     Gaudi::Algorithm* getAlgorithm() const { return m_algorithm; }
     /// Get algorithm index
-    const unsigned int& getAlgoIndex() const { return m_algoIndex; }
+    unsigned int getAlgoIndex() const { return m_algoIndex; }
 
-    /// Set the CPU-blocking flag
-    void setBlocking( bool value ) { m_isBlocking = value; }
-    /// Check if algorithm is CPU-blocking
-    bool isBlocking() const { return m_isBlocking; }
+    /// Set the asynchronous flag
+    void setAsynchronous( bool value ) { m_isAsynchronous = value; }
+    /// Check if algorithm is asynchronous
+    bool isAsynchronous() const { return m_isAsynchronous; }
 
     /// Print a string representing the control flow state
     void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const override;
@@ -538,8 +540,8 @@ namespace concurrency {
     std::string m_algoName;
     /// Algorithm rank of any kind
     float m_rank = -1;
-    /// If an algorithm is CPU-blocking
-    bool m_isBlocking;
+    /// If an algorithm is asynchronous
+    bool m_isAsynchronous;
 
     /// Algorithm outputs (DataNodes)
     std::vector<DataNode*> m_outputs;

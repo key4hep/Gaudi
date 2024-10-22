@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,32 +14,32 @@
 #include <numeric>
 #include <set>
 
-#include "GaudiKernel/FunctionalFilterDecision.h"
-#include "GaudiKernel/IAlgContextSvc.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAuditorSvc.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IExceptionSvc.h"
-#include "GaudiKernel/IHistogramSvc.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IRndmGenSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/Kernel.h"
+#include <GaudiKernel/FunctionalFilterDecision.h>
+#include <GaudiKernel/IAlgContextSvc.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAuditorSvc.h>
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IExceptionSvc.h>
+#include <GaudiKernel/IHistogramSvc.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/IRndmGenSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/Kernel.h>
 
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Chrono.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/Guards.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ServiceLocatorHelper.h"
-#include "GaudiKernel/Stat.h"
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/ToolHandle.h"
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/Chrono.h>
+#include <GaudiKernel/DataHandleHolderVisitor.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/Guards.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/ServiceLocatorHelper.h>
+#include <GaudiKernel/Stat.h>
+#include <GaudiKernel/StringKey.h>
+#include <GaudiKernel/ToolHandle.h>
 
 namespace Gaudi {
   namespace Details {
@@ -110,7 +110,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;
@@ -373,7 +373,7 @@ namespace Gaudi {
       status = exceptionSvc()->handle( *this, Exception );
     } catch ( const std::exception& Exception ) {
 
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       // Stat stat( chronoSvc() , "*std::exception*" ) ;
       status = exceptionSvc()->handle( *this, Exception );
@@ -478,7 +478,7 @@ namespace Gaudi {
       Stat stat( chronoSvc(), Exception.tag() );
       sc = StatusCode::FAILURE;
     } catch ( const std::exception& Exception ) {
-      fatal() << " Standard std::exception is caught " << endmsg;
+      fatal() << "Standard std::exception is caught in " << __func__ << endmsg;
       error() << Exception.what() << endmsg;
       Stat stat( chronoSvc(), "*std::exception*" );
       sc = StatusCode::FAILURE;

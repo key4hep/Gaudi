@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,14 +14,14 @@
 //
 //====================================================================
 // ROOT include files
-#include "TBranch.h"
-#include "TClass.h"
-#include "TFile.h"
-#include "TInterpreter.h"
-#include "TROOT.h"
-#include "TSystem.h"
-#include "TTree.h"
-#include "TUUID.h"
+#include <TBranch.h>
+#include <TClass.h>
+#include <TFile.h>
+#include <TInterpreter.h>
+#include <TROOT.h>
+#include <TSystem.h>
+#include <TTree.h>
+#include <TUUID.h>
 
 // Standad C/C++ include files
 #include <memory>
@@ -113,7 +113,7 @@ namespace Gaudi {
     /// Identifier of description
     std::string container;
     /// Class ID of the described object
-    unsigned long clid;
+    unsigned long clid = 1;
     /// Standard constructor
     RootNTupleDescriptor() = default;
     /// Standard destructor

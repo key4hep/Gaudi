@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,6 +38,7 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -111,19 +112,16 @@ public:
       if ( fgets( buffer, PIPE_BUFFER_LENGTH, pipe ) != NULL ) { result += buffer; }
       bzero( buffer, PIPE_BUFFER_LENGTH );
     }
-    iss = new std::istringstream( result, std::istringstream::in );
+    iss = std::make_unique<std::istringstream>( result, std::istringstream::in );
   }
 
-  ~PipeReader( void ) {
-    pclose( pipe );
-    delete iss;
-  }
+  ~PipeReader( void ) { pclose( pipe ); }
 
   std::istringstream& output( void ) { return *iss; }
 
 private:
-  FILE*               pipe;
-  std::istringstream* iss;
+  FILE*                               pipe;
+  std::unique_ptr<std::istringstream> iss;
 };
 
 // skipWhitespaces()
@@ -1099,17 +1097,17 @@ void put_S_module( S_module* cur_module, const char* dir ) {
   bzero( event_str, MAX_EVENT_NAME_LENGTH );
   strcpy( event_str, event );
   if ( cur_module->get_c_mask() > 0 ) {
-    sprintf( event_str + strlen( event_str ), " CMASK=%d", cur_module->get_c_mask() );
+    sprintf( event_str + strlen( event_str ), " CMASK=%u", cur_module->get_c_mask() );
   }
   if ( cur_module->get_inv_mask() > 0 ) {
-    sprintf( event_str + strlen( event_str ), " INV=%d", cur_module->get_inv_mask() );
+    sprintf( event_str + strlen( event_str ), " INV=%u", cur_module->get_inv_mask() );
   }
   fprintf( module_file, "<a name=\"%s\"><a>\n", event_str );
   fprintf( module_file, "<table cellpadding=\"5\">\n" );
   fprintf( module_file, "<tr bgcolor=\"#EEEEEE\">\n" );
   fprintf( module_file,
            "<th colspan=\"6\" align=\"left\">%s -- cmask: %u -- invmask: %u -- Total Samples: %u -- "
-           "Sampling Period: %d</th>\n",
+           "Sampling Period: %u</th>\n",
            event, cur_module->get_c_mask(), cur_module->get_inv_mask(), cur_module->get_total_num_samples(),
            cur_module->get_smpl_period() );
   fprintf( module_file, "</tr>\n" );

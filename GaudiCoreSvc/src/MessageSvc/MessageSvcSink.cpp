@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,9 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include "Gaudi/BaseSink.h"
-#include "Gaudi/MonitoringHub.h"
-#include "GaudiKernel/MsgStream.h"
+#include <Gaudi/BaseSink.h>
+#include <Gaudi/MonitoringHub.h>
+#include <GaudiKernel/MsgStream.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -21,15 +21,6 @@
 #include <map>
 #include <sstream>
 #include <string_view>
-
-#if FMT_VERSION < 80000
-namespace fmt {
-  template <typename T>
-  const T& runtime( const T& v ) {
-    return v;
-  }
-} // namespace fmt
-#endif
 
 namespace {
 
@@ -91,7 +82,7 @@ public:
     return fmt_end;
   }
   template <typename FormatContext>
-  auto format( const json_fmt_arg& json_arg, FormatContext& ctx ) {
+  auto format( const json_fmt_arg& json_arg, FormatContext& ctx ) const {
     const auto& j = json_arg.payload;
     if ( currentFormat.size() == 0 ) {
       // dealing with {} format, let's find entry for our type in registry
@@ -176,7 +167,7 @@ namespace Gaudi::Monitoring {
   struct MessageSvcSink : BaseSink {
     MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
       // only deal with counters, statentity and histograms
-      setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:" } )
+      setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:.*" } )
           .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
     }
     /// stop method, handles the printing

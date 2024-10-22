@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -33,7 +33,7 @@
 #include <sstream>
 #include <typeinfo>
 
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/System.h>
 
 // Platform specific include(s):
 #ifdef __linux__
@@ -46,7 +46,7 @@
 
 #ifdef __x86_64
 #  define VCL_NAMESPACE Gaudi
-#  include "instrset_detect.cpp"
+#  include <instrset_detect.cpp>
 #  undef VCL_NAMESPACE
 #endif
 
@@ -56,25 +56,25 @@
 #  define getpid _getpid
 #  define NOMSG
 #  define NOGDI
-#  include "process.h"
-#  include "windows.h"
+#  include <process.h>
+#  include <windows.h>
 #  undef NOMSG
 #  undef NOGDI
 static const std::array<const char*, 1> SHLIB_SUFFIXES = { ".dll" };
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
-#  include "libgen.h"
-#  include "sys/times.h"
-#  include "unistd.h"
 #  include <cstdio>
 #  include <cxxabi.h>
 #  include <errno.h>
+#  include <libgen.h>
 #  include <string.h>
+#  include <sys/times.h>
+#  include <unistd.h>
 #  if defined( __linux ) || defined( __APPLE__ )
-#    include "dlfcn.h"
+#    include <dlfcn.h>
 #    include <sys/utsname.h>
 #    include <unistd.h>
 #  elif __hpux
-#    include "dl.h"
+#    include <dl.h>
 struct HMODULE {
   shl_descriptor dsc;
   long           numSym;
@@ -255,6 +255,8 @@ unsigned long System::getProcedureByName( ImageHandle handle, const std::string&
     }
   }
   return 0;
+#else
+  return 0;
 #endif
 }
 
@@ -410,7 +412,7 @@ bool System::isEnvSet( const char* var ) { return getenv( var ) != nullptr; }
 /// get all defined environment vars
 #if defined( __APPLE__ )
 // Needed for _NSGetEnviron(void)
-#  include "crt_externs.h"
+#  include <crt_externs.h>
 #endif
 std::vector<std::string> System::getEnv() {
 #if defined( _WIN32 )
@@ -445,14 +447,14 @@ int System::backTrace( [[maybe_unused]] void** addresses, [[maybe_unused]] const
 bool System::backTrace( std::string& btrace, const int depth, const int offset ) {
   try {
     // Always hide the first two levels of the stack trace (that's us)
-    const int totalOffset = offset + 2;
-    const int totalDepth  = depth + totalOffset;
+    const size_t totalOffset = offset + 2;
+    const size_t totalDepth  = depth + totalOffset;
 
     std::string fnc, lib;
 
     std::vector<void*> addresses( totalDepth, nullptr );
-    int                count = System::backTrace( addresses.data(), totalDepth );
-    for ( int i = totalOffset; i < count; ++i ) {
+    const size_t       count = System::backTrace( addresses.data(), totalDepth );
+    for ( size_t i = totalOffset; i < count; ++i ) {
       void* addr = nullptr;
 
       if ( System::getStackLevel( addresses[i], addr, fnc, lib ) ) {

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,17 +10,17 @@
 \***********************************************************************************/
 #include "IncidentAsyncTestSvc.h"
 
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/ISvcLocator.h"
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/ISvcLocator.h>
 
-#include "GaudiKernel/MsgStream.h"
+#include <GaudiKernel/MsgStream.h>
 
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ThreadLocalContext.h"
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 
 DECLARE_COMPONENT( IncidentAsyncTestSvc )
 
@@ -73,8 +73,8 @@ void IncidentAsyncTestSvc::handle( const Incident& incident ) {
 }
 
 void IncidentAsyncTestSvc::getData( uint64_t* data, EventContext* ctx ) const {
-  debug() << "Asked for data with context " << *ctx << endmsg;
   if ( ctx ) {
+    debug() << "Asked for data with context " << *ctx << endmsg;
     auto cit = m_ctxData.find( *ctx );
     if ( cit == m_ctxData.end() ) {
       fatal() << " data for event " << ctx->evt() << " is not initialized yet!. This shouldn't happen!" << endmsg;

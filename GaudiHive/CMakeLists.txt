@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -39,6 +39,7 @@ gaudi_add_module(GaudiHive
                       Boost::headers
                       Boost::system
                       Boost::filesystem
+                      Boost::fiber
                       Boost::graph
                       ROOT::Hist
                       ROOT::RIO
@@ -48,6 +49,12 @@ gaudi_add_module(GaudiHive
                       ${rt_LIBRARY}
                       ${GAUDI_ATOMIC_LIBS})
 
+if (GAUDI_USE_CUDA)
+  add_compile_definitions(GAUDI_USE_CUDA)
+  target_sources(GaudiHive PRIVATE
+                         src/GPUCruncher.cpp
+                         src/GPUCruncher.cu )
+endif()
 # Build executable
 gaudi_add_executable(makeThesis
                      SOURCES src/bin/makeThesis.cpp)
@@ -57,10 +64,9 @@ gaudi_add_executable(concurrentRun
                           Boost::headers
                           Boost::program_options)
 
-# QMTest
-gaudi_add_tests(QMTest)
-
 # Install python modules
 gaudi_install(PYTHON)
 # Install other scripts
 gaudi_install(SCRIPTS)
+
+gaudi_add_pytest(tests/pytest)

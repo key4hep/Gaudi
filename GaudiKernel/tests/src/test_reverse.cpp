@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <array>
 
-#include "GaudiKernel/reverse.h"
+#include <GaudiKernel/reverse.h>
 
 template <typename R1, typename R2>
 void copy( R1&& r1, R2& r2 ) {
@@ -26,7 +26,9 @@ BOOST_AUTO_TEST_CASE( test_reverse ) {
   {
 
     std::array<int, 3> a{ 0, 1, 2 };
-    BOOST_CHECK( sizeof( reverse( a ) ) == sizeof( void* ) );
+
+    auto r1 = reverse( a );
+    BOOST_CHECK( sizeof( r1 ) == sizeof( void* ) );
 
     std::array<int, 3> b;
     copy( reverse( a ), b );
@@ -48,10 +50,10 @@ BOOST_AUTO_TEST_CASE( test_reverse ) {
     BOOST_CHECK( b[1] == 21 );
     BOOST_CHECK( b[2] == 20 );
 
-    auto r = reverse( std::array<int, 3>{ 30, 31, 32 } );
-    BOOST_CHECK( sizeof( r ) == sizeof( std::array<int, 3> ) );
+    auto r2 = reverse( std::array<int, 3>{ 30, 31, 32 } );
+    BOOST_CHECK( sizeof( r2 ) == sizeof( std::array<int, 3> ) );
 
-    copy( r, b );
+    copy( r2, b );
     BOOST_CHECK( b[0] == 32 );
     BOOST_CHECK( b[1] == 31 );
     BOOST_CHECK( b[2] == 30 );

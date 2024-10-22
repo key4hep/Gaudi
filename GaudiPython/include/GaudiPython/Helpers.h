@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,7 +11,7 @@
 #ifndef GAUDIPYTHON_HELPERS_H
 #define GAUDIPYTHON_HELPERS_H
 
-#include "Python.h"
+#include <Python.h>
 
 // Python 3 compatibility
 #if PY_MAJOR_VERSION >= 3
@@ -22,15 +22,15 @@
 
 #endif
 
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IHistogramSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IToolSvc.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgTool.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IHistogramSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/IToolSvc.h>
 
 // FIXME: (MCl) workaround for ROOT-5850
 namespace AIDA {

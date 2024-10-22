@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,8 +11,8 @@
 #ifndef GAUDIKERNEL_DATAOBJID
 #define GAUDIKERNEL_DATAOBJID 1
 
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/StatusCode.h>
 
 #include <iostream>
 #include <mutex>
@@ -65,7 +65,8 @@ public:
   /// combination of the key and the ClassName, mostly for debugging
   std::string fullKey() const;
 
-  CLID clid() const { return m_clid; }
+  CLID        clid() const { return m_clid; }
+  std::size_t hash() const { return m_hash; }
 
   void updateKey( std::string key );
 
@@ -73,7 +74,7 @@ public:
   friend bool operator==( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash == rhs.m_hash; }
   friend bool operator!=( const DataObjID& lhs, const DataObjID& rhs ) { return !( lhs == rhs ); }
 
-  friend StatusCode    parse( DataObjID& dest, const std::string& src );
+  friend StatusCode    parse( DataObjID& dest, std::string_view src );
   friend std::ostream& toStream( const DataObjID& v, std::ostream& o );
   friend std::ostream& operator<<( std::ostream& os, const DataObjID& d ) { return toStream( d, os ); }
 

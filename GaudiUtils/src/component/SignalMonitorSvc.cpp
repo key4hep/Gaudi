@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,8 +14,8 @@
  *  Created on: Apr 14, 2010
  *      Author: Marco Clemencic
  */
-#include "GaudiKernel/Service.h"
-#include "GaudiUtils/ISignalMonitor.h"
+#include <GaudiKernel/Service.h>
+#include <GaudiUtils/ISignalMonitor.h>
 
 #include <csignal>
 #include <cstring>
@@ -171,12 +171,12 @@ namespace Gaudi {
 
 #include <map>
 
-#include "GaudiKernel/HashMap.h"
+#include <GaudiKernel/HashMap.h>
 
-#include "GaudiKernel/AppReturnCode.h"
-#include "GaudiKernel/IEventProcessor.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIncidentSvc.h"
+#include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/IEventProcessor.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
 
 namespace {
   // hack because windows doesn't provide sys_siglist

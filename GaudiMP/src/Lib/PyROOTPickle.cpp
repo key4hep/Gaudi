@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,12 +21,12 @@
 #  pragma warning( disable : 2259 )
 #endif
 
-#include "GaudiMP/PyROOTPickle.h"
-#include "RVersion.h"
-#include "TBufferFile.h"
-#include "TClass.h"
-#include "TClassRef.h"
-#include "TPython.h"
+#include <GaudiMP/PyROOTPickle.h>
+#include <RVersion.h>
+#include <TBufferFile.h>
+#include <TClass.h>
+#include <TClassRef.h>
+#include <TPython.h>
 
 //- data _______________________________________________________________________
 #if ROOT_VERSION_CODE < ROOT_VERSION( 5, 19, 0 )

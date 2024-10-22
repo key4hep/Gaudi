@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -25,7 +25,7 @@ Release notes of the packages:
 
 # Write all
 foreach(package IN ITEMS GaudiPluginService GaudiPolicy GaudiKernel GaudiCoreSvc
-                         GaudiUtils Gaudi GaudiAlg GaudiAud GaudiCommonSvc
+                         GaudiUtils Gaudi GaudiAud GaudiCommonSvc
                          GaudiHive GaudiMonitor GaudiMP GaudiPartProp
                          GaudiProfiling GaudiPython GaudiRelease GaudiSvc
                          PartPropSvc RootCnv RootHistCnv GaudiTestSuite)

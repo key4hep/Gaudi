@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,7 +20,7 @@
 #  define GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
 
 // Include files
-#  include "RootCnv/RootEvtSelector.h"
+#  include <RootCnv/RootEvtSelector.h>
 #  include <vector>
 
 // Forward declarations
@@ -110,16 +110,16 @@ namespace Gaudi {
 #endif // GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
 
 // Include files
-#include "GaudiKernel/AttribStringParser.h"
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IPersistencySvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/TypeNameString.h"
-#include "RootCnv/RootCnvSvc.h"
-#include "RootCnv/RootDataConnection.h"
-#include "TBranch.h"
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IPersistencySvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/TypeNameString.h>
+#include <RootCnv/RootCnvSvc.h>
+#include <RootCnv/RootDataConnection.h>
+#include <TBranch.h>
 
 using namespace Gaudi;
 using namespace std;
@@ -350,7 +350,8 @@ StatusCode RootEvtSelector::resetCriteria( const string& criteria, Context& cont
       if ( ipos == -1 ) break;
       rest     = rest.substr( ipos, string::npos ); // remove blanks before
       int lpos = rest.find_first_of( " ," );        // locate next blank
-      files.push_back( rest.substr( 0, lpos ) );    // insert in list
+
+      files.push_back( rest.substr( 0, lpos == -1 ? string::npos : lpos ) ); // insert in list
       if ( lpos == -1 ) break;
       rest = rest.substr( lpos, string::npos ); // get the rest
     }

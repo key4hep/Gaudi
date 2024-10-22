@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,10 +15,10 @@
  *      Author: Marco Clemencic
  */
 
-#include "GaudiKernel/ChronoEntity.h"
-#include "GaudiKernel/Memory.h"
-#include "GaudiKernel/Sleep.h"
-#include "GaudiKernel/Timing.h"
+#include <GaudiKernel/ChronoEntity.h>
+#include <GaudiKernel/Memory.h>
+#include <GaudiKernel/Sleep.h>
+#include <GaudiKernel/Timing.h>
 #include <cmath>
 
 // from SPI version of the testdriver
@@ -108,8 +108,8 @@ namespace GaudiKernelTest {
       CPPUNIT_ASSERT_EQUAL( ( t1 - t0 ).elapsedTime<System::Sec>(), 1LL );
 
       // This should result in non-zero user and kernel times
-      t0      = System::getProcessTime();
-      float x = 1.5;
+      t0       = System::getProcessTime();
+      double x = 1.5;
 
       // this variable is only needed to ensure that the timed loop
       // takes a measurable time

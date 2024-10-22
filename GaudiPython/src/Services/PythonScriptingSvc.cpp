@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,23 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "Python.h"
-
-// Python 3 compatibility
-#if PY_MAJOR_VERSION >= 3
-
-#  define PySys_SetArgv_Char_t wchar_t
-
-#else
-
-#  define PySys_SetArgv_Char_t char
-
-#endif
+#include <Python.h>
+#include <cpython/initconfig.h>
 
 // Include Files
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartIF.h>
 
 #include "PythonScriptingSvc.h"
 
@@ -33,7 +23,7 @@
 
 // Special for Unixes
 #if defined( __linux )
-#  include "dlfcn.h"
+#  include <dlfcn.h>
 #endif
 
 // Instantiation of a static factory class used by clients to create
@@ -75,17 +65,19 @@ StatusCode PythonScriptingSvc::initialize()
     }
   }
 
-  // Python 3 compatibility
-#if PY_MAJOR_VERSION >= 3
   wchar_t* progName[] = { const_cast<wchar_t*>( L"GaudiPython" ) };
-#else
-  char* progName[] = { const_cast<char*>( "GaudiPython" ) };
-#endif
 
-  // Initialize the Python interpreter.  Required.
-  Py_Initialize();
+  PyStatus status;
+
+  PyConfig config;
+  PyConfig_InitPythonConfig( &config );
+
+  status = PyConfig_SetString( &config, &config.program_name, progName[0] );
   // Set argv for Tkinter (needs program name)
-  PySys_SetArgv( 1, progName );
+  status = PyConfig_SetArgv( &config, 1, progName );
+  status = Py_InitializeFromConfig( &config );
+  PyConfig_Clear( &config );
+
   // Get the Python version
   std::string fullversion = Py_GetVersion();
   std::string version( fullversion, 0, fullversion.find_first_of( ' ' ) );

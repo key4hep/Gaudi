@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,7 +11,7 @@
 #include "PrecedenceRulesGraph.h"
 #include "Visitors/Promoters.h"
 
-#include "GaudiKernel/DataHandleFinder.h"
+#include <GaudiKernel/DataHandleFinder.h>
 
 #include <algorithm>
 #include <boost/property_map/transform_value_property_map.hpp>
@@ -580,11 +580,9 @@ namespace concurrency {
       for ( const auto& i : dn->getDaughters() ) dumpControlFlow( ost, i, indent + 1 );
     } else if ( an != 0 ) {
       ost << node->name() << " [Alg] ";
-      if ( an != 0 ) {
-        auto ar = an->getAlgorithm();
-        ost << " [n= " << ar->cardinality() << "]";
-        ost << ( ( !ar->isClonable() ) ? " [unclonable] " : "" );
-      }
+      auto ar = an->getAlgorithm();
+      ost << " [n= " << ar->cardinality() << "]";
+      ost << ( ( !ar->isClonable() ) ? " [unclonable] " : "" );
       ost << "\n";
     }
   }

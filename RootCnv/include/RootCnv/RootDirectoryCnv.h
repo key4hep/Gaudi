@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,7 +20,7 @@
 #define POOLDB_POOLDBDIRECTORYCNV_H 1
 
 // Include files
-#include "RootCnv/RootStatCnv.h"
+#include <RootCnv/RootStatCnv.h>
 
 /*
  *  Gaudi namespace declaration

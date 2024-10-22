@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,8 +11,8 @@
 #ifndef GAUDIKERNEL_MESSAGE_H
 #define GAUDIKERNEL_MESSAGE_H
 
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/Kernel.h" // for GAUDI_API
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/Kernel.h> // for GAUDI_API
 #include <iostream>
 #include <string>
 
@@ -117,10 +117,10 @@ private:
 
   /** @name Event identifiers */
   //@{
-  EventContext::ContextID_t  m_ecSlot;  ///< Event slot
-  EventContext::ContextEvt_t m_ecEvt;   ///< Event number
-  EventIDBase                m_ecEvtId; ///< Full event ID
-  pthread_t                  m_ecThrd;  ///< Thread ID
+  EventContext::ContextID_t  m_ecSlot{ EventContext::INVALID_CONTEXT_ID }; ///< Event slot
+  EventContext::ContextEvt_t m_ecEvt{ EventContext::INVALID_CONTEXT_EVT }; ///< Event number
+  EventIDBase                m_ecEvtId;                                    ///< Full event ID
+  pthread_t                  m_ecThrd;                                     ///< Thread ID
   //@}
 
   /** @name Formatting characters */

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,10 +11,10 @@
 #ifndef GAUDIKERNEL_IALGEXECSTATESVC_H
 #define GAUDIKERNEL_IALGEXECSTATESVC_H 1
 
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/StringKey.h"
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IInterface.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/StringKey.h>
 #include <map>
 #include <sstream>
 #include <string>
@@ -51,23 +51,23 @@ public:
   void setExecStatus( const StatusCode& sc = StatusCode::SUCCESS ) { m_execStatus = sc; }
   void reset() { *this = AlgExecState{}; }
 
+  friend std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
+    ost << "e: ";
+    switch ( s.state() ) {
+    case AlgExecState::State::None:
+      return ost << "n";
+    case AlgExecState::State::Executing:
+      return ost << "e";
+    default:
+      return ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
+    }
+  }
+
 private:
   bool       m_filterPassed{ true };
   State      m_state{ State::None };
   StatusCode m_execStatus{ StatusCode::FAILURE };
 };
-
-inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
-  ost << "e: ";
-  switch ( s.state() ) {
-  case AlgExecState::State::None:
-    return ost << "n";
-  case AlgExecState::State::Executing:
-    return ost << "e";
-  default:
-    return ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
-  }
-}
 
 namespace EventStatus {
   enum Status { Invalid = 0, Success = 1, AlgFail = 2, AlgStall = 3, Other = 4 };

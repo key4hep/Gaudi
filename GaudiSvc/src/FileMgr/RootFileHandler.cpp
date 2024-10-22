@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,15 +8,15 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/IFileMgr.h"
-#include "TFile.h"
-#include "TROOT.h"
-#include "TSSLSocket.h"
-#include "TWebFile.h"
+#include <GaudiKernel/IFileMgr.h>
+#include <TFile.h>
+#include <TROOT.h>
+#include <TSSLSocket.h>
+#include <TWebFile.h>
 
-#include "GaudiKernel/MsgStream.h"
 #include "RootFileHandler.h"
-#include "boost/algorithm/string.hpp"
+#include <GaudiKernel/MsgStream.h>
+#include <boost/algorithm/string.hpp>
 
 namespace ba = boost::algorithm;
 
@@ -50,7 +50,7 @@ Io::open_t RootFileHandler::openRootFile( const std::string& n, const Io::IoFlag
     opt = "NEW";
   } else if ( f == ( Io::WRITE | Io::CREATE ) ) {
     opt = "RECREATE";
-  } else if ( ( f | Io::APPEND ) != 0 ) {
+  } else if ( f | Io::APPEND ) {
     opt = "UPDATE";
   } else {
     m_log << MSG::ERROR << "Don't know how to handle IoFlag " << f << endmsg;

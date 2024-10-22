@@ -65,11 +65,11 @@ def test_bool():
 
 def test_float_ok():
     s = getSemanticsFor("double")
-    assert type(s.store(1)) is float
+    assert isinstance(s.store(1), float)
     assert s.store(1e30) == 1e30
 
     s = getSemanticsFor("float")
-    assert type(s.store(1)) is float
+    assert isinstance(s.store(1), float)
     assert s.store(1e30) == 1e30
 
 

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,12 +22,14 @@
 #ifndef GAUDIKERNEL_SERIALIZESTL_H_
 #define GAUDIKERNEL_SERIALIZESTL_H_
 
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/Map.h"
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/Map.h>
 #include <array>
 #include <list>
 #include <map>
 #include <ostream>
+#include <set>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -102,6 +104,18 @@ namespace GaudiUtils {
   template <class T, class ALLOC>
   std::ostream& operator<<( std::ostream& s, const std::list<T, ALLOC>& l ) {
     return details::ostream_joiner( s << '[', l, ", " ) << ']';
+  }
+
+  template <class T, class ALLOC>
+  std::ostream& operator<<( std::ostream& s, const std::set<T, ALLOC>& l ) {
+    return details::ostream_joiner( s << '[', l, ", " ) << ']';
+  }
+
+  template <class T, class ALLOC>
+  std::ostream& operator<<( std::ostream& s, const std::unordered_set<T, ALLOC>& l ) {
+    auto ordered = std::set( l.begin(), l.end() ); // ensure reproducible printout
+    s << ordered;
+    return s;
   }
 
   template <class T1, class T2, class COMP, class ALLOC>

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -117,32 +117,32 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
       delete hist;
       return StatusCode::FAILURE;
     }
+  }
 
-    const auto findF = m_files.find( stream );
-    hid = ( findF != m_files.end() ? THistID( uid, temp, to, f, findF->second.second ) : THistID( uid, temp, to, f ) );
+  const auto findF = m_files.find( stream );
+  hid = ( findF != m_files.end() ? THistID( uid, temp, to, f, findF->second.second ) : THistID( uid, temp, to, f ) );
 
-    hid.shared      = shared;
-    TDirectory* dir = changeDir( hid );
+  hid.shared      = shared;
+  TDirectory* dir = changeDir( hid );
 
-    if ( TTree* tree = dynamic_cast<TTree*>( hist ) ) {
-      tree->SetDirectory( dir );
-      hid.type    = ObjectType::TTREE;
-      m_hasTTrees = true; // at least one TTree is registered
-    } else if ( TH1* th1 = dynamic_cast<TH1*>( hist ) ) {
-      th1->SetDirectory( dir );
-      hid.type = ObjectType::TH1;
-    } else if ( TEfficiency* teff = dynamic_cast<TEfficiency*>( hist ) ) {
-      teff->SetDirectory( dir );
-      hid.type = ObjectType::TEFFICIENCY;
-    } else if ( dynamic_cast<TGraph*>( hist ) ) {
-      dir->Append( hist );
-      hid.type = ObjectType::TGRAPH;
-    } else {
-      error() << "id: \"" << idr << "\" is not a TH, TTree, TGraph, or TEfficiency. Attaching it to current dir."
-              << endmsg;
-      dir->Append( hist );
-      hid.type = ObjectType::UNKNOWN;
-    }
+  if ( TTree* tree = dynamic_cast<TTree*>( hist ) ) {
+    tree->SetDirectory( dir );
+    hid.type    = ObjectType::TTREE;
+    m_hasTTrees = true; // at least one TTree is registered
+  } else if ( TH1* th1 = dynamic_cast<TH1*>( hist ) ) {
+    th1->SetDirectory( dir );
+    hid.type = ObjectType::TH1;
+  } else if ( TEfficiency* teff = dynamic_cast<TEfficiency*>( hist ) ) {
+    teff->SetDirectory( dir );
+    hid.type = ObjectType::TEFFICIENCY;
+  } else if ( dynamic_cast<TGraph*>( hist ) ) {
+    dir->Append( hist );
+    hid.type = ObjectType::TGRAPH;
+  } else {
+    error() << "id: \"" << idr << "\" is not a TH, TTree, TGraph, or TEfficiency. Attaching it to current dir."
+            << endmsg;
+    dir->Append( hist );
+    hid.type = ObjectType::UNKNOWN;
   }
 
   std::string fname;

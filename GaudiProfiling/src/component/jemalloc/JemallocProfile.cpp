@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -32,7 +32,7 @@ DECLARE_COMPONENT( JemallocProfile )
 //=============================================================================
 StatusCode JemallocProfile::initialize() {
   StatusCode sc = Algorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;         // error printed already by GaudiAlgorithm
+  if ( sc.isFailure() ) return sc;         // error printed already by Algorithm
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
   bool active = true;

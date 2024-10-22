@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -91,13 +91,17 @@ set(THREADS_PREFER_PTHREAD_FLAG YES)
 set(Boost_USE_STATIC_LIBS OFF)
 set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cmake handles Boost_USE_STATIC_LIBS correctly
 set(BUILD_SHARED_LIBS ON)
-find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex
+find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex fiber
   thread python unit_test_framework program_options log log_setup graph)
+if (GAUDI_USE_CUDA)
+  find_package(vecmem 1.1.0 ${__quiet} REQUIRED)
+endif()
+
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables
 foreach(component IN ITEMS system filesystem regex thread python unit_test_framework
                            program_options log log_setup graph atomic chrono
-                           date_time headers)
+                           date_time headers chrono)
   mark_as_advanced(boost_${component}_DIR)
 endforeach()
 
@@ -138,8 +142,8 @@ endif()
 # Identify dependencies using pkgconfig (by the pkgconfig module to use)
 set(gperftools_pkgconfig_module "libprofiler>=2.7.0")
 
-option(GAUDI_ENABLE_GAUDIALG "Build the subdirectory GaudiAlg" NO)
 option(GAUDI_ENABLE_GAUDIPARTPROP "Build the subdirectory GaudiPartProp" YES)
+option(GAUDI_BUILD_EXAMPLES "Build the directory GaudiExamples" YES)
 
 foreach(dep IN LISTS deps)
   string(TOUPPER ${dep} DEP)

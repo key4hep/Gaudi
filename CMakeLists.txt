@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -43,6 +43,7 @@ after the configuration or use ccmake or cmake-gui.
   * GAUDI_USE_DOXYGEN
   * GAUDI_USE_INTELAMPLIFIER
   * GAUDI_USE_JEMALLOC
+  * GAUDI_USE_CUDA
 * Install options
   * GAUDI_INSTALL_OPTIONAL
 * Install layout variables
@@ -55,7 +56,7 @@ after the configuration or use ccmake or cmake-gui.
 * For sanitized build
   * GAUDI_GENCONF_NO_FAIL
 * Compile options
-  * GAUDI_ENABLE_GAUDIALG
+  * GAUDI_BUILD_EXAMPLES
   * GAUDI_ENABLE_GAUDIPARTPROP
   * GAUDI_REFLEX_COMPONENT_ALIASES
 * Doxygen
@@ -80,10 +81,25 @@ Maintainer's guide: `<https://twiki.cern.ch/twiki/bin/view/LHCb/MaintainGaudiCMa
 
 #]========================================================================]
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
 
-project(Gaudi VERSION 38.1.1
-              LANGUAGES CXX
+# Optional CUDA
+option(GAUDI_USE_CUDA "Build AsynchronousAlgorithm features that require CUDA")
+if(GAUDI_USE_CUDA)
+  include(CheckLanguage)
+  check_language( CUDA )
+  if(CMAKE_CUDA_COMPILER)
+    message(STATUS "Found CUDA")
+  else()
+    message(SEND_ERROR "CUDA requested but not found")
+  endif()
+  set(optional_CUDA CUDA)
+else()
+  set(optional_CUDA)
+endif()
+
+project(Gaudi VERSION 39.0
+              LANGUAGES CXX ${optional_CUDA}
               DESCRIPTION "Gaudi Software Framework"
               HOMEPAGE_URL "https://cern.ch/gaudi")
 
@@ -112,7 +128,7 @@ list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules") # (Find*.c
 include(cmake/GaudiDependencies.cmake)
 
 string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "
-set(GAUDI_ENABLE_GAUDIALG ${GAUDI_ENABLE_GAUDIALG})
+set(GAUDI_BUILD_EXAMPLES ${GAUDI_BUILD_EXAMPLES})
 set(GAUDI_ENABLE_GAUDIPARTPROP ${GAUDI_ENABLE_GAUDIPARTPROP})
 ")
 
@@ -156,7 +172,6 @@ add_subdirectory(GaudiConfiguration)
 add_subdirectory(GaudiCoreSvc)
 add_subdirectory(GaudiUtils)
 add_subdirectory(Gaudi)
-add_subdirectory(GaudiAlg)
 add_subdirectory(GaudiFunctional)
 add_subdirectory(GaudiAud)
 add_subdirectory(GaudiCommonSvc)
@@ -172,6 +187,7 @@ add_subdirectory(PartPropSvc)
 add_subdirectory(RootCnv)
 add_subdirectory(RootHistCnv)
 add_subdirectory(GaudiTestSuite)
+add_subdirectory(GaudiExamples)
 
 # Generate GAUDI_VERSION.h
 gaudi_generate_version_header_file()

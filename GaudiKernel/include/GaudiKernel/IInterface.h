@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,9 +12,9 @@
 #define GAUDIKERNEL_IINTERFACE_H
 
 // Include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/System.h>
 #include <ostream>
 #include <type_traits>
 #include <typeinfo>
@@ -40,7 +40,7 @@ class GAUDI_API InterfaceID final {
 public:
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
   /// constructor from a pack long
-  constexpr InterfaceID( unsigned long lid )
+  [[deprecated( "use InterfaceID(id, major, minor) instead" )]] constexpr InterfaceID( unsigned long lid )
       : m_id( lid & 0xFFFF ), m_major_ver( ( lid & 0xFF000000 ) >> 24 ), m_minor_ver( ( lid & 0xFF0000 ) >> 16 ) {}
 #endif
   /// constructor from components
@@ -51,7 +51,9 @@ public:
       : m_id( hash32( name ) ), m_major_ver( major ), m_minor_ver( minor ) {}
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
   /// conversion to unsigned long
-  constexpr operator unsigned long() const { return ( m_major_ver << 24 ) + ( m_minor_ver << 16 ) + m_id; }
+  [[deprecated]] constexpr operator unsigned long() const {
+    return ( m_major_ver << 24 ) + ( m_minor_ver << 16 ) + m_id;
+  }
 #endif
   /// get the interface identifier
   constexpr unsigned long id() const { return m_id; }
@@ -84,6 +86,14 @@ public:
     hash += ( hash << 15 );
     return hash;
   }
+
+  // #ifdef GAUDI_V20_COMPAT
+  /// ostream operator for InterfaceID. Needed by PluginSvc
+  friend std::ostream& operator<<( std::ostream& s, const InterfaceID& id ) {
+    s << "IID_" << id.id();
+    return s;
+  }
+  // #endif
 
 private:
   unsigned long m_id;
@@ -163,11 +173,6 @@ namespace Gaudi {
     return { Is::name()... };
   }
 
-  // gcc9 has a false positive warning -- see  https://godbolt.org/z/cyjtrr -- gcc10,clang are happy...
-#if defined( __GNUC__ ) && __GNUC__ < 10
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wparentheses"
-#endif
   template <typename... Is, typename P>
   void* iid_cast( const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr ) {
     const void* target = nullptr;
@@ -176,9 +181,6 @@ namespace Gaudi {
       ... );
     return const_cast<void*>( target );
   }
-#if defined( __GNUC__ ) && __GNUC__ < 10
-#  pragma GCC diagnostic pop
-#endif
 
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
@@ -336,14 +338,6 @@ bool isValidInterface( IFace* i ) {
   return i->queryInterface( IFace::interfaceID(), &ii ).isSuccess();
 }
 
-// #ifdef GAUDI_V20_COMPAT
-/// ostream operator for InterfaceID. Needed by PluginSvc
-inline std::ostream& operator<<( std::ostream& s, const InterfaceID& id ) {
-  s << "IID_" << id.id();
-  return s;
-}
-// #endif
-
 /// Small function to be used instead of the construct (void**)&pointer, which
 /// produces, on gcc 4.1 optimized, the warning
 /// <code>warning: dereferencing type-punned pointer will break strict-aliasing rules</code>
@@ -359,8 +353,8 @@ inline DEST** pp_cast( SRC** ptr ) {
   return reinterpret_cast<DEST**>( ptr );
 }
 
-#include "GaudiKernel/extend_interfaces.h"
-#include "GaudiKernel/extends.h"
-#include "GaudiKernel/implements.h"
+#include <GaudiKernel/extend_interfaces.h>
+#include <GaudiKernel/extends.h>
+#include <GaudiKernel/implements.h>
 
 #endif // GAUDIKERNEL_IINTERFACE_H

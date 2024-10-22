@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,7 +12,7 @@
 #define GAUDIEXAMPLE_IMYTOOL_H 1
 
 // Include files
-#include "GaudiKernel/IAlgTool.h"
+#include <GaudiKernel/IAlgTool.h>
 
 /** @class IMyTool IMyTool.h
  *  Example of an Interface of a Algorithm Tool
@@ -32,7 +32,7 @@ public:
 
 /** @class IMyOtherTool IMyTool.h
  *
- *  Second interface, to test multiple interface tools in GaudiAlg
+ *  Second interface, to test multiple interface tools
  *
  *  @author Chris Jones
  */

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -37,24 +37,24 @@
 #include <iostream>
 
 // Framework include files
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/System.h>
 
 #include "HepRndmEngine.h"
 #include "RndmGenSvc.h"
 
-#include "CLHEP/Random/DRand48Engine.h"
-#include "CLHEP/Random/DualRand.h"
-#include "CLHEP/Random/Hurd160Engine.h"
-#include "CLHEP/Random/Hurd288Engine.h"
-#include "CLHEP/Random/JamesRandom.h"
-#include "CLHEP/Random/MTwistEngine.h"
-#include "CLHEP/Random/RanecuEngine.h"
-#include "CLHEP/Random/Ranlux64Engine.h"
-#include "CLHEP/Random/RanluxEngine.h"
-#include "CLHEP/Random/RanshiEngine.h"
-#include "CLHEP/Random/TripleRand.h"
+#include <CLHEP/Random/DRand48Engine.h>
+#include <CLHEP/Random/DualRand.h>
+#include <CLHEP/Random/Hurd160Engine.h>
+#include <CLHEP/Random/Hurd288Engine.h>
+#include <CLHEP/Random/JamesRandom.h>
+#include <CLHEP/Random/MTwistEngine.h>
+#include <CLHEP/Random/RanecuEngine.h>
+#include <CLHEP/Random/Ranlux64Engine.h>
+#include <CLHEP/Random/RanluxEngine.h>
+#include <CLHEP/Random/RanshiEngine.h>
+#include <CLHEP/Random/TripleRand.h>
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
 namespace CLHEP {}

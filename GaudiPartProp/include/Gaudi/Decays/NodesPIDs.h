@@ -15,6 +15,7 @@
 #include <Gaudi/ParticleProperty.h>
 #include <Gaudi/cxx/SynchronizedValue.h>
 #include <GaudiKernel/MsgStream.h>
+#include <algorithm>
 
 /** @file  Kernel/NodePIDs.h
  *  The actual implementation of various decay nodes

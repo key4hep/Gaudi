@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,11 +12,12 @@
 #define GAUDIEXAMPLE_PROPERTYALG_H
 
 // Include files
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/MsgStream.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/MsgStream.h>
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -61,6 +62,10 @@ private:
 
   Gaudi::Property<std::vector<std::pair<int, int>>>       u_intpairarray{ this, "IntPairArray" };
   Gaudi::Property<std::vector<std::pair<double, double>>> u_doublepairarray{ this, "DoublePairArray" };
+
+  Gaudi::Property<std::set<int>>             m_intset{ this, "IntSet" };
+  Gaudi::Property<std::set<std::string>>     m_stringset{ this, "StringSet" };
+  Gaudi::Property<std::unordered_set<float>> m_floatuset{ this, "FloatUnorderedSet" };
 
   Gaudi::Property<std::map<std::string, std::string>> m_strmap{ this, "StringMap" };
 

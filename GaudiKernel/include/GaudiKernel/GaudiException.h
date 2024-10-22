@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,9 +12,9 @@
 #define GAUDIKERNEL_GAUDIEXCEPTION_H
 
 // Include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/StatusCode.h>
 
 #include <exception>
 #include <iostream>
@@ -109,6 +109,18 @@ public:
   /// method from std::exception
   const char* what() const throw() override { return message().c_str(); }
 
+  /// overloaded printout to std::ostream
+  friend std::ostream& operator<<( std::ostream& os, const GaudiException& ge );
+
+  /// overloaded printout to std::ostream
+  friend std::ostream& operator<<( std::ostream& os, const GaudiException* pge );
+
+  /// overloaded printout to MsgStream
+  friend MsgStream& operator<<( MsgStream& os, const GaudiException& ge );
+
+  /// overloaded printout to MsgStream
+  friend MsgStream& operator<<( MsgStream& os, const GaudiException* pge );
+
 protected:
   std::string                     m_message;   /// error message
   std::string                     m_tag;       /// exception tag
@@ -117,17 +129,5 @@ protected:
   std::unique_ptr<GaudiException> m_previous;  /// "previous" element in the linked list
   static bool                     s_proc;
 };
-
-/// overloaded printout to std::ostream
-std::ostream& operator<<( std::ostream& os, const GaudiException& ge );
-
-/// overloaded printout to std::ostream
-std::ostream& operator<<( std::ostream& os, const GaudiException* pge );
-
-/// overloaded printout to MsgStream
-MsgStream& operator<<( MsgStream& os, const GaudiException& ge );
-
-/// overloaded printout to MsgStream
-MsgStream& operator<<( MsgStream& os, const GaudiException* pge );
 
 #endif // GAUDIKERNEL_GAUDIEXCEPTION_H

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -450,15 +450,6 @@ StatusCode ApplicationMgr::initialize() {
   if ( m_stopOnSignal ) {
     // Instantiate the service that schedules a stop when a signal is received
     std::string svcname( "Gaudi::Utils::StopSignalHandler" );
-    sc = svcManager()->addService( svcname );
-    if ( sc.isFailure() ) {
-      log << MSG::INFO << "Cannot instantiate " << svcname << "signals will be ignored" << endmsg;
-    }
-  }
-
-  if ( m_stalledEventMonitoring ) {
-    // Instantiate the service that schedules a stop when a signal is received
-    std::string svcname( "StalledEventMonitor" );
     sc = svcManager()->addService( svcname );
     if ( sc.isFailure() ) {
       log << MSG::INFO << "Cannot instantiate " << svcname << "signals will be ignored" << endmsg;

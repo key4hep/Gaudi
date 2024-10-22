@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -24,7 +24,7 @@
 // ============================================================================
 // ROOT/SVector
 // ============================================================================
-#include "Math/SVector.h"
+#include <Math/SVector.h>
 // ============================================================================
 /** @file
  *  Declaration of parsing functions for generic vectors to allow
@@ -49,7 +49,7 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     template <class SCALAR, unsigned int N>
-    StatusCode parse( ROOT::Math::SVector<SCALAR, N>& result, const std::string& input ) {
+    StatusCode parse( ROOT::Math::SVector<SCALAR, N>& result, std::string_view input ) {
       std::vector<double> tmp;
       StatusCode          sc = parse( tmp, input );
       if ( sc.isFailure() ) { return sc; }                   // RETURN

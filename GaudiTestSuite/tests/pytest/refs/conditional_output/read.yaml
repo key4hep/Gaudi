@@ -1,0 +1,113 @@
+stdout: |-
+  {'ApplicationMgr': {'EvtMax': -1,
+                      'EvtSel': 'EventSelector/EventSelector',
+                      'ExtSvc': ['FileRecordDataSvc/FileRecordDataSvc'],
+                      'HistogramPersistency': 'NONE',
+                      'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
+                                        'Gaudi::IODataManager/IODataManager',
+                                        'Gaudi::RootCnvSvc/RootCnvSvc'],
+                      'TopAlg': ['GaudiTesting::GetDataObjectAlg/DataReader']},
+   'DataReader': {'IgnoreMissing': True, 'Paths': ['A', 'B', 'C', 'D']},
+   'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+   'EventSelector': {'FirstEvent': 1,
+                     'Input': ["DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"],
+                     'OutputLevel': 3,
+                     'PrintFreq': 1},
+   'FileCatalog': {'Catalogs': ['xmlcatalog_file:ConditionalOutput.xml']},
+   'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']}}
+  ApplicationMgr    SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr       INFO Application Manager Configured successfully
+  EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
+  EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
+  ApplicationMgr       INFO Application Manager Initialized successfully
+  ApplicationMgr       INFO Application Manager Started successfully
+  EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader           INFO Getting 'C'
+  DataReader        WARNING Cannot retrieve object 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 2. Record number within stream 1: 2
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader        WARNING Cannot retrieve object 'B'
+  DataReader           INFO Getting 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 3. Record number within stream 1: 3
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader           INFO Getting 'C'
+  DataReader        WARNING Cannot retrieve object 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 4. Record number within stream 1: 4
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader        WARNING Cannot retrieve object 'B'
+  DataReader           INFO Getting 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 5. Record number within stream 1: 5
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader           INFO Getting 'C'
+  DataReader        WARNING Cannot retrieve object 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 6. Record number within stream 1: 6
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader        WARNING Cannot retrieve object 'B'
+  DataReader           INFO Getting 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 7. Record number within stream 1: 7
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader           INFO Getting 'C'
+  DataReader        WARNING Cannot retrieve object 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 8. Record number within stream 1: 8
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader        WARNING Cannot retrieve object 'B'
+  DataReader           INFO Getting 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 9. Record number within stream 1: 9
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader           INFO Getting 'C'
+  DataReader        WARNING Cannot retrieve object 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventSelector     SUCCESS Reading Event record 10. Record number within stream 1: 10
+  DataReader           INFO Getting 4 objects from EventDataSvc
+  DataReader           INFO Getting 'A'
+  DataReader           INFO Getting 'B'
+  DataReader        WARNING Cannot retrieve object 'B'
+  DataReader           INFO Getting 'C'
+  DataReader           INFO Getting 'D'
+  DataReader        WARNING Cannot retrieve object 'D'
+  EventLoopMgr         INFO No more events in event selection
+  ApplicationMgr       INFO Application Manager Stopped successfully
+  EventLoopMgr         INFO Histograms converted successfully according to request.
+  ToolSvc              INFO Removing all tools created by ToolSvc
+  ApplicationMgr       INFO Application Manager Finalized successfully
+  ApplicationMgr       INFO Application Manager Terminated successfully
+histos: {}
+ttrees: {}

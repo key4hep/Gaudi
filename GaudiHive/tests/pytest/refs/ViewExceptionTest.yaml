@@ -1,0 +1,76 @@
+stdout: "{'A1': {'Cardinality': 1,\n        'OutputLevel': 3,\n        'baseViewName':\
+  \ 'view',\n        'viewNodeName': 'viewNode',\n        'viewNumber': 2},\n 'A2':\
+  \ {'Cardinality': 1, 'OutputLevel': 3, 'viewNodeName': ''},\n 'A3': {'Cardinality':\
+  \ 1,\n        'EventCount': 3,\n        'Mode': 'exception',\n        'OutputLevel':\
+  \ 3},\n 'A4': {'Cardinality': 1, 'OutputLevel': 3, 'viewNodeName': ''},\n 'AlgResourcePool':\
+  \ {'OutputLevel': 3},\n 'ApplicationMgr': {'EventLoop': 'HiveSlimEventLoopMgr/HiveSlimEventLoopMgr',\n\
+  \                    'EvtMax': 10,\n                    'EvtSel': 'NONE',\n    \
+  \                'ExtSvc': ['HiveWhiteBoard/EventDataSvc'],\n                  \
+  \  'MessageSvcType': 'InertMessageSvc',\n                    'TopAlg': ['Gaudi::Sequencer/createViewSeq']},\n\
+  \ 'AvalancheSchedulerSvc': {'OutputLevel': 3,\n                           'ThreadPoolSize':\
+  \ 1,\n                           'VerboseSubSlots': True},\n 'EventDataSvc': {'EventSlots':\
+  \ 1},\n 'HiveSlimEventLoopMgr': {'OutputLevel': 3,\n                          'SchedulerName':\
+  \ 'AvalancheSchedulerSvc'},\n 'createViewSeq': {'Members': ['Test::ViewTester/A1',\n\
+  \                               'Gaudi::Sequencer/viewNode',\n                 \
+  \              'Test::ViewTester/A4'],\n                   'OutputLevel': 3,\n \
+  \                  'Sequential': True},\n 'viewNode': {'Members': ['Test::ViewTester/A2',\n\
+  \                          'GaudiTesting::StopLoopAlg/A3'],\n              'OutputLevel':\
+  \ 3,\n              'Sequential': False,\n              'ShortCircuit': False}}\n\
+  MessageSvc           INFO Activating in a separate thread\nApplicationMgr    SUCCESS\n\
+  ====================================================================================================================================\n\
+  ====================================================================================================================================\n\
+  ApplicationMgr       INFO Application Manager Configured successfully\nThreadPoolSvc\
+  \        INFO no thread init tools attached\nAvalancheSchedu...   INFO Activating\
+  \ scheduler in a separate thread\nAlgResourcePool      INFO TopAlg list empty. Recovering\
+  \ the one of Application Manager\ncreateViewSeq        INFO Member list: Test::ViewTester/A1,\
+  \ Gaudi::Sequencer/viewNode, Test::ViewTester/A4\nviewNode             INFO Member\
+  \ list: Test::ViewTester/A2, GaudiTesting::StopLoopAlg/A3\nAvalancheSchedu...  \
+  \ INFO Found 4 algorithms\nAvalancheSchedu...   INFO Data Dependencies for Algorithms:\n\
+  \  A1\n      none\n  A2\n      none\n  A3\n      none\n  A4\n      none\nPrecedenceSvc\
+  \        INFO Assembling CF and DF task precedence rules\nPrecedenceSvc        INFO\
+  \ PrecedenceSvc initialized successfully\nAvalancheSchedu...   INFO Concurrency\
+  \ level information:\nAvalancheSchedu...   INFO  o Number of events in flight: 1\n\
+  AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':1\nAvalancheSchedu...\
+  \   INFO Task scheduling settings:\nAvalancheSchedu...   INFO  o Avalanche generation\
+  \ mode: disabled\nAvalancheSchedu...   INFO  o Preemptive scheduling of CPU-blocking\
+  \ tasks: disabled\nAvalancheSchedu...   INFO  o Scheduling of condition tasks: disabled\n\
+  HiveSlimEventLo...WARNING Unable to locate service \"EventSelector\"\nHiveSlimEventLo...WARNING\
+  \ No events will be processed from external input.\nHiveSlimEventLo...   INFO Found\
+  \ 0 events in black list\nApplicationMgr       INFO Application Manager Initialized\
+  \ successfully\nApplicationMgr       INFO Application Manager Started successfully\n\
+  HiveSlimEventLo...   INFO Starting loop on events\nA1                   INFO Running\
+  \ in whole event context\nA1                   INFO Attached view view0 to node\
+  \ viewNode for s: 0  e: 0\nA1                   INFO Attached view view1 to node\
+  \ viewNode for s: 0  e: 0\nA2                   INFO Running in view view0\nA3 \
+  \                  INFO 3 events to go\nA2                   INFO Running in view\
+  \ view1\nA3                   INFO 2 events to go\nA4                   INFO Running\
+  \ in whole event context\nA1                   INFO Running in whole event context\n\
+  A1                   INFO Attached view view0 to node viewNode for s: 0  e: 1\n\
+  A1                   INFO Attached view view1 to node viewNode for s: 0  e: 1\n\
+  A2                   INFO Running in view view0\nA3                   INFO 1 events\
+  \ to go\nA2                   INFO Running in view view1\nA3                   INFO\
+  \ Stopping loop with exception\nA3                  FATAL  Exception with tag=A3\
+  \ is caught\nA3                  ERROR A3 \t Stopping loop\t StatusCode=FAILURE\n\
+  AlgTask             FATAL .executeEvent(): Exception with tag=A3 thrown by A3\n\
+  AlgTask             ERROR A3 \t Stopping loop\t StatusCode=FAILURE\nAvalancheSchedu...\
+  \  ERROR *** Stall detected, event context: s: 0  e: 1\nAvalancheSchedu...  ERROR\
+  \ Event 1 on slot 0 failed\nAvalancheSchedu...   INFO Dumping scheduler state\n\
+  =========================================================================================\n\
+  ++++++++++++++++++++++++++++++++++++ SCHEDULER STATE ++++++++++++++++++++++++++++++++++++\n\
+  =========================================================================================\n\
+  ------------------ Last schedule: Task/Event/Slot/Thread/State Mapping ------------------\n\
+  WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the mapping\n\
+  ---------------------------- Task/CF/FSM Mapping [target slot] --------------------------\n\
+  [ slot: 0, event: 1 ]:\nERROR alg(s): in subslot(s)\nNumber of sub-slots: 2\n[ slot:\
+  \ 0, sub-slot: 0, entry: viewNode, event: 1 ]:\nERROR alg(s):\n[ slot: 0, sub-slot:\
+  \ 1, entry: viewNode, event: 1 ]:\nERROR alg(s): A3\n=========================================================================================\n\
+  ++++++++++++++++++++++++++++++++++++++ END OF DUMP ++++++++++++++++++++++++++++++++++++++\n\
+  =========================================================================================\n\
+  PrecedenceSvc     WARNING To trace temporal and topological aspects of execution\
+  \ flow, set DumpPrecedenceRules property to True\nHiveSlimEventLo...  FATAL Failed\
+  \ event detected on s: 0  e: 1\nHiveSlimEventLo...   INFO 0 events were SKIPed\n\
+  ApplicationMgr       INFO Application Manager Stopped successfully\nHiveSlimEventLo...\
+  \   INFO Histograms converted successfully according to request.\nAvalancheSchedu...\
+  \   INFO Joining Scheduler thread\nApplicationMgr       INFO Application Manager\
+  \ Finalized successfully\nApplicationMgr      ERROR Application Manager Terminated\
+  \ with error code 6"

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,15 +13,13 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/BoostArrayAsProperty.h"
-// ============================================================================
-// GaudiAlg
+#include <GaudiKernel/BoostArrayAsProperty.h>
 // ============================================================================
 #include <Gaudi/TestSuite/TestAlg.h>
 // ============================================================================
 // Boots
 // ============================================================================
-#include "boost/array.hpp"
+#include <boost/array.hpp>
 // ============================================================================
 /** @file
  *  Simple example/test for "array"-properties

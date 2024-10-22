@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,33 +12,33 @@
 
 #include <functional>
 
-#include "GaudiKernel/HistoryObj.h"
-#include "GaudiKernel/IVersHistoryObj.h"
+#include <GaudiKernel/HistoryObj.h>
+#include <GaudiKernel/IVersHistoryObj.h>
 
-#include "GaudiKernel/AlgToolHistory.h"
-#include "GaudiKernel/AlgorithmHistory.h"
-#include "GaudiKernel/DataHistory.h"
-#include "GaudiKernel/JobHistory.h"
-#include "GaudiKernel/ServiceHistory.h"
+#include <GaudiKernel/AlgToolHistory.h>
+#include <GaudiKernel/AlgorithmHistory.h>
+#include <GaudiKernel/DataHistory.h>
+#include <GaudiKernel/JobHistory.h>
+#include <GaudiKernel/ServiceHistory.h>
 
-#include "GaudiKernel/ISvcLocator.h"
+#include <GaudiKernel/ISvcLocator.h>
 
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/ServiceHandle.h"
-#include "GaudiKernel/System.h"
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgTool.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IAppMgrUI.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/IToolSvc.h>
+#include <GaudiKernel/ServiceHandle.h>
+#include <GaudiKernel/System.h>
 
-#include "GaudiKernel/IAlgContextSvc.h"
+#include <GaudiKernel/IAlgContextSvc.h>
 
-#include "boost/algorithm/string/predicate.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 namespace ba = boost::algorithm;
 
 #include <fstream>

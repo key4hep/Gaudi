@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,22 +10,26 @@
 \***********************************************************************************/
 #include "ParsersStandardMiscCommon.h"
 
-StatusCode Gaudi::Parsers::parse( std::vector<std::vector<double>>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::vector<std::vector<double>>& result, std::string_view input ) {
   return Gaudi::Parsers::parse_( result, input );
 }
 
-StatusCode Gaudi::Parsers::parse( std::map<int, int>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::vector<std::vector<int>>& result, std::string_view input ) {
   return Gaudi::Parsers::parse_( result, input );
 }
 
-StatusCode Gaudi::Parsers::parse( std::map<int, double>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::map<int, int>& result, std::string_view input ) {
   return Gaudi::Parsers::parse_( result, input );
 }
 
-StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::map<int, double>& result, std::string_view input ) {
   return Gaudi::Parsers::parse_( result, input );
 }
 
-StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string, std::less<>>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string>& result, std::string_view input ) {
+  return Gaudi::Parsers::parse_( result, input );
+}
+
+StatusCode Gaudi::Parsers::parse( std::map<std::string, std::string, std::less<>>& result, std::string_view input ) {
   return Gaudi::Parsers::parse_( result, input );
 }

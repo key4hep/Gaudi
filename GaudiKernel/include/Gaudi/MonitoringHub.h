@@ -1,5 +1,5 @@
 /*****************************************************************************\
-* (c) Copyright 2020-2022 CERN for the benefit of the LHCb Collaboration      *
+* (c) Copyright 2020-2024 CERN for the benefit of the LHCb Collaboration      *
 *                                                                             *
 * This software is distributed under the terms of the GNU General Public      *
 * Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   *
@@ -10,7 +10,7 @@
 \*****************************************************************************/
 #pragma once
 
-#include "GaudiKernel/detected.h"
+#include <GaudiKernel/detected.h>
 
 #include <deque>
 #include <functional>
@@ -108,7 +108,7 @@ namespace Gaudi::Monitoring {
         std::invoke( ent.m_mergeAndReset, ent.m_ptr, other.m_ptr );
       }
       /// operator== for comparison with an entity
-      bool operator==( Entity const& ent ) { return id() == ent.id(); }
+      bool operator==( Entity const& ent ) const { return id() == ent.id(); }
       /// unique identifier, actually mapped to internal pointer
       void* id() const { return m_ptr; }
 

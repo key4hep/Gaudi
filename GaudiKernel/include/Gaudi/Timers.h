@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,9 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-#include "Gaudi/Timers/GenericTimer.h"
+#include <Gaudi/Timers/GenericTimer.h>
 #ifdef __x86_64__
-#  include "Gaudi/Timers/RdtscClock.h"
+#  include <Gaudi/Timers/RdtscClock.h>
 #endif // __x86_64__
 
 #include <chrono>

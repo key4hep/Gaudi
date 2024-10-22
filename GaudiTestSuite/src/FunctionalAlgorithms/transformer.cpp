@@ -25,7 +25,7 @@ namespace Gaudi {
       Gaudi::TestSuite::MyTrack::Selection
       operator()( const Gaudi::Range_<Gaudi::TestSuite::MyTrack::ConstVector>& in_tracks ) const override {
         Gaudi::TestSuite::MyTrack::Selection out_tracks;
-        out_tracks.insert( in_tracks.begin(), in_tracks.end(), []( const MyTrack* t ) { return t->px() >= 10.; } );
+        out_tracks.insert( in_tracks.begin(), in_tracks.end(), []( const MyTrack* t ) { return t->px() >= 10.f; } );
         return out_tracks;
       }
     };

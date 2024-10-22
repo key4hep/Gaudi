@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,26 +15,26 @@
 // ============================================================================
 // Python must always be the first.
 #ifndef __APPLE__
-#  include "Python.h"
+#  include <Python.h>
 #endif // not __APPLE__
 
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/Chrono.h"
-#include "GaudiKernel/ChronoEntity.h"
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/Map.h"
-#include "GaudiKernel/MapBase.h"
-#include "GaudiKernel/Range.h"
-#include "GaudiKernel/SerializeSTL.h"
-#include "GaudiKernel/Stat.h"
-#include "GaudiKernel/StatEntity.h"
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/VectorMap.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/Chrono.h>
+#include <GaudiKernel/ChronoEntity.h>
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/Map.h>
+#include <GaudiKernel/MapBase.h>
+#include <GaudiKernel/Range.h>
+#include <GaudiKernel/SerializeSTL.h>
+#include <GaudiKernel/Stat.h>
+#include <GaudiKernel/StatEntity.h>
+#include <GaudiKernel/StringKey.h>
+#include <GaudiKernel/VectorMap.h>
 
 #ifdef _WIN32
-#  include "GaudiKernel/GaudiHandle.h"
+#  include <GaudiKernel/GaudiHandle.h>
 #endif
 
 #ifdef __ICC
@@ -55,38 +55,38 @@
 #endif
 #ifdef AIDA_FOUND
 #  ifdef _WIN32
-#    include "AIDA/IAnnotation.h"
+#    include <AIDA/IAnnotation.h>
 #  endif // _WIN32
-#  include "AIDA/IAxis.h"
-#  include "AIDA/IHistogram.h"
-#  include "AIDA/IHistogram1D.h"
-#  include "AIDA/IHistogram2D.h"
-#  include "AIDA/IHistogram3D.h"
-#  include "AIDA/IProfile1D.h"
-#  include "AIDA/IProfile2D.h"
+#  include <AIDA/IAxis.h>
+#  include <AIDA/IHistogram.h>
+#  include <AIDA/IHistogram1D.h>
+#  include <AIDA/IHistogram2D.h>
+#  include <AIDA/IHistogram3D.h>
+#  include <AIDA/IProfile1D.h>
+#  include <AIDA/IProfile2D.h>
 #endif // AIDA_FOUND
 #undef class
 
-#include "GaudiPython/Helpers.h"
+#include <GaudiPython/Helpers.h>
 
-#include "GaudiPython/Algorithm.h"
-#include "GaudiPython/CallbackStreamBuf.h"
-#include "GaudiPython/GaudiPython.h"
-#include "GaudiPython/Interface.h"
-#include "GaudiPython/Printer.h"
-#include "GaudiPython/Vector.h"
+#include <GaudiPython/Algorithm.h>
+#include <GaudiPython/CallbackStreamBuf.h>
+#include <GaudiPython/GaudiPython.h>
+#include <GaudiPython/Interface.h>
+#include <GaudiPython/Printer.h>
+#include <GaudiPython/Vector.h>
 
 #ifdef AIDA_FOUND
-#  include "GaudiUtils/Aida2ROOT.h"
-#  include "GaudiUtils/HistoDump.h"
-#  include "GaudiUtils/HistoStats.h"
-#  include "GaudiUtils/HistoStrings.h"
-#  include "GaudiUtils/HistoTableFormat.h"
+#  include <GaudiUtils/Aida2ROOT.h>
+#  include <GaudiUtils/HistoDump.h>
+#  include <GaudiUtils/HistoStats.h>
+#  include <GaudiUtils/HistoStrings.h>
+#  include <GaudiUtils/HistoTableFormat.h>
 #endif // AIDA_FOUND
-#include "GaudiUtils/IFileCatalog.h"
-#include "GaudiUtils/IFileCatalogMgr.h"
-#include "GaudiUtils/IIODataManager.h"
-#include "GaudiUtils/QuasiRandom.h"
+#include <GaudiUtils/IFileCatalog.h>
+#include <GaudiUtils/IFileCatalogMgr.h>
+#include <GaudiUtils/IIODataManager.h>
+#include <GaudiUtils/QuasiRandom.h>
 
 #include <iostream>
 #include <istream>

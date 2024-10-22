@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,13 +10,13 @@
 \***********************************************************************************/
 #define GAUDIKERNEL_STATUSCODE_CPP 1
 
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/System.h"
+#include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/System.h>
 #include <exception>
 
 constexpr const StatusCode::ErrorCode StatusCode::SUCCESS;

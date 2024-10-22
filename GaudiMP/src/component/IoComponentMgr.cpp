@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,11 +17,11 @@
 // GaudiMP includes
 #include "IoComponentMgr.h"
 // FrameWork includes
-#include "GaudiKernel/FileIncident.h"
-#include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/ServiceHandle.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/FileIncident.h>
+#include <GaudiKernel/IFileMgr.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/ServiceHandle.h>
 // BOOST includes
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>

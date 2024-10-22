@@ -14,6 +14,7 @@ Simple script to extract metadata (dependencies, labels) from QMTest tests (.qmt
 files) and suites (.qms files), and report them as declaration of CTest test
 properties.
 """
+
 __author__ = "Marco Clemencic <marco.clemencic@cern.ch>"
 
 try:

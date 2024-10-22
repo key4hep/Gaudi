@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,27 +15,27 @@
 #include <streambuf>
 
 // boost headers
-#include "boost/algorithm/string/case_conv.hpp"
+#include <boost/algorithm/string/case_conv.hpp>
 
 // ROOT headers
-#include "TClass.h"
-#include "TDirectory.h"
-#include "TError.h"
-#include "TFile.h"
-#include "TGraph.h"
-#include "TKey.h"
-#include "TROOT.h"
+#include <TClass.h>
+#include <TDirectory.h>
+#include <TError.h>
+#include <TFile.h>
+#include <TGraph.h>
+#include <TKey.h>
+#include <TROOT.h>
 
 // Gaudi headers
-#include "GaudiKernel/AttribStringParser.h"
-#include "GaudiKernel/FileIncident.h"
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IEventProcessor.h"
-#include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IIoComponentMgr.h"
-#include "GaudiKernel/ISvcLocator.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/FileIncident.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IEventProcessor.h>
+#include <GaudiKernel/IFileMgr.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IIoComponentMgr.h>
+#include <GaudiKernel/ISvcLocator.h>
 
 // local headers
 #include "THistSvc.h"
@@ -339,12 +339,6 @@ StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist )
   return regHist_i( std::move( hist ), id, false );
 }
 
-StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist, TH1* hist_ptr ) {
-  // This is only to support a common use case where the histogram is used after its registration
-  if ( hist_ptr != nullptr ) { hist_ptr = hist.get(); }
-  return regHist_i( std::move( hist ), id, false );
-}
-
 StatusCode THistSvc::regHist( const std::string& id, TH1* hist_ptr ) {
   std::unique_ptr<TH1> hist( hist_ptr );
   return regHist_i( std::move( hist ), id, false );
@@ -639,8 +633,8 @@ StatusCode THistSvc::deReg( TObject* obj ) {
       delete vhid;
 
     } else if ( vhid->size() > 1 ) {
-      m_tobjs.erase( obj_itr );
       vhid->erase( vhid->begin() + obj_itr->second.second );
+      m_tobjs.erase( obj_itr );
 
       // vector of THistID is still not empty (i.e. other instances with same name registered)
     } else {

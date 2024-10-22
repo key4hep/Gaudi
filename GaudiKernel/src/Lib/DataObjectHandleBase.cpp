@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,12 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/DataObjectHandleBase.h"
-#include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/SerializeSTL.h"
-#include "GaudiKernel/ServiceLocatorHelper.h"
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/DataObjectHandleBase.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/SerializeSTL.h>
+#include <GaudiKernel/ServiceLocatorHelper.h>
 
 #include <boost/tokenizer.hpp>
 #include <ostream>

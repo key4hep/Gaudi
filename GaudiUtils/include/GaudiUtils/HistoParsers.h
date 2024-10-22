@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,7 +15,7 @@
 // =============================================================================
 // GaudiKernel
 // =============================================================================
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/StatusCode.h>
 // =============================================================================
 // forward declarations
 // =============================================================================
@@ -45,84 +45,84 @@ namespace Gaudi {
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH1D& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH1D& result, std::string_view input );
     // =========================================================================
     /** parse ROOT histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH2D& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH2D& result, std::string_view input );
     // =========================================================================
     /** parse ROOT histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH3D& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH3D& result, std::string_view input );
     // =========================================================================
     /** parse ROOT histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH1F& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH1F& result, std::string_view input );
     // =========================================================================
     /** parse ROOT histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH2F& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH2F& result, std::string_view input );
     // =========================================================================
     /** parse AIDA histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH3F& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH3F& result, std::string_view input );
     // =========================================================================
     /** parse AIDA histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( AIDA::IHistogram1D& result, const std::string& input );
+    GAUDI_API StatusCode parse( AIDA::IHistogram1D& result, std::string_view input );
     // =========================================================================
     /** parse AIDA histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( AIDA::IHistogram2D& result, const std::string& input );
+    GAUDI_API StatusCode parse( AIDA::IHistogram2D& result, std::string_view input );
     // =========================================================================
     /** parse AIDA histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( AIDA::IHistogram3D& result, const std::string& input );
+    GAUDI_API StatusCode parse( AIDA::IHistogram3D& result, std::string_view input );
     // =========================================================================
     /** parse ROOT histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH1D*& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH1D*& result, std::string_view input );
     // =========================================================================
     /** parse ROOT histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH2D*& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH2D*& result, std::string_view input );
     // =========================================================================
     /** parse ROOT histogram from text representation
      *  @param result (OUTPUT) the histogram
      *  @param input  (INPUT)  the input to be parsed
      *  @return status code
      */
-    GAUDI_API StatusCode parse( TH3D*& result, const std::string& input );
+    GAUDI_API StatusCode parse( TH3D*& result, std::string_view input );
     // =========================================================================
   } // namespace Parsers
   // ===========================================================================

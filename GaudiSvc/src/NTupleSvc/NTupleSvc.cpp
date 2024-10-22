@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -32,22 +32,22 @@
 #define GAUDISVC_NTUPLESVC_CPP
 
 // Framework include files
-#include "GaudiKernel/AttribStringParser.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/ObjectFactory.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/GenericAddress.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiKernel/SmartIF.h>
 
-#include "GaudiKernel/IDataSelector.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/ISvcLocator.h"
+#include <GaudiKernel/IDataSelector.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/ISvcLocator.h>
 
-#include "GaudiKernel/ConversionSvc.h"
-#include "GaudiKernel/NTupleImplementation.h"
-#include "GaudiKernel/Selector.h"
-#include "GaudiKernel/reverse.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/ConversionSvc.h>
+#include <GaudiKernel/NTupleImplementation.h>
+#include <GaudiKernel/Selector.h>
+#include <GaudiKernel/reverse.h>
 
 #include "NTupleSvc.h"
 

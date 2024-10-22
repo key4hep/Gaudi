@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,7 +18,7 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/ISvcLocator.h"
+#include <GaudiKernel/ISvcLocator.h>
 // ============================================================================
 // Local
 // ============================================================================
@@ -193,11 +193,11 @@ StatusCode ExceptionSvc::process( const INamedInterface& alg ) const {
     case RECOVERABLE:
       return StatusCode::RECOVERABLE;
     case RETHROW:
-      throw;
+      throw; // cppcheck-suppress rethrowNoCurrentException
     }
   }
 
-  if ( m_mode_exc == ALL ) { throw; }
+  if ( m_mode_exc == ALL ) { throw; } // cppcheck-suppress rethrowNoCurrentException
   assert( m_mode_exc == NONE );
   return StatusCode::FAILURE;
 }

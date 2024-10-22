@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -16,13 +16,13 @@
  */
 
 // Framework include files
-#include "Gaudi/Interfaces/IOptionsSvc.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IToolSvc.h"
+#include <Gaudi/Interfaces/IOptionsSvc.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/IToolSvc.h>
 
 #include "MetaDataSvc.h"
 

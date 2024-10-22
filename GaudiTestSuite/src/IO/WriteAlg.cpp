@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,19 +18,19 @@
 //
 //      ====================================================================
 // Framework include files
-#include "GaudiKernel/RndmGenerators.h"
-#include "GaudiKernel/SmartDataPtr.h"
+#include <GaudiKernel/RndmGenerators.h>
+#include <GaudiKernel/SmartDataPtr.h>
 
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
 
 // Example related include files
 #include "WriteAlg.h"
 
 // Event Model related classes
-#include "GaudiTestSuite/Counter.h"
-#include "GaudiTestSuite/Event.h"
-#include "GaudiTestSuite/MyTrack.h"
+#include <GaudiTestSuite/Counter.h>
+#include <GaudiTestSuite/Event.h>
+#include <GaudiTestSuite/MyTrack.h>
 
 using namespace Gaudi::TestSuite;
 
@@ -162,11 +162,11 @@ StatusCode WriteAlg::execute() {
   }
   // Now connect vertices and tracks
   for ( MyTrackVector::iterator k = myTracks->begin(); k != myTracks->end(); ++k ) {
-    int       org    = (int)( rndmflat() * float( m ) );
+    int       org    = (int)( rndmflat() * double( m ) );
     MyVertex* orgVtx = *( myVertices->begin() + org );
     ( *k )->setOriginVertex( orgVtx );
-    int dec1 = (int)( rndmflat() * float( m ) );
-    int dec2 = (int)( rndmflat() * float( m ) );
+    int dec1 = (int)( rndmflat() * double( m ) );
+    int dec2 = (int)( rndmflat() * double( m ) );
     int tmp  = dec1;
     dec1     = ( tmp < dec2 ) ? tmp : dec2;
     dec2     = ( tmp > dec2 ) ? tmp : dec2;

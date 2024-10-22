@@ -12,9 +12,9 @@
 #define GAUDI_NTUPLESVC_H 1
 
 // Framework include files
-#include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/IDataSourceMgr.h"
-#include "GaudiKernel/INTupleSvc.h"
+#include <GaudiKernel/DataSvc.h>
+#include <GaudiKernel/IDataSourceMgr.h>
+#include <GaudiKernel/INTupleSvc.h>
 
 // STL include files
 #include <map>

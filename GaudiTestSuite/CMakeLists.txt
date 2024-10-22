@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -55,6 +55,9 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/ExtendedProperties/ExtendedProperties.cpp
                          src/ExtendedProperties/ExtendedProperties2.cpp
                          src/FileMgr/FileMgrTest.cpp
+                         src/FileSvc/HistogramWriterAlg.cpp
+                         src/FileSvc/NTupleWriterAlg.cpp
+                         src/FSMCallback/FSMCallbackTestAlgo.cpp
                          src/FunctionalAlgorithms/EventCounter.cpp
                          src/FunctionalAlgorithms/MakeAndConsume.cpp
                          src/FunctionalAlgorithms/merging_transformer.cpp
@@ -94,6 +97,8 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/Timing/TimingAlg.cpp
                          src/ToolHandles/Algorithms.cpp
                          src/ToolHandles/FloatTool.cpp
+                         src/NTuple/NTupleWriterProducers.cpp
+                         src/NTuple/NTupleWriterImpls.cpp
                  LINK GaudiKernel
                       Gaudi::Functional
                       GaudiUtilsLib
@@ -174,38 +179,30 @@ gaudi_generate_confuserdb()
 
 # Tests
 gaudi_add_tests(QMTest)
-if(BUILD_TESTING)
-  if(TEST "GaudiTestSuite.jira.gaudi_1174" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set_property(TEST GaudiTestSuite.jira.gaudi_1174 PROPERTY DISABLED TRUE)
-  endif()
-  foreach(test IN ITEMS
-      metadatasvc
-      properties.all properties.all2 properties.all_py
-      bug_34121_tool_properties_in_python
-      deferred_write.enforced deferred_write.explicit)
-    if(TEST "GaudiTestSuite.${test}")
-      set_property(
-        TEST GaudiTestSuite.${test}
-        APPEND PROPERTY ENVIRONMENT JOBOPTSDUMPFILE=gauditestsuite.${test}.joboptsdump
-      )
-    endif()
-  endforeach()
-  if(NOT GAUDI_ENABLE_GAUDIALG)
-    # these tests are for features available in GaudiAlg, but depend on a fixture in GaudiTestSuite tests
-    set_tests_properties(
-      GaudiTestSuite.root_io.extcoll.write GaudiTestSuite.root_io.extcoll.read
-      PROPERTIES DISABLED TRUE
+gaudi_add_pytest(tests/pytest)
+
+# Some tests depend on configuration options
+set(tests_to_disable)
+if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
+    list(APPEND tests_to_disable
+        GaudiTestSuite.pytest.test_particlepropsvc
     )
-  endif()
-  if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
-    set_tests_properties(
-      GaudiTestSuite.particlepropsvc
-      PROPERTIES DISABLED TRUE
+endif()
+if(NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "")
+    # the messages expected by this test are printed only if NDEBUG is not defined
+    # (i.e. in release builds or with empty build type)
+    list(APPEND tests_to_disable
+        GaudiTestSuite.pytest.jira.test_gaudi_1174
     )
-  endif()
 endif()
 
-gaudi_add_pytest(tests/pytest)
+if(tests_to_disable)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/disable_tests.cmake
+        "set_tests_properties(${tests_to_disable} PROPERTIES DISABLED TRUE)"
+    )
+    set_property(DIRECTORY APPEND PROPERTY
+        TEST_INCLUDE_FILES ${CMAKE_CURRENT_BINARY_DIR}/disable_tests.cmake)
+endif()
 
 # Compiled python module
 gaudi_add_python_module(PyExample

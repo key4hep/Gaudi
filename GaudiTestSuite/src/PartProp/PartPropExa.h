@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,17 +11,17 @@
 #ifndef GAUDIEXAMPLES_PARTPROPEXA_H
 #define GAUDIEXAMPLES_PARTPROPEXA_H 1
 
-#include "GaudiKernel/Algorithm.h"
+#include <GaudiKernel/Algorithm.h>
 #if HEPPDT_VERSION_MAJOR == 2
-#  include "HepPDT/CommonParticleData.hh"
+#  include <HepPDT/CommonParticleData.hh>
 #endif
 #if HEPPDT_VERSION_MAJOR == 3
-#  include "HepPDT/ParticleData.hh"
+#  include <HepPDT/ParticleData.hh>
 namespace HepPDT {
   using CommonParticleData = ParticleData;
 }
 #endif
-#include "HepPDT/ProcessUnknownID.hh"
+#include <HepPDT/ProcessUnknownID.hh>
 
 class IPartPropSvc;
 

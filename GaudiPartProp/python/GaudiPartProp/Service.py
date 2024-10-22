@@ -21,6 +21,7 @@
 """
 Useful decorator for Gaudi::(I)ParticlePropertySvc
 """
+
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 __version__ = ""

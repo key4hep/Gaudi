@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,7 +28,7 @@
 #include <iostream>
 #include <tuple>
 
-#include "GaudiKernel/compose.h"
+#include <GaudiKernel/compose.h>
 namespace details {
   template <typename lambda>
   struct arg_helper : public arg_helper<decltype( &lambda::operator() )> {};
@@ -207,101 +207,101 @@ private:
 
   /// bunch crossing ID,  32 bit unsigned
   number_type m_bunch_crossing_id{ UNDEFNUM };
-};
 
-inline EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs ) {
+  friend EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs ) {
 
-  //"min" is easy b/c the numbers denoting invalidty for TS or Run/Event/LB are the
-  // largest possible numbers, so naturally larger than any valid number
+    //"min" is easy b/c the numbers denoting invalidty for TS or Run/Event/LB are the
+    // largest possible numbers, so naturally larger than any valid number
 
-  return EventIDBase( std::min( std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ),
-                                std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number ) ),
-                      std::min( std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset ),
-                                std::tie( rhs.m_time_stamp, rhs.m_time_stamp_ns_offset ) ),
-                      lhs.bunch_crossing_id() // bcid doesn't really matter here
-  );
-}
-
-inline EventIDBase max( const EventIDBase& lhs, const EventIDBase& rhs ) {
-
-  //"max" is much trickier because we need to handle invalid number explicilty by
-  // checking if a EventIDBase is TS or Run/Lumi
-
-  std::tuple<EventIDBase::number_type, EventIDBase::number_type, EventIDBase::event_number_t> run_lumi_ev;
-  std::tuple<EventIDBase::number_type, EventIDBase::number_type>                              time_stamp;
-
-  if ( lhs.isTimeStamp() && rhs.isTimeStamp() ) { // both time-stamp, compare them
-    time_stamp = std::max( std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset ),
-                           std::tie( rhs.m_time_stamp, rhs.m_time_stamp_ns_offset ) );
-  } else if ( lhs.isTimeStamp() ) { // only lhs time-stamp: Use it
-    time_stamp = std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset );
-  } else { // otherwise use rhs time-stamp which might be UNDEFNUM (in case both input values are Run-Lumi only)
-    time_stamp = std::tie( rhs.m_time_stamp, rhs.m_time_stamp_ns_offset );
+    return EventIDBase( std::min( std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ),
+                                  std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number ) ),
+                        std::min( std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset ),
+                                  std::tie( rhs.m_time_stamp, rhs.m_time_stamp_ns_offset ) ),
+                        lhs.bunch_crossing_id() // bcid doesn't really matter here
+    );
   }
 
-  if ( lhs.isRunLumi() && rhs.isRunLumi() ) { // both run-lumi, compare them
-    run_lumi_ev = std::max( std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ),
-                            std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number ) );
+  friend EventIDBase max( const EventIDBase& lhs, const EventIDBase& rhs ) {
 
-  } else if ( lhs.isRunLumi() ) { // only lhs run-lumi: Use it
-    run_lumi_ev = std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number );
-  } else { // otherwise use rhs run-lumi which might be UNDEFNUM (in case both input values are TS-only)
-    run_lumi_ev = std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number );
-  }
+    //"max" is much trickier because we need to handle invalid number explicilty by
+    // checking if a EventIDBase is TS or Run/Lumi
 
-  return EventIDBase( run_lumi_ev, time_stamp, lhs.bunch_crossing_id() );
-}
+    std::tuple<EventIDBase::number_type, EventIDBase::number_type, EventIDBase::event_number_t> run_lumi_ev;
+    std::tuple<EventIDBase::number_type, EventIDBase::number_type>                              time_stamp;
 
-inline bool operator<( const EventIDBase& lhs, const EventIDBase& rhs ) {
-  // first try ordering by timestamp if both are non-zero
-  // then try ordering by run/lumi/event
-  // this assumes that both EventIDBase have the same set of values defined.
-
-  if ( lhs.isTimeStamp() && rhs.isTimeStamp() ) {
-    return lhs.m_time_stamp < rhs.m_time_stamp;
-  } else {
-    return std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ) <
-           std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number );
-  }
-}
-
-inline bool operator==( const EventIDBase& lhs, const EventIDBase& rhs ) {
-  // We assume that equality via run/event/lumi numbers is sufficient
-  return ( lhs.m_run_number == rhs.m_run_number && lhs.m_event_number == rhs.m_event_number &&
-           lhs.m_lumi_block == rhs.m_lumi_block );
-}
-
-inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs ) {
-  if ( rhs.m_type == EventIDBase::Invalid ) return os << "[INVALID]";
-
-  const char* separator = "";
-  os << "[";
-  if ( rhs.m_run_number != EventIDBase::UNDEFNUM ) {
-    os << rhs.m_run_number;
-    separator = ",";
-  }
-
-  if ( rhs.m_event_number != EventIDBase::UNDEFEVT ) {
-    os << separator << rhs.m_event_number;
-    separator = ",";
-  }
-
-  if ( rhs.isTimeStamp() ) {
-    os << separator << "t:" << rhs.m_time_stamp;
-    if ( rhs.m_time_stamp_ns_offset != 0 ) {
-      os << "." << std::setfill( '0' ) << std::setw( 9 ) << rhs.m_time_stamp_ns_offset;
+    if ( lhs.isTimeStamp() && rhs.isTimeStamp() ) { // both time-stamp, compare them
+      time_stamp = std::max( std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset ),
+                             std::tie( rhs.m_time_stamp, rhs.m_time_stamp_ns_offset ) );
+    } else if ( lhs.isTimeStamp() ) { // only lhs time-stamp: Use it
+      time_stamp = std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset );
+    } else { // otherwise use rhs time-stamp which might be UNDEFNUM (in case both input values are Run-Lumi only)
+      time_stamp = std::tie( rhs.m_time_stamp, rhs.m_time_stamp_ns_offset );
     }
-    separator = ",";
+
+    if ( lhs.isRunLumi() && rhs.isRunLumi() ) { // both run-lumi, compare them
+      run_lumi_ev = std::max( std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ),
+                              std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number ) );
+
+    } else if ( lhs.isRunLumi() ) { // only lhs run-lumi: Use it
+      run_lumi_ev = std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number );
+    } else { // otherwise use rhs run-lumi which might be UNDEFNUM (in case both input values are TS-only)
+      run_lumi_ev = std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number );
+    }
+
+    return EventIDBase( run_lumi_ev, time_stamp, lhs.bunch_crossing_id() );
   }
 
-  if ( rhs.isLumiEvent() || rhs.isRunLumi() ) {
-    os << separator << "l:" << rhs.m_lumi_block;
-    separator = ",";
+  friend bool operator<( const EventIDBase& lhs, const EventIDBase& rhs ) {
+    // first try ordering by timestamp if both are non-zero
+    // then try ordering by run/lumi/event
+    // this assumes that both EventIDBase have the same set of values defined.
+
+    if ( lhs.isTimeStamp() && rhs.isTimeStamp() ) {
+      return lhs.m_time_stamp < rhs.m_time_stamp;
+    } else {
+      return std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ) <
+             std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number );
+    }
   }
 
-  if ( rhs.m_bunch_crossing_id != 0 ) { os << separator << "b:" << rhs.m_bunch_crossing_id; }
-  os << "]";
-  return os;
-}
+  friend bool operator==( const EventIDBase& lhs, const EventIDBase& rhs ) {
+    // We assume that equality via run/event/lumi numbers is sufficient
+    return ( lhs.m_run_number == rhs.m_run_number && lhs.m_event_number == rhs.m_event_number &&
+             lhs.m_lumi_block == rhs.m_lumi_block );
+  }
+
+  friend std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs ) {
+    if ( rhs.m_type == EventIDBase::Invalid ) return os << "[INVALID]";
+
+    const char* separator = "";
+    os << "[";
+    if ( rhs.m_run_number != EventIDBase::UNDEFNUM ) {
+      os << rhs.m_run_number;
+      separator = ",";
+    }
+
+    if ( rhs.m_event_number != EventIDBase::UNDEFEVT ) {
+      os << separator << rhs.m_event_number;
+      separator = ",";
+    }
+
+    if ( rhs.isTimeStamp() ) {
+      os << separator << "t:" << rhs.m_time_stamp;
+      if ( rhs.m_time_stamp_ns_offset != 0 ) {
+        os << "." << std::setfill( '0' ) << std::setw( 9 ) << rhs.m_time_stamp_ns_offset;
+      }
+      separator = ",";
+    }
+
+    if ( rhs.isLumiEvent() || rhs.isRunLumi() ) {
+      os << separator << "l:" << rhs.m_lumi_block;
+      separator = ",";
+    }
+
+    if ( rhs.m_bunch_crossing_id != 0 ) { os << separator << "b:" << rhs.m_bunch_crossing_id; }
+    os << "]";
+    return os;
+  }
+};
 
 #endif // EVENTINFO_EVENTID_H

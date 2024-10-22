@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,15 +10,15 @@
 \***********************************************************************************/
 // Include files
 
-#include "GaudiKernel/HashMap.h"
 #include <Gaudi/Parsers/CommonParsers.h>
+#include <GaudiKernel/HashMap.h>
 // Local implementation of parsers from HashMap
 namespace Gaudi {
   namespace Parsers {
     /// Basic parser for the types of HashMap used in DODBasicMapper.
     /// Delegates to the parser of map<string,string>.
     template <typename K, typename V>
-    StatusCode parse( GaudiUtils::HashMap<K, V>& result, const std::string& input ) {
+    StatusCode parse( GaudiUtils::HashMap<K, V>& result, std::string_view input ) {
       std::map<std::string, std::string> tmp;
       StatusCode                         sc = parse( tmp, input );
       if ( sc.isSuccess() ) {

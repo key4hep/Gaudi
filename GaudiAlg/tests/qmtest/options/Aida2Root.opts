@@ -1,6 +1,0 @@
-#include "Histograms.opts"
-
-ApplicationMgr.TopAlg += { "Aida2Root" } ;
-ApplicationMgr.ExtSvc += { "Gaudi::Monitoring::MessageSvcSink" } ;
-
-RootHistSvc.OutputFile  = "histo-aida2root.root";

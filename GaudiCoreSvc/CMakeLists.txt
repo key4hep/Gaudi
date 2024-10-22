@@ -49,8 +49,10 @@ gaudi_add_module(GaudiCoreSvc
                    src/MessageSvc/MessageSvc.cpp
                    src/MessageSvc/MessageSvcSink.cpp
                    src/MessageSvc/JSONSink.cpp
+                   src/FileSvc/FileSvc.cpp
                  LINK
                    GaudiKernel
+                   ROOT::RIO
                    Python::Python
                    Boost::headers
                    Boost::filesystem

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,12 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_EVENTCONTEXT_H
-#define GAUDIKERNEL_EVENTCONTEXT_H 1
+#pragma once
 
-#include "GaudiKernel/EventIDBase.h"
+#include <GaudiKernel/EventIDBase.h>
 #include <any>
 #include <cstddef>
+#include <fmt/format.h>
 #include <iostream>
 #include <limits>
 
@@ -128,6 +128,9 @@ public:
 
   const std::type_info& getExtensionType() const { return m_extension.type(); }
 
+  friend std::ostream& operator<<( std::ostream& os, const EventContext& ctx );
+  friend std::ostream& operator<<( std::ostream& os, const EventContext* ctx );
+
 private:
   EventIDBase  m_eid{};
   ContextEvt_t m_evt_num{ INVALID_CONTEXT_EVT };
@@ -138,22 +141,19 @@ private:
   std::any m_extension;
 };
 
-inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx ) {
-  if ( ctx.valid() ) {
-    os << "s: " << ctx.slot() << "  e: " << ctx.evt();
-    if ( ctx.usesSubSlot() ) os << " sub: " << ctx.subSlot();
-    return os;
-  } else {
-    return os << "INVALID";
+template <>
+struct fmt::formatter<EventContext> : formatter<string_view> {
+  auto format( const EventContext& ec, format_context& ctx ) const {
+    if ( ec.valid() ) {
+      std::string out;
+      if ( ec.usesSubSlot() ) {
+        out = fmt::format( "s: {}  e: {} sub: {}", ec.slot(), ec.evt(), ec.subSlot() );
+      } else {
+        out = fmt::format( "s: {}  e: {}", ec.slot(), ec.evt() );
+      }
+      return formatter<string_view>::format( out, ctx );
+    } else {
+      return formatter<string_view>::format( "INVALID", ctx );
+    }
   }
-}
-
-inline std::ostream& operator<<( std::ostream& os, const EventContext* c ) {
-  if ( c ) {
-    return os << *c;
-  } else {
-    return os << "INVALID";
-  }
-}
-
-#endif // GAUDIKERNEL_EVENTCONTEXT_H
+};

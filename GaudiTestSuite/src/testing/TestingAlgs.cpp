@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,23 +8,15 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-/*
- * TestingAlg1.cpp
- *
- *  Created on: Sep 7, 2009
- *      Author: Marco Clemencic
- */
-
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/IEventProcessor.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/Incident.h"
-#include "GaudiKernel/Memory.h"
-#include "GaudiKernel/Sleep.h"
-
-#include <iostream>
-
+#include <Gaudi/Algorithm.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/IEventProcessor.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/Incident.h>
+#include <GaudiKernel/Memory.h>
+#include <GaudiKernel/Sleep.h>
 #include <csignal>
+#include <iostream>
 
 namespace GaudiTesting {
 
@@ -43,11 +35,11 @@ namespace GaudiTesting {
     }
   };
 
-  class SleepyAlg : public Algorithm {
+  class SleepyAlg : public Gaudi::Algorithm {
   public:
     using Algorithm::Algorithm;
-    StatusCode execute() override {
-      info() << "Executing event " << ++m_counter << endmsg;
+    StatusCode execute( EventContext const& ctx ) const override {
+      info() << "Executing event " << ctx.evt() + 1 << endmsg;
       info() << "Sleeping for " << m_sleep.value() << " seconds" << endmsg;
       Gaudi::Sleep( m_sleep );
       info() << "Back from sleep" << endmsg;
@@ -56,7 +48,6 @@ namespace GaudiTesting {
 
   private:
     Gaudi::Property<int> m_sleep{ this, "SleepTime", 10, "Seconds to sleep during the execute" };
-    int                  m_counter = 0;
   };
 
   /**

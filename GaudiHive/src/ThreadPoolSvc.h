@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,16 +11,16 @@
 #ifndef GAUDIHIVE_THREADPOOLSVC_H
 #define GAUDIHIVE_THREADPOOLSVC_H
 
-#include "GaudiKernel/IThreadInitTool.h"
-#include "GaudiKernel/IThreadPoolSvc.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/ToolHandle.h"
+#include <GaudiKernel/IThreadInitTool.h>
+#include <GaudiKernel/IThreadPoolSvc.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/ToolHandle.h>
 
-#include "boost/thread/barrier.hpp"
+#include <boost/thread/barrier.hpp>
 
-#include "tbb/global_control.h"
-#include "tbb/spin_mutex.h"
-#include "tbb/task_arena.h"
+#include <tbb/global_control.h>
+#include <tbb/spin_mutex.h>
+#include <tbb/task_arena.h>
 
 #include <memory>
 #include <vector>
@@ -47,7 +47,7 @@ public:
   StatusCode finalize() override final;
 
   /// Initialize the thread pool and launch the ThreadInitTasks.
-  StatusCode initPool( const int& poolSize ) override final;
+  StatusCode initPool( const int& poolSize, const int& maxParallelismExtra ) override final;
 
   /// Terminate the thread pool and launch thread termination tasks.
   StatusCode terminatePool() override final;

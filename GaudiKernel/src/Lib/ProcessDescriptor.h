@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,8 +12,8 @@
 #define GAUDIKERNEL_PROCESS_H
 
 // Framework include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/SystemBase.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/SystemBase.h>
 
 namespace System {
   // Forward declarations
@@ -130,13 +130,13 @@ namespace System {
   public:
     ProcessDescriptor();
     virtual ~ProcessDescriptor();
-    long query( long pid, InfoType info, PROCESS_BASIC_INFORMATION* buffer );
-    long query( long pid, InfoType info, POOLED_USAGE_AND_LIMITS* buffer );
-    long query( long pid, InfoType info, KERNEL_USER_TIMES* buffer );
-    long query( long pid, InfoType info, QUOTA_LIMITS* buffer );
-    long query( long pid, InfoType info, VM_COUNTERS* buffer );
-    long query( long pid, InfoType info, IO_COUNTERS* buffer );
-    long query( long pid, InfoType info, long* buffer );
+    long query( long pid, InfoType fetch, PROCESS_BASIC_INFORMATION* info );
+    long query( long pid, InfoType fetch, POOLED_USAGE_AND_LIMITS* info );
+    long query( long pid, InfoType fetch, KERNEL_USER_TIMES* info );
+    long query( long pid, InfoType fetch, QUOTA_LIMITS* info );
+    long query( long pid, InfoType fetch, VM_COUNTERS* info );
+    long query( long pid, InfoType fetch, IO_COUNTERS* info );
+    long query( long pid, InfoType fetch, long* info );
   };
 
   inline ProcessDescriptor* getProcess() {

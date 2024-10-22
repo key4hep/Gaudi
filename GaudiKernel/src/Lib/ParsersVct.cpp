@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,10 +11,10 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include "GaudiKernel/VectorsAsProperty.h"
+#include <GaudiKernel/VectorsAsProperty.h>
 // ============================================================================
-#include "GaudiKernel/ToStream.h"
 #include <Gaudi/Parsers/Factory.h>
+#include <GaudiKernel/ToStream.h>
 // ============================================================================
 namespace {
   // ==========================================================================
@@ -34,7 +34,7 @@ namespace {
 namespace Gaudi {
   namespace Parsers {
     template <typename T1, typename T2>
-    inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, const std::string& input ) {
+    inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, std::string_view input ) {
       Skipper                                                                              skipper;
       typename Grammar_<IteratorT, ROOT::Math::PositionVector3D<T1, T2>, Skipper>::Grammar g;
       IteratorT iter = input.begin(), end = input.end();
@@ -44,7 +44,7 @@ namespace Gaudi {
     }
     // ==========================================================================
 
-    StatusCode parse( Gaudi::XYZPoint& result, const std::string& input ) { return parse_( result, input ); }
+    StatusCode parse( Gaudi::XYZPoint& result, std::string_view input ) { return parse_( result, input ); }
 
     // ==========================================================================
     /*  parse 3D-vector
@@ -54,7 +54,7 @@ namespace Gaudi {
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    StatusCode parse( Gaudi::XYZVector& result, const std::string& input ) {
+    StatusCode parse( Gaudi::XYZVector& result, std::string_view input ) {
 
       Gaudi::XYZPoint point;
       StatusCode      sc = parse( point, input );
@@ -63,7 +63,7 @@ namespace Gaudi {
       return StatusCode::SUCCESS; // RETURN
     }
 
-    StatusCode parse( Gaudi::LorentzVector& result, const std::string& input ) { return parse_( result, input ); }
+    StatusCode parse( Gaudi::LorentzVector& result, std::string_view input ) { return parse_( result, input ); }
 
     // ==========================================================================
     /*  parse the vector of points
@@ -73,7 +73,7 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     // ==========================================================================
-    StatusCode parse( std::vector<Gaudi::XYZPoint>& result, const std::string& input ) {
+    StatusCode parse( std::vector<Gaudi::XYZPoint>& result, std::string_view input ) {
       result.clear();
       return parse_( result, input );
     }
@@ -85,7 +85,7 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     // ==========================================================================
-    StatusCode parse( std::vector<Gaudi::XYZVector>& result, const std::string& input ) {
+    StatusCode parse( std::vector<Gaudi::XYZVector>& result, std::string_view input ) {
       result.clear();
       return parse_( result, input );
     }
@@ -99,7 +99,7 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     // ==========================================================================
-    StatusCode parse( std::vector<Gaudi::LorentzVector>& result, const std::string& input ) {
+    StatusCode parse( std::vector<Gaudi::LorentzVector>& result, std::string_view input ) {
       return parse_( result, input );
     }
 #endif

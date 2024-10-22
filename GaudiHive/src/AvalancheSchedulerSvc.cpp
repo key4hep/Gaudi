@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,30 +10,33 @@
 \***********************************************************************************/
 #include "AvalancheSchedulerSvc.h"
 #include "AlgTask.h"
+#include "FiberManager.h"
 #include "ThreadPoolSvc.h"
 
 // Framework includes
-#include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/ThreadLocalContext.h"
 #include <Gaudi/Algorithm.h> // can be removed ASA dynamic casts to Algorithm are removed
+#include <GaudiKernel/ConcurrencyFlags.h>
+#include <GaudiKernel/DataHandleHolderVisitor.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IDataManagerSvc.h>
 #include <GaudiKernel/SerializeSTL.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 
 // C++
 #include <algorithm>
+#include <fstream>
 #include <map>
 #include <queue>
+#include <regex>
 #include <sstream>
 #include <string_view>
 #include <thread>
 #include <unordered_set>
 
 // External libs
-#include "boost/algorithm/string.hpp"
-#include "boost/thread.hpp"
-#include "boost/tokenizer.hpp"
+#include <boost/algorithm/string.hpp>
+#include <boost/thread.hpp>
+#include <boost/tokenizer.hpp>
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AvalancheSchedulerSvc )
@@ -92,6 +95,9 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     fatal() << "Cannot find valid TBB task_arena" << endmsg;
     return StatusCode::FAILURE;
   }
+
+  // Initialize FiberManager
+  m_fiberManager = std::make_unique<FiberManager>( m_numOffloadThreads.value() );
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
@@ -225,6 +231,13 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   }
 
   if ( m_showDataDeps ) { info() << ostdd.str() << endmsg; }
+
+  // If requested, dump a graph of the data dependencies in a .dot or .md file
+  if ( not m_dataDepsGraphFile.empty() ) {
+    if ( dumpGraphFile( algosInputDependenciesMap, algosOutputDependenciesMap ).isFailure() ) {
+      return StatusCode::FAILURE;
+    }
+  }
 
   // Check if we have unmet global input dependencies, and, optionally, heal them
   // WARNING: this step must be done BEFORE the Precedence Service is initialized
@@ -408,6 +421,9 @@ StatusCode AvalancheSchedulerSvc::finalize() {
   sc = deactivate();
   if ( sc.isFailure() ) warning() << "Scheduler could not be deactivated" << endmsg;
 
+  debug() << "Deleting FiberManager" << endmsg;
+  m_fiberManager.reset();
+
   info() << "Joining Scheduler thread" << endmsg;
   m_thread.join();
 
@@ -435,7 +451,7 @@ void AvalancheSchedulerSvc::activate() {
 
   ON_DEBUG debug() << "AvalancheSchedulerSvc::activate()" << endmsg;
 
-  if ( m_threadPoolSvc->initPool( m_threadPoolSize ).isFailure() ) {
+  if ( m_threadPoolSvc->initPool( m_threadPoolSize, m_maxParallelismExtra ).isFailure() ) {
     error() << "problems initializing ThreadPoolSvc" << endmsg;
     m_isActive = FAILURE;
     return;
@@ -591,6 +607,10 @@ StatusCode AvalancheSchedulerSvc::pushNewEvents( std::vector<EventContext*>& eve
 unsigned int AvalancheSchedulerSvc::freeSlots() { return std::max( m_freeSlots.load(), 0 ); }
 
 //---------------------------------------------------------------------------
+
+void AvalancheSchedulerSvc::dumpState() { dumpSchedulerState( -1 ); }
+
+//---------------------------------------------------------------------------
 /**
  * Get a finished event or block until one becomes available.
  */
@@ -688,14 +708,14 @@ StatusCode AvalancheSchedulerSvc::iterate() {
     }
 
     // Perform DR->SCHEDULED
-    auto& drAlgs = thisAlgsStates.algsInState( AState::DATAREADY );
+    const auto& drAlgs = thisAlgsStates.algsInState( AState::DATAREADY );
     for ( uint algIndex : drAlgs ) {
       const std::string& algName{ index2algname( algIndex ) };
       unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
-      bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
+      bool               asynchronous{ m_precSvc->isAsynchronous( algName ) };
 
       partial_sc =
-          schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, thisSlot.eventContext.get() ) );
+          schedule( TaskSpec( nullptr, algIndex, algName, rank, asynchronous, iSlot, thisSlot.eventContext.get() ) );
 
       ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
           << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << algName
@@ -704,13 +724,13 @@ StatusCode AvalancheSchedulerSvc::iterate() {
 
     // Check for algorithms ready in sub-slots
     for ( auto& subslot : thisSlot.allSubSlots ) {
-      auto& drAlgsSubSlot = subslot.algsStates.algsInState( AState::DATAREADY );
+      const auto& drAlgsSubSlot = subslot.algsStates.algsInState( AState::DATAREADY );
       for ( uint algIndex : drAlgsSubSlot ) {
         const std::string& algName{ index2algname( algIndex ) };
         unsigned int       rank{ m_optimizationMode.empty() ? 0 : m_precSvc->getPriority( algName ) };
-        bool               blocking{ m_enablePreemptiveBlockingTasks ? m_precSvc->isBlocking( algName ) : false };
+        bool               asynchronous{ m_precSvc->isAsynchronous( algName ) };
         partial_sc =
-            schedule( TaskSpec( nullptr, algIndex, algName, rank, blocking, iSlot, subslot.eventContext.get() ) );
+            schedule( TaskSpec( nullptr, algIndex, algName, rank, asynchronous, iSlot, subslot.eventContext.get() ) );
       }
     }
 
@@ -874,7 +894,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
     size_t indt( 0 );
     for ( auto& slot : m_eventSlots ) {
 
-      auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
+      const auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
       for ( uint algIndex : schedAlgs ) {
         if ( index2algname( algIndex ).length() > indt ) indt = index2algname( algIndex ).length();
       }
@@ -883,7 +903,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
     // Figure the last running schedule across all slots
     for ( auto& slot : m_eventSlots ) {
 
-      auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
+      const auto& schedAlgs = slot.algsStates.algsInState( AState::SCHEDULED );
       for ( uint algIndex : schedAlgs ) {
 
         const std::string& algoName{ index2algname( algIndex ) };
@@ -927,17 +947,19 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
     outputMS << "[ slot: "
              << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]" )
-             << "  event: "
-             << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->evt() ) : "[ctx invalid]" )
-             << " ]:\n\n";
+             << ", event: "
+             << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->evt() ) : "[ctx invalid]" );
+
+    if ( slot.eventContext->eventID().isValid() ) { outputMS << ", eventID: " << slot.eventContext->eventID(); }
+    outputMS << " ]:\n\n";
 
     if ( 0 > iSlot || iSlot == slotCount ) {
 
       // If an alg has thrown an error then it's not a failure of the CF/DF graph
       if ( wasAlgError ) {
         outputMS << "ERROR alg(s):";
-        int   errorCount = 0;
-        auto& errorAlgs  = slot.algsStates.algsInState( AState::ERROR );
+        int         errorCount = 0;
+        const auto& errorAlgs  = slot.algsStates.algsInState( AState::ERROR );
         for ( uint algIndex : errorAlgs ) {
           outputMS << " " << index2algname( algIndex );
           ++errorCount;
@@ -961,7 +983,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
                    << " ]:\n\n";
           if ( wasAlgError ) {
             outputMS << "ERROR alg(s):";
-            auto& errorAlgs = ss.algsStates.algsInState( AState::ERROR );
+            const auto& errorAlgs = ss.algsStates.algsInState( AState::ERROR );
             for ( uint algIndex : errorAlgs ) { outputMS << " " << index2algname( algIndex ); }
             outputMS << "\n\n";
           } else {
@@ -991,11 +1013,6 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
 StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
 
-  if ( ts.blocking && m_blockingAlgosInFlight == m_maxBlockingAlgosInFlight ) {
-    m_retryQueue.push( std::move( ts ) );
-    return StatusCode::SUCCESS;
-  }
-
   // Check if a free Algorithm instance is available
   StatusCode getAlgSC( m_algResourcePool->acquireAlgorithm( ts.algName, ts.algPtr ) );
 
@@ -1010,32 +1027,30 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
       unsigned int     algIndex{ ts.algIndex };
       std::string_view algName( ts.algName );
       unsigned int     algRank{ ts.algRank };
-      bool             blocking{ ts.blocking };
+      bool             asynchronous{ ts.asynchronous };
       int              slotIndex{ ts.slotIndex };
       EventContext*    contextPtr{ ts.contextPtr };
 
-      if ( !blocking ) {
+      if ( asynchronous ) {
+        // Add to asynchronous scheduled queue
+        m_scheduledAsynchronousQueue.push( std::move( ts ) );
+
+        // Schedule task
+        m_fiberManager->schedule( AlgTask( this, serviceLocator(), m_algExecStateSvc, asynchronous ) );
+      }
+
+      if ( !asynchronous ) {
         // Add the algorithm to the scheduled queue
         m_scheduledQueue.push( std::move( ts ) );
 
         // Prepare a TBB task that will execute the Algorithm according to the above queued specs
-        m_arena->enqueue( AlgTask( this, serviceLocator(), m_algExecStateSvc, false ) );
+        m_arena->enqueue( AlgTask( this, serviceLocator(), m_algExecStateSvc, asynchronous ) );
         ++m_algosInFlight;
-
-      } else { // schedule blocking algorithm in independent thread
-        m_scheduledBlockingQueue.push( std::move( ts ) );
-
-        // Schedule the blocking task in an independent thread
-        ++m_blockingAlgosInFlight;
-        std::thread _t( AlgTask( this, serviceLocator(), m_algExecStateSvc, true ) );
-        _t.detach();
-
-      } // end scheduling blocking Algorithm
-
+      }
       sc = revise( algIndex, contextPtr, AState::SCHEDULED );
 
       ON_DEBUG debug() << "Scheduled " << algName << " [slot:" << slotIndex << ", event:" << contextPtr->evt()
-                       << ", rank:" << algRank << ", blocking:" << ( blocking ? "yes" : "no" )
+                       << ", rank:" << algRank << ", asynchronous:" << ( asynchronous ? "yes" : "no" )
                        << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
                        << ( m_enablePreemptiveBlockingTasks
                                 ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
@@ -1043,9 +1058,10 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
                        << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
+      // Beojan: I don't think this bit works. ts hasn't been pushed into any queue so AlgTask won't retrieve it
       ++m_algosInFlight;
       sc = revise( ts.algIndex, ts.contextPtr, AState::SCHEDULED );
-      AlgTask( this, serviceLocator(), m_algExecStateSvc, false )();
+      AlgTask( this, serviceLocator(), m_algExecStateSvc, ts.asynchronous )();
       --m_algosInFlight;
     }
   } else { // if no Algorithm instance available, retry later
@@ -1069,10 +1085,7 @@ StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
 
   Gaudi::Hive::setCurrentContext( ts.contextPtr );
 
-  if ( !ts.blocking )
-    --m_algosInFlight;
-  else
-    --m_blockingAlgosInFlight;
+  --m_algosInFlight;
 
   const AlgExecState& algstate = m_algExecStateSvc->algExecState( ts.algPtr, *( ts.contextPtr ) );
   AState              state    = algstate.execStatus().isSuccess()
@@ -1083,7 +1096,7 @@ StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
   auto sc = revise( ts.algIndex, ts.contextPtr, state, true );
 
   ON_DEBUG debug() << "Executed " << ts.algName << " [slot:" << ts.slotIndex << ", event:" << ts.contextPtr->evt()
-                   << ", rank:" << ts.algRank << ", blocking:" << ( ts.blocking ? "yes" : "no" )
+                   << ", rank:" << ts.algRank << ", asynchronous:" << ( ts.asynchronous ? "yes" : "no" )
                    << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
                    << ( m_enablePreemptiveBlockingTasks
                             ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
@@ -1141,7 +1154,7 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( const EventContext* sourceC
 
 void AvalancheSchedulerSvc::recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) {
 
-  auto action = [this, samplePeriod, callback{ std::move( callback ) }]() -> StatusCode {
+  auto action = [this, samplePeriod, callback = std::move( callback )]() -> StatusCode {
     if ( samplePeriod < 0 ) {
       this->m_snapshotInterval = std::chrono::duration<int64_t, std::milli>::min();
     } else {
@@ -1152,4 +1165,124 @@ void AvalancheSchedulerSvc::recordOccupancy( int samplePeriod, std::function<voi
   };
 
   m_actionsQueue.push( std::move( action ) );
+}
+
+StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, DataObjIDColl>& inDeps,
+                                                 const std::map<std::string, DataObjIDColl>& outDeps ) const {
+  // Both maps should have the same algorithm entries
+  assert( inDeps.size() == outDeps.size() );
+
+  // Check file extension
+  enum class FileType : short { UNKNOWN, DOT, MD };
+  std::regex fileExtensionRegexDot( ".dot$" );
+  std::regex fileExtensionRegexMd( ".md$" );
+
+  std::string fileName      = m_dataDepsGraphFile.value();
+  FileType    fileExtension = FileType::UNKNOWN;
+  if ( std::regex_search( m_dataDepsGraphFile.value(), fileExtensionRegexDot ) ) {
+    fileExtension = FileType::DOT;
+  } else if ( std::regex_search( m_dataDepsGraphFile.value(), fileExtensionRegexMd ) ) {
+    fileExtension = FileType::MD;
+  } else {
+    fileExtension = FileType::DOT;
+    fileName      = fileName + ".dot";
+  }
+  info() << "Dumping data dependencies graph to file: " << fileName << endmsg;
+
+  std::string startGraph = "";
+  std::string stopGraph  = "";
+  // define functions
+  std::function<std::string( const std::string&, const std::string& )> defineAlg;
+  std::function<std::string( const DataObjID& )>                       defineObj;
+  std::function<std::string( const DataObjID&, const std::string& )>   defineInput;
+  std::function<std::string( const std::string&, const DataObjID& )>   defineOutput;
+
+  if ( fileExtension == FileType::DOT ) {
+    // .dot file
+    startGraph = "digraph datadeps {\nrankdir=\"LR\";\n\n";
+    stopGraph  = "\n}\n";
+
+    defineAlg = []( const std::string& alg, const std::string& idx ) -> std::string {
+      return "Alg_" + idx + " [label=\"" + alg + "\";shape=box];\n";
+    };
+
+    defineObj = []( const DataObjID& obj ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + " [label=\"" + obj.key() + "\"];\n";
+    };
+
+    defineInput = []( const DataObjID& obj, const std::string& alg ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + " -> " + "Alg_" + alg + ";\n";
+    };
+
+    defineOutput = []( const std::string& alg, const DataObjID& obj ) -> std::string {
+      return "Alg_" + alg + " -> " + "obj_" + std::to_string( obj.hash() ) + ";\n";
+    };
+  } else {
+    // .md file
+    startGraph = "```mermaid\ngraph LR;\n\n";
+    stopGraph  = "\n```\n";
+
+    defineAlg = []( const std::string& alg, const std::string& idx ) -> std::string {
+      return "Alg_" + idx + "{{" + alg + "}}\n";
+    };
+
+    defineObj = []( const DataObjID& obj ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + ">" + obj.key() + "]\n";
+    };
+
+    defineInput = []( const DataObjID& obj, const std::string& alg ) -> std::string {
+      return "obj_" + std::to_string( obj.hash() ) + " --> " + "Alg_" + alg + "\n";
+    };
+
+    defineOutput = []( const std::string& alg, const DataObjID& obj ) -> std::string {
+      return "Alg_" + alg + " --> " + "obj_" + std::to_string( obj.hash() ) + "\n";
+    };
+  } // fileExtension
+
+  std::ofstream dataDepthGraphFile( m_dataDepsGraphFile.value(), std::ofstream::out );
+  dataDepthGraphFile << startGraph;
+
+  // define algs and objects
+  std::set<std::size_t> definedObjects;
+
+  // Regex for selection of algs and objects
+  std::regex algNameRegex( m_dataDepsGraphAlgoPattern.value() );
+  std::regex objNameRegex( m_dataDepsGraphObjectPattern.value() );
+
+  // inDeps and outDeps should have the same entries
+  std::size_t algoIndex = 0ul;
+  for ( const auto& [name, ideps] : inDeps ) {
+    if ( not std::regex_search( name, algNameRegex ) ) continue;
+    dataDepthGraphFile << defineAlg( name, std::to_string( algoIndex ) );
+
+    // inputs
+    for ( const auto& dep : ideps ) {
+      if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
+
+      if ( definedObjects.find( dep.hash() ) == definedObjects.end() ) {
+        definedObjects.insert( dep.hash() );
+        dataDepthGraphFile << defineObj( dep );
+      }
+      dataDepthGraphFile << defineInput( dep, std::to_string( algoIndex ) );
+    } // loop on ideps
+
+    const auto& odeps = outDeps.at( name );
+    for ( const auto& dep : odeps ) {
+      if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
+
+      if ( definedObjects.find( dep.hash() ) == definedObjects.end() ) {
+        definedObjects.insert( dep.hash() );
+        dataDepthGraphFile << defineObj( dep );
+      }
+      dataDepthGraphFile << defineOutput( std::to_string( algoIndex ), dep );
+    } // loop on odeps
+
+    ++algoIndex;
+  } // loop on inDeps
+
+  // end the file
+  dataDepthGraphFile << stopGraph;
+  dataDepthGraphFile.close();
+
+  return StatusCode::SUCCESS;
 }

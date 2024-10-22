@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -16,32 +16,36 @@
 //====================================================================
 
 // Framework include files
-#include "RootCnv/RootDataConnection.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/Incident.h"
-#include "GaudiKernel/LinkManager.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/strcasecmp.h"
 #include "RootUtils.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/Incident.h>
+#include <GaudiKernel/LinkManager.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/strcasecmp.h>
+#include <RootCnv/RootDataConnection.h>
 // ROOT include files
-#include "TBranch.h"
-#include "TClass.h"
-#include "TFile.h"
-#include "TLeaf.h"
-#include "TMemFile.h"
-#include "TROOT.h"
-#include "TTree.h"
+#include <TBranch.h>
+#include <TClass.h>
+#include <TFile.h>
+#include <TLeaf.h>
+#include <TMemFile.h>
+#include <TROOT.h>
+#include <TTree.h>
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-#  include "Compression.h"
+#  include <Compression.h>
 static int s_compressionLevel = ROOT::CompressionSettings( ROOT::kLZMA, 4 );
 #else
 static int s_compressionLevel = 1;
 #endif
 
+#define ROOT_HAS_630_FWD_COMPAT ROOT_VERSION_CODE > ROOT_VERSION( 6, 30, 4 )
+
 // C/C++ include files
+#include <fmt/format.h>
 #include <limits>
 #include <numeric>
 #include <stdexcept>
@@ -170,8 +174,8 @@ void RootConnectionSetup::setIncidentSvc( IIncidentSvc* s ) { m_incidentSvc.rese
 /// Standard constructor
 RootDataConnection::RootDataConnection( const IInterface* owner, std::string_view fname,
                                         std::shared_ptr<RootConnectionSetup> setup )
-    : IDataConnection( owner, std::string{ fname } )
-    , m_setup( std::move( setup ) ) { //               01234567890123456789012345678901234567890
+    : IDataConnection( owner, std::string{ fname } ), m_setup( std::move( setup ) ) {
+  //               01234567890123456789012345678901234567890
   // Check if FID: A82A3BD8-7ECB-DC11-8DC0-000423D950B0
   if ( fname.size() == 36 && fname[8] == '-' && fname[13] == '-' && fname[18] == '-' && fname[23] == '-' ) {
     m_name = "FID:";
@@ -226,7 +230,7 @@ void RootDataConnection::enableStatistics( std::string_view section ) {
   msgSvc() << MSG::INFO << "Perfstats are ALREADY ENABLED." << endmsg;
 }
 
-/// Create file access tool to encapsulate POOL compatibiliy
+/// Create file access tool to encapsulate POOL compatibility
 RootDataConnection::Tool* RootDataConnection::makeTool() {
   if ( !m_refs ) m_refs = (TTree*)m_file->Get( "Refs" );
   if ( m_refs ) m_tool.reset( new RootTool( this ) );
@@ -296,6 +300,9 @@ StatusCode RootDataConnection::connectWrite( IoType typ ) {
   case CREATE:
     resetAge();
     m_file.reset( TFile::Open( spec.c_str(), "CREATE", "Root event data", compress ) );
+#if ROOT_HAS_630_FWD_COMPAT
+    if ( m_file && m_setup->root630ForwardCompatibility ) m_file->SetBit( TFile::k630forwardCompatibility );
+#endif
     m_refs = new TTree( "Refs", "Root reference data" );
     msgSvc() << "Opened file " << m_pfn << " in mode CREATE. [" << m_fid << "]" << endmsg;
     m_params.emplace_back( "PFN", m_pfn );
@@ -305,6 +312,9 @@ StatusCode RootDataConnection::connectWrite( IoType typ ) {
   case RECREATE:
     resetAge();
     m_file.reset( TFile::Open( spec.c_str(), "RECREATE", "Root event data", compress ) );
+#if ROOT_HAS_630_FWD_COMPAT
+    if ( m_file && m_setup->root630ForwardCompatibility ) m_file->SetBit( TFile::k630forwardCompatibility );
+#endif
     msgSvc() << "Opened file " << m_pfn << " in mode RECREATE. [" << m_fid << "]" << endmsg;
     m_refs = new TTree( "Refs", "Root reference data" );
     m_params.emplace_back( "PFN", m_pfn );
@@ -434,6 +444,14 @@ TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
         }
       }
       m_sections[std::string{ section }] = t;
+    } else {
+      // in some rare cases we do have the entry we expect, but we cannot read it
+      // https://gitlab.cern.ch/gaudi/Gaudi/-/issues/301
+      auto key = m_file->GetKey( std::string{ section }.c_str() );
+      if ( key ) {
+        incidentSvc()->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
+        msgSvc() << MSG::ERROR << fmt::format( "failed to get TTree '{}' in {}", section, pfn() ) << endmsg;
+      }
     }
   }
   return t;
@@ -588,7 +606,7 @@ int RootDataConnection::loadRefs( std::string_view section, std::string_view cnt
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
   if ( nbytes < 0 ) {
     // This is definitely an error:
-    // -- Either branch not preesent at all or
+    // -- Either branch not present at all or
     // -- ROOT I/O error, which issues -1
     IIncidentSvc* inc = m_setup->incidentSvc();
     if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }

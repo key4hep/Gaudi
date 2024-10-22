@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,11 +13,11 @@
 // ============================================================================
 // Framework include files
 // ============================================================================
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/DataTypeInfo.h"
-#include "GaudiKernel/INTuple.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/SmartDataPtr.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataTypeInfo.h>
+#include <GaudiKernel/INTuple.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/SmartDataPtr.h>
 // ============================================================================
 // STL include files
 // ============================================================================
@@ -87,7 +87,7 @@ namespace NTuple {
     /// Upper boundary of range
     TYP upper() const { return m_upper; }
     /// Distance between lower and upper range
-    TYP distance() const { return m_upper - m_lower; }
+    TYP distance() const { return m_upper - m_lower; } // cppcheck-suppress CastIntegerToAddressAtReturn
     /// Minimal number of data
     static TYP min() { return std::numeric_limits<TYP>::min(); }
     /// Maximal number of data
@@ -227,7 +227,8 @@ namespace NTuple {
     friend class Tuple;
 
   private:
-    _Accessor<TYP>& operator=( const _Accessor<TYP>& ) { return *this; }
+    /// Needs to be implemented in derived classes
+    _Accessor<TYP>& operator=( const _Accessor<TYP>& ) = delete;
 
   protected:
     /// Pointer to instance

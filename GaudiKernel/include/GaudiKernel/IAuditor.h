@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,7 +12,7 @@
 #define GAUDI_IAUDITOR_H
 
 // Include files
-#include "GaudiKernel/INamedInterface.h"
+#include <GaudiKernel/INamedInterface.h>
 #include <array>
 #include <string>
 
@@ -32,6 +32,13 @@ public:
 
   /// Defines the standard (= used by the framework) auditable event types.
   enum StandardEventType { Initialize, ReInitialize, Execute, Finalize, Start, Stop, ReStart };
+  /// Simple mapping function from IAuditor::StandardEventType to string.
+  friend const char* toStr( IAuditor::StandardEventType e ) {
+    constexpr std::array<const char*, IAuditor::StandardEventType::ReStart + 1> s_tbl = {
+        { "Initialize", "ReInitialize", "Execute", "Finalize", "Start", "Stop", "ReStart" } };
+    return e <= IAuditor::StandardEventType::ReStart ? s_tbl[e] : nullptr;
+  }
+  friend std::ostream& operator<<( std::ostream& s, IAuditor::StandardEventType e ) { return s << toStr( e ); }
 
   /// Type used to allow users to specify a custom event to be audit.
   /// Examples of custom events are callbacks (see
@@ -90,14 +97,5 @@ public:
   /// Used by AuditorSvc.
   virtual StatusCode sysFinalize() = 0;
 };
-
-/// Simple mapping function from IAuditor::StandardEventType to string.
-inline const char* toStr( IAuditor::StandardEventType e ) {
-  static const std::array<const char*, IAuditor::StandardEventType::ReStart + 1> s_tbl = {
-      { "Initialize", "ReInitialize", "Execute", "Finalize", "Start", "Stop", "ReStart" } };
-  return e <= IAuditor::StandardEventType::ReStart ? s_tbl[e] : nullptr;
-}
-
-inline std::ostream& operator<<( std::ostream& s, IAuditor::StandardEventType e ) { return s << toStr( e ); }
 
 #endif // GAUDIKERNEL_IAUDITOR_H

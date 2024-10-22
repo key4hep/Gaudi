@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,7 +11,7 @@
 #ifndef GAUDIKERNEL_IMPLEMENTS_H
 #define GAUDIKERNEL_IMPLEMENTS_H
 
-#include "GaudiKernel/IInterface.h"
+#include <GaudiKernel/IInterface.h>
 #include <atomic>
 
 /// Base class used to implement the interfaces.
@@ -41,7 +41,7 @@ public:
   /** Copy constructor (zero the reference count) */
   implements( const implements& /*other*/ ) : m_refCount{ 0 } {}
   /** Assignment operator (do not touch the reference count).*/
-  implements& operator=( const implements& /*other*/ ) { return *this; }
+  implements& operator=( const implements& /*other*/ ) { return *this; } // cppcheck-suppress operatorEqVarError
 
 public:
   /** Reference Interface instance               */

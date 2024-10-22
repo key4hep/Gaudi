@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,11 +14,11 @@
 // Base classes
 // #include "GaudiKernel/DataSvc.h"
 // D. Piparo: Change to the new thread safe version
-#include "GaudiKernel/IDetDataSvc.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/Time.h"
-#include "GaudiKernel/TsDataSvc.h"
+#include <GaudiKernel/IDetDataSvc.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/Time.h>
+#include <GaudiKernel/TsDataSvc.h>
 
 // Forward declarations
 class StatusCode;

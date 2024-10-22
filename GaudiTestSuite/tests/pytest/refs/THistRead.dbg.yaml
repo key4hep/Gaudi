@@ -1,0 +1,159 @@
+stdout: "JobOptionsSvc        INFO Job options successfully file THistRead.opts\n\
+  ApplicationMgr    SUCCESS\n====================================================================================================================================\n\
+  ====================================================================================================================================\e\
+  [m\nApplicationMgr    VERBOSE declared service EvtDataSvc/EventDataSvc\e[m\nApplicationMgr\
+  \    VERBOSE declared service DetDataSvc/DetectorDataSvc\e[m\nApplicationMgr   \
+  \ VERBOSE declared service HistogramSvc/HistogramDataSvc\e[m\nApplicationMgr   \
+  \ VERBOSE declared service HbookCnv::PersSvc/HbookHistSvc\e[m\nApplicationMgr  \
+  \  VERBOSE declared service RootHistCnv::PersSvc/RootHistSvc\e[m\nApplicationMgr\
+  \    VERBOSE declared service EvtPersistencySvc/EventPersistencySvc\e[m\nApplicationMgr\
+  \    VERBOSE declared service DetPersistencySvc/DetectorPersistencySvc\e[m\nApplicationMgr\
+  \    VERBOSE declared service HistogramPersistencySvc/HistogramPersistencySvc\e\
+  [m\nApplicationMgr      DEBUG Loading declared DLL's\e[m\nApplicationMgr    VERBOSE\
+  \ added service EventLoopMgr/EventLoopMgr\e[m\nApplicationMgr       INFO Application\
+  \ Manager Configured successfully\e[m\nTHistSvc            DEBUG Delaying connection\
+  \ of Input Files until Initialize. now in OFFLINE\e[m\nTHistSvc            DEBUG\
+  \ Delaying connection of Output Files until Initialize. now in CONFIGURED\e[m\n\
+  THistSvc            DEBUG Delaying connection of Input Files until Initialize. now\
+  \ in CONFIGURED\e[m\nTHistSvc            DEBUG got the FileMgr\e[m\nTHistSvc   \
+  \         DEBUG Now connecting of Input Files\e[m\nTHistSvc            DEBUG Opening\
+  \ TFile \"tuple2.rt\"  stream: \"read1\"  mode: \"O\" comp level: 1\e[m\nTHistSvc\
+  \            DEBUG Opening TFile \"tuple3.rt\"  stream: \"read2\"  mode: \"O\" comp\
+  \ level: 1\e[m\nTHistSvc             INFO registered file [tuple2.rt]... [ok]\e\
+  [m\nTHistSvc             INFO registered file [tuple3.rt]... [ok]\e[m\nTHistSvc\
+  \            DEBUG regHist_i obj: 0  id: /read1/xxx/1Dgauss  s: 0\e[m\nTHistSvc\
+  \            DEBUG Read in TH1F  \"1Dgauss\" from file tuple2.rt\e[m\nTH1.Print\
+  \ Name  = 1Dgauss, Entries= 20000, Total sum= 19982\nTHistSvc            DEBUG Registering\
+  \ TH1F title: \"1D Gaussian\"  id: \"/read1/xxx/1Dgauss\"  dir: tuple2.rt:/xxx \
+  \ file: tuple2.rt\e[m\nTHistSvc            DEBUG regHist_i  THistID: id: /read1/xxx/1Dgauss\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F\e[m\nTHistRead            INFO\
+  \ 1Dgauss: 20000\e[m\nTHistSvc            DEBUG regHist_i obj: 0  id: /read2/2Dgauss\
+  \  s: 0\e[m\nTHistSvc            DEBUG Read in TH2F  \"2Dgauss\" from file tuple3.rt\e\
+  [m\nTH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19974\nTHistSvc      \
+  \      DEBUG Registering TH2F title: \"2D Gaussian\"  id: \"/read2/2Dgauss\"  dir:\
+  \ tuple3.rt:/  file: tuple3.rt\e[m\nTHistSvc            DEBUG regHist_i  THistID:\
+  \ id: /read2/2Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F\e[m\nTHistRead\
+  \            INFO 2Dgauss: 20000\e[m\nTHistSvc            DEBUG regHist_i obj: 0\
+  \  id: /read2/3Dgauss  s: 0\e[m\nTHistSvc            DEBUG Read in TH3F  \"3Dgauss\"\
+  \ from file tuple3.rt\e[m\nTH1.Print Name  = 3Dgauss, Entries= 20000, Total sum=\
+  \ 19947\nTHistSvc            DEBUG Registering TH3F title: \"3D Gaussian\"  id:\
+  \ \"/read2/3Dgauss\"  dir: tuple3.rt:/  file: tuple3.rt\e[m\nTHistSvc          \
+  \  DEBUG regHist_i  THistID: id: /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x########\
+  \ T: 1 TH3F\e[m\nTHistRead            INFO 3Dgauss: 20000\e[m\nTHistSvc        \
+  \    DEBUG regHist_i obj: 0  id: /read2/profile  s: 0\e[m\nTHistSvc            DEBUG\
+  \ Read in TProfile  \"profile\" from file tuple3.rt\e[m\nTH1.Print Name  = profile,\
+  \ Entries= 0, Total sum= 0\nTHistSvc            DEBUG Registering TProfile title:\
+  \ \"profile\"  id: \"/read2/profile\"  dir: tuple3.rt:/  file: tuple3.rt\e[m\nTHistSvc\
+  \            DEBUG regHist_i  THistID: id: /read2/profile t: 0 s: 0 M: ########\
+  \ m: 0 o: 0x######## T: 1 TProfile\e[m\nTHistRead            INFO profile: 0\e[m\n\
+  THistSvc            DEBUG regHist_i obj: 0  id: /read2/trees/stuff/treename  s:\
+  \ 0\e[m\nTHistSvc            DEBUG Read in TTree  \"treename\" from file tuple3.rt\e\
+  [m\nTHistSvc            DEBUG Registering TTree title: \"tree title\"  id: \"/read2/trees/stuff/treename\"\
+  \  dir: tuple3.rt:/trees/stuff  file: tuple3.rt\e[m\nTHistSvc            DEBUG regHist_i\
+  \  THistID: id: /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o: 0x########\
+  \ T: 2 TTree\e[m\nTHistRead            INFO treename: 1000\e[m\n\e[93;1mEventLoopMgr\
+  \      WARNING Unable to locate service \"EventSelector\" \e[m\n\e[93;1mEventLoopMgr\
+  \      WARNING No events will be processed from external input.\e[m\nApplicationMgr\
+  \       INFO Application Manager Initialized successfully\e[m\nApplicationMgr  \
+  \     INFO Application Manager Started successfully\e[m\nTHistSvc            DEBUG\
+  \ stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream:\
+  \ read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1\
+  \  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name:\
+  \ tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt\
+  \  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt  size:\
+  \ ###\e[m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt  size: ###\e\
+  [m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc\
+  \            DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc     \
+  \       DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc          \
+  \  DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG\
+  \ stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream:\
+  \ read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2\
+  \  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name:\
+  \ tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt\
+  \  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt  size:\
+  \ ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt  size: ###\e\
+  [m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc\
+  \            DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc     \
+  \       DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc          \
+  \  DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG\
+  \ stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream:\
+  \ read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1\
+  \  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name:\
+  \ tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt\
+  \  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt  size:\
+  \ ###\e[m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt  size: ###\e\
+  [m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc\
+  \            DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc     \
+  \       DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc          \
+  \  DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG\
+  \ stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream:\
+  \ read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2\
+  \  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name:\
+  \ tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt\
+  \  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt  size:\
+  \ ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt  size: ###\e\
+  [m\nApplicationMgr       INFO Application Manager Stopped successfully\e[m\nEventLoopMgr\
+  \         INFO Histograms converted successfully according to request.\e[m\nTHistSvc\
+  \            DEBUG dumping THistSvc contents\nm_hlist:  size: 5\n - id: /read1/xxx/1Dgauss\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n\
+  \ - id: /read2/2Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F :: [0x########]\
+  \ 1 {[0x########]}\n - id: /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x########\
+  \ T: 1 TH3F :: [0x########] 1 {[0x########]}\n - id: /read2/profile t: 0 s: 0 M:\
+  \ ######## m: 0 o: 0x######## T: 1 TProfile :: [0x########] 1 {[0x########]}\n -\
+  \ id: /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 2\
+  \ TTree :: [0x########] 1 {[0x########]}\nm_uids: 5\n - /read1/xxx/1Dgauss  [0x########]\n\
+  \ - /read2/2Dgauss  [0x########]\n - /read2/3Dgauss  [0x########]\n - /read2/profile\
+  \  [0x########]\n - /read2/trees/stuff/treename  [0x########]\nm_ids: 5\n - 2Dgauss\
+  \  [0x########]\n - 3Dgauss  [0x########]\n - profile  [0x########]\n - trees/stuff/treename\
+  \  [0x########]\n - xxx/1Dgauss  [0x########]\nm_tobjs: 5\n - 0x######## -> id:\
+  \ /read1/xxx/1Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F\n - 0x########\
+  \ -> id: /read2/2Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F\n - 0x########\
+  \ -> id: /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH3F\n - 0x########\
+  \ -> id: /read2/profile t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TProfile\n\
+  \ - 0x######## -> id: /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o:\
+  \ 0x######## T: 2 TTree\n\e[m\nTHistSvc            DEBUG THistSvc::finalize\e[m\n\
+  THistSvc            DEBUG finalize: id: /read1/xxx/1Dgauss t: 0 s: 0 M: ########\
+  \ m: 0 o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG finalize: id: /read2/2Dgauss\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG\
+  \ finalize: id: /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH3F\e\
+  [m\nTHistSvc            DEBUG finalize: id: /read2/profile t: 0 s: 0 M: ########\
+  \ m: 0 o: 0x######## T: 1 TProfile\e[m\nTHistSvc            DEBUG finalize: id:\
+  \ /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 2 TTree\e\
+  [m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected\
+  \ in ROOT \e[m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List of\
+  \ Files connected in ROOT: \"tuple2.rt\"\e[m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List\
+  \ of Files connected in ROOT: \"tuple3.rt\"\e[m\nTHistSvc             INFO Listing\
+  \ contents of ROOT files: \e[m\nTHistSvc            DEBUG finalizing stream/file\
+  \ read1:tuple2.rt\e[m\nTHistSvc             INFO ==> File: tuple2.rt  stream: read1\e\
+  [m\nTFile: name=tuple2.rt, title=, option=READ\nTH1.Print Name  = 1Dgauss, Entries=\
+  \ 20000, Total sum= 19982\n          Title = 1D Gaussian\n          NbinsX= 100,\
+  \ xmin= -50, xmax=50\nTHistSvc            DEBUG finalizing stream/file read2:tuple3.rt\e\
+  [m\nTHistSvc             INFO ==> File: tuple3.rt  stream: read2\e[m\nTFile: name=tuple3.rt,\
+  \ title=, option=READ\nTH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19974\n\
+  \          Title = 2D Gaussian\n          NbinsX= 100, xmin= -50, xmax=50, NbinsY=\
+  \ 100, ymin= -50, ymax=50\nTH1.Print Name  = 3Dgauss, Entries= 20000, Total sum=\
+  \ 19947\n          Title = 3D Gaussian\n          NbinsX= 100, xmin= -50, xmax=50,\
+  \ NbinsY= 100, ymin= -50, ymax=50, NbinsZ= 100, zmin= -50, zmax=50\nTH1.Print Name\
+  \  = profile, Entries= 0, Total sum= 0\n          Title = profile\n          NbinsX=\
+  \ 100, xmin= -50, xmax=-50\nApplicationMgr       INFO Application Manager Finalized\
+  \ successfully\e[m\nApplicationMgr       INFO Application Manager Terminated successfully\e\
+  [m"
+histos: {}
+ttrees:
+  treename:
+    Name: treename
+    Title: tree title
+    Entries: 1000
+    Branches:
+      branch1:
+        Name: branch1
+        Title: point1/I
+        Entries: 1000
+      branch2:
+        Name: branch2
+        Title: point2/I
+        Entries: 1000
+      branch3:
+        Name: branch3
+        Title: point3/I
+        Entries: 1000

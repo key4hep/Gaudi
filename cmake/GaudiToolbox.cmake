@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -574,10 +574,6 @@ function(gaudi_add_python_module module_name)
         get_filename_component(package_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
         set(package_path "${CMAKE_CURRENT_SOURCE_DIR}/python/${package_name}")
     endif()
-    if(NOT EXISTS "${package_path}/__init__.py")
-        message(FATAL_ERROR "${package_path}/__init__.py"
-            " must exist and the package must be installed (see gaudi_install(PYTHON)).")
-    endif()
 
     # make the module accessible from the build tree
     add_custom_command(TARGET ${module_name} POST_BUILD
@@ -783,6 +779,7 @@ endfunction()
         [OPTIONS pytest_option_1 pytest_option_2]
         [WORKING_DIRECTORY path]
         [PROPERTIES name value...]
+        [DEPENDS target1 target2...]
     )
 
   This function is used to declare a directories and/or files with pytest tests.
@@ -818,6 +815,18 @@ endfunction()
 
   ``PROPERTIES name value...``
     list of properties to set on the discovered tests
+
+  ``DEPENDS target1 target2...``
+    list of targets that have to be built before we run pytest to collect the tests
+
+  ``COVERAGE module ...``
+    generate coverage reports from the tests, equivalent to pass
+    ``--cov=<module>`` for all modules listed. A special test is added
+    with the summary report of the coverage
+
+  ``COVERAGE_OPTIONS coverage_option_1 coverage_option_2``
+    options to pass to the ``coverage report`` utility, for example
+    ``--fail-under=100`` to enforce full coverage
 #]========================================================================]
 function(gaudi_add_pytest)
     if(NOT BUILD_TESTING)
@@ -831,7 +840,7 @@ function(gaudi_add_pytest)
         ARG
         ""
         "PREFIX;ROOT_DIR;WORKING_DIRECTORY"
-        "LABELS;OPTIONS;PROPERTIES"
+        "LABELS;OPTIONS;PROPERTIES;DEPENDS;COVERAGE;COVERAGE_OPTIONS"
         ${ARGN}
     )
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -896,15 +905,21 @@ function(gaudi_add_pytest)
     endif()
 
     list(TRANSFORM ARG_LABELS PREPEND --ctest-label=)
+    list(PREPEND ARG_OPTIONS "--override-ini" "cache_dir=${CMAKE_CURRENT_BINARY_DIR}/pytest_cache")
 
     set(base_filename ${CMAKE_CURRENT_BINARY_DIR}/pytest/collect_${ARG_PREFIX}${CMAKE_BUILD_TYPE})
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pytest)
     string(JOIN " " ARG_OPTIONS_CMD ${ARG_OPTIONS})
     string(JOIN "\\ " ARG_OPTIONS_ESC ${ARG_OPTIONS})
     string(JOIN "\\ " ARG_PROPERTIES_ESC WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY} ${ARG_PROPERTIES})
+    if(ARG_COVERAGE)
+        _import_runtime(coverage)
+        string(JOIN "," ARG_COVERAGE ${ARG_COVERAGE})
+        string(JOIN "\\ " ARG_COVERAGE_OPTIONS_ESC report ${ARG_COVERAGE_OPTIONS})
+    endif()
     file(GENERATE OUTPUT ${base_filename}.cmake
         CONTENT "
-set(files_to_hash)
+set(files_to_hash \${CMAKE_CURRENT_LIST_FILE})
 foreach(file IN ITEMS ${collect_roots})
     if(NOT IS_ABSOLUTE \${file})
         string(PREPEND file ${CMAKE_CURRENT_SOURCE_DIR}/)
@@ -932,9 +947,8 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
     endif()
     execute_process(
         COMMAND $<TARGET_FILE:run> $<TARGET_FILE:pytest>
-            --collect-only --quiet --no-header --no-summary
+            --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
-            -p GaudiTesting.pytest.collect_for_ctest
             --ctest-output-file=${base_filename}.tests.cmake
             --ctest-pytest-command=$<TARGET_FILE:run>\\ $<TARGET_FILE:pytest>\\ ${ARG_OPTIONS_ESC}
             --ctest-pytest-root-dir=${ARG_ROOT_DIR}
@@ -942,11 +956,21 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
             --ctest-label=${PROJECT_NAME}
             --ctest-label=${package_name}
             --ctest-properties=${ARG_PROPERTIES_ESC}
+            --ctest-binary-dir=${CMAKE_CURRENT_BINARY_DIR}
+            $<$<BOOL:${ARG_COVERAGE}>:
+              --ctest-coverage=${ARG_COVERAGE}
+              --ctest-coverage-command=$<TARGET_FILE:run>\\ $<TARGET_FILE:coverage>\\ ${ARG_COVERAGE_OPTIONS_ESC}
+            >
             ${ARG_LABELS}
             ${collect_roots}
         WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
-        OUTPUT_QUIET
+        RESULT_VARIABLE pytest_result
+        OUTPUT_VARIABLE pytest_output
     )
+    if(NOT pytest_result EQUAL 0)
+        message(\"\${pytest_output}\")
+        message(FATAL_ERROR \"pytest invocation failed!\")
+    endif()
     file(WRITE ${base_filename}.tests.checksum \${hash})
 endif()
 if(NOT DEFINED PREFECTH_PYTEST_TESTS)
@@ -962,10 +986,14 @@ endif()
     while(TARGET "pytest-prefetch-${package_name}-${target_name}")
         string(APPEND target_name ".")
     endwhile()
+    if(ARG_DEPENDS)
+        list(PREPEND ARG_DEPENDS DEPENDS)
+    endif()
     add_custom_target(pytest-prefetch-${package_name}-${target_name}
         ALL
         COMMAND ${CMAKE_COMMAND} -DPREFECTH_PYTEST_TESTS=TRUE -P ${base_filename}.cmake
         COMMENT "Collecting pytest tests for ${package_name}:${target_name}"
+        ${ARG_DEPENDS}
     )
 endfunction()
 

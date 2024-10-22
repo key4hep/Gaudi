@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,10 +22,10 @@
 #define GAUDISVC_EventCollectionSelector_EventCollectionSelector_H 1
 
 // Include files
-#include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/IEvtSelector.h"
-#include "GaudiKernel/NTuple.h"
-#include "GaudiKernel/Service.h"
+#include <GaudiKernel/GenericAddress.h>
+#include <GaudiKernel/IEvtSelector.h>
+#include <GaudiKernel/NTuple.h>
+#include <GaudiKernel/Service.h>
 
 // Forward declarations
 class INTuple;
@@ -76,6 +76,8 @@ public:
       item  = ctxt.item;
     }
     ~MyContextType() override { addressBuffer->release(); }
+    MyContextType& operator=( const MyContextType& ) = delete;
+
     void* identifier() const override { return (void*)addressBuffer; }
     void  setAddress( IOpaqueAddress* pAddr );
   };

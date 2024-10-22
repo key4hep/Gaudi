@@ -5,7 +5,7 @@
 //
 //==============================================================
 
-ApplicationMgr.DLLs = {"HbookCnv", "GaudiAlg", "GaudiAud" , "GaudiTestSuite" };
+ApplicationMgr.DLLs = {"HbookCnv", "GaudiAud" , "GaudiTestSuite" };
 
 //==============================================================
 //

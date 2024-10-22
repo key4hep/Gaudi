@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,12 +8,15 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// cppcheck-suppress-file literalWithCharPtrCompare
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_StatusCode
+
 #include <boost/test/unit_test.hpp>
 
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/StatusCode.h"
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/StatusCode.h>
 
 // Define my own error enum/category
 enum class MyErr : StatusCode::code_t {

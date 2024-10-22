@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,8 +21,8 @@
 #define KERNEL_SMARTREF_H 1
 
 // Include files
-#include "GaudiKernel/ContainedObject.h"
-#include "GaudiKernel/SmartRefBase.h"
+#include <GaudiKernel/ContainedObject.h>
+#include <GaudiKernel/SmartRefBase.h>
 
 #include <typeinfo>
 
@@ -168,22 +168,16 @@ public:
     if ( !m_target && c.m_target ) return c.m_base.isEqualEx( c.m_target, m_base );
     return false;
   }
-  /*[[deprecated]]*/ friend bool operator==( const SmartRef<TYPE>& ref, int ) { return ref.target() == nullptr; }
   friend bool operator==( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() == nullptr; }
 
   /// Friend helper to check for object existence (will load object)
-  /*[[deprecated]]*/ friend bool operator==( int, const SmartRef<TYPE>& ref ) { return ref.target() == nullptr; }
   friend bool operator==( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() == nullptr; }
   /// NON-Equality operator
   bool operator!=( const SmartRef<TYPE>& c ) const { return !( this->operator==( c ) ); }
 
-  /*[[deprecated]]*/ friend bool operator!=( const SmartRef<TYPE>& ref, int ) { return ref.target() != nullptr; }
-
   friend bool operator!=( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() != nullptr; }
 
   /// Friend helper to check for object existence (will load object)
-  /*[[deprecated]]*/ friend bool operator!=( int, const SmartRef<TYPE>& ref ) { return ref.target() != nullptr; }
-
   friend bool operator!=( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() != nullptr; }
 
   /// explicit conversion to bool to check for object existence (will load object)

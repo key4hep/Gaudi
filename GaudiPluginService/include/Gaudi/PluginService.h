@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,12 +14,12 @@
 /// @author Marco Clemencic <marco.clemencic@cern.ch>
 /// See @ref GaudiPluginService-readme
 
-#include "Gaudi/Details/PluginServiceCommon.h"
+#include <Gaudi/Details/PluginServiceCommon.h>
 
 #if GAUDI_PLUGIN_SERVICE_USE_V2
-#  include "Gaudi/PluginServiceV2.h"
+#  include <Gaudi/PluginServiceV2.h>
 #else
-#  include "Gaudi/PluginServiceV1.h"
+#  include <Gaudi/PluginServiceV1.h>
 #endif
 
 #endif

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,15 +12,15 @@
 #define GAUDIKERNEL_ISVCMANAGER_H
 
 // Include files
-#include "GaudiKernel/IComponentManager.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/TypeNameString.h"
+#include <GaudiKernel/IComponentManager.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/TypeNameString.h>
 #include <string>
 
 // Forward class declaration
 #if defined( GAUDI_V20_COMPAT ) || ( !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR ) )
 class ISvcFactory;
-#  include "GaudiKernel/IService.h"
+#  include <GaudiKernel/IService.h>
 #else
 class IService;
 #endif

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,42 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//  PersistencySvc.cpp
-//--------------------------------------------------------------------
-//
-//  Package    : System ( The LHCb Offline System)
-//
-//  Description: implementation of the PersistencySvc
-//
-//  Author     : M.Frank
-//  History    :
-// +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who
-// +---------+----------------------------------------------+---------
-// | 29/10/98| Initial version                              | MF
-// +---------+----------------------------------------------+---------
-//
-//====================================================================
-#define PERSISTENCYSVC_PERSISTENCYSVC_CPP
-
-// Interface definitions
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IConverter.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IDataSelector.h"
-#include "GaudiKernel/IOpaqueAddress.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/TypeNameString.h"
-#include "GaudiKernel/strcasecmp.h"
-
-// Implementation specific definitions
 #include "PersistencySvc.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IConverter.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IDataSelector.h>
+#include <GaudiKernel/IOpaqueAddress.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/TypeNameString.h>
+#include <GaudiKernel/strcasecmp.h>
 
-// Instantiation of a static factory class used by clients to create
-// instances of this service
 DECLARE_COMPONENT( PersistencySvc )
 
 enum CnvSvcAction {
@@ -153,6 +129,8 @@ StatusCode PersistencySvc::updateRepRefs( IOpaqueAddress* pAddr, DataObject* pOb
 
 /// Retrieve address creator service from list
 SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type ) {
+  std::scoped_lock _{ m_servicesMutex };
+
   long typ = type;
   auto it  = m_cnvServices.find( typ );
   if ( it == m_cnvServices.end() ) {
@@ -169,6 +147,7 @@ SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type ) {
 
 /// Define transient data store
 StatusCode PersistencySvc::setDataProvider( IDataProviderSvc* pDataSvc ) {
+  std::scoped_lock _{ m_servicesMutex };
   m_dataSvc = pDataSvc;
   for ( auto& i : m_cnvServices ) { i.second.conversionSvc()->setDataProvider( m_dataSvc ).ignore(); }
   return StatusCode::SUCCESS;
@@ -198,6 +177,7 @@ StatusCode PersistencySvc::addConverter( IConverter* pConverter ) {
 
 /// Remove converter object from conversion service (if present).
 StatusCode PersistencySvc::removeConverter( const CLID& clid ) {
+  std::scoped_lock _{ m_servicesMutex };
   // Remove converter type from all services
   StatusCode status = Status::NO_CONVERTER, iret = StatusCode::SUCCESS;
   for ( auto& i : m_cnvServices ) {
@@ -213,8 +193,11 @@ IConverter* PersistencySvc::converter( const CLID& /*clid*/ ) { return nullptr; 
 /// Retrieve conversion service by name
 SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam ) {
   Gaudi::Utils::TypeNameString tn( nam );
-  auto                         it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
-                                                  [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
+
+  std::scoped_lock _{ m_servicesMutex };
+
+  auto it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
+                          [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
 
   auto svc = Service::service<IConversionSvc>( nam, true );
@@ -222,13 +205,14 @@ SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam ) {
     return service( nam ); // now it is in the list
   }
 
-  info() << "Cannot access Conversion service:" << nam << endmsg;
+  error() << "Cannot access Conversion service " << nam << endmsg;
   static SmartIF<IConversionSvc> no_svc;
   return no_svc;
 }
 
 /// Retrieve conversion service from list
 SmartIF<IConversionSvc>& PersistencySvc::service( long type ) {
+  std::scoped_lock _{ m_servicesMutex };
   // Check wether this is already an active service
   auto it = m_cnvServices.find( type );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
@@ -243,6 +227,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service( long type ) {
 
 /// Add data service
 StatusCode PersistencySvc::addCnvService( IConversionSvc* servc ) {
+  std::scoped_lock _{ m_servicesMutex };
   if ( !servc ) return Status::BAD_STORAGE_TYPE;
   long type    = servc->repSvcType();
   long def_typ = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
@@ -259,21 +244,23 @@ StatusCode PersistencySvc::addCnvService( IConversionSvc* servc ) {
       if ( cnv_svc ) removeCnvService( type ).ignore();
       auto p = m_cnvServices.emplace( type, ServiceEntry( type, isvc, iservc, icr ) );
       if ( !p.second ) {
-        info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
+        error() << "Cannot add Conversion service " << isvc->name() << endmsg;
         return StatusCode::FAILURE;
       }
-      info() << "Added successfully Conversion service:" << isvc->name() << endmsg;
+      info() << "Added successfully Conversion service " << isvc->name() << endmsg;
       iservc->setAddressCreator( this ).ignore();
       iservc->setDataProvider( m_dataSvc ).ignore();
       return StatusCode::SUCCESS;
     }
   }
-  info() << "Cannot add Conversion service of type " << type << endmsg;
+  error() << "Cannot add Conversion service for type " << type << endmsg;
   return StatusCode::FAILURE;
 }
 
 /// Remove conversion service
 StatusCode PersistencySvc::removeCnvService( long svctype ) {
+  std::scoped_lock _{ m_servicesMutex };
+
   auto it = m_cnvServices.find( svctype );
   if ( it == m_cnvServices.end() ) return Status::BAD_STORAGE_TYPE;
   it->second.service()->release();
@@ -312,8 +299,8 @@ StatusCode PersistencySvc::createAddress( long svc_type, const CLID& clid, const
 
 /// Convert an address to string form
 StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::string& refAddress ) {
-  // Assumuption is that the Persistency service prepends a header
-  // and requests the conversion service refered to by the service
+  // Assumption is that the Persistency service prepends a header
+  // and requests the conversion service referred to by the service
   // type to encode the rest
   long svc_type = 0;
   CLID clid     = 0;
@@ -403,7 +390,7 @@ void PersistencySvc::decodeAddrHdr( const std::string& address, long& service_ty
 
 /// Set address creator facility
 StatusCode PersistencySvc::setAddressCreator( IAddressCreator* ) {
-  // The persistency service is a address creation dispatcher istelf.
+  // The persistency service is an address creation dispatcher itself.
   // The persistency service can NEVER create addresses itself.
   // The entry point must only be provided in order to fulfill the needs of the
   // implementing interfaces.
@@ -462,6 +449,7 @@ StatusCode PersistencySvc::getService( const std::string& service_type, IConvers
   else if ( ::strncasecmp( imp, "POOL", 4 ) == 0 )
     return getService( POOL_StorageType, refpSvc );
 
+  std::scoped_lock _{ m_servicesMutex };
   for ( const auto& i : m_cnvServices ) {
     SmartIF<IService> svc( i.second.conversionSvc() );
     if ( svc ) {
@@ -506,6 +494,7 @@ StatusCode PersistencySvc::initialize() {
 
 /// stop the service.
 StatusCode PersistencySvc::finalize() {
+  std::scoped_lock _{ m_servicesMutex };
   // Release all workers
   m_cnvServices.clear();
   // Release references to this to avoid loops

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,9 +13,9 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/ToStream.h"
 #include <Gaudi/Parsers/CommonParsers.h>
+#include <GaudiKernel/StringKey.h>
+#include <GaudiKernel/ToStream.h>
 // ============================================================================
 /** @file
  *  Implementation file for class Gaudi::StringKey
@@ -74,7 +74,7 @@ std::ostream& Gaudi::Utils::toStream( const Gaudi::StringKey& key, std::ostream&
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, std::string_view input ) {
   std::string _result;
   StatusCode  sc = parse( _result, input );
   result         = Gaudi::StringKey( _result );
@@ -91,7 +91,7 @@ StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& i
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( std::vector<Gaudi::StringKey>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::vector<Gaudi::StringKey>& result, std::string_view input ) {
   result.clear();
   typedef std::vector<std::string> Strings;
   Strings                          _result;

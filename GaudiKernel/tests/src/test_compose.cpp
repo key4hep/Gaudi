@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,7 +14,7 @@
 
 #include <string>
 
-#include "GaudiKernel/compose.h"
+#include <GaudiKernel/compose.h>
 
 const auto f = compose( []( int ) { return 0; }, []( double ) { return 1; }, []( float ) { return 2; },
                         []( const char* ) { return 3; }, []( void* ) { return 4; } );

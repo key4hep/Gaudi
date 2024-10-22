@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,9 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "GaudiKernel/RenounceToolInputsVisitor.h"
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IDataHandleHolder.h"
+#include <GaudiKernel/IAlgTool.h>
+#include <GaudiKernel/IDataHandleHolder.h>
+#include <GaudiKernel/RenounceToolInputsVisitor.h>
 
 void RenounceToolInputsVisitor::operator()( IAlgTool* alg_tool ) {
   IDataHandleHolder* dh_holder = dynamic_cast<IDataHandleHolder*>( alg_tool );

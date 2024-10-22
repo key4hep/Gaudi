@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,14 +9,14 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Include files
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IChronoStatSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IChronoStatSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SmartIF.h>
 #include <sstream>
 
-#include "GaudiKernel/SerializeSTL.h"
+#include <GaudiKernel/SerializeSTL.h>
 
 #include "PropertyAlg.h"
 
@@ -79,6 +79,9 @@ PropertyAlg::PropertyAlg( const std::string& name, ISvcLocator* ploc ) : Algorit
   info() << "EmptyArray  = " << m_emptyarray.value() << endmsg;
   info() << "IntPairArray  = " << u_intpairarray.value() << endmsg;
   info() << "DoublePairArray  = " << u_doublepairarray.value() << endmsg;
+  info() << "IntSet = " << m_intset.value() << endmsg;
+  info() << "StringSet = " << m_stringset.value() << endmsg;
+  info() << "FloatUnorderedSet = " << m_floatuset.value() << endmsg;
 
   info() << "PInt    = " << p_int << endmsg;
   std::ostringstream os;
@@ -116,6 +119,9 @@ StatusCode PropertyAlg::initialize() {
   info() << "EmptyArray  = " << m_emptyarray.value() << endmsg;
   info() << "IntPairArray  = " << u_intpairarray.value() << endmsg;
   info() << "DoublePairArray  = " << u_doublepairarray.value() << endmsg;
+  info() << "IntSet = " << m_intset.value() << endmsg;
+  info() << "StringSet = " << m_stringset.value() << endmsg;
+  info() << "FloatUnorderedSet = " << m_floatuset.value() << endmsg;
   info() << "StringMap = " << m_strmap << endmsg;
 
   info() << "PInt    = " << p_int << endmsg;

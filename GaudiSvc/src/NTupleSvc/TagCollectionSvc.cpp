@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -32,19 +32,19 @@
 #define GAUDISVC_TAGCOLLECTIONSVC_CPP
 
 // Framework include files
-#include "GaudiKernel/AttribStringParser.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/ObjectFactory.h"
-#include "GaudiKernel/SmartIF.h"
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/GenericAddress.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiKernel/SmartIF.h>
 
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ISvcManager.h"
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/ISvcManager.h>
 
-#include "GaudiKernel/MsgStream.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/MsgStream.h>
 
 #include "TagCollectionSvc.h"
 

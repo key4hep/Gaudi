@@ -243,6 +243,9 @@ namespace Gaudi::Functional::details {
     template <typename T, typename IT>
     struct is_gaudi_range<Gaudi::NamedRange_<T, IT>> : std::true_type {};
 
+    template <typename T, typename IT>
+    struct is_gaudi_range<std::optional<Gaudi::NamedRange_<T, IT>>> : std::true_type {};
+
     template <typename T>
     constexpr static bool is_gaudi_range_v = is_gaudi_range<T>::value;
 
@@ -267,6 +270,10 @@ namespace Gaudi::Functional::details {
       }
       template <template <typename> class Handle, typename I, typename IT>
       auto operator()( const Handle<Gaudi::NamedRange_<I, IT>>& h ) -> const In {
+        return h.get();
+      }
+      template <template <typename> class Handle, typename I, typename IT>
+      auto operator()( const Handle<std::optional<Gaudi::NamedRange_<I, IT>>>& h ) -> const In {
         return h.get();
       }
       template <template <typename> class Handle, typename I,

@@ -6,6 +6,146 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v39r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r0) - 2024-09-23
+This major release of Gaudi features a number of backward incompatible changes that have been waiting
+for a chance of being integrated, like
+
+- remove the deprecated GaudiAlg (gaudi/Gaudi#322)
+- replace *blocking* algorithms with *asynchronous* algorithms (gaudi/Gaudi!1553)
+- allow delayed initialization of counter based histograms and configure them via properties (gaudi/Gaudi!1586)
+  - note: `Gaudi::Accumulators::Histogram` etc. is now constructed at initialization time
+    and implies the declaration of a property to be able to set axes properties. The old behaviour
+    is available through `Gaudi::Accumulators::StaticHistogram` etc.
+- update baseline version of dependencies to LCG 104 (gaudi/Gaudi#289)
+  - the code is tested against, for example, Boost >= 1.82, ROOT >= 6.28/04, Python >= 3.9.12, fmtlib >= 10
+  - compilation requires gcc >= 13, C++ >= 20, CMake >= 3.19
+- deprecate some old APIs and headers (gaudi/Gaudi!1634, gaudi/Gaudi!761)
+  - to be removed in gaudi/Gaudi%v40r0
+
+I also want to mention that as of this release we are enforcing the convention that
+the form `#include "some_header.h"` is only used for actual relative paths while for all other
+includes we must use `#include <some_header.h>`. See gaudi/Gaudi#300 for the details.
+
+Note that the fact that we do not run test builds with C++17 means that we do not
+require anymore merge requests to be C++17 compatible.
+
+These big backward incompatible changes are accompanied by some backward compatible new features
+
+- `AvalancheSchedulerSvc` now can dump the data dependencies in a graph file (`.dot` or `.md`) (gaudi/Gaudi!1561)
+- QMTest (`.qmt`) tests have been migrated to pytest thanks to new helper classes and plugins (gaudi/Gaudi!1605)
+
+Of course, we also have a fair collection of fixes (listed below).
+
+A special thanks to all the people that contributed to this release:
+@bstanisl,
+@cvarni,
+@dmagdali,
+@elmsheus,
+@fwinkl,
+@graven,
+@jcarcell,
+@sponce,
+@staider.
+
+### Changed
+- Deprecate hacks needed to support Gaudi v20 API (gaudi/Gaudi!1634)
+- Use include with quotes only for relative paths (gaudi/Gaudi#300, gaudi/Gaudi!1572)
+- Remove GaudiAlg and all references to it (gaudi/Gaudi#322, gaudi/Gaudi!1628)
+- Make Histograms configurable via properties (gaudi/Gaudi#206, gaudi/Gaudi!1586)
+- Deprecate old parsers headers (gaudi/Gaudi!761)
+- Replace the copyright check in gitlab-ci with with a pre-commit hook (gaudi/Gaudi!1635)
+- Drop compatibility with fmtlib < 8 (gaudi/Gaudi#268, gaudi/Gaudi!1630)
+- Reduce the visibility of operator<< and several others (gaudi/Gaudi!1623)
+- HiveDataBroker: make dependency resolution deterministic (lhcb/DaVinci#215, lhcb/DaVinci#216, gaudi/Gaudi!1617)
+- Delete deprecated `DataObjIDProperty.h` header (gaudi/Gaudi!1614)
+- Drop `StalledEventMonitor` and `WatchdogThread` (gaudi/Gaudi#312, gaudi/Gaudi!1592)
+- Remove comparison of `SmartRef` to integer (gaudi/Gaudi!1554)
+- ToolSvc: replace two separate members which _must_ be in sync with a single dedicated type (gaudi/Gaudi!1547)
+- ITHistSvc: remove one deprecated regHist interface (gaudi/Gaudi#319, gaudi/Gaudi!1610)
+- Introduce asynchronous algorithms (gaudi/Gaudi!1553)
+- Update versions of LCG (gaudi/Gaudi#289, gaudi/Gaudi!1606)
+- Remove the requirement of having an `__init__.py` in every Python directory (gaudi/Gaudi#307, gaudi/Gaudi!1607)
+
+### Added
+- Added `std::optional` functionality to Gaudi::NamedRange (gaudi/Gaudi!1624)
+- Parsers: instantiate property parser for vector<vector<int>> (gaudi/Gaudi!1633)
+- Extend `gaudi_add_pytest` with coverage support (gaudi/Gaudi#274, gaudi/Gaudi!1551)
+- Implement `GaudiExeTest` base test class and migrate QMTest tests to pytest (gaudi/Gaudi!1605)
+- Declare parsers for `std::[unordered_]set` properties (gaudi/Gaudi!1613)
+- Implementation of the File Service (gaudi/Gaudi!1599, gaudi/Gaudi!1615)
+- Add option to dump data dependencies as `.dot` or `.md` files (gaudi/Gaudi!1561)
+- genconf: add command line option to select configurable types to generate (gaudi/Gaudi!1601)
+- Added callback feature in Gaudi Algorithms (gaudi/Gaudi!1585)
+
+### Fixed
+- MessageSvcSink: fix entities filter to correctly include histograms (gaudi/Gaudi!1638)
+- Use report_error for newer versions of fmt (gaudi/Gaudi!1627, gaudi/Gaudi#328, gaudi/Gaudi!1622)
+- Fix use of `gaudirun.py path/to/file.py:func` in case the module uses `__file__` (gaudi/Gaudi#336, gaudi/Gaudi!1629)
+- Fix tests when `CMAKE_BUILD_TYPE` is not set (gaudi/Gaudi#326, gaudi/Gaudi!1626)
+- Fix the `NTupleWriter` algorithm to handle `DataObject*` and `AnyDataWrapperBase*` correctly in `BranchWrapper` (gaudi/Gaudi!1625)
+- THistSvc: fix object types on read-back (gaudi/Gaudi!1620)
+- Fixed `nEntries` for weighted histograms (gaudi/Gaudi#325, gaudi/Gaudi!1619)
+- Improvements to `gaudi_add_pytest` (gaudi/Gaudi!1621)
+- Add missing fstream includes triggered by using boost 1.86 (gaudi/Gaudi!1618)
+- Add missing include for clang19 (gaudi/Gaudi!1616)
+- Set Service semantics to ApplicationMgr Runable and EventLoopMgr properties (gaudi/Gaudi#309, gaudi/Gaudi!1611)
+- Add fmtlib support to EventContext (gaudi/Gaudi#311, gaudi/Gaudi!1597)
+- Improve compiler detection for pragma directives (gaudi/Gaudi!1565)
+- Fix clang warning introduced with gaudi/Gaudi!1553 (gaudi/Gaudi!1612)
+- cppcheck fixes (code quality) (gaudi/Gaudi!1609)
+
+
+## [v38r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r3) - 2024-06-28
+This is a minor release to collect all pending backward compatible changes and fixes
+before integrating the backward incompatible changes scheduled for v39r0.
+
+### Changed
+- Use `string_view` consistently in parse methods (gaudi/Gaudi!1594)
+- Add hard limit on test stdout/err size (gaudi/Gaudi#313, gaudi/Gaudi!1595)
+- Introduce a new way to check timeout on events (gaudi/Gaudi#287, gaudi/Gaudi!1589)
+- Use Ruff for Python linting and formatting (gaudi/Gaudi#298, gaudi/Gaudi!1591)
+
+### Fixed
+- `listcomponents`: skip factories from other libraries (gaudi/Gaudi!1603)
+- Fix building with Catch2 v3 (gaudi/Gaudi!1600)
+- `GaudiTestSuite`: pre-commit fixes (gaudi/Gaudi!1602)
+- Fix race condition in `PersistencySvc::addCnvService` (gaudi/Gaudi#314, gaudi/Gaudi!1598)
+- Improve `BranchWrapper` implementation (gaudi/Gaudi!1596)
+
+
+## [v38r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r2) - 2024-05-16
+A minor release with a number of fixes and some new features.
+
+In particular I want to highlight the addition of a new algorithm that allows
+thread-safe writing of NTuples (gaudi/Gaudi!1577). For the moment it uses TTree as
+backend but we plan to add RNTuple support soon. A minor issue is that it cannot
+share the output file with the `HistogramSvc` or `Gaudi::Histograming::Sink::Root`,
+but there are plans to address it.
+
+Also worth noticing that we started to populate the GaudiExample directory.
+It will require some structure and polishing, but it's a start.
+
+### Added
+- Implement the `NTuple::Writer` and `NTuple::GenericWriter` algorithms for thread-safe NTuple writing (gaudi/Gaudi!1577, gaudi/Gaudi!1588)
+- `AvalancheSchedulerSvc`: include eventID in scheduler dump (gaudi/Gaudi!1579)
+- Added a first example in GaudiExample featuring a tiny experiment code (gaudi/Gaudi!1575)
+- Add `RootCnvSvc` option to write ROOT files in 'forward compatibility' mode (gaudi/Gaudi#303, gaudi/Gaudi!1573)
+- Introduced extra parameter to `ThreadPoolSvc` initPool to allow increase the max allowed parallelism of TBB. (gaudi/Gaudi!1567)
+
+### Fixed
+- Fix a couple of weird method signatures in `AlgorithmNode` (gaudi/Gaudi!1590)
+- Fix the `HiveSlimEventLoopMgr` exit code when there is a failure in the algorithms (gaudi/Gaudi!1576)
+- Fix some includes to build against boost v1.85.0 with gcc12.3 (gaudi/Gaudi!1587)
+- Resolve "`AlgContextSvc` may dereference a `nullptr`" (gaudi/Gaudi#304, gaudi/Gaudi!1583)
+- Don't use the deprecated `PySys_SetArgv` (gaudi/Gaudi!1578)
+- Use the value of `m_scheduledStop` instead of simply ignoring it in `HiveSlimEventLoopMgr` (gaudi/Gaudi#288, gaudi/Gaudi!1545)
+- Improved performance of conversion of profile histograms to ROOT (gaudi/Gaudi#305, gaudi/Gaudi!1574)
+- Add missing includes for gcc14 (gaudi/Gaudi!1580, gaudi/Gaudi!1581)
+- Correctly detect and report a special case of corrupted ROOT file (gaudi/Gaudi#301, gaudi/Gaudi!1571)
+- Use Boost IO State Saver to restore initial ostream flags (gaudi/Gaudi#295, gaudi/Gaudi!1570)
+- Avoid implicit conversion from float to double (gaudi/Gaudi#299, gaudi/Gaudi!1569)
+
+
 ## [v38r1p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1p1) - 2024-10-18
 This patch release is needed by LHCb to pick up a small extension to `NTupleSvc`
 so that we can fine tune the basket size of the `TTree`s we produce.

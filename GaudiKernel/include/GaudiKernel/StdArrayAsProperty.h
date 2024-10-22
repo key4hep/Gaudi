@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,7 +15,7 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include "GaudiKernel/ToStream.h"
+#include <GaudiKernel/ToStream.h>
 #include <algorithm>
 #include <array>
 // ============================================================================
@@ -45,7 +45,7 @@ namespace Gaudi {
      *  @date 2009-09-16
      */
     template <class TYPE, std::size_t N>
-    StatusCode parse( std::array<TYPE, N>& result, const std::string& input ) {
+    StatusCode parse( std::array<TYPE, N>& result, std::string_view input ) {
       std::vector<TYPE> tmp;
       StatusCode        sc = parse( tmp, input );
       if ( sc.isFailure() ) return sc;

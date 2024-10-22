@@ -35,6 +35,7 @@ The CPUCruncher is not a component dealing with concurrency, but a useful
 entity to test it. It's an algorithm that simply wastes cpu.
 
 """
+
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,

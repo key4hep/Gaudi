@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,10 +15,10 @@
  *      Author: Charles Leggett (copied from test_GaudiTiming.cpp)
  */
 
-#include "GaudiKernel/LockedHandle.h"
-#include "GaudiKernel/Timing.h"
+#include <GaudiKernel/LockedHandle.h>
+#include <GaudiKernel/Timing.h>
 
-#include "boost/thread/mutex.hpp"
+#include <boost/thread/mutex.hpp>
 #include <chrono>
 #include <memory>
 #include <mutex>

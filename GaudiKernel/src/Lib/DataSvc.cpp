@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -29,17 +29,17 @@
 #define DATASVC_DATASVC_CPP
 
 // Framework include files
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IConverter.h"
-#include "GaudiKernel/IOpaqueAddress.h"
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IConverter.h>
+#include <GaudiKernel/IOpaqueAddress.h>
 
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/GaudiException.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/GaudiException.h>
 
-#include "GaudiKernel/DataIncident.h"
-#include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/RegistryEntry.h"
+#include <GaudiKernel/DataIncident.h>
+#include <GaudiKernel/DataSvc.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/RegistryEntry.h>
 
 // Include files
 #include <algorithm>
@@ -388,7 +388,7 @@ StatusCode DataSvc::unregisterObject( std::string_view fullPath ) {
   if ( !pEntry->isEmpty() ) return Status::DIR_NOT_EMPTY;
   RegEntry* pParent = pEntry->parentEntry();
   if ( !pParent ) return Status::INVALID_PARENT;
-  if ( pObject ) pObject->addRef();
+  pObject->addRef();
   pParent->remove( pEntry );
   return StatusCode::SUCCESS;
 }

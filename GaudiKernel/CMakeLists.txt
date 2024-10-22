@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -71,6 +71,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/Dictionary.cpp
           src/Lib/DirSearchPath.cpp
           src/Lib/Environment.cpp
+          src/Lib/EventContext.cpp
           src/Lib/EventIDBase.cpp
           src/Lib/EventIDRange.cpp
           src/Lib/EventSelectorDataStream.cpp
@@ -80,7 +81,6 @@ gaudi_add_library(GaudiKernel
           src/Lib/GaudiMain.cpp
           src/Lib/Guards.cpp
           src/Lib/HistoDef.cpp
-          src/Lib/HistogramArray.cpp
           src/Lib/HistoryObj.cpp
           src/Lib/IChronoStatSvc.cpp
           src/Lib/IConversionSvc.cpp
@@ -108,6 +108,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/ParsersStandardList2.cpp
           src/Lib/ParsersStandardList3.cpp
           src/Lib/ParsersStandardList4.cpp
+          src/Lib/ParsersStandardSet.cpp
           src/Lib/ParsersStandardMisc1.cpp
           src/Lib/ParsersStandardMisc2.cpp
           src/Lib/ParsersStandardMisc3.cpp
@@ -146,15 +147,16 @@ gaudi_add_library(GaudiKernel
           src/Lib/ToolVisitor.cpp
           src/Lib/TsDataSvc.cpp
           src/Lib/VirtualDestructors.cpp
-          src/Lib/WatchdogThread.cpp
           src/Lib/StatEntity.cpp
   LINK
     PUBLIC GaudiPluginService
            Boost::headers
+           Boost::fiber
            Boost::filesystem
            Boost::thread
            Boost::regex
            Boost::system
+           Boost::chrono
            TBB::tbb
            ${CMAKE_DL_LIBS}
            ROOT::Core
@@ -170,6 +172,16 @@ target_include_directories(GaudiKernel
   PRIVATE ${VectorClass_INCLUDE_DIR}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
   )
+
+if (GAUDI_USE_CUDA)
+  add_compile_definitions(GAUDI_USE_CUDA)
+  target_sources(GaudiKernel PRIVATE src/Lib/CUDAAsynchronousAlgHelper.cu)
+  target_include_directories(GaudiKernel PUBLIC
+         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} # for CUDA runtime
+         )
+  target_link_libraries(GaudiKernel PUBLIC vecmem::core)
+endif()
+
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
                                      src/Lib/Platform/SystemMacOS.mm)
@@ -314,6 +326,9 @@ if(BUILD_TESTING)
   gaudi_add_executable(test_CounterHistoArray SOURCES tests/src/CounterHistoArrayUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
+  gaudi_add_executable(test_ProfileHistoSpeed SOURCES tests/src/ProfileHistoSpeedTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework ROOT::Hist TEST)
+
   gaudi_add_executable(test_GenericSink SOURCES tests/src/GenericSinkUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
@@ -386,6 +401,7 @@ if(BUILD_TESTING)
     SOURCES
       tests/src/CounterSerializationTest.cpp
       tests/src/MonitoringEntityUnitTest.cpp
+      tests/src/test_EventContextFmt.cpp
       tests/src/test_PropertyFmt.cpp
       tests/src/test_finally.cpp
     LINK
@@ -413,7 +429,4 @@ if(BUILD_TESTING)
             -p CustomFactoryTest
             -i test_CustomFactory
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
-
-  # QMTest
-  gaudi_add_tests(QMTest)
 endif()

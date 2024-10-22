@@ -15,9 +15,9 @@ import warnings
 from multiprocessing import Event, JoinableQueue, Process, cpu_count, current_process
 from multiprocessing.queues import Empty
 
-from GaudiMP.pTools import FileRecordsAgent, HistoAgent, Syncer
 from ROOT import TBuffer, TBufferFile
 
+from GaudiMP.pTools import FileRecordsAgent, HistoAgent, Syncer
 from GaudiPython import (
     FAILURE,
     SUCCESS,

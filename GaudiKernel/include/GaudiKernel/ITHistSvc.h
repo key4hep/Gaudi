@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -16,10 +16,10 @@
 #include <vector>
 
 #ifndef GAUDIKERNEL_ISERVICE_H
-#  include "GaudiKernel/IService.h"
+#  include <GaudiKernel/IService.h>
 #endif
 
-#include "GaudiKernel/LockedHandle.h"
+#include <GaudiKernel/LockedHandle.h>
 
 class TObject;
 class TH1;
@@ -45,11 +45,6 @@ public:
   /// @param [in] name      defines the histogram id/name under which it is recorded
   /// @param [in] hist      transfers ownership of the histogram to the THistSvc
   virtual StatusCode regHist( const std::string& name, std::unique_ptr<TH1> hist ) = 0;
-  /// Register an existing ROOT histogram TH*X with name and moved unique_ptr
-  /// @param [in] name      defines the histogram id/name under which it is recorded
-  /// @param [in] hist      transfers ownership of the histogram to the THistSvc
-  /// @param [out] hist_ptr for compatibility: return raw pointer to managed object to support common usage in Athena
-  virtual StatusCode regHist( const std::string& name, std::unique_ptr<TH1> hist, TH1* hist_ptr ) = 0;
   /// @deprecated {Just for compatibility purposes. Ownership should be clearly managed.}
   /// Register an existing ROOT histogram TH*X with name and pointer
   virtual StatusCode regHist( const std::string& name, TH1* ) = 0;

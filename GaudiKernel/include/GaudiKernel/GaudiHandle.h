@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,10 +12,10 @@
 #define GAUDIKERNEL_GAUDIHANDLE_H
 
 // Includes
-#include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/System.h"
 #include <Gaudi/Property.h>
+#include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IInterface.h>
+#include <GaudiKernel/System.h>
 
 #include <algorithm>
 #include <iostream>
@@ -75,6 +75,10 @@ public:
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py.
       To be implemented in derived class. */
   virtual std::string pythonRepr() const = 0;
+
+  // Easy printing out of Handles and HandleArrays
+  // It prints <propertyName> = <HandleType>( <HandleType(s)AndName(s)> )
+  friend std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle );
 
 protected:
   /** The component type */
@@ -539,9 +543,5 @@ private:
   HandleVector m_handleArray;
   bool         m_retrieved{ false };
 };
-
-// Easy printing out of Handles and HandleArrays
-// It prints <propertyName> = <HandleType>( <HandleType(s)AndName(s)> )
-std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle );
 
 #endif // ! GAUDIKERNEL_GAUDIHANDLE_H

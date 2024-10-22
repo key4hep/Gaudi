@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,13 +11,13 @@
 #ifndef GAUDIPYTHON_CALLBACKSTREAMBUF_H
 #define GAUDIPYTHON_CALLBACKSTREAMBUF_H
 // ============================================================================
-#include "Python.h" //included for the python API
+#include <Python.h> //included for the python API
 // ============================================================================
 #include <array>
 #include <sstream> //included for stringbuf
 // ============================================================================
-#include "GaudiKernel/Kernel.h"
-#include "GaudiPython/GaudiPython.h"
+#include <GaudiKernel/Kernel.h>
+#include <GaudiPython/GaudiPython.h>
 // ============================================================================
 
 namespace GaudiPython {

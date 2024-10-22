@@ -1,0 +1,356 @@
+#!/usr/bin/env python3
+#####################################################################################
+# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+#                                                                                   #
+# This software is distributed under the terms of the Apache version 2 licence,     #
+# copied verbatim in the file "LICENSE".                                            #
+#                                                                                   #
+# In applying this licence, CERN does not waive the privileges and immunities       #
+# granted to it by virtue of its status as an Intergovernmental Organization        #
+# or submit itself to any jurisdiction.                                             #
+#####################################################################################
+import datetime
+import os
+import re
+import sys
+import textwrap
+import xml.etree.ElementTree as ET
+from importlib import import_module
+from pathlib import Path
+from subprocess import run
+
+import click
+import yaml
+from GaudiTesting.utils import (
+    find_histos_summaries,
+    find_ttree_summaries,
+    str_representer,
+)
+
+yaml.representer.SafeRepresenter.add_representer(str, str_representer)
+
+TEMPLATE_HEADER = f"""#####################################################################################
+# (c) Copyright {datetime.date.today().year} CERN for the benefit of the LHCb and ATLAS collaborations      #
+#                                                                                   #
+# This software is distributed under the terms of the Apache version 2 licence,     #
+# copied verbatim in the file "LICENSE".                                            #
+#                                                                                   #
+# In applying this licence, CERN does not waive the privileges and immunities       #
+# granted to it by virtue of its status as an Intergovernmental Organization        #
+# or submit itself to any jurisdiction.                                             #
+#####################################################################################
+import os
+import pytest
+from GaudiTesting import GaudiExeTest, platform_matches
+"""
+
+TEMPLATE_CLASS = """
+class Test(GaudiExeTest):
+{attributes}
+"""
+
+
+TEMPLATE_VALIDATOR_TEST = """
+    def test_stdout(self, stdout: bytes):
+        # FIXME implement validation of stdout
+        if os.environ.get("GAUDI_TEST_IGNORE_STDOUT_VALIDATION") == "1":
+            pytest.xfail("Ignoring stdout validation")
+        raise NotImplementedError("stdout validation not implemented")
+        {validator_code}
+"""
+
+# global list of files that were converted to know if we have to remove the files we convert
+_converted_files = set()
+
+# fixtures required by the processed qmt files
+_fixtures_required = set()
+
+
+def parse_arguments(qmt_file, qmt_dir, pytest_dir):
+    program = "Gaudi.exe"
+    args = []
+    platforms = []
+    attrs = []
+    validator_code = None
+    prerequisites = []
+
+    def resolve_path(value):
+        return os.path.relpath(os.path.join(qmt_dir, value), pytest_dir)
+
+    reference_paths = {}
+
+    for child in ET.parse(qmt_file).getroot():
+        name = child.attrib["name"]
+        value = child[0]
+        if name == "program":
+            program = value.text
+            if os.path.isfile(os.path.join(qmt_dir, program)):
+                program = resolve_path(program)
+        elif name == "args":
+            args = [
+                resolve_path(el.text)
+                if os.path.isfile(os.path.join(qmt_dir, el.text))
+                else el.text
+                for el in value.findall("text")
+            ]
+        elif name == "reference":
+            reference_paths["stdout"] = os.path.join(qmt_dir, value.text)
+        elif name == "error_reference":
+            reference_paths["stderr"] = os.path.join(qmt_dir, value.text)
+        elif name == "timeout":
+            attrs.append(f"    timeout = {value.text}")
+        elif name == "exit_code":
+            if value.text != "0":
+                attrs.append(f"    returncode = {value.text}")
+        elif name == "unsupported_platforms":
+            platforms = [el.text for el in value.findall("text")]
+        elif name == "environment":
+            env = [el.text for el in value.findall("text")]
+            attrs.append(f"    environment = {env}")
+        elif name == "options":
+            options = value.text
+            attrs.append(
+                f'\n    def options(self):\n{textwrap.indent(resolve_wildcard_imports(options), " " * 8)}'
+            )
+        elif name == "validator":
+            validator_code = textwrap.indent(value.text, " " * 8)
+        elif name == "prerequisites":
+            prerequisites = [el.text for el in value.findall("tuple/text")]
+            prerequisites.sort()
+
+    if reference_paths:
+        attrs.insert(
+            0,
+            f"    reference = {resolve_path(convert_references(**reference_paths))!r}",
+        )
+
+    attrs.insert(0, f"    command = {[program] + args}")
+    return platforms, "\n".join(attrs), validator_code, prerequisites
+
+
+def resolve_wildcard_imports(code):
+    """
+    Replace wildcard imports with explicit imports.
+    """
+    import_re = re.compile(r"from\s+(\S+)\s+import\s+\*")
+    for match in import_re.finditer(code):
+        module = match.group(1)
+        if module in sys.modules:
+            explicit_imports = getattr(sys.modules[module], "__all__", [])
+        else:
+            explicit_imports = [
+                name for name in dir(import_module(module)) if not name.startswith("_")
+            ]
+        code = code.replace(
+            match.group(0), f'from {module} import {", ".join(explicit_imports)}'
+        )
+
+    return code
+
+
+def find_qmt_dir(qmt_file):
+    parts = qmt_file.split(os.sep)
+    for i, part in enumerate(parts):
+        if part == "qmtest":
+            return os.sep.join(parts[: i + 1])
+    return ""
+
+
+def convert_qmt_to_pytest(qmt_file):
+    global _converted_files
+    global _fixtures_required
+
+    qmt_file = os.path.abspath(qmt_file)
+    output_file = generate_output_filename(qmt_file)
+    qmt_dir = find_qmt_dir(qmt_file)
+    pytest_dir = os.path.dirname(output_file)
+
+    platforms, attrs, validator_code, prerequisites = parse_arguments(
+        qmt_file, qmt_dir, pytest_dir
+    )
+
+    fixture_name = fix_prerequisite_prefix(deduce_fixture_name(qmt_file), qmt_file)
+
+    pytest_code = TEMPLATE_HEADER
+    pytest_code += "".join(
+        f"@pytest.mark.ctest_fixture_required({fix_prerequisite_prefix(name, qmt_file)!r})\n"
+        for name in prerequisites
+    )
+    if fixture_name in _fixtures_required:
+        pytest_code += f"@pytest.mark.ctest_fixture_setup({fixture_name!r})\n"
+
+    if prerequisites or fixture_name in _fixtures_required:
+        subdir_name = Path(qmt_dir).parent.parent.name
+        pytest_code += f"@pytest.mark.shared_cwd({subdir_name!r})\n"
+    if platforms:
+        pytest_code += f'@pytest.mark.skipif(platform_matches({platforms}), reason="Unsupported platform")\n'
+    pytest_code += TEMPLATE_CLASS.format(
+        attributes=attrs,
+    )
+    if validator_code:
+        pytest_code += TEMPLATE_VALIDATOR_TEST.format(validator_code=validator_code)
+
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, "w") as f:
+        f.write(pytest_code)
+
+    run(["ruff", "check", "--fix", output_file], capture_output=True)
+    run(["ruff", "format", output_file], capture_output=True)
+    run(["git", "add", output_file])
+    _converted_files.add(qmt_file)
+    click.echo(f"converted {qmt_file} to {output_file}")
+
+
+def generate_output_filename(qmt_file):
+    parent, dir_name = os.path.split(os.path.abspath(qmt_file))
+    while dir_name and dir_name != "tests":
+        parent, dir_name = os.path.split(parent)
+    optional_qms = f"{os.path.basename(parent).lower()}.qms/" if dir_name else None
+
+    base_name = os.path.basename(qmt_file).replace(".qmt", ".py")
+    new_name = os.path.join(os.path.dirname(qmt_file), f"test_{base_name}").replace(
+        "/qmtest/", "/pytest/"
+    )
+    if optional_qms:
+        new_name = new_name.replace(optional_qms, "")
+    new_name = new_name.replace(".qms", "")
+    return new_name
+
+
+def _get_ref_variants(model: Path) -> dict[tuple, Path]:
+    return {
+        tuple(sorted(set(re.split(r"[-+]", p.name[len(model.name) + 1 :])))): p
+        for p in model.parent.glob(f"{model.name}.*")
+        if not p.name.endswith("new")
+    }
+
+
+def convert_references(stdout=None, stderr=None):
+    global _converted_files
+    assert stdout or stderr
+    name_prefix = (
+        (stdout if stdout else stderr.replace("_err.", "."))
+        .replace("/qmtest/", "/pytest/")
+        .replace(".ref", "")
+    )
+    stdout_variants = {}
+    stderr_variants = {}
+    if stdout:
+        stdout = Path(stdout)
+        stdout_variants = _get_ref_variants(stdout)
+    if stderr:
+        stderr = Path(stderr)
+        stderr_variants = _get_ref_variants(stderr)
+
+    default_reference = {}
+    if stdout:
+        with open(stdout) as f:
+            default_reference["stdout"] = f.read()
+        _converted_files.add(stdout)
+        default_reference["histos"] = find_histos_summaries(default_reference["stdout"])
+        default_reference["ttrees"] = find_ttree_summaries(default_reference["stdout"])
+    if stderr:
+        with open(stderr) as f:
+            default_reference["stderr"] = f.read()
+        _converted_files.add(stderr)
+
+    os.makedirs(os.path.dirname(name_prefix), exist_ok=True)
+    with open(f"{name_prefix}.yaml", "w") as out:
+        yaml.safe_dump(default_reference, out, sort_keys=False)
+    run(["git", "add", f"{name_prefix}.yaml"])
+
+    for variant in set(stdout_variants).union(stderr_variants):
+        name = f"{name_prefix}.{'-'.join(variant)}.yaml"
+        reference = dict(default_reference)
+        if variant in stdout_variants:
+            with open(stdout_variants[variant]) as f:
+                reference["stdout"] = f.read()
+            _converted_files.add(stdout_variants[variant])
+            reference["histos"] = find_histos_summaries(reference["stdout"])
+            reference["ttrees"] = find_ttree_summaries(reference["stdout"])
+        if variant in stderr_variants:
+            with open(stderr_variants[variant]) as f:
+                reference["stderr"] = f.read()
+            _converted_files.add(stderr_variants[variant])
+        with open(name, "w") as out:
+            yaml.safe_dump(reference, out, sort_keys=False)
+        run(["git", "add", name])
+
+    return f"{name_prefix}.yaml"
+
+
+def deduce_fixture_name(name):
+    qmt_dir = find_qmt_dir(name)
+    path = Path(name).relative_to(qmt_dir)
+    fixture_name = str(path).replace(".qmt", "").replace(".qms/", ".").lower()
+    subdir_prefix = Path(qmt_dir).parent.parent.name.lower() + "."
+    if not fixture_name.startswith(subdir_prefix):
+        fixture_name = subdir_prefix + fixture_name
+    return fixture_name
+
+
+def fix_prerequisite_prefix(name, qmt):
+    qmt_dir = find_qmt_dir(qmt)
+    subdir_prefix = Path(qmt_dir).parent.parent.name.lower() + "."
+    return name if name.startswith(subdir_prefix) else (subdir_prefix + name)
+
+
+@click.command()
+@click.argument("names", nargs=-1)
+@click.option(
+    "--remove/--no-remove", default=False, help="delete the files that are converted"
+)
+def main(names, remove):
+    global _converted_files
+    global _fixtures_required
+
+    bad_names = [name for name in names if not name.endswith(".qmt")]
+    if bad_names:
+        exit("only .qmt files are supported")
+
+    names = [os.path.abspath(name) for name in names]
+
+    # collect prerequisites
+    _fixtures_required = set()
+    for name in names:
+        _fixtures_required.update(
+            fix_prerequisite_prefix(el.text.lower(), name)
+            for el in ET.parse(name)
+            .getroot()
+            .findall('argument[@name="prerequisites"]/set/tuple/text')
+        )
+    fixtures_setup = {deduce_fixture_name(name): name for name in names}
+    if not _fixtures_required.issubset(fixtures_setup):
+        exit(
+            "prerequisites declared in some tests are not provided by "
+            f"the tests being converted: {_fixtures_required.difference(fixtures_setup)}"
+        )
+
+    # pytest cannot handle test files with the same name even if in different directories,
+    # so we have to prevent clashes
+    existing_modules = {}
+    for name in names:
+        pytest_dir = Path(find_qmt_dir(name)).parent / "pytest"
+        if pytest_dir not in existing_modules:
+            existing_modules[pytest_dir] = {
+                mod.name: mod for mod in pytest_dir.glob("**/test_*.py")
+            }
+        output = Path(generate_output_filename(name))
+        if output.name in existing_modules[pytest_dir]:
+            exit(
+                f"converting {name} would produce a clash with {existing_modules[pytest_dir][output.name]}, rename the qmt file before converting"
+            )
+        existing_modules[pytest_dir][output.name] = name
+
+    for name in names:
+        convert_qmt_to_pytest(name)
+
+    if remove:
+        for old in sorted(str(p) for p in _converted_files):
+            os.remove(old)
+            run(["git", "rm", old], capture_output=True)
+            click.echo(f"removed {old}")
+
+
+if __name__ == "__main__":
+    main()

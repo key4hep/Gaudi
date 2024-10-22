@@ -48,13 +48,8 @@ namespace {
   struct test_data<std::vector<int>> {
     std::string      name{ "SomeVector" };
     std::vector<int> value{ 0, 1, 2, 3 };
-#if FMT_VERSION < 80000
-    std::string fmt{ "{0, 1, 2, 3}" };
-    std::string dbg{ " 'SomeVector':{0, 1, 2, 3}" };
-#else
-    std::string fmt{ "[0, 1, 2, 3]" };
-    std::string dbg{ " 'SomeVector':[0, 1, 2, 3]" };
-#endif
+    std::string      fmt{ "[0, 1, 2, 3]" };
+    std::string      dbg{ " 'SomeVector':[0, 1, 2, 3]" };
   };
 
   template <>

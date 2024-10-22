@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -93,18 +93,18 @@ namespace Gaudi {
 #endif // GAUDIROOTCNV_ROOTDATABASEMERGER_H
 
 #ifndef GAUDIROOTCNV_ROOTDATABASEMERGER_H
-#  include "RootDatabaseMerger.h"
+#  include <RootDatabaseMerger.h>
 #endif // GAUDIROOTCNV_ROOTDATABASEMERGER_H
-#include "TBranch.h"
-#include "TFile.h"
-#include "TInterpreter.h"
-#include "TKey.h"
-#include "TLeaf.h"
-#include "TROOT.h"
-#include "TSystem.h"
-#include "TTree.h"
-#include "TTreeCloner.h"
-#include "TUUID.h"
+#include <TBranch.h>
+#include <TFile.h>
+#include <TInterpreter.h>
+#include <TKey.h>
+#include <TLeaf.h>
+#include <TROOT.h>
+#include <TSystem.h>
+#include <TTree.h>
+#include <TTreeCloner.h>
+#include <TUUID.h>
 #ifdef _WIN32
 #else
 #  include <libgen.h>
@@ -290,7 +290,7 @@ MergeStatus RootDatabaseMerger::merge( const string& fid ) {
         }
       }
     }
-    ::printf( "+++ Cannot open input file:%s\n", source->GetName() );
+    ::printf( "+++ Cannot open input file:%s\n", fid.c_str() );
     m_output->cd();
     return MERGE_ERROR;
   }

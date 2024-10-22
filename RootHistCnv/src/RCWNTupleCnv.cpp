@@ -11,9 +11,9 @@
 #define ROOTHISTCNV_RCWNTUPLECNV_CPP
 
 // Include files
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/NTuple.h"
+#include <GaudiKernel/INTupleSvc.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/NTuple.h>
 
 // Compiler include files
 #include <cstdio>
@@ -25,10 +25,10 @@
 
 #include "RCWNTupleCnv.h"
 
-#include "TLeafD.h"
-#include "TLeafF.h"
-#include "TLeafI.h"
-#include "TTree.h"
+#include <TLeafD.h>
+#include <TLeafF.h>
+#include <TLeafI.h>
+#include <TTree.h>
 
 namespace {
   template <typename T>

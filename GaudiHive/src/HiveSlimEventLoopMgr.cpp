@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,13 +11,14 @@
 // Local includes
 #include "HiveSlimEventLoopMgr.h"
 #include "HistogramAgent.h"
+#include <GaudiKernel/StatusCode.h>
 
 // Framework includes
-#include "GaudiKernel/AppReturnCode.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/Incident.h"
+#include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataSvc.h>
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/Incident.h>
 
 // External libraries
 #include <chrono>
@@ -288,11 +289,10 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( EventContext&& ctx ) {
   VERBOSE_MSG << "Beginning to process event " << ctx.evt() << endmsg;
 
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
-  // DP have to find out who shoots this
-  /*  if ( m_scheduledStop ) {
-      always() << "Terminating event processing loop due to a stop scheduled by an incident listener" << endmsg;
-      return StatusCode::SUCCESS;
-      }*/
+  if ( m_scheduledStop ) {
+    always() << "Terminating event processing loop due to a stop scheduled by an incident listener" << endmsg;
+    return StatusCode::SUCCESS;
+  }
 
   // Fire BeginEvent "Incident"
   m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginEvent, ctx ) );
@@ -357,7 +357,7 @@ StatusCode HiveSlimEventLoopMgr::stopRun() {
 // Here the loop on the events takes place.
 // This is also the natural place to put the preparation of the algorithms
 // contexts, which contain the event specific data.
-#include "GaudiKernel/Memory.h"
+#include <GaudiKernel/Memory.h>
 StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
 
   // Calculate runtime
@@ -377,8 +377,9 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
 
   constexpr double oneOver1024 = 1. / 1024.;
 
-  uint iteration  = 0;
-  auto start_time = Clock::now();
+  uint       iteration  = 0;
+  auto       start_time = Clock::now();
+  StatusCode finalSC;
   while ( !loop_ended && ( maxevt < 0 || ( finishedEvts + skippedEvts ) < maxevt ) ) {
     DEBUG_MSG << "work loop iteration " << iteration++ << endmsg;
     // if the created events did not reach maxevt, create an event
@@ -386,7 +387,9 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
          createdEvts >= 0 &&                       // The events are not finished with an unlimited number of events
          ( createdEvts < maxevt || maxevt < 0 ) && // The events are not finished with a limited number of events
          m_schedulerSvc->freeSlots() > 0 &&        // There are still free slots in the scheduler
-         m_whiteboard->freeSlots() > 0 ) {         // There are still free slots in the whiteboard
+         m_whiteboard->freeSlots() > 0 &&          // There are still free slots in the whiteboard
+         !m_scheduledStop                          // There is not a scheduled stop
+    ) {
 
       if ( 1 == createdEvts ) // reset counter to count from event 1
         start_time = Clock::now();
@@ -427,7 +430,10 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
       DEBUG_MSG << "Draining the scheduler" << endmsg;
 
       // Pull out of the scheduler the finished events
-      if ( drainScheduler( finishedEvts ).isFailure() ) loop_ended = true;
+      if ( drainScheduler( finishedEvts ).isFailure() ) {
+        loop_ended = true;
+        finalSC    = StatusCode::FAILURE;
+      }
       newEvtAllowed = true;
     }
   } // end main loop on finished events
@@ -438,7 +444,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
          << std::chrono::duration_cast<std::chrono::nanoseconds>( end_time - start_time ).count() << endmsg;
   info() << skippedEvts << " events were SKIPed" << endmsg;
 
-  return StatusCode::SUCCESS;
+  return finalSC;
 }
 
 //---------------------------------------------------------------------------

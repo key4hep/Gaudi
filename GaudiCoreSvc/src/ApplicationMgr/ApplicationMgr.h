@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -251,8 +251,9 @@ protected:
       this, "JobOptionsPostAction", {}, "additional command to run on config" };
   Gaudi::Property<std::string> m_jobOptionsPostAction{
       this, "JobOptionsPreAction", {}, "additional command to run on config" };
-  Gaudi::Property<std::string> m_runableType{ this, "Runable", "AppMgrRunable", "Runable type" };
-  Gaudi::Property<std::string> m_eventLoopMgr{ this, "EventLoop", "EventLoopMgr", "Processing manager type" };
+  Gaudi::Property<std::string> m_runableType{ this, "Runable", "AppMgrRunable", "Runable type", "Service:IRunable" };
+  Gaudi::Property<std::string> m_eventLoopMgr{ this, "EventLoop", "EventLoopMgr", "Processing manager type",
+                                               "Service:IEventProcessor" };
   Gaudi::Property<std::string> m_evtsel{ this, "EvtSel", {}, "Event selection" };
   Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", "NONE", "Name of the Hist Pers Svc" };
   Gaudi::Property<int>         m_outputLevel{ this, "OutputLevel", MSG::INFO, "Message output level" };
@@ -291,11 +292,6 @@ protected:
   /// @see Gaudi::Utils::StopSignalHandler
   Gaudi::Property<bool> m_stopOnSignal{
       this, "StopOnSignal", false, "Flag to enable/disable the signal handler that schedule a stop of the event loop" };
-
-  /// Property to enable/disable the monitoring and reporting of stalled events.
-  /// @see StalledEventMonitor
-  Gaudi::Property<bool> m_stalledEventMonitoring{
-      this, "StalledEventMonitoring", false, "Flag to enable/disable the monitoring and reporting of stalled events" };
 
   Gaudi::Property<bool> m_propertiesPrint{ this, "PropertiesPrint", false,
                                            "Flag to activate the printout of properties" };
