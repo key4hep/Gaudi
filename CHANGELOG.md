@@ -6,6 +6,14 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v38r3p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r3p1) - 2024-10-22
+This release is integrating the changes from [v38r1p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1p1)
+into v38r3.
+
+### Added
+- Add `NTupleSvc.BasketSize` property and forward in RCWNTupleCnv Branch creation (gaudi/Gaudi!1648)
+
+
 ## [v38r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r3) - 2024-06-28
 This is a minor release to collect all pending backward compatible changes and fixes
 before integrating the backward incompatible changes scheduled for v39r0.
