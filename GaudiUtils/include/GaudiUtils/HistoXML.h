@@ -154,7 +154,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH1D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH1D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -165,7 +165,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH2D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH2D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -176,7 +176,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH3D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH3D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -187,7 +187,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TProfile& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TProfile& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -198,7 +198,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TProfile2D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TProfile2D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -209,7 +209,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH1F& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH1F& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -220,7 +220,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH2F& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH2F& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -231,7 +231,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH3F& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH3F& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -242,7 +242,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH1D*& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH1D*& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -253,7 +253,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH2D*& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH2D*& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -264,7 +264,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TH3D*& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TH3D*& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -275,7 +275,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TProfile*& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TProfile*& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -286,7 +286,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( TProfile2D*& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( TProfile2D*& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -297,7 +297,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( AIDA::IHistogram1D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( AIDA::IHistogram1D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -308,7 +308,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( AIDA::IHistogram2D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( AIDA::IHistogram2D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -319,7 +319,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( AIDA::IHistogram3D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( AIDA::IHistogram3D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -330,7 +330,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( AIDA::IProfile1D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( AIDA::IProfile1D& result, std::string_view input );
       // ======================================================================
       /** parse the histogram from standard ROOT XML
        *
@@ -341,7 +341,7 @@ namespace Gaudi {
        *  @param input  (INPUT)   the input XML string
        *  @return status code
        */
-      GAUDI_API StatusCode fromXml( AIDA::IProfile2D& result, const std::string& input );
+      GAUDI_API StatusCode fromXml( AIDA::IProfile2D& result, std::string_view input );
       // ======================================================================
     } // namespace Histos
     // ========================================================================

@@ -14,6 +14,7 @@ pytest plugin that report collected pytest files as CTest tests
 This plugin is not meant to be used directly, but it is invoked by the
 CMake function `gaudi_add_pytest()`
 """
+
 import argparse
 import os
 from pathlib import Path

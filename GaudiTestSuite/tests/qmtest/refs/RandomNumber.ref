@@ -45,7 +45,7 @@ HistogramPersis...  DEBUG Service base class initialized successfully
 RootHistSvc         DEBUG Property update for OutputLevel : new value = 2
 RootHistSvc         DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 NTupleSvc           DEBUG Property update for OutputLevel : new value = 2
 NTupleSvc           DEBUG Service base class initialized successfully
 NTupleSvcConver...  DEBUG Property update for OutputLevel : new value = 2

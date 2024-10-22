@@ -23,6 +23,32 @@ namespace Gaudi::Histograming::Sink {
 
   namespace {
     using namespace std::string_literals;
+    Base::HistoBinRegistry const binRegistry = {
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::full, double> ) ),
+          &saveProfileHisto<1, Accumulators::atomicity::full, double> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::none, double> ) ),
+          &saveProfileHisto<1, Accumulators::atomicity::none, double> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::full, float> ) ),
+          &saveProfileHisto<1, Accumulators::atomicity::full, float> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<1u, Accumulators::atomicity::none, float> ) ),
+          &saveProfileHisto<1, Accumulators::atomicity::none, float> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::full, double> ) ),
+          &saveProfileHisto<2, Accumulators::atomicity::full, double> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::none, double> ) ),
+          &saveProfileHisto<2, Accumulators::atomicity::none, double> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::full, float> ) ),
+          &saveProfileHisto<2, Accumulators::atomicity::full, float> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<2u, Accumulators::atomicity::none, float> ) ),
+          &saveProfileHisto<2, Accumulators::atomicity::none, float> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::full, double> ) ),
+          &saveProfileHisto<3, Accumulators::atomicity::full, double> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::none, double> ) ),
+          &saveProfileHisto<3, Accumulators::atomicity::none, double> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::full, float> ) ),
+          &saveProfileHisto<3, Accumulators::atomicity::full, float> },
+        { std::type_index( typeid( Gaudi::Accumulators::ProfileHistogram<3u, Accumulators::atomicity::none, float> ) ),
+          &saveProfileHisto<3, Accumulators::atomicity::none, float> },
+    };
     Base::HistoRegistry const registry = {
         { { "histogram:Histogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
         { { "histogram:WeightedHistogram"s, 1 }, &saveRootHisto<1, false, TH1D> },
@@ -43,6 +69,7 @@ namespace Gaudi::Histograming::Sink {
 
     StatusCode initialize() override {
       return Base::initialize().andThen( [&] {
+        for ( auto& [id, func] : binRegistry ) { registerHandler( id, func ); }
         for ( auto& [id, func] : registry ) { registerHandler( id, func ); }
       } );
     }

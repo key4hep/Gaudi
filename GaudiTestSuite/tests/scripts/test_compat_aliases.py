@@ -43,11 +43,12 @@ def test_aliases():
     for component in sorted(class_map):
         assert component in factories, "missing component %s" % component
         factories[component].load()
-        assert (
-            factories[component].classname == class_map[component]
-        ), 'expected class "%s", found "%s"' % (
-            class_map[component],
-            factories[component].classname,
+        assert factories[component].classname == class_map[component], (
+            'expected class "%s", found "%s"'
+            % (
+                class_map[component],
+                factories[component].classname,
+            )
         )
 
 

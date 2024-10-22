@@ -210,6 +210,14 @@ warnings-check:lcg:104:x86_64-el9-gcc13-opt:no-GaudiAlg:
     - job: "lcg:104:x86_64-el9-gcc13-opt:no-GaudiAlg"
       artifacts: true
 
+lcg:105a:x86_64-el9-gcc13-opt:no-examples:
+  <<: *template_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+warnings-check:lcg:105a:x86_64-el9-gcc13-opt:no-examples:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg:105a:x86_64-el9-gcc13-opt:no-examples"
+      artifacts: true
 
 # LHCb-style build
 lhcb:104:x86_64_v3-el9-gcc13-opt+g:
@@ -312,6 +320,7 @@ check-copyright:
         --exclude ci-utils/preset-full.cmake \
         --exclude ci-utils/preset-minimal.cmake \
         --exclude ci-utils/preset-no-AIDA.cmake \
+        --exclude ci-utils/preset-no-examples.cmake \
         --exclude ci-utils/preset-no-GaudiAlg.cmake \
         --exclude ci-utils/preset-no-test.cmake \
         origin/${TARGET_BRANCH}

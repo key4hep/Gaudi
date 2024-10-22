@@ -18,7 +18,7 @@
 
 namespace Gaudi {
   namespace Parsers {
-    StatusCode parse( DataHandle& v, const std::string& s ) {
+    StatusCode parse( DataHandle& v, std::string_view s ) {
       DataObjID id;
       auto      sc = parse( id, s );
       if ( sc ) v.setKey( std::move( id ) );

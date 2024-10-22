@@ -10,6 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
+#include <Gaudi/Accumulators/Histogram.h>
+#include <Gaudi/MonitoringHub.h>
 #include <GaudiKernel/GaudiException.h>
 #include <TDirectory.h>
 #include <TFile.h>
@@ -19,6 +21,7 @@
 #include <TH3D.h>
 #include <TProfile.h>
 #include <TProfile2D.h>
+#include <TProfile3D.h>
 #include <algorithm>
 #include <functional>
 #include <gsl/span>
@@ -47,8 +50,8 @@ namespace Gaudi::Histograming::Sink {
    *       it should intanciate a new ROOT histogram instance and return it
    *   - void fillMetaData( Histo& histo, nlohmann::json const& jsonAxis, unsigned int nentries)
    *       it should fill metadata in the ROOT histo histogram provides from the list of axis number of entries
-   *   - void fill( Histo& histo, unsigned int i, const WeightType& weight )
-   *       it should fill the given bin with the given value
+   *   - void fill( Histo& histo, unsigned int nbins, const WeightType& weight )
+   *       it should fill the given number of bin with the given values
    * Last point, it should have a static constexpr unsigned int Dimension
    */
   template <bool isProfile, typename RootHisto, unsigned int N>
@@ -105,6 +108,23 @@ namespace Gaudi::Histograming::Sink {
     }
 
     /**
+     * handles cases where name includes '/' character(s) and move needed part of it
+     * to dir. Also handle case of absolute names
+     */
+    inline void fixNameAndDir( std::string& name, std::string& dir ) {
+      if ( name[0] == '/' ) {
+        dir  = "";
+        name = name.substr( 1 );
+      }
+      // take into account the case where name contains '/'s (e.g. "Group/Name") by
+      // moving the prefix into dir
+      if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
+        dir += '/' + name.substr( 0, pos );
+        name = name.substr( pos + 1 );
+      }
+    }
+
+    /**
      * generic function to convert json to a ROOT Histogram - internal implementation
      */
     template <typename Traits, std::size_t... index>
@@ -114,32 +134,19 @@ namespace Gaudi::Histograming::Sink {
       // extract data from json
       auto jsonAxis = j.at( "axis" );
       auto axis     = std::array{ jsonToAxis( jsonAxis[index] )... };
-      auto weights  = j.at( "bins" ).get<std::vector<typename Traits::WeightType>>();
+      auto weights  = j.at( "bins" ).get<typename Traits::WeightType>();
       auto title    = j.at( "title" ).get<std::string>();
       auto nentries = j.at( "nEntries" ).get<unsigned int>();
       // weird way ROOT has to give titles to axis
       title += ( axis[index].title + ... );
       // compute total number of bins, multiplying bins per axis
       auto totNBins = ( ( axis[index].nBins + 2 ) * ... );
-      assert( weights.size() == totNBins );
-
-      if ( name[0] == '/' ) {
-        dir  = "";
-        name = name.substr( 1 );
-      }
-
-      // take into account the case where name contains '/'s (e.g. "Group/Name") by
-      // moving the prefix into dir
-      if ( auto pos = name.rfind( '/' ); pos != std::string::npos ) {
-        dir += '/' + name.substr( 0, pos );
-        name = name.substr( pos + 1 );
-      }
-
+      // fix name and dir if needed
+      fixNameAndDir( name, dir );
       // Create Root histogram calling constructors with the args tuple
       auto histo = Traits::create( name, title, axis[index]... );
-
       // fill Histo
-      for ( unsigned int i = 0; i < totNBins; i++ ) Traits::fill( histo, i, weights[i] );
+      Traits::fill( histo, totNBins, weights );
       // in case we have sums, overwrite them in the histogram with our more precise values
       // FIXME This is only supporting regular histograms. It won't work in case of weighted histograms
       if constexpr ( sizeof...( index ) == 1 ) {
@@ -247,6 +254,7 @@ namespace Gaudi::Histograming::Sink {
       ProfileWrapper& operator=( ProfileWrapper const&& ) = delete;
       void            setBinNEntries( Int_t i, Int_t n ) { this->fBinEntries.fArray[i] = n; }
       void            setBinW2( Int_t i, Double_t v ) { this->fSumw2.fArray[i] = v; }
+      Double_t        getBinW2( Int_t i ) { return this->fSumw2.fArray[i]; }
     };
 
     /**
@@ -356,8 +364,10 @@ namespace Gaudi::Histograming::Sink {
   template <typename RootHisto, unsigned int N>
   struct Traits<false, RootHisto, N> : details::TraitsBase<RootHisto, N> {
     using Histo      = RootHisto;
-    using WeightType = double;
-    static void fill( Histo& histo, unsigned int i, const WeightType& weight ) { histo.SetBinContent( i, weight ); }
+    using WeightType = std::vector<double>;
+    static void fill( Histo& histo, unsigned int nbins, const WeightType& weight ) {
+      for ( unsigned int i = 0; i < nbins; i++ ) { histo.SetBinContent( i, weight[i] ); }
+    }
   };
 
   /**
@@ -366,13 +376,15 @@ namespace Gaudi::Histograming::Sink {
   template <typename RootHisto, unsigned int N>
   struct Traits<true, RootHisto, N> : details::TraitsBase<details::ProfileWrapper<RootHisto>, N> {
     using Histo      = details::ProfileWrapper<RootHisto>;
-    using WeightType = std::tuple<std::tuple<unsigned int, double>, double>;
-    static constexpr void fill( Histo& histo, unsigned int i, const WeightType& weight ) {
-      auto [c, sumWeight2]       = weight;
-      auto [nEntries, sumWeight] = c;
-      histo.setBinNEntries( i, nEntries );
-      histo.SetBinContent( i, sumWeight );
-      histo.setBinW2( i, sumWeight2 );
+    using WeightType = std::vector<std::tuple<std::tuple<unsigned int, double>, double>>;
+    static constexpr void fill( Histo& histo, unsigned int nbins, const WeightType& weight ) {
+      for ( unsigned int i = 0; i < nbins; i++ ) {
+        auto [c, sumWeight2]       = weight[i];
+        auto [nEntries, sumWeight] = c;
+        histo.setBinNEntries( i, nEntries );
+        histo.SetBinContent( i, sumWeight );
+        histo.setBinW2( i, sumWeight2 );
+      }
     };
   };
 
@@ -397,6 +409,139 @@ namespace Gaudi::Histograming::Sink {
   template <unsigned int N, bool isProfile, typename ROOTHisto>
   void saveRootHisto( TFile& file, std::string dir, std::string name, nlohmann::json const& j ) {
     saveRootHisto<Traits<isProfile, ROOTHisto, N>>( file, std::move( dir ), std::move( name ), j );
+  }
+
+  /// Direct conversion of 1D histograms form Gaudi to ROOT format
+  template <Accumulators::atomicity Atomicity = Accumulators::atomicity::full, typename Arithmetic = double>
+  details::ProfileWrapper<TProfile> profileHisto1DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
+    // get original histogram from the Entity
+    auto const& gaudiHisto =
+        *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<1, Atomicity, Arithmetic>*>( ent.id() );
+    // convert to Root
+    auto const&                       gaudiAxis = gaudiHisto.axis()[0];
+    details::ProfileWrapper<TProfile> histo{ name.c_str(), gaudiHisto.title().c_str(), gaudiAxis.nBins,
+                                             gaudiAxis.minValue, gaudiAxis.maxValue };
+    histo.Sumw2();
+    unsigned long totNEntries{ 0 };
+    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) { totNEntries += gaudiHisto.nEntries( i ); }
+    if ( !gaudiAxis.labels.empty() ) {
+      auto& axis = *histo.GetXaxis();
+      for ( unsigned int i = 0; i < gaudiAxis.labels.size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiAxis.labels[i].c_str() );
+      }
+    }
+    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) {
+      auto const& [tmp, sumw2] = gaudiHisto.binValue( i );
+      auto const& [nent, sumw] = tmp;
+      histo.SetBinContent( i, sumw );
+      histo.setBinNEntries( i, nent );
+      histo.setBinW2( i, sumw2 );
+    }
+    histo.SetEntries( totNEntries );
+    return histo;
+  }
+
+  /// Direct conversion of 2D histograms form Gaudi to ROOT format
+  template <Accumulators::atomicity Atomicity = Accumulators::atomicity::full, typename Arithmetic = double>
+  details::ProfileWrapper<TProfile2D> profileHisto2DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
+    // get original histogram from the Entity
+    auto const& gaudiHisto =
+        *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<2, Atomicity, Arithmetic>*>( ent.id() );
+    // convert to Root
+    auto const&                         gaudiXAxis = gaudiHisto.axis()[0];
+    auto const&                         gaudiYAxis = gaudiHisto.axis()[1];
+    details::ProfileWrapper<TProfile2D> histo{ name.c_str(),        gaudiHisto.title().c_str(), gaudiXAxis.nBins,
+                                               gaudiXAxis.minValue, gaudiXAxis.maxValue,        gaudiYAxis.nBins,
+                                               gaudiYAxis.minValue, gaudiYAxis.maxValue };
+    histo.Sumw2();
+    if ( !gaudiXAxis.labels.empty() ) {
+      auto& axis = *histo.GetXaxis();
+      for ( unsigned int i = 0; i < gaudiXAxis.labels.size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiXAxis.labels[i].c_str() );
+      }
+    }
+    if ( !gaudiYAxis.labels.empty() ) {
+      auto& axis = *histo.GetYaxis();
+      for ( unsigned int i = 0; i < gaudiYAxis.labels.size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiYAxis.labels[i].c_str() );
+      }
+    }
+    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) {
+      auto const& [tmp, sumw2] = gaudiHisto.binValue( i );
+      auto const& [nent, sumw] = tmp;
+      histo.SetBinContent( i, sumw );
+      histo.setBinNEntries( i, nent );
+      histo.setBinW2( i, sumw2 );
+    }
+    unsigned long totNEntries{ 0 };
+    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) { totNEntries += gaudiHisto.nEntries( i ); }
+    histo.SetEntries( totNEntries );
+    return histo;
+  }
+
+  /// Direct conversion of 3D histograms form Gaudi to ROOT format
+  template <Accumulators::atomicity Atomicity = Accumulators::atomicity::full, typename Arithmetic = double>
+  details::ProfileWrapper<TProfile3D> profileHisto3DToRoot( std::string name, Monitoring::Hub::Entity const& ent ) {
+    // get original histogram from the Entity
+    auto const& gaudiHisto =
+        *reinterpret_cast<Gaudi::Accumulators::ProfileHistogram<3, Atomicity, Arithmetic>*>( ent.id() );
+    // convert to Root
+    auto const&                         gaudiXAxis = gaudiHisto.axis()[0];
+    auto const&                         gaudiYAxis = gaudiHisto.axis()[1];
+    auto const&                         gaudiZAxis = gaudiHisto.axis()[2];
+    details::ProfileWrapper<TProfile3D> histo{ name.c_str(),        gaudiHisto.title().c_str(), gaudiXAxis.nBins,
+                                               gaudiXAxis.minValue, gaudiXAxis.maxValue,        gaudiYAxis.nBins,
+                                               gaudiYAxis.minValue, gaudiYAxis.maxValue,        gaudiZAxis.nBins,
+                                               gaudiZAxis.minValue, gaudiZAxis.maxValue };
+    histo.Sumw2();
+    if ( !gaudiXAxis.labels.empty() ) {
+      auto& axis = *histo.GetXaxis();
+      for ( unsigned int i = 0; i < gaudiXAxis.labels.size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiXAxis.labels[i].c_str() );
+      }
+    }
+    if ( !gaudiYAxis.labels.empty() ) {
+      auto& axis = *histo.GetYaxis();
+      for ( unsigned int i = 0; i < gaudiYAxis.labels.size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiYAxis.labels[i].c_str() );
+      }
+    }
+    if ( !gaudiZAxis.labels.empty() ) {
+      auto& axis = *histo.GetZaxis();
+      for ( unsigned int i = 0; i < gaudiZAxis.labels.size(); i++ ) {
+        axis.SetBinLabel( i + 1, gaudiZAxis.labels[i].c_str() );
+      }
+    }
+    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) {
+      auto const& [tmp, sumw2] = gaudiHisto.binValue( i );
+      auto const& [nent, sumw] = tmp;
+      histo.SetBinContent( i, sumw );
+      histo.setBinNEntries( i, nent );
+      histo.setBinW2( i, sumw2 );
+    }
+    unsigned long totNEntries{ 0 };
+    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) { totNEntries += gaudiHisto.nEntries( i ); }
+    histo.SetEntries( totNEntries );
+    return histo;
+  }
+
+  template <unsigned int N, Accumulators::atomicity Atomicity = Accumulators::atomicity::full,
+            typename Arithmetic = double>
+  void saveProfileHisto( TFile& file, std::string dir, std::string name, Monitoring::Hub::Entity const& ent ) {
+    // fix name and dir if needed
+    details::fixNameAndDir( name, dir );
+    // Change to the proper directory in the ROOT file
+    auto previousDir = details::changeDir( file, dir );
+    // write to file
+    if constexpr ( N == 1 ) {
+      profileHisto1DToRoot<Atomicity, Arithmetic>( name, ent ).Write();
+    } else if constexpr ( N == 2 ) {
+      profileHisto2DToRoot<Atomicity, Arithmetic>( name, ent ).Write();
+    } else if constexpr ( N == 3 ) {
+      profileHisto3DToRoot<Atomicity, Arithmetic>( name, ent ).Write();
+    }
+    // switch back to the previous directory
+    previousDir->cd();
   }
 
 } // namespace Gaudi::Histograming::Sink

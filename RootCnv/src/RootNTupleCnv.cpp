@@ -299,7 +299,7 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
         for ( ; ipar[1] < last; ++ipar[1] ) { // loop on all selected entries
           tree->LoadTree( ipar[1] );
           rpA->select->GetNdata();
-          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<float>::epsilon() ) { break; }
+          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<double>::epsilon() ) { break; }
           log() << MSG::DEBUG << par[0] << "/" << par[1] << " SKIP Entry: " << ipar[1] << endmsg;
         }
       }
@@ -733,7 +733,7 @@ StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTr
         for ( ; ipar[1] < last; ++ipar[1] ) {
           tree->LoadTree( ipar[1] );
           rpA->select->GetNdata();
-          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<float>::epsilon() ) { break; }
+          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<double>::epsilon() ) { break; }
           log() << MSG::DEBUG << par[0] << "/" << par[1] << " SKIP Entry: " << ipar[1] << endmsg;
         }
       }

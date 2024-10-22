@@ -7,7 +7,7 @@ PythonScriptingSvc   INFO Python version: [2.2]
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Successfully loaded modules: RootHistCnv, HbookCnv, GaudiAlg, GaudiAud
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 RndmGenSvc.Engine    INFO Generator engine type:RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<RanluxEngine>

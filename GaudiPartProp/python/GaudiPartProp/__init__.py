@@ -18,6 +18,7 @@
 """
 Helper file/module for GaudiPartProp package
 """
+
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 __version__ = ""

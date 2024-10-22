@@ -82,7 +82,7 @@ namespace Gaudi {
       }
       friend std::ostream& operator<<( std::ostream& os, const PID& pid ) { return toStream( pid, os ); }
 
-      friend StatusCode parse( PID& pid, const std::string& in ) {
+      friend StatusCode parse( PID& pid, std::string_view in ) {
         for ( PID ref : { Electron(), Muon(), Pion(), Kaon(), Proton() } ) {
           if ( in != toString( ref ) ) continue;
           pid = ref;

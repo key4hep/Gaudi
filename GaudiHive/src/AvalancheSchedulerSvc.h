@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -138,6 +138,9 @@ public:
   /// Get free slots number
   unsigned int freeSlots() override;
 
+  /// Dump scheduler state for all slots
+  void dumpState() override;
+
   /// Method to inform the scheduler about event views
   virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
                                         std::unique_ptr<EventContext> viewContext ) override;
@@ -163,6 +166,10 @@ private:
       "Size of the global thread pool initialised by TBB; a value of -1 requests to use"
       "all available hardware threads; -100 requests to bypass TBB executing "
       "all algorithms in the scheduler's thread." };
+  Gaudi::Property<int> m_maxParallelismExtra{
+      this, "maxParallelismExtra", 0,
+      "Allows to add some extra threads to the maximum parallelism set in TBB"
+      "The TBB max parallelism is set as: ThreadPoolSize + maxParallelismExtra + 1" };
   Gaudi::Property<std::string>  m_whiteboardSvcName{ this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name" };
   Gaudi::Property<unsigned int> m_maxBlockingAlgosInFlight{
       this, "MaxBlockingAlgosInFlight", 0, "Maximum allowed number of simultaneously running CPU-blocking algorithms" };

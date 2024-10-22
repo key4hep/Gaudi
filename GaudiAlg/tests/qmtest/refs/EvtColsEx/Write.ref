@@ -89,7 +89,7 @@ Fill              SUCCESS Property ['Name': Value] =  'Enable':True
 Fill              SUCCESS Property ['Name': Value] =  'OutputLevel':3
 Fill              SUCCESS Property ['Name': Value] =  'ExtraOutputs':set()
 Fill              SUCCESS Property ['Name': Value] =  'ExtraInputs':set()
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

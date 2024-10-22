@@ -19,6 +19,8 @@
 #include "GaudiTestSuite/MyTrack.h"
 #include "GaudiTestSuite/MyVertex.h"
 
+#include <Gaudi/TestSuite/NTuple/MyStruct.h>
+
 #include "GaudiExamples/Collision.h"
 #include "GaudiExamples/Counter.h"
 #include "GaudiExamples/Event.h"

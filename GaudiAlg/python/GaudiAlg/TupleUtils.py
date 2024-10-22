@@ -35,9 +35,8 @@ __all__ = (
 )
 # =============================================================================
 
-from GaudiPython.Bindings import AppMgr
+from GaudiPython.Bindings import AppMgr, iAlgTool
 from GaudiPython.Bindings import gbl as cpp
-from GaudiPython.Bindings import iAlgTool
 
 _Tool = cpp.ITupleTool
 _Deco = cpp.GaudiPython.TupleToolDecorator

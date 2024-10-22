@@ -37,7 +37,7 @@ public:
   DeclareInterfaceID( IThreadPoolSvc, 1, 0 );
 
   /// Initializes the thread pool
-  virtual StatusCode initPool( const int& poolSize ) = 0;
+  virtual StatusCode initPool( const int& poolSize, const int& maxParallelismExtra ) = 0;
 
   /// Finalize the thread pool
   virtual StatusCode terminatePool() = 0;

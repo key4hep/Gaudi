@@ -1,6 +1,6 @@
 <?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
 <!--
-    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+    (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations
 
     This software is distributed under the terms of the Apache version 2 licence,
     copied verbatim in the file "LICENSE".
@@ -13,4 +13,10 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set><text>../../options/ToolHandles.py</text></set></argument>
 <argument name="reference"><text>refs/ToolHandles.ref</text></argument>
+<argument name="exit_code"><integer>0</integer></argument>
+<argument name="validator"><text>
+# ignore order of lines printed during execution
+preprocessor = normalizeTestSuite + SortGroupOfLines(r"^THData.*INFO executing")
+validateWithReference(preproc = preprocessor)
+</text></argument>
 </extension>

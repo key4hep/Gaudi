@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -155,6 +155,7 @@ gaudi_add_library(GaudiKernel
            Boost::thread
            Boost::regex
            Boost::system
+           Boost::chrono
            TBB::tbb
            ${CMAKE_DL_LIBS}
            ROOT::Core
@@ -313,6 +314,9 @@ if(BUILD_TESTING)
 
   gaudi_add_executable(test_CounterHistoArray SOURCES tests/src/CounterHistoArrayUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
+
+  gaudi_add_executable(test_ProfileHistoSpeed SOURCES tests/src/ProfileHistoSpeedTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework ROOT::Hist TEST)
 
   gaudi_add_executable(test_GenericSink SOURCES tests/src/GenericSinkUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)

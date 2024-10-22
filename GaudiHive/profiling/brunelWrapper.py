@@ -14,6 +14,7 @@ This script acts as a wrapper in order to generate Gaudi configs for running
 with different parameters in order to perform performance measurements.
 It takes command line arguments.
 """
+
 import optparse
 
 """

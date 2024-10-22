@@ -1,0 +1,25 @@
+# setting LC_ALL to "C"
+# --> Including file '/Gaudi/GaudiExamples/options/SlimEventLoopScheduledStop.py'
+# <-- End of file '/Gaudi/GaudiExamples/options/SlimEventLoopScheduledStop.py'
+# applying configuration of GaudiExamplesCommonConf
+# /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
+# |-OutputLevel = 3
+# |-DummyEvents = -1
+# \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v38r0)
+                                          running on pc on Mon Mar 11 09:57:11 2024
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ThreadPoolSvc        INFO no thread init tools attached
+AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
+PrecedenceSvc        INFO Assembling CF and DF task precedence rules
+PrecedenceSvc        INFO PrecedenceSvc initialized successfully
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+StopperAlg           INFO scheduling a event processing stop....
+HiveSlimEventLo...  ERROR Detected nullptr ctxt before clearing WB!
+ApplicationMgr       INFO Application Manager Stopped successfully
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully with a user requested ScheduledStop

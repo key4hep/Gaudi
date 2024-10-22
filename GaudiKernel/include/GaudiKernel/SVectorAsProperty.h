@@ -49,7 +49,7 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     template <class SCALAR, unsigned int N>
-    StatusCode parse( ROOT::Math::SVector<SCALAR, N>& result, const std::string& input ) {
+    StatusCode parse( ROOT::Math::SVector<SCALAR, N>& result, std::string_view input ) {
       std::vector<double> tmp;
       StatusCode          sc = parse( tmp, input );
       if ( sc.isFailure() ) { return sc; }                   // RETURN

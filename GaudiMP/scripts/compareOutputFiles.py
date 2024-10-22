@@ -9,7 +9,8 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-# flake8: noqa (job options)
+# We do not lint job options
+# ruff: noqa
 
 
 import sys

@@ -17,7 +17,7 @@ SimpleRootCount...  DEBUG output handles: 0
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
-HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine

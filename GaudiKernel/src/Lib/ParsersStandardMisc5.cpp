@@ -10,11 +10,11 @@
 \***********************************************************************************/
 #include "ParsersStandardMiscCommon.h"
 
-StatusCode Gaudi::Parsers::parse( std::map<unsigned int, std::string>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::map<unsigned int, std::string>& result, std::string_view input ) {
   return Gaudi::Parsers::parse_( result, input );
 }
 
-StatusCode Gaudi::Parsers::parse( std::string& name, std::string& value, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::string& name, std::string& value, std::string_view input ) {
   Skipper                                      skipper;
   KeyValueGrammar<IteratorT, Skipper>          g;
   KeyValueGrammar<IteratorT, Skipper>::ResultT result;
@@ -28,6 +28,6 @@ StatusCode Gaudi::Parsers::parse( std::string& name, std::string& value, const s
   return StatusCode::FAILURE;
 }
 
-StatusCode Gaudi::Parsers::parse( std::map<std::string, std::pair<double, double>>& result, const std::string& input ) {
+StatusCode Gaudi::Parsers::parse( std::map<std::string, std::pair<double, double>>& result, std::string_view input ) {
   return Gaudi::Parsers::parse_( result, input );
 }

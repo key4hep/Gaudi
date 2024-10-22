@@ -6,6 +6,57 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v38r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r3) - 2024-06-28
+This is a minor release to collect all pending backward compatible changes and fixes
+before integrating the backward incompatible changes scheduled for v39r0.
+
+### Changed
+- Use `string_view` consistently in parse methods (gaudi/Gaudi!1594)
+- Add hard limit on test stdout/err size (gaudi/Gaudi#313, gaudi/Gaudi!1595)
+- Introduce a new way to check timeout on events (gaudi/Gaudi#287, gaudi/Gaudi!1589)
+- Use Ruff for Python linting and formatting (gaudi/Gaudi#298, gaudi/Gaudi!1591)
+
+### Fixed
+- `listcomponents`: skip factories from other libraries (gaudi/Gaudi!1603)
+- Fix building with Catch2 v3 (gaudi/Gaudi!1600)
+- `GaudiTestSuite`: pre-commit fixes (gaudi/Gaudi!1602)
+- Fix race condition in `PersistencySvc::addCnvService` (gaudi/Gaudi#314, gaudi/Gaudi!1598)
+- Improve `BranchWrapper` implementation (gaudi/Gaudi!1596)
+
+
+## [v38r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r2) - 2024-05-16
+A minor release with a number of fixes and some new features.
+
+In particular I want to highlight the addition of a new algorithm that allows
+thread-safe writing of NTuples (gaudi/Gaudi!1577). For the moment it uses TTree as
+backend but we plan to add RNTuple support soon. A minor issue is that it cannot
+share the output file with the `HistogramSvc` or `Gaudi::Histograming::Sink::Root`,
+but there are plans to address it.
+
+Also worth noticing that we started to populate the GaudiExample directory.
+It will require some structure and polishing, but it's a start.
+
+### Added
+- Implement the `NTuple::Writer` and `NTuple::GenericWriter` algorithms for thread-safe NTuple writing (gaudi/Gaudi!1577, gaudi/Gaudi!1588)
+- `AvalancheSchedulerSvc`: include eventID in scheduler dump (gaudi/Gaudi!1579)
+- Added a first example in GaudiExample featuring a tiny experiment code (gaudi/Gaudi!1575)
+- Add `RootCnvSvc` option to write ROOT files in 'forward compatibility' mode (gaudi/Gaudi#303, gaudi/Gaudi!1573)
+- Introduced extra parameter to `ThreadPoolSvc` initPool to allow increase the max allowed parallelism of TBB. (gaudi/Gaudi!1567)
+
+### Fixed
+- Fix a couple of weird method signatures in `AlgorithmNode` (gaudi/Gaudi!1590)
+- Fix the `HiveSlimEventLoopMgr` exit code when there is a failure in the algorithms (gaudi/Gaudi!1576)
+- Fix some includes to build against boost v1.85.0 with gcc12.3 (gaudi/Gaudi!1587)
+- Resolve "`AlgContextSvc` may dereference a `nullptr`" (gaudi/Gaudi#304, gaudi/Gaudi!1583)
+- Don't use the deprecated `PySys_SetArgv` (gaudi/Gaudi!1578)
+- Use the value of `m_scheduledStop` instead of simply ignoring it in `HiveSlimEventLoopMgr` (gaudi/Gaudi#288, gaudi/Gaudi!1545)
+- Improved performance of conversion of profile histograms to ROOT (gaudi/Gaudi#305, gaudi/Gaudi!1574)
+- Add missing includes for gcc14 (gaudi/Gaudi!1580, gaudi/Gaudi!1581)
+- Correctly detect and report a special case of corrupted ROOT file (gaudi/Gaudi#301, gaudi/Gaudi!1571)
+- Use Boost IO State Saver to restore initial ostream flags (gaudi/Gaudi#295, gaudi/Gaudi!1570)
+- Avoid implicit conversion from float to double (gaudi/Gaudi#299, gaudi/Gaudi!1569)
+
+
 ## [v38r1p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1p1) - 2024-10-18
 This patch release is needed by LHCb to pick up a small extension to `NTupleSvc`
 so that we can fine tune the basket size of the `TTree`s we produce.

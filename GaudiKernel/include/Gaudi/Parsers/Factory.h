@@ -31,12 +31,12 @@
 namespace Gaudi {
   namespace Parsers {
     // ========================================================================
-    typedef std::string::const_iterator IteratorT;
+    typedef std::string_view::const_iterator IteratorT;
     // typedef boost::spirit::ascii::space_type Skipper;
     typedef SkipperGrammar<IteratorT> Skipper;
     // ========================================================================
     template <typename ResultT>
-    inline StatusCode parse_( ResultT& result, const std::string& input ) {
+    inline StatusCode parse_( ResultT& result, std::string_view input ) {
       Skipper                                                 skipper;
       typename Grammar_<IteratorT, ResultT, Skipper>::Grammar g;
       IteratorT                                               iter = input.begin(), end = input.end();
@@ -45,7 +45,7 @@ namespace Gaudi {
     }
     //=========================================================================
     template <>
-    inline StatusCode parse_( std::string& result, const std::string& input ) {
+    inline StatusCode parse_( std::string& result, std::string_view input ) {
       Skipper                                            skipper;
       Grammar_<IteratorT, std::string, Skipper>::Grammar g;
       IteratorT                                          iter = input.begin(), end = input.end();
@@ -55,7 +55,7 @@ namespace Gaudi {
     }
     //=========================================================================
     template <typename ResultT>
-    inline StatusCode parse( ResultT& result, const std::string& input ) {
+    inline StatusCode parse( ResultT& result, std::string_view input ) {
       return parse_( result, input );
     }
     //=========================================================================

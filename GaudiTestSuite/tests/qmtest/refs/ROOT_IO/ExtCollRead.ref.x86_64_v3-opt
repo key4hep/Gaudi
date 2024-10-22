@@ -96,8 +96,8 @@ Gaudi::TestSuite::EvtCollectionSelector	 -> Momenta(Fix): [0]=16.6809 [1]=14.903
 Gaudi::TestSuite::EvtCollectionSelector	 -> Track :  px=10.1578 py=9.51566 pz=9.19358
 Gaudi::TestSuite::EvtCollectionSelector   SELECTED : True
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 2: 1
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
-FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
+FileRecordPersi...   INFO Added successfully Conversion service RootCnvSvc
 ReadAlg           SUCCESS Got incident: NEW_FILE_RECORD Source:/FileRecords/21C0F51C-F62E-11EA-8278-A4BF012CBB19
 ReadAlg           SUCCESS Received incident:NEW_FILE_RECORD: /FileRecords/21C0F51C-F62E-11EA-8278-A4BF012CBB19
 ReadAlg           SUCCESS Incident: FileInfo record: /FileRecords/21C0F51C-F62E-11EA-8278-A4BF012CBB19/EvtCount=1000

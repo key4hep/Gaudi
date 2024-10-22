@@ -18,6 +18,7 @@
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="timeout"><integer>120</integer></argument>
 <argument name="reference"><text>refs/SubSlotVsSlotIsolation.ref</text></argument>
+<argument name="exit_code"><integer>1</integer></argument>
 <argument name="environment"><set>
 <text>GAUDIAPPNAME=</text>
 <text>GAUDIAPPVERSION=</text>

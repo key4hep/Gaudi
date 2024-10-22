@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -98,8 +98,16 @@ int main( int argc, char* argv[] ) {
   if ( output_opt != "-" ) { output_file.reset( new std::ofstream{ output_opt } ); }
   std::ostream& output = ( output_file ? *output_file : std::cout );
 
-  auto dump_from = [&output, &loaded]( auto& reg, const char* lib, const char* prefix ) {
+  auto dump_from = [&output, &loaded]( const auto& reg, const char* lib, const char* prefix ) {
     for ( const auto& factoryName : reg.loadedFactoryNames() ) {
+      // Skip if the component does not come from the same library we are processing
+      // (i.e. we found a symbol that is coming from a library loaded by the linker).
+      const auto& info = reg.factories().find( factoryName )->second;
+      if ( lib != info.library && !info.library.empty() && info.library != "unknown" ) {
+        std::cerr << "WARNING: library [" << lib << "] exposes factory [" << factoryName << "] which is declared in ["
+                  << info.library << "] !!" << std::endl;
+        continue;
+      }
       auto f = loaded.find( factoryName );
       if ( f == loaded.end() ) {
         output << prefix << "::" << lib << ":" << factoryName << std::endl;

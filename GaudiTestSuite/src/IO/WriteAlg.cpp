@@ -162,11 +162,11 @@ StatusCode WriteAlg::execute() {
   }
   // Now connect vertices and tracks
   for ( MyTrackVector::iterator k = myTracks->begin(); k != myTracks->end(); ++k ) {
-    int       org    = (int)( rndmflat() * float( m ) );
+    int       org    = (int)( rndmflat() * double( m ) );
     MyVertex* orgVtx = *( myVertices->begin() + org );
     ( *k )->setOriginVertex( orgVtx );
-    int dec1 = (int)( rndmflat() * float( m ) );
-    int dec2 = (int)( rndmflat() * float( m ) );
+    int dec1 = (int)( rndmflat() * double( m ) );
+    int dec2 = (int)( rndmflat() * double( m ) );
     int tmp  = dec1;
     dec1     = ( tmp < dec2 ) ? tmp : dec2;
     dec2     = ( tmp > dec2 ) ? tmp : dec2;

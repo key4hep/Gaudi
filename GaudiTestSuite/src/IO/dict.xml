@@ -116,4 +116,6 @@
     <field name="m_random" transient="true"/>
   </class>
 
+  <class name="Gaudi::TestSuite::NTuple::MyStruct"/>
+
 </lcgdict>

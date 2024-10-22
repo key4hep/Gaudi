@@ -1,0 +1,16 @@
+[lint]
+select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E7",
+    "E9",
+    "E101",
+    "W6",
+    # isort
+    "I001"
+]
+ignore = [
+    "E741", # Ambiguous variable name
+]
+exclude = [ "*/options/*" ]

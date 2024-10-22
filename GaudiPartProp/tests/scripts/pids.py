@@ -22,15 +22,15 @@ Demo-file for interactive work with new Particle Property Service
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 from pathlib import Path
 
-# The following lines are misunderstood by flake8 - the imports are needed as
-# they have necessary side effects
-import GaudiPartProp.PartPropAlg  # noqa: F401
-import GaudiPartProp.Service  # noqa: F401
-
 # from DDDB.CheckDD4Hep import UseDD4Hep
 # if UseDD4Hep:
 #     # use a predefined particle table file
 from Configurables import Gaudi__ParticlePropertySvc
+
+# The following lines are misunderstood by flake8 - the imports are needed as
+# they have necessary side effects
+import GaudiPartProp.PartPropAlg  # noqa: F401
+import GaudiPartProp.Service  # noqa: F401
 
 ## test the nodes
 from GaudiPartProp.Nodes import Gaudi

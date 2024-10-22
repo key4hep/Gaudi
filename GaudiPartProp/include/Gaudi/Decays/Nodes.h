@@ -16,6 +16,7 @@
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/StatusCode.h>
+#include <algorithm>
 
 /** @file Decays/Nodes.h
  *  Helper general purpose utilities to deal with decay nodes

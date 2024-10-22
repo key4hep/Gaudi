@@ -16,11 +16,12 @@ import platform
 import re
 import signal
 import sys
-import tempfile
 import threading
 import time
+from datetime import datetime, timedelta
 from html import escape as escape_for_html
 from subprocess import PIPE, STDOUT, Popen
+from tempfile import NamedTemporaryFile, mkdtemp
 from unittest import TestCase
 
 if sys.version_info < (3, 5):
@@ -42,6 +43,9 @@ if sys.version_info < (3, 5):
 
 SKIP_RETURN_CODE = 77
 
+# default of 100MB
+OUTPUT_LIMIT = int(os.environ.get("GAUDI_TEST_STDOUT_LIMIT", 100 * 1024**2))
+
 
 def sanitize_for_xml(data):
     """
@@ -51,7 +55,7 @@ def sanitize_for_xml(data):
     >>> sanitize_for_xml('this is \x1b')
     'this is [NON-XML-CHAR-0x1B]'
     """
-    bad_chars = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]")
+    bad_chars = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]")
 
     def quote(match):
         "helper function"
@@ -153,7 +157,7 @@ class BaseTest(object):
             self.result["Options"] = '<code lang="{}"><pre>{}</pre></code>'.format(
                 lang, escape_for_html(self.options)
             )
-            optionFile = tempfile.NamedTemporaryFile(suffix=suffix)
+            optionFile = NamedTemporaryFile(suffix=suffix)
             optionFile.file.write(self.options.encode("utf-8"))
             optionFile.seek(0)
             self.args.append(RationalizePath(optionFile.name))
@@ -179,7 +183,7 @@ class BaseTest(object):
                 if self._common_tmpdir:
                     workdir = self._common_tmpdir
                 else:
-                    workdir = tempfile.mkdtemp()
+                    workdir = mkdtemp()
 
             # prepare the command to execute
             prog = ""
@@ -208,42 +212,86 @@ class BaseTest(object):
             # in the same dir as the program
             os.chdir(workdir)
 
+            tmp_streams = {
+                "stdout": NamedTemporaryFile(),
+                "stderr": NamedTemporaryFile(),
+            }
+
             # launching test in a different thread to handle timeout exception
             def target():
                 logging.debug("executing %r in %s", params, workdir)
                 self.proc = Popen(
-                    params, stdout=PIPE, stderr=PIPE, env=self.environment
+                    params,
+                    stdout=tmp_streams["stdout"],
+                    stderr=tmp_streams["stderr"],
+                    env=self.environment,
                 )
                 logging.debug("(pid: %d)", self.proc.pid)
-                out, err = self.proc.communicate()
-                self.out = out.decode("utf-8", errors="backslashreplace")
-                self.err = err.decode("utf-8", errors="backslashreplace")
+                self.proc.communicate()
+                tmp_streams["stdout"].seek(0)
+                self.out = (
+                    tmp_streams["stdout"]
+                    .read()
+                    .decode("utf-8", errors="backslashreplace")
+                )
+                tmp_streams["stderr"].seek(0)
+                self.err = (
+                    tmp_streams["stderr"]
+                    .read()
+                    .decode("utf-8", errors="backslashreplace")
+                )
 
             thread = threading.Thread(target=target)
             thread.start()
-            # catching timeout
-            thread.join(self.timeout)
+            # checking for timeout and stdout/err cutoff
+            when_to_stop = datetime.now() + timedelta(seconds=self.timeout)
+            too_big_stream = None
+            while (
+                datetime.now() < when_to_stop
+                and thread.is_alive()
+                and not too_big_stream
+            ):
+                # we check stdout and stderr size a few times per second
+                thread.join(0.1)
+                # if we are done, there is no need to check output size
+                if thread.is_alive():
+                    for stream in tmp_streams:
+                        if os.path.getsize(tmp_streams[stream].name) > OUTPUT_LIMIT:
+                            too_big_stream = stream
 
             if thread.is_alive():
-                logging.debug("time out in test %s (pid %d)", self.name, self.proc.pid)
-                # get the stack trace of the stuck process
-                cmd = [
-                    "gdb",
-                    "--pid",
-                    str(self.proc.pid),
-                    "--batch",
-                    "--eval-command=thread apply all backtrace",
-                ]
-                gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-                self.stack_trace = gdb.communicate()[0].decode(
-                    "utf-8", errors="backslashreplace"
-                )
+                if not too_big_stream:
+                    logging.debug(
+                        "time out in test %s (pid %d)", self.name, self.proc.pid
+                    )
+                    # get the stack trace of the stuck process
+                    cmd = [
+                        "gdb",
+                        "--pid",
+                        str(self.proc.pid),
+                        "--batch",
+                        "--eval-command=thread apply all backtrace",
+                    ]
+                    gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+                    self.stack_trace = gdb.communicate()[0].decode(
+                        "utf-8", errors="backslashreplace"
+                    )
+                    self.causes.append("timeout")
+                else:
+                    logging.debug(
+                        "too big %s detected (pid %d)", too_big_stream, self.proc.pid
+                    )
+                    self.result[f"{too_big_stream} limit"] = str(OUTPUT_LIMIT)
+                    self.result[f"{too_big_stream} size"] = str(
+                        os.path.getsize(tmp_streams[too_big_stream].name)
+                    )
+                    self.causes.append(f"too big {too_big_stream}")
 
                 kill_tree(self.proc.pid, signal.SIGTERM)
                 thread.join(60)
                 if thread.is_alive():
                     kill_tree(self.proc.pid, signal.SIGKILL)
-                self.causes.append("timeout")
+
             else:
                 self.returnedCode = self.proc.returncode
                 if self.returnedCode != SKIP_RETURN_CODE:
@@ -1048,6 +1096,12 @@ for w, o, r in [
     (r"Property \['Name': Value\]", r"( =  '[^']+':)'(.*)'", r"\1\2"),
     ("TimelineSvc", "to file  'TimelineFile':", "to file "),
     ("DataObjectHandleBase", r'DataObjectHandleBase\("([^"]*)"\)', r"'\1'"),
+    # Output line changes in Gaudi v38r3
+    (
+        "Added successfully Conversion service:",
+        "Added successfully Conversion service:",
+        "Added successfully Conversion service ",
+    ),
 ]:
     normalizeTestSuite += RegexpReplacer(o, r, w)
 
@@ -1249,7 +1303,7 @@ def cmpTreesDicts(reference, to_check, ignore=None):
     # loop over the keys (not ignored) in the reference dictionary
     for k in keys:
         if k in to_check:  # the key must be in the dictionary to_check
-            if (type(reference[k]) is dict) and (type(to_check[k]) is dict):
+            if isinstance(reference[k], dict) and isinstance(to_check[k], dict):
                 # if both reference and to_check values are dictionaries,
                 # recurse
                 failed = fail_keys = cmpTreesDicts(reference[k], to_check[k], ignore)

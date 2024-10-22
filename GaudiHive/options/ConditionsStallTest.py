@@ -17,6 +17,7 @@ A test to demonstrate stalling for a conditions algorithm
  - However, Alg A requires the output from Alg C, and thus the job will stall
 
 """
+
 from Configurables import (
     AlgResourcePool,
     AvalancheSchedulerSvc,

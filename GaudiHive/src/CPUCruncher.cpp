@@ -59,7 +59,7 @@ StatusCode CPUCruncher::initialize() {
   }
 
   // if an algorithm was setup to sleep, for whatever period, it effectively models CPU-blocking behavior
-  if ( std::abs( m_sleepFraction ) > std::numeric_limits<float>::epsilon() ) setBlocking( true );
+  if ( std::abs( m_sleepFraction ) > std::numeric_limits<double>::epsilon() ) setBlocking( true );
 
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
   // we need to wait until initialize when we've read in the input and output key
@@ -108,7 +108,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
   if ( m_loader && !m_declAugmented ) declareRuntimeRequestedOutputs();
 
-  float crunchtime;
+  double crunchtime;
 
   if ( m_local_rndm_gen ) {
     /* This will disappear with a thread safe random number generator service.

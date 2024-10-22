@@ -17,9 +17,8 @@ import logging
 from Gaudi.CommonGaudiConfigurables import *  # noqa: F401 F403
 from GaudiKernel.Configurable import *  # noqa: F401 F403
 from GaudiKernel.Configurable import Configurable
-from GaudiKernel.ConfigurableDb import cfgDb
+from GaudiKernel.ConfigurableDb import cfgDb, loadConfigurableDb
 from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
-from GaudiKernel.ConfigurableDb import loadConfigurableDb
 from GaudiKernel.Constants import *  # noqa: F401 F403
 from GaudiKernel.ProcessJobOptions import (
     InstallRootLoggingHandler as _InstallRootLoggingHandler,
@@ -122,7 +121,7 @@ def getConfigurable(name, defaultType=None):
         if defaultType is None:
             # try to use the name of the configurable as default type
             defaultType = name
-        if type(defaultType) is str:
+        if isinstance(defaultType, str):
             # we need to convert from string to actual class
             if defaultType in globals():
                 # We the type is defined in the global namespace

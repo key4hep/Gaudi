@@ -18,6 +18,7 @@
 """
 Simple 'decorator for nodes'
 """
+
 from __future__ import print_function
 
 # =============================================================================

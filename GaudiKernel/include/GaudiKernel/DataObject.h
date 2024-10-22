@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,14 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_DATAOBJECT_H
-#define GAUDIKERNEL_DATAOBJECT_H
+#pragma once
 
-// Framework include files
-#include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/StatusCode.h"
-
-// STL includes
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/StatusCode.h>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -90,10 +86,7 @@ public:
   /// Return the refcount
   unsigned long refCount() const { return m_refCount; }
   /// Fill the output stream (ASCII)
-  virtual std::ostream& fillStream( std::ostream& s ) const {
-    s << "DataObject at " << std::hex << this << std::dec;
-    return s;
-  }
+  virtual std::ostream& fillStream( std::ostream& s ) const;
   /// Output operator (ASCII)
   friend std::ostream& operator<<( std::ostream& s, const DataObject& obj ) { return obj.fillStream( s ); }
 };
@@ -105,5 +98,3 @@ namespace Gaudi {
   GAUDI_API void        popCurrentDataObject();
   GAUDI_API DataObject* getCurrentDataObject();
 } // namespace Gaudi
-
-#endif // GAUDIKERNEL_DATAOBJECT_H

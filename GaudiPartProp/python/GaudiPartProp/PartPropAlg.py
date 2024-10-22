@@ -15,8 +15,8 @@
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @date   2008-12-02
 # =============================================================================
-""" The configuration file to run QMTest for the package GaudiPartProp
-"""
+"""The configuration file to run QMTest for the package GaudiPartProp"""
+
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 # =============================================================================

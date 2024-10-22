@@ -12,6 +12,7 @@
 from copy import copy
 
 import pytest
+
 from GaudiKernel.Configurable import ConfigurableAlgTool, ConfigurableService
 from GaudiKernel.GaudiHandles import (
     PrivateToolHandle,
