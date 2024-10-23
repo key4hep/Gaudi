@@ -782,10 +782,17 @@ def RationalizePath(p):
     """
     Function used to normalize the used path
     """
-    newPath = os.path.normpath(os.path.expandvars(p))
-    if os.path.exists(newPath):
-        p = os.path.realpath(newPath)
-    return p
+    p = os.path.normpath(os.path.expandvars(p))
+
+    # handle the special case "path/to/file:some_suffix"
+    suffix = ""
+    if ":" in p:
+        p, suffix = p.rsplit(":", 1)
+        suffix = f":{suffix}"
+
+    if os.path.exists(p):
+        p = os.path.realpath(p)
+    return p + suffix
 
 
 def which(executable):

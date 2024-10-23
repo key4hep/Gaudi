@@ -60,12 +60,19 @@ class SubprocessBaseTest:
         if isinstance(path, Path):
             path = str(path)
         path = os.path.expandvars(path)
+
+        # handle the special case "path/to/file:some_suffix"
+        suffix = ""
+        if ":" in path:
+            path, suffix = path.rsplit(":", 1)
+            suffix = f":{suffix}"
+
         if not os.path.isabs(path):
             base_dir = file_path_for_class(cls).parent
             possible_path = str((base_dir / path).resolve())
             if os.path.exists(possible_path):
                 path = possible_path
-        return path
+        return path + suffix
 
     @classmethod
     def update_env(cls, env: Dict[str, str]) -> None:
@@ -102,15 +109,11 @@ class SubprocessBaseTest:
         """
         command = [cls._determine_program(cls.command[0])]
         for part in cls.command[1:]:
-            if cls._is_file_path(part):
+            if not part.startswith("-"):  # do not try to expand options
                 command.append(cls.resolve_path(part))
             else:
                 command.append(part)
         return command
-
-    @staticmethod
-    def _is_file_path(part: str) -> bool:
-        return not part.startswith("-") and ":" not in part
 
     @classmethod
     def _handle_timeout(cls, proc: subprocess.Popen) -> str:
