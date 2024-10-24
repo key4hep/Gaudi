@@ -201,18 +201,29 @@ def capture_class_docstring(
 @pytest.fixture(scope="class")
 def reference_path(request) -> Generator[Optional[Path], None, None]:
     cls = request.cls
-    path = None
-    if hasattr(cls, "reference") and cls.reference:
+
+    if not hasattr(cls, "reference") or cls.reference is None:
+        yield None
+
+    elif isinstance(cls.reference, (str, os.PathLike)):
         path = cls.reference
         if hasattr(cls, "resolve_path"):
             path = cls.resolve_path(path)
 
-    path = expand_reference_file_name(path)
-    yield Path(path) if path else None
+        path = expand_reference_file_name(path)
+        yield Path(path) if path else None
+
+    elif isinstance(cls.reference, dict):
+        yield None
+
+    else:
+        raise ValueError(
+            f"Invalid reference type {type(cls.reference)}, only str, PathLike or dict are allowed"
+        )
 
 
 @pytest.fixture(scope="class")
-def reference(request, reference_path: Optional[Path]):
+def reference(request, reference_path: Optional[Path]) -> Generator[dict, None, None]:
     cls = request.cls
     original_reference_data = None
     current_reference_data = None
@@ -229,9 +240,16 @@ def reference(request, reference_path: Optional[Path]):
 
         current_reference_data = original_reference_data.copy()
 
+    elif hasattr(cls, "reference") and isinstance(cls.reference, dict):
+        original_reference_data = cls.reference
+        current_reference_data = original_reference_data.copy()
+
     yield current_reference_data
 
-    if current_reference_data != original_reference_data:
+    if current_reference_data == original_reference_data:
+        return
+
+    if reference_path:
         cnt = 0
         newrefname = f"{reference_path}.new"
         while os.path.exists(newrefname):
