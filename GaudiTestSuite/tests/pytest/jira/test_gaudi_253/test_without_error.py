@@ -9,7 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import pytest
-from GaudiTesting import GaudiExeTest
+from GaudiTesting import NO_ERROR_MESSAGES, GaudiExeTest
 
 
 @pytest.mark.ctest_fixture_required("gauditestsuite.jira_gaudi_253.prepare")
@@ -21,6 +21,4 @@ class Test(GaudiExeTest):
         "../../../options/jira_gaudi_253/Read.py",
         "../../../options/jira_gaudi_253/DisablePFNWarning.py",
     ]
-
-    def test_stdout(self, stdout):
-        GaudiExeTest.count_error_lines({"ERROR": 0}, stdout.decode())
+    reference = {"messages_count": NO_ERROR_MESSAGES}

@@ -9,7 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import pytest
-from GaudiTesting import GaudiExeTest
+from GaudiTesting import NO_ERROR_MESSAGES, GaudiExeTest
 
 
 @pytest.mark.ctest_fixture_setup("gauditestsuite.jira_gaudi_253.prepare")
@@ -17,5 +17,4 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/jira_gaudi_253/Write.py"]
 
-    def test_stdout(self, stdout):
-        GaudiExeTest.count_error_lines({"ERROR": 0}, stdout.decode())
+    reference = {"messages_count": NO_ERROR_MESSAGES}

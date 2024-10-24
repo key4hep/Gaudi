@@ -19,7 +19,7 @@ pytest.register_assert_rewrite("GaudiTesting.SubprocessBaseTest")
 from .BaseTest import SKIP_RETURN_CODE  # noqa: F401
 
 # allow from GaudiTesting import GaudiExeTest
-from .GaudiExeTest import GaudiExeTest  # noqa: F401
+from .GaudiExeTest import NO_ERROR_MESSAGES, GaudiExeTest  # noqa: F401
 
 # allow from GaudiTesting import platformMatches
 from .utils import platform_matches  # noqa: F401

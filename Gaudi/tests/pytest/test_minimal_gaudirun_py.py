@@ -8,11 +8,10 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiTesting import GaudiExeTest
+from GaudiTesting import NO_ERROR_MESSAGES, GaudiExeTest
 
 
 class Test(GaudiExeTest):
     command = ["gaudirun.py"]
 
-    def test_count_error_lines(self, stdout):
-        GaudiExeTest.count_error_lines({}, stdout.decode())
+    reference = {"messages_count": NO_ERROR_MESSAGES}

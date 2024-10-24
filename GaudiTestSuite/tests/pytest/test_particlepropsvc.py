@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiTesting import GaudiExeTest
+from GaudiTesting import NO_ERROR_MESSAGES, GaudiExeTest
 
 
 class TestGaudiPPS(GaudiExeTest):
@@ -16,6 +16,7 @@ class TestGaudiPPS(GaudiExeTest):
     environment = [
         "JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiTestSuite/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiTestSuite/options"
     ]
+    reference = {"messages_count": NO_ERROR_MESSAGES}
 
     def options(self):
         from Configurables import ApplicationMgr
@@ -37,6 +38,3 @@ class TestGaudiPPS(GaudiExeTest):
     def test_stdout(self, stdout):
         expected = b"Opened particle properties file : ../data/ParticleTable.txt"
         assert expected in stdout
-
-    def test_count_error_lines(self, stdout):
-        GaudiExeTest.count_error_lines({}, stdout.decode())
