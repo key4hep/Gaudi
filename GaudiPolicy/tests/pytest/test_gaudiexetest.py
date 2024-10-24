@@ -125,15 +125,6 @@ def test_find_reference_block(record_property):
         )
 
 
-def test_count_error_lines():
-    stdout = (
-        "1 ERROR something bad\n2 FATAL something very bad\n3 ERROR another bad thing\n"
-    )
-    expected = {"ERROR": 2, "FATAL": 1}
-
-    GaudiExeTest.count_error_lines(expected, stdout)
-
-
 def test_count_messages():
     class TestCountMessages(GaudiExeTest):
         pass

@@ -228,30 +228,6 @@ class GaudiExeTest(SubprocessBaseTest):
 
         return assert_function
 
-    @staticmethod
-    def count_error_lines(
-        expected: Dict = {"ERROR": 0, "FATAL": 0}, stdout: str = None
-    ):
-        import warnings
-
-        warnings.warn(
-            "count_error_lines is deprecated, use 'messages_count' entry in reference",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        errors = {key: 0 for key in expected}
-
-        outlines = stdout.splitlines()
-
-        for linecount, l in enumerate(outlines, 1):
-            linecount
-            words = l.split()
-            if len(words) >= 2 and words[1] in errors:
-                errors[words[1]] += 1
-
-        assert errors == expected
-
     @pytest.mark.do_not_collect_source
     def test_count_messages(self, reference, stdout, record_property):
         """
