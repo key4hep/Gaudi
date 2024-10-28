@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2021 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2021-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -22,19 +22,23 @@ def gen_opts_dict(options):
         return literal_eval(tmp.read())
 
 
-@pytest.mark.parametrize(
-    "options",
-    [
-        Path(__file__).parent.parent.parent
-        / "options"
-        / "FunctionalAlgorithms"
-        / "ProduceConsume.py",
-    ],
-)
+options = [
+    Path(__file__).parent.parent.parent
+    / "options"
+    / "FunctionalAlgorithms"
+    / "ProduceConsume.py",
+]
+
+
+@pytest.fixture(scope="module", params=options)
+def options_expected(request):
+    yield request.param, gen_opts_dict(request.param)
+
+
 @pytest.mark.parametrize("filetype", ["opts", "pkl", "json", "yaml", "yml"])
-def test_opts_dump(options, filetype):
-    expected = gen_opts_dict(options)
+def test_opts_dump(filetype, options_expected):
+    opts, expected = options_expected
     with NamedTemporaryFile(suffix=f".{filetype}") as dump:
-        run_gaudi("--dry-run", "--output", dump.name, options)
+        run_gaudi("--dry-run", "--output", dump.name, opts)
         configuration = gen_opts_dict(dump.name)
         assert configuration == expected

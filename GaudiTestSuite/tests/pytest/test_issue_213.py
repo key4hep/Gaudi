@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2022 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,33 +10,32 @@
 #####################################################################################
 import json
 
-from GaudiTests import run_gaudi
+from GaudiTesting import GaudiExeTest
 
 
-def config():
-    """
-    Mix GaudiConfig2 and legacy ConfigurableUser configurations.
-    """
-    # use a ConfigurableUser specialization
-    from Configurables import GaudiTestSuiteCommonConf
-
-    GaudiTestSuiteCommonConf(DummyEvents=42)
-
-    # no GaudiConfig2 configurables to add
-
-
-def test(tmp_path):
+class Test(GaudiExeTest):
     """
     Run gaudirun.py with a Python option function that instantiates
     a ConfigurableUser specialization.
 
     See https://gitlab.cern.ch/gaudi/Gaudi/-/issues/213
     """
-    opts_dump = tmp_path / "opts.json"
 
-    run_gaudi(f"{__file__}:config", "-n", "-o", opts_dump, check=True)
+    opts_dump = "opts.json"
+    command = ["gaudirun.py", "-n", "-o", opts_dump]
 
-    assert opts_dump.exists()
-    opts = json.load(opts_dump.open())
+    def options(self):
+        # use a ConfigurableUser specialization
+        from Configurables import GaudiTestSuiteCommonConf
 
-    assert opts["ApplicationMgr.EvtMax"] == "42"
+        GaudiTestSuiteCommonConf(DummyEvents=42)
+
+        # no GaudiConfig2 configurables to add
+
+    def test_opts_dump(self, cwd):
+        opts_path = cwd / self.opts_dump
+        assert opts_path.exists()
+
+        with opts_path.open() as f:
+            opts = json.load(f)
+        assert opts["ApplicationMgr.EvtMax"] == "42"

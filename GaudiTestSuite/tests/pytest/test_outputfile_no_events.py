@@ -10,7 +10,7 @@
 #####################################################################################
 import os
 
-from GaudiTests import run_gaudi
+from GaudiTesting import GaudiExeTest
 
 OUTPUT_FILE_NAME = "empty-output-file.dst"
 
@@ -33,18 +33,12 @@ def config():
     return [app, out]
 
 
-def test(tmp_path):
+class Test(GaudiExeTest):
     """
     Check that an output file is created even if no event is written to it.
     """
-    os.chdir(tmp_path)
 
-    if os.path.exists(OUTPUT_FILE_NAME):
-        os.remove(OUTPUT_FILE_NAME)
+    command = ["gaudirun.py", f"{__file__}:config"]
 
-    run_gaudi(f"{__file__}:config", check=True)
-
-    assert os.path.exists(
-        OUTPUT_FILE_NAME
-    ), f"expected output file {OUTPUT_FILE_NAME} not found"
-    os.remove(OUTPUT_FILE_NAME)
+    def test_output_file(self, cwd):
+        assert os.path.exists(cwd / OUTPUT_FILE_NAME)

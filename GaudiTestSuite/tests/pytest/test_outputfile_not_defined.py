@@ -8,10 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import os
-import sys
-
-from GaudiTests import run_gaudi
+from GaudiTesting import GaudiExeTest
 
 
 def config():
@@ -31,17 +28,13 @@ def config():
     return [app, out]
 
 
-def test(tmp_path):
+class Test(GaudiExeTest):
     """
     Check that an output file is created even if no event is written to it.
     """
-    os.chdir(tmp_path)
 
-    result = run_gaudi(
-        f"{__file__}:config", capture_output=True, errors="surrogateescape"
-    )
-    print(result.stdout, end="")
-    print(result.stderr, end="", file=sys.stderr)
+    command = ["gaudirun.py", f"{__file__}:config"]
+    returncode = 1
 
-    assert result.returncode == 1
-    assert "OutputStream instances require an output" in result.stdout
+    def test_stdout(self, stdout):
+        assert b"OutputStream instances require an output" in stdout

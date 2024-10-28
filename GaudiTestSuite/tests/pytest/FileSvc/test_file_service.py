@@ -8,31 +8,38 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import os
-
 import pytest
 import ROOT
-from GaudiTests import run_gaudi
+from GaudiTesting import GaudiExeTest
 
 OUTPUT_FILE_NAME = "file_svc_shared.root"
 
 
-@pytest.fixture(scope="module")
-def setup_file_tree(tmp_path_factory):
-    tmp_dir = tmp_path_factory.mktemp("FileSvc")
-    os.chdir(tmp_dir)
-    if os.path.exists(OUTPUT_FILE_NAME):
-        os.remove(OUTPUT_FILE_NAME)
+class Test(GaudiExeTest):
+    command = ["gaudirun.py", f"{__file__}:config"]
 
-    run_gaudi(f"{__file__}:config", check=True)
+    @pytest.fixture(scope="class")
+    def setup_file_tree(self, cwd):
+        file = ROOT.TFile.Open(str(cwd / OUTPUT_FILE_NAME))
+        tree = file.Get("FileSvcNTuple")
+        hist = file.Get("FileSvcRandomHist")
+        yield file, tree, hist
+        file.Close()
 
-    file = ROOT.TFile.Open(OUTPUT_FILE_NAME)
-    tree = file.Get("FileSvcNTuple")
-    hist = file.Get("FileSvcRandomHist")
+    def test_ntuple_exists(self, setup_file_tree):
+        _, tree, _ = setup_file_tree
+        assert tree is not None, "FileSvcNTuple should exist in the output file"
+        assert tree.GetBranch("value"), "Branch `value` should exist in FileSvcNTuple."
+        assert tree.GetEntries() > 0, "FileSvcNTuple should have entries"
 
-    yield file, tree, hist
+    def test_histogram_exists(self, setup_file_tree):
+        _, _, hist = setup_file_tree
+        assert hist is not None, "FileSvcRandomHist should exist in the output file"
+        assert hist.GetEntries() > 0, "FileSvcRandomHist should have entries"
 
-    file.Close()
+    def test_file_not_zombie(self, setup_file_tree):
+        file, _, _ = setup_file_tree
+        assert not file.IsZombie(), "Output file should not be a zombie"
 
 
 def config():
@@ -73,21 +80,3 @@ def config():
         + svcs
         + [fileSvc]
     )
-
-
-def test_ntuple_exists(setup_file_tree):
-    _, tree, _ = setup_file_tree
-    assert tree is not None, "FileSvcNTuple should exist in the output file"
-    assert tree.GetBranch("value"), "Branch `value` should exist in FileSvcNTuple."
-    assert tree.GetEntries() > 0, "FileSvcNTuple should have entries"
-
-
-def test_histogram_exists(setup_file_tree):
-    _, _, hist = setup_file_tree
-    assert hist is not None, "FileSvcRandomHist should exist in the output file"
-    assert hist.GetEntries() > 0, "FileSvcRandomHist should have entries"
-
-
-def test_file_not_zombie(setup_file_tree):
-    file, _, _ = setup_file_tree
-    assert not file.IsZombie(), "Output file should not be a zombie"

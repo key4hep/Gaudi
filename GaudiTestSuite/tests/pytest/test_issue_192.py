@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2022 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,7 +8,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiTests import run_gaudi
+from GaudiTesting import GaudiExeTest
 
 
 def config():
@@ -18,10 +18,11 @@ def config():
     return []
 
 
-def test():
+class Test(GaudiExeTest):
     """
     Run gaudirun.py with full path to a Python module.
 
     See https://gitlab.cern.ch/gaudi/Gaudi/-/issues/192
     """
-    run_gaudi(f"{__file__}:config", "-n", check=True)
+
+    command = ["gaudirun.py", f"{__file__}:config", "-n"]
