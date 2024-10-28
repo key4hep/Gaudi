@@ -11,6 +11,7 @@
 variables:
   CMAKE_GENERATOR: 'Ninja' # default build system
   TARGET_BRANCH: master
+  TARGET_REPOSITORY: https://gitlab.cern.ch/gaudi/Gaudi.git
 
 # Job templates
 .build: &template_build
@@ -260,10 +261,11 @@ pre-commit-checks:
       - ${PRE_COMMIT_HOME}
   before_script:
     - |
+      set -x
       python -m venv ${CI_PROJECT_DIR}/.cache/pre-commit-venv
       . ${CI_PROJECT_DIR}/.cache/pre-commit-venv/bin/activate
       pip install pre-commit
-      git fetch origin $TARGET_BRANCH
+      git fetch $TARGET_REPOSITORY $TARGET_BRANCH
       git config user.name "Gitlab CI"
       git config user.email "noreply@cern.ch"
   script:
