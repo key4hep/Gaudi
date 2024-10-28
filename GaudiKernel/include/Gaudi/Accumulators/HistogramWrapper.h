@@ -44,6 +44,7 @@ namespace Gaudi::Accumulators {
   public:
     using AxisTupleType      = typename HistogramType::AxisTupleType;
     using AxisArithmeticType = typename HistogramType::AxisArithmeticType;
+    using BufferType         = typename HistogramType::BufferType;
     template <unsigned int I>
     using AxisType = std::tuple_element_t<I, AxisTupleType>;
 

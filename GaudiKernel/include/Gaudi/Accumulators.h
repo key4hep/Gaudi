@@ -909,10 +909,11 @@ namespace Gaudi::Accumulators {
   class BufferableCounter : public PrintableCounter, public Accumulator<Atomicity, Args...> {
   public:
     using Accumulator<Atomicity, Args...>::Accumulator;
+    using BufferType    = Buffer<Accumulator, Atomicity, Args...>;
     BufferableCounter() = default;
     template <typename OWNER>
     BufferableCounter( OWNER* o, std::string const& name ) : BufferableCounter( o, name, *this ) {}
-    Buffer<Accumulator, Atomicity, Args...> buffer() { return { *this }; }
+    BufferType buffer() { return { *this }; }
     BufferableCounter( BufferableCounter const& )            = delete;
     BufferableCounter& operator=( BufferableCounter const& ) = delete;
     ~BufferableCounter() {
