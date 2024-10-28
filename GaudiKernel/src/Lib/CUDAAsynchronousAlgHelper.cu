@@ -86,7 +86,9 @@ namespace Gaudi {
     } // namespace Detail
 
     std::pmr::memory_resource* get_pinned_memory_resource() {
+#ifndef NDEBUG
       fmt::print( "Initializing pinned memory resource\n" );
+#endif
       static auto base = std::make_unique<Detail::PinnedMemoryResource>();
       static auto bpmr = std::make_unique<vecmem::binary_page_memory_resource>( *base );
       static auto res  = std::make_unique<std::pmr::synchronized_pool_resource>( bpmr.get() );
@@ -96,7 +98,9 @@ namespace Gaudi {
     CUDAStream::CUDAStream( const Gaudi::AsynchronousAlgorithm* parent, std::string file, int line )
         : stream( nullptr ), parent( parent ) {
       nth_stream = running_streams.fetch_add( 1 ) + 1;
+#ifndef NDEBUG
       fmt::print( "Starting {}th concurrent stream\n", nth_stream );
+#endif
       if ( !available_streams->pop( stream ) ) {
         cudaError_t err = cudaStreamCreate( &stream );
         if ( err != cudaSuccess ) { parent->print_cuda_error( err_fmt( err, __FILE__, __LINE__ ) ); }

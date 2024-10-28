@@ -33,7 +33,7 @@ DECLARE_COMPONENT( GPUCruncher )
 
 GPUCruncher::GPUCruncher( const std::string& name, // the algorithm instance name
                           ISvcLocator*       pSvc )
-    : Algorithm( name, pSvc ) {
+    : AsynchronousAlgorithm( name, pSvc ) {
 
   // Register the algo in the static concurrent hash map in order to
   // monitor the # of copies

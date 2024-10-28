@@ -41,7 +41,7 @@ public:
   FiberManager( int n_threads ) {
     for ( int i = 0; i < n_threads; ++i ) {
       m_threads.emplace_back( std::thread( [this]() {
-        boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>();
+        boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>( true );
         std::unique_lock lck{ m_shuttingDown_mtx };
         m_shuttingDown_cv.wait( lck );
       } ) );
@@ -66,7 +66,7 @@ public:
   void schedule( F&& func ) {
     if ( !m_activated ) {
       // Since we never call boost::this_fiber::yield, fibers never actually run on this thread
-      boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>();
+      boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>( true );
       m_activated = true;
     }
     boost::fibers::fiber( boost::fibers::launch::post, std::forward<F>( func ) ).detach();
