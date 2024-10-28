@@ -86,20 +86,21 @@ namespace Gaudi::NTuple {
 
     // Execute the algorithm for each event, retrieving data from the event store and writing it to the TTree
     StatusCode execute( const EventContext& ) const override {
-      std::lock_guard<std::mutex> lock( m_mtx );
+      std::vector<DataObject*> pObjs( m_branchWrappers.size(), nullptr );
 
-      DataObject* pObj = nullptr;
-      for ( auto& wrapper : m_branchWrappers ) {
-        m_eventSvc->retrieveObject( wrapper.getLocation(), pObj )
+      for ( std::size_t i = 0; const auto& wrapper : m_branchWrappers ) {
+        m_eventSvc->retrieveObject( wrapper.getLocation(), pObjs[i++] )
             .orThrow( fmt::format( "Failed to retrieve object for location '{}'. Ensure the location is correct and "
                                    "the object exists.",
                                    wrapper.getLocation() ),
                       name() );
-
-        wrapper.setBranchData( pObj );
       }
 
-      m_tree->Fill();
+      {
+        std::scoped_lock lock{ m_mtx };
+        for ( std::size_t i = 0; auto& wrapper : m_branchWrappers ) { wrapper.setBranchData( pObjs[i++] ); }
+        m_tree->Fill();
+      }
 
       return StatusCode::SUCCESS;
     }
@@ -123,7 +124,7 @@ namespace Gaudi::NTuple {
       for ( const auto& dep : extraInputs ) {
         auto typeName   = getTypeName( dep.className() );
         auto branchName = getNameFromLoc( dep.key() );
-        m_branchWrappers.emplace_back( m_tree, typeName, branchName, dep.key(), *this );
+        m_branchWrappers.emplace_back( m_tree, typeName, branchName, dep.key(), name() );
       }
     }
 

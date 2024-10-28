@@ -62,20 +62,20 @@ namespace Gaudi::NTuple {
 
     // Initialize the TTree and creates branches
     void initTree( const std::shared_ptr<TFile>& file, const std::string& ntupleName,
-                   const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames, const Gaudi::Algorithm& algRef ) {
+                   const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames, const std::string& algName ) {
       file->cd();
       m_tree = std::make_unique<TTree>( ntupleName.c_str(), "Tree of Writer Algorithm" ).release();
       m_branchWrappers.reserve( m_branchWrappers.size() + sizeof...( OUTPUTs ) );
-      createBranchesForOutputs( branchNames, std::make_index_sequence<sizeof...( OUTPUTs )>{}, algRef );
+      createBranchesForOutputs( branchNames, std::make_index_sequence<sizeof...( OUTPUTs )>{}, algName );
     }
 
     // Create branches in the TTree based on the provided names and output data types
     template <std::size_t... Is>
     void createBranchesForOutputs( const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames,
-                                   const std::index_sequence<Is...>, const Gaudi::Algorithm& algRef ) const {
+                                   const std::index_sequence<Is...>, const std::string& algName ) const {
       ( ..., m_branchWrappers.emplace_back(
                  m_tree, System::typeinfoName( typeid( std::tuple_element_t<Is, std::tuple<OUTPUTs...>> ) ),
-                 branchNames[Is], "", algRef ) );
+                 branchNames[Is], "", algName ) );
     }
 
     // Fill the TTree with transformed data from the input
@@ -91,13 +91,12 @@ namespace Gaudi::NTuple {
     }
 
     // Write the TTree to the associated ROOT file
-    void writeTree( const std::shared_ptr<TFile>& file, const Gaudi::Algorithm& algRef ) {
+    void writeTree( const std::shared_ptr<TFile>& file, const std::string& algName ) {
       file->cd();
       if ( m_tree->Write() <= 0 ) {
-        throw GaudiException( "Failed to write TTree to ROOT file.", algRef.name(), StatusCode::FAILURE );
+        throw GaudiException( "Failed to write TTree to ROOT file.", algName, StatusCode::FAILURE );
       }
       m_tree = nullptr;
-      algRef.info() << "TTree written to TFile." << endmsg;
     }
 
     virtual ~WriterMixin() = default;
@@ -152,7 +151,7 @@ namespace Gaudi::NTuple {
           return StatusCode::FAILURE;
         }
 
-        this->initTree( m_file, m_ntupleTname.value(), m_branchNames.value(), *this );
+        this->initTree( m_file, m_ntupleTname.value(), m_branchNames.value(), this->name() );
 
         return StatusCode::SUCCESS;
       } );
@@ -160,13 +159,13 @@ namespace Gaudi::NTuple {
 
     // Execute the algorithm for each event, retrieving data from the event store and writing it to the TTree
     void operator()( const INPUTs&... args ) const override {
-      std::lock_guard<std::mutex> lock( m_mtx );
+      std::scoped_lock lock{ m_mtx };
       this->fillTree( args... );
     }
 
     // Finalize the algorithm by writing the TTree to the file and closing it
     virtual StatusCode finalize() override {
-      this->writeTree( m_file, *this );
+      this->writeTree( m_file, this->name() );
       return Consumer_t::finalize();
     }
   };
