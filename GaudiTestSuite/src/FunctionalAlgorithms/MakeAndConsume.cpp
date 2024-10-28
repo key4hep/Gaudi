@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -435,6 +435,30 @@ namespace Gaudi::TestSuite {
     }
   };
   DECLARE_COMPONENT( SRangesToIntVector )
+
+  struct OptionalSRangesMerger final
+      : public Gaudi::Functional::MergingTransformer<void( const Gaudi::Functional::vector_of_const_<
+                                                           std::optional<Gaudi::NamedRange_<std::vector<S const*>>>>& ),
+                                                     BaseClass_t> {
+
+    OptionalSRangesMerger( const std::string& name, ISvcLocator* svcLoc )
+        : MergingTransformer( name, svcLoc, { "InputRanges", {} } ) {}
+
+    void
+    operator()( const Gaudi::Functional::vector_of_const_<std::optional<Gaudi::NamedRange_<std::vector<S const*>>>>&
+                    OptSVectors ) const override {
+      // Loop over the optional ranges checking if the opt has a value
+      for ( const auto& OptSVector : OptSVectors ) {
+        if ( OptSVector.has_value() ) {
+          auto SVector = OptSVector.value();
+          info() << "Consuming vector of size: " << SVector.size() << endmsg;
+        } else {
+          info() << "Skipping empty optional range" << endmsg;
+        }
+      }
+    }
+  };
+  DECLARE_COMPONENT( OptionalSRangesMerger )
 
   struct IntVectorsMerger final
       : public Gaudi::Functional::MergingTransformer<

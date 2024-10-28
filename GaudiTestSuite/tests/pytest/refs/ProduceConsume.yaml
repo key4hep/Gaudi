@@ -103,6 +103,9 @@ stdout: |-
   SRangesToIntVector   INFO Concatening range of size 3
   SRangesToIntVector   INFO Concatening range of size 10
   SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
+  OptionalSRanges...   INFO Consuming vector of size: 3
+  OptionalSRanges...   INFO Consuming vector of size: 10
+  OptionalSRanges...   INFO Skipping empty optional range
   IntVectorsMerger     INFO sum of input sizes: 8
   IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
   IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
@@ -172,6 +175,9 @@ stdout: |-
   SRangesToIntVector   INFO Concatening range of size 3
   SRangesToIntVector   INFO Concatening range of size 10
   SRangesToIntVector   INFO Storing output vector [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] to /Event/MyConcatenatedIntFromSVector
+  OptionalSRanges...   INFO Consuming vector of size: 3
+  OptionalSRanges...   INFO Consuming vector of size: 10
+  OptionalSRanges...   INFO Skipping empty optional range
   IntVectorsMerger     INFO sum of input sizes: 8
   IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
   IntVectorsMerger     INFO Consuming vector [3, 3, 3, 3]
