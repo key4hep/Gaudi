@@ -8,6 +8,13 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import pytest
+
+# make sure asserts in GaudiExeTest and SubprocessBaseTest are enhanced by pytest
+# (see https://docs.pytest.org/en/stable/how-to/writing_plugins.html#assertion-rewriting)
+pytest.register_assert_rewrite("GaudiTesting.GaudiExeTest")
+pytest.register_assert_rewrite("GaudiTesting.SubprocessBaseTest")
+
 # allow from GaudiTesting import SKIP_RETURN_CODE
 from .BaseTest import SKIP_RETURN_CODE  # noqa: F401
 
