@@ -9,7 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import pytest
-from GaudiTesting import GaudiExeTest
+from GaudiTesting import NO_ERROR_MESSAGES, GaudiExeTest
 
 
 @pytest.mark.ctest_fixture_required("gauditestsuite.multi_input.prepare_base")
@@ -17,6 +17,4 @@ from GaudiTesting import GaudiExeTest
 @pytest.mark.shared_cwd("multi_input")
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/MultiInput/PrepareExt.py"]
-
-    def test_stdout(self, stdout):
-        self.count_error_lines({"ERROR": 0}, stdout.decode())
+    reference = {"messages_count": NO_ERROR_MESSAGES}

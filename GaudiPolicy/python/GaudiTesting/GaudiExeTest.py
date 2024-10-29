@@ -13,7 +13,6 @@ import inspect
 import json
 import os
 import re
-from math import log10
 from pathlib import Path
 from textwrap import dedent
 from typing import Callable, Dict, List
@@ -28,6 +27,8 @@ from GaudiTesting.utils import (
     find_histos_summaries,
     find_ttree_summaries,
 )
+
+NO_ERROR_MESSAGES = {"ERROR": 0, "FATAL": 0}
 
 
 class GaudiExeTest(SubprocessBaseTest):
@@ -227,27 +228,42 @@ class GaudiExeTest(SubprocessBaseTest):
 
         return assert_function
 
-    @staticmethod
-    def count_error_lines(
-        expected: Dict = {"ERROR": 0, "FATAL": 0}, stdout: str = None
-    ):
-        errors = {}
-        for sev in expected:
-            errors[sev] = []
+    @pytest.mark.do_not_collect_source
+    def test_count_messages(self, reference, stdout, record_property):
+        """
+        Test the count of error messages in the stdout against expected values.
+        """
+        expected_messages = (
+            None if reference is None else reference.get("messages_count")
+        )
+        if expected_messages is None:
+            pytest.skip()
 
-        outlines = stdout.splitlines()
+        if not isinstance(expected_messages, dict):
+            raise ValueError("reference['messages_count'] must be a dict")
+        if not expected_messages:
+            # an empty dict doesn't make sense, let's assume we are bootstrapping the reference
+            # and start from the default
+            expected_messages = NO_ERROR_MESSAGES
+            reference["messages_count"] = expected_messages
 
-        fmt = "%%%dd - %%s" % (int(log10(len(outlines) + 1)))
+        outlines = self.preprocessor(
+            stdout.decode("utf-8", errors="backslashreplace")
+        ).splitlines()
 
-        linecount = 0
-        for l in outlines:
-            linecount += 1
-            words = l.split()
-            if len(words) >= 2 and words[1] in errors:
-                errors[words[1]].append(fmt % (linecount, l.rstrip()))
+        messages = {key: [] for key in expected_messages}
+        for n, line in enumerate(outlines, 1):
+            words = line.split()
+            if len(words) >= 2 and words[1] in messages:
+                messages[words[1]].append((n, line.rstrip()))
 
-        for e in errors:
-            assert len(errors[e]) == expected[e]
+        messages_count = {key: len(value) for key, value in messages.items()}
+        try:
+            assert messages_count == expected_messages
+        except AssertionError:
+            reference["messages_count"] = messages_count
+            record_property("unexpected_messages_count", messages)
+            raise
 
     @pytest.mark.do_not_collect_source
     def test_stdout(

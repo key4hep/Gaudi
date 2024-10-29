@@ -14,6 +14,7 @@ from GaudiTesting import GaudiExeTest
 class TestBug41136(GaudiExeTest):
     command = ["gaudirun.py", "-v"]
     returncode = 1
+    reference = {"messages_count": {"ERROR": 8, "FATAL": 0}}
 
     def options(self):
         from Configurables import ApplicationMgr, TestToolAlgFailure, TestToolFailing
@@ -26,6 +27,3 @@ class TestBug41136(GaudiExeTest):
         )
 
         ApplicationMgr(TopAlg=[tta1, tta2], EvtSel="NONE", EvtMax=1)
-
-    def test_count_error_lines(self, stdout):
-        GaudiExeTest.count_error_lines({"ERROR": 8}, stdout.decode())

@@ -17,5 +17,4 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/jira_gaudi_253/Read.py"]
 
-    def test_stdout(self, stdout):
-        GaudiExeTest.count_error_lines({"ERROR": 2}, stdout.decode())
+    reference = {"messages_count": {"ERROR": 2, "FATAL": 0}}

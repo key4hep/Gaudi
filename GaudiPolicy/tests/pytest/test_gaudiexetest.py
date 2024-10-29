@@ -14,7 +14,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from GaudiTesting import GaudiExeTest, platform_matches
+from GaudiTesting import NO_ERROR_MESSAGES, GaudiExeTest, platform_matches
 from GaudiTesting.SubprocessBaseTest import SubprocessBaseTest
 
 
@@ -125,13 +125,49 @@ def test_find_reference_block(record_property):
         )
 
 
-def test_count_error_lines():
-    stdout = (
-        "1 ERROR something bad\n2 FATAL something very bad\n3 ERROR another bad thing\n"
-    )
-    expected = {"ERROR": 2, "FATAL": 1}
+def test_count_messages():
+    class TestCountMessages(GaudiExeTest):
+        pass
 
-    GaudiExeTest.count_error_lines(expected, stdout)
+    # getting the expected messages
+    stdout = b"Alg ERROR something bad\nAlg FATAL something very bad\nAlg ERROR another bad thing\n"
+    properties = []
+    TestCountMessages().test_count_messages(
+        {"messages_count": {"ERROR": 2, "FATAL": 1}},
+        stdout,
+        lambda *args: properties.append(args),
+    )
+    assert properties == []
+
+    # empty dict in reference means expect the default and update the reference
+    properties = []
+    reference = {"messages_count": {}}
+    TestCountMessages().test_count_messages(
+        reference, b"", lambda *args: properties.append(args)
+    )
+    assert reference == {"messages_count": NO_ERROR_MESSAGES}
+
+    #
+    properties = []
+    reference = {"messages_count": NO_ERROR_MESSAGES}
+    with pytest.raises(AssertionError):
+        TestCountMessages().test_count_messages(
+            reference, stdout, lambda *args: properties.append(args)
+        )
+    assert properties == [
+        (
+            "unexpected_messages_count",
+            {
+                "ERROR": [
+                    (1, "Alg ERROR something bad"),
+                    (3, "Alg ERROR another bad thing"),
+                ],
+                "FATAL": [
+                    (2, "Alg FATAL something very bad"),
+                ],
+            },
+        )
+    ]
 
 
 def test_skip_if_platform_matches():
