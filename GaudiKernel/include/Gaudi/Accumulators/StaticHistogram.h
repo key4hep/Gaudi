@@ -15,6 +15,7 @@
 #include <GaudiKernel/HistoDef.h>
 
 #include <array>
+#include <cassert>
 #include <cmath>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
@@ -479,7 +480,7 @@ namespace Gaudi::Accumulators {
       return *this;
     }
     void reset() {
-      for ( unsigned int index = 0; index < m_totNBins; index++ ) accumulator( index ).reset();
+      for ( unsigned int index = 0; index < m_totNBins; index++ ) { accumulator( index ).reset(); }
     }
     template <atomicity ato>
     void mergeAndReset(
@@ -512,6 +513,7 @@ namespace Gaudi::Accumulators {
   private:
     BaseAccumulator& accumulator( unsigned int index ) const {
       assert( index < m_totNBins );
+      assert( m_value.get() );
       return m_value[index];
     }
 
@@ -531,7 +533,7 @@ namespace Gaudi::Accumulators {
     /// set of Axis of this Histogram
     AxisTupleType m_axis;
     /// total number of bins in this histogram, under and overflow included
-    unsigned int m_totNBins;
+    unsigned int m_totNBins{};
     /// Histogram content
     std::unique_ptr<BaseAccumulator[]> m_value;
   };
