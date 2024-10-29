@@ -5,6 +5,7 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+
 ## [v39r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r0) - 2024-09-23
 This major release of Gaudi features a number of backward incompatible changes that have been waiting
 for a chance of being integrated, like
@@ -94,6 +95,14 @@ A special thanks to all the people that contributed to this release:
 - cppcheck fixes (code quality) (gaudi/Gaudi!1609)
 
 
+## [v38r3p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r3p1) - 2024-10-22
+This release is integrating the changes from [v38r1p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1p1)
+into v38r3.
+
+### Added
+- Add `NTupleSvc.BasketSize` property and forward in RCWNTupleCnv Branch creation (gaudi/Gaudi!1648)
+
+
 ## [v38r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r3) - 2024-06-28
 This is a minor release to collect all pending backward compatible changes and fixes
 before integrating the backward incompatible changes scheduled for v39r0.
@@ -143,6 +152,14 @@ It will require some structure and polishing, but it's a start.
 - Correctly detect and report a special case of corrupted ROOT file (gaudi/Gaudi#301, gaudi/Gaudi!1571)
 - Use Boost IO State Saver to restore initial ostream flags (gaudi/Gaudi#295, gaudi/Gaudi!1570)
 - Avoid implicit conversion from float to double (gaudi/Gaudi#299, gaudi/Gaudi!1569)
+
+
+## [v38r1p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1p1) - 2024-10-18
+This patch release is needed by LHCb to pick up a small extension to `NTupleSvc`
+so that we can fine tune the basket size of the `TTree`s we produce.
+
+### Added
+- Add `NTupleSvc.BasketSize` property and forward in RCWNTupleCnv Branch creation (gaudi/Gaudi!1648)
 
 
 ## [v38r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v38r1) - 2024-03-15

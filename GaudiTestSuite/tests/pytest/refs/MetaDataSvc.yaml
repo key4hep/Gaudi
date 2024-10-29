@@ -273,6 +273,7 @@ stdout: |-
   NTupleSvc.AuditStart:False
   NTupleSvc.AuditStop:False
   NTupleSvc.AutoRetrieveTools:True
+  NTupleSvc.BasketSize:32000
   NTupleSvc.CheckToolDeps:True
   NTupleSvc.DataAccessName:'DataAccess'
   NTupleSvc.DataFaultName:'DataFault'
