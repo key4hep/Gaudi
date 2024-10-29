@@ -18,3 +18,4 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../../options/ROOT_IO/CollWrite.py"]
     reference = "../../refs/ROOT_IO/CollWrite.yaml"
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]

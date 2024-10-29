@@ -19,6 +19,7 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/ROOT_IO/Write.py"]
     reference = "../refs/ROOT_IO/Write.yaml"
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]
 
     def options(self):
         import os

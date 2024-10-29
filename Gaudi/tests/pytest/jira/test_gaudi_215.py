@@ -16,7 +16,9 @@ import pytest
 
 
 @pytest.fixture
-def pickle_file(tmp_path):
+def pickle_file(tmp_path, monkeypatch):
+    monkeypatch.delenv("GAUDIAPPNAME", raising=False)
+    monkeypatch.delenv("GAUDIAPPVERSION", raising=False)
     pickle_name = str(tmp_path / "options.pkl")
     run(
         [

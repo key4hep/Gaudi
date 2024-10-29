@@ -17,3 +17,4 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/ROOT_IO/NewInputRead.py"]
     reference = "../refs/ROOT_IO/NewInputRead.yaml"
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]

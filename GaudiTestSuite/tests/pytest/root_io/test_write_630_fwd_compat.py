@@ -14,3 +14,4 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/ROOT_IO/Write630FwdCompat.py"]
     reference = "../refs/ROOT_IO/Write630FwdCompat.yaml"
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]

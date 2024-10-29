@@ -23,6 +23,8 @@ class Test(OptParseTest):
         with open(tmp_opts, "w") as f:
             f.write("MyAlg.MyOpt = 1;\n")
         env["GAUDI_TEMP_OPTS_FILE"] = tmp_opts
+        env["GAUDIAPPNAME"] = ""
+        env["GAUDIAPPVERSION"] = ""
 
     options = None  # options are taken from $GAUDI_TEMP_OPTS_FILE
 

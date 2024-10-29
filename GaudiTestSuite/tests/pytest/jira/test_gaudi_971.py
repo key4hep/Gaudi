@@ -68,3 +68,5 @@ class Test(GaudiExeTest):
         orig=r"file (.*)dummy.dst does not exist",
         repl=r"file .../dummy.dst does not exist",
     )
+
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]
