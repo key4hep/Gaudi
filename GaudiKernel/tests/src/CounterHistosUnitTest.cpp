@@ -434,6 +434,24 @@ BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
   BOOST_TEST( nEntries == 64 * 52 );
 }
 
+BOOST_AUTO_TEST_CASE( test_histos_buffer_move, *boost::unit_test::tolerance( 1e-14 ) ) {
+  using namespace Gaudi::Accumulators;
+  Algo algo;
+  // test filling a 1D histogram via a moved buffer
+  StaticHistogram<1, atomicity::full, float> hist{ &algo, "Test1DHist", "Test 1D histogram", { 64, 0., 64. } };
+
+  {
+    auto buff1 = hist.buffer();
+    for ( int i = 0; i < 64; ++i ) { ++buff1[i]; }
+    decltype( buff1 ) buff2( std::move( buff1 ) );
+    for ( int i = 0; i < 64; ++i ) { ++buff2[i]; }
+  }
+
+  auto j        = toJSON( hist );
+  auto nEntries = j.at( "nEntries" ).get<unsigned long>();
+  BOOST_TEST( nEntries == 64 * 2 );
+}
+
 BOOST_AUTO_TEST_CASE( test_2d_histos_unique_ptr, *boost::unit_test::tolerance( 1e-14 ) ) {
   using namespace Gaudi::Accumulators;
   Algo algo;

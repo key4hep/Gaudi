@@ -852,15 +852,17 @@ namespace Gaudi::Accumulators {
 
   public:
     Buffer() = delete;
-    Buffer( prime_type& p ) : base_type( construct_empty, p ), m_prime( p ) {}
+    Buffer( prime_type& p ) : base_type( construct_empty, p ), m_prime( &p ) {}
     Buffer( const Buffer& )         = delete;
     void operator=( const Buffer& ) = delete;
-    Buffer( Buffer&& other ) : base_type( other ), m_prime( other.m_prime ) { other.reset(); }
-    void push() { m_prime.mergeAndReset( static_cast<base_type&>( *this ) ); }
+    Buffer( Buffer&& other ) : base_type( std::move( other ) ), m_prime( other.m_prime ) { other.m_prime = nullptr; }
+    void push() {
+      if ( m_prime ) { m_prime->mergeAndReset( static_cast<base_type&>( *this ) ); }
+    }
     ~Buffer() { push(); }
 
   private:
-    prime_type& m_prime;
+    prime_type* m_prime = nullptr;
   };
 
   /**
