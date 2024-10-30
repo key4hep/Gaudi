@@ -17,3 +17,4 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/ConditionalOutput/Read.py"]
     reference = "../refs/conditional_output/read.yaml"
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]

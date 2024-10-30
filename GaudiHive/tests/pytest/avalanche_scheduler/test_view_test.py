@@ -15,3 +15,4 @@ class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/BasicViewTest.py"]
     timeout = 120
     reference = "../refs/ViewTest.yaml"
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]

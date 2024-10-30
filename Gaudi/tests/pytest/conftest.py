@@ -37,6 +37,14 @@ class OptParseTest(GaudiExeTest):
         )
         return command
 
+    @classmethod
+    def update_env(cls, env: dict[str, str]) -> None:
+        super().update_env(env)
+        if "GAUDIAPPNAME" in env:
+            del env["GAUDIAPPNAME"]
+        if "GAUDIAPPVERSION" in env:
+            del env["GAUDIAPPVERSION"]
+
     @pytest.mark.do_not_collect_source
     def test_options(self, options_dump):
         assert (

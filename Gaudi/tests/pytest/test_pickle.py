@@ -40,6 +40,8 @@ def pickle_file(monkeypatch, tmp_path):
         "PYTHONPATH",
         f"{Path(__file__).parent.parent / 'python'}:{os.environ.get('PYTHONPATH', '')}",
     )
+    monkeypatch.delenv("GAUDIAPPNAME", raising=False)
+    monkeypatch.delenv("GAUDIAPPVERSION", raising=False)
     pickle_name = str(tmp_path / "options.pkl")
     run(
         [

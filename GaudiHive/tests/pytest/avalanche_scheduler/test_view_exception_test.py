@@ -16,6 +16,7 @@ class Test(GaudiExeTest):
 
     @classmethod
     def update_env(cls, env):
+        super().update_env(env)
         # this is to prevent GaudiException to print a stack trace (it confuses the test)
         if "ENABLE_BACKTRACE" in env:
             del env["ENABLE_BACKTRACE"]
@@ -23,3 +24,4 @@ class Test(GaudiExeTest):
     timeout = 120
     reference = "../refs/ViewExceptionTest.yaml"
     returncode = 6
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]

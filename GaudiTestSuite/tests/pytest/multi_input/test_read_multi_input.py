@@ -18,3 +18,4 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/MultiInput/Read.py"]
     reference = "../refs/MultiInput/Read.yaml"
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]

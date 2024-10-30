@@ -21,4 +21,6 @@ class Test(GaudiExeTest):
         "STDOPTS=$ENV_PROJECT_SOURCE_DIR/GaudiTestSuite/options",
         "JOBOPTSEARCHPATH=$ENV_PROJECT_SOURCE_DIR/GaudiTestSuite/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/GaudiTestSuite/options:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/pyjobopts:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests",
         "PYTHONPATH=$ENV_PROJECT_SOURCE_DIR/GaudiTestSuite/tests/qmtest:$ENV_PROJECT_SOURCE_DIR/Gaudi/tests/python:$PYTHONPATH",
+        "GAUDIAPPNAME=",
+        "GAUDIAPPVERSION=",
     ]

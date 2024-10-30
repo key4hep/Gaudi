@@ -16,3 +16,4 @@ class Test(GaudiExeTest):
     timeout = 120
     reference = "../refs/SubSlotVsSlotIsolation.yaml"
     returncode = 1
+    environment = ["GAUDIAPPNAME=", "GAUDIAPPVERSION="]
