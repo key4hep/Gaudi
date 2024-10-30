@@ -782,7 +782,7 @@ def RationalizePath(p):
     """
     Function used to normalize the used path
     """
-    p = os.path.normpath(os.path.expandvars(p))
+    p = os.path.expandvars(p)
 
     # handle the special case "path/to/file:some_suffix"
     suffix = ""
