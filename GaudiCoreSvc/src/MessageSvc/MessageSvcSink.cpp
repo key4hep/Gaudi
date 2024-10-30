@@ -208,7 +208,10 @@ namespace Gaudi::Monitoring {
     MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
       // only deal with counters, statentity and histograms
       setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:.*" } )
-          .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
+          .orThrow( "Unable to set TypesToSave property", "Gaudi::Monitoring::MessageSvcSink" );
+      // require a non-empty name for the owner
+      setProperty( "ComponentsToSave", std::vector<std::string>{ "^.+$" } )
+          .orThrow( "Unable to set ComponentsToSave property", "Gaudi::Monitoring::MessageSvcSink" );
     }
     /// stop method, handles the printing
     void                          flush( bool ) override;
