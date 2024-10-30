@@ -53,6 +53,8 @@ namespace Gaudi::NTuple {
     // Initialize the algorithm, set up the ROOT file and a TTree branch for each input location
     StatusCode initialize() override {
       return Gaudi::Algorithm::initialize().andThen( [this]() {
+        if ( m_ntupleTname.empty() ) m_ntupleTname = name();
+
         const auto& extraInputs = extraInputDeps();
         if ( extraInputs.empty() ) {
           error() << "No extra inputs locations specified. Please define extra inputs for the NTuple writer." << endmsg;
@@ -71,7 +73,7 @@ namespace Gaudi::NTuple {
           return StatusCode::FAILURE;
         }
 
-        m_tree = std::make_unique<TTree>( "GenericWriterTree", "Tree of GenericWriter Algorithm" ).release();
+        m_tree = std::make_unique<TTree>( m_ntupleTname.value().c_str(), "Tree of GenericWriter Algorithm" ).release();
 
         createBranches( extraInputs );
 
@@ -84,20 +86,21 @@ namespace Gaudi::NTuple {
 
     // Execute the algorithm for each event, retrieving data from the event store and writing it to the TTree
     StatusCode execute( const EventContext& ) const override {
-      std::lock_guard<std::mutex> lock( m_mtx );
+      std::vector<DataObject*> pObjs( m_branchWrappers.size(), nullptr );
 
-      DataObject* pObj = nullptr;
-      for ( auto& wrapper : m_branchWrappers ) {
-        m_eventSvc->retrieveObject( wrapper.getLocation(), pObj )
+      for ( std::size_t i = 0; const auto& wrapper : m_branchWrappers ) {
+        m_eventSvc->retrieveObject( wrapper.getLocation(), pObjs[i++] )
             .orThrow( fmt::format( "Failed to retrieve object for location '{}'. Ensure the location is correct and "
                                    "the object exists.",
                                    wrapper.getLocation() ),
                       name() );
-
-        wrapper.setBranchData( pObj );
       }
 
-      m_tree->Fill();
+      {
+        std::scoped_lock lock{ m_mtx };
+        for ( std::size_t i = 0; auto& wrapper : m_branchWrappers ) { wrapper.setBranchData( pObjs[i++] ); }
+        m_tree->Fill();
+      }
 
       return StatusCode::SUCCESS;
     }
@@ -121,7 +124,7 @@ namespace Gaudi::NTuple {
       for ( const auto& dep : extraInputs ) {
         auto typeName   = getTypeName( dep.className() );
         auto branchName = getNameFromLoc( dep.key() );
-        m_branchWrappers.emplace_back( m_tree, typeName, branchName, dep.key(), *this );
+        m_branchWrappers.emplace_back( m_tree, typeName, branchName, dep.key(), name() );
       }
     }
 
@@ -138,8 +141,10 @@ namespace Gaudi::NTuple {
 
   private:
     Gaudi::Property<std::string> m_fileId; // Property to hold the the identifier of where the TTree will be saved
-    std::shared_ptr<TFile>       m_file     = nullptr; // Smart pointer to the ROOT TFile object
-    TTree*                       m_tree     = nullptr; // Pointer to the ROOT TTree object
+    Gaudi::Property<std::string> m_ntupleTname{ this, "NTupleName", "",
+                                                "Name of the TTree" }; // Property to hold the name of the TTree
+    std::shared_ptr<TFile>       m_file     = nullptr;                 // Smart pointer to the ROOT TFile object
+    TTree*                       m_tree     = nullptr;                 // Pointer to the ROOT TTree object
     IDataProviderSvc*            m_eventSvc = nullptr; // Pointer to the event service interface for data retrieval
     Gaudi::Interfaces::IFileSvc* m_fileSvc;
     mutable std::mutex           m_mtx; // Mutex for thread-safe operations on the GenericWriter object

@@ -24,23 +24,22 @@ namespace {
       { "bool", "O" } };
 
   // Helper function to find the ROOT branch type corresponding to a C++ type
-  auto getLeafListForType( const std::string_view& typeName ) {
+  std::optional<std::string> getLeafListForType( const std::string_view& typeName ) {
     auto it = typeMap.find( typeName );
-    return ( it != typeMap.end() ) ? it->second : std::string{};
+    return ( it != typeMap.end() ) ? std::optional<std::string>{ it->second } : std::nullopt;
   }
 } // namespace
 
 namespace Gaudi::details {
 
   BranchWrapper::BranchWrapper( const gsl::not_null<TTree*> tree, const std::string& className,
-                                const std::string& branchName, const std::string& location,
-                                const Gaudi::Algorithm& algRef )
-      : m_className( className ), m_branchName( branchName ), m_location( location ), m_algRef( algRef ) {
+                                const std::string& branchName, const std::string& location, const std::string& algName )
+      : m_className( className ), m_branchName( branchName ), m_location( location ), m_algName( algName ) {
     auto leafListTag = getLeafListForType( m_className );
-    if ( !leafListTag.empty() ) {
+    if ( leafListTag ) {
       // Create a branch for fundamental types using the leaflist
       m_branch         = tree->Branch( m_branchName.c_str(), &m_dataBuffer,
-                                       ( fmt::format( "{}/{}", m_className, leafListTag ) ).c_str() );
+                                       ( fmt::format( "{}/{}", m_className, leafListTag.value() ) ).c_str() );
       setBranchAddress = []( gsl::not_null<TBranch*> br, const void** wrappedDataPtr ) {
         br->SetAddress( const_cast<void*>( *wrappedDataPtr ) );
       };
@@ -55,12 +54,12 @@ namespace Gaudi::details {
     } else {
       throw GaudiException( fmt::format( "Cannot create branch {} for unknown class: {}. Provide a dictionary please.",
                                          m_branchName, m_className ),
-                            m_algRef.name(), StatusCode::FAILURE );
+                            m_algName, StatusCode::FAILURE );
     }
 
     if ( !m_branch ) {
       throw GaudiException( fmt::format( "Failed to create branch {} for type {}.", m_branchName, m_className ),
-                            m_algRef.name(), StatusCode::FAILURE );
+                            m_algName, StatusCode::FAILURE );
     }
   }
 

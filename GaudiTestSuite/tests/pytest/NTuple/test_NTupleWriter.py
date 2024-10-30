@@ -17,6 +17,7 @@ OUTPUT_FILE_NAME = "ntuple_writer_tree.root"
 EXPECTED_ENTRIES = 10
 EXPECTED_VECTOR_SUM = 10
 EXPECTED_VECTOR_SIZE = 5
+ALG_NAME = "WriterAlg"
 
 
 class Test(GaudiExeTest):
@@ -32,7 +33,7 @@ class Test(GaudiExeTest):
             Tuple of the produced (ROOT file, ROOT TTree).
         """
         file = ROOT.TFile.Open(str(cwd / OUTPUT_FILE_NAME))
-        tree = file.Get("WriterTree")
+        tree = file.Get(ALG_NAME)
         yield file, tree
         file.Close()
 
@@ -84,7 +85,7 @@ def config():
     algs = [
         E.TestSuite.NTuple.IntVectorDataProducer("IntVectorDataProducer"),
         E.TestSuite.NTuple.NTupleWriter_V(
-            "NTupleWriter_V",
+            ALG_NAME,
             OutputFile="NTuple",
             BranchNames=["Branch1", "Branch2", "Branch3"],
         ),
