@@ -6,6 +6,58 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v39r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r1) - 2024-10-31
+Today we have a minor release collecting a number of bugfixes and improvements.
+In particular there are several fixes and usability improvements for
+`Accumulators::Histogram` (gaudi/Gaudi!1643, gaudi/Gaudi!1639, gaudi/Gaudi!1646,
+gaudi/Gaudi!1641, gaudi/Gaudi!1652, gaudi/Gaudi!1651) and in the new `pytest`
+based tests (gaudi/Gaudi!1631, gaudi/Gaudi!1659, gaudi/Gaudi!1644, gaudi/Gaudi!1660).
+
+We have a couple of important changes worth mentioning:
+- an improvement that was added to [v38r1p1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r0) (gaudi/Gaudi!1648)
+- a fix for the new asynchronous algorithms (gaudi/Gaudi!1653)
+
+Please, note that a few old (deprecated) APIs noe issue deprecation warnings and
+will be removes in v40r0 (gaudi/Gaudi!1637).
+
+A special thanks to all the people that contributed to this release:
+@bstanisl,
+@dmagdali,
+@fwinkl,
+@jonrob,
+@rquaglia,
+@sponce,
+@staider,
+@jcarcell.
+
+### Changed
+- Improved usability of HistogramArray (lhcb/Lbcom#12, gaudi/Gaudi!1643)
+- Print more informations about histograms in the MessageSvc (gaudi/Gaudi!1639)
+- Deprecate obsolete ISvcLocator APIs (Gaudi < v22) (gaudi/Gaudi!1637)
+- Use pytest_runtest_logreport instead of pytest_runtest_makereport (gaudi/Gaudi!1631)
+- Make NTupleName a property of the NTupleWriter (gaudi/Gaudi!1650)
+- Improvements to pytest helpers (gaudi/Gaudi!1659)
+- Remove compatibility with Python 2 in genconf.cpp (gaudi/Gaudi!1642)
+- Convert existing pytest tests using run_gaudi to GaudiExeTest (gaudi/Gaudi#335, gaudi/Gaudi!1644)
+
+### Added
+- Add default 'count messages' test in GaudiExeTest (gaudi/Gaudi!1660)
+- Port changes in v38r1-patches to master (gaudi/Gaudi!1655)
+  - Add `NTupleSvc.BasketSize` property and forward in RCWNTupleCnv Branch creation (gaudi/Gaudi!1648)
+- Expose buffer type via histogram (gaudi/Gaudi!1646)
+- Expose axis in the new Histogram API (gaudi/Gaudi!1641)
+- Added testing for std::optional functionality of Gaudi::NamedRange (gaudi/Gaudi#340, gaudi/Gaudi!1640)
+
+### Fixed
+- Restore fix for #233 (gaudi/Gaudi!1665)
+- Fix handling of env variables in options arguments (gaudi/Gaudi#343, gaudi/Gaudi!1661)
+- Fixed definition of StaticWeightedProfileHistogram. The InputTransform was not correct (gaudi/Gaudi!1652)
+- Fix handling of 'path/to/file:some_suffix' in test arguments (gaudi/Gaudi!1658, gaudi/Gaudi!1666)
+- Add missing std::move in Buffer move constructor and add unit test for moving a histogram buffer (gaudi/Gaudi!1651)
+- Asynchronous algorithm fixes (gaudi/Gaudi!1653)
+- Prevent spurious failures from pre-commit in MRs from forks (gaudi/Gaudi!1662)
+
+
 ## [v39r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r0) - 2024-09-23
 This major release of Gaudi features a number of backward incompatible changes that have been waiting
 for a chance of being integrated, like
