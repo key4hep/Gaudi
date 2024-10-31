@@ -136,7 +136,8 @@ stdout: |-
   Gaudi::Monitoring::MessageSvcSink.AutoFlushPeriod:0.00000
   Gaudi::Monitoring::MessageSvcSink.AutoRetrieveTools:True
   Gaudi::Monitoring::MessageSvcSink.CheckToolDeps:True
-  Gaudi::Monitoring::MessageSvcSink.ComponentsToSave:[  ]
+  Gaudi::Monitoring::MessageSvcSink.ComponentsToSave:[ '^.+$' ]
+  Gaudi::Monitoring::MessageSvcSink.HistoStringsWidth:45
   Gaudi::Monitoring::MessageSvcSink.NamesToSave:[  ]
   Gaudi::Monitoring::MessageSvcSink.OutputLevel:3
   Gaudi::Monitoring::MessageSvcSink.TypesToSave:[ 'counter:.*' , 'statentity' , 'histogram:.*' ]

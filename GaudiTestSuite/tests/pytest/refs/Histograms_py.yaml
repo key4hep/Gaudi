@@ -17,11 +17,370 @@ stdout: |-
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
   SimpleCounterHi...SUCCESS Filling Histograms...... Please be patient !
   SimpleRootCount...SUCCESS Filling Histograms...... Please be patient !
-  SimpleCounterHi...   INFO Number of counters : 48
-  SimpleRootCount...   INFO Number of counters : 10
+  SimpleCounterHi...   INFO Number of counters : 1
+  SimpleCounterHi...   INFO Booked 47 Histogram(s) : 1D=11 2D=8 3D=7 1DProf=7 2DProf=7 3DProf=7
+  SimpleCounterHi...   INFO 1D histograms in directory "SimpleCounterHistos" : 11
+  SimpleCounterHi...   INFO 2D histograms in directory "SimpleCounterHistos" : 8
+  SimpleCounterHi...   INFO 3D histograms in directory "SimpleCounterHistos" : 7
+  SimpleCounterHi...   INFO 1D profile histograms in directory "SimpleCounterHistos" : 7
+  SimpleCounterHi...   INFO 2D profile histograms in directory "SimpleCounterHistos" : 7
+  SimpleCounterHi...   INFO 3D profile histograms in directory "SimpleCounterHistos" : 7
+  SimpleRootCount...   INFO Number of counters : 1
+  SimpleRootCount...   INFO Booked 9 Histogram(s) : 1D=3 2D=3 3D=3 1DProf=0 2DProf=0 3DProf=0
+  SimpleRootCount...   INFO 1D histograms in directory "SimpleRootCounterHistos" : 3
+  SimpleRootCount...   INFO 2D histograms in directory "SimpleRootCounterHistos" : 3
+  SimpleRootCount...   INFO 3D histograms in directory "SimpleRootCounterHistos" : 3
   ApplicationMgr       INFO Application Manager Stopped successfully
   EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
-histos: {}
+histos:
+  SimpleCounterHistos:
+    1D:
+      /TopDir/SubDir/Gauss:
+        ID: /TopDir/SubDir/Gauss
+        Title: '"Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      CustomGauss:
+        ID: CustomGauss
+        Title: '"Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      CustomGaussNoInit:
+        ID: CustomGaussNoInit
+        Title: '"Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      CustomGaussNoProp:
+        ID: CustomGaussNoProp
+        Title: '"Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      CustomGaussW:
+        ID: CustomGaussW
+        Title: '"Gaussian mean=0, sigma=1, weighted"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      Gauss:
+        ID: Gauss
+        Title: '"Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      GaussBuf:
+        ID: GaussBuf
+        Title: '"Gaussian mean=0, sigma=1, buffered"'
+        '#': '500000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      GaussInt:
+        ID: GaussInt
+        Title: '"Gaussian mean=0, sigma=1, integer values"'
+        '#': '50000'
+        Mean: '0.49548'
+        RMS: '0.68219'
+        Skewness: '0.012066'
+        Kurtosis: '2.4124'
+        ? ''
+        : ''
+      GaussNA:
+        ID: GaussNA
+        Title: '"Gaussian mean=0, sigma=1, non atomic"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      GaussW:
+        ID: GaussW
+        Title: '"Gaussian mean=0, sigma=1, weighted"'
+        '#': '50000'
+        Mean: '-0.005996'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      LogGauss:
+        ID: LogGauss
+        Title: '"Log, Gaussian"'
+        '#': '50000'
+        Mean: '0.4051'
+        RMS: '0.26059'
+        Skewness: '0.96351'
+        Kurtosis: '0.08275'
+        ? ''
+        : ''
+    header:
+      1D: 11
+      2D: 8
+      3D: 7
+      1DProf: 7
+      2DProf: 7
+      3DProf: 7
+      Total: 47
+    2D:
+      CustomGaussFlat:
+      - CustomGaussFlat
+      - Gaussian V Flat, atomic
+      - Ents/All=24816/50000<X>/sX=-0.035147/2.8839,<Y>/sY=-0.0080754/1.0029
+      CustomGaussFlatW:
+      - CustomGaussFlatW
+      - Gaussian V Flat, weighted
+      - Ents/All=12408/50000<X>/sX=-0.035147/2.8839,<Y>/sY=-0.0080754/1.0029
+      GaussFlat:
+      - GaussFlat
+      - Gaussian V Flat, atomic
+      - Ents/All=24816/50000<X>/sX=-0.035147/2.8839,<Y>/sY=-0.0080754/1.0029
+      GaussFlatBuf:
+      - GaussFlatBuf
+      - Gaussian V Flat, buffered
+      - Ents/All=248160/500000<X>/sX=-0.035147/2.8839,<Y>/sY=-0.0080754/1.0029
+      GaussFlatInt:
+      - GaussFlatInt
+      - Gaussian V Flat, integer values
+      - Ents/All=27341/50000<X>/sX=0.0096741/2.739,<Y>/sY=0.49236/0.68131
+      GaussFlatNA:
+      - GaussFlatNA
+      - Gaussian V Flat, non atomic
+      - Ents/All=24816/50000<X>/sX=-0.035147/2.8839,<Y>/sY=-0.0080754/1.0029
+      GaussFlatW:
+      - GaussFlatW
+      - Gaussian V Flat, weighted
+      - Ents/All=12408/50000<X>/sX=-0.035147/2.8839,<Y>/sY=-0.0080754/1.0029
+      LogGaussFlat:
+      - LogGaussFlat
+      - LogLog, Gaussian V Flat
+      - Ents/All= 2512/50000<X>/sX=1.3037/0.51963,<Y>/sY=0.40748/0.26627
+    3D:
+      CustomGaussFlatGauss:
+      - CustomGaussFlatGauss
+      - Gaussian V Flat V Gaussian, atomic
+      - Ents/All=24816/50000<X>/sX=-0.035703/2.8691,<Y>/sY=-0.01088/1.0388,<Z>/sZ=-0.0012895/1.0447
+      CustomGaussFlatGaussW:
+      - CustomGaussFlatGaussW
+      - Gaussian V Flat V Gaussian, weighted
+      - Ents/All=12408/50000<X>/sX=-0.035703/2.8691,<Y>/sY=-0.01088/1.0388,<Z>/sZ=-0.0012895/1.0447
+      GaussFlatGauss:
+      - GaussFlatGauss
+      - Gaussian V Flat V Gaussian, atomic
+      - Ents/All=24816/50000<X>/sX=-0.035703/2.8691,<Y>/sY=-0.01088/1.0388,<Z>/sZ=-0.0012895/1.0447
+      GaussFlatGaussBuf:
+      - GaussFlatGaussBuf
+      - Gaussian V Flat V Gaussian, buffered
+      - Ents/All=248160/500000<X>/sX=-0.035703/2.8691,<Y>/sY=-0.01088/1.0388,<Z>/sZ=-0.0012895/1.0447
+      GaussFlatGaussInt:
+      - GaussFlatGaussInt
+      - Gaussian V Flat V Gaussian, interger values
+      - Ents/All=27341/50000<X>/sX=0.0096741/2.739,<Y>/sY=0.49236/0.68131,<Z>/sZ=0.49459/0.685
+      GaussFlatGaussNA:
+      - GaussFlatGaussNA
+      - Gaussian V Flat V Gaussian, non atomic
+      - Ents/All=24816/50000<X>/sX=-0.035703/2.8691,<Y>/sY=-0.01088/1.0388,<Z>/sZ=-0.0012895/1.0447
+      GaussFlatGaussW:
+      - GaussFlatGaussW
+      - Gaussian V Flat V Gaussian, weighted
+      - Ents/All=12408/50000<X>/sX=-0.035703/2.8691,<Y>/sY=-0.01088/1.0388,<Z>/sZ=-0.0012895/1.0447
+    1DProf:
+      CustomProfGauss:
+        ID: CustomProfGauss
+        Title: '"Profile, Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.106'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      CustomProfGaussW:
+        ID: CustomProfGaussW
+        Title: '"Profile, Gaussian mean=0, sigma=1, weighted"'
+        '#': '50000'
+        Mean: '-0.0059287'
+        RMS: '0.99946'
+        Skewness: '0.010837'
+        Kurtosis: '-0.033323'
+        ? ''
+        : ''
+      ProfGauss:
+        ID: ProfGauss
+        Title: '"Profile, Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.106'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      ProfGaussBuf:
+        ID: ProfGaussBuf
+        Title: '"Profile, Gaussian mean=0, sigma=1, buffered"'
+        '#': '500000'
+        Mean: '-0.106'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      ProfGaussInt:
+        ID: ProfGaussInt
+        Title: '"Profile, Gaussian mean=0, sigma=1, integ..."'
+        '#': '50000'
+        Mean: '0.49548'
+        RMS: '0.68219'
+        Skewness: '0.012066'
+        Kurtosis: '2.4124'
+        ? ''
+        : ''
+      ProfGaussNA:
+        ID: ProfGaussNA
+        Title: '"Profile, Gaussian mean=0, sigma=1, non a..."'
+        '#': '50000'
+        Mean: '-0.106'
+        RMS: '1.0015'
+        Skewness: '0.0079746'
+        Kurtosis: '-0.0010546'
+        ? ''
+        : ''
+      ProfGaussW:
+        ID: ProfGaussW
+        Title: '"Profile, Gaussian mean=0, sigma=1, weighted"'
+        '#': '50000'
+        Mean: '-0.0059287'
+        RMS: '0.99946'
+        Skewness: '0.010837'
+        Kurtosis: '-0.033323'
+        ? ''
+        : ''
+    2DProf:
+      CustomProfGaussFlat:
+      - CustomProfGaussFlat
+      - Profile, Gaussian V Flat, atomic
+      - Ents/All=24816/50000<X>/sX=-0.23515/2.8839,<Y>/sY=-0.0080754/1.0029
+      CustomProfGaussFlatW:
+      - CustomProfGaussFlatW
+      - Profile, Gaussian V Flat, weighted
+      - Ents/All=12007/50000<X>/sX=-0.038836/2.885,<Y>/sY=-0.009103/0.96101
+      ProfGaussFlat:
+      - ProfGaussFlat
+      - Profile, Gaussian V Flat, atomic
+      - Ents/All=24816/50000<X>/sX=-0.23515/2.8839,<Y>/sY=-0.0080754/1.0029
+      ProfGaussFlatBuf:
+      - ProfGaussFlatBuf
+      - Profile, Gaussian V Flat, buffered
+      - Ents/All=248160/500000<X>/sX=-0.23515/2.8839,<Y>/sY=-0.0080754/1.0029
+      ProfGaussFlatInt:
+      - ProfGaussFlatInt
+      - Profile, Gaussian V Flat, integer values
+      - Ents/All=27341/50000<X>/sX=0.0096741/2.739,<Y>/sY=0.49236/0.68131
+      ProfGaussFlatNA:
+      - ProfGaussFlatNA
+      - Profile, Gaussian V Flat, non atomic
+      - Ents/All=24816/50000<X>/sX=-0.23515/2.8839,<Y>/sY=-0.0080754/1.0029
+      ProfGaussFlatW:
+      - ProfGaussFlatW
+      - Profile, Gaussian V Flat, weighted
+      - Ents/All=12007/50000<X>/sX=-0.038836/2.885,<Y>/sY=-0.009103/0.96101
+  SimpleRootCounterHistos:
+    1D:
+      CustomGauss:
+        ID: CustomGauss
+        Title: '"Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.007654'
+        RMS: '1.0016'
+        Skewness: '0.019119'
+        Kurtosis: '0.033422'
+        ? ''
+        : ''
+      Gauss:
+        ID: Gauss
+        Title: '"Gaussian mean=0, sigma=1, atomic"'
+        '#': '50000'
+        Mean: '-0.007654'
+        RMS: '1.0016'
+        Skewness: '0.019119'
+        Kurtosis: '0.033422'
+        ? ''
+        : ''
+      GaussBuf:
+        ID: GaussBuf
+        Title: '"Gaussian mean=0, sigma=1, buffered"'
+        '#': '500000'
+        Mean: '-0.007654'
+        RMS: '1.0016'
+        Skewness: '0.019119'
+        Kurtosis: '0.033422'
+        ? ''
+        : ''
+    header:
+      1D: 3
+      2D: 3
+      3D: 3
+      1DProf: 0
+      2DProf: 0
+      3DProf: 0
+      Total: 9
+    2D:
+      CustomGaussFlat:
+      - CustomGaussFlat
+      - Gaussian V Flat, atomic
+      - Ents/All=25070/50000<X>/sX=-0.00927/2.8851,<Y>/sY=-0.015947/1.0067
+      GaussFlat:
+      - GaussFlat
+      - Gaussian V Flat, atomic
+      - Ents/All=25070/50000<X>/sX=-0.00927/2.8851,<Y>/sY=-0.015947/1.0067
+      GaussFlatBuf:
+      - GaussFlatBuf
+      - Gaussian V Flat, buffered
+      - Ents/All=250700/500000<X>/sX=-0.00927/2.8851,<Y>/sY=-0.015947/1.0067
+    3D:
+      CustomGaussFlatGauss:
+      - CustomGaussFlatGauss
+      - Gaussian V Flat V Gaussian, atomic
+      - Ents/All=25070/50000<X>/sX=-0.0073793/2.8746,<Y>/sY=-0.017112/1.0477,<Z>/sZ=0.00059832/1.0439
+      GaussFlatGauss:
+      - GaussFlatGauss
+      - Gaussian V Flat V Gaussian, atomic
+      - Ents/All=25070/50000<X>/sX=-0.0073793/2.8746,<Y>/sY=-0.017112/1.0477,<Z>/sZ=0.00059832/1.0439
+      GaussFlatGaussBuf:
+      - GaussFlatGaussBuf
+      - Gaussian V Flat V Gaussian, buffered
+      - Ents/All=250700/500000<X>/sX=-0.0073793/2.8746,<Y>/sY=-0.017112/1.0477,<Z>/sZ=0.00059832/1.0439
 ttrees: {}

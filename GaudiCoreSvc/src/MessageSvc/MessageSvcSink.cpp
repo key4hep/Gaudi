@@ -9,7 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
+#include <Gaudi/Accumulators/StaticHistogram.h>
 #include <Gaudi/BaseSink.h>
+#include <Gaudi/Histograming/Sink/Utils.h>
 #include <Gaudi/MonitoringHub.h>
 #include <GaudiKernel/MsgStream.h>
 
@@ -36,8 +38,7 @@ namespace {
    * first multiplies by 100.
    */
   static const auto registry = std::map<std::string_view, std::string_view>{
-      { "counter", "{0:nEntries|10d}" },   // all unknown counters, and default
-      { "histogram", "{0:nEntries|10d}" }, // all histograms
+      { "counter", "{0:nEntries|10d}" }, // all unknown counters, and default
       { "counter:AveragingCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g}" },
       { "counter:SigmaCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g}" },
       { "counter:StatCounter", "{0:nEntries|10d} |{0:sum|11.7g} |{0:mean|#11.5g} |{0:standard_deviation|#11.5g} "
@@ -46,12 +47,51 @@ namespace {
         "{0:nEntries|10d} |{0:nTrueEntries|11d} |({0:efficiency|#9.7p} +- {0:efficiencyErr|-#8.7p})%" },
   };
 
+  // the int says in which bunch of counters to put the histogram. We separate indeed
+  // regular counters (0) from 1d/2d/3d histogram (1, 2 and 3) from 1d/2d/3d profile
+  // histograms (4, 5 and 6)
+  using HistoBinHandler =
+      std::pair<unsigned int,
+                std::function<std::string( std::string_view, Gaudi::Monitoring::Hub::Entity const&, unsigned int )>>;
+  namespace Acc = ::Gaudi::Accumulators;
+  /**
+   * map of binary formating methods for dedicated types where we want to avoid going through json
+   * data for performance reasons. Essentially Profile histograms at this stage
+   */
+  std::map<std::type_index, HistoBinHandler> const binRegistry = {
+      { std::type_index( typeid( Acc::StaticProfileHistogram<1u, Acc::atomicity::full, double> ) ),
+        { 4, &Gaudi::Histograming::Sink::printProfileHisto1D<Acc::atomicity::full, double> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<1u, Acc::atomicity::none, double> ) ),
+        { 4, &Gaudi::Histograming::Sink::printProfileHisto1D<Acc::atomicity::none, double> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<1u, Acc::atomicity::full, float> ) ),
+        { 4, &Gaudi::Histograming::Sink::printProfileHisto1D<Acc::atomicity::full, float> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<1u, Acc::atomicity::none, float> ) ),
+        { 4, &Gaudi::Histograming::Sink::printProfileHisto1D<Acc::atomicity::none, float> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<2u, Acc::atomicity::full, double> ) ),
+        { 5, &Gaudi::Histograming::Sink::printProfileHisto2D<Acc::atomicity::full, double> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<2u, Acc::atomicity::none, double> ) ),
+        { 5, &Gaudi::Histograming::Sink::printProfileHisto2D<Acc::atomicity::none, double> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<2u, Acc::atomicity::full, float> ) ),
+        { 5, &Gaudi::Histograming::Sink::printProfileHisto2D<Acc::atomicity::full, float> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<2u, Acc::atomicity::none, float> ) ),
+        { 5, &Gaudi::Histograming::Sink::printProfileHisto2D<Acc::atomicity::none, float> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<3u, Acc::atomicity::full, double> ) ),
+        { 6, &Gaudi::Histograming::Sink::printProfileHisto3D<Acc::atomicity::full, double> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<3u, Acc::atomicity::none, double> ) ),
+        { 6, &Gaudi::Histograming::Sink::printProfileHisto3D<Acc::atomicity::none, double> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<3u, Acc::atomicity::full, float> ) ),
+        { 6, &Gaudi::Histograming::Sink::printProfileHisto3D<Acc::atomicity::full, float> } },
+      { std::type_index( typeid( Acc::StaticProfileHistogram<3u, Acc::atomicity::none, float> ) ),
+        { 6, &Gaudi::Histograming::Sink::printProfileHisto3D<Acc::atomicity::none, float> } },
+  };
+
   // Helper to fix custom formatting of nlohmann::json version 3.10.5
   // See https://gitlab.cern.ch/gaudi/Gaudi/-/issues/220
   struct json_fmt_arg {
     json_fmt_arg( const nlohmann::json& j ) : payload{ j } {}
     const nlohmann::json& payload;
   };
+
 } // namespace
 
 /**
@@ -168,42 +208,133 @@ namespace Gaudi::Monitoring {
     MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
       // only deal with counters, statentity and histograms
       setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:.*" } )
-          .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );
+          .orThrow( "Unable to set TypesToSave property", "Gaudi::Monitoring::MessageSvcSink" );
+      // require a non-empty name for the owner
+      setProperty( "ComponentsToSave", std::vector<std::string>{ "^.+$" } )
+          .orThrow( "Unable to set ComponentsToSave property", "Gaudi::Monitoring::MessageSvcSink" );
     }
     /// stop method, handles the printing
-    void flush( bool ) override;
+    void                          flush( bool ) override;
+    Gaudi::Property<unsigned int> m_histoStringsWidth{ this, "HistoStringsWidth", 45,
+                                                       "length of histograms names and titles in the output" };
   };
 
   DECLARE_COMPONENT( MessageSvcSink )
 } // namespace Gaudi::Monitoring
 
 void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
-  std::string        curAlgo = "";
-  std::ostringstream curLog;
-  unsigned int       nbNonEmptyEntities = 0;
-  auto               dumpAlgoCounters   = [&]() {
-    // Yes, so print header, dump log and reset counters
-    if ( nbNonEmptyEntities > 0 ) {
-      MsgStream log{ msgSvc(), curAlgo };
-      log << MSG::INFO << "Number of counters : " << nbNonEmptyEntities << "\n"
+  std::string curAlgo = "";
+  // an array of counters, separating (in this order)
+  // regular counters from 1d / 2d / 3d histograms, from
+  // 1d / 2d / 3d profile histograms
+  std::array<std::ostringstream, 7> curLog;
+  // associated counters of non empty entities, in order
+  // to know whether to print or not the given section
+  std::array<unsigned int, 7> nbNonEmptyEntities{};
+  auto                        dumpAlgoCounters = [&]() {
+    MsgStream log{ msgSvc(), curAlgo };
+    // Regular counters first
+    if ( nbNonEmptyEntities[0] > 0 ) {
+      log << MSG::INFO << "Number of counters : " << nbNonEmptyEntities[0] << "\n"
           << " |    Counter                                      |     #     |   "
           << " sum     | mean/eff^* | rms/err^*  |     min     |     max     |";
-      log << curLog.str() << endmsg;
+      log << curLog[0].str() << endmsg;
+    }
+    // Now histograms
+    unsigned int nHistos = nbNonEmptyEntities[1] + nbNonEmptyEntities[2] + nbNonEmptyEntities[3] +
+                           nbNonEmptyEntities[4] + nbNonEmptyEntities[5] + nbNonEmptyEntities[6];
+    if ( nHistos > 0 ) {
+      log << MSG::INFO << "Booked " << nHistos << " Histogram(s) : 1D=" << nbNonEmptyEntities[1]
+          << " 2D=" << nbNonEmptyEntities[2] << " 3D=" << nbNonEmptyEntities[3] << " 1DProf=" << nbNonEmptyEntities[4]
+          << " 2DProf=" << nbNonEmptyEntities[5] << " 3DProf=" << nbNonEmptyEntities[6] << endmsg;
+      if ( nbNonEmptyEntities[1] > 0 ) {
+        log << MSG::INFO << "1D histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[1] << "\n"
+            << fmt::format(
+                   fmt::runtime(
+                       " | {:{}s} | {:{}s} |      #     |     Mean   |    RMS     |  Skewness  |  Kurtosis  |" ),
+                   "ID", m_histoStringsWidth.value(), "Title", m_histoStringsWidth.value() )
+            << curLog[1].str() << endmsg;
+      }
+      if ( nbNonEmptyEntities[2] > 0 ) {
+        log << MSG::INFO << "2D histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[2]
+            << curLog[2].str() << endmsg;
+      }
+      if ( nbNonEmptyEntities[3] > 0 ) {
+        log << MSG::INFO << "3D histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[3]
+            << curLog[3].str() << endmsg;
+      }
+      if ( nbNonEmptyEntities[4] > 0 ) {
+        log << MSG::INFO << "1D profile histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[4]
+            << "\n"
+            << fmt::format(
+                   fmt::runtime(
+                       " | {:{}s} | {:{}s} |      #     |     Mean   |    RMS     |  Skewness  |  Kurtosis  |" ),
+                   "ID", m_histoStringsWidth.value(), "Title", m_histoStringsWidth.value() )
+            << curLog[4].str() << endmsg;
+      }
+      if ( nbNonEmptyEntities[5] > 0 ) {
+        log << MSG::INFO << "2D profile histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[5]
+            << curLog[5].str() << endmsg;
+      }
+      if ( nbNonEmptyEntities[6] > 0 ) {
+        log << MSG::INFO << "3D profile histograms in directory \"" << curAlgo << "\" : " << nbNonEmptyEntities[6]
+            << curLog[6].str() << endmsg;
+      }
     }
   };
-  applyToAllSortedEntities( [&]( std::string const& algo, std::string const& entity, nlohmann::json const& j ) {
+  applyToAllSortedEntities( [&]( std::string const& algo, std::string const& name,
+                                 Monitoring::Hub::Entity const& ent ) {
     // Did we change to new component ?
     if ( algo != curAlgo ) {
       dumpAlgoCounters();
       curAlgo            = algo;
-      nbNonEmptyEntities = 0;
-      curLog             = std::ostringstream{};
+      nbNonEmptyEntities = { 0, 0, 0, 0, 0, 0, 0 };
+      curLog             = { std::ostringstream{}, std::ostringstream{}, std::ostringstream{}, std::ostringstream{},
+                             std::ostringstream{}, std::ostringstream{}, std::ostringstream{} };
     }
-    // is current counter empty ?
-    if ( !j.at( "empty" ).template get<bool>() ) {
-      ++nbNonEmptyEntities;
-      curLog << "\n";
-      printCounter( curLog, entity, j );
+    // first try dedicated binary printers for profile histograms
+    auto typeIndex = ent.typeIndex();
+    auto binWriter = binRegistry.find( typeIndex );
+    if ( binWriter != binRegistry.end() ) {
+      auto index = binWriter->second.first;
+      ++nbNonEmptyEntities[index];
+      curLog[index] << "\n" << binWriter->second.second( name, ent, m_histoStringsWidth );
+    } else {
+      // use json representation of the entity
+      nlohmann::json const j = ent;
+      // do we have an histogram ?
+      const auto type = j.at( "type" ).get<std::string>();
+      if ( type.find( "histogram" ) == 0 ) {
+        if ( !j.at( "empty" ).template get<bool>() ) {
+          unsigned int d         = j.at( "dimension" ).get<int>();
+          auto         subtype   = std::string_view( type ).substr( 10 ); // remove "histogram:" in front
+          bool         isProfile = subtype.substr( 0, 15 ) == "WeightedProfile" || subtype.substr( 0, 7 ) == "Profile";
+          unsigned int index     = ( isProfile ? 3 : 0 ) + d;
+          auto         title     = j.at( "title" ).get<std::string>();
+          switch ( d ) {
+          case 1:
+            curLog[index] << "\n"
+                          << Gaudi::Histograming::Sink::printHistogram1D( type, name, title, j, m_histoStringsWidth );
+            break;
+          case 2:
+            curLog[index] << "\n"
+                          << Gaudi::Histograming::Sink::printHistogram2D( type, name, title, j, m_histoStringsWidth );
+            break;
+          case 3:
+            curLog[index] << "\n"
+                          << Gaudi::Histograming::Sink::printHistogram3D( type, name, title, j, m_histoStringsWidth );
+            break;
+          }
+          ++nbNonEmptyEntities[index];
+        }
+      } else {
+        // regular counter. Is current counter empty ?
+        if ( !j.at( "empty" ).template get<bool>() ) {
+          ++nbNonEmptyEntities[0];
+          curLog[0] << "\n";
+          printCounter( curLog[0], name, j );
+        }
+      }
     }
   } );
   // last component

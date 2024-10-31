@@ -12,11 +12,42 @@ stdout: |-
   RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
   RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-  Histos2              INFO Number of counters : 2
+  Histos2              INFO Booked 2 Histogram(s) : 1D=2 2D=0 3D=0 1DProf=0 2DProf=0 3DProf=0
+  Histos2              INFO 1D histograms in directory "Histos2" : 2
   ApplicationMgr       INFO Application Manager Stopped successfully
   Histos2           SUCCESS Histograms report
   EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
-histos: {}
+histos:
+  Histos2:
+    1D:
+      Histo1:
+        ID: Histo1
+        Title: '"Histogram 1"'
+        '#': '50000'
+        Mean: '-0.010194'
+        RMS: '0.98246'
+        Skewness: '-0.0041154'
+        Kurtosis: '-0.16179'
+        ? ''
+        : ''
+      Histo2:
+        ID: Histo2
+        Title: '"Histogram 2"'
+        '#': '50000'
+        Mean: '-0.013065'
+        RMS: '1.0048'
+        Skewness: '0.001627'
+        Kurtosis: '-0.0045467'
+        ? ''
+        : ''
+    header:
+      1D: 2
+      2D: 0
+      3D: 0
+      1DProf: 0
+      2DProf: 0
+      3DProf: 0
+      Total: 2
 ttrees: {}

@@ -178,6 +178,14 @@ namespace Gaudi {
 
         // Testing regular histograms in all dimensions and features
 
+        // empty histograms. Should not be printed in Sinks
+        mutable Gaudi::Accumulators::StaticHistogram<1> m_empty1D{
+            this, "Empty1D", "Empty 1D histogram", { 100, -5, 5, "X" } };
+        mutable Gaudi::Accumulators::StaticHistogram<2> m_empty2D{
+            this, "Empty2D", "Empty 2D histogram", { { 50, -5, 5, "X" }, { 50, -5, 5, "Y" } } };
+        mutable Gaudi::Accumulators::StaticHistogram<3> m_empty3D{
+            this, "Empty3D", "Empty 3D histogram", { { 10, -5, 5, "X" }, { 10, -5, 5, "Y" }, { 10, -5, 5, "Z" } } };
+
         // "default" case, that is bins containing doubles and atomic
         mutable Gaudi::Accumulators::StaticHistogram<1> m_gauss{
             this, "Gauss", "Gaussian mean=0, sigma=1, atomic", { 100, -5, 5, "X" } };
