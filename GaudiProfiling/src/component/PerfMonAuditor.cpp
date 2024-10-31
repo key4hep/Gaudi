@@ -186,6 +186,9 @@ namespace {
       if ( handle ) dlclose( handle );
     }
 
+    PFMon( const PFMon& )            = delete;
+    PFMon& operator=( const PFMon& ) = delete;
+
     static PFMon s_instance;
   };
 
