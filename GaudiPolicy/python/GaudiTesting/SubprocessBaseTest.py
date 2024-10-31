@@ -166,7 +166,7 @@ class SubprocessBaseTest:
 
         stdout_chunks, stderr_chunks = [], []
         stdout = stderr = ""
-        exceeded_stream = stack_trace = failure = None
+        exceeded_stream = stack_trace = run_exception = None
         streams = {
             proc.stdout.fileno(): (stdout_chunks, "stdout"),
             proc.stderr.fileno(): (stderr_chunks, "stderr"),
@@ -193,9 +193,11 @@ class SubprocessBaseTest:
 
         if thread.is_alive():
             stack_trace = cls._handle_timeout(proc)
-            failure = ProcessTimeoutError("Process timed out", stack_trace)
+            run_exception = ProcessTimeoutError("Process timed out", stack_trace)
         elif exceeded_stream:
-            failure = ExceededStreamError("Stream exceeded size limit", exceeded_stream)
+            run_exception = ExceededStreamError(
+                "Stream exceeded size limit", exceeded_stream
+            )
 
         end_time = datetime.now()
 
@@ -210,7 +212,7 @@ class SubprocessBaseTest:
             completed_process=completed_process,
             start_time=start_time,
             end_time=end_time,
-            failure=failure,
+            run_exception=run_exception,
             command=cls.command,
             expanded_command=command,
             env=env,
@@ -233,8 +235,8 @@ class SubprocessBaseTest:
         if reference_path:
             record_property("reference_file", str(reference_path))
 
-        if fixture_result.failure:
-            pytest.fail(f"{fixture_result.failure}")
+        if fixture_result.run_exception:
+            pytest.fail(f"{fixture_result.run_exception}")
 
     @pytest.mark.do_not_collect_source
     def test_returncode(self, returncode: int) -> None:
