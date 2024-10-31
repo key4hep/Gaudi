@@ -146,7 +146,7 @@ namespace Gaudi::NTuple {
     std::shared_ptr<TFile>       m_file     = nullptr;                 // Smart pointer to the ROOT TFile object
     TTree*                       m_tree     = nullptr;                 // Pointer to the ROOT TTree object
     IDataProviderSvc*            m_eventSvc = nullptr; // Pointer to the event service interface for data retrieval
-    Gaudi::Interfaces::IFileSvc* m_fileSvc;
+    Gaudi::Interfaces::IFileSvc* m_fileSvc  = nullptr;
     mutable std::mutex           m_mtx; // Mutex for thread-safe operations on the GenericWriter object
     mutable std::vector<Gaudi::details::BranchWrapper> m_branchWrappers{}; // Container for all BranchWrapper instances
   };

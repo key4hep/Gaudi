@@ -120,7 +120,7 @@ private:
   EventContext::ContextID_t  m_ecSlot{ EventContext::INVALID_CONTEXT_ID }; ///< Event slot
   EventContext::ContextEvt_t m_ecEvt{ EventContext::INVALID_CONTEXT_EVT }; ///< Event number
   EventIDBase                m_ecEvtId;                                    ///< Full event ID
-  pthread_t                  m_ecThrd;                                     ///< Thread ID
+  pthread_t                  m_ecThrd{};                                   ///< Thread ID
   //@}
 
   /** @name Formatting characters */

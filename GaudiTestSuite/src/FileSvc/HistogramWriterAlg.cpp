@@ -48,7 +48,7 @@ namespace Gaudi::TestSuite::FileSvc {
     }
 
   private:
-    Gaudi::Interfaces::IFileSvc* m_fileSvc;
+    Gaudi::Interfaces::IFileSvc* m_fileSvc{ nullptr };
     std::shared_ptr<TFile>       m_file;
     std::unique_ptr<TH1F>        m_hist;
   };
