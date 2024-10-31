@@ -94,6 +94,46 @@ BOOST_AUTO_TEST_CASE( test_static_counter_histos, *boost::unit_test::tolerance( 
   }
 }
 
+BOOST_AUTO_TEST_CASE( test_large_static_counter_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
+  Algo algo;
+
+  {
+    // testing an array of 5 1D, regular histograms, with "standard" names / titles
+    Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::StaticHistogram<1>, 100> histo1d{
+        &algo, "SGaudiH1D-{}", "A Gaudi 1D histogram - number {}", { 21, -10.5, 10.5, "X" } };
+    for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
+    for ( unsigned int i = 0; i < 5; i++ ) BOOST_TEST( toJSON( histo1d[i] ).at( "bins" )[1] == 1 );
+    BOOST_TEST( toJSON( histo1d[2] ).at( "title" ) == "A Gaudi 1D histogram - number 2" );
+    ++histo1d[3][-10.0]; // fill the first (non-overflow) bin
+    BOOST_TEST( toJSON( histo1d[3] ).at( "bins" )[1] == 2 );
+  }
+
+  {
+    // testing an array of 7 2D, weighted histograms, with "standard" names / titles
+    Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::StaticWeightedHistogram<2>, 100> histo2dw{
+        &algo, "SName{}", "Title {}", { 21, -10.5, 10.5, "X" }, { 21, -10.5, 10.5, "Y" } };
+    for ( unsigned int i = 0; i < 7; i++ ) histo2dw[i][{ -10.0, -10.0 }] += 0.25; // fill the first (non-overflow) bin
+    for ( unsigned int i = 0; i < 7; i++ ) BOOST_TEST( toJSON( histo2dw[i] ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 0.25 );
+    for ( unsigned int i = 0; i < 7; i++ ) histo2dw[i][{ -10.0, -10.0 }] += 0.5; // fill the first (non-overflow) bin
+    for ( unsigned int i = 0; i < 7; i++ ) BOOST_TEST( toJSON( histo2dw[i] ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 0.75 );
+  }
+
+  {
+    Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::StaticHistogram<1>, 100> histo1d{
+        &algo,
+        []( int n ) { return fmt::format( "SGaudiH1D-{}-{}", n, n ^ 2 ); },
+        [nb = 5]( int n ) {
+          return fmt::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
+        },
+        { 21, -10.5, 10.5, "X" } };
+    for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
+    for ( unsigned int i = 0; i < 5; i++ ) BOOST_TEST( toJSON( histo1d[i] ).at( "bins" )[1] == 1 );
+    BOOST_TEST( toJSON( histo1d[3] ).at( "title" ) == "Title number 3 of Histogram arrays of 5 histograms in total" );
+    ++histo1d[3][-10.0]; // fill the first (non-overflow) bin
+    BOOST_TEST( toJSON( histo1d[3] ).at( "bins" )[1] == 2 );
+  }
+}
+
 BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
   Algo algo;
 
