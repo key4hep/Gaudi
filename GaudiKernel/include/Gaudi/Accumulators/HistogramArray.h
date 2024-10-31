@@ -14,6 +14,9 @@
 
 #include <fmt/format.h>
 
+#include <boost/container/static_vector.hpp>
+
+#include <array>
 #include <utility>
 
 namespace Gaudi::Accumulators {
@@ -31,29 +34,58 @@ namespace Gaudi::Accumulators {
     };
 
     /**
-     * internal class implementing an array of histograms
+     * internal class implementing an "array" of histograms
+     *
+     * Depending on the number of histograms, the internal implementation will use
+     * std::array (for N < 30) or boost::container::static_vector (N >= 30)
+     * The reason for using boost::container::static_vector is that compilation time becomes
+     * too large when using arrays for too many items, as we need to use
+     * template metaprograming for the array construction
      * @see HistogramArray
      */
+    template <typename Histo, std::size_t N, typename = void>
+    struct HistogramArrayInternal;
+
+    /**
+     * Specialization of HistogramArrayInternal for N < 30
+     */
     template <typename Histo, std::size_t N>
-    struct HistogramArrayInternal : std::array<Histo, N> {
+    struct HistogramArrayInternal<Histo, N, std::enable_if_t<( N < 30 )>> : std::array<Histo, N> {
       /// constructor with callables for FormatName and FormatTitle
       template <typename OWNER, typename FormatName, typename FormatTitle, std::size_t... Ns,
                 typename = typename std::enable_if_t<std::is_invocable_v<FormatName, int>>,
                 typename = typename std::enable_if_t<std::is_invocable_v<FormatTitle, int>>>
       HistogramArrayInternal( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle,
                               std::integer_sequence<std::size_t, Ns...>, typename Histo::AxisTupleType&& allAxis )
-          : std::array<Histo, N>{ Histo{ owner, fname( Ns ), ftitle( Ns ), allAxis }... } {
-        static_assert( sizeof...( Ns ) < 1000, "Using HistogramArray with 1000 arrays or more is prohibited. This "
-                                               "would lead to very long compilation times" );
-      }
+          : std::array<Histo, N>{ Histo{ owner, fname( Ns ), ftitle( Ns ), allAxis }... } {}
       /// constructor for strings, FormatHistDefault is used as the default callable
       template <typename OWNER, std::size_t... Ns>
       HistogramArrayInternal( OWNER* owner, std::string_view name, std::string_view title,
                               std::integer_sequence<std::size_t, Ns...>, typename Histo::AxisTupleType&& allAxis )
           : std::array<Histo, N>{
-                Histo{ owner, FormatHistDefault{ name }( Ns ), FormatHistDefault{ title }( Ns ), allAxis }... } {
-        static_assert( sizeof...( Ns ) < 1000, "Using HistogramArray with 1000 arrays or more is prohibited. This "
-                                               "would lead to very long compilation times" );
+                Histo{ owner, FormatHistDefault{ name }( Ns ), FormatHistDefault{ title }( Ns ), allAxis }... } {}
+    };
+
+    /**
+     * Specialization of HistogramArrayInternal for N >= 30
+     */
+    template <typename Histo, std::size_t N>
+    struct HistogramArrayInternal<Histo, N, std::enable_if_t<( N >= 30 )>> : boost::container::static_vector<Histo, N> {
+      /// constructor with callables for FormatName and FormatTitle
+      template <typename OWNER, typename FormatName, typename FormatTitle,
+                typename = typename std::enable_if_t<std::is_invocable_v<FormatName, int>>,
+                typename = typename std::enable_if_t<std::is_invocable_v<FormatTitle, int>>>
+      HistogramArrayInternal( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle,
+                              typename Histo::AxisTupleType&& allAxis ) {
+        for ( std::size_t i = 0; i < N; i++ ) { this->emplace_back( owner, fname( i ), ftitle( i ), allAxis ); }
+      }
+      /// constructor for strings, FormatHistDefault is used as the default callable
+      template <typename OWNER>
+      HistogramArrayInternal( OWNER* owner, std::string_view name, std::string_view title,
+                              typename Histo::AxisTupleType&& allAxis ) {
+        for ( std::size_t i = 0; i < N; i++ ) {
+          this->emplace_back( owner, FormatHistDefault{ name }( i ), FormatHistDefault{ title }( i ), allAxis );
+        }
       }
     };
   } // namespace details
@@ -99,9 +131,16 @@ namespace Gaudi::Accumulators {
   template <typename Histo, std::size_t N, unsigned int... ND>
   struct HistogramArray<Histo, N, std::integer_sequence<unsigned int, ND...>>
       : details::HistogramArrayInternal<Histo, N> {
-    template <typename OWNER, typename FormatName, typename FormatTitle>
+    template <typename OWNER, typename FormatName, typename FormatTitle, std::size_t M = N,
+              typename std::enable_if_t<( M < 30 ), int> = 0>
     HistogramArray( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle, typename Histo::AxisTupleType&& allAxis )
         : details::HistogramArrayInternal<Histo, N>( owner, fname, ftitle, std::make_integer_sequence<std::size_t, N>{},
+                                                     std::forward<typename Histo::AxisTupleType>( allAxis ) ) {}
+
+    template <typename OWNER, typename FormatName, typename FormatTitle, std::size_t M = N,
+              typename std::enable_if_t<( M >= 30 ), int> = 0>
+    HistogramArray( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle, typename Histo::AxisTupleType&& allAxis )
+        : details::HistogramArrayInternal<Histo, N>( owner, fname, ftitle,
                                                      std::forward<typename Histo::AxisTupleType>( allAxis ) ) {}
 
     template <unsigned int I>
