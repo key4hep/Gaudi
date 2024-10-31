@@ -85,7 +85,8 @@ public:
   /** Access a service by name, creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+  service( const std::string& name, const T*& psvc, bool createIf = true ) const {
     ISvcLocator& svcLoc = *serviceLocator();
     auto         ptr    = ServiceLocatorHelper( svcLoc, *this )
                    .service<T>( name, !createIf, // quiet
@@ -101,7 +102,8 @@ public:
   }
 
   template <class T>
-  StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+  service( const std::string& name, T*& psvc, bool createIf = true ) const {
     auto ptr = service<T>( name, createIf );
     psvc     = ( ptr ? ptr.get() : nullptr );
     if ( psvc ) {
@@ -121,7 +123,8 @@ public:
   /** Access a service by name and type, creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+  service( const std::string& svcType, const std::string& svcName, T*& psvc ) const {
     return service( svcType + "/" + svcName, psvc );
   }
 

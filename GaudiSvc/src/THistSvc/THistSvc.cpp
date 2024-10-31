@@ -76,6 +76,9 @@ namespace {
 
 //*************************************************************************//
 
+THistSvc::THistSvc( const std::string& name, ISvcLocator* svcloc )
+    : base_class( name, svcloc ), p_incSvc( "IncidentSvc", name ), p_fileMgr( "FileMgr", name ) {}
+
 StatusCode THistSvc::initialize() {
   GlobalDirectoryRestore restore( m_svcMut );
 
@@ -110,14 +113,14 @@ StatusCode THistSvc::initialize() {
     if ( msgLevel( MSG::VERBOSE ) ) { verbose() << "ROOT already initialized, debug = " << gDebug << endmsg; }
   }
 
-  if ( service( "IncidentSvc", p_incSvc, true ).isFailure() ) {
+  if ( p_incSvc.retrieve().isFailure() ) {
     error() << "unable to get the IncidentSvc" << endmsg;
     st = StatusCode::FAILURE;
   } else {
     p_incSvc->addListener( this, "EndEvent", 100, true );
   }
 
-  if ( service( "FileMgr", p_fileMgr, true ).isFailure() ) {
+  if ( p_fileMgr.retrieve().isFailure() ) {
     error() << "unable to get the FileMgr" << endmsg;
     st = StatusCode::FAILURE;
   } else {
@@ -146,8 +149,8 @@ StatusCode THistSvc::initialize() {
   m_alreadyConnectedOutFiles.clear();
   m_alreadyConnectedInFiles.clear();
 
-  IIoComponentMgr* iomgr = nullptr;
-  if ( service( "IoComponentMgr", iomgr, true ).isFailure() ) {
+  auto iomgr = service<IIoComponentMgr>( "IoComponentMgr" );
+  if ( !iomgr ) {
     error() << "unable to get the IoComponentMgr" << endmsg;
     st = StatusCode::FAILURE;
   } else {
@@ -262,12 +265,6 @@ StatusCode THistSvc::finalize() {
 
     p_fileMgr->close( itr.second.first, name() );
 
-    IIncidentSvc* pIncidentSvc = nullptr;
-    if ( service( "IncidentSvc", pIncidentSvc ).isFailure() ) {
-      error() << "Unable to get the IncidentSvc" << endmsg;
-      return StatusCode::FAILURE;
-    }
-
     if ( itr.second.second == SHARE ) {
       // Merge File
       void* vfile = nullptr;
@@ -280,7 +277,7 @@ StatusCode THistSvc::finalize() {
       }
 
       TFile* outputfile = (TFile*)vfile;
-      pIncidentSvc->fireIncident( FileIncident( name(), IncidentType::WroteToOutputFile, m_sharedFiles[itr.first] ) );
+      p_incSvc->fireIncident( FileIncident( name(), IncidentType::WroteToOutputFile, m_sharedFiles[itr.first] ) );
 
       if ( msgLevel( MSG::DEBUG ) ) { debug() << "THistSvc::writeObjectsToFile()::Merging Rootfile " << endmsg; }
 
@@ -1324,10 +1321,9 @@ void THistSvc::handle( const Incident& /* inc */ ) {
       fatal() << "file \"" << tf->GetName() << "\" associated with stream \"" << f.first
               << "\" has exceeded the max file size of " << m_maxFileSize.value() << "MB. Terminating Job." << endmsg;
 
-      IEventProcessor* evt = nullptr;
-      if ( service( "ApplicationMgr", evt, true ).isSuccess() ) {
+      auto evt = service<IEventProcessor>( "ApplicationMgr", true );
+      if ( evt ) {
         evt->stopRun().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-        evt->release();
       } else {
         abort();
       }
@@ -1347,9 +1343,8 @@ StatusCode THistSvc::io_reinit() {
 
   // retrieve the I/O component manager...
 
-  IIoComponentMgr* iomgr = nullptr;
-
-  if ( service( "IoComponentMgr", iomgr, true ).isFailure() ) {
+  auto iomgr = service<IIoComponentMgr>( "IoComponentMgr", true );
+  if ( !iomgr ) {
     error() << "could not retrieve I/O component manager !" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -1652,12 +1647,6 @@ StatusCode THistSvc::connect( const std::string& ident ) {
     }
   }
 
-  IIncidentSvc* pi = nullptr;
-  if ( service( "IncidentSvc", pi ).isFailure() ) {
-    error() << "Unable to get the IncidentSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
   void*  vf = nullptr;
   TFile* f  = nullptr;
 
@@ -1673,7 +1662,7 @@ StatusCode THistSvc::connect( const std::string& ident ) {
     f = (TFile*)vf;
 
     // FIX ME!
-    pi->fireIncident( FileIncident( name(), "BeginHistFile", filename ) );
+    p_incSvc->fireIncident( FileIncident( name(), "BeginHistFile", filename ) );
 
   } else if ( newMode == THistSvc::WRITE ) {
     // new file. error if file exists

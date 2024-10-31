@@ -27,8 +27,7 @@ DECLARE_COMPONENT( FileMgrTest )
 
 ///////////////////////////////////////////////////////////////////////////
 
-FileMgrTest::FileMgrTest( const std::string& name, ISvcLocator* pSvcLocator )
-    : Algorithm( name, pSvcLocator ), p_fileMgr( 0 ) {}
+FileMgrTest::FileMgrTest( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -48,7 +47,7 @@ StatusCode FileMgrTest::initialize() {
           "mc10_7TeV.105805.filtered_minbias6.merge.AOD.e574_s1110_s1100_r1655_r1700_tid261524_00/"
           "AOD.261524._032551.pool.root.1";
 
-  if ( service( "FileMgr", p_fileMgr, true ).isFailure() ) {
+  if ( p_fileMgr.retrieve().isFailure() ) {
     error() << "unable to get the FileMgr" << endmsg;
     st = StatusCode::FAILURE;
   } else {

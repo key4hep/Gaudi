@@ -20,6 +20,7 @@
 // Gaudi includes:
 #include <GaudiKernel/IFileMgr.h>
 #include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/IIoComponent.h>
 #include <GaudiKernel/ITHistSvc.h>
 #include <GaudiKernel/MsgStream.h>
@@ -35,12 +36,11 @@
 #include <TObject.h>
 #include <TTree.h>
 
-class IIncidentSvc;
 class TClass;
 
 class THistSvc : public extends<Service, ITHistSvc, IIncidentListener, IIoComponent> {
 public:
-  using extends::extends;
+  THistSvc( const std::string& name, ISvcLocator* svcloc );
 
   StatusCode initialize() override;
   StatusCode reinitialize() override;
@@ -386,8 +386,8 @@ private:
 
   /// @}
 
-  IIncidentSvc* p_incSvc  = nullptr;
-  IFileMgr*     p_fileMgr = nullptr;
+  ServiceHandle<IIncidentSvc> p_incSvc;
+  ServiceHandle<IFileMgr>     p_fileMgr;
 
   bool m_signaledStop = false;
   bool m_delayConnect = false;

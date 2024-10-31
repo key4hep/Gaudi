@@ -65,14 +65,18 @@ StatusCode HiveRndm::HiveNumbers::finalize() {
 }
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 // Construct and initialize the generator
 HiveRndm::HiveNumbers::HiveNumbers( IRndmGenSvc* svc, const IRndmGen::Param& par )
     : m_buffer_index( 0 ), m_buffer_size( HIVENUMBERS_BUFFER_SIZE ), m_generator( 0 ) {
   StatusCode status = initialize( svc, par );
   if ( !status.isSuccess() ) { throw GaudiException( "Initialization failed !", "HiveRndm::HiveNumbers", status ); }
 }
-#endif
+
 // Initialize the generator
 StatusCode HiveRndm::HiveNumbers::initialize( IRndmGenSvc* svc, const IRndmGen::Param& par ) {
   return initialize( SmartIF<IRndmGenSvc>( svc ), par );
 }
+#  pragma GCC diagnostic pop
+#endif

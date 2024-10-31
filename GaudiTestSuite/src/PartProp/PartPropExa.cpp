@@ -25,7 +25,7 @@ DECLARE_COMPONENT( PartPropExa )
 
 StatusCode PartPropExa::initialize() {
 
-  if ( service( "PartPropSvc", m_pps ).isFailure() ) {
+  if ( m_pps.retrieve().isFailure() ) {
     error() << "Could not get PartPropSvc" << endmsg;
     return StatusCode::FAILURE;
   }

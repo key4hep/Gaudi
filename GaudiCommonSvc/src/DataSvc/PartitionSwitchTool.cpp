@@ -40,13 +40,10 @@ public:
       error() << "Cannot initialize base class!" << endmsg;
       return sc;
     }
-    m_actor                   = nullptr;
-    IPartitionControl* tmpPtr = nullptr;
-    sc                        = service( m_actorName, tmpPtr );
-    m_actor                   = tmpPtr;
-    if ( !sc.isSuccess() ) {
+    m_actor = service<IPartitionControl>( m_actorName );
+    if ( !m_actor ) {
       error() << "Cannot retrieve partition controller \"" << m_actorName.value() << "\"!" << endmsg;
-      return sc;
+      return StatusCode::FAILURE;
     }
     return sc;
   }

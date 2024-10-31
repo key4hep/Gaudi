@@ -23,6 +23,7 @@
 // Framework include files
 #include <GaudiKernel/Algorithm.h> // Required for inheritance
 #include <GaudiKernel/NTuple.h>
+#include <GaudiKernel/ServiceHandle.h>
 
 // Forward declarations
 class INtupleSvc;
@@ -51,7 +52,7 @@ class EvtCollectionWrite : public Algorithm {
   NTuple::Array<float>                     m_trkMomFixed;
   NTuple::Item<IOpaqueAddress*>            m_evtAddrColl;
   NTuple::Item<IOpaqueAddress*>            m_evtAddrCollEx;
-  INTupleSvc*                              m_evtTupleSvc = nullptr;
+  ServiceHandle<INTupleSvc>                m_evtTupleSvc{ this, "NTupleSvc", "EvtTupleSvc" };
 
 public:
   /// Constructor: A constructor of this form must be provided.

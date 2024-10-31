@@ -13,6 +13,7 @@
 
 // Include files
 #include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/ServiceHandle.h>
 
 class TH1F;
 class ITHistSvc;
@@ -30,7 +31,7 @@ public:
   StatusCode finalize() override;
 
 private:
-  ITHistSvc* m_ths;
+  ServiceHandle<ITHistSvc> m_ths{ this, "HistSvc", "THistSvc" };
 };
 
 #endif // THIST_HISTREAD_H

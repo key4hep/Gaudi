@@ -106,7 +106,8 @@ public:
   /** Access a service by name, creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( std::string_view name, T*& svc, bool createIf = false ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode service( std::string_view name, T*& svc,
+                                                                                       bool createIf = false ) const {
     auto ptr = serviceLocator()->service<T>( name, createIf );
     if ( ptr ) {
       svc = ptr.get();

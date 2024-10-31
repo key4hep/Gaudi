@@ -49,8 +49,6 @@ namespace GaudiTesting {
       Ensures( m_svcLoc.isValid() );
       m_toolSvc = m_svcLoc->service( "ToolSvc" );
       Ensures( m_toolSvc.isValid() );
-      //      pSvcLoc =
-      (void)m_svcLoc.pRef();
       m_propMgr->setProperty( "EvtSel", "NONE" ).ignore();
       m_propMgr->setProperty( "JobOptionsType", "NONE" ).ignore();
       Ensures( ( m_appMgr->configure().isSuccess() ) );

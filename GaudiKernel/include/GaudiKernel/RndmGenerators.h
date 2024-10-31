@@ -374,9 +374,11 @@ namespace Rndm {
     virtual StatusCode initialize( const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par );
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
     /// Initializing constructor
-    Numbers( IRndmGenSvc* svc, const IRndmGen::Param& par );
+    [[deprecated( "use Numbers( SmartIF<IRndmGenSvc>, IRndmGen::Param ) instead" )]] Numbers(
+        IRndmGenSvc* svc, const IRndmGen::Param& par );
     /// Initialization
-    virtual StatusCode initialize( IRndmGenSvc* svc, const IRndmGen::Param& par );
+    [[deprecated( "use Numbers::initialize( SmartIF<IRndmGenSvc>, IRndmGen::Param ) instead" )]] virtual StatusCode
+    initialize( IRndmGenSvc* svc, const IRndmGen::Param& par );
 #endif
     /// Finalization
     virtual StatusCode finalize();

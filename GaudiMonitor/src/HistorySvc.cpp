@@ -131,14 +131,13 @@ StatusCode HistorySvc::initialize() {
 
   if ( !m_activate ) return StatusCode::SUCCESS;
 
-  static const bool CREATEIF( true );
-
-  if ( service( "AlgContextSvc", p_algCtxSvc, CREATEIF ).isFailure() ) {
+  if ( p_algCtxSvc.retrieve().isFailure() ) {
     error() << "unable to get the AlgContextSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  if ( service( "IncidentSvc", m_incidentSvc, CREATEIF ).isFailure() ) {
+  auto incidentSvc = service<IIncidentSvc>( "IncidentSvc", true );
+  if ( !incidentSvc ) {
     error() << "unable to get the IncidentSvc" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -155,7 +154,7 @@ StatusCode HistorySvc::initialize() {
   // so it gets called first
   const bool rethrow = false;
   const bool oneShot = true; // make the listener called only once
-  m_incidentSvc->addListener( this, IncidentType::BeginEvent, std::numeric_limits<long>::min(), rethrow, oneShot );
+  incidentSvc->addListener( this, IncidentType::BeginEvent, std::numeric_limits<long>::min(), rethrow, oneShot );
 
   m_outputFileTypeXML = ba::iends_with( m_outputFile.value(), ".xml" );
   ON_DEBUG if ( m_outputFileTypeXML ) { debug() << "output format is XML" << endmsg; }
@@ -400,7 +399,7 @@ JobHistory* HistorySvc::getJobHistory() const { return m_jobHistory.get(); }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 IAlgorithm* HistorySvc::getCurrentIAlg() const {
-  if ( p_algCtxSvc ) return p_algCtxSvc->currentAlg();
+  if ( p_algCtxSvc.isSet() ) return p_algCtxSvc->currentAlg();
   warning() << "trying to create DataHistoryObj before "
             << "HistorySvc has been initialized" << endmsg;
   return nullptr;
@@ -567,8 +566,8 @@ void HistorySvc::dumpProperties( const IService& svc, std::ofstream& ofs ) const
 StatusCode HistorySvc::registerAlgTool( const IAlgTool& ialg ) {
 
   if ( !m_isInitialized ) {
-    if ( !p_algCtxSvc ) {
-      if ( service( "AlgContextSvc", p_algCtxSvc, true ).isFailure() ) {
+    if ( !p_algCtxSvc.isSet() ) {
+      if ( p_algCtxSvc.retrieve().isFailure() ) {
         error() << "unable to get the AlgContextSvc" << endmsg;
         return StatusCode::FAILURE;
       }

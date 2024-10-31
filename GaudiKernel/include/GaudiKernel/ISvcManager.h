@@ -55,7 +55,8 @@ public:
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode addService( const std::string& typ, const std::string& nam, int prio ) {
+  [[deprecated( "use addService(type_name, prio) instead" )]] virtual StatusCode
+  addService( const std::string& typ, const std::string& nam, int prio ) {
     return addService( Gaudi::Utils::TypeNameString( nam, typ ), prio );
   }
 #endif
@@ -88,7 +89,8 @@ public:
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode declareSvcFactory( const ISvcFactory& /*factory*/, const std::string& /*svctype*/ ) {
+  [[deprecated]] virtual StatusCode declareSvcFactory( const ISvcFactory& /*factory*/,
+                                                       const std::string& /*svctype*/ ) {
     // This function is never used.
     return StatusCode::FAILURE;
   }
@@ -128,7 +130,8 @@ public:
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode createService( const std::string& svctype, const std::string& svcname, IService*& svc ) {
+  [[deprecated( "use createService(type_name) instead" )]] virtual StatusCode
+  createService( const std::string& svctype, const std::string& svcname, IService*& svc ) {
     SmartIF<IService> s = createService( svctype + "/" + svcname );
     svc                 = s.get();
     if ( svc ) {
@@ -144,7 +147,7 @@ public:
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode getFactory( const std::string& /*svc_type*/, const ISvcFactory*& /*fac*/ ) const {
+  [[deprecated]] virtual StatusCode getFactory( const std::string& /*svc_type*/, const ISvcFactory*& /*fac*/ ) const {
     // This function is never used.
     return StatusCode::FAILURE;
   }
@@ -153,37 +156,37 @@ public:
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode initializeServices() { return initialize(); }
+  [[deprecated]] virtual StatusCode initializeServices() { return initialize(); }
 
   /** Starts the list of "active" services
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode startServices() { return start(); }
+  [[deprecated]] virtual StatusCode startServices() { return start(); }
 
   /** Stops the list of "active" services
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode stopServices() { return stop(); }
+  [[deprecated]] virtual StatusCode stopServices() { return stop(); }
 
   /** Finalizes the list of "active" services
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode finalizeServices() { return finalize(); }
+  [[deprecated]] virtual StatusCode finalizeServices() { return finalize(); }
 
   /** Reinitializes the list of "active" services
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode reinitializeServices() { return reinitialize(); }
+  [[deprecated]] virtual StatusCode reinitializeServices() { return reinitialize(); }
 
   /** Restarts the list of "active" services
    *
    * @return StatusCode indicating success or failure.
    */
-  virtual StatusCode restartServices() { return restart(); }
+  [[deprecated]] virtual StatusCode restartServices() { return restart(); }
 #endif
 
   virtual int        getPriority( std::string_view name ) const    = 0;

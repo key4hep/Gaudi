@@ -138,9 +138,9 @@ protected:
   Gaudi::Property<std::vector<std::string>> m_inhibitPathes{ this, "InhibitPathes", {}, "inhibited leaves" };
 
   /// Pointer to data loader service
-  IConversionSvc* m_dataLoader = nullptr;
+  SmartIF<IConversionSvc> m_dataLoader;
   /// Reference to address creator
-  IAddressCreator* m_addrCreator = nullptr;
+  SmartIF<IAddressCreator> m_addrCreator;
   /// Datastore partitions
   std::vector<Synced<Partition>> m_partitions;
   /// fifo queue of free slots
@@ -248,7 +248,6 @@ public:
    */
   StatusCode setDataLoader( IConversionSvc* pDataLoader, IDataProviderSvc* = nullptr ) override {
     if ( pDataLoader ) pDataLoader->addRef();
-    if ( m_dataLoader ) m_dataLoader->release();
     if ( pDataLoader ) pDataLoader->setDataProvider( this ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_dataLoader = pDataLoader;
     for_( m_partitions, [&]( Partition& p ) { p.dataManager->setDataLoader( m_dataLoader, this ).ignore(); } );
@@ -407,21 +406,19 @@ public:
   }
 
   StatusCode attachServices() {
-    StatusCode sc = service( m_loader, m_addrCreator, true );
-    if ( !sc.isSuccess() ) {
+    m_addrCreator = service( m_loader, true );
+    if ( !m_addrCreator ) {
       error() << "Failed to retrieve data loader "
               << "\"" << m_loader << "\"" << endmsg;
-      return sc;
+      return StatusCode::FAILURE;
     }
-    IConversionSvc* dataLoader = nullptr;
-    sc                         = service( m_loader, dataLoader, true );
-    if ( !sc.isSuccess() ) {
+    SmartIF<IConversionSvc> dataLoader{ service( m_loader, true ) };
+    if ( !dataLoader ) {
       error() << MSG::ERROR << "Failed to retrieve data loader "
               << "\"" << m_loader << "\"" << endmsg;
-      return sc;
+      return StatusCode::FAILURE;
     }
-    sc = setDataLoader( dataLoader );
-    dataLoader->release();
+    StatusCode sc = setDataLoader( dataLoader );
     if ( !sc.isSuccess() ) {
       error() << MSG::ERROR << "Failed to set data loader "
               << "\"" << m_loader << "\"" << endmsg;
@@ -431,10 +428,8 @@ public:
   }
 
   StatusCode detachServices() {
-    if ( m_addrCreator ) m_addrCreator->release();
-    if ( m_dataLoader ) m_dataLoader->release();
-    m_addrCreator = nullptr;
-    m_dataLoader  = nullptr;
+    m_addrCreator.reset();
+    m_dataLoader.reset();
     return StatusCode::SUCCESS;
   }
 

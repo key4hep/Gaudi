@@ -12,6 +12,7 @@
 #define GAUDIEXAMPLES_PARTPROPEXA_H 1
 
 #include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/ServiceHandle.h>
 #if HEPPDT_VERSION_MAJOR == 2
 #  include <HepPDT/CommonParticleData.hh>
 #endif
@@ -33,7 +34,7 @@ public:
   StatusCode execute() override;
 
 private:
-  IPartPropSvc* m_pps{ nullptr };
+  ServiceHandle<IPartPropSvc> m_pps{ this, "PartPropSvc", "PartPropSvc" };
 };
 
 namespace HepPDT {

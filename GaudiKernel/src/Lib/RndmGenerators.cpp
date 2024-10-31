@@ -42,6 +42,8 @@ StatusCode Rndm::Numbers::finalize() {
 }
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 // Construct and initialize the generator
 Rndm::Numbers::Numbers( IRndmGenSvc* svc, const IRndmGen::Param& par ) {
   StatusCode status = initialize( svc, par );
@@ -52,4 +54,5 @@ Rndm::Numbers::Numbers( IRndmGenSvc* svc, const IRndmGen::Param& par ) {
 StatusCode Rndm::Numbers::initialize( IRndmGenSvc* svc, const IRndmGen::Param& par ) {
   return initialize( SmartIF<IRndmGenSvc>( svc ), par );
 }
+#  pragma GCC diagnostic pop
 #endif

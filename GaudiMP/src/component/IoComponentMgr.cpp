@@ -68,9 +68,9 @@ StatusCode IoComponentMgr::initialize() {
     return StatusCode::FAILURE;
   }
 
-  IIncidentSvc* p_incSvc( 0 );
+  auto p_incSvc = service<IIncidentSvc>( "IncidentSvc", true );
 
-  if ( service( "IncidentSvc", p_incSvc, true ).isFailure() ) {
+  if ( !p_incSvc ) {
     error() << "unable to get the IncidentSvc" << endmsg;
     return StatusCode::FAILURE;
   } else {

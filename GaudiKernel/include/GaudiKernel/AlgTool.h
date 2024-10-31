@@ -134,14 +134,16 @@ public:
    *  creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( std::string_view name, T*& svc, bool createIf = true ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode service( std::string_view name, T*& svc,
+                                                                                       bool createIf = true ) const {
     return service_i( name, createIf, T::interfaceID(), (void**)&svc );
   }
 
   /** Access a service by name, type creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( std::string_view type, std::string_view name, T*& svc ) const {
+  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
+  service( std::string_view type, std::string_view name, T*& svc ) const {
     return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &svc ) );
   }
 
@@ -320,9 +322,11 @@ private:
   mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
 
-  /** implementation of service method */
-  StatusCode service_i( std::string_view algName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
-  StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid, void** ppS ) const;
+  /** implementation of legacy service method */
+  [[deprecated]] StatusCode service_i( std::string_view algName, bool createIf, const InterfaceID& iid,
+                                       void** ppSvc ) const;
+  [[deprecated]] StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
+                                       void** ppS ) const;
 
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool

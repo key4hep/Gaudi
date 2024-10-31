@@ -232,9 +232,7 @@ std::string IntelProfilerAuditor::taskTypeName( const std::string& component_nam
 StatusCode IntelProfilerAuditor::initialize() {
   info() << "Initialised" << endmsg;
 
-  IIncidentSvc*    inSvc = NULL;
-  const StatusCode sc    = serviceLocator()->service( "IncidentSvc", inSvc );
-  if ( sc.isFailure() ) return sc;
+  auto inSvc = serviceLocator()->service<IIncidentSvc>( "IncidentSvc" );
   // Useful to start profiling only after some event, we don't need profile
   // initialization stage. For that we need to count events with BeginEvent
   // listener.

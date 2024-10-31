@@ -15,7 +15,8 @@ stdout: |-
                      'PrintFreq': 100},
    'EvtTupleSvc': {'Output': ["EvtColl DATAFILE='PFN:ROOT_IO.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
    'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
-   'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']}}
+   'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+   'Writer': {'NTupleSvc': 'EvtTupleSvc'}}
   ApplicationMgr    SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================

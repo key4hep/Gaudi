@@ -30,7 +30,6 @@ DECLARE_COMPONENT( THistRead )
 //------------------------------------------------------------------------------
 THistRead::THistRead( const std::string& name, ISvcLocator* pSvcLocator )
     : Algorithm( name, pSvcLocator )
-    , m_ths( nullptr )
 //------------------------------------------------------------------------------
 {}
 
@@ -38,7 +37,7 @@ THistRead::THistRead( const std::string& name, ISvcLocator* pSvcLocator )
 StatusCode THistRead::initialize()
 //------------------------------------------------------------------------------
 {
-  if ( service( "THistSvc", m_ths ).isFailure() ) {
+  if ( m_ths.retrieve().isFailure() ) {
     error() << "Couldn't get THistSvc" << endmsg;
     return StatusCode::FAILURE;
   }

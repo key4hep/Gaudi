@@ -31,7 +31,6 @@ DECLARE_COMPONENT( THistWrite )
 //------------------------------------------------------------------------------
 THistWrite::THistWrite( const std::string& name, ISvcLocator* pSvcLocator )
     : Algorithm( name, pSvcLocator )
-    , m_ths( nullptr )
 //------------------------------------------------------------------------------
 {}
 
@@ -52,7 +51,7 @@ StatusCode THistWrite::initialize()
   //
   // These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
 
-  if ( service( "THistSvc", m_ths ).isFailure() ) {
+  if ( m_ths.retrieve().isFailure() ) {
     error() << "Couldn't get THistSvc" << endmsg;
     return StatusCode::FAILURE;
   }

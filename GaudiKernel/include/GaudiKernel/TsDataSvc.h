@@ -15,8 +15,10 @@
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IDataManagerSvc.h>
 #include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/RegistryEntry.h>
 #include <GaudiKernel/Service.h>
+#include <GaudiKernel/ServiceHandle.h>
 
 // System libraries
 #include <mutex>
@@ -26,8 +28,6 @@ namespace {
 } // namespace
 
 // Forward declarations
-// Incident service
-class IIncidentSvc;
 // Generic address
 class IOpaqueAddress;
 // Generic interface to data object class
@@ -66,8 +66,8 @@ class GAUDI_API TsDataSvc : public extends<Service, IDataProviderSvc, IDataManag
 
   /// Pointer to data loader service
   IConversionSvc* m_dataLoader = nullptr;
-  /// Pointer to incident service
-  IIncidentSvc* m_incidentSvc = nullptr;
+  /// Handle to incident service
+  ServiceHandle<IIncidentSvc> m_incidentSvc;
 
   Gaudi::Property<CLID>                     m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
   Gaudi::Property<std::string>              m_rootName{ this, "RootName", "/Event", "name of root entry" };
@@ -259,8 +259,8 @@ public:
   /// Service initialization
   StatusCode finalize() override;
 
-  /// inherit contructor
-  using extends::extends;
+  /// constructor
+  TsDataSvc( const std::string& name, ISvcLocator* svc );
 
   /// no copy constructor
   TsDataSvc( const TsDataSvc& ) = delete;
