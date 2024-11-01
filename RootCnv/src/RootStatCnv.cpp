@@ -86,7 +86,7 @@ const string RootStatCnv::topLevel( IRegistry* pReg ) const {
     size_t idx  = path.find( '/', 1 );
     if ( idx != string::npos ) {
       idx = path.find( '/', idx + 1 );
-      if ( idx != string::npos ) { path = path.substr( 0, idx ); }
+      if ( idx != string::npos ) { path.resize( idx ); }
       return path;
     }
   }
