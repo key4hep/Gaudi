@@ -153,7 +153,7 @@ StatusCode ReadAlg::execute() {
         }
       }
 
-      for ( MyTrackVector::iterator i = myTracks->begin(); i != myTracks->end() && count++ < 5; i++ ) {
+      for ( MyTrackVector::iterator i = myTracks->begin(); i != myTracks->end() && count++ < 5; ++i ) {
         try {
           if ( evt->event() < 10 || evt->event() % 500 == 0 ) {
             auto& log = debug();

@@ -1355,7 +1355,7 @@ int read_S_events( const char* dir, const char* filename ) {
 // puts footers in module HTML pages and creates index file
 int finalize_S_html_pages( const char* dir ) {
   for ( std::map<std::string, unsigned int>::const_iterator i = modules_tot_samples.begin();
-        i != modules_tot_samples.end(); i++ ) {
+        i != modules_tot_samples.end(); ++i ) {
     char module_filename[MAX_FILENAME_LENGTH];
     strcpy( module_filename, dir );
     strcat( module_filename, "/HTML/" );

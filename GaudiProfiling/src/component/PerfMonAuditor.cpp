@@ -538,9 +538,9 @@ void PerfMonAuditor::finalizepm() {
     }
     fprintf( outfile, "%s %u %d %d\n", event_cstr[i], cmask[i], inv[i], sp[i] );
     for ( std::map<std::string, std::vector<unsigned long int>>::iterator it = ( results[i] ).begin();
-          it != ( results[i] ).end(); it++ ) {
+          it != ( results[i] ).end(); ++it ) {
       fprintf( outfile, "%s\n", ( it->first ).c_str() );
-      for ( std::vector<unsigned long int>::iterator j = ( it->second ).begin(); j != ( it->second ).end(); j++ ) {
+      for ( std::vector<unsigned long int>::iterator j = ( it->second ).begin(); j != ( it->second ).end(); ++j ) {
         fprintf( outfile, "%lu\n", *j );
       }
     }
@@ -821,17 +821,17 @@ void PerfMonAuditor::finalize_smpl() {
         error() << "ERROR: gzputs err: " << gzerror( outfile, &err ) << ". Aborting..." << endmsg;
       }
       for ( std::map<std::string, std::map<unsigned long, unsigned int>>::iterator it = samples[i].begin();
-            it != samples[i].end(); it++ ) {
+            it != samples[i].end(); ++it ) {
         unsigned long long sum = 0;
         for ( std::map<unsigned long, unsigned int>::iterator jt = ( it->second ).begin(); jt != ( it->second ).end();
-              jt++ ) {
+              ++jt ) {
           sum += jt->second;
         }
         if ( gzprintf( outfile, "%s%%%llu\n", ( it->first ).c_str(), sum ) < (int)( ( it->first ).length() ) ) {
           error() << "ERROR: gzputs err: " << gzerror( outfile, &err ) << ". Aborting..." << endmsg;
         }
         for ( std::map<unsigned long, unsigned int>::iterator jt = ( it->second ).begin(); jt != ( it->second ).end();
-              jt++ ) {
+              ++jt ) {
           char sym_name[SYM_NAME_MAX_LENGTH];
           bzero( sym_name, SYM_NAME_MAX_LENGTH );
           const char* libName;

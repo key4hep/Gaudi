@@ -85,8 +85,8 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer ) {
   m_objects.clear();
 
   // Traverse the tree and collect the requested objects
-  for ( Items::iterator i = m_itemList.begin(); i != m_itemList.end(); i++ ) {
-    m_currentItem = ( *i );
+  for ( DataStoreItem* item : m_itemList ) {
+    m_currentItem = item;
     // cout << "Retrieving Mandatory Object : " << m_currentItem->path() << endl;
     status = m_TES->retrieveObject( m_currentItem->path(), obj );
     if ( status.isSuccess() ) {
@@ -103,8 +103,8 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer ) {
     }
   }
   // Traverse the tree and collect the requested objects (tolerate missing items here)
-  for ( Items::iterator i = m_optItemList.begin(); i != m_optItemList.end(); i++ ) {
-    m_currentItem = ( *i );
+  for ( DataStoreItem* item : m_optItemList ) {
+    m_currentItem = item;
     // cout << "Retrieving Optional Object : " << m_currentItem->path() << endl;
     status = m_TES->retrieveObject( m_currentItem->path(), obj );
     if ( status.isSuccess() ) {
