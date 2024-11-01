@@ -28,14 +28,6 @@ SmartDataObjectPtr::AccessFunction SmartDataObjectPtr::ObjectLoader::access() { 
 
 SmartDataObjectPtr::AccessFunction SmartDataObjectPtr::ObjectFinder::access() { return &SmartDataObjectPtr::find; }
 
-/// Assignment operator
-SmartDataObjectPtr& SmartDataObjectPtr::operator=( const SmartDataObjectPtr& copy ) {
-  m_path         = copy.m_path;
-  m_pRegistry    = copy.m_pRegistry;
-  m_dataProvider = copy.m_dataProvider;
-  return *this;
-}
-
 /// Retrieve the object from the data store.
 StatusCode SmartDataObjectPtr::retrieve( IRegistry* pRegistry, std::string_view path, DataObject*& refpObject ) {
   return ( m_dataProvider && pRegistry ) ? m_dataProvider->retrieveObject( pRegistry, path, refpObject )
