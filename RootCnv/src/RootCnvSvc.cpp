@@ -466,10 +466,9 @@ StatusCode RootCnvSvc::i__createObj( IOpaqueAddress* pA, DataObject*& refpObj ) 
     delete pObj;
   }
   string tag = par[0] + ":" + par[1];
-  if ( m_badFiles.find( tag ) == m_badFiles.end() ) {
-    m_badFiles.insert( tag );
-    return error( "createObj> Cannot access the object:" + tag );
-  }
+
+  const auto [itr, new_bad] = m_badFiles.insert( tag );
+  if ( new_bad ) { return error( "createObj> Cannot access the object:" + tag ); }
   return S_FAIL;
 }
 
@@ -513,10 +512,9 @@ StatusCode RootCnvSvc::i__fillObjRefs( IOpaqueAddress* pA, DataObject* pObj ) {
       return pObj->update();
     } else if ( nb < 0 ) {
       string tag = par[0] + ":" + par[1];
-      if ( m_badFiles.find( tag ) == m_badFiles.end() ) {
-        m_badFiles.insert( tag );
-        return error( "createObj> Cannot access the object:" + tag + " [Corrupted file]" );
-      }
+
+      const auto [itr, new_bad] = m_badFiles.insert( tag );
+      if ( new_bad ) { return error( "createObj> Cannot access the object:" + tag + " [Corrupted file]" ); }
     }
   }
   return S_FAIL;

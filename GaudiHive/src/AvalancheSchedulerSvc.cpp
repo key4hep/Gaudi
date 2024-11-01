@@ -1259,10 +1259,9 @@ StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, Dat
     for ( const auto& dep : ideps ) {
       if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
 
-      if ( definedObjects.find( dep.hash() ) == definedObjects.end() ) {
-        definedObjects.insert( dep.hash() );
-        dataDepthGraphFile << defineObj( dep );
-      }
+      const auto [itr, inserted] = definedObjects.insert( dep.hash() );
+      if ( inserted ) dataDepthGraphFile << defineObj( dep );
+
       dataDepthGraphFile << defineInput( dep, std::to_string( algoIndex ) );
     } // loop on ideps
 
@@ -1270,10 +1269,9 @@ StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, Dat
     for ( const auto& dep : odeps ) {
       if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
 
-      if ( definedObjects.find( dep.hash() ) == definedObjects.end() ) {
-        definedObjects.insert( dep.hash() );
-        dataDepthGraphFile << defineObj( dep );
-      }
+      const auto [itr, inserted] = definedObjects.insert( dep.hash() );
+      if ( inserted ) dataDepthGraphFile << defineObj( dep );
+
       dataDepthGraphFile << defineOutput( std::to_string( algoIndex ), dep );
     } // loop on odeps
 
