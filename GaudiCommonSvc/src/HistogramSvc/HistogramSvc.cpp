@@ -41,7 +41,7 @@ namespace {
   using std::string;
 
   string histoAddr( const string& name ) {
-    if ( 0 == name.find( "/stat/" ) ) { return string( name, 6 ); }
+    if ( name.starts_with( "/stat/" ) ) { return string( name, 6 ); }
     return name;
   }
 

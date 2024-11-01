@@ -215,7 +215,7 @@ StatusCode THistSvc::finalize() {
           std::string id2( thid.id );
           id2.erase( 0, id2.find( "/", 1 ) );
           id2.erase( id2.rfind( "/" ), id2.length() );
-          if ( id2.find( "/" ) == 0 ) { id2.erase( 0, 1 ); }
+          if ( id2.starts_with( "/" ) ) { id2.erase( 0, 1 ); }
           dirname += id2;
         } else {
           dirname = "/tmp";
@@ -1954,7 +1954,7 @@ size_t THistSvc::findHistID( const std::string& id, const THistID*& hid, const s
 
   hid = 0;
 
-  if ( idr.find( "/" ) == 0 ) {
+  if ( idr.starts_with( "/" ) ) {
     // fully specified name, starts with "/"
     auto itr = m_uids.find( idr );
     if ( itr == m_uids.end() ) {
