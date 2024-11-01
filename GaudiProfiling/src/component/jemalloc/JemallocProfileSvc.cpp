@@ -94,7 +94,7 @@ void JemallocProfileSvc::handle( const Incident& incident ) {
 
   // If already processing we can ignore the incidents for start
   if ( !m_profiling && m_hasStartIncident ) {
-    for ( std::string startincident : m_startFromIncidents ) {
+    for ( const std::string& startincident : m_startFromIncidents ) {
       if ( startincident == incident.type() ) {
         info() << "Starting Jemalloc profile at incident " << incident.type() << endmsg;
         startProfiling();
@@ -105,7 +105,7 @@ void JemallocProfileSvc::handle( const Incident& incident ) {
 
   // If already processing we can ignore the incidents for start
   if ( m_profiling && m_hasStopIncident ) {
-    for ( std::string stopincident : m_stopAtIncidents ) {
+    for ( const std::string& stopincident : m_stopAtIncidents ) {
       if ( stopincident == incident.type() ) {
         info() << "Stopping Jemalloc profile at incident " << incident.type() << endmsg;
         stopProfiling();
