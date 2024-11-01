@@ -371,7 +371,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr ) 
     RootDataConnection* con     = nullptr;
     string              path    = fileName( pRegistry );
     string              cntName = containerName( pRegistry );
-    string              secName = cntName.c_str();
+    string              secName = cntName;
     const INTuple*      nt      = dynamic_cast<const INTuple*>( pObj );
     StatusCode          status  = m_dbMgr->connectDatabase( path, IDataConnection::UPDATE, &con );
     if ( !status.isSuccess() ) { return makeError( "Failed to access Tuple file:" + path ); }
