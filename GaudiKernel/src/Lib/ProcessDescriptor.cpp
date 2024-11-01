@@ -332,17 +332,18 @@ void readProcStat( long pid, linux_proc& pinfo ) {
   // Format
   if ( cnt > 0 ) {
     buf[cnt] = '\0';
-    sscanf( buf,
-            // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
-            // 30  1   2   3   4   5
-            "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
-            "%lu %lu %lu %lu %lu %lu %lu",
-            &pinfo.pid, pinfo.comm, &pinfo.state, &pinfo.ppid, &pinfo.pgrp, &pinfo.session, &pinfo.tty, &pinfo.tpgid,
-            &pinfo.flags, &pinfo.minflt, &pinfo.cminflt, &pinfo.majflt, &pinfo.cmajflt, &pinfo.utime, &pinfo.stime,
-            &pinfo.cutime, &pinfo.cstime, &pinfo.priority, &pinfo.nice, &pinfo.num_threads, &pinfo.itrealvalue,
-            &pinfo.starttime, &pinfo.vsize, &pinfo.rss, &pinfo.rlim, &pinfo.startcode, &pinfo.endcode,
-            &pinfo.startstack, &pinfo.kstkesp, &pinfo.kstkeip, &pinfo.signal, &pinfo.blocked, &pinfo.sigignore,
-            &pinfo.sigcatch, &pinfo.wchan );
+    sscanf(
+        buf,
+        // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
+        // 30  1   2   3   4   5
+        "%d %400s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
+        "%lu %lu %lu %lu %lu %lu %lu",
+        &pinfo.pid, pinfo.comm, &pinfo.state, &pinfo.ppid, &pinfo.pgrp, &pinfo.session, &pinfo.tty, &pinfo.tpgid,
+        &pinfo.flags, &pinfo.minflt, &pinfo.cminflt, &pinfo.majflt, &pinfo.cmajflt, &pinfo.utime, &pinfo.stime,
+        &pinfo.cutime, &pinfo.cstime, &pinfo.priority, &pinfo.nice, &pinfo.num_threads, &pinfo.itrealvalue,
+        &pinfo.starttime, &pinfo.vsize, &pinfo.rss, &pinfo.rlim, &pinfo.startcode, &pinfo.endcode, &pinfo.startstack,
+        &pinfo.kstkesp, &pinfo.kstkeip, &pinfo.signal, &pinfo.blocked, &pinfo.sigignore, &pinfo.sigcatch,
+        &pinfo.wchan );
   }
   close( fd );
 }

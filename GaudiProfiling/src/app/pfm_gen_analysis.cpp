@@ -35,6 +35,7 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 #include <zlib.h>
 
 #include <algorithm>
+#include <format>
 #include <iostream>
 #include <list>
 #include <map>
@@ -1221,7 +1222,8 @@ int read_S_file( const char* dir, const char* filename ) {
     gzgets( res_file, line, MAX_LINE_LENGTH );
     if ( line[strlen( line ) - 1] == '\n' ) line[strlen( line ) - 1] = '\0';
     bzero( event, MAX_EVENT_NAME_LENGTH );
-    sscanf( line, "%s %s %u %u %u", arch, event, &cmask, &inv, &sp );
+    const std::string fmt = std::format( "%{:}s %{:}s %u %u %u", MAX_ARCH_NAME_LENGTH - 1, MAX_EVENT_NAME_LENGTH - 1 );
+    sscanf( line, fmt.c_str(), arch, event, &cmask, &inv, &sp );
     if ( !strcmp( arch, "NHM" ) )
       nehalem = true;
     else
@@ -1259,7 +1261,8 @@ int read_S_file( const char* dir, const char* filename ) {
         bzero( final_sym, MAX_SYM_MOD_LENGTH );
         bzero( final_lib, MAX_LIB_MOD_LENGTH );
 
-        sscanf( line, "%s %s %u %u", symbol, libName, &libOffset, &value );
+        const std::string fmt = std::format( "%{:}s %{:}s %u %u", MAX_SYM_LENGTH - 1, MAX_LIB_LENGTH - 1 );
+        sscanf( line, fmt.c_str(), symbol, libName, &libOffset, &value );
         char realPathName_s[FILENAME_MAX];
         bzero( realPathName_s, FILENAME_MAX );
         char* realPathName = realpath( libName, realPathName_s );
@@ -1330,7 +1333,10 @@ int read_S_events( const char* dir, const char* filename ) {
     gzgets( res_file, line, MAX_LINE_LENGTH );
     if ( line[strlen( line ) - 1] == '\n' ) line[strlen( line ) - 1] = '\0';
     bzero( event, MAX_EVENT_NAME_LENGTH );
-    sscanf( line, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str );
+    const std::string fmt =
+        std::format( "%{:}s %{:}s %{:}s %{:}s %{:}s\n", MAX_ARCH_NAME_LENGTH - 1, MAX_EVENT_NAME_LENGTH - 1,
+                     MAX_CMASK_STR_LENGTH - 1, MAX_INV_STR_LENGTH - 1, MAX_SP_STR_LENGTH - 1 );
+    sscanf( line, fmt.c_str(), arch, event, cmask_str, inv_str, sp_str );
     std::string event_str( event );
     if ( atoi( cmask_str ) > 0 ) {
       event_str += " CMASK=";
@@ -1403,8 +1409,11 @@ int read_C_file( const char* dir, const char* filename ) {
   strcpy( path_name, dir );
   strcat( path_name, "/" );
   strcat( path_name, filename );
-  FILE* fp   = fopen( path_name, "r" );
-  int   stat = fscanf( fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str );
+  FILE*             fp = fopen( path_name, "r" );
+  const std::string fmt1 =
+      std::format( "%{:}s %{:}s %{:}s %{:}s %{:}s\n", MAX_ARCH_NAME_LENGTH - 1, MAX_EVENT_NAME_LENGTH - 1,
+                   MAX_CMASK_STR_LENGTH - 1, MAX_INV_STR_LENGTH - 1, MAX_SP_STR_LENGTH - 1 );
+  int stat = fscanf( fp, fmt1.c_str(), arch, event, cmask_str, inv_str, sp_str );
   if ( stat != 5 ) {
     std::cerr << "ERROR: failed to parse " << path_name << std::endl;
     exit( 1 );
@@ -1423,7 +1432,8 @@ int read_C_file( const char* dir, const char* filename ) {
     event_str += inv_str;
   }
   C_events.push_back( event_str );
-  while ( fscanf( fp, "%s\n", line ) != EOF ) {
+  const std::string fmt2 = std::format( "%{:}s\n", MAX_LINE_LENGTH - 1 );
+  while ( fscanf( fp, fmt2.c_str(), line ) != EOF ) {
     if ( isalpha( line[0] ) ) // module
     {
       if ( number_of_modules > 0 ) {

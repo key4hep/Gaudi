@@ -29,7 +29,7 @@ SysProcStat::SysProcStat() { update(); }
 int SysProcStat::update() {
   FILE* file = fopen( "/proc/self/stat", "r" );
   int   par  = fscanf( file,
-                       "%d %s %c %d %d"
+                       "%d %127s %c %d %d"
                           "%d %d %d %lu %lu"
                           "%lu %lu %lu %lu %lu"
                           "%ld %ld %ld %ld %ld"
