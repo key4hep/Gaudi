@@ -47,8 +47,8 @@ public:
   const CLID&        clID() const override { return DataHistory::classID(); }
   static const CLID& classID();
 
-  std::string dataKey() const { return m_dataKey; }
-  const CLID& dataClassID() const { return m_dataClassID; }
+  const std::string& dataKey() const { return m_dataKey; }
+  const CLID&        dataClassID() const { return m_dataClassID; }
 
   AlgorithmHistory* algorithmHistory() const { return m_algHist; }
 

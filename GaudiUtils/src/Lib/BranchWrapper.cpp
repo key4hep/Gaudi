@@ -78,7 +78,7 @@ namespace Gaudi::details {
     setBranchAddress( m_branch, &m_dataBuffer );
   }
 
-  std::string BranchWrapper::getLocation() const { return m_location; }
+  const std::string& BranchWrapper::getLocation() const { return m_location; }
 
-  std::string BranchWrapper::getClassName() const { return m_className; }
+  const std::string& BranchWrapper::getClassName() const { return m_className; }
 } // namespace Gaudi::details

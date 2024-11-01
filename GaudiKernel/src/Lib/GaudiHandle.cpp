@@ -68,8 +68,7 @@ bool GaudiHandleArrayBase::setTypesAndNames( const std::vector<std::string>& myT
   return true;
 }
 
-const std::vector<std::string> GaudiHandleArrayBase::getBaseInfos( std::string ( GaudiHandleBase::*pMemFunc )()
-                                                                       const ) const {
+const std::vector<std::string> GaudiHandleArrayBase::getBaseInfos( auto ( GaudiHandleBase::*pMemFunc )() const ) const {
   std::vector<std::string> theList;
   for ( const auto& it : getBaseArray() ) theList.push_back( ( it->*pMemFunc )() );
   return theList;

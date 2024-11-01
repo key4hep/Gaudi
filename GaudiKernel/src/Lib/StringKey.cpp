@@ -37,7 +37,7 @@ std::string Gaudi::StringKey::toString() const { return Gaudi::Utils::toString( 
 // ============================================================================
 // the representation of the object
 // ============================================================================
-std::string Gaudi::StringKey::__str__() const { return m_str; }
+const std::string& Gaudi::StringKey::__str__() const { return m_str; }
 // ============================================================================
 // the representation of the object
 // ============================================================================

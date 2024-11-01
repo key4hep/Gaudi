@@ -43,9 +43,9 @@ namespace Gaudi {
 
       void setBranchData( const gsl::not_null<DataObject*> pObj );
 
-      std::string getLocation() const;
+      const std::string& getLocation() const;
 
-      std::string getClassName() const;
+      const std::string& getClassName() const;
     };
 
   } // namespace details
