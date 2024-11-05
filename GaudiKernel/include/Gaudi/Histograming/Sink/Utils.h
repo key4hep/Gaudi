@@ -476,9 +476,6 @@ namespace Gaudi::Histograming::Sink {
     auto const&                       gaudiAxis = gaudiHisto.template axis<0>();
     details::ProfileWrapper<TProfile> histo{ name.c_str(), gaudiHisto.title().c_str(), gaudiAxis.numBins(),
                                              gaudiAxis.minValue(), gaudiAxis.maxValue() };
-    histo.Sumw2();
-    unsigned long totNEntries{ 0 };
-    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) { totNEntries += gaudiHisto.nEntries( i ); }
     if ( !gaudiAxis.labels().empty() ) {
       auto& axis = *histo.GetXaxis();
       for ( unsigned int i = 0; i < gaudiAxis.labels().size(); i++ ) {
@@ -492,6 +489,8 @@ namespace Gaudi::Histograming::Sink {
       histo.setBinNEntries( i, nent );
       histo.setBinW2( i, sumw2 );
     }
+    unsigned long totNEntries{ 0 };
+    for ( unsigned int i = 0; i < gaudiHisto.totNBins(); i++ ) { totNEntries += gaudiHisto.nEntries( i ); }
     histo.SetEntries( totNEntries );
     return histo;
   }
@@ -508,7 +507,6 @@ namespace Gaudi::Histograming::Sink {
     details::ProfileWrapper<TProfile2D> histo{ name.c_str(),          gaudiHisto.title().c_str(), gaudiXAxis.numBins(),
                                                gaudiXAxis.minValue(), gaudiXAxis.maxValue(),      gaudiYAxis.numBins(),
                                                gaudiYAxis.minValue(), gaudiYAxis.maxValue() };
-    histo.Sumw2();
     if ( !gaudiXAxis.labels().empty() ) {
       auto& axis = *histo.GetXaxis();
       for ( unsigned int i = 0; i < gaudiXAxis.labels().size(); i++ ) {
@@ -548,7 +546,6 @@ namespace Gaudi::Histograming::Sink {
                                                gaudiXAxis.minValue(), gaudiXAxis.maxValue(),      gaudiYAxis.numBins(),
                                                gaudiYAxis.minValue(), gaudiYAxis.maxValue(),      gaudiZAxis.numBins(),
                                                gaudiZAxis.minValue(), gaudiZAxis.maxValue() };
-    histo.Sumw2();
     if ( !gaudiXAxis.labels().empty() ) {
       auto& axis = *histo.GetXaxis();
       for ( unsigned int i = 0; i < gaudiXAxis.labels().size(); i++ ) {
