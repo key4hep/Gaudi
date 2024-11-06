@@ -46,9 +46,10 @@ private:
    *
    * @param filePath The file path.
    * @param option The file opening options to pass to root ("NEW/CREATE", "RECREATE", "UPDATE").
+   * @param compress The compression level and algorithm to use for the file.
    * @return A shared_ptr to a newly opened TFile object, or null if the operation fails.
    */
-  std::shared_ptr<TFile> openFile( const std::string& filePath, const std::string& option );
+  std::shared_ptr<TFile> openFile( const std::string& filePath, const std::string& option, int compress );
 
   /** Close all files.
    *
@@ -148,7 +149,10 @@ StatusCode FileSvc::initialize() {
         m_identifiers[boost::to_lower_copy( identifier )] = *fileIndex;
       } else {
         // File not found, open a new one
-        if ( auto file = openFile( path, params["mode"] ) ) {
+        int compress = ( params.find( "compress" ) != params.end() )
+                           ? std::stoi( params["compress"] )
+                           : ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault;
+        if ( auto file = openFile( path, params["mode"], compress ) ) {
           m_files.push_back( std::move( file ) );
           m_identifiers[boost::to_lower_copy( identifier )] = m_files.size() - 1;
         } else {
@@ -171,8 +175,8 @@ std::shared_ptr<TFile> FileSvc::getFile( const std::string& identifier ) {
   return nullptr;
 }
 
-std::shared_ptr<TFile> FileSvc::openFile( const std::string& filePath, const std::string& option ) {
-  auto file = std::make_shared<TFile>( filePath.c_str(), option.c_str() );
+std::shared_ptr<TFile> FileSvc::openFile( const std::string& filePath, const std::string& option, int compress ) {
+  auto file = std::make_shared<TFile>( filePath.c_str(), option.c_str(), "", compress );
   if ( !file || file->IsZombie() ) { return nullptr; }
   return file;
 }
