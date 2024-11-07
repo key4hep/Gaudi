@@ -27,21 +27,21 @@
 // Standard constructor, initializes variables
 //=============================================================================
 RootHistCnv::RootCompressionSettings::RootCompressionSettings( const std::string& settings )
-    : m_level( ROOT::CompressionSettings( ROOT::kZLIB, 1 ) ) {
+    : m_level( ROOT::CompressionSettings( ROOT::RCompressionSetting::EAlgorithm::kZLIB, 1 ) ) {
   const std::string::size_type idx = settings.find( ':' );
   if ( idx != std::string::npos ) {
     // Get compression algorithm type
-    const std::string           alg      = settings.substr( 0, idx );
-    ROOT::ECompressionAlgorithm alg_code = ROOT::kUseGlobalSetting;
+    const std::string                              alg      = settings.substr( 0, idx );
+    ROOT::RCompressionSetting::EAlgorithm::EValues alg_code = ROOT::RCompressionSetting::EAlgorithm::kUseGlobal;
     if ( alg == "ZLIB" ) {
-      alg_code = ROOT::kZLIB;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kZLIB;
     } else if ( alg == "LZMA" ) {
-      alg_code = ROOT::kLZMA;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZMA;
     } else if ( alg == "LZ4" ) {
-      alg_code = ROOT::kLZ4;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZ4;
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 6, 20, 0 )
     } else if ( alg == "ZSTD" ) {
-      alg_code = ROOT::kZSTD;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kZSTD;
 #endif
     } else {
       throw std::runtime_error( "ERROR: Unknown ROOT compression algorithm:" + alg );

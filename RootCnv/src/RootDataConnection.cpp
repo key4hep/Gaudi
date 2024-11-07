@@ -37,7 +37,7 @@
 #include <TTree.h>
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
 #  include <Compression.h>
-static int s_compressionLevel = ROOT::CompressionSettings( ROOT::kLZMA, 4 );
+static int s_compressionLevel = ROOT::CompressionSettings( ROOT::RCompressionSetting::EAlgorithm::kLZMA, 4 );
 #else
 static int s_compressionLevel = 1;
 #endif
@@ -125,20 +125,20 @@ STATUSCODE_ENUM_IMPL( Gaudi::RootDataConnection::Status, RootDataConnectionCateg
 /// Set the global compression level
 StatusCode RootConnectionSetup::setCompression( std::string_view compression ) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-  int  res = 0, level = ROOT::CompressionSettings( ROOT::kLZMA, 6 );
+  int  res = 0, level = ROOT::CompressionSettings( ROOT::RCompressionSetting::EAlgorithm::kLZMA, 6 );
   auto idx = compression.find( ':' );
   if ( idx != string::npos ) {
-    auto                        alg      = compression.substr( 0, idx );
-    ROOT::ECompressionAlgorithm alg_code = ROOT::kUseGlobalSetting;
+    auto                                           alg      = compression.substr( 0, idx );
+    ROOT::RCompressionSetting::EAlgorithm::EValues alg_code = ROOT::RCompressionSetting::EAlgorithm::kUseGlobal;
     if ( alg.size() == 4 && strncasecmp( alg.data(), "ZLIB", 4 ) == 0 )
-      alg_code = ROOT::kZLIB;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kZLIB;
     else if ( alg.size() == 4 && strncasecmp( alg.data(), "LZMA", 4 ) == 0 )
-      alg_code = ROOT::kLZMA;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZMA;
     else if ( alg.size() == 3 && strncasecmp( alg.data(), "LZ4", 3 ) == 0 )
-      alg_code = ROOT::kLZ4;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZ4;
 #  if ROOT_VERSION_CODE >= ROOT_VERSION( 6, 20, 0 )
     else if ( alg.size() == 4 && strncasecmp( alg.data(), "ZSTD", 4 ) == 0 )
-      alg_code = ROOT::kZSTD;
+      alg_code = ROOT::RCompressionSetting::EAlgorithm::kZSTD;
 #  endif
     else
       throw runtime_error( "ERROR: request to set unknown ROOT compression algorithm:" + std::string{ alg } );
