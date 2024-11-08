@@ -117,7 +117,7 @@ def pytest_collection_finish(session):
 
     coverage = args["coverage"].split(",") if args["coverage"] else []
     if coverage:
-        args["pytest_command"] += " --cov-report= " + " ".join(
+        args["pytest_command"] += " --cov-report= --cov-reset " + " ".join(
             f"--cov={module}" for module in coverage
         )
 
