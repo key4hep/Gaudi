@@ -136,7 +136,7 @@ namespace NTuple {
     /// Set type definition to make life more easy easy
     typedef Range<TYP> ItemRange;
     /// Set default value
-    virtual void setDefault( const TYP d ) = 0;
+    virtual void setDefault( const TYP d ) = 0; // cppcheck-suppress passedByValue; small type
     /// Access the range if specified
     virtual const ItemRange& range() const = 0;
   };

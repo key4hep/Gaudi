@@ -91,7 +91,7 @@ std::vector<std::string> DHHVisitor::owners_names_of( const DataObjID& id, bool 
 MsgStream& DHHVisitor::report( MsgStream& stream ) const {
   // sort DataObjects by path so that logging is reproducible
   // we define a little helper creating an ordered set from a non ordered one
-  auto sort     = []( const DataObjID a, const DataObjID& b ) -> bool { return a.fullKey() < b.fullKey(); };
+  auto sort     = []( const DataObjID& a, const DataObjID& b ) -> bool { return a.fullKey() < b.fullKey(); };
   auto orderset = [&sort]( const DataObjIDColl& in ) -> std::set<DataObjID, decltype( sort )> {
     return { in.begin(), in.end(), sort };
   };

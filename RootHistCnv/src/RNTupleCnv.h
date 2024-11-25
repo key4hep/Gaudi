@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -68,8 +68,9 @@ namespace RootHistCnv {
 
   /// Add an item of a given type to the N tuple
   template <class TYP>
-  INTupleItem* createNTupleItem( std::string itemName, std::string blockName, std::string indexName, int indexRange,
-                                 int arraySize, TYP minimum, TYP maximum, INTuple* tuple, bool hasRange );
+  INTupleItem* createNTupleItem( const std::string& itemName, const std::string& blockName,
+                                 const std::string& indexName, int indexRange, int arraySize, TYP minimum, TYP maximum,
+                                 INTuple* tuple, bool hasRange );
 
   bool parseName( const std::string& full, std::string& blk, std::string& var );
 

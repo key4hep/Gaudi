@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -165,7 +165,7 @@ namespace Gaudi::Functional {
       }
 
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs )
-          : MergingTransformer{ name, locator, InKeys{ inputs } } {
+          : MergingTransformer{ std::move( name ), locator, InKeys{ inputs } } {
         static_assert( sizeof...( Ins ) == 1 );
       }
 
@@ -175,7 +175,7 @@ namespace Gaudi::Functional {
       }
 
       MergingTransformer( std::string name, ISvcLocator* locator, const KeyValues& inputs, const KeyValue& output )
-          : MergingTransformer{ name, locator, InKeys{ inputs }, output } {
+          : MergingTransformer{ std::move( name ), locator, InKeys{ inputs }, output } {
         static_assert( sizeof...( Ins ) == 1 );
       }
 

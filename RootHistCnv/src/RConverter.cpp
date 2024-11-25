@@ -271,7 +271,7 @@ StatusCode RootHistCnv::RConverter::readObject( IOpaqueAddress* /* pAddr */, Dat
 TObject* RootHistCnv::RConverter::createPersistent( DataObject* /* pObj */ ) { return nullptr; }
 
 //-----------------------------------------------------------------------------
-StatusCode RootHistCnv::RConverter::regTFile( const std::string id, const TFile* tfile )
+StatusCode RootHistCnv::RConverter::regTFile( const std::string& id, const TFile* tfile )
 //-----------------------------------------------------------------------------
 {
   auto imap = s_fileMap.find( id );
@@ -286,7 +286,7 @@ StatusCode RootHistCnv::RConverter::regTFile( const std::string id, const TFile*
 }
 
 //-----------------------------------------------------------------------------
-StatusCode RootHistCnv::RConverter::findTFile( const std::string id, TFile*& tfile )
+StatusCode RootHistCnv::RConverter::findTFile( const std::string& id, TFile*& tfile )
 //-----------------------------------------------------------------------------
 {
   MsgStream log( msgSvc(), "RConverter" );

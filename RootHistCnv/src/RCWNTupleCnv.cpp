@@ -91,7 +91,7 @@ namespace {
 
   //-----------------------------------------------------------------------------
   template <class T>
-  void analyzeItem( std::string typ, const NTuple::_Data<T>* it, std::string& desc, std::string& block_name,
+  void analyzeItem( const std::string& typ, const NTuple::_Data<T>* it, std::string& desc, std::string& block_name,
                     std::string& var_name, long& lowerRange, long& upperRange, long& size )
   //-----------------------------------------------------------------------------
   {

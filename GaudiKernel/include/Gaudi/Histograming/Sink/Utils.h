@@ -316,7 +316,7 @@ namespace Gaudi::Histograming::Sink {
      * changes to the ROOT directory given in the current ROOT file and returns
      * the current directory before the change
      */
-    inline TDirectory* changeDir( TFile& file, std::string dir ) {
+    inline TDirectory* changeDir( TFile& file, const std::string& dir ) {
       // remember the current directory
       auto previousDir = gDirectory;
       // find or create the directory for the histogram

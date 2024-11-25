@@ -61,7 +61,7 @@ public:
   /// Autodeclaring constructor with property name, service type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
-  inline ServiceHandle( OWNER* owner, std::string PropName, std::string svcName, std::string doc = "" )
+  inline ServiceHandle( OWNER* owner, std::string PropName, const std::string& svcName, std::string doc = "" )
       : ServiceHandle( svcName, owner->name() ) {
     auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( PropName ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();

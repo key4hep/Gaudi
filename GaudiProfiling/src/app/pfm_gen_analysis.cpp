@@ -1541,7 +1541,7 @@ void put_C_modules_csv( FILE* fp, std::vector<std::string>& columns ) {
 // double value       : value to be normalized
 // double normalizeTo      : value to which the value above should be normalized
 // returns the normalized value
-double normalize( std::string field, double value, double normalizeTo ) {
+double normalize( const std::string& field, double value, double normalizeTo ) {
   double max = 0;
   double counter_value;
   for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();

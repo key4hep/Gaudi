@@ -8,6 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// cppcheck-suppress-file passedByValue; TYP is a small type
+
 #ifndef GAUDI_NTUPLESVC_NTUPLEITEMS_H
 #define GAUDI_NTUPLESVC_NTUPLEITEMS_H 1
 
