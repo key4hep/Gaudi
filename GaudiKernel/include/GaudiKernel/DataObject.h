@@ -15,6 +15,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <atomic>
 
 // Forward declarations
 class IOpaqueAddress;
@@ -36,7 +37,7 @@ static const CLID CLID_DataObject = 1;
 class GAUDI_API DataObject {
 private:
   /// Reference count
-  unsigned long m_refCount = 0;
+  std::atomic<unsigned long> m_refCount = 0;
   /// Version number
   unsigned char m_version = 0;
   /// Pointer to the Registry Object
