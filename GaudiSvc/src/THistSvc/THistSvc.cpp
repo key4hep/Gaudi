@@ -11,6 +11,7 @@
 // system headers
 #include <cassert>
 #include <cstdio>
+#include <format>
 #include <sstream>
 #include <streambuf>
 
@@ -31,7 +32,6 @@
 #include <GaudiKernel/AttribStringParser.h>
 #include <GaudiKernel/FileIncident.h>
 #include <GaudiKernel/GaudiException.h>
-#include <GaudiKernel/IEventProcessor.h>
 #include <GaudiKernel/IFileMgr.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/IIoComponentMgr.h>
@@ -1294,7 +1294,6 @@ StatusCode THistSvc::getTEfficiencies( const std::string& dir, TList& tl, bool r
 //*************************************************************************//
 
 void THistSvc::handle( const Incident& /* inc */ ) {
-  if ( m_signaledStop ) return;
 
   if ( m_maxFileSize.value() == -1 ) return;
 
@@ -1313,20 +1312,15 @@ void THistSvc::handle( const Incident& /* inc */ ) {
     }
 #endif
 
-    // Signal job to terminate if output file is too large
+    // Terminate job if output file is too large
     if ( tf->GetSize() > mfs ) {
 
-      m_signaledStop = true;
+      if ( writeObjectsToFile().isFailure() ) { error() << "problems writing histograms" << endmsg; }
+      throw GaudiException( fmt::format( "file \"{}\" associated with stream \"{}\" has exceeded the max "
+                                         "file size of {} MB. Terminating Job.",
+                                         tf->GetName(), f.first, m_maxFileSize.value() ),
+                            name(), StatusCode::FAILURE );
 
-      fatal() << "file \"" << tf->GetName() << "\" associated with stream \"" << f.first
-              << "\" has exceeded the max file size of " << m_maxFileSize.value() << "MB. Terminating Job." << endmsg;
-
-      auto evt = service<IEventProcessor>( "ApplicationMgr", true );
-      if ( evt ) {
-        evt->stopRun().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
-      } else {
-        abort();
-      }
     } else if ( tf->GetSize() > mfs_warn ) {
       warning() << "file \"" << tf->GetName() << "\" associated with stream \"" << f.first
                 << "\" is at 95% of its maximum allowable file size of " << m_maxFileSize.value() << "MB" << endmsg;

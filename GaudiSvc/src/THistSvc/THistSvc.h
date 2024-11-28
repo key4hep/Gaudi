@@ -389,7 +389,6 @@ private:
   ServiceHandle<IIncidentSvc> p_incSvc;
   ServiceHandle<IFileMgr>     p_fileMgr;
 
-  bool m_signaledStop = false;
   bool m_delayConnect = false;
   bool m_okToConnect  = false;
   bool m_hasTTrees    = false;
