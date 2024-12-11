@@ -95,7 +95,7 @@ void SequentialOutputStream::makeFilename() {
   } else {
     if ( m_iFile != 1 ) {
       size_t pos = stem.rfind( "_" );
-      stem       = stem.substr( 0, pos );
+      stem.resize( pos );
     }
 
     string iFile = std::to_string( m_iFile );

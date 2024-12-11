@@ -186,6 +186,9 @@ namespace {
       if ( handle ) dlclose( handle );
     }
 
+    PFMon( const PFMon& )            = delete;
+    PFMon& operator=( const PFMon& ) = delete;
+
     static PFMon s_instance;
   };
 
@@ -534,12 +537,10 @@ void PerfMonAuditor::finalizepm() {
       fprintf( outfile, "CORE " );
     }
     fprintf( outfile, "%s %u %d %d\n", event_cstr[i], cmask[i], inv[i], sp[i] );
-    for ( std::map<std::string, std::vector<unsigned long int>>::iterator it = ( results[i] ).begin();
-          it != ( results[i] ).end(); it++ ) {
-      fprintf( outfile, "%s\n", ( it->first ).c_str() );
-      for ( std::vector<unsigned long int>::iterator j = ( it->second ).begin(); j != ( it->second ).end(); j++ ) {
-        fprintf( outfile, "%lu\n", *j );
-      }
+
+    for ( const auto& r : results[i] ) {
+      fprintf( outfile, "%s\n", r.first.c_str() );
+      for ( unsigned long int j : r.second ) { fprintf( outfile, "%lu\n", j ); }
     }
     fclose( outfile );
   }
@@ -817,25 +818,20 @@ void PerfMonAuditor::finalize_smpl() {
            (int)strlen( event_cstr[i] ) ) {
         error() << "ERROR: gzputs err: " << gzerror( outfile, &err ) << ". Aborting..." << endmsg;
       }
-      for ( std::map<std::string, std::map<unsigned long, unsigned int>>::iterator it = samples[i].begin();
-            it != samples[i].end(); it++ ) {
+      for ( const auto& it : samples[i] ) {
         unsigned long long sum = 0;
-        for ( std::map<unsigned long, unsigned int>::iterator jt = ( it->second ).begin(); jt != ( it->second ).end();
-              jt++ ) {
-          sum += jt->second;
-        }
-        if ( gzprintf( outfile, "%s%%%llu\n", ( it->first ).c_str(), sum ) < (int)( ( it->first ).length() ) ) {
+        for ( const auto& jt : it.second ) { sum += jt.second; }
+        if ( gzprintf( outfile, "%s%%%llu\n", it.first.c_str(), sum ) < (int)( it.first.length() ) ) {
           error() << "ERROR: gzputs err: " << gzerror( outfile, &err ) << ". Aborting..." << endmsg;
         }
-        for ( std::map<unsigned long, unsigned int>::iterator jt = ( it->second ).begin(); jt != ( it->second ).end();
-              jt++ ) {
+        for ( const auto& jt : it.second ) {
           char sym_name[SYM_NAME_MAX_LENGTH];
           bzero( sym_name, SYM_NAME_MAX_LENGTH );
           const char* libName;
           const char* symbolName;
           int         libOffset = 0;
           int         offset    = 0;
-          void*       sym_addr  = IgHookTrace::tosymbol( (void*)( jt->first ) );
+          void*       sym_addr  = IgHookTrace::tosymbol( (void*)( jt.first ) );
           if ( sym_addr != NULL ) {
             bool success = IgHookTrace::symbol( sym_addr, symbolName, libName, offset, libOffset );
             if ( success ) {
@@ -859,7 +855,7 @@ void PerfMonAuditor::finalize_smpl() {
           } else {
             strcpy( sym_name, "??? ??? 0 " );
           }
-          if ( gzprintf( outfile, "%s %d\n", sym_name, jt->second ) < (int)strlen( sym_name ) ) {
+          if ( gzprintf( outfile, "%s %d\n", sym_name, jt.second ) < (int)strlen( sym_name ) ) {
             error() << "ERROR: gzputs err: " << gzerror( outfile, &err ) << endmsg;
           }
         }

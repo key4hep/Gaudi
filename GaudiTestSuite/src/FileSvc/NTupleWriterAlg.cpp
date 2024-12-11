@@ -49,9 +49,9 @@ namespace Gaudi::TestSuite::FileSvc {
     }
 
   private:
-    Gaudi::Interfaces::IFileSvc* m_fileSvc;
+    Gaudi::Interfaces::IFileSvc* m_fileSvc{ nullptr };
     std::shared_ptr<TFile>       m_file;
-    TTree*                       m_tree;
+    TTree*                       m_tree{ nullptr };
     int                          m_value{ 9 };
   };
 

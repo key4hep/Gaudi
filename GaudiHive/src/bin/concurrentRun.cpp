@@ -59,7 +59,7 @@ int main( int argc, char** argv ) {
   if ( 0 != vm.count( "param" ) ) {
     std::vector<std::string> vParams = vm["param"].as<std::vector<std::string>>();
     std::cout << "Configuration parameters are:" << std::endl;
-    for ( std::string s : vParams ) {
+    for ( const std::string& s : vParams ) {
       params << s << "\n";
       std::cout << "\t" << s << std::endl;
     }

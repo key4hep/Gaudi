@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -30,7 +30,7 @@ namespace Gaudi {
         m_haveType           = slash_pos != std::string::npos;
         if ( m_haveType ) {
           m_name = m_type.substr( slash_pos + 1 );
-          m_type = m_type.substr( 0, slash_pos );
+          m_type.resize( slash_pos );
         } else
           m_name = m_type;
       }

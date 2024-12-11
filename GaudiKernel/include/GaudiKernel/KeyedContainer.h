@@ -506,10 +506,7 @@ template <class DATATYPE, class MAPPING>
 inline StatusCode KeyedContainer<DATATYPE, MAPPING>::update() {
   int count = 0;
   m_cont.clearDirect();
-  typename seq_type::iterator i = m_sequential.begin();
-  typename seq_type::iterator s = m_sequential.end();
-  for ( ; i != s; i++ ) {
-    typename seq_type::value_type v = *i;
+  for ( typename seq_type::value_type v : m_sequential ) {
     if ( v ) {
       if ( !v->hasKey() ) {
         traits::setKey( v, v->key() );
@@ -583,12 +580,10 @@ inline long KeyedContainer<DATATYPE, MAPPING>::index( const ContainedObject* p )
 template <class DATATYPE, class MAPPING>
 inline typename KeyedContainer<DATATYPE, MAPPING>::size_type
 KeyedContainer<DATATYPE, MAPPING>::containedObjects( std::vector<ContainedObject*>& vec ) const {
-  typename seq_type::const_iterator i = m_sequential.begin();
-  typename seq_type::const_iterator s = m_sequential.end();
   vec.clear();
   vec.reserve( size() );
-  for ( ; i != s; i++ ) {
-    ContainedObject* p = const_cast<typename seq_type::value_type>( *i );
+  for ( typename seq_type::value_type v : m_sequential ) {
+    ContainedObject* p = const_cast<typename seq_type::value_type>( v );
     vec.push_back( p );
   }
   return vec.size();

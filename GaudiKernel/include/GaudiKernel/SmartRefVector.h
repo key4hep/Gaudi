@@ -94,7 +94,7 @@ protected:
   void _setEnvironment( const DataObject* pObj, const ContainedObject* pContd ) const {
     m_data  = pObj;
     m_contd = pContd;
-    for ( _BaseConstIter i = _Base::begin(); i != _Base::end(); i++ ) { ( *i )._setEnvironment( pObj, pContd ); }
+    for ( _BaseConstIter i = _Base::begin(); i != _Base::end(); ++i ) { ( *i )._setEnvironment( pObj, pContd ); }
   }
 
 public:

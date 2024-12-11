@@ -201,14 +201,13 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
   //= Get the Application manager, to see if algorithm exist
   auto   appMgr = service<IAlgManager>( "ApplicationMgr" );
   size_t index  = 0;
-  for ( const Gaudi::Utils::TypeNameString item : names ) {
-    const std::string& theName = item.name();
-    const std::string& theType = item.type();
+  for ( const std::string& item : names ) {
+    const Gaudi::Utils::TypeNameString tn( item );
 
     //== Check wether the specified algorithm already exists. If not, create it
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm( item, false ); // do not create it now
     if ( !myIAlg ) {
-      myIAlg = createAlgorithm( *appMgr, theType, theName );
+      myIAlg = createAlgorithm( *appMgr, tn.type(), tn.name() );
     } else {
       // when the algorithm is not created, the ref count is short by one, so we
       // have to fix it.
@@ -227,7 +226,7 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
                             StatusCode::FAILURE };
     }
 
-    algorithms.emplace( theName, AlgEntry{ index++, std::move( myIAlg ) } );
+    algorithms.emplace( tn.name(), AlgEntry{ index++, std::move( myIAlg ) } );
   }
 
   return algorithms;
