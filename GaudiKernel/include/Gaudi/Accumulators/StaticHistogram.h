@@ -284,9 +284,9 @@ namespace Gaudi::Accumulators {
       m_maxValue = v;
       recomputeRatio();
     }
-    std::string const&             title() const { return m_title; }
-    void                           setTitle( std::string const& t ) { m_title = t; };
-    std::vector<std::string> const labels() const { return m_labels; }
+    std::string const&              title() const { return m_title; }
+    void                            setTitle( std::string const& t ) { m_title = t; };
+    std::vector<std::string> const& labels() const { return m_labels; }
 
   private:
     /// title of this axis

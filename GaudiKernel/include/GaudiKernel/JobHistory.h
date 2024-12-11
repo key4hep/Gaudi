@@ -70,17 +70,17 @@ public: // functions
   void addProperty( const std::string& key, const std::string& value );
 
   // Return the job history data.
-  std::string              release_version() const { return m_release_version; }
-  std::string              os() const { return m_osname; }
-  std::string              hostname() const { return m_hostname; }
-  std::string              os_version() const { return m_os_version; }
-  std::string              machine() const { return m_machine; }
-  std::string              dir() const { return m_dir; }
-  std::string              cmtconfig() const { return m_cmtconfig; }
-  std::vector<std::string> environment() const { return m_environ; }
-  const PropertyList&      properties() const override { return m_props; }
-  const PropertyPairList&  propertyPairs() const { return m_ppl; }
-  time_t                   start_time() const { return m_start_time; }
+  const std::string&              release_version() const { return m_release_version; }
+  const std::string&              os() const { return m_osname; }
+  const std::string&              hostname() const { return m_hostname; }
+  const std::string&              os_version() const { return m_os_version; }
+  const std::string&              machine() const { return m_machine; }
+  const std::string&              dir() const { return m_dir; }
+  const std::string&              cmtconfig() const { return m_cmtconfig; }
+  const std::vector<std::string>& environment() const { return m_environ; }
+  const PropertyList&             properties() const override { return m_props; }
+  const PropertyPairList&         propertyPairs() const { return m_ppl; }
+  time_t                          start_time() const { return m_start_time; }
 
   std::ostream& dump( std::ostream&, bool isXML, int indent ) const override;
 

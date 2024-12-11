@@ -37,8 +37,8 @@ public:
   EventIDRange( const EventIDRange& r ) : m_start( r.m_start ), m_stop( r.m_stop ){};
   EventIDRange& operator=( const EventIDRange& r );
 
-  EventIDBase start() const { return m_start; }
-  EventIDBase stop() const { return m_stop; }
+  const EventIDBase& start() const { return m_start; }
+  const EventIDBase& stop() const { return m_stop; }
 
   bool isInRange( const EventIDBase& t ) const {                             // return ( t >= m_start && t < m_stop ); }
     return ( std::tie( t.m_run_number, t.m_lumi_block, t.m_event_number ) >= // run/lumi larger than run/lumi of start

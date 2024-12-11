@@ -129,7 +129,7 @@ public:
   // Public member functions
   //
   /** The full type and name: "type/name" */
-  std::string typeAndName() const { return m_typeAndName; }
+  const std::string& typeAndName() const { return m_typeAndName; }
 
   /** The concrete component class name: the part before the '/' */
   std::string type() const;
@@ -372,7 +372,7 @@ public:
 
   /** Helper function to get a vector of strings filled with the return value
       of each tool of a member function if GaudiHandleBase */
-  const std::vector<std::string> getBaseInfos( std::string ( GaudiHandleBase::*pMemFunc )() const ) const;
+  const std::vector<std::string> getBaseInfos( auto ( GaudiHandleBase::*pMemFunc )() const ) const;
 
   /** Name of the componentType with "HandleArray" appended. Used as the python class name
       for the property in the genconf-generated configurables.

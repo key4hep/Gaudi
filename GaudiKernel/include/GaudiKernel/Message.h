@@ -59,7 +59,7 @@ public:
   //@{
   EventContext::ContextID_t  getEventSlot() const { return m_ecSlot; }
   EventContext::ContextEvt_t getEventNumber() const { return m_ecEvt; }
-  EventIDBase                getEventID() const { return m_ecEvtId; }
+  const EventIDBase&         getEventID() const { return m_ecEvtId; }
   //@}
 
   /// Get the format string.

@@ -808,12 +808,12 @@ public:
     total_num_samples = total;
     return;
   }
-  unsigned int get_smpl_period() { return sp; }
-  unsigned int get_inv_mask() { return inv; }
-  unsigned int get_c_mask() { return cmask; }
-  std::string  get_arch() { return arch; }
-  std::string  get_event() { return event; }
-  void         add_sample( const char* index, unsigned int value ) {
+  unsigned int       get_smpl_period() { return sp; }
+  unsigned int       get_inv_mask() { return inv; }
+  unsigned int       get_c_mask() { return cmask; }
+  const std::string& get_arch() { return arch; }
+  const std::string& get_event() { return event; }
+  void               add_sample( const char* index, unsigned int value ) {
     samples[index] += value;
     return;
   }
@@ -826,8 +826,8 @@ public:
     samples.erase( max_pos );
     return true;
   }
-  std::string  get_module_name() { return module_name; }
-  unsigned int get_total_num_samples() { return total_num_samples; }
+  const std::string& get_module_name() { return module_name; }
+  unsigned int       get_total_num_samples() { return total_num_samples; }
 };
 
 // void html_special_chars()

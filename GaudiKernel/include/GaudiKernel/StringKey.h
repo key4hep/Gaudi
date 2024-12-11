@@ -135,7 +135,7 @@ namespace Gaudi {
     std::size_t __hash__() const { return m_hash; }
     // ========================================================================
     /// the representation of the object
-    std::string __str__() const; // the representation of the object
+    const std::string& __str__() const; // the representation of the object
     /// the representation of the object
     std::string __repr__() const; // the representation of the object
     /// equality operator for python
