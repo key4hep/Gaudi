@@ -72,7 +72,7 @@ public:
   virtual ~SmartDataObjectPtr() = default;
 
   /// Assignment operator
-  virtual SmartDataObjectPtr& operator=( const SmartDataObjectPtr& );
+  virtual SmartDataObjectPtr& operator=( const SmartDataObjectPtr& ) = default;
 
   /// Automatic conversion to data directory
   operator IRegistry*() { return m_pRegistry; }
