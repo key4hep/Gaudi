@@ -193,6 +193,22 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
   }
 
   {
+    std::map<std::string, std::pair<double, double>> result;
+    BOOST_CHECK( parse( result, "{'key':(10.0,20.0)}" ) );
+    BOOST_CHECK( result.size() == 1 );
+    BOOST_CHECK_CLOSE( result["key"].first, 10, 1.e-4 );
+    BOOST_CHECK_CLOSE( result["key"].second, 20, 1.e-4 );
+  }
+
+  {
+    std::map<std::string, std::pair<int, int>> result;
+    BOOST_CHECK( parse( result, "{'key':(10,20)}" ) );
+    BOOST_CHECK( result.size() == 1 );
+    BOOST_CHECK( result["key"].first == 10 );
+    BOOST_CHECK( result["key"].second == 20 );
+  }
+
+  {
     GaudiUtils::VectorMap<Gaudi::StringKey, double> result;
     BOOST_CHECK( parse( result, "{'key':10, 'key1'=20}" ) );
     BOOST_CHECK( result.size() == 2 );

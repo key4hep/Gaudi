@@ -516,9 +516,6 @@ namespace Gaudi {
     GAUDI_API StatusCode parse( std::map<std::string, Gaudi::Histo1DDef>& histos, std::string_view input );
     // ========================================================================
     /** helper function, needed for implementation of map of pairs
-     *  It is very useful construction for monitoring to
-     *  represent the value and error or the allowed range for
-     *  some parameter
      *  @param params the map of pair
      *  @param input the string to be parsed
      *  @return status code
@@ -527,6 +524,17 @@ namespace Gaudi {
      *  @date 2009-05-19
      */
     GAUDI_API StatusCode parse( std::map<std::string, std::pair<double, double>>& params, std::string_view input );
+    // ========================================================================
+    /** helper function, needed for implementation of map of pairs
+     *  @param params the map of pair
+     *  @param input the string to be parsed
+     *  @return status code
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author David BACHER david.bacher@physics.ox.ac.uk
+     *  @date 2024-11-06
+     */
+    GAUDI_API StatusCode parse( std::map<std::string, std::pair<int, int>>& params, std::string_view input );
     // ========================================================================
     /** parser function for C-arrays
      *  @param params C-array
