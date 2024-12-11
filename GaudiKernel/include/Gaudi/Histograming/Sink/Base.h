@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -36,7 +36,7 @@ namespace Gaudi::Histograming::Sink {
         std::function<void( TFile& file, std::string, std::string, Monitoring::Hub::Entity const& )>;
     using HistoBinRegistry = std::map<HistoBinIdentification, HistoBinHandler>;
 
-    Base( std::string name, ISvcLocator* svcloc ) : Monitoring::BaseSink( name, svcloc ) {
+    Base( const std::string& name, ISvcLocator* svcloc ) : Monitoring::BaseSink( name, svcloc ) {
       // only deal with histograms
       setProperty( "TypesToSave", std::vector<std::string>{ "histogram:.*" } )
           .orThrow( "Unable to set typesToSaveProperty", "Histograming::Sink::Base" );

@@ -19,8 +19,8 @@
 #include <sstream>
 #include <stdexcept>
 namespace GaudiTesting {
-  void throwConditionFailed( bool condition, const std::string file_name, int line_no,
-                             const std::string condition_string );
+  void throwConditionFailed( bool condition, const std::string& file_name, int line_no,
+                             const std::string& condition_string );
 }
 
 #define Ensures( a ) GaudiTesting::throwConditionFailed( a, __FILE__, __LINE__, #a )

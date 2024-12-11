@@ -65,7 +65,7 @@ namespace Gaudi::Accumulators {
       }
     }
     static constexpr OutputType DefaultValue() { return InternalType{}; }
-    static void                 merge( InternalType& a, OutputType b ) noexcept {
+    static void                 merge( InternalType& a, const OutputType& b ) noexcept {
       if constexpr ( Atomicity == atomicity::full ) {
         for ( unsigned int i = 0; i < NSUMS( ND ); i++ ) { fetch_add( a[i], b[i] ); }
       } else {

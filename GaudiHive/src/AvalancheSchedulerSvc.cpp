@@ -201,7 +201,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
     ostdd << "\n  " << algoPtr->name();
 
-    auto write_owners = [&avis, &ostdd]( const DataObjID id ) {
+    auto write_owners = [&avis, &ostdd]( const DataObjID& id ) {
       auto owners = avis.owners_names_of( id );
       if ( !owners.empty() ) { GaudiUtils::operator<<( ostdd << ' ', owners ); }
     };

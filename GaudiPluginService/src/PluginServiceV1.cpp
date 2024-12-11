@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -59,7 +59,7 @@ namespace {
   /// Helper function used to set values in FactoryInfo data members only
   /// if the original value is empty and reporting warnings in case of
   /// inconsistencies.
-  inline void factoryInfoSetHelper( std::string& dest, const std::string value, const std::string& desc,
+  inline void factoryInfoSetHelper( std::string& dest, const std::string& value, const std::string& desc,
                                     const std::string& id ) {
     if ( dest.empty() ) {
       dest = value;

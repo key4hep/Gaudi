@@ -47,8 +47,8 @@ namespace RootHistCnv {
     long        repSvcType() const override { return i_repSvcType(); }
 
     StatusCode error( const std::string& msg );
-    StatusCode regTFile( const std::string, const TFile* );
-    StatusCode findTFile( const std::string, TFile*& );
+    StatusCode regTFile( const std::string&, const TFile* );
+    StatusCode findTFile( const std::string&, TFile*& );
 
     std::string diskDirectory( const std::string& loc );
     std::string directory( const std::string& loc );

@@ -22,8 +22,8 @@
 #endif
 
 namespace GaudiTesting {
-  void throwConditionFailed( bool condition, const std::string file_name, int line_no,
-                             const std::string condition_string ) {
+  void throwConditionFailed( bool condition, const std::string& file_name, int line_no,
+                             const std::string& condition_string ) {
     if ( !condition ) {
       std::stringstream msg;
       msg << "Conditoin Failed: " << file_name << ":" << line_no << " " << condition_string;
@@ -89,12 +89,12 @@ namespace GaudiTesting {
       }
     };
 
-    void addInput( const std::string key ) {
+    void addInput( const std::string& key ) {
       m_keys.emplace_back( key );
       m_handles.emplace_back( m_keys.back(), Gaudi::DataHandle::Reader, this );
       this->declare( m_handles.back() );
     }
-    void addOutput( const std::string key ) {
+    void addOutput( const std::string& key ) {
       m_keys.emplace_back( key );
       m_handles.emplace_back( m_keys.back(), Gaudi::DataHandle::Writer, this );
       this->declare( m_handles.back() );
@@ -134,7 +134,7 @@ namespace GaudiTesting {
 
   class TestAlg : public Algorithm {
   public:
-    TestAlg( std::string aname, ISvcLocator* svc_Locator ) : Algorithm( aname, svc_Locator ) {
+    TestAlg( const std::string& aname, ISvcLocator* svc_Locator ) : Algorithm( aname, svc_Locator ) {
       Ensures( setProperty( "FilterCircularDependencies", false ).isSuccess() );
       DEBUG_TRACE( std::cout << "DEBUG TestAlg ctor " << name() << std::endl );
       if ( extractBaseName( name() ) == "TestAlgBug" ) {

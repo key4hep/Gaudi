@@ -37,7 +37,7 @@ namespace {
     Gaudi::Monitoring::Hub* m_monitoringHub{ nullptr };
 
     template <typename OWNER>
-    Store( OWNER* o, std::string const& name, const std::string storeType )
+    Store( OWNER* o, std::string const& name, const std::string& storeType )
         : m_monitoringHub( &o->serviceLocator()->monitoringHub() ) {
       m_monitoringHub->registerEntity( o->name(), name, storeType, *this );
     }

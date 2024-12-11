@@ -205,7 +205,7 @@ namespace Gaudi::Monitoring {
    * the convention described in Accumulators.h
    */
   struct MessageSvcSink : BaseSink {
-    MessageSvcSink( std::string name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
+    MessageSvcSink( const std::string& name, ISvcLocator* svcloc ) : BaseSink( name, svcloc ) {
       // only deal with counters, statentity and histograms
       setProperty( "TypesToSave", std::vector<std::string>{ "counter:.*", "statentity", "histogram:.*" } )
           .orThrow( "Unable to set TypesToSave property", "Gaudi::Monitoring::MessageSvcSink" );

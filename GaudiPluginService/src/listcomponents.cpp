@@ -26,7 +26,7 @@
 #include <Gaudi/PluginService.h>
 #include <Gaudi/PluginServiceV1.h>
 
-void help( std::string argv0 ) {
+void help( const std::string& argv0 ) {
   std::cout << "Usage: " << argv0
             << " [option] library1 [library2 ...]\n"
                "\n list the component factories present in the given libraries\n\n"
@@ -38,7 +38,7 @@ void help( std::string argv0 ) {
             << std::endl;
 }
 
-void usage( std::string argv0 ) {
+void usage( const std::string& argv0 ) {
   std::cout << "Usage: " << argv0
             << " [option] library1 [library2 ...]\n"
                "Try `"
