@@ -11,8 +11,6 @@
 #include <Gaudi/Algorithm.h>
 
 #include <algorithm>
-#include <numeric>
-#include <set>
 
 #include <GaudiKernel/FunctionalFilterDecision.h>
 #include <GaudiKernel/IAlgContextSvc.h>

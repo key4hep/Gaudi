@@ -21,7 +21,6 @@
 #include <GaudiKernel/ISvcLocator.h> /*used by service(..)*/
 #include <GaudiKernel/PropertyHolder.h>
 #include <string>
-#include <vector>
 
 // Forward declarations
 class IService;

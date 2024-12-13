@@ -38,7 +38,7 @@ class IRegistry;
  *       itself - since the client claims back ownership. Note that this is a
  *       very delicate operation - any reference to the object will be invalid.
  *       Even worse: invalid references cannot be detected.
- *  <LI> Retrieve objects to the data store. Depending ont he
+ *  <LI> Retrieve objects to the data store. Depending on the
  *       availibility of the requested object in the data store the
  *       represented object will be loaded if possible.
  *  <LI> Find objects beeing present in the store without actually creating

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,7 +22,7 @@ namespace concurrency {
   public:
     /// Constructor
     DataReadyPromoter( EventSlot& slot, const Cause& cause, bool ifTrace = false )
-        : m_slot( &slot ), m_cause( cause ), m_trace( ifTrace ){};
+        : m_slot( &slot ), m_cause( cause ), m_trace( ifTrace ) {}
 
     using IGraphVisitor::visit;
     using IGraphVisitor::visitEnter;
@@ -49,7 +49,7 @@ namespace concurrency {
   public:
     /// Constructor
     DecisionUpdater( EventSlot& slot, const Cause& cause, bool ifTrace = false )
-        : m_slot( &slot ), m_cause( cause ), m_trace( ifTrace ){};
+        : m_slot( &slot ), m_cause( cause ), m_trace( ifTrace ) {}
 
     using IGraphVisitor::visit;
 
@@ -65,7 +65,7 @@ namespace concurrency {
   public:
     /// Constructor
     Supervisor( EventSlot& slot, const Cause& cause, bool ifTrace = false )
-        : m_slot( &slot ), m_cause( cause ), m_trace( ifTrace ){};
+        : m_slot( &slot ), m_cause( cause ), m_trace( ifTrace ) {}
 
     using IGraphVisitor::visit;
     using IGraphVisitor::visitEnter;
@@ -87,7 +87,7 @@ namespace concurrency {
   class RunSimulator : public IGraphVisitor {
   public:
     /// Constructor
-    RunSimulator( EventSlot& slot, const Cause& cause ) : m_slot( &slot ), m_cause( cause ){};
+    RunSimulator( EventSlot& slot, const Cause& cause ) : m_slot( &slot ), m_cause( cause ) {}
 
     using IGraphVisitor::visit;
     using IGraphVisitor::visitEnter;
@@ -100,7 +100,7 @@ namespace concurrency {
 
     bool visit( AlgorithmNode& ) override;
 
-    void reset() override { m_nodesSucceeded = 0; };
+    void reset() override { m_nodesSucceeded = 0; }
 
     EventSlot* m_slot;
     Cause      m_cause;

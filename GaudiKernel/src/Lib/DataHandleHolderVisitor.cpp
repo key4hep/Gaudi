@@ -77,7 +77,7 @@ std::vector<const IDataHandleHolder*> DHHVisitor::owners_of( const DataObjID& id
     return { item->second.begin(), item->second.end() };
   }
   return {};
-};
+}
 
 std::vector<std::string> DHHVisitor::owners_names_of( const DataObjID& id, bool with_main ) const {
   std::vector<std::string> tmp;
@@ -86,7 +86,7 @@ std::vector<std::string> DHHVisitor::owners_names_of( const DataObjID& id, bool 
   }
   if ( !tmp.empty() ) { std::sort( tmp.begin(), tmp.end() ); }
   return tmp;
-};
+}
 
 MsgStream& DHHVisitor::report( MsgStream& stream ) const {
   // sort DataObjects by path so that logging is reproducible

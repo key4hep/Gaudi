@@ -50,7 +50,7 @@ namespace Io {
   class IoFlags final {
   public:
     IoFlags() = default;
-    IoFlags( unsigned i ) : _f( i ){};
+    IoFlags( unsigned i ) : _f( i ) {}
 
     unsigned f() const { return _f; }
 
@@ -180,7 +180,7 @@ namespace Io {
         , m_iflags( fa )
         , m_fptr( p )
         , m_isOpen( o )
-        , m_shared( s ){};
+        , m_shared( s ) {}
 
     Fd                 fd() const { return m_fd; }
     const std::string& name() const { return m_name; }
@@ -262,11 +262,11 @@ namespace Io {
 
     FileHdlr() = default;
     FileHdlr( IoTech t, bfcn_open_t o, bfcn_close_t c, bfcn_reopen_t r )
-        : tech( t ), b_open_fcn( o ), b_close_fcn( c ), b_reopen_fcn( r ){};
+        : tech( t ), b_open_fcn( o ), b_close_fcn( c ), b_reopen_fcn( r ) {}
     FileHdlr( IoTech t, bfcn_open_t o, bfcn_closeP_t c, bfcn_reopenP_t r )
-        : tech( t ), b_open_fcn( o ), b_closeP_fcn( c ), b_reopenP_fcn( r ){};
+        : tech( t ), b_open_fcn( o ), b_closeP_fcn( c ), b_reopenP_fcn( r ) {}
     FileHdlr( IoTech t, bfcn_open_t o, bfcn_close_t c1, bfcn_closeP_t c2, bfcn_reopen_t r1, bfcn_reopenP_t r2 )
-        : tech( t ), b_open_fcn( o ), b_close_fcn( c1 ), b_closeP_fcn( c2 ), b_reopen_fcn( r1 ), b_reopenP_fcn( r2 ){};
+        : tech( t ), b_open_fcn( o ), b_close_fcn( c1 ), b_closeP_fcn( c2 ), b_reopen_fcn( r1 ), b_reopenP_fcn( r2 ) {}
   };
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

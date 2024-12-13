@@ -57,7 +57,7 @@ protected:
   T m_data;
 
 public:
-  AnyDataWrapper( T&& data ) : m_data{ std::move( data ) } {};
+  AnyDataWrapper( T&& data ) : m_data{ std::move( data ) } {}
   AnyDataWrapper( AnyDataWrapper&& )                 = delete;
   AnyDataWrapper( AnyDataWrapper const& )            = delete;
   AnyDataWrapper& operator=( AnyDataWrapper&& )      = delete;

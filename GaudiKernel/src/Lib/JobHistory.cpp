@@ -30,9 +30,6 @@
 using std::endl;
 using std::ostream;
 using std::string;
-using std::vector;
-
-using Gaudi::Details::PropertyBase;
 
 //**********************************************************************
 // Member functions.

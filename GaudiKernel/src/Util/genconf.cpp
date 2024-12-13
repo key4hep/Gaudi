@@ -75,7 +75,6 @@ namespace fs = boost::filesystem;
 #define LOG_ERROR BOOST_LOG_TRIVIAL( error )
 #define LOG_WARNING BOOST_LOG_TRIVIAL( warning )
 #define LOG_INFO BOOST_LOG_TRIVIAL( info )
-#define LOG_DEBUG BOOST_LOG_TRIVIAL( debug )
 
 using namespace std;
 using Gaudi::Details::PropertyBase;

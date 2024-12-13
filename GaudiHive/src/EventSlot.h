@@ -24,7 +24,7 @@
 struct EventSlot {
   /// Construct a slot
   EventSlot( unsigned int numberOfAlgorithms, unsigned int numberOfControlFlowNodes, SmartIF<IMessageSvc> MS )
-      : algsStates( numberOfAlgorithms, MS ), controlFlowState( numberOfControlFlowNodes, -1 ){};
+      : algsStates( numberOfAlgorithms, MS ), controlFlowState( numberOfControlFlowNodes, -1 ) {}
 
   /// Copy constructor
   EventSlot( const EventSlot& ) = delete;
@@ -43,7 +43,7 @@ struct EventSlot {
       , entryPoint( nodeName )
       , parentSlot( &original ) {
     algsStates.reset();
-  };
+  }
 
   /// Reset all resources in order to reuse the slot (thread-unsafe)
   void reset( EventContext* theeventContext ) {
@@ -55,7 +55,7 @@ struct EventSlot {
     parentSlot = nullptr;
     subSlotsByNode.clear();
     allSubSlots.clear();
-  };
+  }
 
   /// Add a subslot to the slot (this constructs a new slot and registers it with the parent one)
   void addSubSlot( std::unique_ptr<EventContext> viewContext, const std::string& nodeName ) {

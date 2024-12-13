@@ -71,7 +71,7 @@ private:
         m_types = m_customTypes;
       }
     }
-  };
+  }
 
   Gaudi::Property<std::vector<std::string>> m_types{
       this, "EventTypes", {}, "list of event types to audit ([]=all, ['none']=none)" };

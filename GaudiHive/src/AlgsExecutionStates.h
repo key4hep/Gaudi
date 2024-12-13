@@ -56,7 +56,7 @@ public:
 
     m_algsInState[INITIAL].reserve( algsNumber );
     for ( unsigned int i = 0; i < algsNumber; ++i ) m_algsInState[INITIAL].insert( i );
-  };
+  }
 
   StatusCode set( unsigned int iAlgo, State newState );
 
@@ -66,7 +66,7 @@ public:
     for ( auto& algs : m_algsInState ) algs.clear();
     m_algsInState[INITIAL].reserve( m_states.size() );
     for ( unsigned int i = 0; i < m_states.size(); ++i ) m_algsInState[INITIAL].insert( i );
-  };
+  }
 
   /// check if the collection contains at least one state of requested type
   bool contains( State state ) const { return m_algsInState[state].size() > 0; }
@@ -82,7 +82,7 @@ public:
   // states change during scheduler loop over set, so cannot return reference
   const boost::container::flat_set<int> algsInState( State state ) const { return m_algsInState[state]; }
 
-  const State& operator[]( unsigned int i ) const { return m_states.at( i ); };
+  const State& operator[]( unsigned int i ) const { return m_states.at( i ); }
 
   size_t size() const { return m_states.size(); }
 

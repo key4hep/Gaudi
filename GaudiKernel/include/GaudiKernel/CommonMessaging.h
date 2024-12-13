@@ -26,7 +26,7 @@
 #include <GaudiKernel/detected.h>
 #include <boost/thread/tss.hpp>
 
-#include <memory>
+#include <string>
 #include <utility>
 
 /** Templated class to add the standard messaging functionalities

@@ -52,7 +52,7 @@ namespace Gaudi::Example::TinyExperiment {
           ++n_duplicatedTracks;
         }
       }
-    };
+    }
 
   private:
     bool almostEqual( float a, float b ) const { return std::abs( a - b ) <= m_maxDeltaTheta; }

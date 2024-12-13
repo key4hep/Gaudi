@@ -132,7 +132,7 @@ namespace Gaudi::Accumulators {
       } else {
         return v;
       }
-    };
+    }
     static RegularType exchange( InternalType& v, RegularType newv ) noexcept {
       if constexpr ( isAtomic ) {
         return { v.first.exchange( newv.first ), v.second.exchange( newv.second ) };
@@ -149,7 +149,7 @@ namespace Gaudi::Accumulators {
         a.first += b.first;
         a.second += b.second;
       }
-    };
+    }
   };
 
   /**
@@ -198,7 +198,7 @@ namespace Gaudi::Accumulators {
       : GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity, WeightedSquare> {
     using GenericAccumulator<std::pair<Arithmetic, Arithmetic>, Arithmetic, Atomicity,
                              WeightedSquare>::GenericAccumulator;
-    Arithmetic sum2() const { return this->value(); };
+    Arithmetic sum2() const { return this->value(); }
   };
 
   /**
@@ -239,9 +239,9 @@ namespace Gaudi::Accumulators {
       details::requireValidTitle( m_title );
       recomputeRatio();
       for ( const auto& s : m_labels ) details::requireValidTitle( s );
-    };
+    }
     explicit Axis( Gaudi::Histo1DDef const& def )
-        : Axis( (unsigned int)def.bins(), def.lowEdge(), def.highEdge(), def.title() ){};
+        : Axis( (unsigned int)def.bins(), def.lowEdge(), def.highEdge(), def.title() ) {}
 
     /// returns the bin number for a given value, ranging from 0 (underflow) to nBins+1 (overflow)
     unsigned int index( Arithmetic value ) const {
@@ -269,24 +269,24 @@ namespace Gaudi::Accumulators {
     bool inAcceptance( Arithmetic value ) const { return value >= m_minValue && value <= m_maxValue; }
 
     // accessors
-    unsigned int numBins() const { return nBins; };
+    unsigned int numBins() const { return nBins; }
     void         setNumBins( unsigned int n ) {
       nBins = n;
       recomputeRatio();
     }
-    Arithmetic minValue() const { return m_minValue; };
+    Arithmetic minValue() const { return m_minValue; }
     void       setMinValue( Arithmetic v ) {
       m_minValue = v;
       recomputeRatio();
     }
-    Arithmetic maxValue() const { return m_maxValue; };
+    Arithmetic maxValue() const { return m_maxValue; }
     void       setMaxValue( Arithmetic v ) {
       m_maxValue = v;
       recomputeRatio();
     }
-    std::string const&              title() const { return m_title; }
-    void                            setTitle( std::string const& t ) { m_title = t; };
-    std::vector<std::string> const& labels() const { return m_labels; }
+    std::string const&             title() const { return m_title; }
+    void                           setTitle( std::string const& t ) { m_title = t; }
+    std::vector<std::string> const labels() const { return m_labels; }
 
   private:
     /// title of this axis

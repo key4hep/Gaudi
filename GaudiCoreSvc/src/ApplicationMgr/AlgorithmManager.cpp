@@ -17,7 +17,6 @@
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/System.h>
 #include <GaudiKernel/TypeNameString.h>
-#include <iostream>
 #ifndef _WIN32
 #  include <errno.h>
 #endif

@@ -490,7 +490,7 @@ namespace concurrency {
         , m_algorithm( algoPtr )
         , m_algoIndex( algoIndex )
         , m_algoName( algoPtr->name() )
-        , m_isAsynchronous( algoPtr->isAsynchronous() ){};
+        , m_isAsynchronous( algoPtr->isAsynchronous() ) {}
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -644,7 +644,7 @@ namespace concurrency {
     void addHeadNode( const std::string& headName, concurrency::Concurrent, concurrency::PromptDecision,
                       concurrency::ModeOr, concurrency::AllPass, concurrency::Inverted );
     /// Get head node
-    DecisionNode* getHeadNode() const { return m_headNode; };
+    DecisionNode* getHeadNode() const { return m_headNode; }
     /// Add algorithm node
     StatusCode addAlgorithmNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName );
     /// Get the AlgorithmNode from by algorithm name using graph index
@@ -670,7 +670,7 @@ namespace concurrency {
     void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const;
 
     /// BGL-based facilities
-    void         enableAnalysis() { m_enableAnalysis = true; };
+    void         enableAnalysis() { m_enableAnalysis = true; }
     PRVertexDesc node( const std::string& ) const;
 
     /// Print out all data origins and destinations, as reflected in the EF graph

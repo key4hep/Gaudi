@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,19 +22,19 @@ namespace concurrency {
   public:
     virtual ~IGraphVisitor() = default;
 
-    virtual bool visitEnter( DecisionNode& ) const { return true; };
-    virtual bool visit( DecisionNode& ) { return true; };
+    virtual bool visitEnter( DecisionNode& ) const { return true; }
+    virtual bool visit( DecisionNode& ) { return true; }
 
-    virtual bool visitEnter( AlgorithmNode& ) const { return true; };
-    virtual bool visit( AlgorithmNode& ) { return true; };
+    virtual bool visitEnter( AlgorithmNode& ) const { return true; }
+    virtual bool visit( AlgorithmNode& ) { return true; }
 
-    virtual bool visitEnter( DataNode& ) const { return true; };
-    virtual bool visit( DataNode& ) { return true; };
+    virtual bool visitEnter( DataNode& ) const { return true; }
+    virtual bool visit( DataNode& ) { return true; }
 
-    virtual bool visitEnter( ConditionNode& ) const { return true; };
-    virtual bool visit( ConditionNode& ) { return true; };
+    virtual bool visitEnter( ConditionNode& ) const { return true; }
+    virtual bool visit( ConditionNode& ) { return true; }
 
-    virtual void reset(){};
+    virtual void reset() {}
   };
 } // namespace concurrency
 

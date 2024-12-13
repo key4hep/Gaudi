@@ -55,7 +55,7 @@ namespace AIDA {
     /// Internal private annotation item class
     struct AnnotationItem final {
       AnnotationItem( std::string k = "", std::string v = "", bool vis = true )
-          : m_key( std::move( k ) ), m_value( std::move( v ) ), m_sticky( vis ){ /* nop */ };
+          : m_key( std::move( k ) ), m_value( std::move( v ) ), m_sticky( vis ) {}
 
       ~AnnotationItem() = default;
 
