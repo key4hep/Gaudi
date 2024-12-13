@@ -324,7 +324,7 @@ namespace Gaudi::Accumulators {
   struct BaseValueHandler<Arithmetic, atomicity::none> {
     using OutputType   = Arithmetic;
     using InternalType = Arithmetic;
-    static constexpr OutputType getValue( const InternalType& v ) noexcept { return v; };
+    static constexpr OutputType getValue( const InternalType& v ) noexcept { return v; }
     static Arithmetic exchange( InternalType& v, Arithmetic newv ) noexcept { return std::exchange( v, newv ); }
   };
 
@@ -337,7 +337,7 @@ namespace Gaudi::Accumulators {
     using InternalType = std::atomic<Arithmetic>;
     static constexpr OutputType getValue( const InternalType& v ) noexcept {
       return v.load( std::memory_order_relaxed );
-    };
+    }
     static Arithmetic exchange( InternalType& v, Arithmetic newv ) noexcept { return v.exchange( newv ); }
   };
 
@@ -356,7 +356,7 @@ namespace Gaudi::Accumulators {
     using typename BaseValueHandler<Arithmetic, atomicity::none>::OutputType;
     using typename BaseValueHandler<Arithmetic, atomicity::none>::InternalType;
     static constexpr OutputType DefaultValue() { return Arithmetic{}; }
-    static void                 merge( InternalType& a, Arithmetic b ) noexcept { a += b; };
+    static void                 merge( InternalType& a, Arithmetic b ) noexcept { a += b; }
   };
 
   /**
@@ -386,7 +386,7 @@ namespace Gaudi::Accumulators {
         if ( DefaultValue() == b ) return;                     // avoid atomic operation if b is "0"
       }
       fetch_add( a, b );
-    };
+    }
   };
 
   /**
@@ -406,7 +406,7 @@ namespace Gaudi::Accumulators {
     static constexpr OutputType DefaultValue() { return Initial(); }
     static void                 merge( InternalType& a, Arithmetic b ) noexcept {
       if ( Compare{}( b, a ) ) a = b;
-    };
+    }
   };
 
   /**
@@ -421,7 +421,7 @@ namespace Gaudi::Accumulators {
       Arithmetic prev_value = BaseValueHandler<Arithmetic, atomicity::full>::getValue( a );
       while ( Compare{}( b, prev_value ) && !a.compare_exchange_weak( prev_value, b ) )
         ;
-    };
+    }
   };
 
   /**
@@ -662,7 +662,7 @@ namespace Gaudi::Accumulators {
   template <atomicity Atomicity, typename Arithmetic = double>
   struct SquareAccumulator : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Square> {
     using GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Square>::GenericAccumulator;
-    Arithmetic sum2() const { return this->value(); };
+    Arithmetic sum2() const { return this->value(); }
   };
 
   /// helper functor for the TrueAccumulator
@@ -678,7 +678,7 @@ namespace Gaudi::Accumulators {
   template <atomicity Atomicity, typename Arithmetic>
   struct TrueAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, TrueTo1> {
     using GenericAccumulator<Arithmetic, unsigned long, Atomicity, TrueTo1>::GenericAccumulator;
-    unsigned long nTrueEntries() const { return this->value(); };
+    unsigned long nTrueEntries() const { return this->value(); }
   };
 
   /// helper functor for the FalseAccumulator
@@ -694,7 +694,7 @@ namespace Gaudi::Accumulators {
   template <atomicity Atomicity, typename Arithmetic>
   struct FalseAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, FalseTo1> {
     using GenericAccumulator<Arithmetic, unsigned long, Atomicity, FalseTo1>::GenericAccumulator;
-    unsigned long nFalseEntries() const { return this->value(); };
+    unsigned long nFalseEntries() const { return this->value(); }
   };
 
   /**
@@ -705,7 +705,7 @@ namespace Gaudi::Accumulators {
   template <atomicity Atomicity, typename Arithmetic>
   struct BinomialAccumulator : AccumulatorSet<bool, Atomicity, bool, TrueAccumulator, FalseAccumulator> {
     using AccumulatorSet<bool, Atomicity, bool, TrueAccumulator, FalseAccumulator>::AccumulatorSet;
-    unsigned long nEntries() const { return this->nTrueEntries() + this->nFalseEntries(); };
+    unsigned long nEntries() const { return this->nTrueEntries() + this->nFalseEntries(); }
 
     template <typename Result = fp_result_type<Arithmetic>>
     auto efficiency() const {

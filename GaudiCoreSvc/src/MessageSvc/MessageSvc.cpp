@@ -43,11 +43,6 @@ namespace {
     }
   }
 
-  template <typename Container, typename Predicate>
-  void erase_if( Container& c, Predicate pred ) {
-    return erase_if( c, std::begin( c ), std::end( c ), std::forward<Predicate>( pred ) );
-  }
-
   template <typename Container, typename Iterator, typename Predicate>
   void erase_if( Container& c, std::pair<Iterator, Iterator> range, Predicate pred ) {
     return erase_if( c, std::move( range.first ), std::move( range.second ), std::forward<Predicate>( pred ) );

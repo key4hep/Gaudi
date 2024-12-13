@@ -19,7 +19,6 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
-#include <vector>
 
 /**
  * @class MsgStream MsgStream.h GaudiKernel/MsgStream.h

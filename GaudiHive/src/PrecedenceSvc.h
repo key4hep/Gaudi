@@ -72,7 +72,7 @@ public:
   void dumpPrecedenceTrace( const EventSlot& ) override;
 
   /// Precedence rules accessor
-  const concurrency::PrecedenceRulesGraph* getRules() const { return &m_PRGraph; };
+  const concurrency::PrecedenceRulesGraph* getRules() const { return &m_PRGraph; }
 
 private:
   StatusCode assembleCFRules( Gaudi::Algorithm*, const std::string&, unsigned int recursionDepth = 0 );

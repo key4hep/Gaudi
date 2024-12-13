@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,10 +18,8 @@
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/TaggedBool.h>
 #include <GaudiKernel/ToStream.h>
-#include <stdexcept>
 #include <string>
 #include <string_view>
-#include <typeinfo>
 #include <utility>
 
 namespace Gaudi {
@@ -1068,7 +1066,7 @@ namespace Gaudi {
     template <unsigned N>
     StatusCode setProperty( IInterface* component, const std::string& name, const char ( &value )[N],
                             const std::string& doc = "" ) {
-      if ( 0 == component ) { return StatusCode::FAILURE; }
+      if ( !component ) { return StatusCode::FAILURE; }
       return setProperty( component, name, std::string{ value, value + N }, doc );
     }
     // ========================================================================

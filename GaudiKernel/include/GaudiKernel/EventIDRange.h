@@ -34,7 +34,7 @@ class EventIDRange {
 public:
   EventIDRange();
   EventIDRange( const EventIDBase& start, const EventIDBase& stop );
-  EventIDRange( const EventIDRange& r ) : m_start( r.m_start ), m_stop( r.m_stop ){};
+  EventIDRange( const EventIDRange& r ) : m_start( r.m_start ), m_stop( r.m_stop ) {}
   EventIDRange& operator=( const EventIDRange& r );
 
   const EventIDBase& start() const { return m_start; }

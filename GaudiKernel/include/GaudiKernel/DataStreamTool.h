@@ -69,15 +69,15 @@ public:
 
   EventSelectorDataStream* lastStream() override;
 
-  size_type size() override { return m_streams.size(); };
+  size_type size() override { return m_streams.size(); }
 
   StatusCode clear() override;
 
-  virtual Streams& getStreams() { return m_streams; };
+  virtual Streams& getStreams() { return m_streams; }
 
-  virtual Streams::iterator beginOfStreams() { return m_streams.begin(); };
+  virtual Streams::iterator beginOfStreams() { return m_streams.begin(); }
 
-  virtual Streams::iterator endOfStreams() { return m_streams.end(); };
+  virtual Streams::iterator endOfStreams() { return m_streams.end(); }
 
 protected:
   StatusCode createSelector( const std::string&, const std::string&, IEvtSelector*& ) override;

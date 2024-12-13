@@ -29,19 +29,19 @@
     residing in data stores.
 
       The class constructors take several arguments neccessary to be passed
-    tyo the data services in order to automatically load objects in case
+    to the data services in order to automatically load objects in case
     they are not yet loaded. This is achieved through a smart pointer
     mechanism i.e. by overloading the operator->() at dereferencing time
-    the the object will be requested from the store.
+    the object will be requested from the store.
 
       The SmartDataStorePtr is meant to be "short living". It only makes
     sense to keep an object instance within e.g. the scope of one method.
     "long living" instances do not make sense and in the contrary
     would be harmful, because the information passed during construction
-    to would be invalid and returned object pointers would actually
+    would be invalid and returned object pointers would actually
     point to hyperspace.
 
-      The intrinsic functionality, wether the object will be retrieved or
+      The intrinsic functionality, whether the object will be retrieved or
     loaded from the data store is defined by the LOADER::.
 
 
@@ -64,7 +64,7 @@ public:
   */
   SmartDataStorePtr( IDataProviderSvc* pService, IRegistry* pRegistry, std::string path )
       : SmartDataObjectPtr( LOADER::access(), pService, pRegistry, std::move( path ) ), m_pObject( nullptr ) {}
-  /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
+  /** Copy constructor: Construct a copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */
   SmartDataStorePtr( const SmartDataObjectPtr& copy ) : SmartDataObjectPtr( copy ), m_pObject( nullptr ) {}

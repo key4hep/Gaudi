@@ -40,10 +40,10 @@ namespace Gaudi {
     enum Mode { Reader = 1 << 2, Writer = 1 << 4 };
 
     DataHandle( DataObjID k, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key( std::move( k ) ), m_owner( owner ), m_mode( a ){};
+        : m_key( std::move( k ) ), m_owner( owner ), m_mode( a ) {}
 
     DataHandle( DataObjID k, bool isCond, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key( std::move( k ) ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
+        : m_key( std::move( k ) ), m_owner( owner ), m_mode( a ), m_isCond( isCond ) {}
 
     using PropertyType = DataHandleProperty;
 
@@ -60,7 +60,7 @@ namespace Gaudi {
     virtual const std::string& objKey() const { return m_key.key(); }
     virtual const DataObjID&   fullKey() const { return m_key; }
 
-    virtual void reset( bool ){};
+    virtual void reset( bool ) {}
 
     virtual std::string pythonRepr() const;
     virtual bool        init() { return true; }

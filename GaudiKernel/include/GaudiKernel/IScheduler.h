@@ -50,7 +50,7 @@ public:
   /// Get the free event processing slots
   virtual unsigned int freeSlots() = 0;
 
-  virtual void dumpState(){};
+  virtual void dumpState() {}
 
   /// Method to inform the scheduler about event views
   virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,

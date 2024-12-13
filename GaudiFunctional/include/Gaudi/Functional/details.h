@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,7 +22,6 @@
 #include <range/v3/view/const.hpp>
 #include <range/v3/view/zip.hpp>
 #include <sstream>
-#include <stdexcept>
 #include <type_traits>
 
 // upstream has renamed namespace ranges::view ranges::views

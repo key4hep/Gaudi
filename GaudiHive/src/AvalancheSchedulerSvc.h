@@ -249,13 +249,13 @@ private:
   std::thread m_thread;
 
   /// Convert a name to an integer
-  inline unsigned int algname2index( const std::string& algoname ) { return m_algname_index_map[algoname]; };
+  inline unsigned int algname2index( const std::string& algoname ) { return m_algname_index_map[algoname]; }
 
   /// Map to bookkeep the information necessary to the name2index conversion
   std::unordered_map<std::string, unsigned int> m_algname_index_map;
 
   /// Convert an integer to a name
-  inline const std::string& index2algname( unsigned int index ) { return m_algname_vect[index]; };
+  inline const std::string& index2algname( unsigned int index ) { return m_algname_vect[index]; }
 
   /// Vector to bookkeep the information necessary to the index2name conversion
   std::vector<std::string> m_algname_vect;
@@ -321,7 +321,7 @@ private:
   /// Struct to hold entries in the alg queues
   struct TaskSpec {
     /// Default constructor
-    TaskSpec(){};
+    TaskSpec() {}
     TaskSpec( IAlgorithm* algPtr, unsigned int algIndex, const std::string& algName, unsigned int algRank,
               bool asynchronous, int slotIndex, EventContext* eventContext )
         : algPtr( algPtr )
@@ -330,7 +330,7 @@ private:
         , algRank( algRank )
         , asynchronous( asynchronous )
         , slotIndex( slotIndex )
-        , contextPtr( eventContext ){};
+        , contextPtr( eventContext ) {}
     /// Copy constructor (to keep a lambda capturing a TaskSpec storable as a std::function value)
     TaskSpec( const TaskSpec& ) = default;
     /// Assignment operator
@@ -377,7 +377,7 @@ public:
   bool next( TaskSpec& ts, bool asynchronous ) {
     if ( asynchronous ) { return m_scheduledAsynchronousQueue.try_pop( ts ); }
     return m_scheduledQueue.try_pop( ts );
-  };
+  }
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

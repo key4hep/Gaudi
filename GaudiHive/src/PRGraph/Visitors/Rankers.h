@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -30,7 +30,7 @@ namespace concurrency {
     using IGraphVisitor::visit;
 
     bool visit( AlgorithmNode& ) override;
-    void reset() override { m_nodesSucceeded = 0; };
+    void reset() override { m_nodesSucceeded = 0; }
 
     void runThroughAdjacents( boost::graph_traits<precedence::PrecTrace>::vertex_descriptor, precedence::PrecTrace );
 

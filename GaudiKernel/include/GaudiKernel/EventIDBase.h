@@ -76,7 +76,7 @@ public:
 public:
   /// \name structors
   //@{
-  EventIDBase(){};
+  EventIDBase() {}
   EventIDBase( number_type run_number, event_number_t event_number, number_type time_stamp = UNDEFNUM,
                number_type time_stamp_ns_offset = 0, number_type lumi_block = UNDEFNUM,
                number_type bunch_crossing_id = 0 );
@@ -162,22 +162,22 @@ public:
   static auto SortByTimeStamp() {
     return ::details::add_deref( ::details::make_cmp(
         []( const EventIDBase& e ) { return std::tie( e.m_time_stamp, e.m_time_stamp_ns_offset ); } ) );
-  };
+  }
 
   static auto SortByRunEvent() {
     return ::details::add_deref(
         ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_event_number ); } ) );
-  };
+  }
 
   static auto SortByLumiEvent() {
     return ::details::add_deref(
         ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_lumi_block, e.m_event_number ); } ) );
-  };
+  }
 
   static auto SortByRunLumi() {
     return ::details::add_deref(
         ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_lumi_block ); } ) );
-  };
+  }
 
 private:
   enum Type { Invalid = 0, RunEvent = 1 << 1, TimeStamp = 1 << 2, LumiEvent = 1 << 3, RunLumi = 1 << 4 };

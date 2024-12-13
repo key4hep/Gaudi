@@ -13,8 +13,6 @@
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiKernel/SerializeSTL.h>
 #include <boost/algorithm/string/join.hpp>
-#include <initializer_list>
-#include <string>
 
 namespace Gaudi::Functional {
 

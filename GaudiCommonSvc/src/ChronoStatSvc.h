@@ -156,7 +156,7 @@ private:
   static MSG::Level int2level( int l ) {
     return static_cast<MSG::Level>(
         std::max( std::min( l, static_cast<int>( MSG::FATAL ) ), static_cast<int>( MSG::NIL ) ) );
-  };
+  }
   // ============================================================================
   /// chrono part
   ChronoMap m_chronoEntities;

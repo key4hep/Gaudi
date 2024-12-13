@@ -67,29 +67,29 @@ namespace Gaudi {
      *  @param name    name of the range
      */
     NamedRange_( typename Base::iterator ibegin, typename Base::iterator iend, std::string name = "" )
-        : Base( ibegin, iend ), m_name( std::move( name ) ){};
+        : Base( ibegin, iend ), m_name( std::move( name ) ) {}
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
-    NamedRange_( const Base& base, std::string name = "" ) : Base( base ), m_name( std::move( name ) ){};
+    NamedRange_( const Base& base, std::string name = "" ) : Base( base ), m_name( std::move( name ) ) {}
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
-    NamedRange_( const typename Base::Base& base, std::string name = "" ) : Base( base ), m_name( std::move( name ) ){};
+    NamedRange_( const typename Base::Base& base, std::string name = "" ) : Base( base ), m_name( std::move( name ) ) {}
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
     NamedRange_( const typename Base::Container& base, std::string name = "" )
-        : Base( base ), m_name( std::move( name ) ){};
+        : Base( base ), m_name( std::move( name ) ) {}
     /* constructor of empty range/sequence
      * @param ibegin  iterator to begin of empty sequence
      *  @param name name of the range
      */
     NamedRange_( typename Base::iterator ibegin, std::string name = "" )
-        : Base( ibegin, ibegin ), m_name( std::move( name ) ){};
+        : Base( ibegin, ibegin ), m_name( std::move( name ) ) {}
     /// destructor
     ~NamedRange_() = default;
     // ========================================================================

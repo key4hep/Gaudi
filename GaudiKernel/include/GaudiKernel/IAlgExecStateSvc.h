@@ -17,7 +17,6 @@
 #include <GaudiKernel/StringKey.h>
 #include <map>
 #include <sstream>
-#include <string>
 
 class EventContext;
 

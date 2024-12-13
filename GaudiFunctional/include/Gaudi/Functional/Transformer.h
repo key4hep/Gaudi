@@ -14,7 +14,7 @@
 #include "utilities.h"
 #include <GaudiKernel/FunctionalFilterDecision.h>
 #include <GaudiKernel/GaudiException.h>
-#include <type_traits>
+#include <tuple>
 #include <utility>
 
 // Adapt an Algorithm (by default, Gaudi::Algorithm) so that derived classes

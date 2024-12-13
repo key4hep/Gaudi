@@ -440,7 +440,7 @@ namespace Gaudi::Histograming::Sink {
         histo.SetBinContent( i, sumWeight );
         histo.setBinW2( i, sumWeight2 );
       }
-    };
+    }
   };
 
   template <typename Traits>
