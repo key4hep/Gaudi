@@ -10,14 +10,12 @@
 \***********************************************************************************/
 
 #include "GPUCruncher.h"
-#include "HiveNumbers.h"
+#include <algorithm>
 #include <chrono>
 #include <ctime>
-#include <fmt/format.h>
 #include <sys/resource.h>
 #include <sys/times.h>
 #include <tbb/tick_count.h>
-#include <thread>
 
 GPUCruncher::CHM GPUCruncher::m_name_ncopies_map;
 
@@ -52,8 +50,6 @@ StatusCode GPUCruncher::initialize() {
   auto sc = Algorithm::initialize();
   if ( !sc ) return sc;
 
-  pinned = Gaudi::CUDA::get_pinned_memory_resource();
-
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
   // we need to wait until initialize when we've read in the input and output key
   // properties, and know their size, and then turn them
@@ -84,59 +80,53 @@ StatusCode GPUCruncher::initialize() {
 StatusCode GPUCruncher::execute( const EventContext& ctx ) const // the execution of the algorithm
 {
 
-  double                   crunchtime;
-  std::pmr::vector<double> input( pinned );
-  if ( m_local_rndm_gen ) {
-    /* This will disappear with a thread safe random number generator service.
-     * Use basic Box-Muller to generate Gaussian random numbers.
-     * The quality is not good for in depth study given that the generator is a
-     * linear congruent.
-     * Throw away basically a free number: we are in a ~~cpu~~ /gpu/ cruncher after all.
-     * The seed is taken from the clock, but we could assign a seed per module to
-     * ensure reproducibility.
-     *
-     * This is not an overkill but rather an exercise towards a thread safe
-     * random number generation.
-     */
+  double              crunchtime;
+  std::vector<double> input{};
+  /* This will disappear with a thread safe random number generator service.
+   * Use basic Box-Muller to generate Gaussian random numbers.
+   * The quality is not good for in depth study given that the generator is a
+   * linear congruent.
+   * Throw away basically a free number: we are in a ~~cpu~~ /gpu/ cruncher after all.
+   * The seed is taken from the clock, but we could assign a seed per module to
+   * ensure reproducibility.
+   *
+   * This is not an overkill but rather an exercise towards a thread safe
+   * random number generation.
+   */
 
-    auto getGausRandom = []( double mean, double sigma ) -> double {
-      unsigned int seed = std::clock();
+  auto getGausRandom = []( double mean, double sigma ) -> double {
+    unsigned int seed = std::clock();
 
-      auto getUnifRandom = []( unsigned int& seed ) -> double {
-        // from "Numerical Recipes"
-        constexpr unsigned int m = 232;
-        constexpr unsigned int a = 1664525;
-        constexpr unsigned int c = 1013904223;
-        seed                     = ( a * seed + c ) % m;
-        const double unif        = double( seed ) / m;
-        return unif;
-      };
-
-      double unif1, unif2;
-      do {
-        unif1 = getUnifRandom( seed );
-        unif2 = getUnifRandom( seed );
-      } while ( unif1 < std::numeric_limits<double>::epsilon() );
-
-      const double normal = sqrt( -2. * log( unif1 ) ) * cos( 2 * M_PI * unif2 );
-
-      return normal * sigma + mean;
+    auto getUnifRandom = []( unsigned int& seed ) -> double {
+      // from "Numerical Recipes"
+      constexpr unsigned int m = 232;
+      constexpr unsigned int a = 1664525;
+      constexpr unsigned int c = 1013904223;
+      seed                     = ( a * seed + c ) % m;
+      const double unif        = double( seed ) / m;
+      return unif;
     };
 
-    crunchtime = fabs( getGausRandom( m_avg_runtime, m_var_runtime ) );
-    // Generate input vector
-    input.reserve( 40000 * crunchtime );
-    for ( int i = 0; i < 40000 * crunchtime; ++i ) { input.push_back( getGausRandom( 10.0, 1.0 ) ); }
-    // End Of temp block
-  } else {
-    // Should be a member.
-    HiveRndm::HiveNumbers rndmgaus( randSvc(), Rndm::Gauss( m_avg_runtime, m_var_runtime ) );
-    crunchtime = std::fabs( rndmgaus() );
-    // Generate input vector
-    for ( int i = 0; i < 2000 * crunchtime; ++i ) { input.push_back( rndmgaus() ); }
-  }
+    double unif1, unif2;
+    do {
+      unif1 = getUnifRandom( seed );
+      unif2 = getUnifRandom( seed );
+    } while ( unif1 < std::numeric_limits<double>::epsilon() );
+
+    const double normal = sqrt( -2. * log( unif1 ) ) * cos( 2 * M_PI * unif2 );
+
+    return normal * sigma + mean;
+  };
+
+  crunchtime = fabs( getGausRandom( m_avg_runtime, m_var_runtime ) );
+  // Generate input vector
+  input.reserve( 50000 * crunchtime );
+  for ( int i = 0; i < 50000 * crunchtime; ++i ) { input.push_back( getGausRandom( 20.0, 1.0 ) ); }
   unsigned int crunchtime_ms = 1000 * crunchtime;
 
+  // First figure out what output should be
+  double lower_bound = std::ranges::min( input );
+  double upper_bound = std::ranges::max( input ) * 256;
   DEBUG_MSG << "Crunching time will be: " << crunchtime_ms << " ms" << endmsg;
   DEBUG_MSG << "Start event " << ctx.evt() << " in slot " << ctx.slot() << " on pthreadID " << std::hex
             << pthread_self() << std::dec << endmsg;
@@ -150,28 +140,44 @@ StatusCode GPUCruncher::execute( const EventContext& ctx ) const // the executio
 
     VERBOSE_MSG << "get from TS: " << inputHandle->objKey() << endmsg;
     DataObject* obj = nullptr;
-    obj             = inputHandle->get();
+    try {
+      obj = inputHandle->get();
+    } catch ( const GaudiException& e ) {
+      error() << "Caught exception with message " << e.what() << " in evt " << ctx.evt() << endmsg;
+      throw;
+    }
     if ( obj == nullptr ) error() << "A read object was a null pointer." << endmsg;
   }
 
-  // Use fiber sleep, should eventually be a GPU computation
   info() << "Crunching..." << endmsg;
   auto                startcrunch = std::chrono::steady_clock::now();
-  std::vector<double> out{ 3.0, 5.0 };
+  std::vector<double> out{};
   gpuExecute( input, out ).orThrow( "GPU_EXECUTE" );
-  auto endcrunch = std::chrono::steady_clock::now();
+  auto endcrunch     = std::chrono::steady_clock::now();
+  int  total_entries = std::accumulate( out.begin() + 2, out.end(), 0, std::plus{} );
+  bool match =
+      ( out.at( 0 ) == lower_bound ) && ( out.at( 1 ) == upper_bound ) && ( total_entries == 256 * input.size() );
   info() << "Crunched." << endmsg;
-  fmt::print( "{}   GPU Crunch time: {}. Input length {}, output length {}.\n", name(),
-              Gaudi::CUDA::SI(
-                  std::chrono::duration_cast<std::chrono::milliseconds>( endcrunch - startcrunch ).count() / 1e3, "s" ),
-              input.size(), out.size() );
+  ( match ? info() : warning() )
+      << std::format(
+             "GPU Crunch time: {} s. Input length {}, total entries {}. Pass: Lower {}, Upper {}, Entries {} ({} "
+             "missing)",
+             std::chrono::duration_cast<std::chrono::milliseconds>( endcrunch - startcrunch ).count() / 1e3,
+             input.size(), total_entries, out.at( 0 ) == lower_bound, out.at( 1 ) == upper_bound,
+             total_entries == 256 * input.size(), 256 * input.size() - total_entries )
+      << endmsg;
 
   VERBOSE_MSG << "outputs number: " << m_outputHandles.size() << endmsg;
   for ( auto& outputHandle : m_outputHandles ) {
     if ( !outputHandle->isValid() ) continue;
 
     VERBOSE_MSG << "put to TS: " << outputHandle->objKey() << endmsg;
-    outputHandle->put( std::make_unique<DataObject>() );
+    try {
+      outputHandle->put( std::make_unique<DataObject>() );
+    } catch ( const GaudiException& e ) {
+      error() << "Caught exception with message " << e.what() << " in evt " << ctx.evt() << endmsg;
+      throw;
+    }
   }
 
   tbb::tick_count endtbb        = tbb::tick_count::now();

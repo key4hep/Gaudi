@@ -28,6 +28,7 @@
 #include <map>
 #include <queue>
 #include <regex>
+#include <semaphore>
 #include <sstream>
 #include <string_view>
 #include <thread>
@@ -96,12 +97,17 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     return StatusCode::FAILURE;
   }
 
-  // Initialize FiberManager
-  m_fiberManager = std::make_unique<FiberManager>( m_numOffloadThreads.value() );
-
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
-  m_thread = std::thread( [this]() { this->activate(); } );
+  std::binary_semaphore fiber_manager_initalized{ 0 };
+  m_thread = std::thread( [this, &fiber_manager_initalized]() {
+    // Initialize FiberManager
+    this->m_fiberManager = std::make_unique<FiberManager>( this->m_numOffloadThreads.value() );
+    fiber_manager_initalized.release();
+    this->activate();
+  } );
+  // Wait for initialization to complete
+  fiber_manager_initalized.acquire();
 
   while ( m_isActive != ACTIVE ) {
     if ( m_isActive == FAILURE ) {
@@ -387,6 +393,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   info() << "Concurrency level information:" << endmsg;
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
+  info() << " o Fiber thread pool size: " << m_numOffloadThreads << endmsg;
 
   // Inform about task scheduling prescriptions
   info() << "Task scheduling settings:" << endmsg;

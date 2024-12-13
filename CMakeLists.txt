@@ -147,6 +147,11 @@ message(STATUS "Gaudi will be built using C++${GAUDI_CXX_STANDARD} standard.")
 set(CMAKE_CXX_STANDARD ${GAUDI_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE) # do not fall back on older version
 set(CMAKE_CXX_EXTENSIONS OFF) # strict c++.. instead of gnu++..
+if(GAUDI_USE_CUDA)
+  set(CMAKE_CUDA_STANDARD ${GAUDI_CXX_STANDARD})
+  set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
+  set(CMAKE_CUDA_EXTENSIONS OFF)
+endif()
 
 # Enable testing with CTest/CDash
 include(CTest)
@@ -181,6 +186,9 @@ add_subdirectory(RootCnv)
 add_subdirectory(RootHistCnv)
 add_subdirectory(GaudiTestSuite)
 add_subdirectory(GaudiExamples)
+if(GAUDI_USE_CUDA)
+add_subdirectory(GaudiCUDA)
+endif()
 
 # Generate GAUDI_VERSION.h
 gaudi_generate_version_header_file()

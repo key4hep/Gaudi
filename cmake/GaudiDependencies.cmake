@@ -93,9 +93,6 @@ set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cma
 set(BUILD_SHARED_LIBS ON)
 find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex fiber
   thread python unit_test_framework program_options log log_setup graph)
-if (GAUDI_USE_CUDA)
-  find_package(vecmem 1.1.0 ${__quiet} REQUIRED)
-endif()
 
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables
@@ -104,6 +101,10 @@ foreach(component IN ITEMS system filesystem regex thread python unit_test_frame
                            date_time headers chrono)
   mark_as_advanced(boost_${component}_DIR)
 endforeach()
+
+if(GAUDI_USE_CUDA)
+  find_package(CUDAToolkit ${__quiet} REQUIRED)
+endif()
 
 if(GAUDI_USE_PYTHON_MAJOR STREQUAL "2")
   set(_gaudi_Python_MIN_VERSION 2.7.15)

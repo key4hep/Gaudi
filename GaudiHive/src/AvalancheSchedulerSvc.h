@@ -192,8 +192,7 @@ private:
   Gaudi::Property<int> m_numOffloadThreads{
       this, "NumOffloadThreads", 2,
       "Number of threads to use for CPU portion of asynchronous algorithms. Asynchronous algorithms must be flagged "
-      "and "
-      "use Boost Fiber functionality to suspend while waiting for offloaded work." };
+      "and use Boost Fiber functionality to suspend while waiting for offloaded work." };
   Gaudi::Property<bool>                     m_checkDeps{ this, "CheckDependencies", false,
                                      "Runtime check of Algorithm Input Data Dependencies" };
   Gaudi::Property<bool>                     m_checkOutput{ this, "CheckOutputUsage", false,

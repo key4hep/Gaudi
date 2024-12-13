@@ -10,14 +10,14 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-
 #include <boost/fiber/algo/shared_work.hpp>
 #include <boost/fiber/condition_variable.hpp>
 #include <boost/fiber/fiber.hpp>
 #include <boost/fiber/mutex.hpp>
-
-#include <fmt/format.h>
-
+#include <boost/version.hpp>
+#if ( BOOST_VERSION >= 108400 )
+#  include <boost/fiber/stack_allocator_wrapper.hpp>
+#endif
 /** @class FiberManager FiberManager.h
  *
  * The FiberManager manages a pool of threads used to run boost::fiber fibers.
@@ -32,27 +32,15 @@
  * */
 
 class FiberManager {
+
 public:
   /** FiberManager constructor
    *
    * @param n_threads Number of threads for CPU portion of asynchronous algorithms.
    *                  These are *in addition* to the TBB worker threads used for CPU algorithms.
    *    * */
-  FiberManager( int n_threads ) {
-    for ( int i = 0; i < n_threads; ++i ) {
-      m_threads.emplace_back( std::thread( [this]() {
-        boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>( true );
-        std::unique_lock lck{ m_shuttingDown_mtx };
-        m_shuttingDown_cv.wait( lck );
-      } ) );
-    }
-  }
-
-  ~FiberManager() {
-    m_shuttingDown_cv.notify_all();
-
-    for ( std::thread& t : m_threads ) { t.join(); }
-  }
+  FiberManager( int n_threads );
+  ~FiberManager();
 
   /** Schedule work to run on the asynchronous pool.
    *
@@ -64,17 +52,14 @@ public:
    * */
   template <typename F>
   void schedule( F&& func ) {
-    if ( !m_activated ) {
-      // Since we never call boost::this_fiber::yield, fibers never actually run on this thread
-      boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>( true );
-      m_activated = true;
-    }
     boost::fibers::fiber( boost::fibers::launch::post, std::forward<F>( func ) ).detach();
+    for ( auto* p : m_schedAlgoList ) { p->notify(); }
   }
 
 private:
+  using SchedAlgo = boost::fibers::algo::shared_work;
   boost::fibers::condition_variable m_shuttingDown_cv{};
   boost::fibers::mutex              m_shuttingDown_mtx{};
-  std::vector<std::thread>          m_threads;
-  bool                              m_activated = false; // set to true when first fiber is scheduled
+  std::vector<std::thread>          m_threads{};
+  std::vector<SchedAlgo*>           m_schedAlgoList{};
 };
