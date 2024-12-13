@@ -47,6 +47,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/AlgToolHistory.cpp
           src/Lib/AllocatorPool.cpp
           src/Lib/Application.cpp
+          src/Lib/AsynchronousAlgorithm.cpp
           src/Lib/Auditor.cpp
           src/Lib/Bootstrap.cpp
           src/Lib/ChronoEntity.cpp
@@ -172,18 +173,6 @@ target_include_directories(GaudiKernel
   PRIVATE ${VectorClass_INCLUDE_DIR}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
   )
-
-# GAUDI_USE_CUDA
-configure_file(include/Gaudi/AsynchronousAlgorithm.h.in include/Gaudi/AsynchronousAlgorithm.h)
-if (GAUDI_USE_CUDA)
-  target_sources(GaudiKernel PRIVATE src/Lib/CUDAAsynchronousAlgHelper.cu)
-  target_include_directories(GaudiKernel PUBLIC
-         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} # for CUDA runtime
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> # for AsynchronousAlgorithm.h
-         )
-  target_link_libraries(GaudiKernel PUBLIC vecmem::core)
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/Gaudi TYPE INCLUDE)
-endif()
 
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h

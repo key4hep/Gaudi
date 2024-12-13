@@ -9,24 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#ifndef __CUDACC__
-#  include <cuda_runtime.h>
-#endif
 #include <fmt/format.h>
 
 #include <atomic>
 #include <memory_resource>
 #include <string>
-
-#define CUDA_CHECK( stmt )                                                                                             \
-  {                                                                                                                    \
-    cudaError_t temp_error = ( stmt );                                                                                 \
-    if ( ( temp_error ) != cudaSuccess ) {                                                                             \
-      std::string errmsg = Gaudi::CUDA::err_fmt( temp_error, __FILE__, __LINE__ );                                     \
-      error() << errmsg << endmsg;                                                                                     \
-      return StatusCode::FAILURE;                                                                                      \
-    }                                                                                                                  \
-  }
 
 namespace Gaudi {
   namespace CUDA {

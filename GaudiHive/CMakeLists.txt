@@ -19,6 +19,7 @@ gaudi_add_module(GaudiHive
                          src/CPUCruncher.cpp
                          src/FetchDataFromFile.cpp
                          src/FetchLeavesFromFile.cpp
+                         src/FiberManager.cpp
                          src/HiveDataBroker.cpp
                          src/HiveNumbers.cpp
                          src/HiveReadAlgorithm.cpp
@@ -49,11 +50,6 @@ gaudi_add_module(GaudiHive
                       ${rt_LIBRARY}
                       ${GAUDI_ATOMIC_LIBS})
 
-if (GAUDI_USE_CUDA)
-  target_sources(GaudiHive PRIVATE
-                         src/GPUCruncher.cpp
-                         src/GPUCruncher.cu )
-endif()
 # Build executable
 gaudi_add_executable(makeThesis
                      SOURCES src/bin/makeThesis.cpp)

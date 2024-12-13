@@ -20,13 +20,12 @@
 
 /** @class GPUCruncher
  *
- *  A test asynchronous algorithm. Might eventually run computations on a GPU but for now
- *  it just sleeps for a few seconds.
+ *  A test asynchronous algorithm on the GPU
  */
 class GPUCruncher : public Gaudi::AsynchronousAlgorithm {
 
 public:
-  typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;
+  using CHM = tbb::concurrent_hash_map<std::string, unsigned int>;
 
   bool isClonable() const override { return true; }
 
@@ -53,18 +52,13 @@ private:
   /// the assignement operator is disabled
   GPUCruncher& operator=( const GPUCruncher& ); // no assignement
   /// The GPU intensive function
-  StatusCode gpuExecute( const std::pmr::vector<double>& in, std::vector<double>& out ) const;
+  StatusCode gpuExecute( const std::vector<double>& in, std::vector<double>& out ) const;
 
   Gaudi::Property<std::vector<std::string>> m_inpKeys{ this, "inpKeys", {}, "" };
   Gaudi::Property<std::vector<std::string>> m_outKeys{ this, "outKeys", {}, "" };
 
   Gaudi::Property<double> m_avg_runtime{ this, "avgRuntime", 1., "Average runtime of the module." };
   Gaudi::Property<double> m_var_runtime{ this, "varRuntime", 0.01, "Variance of the runtime of the module." };
-  Gaudi::Property<bool>   m_local_rndm_gen{ this, "localRndm", true,
-                                          "Decide if the local random generator is to be used" };
-
-  // For allocating CUDA pinned memory
-  std::pmr::memory_resource* pinned;
 
   // For the concurrency
   const uint MAX_INPUTS  = 40;

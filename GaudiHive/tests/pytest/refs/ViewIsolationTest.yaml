@@ -70,6 +70,7 @@ stdout: |-
   AvalancheSchedu...   INFO Concurrency level information:
   AvalancheSchedu...   INFO  o Number of events in flight: 1
   AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':1
+  AvalancheSchedu...   INFO  o Fiber thread pool size:  'NumOffloadThreads':2
   AvalancheSchedu...   INFO Task scheduling settings:
   AvalancheSchedu...   INFO  o Avalanche generation mode: disabled
   AvalancheSchedu...   INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
