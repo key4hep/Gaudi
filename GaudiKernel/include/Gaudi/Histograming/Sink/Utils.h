@@ -600,23 +600,25 @@ namespace Gaudi::Histograming::Sink {
             typename Arithmetic                      = double>
   std::string printProfileHisto1D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
                                    unsigned int stringsWidth = 45 ) {
+    // Type to use for internal calculation. Use double to avoid precision issues across different builds.
+    using FPType = double;
     // get original histogram from the Entity
     auto const& gaudiHisto =
         *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<1, Atomicity, Arithmetic>*>( ent.id() );
     // compute min and max values, we actually display the axis limits
     auto const&  gaudiAxisX = gaudiHisto.template axis<0>();
-    Arithmetic   minValueX  = gaudiAxisX.minValue();
-    Arithmetic   maxValueX  = gaudiAxisX.maxValue();
+    FPType       minValueX  = gaudiAxisX.minValue();
+    FPType       maxValueX  = gaudiAxisX.maxValue();
     unsigned int nBinsX     = gaudiAxisX.numBins();
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
     unsigned int nEntries{ 0 }, nAllEntries{ 0 };
-    Arithmetic   sumX{};
-    Arithmetic   sum2X{};
-    Arithmetic   sum3X{};
-    Arithmetic   sum4X{};
-    Arithmetic   binXSize  = ( maxValueX - minValueX ) / nBinsX;
-    Arithmetic   binXValue = minValueX - binXSize / 2;
+    FPType       sumX{};
+    FPType       sum2X{};
+    FPType       sum3X{};
+    FPType       sum4X{};
+    FPType       binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    FPType       binXValue = minValueX - binXSize / 2;
     for ( unsigned int nx = 0; nx <= nBinsX + 1; nx++ ) {
       auto const& [tmp, sumw2] = gaudiHisto.binValue( nx );
       auto const& [nent, sumw] = tmp;
@@ -639,47 +641,49 @@ namespace Gaudi::Histograming::Sink {
       return fmt::format( fmt::runtime( detail::histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle,
                           stringsWidth, detail::IntWithFixedWidth{}, 0.0, 0.0, 0.0, 0.0 );
     }
-    Arithmetic meanX     = sumX / nEntries;
-    Arithmetic sigmaX2   = sum2X / nEntries - meanX * meanX;
-    Arithmetic stddevX   = sqrt( sigmaX2 );
-    Arithmetic EX3       = sum3X / nEntries;
-    Arithmetic skewnessX = EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX;
-    Arithmetic kurtosisX = sum4X / nEntries - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) );
+    FPType meanX     = sumX / nEntries;
+    FPType sigmaX2   = sum2X / nEntries - meanX * meanX;
+    FPType stddevX   = sqrt( sigmaX2 );
+    FPType EX3       = sum3X / nEntries;
+    FPType skewnessX = EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX;
+    FPType kurtosisX = sum4X / nEntries - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) );
     skewnessX /= sigmaX2 * stddevX;
     kurtosisX /= sigmaX2 * sigmaX2;
     // print
     return fmt::format( fmt::runtime( detail::histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle,
                         stringsWidth, detail::IntWithFixedWidth{ nEntries }, meanX, stddevX, skewnessX,
-                        kurtosisX - Arithmetic{ 3.0 } );
+                        kurtosisX - FPType{ 3.0 } );
   }
 
   template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
             typename Arithmetic                      = double>
   std::string printProfileHisto2D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
                                    unsigned int stringsWidth = 45 ) {
+    // Type to use for internal calculation. Use double to avoid precision issues across different builds.
+    using FPType = double;
     // get original histogram from the Entity
     auto const& gaudiHisto =
         *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<2, Atomicity, Arithmetic>*>( ent.id() );
     // compute min and max values, we actually display the axis limits
     auto const&  gaudiAxisX = gaudiHisto.template axis<0>();
-    Arithmetic   minValueX  = gaudiAxisX.minValue();
-    Arithmetic   maxValueX  = gaudiAxisX.maxValue();
+    FPType       minValueX  = gaudiAxisX.minValue();
+    FPType       maxValueX  = gaudiAxisX.maxValue();
     unsigned int nBinsX     = gaudiAxisX.numBins();
     auto const&  gaudiAxisY = gaudiHisto.template axis<1>();
-    Arithmetic   minValueY  = gaudiAxisY.minValue();
-    Arithmetic   maxValueY  = gaudiAxisY.maxValue();
+    FPType       minValueY  = gaudiAxisY.minValue();
+    FPType       maxValueY  = gaudiAxisY.maxValue();
     unsigned int nBinsY     = gaudiAxisY.numBins();
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
-    Arithmetic nEntries{ 0 }, nAllEntries{ 0 };
-    Arithmetic sumX{}, sumY{};
-    Arithmetic sum2X{}, sum2Y{};
-    Arithmetic binXSize  = ( maxValueX - minValueX ) / nBinsX;
-    Arithmetic binYSize  = ( maxValueY - minValueY ) / nBinsY;
-    Arithmetic binYValue = minValueY - binYSize / 2;
+    FPType nEntries{ 0 }, nAllEntries{ 0 };
+    FPType sumX{}, sumY{};
+    FPType sum2X{}, sum2Y{};
+    FPType binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    FPType binYSize  = ( maxValueY - minValueY ) / nBinsY;
+    FPType binYValue = minValueY - binYSize / 2;
     for ( unsigned int ny = 0; ny <= nBinsY + 1; ny++ ) {
-      Arithmetic binXValue = minValueX - binXSize / 2;
-      auto       offset    = ny * ( nBinsX + 2 );
+      FPType binXValue = minValueX - binXSize / 2;
+      auto   offset    = ny * ( nBinsX + 2 );
       for ( unsigned int nx = 0; nx <= nBinsX + 1; nx++ ) {
         auto const& [tmp, sumw2] = gaudiHisto.binValue( nx + offset );
         auto const& [nent, sumw] = tmp;
@@ -695,10 +699,10 @@ namespace Gaudi::Histograming::Sink {
       }
       binYValue += binYSize;
     }
-    Arithmetic meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
-    Arithmetic stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
-    Arithmetic meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
-    Arithmetic stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+    FPType meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
+    FPType stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    FPType meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
+    FPType stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
     // print
     std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo2DFormatting ), name, stringsWidth, stringsWidth, ftitle,
@@ -709,37 +713,39 @@ namespace Gaudi::Histograming::Sink {
             typename Arithmetic                      = double>
   std::string printProfileHisto3D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
                                    unsigned int stringsWidth = 45 ) {
+    // Type to use for internal calculation. Use double to avoid precision issues across different builds.
+    using FPType = double;
     // get original histogram from the Entity
     auto const& gaudiHisto =
         *reinterpret_cast<Gaudi::Accumulators::StaticProfileHistogram<3, Atomicity, Arithmetic>*>( ent.id() );
     // compute min and max values, we actually display the axis limits
     auto const&  gaudiAxisX = gaudiHisto.template axis<0>();
-    Arithmetic   minValueX  = gaudiAxisX.minValue();
-    Arithmetic   maxValueX  = gaudiAxisX.maxValue();
+    FPType       minValueX  = gaudiAxisX.minValue();
+    FPType       maxValueX  = gaudiAxisX.maxValue();
     unsigned int nBinsX     = gaudiAxisX.numBins();
     auto const&  gaudiAxisY = gaudiHisto.template axis<1>();
-    Arithmetic   minValueY  = gaudiAxisY.minValue();
-    Arithmetic   maxValueY  = gaudiAxisY.maxValue();
+    FPType       minValueY  = gaudiAxisY.minValue();
+    FPType       maxValueY  = gaudiAxisY.maxValue();
     unsigned int nBinsY     = gaudiAxisY.numBins();
     auto const&  gaudiAxisZ = gaudiHisto.template axis<2>();
-    Arithmetic   minValueZ  = gaudiAxisZ.minValue();
-    Arithmetic   maxValueZ  = gaudiAxisZ.maxValue();
+    FPType       minValueZ  = gaudiAxisZ.minValue();
+    FPType       maxValueZ  = gaudiAxisZ.maxValue();
     unsigned int nBinsZ     = gaudiAxisZ.numBins();
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
-    Arithmetic nEntries{ 0 }, nAllEntries{ 0 };
-    Arithmetic sumX{}, sumY{}, sumZ{};
-    Arithmetic sum2X{}, sum2Y{}, sum2Z{};
-    Arithmetic binXSize  = ( maxValueX - minValueX ) / nBinsX;
-    Arithmetic binYSize  = ( maxValueY - minValueY ) / nBinsY;
-    Arithmetic binZSize  = ( maxValueZ - minValueZ ) / nBinsZ;
-    Arithmetic binZValue = minValueZ - binZSize / 2;
+    FPType nEntries{ 0 }, nAllEntries{ 0 };
+    FPType sumX{}, sumY{}, sumZ{};
+    FPType sum2X{}, sum2Y{}, sum2Z{};
+    FPType binXSize  = ( maxValueX - minValueX ) / nBinsX;
+    FPType binYSize  = ( maxValueY - minValueY ) / nBinsY;
+    FPType binZSize  = ( maxValueZ - minValueZ ) / nBinsZ;
+    FPType binZValue = minValueZ - binZSize / 2;
     for ( unsigned int nz = 0; nz <= nBinsZ + 1; nz++ ) {
-      Arithmetic binYValue = minValueY - binYSize / 2;
-      auto       offsetz   = nz * ( nBinsY + 2 );
+      FPType binYValue = minValueY - binYSize / 2;
+      auto   offsetz   = nz * ( nBinsY + 2 );
       for ( unsigned int ny = 0; ny <= nBinsY; ny++ ) {
-        Arithmetic binXValue = minValueX - binXSize / 2;
-        auto       offset    = ( offsetz + ny ) * ( nBinsX + 2 );
+        FPType binXValue = minValueX - binXSize / 2;
+        auto   offset    = ( offsetz + ny ) * ( nBinsX + 2 );
         for ( unsigned int nx = 0; nx <= nBinsX; nx++ ) {
           auto const& [tmp, sumw2] = gaudiHisto.binValue( nx + offset );
           auto const& [nent, sumw] = tmp;
@@ -759,12 +765,12 @@ namespace Gaudi::Histograming::Sink {
       }
       binZValue += binZSize;
     }
-    Arithmetic meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
-    Arithmetic stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
-    Arithmetic meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
-    Arithmetic stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
-    Arithmetic meanZ   = nEntries > 0 ? sumZ / nEntries : 0.0;
-    Arithmetic stddevZ = nEntries > 0 ? sqrt( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
+    FPType meanX   = nEntries > 0 ? sumX / nEntries : 0.0;
+    FPType stddevX = nEntries > 0 ? sqrt( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    FPType meanY   = nEntries > 0 ? sumY / nEntries : 0.0;
+    FPType stddevY = nEntries > 0 ? sqrt( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+    FPType meanZ   = nEntries > 0 ? sumZ / nEntries : 0.0;
+    FPType stddevZ = nEntries > 0 ? sqrt( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
     // print
     std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo3DFormatting ), name, stringsWidth, stringsWidth, ftitle,
