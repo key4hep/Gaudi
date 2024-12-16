@@ -91,7 +91,7 @@ else()
     set(optionalCUDA)
 endif()
 
-project(Gaudi VERSION 39.1
+project(Gaudi VERSION 39.2
               LANGUAGES CXX ${optionalCUDA}
               DESCRIPTION "Gaudi Software Framework"
               HOMEPAGE_URL "https://cern.ch/gaudi")

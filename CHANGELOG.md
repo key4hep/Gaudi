@@ -6,6 +6,38 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v39r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r2) - 2024-12-16
+This is a minor update just to wrap up 2024. We have some clean up, but mostly
+bug fixes.
+
+A special thanks to all the people that contributed to this release:
+@bstanisl,
+@dabacher,
+@fwinkl,
+@jcarcell,
+@jonrob,
+@sailer,
+@sponce.
+
+### Changed
+- New AsynchronousAlgorithms API (gaudi/Gaudi!1680)
+- Histograming/Sink/Utils.h: Use double as type for internal histogram stats calculations (gaudi/Gaudi!1682)
+- THistSvc: abort job in case file size is too large (gaudi/Gaudi!1681)
+- CompressionSetting: replace deprecated and removed enums (gaudi/Gaudi!1678)
+
+### Added
+- Add parser for `std::map<std::string, std::pair<int, int>>` properties (!1676)
+
+### Fixed
+- Cleanup headers and imports (gaudi/Gaudi!1645)
+- Fixed ROOT Sink for Profile histograms 1D (gaudi/Gaudi#347, gaudi/Gaudi!1675)
+- Improve pytest coverage report modules selection (gaudi/Gaudi!1679)
+- Polishing of GaudiHistoArray and its test based on #346 (gaudi/Gaudi#346, gaudi/Gaudi!1674)
+- Fixes for various cppcheck defects (gaudi/Gaudi!1670, gaudi/Gaudi!1672, gaudi/Gaudi!1673)
+- Fix potential overflow in sscanf usage (gaudi/Gaudi!1669)
+- SmartDataObjectPtr: fix assignment operator (gaudi/Gaudi!1668)
+
+
 ## [v39r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r1) - 2024-10-31
 Today we have a minor release collecting a number of bugfixes and improvements.
 In particular there are several fixes and usability improvements for
