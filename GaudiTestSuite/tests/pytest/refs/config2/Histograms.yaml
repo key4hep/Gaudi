@@ -133,20 +133,20 @@ histos:
         ID: ProfGauss
         Title: '"Profile, Gaussian mean=0, sigma=1, ..."'
         '#': '50000'
-        Mean: '-0.10834'
-        RMS: '0.99458'
-        Skewness: '-0.0074248'
-        Kurtosis: '0.0016078'
+        Mean: '-0.0088113'
+        RMS: '0.99456'
+        Skewness: '-0.0015638'
+        Kurtosis: '0.0048845'
         ? ''
         : ''
       ProfGaussBuf:
         ID: ProfGaussBuf
         Title: '"Profile, Gaussian mean=0, sigma=1, ..."'
         '#': '500000'
-        Mean: '-0.10834'
-        RMS: '0.99458'
-        Skewness: '-0.0074248'
-        Kurtosis: '0.0016078'
+        Mean: '-0.0088113'
+        RMS: '0.99456'
+        Skewness: '-0.0015638'
+        Kurtosis: '0.0048845'
         ? ''
         : ''
       ProfGaussInt:
@@ -154,50 +154,50 @@ histos:
         Title: '"Profile, Gaussian mean=0, sigma=1, ..."'
         '#': '50000'
         Mean: '0.49618'
-        RMS: '0.67652'
-        Skewness: '-0.01245'
-        Kurtosis: '2.4154'
+        RMS: '0.67755'
+        Skewness: '-0.0026721'
+        Kurtosis: '2.4174'
         ? ''
         : ''
       ProfGaussNA:
         ID: ProfGaussNA
         Title: '"Profile, Gaussian mean=0, sigma=1, ..."'
         '#': '50000'
-        Mean: '-0.10834'
-        RMS: '0.99458'
-        Skewness: '-0.0074248'
-        Kurtosis: '0.0016078'
+        Mean: '-0.0088113'
+        RMS: '0.99456'
+        Skewness: '-0.0015638'
+        Kurtosis: '0.0048845'
         ? ''
         : ''
       ProfGaussW:
         ID: ProfGaussW
         Title: '"Profile, Gaussian mean=0, sigma=1, ..."'
         '#': '50000'
-        Mean: '-0.0082866'
-        RMS: '0.99259'
-        Skewness: '-0.0049453'
-        Kurtosis: '-0.029363'
+        Mean: '-0.0088113'
+        RMS: '0.99456'
+        Skewness: '-0.0015638'
+        Kurtosis: '0.0048845'
         ? ''
         : ''
     2DProf:
       ProfGaussFlat:
       - ProfGaussFlat
       - Profile, Gaussian V Flat, atomic
-      - Ents/All=25077/50000<X>/sX=-0.21741/2.8724,<Y>/sY=-0.017079/0.99876
+      - Ents/All=25077/50000<X>/sX=-0.016751/2.8706,<Y>/sY=-0.019082/0.99849
       ProfGaussFlatBuf:
       - ProfGaussFlatBuf
       - Profile, Gaussian V Flat, buffered
-      - Ents/All=250770/500000<X>/sX=-0.21741/2.8724,<Y>/sY=-0.017079/0.99876
+      - Ents/All=250770/500000<X>/sX=-0.016751/2.8706,<Y>/sY=-0.019082/0.99849
       ProfGaussFlatInt:
       - ProfGaussFlatInt
       - Profile, Gaussian V Flat, integer v...
-      - Ents/All=27539/50000<X>/sX=0.040288/2.7261,<Y>/sY=0.48932/0.6813
+      - Ents/All=123664/50000<X>/sX=0.044548/2.7229,<Y>/sY=0.48865/0.68191
       ProfGaussFlatNA:
       - ProfGaussFlatNA
       - Profile, Gaussian V Flat, non atomic
-      - Ents/All=25077/50000<X>/sX=-0.21741/2.8724,<Y>/sY=-0.017079/0.99876
+      - Ents/All=25077/50000<X>/sX=-0.016751/2.8706,<Y>/sY=-0.019082/0.99849
       ProfGaussFlatW:
       - ProfGaussFlatW
       - Profile, Gaussian V Flat, weighted
-      - Ents/All=12158/50000<X>/sX=-0.017009/2.8697,<Y>/sY=-0.017322/0.9612
+      - Ents/All=62588/50000<X>/sX=-0.016751/2.8706,<Y>/sY=-0.019082/0.99849
 ttrees: {}
