@@ -6,7 +6,7 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
-## [v39r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r2) - 2024-12-16
+## [v39r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r2) - 2024-12-19
 This is a minor update just to wrap up 2024. We have some clean up, but mostly
 bug fixes.
 
@@ -29,6 +29,7 @@ A special thanks to all the people that contributed to this release:
 - Add parser for `std::map<std::string, std::pair<int, int>>` properties (!1676)
 
 ### Fixed
+- `Histograming/Sink/Utils.h`: Fix calculation of stats for (profile) histograms (gaudi/Gaudi#351, gaudi/Gaudi!1684)
 - Cleanup headers and imports (gaudi/Gaudi!1645)
 - Fixed ROOT Sink for Profile histograms 1D (gaudi/Gaudi#347, gaudi/Gaudi!1675)
 - Improve pytest coverage report modules selection (gaudi/Gaudi!1679)
