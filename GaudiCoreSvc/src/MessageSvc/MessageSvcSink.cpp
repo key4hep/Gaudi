@@ -282,61 +282,63 @@ void Gaudi::Monitoring::MessageSvcSink::flush( bool ) {
       }
     }
   };
-  applyToAllSortedEntities( [&]( std::string const& algo, std::string const& name,
-                                 Monitoring::Hub::Entity const& ent ) {
-    // Did we change to new component ?
-    if ( algo != curAlgo ) {
-      dumpAlgoCounters();
-      curAlgo            = algo;
-      nbNonEmptyEntities = { 0, 0, 0, 0, 0, 0, 0 };
-      curLog             = { std::ostringstream{}, std::ostringstream{}, std::ostringstream{}, std::ostringstream{},
-                             std::ostringstream{}, std::ostringstream{}, std::ostringstream{} };
-    }
-    // first try dedicated binary printers for profile histograms
-    auto typeIndex = ent.typeIndex();
-    auto binWriter = binRegistry.find( typeIndex );
-    if ( binWriter != binRegistry.end() ) {
-      auto index = binWriter->second.first;
-      ++nbNonEmptyEntities[index];
-      curLog[index] << "\n" << binWriter->second.second( name, ent, m_histoStringsWidth );
-    } else {
-      // use json representation of the entity
-      nlohmann::json const j = ent;
-      // do we have an histogram ?
-      const auto type = j.at( "type" ).get<std::string>();
-      if ( type.find( "histogram" ) == 0 ) {
-        if ( !j.at( "empty" ).template get<bool>() ) {
-          unsigned int d         = j.at( "dimension" ).get<int>();
-          auto         subtype   = std::string_view( type ).substr( 10 ); // remove "histogram:" in front
-          bool         isProfile = subtype.substr( 0, 15 ) == "WeightedProfile" || subtype.substr( 0, 7 ) == "Profile";
-          unsigned int index     = ( isProfile ? 3 : 0 ) + d;
-          auto         title     = j.at( "title" ).get<std::string>();
-          switch ( d ) {
-          case 1:
-            curLog[index] << "\n"
-                          << Gaudi::Histograming::Sink::printHistogram1D( type, name, title, j, m_histoStringsWidth );
-            break;
-          case 2:
-            curLog[index] << "\n"
-                          << Gaudi::Histograming::Sink::printHistogram2D( type, name, title, j, m_histoStringsWidth );
-            break;
-          case 3:
-            curLog[index] << "\n"
-                          << Gaudi::Histograming::Sink::printHistogram3D( type, name, title, j, m_histoStringsWidth );
-            break;
-          }
+  applyToAllSortedEntities(
+      [&]( std::string const& algo, std::string const& name, Monitoring::Hub::Entity const& ent ) {
+        // Did we change to new component ?
+        if ( algo != curAlgo ) {
+          dumpAlgoCounters();
+          curAlgo            = algo;
+          nbNonEmptyEntities = { 0, 0, 0, 0, 0, 0, 0 };
+          curLog             = { std::ostringstream{}, std::ostringstream{}, std::ostringstream{}, std::ostringstream{},
+                                 std::ostringstream{}, std::ostringstream{}, std::ostringstream{} };
+        }
+        // first try dedicated binary printers for profile histograms
+        auto typeIndex = ent.typeIndex();
+        auto binWriter = binRegistry.find( typeIndex );
+        if ( binWriter != binRegistry.end() ) {
+          auto index = binWriter->second.first;
           ++nbNonEmptyEntities[index];
+          std::string logLine = binWriter->second.second( name, ent, m_histoStringsWidth );
+          if ( logLine.size() > 0 ) { curLog[index] << "\n" << logLine; }
+        } else {
+          // use json representation of the entity
+          nlohmann::json const j = ent;
+          // do we have an histogram ?
+          const auto type = j.at( "type" ).get<std::string>();
+          if ( type.find( "histogram" ) == 0 ) {
+            if ( !j.at( "empty" ).template get<bool>() ) {
+              unsigned int d       = j.at( "dimension" ).get<int>();
+              auto         subtype = std::string_view( type ).substr( 10 ); // remove "histogram:" in front
+              bool isProfile     = subtype.substr( 0, 15 ) == "WeightedProfile" || subtype.substr( 0, 7 ) == "Profile";
+              unsigned int index = ( isProfile ? 3 : 0 ) + d;
+              auto         title = j.at( "title" ).get<std::string>();
+              std::string  logLine{ "" };
+              switch ( d ) {
+              case 1:
+                logLine = Gaudi::Histograming::Sink::printHistogram1D( type, name, title, j, m_histoStringsWidth );
+                break;
+              case 2:
+                logLine = Gaudi::Histograming::Sink::printHistogram2D( type, name, title, j, m_histoStringsWidth );
+                break;
+              case 3:
+                logLine = Gaudi::Histograming::Sink::printHistogram3D( type, name, title, j, m_histoStringsWidth );
+                break;
+              }
+              if ( logLine.size() > 0 ) {
+                curLog[index] << "\n" << logLine;
+                ++nbNonEmptyEntities[index];
+              }
+            }
+          } else {
+            // regular counter. Is current counter empty ?
+            if ( !j.at( "empty" ).template get<bool>() ) {
+              ++nbNonEmptyEntities[0];
+              curLog[0] << "\n";
+              printCounter( curLog[0], name, j );
+            }
+          }
         }
-      } else {
-        // regular counter. Is current counter empty ?
-        if ( !j.at( "empty" ).template get<bool>() ) {
-          ++nbNonEmptyEntities[0];
-          curLog[0] << "\n";
-          printCounter( curLog[0], name, j );
-        }
-      }
-    }
-  } );
+      } );
   // last component
   dumpAlgoCounters();
 }
