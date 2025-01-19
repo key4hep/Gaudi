@@ -11,9 +11,7 @@
 // system headers
 #include <cassert>
 #include <cstdio>
-#include <format>
 #include <sstream>
-#include <streambuf>
 
 // boost headers
 #include <boost/algorithm/string/case_conv.hpp>
