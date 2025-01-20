@@ -13,6 +13,8 @@
 #include <cstdio>
 #include <sstream>
 
+#include <fmt/format.h>
+
 // boost headers
 #include <boost/algorithm/string/case_conv.hpp>
 
