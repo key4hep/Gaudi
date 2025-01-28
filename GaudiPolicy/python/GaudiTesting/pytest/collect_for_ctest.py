@@ -1,5 +1,5 @@
 ###############################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb Collaboration           #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb Collaboration      #
 #                                                                             #
 # This software is distributed under the terms of the GNU General Public      #
 # Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   #
@@ -109,9 +109,11 @@ set_tests_properties({name} PROPERTIES {properties})
 def pytest_collection_finish(session):
     args = session.ctest_args
     output_filename = args.get("output_file")
+
     if not output_filename:
         # nothing to do if no output file is specified
         return
+
     output = open(output_filename, "w")
     output_rootdir = Path(output_filename).parent
 
@@ -126,6 +128,9 @@ def pytest_collection_finish(session):
         properties += f'ENVIRONMENT "CMAKE_CURRENT_BINARY_DIR={args["binary_dir"]}" '
     properties += " ".join(args["properties"])
 
+    producers = defaultdict(list)  # test name -> list of fixtures it produces
+    consumers = defaultdict(list)  # test name -> list of fixtures it depends on
+    fixtures = defaultdict(list)  # fixture name -> list of tests that produce it
     names = []
     for path in sorted(session.ctest_files):
         name = (
@@ -145,15 +150,33 @@ def pytest_collection_finish(session):
         )
 
         if session.ctest_fixture_setup.get(path):
-            output.write(
-                'set_tests_properties('
-                f'{name} PROPERTIES FIXTURES_SETUP "{";".join(session.ctest_fixture_setup[path])}")\n'
-            )
+            for fixture in session.ctest_fixture_setup[path]:
+                producers[name].append(fixture)
+                fixtures[fixture].append(name)
 
         if session.ctest_fixture_required.get(path):
+            for fixture in session.ctest_fixture_required[path]:
+                consumers[name].append(fixture)
+
+        names.append(name)
+
+    for name in names:
+        if name in producers:
             output.write(
                 'set_tests_properties('
-                f'{name} PROPERTIES FIXTURES_REQUIRED "{";".join(session.ctest_fixture_required[path])}")\n'
+                f'{name} PROPERTIES FIXTURES_SETUP "{";".join(producers[name])}")\n'
+            )
+
+        if name in consumers:
+            producer_test_names = []
+            for fixture in consumers[name]:
+                producer_test_names.extend(fixtures[fixture])
+            output.write(
+                'if (DEFINED ENV{PYTEST_DISABLE_FIXTURES_REQUIRED})\n'
+                f'  set_tests_properties({name} PROPERTIES DEPENDS "{";".join(producer_test_names)}")\n'
+                'else()\n'
+                f'  set_tests_properties({name} PROPERTIES FIXTURES_REQUIRED "{";".join(consumers[name])}")\n'
+                'endif()\n'
             )
 
         # we force one test to be run one by one
@@ -163,7 +186,6 @@ def pytest_collection_finish(session):
                 f"set_tests_properties({name} PROPERTIES ENVIRONMENT COVERAGE_FILE={output_rootdir}/.coverage.{name})\n"
                 f"set_tests_properties({name} PROPERTIES FIXTURES_SETUP {name})\n"
             )
-        names.append(name)
 
     if coverage and names:
         combine_test = (args["prefix"] + "coverage_combine").replace("/", ".")
