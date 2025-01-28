@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -13,6 +13,7 @@ import inspect
 import json
 import os
 import re
+import time
 from pathlib import Path
 from textwrap import dedent
 from typing import Callable, Dict, List
@@ -49,6 +50,10 @@ class GaudiExeTest(SubprocessBaseTest):
         """
         command = super()._prepare_command(tmp_path=tmp_path)
 
+        def generate_unique_options_filename(extension, directory):
+            timestamp = time.strftime("%Y%m%d_%H%M%S")
+            return directory / f"options_{timestamp}.{extension}"
+
         if hasattr(cls, "options") and cls.options is not None:
             options = cls.options
             filename = None
@@ -59,14 +64,14 @@ class GaudiExeTest(SubprocessBaseTest):
                 clean_source = dedent(
                     "\n".join(source_lines[1:])
                 )  # Skip the first line (def options():)
-                filename = tmp_path / "options.py"
+                filename = generate_unique_options_filename("py", tmp_path)
                 with open(filename, "w") as file:
                     file.write(clean_source)
                     cls.options_code = CodeWrapper(clean_source, "python")
 
             # Check if options is a dictionary
             elif isinstance(options, dict):
-                filename = tmp_path / "options.json"
+                filename = generate_unique_options_filename("json", tmp_path)
                 with open(filename, "w") as file:
                     json.dump(options, file, indent=4)
                     cls.options_code = CodeWrapper(options, "json")
@@ -74,7 +79,7 @@ class GaudiExeTest(SubprocessBaseTest):
             # Check if options is a string
             elif isinstance(options, str):
                 options = dedent(options)
-                filename = tmp_path / "options.opts"
+                filename = generate_unique_options_filename("opts", tmp_path)
                 with open(filename, "w") as file:
                     file.write(options)
                     cls.options_code = CodeWrapper(options, "cpp")

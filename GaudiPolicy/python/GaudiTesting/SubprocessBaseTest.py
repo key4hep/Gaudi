@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -146,16 +146,20 @@ class SubprocessBaseTest:
             kill_tree(proc.pid, signal.SIGKILL)
 
     @classmethod
+    def _prepare_execution(cls, tmp_path=None):
+        command = cls._prepare_command(tmp_path=tmp_path)
+        env = cls._prepare_environment()
+        os.makedirs(cls.popen_kwargs.get("cwd", tmp_path), exist_ok=True)
+        return command, env
+
+    @classmethod
     def run_program(cls, tmp_path=None) -> FixtureResult:
         """
         Run the specified program and capture its output.
         """
         start_time = datetime.now()
-        command = cls._prepare_command(tmp_path=tmp_path)
-        env = cls._prepare_environment()
-        # ensure the required working directory exist
-        # (the entry cwd of popen_kwargs is set by the fixture "fixture_result")
-        os.makedirs(cls.popen_kwargs["cwd"], exist_ok=True)
+        command, env = cls._prepare_execution(tmp_path=tmp_path)
+
         proc = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
@@ -217,6 +221,18 @@ class SubprocessBaseTest:
             expanded_command=command,
             env=env,
             cwd=cls.popen_kwargs["cwd"],
+        )
+
+    @classmethod
+    def run_program_for_dbg(cls, tmp_path):
+        tmp_path = cls.popen_kwargs.get("cwd", tmp_path)
+        command, env = cls._prepare_execution(tmp_path=tmp_path)
+        print("Running the command: ", command)
+        subprocess.run(
+            command,
+            env=env,
+            cwd=tmp_path,
+            **cls.popen_kwargs,
         )
 
     @pytest.mark.do_not_collect_source
