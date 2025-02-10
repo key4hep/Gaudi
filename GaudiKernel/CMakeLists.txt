@@ -121,7 +121,6 @@ gaudi_add_library(GaudiKernel
           src/Lib/PrintAlgsSequences.cpp
           src/Lib/ProcessDescriptor.cpp
           src/Lib/Property.cpp
-          src/Lib/PropertyMgr.cpp
           src/Lib/Range.cpp
           src/Lib/RegistryEntry.cpp
           src/Lib/RenounceToolInputsVisitor.cpp
