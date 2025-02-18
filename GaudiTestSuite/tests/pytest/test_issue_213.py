@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -13,6 +13,15 @@ import json
 from GaudiTesting import GaudiExeTest
 
 
+def config():
+    # use a ConfigurableUser specialization
+    from Configurables import GaudiTestSuiteCommonConf
+
+    GaudiTestSuiteCommonConf(DummyEvents=42)
+
+    # no GaudiConfig2 configurables to add
+
+
 class Test(GaudiExeTest):
     """
     Run gaudirun.py with a Python option function that instantiates
@@ -22,15 +31,7 @@ class Test(GaudiExeTest):
     """
 
     opts_dump = "opts.json"
-    command = ["gaudirun.py", "-n", "-o", opts_dump]
-
-    def options(self):
-        # use a ConfigurableUser specialization
-        from Configurables import GaudiTestSuiteCommonConf
-
-        GaudiTestSuiteCommonConf(DummyEvents=42)
-
-        # no GaudiConfig2 configurables to add
+    command = ["gaudirun.py", "-n", "-o", opts_dump, f"{__file__}:config"]
 
     def test_opts_dump(self, cwd):
         opts_path = cwd / self.opts_dump
