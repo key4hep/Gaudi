@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -125,7 +125,19 @@ class GaudiExeTest(SubprocessBaseTest):
         if cls.reference:
             try:
                 if key in reference:
-                    assert data == reference[key]
+                    # If the data is less than 100k, we can compare it directly
+                    # and let pytest generate a nice diff, otherwise we hide the values
+                    # to pytest to avoid that the test (practically) hangs.
+                    #
+                    # See
+                    # - https://gitlab.cern.ch/lhcb/LHCb/-/issues/252
+                    # - https://gitlab.cern.ch/gaudi/Gaudi/-/merge_requests/1375
+                    # - https://gitlab.cern.ch/lhcb/LHCb/-/merge_requests/4773#note_9075367
+                    if len(data) < 100000:
+                        assert data == reference[key]
+                    else:
+                        same_as_reference = data == reference[key]
+                        assert same_as_reference, "data is different from reference"
             except AssertionError:
                 record_property(
                     f"{key}_diff",
