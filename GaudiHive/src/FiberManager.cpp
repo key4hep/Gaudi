@@ -23,7 +23,7 @@ FiberManager::FiberManager( int n_threads ) {
 #endif
 
   for ( int i = 0; i < n_threads; ++i ) {
-    m_threads.emplace_back( std::thread( [this, i, n_threads]() {
+    m_threads.emplace_back( std::thread( [this, i]() {
       auto* algo_ptr          = new SchedAlgo( true );
       m_schedAlgoList.at( i ) = algo_ptr;
 #if ( BOOST_VERSION >= 108400 )
