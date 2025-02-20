@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -32,6 +32,7 @@
 #include <range/v3/view/split_when.hpp>
 #include <range/v3/view/transform.hpp>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <fmt/format.h>
@@ -604,6 +605,41 @@ namespace Gaudi::Histograming::Sink {
     previousDir->cd();
   }
 
+  namespace details {
+    template <typename TYPE>
+    struct BinAvValue {
+    private:
+      TYPE m_min{ 0 }, m_max{ 0 }, m_binSize{ 0 };
+      bool m_isInt{ false };
+
+    public:
+      BinAvValue( const TYPE minV, const TYPE maxV, unsigned int nbins, const bool isInt )
+          : m_min( minV ), m_max( maxV ), m_isInt( isInt ) {
+        if ( nbins > 0 ) { m_binSize = ( maxV - minV ) / nbins; }
+      }
+      auto operator()( const unsigned int n ) const {
+        TYPE binAv{ 0 };
+        if ( m_isInt ) {
+          // Need to find all int values that are in range for this bin and form average
+          const auto   binMin = m_min + ( n - 1.0 ) * m_binSize;
+          const auto   binMax = binMin + m_binSize;
+          unsigned int nAv{ 0 };
+          for ( auto iv = std::floor( binMin ); iv < std::ceil( binMax ); iv += 1.0 ) {
+            if ( binMin <= iv && iv <= binMax ) {
+              binAv += iv;
+              ++nAv;
+            }
+          }
+          binAv = ( nAv > 0 ? binAv / nAv : 0 );
+        } else {
+          // For floats just use bin centre
+          binAv = m_min + ( n - 0.5 ) * m_binSize;
+        }
+        return binAv;
+      }
+    };
+  } // namespace details
+
   template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
             typename Arithmetic                      = double>
   std::string printProfileHisto1D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
@@ -620,19 +656,16 @@ namespace Gaudi::Histograming::Sink {
     const unsigned int nBinsX     = gaudiAxisX.numBins();
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
-    unsigned int nEntries{ 0 }, nAllEntries{ 0 };
-    FPType       totalSumW{ 0 };
-    FPType       sumX{ 0 };
-    FPType       sum2X{ 0 };
-    FPType       sum3X{ 0 };
-    FPType       sum4X{ 0 };
-    const FPType binXSize = ( maxValueX - minValueX ) / nBinsX;
+    unsigned int              nEntries{ 0 }, nAllEntries{ 0 };
+    FPType                    totalSumW{ 0 };
+    FPType                    sumX{ 0 }, sum2X{ 0 }, sum3X{ 0 }, sum4X{ 0 };
+    const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, std::is_integral_v<Arithmetic> );
     for ( unsigned int nx = 0; nx <= nBinsX + 1; ++nx ) {
       auto const& [tmp, sumw2] = gaudiHisto.binValue( nx );
       auto const& [nent, sumw] = tmp;
       nAllEntries += nent;
       if ( nx > 0 && nx <= nBinsX ) {
-        const FPType binXValue = minValueX + ( nx - 0.5 ) * binXSize;
+        const FPType binXValue = xBinAv( nx );
         nEntries += nent;
         totalSumW += sumw;
         auto val = binXValue * sumw;
@@ -684,12 +717,12 @@ namespace Gaudi::Histograming::Sink {
     const unsigned int nBinsY     = gaudiAxisY.numBins();
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
-    FPType       nEntries{ 0 }, nAllEntries{ 0 };
-    FPType       totalSumW{ 0 };
-    FPType       sumX{ 0 }, sumY{ 0 };
-    FPType       sum2X{ 0 }, sum2Y{ 0 };
-    const FPType binXSize = ( maxValueX - minValueX ) / nBinsX;
-    const FPType binYSize = ( maxValueY - minValueY ) / nBinsY;
+    FPType                    nEntries{ 0 }, nAllEntries{ 0 };
+    FPType                    totalSumW{ 0 };
+    FPType                    sumX{ 0 }, sumY{ 0 };
+    FPType                    sum2X{ 0 }, sum2Y{ 0 };
+    const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, std::is_integral_v<Arithmetic> );
+    const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, std::is_integral_v<Arithmetic> );
     for ( unsigned int ny = 0; ny <= nBinsY + 1; ++ny ) {
       const auto offset = ny * ( nBinsX + 2 );
       for ( unsigned int nx = 0; nx <= nBinsX + 1; ++nx ) {
@@ -697,8 +730,8 @@ namespace Gaudi::Histograming::Sink {
         auto const& [nent, sumw] = tmp;
         nAllEntries += nent;
         if ( nx > 0 && ny > 0 && nx <= nBinsX && ny <= nBinsY ) {
-          const FPType binXValue = minValueX + ( nx - 0.5 ) * binXSize;
-          const FPType binYValue = minValueY + ( ny - 0.5 ) * binYSize;
+          const FPType binXValue = xBinAv( nx );
+          const FPType binYValue = yBinAv( ny );
           nEntries += nent;
           totalSumW += sumw;
           sumX += binXValue * sumw;
@@ -744,13 +777,13 @@ namespace Gaudi::Histograming::Sink {
     const unsigned int nBinsZ     = gaudiAxisZ.numBins();
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
-    FPType       nEntries{ 0 }, nAllEntries{ 0 };
-    FPType       totalSumW{};
-    FPType       sumX{ 0 }, sumY{ 0 }, sumZ{ 0 };
-    FPType       sum2X{ 0 }, sum2Y{ 0 }, sum2Z{ 0 };
-    const FPType binXSize = ( maxValueX - minValueX ) / nBinsX;
-    const FPType binYSize = ( maxValueY - minValueY ) / nBinsY;
-    const FPType binZSize = ( maxValueZ - minValueZ ) / nBinsZ;
+    FPType                    nEntries{ 0 }, nAllEntries{ 0 };
+    FPType                    totalSumW{};
+    FPType                    sumX{ 0 }, sumY{ 0 }, sumZ{ 0 };
+    FPType                    sum2X{ 0 }, sum2Y{ 0 }, sum2Z{ 0 };
+    const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, std::is_integral_v<Arithmetic> );
+    const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, std::is_integral_v<Arithmetic> );
+    const details::BinAvValue zBinAv( minValueZ, maxValueZ, nBinsZ, std::is_integral_v<Arithmetic> );
     for ( unsigned int nz = 0; nz <= nBinsZ + 1; ++nz ) {
       const auto offsetz = nz * ( nBinsY + 2 );
       for ( unsigned int ny = 0; ny <= nBinsY; ++ny ) {
@@ -760,9 +793,9 @@ namespace Gaudi::Histograming::Sink {
           auto const& [nent, sumw] = tmp;
           nAllEntries += nent;
           if ( nx > 0 && ny > 0 && nz > 0 && nx <= nBinsX && ny <= nBinsY && nz <= nBinsZ ) {
-            const FPType binXValue = minValueX + ( nx - 0.5 ) * binXSize;
-            const FPType binYValue = minValueY + ( ny - 0.5 ) * binYSize;
-            const FPType binZValue = minValueZ + ( nz - 0.5 ) * binZSize;
+            const FPType binXValue = xBinAv( nx );
+            const FPType binYValue = yBinAv( ny );
+            const FPType binZValue = zBinAv( nz );
             nEntries += nent;
             totalSumW += sumw;
             sumX += binXValue * sumw;
@@ -805,7 +838,16 @@ namespace Gaudi::Histograming::Sink {
         m_get = [bins = j.at( "bins" ).get<std::vector<double>>()]( unsigned int nx ) { return bins[nx]; };
       }
     }
-    auto operator[]( unsigned int n ) const { return m_get( n ); }
+    auto operator[]( const unsigned int n ) const { return m_get( n ); }
+  };
+
+  struct ArthTypeAccessor {
+    static bool is_integral( const std::string_view type ) {
+      for ( const std::string s : { ":i", ":l" } ) {
+        if ( 0 == type.compare( type.length() - s.length(), s.length(), s ) ) { return true; }
+      }
+      return false;
+    }
   };
 
   inline std::string printHistogram1D( std::string_view type, std::string_view name, std::string_view title,
@@ -816,11 +858,11 @@ namespace Gaudi::Histograming::Sink {
     const auto  nBinsX      = jaxis[0].at( "nBins" ).get<unsigned int>();
     const auto  nAllEntries = j.at( "nEntries" ).get<unsigned int>();
     // compute the various momenta
-    BinAccessor  ba{ type, j };
-    double       sumX{}, sum2X{}, sum3X{}, sum4X{}, nEntries{ 0 };
-    const double binXSize = ( maxValueX - minValueX ) / nBinsX;
+    BinAccessor               ba{ type, j };
+    double                    sumX{}, sum2X{}, sum3X{}, sum4X{}, nEntries{ 0 };
+    const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, ArthTypeAccessor::is_integral( type ) );
     for ( unsigned int nx = 1; nx <= nBinsX; ++nx ) {
-      const double binXValue = minValueX + ( nx - 0.5 ) * binXSize;
+      const double binXValue = xBinAv( nx );
       const auto   n         = ba[nx];
       nEntries += n;
       auto val = binXValue * n;
@@ -862,17 +904,18 @@ namespace Gaudi::Histograming::Sink {
     const auto  nBinsY      = jaxis[1].at( "nBins" ).get<unsigned int>();
     const auto  nAllEntries = j.at( "nEntries" ).get<double>();
     // compute the various memneta
-    BinAccessor  ba{ type, j };
-    double       nEntries{};
-    double       sumX{}, sumY{};
-    double       sum2X{}, sum2Y{};
-    const double binXSize = ( maxValueX - minValueX ) / nBinsX;
-    const double binYSize = ( maxValueY - minValueY ) / nBinsY;
+    BinAccessor               ba{ type, j };
+    double                    nEntries{};
+    double                    sumX{}, sumY{};
+    double                    sum2X{}, sum2Y{};
+    const auto                isInt = ArthTypeAccessor::is_integral( type );
+    const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, isInt );
+    const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, isInt );
     for ( unsigned int ny = 1; ny <= nBinsY; ++ny ) {
       const auto offset = ny * ( nBinsX + 2 );
       for ( unsigned int nx = 1; nx <= nBinsX; ++nx ) {
-        const double binXValue = minValueX + ( nx - 0.5 ) * binXSize;
-        const double binYValue = minValueY + ( ny - 0.5 ) * binYSize;
+        const double binXValue = xBinAv( nx );
+        const double binYValue = yBinAv( ny );
         const auto   n         = ba[offset + nx];
         nEntries += n;
         sumX += n * binXValue;
@@ -907,21 +950,22 @@ namespace Gaudi::Histograming::Sink {
     const auto  nBinsZ      = jaxis[2].at( "nBins" ).get<unsigned int>();
     const auto  nAllEntries = j.at( "nEntries" ).get<double>();
     // compute the various memneta
-    BinAccessor  ba{ type, j };
-    double       nEntries{};
-    double       sumX{}, sumY{}, sumZ{};
-    double       sum2X{}, sum2Y{}, sum2Z{};
-    const double binXSize = ( maxValueX - minValueX ) / nBinsX;
-    const double binYSize = ( maxValueY - minValueY ) / nBinsY;
-    const double binZSize = ( maxValueZ - minValueZ ) / nBinsZ;
+    BinAccessor               ba{ type, j };
+    double                    nEntries{};
+    double                    sumX{}, sumY{}, sumZ{};
+    double                    sum2X{}, sum2Y{}, sum2Z{};
+    const auto                isInt = ArthTypeAccessor::is_integral( type );
+    const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, isInt );
+    const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, isInt );
+    const details::BinAvValue zBinAv( minValueZ, maxValueZ, nBinsZ, isInt );
     for ( unsigned int nz = 1; nz <= nBinsZ; ++nz ) {
       const auto offsetz = nz * ( nBinsY + 2 );
       for ( unsigned int ny = 1; ny <= nBinsY; ++ny ) {
         const auto offset = ( offsetz + ny ) * ( nBinsX + 2 );
         for ( unsigned int nx = 1; nx <= nBinsX; ++nx ) {
-          const double binXValue = minValueX + ( nx - 0.5 ) * binXSize;
-          const double binYValue = minValueY + ( ny - 0.5 ) * binYSize;
-          const double binZValue = minValueZ + ( nz - 0.5 ) * binZSize;
+          const double binXValue = xBinAv( nx );
+          const double binYValue = yBinAv( ny );
+          const double binZValue = zBinAv( nz );
           const auto   n         = ba[offset + nx];
           nEntries += n;
           sumX += n * binXValue;

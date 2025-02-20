@@ -111,7 +111,7 @@ histos:
         ID: GaussInt
         Title: '"Gaussian mean=0, sigma=1, integer values"'
         '#': '50000'
-        Mean: '0.49548'
+        Mean: '-0.00452'
         RMS: '0.68219'
         Skewness: '0.012066'
         Kurtosis: '2.4124'
@@ -175,7 +175,7 @@ histos:
       GaussFlatInt:
       - GaussFlatInt
       - Gaussian V Flat, integer values
-      - Ents/All=27341/50000<X>/sX=0.0096741/2.739,<Y>/sY=0.49236/0.68131
+      - Ents/All=27341/50000<X>/sX=-0.49033/2.739,<Y>/sY=-0.0076442/0.68131
       GaussFlatNA:
       - GaussFlatNA
       - Gaussian V Flat, non atomic
@@ -208,7 +208,7 @@ histos:
       GaussFlatGaussInt:
       - GaussFlatGaussInt
       - Gaussian V Flat V Gaussian, interger values
-      - Ents/All=27341/50000<X>/sX=0.0096741/2.739,<Y>/sY=0.49236/0.68131,<Z>/sZ=0.49459/0.685
+      - Ents/All=27341/50000<X>/sX=-0.49033/2.739,<Y>/sY=-0.0076442/0.68131,<Z>/sZ=-0.0054131/0.685
       GaussFlatGaussNA:
       - GaussFlatGaussNA
       - Gaussian V Flat V Gaussian, non atomic
@@ -262,7 +262,7 @@ histos:
         ID: ProfGaussInt
         Title: '"Profile, Gaussian mean=0, sigma=1, integ..."'
         '#': '50000'
-        Mean: '0.49559'
+        Mean: '-0.0044143'
         RMS: '0.68346'
         Skewness: '0.01007'
         Kurtosis: '2.407'
@@ -308,7 +308,7 @@ histos:
       ProfGaussFlatInt:
       - ProfGaussFlatInt
       - Profile, Gaussian V Flat, integer values
-      - Ents/All=122694/50000<X>/sX=0.01181/2.738,<Y>/sY=0.49119/0.68294
+      - Ents/All=122694/50000<X>/sX=-0.48819/2.738,<Y>/sY=-0.0088105/0.68294
       ProfGaussFlatNA:
       - ProfGaussFlatNA
       - Profile, Gaussian V Flat, non atomic
