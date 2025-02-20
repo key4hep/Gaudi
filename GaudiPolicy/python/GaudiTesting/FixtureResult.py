@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,6 +11,8 @@
 import datetime
 import subprocess
 from typing import List, Union
+
+from GaudiTesting.utils import CodeWrapper
 
 
 class ProcessTimeoutError(Exception):
@@ -71,13 +73,19 @@ class FixtureResult:
         properties = {attr: getattr(self, attr) for attr in vars(self)}
         properties.update(
             {
-                "stdout": self.completed_process.stdout.decode(
-                    "utf-8", errors="backslashreplace"
+                "stdout": CodeWrapper(
+                    self.completed_process.stdout.decode(
+                        "utf-8", errors="backslashreplace"
+                    ),
+                    "console",
                 )
                 if self.completed_process.stdout
                 else None,
-                "stderr": self.completed_process.stderr.decode(
-                    "utf-8", errors="backslashreplace"
+                "stderr": CodeWrapper(
+                    self.completed_process.stderr.decode(
+                        "utf-8", errors="backslashreplace"
+                    ),
+                    "console",
                 )
                 if self.completed_process.stderr
                 else None,
