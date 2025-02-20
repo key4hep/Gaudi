@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+#####################################################################################
+# (c) Copyright 2025 CERN for the benefit of the LHCb and ATLAS collaborations      #
+#                                                                                   #
+# This software is distributed under the terms of the Apache version 2 licence,     #
+# copied verbatim in the file "LICENSE".                                            #
+#                                                                                   #
+# In applying this licence, CERN does not waive the privileges and immunities       #
+# granted to it by virtue of its status as an Intergovernmental Organization        #
+# or submit itself to any jurisdiction.                                             #
+#####################################################################################
+import argparse
+import importlib.util
+import sys
+from pathlib import Path
+
+
+def load_class_from_file(file_path, class_name=None):
+    file_path = Path(file_path).resolve()
+    module_name = file_path.stem
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+
+    try:
+        spec.loader.exec_module(module)
+    except Exception as e:
+        print(f"Error loading module from {file_path}:\n{e}")
+        sys.exit(1)
+
+    try:
+        if class_name is None:
+            # we look for the first class that starts with "Test"
+            class_name = next(
+                (name for name in dir(module) if name.startswith("Test")), None
+            )
+        return getattr(module, class_name), class_name
+    except AttributeError:
+        print(f"Error: Class '{class_name}' not found in '{file_path}'.")
+        sys.exit(1)
+
+
+def run_test_class(file_path, class_name=None, prepare=False):
+    """
+    Run the test class job using its `run_program_for_dbg` method
+
+    Args:
+        file_path (str)
+    """
+    tmp_path = Path(".")
+    test_class, class_name = load_class_from_file(file_path, class_name)
+
+    if not hasattr(test_class, "run_program_for_dbg") or not hasattr(
+        test_class, "_prepare_execution"
+    ):
+        print("Error: Class does not have the needed method.")
+        sys.exit(1)
+
+    try:
+        if prepare:
+            prepared_command, _ = test_class._prepare_execution(tmp_path=tmp_path)
+            print(f"Prepared command: {prepared_command}")
+        else:
+            test_class.run_program_for_dbg(tmp_path=tmp_path)
+    except Exception as e:
+        print(f"Error running test class {class_name}:\n{e}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Script to run a test class's job without running tests"
+    )
+    parser.add_argument("file_path", help="Path to the test file")
+    parser.add_argument(
+        "--class-name", help="Name of the class to run (defaults to first 'Test' class)"
+    )
+    parser.add_argument(
+        "--prepare", action="store_true", help="Prepare the execution without running"
+    )
+
+    args = parser.parse_args()
+
+    run_test_class(args.file_path, args.class_name, args.prepare)
