@@ -103,7 +103,7 @@ private:
   Gaudi::Property<GaudiUtils::Map<std::string, std::string>> m_24{ this, "GaudiMapSS" };
 
   using Triplet = std::tuple<std::string, std::string, std::string>;
-  static std::hash<std::string> hasher;
+  static inline std::hash<std::string> hasher;
   struct HashFunction {
     std::size_t operator()( Triplet const& entry ) const {
       return hasher( std::get<0>( entry ) ) ^ hasher( std::get<1>( entry ) ) ^ hasher( std::get<2>( entry ) );
