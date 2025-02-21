@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,6 +13,7 @@
 #include <GaudiKernel/DataObjID.h>
 #include <GaudiKernel/IClassIDSvc.h>
 #include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/ToStream.h>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -56,28 +57,19 @@ namespace Gaudi {
 
 StatusCode parse( DataObjID& dest, std::string_view src ) { return Gaudi::Parsers::parse_( dest, quote( src ) ); }
 
-IClassIDSvc*   DataObjID::p_clidSvc( nullptr );
-std::once_flag DataObjID::m_ip;
 namespace {
-  auto getClidSvc = []( std::reference_wrapper<IClassIDSvc*> p ) {
-    p.get() = Gaudi::svcLocator()->service<IClassIDSvc>( "ClassIDSvc" ).get();
+  /// Helper to retrieve and cache pointer to ClassIDSvc if available
+  IClassIDSvc* getClidSvc() {
+    static IClassIDSvc* clidSvc = Gaudi::svcLocator()->service<IClassIDSvc>( "ClassIDSvc" ).get();
+    return clidSvc;
   };
-}
+} // namespace
 
 void DataObjID::setClid() {
-  std::call_once( m_ip, getClidSvc, std::ref( p_clidSvc ) );
 
-  if ( !p_clidSvc || p_clidSvc->getIDOfTypeName( m_className, m_clid ).isFailure() ) {
+  if ( !getClidSvc() || getClidSvc()->getIDOfTypeName( m_className, m_clid ).isFailure() ) {
     m_clid      = 0;
     m_className = "UNKNOWN_CLASS:" + m_className;
-  }
-}
-
-void DataObjID::setClassName() {
-  std::call_once( m_ip, getClidSvc, std::ref( p_clidSvc ) );
-
-  if ( !p_clidSvc || p_clidSvc->getTypeNameOfID( m_clid, m_className ).isFailure() ) {
-    m_className = "UNKNOW_CLID:" + std::to_string( m_clid );
   }
 }
 
@@ -89,15 +81,27 @@ void DataObjID::hashGen() {
   }
 }
 
-#include <GaudiKernel/ToStream.h>
 std::ostream& toStream( const DataObjID& d, std::ostream& os ) {
   using Gaudi::Utils::toStream;
-  return ( d.m_clid != 0 || !d.m_className.empty() ) ? toStream( std::tie( d.m_className, d.m_key ), os )
+  return ( d.m_clid != 0 || !d.className().empty() ) ? toStream( std::tie( d.className(), d.m_key ), os )
                                                      : toStream( d.m_key, os );
 }
 
+const std::string& DataObjID::className() const {
+
+  // Set class name once if not done already
+  if ( m_clid != 0 && m_className.empty() ) {
+    std::call_once( m_setClassName, [&]() {
+      if ( !getClidSvc() || getClidSvc()->getTypeNameOfID( m_clid, m_className ).isFailure() ) {
+        m_className = "UNKNOWN_CLID:" + std::to_string( m_clid );
+      }
+    } );
+  }
+  return m_className;
+}
+
 std::string DataObjID::fullKey() const {
-  return ( m_clid == 0 && m_className.empty() ) ? m_key : ( m_className + '/' + m_key );
+  return ( m_clid == 0 && m_className.empty() ) ? m_key : ( className() + '/' + m_key );
 }
 
 std::string Gaudi::Details::Property::StringConverter<DataObjIDColl>::toString( const DataObjIDColl& v ) {
