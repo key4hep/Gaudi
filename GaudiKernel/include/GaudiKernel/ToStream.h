@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -123,6 +123,10 @@ namespace Gaudi {
     inline std::ostream& toStream( const std::pair<KTYPE, VTYPE>& obj, std::ostream& s ) {
       return toStream( obj.second, toStream( obj.first, s << "( " ) << " , " ) << " )";
     }
+
+    template <typename... Args>
+    inline std::ostream& toStream( const std::tuple<Args...>& tuple, std::ostream& s );
+
     // ========================================================================
     /** the partial template specialization of <c>std::vector<TYPE,ALLOCATOR></c>
      *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
@@ -284,32 +288,6 @@ namespace Gaudi {
       return s << obj;
     }
     // ========================================================================
-    /** the helper function to print the sequence
-     *  @param first (INPUT)  begin-iterator for the sequence
-     *  @param last  (INPUT)  end-iterator for the sequence
-     *  @param s     (UPDATE) the stream itself
-     *  @param open  (INPUT)  "open"-symbol
-     *  @param close (INPUT)  "close"-symbol
-     *  @param delim (INPUT)  "delimiter"-symbol
-     *  @return the stream
-     *  @author Vanya BELYAEV Ivan.BElyaev@nikhef.nl
-     *  @date 2009-09-15
-     */
-    template <class ITERATOR>
-    inline std::ostream& toStream( ITERATOR           first,  // begin of the sequence
-                                   ITERATOR           last,   //   end of the sequence
-                                   std::ostream&      s,      //            the stream
-                                   const std::string& open,   //               opening
-                                   const std::string& close,  //               closing
-                                   const std::string& delim ) //             delimiter
-    {
-      using ref_t = typename std::iterator_traits<ITERATOR>::reference;
-      using GaudiUtils::details::ostream_joiner;
-      return ostream_joiner( s << open, first, last, delim,
-                             []( std::ostream& os, ref_t i ) -> std::ostream& { return toStream( i, os ); } )
-             << close;
-    }
-    // ========================================================================
     // helper function to print a tuple of any size
     template <class Tuple, std::size_t N>
     struct TuplePrinter {
@@ -339,6 +317,32 @@ namespace Gaudi {
         out << " ,";
       }
       return out << " ) ";
+    }
+    // ========================================================================
+    /** the helper function to print the sequence
+     *  @param first (INPUT)  begin-iterator for the sequence
+     *  @param last  (INPUT)  end-iterator for the sequence
+     *  @param s     (UPDATE) the stream itself
+     *  @param open  (INPUT)  "open"-symbol
+     *  @param close (INPUT)  "close"-symbol
+     *  @param delim (INPUT)  "delimiter"-symbol
+     *  @return the stream
+     *  @author Vanya BELYAEV Ivan.BElyaev@nikhef.nl
+     *  @date 2009-09-15
+     */
+    template <class ITERATOR>
+    inline std::ostream& toStream( ITERATOR           first,  // begin of the sequence
+                                   ITERATOR           last,   //   end of the sequence
+                                   std::ostream&      s,      //            the stream
+                                   const std::string& open,   //               opening
+                                   const std::string& close,  //               closing
+                                   const std::string& delim ) //             delimiter
+    {
+      using ref_t = typename std::iterator_traits<ITERATOR>::reference;
+      using GaudiUtils::details::ostream_joiner;
+      return ostream_joiner( s << open, first, last, delim,
+                             []( std::ostream& os, ref_t i ) -> std::ostream& { return toStream( i, os ); } )
+             << close;
     }
 
     // ========================================================================

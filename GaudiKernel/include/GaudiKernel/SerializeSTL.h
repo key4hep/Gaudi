@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,6 +38,10 @@ namespace GaudiUtils {
   template <class T1, class T2>
   std::ostream& operator<<( std::ostream& s, const std::pair<T1, T2>& p );
 
+  /// Serialize an std::tuple in a python like format. E.g. "(1, 2)".
+  template <typename... Args>
+  std::ostream& operator<<( std::ostream& s, const std::tuple<Args...>& tuple );
+
   /// Serialize an std::vector in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   std::ostream& operator<<( std::ostream& s, const std::vector<T, ALLOC>& v );
@@ -49,6 +53,14 @@ namespace GaudiUtils {
   /// Serialize an std::list in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   std::ostream& operator<<( std::ostream& s, const std::list<T, ALLOC>& l );
+
+  /// Serialize an std::set in a python like format. E.g. "[1, 2, 3]".
+  template <class T, class ALLOC>
+  std::ostream& operator<<( std::ostream& s, const std::set<T, ALLOC>& l );
+
+  /// Serialize an std::unordered_set in a python like format. E.g. "{1, 2, 3}".
+  template <class T, class ALLOC>
+  std::ostream& operator<<( std::ostream& s, const std::unordered_set<T, ALLOC>& l );
 
   /// Serialize an std::map in a python like format. E.g. "{a: 1, b: 2}".
   template <class T1, class T2, class COMP, class ALLOC>
@@ -89,6 +101,19 @@ namespace GaudiUtils {
   template <class T1, class T2>
   std::ostream& operator<<( std::ostream& s, const std::pair<T1, T2>& p ) {
     return s << '(' << p.first << ", " << p.second << ')';
+  }
+
+  template <typename... Args>
+  std::ostream& operator<<( std::ostream& s, const std::tuple<Args...>& tup ) {
+    return std::apply(
+        [&s]( const auto&... a ) -> decltype( auto ) {
+          unsigned n = sizeof...( a );
+          if ( n == 1 ) n = 2; // special case in python...
+          s << " (";
+          ( ( s << " " << a << ( --n == 0 ? "" : "," ) ), ... );
+          return s << " )";
+        },
+        tup );
   }
 
   template <class T, class ALLOC>
