@@ -6,6 +6,33 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v39r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r3) - 2025-02-21
+This is a minor release meant to pick up a few fixes and, in particular, small improvements on
+the pytest helpers that are required by LHCb to start migrating from QMTest to pytest.
+
+A special thanks to all the people that contributed to this release:
+@jcarcell,
+@jonrob,
+@sponce,
+@staider.
+
+### Changed
+- Remove the deprecated PropertyMgr (gaudi/Gaudi!1693)
+
+### Added
+- Add the `gaudi-test-run` script to run just the job from a pytest/GaudiExeTest test class (gaudi/Gaudi#332, gaudi/Gaudi!1690)
+- Add support for switching between `FIXTURES_REQUIRED` and `DEPENDS` in pytest (gaudi/Gaudi#330, gaudi/Gaudi!1692)
+
+### Fixed
+- Fixed support for tuples and containers in Properties (gaudi/Gaudi!1696)
+- Fix bin value determination when computing stats for int type histograms (gaudi/Gaudi!1688)
+- Add code tags for stdout/stderr and correctly escape diff blocks (gaudi/Gaudi!1694)
+- Prevent pytes` to hang on large stdout (gaudi/Gaudi!1695)
+- Modify `test_issue_213` to test what it is supposed to test (gaudi/Gaudi!1691)
+- Remove two unused includes (gaudi/Gaudi!1689)
+- `FiberManager`: Remove unused lambda capture (gaudi/Gaudi!1687)
+
+
 ## [v39r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r2) - 2024-12-19
 This is a minor update just to wrap up 2024. We have some clean up, but mostly
 bug fixes.
