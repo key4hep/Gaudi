@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -101,71 +101,29 @@ private:
   Gaudi::Property<std::array<int, 1>>    m_26{ this, "StdArrayInt1", { 0 } };
 
   Gaudi::Property<GaudiUtils::Map<std::string, std::string>> m_24{ this, "GaudiMapSS" };
+
+  using Triplet = std::tuple<std::string, std::string, std::string>;
+  static std::hash<std::string> hasher;
+  struct HashFunction {
+    std::size_t operator()( Triplet const& entry ) const {
+      return hasher( std::get<0>( entry ) ) ^ hasher( std::get<1>( entry ) ) ^ hasher( std::get<2>( entry ) );
+    }
+  };
+
+  Gaudi::Property<std::vector<Triplet>>                      m_tuplevector{ this, "PTupleVector" };
+  Gaudi::Property<std::set<Triplet>>                         m_tupleset{ this, "PTupleSet" };
+  Gaudi::Property<std::unordered_set<Triplet, HashFunction>> m_tupleunset{ this, "PTupleUnSet" };
+  using VS = std::vector<std::string>;
+  Gaudi::Property<std::tuple<int, VS>> m_intvectortuple{ this, "PIntVectorTuple" };
+  using SS = std::set<std::string>;
+  Gaudi::Property<std::tuple<int, SS>> m_intsettuple{ this, "PIntSetTuple" };
+  using USS = std::unordered_set<std::string>;
+  Gaudi::Property<std::tuple<int, USS>> m_intunsettuple{ this, "PIntUnSetTuple" };
 };
 // ============================================================================
 /// factory
 // ============================================================================
 DECLARE_COMPONENT( ExtendedProperties )
-// ============================================================================
-namespace {
-  template <class TYPE>
-  inline SimplePropertyRef<TYPE> _prop( TYPE& value ) {
-    // construct a readable name
-    std::string            name = System::typeinfoName( typeid( value ) );
-    std::string::size_type ipos = name.find( "std::" );
-    while ( std::string::npos != ipos ) {
-      name.erase( ipos, 5 );
-      ipos = name.find( "std::" );
-    }
-    ipos = name.find( "__cxx11::" );
-    while ( std::string::npos != ipos ) {
-      name.erase( ipos, 9 );
-      ipos = name.find( "__cxx11::" );
-    }
-    ipos = name.find( " " );
-    while ( std::string::npos != ipos ) {
-      name.erase( ipos, 1 );
-      ipos = name.find( " " );
-    }
-    ipos = name.find( "const" );
-    while ( std::string::npos != ipos ) {
-      name.erase( ipos, 5 );
-      ipos = name.find( "const" );
-    }
-    ipos = name.find( ",allocator<" );
-    while ( std::string::npos != ipos ) {
-      std::string::size_type ip2 = ipos + 11;
-      int                    ip3 = 1;
-      for ( ; ip2 < name.size(); ++ip2 ) {
-        if ( '<' == name[ip2] ) { ip3 += 1; }
-        if ( '>' == name[ip2] ) { ip3 -= 1; }
-        if ( 0 == ip3 ) { break; }
-      }
-      name.erase( ipos, ip2 + 1 - ipos );
-      ipos = name.find( ",allocator<" );
-    }
-    if ( std::string::npos != name.find( "map<" ) ) {
-      ipos = name.find( ",less<" );
-      while ( std::string::npos != ipos ) {
-        std::string::size_type ip2 = ipos + 6;
-        int                    ip3 = 1;
-        for ( ; ip2 < name.size(); ++ip2 ) {
-          if ( '<' == name[ip2] ) { ip3 += 1; }
-          if ( '>' == name[ip2] ) { ip3 -= 1; }
-          if ( 0 == ip3 ) { break; }
-        }
-        name.erase( ipos, ip2 + 1 - ipos );
-        ipos = name.find( ",less<" );
-      }
-    }
-    ipos = name.find( ">>" );
-    while ( std::string::npos != ipos ) {
-      name.replace( ipos, 2, "> >" );
-      ipos = name.find( ">>" );
-    }
-    return SimplePropertyRef<TYPE>( name, value );
-  }
-} // namespace
 // ============================================================================
 StatusCode ExtendedProperties::execute() {
   always() << " My Properties : " << endmsg;
@@ -200,6 +158,13 @@ StatusCode ExtendedProperties::execute() {
 
   always() << " \t" << m_30 << endmsg;
   always() << " \t" << m_31 << endmsg;
+
+  always() << " \t" << m_tuplevector << endmsg;
+  always() << " \t" << m_intvectortuple << endmsg;
+  always() << " \t" << m_tupleset << endmsg;
+  always() << " \t" << m_intsettuple << endmsg;
+  always() << " \t" << m_tupleunset << endmsg;
+  always() << " \t" << m_intunsettuple << endmsg;
 
   // some properties could be created from other (convertible) types:
   Gaudi::Property<short>  m1( "a", 0 );

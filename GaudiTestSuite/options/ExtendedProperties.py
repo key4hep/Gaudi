@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -95,6 +95,13 @@ xProps.GaudiMapSS = {"a": "1", "b": "2"}
 # DataObjIDColl
 xProps.ExtraInputs = set()
 xProps.ExtraOutputs = {"a", ("a", "b"), (1, "a")}
+
+xProps.PTupleVector = [("one", "two", "three"), ("a", "b", "c")]
+xProps.PIntVectorTuple = (42, ["one", "two", "three"])
+xProps.PTupleSet = [("one", "two", "three"), ("a", "b", "c")]
+xProps.PIntSetTuple = (42, ["one", "two", "three"])
+xProps.PTupleUnSet = {("one", "two", "three"), ("a", "b", "c")}
+xProps.PIntUnSetTuple = (42, {"one", "two", "three"})
 
 # END of xProp configuration
 

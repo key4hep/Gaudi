@@ -123,6 +123,13 @@ xProps.StdArrayInt1 = (42);
 
 xProps.GaudiMapSS = {"a": "1", "b": "2"};
 
+xProps.PTupleVector = [("one", "two", "three"), ("a", "b", "c")];
+xProps.PIntVectorTuple = (42, ["one", "two", "three"]);
+xProps.PTupleSet = [("one", "two", "three"), ("a", "b", "c")];
+xProps.PIntSetTuple = (42, ["one", "two", "three"]);
+xProps.PTupleUnSet = {("one", "two", "three"), ("a", "b", "c")};
+xProps.PIntUnSetTuple = (42, {"one", "two", "three"});
+
 // ============================================================================
 
 // ============================================================================

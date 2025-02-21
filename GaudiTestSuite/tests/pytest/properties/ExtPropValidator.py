@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -59,6 +59,12 @@ def validate(stdout):
         "StdArrayDouble3": (3.3, 2.2, 1.1),
         "StdArrayInt1": (42,),
         "GaudiMapSS": {"a": "1", "b": "2"},
+        "PTupleVector": [("one", "two", "three"), ("a", "b", "c")],
+        "PIntVectorTuple": (42, ["one", "two", "three"]),
+        "PTupleSet": [("a", "b", "c"), ("one", "two", "three")],
+        "PIntSetTuple": (42, ["one", "three", "two"]),
+        "PTupleUnSet": {("a", "b", "c"), ("one", "two", "three")},
+        "PIntUnSetTuple": (42, {"one", "two", "three"}),
     }
 
     import re
