@@ -52,6 +52,16 @@ namespace Gaudi::Histograming::Sink::detail {
       return fmt::format( "\"{:.{}s}\"", title, width );
     }
   }
+  inline std::string formatName( std::string_view name, unsigned int width ) {
+    if ( name.size() > width ) {
+      const auto preSize  = ( width / 2 ) - 2;
+      const auto postSize = width - preSize - 1;
+      return fmt::format( "{:.{}s}...{:.{}s}", name.substr( 0, preSize ), preSize,
+                          name.substr( name.size() - postSize, postSize ), postSize );
+    } else {
+      return std::string{ name };
+    }
+  }
   constexpr std::string_view histo1DFormatting =
       " | {:{}.{}s} | {:{}s} | {:10} |{:11.5g} | {:<#11.5g}|{:11.5g} |{:11.5g} |";
   constexpr std::string_view histo2DFormatting =
@@ -692,9 +702,9 @@ namespace Gaudi::Histograming::Sink {
               ? ( sum4X / totalSumW - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) ) ) / B
               : 3.0 );
     // print
-    return fmt::format( fmt::runtime( detail::histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle,
-                        stringsWidth, detail::IntWithFixedWidth{ nEntries }, meanX, stddevX, skewnessX,
-                        kurtosisX - FPType{ 3.0 } );
+    return fmt::format( fmt::runtime( detail::histo1DFormatting ), detail::formatName( name, stringsWidth ),
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, detail::IntWithFixedWidth{ nEntries }, meanX,
+                        stddevX, skewnessX, kurtosisX - FPType{ 3.0 } );
   }
 
   template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
@@ -749,8 +759,9 @@ namespace Gaudi::Histograming::Sink {
         fabs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / totalSumW ) ) / totalSumW ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
-    return fmt::format( fmt::runtime( detail::histo2DFormatting ), name, stringsWidth, stringsWidth, ftitle,
-                        stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY, stddevY );
+    return fmt::format( fmt::runtime( detail::histo2DFormatting ), detail::formatName( name, stringsWidth ),
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
+                        stddevY );
   }
 
   template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
@@ -819,8 +830,9 @@ namespace Gaudi::Histograming::Sink {
         fabs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / totalSumW ) ) / totalSumW ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
-    return fmt::format( fmt::runtime( detail::histo3DFormatting ), name, stringsWidth, stringsWidth, ftitle,
-                        stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY, stddevY, meanZ, stddevZ );
+    return fmt::format( fmt::runtime( detail::histo3DFormatting ), detail::formatName( name, stringsWidth ),
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
+                        stddevY, meanZ, stddevZ );
   }
 
   struct BinAccessor {
@@ -888,9 +900,9 @@ namespace Gaudi::Histograming::Sink {
               ? ( sum4X / nEntries - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) ) ) / B
               : 3.0 );
     // print
-    return fmt::format( fmt::runtime( detail::histo1DFormatting ), name, stringsWidth, stringsWidth, ftitle,
-                        stringsWidth, detail::IntWithFixedWidth{ nAllEntries }, meanX, stddevX, skewnessX,
-                        kurtosisX - 3.0 );
+    return fmt::format( fmt::runtime( detail::histo1DFormatting ), detail::formatName( name, stringsWidth ),
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, detail::IntWithFixedWidth{ nAllEntries },
+                        meanX, stddevX, skewnessX, kurtosisX - 3.0 );
   }
 
   inline std::string printHistogram2D( std::string_view type, std::string_view name, std::string_view title,
@@ -932,8 +944,9 @@ namespace Gaudi::Histograming::Sink {
         fabs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
-    return fmt::format( fmt::runtime( detail::histo2DFormatting ), name, stringsWidth, stringsWidth, ftitle,
-                        stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY, stddevY );
+    return fmt::format( fmt::runtime( detail::histo2DFormatting ), detail::formatName( name, stringsWidth ),
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
+                        stddevY );
   }
 
   inline std::string printHistogram3D( std::string_view type, std::string_view name, std::string_view title,
@@ -988,8 +1001,9 @@ namespace Gaudi::Histograming::Sink {
         fabs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
-    return fmt::format( fmt::runtime( detail::histo3DFormatting ), name, stringsWidth, stringsWidth, ftitle,
-                        stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY, stddevY, meanZ, stddevZ );
+    return fmt::format( fmt::runtime( detail::histo3DFormatting ), detail::formatName( name, stringsWidth ),
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
+                        stddevY, meanZ, stddevZ );
   }
 
 } // namespace Gaudi::Histograming::Sink
