@@ -15,14 +15,9 @@
 /// See @ref GaudiPluginService-readme
 
 #include <Gaudi/Details/PluginServiceDetailsV2.h>
-#include <cstdint>
-#include <functional>
-#include <memory>
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <type_traits>
-#include <typeinfo>
 #include <utility>
 
 #if __cplusplus > 201703L && __has_include( <source_location> ) && !defined (__CLING__)
