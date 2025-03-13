@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,6 +15,7 @@
 #include <GaudiKernel/StatusCode.h>
 
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_set>
@@ -48,19 +49,27 @@ class DataObjID {
 public:
   friend DataObjID_Hasher;
 
-  DataObjID()                   = default;
-  DataObjID( const DataObjID& ) = default;
+  DataObjID() = default;
+  DataObjID( const DataObjID& other )
+      : m_clid( other.m_clid ), m_hash( other.m_hash ), m_key( other.m_key ), m_className( other.m_className ) {}
+
   DataObjID( std::string key );
   DataObjID( const CLID& clid, std::string key );
   DataObjID( std::string className, std::string key );
 
-  DataObjID& operator=( const DataObjID& ) = default;
+  DataObjID& operator=( const DataObjID& other ) {
+    m_clid      = other.m_clid;
+    m_hash      = other.m_hash;
+    m_key       = other.m_key;
+    m_className = other.m_className;
+    return *this;
+  }
 
   /// only return the last part of the key
   const std::string& key() const { return m_key; }
 
   /// return the ClassName (if available)
-  const std::string& className() const { return m_className; }
+  const std::string& className() const;
 
   /// combination of the key and the ClassName, mostly for debugging
   std::string fullKey() const;
@@ -81,22 +90,18 @@ public:
 private:
   void hashGen();
   void setClid();
-  void setClassName();
 
   CLID        m_clid{ 0 };
   std::size_t m_hash{ 0 };
 
-  std::string m_key{ "INVALID" };
-  std::string m_className;
-
-  static IClassIDSvc*   p_clidSvc;
-  static std::once_flag m_ip;
+  std::string            m_key{ "INVALID" };
+  mutable std::string    m_className;
+  mutable std::once_flag m_setClassName;
 };
 
 inline DataObjID::DataObjID( std::string key ) : m_key( std::move( key ) ) { hashGen(); }
 
 inline DataObjID::DataObjID( const CLID& clid, std::string key ) : m_clid( clid ), m_key( std::move( key ) ) {
-  setClassName();
   hashGen();
 }
 

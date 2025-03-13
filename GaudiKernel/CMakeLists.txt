@@ -281,6 +281,9 @@ if(BUILD_TESTING)
   gaudi_add_executable(test_Property SOURCES tests/src/test_Property.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
+  gaudi_add_executable(test_DataObjID SOURCES tests/src/test_DataObjID.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
   gaudi_add_executable(test_WeakPropertyRef SOURCES tests/src/test_WeakPropertyRef.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
