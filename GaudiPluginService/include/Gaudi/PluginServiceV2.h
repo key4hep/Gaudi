@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,14 +15,9 @@
 /// See @ref GaudiPluginService-readme
 
 #include <Gaudi/Details/PluginServiceDetailsV2.h>
-#include <cstdint>
-#include <functional>
-#include <memory>
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <type_traits>
-#include <typeinfo>
 #include <utility>
 
 #if __cplusplus > 201703L && __has_include( <source_location> ) && !defined (__CLING__)
