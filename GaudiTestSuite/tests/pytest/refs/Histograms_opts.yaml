@@ -30,8 +30,6 @@ histos:
         RMS: '0.98246'
         Skewness: '-0.0041154'
         Kurtosis: '-0.16179'
-        ? ''
-        : ''
       Histo2:
         ID: Histo2
         Title: '"Histogram 2"'
@@ -40,8 +38,6 @@ histos:
         RMS: '1.0048'
         Skewness: '0.001627'
         Kurtosis: '-0.0045467'
-        ? ''
-        : ''
     header:
       1D: 2
       2D: 0
