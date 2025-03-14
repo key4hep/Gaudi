@@ -282,8 +282,7 @@ stdout: "JobOptionsSvc        INFO Job options successfully file Maps.opts\nAppl
   \ const>,std::allocator<std::pair<int,double> > >\nMap               SUCCESS  \t\
   3) GaudiUtils::Map<int,double,std::map<int,double,std::less<int>,std::allocator<std::pair<int\
   \ const,double> > > >\nMap               SUCCESS  \t4) GaudiUtils::HashMap<int,double,GaudiUtils::Hash<int>,std::unordered_map<int,double,GaudiUtils::Hash<int>,std::equal_to<int>,std::allocator<std::pair<int\
-  \ const,double> > > >\nEventLoopMgr         INFO Histograms converted successfully\
-  \ according to request.\nApplicationMgr       INFO Application Manager Finalized\
-  \ successfully\nApplicationMgr       INFO Application Manager Terminated successfully"
+  \ const,double> > > >\nApplicationMgr       INFO Application Manager Finalized successfully\n\
+  ApplicationMgr       INFO Application Manager Terminated successfully"
 histos: {}
 ttrees: {}

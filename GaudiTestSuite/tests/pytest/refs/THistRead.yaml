@@ -56,8 +56,7 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistRead.opts\
   \      WARNING No events will be processed from external input.\e[m\nApplicationMgr\
   \       INFO Application Manager Initialized successfully\e[m\nApplicationMgr  \
   \     INFO Application Manager Started successfully\e[m\nApplicationMgr       INFO\
-  \ Application Manager Stopped successfully\e[m\nEventLoopMgr         INFO Histograms\
-  \ converted successfully according to request.\e[m\nTHistSvc            DEBUG dumping\
+  \ Application Manager Stopped successfully\e[m\nTHistSvc            DEBUG dumping\
   \ THistSvc contents\nm_hlist:  size: 5\n - id: /read1/xxx/1Dgauss t: 0 s: 0 M: ########\
   \ m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n - id: /read2/2Dgauss\
   \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F :: [0x########] 1 {[0x########]}\n\

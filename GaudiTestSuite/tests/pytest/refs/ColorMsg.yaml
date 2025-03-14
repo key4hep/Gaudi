@@ -16,18 +16,14 @@ stdout: "JobOptionsSvc        INFO Job options successfully file ColorMsg.opts\n
   \ will add Alg ColorMsgAlg later\e[m\n\e[92;1mColorMsgAlg         DEBUG input handles:\
   \ 0\e[m\n\e[92;1mColorMsgAlg         DEBUG output handles: 0\e[m\n\e[93;1mEventLoopMgr\
   \      WARNING Unable to locate service \"EventSelector\" \e[m\n\e[93;1mEventLoopMgr\
-  \      WARNING No events will be processed from external input.\e[m\n\e[95;4mHistogramDataSvc\
-  \  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc\e[m\n\e[95;4mHistogramDataSvc\
-  \  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc\e\
-  [m\n\e[96;1mApplicationMgr       INFO Application Manager Initialized successfully\e\
-  [m\n\e[92;1mServiceManager      DEBUG Starting service AppMgrRunable\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Starting service IncidentSvc\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Starting service EventPersistencySvc\e[m\n\e[92;1mServiceManager      DEBUG Starting\
-  \ service EventDataSvc\e[m\n\e[92;1mServiceManager      DEBUG Starting service TimelineSvc\e\
-  [m\n\e[92;1mServiceManager      DEBUG Starting service AlgExecStateSvc\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Starting service HistogramPersistencySvc\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Starting service HistogramDataSvc\e[m\n\e[92;1mServiceManager     \
-  \ DEBUG Starting service EventLoopMgr\e[m\n\e[96;1mApplicationMgr       INFO Application\
+  \      WARNING No events will be processed from external input.\e[m\n\e[96;1mApplicationMgr\
+  \       INFO Application Manager Initialized successfully\e[m\n\e[92;1mServiceManager\
+  \      DEBUG Starting service AppMgrRunable\e[m\n\e[92;1mServiceManager      DEBUG\
+  \ Starting service IncidentSvc\e[m\n\e[92;1mServiceManager      DEBUG Starting service\
+  \ EventPersistencySvc\e[m\n\e[92;1mServiceManager      DEBUG Starting service EventDataSvc\e\
+  [m\n\e[92;1mServiceManager      DEBUG Starting service TimelineSvc\e[m\n\e[92;1mServiceManager\
+  \      DEBUG Starting service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG\
+  \ Starting service EventLoopMgr\e[m\n\e[96;1mApplicationMgr       INFO Application\
   \ Manager Started successfully\e[m\n\e[95;4mAlgExecStateSvc   VERBOSE reset(0)\e\
   [m\n\e[92;1mAlgExecStateSvc     DEBUG resizing state containers to : 1\e[m\n\e[92;1mAlgExecStateSvc\
   \     DEBUG adding alg ColorMsgAlg to 1 slots\e[m\n\e[95;4mAlgExecStateSvc   VERBOSE\
@@ -57,33 +53,26 @@ stdout: "JobOptionsSvc        INFO Job options successfully file ColorMsg.opts\n
   [95;107;1m and purple on white\e[m\n\e[96;1mColorMsgAlg          INFO \e[92;1mThis\
   \ is green. \e[93;104;1mThis is in yellow on blue. \e[m\e[96;1mThis is back to normal\e\
   [m\n\e[92;1mServiceManager      DEBUG Stopping service EventLoopMgr\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Stopping service HistogramDataSvc\e[m\n\e[92;1mServiceManager     \
-  \ DEBUG Stopping service HistogramPersistencySvc\e[m\n\e[92;1mServiceManager   \
-  \   DEBUG Stopping service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG\
+  \      DEBUG Stopping service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG\
   \ Stopping service TimelineSvc\e[m\n\e[92;1mServiceManager      DEBUG Stopping service\
   \ EventDataSvc\e[m\n\e[92;1mServiceManager      DEBUG Stopping service EventPersistencySvc\e\
   [m\n\e[92;1mServiceManager      DEBUG Stopping service IncidentSvc\e[m\n\e[92;1mServiceManager\
   \      DEBUG Stopping service AppMgrRunable\e[m\n\e[96;1mApplicationMgr       INFO\
   \ Application Manager Stopped successfully\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Finalizing service EventLoopMgr\e[m\n\e[96;1mEventLoopMgr         INFO Histograms\
-  \ converted successfully according to request.\e[m\n\e[92;1mServiceManager     \
-  \ DEBUG Finalizing service HistogramDataSvc\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Finalizing service HistogramPersistencySvc\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Finalizing service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG Finalizing\
-  \ service TimelineSvc\e[m\n\e[92;1mServiceManager      DEBUG Finalizing service\
-  \ EventDataSvc\e[m\n\e[92;1mServiceManager      DEBUG Finalizing service EventPersistencySvc\e\
-  [m\n\e[92;1mServiceManager      DEBUG Finalizing service IncidentSvc\e[m\n\e[92;1mServiceManager\
+  \ Finalizing service EventLoopMgr\e[m\n\e[92;1mServiceManager      DEBUG Finalizing\
+  \ service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG Finalizing service\
+  \ TimelineSvc\e[m\n\e[92;1mServiceManager      DEBUG Finalizing service EventDataSvc\e\
+  [m\n\e[92;1mServiceManager      DEBUG Finalizing service EventPersistencySvc\e[m\n\
+  \e[92;1mServiceManager      DEBUG Finalizing service IncidentSvc\e[m\n\e[92;1mServiceManager\
   \      DEBUG Finalizing service AppMgrRunable\e[m\n\e[92;1mServiceManager      DEBUG\
   \ Looping over all active services...\e[m\n\e[92;1mServiceManager      DEBUG ----\
-  \ MessageSvc (refCount = 17)\e[m\n\e[92;1mServiceManager      DEBUG ---- JobOptionsSvc\
+  \ MessageSvc (refCount = 15)\e[m\n\e[92;1mServiceManager      DEBUG ---- JobOptionsSvc\
   \ (refCount = 2)\e[m\n\e[92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount\
   \ = 3)\e[m\n\e[92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)\e\
   [m\n\e[92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)\e\
   [m\n\e[92;1mServiceManager      DEBUG ---- EventDataSvc (refCount = 3)\e[m\n\e[92;1mServiceManager\
   \      DEBUG ---- TimelineSvc (refCount = 2)\e[m\n\e[92;1mServiceManager      DEBUG\
   \ ---- AlgExecStateSvc (refCount = 3)\e[m\n\e[92;1mServiceManager      DEBUG ----\
-  \ HistogramPersistencySvc (refCount = 2)\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ ---- HistogramDataSvc (refCount = 3)\e[m\n\e[92;1mServiceManager      DEBUG ----\
   \ EventLoopMgr (refCount = 3)\e[m\n\e[96;1mApplicationMgr       INFO Application\
   \ Manager Finalized successfully\e[m\n\e[96;1mApplicationMgr       INFO Application\
   \ Manager Terminated successfully\e[m"

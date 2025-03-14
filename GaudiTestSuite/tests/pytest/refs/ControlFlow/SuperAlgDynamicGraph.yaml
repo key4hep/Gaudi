@@ -21,6 +21,5 @@ stdout: |-
   s2_Prescaler         INFO Number of counters : 1
   ApplicationMgr       INFO Application Manager Stopped successfully
   s1_HW                INFO finalizing....
-  EventLoopMgr         INFO Histograms converted successfully according to request.
 histos: {}
 ttrees: {}

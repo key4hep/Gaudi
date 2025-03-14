@@ -102,15 +102,18 @@ StatusCode HiveSlimEventLoopMgr::initialize() {
     }
   }
 
-  // Setup access to histogramming services
-  m_histoDataMgrSvc = serviceLocator()->service( "HistogramDataSvc" );
-  if ( !m_histoDataMgrSvc ) {
-    fatal() << "Error retrieving HistogramDataSvc." << endmsg;
-    return StatusCode::FAILURE;
+  setProperty( m_appMgrProperty->getProperty( "HistogramPersistency" ) ).ignore();
+  if ( m_histPersName != "NONE" && !m_histPersName.empty() ) {
+    // Setup access to histogramming services
+    m_histoDataMgrSvc = serviceLocator()->service( "HistogramDataSvc" );
+    if ( !m_histoDataMgrSvc ) {
+      fatal() << "Error retrieving HistogramDataSvc." << endmsg;
+      return StatusCode::FAILURE;
+    }
+    // Setup histogram persistency
+    m_histoPersSvc = serviceLocator()->service( "HistogramPersistencySvc" );
+    if ( !m_histoPersSvc ) { warning() << "Histograms cannot not be saved - though required." << endmsg; }
   }
-  // Setup histogram persistency
-  m_histoPersSvc = serviceLocator()->service( "HistogramPersistencySvc" );
-  if ( !m_histoPersSvc ) { warning() << "Histograms cannot not be saved - though required." << endmsg; }
 
   // Setup algorithm resource pool
   m_algResourcePool = serviceLocator()->service( "AlgResourcePool" );

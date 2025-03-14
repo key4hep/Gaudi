@@ -177,7 +177,6 @@ stdout: |-
   SimulationAlg        INFO Number of counters : 1
   TrackingAlg          INFO Number of counters : 1
   ApplicationMgr       INFO Application Manager Stopped successfully
-  HiveSlimEventLo...   INFO Histograms converted successfully according to request.
   AvalancheSchedu...   INFO Joining Scheduler thread
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully

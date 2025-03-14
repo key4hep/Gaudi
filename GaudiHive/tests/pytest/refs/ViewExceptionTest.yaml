@@ -70,8 +70,7 @@ stdout: "{'A1': {'Cardinality': 1,\n        'OutputLevel': 3,\n        'baseView
   PrecedenceSvc     WARNING To trace temporal and topological aspects of execution\
   \ flow, set DumpPrecedenceRules property to True\nHiveSlimEventLo...  FATAL Failed\
   \ event detected on s: 0  e: 1\nHiveSlimEventLo...   INFO 0 events were SKIPed\n\
-  ApplicationMgr       INFO Application Manager Stopped successfully\nHiveSlimEventLo...\
-  \   INFO Histograms converted successfully according to request.\nAvalancheSchedu...\
+  ApplicationMgr       INFO Application Manager Stopped successfully\nAvalancheSchedu...\
   \   INFO Joining Scheduler thread\nApplicationMgr       INFO Application Manager\
   \ Finalized successfully\nApplicationMgr      ERROR Application Manager Terminated\
   \ with error code 6"

@@ -183,7 +183,6 @@ stdout: "{'ApplicationMgr': {'EvtMax': -1,\n                    'ExtSvc': ['TagC
   \ INFO ========= EVENT:1000 RUN:999 TIME:1577837801.0 0 (0) 1 (1) 2 (2)\nGaudi::RootNTup...\
   \   INFO End of input Ntuple.\nEventLoopMgr         INFO No more events in event\
   \ selection\nApplicationMgr       INFO Application Manager Stopped successfully\n\
-  EventLoopMgr         INFO Histograms converted successfully according to request.\n\
   ToolSvc              INFO Removing all tools created by ToolSvc\nApplicationMgr\
   \       INFO Application Manager Finalized successfully\nApplicationMgr       INFO\
   \ Application Manager Terminated successfully\nNumber of MyTrack instances:2"

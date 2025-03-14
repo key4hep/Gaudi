@@ -74,7 +74,6 @@ stdout: |-
   Writer               INFO ================ EVENT:1000 RUN:999 ====== N(Track)=55 PASSED selection (>=50) ============
   EventLoopMgr         INFO No more events in event selection
   ApplicationMgr       INFO Application Manager Stopped successfully
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ToolSvc              INFO Removing all tools created by ToolSvc
   EvtTupleSvc          INFO NTuples saved successfully
   ApplicationMgr       INFO Application Manager Finalized successfully

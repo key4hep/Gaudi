@@ -228,8 +228,7 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistWrite.opts
   \        DEBUG stream: rec  name: tuple3.rt  size: ###\e[m\nTHistSvc           \
   \ DEBUG stream: upd  name: tuple2.rt  size: ###\e[m\nApplicationMgr       INFO Application\
   \ Manager Stopped successfully\e[m\nTHistWrite           INFO Finalizing...\e[m\n\
-  THistSvc            DEBUG vhid for /temp/TempHist7 is empty. deleting\e[m\nEventLoopMgr\
-  \         INFO Histograms converted successfully according to request.\e[m\nTHistSvc\
+  THistSvc            DEBUG vhid for /temp/TempHist7 is empty. deleting\e[m\nTHistSvc\
   \            DEBUG dumping THistSvc contents\nm_hlist:  size: 12\n - id: /new/Tree2\
   \ t: 1 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n\
   \ - id: /rec/gauss2d t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F :: [0x########]\

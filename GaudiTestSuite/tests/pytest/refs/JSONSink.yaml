@@ -15,7 +15,6 @@ stdout: |-
   Gaudi::Monitori...   INFO Writing JSON file CounterAlg.json
   CounterAlg           INFO Number of counters : 18
   ApplicationMgr       INFO Application Manager Stopped successfully
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
 histos: {}

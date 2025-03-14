@@ -20,7 +20,6 @@ stdout: |-
   AnyDataGetAlgor...   INFO Got std::vector<int,std::allocator<int> > from TestAnyData/Two: [0, 1, 2, 3]
   AnyDataGetAlgor...   INFO AnyDataHandler holds:42 84
   ApplicationMgr       INFO Application Manager Stopped successfully
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
 histos: {}

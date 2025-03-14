@@ -38,7 +38,6 @@ stdout: |-
   ApplicationMgr       INFO Application Manager Stopped successfully
   ConditionsUser1      INFO finalize
   ConditionsUser2      INFO finalize
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
 histos: {}
