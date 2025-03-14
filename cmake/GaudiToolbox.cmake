@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -942,7 +942,7 @@ if(EXISTS ${base_filename}.tests.checksum)
     file(READ ${base_filename}.tests.checksum old_hash)
 endif()
 if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
-    if(NOT DEFINED PREFECTH_PYTEST_TESTS)
+    if(NOT DEFINED PREFETCH_PYTEST_TESTS)
         message(\"... collect pytest tests from ${roots_msg}\")
     endif()
     execute_process(
@@ -973,7 +973,7 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
     endif()
     file(WRITE ${base_filename}.tests.checksum \${hash})
 endif()
-if(NOT DEFINED PREFECTH_PYTEST_TESTS)
+if(NOT DEFINED PREFETCH_PYTEST_TESTS)
     include(${base_filename}.tests.cmake)
 endif()
 ")
@@ -991,7 +991,7 @@ endif()
     endif()
     add_custom_target(pytest-prefetch-${package_name}-${target_name}
         ALL
-        COMMAND ${CMAKE_COMMAND} -DPREFECTH_PYTEST_TESTS=TRUE -P ${base_filename}.cmake
+        COMMAND ${CMAKE_COMMAND} -DPREFETCH_PYTEST_TESTS=TRUE -P ${base_filename}.cmake
         COMMENT "Collecting pytest tests for ${package_name}:${target_name}"
         ${ARG_DEPENDS}
     )
