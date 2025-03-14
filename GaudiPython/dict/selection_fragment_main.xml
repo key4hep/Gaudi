@@ -1,5 +1,5 @@
 <!--
-    (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations
+    (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations
 
     This software is distributed under the terms of the Apache version 2 licence,
     copied verbatim in the file "LICENSE".
@@ -31,24 +31,15 @@
 
   <class name    = "std::vector<IAlgTool*>"          />
   <class name    = "std::vector<StatEntity*>"        />
-  <class name    = "std::vector<AIDA::IHistogram1D*>"/>
-  <class name    = "std::vector<AIDA::IHistogram2D*>"/>
-  <class name    = "std::vector<AIDA::IHistogram3D*>"/>
-  <class name    = "std::vector<AIDA::IProfile1D*>"  />
-  <class name    = "std::vector<AIDA::IProfile2D*>"  />
   <function name = "Gaudi::Utils::Histos::path"      />
   <function name = "Gaudi::Utils::Histos::histoDump" />
-  <class name    = "Gaudi::Utils::Histos::HistoStrings" />
 
   <class name    = "StatEntity"               />
   <class pattern = "GaudiPython::Printer<*>"  />
 
-  <class name    = "Gaudi::Utils::Aida2ROOT"    />
-
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
 
-  <class pattern = "AIDA::I*"  />
   <class name    = "GaudiPython::PyAlgorithm"/>
   <class name    = "GaudiPython::CallbackStreamBuf"/>
 
@@ -66,8 +57,6 @@
   <function name= "Gaudi::Utils::Histos::Formats::format" />
   <function name= "Gaudi::Utils::Histos::Formats::header" />
   <function name= "Gaudi::Utils::Histos::format" />
-  <class    name= "Gaudi::Utils::Histos::Table"  />
-  <class    name= "Gaudi::Utils::HistoStats"  />
 
   <function name= "Gaudi::Utils::QuasiRandom::mix" />
   <function name= "Gaudi::Utils::QuasiRandom::mix32" />
