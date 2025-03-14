@@ -188,6 +188,18 @@ if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
         GaudiTestSuite.pytest.test_particlepropsvc
     )
 endif()
+if(NOT GAUDI_USE_AIDA)
+    list(APPEND tests_to_disable
+        GaudiTestSuite.pytest.bug.test_71216
+        GaudiTestSuite.pytest.gaudiconfig2.test_histograms
+        GaudiTestSuite.pytest.gaudiconfig2.test_histograms_with_global
+        GaudiTestSuite.pytest.test_randomnumber
+        GaudiTestSuite.pytest.test_ntuples
+        GaudiTestSuite.pytest.test_metadatasvc
+        GaudiTestSuite.pytest.test_histograms_py
+        GaudiTestSuite.pytest.test_histograms_opts
+    )
+endif()
 if(NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "")
     # the messages expected by this test are printed only if NDEBUG is not defined
     # (i.e. in release builds or with empty build type)
