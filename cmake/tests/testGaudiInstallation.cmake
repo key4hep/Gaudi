@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -99,7 +99,7 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Include directory not installed correctly,"
             " Aida2ROOT.h not found in include/GaudiUtils/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiCommonSvc/Axis.h)
+    if(GAUDI_USE_AIDA AND NOT EXISTS ${GAUDI_INSTALL_DIR}/include/GaudiCommonSvc/Axis.h)
         message(FATAL_ERROR "Include directory not installed correctly,"
             " Axis.h not found in include/GaudiCommonSvc/")
     endif()
