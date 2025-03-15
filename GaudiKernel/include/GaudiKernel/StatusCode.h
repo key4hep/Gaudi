@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -105,7 +105,8 @@ public:
   StatusCode() = default;
 
   /// Constructor from enum type (allowing implicit conversion)
-  template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
+  template <typename T>
+    requires( is_StatusCode_enum<T>::value )
   StatusCode( T sc ) noexcept : StatusCode{ static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance } {}
 
   /// Constructor from code_t and category (explicit conversion only)
@@ -265,7 +266,7 @@ private:
   [[noreturn]] void i_doThrow( std::string_view message, std::string_view tag ) const;
 
   /// Helper to invoke a callable and return the resulting StatusCode or this, if the callable returns void.
-  template <typename F, typename... ARGS, typename = std::enable_if_t<std::is_invocable_v<F, ARGS...>>>
+  template <typename... ARGS, std::invocable<ARGS...> F> // requires ( std::is_invocable_v<F, ARGS...> )
   StatusCode i_invoke( F&& f, ARGS&&... args ) const {
     if constexpr ( std::is_invocable_r_v<StatusCode, F, ARGS...> ) {
       return std::invoke( std::forward<F>( f ), std::forward<ARGS>( args )... );

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -42,9 +42,7 @@ namespace Gaudi::Accumulators {
     template <typename Histo, std::size_t N>
     struct HistogramArrayInternal : boost::container::static_vector<Histo, N> {
       /// constructor with callables for FormatName and FormatTitle
-      template <typename OWNER, typename FormatName, typename FormatTitle,
-                typename = typename std::enable_if_t<std::is_invocable_v<FormatName, int>>,
-                typename = typename std::enable_if_t<std::is_invocable_v<FormatTitle, int>>>
+      template <typename OWNER, std::invocable<int> FormatName, std::invocable<int> FormatTitle>
       HistogramArrayInternal( OWNER* owner, FormatName&& fname, FormatTitle&& ftitle,
                               typename Histo::AxisTupleType&& allAxis ) {
         for ( std::size_t i = 0; i < N; i++ ) { this->emplace_back( owner, fname( i ), ftitle( i ), allAxis ); }

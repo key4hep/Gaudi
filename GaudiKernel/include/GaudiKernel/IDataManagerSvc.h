@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -136,7 +136,8 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
                                   it should have the signature bool(IRegistry*,int level)
       @return                     Status code indicating success or failure.
   */
-  template <typename F, typename = std::enable_if_t<!std::is_convertible_v<F, IDataStoreAgent*>>>
+  template <typename F>
+    requires( !std::is_convertible_v<F, IDataStoreAgent*> )
   StatusCode traverseSubTree( std::string_view sub_path, F&& f ) {
     auto agent = makeDataStoreAgent( std::forward<F>( f ) );
     return traverseSubTree( sub_path, &agent );
@@ -157,7 +158,8 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
                                   it should have the signature bool(IRegistry*,int level)
       @return                     Status code indicating success or failure
   */
-  template <typename F, typename = std::enable_if_t<!std::is_convertible_v<F, IDataStoreAgent*>>>
+  template <typename F>
+    requires( !std::is_convertible_v<F, IDataStoreAgent*> )
   StatusCode traverseSubTree( DataObject* pObject, F&& f ) {
     auto agent = makeDataStoreAgent( std::forward<F>( f ) );
     return traverseSubTree( pObject, &agent );
@@ -173,7 +175,8 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
                                   it should have the signature bool(IRegistry*,int level)
       @return     Status code indicating success or failure
   */
-  template <typename F, typename = std::enable_if_t<!std::is_convertible_v<F, IDataStoreAgent*>>>
+  template <typename F>
+    requires( !std::is_convertible_v<F, IDataStoreAgent*> )
   StatusCode traverseTree( F&& f ) {
     auto agent = makeDataStoreAgent( std::forward<F>( f ) );
     return traverseTree( &agent );

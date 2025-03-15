@@ -40,7 +40,8 @@ namespace Gaudi::Allocator {
      *  This constructor is only enabled if an instance of DefaultResource can be invoked
      *  with no arguments and yields Resource*.
      */
-    template <typename D = void, typename = std::enable_if_t<std::is_invocable_r_v<Resource*, DefaultResource>, D>>
+    template <typename D = void>
+      requires( std::is_invocable_r_v<Resource*, DefaultResource> )
     Arena() : Arena( std::invoke( DefaultResource{} ) ) {}
 
     /** Converting copy constructor, rebinding U -> T.

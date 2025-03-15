@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -53,8 +53,8 @@ namespace Gaudi::Functional {
 
     template <typename Data, typename View>
     struct writeViewFor {
-      template <typename T>
-      using OutputHandle = std::enable_if_t<std::is_same_v<T, Data>, DataObjectWriteHandle<View, Data>>;
+      template <std::same_as<Data> T>
+      using OutputHandle = DataObjectWriteHandle<View, Data>;
     };
 
     // add support for objects that should reside in the TES for lifetime management, but should not
@@ -67,8 +67,8 @@ namespace Gaudi::Functional {
         OpaqueView( T const& ) {}
       };
 
-      template <typename T>
-      using OutputHandle = std::enable_if_t<std::is_same_v<T, Data>, DataObjectWriteHandle<OpaqueView, Data>>;
+      template <std::same_as<Data> T>
+      using OutputHandle = DataObjectWriteHandle<OpaqueView, Data>;
     };
 
     // this uses the defaults -- and it itself is the default ;-)

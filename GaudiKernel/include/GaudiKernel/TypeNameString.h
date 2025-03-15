@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -41,8 +41,8 @@ namespace Gaudi {
 
       // support passing a Gaudi::Property<std::string> without having to include Property.h
       // require that prop.value() can be used to construct a TypeNameString...
-      template <class T, typename = std::enable_if_t<std::is_constructible<
-                             TypeNameString, decltype( std::declval<const T&>().value() )>::value>>
+      template <class T>
+        requires( std::is_constructible_v<TypeNameString, decltype( std::declval<const T&>().value() )> )
       TypeNameString( const T& prop ) : TypeNameString( prop.value() ) {}
 
       const std::string& type() const { return m_type; }

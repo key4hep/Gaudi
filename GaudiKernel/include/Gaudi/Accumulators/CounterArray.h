@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -36,8 +36,7 @@ namespace Gaudi::Accumulators {
     template <typename Counter, std::size_t N>
     struct CounterArrayInternal : std::array<Counter, N> {
       /// constructor with callables for FormatName
-      template <typename OWNER, typename FormatName, std::size_t... Ns,
-                typename = typename std::enable_if_t<std::is_invocable_v<FormatName, int>>>
+      template <typename OWNER, std::invocable<int> FormatName, std::size_t... Ns>
       CounterArrayInternal( OWNER* owner, FormatName&& fname, std::integer_sequence<std::size_t, Ns...> )
           : std::array<Counter, N>{ Counter{ owner, fname( Ns ) }... } {
         static_assert( sizeof...( Ns ) < 1000, "Using CounterArray with 1000 arrays or more is prohibited. This "

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -131,22 +131,18 @@ namespace Gaudi::Functional::details {
   template <typename Arg>
   constexpr bool is_optional_v = Gaudi::cpp17::is_detected_v<details2::is_optional_, Arg>;
 
-  template <typename Arg>
-  using require_is_optional = std::enable_if_t<is_optional_v<Arg>>;
-
-  template <typename Arg>
-  using require_is_not_optional = std::enable_if_t<!is_optional_v<Arg>>;
-
   template <typename T>
   using remove_optional_t =
       std::conditional_t<is_optional_v<T>, Gaudi::cpp17::detected_t<details2::value_type_of_t, T>, T>;
 
   constexpr struct invoke_optionally_t {
-    template <typename F, typename Arg, typename = require_is_not_optional<Arg>>
+    template <typename F, typename Arg>
+      requires( !is_optional_v<Arg> )
     decltype( auto ) operator()( F&& f, Arg&& arg ) const {
       return std::invoke( std::forward<F>( f ), std::forward<Arg>( arg ) );
     }
-    template <typename F, typename Arg, typename = require_is_optional<Arg>>
+    template <typename F, typename Arg>
+      requires( is_optional_v<Arg> )
     void operator()( F&& f, Arg&& arg ) const {
       if ( arg ) std::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
     }
@@ -162,20 +158,19 @@ namespace Gaudi::Functional::details {
   using RepeatValues_ = decltype( get_values_helper<Value>( std::make_index_sequence<N>() ) );
 
   /////////////////////////////////////////
-
-  template <typename Out1, typename Out2,
-            typename = std::enable_if_t<std::is_constructible_v<Out1, Out2> && std::is_base_of_v<DataObject, Out1>>>
+  template <std::derived_from<DataObject> Out1, std::convertible_to<Out1> Out2>
   auto put( const DataObjectHandle<Out1>& out_handle, Out2&& out ) {
     return out_handle.put( std::make_unique<Out1>( std::forward<Out2>( out ) ) );
   }
 
-  template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible_v<Out1, Out2>>>
+  template <typename Out1, std::convertible_to<Out1> Out2>
   auto put( const DataObjectHandle<AnyDataWrapper<Out1>>& out_handle, Out2&& out ) {
     return out_handle.put( std::forward<Out2>( out ) );
   }
 
   // optional put
-  template <typename OutHandle, typename OptOut, typename = require_is_optional<OptOut>>
+  template <typename OutHandle, typename OptOut>
+    requires( is_optional_v<OptOut> )
   void put( const OutHandle& out_handle, OptOut&& out ) {
     if ( out ) put( out_handle, *std::forward<OptOut>( out ) );
   }
@@ -201,9 +196,9 @@ namespace Gaudi::Functional::details {
     }
 
     // Container<T*> with T&& as argument
-    template <typename Container, typename Value,
-              typename = std::enable_if_t<std::is_pointer_v<typename Container::value_type>>,
-              typename = std::enable_if_t<std::is_convertible_v<Value, c_remove_ptr_t<Container>>>>
+    template <typename Container, typename Value>
+      requires( std::is_pointer_v<typename Container::value_type> &&
+                std::is_convertible_v<Value, c_remove_ptr_t<Container>> )
     auto operator()( Container& c, Value&& v ) const {
       return operator()( c, new c_remove_ptr_t<Container>{ std::forward<Value>( v ) } );
     }
@@ -213,12 +208,14 @@ namespace Gaudi::Functional::details {
   /////////////////////////////////////////
 
   constexpr struct deref_t {
-    template <typename In, typename = std::enable_if_t<!std::is_pointer_v<In>>>
+    template <typename In>
+      requires( !std::is_pointer_v<In> )
     const In& operator()( const In& in ) const {
       return in;
     }
 
-    template <typename In, typename = std::enable_if_t<!std::is_pointer_v<std::decay_t<In>>>>
+    template <typename In>
+      requires( !std::is_pointer_v<std::decay_t<In>> )
     In operator()( In&& in ) const {
       return std::forward<In>( in );
     }
@@ -234,19 +231,16 @@ namespace Gaudi::Functional::details {
   // if Container is a pointer, then we're optional items
   namespace details2 {
     template <typename T>
-    struct is_gaudi_range : std::false_type {};
-
-    template <typename T, typename IT>
-    struct is_gaudi_range<Gaudi::Range_<T, IT>> : std::true_type {};
-
-    template <typename T, typename IT>
-    struct is_gaudi_range<Gaudi::NamedRange_<T, IT>> : std::true_type {};
-
-    template <typename T, typename IT>
-    struct is_gaudi_range<std::optional<Gaudi::NamedRange_<T, IT>>> : std::true_type {};
+    constexpr static bool is_gaudi_range_v = false;
 
     template <typename T>
-    constexpr static bool is_gaudi_range_v = is_gaudi_range<T>::value;
+    constexpr static bool is_gaudi_range_v<Gaudi::Range_<T>> = true;
+
+    template <typename T>
+    constexpr static bool is_gaudi_range_v<Gaudi::NamedRange_<T>> = true;
+
+    template <typename T>
+    constexpr static bool is_gaudi_range_v<std::optional<Gaudi::NamedRange_<T>>> = true;
 
     template <typename Container, typename Value>
     void push_back( Container& c, const Value& v, std::true_type ) {
@@ -259,24 +253,24 @@ namespace Gaudi::Functional::details {
 
     template <typename In>
     struct get_from_handle {
-      template <template <typename> class Handle, typename I, typename = std::enable_if_t<std::is_convertible_v<I, In>>>
+      template <template <typename> class Handle, std::convertible_to<In> I>
       auto operator()( const Handle<I>& h ) -> const In& {
         return *h.get();
       }
-      template <template <typename> class Handle, typename I, typename IT>
-      auto operator()( const Handle<Gaudi::Range_<I, IT>>& h ) -> const In {
+      template <template <typename> class Handle, typename I>
+      auto operator()( const Handle<Gaudi::Range_<I>>& h ) -> const In {
         return h.get();
       }
-      template <template <typename> class Handle, typename I, typename IT>
-      auto operator()( const Handle<Gaudi::NamedRange_<I, IT>>& h ) -> const In {
+      template <template <typename> class Handle, typename I>
+      auto operator()( const Handle<Gaudi::NamedRange_<I>>& h ) -> const In {
         return h.get();
       }
-      template <template <typename> class Handle, typename I, typename IT>
-      auto operator()( const Handle<std::optional<Gaudi::NamedRange_<I, IT>>>& h ) -> const In {
+      template <template <typename> class Handle, typename I>
+      auto operator()( const Handle<std::optional<Gaudi::NamedRange_<I>>>& h ) -> const In {
         return h.get();
       }
-      template <template <typename> class Handle, typename I,
-                typename = std::enable_if_t<std::is_convertible_v<I*, In>>>
+      template <template <typename> class Handle, typename I>
+        requires( std::is_convertible_v<I*, In> )
       auto operator()( const Handle<I>& h ) -> const In {
         return h.getIfExists();
       } // In is-a pointer
@@ -352,38 +346,50 @@ namespace Gaudi::Functional::details {
     size_type size() const { return m_containers.size(); }
 
     template <typename X = Container>
-    std::enable_if_t<!std::is_pointer_v<X>, ref_t> front() const {
+      requires( !std::is_pointer_v<X> )
+    ref_t front() const {
       return *m_containers.front();
     }
+
     template <typename X = Container>
-    std::enable_if_t<std::is_pointer_v<X>, ptr_t> front() const {
+      requires( std::is_pointer_v<X> )
+    ptr_t front() const {
       return m_containers.front();
     }
 
     template <typename X = Container>
-    std::enable_if_t<!std::is_pointer_v<X>, ref_t> back() const {
+      requires( !std::is_pointer_v<X> )
+    ref_t back() const {
       return *m_containers.back();
     }
+
     template <typename X = Container>
-    std::enable_if_t<std::is_pointer_v<X>, ptr_t> back() const {
+      requires( std::is_pointer_v<X> )
+    ptr_t back() const {
       return m_containers.back();
     }
 
     template <typename X = Container>
-    std::enable_if_t<!std::is_pointer_v<X>, ref_t> operator[]( size_type i ) const {
+      requires( !std::is_pointer_v<X> )
+    ref_t operator[]( size_type i ) const {
       return *m_containers[i];
     }
+
     template <typename X = Container>
-    std::enable_if_t<std::is_pointer_v<X>, ptr_t> operator[]( size_type i ) const {
+      requires( std::is_pointer_v<X> )
+    ptr_t operator[]( size_type i ) const {
       return m_containers[i];
     }
 
     template <typename X = Container>
-    std::enable_if_t<!std::is_pointer_v<X>, ref_t> at( size_type i ) const {
+      requires( !std::is_pointer_v<X> )
+    ref_t at( size_type i ) const {
       return *m_containers[i];
     }
+
     template <typename X = Container>
-    std::enable_if_t<std::is_pointer_v<X>, ptr_t> at( size_type i ) const {
+      requires( std::is_pointer_v<X> )
+    ptr_t at( size_type i ) const {
       return m_containers[i];
     }
 
