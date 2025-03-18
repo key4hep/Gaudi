@@ -133,11 +133,16 @@ def pytest_collection_finish(session):
     fixtures = defaultdict(list)  # fixture name -> list of tests that produce it
     names = []
     for path in sorted(session.ctest_files):
-        name = (
-            args["prefix"] + os.path.relpath(path, args["pytest_root_dir"])
-        ).replace("/", ".")
+        name = os.path.relpath(path, args["pytest_root_dir"]).replace("/", ".")
         if name.endswith(".py"):
             name = name[:-3]
+        if name == ".":
+            # when we pass a single file to pytest, pytest_root_dir and path are the same
+            # and relpath returns ".", so we take the prefix and drop the final dot
+            # (see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/354)
+            name = args["prefix"][:-1]
+        else:
+            name = args["prefix"] + name
         pytest_cmd = args["pytest_command"]
 
         output.write(
