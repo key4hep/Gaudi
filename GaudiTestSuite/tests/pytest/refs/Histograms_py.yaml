@@ -45,8 +45,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       CustomGauss:
         ID: CustomGauss
         Title: '"Gaussian mean=0, sigma=1, atomic"'
@@ -55,8 +53,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       CustomGaussNoInit:
         ID: CustomGaussNoInit
         Title: '"Gaussian mean=0, sigma=1, atomic"'
@@ -65,8 +61,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       CustomGaussNoProp:
         ID: CustomGaussNoProp
         Title: '"Gaussian mean=0, sigma=1, atomic"'
@@ -75,8 +69,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       CustomGaussW:
         ID: CustomGaussW
         Title: '"Gaussian mean=0, sigma=1, weighted"'
@@ -85,8 +77,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       Gauss:
         ID: Gauss
         Title: '"Gaussian mean=0, sigma=1, atomic"'
@@ -95,8 +85,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       GaussBuf:
         ID: GaussBuf
         Title: '"Gaussian mean=0, sigma=1, buffered"'
@@ -105,8 +93,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       GaussInt:
         ID: GaussInt
         Title: '"Gaussian mean=0, sigma=1, integer values"'
@@ -115,8 +101,6 @@ histos:
         RMS: '0.68219'
         Skewness: '0.012066'
         Kurtosis: '2.4124'
-        ? ''
-        : ''
       GaussNA:
         ID: GaussNA
         Title: '"Gaussian mean=0, sigma=1, non atomic"'
@@ -125,8 +109,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       GaussW:
         ID: GaussW
         Title: '"Gaussian mean=0, sigma=1, weighted"'
@@ -135,8 +117,6 @@ histos:
         RMS: '1.0015'
         Skewness: '0.0079746'
         Kurtosis: '-0.0010546'
-        ? ''
-        : ''
       LogGauss:
         ID: LogGauss
         Title: '"Log, Gaussian"'
@@ -145,8 +125,6 @@ histos:
         RMS: '0.26059'
         Skewness: '0.96351'
         Kurtosis: '0.08275'
-        ? ''
-        : ''
     header:
       1D: 11
       2D: 8
@@ -226,8 +204,6 @@ histos:
         RMS: '1.0022'
         Skewness: '0.0079034'
         Kurtosis: '0.00508'
-        ? ''
-        : ''
       CustomProfGaussW:
         ID: CustomProfGaussW
         Title: '"Profile, Gaussian mean=0, sigma=1, weighted"'
@@ -236,8 +212,6 @@ histos:
         RMS: '1.0022'
         Skewness: '0.0079034'
         Kurtosis: '0.00508'
-        ? ''
-        : ''
       ProfGauss:
         ID: ProfGauss
         Title: '"Profile, Gaussian mean=0, sigma=1, atomic"'
@@ -246,8 +220,6 @@ histos:
         RMS: '1.0022'
         Skewness: '0.0079034'
         Kurtosis: '0.00508'
-        ? ''
-        : ''
       ProfGaussBuf:
         ID: ProfGaussBuf
         Title: '"Profile, Gaussian mean=0, sigma=1, buffered"'
@@ -256,8 +228,6 @@ histos:
         RMS: '1.0022'
         Skewness: '0.0079034'
         Kurtosis: '0.00508'
-        ? ''
-        : ''
       ProfGaussInt:
         ID: ProfGaussInt
         Title: '"Profile, Gaussian mean=0, sigma=1, integ..."'
@@ -266,8 +236,6 @@ histos:
         RMS: '0.68346'
         Skewness: '0.01007'
         Kurtosis: '2.407'
-        ? ''
-        : ''
       ProfGaussNA:
         ID: ProfGaussNA
         Title: '"Profile, Gaussian mean=0, sigma=1, non a..."'
@@ -276,8 +244,6 @@ histos:
         RMS: '1.0022'
         Skewness: '0.0079034'
         Kurtosis: '0.00508'
-        ? ''
-        : ''
       ProfGaussW:
         ID: ProfGaussW
         Title: '"Profile, Gaussian mean=0, sigma=1, weighted"'
@@ -286,8 +252,6 @@ histos:
         RMS: '1.0022'
         Skewness: '0.0079034'
         Kurtosis: '0.00508'
-        ? ''
-        : ''
     2DProf:
       CustomProfGaussFlat:
       - CustomProfGaussFlat
@@ -327,8 +291,6 @@ histos:
         RMS: '1.0016'
         Skewness: '0.019119'
         Kurtosis: '0.033422'
-        ? ''
-        : ''
       Gauss:
         ID: Gauss
         Title: '"Gaussian mean=0, sigma=1, atomic"'
@@ -337,8 +299,6 @@ histos:
         RMS: '1.0016'
         Skewness: '0.019119'
         Kurtosis: '0.033422'
-        ? ''
-        : ''
       GaussBuf:
         ID: GaussBuf
         Title: '"Gaussian mean=0, sigma=1, buffered"'
@@ -347,8 +307,6 @@ histos:
         RMS: '1.0016'
         Skewness: '0.019119'
         Kurtosis: '0.033422'
-        ? ''
-        : ''
     header:
       1D: 3
       2D: 3
