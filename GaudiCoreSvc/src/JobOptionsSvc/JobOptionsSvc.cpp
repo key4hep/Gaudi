@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -31,17 +31,9 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
-
-#if __cplusplus >= 201703
-#  include <string_view>
-#else
-#  include <experimental/string_view>
-namespace std {
-  using experimental::string_view;
-}
-#endif
 
 namespace Gaudi {
   namespace Parsers {

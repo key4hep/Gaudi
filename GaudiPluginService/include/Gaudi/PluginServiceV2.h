@@ -20,13 +20,13 @@
 #include <string_view>
 #include <utility>
 
-#if __cplusplus > 201703L && __has_include( <source_location> ) && !defined (__CLING__)
+#if __has_include( <source_location> ) && !defined (__CLING__)
 #  include <source_location>
 namespace Gaudi::PluginService::Details {
   using std::source_location;
 }
 
-#elif __cplusplus >= 201402L && !defined( __clang__ ) && __GNUC__ >= 8
+#elif !defined( __clang__ ) && __GNUC__ >= 8
 #  include <experimental/source_location>
 namespace Gaudi::PluginService::Details {
   using std::experimental::source_location;

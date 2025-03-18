@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2022 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2022-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,17 +13,9 @@
 #include <algorithm>
 #include <functional>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
-
-#if __cplusplus >= 201703
-#  include <string_view>
-#else
-#  include <experimental/string_view>
-namespace std {
-  using experimental::string_view;
-}
-#endif
 
 namespace Gaudi::Details {
   /** std::string wrapper for static strings where identical values actually share the memory.
