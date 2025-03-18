@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,6 +12,7 @@
 #define GAUDIKERNEL_SERVICEHANDLE_H
 
 // Includes
+#include <Gaudi/Concepts.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/GaudiHandle.h>
@@ -94,9 +95,27 @@ public:
 
 protected:
   /** Do the real retrieval of the Service. */
-  StatusCode retrieve( T*& service ) const override {
+  StatusCode retrieve( T*& service ) const override { return i_retrieve( service ); }
+
+  /// retrieve the service for ServiceHandles<ISomeInterfaces>
+  template <Gaudi::IsInterface I = T>
+  StatusCode i_retrieve( I*& service ) const {
     const ServiceLocatorHelper helper( *serviceLocator(), GaudiHandleBase::messageName(), this->parentName() );
-    return helper.getService( GaudiHandleBase::typeAndName(), true, T::interfaceID(), (void**)&service );
+    return helper.getService( GaudiHandleBase::typeAndName(), true, I::interfaceID(), (void**)&service );
+  }
+
+  /// retrieve the service for ServiceHandles<ActualService>
+  template <typename I = T>
+    requires( !Gaudi::IsInterface<I> )
+  StatusCode i_retrieve( I*& service ) const {
+    IService* svc = nullptr;
+    return i_retrieve( svc ).andThen( [&] {
+      service = dynamic_cast<I*>( svc );
+      if ( !service )
+        throw GaudiException( "unable to dcast Service " + this->typeAndName() + " to " +
+                                  System::typeinfoName( typeid( T ) ),
+                              this->typeAndName() + " retrieve", StatusCode::FAILURE );
+    } );
   }
 
   //   /** Do the real release of the Service */
