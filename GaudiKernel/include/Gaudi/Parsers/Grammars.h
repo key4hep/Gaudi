@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -32,7 +32,11 @@
 //==============================================================================
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/fusion/include/unused.hpp>
+#if ( BOOST_VERSION >= 187000 ) && ( BOOST_VERSION < 188000 )
+#  define BOOST_ALLOW_DEPRECATED_HEADERS
+#endif
 #include <boost/spirit/include/qi.hpp>
+#undef BOOST_ALLOW_DEPRECATED_HEADERS
 
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/operator.hpp>
