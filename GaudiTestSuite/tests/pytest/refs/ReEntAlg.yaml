@@ -51,7 +51,6 @@ stdout: |-
   HiveSlimEventLo...   INFO 0 events were SKIPed
   ApplicationMgr       INFO Application Manager Stopped successfully
   ReEntAlg             INFO finalize()
-  HiveSlimEventLo...   INFO Histograms converted successfully according to request.
   AvalancheSchedu...   INFO Joining Scheduler thread
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully

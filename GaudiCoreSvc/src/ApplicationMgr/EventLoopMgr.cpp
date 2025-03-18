@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -85,17 +85,17 @@ StatusCode EventLoopMgr::initialize() {
     }
   }
 
-  // Setup access to histogramming services
-  m_histoDataMgrSvc = serviceLocator()->service( "HistogramDataSvc" );
-  if ( !m_histoDataMgrSvc ) {
-    fatal() << "Error retrieving HistogramDataSvc." << endmsg;
-    return sc;
-  }
-  // Setup histogram persistency
-  m_histoPersSvc = serviceLocator()->service( "HistogramPersistencySvc" );
-  if ( !m_histoPersSvc ) {
-    warning() << "Histograms cannot not be saved - though required." << endmsg;
-    return sc;
+  setProperty( m_appMgrProperty->getProperty( "HistogramPersistency" ) ).ignore();
+  if ( m_histPersName != "NONE" && !m_histPersName.empty() ) {
+    // Setup access to histogramming services
+    m_histoDataMgrSvc = serviceLocator()->service( "HistogramDataSvc" );
+    if ( !m_histoDataMgrSvc ) {
+      fatal() << "Error retrieving HistogramDataSvc." << endmsg;
+      return StatusCode::FAILURE;
+    }
+    // Setup histogram persistency
+    m_histoPersSvc = serviceLocator()->service( "HistogramPersistencySvc" );
+    if ( !m_histoPersSvc ) { warning() << "Histograms cannot not be saved - though required." << endmsg; }
   }
 
   return StatusCode::SUCCESS;

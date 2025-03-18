@@ -41,7 +41,6 @@ stdout: |-
   ApplicationMgr       INFO Application Manager Stopped successfully
   Google::HeapChe...   INFO Starting Auditor for HelloWorld:Finalize
   HelloWorld           INFO finalizing....
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
   ChronoStatSvc.f...   INFO  Service finalized successfully
   ApplicationMgr       INFO Application Manager Finalized successfully

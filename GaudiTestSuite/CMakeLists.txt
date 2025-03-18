@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -66,12 +66,21 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/FunctionalAlgorithms/TestObjectVersion.cpp
                          src/FunctionalAlgorithms/transformer.cpp
                          src/Histograms/CounterHistos.cpp
+                         src/Histograms/HistoProps.cpp
                          src/History/History.cpp
                          src/IncidentSvc/IncidentAsyncTestAlg.cpp
                          src/IncidentSvc/IncidentAsyncTestSvc.cpp
                          src/IncidentSvc/IncidentListenerTest.cpp
                          src/IncidentSvc/IncidentListenerTestAlg.cpp
                          src/IntelProfiler/CpuHungryAlg.cpp
+                         src/IO/EvtCollectionSelector.cpp
+                         src/IO/EvtCollectionWrite.cpp
+                         src/IO/EvtExtCollectionSelector.cpp
+                         src/IO/ReadAlg.cpp
+                         src/IO/ReadHandleAlg.cpp
+                         src/IO/ReadTES.cpp
+                         src/IO/WriteAlg.cpp
+                         src/IO/WriteHandleAlg.cpp
                          src/Maps/MapAlg.cpp
                          src/MultipleLogStreams/QotdAlg.cpp
                          src/NTuples/NTupleAlgorithm.cpp
@@ -122,15 +131,6 @@ endif()
 if(GAUDI_USE_AIDA)
     target_sources(GaudiTestSuiteComponents PRIVATE
                                          src/Histograms/HistoAlgorithm.cpp
-                                         src/Histograms/HistoProps.cpp
-                                         src/IO/EvtCollectionSelector.cpp
-                                         src/IO/EvtCollectionWrite.cpp
-                                         src/IO/EvtExtCollectionSelector.cpp
-                                         src/IO/ReadAlg.cpp
-                                         src/IO/ReadHandleAlg.cpp
-                                         src/IO/ReadTES.cpp
-                                         src/IO/WriteAlg.cpp
-                                         src/IO/WriteHandleAlg.cpp
                                          src/RandomNumber/RandomNumberAlg.cpp)
     target_link_libraries(GaudiTestSuiteComponents PRIVATE AIDA::aida)
 endif()
@@ -186,6 +186,18 @@ set(tests_to_disable)
 if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
     list(APPEND tests_to_disable
         GaudiTestSuite.pytest.test_particlepropsvc
+    )
+endif()
+if(NOT GAUDI_USE_AIDA)
+    list(APPEND tests_to_disable
+        GaudiTestSuite.pytest.bug.test_71216
+        GaudiTestSuite.pytest.gaudiconfig2.test_histograms
+        GaudiTestSuite.pytest.gaudiconfig2.test_histograms_with_global
+        GaudiTestSuite.pytest.test_randomnumber
+        GaudiTestSuite.pytest.test_ntuples
+        GaudiTestSuite.pytest.test_metadatasvc
+        GaudiTestSuite.pytest.test_histograms_py
+        GaudiTestSuite.pytest.test_histograms_opts
     )
 endif()
 if(NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "")

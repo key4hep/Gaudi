@@ -64,7 +64,6 @@ stdout: |-
   RootMini             INFO Events output: 1000
   FileRecords          INFO Set up File Summary Record
   FileRecords          INFO Events output: 1
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
 histos: {}

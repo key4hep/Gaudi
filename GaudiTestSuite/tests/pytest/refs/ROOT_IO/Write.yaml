@@ -91,8 +91,6 @@ stdout: |-
   FileRecords         DEBUG output handles: 0
   EventLoopMgr      WARNING Unable to locate service "EventSelector"
   EventLoopMgr      WARNING No events will be processed from external input.
-  HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-  HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
   ApplicationMgr       INFO Application Manager Initialized successfully
   ServiceManager      DEBUG Starting service FileRecordDataSvc
   ServiceManager      DEBUG Starting service AppMgrRunable
@@ -105,8 +103,6 @@ stdout: |-
   ServiceManager      DEBUG Starting service FileCatalog
   ServiceManager      DEBUG Starting service IODataManager
   ServiceManager      DEBUG Starting service RootCnvSvc
-  ServiceManager      DEBUG Starting service HistogramPersistencySvc
-  ServiceManager      DEBUG Starting service HistogramDataSvc
   ServiceManager      DEBUG Starting service EventLoopMgr
   ApplicationMgr       INFO Application Manager Started successfully
   RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
@@ -1268,8 +1264,6 @@ stdout: |-
   ReadAlg             DEBUG       0.111706  0.115527  0.112686 Collisions:  0 (-1)  1 (-1)  2 (-1)
   ServiceManager      DEBUG Stopping service EventLoopMgr
   ServiceManager      DEBUG Stopping service RndmGenSvc
-  ServiceManager      DEBUG Stopping service HistogramDataSvc
-  ServiceManager      DEBUG Stopping service HistogramPersistencySvc
   ServiceManager      DEBUG Stopping service RootCnvSvc
   ServiceManager      DEBUG Stopping service IODataManager
   ServiceManager      DEBUG Stopping service FileCatalog
@@ -1288,10 +1282,7 @@ stdout: |-
   FileRecords          INFO Set up File Summary Record
   FileRecords       VERBOSE will not fire incidents
   FileRecords          INFO Events output: 1
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ServiceManager      DEBUG Finalizing service RndmGenSvc
-  ServiceManager      DEBUG Finalizing service HistogramDataSvc
-  ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
   ServiceManager      DEBUG Finalizing service RootCnvSvc
   ServiceManager      DEBUG Finalizing service IODataManager
   ServiceManager      DEBUG Finalizing service FileCatalog
@@ -1304,7 +1295,7 @@ stdout: |-
   ServiceManager      DEBUG Finalizing service AppMgrRunable
   ServiceManager      DEBUG Finalizing service FileRecordDataSvc
   ServiceManager      DEBUG Looping over all active services...
-  ServiceManager      DEBUG ---- MessageSvc (refCount = 27)
+  ServiceManager      DEBUG ---- MessageSvc (refCount = 25)
   ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
   ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
   ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
@@ -1318,8 +1309,6 @@ stdout: |-
   ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
   ServiceManager      DEBUG ---- IODataManager (refCount = 2)
   ServiceManager      DEBUG ---- RootCnvSvc (refCount = 2)
-  ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
-  ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
   ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
   ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
   ApplicationMgr       INFO Application Manager Finalized successfully

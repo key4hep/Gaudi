@@ -17,7 +17,6 @@ stdout: |-
   Callback properly called at STOP
   ApplicationMgr       INFO Application Manager Stopped successfully
   Callback properly called at FINALIZE
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
 histos: {}

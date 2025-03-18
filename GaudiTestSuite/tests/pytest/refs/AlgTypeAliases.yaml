@@ -20,7 +20,6 @@ stdout: |-
   ApplicationMgr       INFO Application Manager Stopped successfully
   HW1                  INFO finalizing....
   HW2                  INFO finalizing....
-  EventLoopMgr         INFO Histograms converted successfully according to request.
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr       INFO Application Manager Terminated successfully
 histos: {}

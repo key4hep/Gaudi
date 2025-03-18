@@ -1,0 +1,24 @@
+<!--
+    (c) Copyright 2025 CERN for the benefit of the LHCb and ATLAS collaborations
+
+    This software is distributed under the terms of the Apache version 2 licence,
+    copied verbatim in the file "LICENSE".
+
+    In applying this licence, CERN does not waive the privileges and immunities
+    granted to it by virtue of its status as an Intergovernmental Organization
+    or submit itself to any jurisdiction.
+-->
+
+  <class name    = "std::vector<AIDA::IHistogram1D*>"/>
+  <class name    = "std::vector<AIDA::IHistogram2D*>"/>
+  <class name    = "std::vector<AIDA::IHistogram3D*>"/>
+  <class name    = "std::vector<AIDA::IProfile1D*>"  />
+  <class name    = "std::vector<AIDA::IProfile2D*>"  />
+
+  <class pattern = "AIDA::I*"  />
+
+  <class name    = "Gaudi::Utils::Aida2ROOT"    />
+
+  <class name    = "Gaudi::Utils::Histos::Table"  />
+  <class name    = "Gaudi::Utils::HistoStats"  />
+  <class name    = "Gaudi::Utils::Histos::HistoStrings" />

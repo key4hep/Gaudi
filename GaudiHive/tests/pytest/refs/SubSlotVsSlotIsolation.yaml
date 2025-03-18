@@ -199,7 +199,6 @@ stdout: |-
   HiveSlimEventLo...  DEBUG Clearing slot 0 (event 0) of the whiteboard
   HiveSlimEventLo...   INFO 0 events were SKIPed
   ApplicationMgr       INFO Application Manager Stopped successfully
-  HiveSlimEventLo...   INFO Histograms converted successfully according to request.
   AvalancheSchedu...   INFO Joining Scheduler thread
   ApplicationMgr       INFO Application Manager Finalized successfully
   ApplicationMgr      ERROR Application Manager Terminated with error code 1

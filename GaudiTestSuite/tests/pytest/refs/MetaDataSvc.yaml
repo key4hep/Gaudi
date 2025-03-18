@@ -98,7 +98,7 @@ stdout: |-
   EventLoopMgr.AutoRetrieveTools:True
   EventLoopMgr.CheckToolDeps:True
   EventLoopMgr.EvtSel:'NONE'
-  EventLoopMgr.HistogramPersistency:''
+  EventLoopMgr.HistogramPersistency:'ROOT'
   EventLoopMgr.OutStream:[  ]
   EventLoopMgr.OutputLevel:3
   EventLoopMgr.PrintControlFlowExpression:False
