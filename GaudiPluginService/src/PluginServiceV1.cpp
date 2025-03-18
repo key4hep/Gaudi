@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -119,14 +119,10 @@ namespace Gaudi {
           auto realname = std::unique_ptr<char, decltype( free )*>(
               abi::__cxa_demangle( id.c_str(), nullptr, nullptr, &status ), free );
           if ( !realname ) return id;
-#if _GLIBCXX_USE_CXX11_ABI
           return std::regex_replace(
               realname.get(),
               std::regex{ "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?" },
               "std::string" );
-#else
-          return std::string{ realname.get() };
-#endif
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 

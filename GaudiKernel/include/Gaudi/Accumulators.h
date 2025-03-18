@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,7 +23,7 @@ namespace Gaudi::Accumulators {
 } // namespace Gaudi::Accumulators
 
 // Fix builds with GCC 11 and C++20
-#if defined( __GNUC__ ) && ( __GNUC__ == 11 ) && !defined( __clang__ ) && __cplusplus >= 202002L
+#if defined( __GNUC__ ) && ( __GNUC__ == 11 ) && !defined( __clang__ )
 namespace std::chrono {
   template <typename Ratio>
   static constexpr const char* suffix( const Ratio& ) {
@@ -473,12 +473,8 @@ namespace Gaudi::Accumulators {
     friend class GenericAccumulator;
 
   public:
-    using InputType = InputTypeT;
-#if __cplusplus >= 201703L
-    using OutputType = std::decay_t<std::invoke_result_t<OutputTransform, InnerType>>;
-#else
-    using OutputType = std::decay_t<std::result_of_t<OutputTransform( InnerType )>>;
-#endif
+    using InputType             = InputTypeT;
+    using OutputType            = std::decay_t<std::invoke_result_t<OutputTransform, InnerType>>;
     using InternalType          = InnerType;
     using JSONStringEntriesType = std::string;
     GenericAccumulator operator+=( const InputType by ) {

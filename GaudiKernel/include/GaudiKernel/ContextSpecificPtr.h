@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -82,11 +82,7 @@ namespace Gaudi {
       /// all the values corresponding to the contained pointers using init as
       /// first value.
       template <class Mapper>
-#if __cplusplus >= 201703L
       auto accumulate( Mapper f, std::invoke_result_t<Mapper, const T*> init ) const -> decltype( init ) {
-#else
-      auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init ) const -> decltype( init ) {
-#endif
         return accumulate( f, init, std::plus<>() );
       }
 
@@ -94,11 +90,7 @@ namespace Gaudi {
       /// accumulated  result, through the operation 'op', of all the values
       /// corresponding to the contained pointers using init as first value.
       template <class Mapper, class BinaryOperation>
-#if __cplusplus >= 201703L
       auto accumulate( Mapper f, std::invoke_result_t<Mapper, const T*> init, BinaryOperation op ) const
-#else
-      auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init, BinaryOperation op ) const
-#endif
           -> decltype( init ) {
         auto lock = std::scoped_lock{ m_ptrs_lock };
         return std::accumulate( m_ptrs.begin(), m_ptrs.end(), init, [&f, &op]( const auto& partial, const auto& p ) {
