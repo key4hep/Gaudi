@@ -108,6 +108,7 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/ToolHandles/FloatTool.cpp
                          src/NTuple/NTupleWriterProducers.cpp
                          src/NTuple/NTupleWriterImpls.cpp
+                         src/UseSvcWithoutInterface.cpp
                  LINK GaudiKernel
                       Gaudi::Functional
                       GaudiUtilsLib
