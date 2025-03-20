@@ -4388,6 +4388,7 @@ static int
 #endif
     VALGRIND_PRINTF( const char* format, ... ) {
 #if defined( NVALGRIND )
+  (void)format; // avoid compiler warning for unused argument
   return 0;
 #else /* NVALGRIND */
 #  if defined( _MSC_VER ) || defined( __MINGW64__ )
@@ -4419,6 +4420,7 @@ static int
 #endif
     VALGRIND_PRINTF_BACKTRACE( const char* format, ... ) {
 #if defined( NVALGRIND )
+  (void)format; // avoid compiler warning for unused argument
   return 0;
 #else /* NVALGRIND */
 #  if defined( _MSC_VER ) || defined( __MINGW64__ )
