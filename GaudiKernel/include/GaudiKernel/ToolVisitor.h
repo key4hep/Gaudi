@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -36,7 +36,8 @@ public:
    *      ToolVisitor::visit(tools(), visitor);
    * @verbatim
    */
-  template <typename Callable, typename = std::enable_if_t<std::is_invocable_r_v<void, Callable, IAlgTool*>>>
+  template <std::invocable<IAlgTool*> Callable>
+    requires( std::is_invocable_r_v<void, Callable, IAlgTool*> )
   static void visit( const std::vector<IAlgTool*>& tools, Callable& callable,
                      const std::regex& reject_filter = s_noFilter ) {
     class Visitor final : public IVisitor {

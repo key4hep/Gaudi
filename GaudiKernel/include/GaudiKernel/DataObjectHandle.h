@@ -455,8 +455,8 @@ public:
       : ::details::ReadHandle<T>{ k, Gaudi::DataHandle::Reader, owner } {}
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+  /// @note the use of requires is required to avoid ambiguities
+  template <std::derived_from<IProperty> OWNER, typename K>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, K key = {}, std::string doc = "" )
       : ::details::ReadHandle<T>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), std::move( key ),
                                   std::move( doc ) ) {}
@@ -477,8 +477,8 @@ public:
       : ::details::WriteHandle<T, U>{ k, Gaudi::DataHandle::Writer, owner } {}
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+  /// @note the use of requires is required to avoid ambiguities
+  template <std::derived_from<IProperty> OWNER, typename K>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, K key = {}, std::string doc = "" )
       : ::details::WriteHandle<T, U>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), std::move( key ),
                                       std::move( doc ) ) {}

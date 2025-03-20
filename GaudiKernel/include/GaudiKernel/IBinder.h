@@ -1,5 +1,5 @@
 /*****************************************************************************\
-* (c) Copyright 2021-2024 CERN for the benefit of the LHCb Collaboration      *
+* (c) Copyright 2021-2025 CERN for the benefit of the LHCb Collaboration      *
 *                                                                             *
 * This software is distributed under the terms of the GNU General Public      *
 * Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   *
@@ -29,7 +29,7 @@ namespace Gaudi::Interface::Bind {
     // identity binding: no actual binding is required...
     Box( IFace const* ptr ) : m_ptr{ ptr } { assert( m_ptr != nullptr ); }
     // bind the arguments...
-    template <typename Ret, typename... Args, typename = std::enable_if_t<std::is_base_of_v<IFace, Ret>>>
+    template <std::derived_from<IFace> Ret, typename... Args>
     Box( std::in_place_type_t<Ret>, Args&&... args ) {
       if constexpr ( sizeof( Ret ) <= sizeof( m_storage ) ) {
         m_ptr      = new ( &m_storage ) Ret{ std::forward<Args>( args )... };

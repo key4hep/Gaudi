@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,11 +38,11 @@ namespace Gaudi::Functional {
     }
 
     template <typename Sig>
-    struct is_void_fun : std::false_type {};
+    constexpr bool is_void_fun_v = false;
     template <typename... Args>
-    struct is_void_fun<void( Args... )> : std::true_type {};
+    constexpr bool is_void_fun_v<void( Args... )> = true;
     template <typename Sig>
-    inline constexpr bool is_void_fun_v = is_void_fun<Sig>::value;
+    concept is_void_fun = is_void_fun_v<Sig>;
 
     template <typename Signature, typename Traits_, bool isLegacy>
     struct MergingTransformer;
@@ -234,8 +234,7 @@ namespace Gaudi::Functional {
   using MergingTransformer = details::MergingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
 
   // more meaningful alias for cases where the return type in Signature is void
-  template <typename Signature, typename Traits_ = Traits::useDefaults,
-            typename = std::enable_if_t<details::is_void_fun_v<Signature>>>
+  template <details::is_void_fun Signature, typename Traits_ = Traits::useDefaults>
   using MergingConsumer = details::MergingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
 
   // M vectors of the same -> N

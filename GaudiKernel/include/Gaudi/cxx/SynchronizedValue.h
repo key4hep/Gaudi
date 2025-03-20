@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -78,15 +78,14 @@ namespace Gaudi::cxx {
       return *this;
     }
 
-    template <typename F, typename... Args,
-              typename = std::enable_if_t<std::is_invocable_v<F, Value&, Args...> &&
-                                          !std::is_invocable_v<F, const Value&, Args...>>>
+    template <typename... Args, std::invocable<Value&, Args...> F>
+      requires( !std::is_invocable_v<F, const Value&, Args...> )
     decltype( auto ) with_lock( F&& f, Args&&... args ) {
       WriteLock _{ m_mtx };
       return std::invoke( std::forward<F>( f ), m_obj, std::forward<Args>( args )... );
     }
 
-    template <typename F, typename... Args, typename = std::enable_if_t<std::is_invocable_v<F, const Value&, Args...>>>
+    template <typename... Args, std::invocable<const Value&, Args...> F>
     decltype( auto ) with_lock( F&& f, Args&&... args ) const {
       ReadLock _{ m_mtx };
       return std::invoke( std::forward<F>( f ), m_obj, std::forward<Args>( args )... );

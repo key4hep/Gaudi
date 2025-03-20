@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -33,12 +33,14 @@ namespace Gaudi::Accumulators {
     template <class... ARGS>
     LogInputType( ARGS... args ) : std::array<Arithmetic, ND>{ static_cast<Arithmetic>( args )... } {}
     using ValueType = LogInputType<Arithmetic, ND>;
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == ND )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == ND )
     unsigned int computeIndex( std::tuple<AxisType...> const& axis ) const {
       return computeIndexInternal<0, std::tuple<AxisType...>>( axis );
     }
     auto forInternalCounter() { return 1ul; }
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == ND )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == ND )
     static unsigned int computeTotNBins( std::tuple<AxisType...> const& axis ) {
       return computeTotNBinsInternal<0, std::tuple<AxisType...>>( axis );
     }

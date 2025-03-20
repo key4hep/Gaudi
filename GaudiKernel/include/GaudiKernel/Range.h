@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -92,6 +92,9 @@ namespace Gaudi {
    */
   template <class CONTAINER, class ITERATOR = typename Gaudi::details::container<CONTAINER>::Iterator>
   class Range_ : public RangeBase_ {
+    // FIXME: prepare for removal of ITERATOR argument: check whether the default is _always_ used
+    static_assert( std::is_same_v<ITERATOR, typename Gaudi::details::container<CONTAINER>::Iterator> );
+
   public:
     // ========================================================================
     typedef std::pair<ITERATOR, ITERATOR> Base;

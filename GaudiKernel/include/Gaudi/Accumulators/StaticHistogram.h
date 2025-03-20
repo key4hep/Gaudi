@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -347,16 +347,19 @@ namespace Gaudi::Accumulators {
     using InternalType = std::tuple<Elements...>;
     using ValueType    = HistoInputType<SubTuple_t<InternalType, NIndex>, NIndex>;
     using std::tuple<Elements...>::tuple;
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == NIndex )
     unsigned int computeIndex( std::tuple<AxisType...> const& axis ) const {
       return computeIndexInternal<0, std::tuple<AxisType...>>( axis );
     }
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == NIndex )
     static unsigned int computeTotNBins( std::tuple<AxisType...> const& axis ) {
       return computeTotNBinsInternal<0, std::tuple<AxisType...>>( axis );
     }
     auto forInternalCounter() const { return 1ul; }
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == NIndex )
     bool inAcceptance( std::tuple<AxisType...> const& axis ) const {
       return inAcceptanceInternal<0, std::tuple<AxisType...>>( axis );
     }
@@ -401,16 +404,19 @@ namespace Gaudi::Accumulators {
   struct WeightedHistoInputType : std::pair<HistoInputType<ArithmeticTuple, NIndex>, WArithmetic> {
     using ValueType = typename HistoInputType<ArithmeticTuple, NIndex>::ValueType;
     using std::pair<HistoInputType<ArithmeticTuple, NIndex>, WArithmetic>::pair;
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == NIndex )
     unsigned int computeIndex( std::tuple<AxisType...> const& axis ) const {
       return this->first.computeIndex( axis );
     }
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == NIndex )
     static unsigned int computeTotNBins( std::tuple<AxisType...> const& axis ) {
       return HistoInputType<ArithmeticTuple, NIndex>::computeTotNBins( axis );
     }
     auto forInternalCounter() const { return std::pair( this->first.forInternalCounter(), this->second ); }
-    template <class... AxisType, typename = typename std::enable_if_t<( sizeof...( AxisType ) == NIndex )>>
+    template <class... AxisType>
+      requires( sizeof...( AxisType ) == NIndex )
     bool inAcceptance( std::tuple<AxisType...> const& axis ) const {
       return this->first.inAcceptance( axis );
     }
@@ -534,7 +540,8 @@ namespace Gaudi::Accumulators {
       throw std::logic_error(
           fmt::format( "Retrieving axis {} in Histogram of dimension {}", i, std::tuple_size_v<AxisTupleType> ) );
     }
-    template <size_t N, typename = std::enable_if_t<std::tuple_size_v<AxisTupleType> != N>>
+    template <size_t N>
+      requires( std::tuple_size_v<AxisTupleType> != N )
     auto& _getAxis( size_t i, std::integral_constant<size_t, N> ) const {
       if ( i == N ) return std::get<N>( m_axis );
       return _getAxis( i, std::integral_constant<size_t, N + 1>() );

@@ -149,8 +149,8 @@ namespace Gaudi {
     // ----------------------------------------------------------------------------
     // Register IntGrammar:
     // ----------------------------------------------------------------------------
-    template <typename Iterator, typename T, typename Skipper>
-    struct Grammar_<Iterator, T, Skipper, std::enable_if_t<std::is_integral_v<T>>> {
+    template <typename Iterator, std::integral T, typename Skipper>
+    struct Grammar_<Iterator, T, Skipper> {
       typedef IntGrammar<Iterator, T, Skipper> Grammar;
     };
     //==============================================================================
@@ -163,8 +163,8 @@ namespace Gaudi {
     // ----------------------------------------------------------------------------
     // Register RealGrammar:
     // ----------------------------------------------------------------------------
-    template <typename Iterator, typename T, typename Skipper>
-    struct Grammar_<Iterator, T, Skipper, std::enable_if_t<std::is_floating_point_v<T>>> {
+    template <typename Iterator, std::floating_point T, typename Skipper>
+    struct Grammar_<Iterator, T, Skipper> {
       typedef RealGrammar<Iterator, T, Skipper> Grammar;
     };
     //==============================================================================

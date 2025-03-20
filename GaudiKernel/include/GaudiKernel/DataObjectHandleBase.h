@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -44,8 +44,8 @@ public:
   DataObjectHandleBase& operator=( const DataObjectHandleBase& );
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+  /// @note the use of requires is required to avoid ambiguities
+  template <std::derived_from<IProperty> OWNER, class K>
   inline DataObjectHandleBase( OWNER* owner, Gaudi::DataHandle::Mode m, std::string name, K key = {},
                                std::string doc = "" )
       : DataObjectHandleBase( std::move( key ), m, owner ) {

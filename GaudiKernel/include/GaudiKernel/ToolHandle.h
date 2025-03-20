@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -149,8 +149,8 @@ public:
       , m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() ) {}
 
   /** Copy constructor from a non const T to const T tool handle */
-  template <typename CT = T, typename NCT = std::remove_const_t<T>,
-            typename = std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>>
+  template <typename CT = T, typename NCT = std::remove_const_t<T>>
+    requires( std::is_const_v<CT> && !std::is_same_v<CT, NCT> )
   ToolHandle( const ToolHandle<NCT>& other )
       : BaseToolHandle( other.parent(), other.createIf() )
       , GaudiHandle<CT>( other )
@@ -194,8 +194,8 @@ public:
   }
 
   /// Autodeclaring constructor with property propName, tool type/name and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+  /// @note the use of requires is required to avoid ambiguities
+  template <std::derived_from<IProperty> OWNER>
   ToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" ) : ToolHandle( owner ) {
     // convert name and type to a valid type/name string
     // - if type does not contain '/' use type/type
@@ -364,13 +364,13 @@ public:
 
   /// Copy constructor from a non const T to const T tool handle
   template <typename CT = T, typename NCT = std::remove_const_t<T>>
-  PublicToolHandle( const PublicToolHandle<NCT>& other,
-                    std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>* = nullptr )
+    requires( std::is_const_v<CT> && !std::is_same_v<CT, NCT> )
+  PublicToolHandle( const PublicToolHandle<NCT>& other )
       : ToolHandle<T>( static_cast<const ToolHandle<NCT>&>( other ) ) {}
 
   /// Autodeclaring constructor with property propName, tool type/name and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+  /// @note the use of requires is required to avoid ambiguities
+  template <std::derived_from<IProperty> OWNER>
   inline PublicToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
       : PublicToolHandle() {
     // convert name and type to a valid type/name string
@@ -436,8 +436,8 @@ public:
   bool push_back( const ToolHandle<T>& myHandle ) override { return push_back( myHandle.typeAndName() ); }
 
   /// Autodeclaring constructor with property name, tool type/name and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+  /// @note the use of requires is required to avoid ambiguities
+  template <std::derived_from<IProperty> OWNER>
   inline ToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
                           std::string doc = "" )
       : ToolHandleArray( owner ) {
@@ -463,8 +463,8 @@ public:
       : ToolHandleArray<T>( typesAndNames, nullptr, createIf ) {}
 
   /// Autodeclaring constructor with property name, tool type/name and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
+  /// @note the use of requires is required to avoid ambiguities
+  template <std::derived_from<IProperty> OWNER>
   PublicToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
                          std::string doc = "" )
       : PublicToolHandleArray() {
