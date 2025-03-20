@@ -6,6 +6,37 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v39r4](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r4) - 2025-03-20
+Another minor release to pick up some bug fixes and minor improvements in preparation
+for 2025 data taking (for LHCb).
+
+A special thanks to all the people that contributed to this release:
+@fwinkl,
+@graven,
+@jcarcell,
+@jonrob,
+@sponce,
+@staider.
+
+### Changed
+- Replace SFINAE with concepts / requires clauses (gaudi/Gaudi!1714)
+- Remove checks for a version of the C++ standard lower than 20 (gaudi/Gaudi!1707)
+- Histograming/Sink/Utils.h: Truncate histogram name as required during printout (gaudi/Gaudi!1704)
+- Clean up a few headers, remove unused headers, add headers that are used (gaudi/Gaudi!1706)
+- DataObjID: on-demand lookup of className (gaudi/Gaudi!1700)
+- Remove the deprecated put with a raw pointer in DataObjectHandle.h (gaudi/Gaudi!1701)
+
+### Fixed
+- Fixed unused argument warning in local_valgrind on ARM (gaudi/Gaudi!1716)
+- Allow concrete services to be used in ServiceHandle<T> (gaudi/Gaudi#344, gaudi/Gaudi!1715)
+- Define BOOST_ALLOW_DEPRECATED_HEADERS when including qi.hpp (gaudi/Gaudi!1705)
+- Fix CI warnings for builds without AIDA (gaudi/Gaudi#357, gaudi/Gaudi!1708)
+- Fix test name when gaudi_add_pytest is passed a test file (gaudi/Gaudi#354, gaudi/Gaudi!1713)
+- fix spelling of PREFETCH (gaudi/Gaudi!1711)
+- Fix Histogram Summaries Parsing to Remove Empty Lines (gaudi/Gaudi!1703)
+- GaudiTestSuite: fix missing definition of static member (gaudi/Gaudi!1699)
+
+
 ## [v39r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r3) - 2025-02-21
 This is a minor release meant to pick up a few fixes and, in particular, small improvements on
 the pytest helpers that are required by LHCb to start migrating from QMTest to pytest.
