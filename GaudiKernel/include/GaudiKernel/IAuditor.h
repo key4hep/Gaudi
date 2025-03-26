@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDI_IAUDITOR_H
-#define GAUDI_IAUDITOR_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/INamedInterface.h>
@@ -18,8 +17,8 @@
 
 /** @class IAuditor IAuditor.h GaudiKernel/IAuditor.h
 
-    The IAuditor is the interface implmented by the AlgAuditor base class.
-    Concrete auditors, derived from the AlgAuditor base class are controlled
+    The IAuditor is the interface implemented by the Auditor base class.
+    Concrete auditors, derived from the Auditor base class are controlled
     via this interface.
 
     @author Marjorie Shapiro, LBNL
@@ -28,7 +27,7 @@
 class GAUDI_API IAuditor : virtual public INamedInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID( IAuditor, 3, 0 );
+  DeclareInterfaceID( IAuditor, 4, 0 );
 
   /// Defines the standard (= used by the framework) auditable event types.
   enum StandardEventType { Initialize, ReInitialize, Execute, Finalize, Start, Stop, ReStart };
@@ -70,32 +69,9 @@ public:
   /// Tell if the auditor is enabled or not.
   virtual bool isEnabled() const = 0;
 
-  // ------- Obsolete interface ------
-  /// \deprecated use before
-  virtual void beforeInitialize( INamedInterface* ) = 0;
-  /// \deprecated use after
-  virtual void afterInitialize( INamedInterface* ) = 0;
-
-  /// \deprecated use before
-  virtual void beforeReinitialize( INamedInterface* ) = 0;
-  /// \deprecated use after
-  virtual void afterReinitialize( INamedInterface* ) = 0;
-
-  /// \deprecated use before
-  virtual void beforeExecute( INamedInterface* ) = 0;
-  /// \deprecated use after
-  virtual void afterExecute( INamedInterface*, const StatusCode& ) = 0;
-
-  /// \deprecated use before
-  virtual void beforeFinalize( INamedInterface* ) = 0;
-  /// \deprecated use after
-  virtual void afterFinalize( INamedInterface* ) = 0;
-
   /// Used by AuditorSvc.
   virtual StatusCode sysInitialize() = 0;
 
   /// Used by AuditorSvc.
   virtual StatusCode sysFinalize() = 0;
 };
-
-#endif // GAUDIKERNEL_IAUDITOR_H

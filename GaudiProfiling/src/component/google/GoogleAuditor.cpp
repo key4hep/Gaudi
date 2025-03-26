@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -183,21 +183,6 @@ namespace Google {
         if ( s == m_startedBy ) { google_after( getDumpName( type, s ) ); }
       }
     }
-
-    // Obsolete methods
-    void beforeInitialize( INamedInterface* i ) override { return before( IAuditor::Initialize, i ); }
-    void beforeReinitialize( INamedInterface* i ) override { return before( IAuditor::ReInitialize, i ); }
-    void beforeExecute( INamedInterface* i ) override { return before( IAuditor::Execute, i ); }
-    void beforeFinalize( INamedInterface* i ) override { return before( IAuditor::Finalize, i ); }
-
-    void afterInitialize( INamedInterface* i ) override {
-      return after( IAuditor::Initialize, i, StatusCode::SUCCESS );
-    }
-    void afterReinitialize( INamedInterface* i ) override {
-      return after( IAuditor::ReInitialize, i, StatusCode::SUCCESS );
-    }
-    void afterExecute( INamedInterface* i, const StatusCode& s ) override { return after( IAuditor::Execute, i, s ); }
-    void afterFinalize( INamedInterface* i ) override { return after( IAuditor::Finalize, i, StatusCode::SUCCESS ); }
 
   protected:
     /// Start the google tool

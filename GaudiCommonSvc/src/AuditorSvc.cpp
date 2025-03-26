@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -167,28 +167,6 @@ void AuditorSvc::after( CustomEventTypeRef evt, const std::string& name, const S
     if ( it->isEnabled() ) it->after( evt, name, sc );
   }
 }
-
-// --------- obsolete methods ---------
-#define OBSOLETION( name )                                                                                             \
-  void AuditorSvc::name( INamedInterface* ) {                                                                          \
-    throw GaudiException( "The method IAuditor::" #name " is obsolete do not call it.", "AuditorSvc::" #name,          \
-                          StatusCode::FAILURE );                                                                       \
-  }
-
-OBSOLETION( beforeInitialize )
-OBSOLETION( afterInitialize )
-
-OBSOLETION( beforeReinitialize )
-OBSOLETION( afterReinitialize )
-
-OBSOLETION( beforeExecute )
-void AuditorSvc::afterExecute( INamedInterface*, const StatusCode& ) {
-  throw GaudiException( "The method afterExecute is obsolete do not call it.", "AuditorSvc::afterExecute",
-                        StatusCode::FAILURE );
-}
-
-OBSOLETION( beforeFinalize )
-OBSOLETION( afterFinalize )
 
 bool AuditorSvc::isEnabled() const { return m_isEnabled; }
 

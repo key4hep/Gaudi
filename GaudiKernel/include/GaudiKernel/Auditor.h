@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_AUDITOR_H
-#define GAUDIKERNEL_AUDITOR_H
+#pragma once
 
 // Include files
 #include <Gaudi/PluginService.h>
@@ -63,44 +62,30 @@ public:
 
   /// The following methods are meant to be implemented by the child class...
 
-  void before( StandardEventType, INamedInterface* ) override;
-  void before( StandardEventType, const std::string& ) override;
+  void before( StandardEventType, INamedInterface* ) override {}
+  void before( StandardEventType, const std::string& ) override {}
 
-  void before( CustomEventTypeRef, INamedInterface* ) override;
-  void before( CustomEventTypeRef, const std::string& ) override;
+  void before( CustomEventTypeRef, INamedInterface* ) override {}
+  void before( CustomEventTypeRef, const std::string& ) override {}
 
-  void after( StandardEventType, INamedInterface*, const StatusCode& ) override;
-  void after( StandardEventType, const std::string&, const StatusCode& ) override;
+  void after( StandardEventType, INamedInterface*, const StatusCode& ) override {}
+  void after( StandardEventType, const std::string&, const StatusCode& ) override {}
 
-  void after( CustomEventTypeRef, INamedInterface*, const StatusCode& ) override;
-  void after( CustomEventTypeRef, const std::string&, const StatusCode& ) override;
+  void after( CustomEventTypeRef, INamedInterface*, const StatusCode& ) override {}
+  void after( CustomEventTypeRef, const std::string&, const StatusCode& ) override {}
 
-  // Obsolete methods
+  virtual StatusCode initialize() { return StatusCode::SUCCESS; }
+  virtual StatusCode finalize() { return StatusCode::SUCCESS; }
 
-  void beforeInitialize( INamedInterface* ) override;
-  void afterInitialize( INamedInterface* ) override;
+  const std::string& name() const override { return m_name; }
 
-  void beforeReinitialize( INamedInterface* ) override;
-  void afterReinitialize( INamedInterface* ) override;
-
-  void beforeExecute( INamedInterface* ) override;
-  void afterExecute( INamedInterface*, const StatusCode& ) override;
-
-  void beforeFinalize( INamedInterface* ) override;
-  void afterFinalize( INamedInterface* ) override;
-
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
-
-  const std::string& name() const override;
-
-  bool isEnabled() const override;
+  bool isEnabled() const override { return m_isEnabled; }
 
   /** The standard service locator. Returns a pointer to the service locator service.
       This service may be used by an auditor to request any services it requires in
       addition to those provided by default.
   */
-  SmartIF<ISvcLocator>& serviceLocator() const override;
+  SmartIF<ISvcLocator>& serviceLocator() const override { return m_pSvcLocator; }
 
   /** Access a service by name, creating it if it doesn't already exist.
    */
@@ -136,5 +121,3 @@ private:
   bool m_isInitialized = false; ///< Auditor has been initialized flag
   bool m_isFinalized   = false; ///< Auditor has been finalized flag
 };
-
-#endif // GAUDIKERNEL_AUDITOR_H
