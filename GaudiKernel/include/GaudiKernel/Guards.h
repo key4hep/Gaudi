@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,26 +8,17 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_GUARDS_H
-#define GAUDIKERNEL_GUARDS_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+#pragma once
+
 #include <exception>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
+#include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IAuditor.h>
 #include <GaudiKernel/IExceptionSvc.h>
-#include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/SmartIF.h>
-// ============================================================================
-// forward declaration
-// ============================================================================
+
 class GaudiException;
-// ============================================================================
+
 namespace Gaudi {
   /** @namespace Gaudi::Guards Guards.h GaudiKernel/Guards.h
    *  Collection of very simple classes which allows to
@@ -212,104 +203,69 @@ namespace Gaudi {
      */
     class GAUDI_API AuditorGuard final {
     public:
-      /// constructor
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::StandardEventType evt );
-      /// constructor
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::CustomEventTypeRef evt );
+      // user facing constructors
+      AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, EventContext const& context = {} );
+      AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, StatusCode const& sc,
+                    EventContext const& context = {} );
 
-      /// constructor
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::StandardEventType evt, const StatusCode& sc );
-      /// constructor
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::CustomEventTypeRef evt, const StatusCode& sc );
-      /// constructor
-      AuditorGuard( std::string name, IAuditor* svc, IAuditor::StandardEventType evt );
-      /// constructor
-      AuditorGuard( std::string name, IAuditor* svc, IAuditor::CustomEventTypeRef evt );
+      // For backward compatibility with old interface, to be deprecated and then dropped FIXME
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, ::IAuditor::StandardEventType evt,
+                    EventContext const& context = {} )
+          : AuditorGuard{ obj ? obj->name() : "", svc, evt, context } {};
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, std::string const& evt, EventContext const& context = {} )
+          : AuditorGuard{ obj ? obj->name() : "", svc, evt, context } {};
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, ::IAuditor::StandardEventType evt, StatusCode const& sc,
+                    EventContext const& context = {} )
+          : AuditorGuard{ obj ? obj->name() : "", svc, evt, sc, context } {};
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, std::string const& evt, StatusCode const& sc,
+                    EventContext const& context = {} )
+          : AuditorGuard{ obj ? obj->name() : "", svc, evt, sc, context } {};
+      AuditorGuard( std::string name, IAuditor* svc, ::IAuditor::StandardEventType evt,
+                    EventContext const& context = {} )
+          : AuditorGuard( std::move( name ), svc, toStr( evt ), context ) {}
+      AuditorGuard( std::string name, IAuditor* svc, ::IAuditor::StandardEventType evt, StatusCode const& sc,
+                    EventContext const& context = {} )
+          : AuditorGuard( std::move( name ), svc, toStr( evt ), sc, context ) {}
 
-      /// constructor
-      AuditorGuard( std::string name, IAuditor* svc, IAuditor::StandardEventType evt, const StatusCode& sc );
-      /// constructor
-      AuditorGuard( std::string name, IAuditor* svc, IAuditor::CustomEventTypeRef evt, const StatusCode& sc );
-
-      /// dectructor
-      ~AuditorGuard();
+      ~AuditorGuard() { i_after(); }
 
     public:
       // get the status code
-      const StatusCode& code() const { return *m_sc; }
+      const StatusCode code() const { return m_sc ? *m_sc : StatusCode::SUCCESS; }
 
     private:
       // delete the default/copy constructor and assigment
-      AuditorGuard()                                       = delete;
       AuditorGuard( const AuditorGuard& right )            = delete;
       AuditorGuard& operator=( const AuditorGuard& right ) = delete;
 
     private:
-      /// the guarded object
-      INamedInterface* m_obj = nullptr;
       /// the guarded object name (if there is no INamedInterface)
       std::string m_objName;
       /// auditor service
       SmartIF<IAuditor> m_svc = nullptr;
-      /// Event type (standard events)
-      IAuditor::StandardEventType m_evt;
-      /// Event type (custom events)
-      IAuditor::CustomEventType m_cevt;
+      /// Event type
+      std::string const m_evt;
       /// Pointer to a status code instance, to be passed to the "after" function if needed
       /// The instance must have a scope larger than the one of the guard.
       /// No check is performed.
-      const StatusCode* m_sc = nullptr;
-      /// Flag to remember which event type was used.
-      bool m_customEvtType = false;
+      StatusCode const* m_sc{};
+      /// Pointer to a EventContext instance, to be passed to the "before" and "after" function
+      /// If given, the instance must have a scope larger than the one of the guard.
+      /// No check is performed.
+      const EventContext& m_context;
 
       inline void i_before() {
         if ( m_svc ) { // if the service is not available, we cannot do anything
-          if ( m_obj ) {
-            if ( m_customEvtType ) {
-              m_svc->before( m_cevt, m_obj );
-            } else {
-              m_svc->before( m_evt, m_obj );
-            }
-          } else { // use object name
-            if ( m_customEvtType ) {
-              m_svc->before( m_cevt, m_objName );
-            } else {
-              m_svc->before( m_evt, m_objName );
-            }
-          }
+          m_svc->before( m_evt, m_objName, m_context );
         }
       }
 
       inline void i_after() {
         if ( m_svc ) { // if the service is not available, we cannot do anything
-          if ( m_obj ) {
-            if ( m_customEvtType ) {
-              if ( m_sc ) {
-                m_svc->after( m_cevt, m_obj, *m_sc );
-              } else {
-                m_svc->after( m_cevt, m_obj );
-              }
-            } else {
-              if ( m_sc ) {
-                m_svc->after( m_evt, m_obj, *m_sc );
-              } else {
-                m_svc->after( m_evt, m_obj );
-              }
-            }
-          } else { // use object name
-            if ( m_customEvtType ) {
-              if ( m_sc ) {
-                m_svc->after( m_cevt, m_objName, *m_sc );
-              } else {
-                m_svc->after( m_cevt, m_objName );
-              }
-            } else {
-              if ( m_sc ) {
-                m_svc->after( m_evt, m_objName, *m_sc );
-              } else {
-                m_svc->after( m_evt, m_objName );
-              }
-            }
+          if ( m_sc ) {
+            m_svc->after( m_evt, m_objName, m_context, *m_sc );
+          } else {
+            m_svc->after( m_evt, m_objName, m_context );
           }
           m_svc.reset();
         }
@@ -317,8 +273,3 @@ namespace Gaudi {
     };
   } // namespace Guards
 } // end of namespace Gaudi
-
-// ============================================================================
-// The END
-// ============================================================================
-#endif // GAUDIKERNEL_GUARDS_H

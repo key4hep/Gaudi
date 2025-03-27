@@ -25,9 +25,43 @@
 class IService;
 class IMessageSvc;
 
+namespace Gaudi {
+  namespace details {
+    // pragmas are needed to be backward compatible with the new API inherited from Gaudi::IAuditor
+    // without exposing it to users still using the old interface ::IAuditor
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+    /**
+     * small Legacy adapter class to allow hiding the new interface of Gaudi::IAuditor
+     * from the backward compatibility class Auditor.
+     */
+    class LegacyauditorAdaptor : public ::IAuditor {
+      // privately implements new interface in terms of old one
+      void before( std::string const& evt, std::string const& caller, EventContext const& ) override {
+        return before( evt, caller );
+      }
+      void after( std::string const& evt, std::string const& caller, EventContext const&,
+                  StatusCode const& sc ) override {
+        return after( evt, caller, sc );
+      }
+
+    public:
+      // keep the old interface visible
+      using ::IAuditor::after;
+      using ::IAuditor::before;
+    };
+#pragma GCC diagnostic pop
+  } // namespace details
+} // namespace Gaudi
+
+// pragmas are needed to be backward compatible with the new API inherited from Gaudi::IAuditor
+// without exposing it to users still using the old interface ::IAuditor
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
 /** @class Auditor Auditor.h GaudiKernel/Auditor.h
 
-    Base class from which all concrete auditor classes should be derived.
+    Base class from which all concrete auditor classes used to be derived.
+    This class is now deprecated and Gaudi::Auditor should be used.
     The only base class functionality which may be used in the
     constructor of a concrete auditor is the declaration of
     member variables as properties. All other functionality,
@@ -39,7 +73,8 @@ class IMessageSvc;
     @author Marco Clemencic
     @date   2008-03
 */
-class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor, IProperty>>> {
+class GAUDI_API Auditor
+    : public PropertyHolder<CommonMessaging<implements<Gaudi::details::LegacyauditorAdaptor, IProperty>>> {
 public:
   using Factory = Gaudi::PluginService::Factory<IAuditor*( const std::string&, ISvcLocator* )>;
 
@@ -121,3 +156,4 @@ private:
   bool m_isInitialized = false; ///< Auditor has been initialized flag
   bool m_isFinalized   = false; ///< Auditor has been finalized flag
 };
+#pragma GCC diagnostic pop

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -129,7 +129,7 @@ StatusCode Service::sysStart() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       ( m_auditorStart ) ? auditorSvc().get() : nullptr, IAuditor::Start );
+                                       ( m_auditorStart ) ? auditorSvc().get() : nullptr, "Start" );
     sc = start();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
@@ -157,7 +157,7 @@ StatusCode Service::sysStop() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::STOP, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       ( m_auditorStop ) ? auditorSvc().get() : nullptr, IAuditor::Stop );
+                                       ( m_auditorStop ) ? auditorSvc().get() : nullptr, "Stop" );
     sc = stop();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
@@ -198,7 +198,7 @@ StatusCode Service::sysFinalize() {
     m_targetState = Gaudi::StateMachine::OFFLINE;
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, IAuditor::Finalize );
+                                       ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, "Finalize" );
     sc = finalize();
     if ( sc.isSuccess() ) m_state = m_targetState;
   } catch ( const GaudiException& Exception ) {
@@ -239,8 +239,7 @@ StatusCode Service::sysReinitialize() {
 
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       ( m_auditorReinitialize ) ? auditorSvc().get() : nullptr,
-                                       IAuditor::ReInitialize );
+                                       ( m_auditorReinitialize ) ? auditorSvc().get() : nullptr, "ReInitialize" );
     sc = reinitialize();
     return sc;
   } catch ( const GaudiException& Exception ) {
@@ -273,7 +272,7 @@ StatusCode Service::sysRestart() {
 
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       ( m_auditorRestart ) ? auditorSvc().get() : nullptr, IAuditor::ReStart );
+                                       ( m_auditorRestart ) ? auditorSvc().get() : nullptr, "ReStart" );
     sc = restart();
     return sc;
   } catch ( const GaudiException& Exception ) {

@@ -49,6 +49,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/Application.cpp
           src/Lib/AsynchronousAlgorithm.cpp
           src/Lib/Auditor.cpp
+          src/Lib/AuditorLegacy.cpp
           src/Lib/Bootstrap.cpp
           src/Lib/ChronoEntity.cpp
           src/Lib/ComponentManager.cpp

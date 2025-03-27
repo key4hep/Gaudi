@@ -10,9 +10,10 @@
 \***********************************************************************************/
 // Include Files
 #include "AuditorSvc.h"
+#include <Gaudi/Auditor.h>
+#include <Gaudi/IAuditor.h>
 #include <GaudiKernel/Auditor.h>
 #include <GaudiKernel/GaudiException.h>
-#include <GaudiKernel/IAuditor.h>
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
@@ -22,25 +23,25 @@
 //  instances of this service
 DECLARE_COMPONENT( AuditorSvc )
 
-//
-// ClassName:   AuditorSvc
-//
-// Description: This service manages Auditors.
-//------------------------------------------------------------------
-
-//- private helpers ---
-SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, std::string_view name ) {
+std::unique_ptr<Gaudi::IAuditor> AuditorSvc::newAuditor( MsgStream& log, std::string_view name ) {
   // locate the auditor factory, instantiate a new auditor, initialize it
-  StatusCode                   sc;
-  Gaudi::Utils::TypeNameString item( name );
-  SmartIF<IAuditor> aud{ Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release() };
+  Gaudi::Utils::TypeNameString     item( name );
+  std::unique_ptr<Gaudi::IAuditor> aud{
+      Gaudi::Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release() };
+  // Backward compatibility with legacy auditors
+  if ( !aud ) {
+    aud = std::unique_ptr<Gaudi::IAuditor>{
+        Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release() };
+  }
   if ( aud ) {
-    if ( m_targetState >= Gaudi::StateMachine::INITIALIZED ) {
-      sc = aud->sysInitialize();
-      if ( sc.isFailure() ) {
-        log << MSG::WARNING << "Failed to initialize Auditor " << name << endmsg;
-        aud.reset();
-      }
+    // make sure we increase the internal reference counter used by SmartIF or any usage of it
+    // somewhere else will delete the Auditor in our back !
+    // note that release is never called, as we handle the ownership via unique_ptr and do not
+    // rely on Gaudi's legacy black magic
+    aud->addRef();
+    if ( m_targetState >= Gaudi::StateMachine::INITIALIZED && aud->sysInitialize().isFailure() ) {
+      log << MSG::WARNING << "Failed to initialize Auditor " << name << endmsg;
+      aud.reset();
     }
   } else {
     log << MSG::WARNING << "Unable to retrieve factory for Auditor " << name << endmsg;
@@ -48,140 +49,81 @@ SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, std::string_view name
   return aud;
 }
 
-SmartIF<IAuditor> AuditorSvc::findAuditor_( std::string_view name ) {
+Gaudi::IAuditor* AuditorSvc::getAuditor( const std::string& name ) const {
   // find an auditor by name, return 0 on error
-  auto it = std::find_if( std::begin( m_pAudList ), std::end( m_pAudList ),
-                          [item_name = Gaudi::Utils::TypeNameString( name ).name()]( const IAuditor* i ) {
-                            return i->name() == item_name;
-                          } );
-  return SmartIF<IAuditor>{ it != std::end( m_pAudList ) ? *it : nullptr };
+  auto it = std::find_if(
+      std::begin( m_pAudList ), std::end( m_pAudList ),
+      [item_name = Gaudi::Utils::TypeNameString( name ).name()]( auto const& i ) { return i->name() == item_name; } );
+  return it != std::end( m_pAudList ) ? it->get() : nullptr;
 }
 
-StatusCode AuditorSvc::syncAuditors_() {
-  if ( m_audNameList.size() == m_pAudList.size() ) return StatusCode::SUCCESS;
-
-  StatusCode sc;
-
-  //   if ( sc.isFailure() ) {
-  //     error() << "Unable to locate ObjectManager Service" << endmsg;
-  //     return sc;
-  //   }
-
-  // create all declared Auditors that do not yet exist
-  for ( auto& it : m_audNameList ) {
-
-    // this is clumsy, but the PropertyHolder won't tell us when my property changes right
-    // under my nose, so I'll have to figure this out the hard way
-    if ( !findAuditor_( it ) ) { // if auditor does not yet exist
-      auto aud = newAuditor_( msgStream(), it );
-      if ( aud ) {
-        m_pAudList.push_back( std::move( aud ) );
-      } else {
-        error() << "Error constructing Auditor " << it << endmsg;
-        sc = StatusCode::FAILURE;
-      }
+StatusCode AuditorSvc::addAuditor( std::string const& name ) {
+  // this is clumsy, but the PropertyHolder won't tell us when my property changes right
+  // under my nose, so I'll have to figure this out the hard way
+  if ( !hasAuditor( name ) ) { // if auditor does not yet exist
+    auto aud = newAuditor( msgStream(), name );
+    if ( aud ) {
+      m_pAudList.push_back( std::move( aud ) );
+    } else {
+      error() << "Error constructing Auditor " << name << endmsg;
+      return StatusCode::FAILURE;
     }
+  }
+  return StatusCode::SUCCESS;
+}
+
+std::optional<StatusCode> AuditorSvc::removesAuditor( std::string const& name ) {
+  auto it = std::find_if(
+      std::begin( m_pAudList ), std::end( m_pAudList ),
+      [item_name = Gaudi::Utils::TypeNameString( name ).name()]( auto const& i ) { return i->name() == item_name; } );
+  if ( it != std::end( m_pAudList ) ) {
+    auto sc = ( *it )->sysFinalize();
+    if ( sc.isFailure() ) { error() << "Finalization of auditor " << name << " failed : " << sc << endmsg; }
+    m_pAudList.erase( it );
+    return sc;
+  }
+  return {};
+}
+
+StatusCode AuditorSvc::syncAuditors() {
+  // drop all existing Auditors no more declared (and finalize them in case)
+  auto pastEnd = std::remove_if( begin( m_pAudList ), end( m_pAudList ), [this]( auto& entry ) -> bool {
+    return std::find( begin( m_audNameList ), end( m_audNameList ), entry->name() ) != m_audNameList.end();
+  } );
+  std::for_each( pastEnd, m_pAudList.end(), [this]( auto& entry ) {
+    if ( entry->isEnabled() ) {
+      auto sc = entry->sysFinalize();
+      if ( sc.isFailure() ) { error() << "Finalization of auditor " << entry->name() << " failed : " << sc << endmsg; }
+    }
+  } );
+  m_pAudList.erase( pastEnd, m_pAudList.end() );
+  // create all newly declared Auditors
+  StatusCode sc = StatusCode::SUCCESS;
+  for ( auto& it : m_audNameList ) {
+    if ( addAuditor( it ).isFailure() ) sc = StatusCode::FAILURE;
   }
   return sc;
 }
 
-// Inherited Service overrides:
-//
-// Initialize the service.
-StatusCode AuditorSvc::initialize() {
-  StatusCode sc = Service::initialize();
-  if ( sc.isFailure() ) return sc;
-
-  // create auditor objects for all named auditors
-  sc = syncAuditors_();
-
-  return sc;
-}
-
-// Finalise the service.
 StatusCode AuditorSvc::finalize() {
-
   for ( auto& it : m_pAudList ) {
     if ( it->isEnabled() ) it->sysFinalize().ignore();
   }
   m_pAudList.clear();
-
-  // Finalize this specific service
   return Service::finalize();
 }
 
-// --------- "Before" methods ---------
-void AuditorSvc::before( StandardEventType evt, INamedInterface* obj ) {
+void AuditorSvc::before( std::string const& evt, const std::string& name, EventContext const& context ) {
   if ( !isEnabled() ) return;
   for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->before( evt, obj );
+    if ( it->isEnabled() ) it->before( evt, name, context );
   }
 }
 
-void AuditorSvc::before( StandardEventType evt, const std::string& name ) {
+void AuditorSvc::after( std::string const& evt, const std::string& name, EventContext const& context,
+                        StatusCode const& sc ) {
   if ( !isEnabled() ) return;
   for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->before( evt, name );
+    if ( it->isEnabled() ) it->after( evt, name, context, sc );
   }
-}
-
-void AuditorSvc::before( CustomEventTypeRef evt, INamedInterface* obj ) {
-  if ( !isEnabled() ) return;
-  for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->before( evt, obj );
-  }
-}
-
-void AuditorSvc::before( CustomEventTypeRef evt, const std::string& name ) {
-  if ( !isEnabled() ) return;
-  for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->before( evt, name );
-  }
-}
-
-// --------- "After" methods ---------
-void AuditorSvc::after( StandardEventType evt, INamedInterface* obj, const StatusCode& sc ) {
-  if ( !isEnabled() ) return;
-  for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->after( evt, obj, sc );
-  }
-}
-
-void AuditorSvc::after( StandardEventType evt, const std::string& name, const StatusCode& sc ) {
-  if ( !isEnabled() ) return;
-  for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->after( evt, name, sc );
-  }
-}
-
-void AuditorSvc::after( CustomEventTypeRef evt, INamedInterface* obj, const StatusCode& sc ) {
-  if ( !isEnabled() ) return;
-  for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->after( evt, obj, sc );
-  }
-}
-
-void AuditorSvc::after( CustomEventTypeRef evt, const std::string& name, const StatusCode& sc ) {
-  if ( !isEnabled() ) return;
-  for ( auto& it : m_pAudList ) {
-    if ( it->isEnabled() ) it->after( evt, name, sc );
-  }
-}
-
-bool AuditorSvc::isEnabled() const { return m_isEnabled; }
-
-StatusCode AuditorSvc::sysInitialize() { return Service::sysInitialize(); }
-StatusCode AuditorSvc::sysFinalize() { return Service::sysFinalize(); }
-
-IAuditor* AuditorSvc::getAuditor( const std::string& name ) {
-  // by interactively setting properties, auditors might be out of sync
-  if ( !syncAuditors_().isSuccess() ) {
-    // as we didn't manage to sync auditors, the safest bet is to assume the
-    // worse...
-    // So don't let clients play with an AuditorSvc in an inconsistent state
-    return nullptr;
-  }
-
-  // search available auditors, returns 0 on error
-  return findAuditor_( name );
 }

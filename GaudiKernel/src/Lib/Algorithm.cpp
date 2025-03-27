@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -93,7 +93,7 @@ namespace Gaudi {
         Gaudi::Guards::AuditorGuard guard( this,
                                            // check if we want to audit the initialize
                                            ( m_auditorInitialize ) ? auditorSvc().get() : nullptr,
-                                           IAuditor::Initialize );
+                                           ::IAuditor::Initialize );
         // Invoke the initialize() method of the derived class
         sc = initialize();
       }
@@ -207,7 +207,7 @@ namespace Gaudi {
       { // limit the scope of the guard
         Gaudi::Guards::AuditorGuard guard( this,
                                            // check if we want to audit the initialize
-                                           ( m_auditorStart ) ? auditorSvc().get() : nullptr, IAuditor::Start );
+                                           ( m_auditorStart ) ? auditorSvc().get() : nullptr, ::IAuditor::Start );
         // Invoke the start() method of the derived class
         sc = start();
       }
@@ -258,7 +258,7 @@ namespace Gaudi {
       Gaudi::Guards::AuditorGuard guard( this,
                                          // check if we want to audit the initialize
                                          ( m_auditorReinitialize ) ? auditorSvc().get() : nullptr,
-                                         IAuditor::ReInitialize );
+                                         ::IAuditor::ReInitialize );
       // Invoke the reinitialize() method of the derived class
       sc = reinitialize();
     } catch ( const GaudiException& Exception ) {
@@ -300,7 +300,7 @@ namespace Gaudi {
     try {
       Gaudi::Guards::AuditorGuard guard( this,
                                          // check if we want to audit the initialize
-                                         ( m_auditorRestart ) ? auditorSvc().get() : nullptr, IAuditor::ReStart );
+                                         ( m_auditorRestart ) ? auditorSvc().get() : nullptr, ::IAuditor::ReStart );
       // Invoke the reinitialize() method of the derived class
       sc = restart();
     } catch ( const GaudiException& Exception ) {
@@ -341,7 +341,7 @@ namespace Gaudi {
 
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       ( m_auditorExecute ) ? auditorSvc().get() : nullptr, IAuditor::Execute, status );
+                                       ( m_auditorExecute ) ? auditorSvc().get() : nullptr, "Execute", status, ctx );
 
     try {
       ITimelineSvc::TimelineRecorder timelineRecoder;
@@ -418,7 +418,7 @@ namespace Gaudi {
       { // limit the scope of the guard
         Gaudi::Guards::AuditorGuard guard( this,
                                            // check if we want to audit the initialize
-                                           ( m_auditorStop ) ? auditorSvc().get() : nullptr, IAuditor::Stop );
+                                           ( m_auditorStop ) ? auditorSvc().get() : nullptr, "Stop" );
 
         // Invoke the stop() method of the derived class
         sc = stop();
@@ -462,7 +462,7 @@ namespace Gaudi {
       { // limit the scope of the guard
         Gaudi::Guards::AuditorGuard guard( this,
                                            // check if we want to audit the initialize
-                                           ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, IAuditor::Finalize );
+                                           ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, "Finalize" );
         // Invoke the finalize() method of the derived class
         sc = finalize();
       }

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,6 +15,7 @@
 #include <GaudiKernel/ISvcLocator.h>
 
 #include <Gaudi/Algorithm.h>
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/Auditor.h>
 #include <GaudiKernel/DataHandleHolderVisitor.h>
 #include <GaudiKernel/GaudiException.h>
@@ -126,7 +127,10 @@ AlgTool::AlgTool( std::string type, std::string name, const IInterface* parent )
     m_svcLocator = _svc->serviceLocator();
   } else if ( AlgTool* _too = dynamic_cast<AlgTool*>( _p ) ) {
     m_svcLocator = _too->serviceLocator();
-  } else if ( Auditor* _aud = dynamic_cast<Auditor*>( _p ) ) {
+  } else if ( Gaudi::Auditor* _aud = dynamic_cast<Gaudi::Auditor*>( _p ) ) {
+    m_svcLocator = _aud->serviceLocator();
+  } else if ( ::Auditor* _aud = dynamic_cast<::Auditor*>( _p ) ) {
+    // leagcy Auditors
     m_svcLocator = _aud->serviceLocator();
   } else {
     throw GaudiException( "Failure to create tool '" + m_type + "/" + m_name + "': illegal parent type '" +
@@ -164,7 +168,7 @@ StatusCode AlgTool::sysInitialize() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::INITIALIZE, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       m_auditorInitialize ? auditorSvc() : nullptr, IAuditor::Initialize );
+                                       m_auditorInitialize ? auditorSvc() : nullptr, "Initialize" );
     StatusCode                  sc = initialize();
     if ( !sc ) return sc;
 
@@ -212,7 +216,7 @@ StatusCode AlgTool::sysStart() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       m_auditorStart ? auditorSvc() : nullptr, IAuditor::Start );
+                                       m_auditorStart ? auditorSvc() : nullptr, "Start" );
     StatusCode                  sc = start();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
@@ -234,7 +238,7 @@ StatusCode AlgTool::sysStop() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::STOP, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       m_auditorStop ? auditorSvc() : nullptr, IAuditor::Stop );
+                                       m_auditorStop ? auditorSvc() : nullptr, "Stop" );
     StatusCode                  sc = stop();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
@@ -256,7 +260,7 @@ StatusCode AlgTool::sysFinalize() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::FINALIZE, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       m_auditorFinalize ? auditorSvc() : nullptr, IAuditor::Finalize );
+                                       m_auditorFinalize ? auditorSvc() : nullptr, "Finalize" );
     StatusCode                  sc = finalize();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
@@ -283,7 +287,7 @@ StatusCode AlgTool::sysReinitialize() {
   return attempt( *this, "SysReinitialize()", [&]() {
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       m_auditorReinitialize ? auditorSvc() : nullptr, IAuditor::ReInitialize );
+                                       m_auditorReinitialize ? auditorSvc() : nullptr, "ReInitialize" );
     return reinitialize();
   } );
 }
@@ -325,7 +329,7 @@ StatusCode AlgTool::sysRestart() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
-                                       m_auditorRestart ? auditorSvc() : nullptr, IAuditor::ReStart );
+                                       m_auditorRestart ? auditorSvc() : nullptr, "ReStart" );
     return restart();
   } );
 }

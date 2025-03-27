@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,27 +8,32 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IAUDITORSVC_H
-#define GAUDIKERNEL_IAUDITORSVC_H
+#pragma once
 
-#include <GaudiKernel/IAuditor.h>
+#include <Gaudi/IAuditor.h>
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/System.h>
+
+#include <optional>
 #include <string>
 
-/** @class IAuditorSvc IAuditorSvc.h GaudiKernel/IAuditorSvc.h
-
-    The interface implemented by the IAuditorSvc base class.
-
-    @author Pere Mato
-*/
-class GAUDI_API IAuditorSvc : virtual public extend_interfaces<IService, IAuditor> {
+/**
+ * The interface implemented by the IAuditorSvc base class.
+ * @author Pere Mato
+ */
+class GAUDI_API IAuditorSvc : virtual public extend_interfaces<IService, Gaudi::IAuditor> {
 public:
   /// InterfaceID
-  DeclareInterfaceID( IAuditorSvc, 3, 0 );
+  DeclareInterfaceID( IAuditorSvc, 4, 0 );
 
   /// management functionality: retrieve an Auditor
-  virtual IAuditor* getAuditor( const std::string& name ) = 0;
-};
+  virtual Gaudi::IAuditor* getAuditor( std::string const& name ) const = 0;
+  /// management functionality: check if an Auditor exists
+  virtual bool hasAuditor( std::string const& name ) const = 0;
 
-#endif // INTERFACES_IAUDITORSVC_H
+  /// adds a new Auditor
+  virtual StatusCode addAuditor( std::string const& name ) = 0;
+
+  /// removes an Auditor. Returns whether the removal was successful if the Auditor was present
+  virtual std::optional<StatusCode> removesAuditor( std::string const& name ) = 0;
+};

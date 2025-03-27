@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
+#include <Gaudi/IAuditor.h>
 #include <GaudiKernel/INamedInterface.h>
 #include <array>
 #include <string>
@@ -21,10 +21,12 @@
     Concrete auditors, derived from the Auditor base class are controlled
     via this interface.
 
+    This version of the interface is deprecated and Gaudi::IAuditor should now be used.
+
     @author Marjorie Shapiro, LBNL
     @author Marco Clemencic <marco.clemencic@cern.ch>
 */
-class GAUDI_API IAuditor : virtual public INamedInterface {
+class GAUDI_API IAuditor : virtual public Gaudi::IAuditor {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAuditor, 4, 0 );
@@ -46,6 +48,10 @@ public:
   /// Used in function calls for optimization purposes.
   typedef const CustomEventType& CustomEventTypeRef;
 
+  /// iherit new interface
+  using Gaudi::IAuditor::after;
+  using Gaudi::IAuditor::before;
+
   /// Audit the start of a standard "event".
   virtual void before( StandardEventType, INamedInterface* ) = 0;
   /// Audit the start of a standard "event" for callers that do not implement INamedInterface.
@@ -65,13 +71,4 @@ public:
   virtual void after( CustomEventTypeRef, INamedInterface*, const StatusCode& sc = StatusCode::SUCCESS ) = 0;
   /// Audit the end of a custom "event" for callers that do not implement INamedInterface.
   virtual void after( CustomEventTypeRef, const std::string&, const StatusCode& sc = StatusCode::SUCCESS ) = 0;
-
-  /// Tell if the auditor is enabled or not.
-  virtual bool isEnabled() const = 0;
-
-  /// Used by AuditorSvc.
-  virtual StatusCode sysInitialize() = 0;
-
-  /// Used by AuditorSvc.
-  virtual StatusCode sysFinalize() = 0;
 };
