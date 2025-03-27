@@ -206,6 +206,11 @@ if(NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME) # If we are building the full s
   # but we add Gaudi's CMake modules to the CMAKE_MODULE_PATH for downstream projects
   list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE)
+
+  # Set the version of the project as a cache variable to be seen by other
+  # projects in the same super-project.
+  set(${PROJECT_NAME}_VERSION "${PROJECT_VERSION}" CACHE STRING "Version of ${PROJECT_NAME}" FORCE)
+
   return()
 endif()
 
@@ -276,10 +281,6 @@ set(CPACK_RPM_SPEC_MORE_DEFINE "%global __os_install_post %(echo '%{__os_install
 set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.git/;/\\\\.git.*")
 set(CPACK_SOURCE_GENERATOR "ZIP;RPM")
 include(CPack)
-
-# Set the version of the project as a cache variable to be seen by other
-# projects in the same super-project.
-set(${PROJECT_NAME}_VERSION "${PROJECT_VERSION}" CACHE STRING "Version of ${PROJECT_NAME}" FORCE)
 
 # Optionally enable compatibility with old-style CMake configurations, via helper module
 option(GAUDI_LEGACY_CMAKE_SUPPORT "Enable compatibility with old-style CMake builds" "$ENV{GAUDI_LEGACY_CMAKE_SUPPORT}")
