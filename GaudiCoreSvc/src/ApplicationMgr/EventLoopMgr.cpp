@@ -14,7 +14,11 @@
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/Incident.h>
 #include <GaudiKernel/MsgStream.h>
+
 #include <chrono>
+#include <numeric>
+#include <utility>
+#include <vector>
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( EventLoopMgr )

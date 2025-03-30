@@ -20,9 +20,13 @@
 #include <GaudiKernel/ServiceHandle.h>
 #include <GaudiKernel/TaggedBool.h>
 
-#include <stdexcept>
+#include <cassert>
+#include <concepts>
+#include <ostream>
 #include <string>
+#include <tuple>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 // forward declarations
