@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import os
+import re
 import select
 import signal
 import subprocess
@@ -43,6 +44,10 @@ class SubprocessBaseTest:
     timeout: int = 600
     returncode: int = 0
     popen_kwargs: Dict = {}
+    # By default record environment variables that are likely to affect job execution
+    env_to_record: List[str] = [
+        r"^(.*PATH|BINARY_TAG|CMTCONFIG|PWD|TMPDIR|DISPLAY|LC_[A-Z]+|LANGUAGE|.*ROOT|.*OPTS|GAUDI_ENV_TO_RECORD(_\d+)?)$"
+    ]
 
     @property
     def cwd(self) -> Optional[Path]:
@@ -212,6 +217,20 @@ class SubprocessBaseTest:
             stderr=stderr,
         )
 
+        # Only record  environment variables that match at least one
+        # of the regular expressions in env_to_record.
+        # If env_to_record is empty or None, do not record any env variable
+        env_to_record = list(cls.env_to_record) if cls.env_to_record else []
+        # extend env_to_record with the regular expressions in environment variables
+        # named GAUDI_ENV_TO_RECORD, GAUDI_ENV_TO_RECORD_1, GAUDI_ENV_TO_RECORD_2, ...
+        env_to_record.extend(
+            env[name] for name in env if re.match(r"GAUDI_ENV_TO_RECORD(_\d+)?", name)
+        )
+        env = {
+            key: value
+            for key, value in env.items()
+            if any(re.match(exp, key) for exp in env_to_record)
+        }
         return FixtureResult(
             completed_process=completed_process,
             start_time=start_time,
