@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -187,8 +187,8 @@ protected:
 public:
   /** Copy constructor needed for correct ref-counting */
   template <typename CT = T, typename NCT = std::remove_const_t<T>>
-  GaudiHandle( const GaudiHandle<NCT>& other,
-               std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>* = nullptr )
+  GaudiHandle( const GaudiHandle<NCT>& other )
+    requires( std::is_const_v<CT> && !std::is_same_v<CT, NCT> )
       : GaudiHandleBase( other ) {
     m_pObject = other.get();
     if ( m_pObject ) ::details::nonConst( m_pObject.load() )->addRef();
@@ -202,8 +202,8 @@ public:
 
   /** Assignment operator for correct ref-counting */
   template <typename CT = T, typename NCT = std::remove_const_t<T>>
-  std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>, GaudiHandle&>
-  operator=( const GaudiHandle<NCT>& other ) {
+    requires( std::is_const_v<CT> && !std::is_same_v<CT, NCT> )
+  GaudiHandle& operator=( const GaudiHandle<NCT>& other ) {
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();

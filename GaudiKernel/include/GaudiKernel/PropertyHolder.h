@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -40,10 +40,10 @@ namespace Gaudi {
   namespace Details {
 
     template <typename T>
-    struct is_gaudi_property : std::false_type {};
+    constexpr bool is_gaudi_property_v = false;
 
     template <typename TYPE, typename VERIFIER, typename HANDLERS>
-    struct is_gaudi_property<Gaudi::Property<TYPE, VERIFIER, HANDLERS>> : std::true_type {};
+    constexpr bool is_gaudi_property_v<Gaudi::Property<TYPE, VERIFIER, HANDLERS>> = true;
 
     template <typename T>
     using PropertyType_t = typename std::remove_reference_t<T>::PropertyType;
@@ -111,10 +111,18 @@ public:
 
   /// Helper to wrap a regular data member and use it as a regular property.
   /// \deprecated Prefer the signatures using a a fully initialized PropertyBase instance.
-  template <typename TYPE, typename = std::enable_if_t<!Gaudi::Details::is_gaudi_property<TYPE>::value>>
+  template <typename TYPE>
+    requires( !Gaudi::Details::is_gaudi_property_v<TYPE> )
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value,
                                                  const std::string& doc = "none" ) {
-    m_todelete.push_back( std::make_unique<Gaudi::Details::PropertyType<TYPE&>>( name, value ) );
+    auto make_property = [&]( const std::string& n, TYPE& v ) {
+      if constexpr ( requires { typename TYPE::PropertyType; } ) {
+        return std::make_unique<typename TYPE::PropertyType>( n, v );
+      } else {
+        return std::make_unique<Gaudi::Property<TYPE&>>( n, v );
+      }
+    };
+    m_todelete.push_back( make_property( name, value ) );
     Gaudi::Details::PropertyBase* p = m_todelete.back().get();
 
     p->setDocumentation( doc );

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -158,18 +158,18 @@ namespace CustomFactoryWrapper {
   void initBase( Base*, const std::string& );
 
   // helper to use the default constructor of T, followed by initialization with initBase
-  template <typename T>
-  std::enable_if_t<std::is_default_constructible_v<T>, std::unique_ptr<Base>>
-  baseConstructorHelper( const std::string& name ) {
+  template <std::derived_from<Base> T>
+    requires( std::is_default_constructible_v<T> )
+  std::unique_ptr<T> baseConstructorHelper( const std::string& name ) {
     auto p = std::make_unique<T>();
     initBase( p.get(), name );
     return p;
   }
 
   // helper to use the special constructor of T (backward compatibility)
-  template <typename T>
-  std::enable_if_t<!std::is_default_constructible_v<T>, std::unique_ptr<Base>>
-  baseConstructorHelper( const std::string& name ) {
+  template <std::derived_from<Base> T>
+    requires( !std::is_default_constructible_v<T> )
+  std::unique_ptr<T> baseConstructorHelper( const std::string& name ) {
     return std::make_unique<T>( name );
   }
 } // namespace CustomFactoryWrapper

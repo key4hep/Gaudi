@@ -19,14 +19,7 @@
 
 namespace Gaudi::cxx {
 
-  namespace details {
-
-    template <typename Value, typename... Args>
-    using require_constructible_t = std::enable_if_t<std::is_constructible_v<Value, Args...>>;
-
-  } // namespace details
-
-  // C++20: replace with http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0290r2.html
+  // C++23: replace with http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0290r2.html
   //         http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4033.html
 
   template <typename Value, typename Mutex = std::mutex,
@@ -39,7 +32,8 @@ namespace Gaudi::cxx {
     mutable Mutex m_mtx;
 
   public:
-    template <typename... Args, typename = details::require_constructible_t<Value, Args...>>
+    template <typename... Args>
+      requires( std::is_constructible_v<Value, Args...> )
     SynchronizedValue( Args&&... args ) : m_obj{ std::forward<Args>( args )... } {}
 
     SynchronizedValue( const SynchronizedValue& rhs ) {
