@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2023-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <GaudiKernel/Auditor.h>
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/SmartIF.h>
@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <vector>
 
-struct AlgTimingAuditor final : extends<Auditor, IIncidentListener> {
+struct AlgTimingAuditor final : extends<Gaudi::Auditor, IIncidentListener> {
   using base_class::base_class;
 
   using Auditor::after;
@@ -38,36 +38,20 @@ struct AlgTimingAuditor final : extends<Auditor, IIncidentListener> {
     } );
   }
 
-  void before( StandardEventType evt, INamedInterface* alg ) override {
-    if ( !alg ) return;
-    switch ( evt ) {
-    case Initialize:
+  void before( std::string const& evt, std::string const& alg, EventContext const& ) override {
+    if ( evt == "Initialize" ) {
       stats( alg ); // this implicitly adds the algorithm to the list of known ones
       ++m_currentDepth;
-      break;
-
-    case Execute:
+    } else if ( evt == "Execute" ) {
       stats( alg ).start();
-      break;
-
-    default:
-      break;
     }
   }
 
-  void after( StandardEventType evt, INamedInterface* alg, const StatusCode& ) override {
-    if ( !alg ) return;
-    switch ( evt ) {
-    case Initialize:
+  void after( std::string const& evt, std::string const& alg, EventContext const&, const StatusCode& ) override {
+    if ( evt == "Initialize" ) {
       --m_currentDepth;
-      break;
-
-    case Execute:
+    } else if ( evt == "Execute" ) {
       stats( alg ).stop();
-      break;
-
-    default:
-      break;
     }
   }
 
@@ -127,13 +111,13 @@ struct AlgTimingAuditor final : extends<Auditor, IIncidentListener> {
     }
   };
 
-  stats_t& stats( INamedInterface* alg ) {
-    if ( auto it = m_offsets.find( alg->name() ); it != end( m_offsets ) ) {
+  stats_t& stats( std::string const& alg ) {
+    if ( auto it = m_offsets.find( alg ); it != end( m_offsets ) ) {
       return m_stats[it->second];
     } else {
       m_depths.push_back( m_currentDepth );
       m_stats.emplace_back();
-      m_offsets[alg->name()] = m_stats.size() - 1;
+      m_offsets[alg] = m_stats.size() - 1;
       return m_stats.back();
     }
   }

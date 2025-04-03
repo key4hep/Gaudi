@@ -8,33 +8,44 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "AlgContextAuditor.h"
 
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IAlgContextSvc.h>
+#include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IAlgorithm.h>
-#include <GaudiKernel/MsgStream.h>
-#include <GaudiKernel/SmartIF.h>
-#include <GaudiKernel/ThreadLocalContext.h>
 
-#include <cassert>
+class IAlgContextSvc;
 
-/** @file
- *  Implementation file for class AlgContexAuditor
+/** @class AlgContextAuditor
+ *  Description:  Register/Unregister the AlgContext of each
+ *  algorithm before entering the algorithm and after leaving it
  *  @author M. Shapiro, LBNL
  *  @author modified by Vanya BELYAEV ibelyaev@physics.syr.edu
  */
-namespace {
-  template <StatusCode ( IAlgContextSvc::*fun )( IAlgorithm*, const EventContext& )>
-  void call( IAlgContextSvc* ctx, INamedInterface* a ) {
-    if ( ctx ) {
-      // make a safe cast using "smart interface"
-      SmartIF<IAlgorithm> alg{ a };
-      const EventContext& ectx = Gaudi::Hive::currentContext();
-      if ( alg ) ( ctx->*fun )( alg.get(), ectx ).ignore();
-    }
-  }
-} // namespace
+class AlgContextAuditor : public Gaudi::Auditor {
+public:
+  // IAuditor implementation
+  void before( std::string const&, std::string const&, EventContext const& ) override;
+  void after( std::string const&, std::string const&, EventContext const&, StatusCode const& ) override;
+
+public:
+  using Auditor::Auditor;
+  StatusCode initialize() override;
+  StatusCode finalize() override;
+
+private:
+  /// delete the default/copy constructor and assignment
+  AlgContextAuditor()                                      = delete;
+  AlgContextAuditor( const AlgContextAuditor& )            = delete;
+  AlgContextAuditor& operator=( const AlgContextAuditor& ) = delete;
+
+private:
+  /// the pointer to Algorithm Context Service
+  SmartIF<IAlgContextSvc> m_svc;
+  /// the pointer to Algorithm Manager
+  SmartIF<IAlgManager> m_algMgr;
+};
 
 // mandatory auditor factory, needed for instantiation
 DECLARE_COMPONENT( AlgContextAuditor )
@@ -46,33 +57,32 @@ StatusCode AlgContextAuditor::initialize() {
       error() << "Invalid pointer to IAlgContextSvc" << endmsg;
       return StatusCode::FAILURE; // RETURN
     }
+    m_algMgr = serviceLocator();
+    if ( !m_algMgr ) {
+      error() << "Invalid pointer to IAlgManager" << endmsg;
+      return StatusCode::FAILURE; // RETURN
+    }
     return StatusCode::SUCCESS;
   } );
 }
 
 StatusCode AlgContextAuditor::finalize() {
   m_svc.reset();
+  m_algMgr.reset();
   return Auditor::finalize();
 }
 
-void AlgContextAuditor::before( StandardEventType evt, INamedInterface* a ) {
-  switch ( evt ) {
-  case Initialize:
-  case Execute:
-  case Finalize:
-    return call<&IAlgContextSvc::setCurrentAlg>( m_svc, a );
-  default:
-    return;
+void AlgContextAuditor::before( std::string const& event, std::string const& caller, EventContext const& context ) {
+  if ( m_svc && ( event == "Initialize" || event == "Execute" || event == "Finalize" ) ) {
+    SmartIF<IAlgorithm>& alg = m_algMgr->algorithm( caller, false );
+    if ( alg ) m_svc->setCurrentAlg( alg, context ).ignore();
   }
 }
 
-void AlgContextAuditor::after( StandardEventType evt, INamedInterface* a, const StatusCode& ) {
-  switch ( evt ) {
-  case Initialize:
-  case Execute:
-  case Finalize:
-    return call<&IAlgContextSvc::unSetCurrentAlg>( m_svc, a );
-  default:
-    return;
+void AlgContextAuditor::after( std::string const& event, std::string const& caller, EventContext const& context,
+                               StatusCode const& ) {
+  if ( m_svc && ( event == "Initialize" || event == "Execute" || event == "Finalize" ) ) {
+    SmartIF<IAlgorithm>& alg = m_algMgr->algorithm( caller, false );
+    if ( alg ) m_svc->unSetCurrentAlg( alg, context ).ignore();
   }
 }

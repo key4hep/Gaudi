@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,7 +20,7 @@
 #include <vector>
 
 // * Gaudi libraries.
-#include <GaudiKernel/Auditor.h>
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IAuditorSvc.h>
 #include <GaudiKernel/IIncidentListener.h>
@@ -38,17 +38,15 @@ typedef std::map<std::string, __itt_event> TaskTypes;
 // Gaudi profiling auditor. The auditor use Intel API for control profiling
 // flow. We need to run profiling  throw Intel Amplifier amplxe-cl command
 // line tool.
-class IntelProfilerAuditor : public extends<Auditor, IIncidentListener> {
+class IntelProfilerAuditor : public extends<Gaudi::Auditor, IIncidentListener> {
 public:
   // ## Public functions.
   using extends::extends;
   StatusCode initialize() override;
   // Overridden functions.
   void handle( const Incident& incident ) override;
-  using Auditor::before; // avoid hiding base-class methods
-  void before( StandardEventType type, INamedInterface* i ) override;
-  using Auditor::after; // avoid hiding base-class methods
-  void after( StandardEventType type, INamedInterface* i, const StatusCode& sc ) override;
+  void before( std::string const&, std::string const&, EventContext const& ) override;
+  void after( std::string const&, std::string const&, EventContext const&, StatusCode const& ) override;
   // ## Private attributes.
 private:
   // Stack for store current component(algorithm) chain with useful
@@ -281,13 +279,9 @@ void IntelProfilerAuditor::handle( const Incident& incident ) {
   }
 }
 
-void IntelProfilerAuditor::before( StandardEventType type, INamedInterface* i ) {
+void IntelProfilerAuditor::before( std::string const& type, std::string const& name, EventContext const& ) {
   // Skip unnecessary event types.
-  if ( !( ( type == IAuditor::Execute ) && m_isStarted ) ) return;
-
-  // Name of the current component.
-  const std::string& name = i->name();
-  // debug() <<  "Before: " << name << " " << type << endmsg;
+  if ( !( ( type == "Execute" ) && m_isStarted ) ) return;
 
   if ( isRunning() ) {
     if ( isExcluded( name ) ) {
@@ -325,15 +319,15 @@ void IntelProfilerAuditor::before( StandardEventType type, INamedInterface* i ) 
   if ( m_nEvents % m_frames_rate == 0 ) { __itt_frame_begin_v3( domain, NULL ); }
 }
 
-void IntelProfilerAuditor::after( StandardEventType type, INamedInterface* i, const StatusCode& /* sc*/ ) {
+void IntelProfilerAuditor::after( std::string const& type, std::string const& name, EventContext const&,
+                                  StatusCode const& ) {
   // Skip unnecessary event types
-  if ( !( ( type == IAuditor::Execute ) && m_isStarted ) ) return;
+  if ( !( ( type == "Execute" ) && m_isStarted ) ) return;
 
   if ( ( m_nEvents + 1 ) % m_frames_rate == 0 ) { __itt_frame_end_v3( domain, NULL ); }
 
   // Name of the current component
-  const std::string& name  = i->name();
-  stack_entity       state = m_stack.back();
+  stack_entity state = m_stack.back();
   // Remove component from stack.
   m_stack.pop_back();
 

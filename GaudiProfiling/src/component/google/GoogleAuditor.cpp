@@ -9,8 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include <GaudiKernel/Auditor.h>
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/IAuditorSvc.h>
 #include <GaudiKernel/IIncidentListener.h>
@@ -34,7 +35,7 @@ namespace Google {
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class AuditorBase : public extends<Auditor, IIncidentListener> {
+  class AuditorBase : public extends<Gaudi::Auditor, IIncidentListener> {
 
   public:
     /// Constructor
@@ -49,6 +50,13 @@ namespace Google {
       if ( !inSvc ) return StatusCode::FAILURE;
       inSvc->addListener( this, IncidentType::BeginEvent );
 
+      // get hold of IAlgManager
+      m_algMgr = serviceLocator();
+      if ( !m_algMgr ) {
+        error() << "Invalid pointer to IAlgManager" << endmsg;
+        return StatusCode::FAILURE;
+      }
+
       // sort various lists for speed when searching
       std::sort( m_when.begin(), m_when.end() );
       std::sort( m_veto.begin(), m_veto.end() );
@@ -60,6 +68,7 @@ namespace Google {
     /// Finalize the auditor base
     StatusCode finalize() override {
       if ( alreadyRunning() ) stopAudit();
+      m_algMgr.reset();
       return StatusCode::SUCCESS;
     }
 
@@ -85,13 +94,14 @@ namespace Google {
     }
 
     // Check if the component in question is a Sequencer
-    inline bool isSequencer( INamedInterface* i ) const {
-      if ( auto alg = dynamic_cast<IAlgorithm*>( i ) ) { return alg->isSequence(); }
+    inline bool isSequencer( std::string const& algName ) const {
+      SmartIF<IAlgorithm>& alg = m_algMgr->algorithm( algName, false );
+      if ( alg ) { return alg->isSequence(); }
       return false;
     }
 
     /// Check if auditing is enabled for the current processing phase
-    inline bool isPhaseEnabled( CustomEventTypeRef type ) const {
+    inline bool isPhaseEnabled( std::string const& type ) const {
       return ( std::find( m_when.begin(), m_when.end(), type ) != m_when.end() );
     }
 
@@ -102,7 +112,7 @@ namespace Google {
     }
 
     // Construct the dump name based on processing phase and component name
-    std::string getDumpName( CustomEventTypeRef type, std::string_view name ) const {
+    std::string getDumpName( std::string const& type, std::string_view name ) const {
       std::ostringstream t;
       t << name << "-" << type;
       if ( type == "Execute" ) t << "-Event" << m_nEvts;
@@ -134,21 +144,8 @@ namespace Google {
     }
 
   public:
-    void before( StandardEventType type, INamedInterface* i ) override {
-      if ( !m_skipSequencers || !isSequencer( i ) ) { before( type, i->name() ); }
-    }
-
-    void before( CustomEventTypeRef type, INamedInterface* i ) override {
-      if ( !m_skipSequencers || !isSequencer( i ) ) { before( type, i->name() ); }
-    }
-
-    void before( StandardEventType type, const std::string& s ) override {
-      std::ostringstream t;
-      t << type;
-      before( t.str(), s );
-    }
-
-    void before( CustomEventTypeRef type, const std::string& s ) override {
+    void before( std::string const& type, std::string const& s, EventContext const& ) override {
+      if ( m_skipSequencers && isSequencer( s ) ) return;
       if ( !m_fullEventAudit && m_audit && isPhaseEnabled( type ) && isComponentEnabled( s ) ) {
         if ( !alreadyRunning() ) {
           info() << "Starting Auditor for " << s << ":" << type << endmsg;
@@ -160,25 +157,8 @@ namespace Google {
       }
     }
 
-    void after( StandardEventType type, INamedInterface* i, const StatusCode& sc ) override {
-      if ( !m_skipSequencers || !isSequencer( i ) ) {
-        std::ostringstream t;
-        t << type;
-        after( t.str(), i, sc );
-      }
-    }
-
-    void after( CustomEventTypeRef type, INamedInterface* i, const StatusCode& sc ) override {
-      if ( !m_skipSequencers || !isSequencer( i ) ) { after( type, i->name(), sc ); }
-    }
-
-    void after( StandardEventType type, const std::string& s, const StatusCode& sc ) override {
-      std::ostringstream t;
-      t << type;
-      after( t.str(), s, sc );
-    }
-
-    void after( CustomEventTypeRef type, const std::string& s, const StatusCode& ) override {
+    void after( std::string const& type, std::string const& s, EventContext const&, StatusCode const& ) override {
+      if ( m_skipSequencers && isSequencer( s ) ) return;
       if ( !m_fullEventAudit && m_audit && isPhaseEnabled( type ) && isComponentEnabled( s ) ) {
         if ( s == m_startedBy ) { google_after( getDumpName( type, s ) ); }
       }
@@ -220,6 +200,9 @@ namespace Google {
         0;                             ///< Internal count of the number of events currently processed during an audit
     bool        m_inFullAudit = false; ///< Internal flag to indicate if we are current in a full event audit
     std::string m_startedBy;           ///< Name of the component we are currently auditing
+
+    /// the pointer to Algorithm Manager
+    SmartIF<IAlgManager> m_algMgr;
   };
 
   /** @class HeapProfiler GoogleAuditor.cpp
