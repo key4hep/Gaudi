@@ -124,11 +124,6 @@ target_sources(GaudiTestSuiteComponents PRIVATE src/IO/ExamplesHandleAlgs.cpp)
 add_library(GaudiExamplesLib ALIAS GaudiTestSuiteLib)
 add_library(${PROJECT_NAME}::GaudiExamplesLib ALIAS GaudiTestSuiteLib)
 
-if(NOT ROOT_VERSION VERSION_LESS "6.20")
-  find_package(ROOT REQUIRED COMPONENTS ROOTHist)
-  target_link_libraries(GaudiTestSuiteComponents PRIVATE ROOT::ROOTHist)
-endif()
-
 if(GAUDI_USE_AIDA)
     target_sources(GaudiTestSuiteComponents PRIVATE
                                          src/Histograms/HistoAlgorithm.cpp
