@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -76,77 +76,6 @@ StatusCode Auditor::sysInitialize() {
   return StatusCode::FAILURE;
 }
 
-StatusCode Auditor::initialize() { return StatusCode::SUCCESS; }
-
-// Implemented for backward compatibility
-void Auditor::before( StandardEventType evt, INamedInterface* obj ) {
-  switch ( evt ) {
-  case Initialize:
-    beforeInitialize( obj );
-    break;
-  case ReInitialize:
-    beforeReinitialize( obj );
-    break;
-  case Execute:
-    beforeExecute( obj );
-    break;
-  case Finalize:
-    beforeFinalize( obj );
-    break;
-  case Start:
-    break;
-  case Stop:
-    break;
-  case ReStart:
-    break;
-  default:
-    break; // do nothing
-  }
-}
-void Auditor::before( StandardEventType, const std::string& ) {}
-
-void Auditor::before( CustomEventTypeRef, INamedInterface* ) {}
-void Auditor::before( CustomEventTypeRef, const std::string& ) {}
-
-// Implemented for backward compatibility
-void Auditor::after( StandardEventType evt, INamedInterface* obj, const StatusCode& sc ) {
-  switch ( evt ) {
-  case Initialize:
-    afterInitialize( obj );
-    break;
-  case ReInitialize:
-    afterReinitialize( obj );
-    break;
-  case Execute:
-    afterExecute( obj, sc );
-    break;
-  case Finalize:
-    afterFinalize( obj );
-    break;
-  case Start:
-    break;
-  case Stop:
-    break;
-  case ReStart:
-    break;
-  default:
-    break; // do nothing
-  }
-}
-void Auditor::after( StandardEventType, const std::string&, const StatusCode& ) {}
-
-void Auditor::after( CustomEventTypeRef, INamedInterface*, const StatusCode& ) {}
-void Auditor::after( CustomEventTypeRef, const std::string&, const StatusCode& ) {}
-
-void Auditor::beforeInitialize( INamedInterface* ) {}
-void Auditor::afterInitialize( INamedInterface* ) {}
-void Auditor::beforeReinitialize( INamedInterface* ) {}
-void Auditor::afterReinitialize( INamedInterface* ) {}
-void Auditor::beforeExecute( INamedInterface* ) {}
-void Auditor::afterExecute( INamedInterface*, const StatusCode& ) {}
-void Auditor::beforeFinalize( INamedInterface* ) {}
-void Auditor::afterFinalize( INamedInterface* ) {}
-
 StatusCode Auditor::sysFinalize() {
   StatusCode sc = StatusCode::SUCCESS;
   try {
@@ -186,11 +115,3 @@ StatusCode Auditor::sysFinalize() {
   ///
   return StatusCode::FAILURE;
 }
-
-StatusCode Auditor::finalize() { return StatusCode::SUCCESS; }
-
-const std::string& Auditor::name() const { return m_name; }
-
-bool Auditor::isEnabled() const { return m_isEnabled; }
-
-SmartIF<ISvcLocator>& Auditor::serviceLocator() const { return m_pSvcLocator; }

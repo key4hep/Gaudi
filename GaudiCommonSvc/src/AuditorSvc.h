@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef AuditorSvc_AuditorSvc_H
-#define AuditorSvc_AuditorSvc_H
+#pragma once
 
 // Include Files
 #include <GaudiKernel/IAuditorSvc.h>
@@ -27,12 +26,7 @@
 //------------------------------------------------------------------
 class AuditorSvc : public extends<Service, IAuditorSvc> {
 public:
-  // Inherited Service overrides:
-  //
-  // Initialize the service.
   StatusCode initialize() override;
-
-  // Finalize the service.
   StatusCode finalize() override;
 
   // IAuditorSvc interfaces overwrite
@@ -50,26 +44,6 @@ public:
 
   void after( CustomEventTypeRef, INamedInterface*, const StatusCode& ) override;
   void after( CustomEventTypeRef, const std::string&, const StatusCode& ) override;
-
-  // inform Auditors that the initialize() is about to be called
-  void beforeInitialize( INamedInterface* ini ) override;
-  // inform Auditors that the initialize() has been called
-  void afterInitialize( INamedInterface* ini ) override;
-
-  // inform Auditors that the reinitialize() is about to be called
-  void beforeReinitialize( INamedInterface* ini ) override;
-  // inform Auditors that the reinitialize() has been called
-  void afterReinitialize( INamedInterface* ini ) override;
-
-  // inform Auditors that the execute() is about to be called
-  void beforeExecute( INamedInterface* ini ) override;
-  // inform Auditors that the execute() has been called
-  void afterExecute( INamedInterface* ini, const StatusCode& ) override;
-
-  // inform Auditors that the finalize() is about to be called
-  void beforeFinalize( INamedInterface* ini ) override;
-  // inform Auditors that the finalize() has been called
-  void afterFinalize( INamedInterface* ini ) override;
 
   bool isEnabled() const override;
 
@@ -94,5 +68,3 @@ private:
   // Manager list of Auditors
   std::vector<SmartIF<IAuditor>> m_pAudList;
 };
-
-#endif
