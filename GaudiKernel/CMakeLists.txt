@@ -320,6 +320,9 @@ if(BUILD_TESTING)
   gaudi_add_executable(test_CounterHistoArray SOURCES tests/src/CounterHistoArrayUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
+  gaudi_add_executable(test_CounterHistoMap SOURCES tests/src/CounterHistoMapUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
   gaudi_add_executable(test_ProfileHistoSpeed SOURCES tests/src/ProfileHistoSpeedTest.cpp
     LINK GaudiKernel Boost::unit_test_framework ROOT::Hist TEST)
 
