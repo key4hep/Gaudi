@@ -1,5 +1,5 @@
 /*****************************************************************************\
-* (c) Copyright 2020-2024 CERN for the benefit of the LHCb Collaboration      *
+* (c) Copyright 2020-2025 CERN for the benefit of the LHCb Collaboration      *
 *                                                                             *
 * This software is distributed under the terms of the GNU General Public      *
 * Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   *
@@ -9,9 +9,6 @@
 * or submit itself to any jurisdiction.                                       *
 \*****************************************************************************/
 #pragma once
-
-#include <GaudiKernel/detected.h>
-
 #include <deque>
 #include <functional>
 #include <iostream>

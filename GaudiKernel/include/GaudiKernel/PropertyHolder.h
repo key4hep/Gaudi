@@ -32,7 +32,6 @@
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
-#include <GaudiKernel/detected.h>
 
 #include <Gaudi/Interfaces/IOptionsSvc.h>
 // ============================================================================
@@ -45,10 +44,6 @@ namespace Gaudi {
     template <typename TYPE, typename VERIFIER, typename HANDLERS>
     constexpr bool is_gaudi_property_v<Gaudi::Property<TYPE, VERIFIER, HANDLERS>> = true;
 
-    template <typename T>
-    using PropertyType_t = typename std::remove_reference_t<T>::PropertyType;
-    template <typename T>
-    using PropertyType = Gaudi::cpp17::detected_or_t<Gaudi::Property<T>, PropertyType_t, T>;
   } // namespace Details
   namespace Utils {
     /// Helper for case insensitive string comparison.
