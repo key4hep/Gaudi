@@ -133,29 +133,38 @@ namespace Gaudi::Functional::details {
   }
 
   /////////////////////////////////////////
+  template <typename T>
+  concept is_optional = requires( T const& t ) {
+    t.has_value();
+    t.value();
+    typename T::value_type;
+  };
+
   namespace details2 {
-    template <typename T>
-    using is_optional_ = decltype( std::declval<T>().has_value(), std::declval<T>().value() );
 
     template <typename T>
-    using value_type_of_t = typename T::value_type;
+    struct value_type_of {
+      using type = T;
+    };
+
+    template <is_optional T>
+    struct value_type_of<T> {
+      using type = T::value_type;
+    };
 
   } // namespace details2
-  template <typename Arg>
-  constexpr bool is_optional_v = Gaudi::cpp17::is_detected_v<details2::is_optional_, Arg>;
 
   template <typename T>
-  using remove_optional_t =
-      std::conditional_t<is_optional_v<T>, Gaudi::cpp17::detected_t<details2::value_type_of_t, T>, T>;
+  using remove_optional_t = typename details2::value_type_of<T>::type;
 
   constexpr struct invoke_optionally_t {
     template <typename F, typename Arg>
-      requires( !is_optional_v<Arg> )
+      requires( !is_optional<Arg> )
     decltype( auto ) operator()( F&& f, Arg&& arg ) const {
       return std::invoke( std::forward<F>( f ), std::forward<Arg>( arg ) );
     }
     template <typename F, typename Arg>
-      requires( is_optional_v<Arg> )
+      requires( is_optional<Arg> )
     void operator()( F&& f, Arg&& arg ) const {
       if ( arg ) std::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
     }
@@ -183,7 +192,7 @@ namespace Gaudi::Functional::details {
 
   // optional put
   template <typename OutHandle, typename OptOut>
-    requires( is_optional_v<OptOut> )
+    requires( is_optional<OptOut> )
   void put( const OutHandle& out_handle, OptOut&& out ) {
     if ( out ) put( out_handle, *std::forward<OptOut>( out ) );
   }
@@ -411,37 +420,61 @@ namespace Gaudi::Functional::details {
 
   /////////////////////////////////////////
   namespace detail2 { // utilities for detected_or_t{,_} usage
+
+    // keep only for backwards compatibility... for now.
     template <typename Tr>
     using BaseClass_t = typename Tr::BaseClass;
-    template <typename Tr, typename T>
-    using OutputHandle_t = typename Tr::template OutputHandle<T>;
-    template <typename Tr, typename T>
-    using InputHandle_t = typename Tr::template InputHandle<T>;
+
+    template <typename Tr, typename Default>
+    struct BaseClass {
+      using type = Default;
+    };
+    template <typename Tr, typename Default>
+      requires requires { typename Tr::BaseClass; }
+    struct BaseClass<Tr, Default> {
+      using type = Tr::BaseClass;
+    };
+
+    template <typename T, typename Tr, template <typename...> typename Default>
+    struct OutputHandle {
+      using type = Default<T>;
+    };
+    template <typename T, typename Tr, template <typename...> typename Default>
+      requires requires { typename Tr::template OutputHandle<T>; }
+    struct OutputHandle<T, Tr, Default> {
+      using type = Tr::template OutputHandle<T>;
+    };
+
+    template <typename T, typename Tr, template <typename...> typename Default>
+    struct InputHandle {
+      using type = Default<T>;
+    };
+    template <typename T, typename Tr, template <typename...> typename Default>
+      requires requires { typename Tr::template InputHandle<T>; }
+    struct InputHandle<T, Tr, Default> {
+      using type = Tr::template InputHandle<T>;
+    };
 
     template <typename T>
-    constexpr auto is_tool_v = std::is_base_of_v<IAlgTool, std::decay_t<T>>;
-
-    template <typename T>
-    using ToolHandle_t = ToolHandle<Gaudi::Interface::Bind::IBinder<std::decay_t<T>>>;
-
-    template <typename T>
-    using DefaultInputHandle = std::conditional_t<is_tool_v<T>, ToolHandle_t<T>, DataObjectReadHandle<T>>;
+    using DefaultInputHandle =
+        std::conditional_t<std::derived_from<std::decay_t<T>, IAlgTool>,
+                           ToolHandle<Gaudi::Interface::Bind::IBinder<std::decay_t<T>>>, DataObjectReadHandle<T>>;
   } // namespace detail2
 
-  // check whether Traits::BaseClass is a valid type,
-  // if so, define BaseClass_t<Traits> as being Traits::BaseClass
-  // else   define                     as being Gaudi::Algorithm
-  template <typename Tr, typename Base = Gaudi::Algorithm>
-  using BaseClass_t = Gaudi::cpp17::detected_or_t<Base, detail2::BaseClass_t, Tr>;
+  // check whether Tr::BaseClass is a valid type,
+  // if so, define BaseClass_t<Tr> as being Tr::BaseClass
+  // else   define                 as being Gaudi::Algorithm
+  template <typename Tr, typename Default = Gaudi::Algorithm>
+  using BaseClass_t = detail2::BaseClass<Tr, Default>::type;
 
   // check whether Traits::{Input,Output}Handle<T> is a valid type,
   // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
   // else   define                                  as being DataObject{Read,,Write}Handle<T>
+  template <typename Tr, typename T>
+  using OutputHandle_t = typename detail2::OutputHandle<T, Tr, DataObjectWriteHandle>::type;
 
   template <typename Tr, typename T>
-  using OutputHandle_t = Gaudi::cpp17::detected_or_t<DataObjectWriteHandle<T>, detail2::OutputHandle_t, Tr, T>;
-  template <typename Tr, typename T>
-  using InputHandle_t = Gaudi::cpp17::detected_or_t<detail2::DefaultInputHandle<T>, detail2::InputHandle_t, Tr, T>;
+  using InputHandle_t = typename detail2::InputHandle<T, Tr, detail2::DefaultInputHandle>::type;
 
   template <typename Traits>
   inline constexpr bool isLegacy =
