@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -314,15 +314,6 @@ protected:
   }
 
 private:
-  /** Helper function to set default name and type */
-  void setDefaultTypeAndName() {
-    const std::string& myType = getDefaultType();
-    GaudiHandleBase::setTypeAndName( myType + '/' + myType );
-  }
-
-  /** Helper function to set default type from the class type T */
-  void setDefaultType() { GaudiHandleBase::setTypeAndName( getDefaultType() ); }
-
   /** Load the pointer to the component. Do a retrieve if needed. Throw an exception if
       retrieval fails. */
   void assertObject() const { // not really const, because it may update m_pObject
