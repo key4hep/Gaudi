@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -13,6 +13,11 @@ import logging
 import re
 import sys
 from collections.abc import MutableMapping, MutableSequence, MutableSet
+
+import GaudiKernel.GaudiHandles
+from GaudiKernel.GaudiHandles import GaudiHandle
+
+from . import Configurable, Configurables
 
 _log = logging.getLogger(__name__)
 is_64bits = sys.maxsize > 2**32
@@ -221,8 +226,6 @@ class ComponentSemantics(PropertySemantics):
             self.interfaces = set()
 
     def store(self, value):
-        from . import Configurable, Configurables
-
         if isinstance(value, Configurable):
             value.name  # make sure the configurable has a name
         elif isinstance(value, str):
@@ -263,6 +266,53 @@ class ComponentSemantics(PropertySemantics):
 
     def default(self, value):
         return self.store(value)
+
+
+class ComponentHandleSemantics(PropertySemantics):
+    """
+    Semantics for component (tool, service) handles. On access, it will create the
+    corresponding Configurable instance and store it in the property.
+    """
+
+    __handled_types__ = ("PrivateToolHandle", "PublicToolHandle", "ServiceHandle")
+
+    def __init__(self, cpp_type):
+        super().__init__(cpp_type)
+        self.handle_type = getattr(GaudiKernel.GaudiHandles, self.cpp_type)
+
+    def store(self, value):
+        # Configurable: store if correct type
+        if (
+            isinstance(value, Configurable)
+            and value.getGaudiType() == self.handle_type.componentType
+        ):
+            return value
+
+        # Handle: create Configurable
+        elif isinstance(value, GaudiHandle):
+            return (
+                Configurables.getByType(value.getType()).getInstance(value.getName())
+                if value.typeAndName
+                else self.handle_type()  # empty handle
+            )
+
+        # Empty: empty Handle
+        elif value is None or value == "":
+            return self.handle_type()
+
+        # String: create Configurable
+        elif isinstance(value, str):
+            tn = value.split("/", maxsplit=1)  # type[/name]
+            name = tn[1] if len(tn) == 2 else tn[0]
+            return Configurables.getByType(tn[0]).getInstance(name)
+
+        raise TypeError(f"cannot assign {value!r} ({type(value)}) to {self.name}")
+
+    def default(self, value):
+        return self.store(value)
+
+    def merge(self, b, a):
+        return a.merge(b)
 
 
 def extract_template_args(cpp_type):
