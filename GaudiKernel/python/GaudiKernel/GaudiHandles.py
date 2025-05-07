@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -225,6 +225,11 @@ class GaudiHandleArray(MutableSequence):
 
     def __add__(self, other):
         return self.__class__(list(self) + list(other))
+
+    def index(self, value, *args):
+        return list(self._items.keys()).index(
+            value if isinstance(value, str) else value.getName(), *args
+        )
 
     def insert(self, index, value):
         """Only allow inserting compatible types. It accepts a string, a handle or a configurable."""
