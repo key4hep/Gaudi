@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -534,4 +534,14 @@ BOOST_AUTO_TEST_CASE( test_json_to_prof2D ) {
   BOOST_CHECK_SMALL( histo.GetBinContent( 2 ), 1.e-4 );
   BOOST_CHECK_SMALL( sumw2->At( 2 ), 1.e-4 );
   BOOST_CHECK_SMALL( histo.GetBinError( 2 ), 1.e-4 );
+}
+
+BOOST_AUTO_TEST_CASE( formatName ) {
+  using Gaudi::Histograming::Sink::detail::formatName;
+
+  BOOST_CHECK( formatName( "123abc", 15 ) == "123abc" );
+  BOOST_CHECK( formatName( "123abc123abc123", 15 ) == "123abc123abc123" );
+  BOOST_CHECK( formatName( "123abc123abc123abc", 15 ) == "123ab...c123abc" );
+  // just to check an even width...
+  BOOST_CHECK( formatName( "123abc123abc123abc", 14 ) == "123ab...123abc" );
 }
