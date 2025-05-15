@@ -12,8 +12,8 @@
 
 #include <exception>
 
+#include <Gaudi/IAuditor.h>
 #include <GaudiKernel/EventContext.h>
-#include <GaudiKernel/IAuditor.h>
 #include <GaudiKernel/IExceptionSvc.h>
 #include <GaudiKernel/SmartIF.h>
 
@@ -207,25 +207,6 @@ namespace Gaudi {
       AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, EventContext const& context = {} );
       AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, StatusCode const& sc,
                     EventContext const& context = {} );
-
-      // For backward compatibility with old interface, to be deprecated and then dropped FIXME
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, ::IAuditor::StandardEventType evt,
-                    EventContext const& context = {} )
-          : AuditorGuard{ obj ? obj->name() : "", svc, evt, context } {};
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, std::string const& evt, EventContext const& context = {} )
-          : AuditorGuard{ obj ? obj->name() : "", svc, evt, context } {};
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, ::IAuditor::StandardEventType evt, StatusCode const& sc,
-                    EventContext const& context = {} )
-          : AuditorGuard{ obj ? obj->name() : "", svc, evt, sc, context } {};
-      AuditorGuard( INamedInterface* obj, IAuditor* svc, std::string const& evt, StatusCode const& sc,
-                    EventContext const& context = {} )
-          : AuditorGuard{ obj ? obj->name() : "", svc, evt, sc, context } {};
-      AuditorGuard( std::string name, IAuditor* svc, ::IAuditor::StandardEventType evt,
-                    EventContext const& context = {} )
-          : AuditorGuard( std::move( name ), svc, toStr( evt ), context ) {}
-      AuditorGuard( std::string name, IAuditor* svc, ::IAuditor::StandardEventType evt, StatusCode const& sc,
-                    EventContext const& context = {} )
-          : AuditorGuard( std::move( name ), svc, toStr( evt ), sc, context ) {}
 
       ~AuditorGuard() { i_after(); }
 

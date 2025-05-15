@@ -21,6 +21,10 @@
  */
 class AuditorSvc : public extends<Service, IAuditorSvc> {
 public:
+  StatusCode initialize() override {
+    // make sure we synchronize auditors at initialization
+    return Service::initialize().andThen( [&] { return syncAuditors(); } );
+  }
   StatusCode finalize() override;
 
   void before( std::string const&, std::string const&, EventContext const& ) override;
@@ -47,17 +51,19 @@ private:
   /// internal mathod to update auditors when m_audNameList is changed
   StatusCode syncAuditors();
 
-  Gaudi::Property<std::vector<std::string>> m_audNameList{ this,
-                                                           "Auditors",
-                                                           {},
-                                                           [this]( auto& ) {
-                                                             auto sc = syncAuditors();
-                                                             if ( sc.isFailure() ) {
-                                                               error() << "Unable to update Auditors : " << endmsg;
-                                                             };
-                                                           },
-                                                           "list of auditors names",
-                                                           "OrderedSet<std::string>" };
+  Gaudi::Property<std::vector<std::string>> m_audNameList{
+      this,
+      "Auditors",
+      {},
+      [this]( auto& ) {
+        // Warn that any change of this property after initialize
+        // won't be taken into account
+        if ( FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+          error() << "Updating 'Auditors' after initialize is not supported. Use addAuditor instead." << endmsg;
+        }
+      },
+      "list of auditors names",
+      "OrderedSet<std::string>" };
   Gaudi::Property<bool> m_isEnabled{ this, "Enable", true, "enable/disable alltogether the auditors" };
 
   // Manager list of Auditors

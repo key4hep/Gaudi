@@ -42,6 +42,15 @@ namespace Gaudi {
 
     /// Used by AuditorSvc.
     virtual StatusCode sysFinalize() = 0;
+
+    // Defining a set of standard events used internally by the framework
+    static constexpr std::string Initialize   = "Initialize";
+    static constexpr std::string ReInitialize = "ReInitialize";
+    static constexpr std::string Start        = "Start";
+    static constexpr std::string ReStart      = "ReStart";
+    static constexpr std::string Execute      = "Execute";
+    static constexpr std::string Stop         = "Stop";
+    static constexpr std::string Finalize     = "Finalize";
   };
 
 } // namespace Gaudi

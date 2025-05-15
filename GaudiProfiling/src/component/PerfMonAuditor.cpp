@@ -782,7 +782,7 @@ StatusCode PerfMonAuditor::finalize() {
 }
 
 void PerfMonAuditor::before( std::string const& event, std::string const& alg, EventContext const& ) {
-  if ( event != "Execute" ) return;
+  if ( event != Gaudi::IAuditor::Execute ) return;
   if ( first_alg ) {
     first_alg      = false;
     first_alg_name = alg;
@@ -811,7 +811,7 @@ void PerfMonAuditor::before( std::string const& event, std::string const& alg, E
 }
 
 void PerfMonAuditor::after( std::string const& event, std::string const&, EventContext const&, const StatusCode& ) {
-  if ( event != "Execute" ) return;
+  if ( event != Gaudi::IAuditor::Execute ) return;
   if ( event_count_reached ) {
     if ( sampling == 0 )
       stoppm();

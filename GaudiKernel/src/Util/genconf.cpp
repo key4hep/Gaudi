@@ -29,7 +29,6 @@
 #include <Gaudi/IAuditor.h>
 #include <Gaudi/PluginService.h>
 #include <GaudiKernel/AlgTool.h>
-#include <GaudiKernel/Auditor.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/DataHandle.h>
 #include <GaudiKernel/DataHandleProperty.h>
@@ -126,8 +125,6 @@ namespace {
       { typeid( AlgTool::Factory::FactoryType ).name(), component_t::AlgTool },
       // factories for new Auditors
       { typeid( Gaudi::Auditor::Factory::FactoryType ).name(), component_t::Auditor },
-      // factories for legacy auditors
-      { typeid( Auditor::Factory::FactoryType ).name(), component_t::Auditor },
   };
 
   const std::string& toString( component_t type ) {
@@ -584,10 +581,6 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
           break;
         case component_t::Auditor:
           prop = SmartIF<Gaudi::IAuditor>( Gaudi::Auditor::Factory::create( factoryName, cname, svcLoc ).release() );
-          // backward compatibility code for legacy auditors
-          if ( !prop ) {
-            prop = SmartIF<Gaudi::IAuditor>( Auditor::Factory::create( factoryName, cname, svcLoc ).release() );
-          }
           break;
         case component_t::ApplicationMgr:
           prop = SmartIF<ISvcLocator>( svcLoc );

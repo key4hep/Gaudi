@@ -73,7 +73,8 @@ StatusCode AlgContextAuditor::finalize() {
 }
 
 void AlgContextAuditor::before( std::string const& event, std::string const& caller, EventContext const& context ) {
-  if ( m_svc && ( event == "Initialize" || event == "Execute" || event == "Finalize" ) ) {
+  if ( m_svc && ( event == Gaudi::IAuditor::Initialize || event == Gaudi::IAuditor::Execute ||
+                  event == Gaudi::IAuditor::Finalize ) ) {
     SmartIF<IAlgorithm>& alg = m_algMgr->algorithm( caller, false );
     if ( alg ) m_svc->setCurrentAlg( alg, context ).ignore();
   }
@@ -81,7 +82,8 @@ void AlgContextAuditor::before( std::string const& event, std::string const& cal
 
 void AlgContextAuditor::after( std::string const& event, std::string const& caller, EventContext const& context,
                                StatusCode const& ) {
-  if ( m_svc && ( event == "Initialize" || event == "Execute" || event == "Finalize" ) ) {
+  if ( m_svc && ( event == Gaudi::IAuditor::Initialize || event == Gaudi::IAuditor::Execute ||
+                  event == Gaudi::IAuditor::Finalize ) ) {
     SmartIF<IAlgorithm>& alg = m_algMgr->algorithm( caller, false );
     if ( alg ) m_svc->unSetCurrentAlg( alg, context ).ignore();
   }

@@ -12,7 +12,6 @@
 #include "AuditorSvc.h"
 #include <Gaudi/Auditor.h>
 #include <Gaudi/IAuditor.h>
-#include <GaudiKernel/Auditor.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/ISvcLocator.h>
@@ -27,12 +26,7 @@ std::unique_ptr<Gaudi::IAuditor> AuditorSvc::newAuditor( MsgStream& log, std::st
   // locate the auditor factory, instantiate a new auditor, initialize it
   Gaudi::Utils::TypeNameString     item( name );
   std::unique_ptr<Gaudi::IAuditor> aud{
-      Gaudi::Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release() };
-  // Backward compatibility with legacy auditors
-  if ( !aud ) {
-    aud = std::unique_ptr<Gaudi::IAuditor>{
-        Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release() };
-  }
+      Gaudi::Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ) };
   if ( aud ) {
     // make sure we increase the internal reference counter used by SmartIF or any usage of it
     // somewhere else will delete the Auditor in our back !

@@ -115,7 +115,7 @@ namespace Google {
     std::string getDumpName( std::string const& type, std::string_view name ) const {
       std::ostringstream t;
       t << name << "-" << type;
-      if ( type == "Execute" ) t << "-Event" << m_nEvts;
+      if ( type == IAuditor::Execute ) t << "-Event" << m_nEvts;
       return t.str();
     }
 
@@ -177,7 +177,8 @@ namespace Google {
   private:
     Gaudi::Property<std::vector<std::string>> m_when{ this,
                                                       "ActivateAt",
-                                                      { "Initialize", "ReInitialize", "Execute", "Finalize" },
+                                                      { Gaudi::IAuditor::Initialize, Gaudi::IAuditor::ReInitialize,
+                                                        Gaudi::IAuditor::Execute, Gaudi::IAuditor::Finalize },
                                                       "List of phases to activate the Auditoring during" };
     Gaudi::Property<std::vector<std::string>> m_veto{
         this, "DisableFor", {}, "List of component names to disable the auditing for" };

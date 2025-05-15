@@ -281,7 +281,7 @@ void IntelProfilerAuditor::handle( const Incident& incident ) {
 
 void IntelProfilerAuditor::before( std::string const& type, std::string const& name, EventContext const& ) {
   // Skip unnecessary event types.
-  if ( !( ( type == "Execute" ) && m_isStarted ) ) return;
+  if ( !( ( type == Gaudi::IAuditor::Execute ) && m_isStarted ) ) return;
 
   if ( isRunning() ) {
     if ( isExcluded( name ) ) {
@@ -322,7 +322,7 @@ void IntelProfilerAuditor::before( std::string const& type, std::string const& n
 void IntelProfilerAuditor::after( std::string const& type, std::string const& name, EventContext const&,
                                   StatusCode const& ) {
   // Skip unnecessary event types
-  if ( !( ( type == "Execute" ) && m_isStarted ) ) return;
+  if ( !( ( type == Gaudi::IAuditor::Execute ) && m_isStarted ) ) return;
 
   if ( ( m_nEvents + 1 ) % m_frames_rate == 0 ) { __itt_frame_end_v3( domain, NULL ); }
 

@@ -40,9 +40,10 @@ void Service::sysInitialize_imp() {
 
   try {
     m_targetState = Gaudi::StateMachine::INITIALIZED;
-    Gaudi::Guards::AuditorGuard guard( this,
+    Gaudi::Guards::AuditorGuard guard( name(),
                                        // check if we want to audit the initialize
-                                       ( m_auditorInitialize ) ? auditorSvc().get() : nullptr, IAuditor::Initialize );
+                                       ( m_auditorInitialize ) ? auditorSvc().get() : nullptr,
+                                       Gaudi::IAuditor::Initialize );
 
     // initialize messaging (except for MessageSvc)
     if ( name() != "MessageSvc" ) {
@@ -127,9 +128,9 @@ StatusCode Service::sysStart() {
 
   try {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
-    Gaudi::Guards::AuditorGuard guard( this,
+    Gaudi::Guards::AuditorGuard guard( name(),
                                        // check if we want to audit the initialize
-                                       ( m_auditorStart ) ? auditorSvc().get() : nullptr, "Start" );
+                                       ( m_auditorStart ) ? auditorSvc().get() : nullptr, Gaudi::IAuditor::Start );
     sc = start();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
@@ -155,9 +156,9 @@ StatusCode Service::sysStop() {
 
   try {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::STOP, m_state );
-    Gaudi::Guards::AuditorGuard guard( this,
+    Gaudi::Guards::AuditorGuard guard( name(),
                                        // check if we want to audit the initialize
-                                       ( m_auditorStop ) ? auditorSvc().get() : nullptr, "Stop" );
+                                       ( m_auditorStop ) ? auditorSvc().get() : nullptr, Gaudi::IAuditor::Stop );
     sc = stop();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
@@ -196,9 +197,10 @@ StatusCode Service::sysFinalize() {
 
   try {
     m_targetState = Gaudi::StateMachine::OFFLINE;
-    Gaudi::Guards::AuditorGuard guard( this,
+    Gaudi::Guards::AuditorGuard guard( name(),
                                        // check if we want to audit the initialize
-                                       ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, "Finalize" );
+                                       ( m_auditorFinalize ) ? auditorSvc().get() : nullptr,
+                                       Gaudi::IAuditor::Finalize );
     sc = finalize();
     if ( sc.isSuccess() ) m_state = m_targetState;
   } catch ( const GaudiException& Exception ) {
@@ -237,9 +239,10 @@ StatusCode Service::sysReinitialize() {
 
   try {
 
-    Gaudi::Guards::AuditorGuard guard( this,
+    Gaudi::Guards::AuditorGuard guard( name(),
                                        // check if we want to audit the initialize
-                                       ( m_auditorReinitialize ) ? auditorSvc().get() : nullptr, "ReInitialize" );
+                                       ( m_auditorReinitialize ) ? auditorSvc().get() : nullptr,
+                                       Gaudi::IAuditor::ReInitialize );
     sc = reinitialize();
     return sc;
   } catch ( const GaudiException& Exception ) {
@@ -270,9 +273,9 @@ StatusCode Service::sysRestart() {
 
   try {
 
-    Gaudi::Guards::AuditorGuard guard( this,
+    Gaudi::Guards::AuditorGuard guard( name(),
                                        // check if we want to audit the initialize
-                                       ( m_auditorRestart ) ? auditorSvc().get() : nullptr, "ReStart" );
+                                       ( m_auditorRestart ) ? auditorSvc().get() : nullptr, Gaudi::IAuditor::ReStart );
     sc = restart();
     return sc;
   } catch ( const GaudiException& Exception ) {

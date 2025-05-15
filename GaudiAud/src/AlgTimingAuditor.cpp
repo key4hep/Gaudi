@@ -39,18 +39,18 @@ struct AlgTimingAuditor final : extends<Gaudi::Auditor, IIncidentListener> {
   }
 
   void before( std::string const& evt, std::string const& alg, EventContext const& ) override {
-    if ( evt == "Initialize" ) {
+    if ( evt == Gaudi::IAuditor::Initialize ) {
       stats( alg ); // this implicitly adds the algorithm to the list of known ones
       ++m_currentDepth;
-    } else if ( evt == "Execute" ) {
+    } else if ( evt == Gaudi::IAuditor::Execute ) {
       stats( alg ).start();
     }
   }
 
   void after( std::string const& evt, std::string const& alg, EventContext const&, const StatusCode& ) override {
-    if ( evt == "Initialize" ) {
+    if ( evt == Gaudi::IAuditor::Initialize ) {
       --m_currentDepth;
-    } else if ( evt == "Execute" ) {
+    } else if ( evt == Gaudi::IAuditor::Execute ) {
       stats( alg ).stop();
     }
   }
