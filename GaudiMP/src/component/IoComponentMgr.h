@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -126,33 +126,23 @@ public:
   // Private data:
   ///////////////////////////////////////////////////////////////////
 private:
-  struct IoComponentEntry {
+  struct IoComponentEntry final {
     std::string                   m_oldfname;
     std::string                   m_oldabspath;
     std::string                   m_newfname;
-    IIoComponentMgr::IoMode::Type m_iomode;
+    IIoComponentMgr::IoMode::Type m_iomode{ IIoComponentMgr::IoMode::INVALID };
 
-    IoComponentEntry()
-        : m_oldfname( "" ), m_oldabspath( "" ), m_newfname( "" ), m_iomode( IIoComponentMgr::IoMode::INVALID ) {}
+    IoComponentEntry() = default;
     IoComponentEntry( const std::string& f, const std::string& p, const IIoComponentMgr::IoMode::Type& t )
-        : m_oldfname( f ), m_oldabspath( p ), m_newfname( "" ), m_iomode( t ) {}
-    IoComponentEntry( const IoComponentEntry& rhs )
-        : m_oldfname( rhs.m_oldfname )
-        , m_oldabspath( rhs.m_oldabspath )
-        , m_newfname( rhs.m_newfname )
-        , m_iomode( rhs.m_iomode ) {}
-    bool operator<( IoComponentEntry const& rhs ) const {
-      if ( m_oldfname == rhs.m_oldfname ) {
-        return ( m_iomode < rhs.m_iomode );
-      } else {
-        return ( m_oldfname < rhs.m_oldfname );
-      }
+        : m_oldfname( f ), m_oldabspath( p ), m_iomode( t ) {}
+
+    friend bool operator<( const IoComponentEntry& lhs, const IoComponentEntry& rhs ) {
+      return std::tie( lhs.m_oldfname, lhs.m_iomode ) < std::tie( rhs.m_oldfname, rhs.m_iomode );
     }
 
     friend std::ostream& operator<<( std::ostream& os, const IoComponentEntry& c ) {
-      os << "old: \"" << c.m_oldfname << "\"  absolute path: \"" << c.m_oldabspath << "\"  new: \"" << c.m_newfname
-         << "\"  m: " << ( ( c.m_iomode == IIoComponentMgr::IoMode::READ ) ? "R" : "W" );
-      return os;
+      return os << "old: \"" << c.m_oldfname << "\"  absolute path: \"" << c.m_oldabspath << "\"  new: \""
+                << c.m_newfname << "\"  m: " << ( ( c.m_iomode == IIoComponentMgr::IoMode::READ ) ? "R" : "W" );
     }
   };
 
