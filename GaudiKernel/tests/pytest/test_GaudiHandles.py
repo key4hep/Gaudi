@@ -144,6 +144,16 @@ def test_array_contains():
     assert AService("foo") in h
 
 
+def test_array_index():
+    h = ServiceHandleArray(["foo", "bar"])
+    assert h.index(ServiceHandle("bar")) == 1
+    assert h.index(AService("bar")) == 1
+    assert h.index("bar") == 1
+
+    with pytest.raises(ValueError):
+        h.index("x")
+
+
 def test_array_iter():
     h = ServiceHandleArray(["foo", "bar"])
     l = [s.getName() for s in h]

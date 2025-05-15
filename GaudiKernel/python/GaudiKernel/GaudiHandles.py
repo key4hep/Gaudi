@@ -228,6 +228,11 @@ class GaudiHandleArray(MutableSequence):
     def __add__(self, other):
         return self.__class__(list(self) + list(other))
 
+    def index(self, value, *args):
+        return list(self._items.keys()).index(
+            value if isinstance(value, str) else value.getName(), *args
+        )
+
     def insert(self, index, value):
         """Only allow inserting compatible types. It accepts a string, a handle or a configurable."""
         if isinstance(value, str):
