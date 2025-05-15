@@ -314,15 +314,6 @@ protected:
   }
 
 private:
-  /** Helper function to set default name and type */
-  void setDefaultTypeAndName() {
-    const std::string& myType = getDefaultType();
-    GaudiHandleBase::setTypeAndName( myType + '/' + myType );
-  }
-
-  /** Helper function to set default type from the class type T */
-  void setDefaultType() { GaudiHandleBase::setTypeAndName( getDefaultType() ); }
-
   /** Load the pointer to the component. Do a retrieve if needed. Throw an exception if
       retrieval fails. */
   void assertObject() const { // not really const, because it may update m_pObject
