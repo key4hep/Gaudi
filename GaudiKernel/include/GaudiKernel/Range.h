@@ -56,7 +56,6 @@ namespace Gaudi {
       template <typename T>
       using _has_container_t = typename T::Container;
       using Container        = Gaudi::cpp17::detected_or_t<CONTAINER, _has_container_t, CONTAINER>;
-      using Iterator         = typename CONTAINER::const_iterator;
     };
     // =========================================================================
   } // namespace details
@@ -90,22 +89,18 @@ namespace Gaudi {
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   2002-07-12
    */
-  template <class CONTAINER, class ITERATOR = typename Gaudi::details::container<CONTAINER>::Iterator>
+  template <class CONTAINER, class ITERATOR = typename CONTAINER::const_iterator>
   class Range_ : public RangeBase_ {
     // FIXME: prepare for removal of ITERATOR argument: check whether the default is _always_ used
-    static_assert( std::is_same_v<ITERATOR, typename Gaudi::details::container<CONTAINER>::Iterator> );
+    static_assert( std::is_same_v<ITERATOR, typename CONTAINER::const_iterator> );
 
   public:
     // ========================================================================
-    typedef std::pair<ITERATOR, ITERATOR> Base;
-    // ========================================================================
-  public:
-    // ========================================================================
     /// type for actual contained iterator
-    typedef typename Gaudi::details::container<CONTAINER>::Container Container;
-    //
-    typedef ITERATOR iterator;
-    typedef ITERATOR const_iterator;
+    using Container      = typename Gaudi::details::container<CONTAINER>::Container;
+    using const_iterator = typename CONTAINER::const_iterator;
+    using iterator       = const_iterator;
+    using Base           = std::pair<iterator, iterator>;
     //
   private:
     //

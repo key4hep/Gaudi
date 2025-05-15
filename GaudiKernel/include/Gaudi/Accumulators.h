@@ -244,7 +244,6 @@ namespace std::chrono {
 
 #include <GaudiKernel/CommonMessaging.h>
 #include <GaudiKernel/MsgStream.h>
-#include <GaudiKernel/detected.h>
 
 // Json serialization for std::chrono::duration
 namespace nlohmann {
@@ -296,14 +295,6 @@ namespace Gaudi::Accumulators {
       return v * v;
     }
   };
-
-  /**
-   * type_traits for checking the presence of fetch_add
-   */
-  template <typename T, typename = int>
-  using has_fetch_add_ = decltype( std::declval<T&>().fetch_add( 0 ) );
-  template <typename T>
-  inline constexpr bool has_fetch_add_v = Gaudi::cpp17::is_detected_v<has_fetch_add_, T>;
 
   /**
    * type_trait for the result type of a floating point operation on the type Arithmetic
@@ -364,7 +355,7 @@ namespace Gaudi::Accumulators {
    */
   template <typename AtomicType, typename Arithmetic>
   void fetch_add( AtomicType& atVar, Arithmetic value ) {
-    if constexpr ( has_fetch_add_v<AtomicType> ) {
+    if constexpr ( requires { atVar.fetch_add( value, std::memory_order_relaxed ); } ) {
       atVar.fetch_add( value, std::memory_order_relaxed );
     } else {
       auto current = BaseValueHandler<Arithmetic, atomicity::full>::getValue( atVar );

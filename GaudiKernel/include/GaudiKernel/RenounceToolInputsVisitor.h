@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -43,8 +43,7 @@ public:
     std::function<void( std::string_view, std::string_view )> m_func;
 
   public:
-    template <typename F,
-              typename = std::enable_if_t<std::is_invocable_r_v<void, F, std::string_view, std::string_view>>>
+    template <std::invocable<std::string_view, std::string_view> F>
     Logger( F func ) : m_func( std::move( func ) ) {}
     void renounce( std::string_view tool_name, std::string_view key ) override { m_func( tool_name, key ); }
   };

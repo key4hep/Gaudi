@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,7 +23,6 @@
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/SmartIF.h>
-#include <GaudiKernel/detected.h>
 #include <boost/thread/tss.hpp>
 
 #include <string>
@@ -33,33 +32,34 @@
  *
  */
 
-#define generate_( method, ret, args )                                                                                 \
-                                                                                                                       \
-  template <typename T>                                                                                                \
-  using _has_##method = decltype( std::declval<const T&>().method args );                                              \
-                                                                                                                       \
-  template <typename T>                                                                                                \
-  using has_##method = Gaudi::cpp17::is_detected<_has_##method, T>;                                                    \
-                                                                                                                       \
-  template <typename Base>                                                                                             \
-  struct add_##method : public Base {                                                                                  \
-    using Base::Base;                                                                                                  \
-    virtual ~add_##method()       = default;                                                                           \
-    virtual ret method args const = 0;                                                                                 \
+namespace implementation_detail {
+
+  template <typename T>
+  concept has_name = requires( T const& t ) { t.name(); };
+
+  template <typename T>
+  concept has_serviceLocator = requires( T const& t ) { t.serviceLocator(); };
+
+  template <typename Base>
+  struct add_name : Base {
+    using Base::Base;
+    virtual ~add_name()                     = default;
+    virtual const std::string& name() const = 0;
   };
 
-namespace implementation_detail {
-  generate_( name, const std::string&, () )
-
-      generate_( serviceLocator, SmartIF<ISvcLocator>&, () )
-}
-#undef generate_
+  template <typename Base>
+  struct add_serviceLocator : Base {
+    using Base::Base;
+    virtual ~add_serviceLocator()                        = default;
+    virtual SmartIF<ISvcLocator>& serviceLocator() const = 0;
+  };
+} // namespace implementation_detail
 
 template <typename Base>
-using add_name =
-    std::conditional_t<implementation_detail::has_name<Base>::value, Base, implementation_detail::add_name<Base>>;
+using add_name = std::conditional_t<implementation_detail::has_name<Base>, Base, implementation_detail::add_name<Base>>;
+
 template <typename Base>
-using add_serviceLocator = std::conditional_t<implementation_detail::has_serviceLocator<Base>::value, Base,
+using add_serviceLocator = std::conditional_t<implementation_detail::has_serviceLocator<Base>, Base,
                                               implementation_detail::add_serviceLocator<Base>>;
 
 template <typename Base>

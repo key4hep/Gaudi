@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "COPYING".                                            *
@@ -80,7 +80,7 @@ namespace Gaudi::Details::Property {
   // falls back fo a requirement of copy-constructibility if it must. So
   // here is the "default" implementation for copy-constructible types...
   //
-  template <typename TYPE, typename Enable = void>
+  template <typename TYPE>
   struct DefaultStringConverter : DefaultStringConverterImpl<TYPE> {
     TYPE fromString( const TYPE& ref_value, const std::string& s ) final override {
       TYPE buffer = ref_value;
@@ -90,8 +90,8 @@ namespace Gaudi::Details::Property {
   };
   // ...and here is the preferred impl for default-constructible types:
   template <class TYPE>
-  struct DefaultStringConverter<TYPE, std::enable_if_t<std::is_default_constructible_v<TYPE>>>
-      : DefaultStringConverterImpl<TYPE> {
+    requires( std::is_default_constructible_v<TYPE> )
+  struct DefaultStringConverter<TYPE> : DefaultStringConverterImpl<TYPE> {
     TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override {
       TYPE buffer{};
       this->fromStringImpl( buffer, s );
