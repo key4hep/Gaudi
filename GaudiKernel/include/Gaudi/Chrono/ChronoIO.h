@@ -10,7 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// empty file, kept for backward compatibility
+#ifndef GAUDI_TEST_PUBLIC_HEADERS_BUILD
+#  warning "deprecated header file, not to be used"
+#endif
 
 #include <chrono>
 #include <iostream>
