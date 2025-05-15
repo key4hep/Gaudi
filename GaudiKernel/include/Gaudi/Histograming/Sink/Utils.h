@@ -654,6 +654,7 @@ namespace Gaudi::Histograming::Sink {
             typename Arithmetic                      = double>
   std::string printProfileHisto1D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
                                    unsigned int stringsWidth = 45 ) {
+    using std::abs;
     // Type to use for internal calculation. Use double to avoid precision issues across different builds.
     using FPType = double;
     // get original histogram from the Entity
@@ -664,7 +665,7 @@ namespace Gaudi::Histograming::Sink {
     const FPType       minValueX  = gaudiAxisX.minValue();
     const FPType       maxValueX  = gaudiAxisX.maxValue();
     const unsigned int nBinsX     = gaudiAxisX.numBins();
-    // Compute fist and second momenta for normal dimenstion
+    // Compute fist and second momenta for normal dimension
     // Compute 1st and 2nd momenta for the profile dimension
     unsigned int              nEntries{ 0 }, nAllEntries{ 0 };
     FPType                    totalSumW{ 0 };
@@ -677,8 +678,9 @@ namespace Gaudi::Histograming::Sink {
       if ( nx > 0 && nx <= nBinsX ) {
         const FPType binXValue = xBinAv( nx );
         nEntries += nent;
-        totalSumW += sumw;
-        auto val = binXValue * sumw;
+        const auto sumw_abs = abs( sumw );
+        totalSumW += sumw_abs;
+        auto val = binXValue * sumw_abs;
         sumX += val;
         val *= binXValue;
         sum2X += val;
@@ -689,16 +691,16 @@ namespace Gaudi::Histograming::Sink {
       }
     }
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
-    if ( nEntries == 0 || !( fabs( totalSumW ) > 0 ) ) { return ""; }
+    if ( nEntries == 0 || !( abs( totalSumW ) > 0 ) ) { return ""; }
     const FPType meanX     = sumX / totalSumW;
     const FPType sigmaX2   = ( sum2X / totalSumW ) - std::pow( meanX, 2 );
     const FPType stddevX   = detail::sqrt_or_zero( sigmaX2 );
     const FPType EX3       = sum3X / totalSumW;
     const FPType A         = sigmaX2 * stddevX;
-    const FPType skewnessX = ( fabs( A ) > 0.0 ? ( EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX ) / A : 0.0 );
+    const FPType skewnessX = ( abs( A ) > 0.0 ? ( EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX ) / A : 0.0 );
     const FPType B         = sigmaX2 * sigmaX2;
     const FPType kurtosisX =
-        ( fabs( B ) > 0.0 && fabs( A ) > 0.0
+        ( abs( B ) > 0.0 && abs( A ) > 0.0
               ? ( sum4X / totalSumW - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) ) ) / B
               : 3.0 );
     // print
@@ -711,6 +713,7 @@ namespace Gaudi::Histograming::Sink {
             typename Arithmetic                      = double>
   std::string printProfileHisto2D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
                                    unsigned int stringsWidth = 45 ) {
+    using std::abs;
     // Type to use for internal calculation. Use double to avoid precision issues across different builds.
     using FPType = double;
     // get original histogram from the Entity
@@ -743,20 +746,21 @@ namespace Gaudi::Histograming::Sink {
           const FPType binXValue = xBinAv( nx );
           const FPType binYValue = yBinAv( ny );
           nEntries += nent;
-          totalSumW += sumw;
-          sumX += binXValue * sumw;
-          sum2X += binXValue * binXValue * sumw;
-          sumY += binYValue * sumw;
-          sum2Y += binYValue * binYValue * sumw;
+          const auto sumw_abs = abs( sumw );
+          totalSumW += sumw_abs;
+          sumX += binXValue * sumw_abs;
+          sum2X += binXValue * binXValue * sumw_abs;
+          sumY += binYValue * sumw_abs;
+          sum2Y += binYValue * binYValue * sumw_abs;
         }
       }
     }
-    const FPType meanX = fabs( totalSumW ) > 0 ? sumX / totalSumW : 0.0;
+    const FPType meanX = abs( totalSumW ) > 0 ? sumX / totalSumW : 0.0;
     const FPType stddevX =
-        fabs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / totalSumW ) ) / totalSumW ) : 0.0;
-    const FPType meanY = fabs( totalSumW ) > 0 ? sumY / totalSumW : 0.0;
+        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / totalSumW ) ) / totalSumW ) : 0.0;
+    const FPType meanY = abs( totalSumW ) > 0 ? sumY / totalSumW : 0.0;
     const FPType stddevY =
-        fabs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / totalSumW ) ) / totalSumW ) : 0.0;
+        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / totalSumW ) ) / totalSumW ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo2DFormatting ), detail::formatName( name, stringsWidth ),
@@ -768,6 +772,7 @@ namespace Gaudi::Histograming::Sink {
             typename Arithmetic                      = double>
   std::string printProfileHisto3D( std::string_view name, Gaudi::Monitoring::Hub::Entity const& ent,
                                    unsigned int stringsWidth = 45 ) {
+    using std::abs;
     // Type to use for internal calculation. Use double to avoid precision issues across different builds.
     using FPType = double;
     // get original histogram from the Entity
@@ -808,26 +813,27 @@ namespace Gaudi::Histograming::Sink {
             const FPType binYValue = yBinAv( ny );
             const FPType binZValue = zBinAv( nz );
             nEntries += nent;
-            totalSumW += sumw;
-            sumX += binXValue * sumw;
-            sum2X += binXValue * binXValue * sumw;
-            sumY += binYValue * sumw;
-            sum2Y += binYValue * binYValue * sumw;
-            sumZ += binZValue * sumw;
-            sum2Z += binZValue * binZValue * sumw;
+            const auto sumw_abs = abs( sumw );
+            totalSumW += sumw_abs;
+            sumX += binXValue * sumw_abs;
+            sum2X += binXValue * binXValue * sumw_abs;
+            sumY += binYValue * sumw_abs;
+            sum2Y += binYValue * binYValue * sumw_abs;
+            sumZ += binZValue * sumw_abs;
+            sum2Z += binZValue * binZValue * sumw_abs;
           }
         }
       }
     }
-    const FPType meanX = fabs( totalSumW ) > 0 ? sumX / totalSumW : 0.0;
+    const FPType meanX = abs( totalSumW ) > 0 ? sumX / totalSumW : 0.0;
     const FPType stddevX =
-        fabs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / totalSumW ) ) / totalSumW ) : 0.0;
-    const FPType meanY = fabs( totalSumW ) > 0 ? sumY / totalSumW : 0.0;
+        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / totalSumW ) ) / totalSumW ) : 0.0;
+    const FPType meanY = abs( totalSumW ) > 0 ? sumY / totalSumW : 0.0;
     const FPType stddevY =
-        fabs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / totalSumW ) ) / totalSumW ) : 0.0;
-    const FPType meanZ = fabs( totalSumW ) > 0 ? sumZ / totalSumW : 0.0;
+        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / totalSumW ) ) / totalSumW ) : 0.0;
+    const FPType meanZ = abs( totalSumW ) > 0 ? sumZ / totalSumW : 0.0;
     const FPType stddevZ =
-        fabs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / totalSumW ) ) / totalSumW ) : 0.0;
+        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / totalSumW ) ) / totalSumW ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo3DFormatting ), detail::formatName( name, stringsWidth ),
@@ -850,7 +856,10 @@ namespace Gaudi::Histograming::Sink {
         m_get = [bins = j.at( "bins" ).get<std::vector<double>>()]( unsigned int nx ) { return bins[nx]; };
       }
     }
-    auto operator[]( const unsigned int n ) const { return m_get( n ); }
+    auto operator[]( const unsigned int n ) const {
+      using std::abs;
+      return abs( m_get( n ) );
+    }
   };
 
   struct ArthTypeAccessor {
@@ -864,6 +873,7 @@ namespace Gaudi::Histograming::Sink {
 
   inline std::string printHistogram1D( std::string_view type, std::string_view name, std::string_view title,
                                        const nlohmann::json& j, unsigned int stringsWidth = 45 ) {
+    using std::abs;
     const auto& jaxis       = j.at( "axis" );
     const auto  minValueX   = jaxis[0].at( "minValue" ).get<double>();
     const auto  maxValueX   = jaxis[0].at( "maxValue" ).get<double>();
@@ -887,16 +897,16 @@ namespace Gaudi::Histograming::Sink {
       sum4X += val;
     }
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
-    if ( !( fabs( nEntries ) > 0.0 ) ) { return ""; }
+    if ( !( abs( nEntries ) > 0.0 ) ) { return ""; }
     const double meanX     = sumX / nEntries;
     const double sigmaX2   = ( sum2X / nEntries ) - std::pow( meanX, 2 );
     const double stddevX   = detail::sqrt_or_zero( sigmaX2 );
     const double EX3       = sum3X / nEntries;
     const double A         = sigmaX2 * stddevX;
-    const double skewnessX = ( fabs( A ) > 0.0 ? ( EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX ) / A : 0.0 );
+    const double skewnessX = ( abs( A ) > 0.0 ? ( EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX ) / A : 0.0 );
     const double B         = sigmaX2 * sigmaX2;
     const double kurtosisX =
-        ( fabs( B ) > 0.0 && fabs( A ) > 0.0
+        ( abs( B ) > 0.0 && abs( A ) > 0.0
               ? ( sum4X / nEntries - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) ) ) / B
               : 3.0 );
     // print
@@ -907,6 +917,7 @@ namespace Gaudi::Histograming::Sink {
 
   inline std::string printHistogram2D( std::string_view type, std::string_view name, std::string_view title,
                                        const nlohmann::json& j, unsigned int stringsWidth = 45 ) {
+    using std::abs;
     const auto& jaxis       = j.at( "axis" );
     const auto  minValueX   = jaxis[0].at( "minValue" ).get<double>();
     const auto  maxValueX   = jaxis[0].at( "maxValue" ).get<double>();
@@ -936,12 +947,12 @@ namespace Gaudi::Histograming::Sink {
         sum2Y += n * binYValue * binYValue;
       }
     }
-    const double meanX = fabs( nEntries ) > 0 ? sumX / nEntries : 0.0;
+    const double meanX = abs( nEntries ) > 0 ? sumX / nEntries : 0.0;
     const double stddevX =
-        fabs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
-    const double meanY = fabs( nEntries ) > 0 ? sumY / nEntries : 0.0;
+        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    const double meanY = abs( nEntries ) > 0 ? sumY / nEntries : 0.0;
     const double stddevY =
-        fabs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo2DFormatting ), detail::formatName( name, stringsWidth ),
@@ -951,6 +962,7 @@ namespace Gaudi::Histograming::Sink {
 
   inline std::string printHistogram3D( std::string_view type, std::string_view name, std::string_view title,
                                        const nlohmann::json& j, unsigned int stringsWidth = 45 ) {
+    using std::abs;
     const auto& jaxis       = j.at( "axis" );
     const auto  minValueX   = jaxis[0].at( "minValue" ).get<double>();
     const auto  maxValueX   = jaxis[0].at( "maxValue" ).get<double>();
@@ -990,15 +1002,15 @@ namespace Gaudi::Histograming::Sink {
         }
       }
     }
-    const double meanX = fabs( nEntries ) > 0 ? sumX / nEntries : 0.0;
+    const double meanX = abs( nEntries ) > 0 ? sumX / nEntries : 0.0;
     const double stddevX =
-        fabs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
-    const double meanY = fabs( nEntries ) > 0 ? sumY / nEntries : 0.0;
+        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
+    const double meanY = abs( nEntries ) > 0 ? sumY / nEntries : 0.0;
     const double stddevY =
-        fabs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
-    const double meanZ = fabs( nEntries ) > 0 ? sumZ / nEntries : 0.0;
+        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
+    const double meanZ = abs( nEntries ) > 0 ? sumZ / nEntries : 0.0;
     const double stddevZ =
-        fabs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
+        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo3DFormatting ), detail::formatName( name, stringsWidth ),
