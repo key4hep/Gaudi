@@ -55,7 +55,7 @@ namespace Gaudi::Histograming::Sink::detail {
   inline std::string formatName( std::string_view name, unsigned int width ) {
     if ( name.size() > width ) {
       const auto preSize  = ( width / 2 ) - 2;
-      const auto postSize = width - preSize - 1;
+      const auto postSize = width - preSize - 3;
       return fmt::format( "{:.{}s}...{:.{}s}", name.substr( 0, preSize ), preSize,
                           name.substr( name.size() - postSize, postSize ), postSize );
     } else {
