@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -40,8 +40,10 @@ def derives_from(derived, base):
     return False
 
 
-def _isCompatible(tp, value):
-    errmsg = "received an instance of %s, but %s expected" % (type(value), tp)
+def _isCompatible(tp, value, name):
+    errmsg = (
+        f"received an instance of {type(value)}, but {tp} expected for property {name}"
+    )
 
     if derives_from(value, "PropertyReference"):
         # TODO: implement type checking for references
@@ -143,7 +145,7 @@ class PropertyProxy(object):
         ):
             try:
                 # check value itself
-                value = _isCompatible(proptype, value)
+                value = _isCompatible(proptype, value, self.descr.__name__)
 
                 # check element in case of list
                 if proptype == list:
@@ -152,7 +154,7 @@ class PropertyProxy(object):
                         if oldvec:
                             tpo = type(oldvec[0])
                             for v in value:
-                                _isCompatible(tpo, v)
+                                _isCompatible(tpo, v, self.descr.__name__)
                     except AttributeError:
                         # value not yet set
                         pass
