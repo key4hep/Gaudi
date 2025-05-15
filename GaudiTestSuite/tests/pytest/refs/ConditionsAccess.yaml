@@ -7,8 +7,7 @@ stdout: |-
   ConditionsUser1      INFO initialize
   ConditionsStore: requested condition another/key
   ConditionsUser2      INFO initialize
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   ConditionsStore: first access to store 0

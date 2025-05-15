@@ -14,8 +14,7 @@ stdout: |-
   Google::CPUProf...   INFO Initialised
   Google::CPUProf...   INFO Starting Auditor for HelloWorld:Initialize
   HelloWorld           INFO initializing....
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   Google::CPUProf...   INFO Starting Auditor for HelloWorld:Execute

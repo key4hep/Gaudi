@@ -7,8 +7,7 @@ stdout: |-
   NTupleSvc            INFO Added stream file:ntuple.root as MyTuples
   RFileCnv             INFO opening Root file "ntuple.root" for writing
   NTupleAlgorithm      INFO Finished booking NTuples
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully

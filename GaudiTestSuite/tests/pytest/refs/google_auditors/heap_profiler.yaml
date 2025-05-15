@@ -14,8 +14,7 @@ stdout: |-
   Google::HeapPro...   INFO Initialised
   Google::HeapPro...   INFO Starting Auditor for HelloWorld:Initialize
   HelloWorld           INFO initializing....
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute

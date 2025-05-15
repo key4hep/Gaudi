@@ -14,26 +14,26 @@ stdout: "JobOptionsSvc        INFO Job options successfully file ColorMsg.opts\n
   \ TimelineSvc\e[m\n\e[95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service:\
   \ found service AlgExecStateSvc\e[m\n\e[92;1mAlgExecStateSvc     DEBUG preInit:\
   \ will add Alg ColorMsgAlg later\e[m\n\e[92;1mColorMsgAlg         DEBUG input handles:\
-  \ 0\e[m\n\e[92;1mColorMsgAlg         DEBUG output handles: 0\e[m\n\e[93;1mEventLoopMgr\
-  \      WARNING Unable to locate service \"EventSelector\" \e[m\n\e[93;1mEventLoopMgr\
-  \      WARNING No events will be processed from external input.\e[m\n\e[96;1mApplicationMgr\
-  \       INFO Application Manager Initialized successfully\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Starting service AppMgrRunable\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Starting service IncidentSvc\e[m\n\e[92;1mServiceManager      DEBUG Starting service\
-  \ EventPersistencySvc\e[m\n\e[92;1mServiceManager      DEBUG Starting service EventDataSvc\e\
-  [m\n\e[92;1mServiceManager      DEBUG Starting service TimelineSvc\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Starting service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Starting service EventLoopMgr\e[m\n\e[96;1mApplicationMgr       INFO Application\
-  \ Manager Started successfully\e[m\n\e[95;4mAlgExecStateSvc   VERBOSE reset(0)\e\
-  [m\n\e[92;1mAlgExecStateSvc     DEBUG resizing state containers to : 1\e[m\n\e[92;1mAlgExecStateSvc\
-  \     DEBUG adding alg ColorMsgAlg to 1 slots\e[m\n\e[95;4mAlgExecStateSvc   VERBOSE\
-  \ dumping state:\n  [slot: 0, incident: Invalid]:\n  + ColorMsgAlg  e: n\n\e[m\n\
-  \e[94;101;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE\e[m\n\e[97;101;1mColorMsgAlg\
-  \         ERROR THIS IS AN ERROR MESSAGE\e[m\n\e[93;1mColorMsgAlg       WARNING\
-  \ THIS IS A WARNING MESSAGE\e[m\n\e[96;1mColorMsgAlg          INFO THIS IS A INFO\
-  \ MESSAGE\e[m\n\e[92;1mColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE\e[m\n\e\
-  [95;4mColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE\e[m\n\e[97;101;1mColorMsgAlg\
-  \         ERROR this is another\e[92;1m error \e[m\e[97;101;1mmessage\e[m\n\e[93;1mColorMsgAlg\
+  \ 0\e[m\n\e[92;1mColorMsgAlg         DEBUG output handles: 0\e[m\n\e[96;1mEventLoopMgr\
+  \         INFO Unable to locate service \"EventSelector\": No events will be processed\
+  \ from external input.\e[m\n\e[96;1mApplicationMgr       INFO Application Manager\
+  \ Initialized successfully\e[m\n\e[92;1mServiceManager      DEBUG Starting service\
+  \ AppMgrRunable\e[m\n\e[92;1mServiceManager      DEBUG Starting service IncidentSvc\e\
+  [m\n\e[92;1mServiceManager      DEBUG Starting service EventPersistencySvc\e[m\n\
+  \e[92;1mServiceManager      DEBUG Starting service EventDataSvc\e[m\n\e[92;1mServiceManager\
+  \      DEBUG Starting service TimelineSvc\e[m\n\e[92;1mServiceManager      DEBUG\
+  \ Starting service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG Starting\
+  \ service EventLoopMgr\e[m\n\e[96;1mApplicationMgr       INFO Application Manager\
+  \ Started successfully\e[m\n\e[95;4mAlgExecStateSvc   VERBOSE reset(0)\e[m\n\e[92;1mAlgExecStateSvc\
+  \     DEBUG resizing state containers to : 1\e[m\n\e[92;1mAlgExecStateSvc     DEBUG\
+  \ adding alg ColorMsgAlg to 1 slots\e[m\n\e[95;4mAlgExecStateSvc   VERBOSE dumping\
+  \ state:\n  [slot: 0, incident: Invalid]:\n  + ColorMsgAlg  e: n\n\e[m\n\e[94;101;1mColorMsgAlg\
+  \         FATAL THIS IS A FATAL MESSAGE\e[m\n\e[97;101;1mColorMsgAlg         ERROR\
+  \ THIS IS AN ERROR MESSAGE\e[m\n\e[93;1mColorMsgAlg       WARNING THIS IS A WARNING\
+  \ MESSAGE\e[m\n\e[96;1mColorMsgAlg          INFO THIS IS A INFO MESSAGE\e[m\n\e\
+  [92;1mColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE\e[m\n\e[95;4mColorMsgAlg\
+  \       VERBOSE THIS IS A VERBOSE MESSAGE\e[m\n\e[97;101;1mColorMsgAlg         ERROR\
+  \ this is another\e[92;1m error \e[m\e[97;101;1mmessage\e[m\n\e[93;1mColorMsgAlg\
   \       WARNING This is another\e[95;1m warning \e[m\e[93;1mmessage\e[m\n\e[96;1mColorMsgAlg\
   \          INFO testing colour\e[m\n\e[96;1mColorMsgAlg          INFO setting....\e\
   [93;1mthis should be in yellow\e[91;1m and red\e[m\n\e[96;1mColorMsgAlg        \

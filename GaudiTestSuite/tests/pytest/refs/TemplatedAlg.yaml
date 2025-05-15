@@ -8,8 +8,7 @@ stdout: |-
   TAlgIS2              INFO Initializing TemplatedAlg instance TAlgIS2 of type TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >
   TAlgDB1              INFO Initializing TemplatedAlg instance TAlgDB1 of type TemplatedAlg<double, bool>
   TAlgDB2              INFO Initializing TemplatedAlg instance TAlgDB2 of type TemplatedAlg<double, bool>
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   ApplicationMgr       INFO Application Manager Stopped successfully

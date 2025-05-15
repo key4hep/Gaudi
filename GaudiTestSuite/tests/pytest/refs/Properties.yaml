@@ -220,7 +220,6 @@ stdout: |-
   EventLoopMgr.OutputLevel: 2
   EventLoopMgr.PrintControlFlowExpression: False
   EventLoopMgr.TopAlg: [ 'PropertyAlg' , 'PropertyProxy' ]
-  EventLoopMgr.Warnings: True
   EventPersistencySvc.AuditFinalize: False
   EventPersistencySvc.AuditInitialize: False
   EventPersistencySvc.AuditReinitialize: False
@@ -377,8 +376,7 @@ stdout: |-
   PropertyProxy        INFO  Set property this.RInt = 1001;
   PropertyProxy        INFO  Got property this.RInt = 1001;
   PropertyProxy        INFO  Got property this.String = This is set by the proxy;
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   PropertyAlg          INFO executing....

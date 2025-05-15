@@ -96,10 +96,7 @@ StatusCode HiveSlimEventLoopMgr::initialize() {
   } else {
     m_evtSelector = 0;
     m_evtContext  = 0;
-    if ( m_warnings ) {
-      warning() << "Unable to locate service \"EventSelector\" " << endmsg;
-      warning() << "No events will be processed from external input." << endmsg;
-    }
+    info() << "\"EventSelector\" disabled: no events will be processed from external input." << endmsg;
   }
 
   setProperty( m_appMgrProperty->getProperty( "HistogramPersistency" ) ).ignore();

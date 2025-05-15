@@ -4,8 +4,7 @@ stdout: |-
   ====================================================================================================================================
   ApplicationMgr       INFO Application Manager Configured successfully
   Callback properly called at INITIALIZE
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   Callback properly called at START
   ApplicationMgr       INFO Application Manager Started successfully

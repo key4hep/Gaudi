@@ -51,11 +51,14 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistRead.opts\
   [m\nTHistSvc            DEBUG Registering TTree title: \"tree title\"  id: \"/read2/trees/stuff/treename\"\
   \  dir: tuple3.rt:/trees/stuff  file: tuple3.rt\e[m\nTHistSvc            DEBUG regHist_i\
   \  THistID: id: /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o: 0x########\
-  \ T: 2 TTree\e[m\nTHistRead            INFO treename: 1000\e[m\n\e[93;1mEventLoopMgr\
-  \      WARNING Unable to locate service \"EventSelector\" \e[m\n\e[93;1mEventLoopMgr\
-  \      WARNING No events will be processed from external input.\e[m\nApplicationMgr\
-  \       INFO Application Manager Initialized successfully\e[m\nApplicationMgr  \
-  \     INFO Application Manager Started successfully\e[m\nTHistSvc            DEBUG\
+  \ T: 2 TTree\e[m\nTHistRead            INFO treename: 1000\e[m\nEventLoopMgr   \
+  \      INFO Unable to locate service \"EventSelector\": No events will be processed\
+  \ from external input.\e[m\nApplicationMgr       INFO Application Manager Initialized\
+  \ successfully\e[m\nApplicationMgr       INFO Application Manager Started successfully\e\
+  [m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc\
+  \            DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc     \
+  \       DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc          \
+  \  DEBUG stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG\
   \ stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream:\
   \ read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1\
   \  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name:\
@@ -88,39 +91,35 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistRead.opts\
   \  DEBUG stream: read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG\
   \ stream: read2  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream:\
   \ read1  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2\
-  \  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name:\
-  \ tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt\
-  \  size: ###\e[m\nTHistSvc            DEBUG stream: read1  name: tuple2.rt  size:\
-  \ ###\e[m\nTHistSvc            DEBUG stream: read2  name: tuple3.rt  size: ###\e\
-  [m\nApplicationMgr       INFO Application Manager Stopped successfully\e[m\nTHistSvc\
-  \            DEBUG dumping THistSvc contents\nm_hlist:  size: 5\n - id: /read1/xxx/1Dgauss\
-  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n\
-  \ - id: /read2/2Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F :: [0x########]\
-  \ 1 {[0x########]}\n - id: /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x########\
-  \ T: 1 TH3F :: [0x########] 1 {[0x########]}\n - id: /read2/profile t: 0 s: 0 M:\
-  \ ######## m: 0 o: 0x######## T: 1 TProfile :: [0x########] 1 {[0x########]}\n -\
-  \ id: /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 2\
-  \ TTree :: [0x########] 1 {[0x########]}\nm_uids: 5\n - /read1/xxx/1Dgauss  [0x########]\n\
-  \ - /read2/2Dgauss  [0x########]\n - /read2/3Dgauss  [0x########]\n - /read2/profile\
-  \  [0x########]\n - /read2/trees/stuff/treename  [0x########]\nm_ids: 5\n - 2Dgauss\
-  \  [0x########]\n - 3Dgauss  [0x########]\n - profile  [0x########]\n - trees/stuff/treename\
-  \  [0x########]\n - xxx/1Dgauss  [0x########]\nm_tobjs: 5\n - 0x######## -> id:\
-  \ /read1/xxx/1Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F\n - 0x########\
-  \ -> id: /read2/2Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F\n - 0x########\
-  \ -> id: /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH3F\n - 0x########\
-  \ -> id: /read2/profile t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TProfile\n\
-  \ - 0x######## -> id: /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o:\
-  \ 0x######## T: 2 TTree\n\e[m\nTHistSvc            DEBUG THistSvc::finalize\e[m\n\
-  THistSvc            DEBUG finalize: id: /read1/xxx/1Dgauss t: 0 s: 0 M: ########\
-  \ m: 0 o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG finalize: id: /read2/2Dgauss\
-  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG\
-  \ finalize: id: /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH3F\e\
-  [m\nTHistSvc            DEBUG finalize: id: /read2/profile t: 0 s: 0 M: ########\
-  \ m: 0 o: 0x######## T: 1 TProfile\e[m\nTHistSvc            DEBUG finalize: id:\
-  \ /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 2 TTree\e\
-  [m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected\
-  \ in ROOT \e[m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List of\
-  \ Files connected in ROOT: \"tuple2.rt\"\e[m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List\
+  \  name: tuple3.rt  size: ###\e[m\nApplicationMgr       INFO Application Manager\
+  \ Stopped successfully\e[m\nTHistSvc            DEBUG dumping THistSvc contents\n\
+  m_hlist:  size: 5\n - id: /read1/xxx/1Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x########\
+  \ T: 1 TH1F :: [0x########] 1 {[0x########]}\n - id: /read2/2Dgauss t: 0 s: 0 M:\
+  \ ######## m: 0 o: 0x######## T: 1 TH2F :: [0x########] 1 {[0x########]}\n - id:\
+  \ /read2/3Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH3F :: [0x########]\
+  \ 1 {[0x########]}\n - id: /read2/profile t: 0 s: 0 M: ######## m: 0 o: 0x########\
+  \ T: 1 TProfile :: [0x########] 1 {[0x########]}\n - id: /read2/trees/stuff/treename\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 2 TTree :: [0x########] 1 {[0x########]}\n\
+  m_uids: 5\n - /read1/xxx/1Dgauss  [0x########]\n - /read2/2Dgauss  [0x########]\n\
+  \ - /read2/3Dgauss  [0x########]\n - /read2/profile  [0x########]\n - /read2/trees/stuff/treename\
+  \  [0x########]\nm_ids: 5\n - 2Dgauss  [0x########]\n - 3Dgauss  [0x########]\n\
+  \ - profile  [0x########]\n - trees/stuff/treename  [0x########]\n - xxx/1Dgauss\
+  \  [0x########]\nm_tobjs: 5\n - 0x######## -> id: /read1/xxx/1Dgauss t: 0 s: 0 M:\
+  \ ######## m: 0 o: 0x######## T: 1 TH1F\n - 0x######## -> id: /read2/2Dgauss t:\
+  \ 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F\n - 0x######## -> id: /read2/3Dgauss\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH3F\n - 0x######## -> id: /read2/profile\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TProfile\n - 0x######## -> id: /read2/trees/stuff/treename\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 2 TTree\n\e[m\nTHistSvc          \
+  \  DEBUG THistSvc::finalize\e[m\nTHistSvc            DEBUG finalize: id: /read1/xxx/1Dgauss\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG\
+  \ finalize: id: /read2/2Dgauss t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F\e\
+  [m\nTHistSvc            DEBUG finalize: id: /read2/3Dgauss t: 0 s: 0 M: ########\
+  \ m: 0 o: 0x######## T: 1 TH3F\e[m\nTHistSvc            DEBUG finalize: id: /read2/profile\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TProfile\e[m\nTHistSvc         \
+  \   DEBUG finalize: id: /read2/trees/stuff/treename t: 0 s: 0 M: ######## m: 0 o:\
+  \ 0x######## T: 2 TTree\e[m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List\
+  \ of Files connected in ROOT \e[m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List\
+  \ of Files connected in ROOT: \"tuple2.rt\"\e[m\nTHistSvc            DEBUG THistSvc::writeObjectsToFile()::List\
   \ of Files connected in ROOT: \"tuple3.rt\"\e[m\nTHistSvc             INFO Listing\
   \ contents of ROOT files: \e[m\nTHistSvc            DEBUG finalizing stream/file\
   \ read1:tuple2.rt\e[m\nTHistSvc             INFO ==> File: tuple2.rt  stream: read1\e\

@@ -60,8 +60,7 @@ stdout: |-
   ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
   ToolSvc.ToolB       DEBUG Initialize
   ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   MyAlg                INFO executing....

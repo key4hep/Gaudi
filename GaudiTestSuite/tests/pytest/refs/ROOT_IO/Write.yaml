@@ -89,8 +89,7 @@ stdout: |-
   FileRecords       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
   FileRecords         DEBUG input handles: 0
   FileRecords         DEBUG output handles: 0
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ServiceManager      DEBUG Starting service FileRecordDataSvc
   ServiceManager      DEBUG Starting service AppMgrRunable

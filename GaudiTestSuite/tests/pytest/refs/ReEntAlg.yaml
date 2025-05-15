@@ -22,8 +22,7 @@ stdout: |-
   AvalancheSchedu...   INFO  o Avalanche generation mode: disabled
   AvalancheSchedu...   INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
   AvalancheSchedu...   INFO  o Scheduling of condition tasks: disabled
-  HiveSlimEventLo...WARNING Unable to locate service "EventSelector"
-  HiveSlimEventLo...WARNING No events will be processed from external input.
+  HiveSlimEventLo...   INFO "EventSelector" disabled: no events will be processed from external input.
   HiveSlimEventLo...   INFO Found 0 events in black list
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
