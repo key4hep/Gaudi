@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -31,6 +31,8 @@ _log = logging.getLogger("GaudiHandles")
 class GaudiHandle(object):
     componentType = "Unspecified"  # must be overridden by derived class
     isPublic = True  # can be overridden by derived class
+
+    __slots__ = ("typeAndName",)
 
     def __init__(self, typeAndName):
         object.__init__(self)
