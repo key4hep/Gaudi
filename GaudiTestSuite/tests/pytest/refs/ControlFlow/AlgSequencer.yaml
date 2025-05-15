@@ -24,8 +24,7 @@ stdout: |-
   OR                   INFO initializing....
   EventLoopMgr         INFO Control Flow Expression:
   EventLoopMgr         INFO seq(seq(seq(seq(ParentAlg('ParentAlg') >> StopperAlg('StopperAlg')) >> seq(seq(seq(Gaudi::TestSuite::Prescaler('Prescaler1') & HelloWorld('HelloWorld')) & Gaudi::TestSuite::EventCounter('Counter1')) >> seq(seq(Gaudi::TestSuite::Prescaler('Prescaler2') & HelloWorld('HelloWorld')) & Gaudi::TestSuite::EventCounter('Counter2')))) >> seq(HelloWorld('AND') & Gaudi::TestSuite::EventCounter('ANDCounter'))) >> seq(HelloWorld('OR') | Gaudi::TestSuite::EventCounter('ORCounter')))
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   ParentAlg            INFO executing....

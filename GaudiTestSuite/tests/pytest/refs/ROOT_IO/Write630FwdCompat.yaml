@@ -32,8 +32,7 @@ stdout: |-
   RootMini             INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO_630fwd.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
   FileRecordPersi...   INFO Added successfully Conversion service RootCnvSvc
   FileRecords          INFO Data source: FileRecordDataSvc/FileRecordDataSvc output: DATAFILE='PFN:ROOTIO_630fwd.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine

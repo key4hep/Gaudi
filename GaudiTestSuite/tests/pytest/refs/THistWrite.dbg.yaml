@@ -79,21 +79,13 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistWrite.opts
   \  s: 1\e[m\nTHistSvc            DEBUG Registering shared TH3F title: \"3D Gaussian\"\
   \  id: \"/rec/gauss3d_shared\"  dir: tuple3.rt:/  file: tuple3.rt\e[m\nTHistSvc\
   \            DEBUG regHist_i  THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: ########\
-  \ m: 0x######## o: 0x######## T: 1 TH3F\e[m\n\e[93;1mEventLoopMgr      WARNING Unable\
-  \ to locate service \"EventSelector\" \e[m\n\e[93;1mEventLoopMgr      WARNING No\
-  \ events will be processed from external input.\e[m\nApplicationMgr       INFO Application\
-  \ Manager Initialized successfully\e[m\nApplicationMgr       INFO Application Manager\
-  \ Started successfully\e[m\nRndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine\e\
-  [m\nRndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3\e[m\nRndmGenSvc    \
-  \       INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>\e[m\nTHistSvc\
-  \            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t:\
-  \ 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH1F\e[m\nTHistSvc       \
-  \     DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: ########\
-  \ m: 0x######## o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG getSharedHist:\
-  \ found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: ######## m: 0x######## o:\
-  \ 0x######## T: 1 TH3F\e[m\nTHistSvc            DEBUG stream: rec  name: tuple3.rt\
-  \  size: ###\e[m\nTHistSvc            DEBUG stream: upd  name: tuple2.rt  size:\
-  \ ###\e[m\nTHistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared\
+  \ m: 0x######## o: 0x######## T: 1 TH3F\e[m\nEventLoopMgr         INFO Unable to\
+  \ locate service \"EventSelector\": No events will be processed from external input.\e\
+  [m\nApplicationMgr       INFO Application Manager Initialized successfully\e[m\n\
+  ApplicationMgr       INFO Application Manager Started successfully\e[m\nRndmGenSvc.Engine\
+  \    INFO Generator engine type:CLHEP::RanluxEngine\e[m\nRndmGenSvc.Engine    INFO\
+  \ Current Seed:1234567 Luxury:3\e[m\nRndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>\e\
+  [m\nTHistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared\
   \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH1F\e[m\nTHistSvc    \
   \        DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M:\
   \ ######## m: 0x######## o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG\
@@ -108,6 +100,13 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistWrite.opts
   \ ######## m: 0x######## o: 0x######## T: 1 TH3F\e[m\nTHistSvc            DEBUG\
   \ stream: rec  name: tuple3.rt  size: ###\e[m\nTHistSvc            DEBUG stream:\
   \ upd  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG getSharedHist:\
+  \ found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: ######## m: 0x########\
+  \ o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID:\
+  \ id: /rec/gauss2d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1\
+  \ TH2F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared\
+  \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH3F\e[m\nTHistSvc    \
+  \        DEBUG stream: rec  name: tuple3.rt  size: ###\e[m\nTHistSvc           \
+  \ DEBUG stream: upd  name: tuple2.rt  size: ###\e[m\nTHistSvc            DEBUG getSharedHist:\
   \ found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: ######## m: 0x########\
   \ o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID:\
   \ id: /rec/gauss2d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1\

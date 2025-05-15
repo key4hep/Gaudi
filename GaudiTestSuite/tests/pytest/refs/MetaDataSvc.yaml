@@ -6,8 +6,7 @@ stdout: |-
   NTupleSvc            INFO Added stream file:ntuple_with_metadata.root as MyTuples
   RFileCnv             INFO opening Root file "ntuple_with_metadata.root" for writing
   NTupleAlgorithm      INFO Finished booking NTuples
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
   ApplicationMgr       INFO Application Manager Initialized successfully
   Gaudi::MetaDataSvc  DEBUG started
@@ -103,7 +102,6 @@ stdout: |-
   EventLoopMgr.OutputLevel:3
   EventLoopMgr.PrintControlFlowExpression:False
   EventLoopMgr.TopAlg:[ 'NTupleAlgorithm' ]
-  EventLoopMgr.Warnings:True
   EventPersistencySvc.AuditFinalize:False
   EventPersistencySvc.AuditInitialize:False
   EventPersistencySvc.AuditReinitialize:False

@@ -83,10 +83,8 @@ StatusCode EventLoopMgr::initialize() {
   } else {
     m_evtSelector = nullptr;
     m_evtContext  = nullptr;
-    if ( m_warnings ) {
-      warning() << "Unable to locate service \"EventSelector\" " << endmsg;
-      warning() << "No events will be processed from external input." << endmsg;
-    }
+    info() << "Unable to locate service \"EventSelector\": "
+           << "No events will be processed from external input." << endmsg;
   }
 
   setProperty( m_appMgrProperty->getProperty( "HistogramPersistency" ) ).ignore();

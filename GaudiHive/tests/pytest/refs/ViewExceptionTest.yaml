@@ -35,8 +35,8 @@ stdout: "{'A1': {'Cardinality': 1,\n        'OutputLevel': 3,\n        'baseView
   \  INFO Task scheduling settings:\nAvalancheSchedu...   INFO  o Avalanche generation\
   \ mode: disabled\nAvalancheSchedu...   INFO  o Preemptive scheduling of CPU-blocking\
   \ tasks: disabled\nAvalancheSchedu...   INFO  o Scheduling of condition tasks: disabled\n\
-  HiveSlimEventLo...WARNING Unable to locate service \"EventSelector\"\nHiveSlimEventLo...WARNING\
-  \ No events will be processed from external input.\nHiveSlimEventLo...   INFO Found\
+  HiveSlimEventLo...   INFO \"EventSelector\" disabled: no events will be processed from external input.\n\
+  HiveSlimEventLo...   INFO Found\
   \ 0 events in black list\nApplicationMgr       INFO Application Manager Initialized\
   \ successfully\nApplicationMgr       INFO Application Manager Started successfully\n\
   HiveSlimEventLo...   INFO Starting loop on events\nA1                   INFO Running\

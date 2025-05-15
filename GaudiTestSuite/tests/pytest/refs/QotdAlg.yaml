@@ -17,8 +17,7 @@ stdout: |-
                Qotd1   INFO Initializing Qotd1...
                Qotd2   INFO Initializing Qotd2...
                Qotd3   INFO Initializing Qotd3...
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
                Qotd1   INFO Event #0

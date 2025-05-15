@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -48,7 +48,6 @@ protected:
 
   Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", {}, "name of the Hist Pers type" };
   Gaudi::Property<std::string> m_evtsel{ this, "EvtSel", {}, "event selector" };
-  Gaudi::Property<bool>        m_warnings{ this, "Warnings", true, "set to false to suppress warning messages" };
 
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc> m_evtDataMgrSvc = nullptr;

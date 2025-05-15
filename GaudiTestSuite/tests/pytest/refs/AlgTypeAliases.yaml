@@ -5,8 +5,7 @@ stdout: |-
   ApplicationMgr       INFO Application Manager Configured successfully
   HW1                  INFO initializing....
   HW2                  INFO initializing....
-  EventLoopMgr      WARNING Unable to locate service "EventSelector"
-  EventLoopMgr      WARNING No events will be processed from external input.
+  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
   HW1                  INFO executing....
