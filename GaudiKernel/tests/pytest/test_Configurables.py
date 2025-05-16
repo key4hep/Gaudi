@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,9 +10,13 @@
 #####################################################################################
 import pytest
 
-from GaudiKernel.Configurable import Configurable, ConfigurableAlgorithm
+from GaudiKernel.Configurable import (
+    Configurable,
+    ConfigurableAlgorithm,
+    ConfigurableAlgTool,
+)
 from GaudiKernel.DataHandle import DataHandle
-from GaudiKernel.GaudiHandles import PublicToolHandleArray
+from GaudiKernel.GaudiHandles import PrivateToolHandle, PublicToolHandleArray
 
 
 # Prepare dummy configurables
@@ -25,12 +29,25 @@ class MyAlg(ConfigurableAlgorithm):
         "List": [],
         "Set": set(),
         "ToolHandleArray": PublicToolHandleArray(),
+        "PrivateTool": PrivateToolHandle(),
     }
 
     def getDlls(self):
         return "Dummy"
 
     def getType(self):
+        return "MyAlg"
+
+
+class MyTool(ConfigurableAlgTool):
+    __slots__ = {
+        "PrivateTool": PrivateToolHandle(),
+    }
+
+    def getDlls(self):
+        return "Dummy"
+
+    def getTool(self):
         return "MyAlg"
 
 
@@ -131,3 +148,15 @@ def test_collection_defaults():
 
     a.Set.add(1)
     assert a.Set == {1}
+
+
+def test_nested_tool():
+    t2 = MyTool("t2")
+    t1 = MyTool("t1")
+    t1.PrivateTool = t2
+    a = MyAlg()
+    a.PrivateTool = t1
+    assert Configurable.allConfigurables["MyAlg"] == a
+    assert Configurable.allConfigurables["MyAlg.t1"] == a.PrivateTool
+    assert Configurable.allConfigurables["MyAlg.t1.t2"] == a.PrivateTool.PrivateTool
+    return

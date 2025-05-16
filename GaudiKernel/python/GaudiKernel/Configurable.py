@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -1285,15 +1285,18 @@ class ConfigurableAlgTool(Configurable):
         #       print "Calling stack:"
         #       import traceback
         #       traceback.print_stack()
+
+        # Find name of this instance.
+        name = self.getName()
+        instance = name[name.rfind(".") + 1 :]
+
         # propagate parent to AlgTools in children
         for c in self.getAllChildren():
             if isinstance(c, ConfigurableAlgTool):
-                c.setParent(parentName)
+                c.setParent(parentName + "." + instance)
 
         # update my own parent
-        name = self.getName()
-        name = name[name.rfind(".") + 1 :]  # Name of the instance
-        self._jobOptName = self._name = parentName + "." + name
+        self._jobOptName = self._name = parentName + "." + instance
 
     def getParent(self):
         dot = self._jobOptName.rfind(".")

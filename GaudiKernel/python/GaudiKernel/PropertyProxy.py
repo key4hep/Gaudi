@@ -79,6 +79,13 @@ def _isCompatible(tp, value, name):
     return dummy  # in case of e.g. classes with __int__, __iter__, etc. implemented
 
 
+def _registerConfigurables(allConfigurables, c):
+    allConfigurables[c.name()] = c
+    for cc in c.getAllChildren():
+        _registerConfigurables(allConfigurables, cc)
+    return
+
+
 class PropertyProxy(object):
     def __init__(self, descr, docString=None, default=None):
         self.history = {}
@@ -360,8 +367,9 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
             else:
                 # make a copy of the configurable
                 value = obj.copyChildAndSetParent(value, obj.getJobOptName())
-                # ensure that the new object is in allConfigurables
-                obj.allConfigurables[value.name()] = value
+                # ensure that the new object (as well as all its children)
+                # are in allConfigurables
+                _registerConfigurables(obj.allConfigurables, value)
                 return value
         else:
             raise TypeError(
