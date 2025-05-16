@@ -8,21 +8,21 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <GaudiKernel/EventContext.h>
-#include <GaudiKernel/ITimelineSvc.h>
-#include <GaudiKernel/TimelineEvent.h>
 
+#include <chrono>
+#include <pthread.h>
 #include <string>
 
-ITimelineSvc::TimelineRecorder::TimelineRecorder( TimelineEvent& record, std::string alg, const EventContext& ctx )
-    : m_record{ &record } {
-  m_record->thread    = pthread_self();
-  m_record->slot      = ctx.slot();
-  m_record->event     = ctx.evt();
-  m_record->algorithm = std::move( alg );
-  m_record->start     = TimelineEvent::Clock::now();
-}
+struct TimelineEvent final {
+  using Clock      = std::chrono::high_resolution_clock;
+  using time_point = Clock::time_point;
 
-ITimelineSvc::TimelineRecorder::~TimelineRecorder() {
-  if ( m_record ) m_record->end = TimelineEvent::Clock::now();
-}
+  pthread_t thread;
+  size_t    slot;
+  size_t    event;
+
+  std::string algorithm;
+
+  time_point start;
+  time_point end;
+};
