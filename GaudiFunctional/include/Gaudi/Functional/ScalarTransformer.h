@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,7 +28,7 @@ namespace Gaudi::Functional {
 
     /// The main operator
     Out operator()( const In&... in ) const override final {
-      const auto inrange = details::zip::range( in... );
+      const auto inrange = std::ranges::zip_view( in... );
       Out        out;
       out.reserve( inrange.size() );
       auto& scalar = scalarOp();
@@ -58,7 +58,7 @@ namespace Gaudi::Functional {
 
     /// The main operator
     std::tuple<Out...> operator()( const In&... in ) const override final {
-      const auto         inrange = details::zip::range( in... );
+      const auto         inrange = std::ranges::zip_view( in... );
       std::tuple<Out...> out;
       std::apply( [sz = inrange.size()]( auto&&... o ) { ( o.reserve( sz ), ... ); }, out );
       auto& scalar = scalarOp();
