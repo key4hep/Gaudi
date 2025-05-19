@@ -18,17 +18,22 @@
 #include <GaudiKernel/ThreadLocalContext.h>
 #include <GaudiKernel/detected.h>
 #include <cassert>
-#include <range/v3/version.hpp>
-#include <range/v3/view/const.hpp>
-#include <range/v3/view/zip.hpp>
 #include <sstream>
 #include <type_traits>
 
+#if defined( __cpp_lib_ranges_zip ) && defined( __cpp_lib_ranges_as_const )
+#  define GAUDI_FUNCTIONAL_USES_STD_RANGES 1
+#  include <ranges>
+#else
+#  include <range/v3/version.hpp>
+#  include <range/v3/view/const.hpp>
+#  include <range/v3/view/zip.hpp>
 // upstream has renamed namespace ranges::view ranges::views
-#if RANGE_V3_VERSION < 900
+#  if RANGE_V3_VERSION < 900
 namespace ranges::views {
   using namespace ranges::view;
 }
+#  endif
 #endif
 
 #if defined( __clang__ ) && ( __clang_major__ < 11 ) || defined( __APPLE__ ) && ( __clang_major__ < 12 )
@@ -98,7 +103,11 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
+#if defined( GAUDI_FUNCTIONAL_USES_STD_RANGES )
+      return std::ranges::zip_view( std::forward<Args>( args )... );
+#else
       return ranges::views::zip( std::forward<Args>( args )... );
+#endif
     }
 
     /// Zips multiple containers together to form a single const range
@@ -107,7 +116,11 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
+#if defined( GAUDI_FUNCTIONAL_USES_STD_RANGES )
+      return std::ranges::as_const_view( std::ranges::zip_view( std::forward<Args>( args )... ) );
+#else
       return ranges::views::const_( ranges::views::zip( std::forward<Args>( args )... ) );
+#endif
     }
   } // namespace zip
 
