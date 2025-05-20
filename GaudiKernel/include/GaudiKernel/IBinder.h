@@ -18,30 +18,21 @@ class EventContext;
 
 namespace Gaudi::Interface::Bind {
 
-  // see https://godbolt.org/z/KPMYd1sbr
   template <typename IFace>
   class Box final {
-    const IFace* m_ptr            = nullptr;
-    void ( *m_destruct )( void* ) = nullptr;
-    std::aligned_storage_t<64 - 2 * sizeof( void* )> m_storage; // local storage for bound arguments... fit into a
-                                                                // cacheline
+    const IFace* m_ptr   = nullptr;
+    bool         m_owned = false;
+
   public:
     // identity binding: no actual binding is required...
     Box( IFace const* ptr ) : m_ptr{ ptr } { assert( m_ptr != nullptr ); }
     // bind the arguments...
     template <std::derived_from<IFace> Ret, typename... Args>
-    Box( std::in_place_type_t<Ret>, Args&&... args ) {
-      if constexpr ( sizeof( Ret ) <= sizeof( m_storage ) ) {
-        m_ptr      = new ( &m_storage ) Ret{ std::forward<Args>( args )... };
-        m_destruct = []( void* ptr ) { static_cast<Ret*>( ptr )->~Ret(); };
-      } else {
-        m_ptr      = new Ret{ std::forward<Args>( args )... };
-        m_destruct = []( void* ptr ) { delete static_cast<Ret*>( ptr ); };
-      }
-    }
+    Box( std::in_place_type_t<Ret>, Args&&... args )
+        : m_ptr{ new Ret{ std::forward<Args>( args )... } }, m_owned{ true } {}
 
     ~Box() {
-      if ( m_destruct ) ( *m_destruct )( const_cast<IFace*>( m_ptr ) );
+      if ( m_owned ) delete m_ptr;
     }
     Box( const Box& )            = delete;
     Box& operator=( const Box& ) = delete;
