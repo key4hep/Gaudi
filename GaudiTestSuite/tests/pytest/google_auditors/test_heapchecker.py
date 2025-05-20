@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -22,7 +22,7 @@ from GaudiTesting.preprocessors import LineSkipper, RegexpReplacer, normalizeTes
 )
 # FIXME We get a segfault in tcmalloc when we use gperftools 2.15 from LCG 106
 @pytest.mark.skipif(
-    os.environ.get("LCG_VERSION") == "106",
+    os.environ.get("LCG_VERSION", "").startswith("106"),
     reason="Unsupported LCG version (gperftools 2.15)",
 )
 class TestHeapChecker(GaudiExeTest):
