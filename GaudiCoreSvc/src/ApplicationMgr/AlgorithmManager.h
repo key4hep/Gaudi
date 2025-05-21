@@ -65,7 +65,7 @@ public:
   /// implementation of IAlgManager::existsAlgorithm
   bool existsAlgorithm( std::string_view name ) const override;
   /// implementation of IAlgManager::getAlgorithms
-  const std::vector<IAlgorithm*>& getAlgorithms() const override;
+  std::vector<IAlgorithm*> getAlgorithms() const override;
 
   /// Initialization (from CONFIGURED to INITIALIZED).
   StatusCode initialize() override;
@@ -99,9 +99,6 @@ private:
   std::vector<AlgorithmItem>                                     m_algs; ///< algorithms maintained by AlgorithmManager
   std::unordered_multimap<std::string_view, SmartIF<IAlgorithm>> m_algsMap; ///< algorithms maintained by
                                                                             ///< AlgorithmManager
-
-  /// List of pointers to the know services used to implement getAlgorithms()
-  mutable std::vector<IAlgorithm*> m_listOfPtrs;
 
   AlgTypeAliasesMap m_algTypeAliases;
 };

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -69,7 +69,7 @@ public:
   virtual bool existsAlgorithm( std::string_view name // Algorithm name to be searched
   ) const = 0;
   /// Return the list of Algorithms
-  virtual const std::vector<IAlgorithm*>& getAlgorithms() const = 0;
+  virtual std::vector<IAlgorithm*> getAlgorithms() const = 0;
 
   /// Returns a smart pointer to a service.
   virtual SmartIF<IAlgorithm>& algorithm( const Gaudi::Utils::TypeNameString& typeName,
