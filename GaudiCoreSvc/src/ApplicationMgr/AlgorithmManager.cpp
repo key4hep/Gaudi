@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -51,8 +51,8 @@ StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
 }
 
 // createService
-StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string algname, IAlgorithm*& algorithm,
-                                              bool managed, bool checkIfExists ) {
+StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const std::string& algname,
+                                              IAlgorithm*& algorithm, bool managed, bool checkIfExists ) {
   // Check is the algorithm is already existing
   if ( checkIfExists ) {
     if ( existsAlgorithm( algname ) ) {

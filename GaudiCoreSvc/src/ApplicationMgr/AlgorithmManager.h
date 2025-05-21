@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -59,8 +59,8 @@ public:
   /// implementation of IAlgManager::removeAlgorithm
   StatusCode removeAlgorithm( IAlgorithm* alg ) override;
   /// implementation of IAlgManager::createAlgorithm
-  StatusCode createAlgorithm( std::string algtype, std::string algname, IAlgorithm*& algorithm, bool managed = false,
-                              bool checkIfExists = true ) override;
+  StatusCode createAlgorithm( const std::string& algtype, const std::string& algname, IAlgorithm*& algorithm,
+                              bool managed = false, bool checkIfExists = true ) override;
 
   /// implementation of IAlgManager::existsAlgorithm
   bool existsAlgorithm( std::string_view name ) const override;
