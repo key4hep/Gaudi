@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_CONVERTER_H
-#define GAUDIKERNEL_CONVERTER_H
+#pragma once
 
 // generic experiment headers
 #include <GaudiKernel/ConversionSvc.h>
@@ -141,5 +140,3 @@ inline std::ostream& operator<<( std::ostream& s, const ConverterID& id ) {
 
 // Macro to declare component factories
 #define DECLARE_CONVERTER( x ) DECLARE_COMPONENT_WITH_ID( x, ConverterID( x::storageType(), x::classID() ) )
-
-#endif // GAUDIKERNEL_CONVERTER_H

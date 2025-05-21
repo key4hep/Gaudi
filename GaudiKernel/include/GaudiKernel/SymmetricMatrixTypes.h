@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@
  */
 //---------------------------------------------------------------------------------
 
-#ifndef GAUDIKERNEL_SYMMETRICMATRIXTYPES_H
-#define GAUDIKERNEL_SYMMETRICMATRIXTYPES_H 1
+#pragma once
 
 // Include files
 #include <Math/SMatrix.h>
@@ -72,4 +71,3 @@ namespace Gaudi {
   typedef ROOT::Math::SMatrix<float, 9, 9, ROOT::Math::MatRepSym<float, 9>> SymMatrix9x9F; ///< Symmetrix 9x9 matrix
                                                                                            ///(float)
 } // namespace Gaudi
-#endif // KERNEL_SYMMETRICMATRIXTYPES_H

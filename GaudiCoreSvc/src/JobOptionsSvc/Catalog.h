@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef JOBOPTIONSVC_CATALOG_H_
-#define JOBOPTIONSVC_CATALOG_H_
+#pragma once
 // ============================================================================
 // STD & STL:
 // ============================================================================
@@ -75,4 +74,3 @@ inline bool Gaudi::Parsers::Catalog::Add( std::string client, std::string proper
 }
 
 // ============================================================================
-#endif // JOBOPTIONSVC_CATALOG_H_

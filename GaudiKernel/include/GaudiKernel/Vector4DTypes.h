@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@
  */
 //---------------------------------------------------------------------------------
 
-#ifndef GAUDIKERNEL_VECTOR4DTYPES_H
-#define GAUDIKERNEL_VECTOR4DTYPES_H 1
+#pragma once
 
 // Include files
 #include <Math/Vector4D.h>
@@ -42,4 +41,3 @@ namespace Gaudi {
   typedef ROOT::Math::XYZTVectorF     LorentzVectorF;  ///< Cartesian 4 Vector (float)
   typedef ROOT::Math::PtEtaPhiEVector PtEtaPhiEVector; ///< Polar 4 Vector
 } // namespace Gaudi
-#endif // EVENT_VECTOR4DTYPES_H

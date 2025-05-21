@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IDATAMANAGERSVC_H
-#define GAUDIKERNEL_IDATAMANAGERSVC_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/ClassID.h>
@@ -256,5 +255,3 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
   */
   virtual StatusCode unregisterAddress( IRegistry* pParent, std::string_view objPath ) = 0;
 };
-
-#endif // GAUDIKERNEL_IDATAMANAGERSVC_H

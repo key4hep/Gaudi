@@ -44,8 +44,7 @@
 //          and pressure; also added Gas threshold.
 // 28.04.06 Imported from CLHEP into GaudiKernel -- HD
 
-#ifndef GAUDI_PHYSICAL_CONSTANTS_H
-#define GAUDI_PHYSICAL_CONSTANTS_H
+#pragma once
 
 #include <GaudiKernel/SystemOfUnits.h>
 
@@ -119,5 +118,3 @@ namespace Gaudi {
 
   } // namespace Units
 } // namespace Gaudi
-
-#endif /* GAUDI_PHYSICAL_CONSTANTS_H */

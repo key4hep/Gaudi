@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IALGORITHM_H
-#define GAUDIKERNEL_IALGORITHM_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/INamedInterface.h>
@@ -145,5 +144,3 @@ public:
 
   virtual bool isReEntrant() const = 0;
 };
-
-#endif // GAUDIKERNEL_IALGORITHM_H

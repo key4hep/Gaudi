@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,8 +22,7 @@
 // | 21/07/99| Initial version                              | MF
 // +---------+----------------------------------------------+---------
 //====================================================================
-#ifndef CONTAINERFACTORIESDEFS_H
-#define CONTAINERFACTORIESDEFS_H 1
+#pragma once
 
 #define _ImplementContainerDictionaryFactory( x )
 #define _ImplementDataObjectDictionaryFactory( x )
@@ -44,5 +43,3 @@
   DLL_DECL_OBJECTFACTORY( x )                                                                                          \
   DLL_DECL_OBJECTFACTORY( x##Vector )                                                                                  \
   DLL_DECL_OBJECTFACTORY( x##List )
-
-#endif // CONTAINERFACTORIESDEFS_H

@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IINTERFACE_H
-#define GAUDIKERNEL_IINTERFACE_H
+#pragma once
 
 // Include files
 #include <Gaudi/Concepts.h>
@@ -376,5 +375,3 @@ inline DEST** pp_cast( SRC** ptr ) {
 #include <GaudiKernel/extend_interfaces.h>
 #include <GaudiKernel/extends.h>
 #include <GaudiKernel/implements.h>
-
-#endif // GAUDIKERNEL_IINTERFACE_H

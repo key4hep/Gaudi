@@ -6,8 +6,7 @@
 // copied from https://github.com/akrzemi1/explicit/tree/master/include/ak_toolkit
 // last commit: bd572fe05a700cc6766b3d09f8916c9975ccbb45
 
-#ifndef GAUDIKERNEL_TAGGEDBOOL_H
-#define GAUDIKERNEL_TAGGEDBOOL_H
+#pragma once
 
 namespace Gaudi {
   namespace tagged_bool_ns { // artificial namespace to prevent ADL lookups in namespace Gaudi
@@ -38,5 +37,3 @@ namespace Gaudi {
 
   using tagged_bool_ns::tagged_bool; // with this tagged_bool is in namespace xplicit but with disabled ADL
 } // namespace Gaudi
-
-#endif

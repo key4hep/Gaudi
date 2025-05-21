@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef EVENTSLOT_H_
-#define EVENTSLOT_H_
+#pragma once
 
 // Framework includes
 #include "AlgsExecutionStates.h"
@@ -99,5 +98,3 @@ struct EventSlot {
   /// Actual sub-slot instances
   std::vector<EventSlot> allSubSlots;
 };
-
-#endif /* EVENTSLOT_H_ */

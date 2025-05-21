@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,8 +15,7 @@
 //	Package    : Gaudi/RndmGenSvc ( The LHCb Offline System)
 //	Author     : M.Frank
 //====================================================================
-#ifndef GAUDI_RNDMGENSVC_RNDMENGINE_H
-#define GAUDI_RNDMGENSVC_RNDMENGINE_H 1
+#pragma once
 
 // STL include files
 #include <vector>
@@ -75,5 +74,3 @@ public:
   */
   StreamBuffer& serialize( StreamBuffer& str ) const override;
 };
-
-#endif // GAUDI_RNDMGENSVC_RNDMENGINE_H

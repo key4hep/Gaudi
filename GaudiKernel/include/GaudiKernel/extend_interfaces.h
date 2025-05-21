@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_EXTEND_INTERFACES_H
-#define GAUDIKERNEL_EXTEND_INTERFACES_H
+#pragma once
 
 template <typename... Interfaces>
 struct extend_interfaces;
@@ -38,5 +37,3 @@ template <typename I1, typename I2, typename I3>
 using extend_interfaces3 = extend_interfaces<I1, I2, I3>;
 template <typename I1, typename I2, typename I3, typename I4>
 using extend_interfaces4 = extend_interfaces<I1, I2, I3, I4>;
-
-#endif

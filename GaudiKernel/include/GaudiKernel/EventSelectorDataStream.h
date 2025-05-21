@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@
 //	Changes    : R. Lambert 2009-09-04
 //
 //====================================================================
-#ifndef GAUDIKERNEL_EVENTSELECTORDATASTREAM_H
-#define GAUDIKERNEL_EVENTSELECTORDATASTREAM_H 1
+#pragma once
 
 // Include files
 #include <Gaudi/Property.h>
@@ -118,5 +117,3 @@ public:
 GAUDI_API MsgStream& operator<<( MsgStream& s, const EventSelectorDataStream& obj );
 /// Output friend for standard I/O
 GAUDI_API std::ostream& operator<<( std::ostream& s, const EventSelectorDataStream& obj );
-
-#endif // GAUDIKERNEL_EVENTSELECTORDATASTREAM_H

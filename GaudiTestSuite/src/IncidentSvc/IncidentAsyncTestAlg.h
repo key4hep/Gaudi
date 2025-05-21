@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIEXAMPLES_INCIDENTASYNCTESTALG_H_
-#define GAUDIEXAMPLES_INCIDENTASYNCTESTALG_H_
+#pragma once
 
 #include <GaudiKernel/Algorithm.h>
 #include <GaudiKernel/DataObjectHandle.h>
@@ -39,5 +38,3 @@ private:
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputObjHandles;
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputObjHandles;
 };
-
-#endif /*GAUDIEXAMPLES_INCIDENTREGISTRYTESTALG_H_*/

@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_TOOLHANDLE_H
-#define GAUDIKERNEL_TOOLHANDLE_H
+#pragma once
 
 // Includes
 #include <GaudiKernel/GaudiHandle.h>
@@ -478,5 +477,3 @@ public:
     p->template setOwnerType<OWNER>();
   }
 };
-
-#endif // ! GAUDIKERNEL_TOOLHANDLE_H

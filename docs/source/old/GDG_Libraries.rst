@@ -114,9 +114,7 @@ Interfaces in Gaudi
         :name: lstg-exabstrint
         :caption: Example of an abstract interface (IService)
 
-        // $Header: $
-        #ifndef GAUDIKERNEL_ISERVICE_H
-        #define GAUDIKERNEL_ISERVICE_H
+        #pragma once
 
         // Include files
         #include "GaudiKernel/IInterface.h"

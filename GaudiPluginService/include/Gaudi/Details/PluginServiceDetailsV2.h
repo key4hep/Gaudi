@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef _GAUDI_PLUGIN_SERVICE_DETAILS_V2_H_
-#define _GAUDI_PLUGIN_SERVICE_DETAILS_V2_H_
+#pragma once
 
 /// @author Marco Clemencic <marco.clemencic@cern.ch>
 
@@ -235,5 +234,3 @@ namespace Gaudi {
 #define _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME( serial )                                                          \
   _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME_TOKEN( serial )
 #define _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME( __LINE__ )
-
-#endif //_GAUDI_PLUGIN_SERVICE_DETAILS_H_

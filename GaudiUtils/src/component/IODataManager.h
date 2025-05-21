@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIUTILS_IODATAMANAGER_H
-#define GAUDIUTILS_IODATAMANAGER_H
+#pragma once
 
 // C++ include files
 #include <map>
@@ -101,4 +100,3 @@ namespace Gaudi {
     long long int seek( Connection* ioDesc, long long int where, int origin ) override;
   };
 } // End namespace Gaudi
-#endif // GAUDIUTILS_IODATAMANAGER_H

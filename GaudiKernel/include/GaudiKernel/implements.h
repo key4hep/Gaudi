@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IMPLEMENTS_H
-#define GAUDIKERNEL_IMPLEMENTS_H
+#pragma once
 
 #include <GaudiKernel/IInterface.h>
 #include <atomic>
@@ -82,5 +81,3 @@ template <typename I1, typename I2, typename I3>
 using implements3 = implements<I1, I2, I3>;
 template <typename I1, typename I2, typename I3, typename I4>
 using implements4 = implements<I1, I2, I3, I4>;
-
-#endif /* GAUDIKERNEL_IMPLEMENTS_H_ */

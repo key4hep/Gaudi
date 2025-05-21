@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIHIVE_DATAOBJECTHANDLEBASE_H
-#define GAUDIHIVE_DATAOBJECTHANDLEBASE_H
+#pragma once
 
 #include <mutex>
 
@@ -73,5 +72,3 @@ protected:
   bool m_init     = false;
   bool m_optional = false;
 };
-
-#endif

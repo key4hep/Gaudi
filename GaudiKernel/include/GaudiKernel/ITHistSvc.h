@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,18 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_ITHISTSVC_H
-#define GAUDIKERNEL_ITHISTSVC_H
+#pragma once
 
+#include <GaudiKernel/IService.h>
+#include <GaudiKernel/LockedHandle.h>
 #include <memory>
 #include <string>
 #include <vector>
-
-#ifndef GAUDIKERNEL_ISERVICE_H
-#  include <GaudiKernel/IService.h>
-#endif
-
-#include <GaudiKernel/LockedHandle.h>
 
 class TObject;
 class TH1;
@@ -182,5 +177,3 @@ public:
   /// virtual destructor
   virtual ~ITHistSvc() = default;
 };
-
-#endif // GAUDIKERNEL_ITHISTSVC_H

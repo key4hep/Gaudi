@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_RNDMGENGENERATORS_H
-#define GAUDIKERNEL_RNDMGENGENERATORS_H
+#pragma once
 
 // STL include files
 #include <vector>
@@ -388,4 +387,3 @@ namespace Rndm {
     }
   };
 } // namespace Rndm
-#endif // GAUDIKERNEL_RNDMGENGENERATORS_H

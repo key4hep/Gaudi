@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_DATAOBJID
-#define GAUDIKERNEL_DATAOBJID 1
+#pragma once
 
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/StatusCode.h>
@@ -143,5 +142,3 @@ namespace Gaudi {
     } // namespace Property
   }   // namespace Details
 } // namespace Gaudi
-
-#endif

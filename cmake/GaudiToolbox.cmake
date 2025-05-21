@@ -1372,8 +1372,7 @@ function(gaudi_generate_version_header_file)
     endif()
     # Generate the configure file only once
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/include/${output_file_name} CONTENT
-"#ifndef ${NAME}_VERSION_H
-#define ${NAME}_VERSION_H
+"#pragma once
 
 #ifndef CALC_GAUDI_VERSION
 #define CALC_GAUDI_VERSION(maj,min) (((maj) << 16) + (min))
@@ -1384,8 +1383,7 @@ function(gaudi_generate_version_header_file)
 #define ${NAME}_PATCH_VERSION ${PROJECT_VERSION_PATCH}
 
 #define ${NAME}_VERSION CALC_GAUDI_VERSION(${NAME}_MAJOR_VERSION,${NAME}_MINOR_VERSION)
-
-#endif // ${NAME}_VERSION_H")
+")
 endfunction()
 
 

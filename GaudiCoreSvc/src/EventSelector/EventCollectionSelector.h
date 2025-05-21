@@ -18,8 +18,7 @@
 //  Created    : 4/10/00
 //
 //====================================================================
-#ifndef GAUDISVC_EventCollectionSelector_EventCollectionSelector_H
-#define GAUDISVC_EventCollectionSelector_EventCollectionSelector_H 1
+#pragma once
 
 // Include files
 #include <GaudiKernel/GenericAddress.h>
@@ -195,5 +194,3 @@ public:
   /// inherit constructor
   using extends::extends;
 };
-
-#endif // GAUDISVC_EventCollectionSelector_EventCollectionSelector_H

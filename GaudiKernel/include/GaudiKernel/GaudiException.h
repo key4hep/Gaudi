@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_GAUDIEXCEPTION_H
-#define GAUDIKERNEL_GAUDIEXCEPTION_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/Kernel.h>
@@ -130,5 +129,3 @@ protected:
   std::unique_ptr<GaudiException> m_previous;  /// "previous" element in the linked list
   static bool                     s_proc;
 };
-
-#endif // GAUDIKERNEL_GAUDIEXCEPTION_H

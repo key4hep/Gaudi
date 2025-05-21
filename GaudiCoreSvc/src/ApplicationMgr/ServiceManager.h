@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDISVC_ServiceManager_H
-#define GAUDISVC_ServiceManager_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/ComponentManager.h>
@@ -185,4 +184,3 @@ private:
 private:
   void dump() const;
 };
-#endif // GAUDISVC_ServiceManager_H

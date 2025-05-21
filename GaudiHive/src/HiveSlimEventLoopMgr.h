@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H
-#define GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H 1
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/IAlgExecStateSvc.h>
@@ -108,4 +107,3 @@ public:
   /// implementation of IEventProcessor::stopRun()
   StatusCode stopRun() override;
 };
-#endif // GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H

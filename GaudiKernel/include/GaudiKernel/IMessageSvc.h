@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IMESSAGESVC_H
-#define GAUDIKERNEL_IMESSAGESVC_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/IInterface.h>
@@ -166,5 +165,3 @@ public:
    */
   virtual void incrInactiveCount( MSG::Level level, std::string_view src ) = 0;
 };
-
-#endif // GAUDIKERNEL_IMESSAGESVC_H

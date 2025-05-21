@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef _GAUDI_C_PLUGIN_SERVICE_H_
-#define _GAUDI_C_PLUGIN_SERVICE_H_ 1
+#pragma once
 
 /* @author Sebastien Binet <binet@cern.ch> */
 
@@ -81,5 +80,3 @@ const char* cgaudi_property_get_value( cgaudi_property_t self );
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
-#endif /* !_GAUDI_C_PLUGIN_SERVICE_H_ */

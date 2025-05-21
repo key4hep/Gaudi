@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_ICLASSIDSVC_H
-#define GAUDIKERNEL_ICLASSIDSVC_H
+#pragma once
 
 #include <string>
 
@@ -45,5 +44,3 @@ public:
   /// associate type name and type-info name with clID
   virtual StatusCode setTypeForID( const CLID&, const std::string& typeName, const std::string& typeInfoName = "" ) = 0;
 };
-
-#endif // GAUDIKERNEL_ICLASSIDSVC_H

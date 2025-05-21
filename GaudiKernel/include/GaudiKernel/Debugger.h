@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,8 +21,7 @@
 //  Created    : 13/1/99
 //	Changes    :
 //====================================================================
-#ifndef GAUDI_SYSTEM_DEBUGGER_H
-#define GAUDI_SYSTEM_DEBUGGER_H
+#pragma once
 
 #include <GaudiKernel/Kernel.h>
 
@@ -32,4 +31,3 @@ namespace System {
   /// Break the execution of the application and invoke the debugger in a remote process
   GAUDI_API long breakExecution( long pid );
 } // namespace System
-#endif // GAUDI_SYSTEM_DEBUGGER_H

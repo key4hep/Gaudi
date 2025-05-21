@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@
  */
 //---------------------------------------------------------------------------------
 
-#ifndef GAUDIKERNEL_COORD3DTYPES_H
-#define GAUDIKERNEL_COORD3DTYPES_H 1
+#pragma once
 
 /** @namespace Gaudi
  *
@@ -46,5 +45,3 @@ namespace Gaudi {
   typedef ROOT::Math::CylindricalEta3D<double> RhoEtaPhi3D;  ///< Cylindrical Eta 3D point (double)
   typedef ROOT::Math::CylindricalEta3D<float>  RhoEtaPhi3DF; ///< Cylindrical Eta 3D point (float)
 } // namespace Gaudi
-
-#endif // KERNEL_COORD3DTYPES_H

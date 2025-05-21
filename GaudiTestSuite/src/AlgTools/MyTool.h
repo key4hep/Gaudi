@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIEXANMPLES_MYTOOL_H
-#define GAUDIEXANMPLES_MYTOOL_H 1
+#pragma once
 
 // Include files
 #include "IMyTool.h"
@@ -46,4 +45,3 @@ private:
   Gaudi::Property<std::string> m_string{ this, "String", "hundred" };
   Gaudi::Property<bool>        m_bool{ this, "Bool", true };
 };
-#endif // GAUDIEXANMPLES_MYTOOL_H

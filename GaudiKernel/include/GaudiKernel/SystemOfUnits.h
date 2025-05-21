@@ -49,8 +49,7 @@
 // 28.04.06   import from CLHEP to GaudiKernel -- HD
 // 11.05.06   Rename pascal to Pa to avoid warnings on Windows - MC
 
-#ifndef GAUDI_SYSTEM_OF_UNITS_H
-#define GAUDI_SYSTEM_OF_UNITS_H
+#pragma once
 
 namespace Gaudi {
   namespace Units {
@@ -317,5 +316,3 @@ namespace Gaudi {
 
   } // namespace Units
 } // namespace Gaudi
-
-#endif /* GAUDI_SYSTEM_OF_UNITS_H */

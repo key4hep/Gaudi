@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDI_NAMEDRANGE_H
-#define GAUDI_NAMEDRANGE_H 1
+#pragma once
 // ============================================================================
 // Include files
 // ============================================================================
@@ -133,4 +132,3 @@ namespace Gaudi {
 // ============================================================================
 // The END
 // ============================================================================
-#endif // GAUDI_NAMEDRANGE_H

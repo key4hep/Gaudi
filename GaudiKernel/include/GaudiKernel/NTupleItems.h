@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,8 +11,7 @@
 
 // cppcheck-suppress-file passedByValue; TYP is a small type
 
-#ifndef GAUDI_NTUPLESVC_NTUPLEITEMS_H
-#define GAUDI_NTUPLESVC_NTUPLEITEMS_H 1
+#pragma once
 
 // The converter understands all items
 #define ALLOW_ALL_TYPES
@@ -238,4 +237,3 @@ namespace NTuple {
     }
   };
 } // namespace NTuple
-#endif // GAUDI_NTUPLESVC_NTUPLEITEMS_H

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef ROOTHISTCNV_RCWNTCNV_H
-#define ROOTHISTCNV_RCWNTCNV_H 1
+#pragma once
 
 // Include files
 #include "RNTupleCnv.h"
@@ -45,5 +44,3 @@ namespace RootHistCnv {
     StatusCode readData( TTree* rtree, INTuple* pObject, long ievt ) override;
   };
 } // namespace RootHistCnv
-
-#endif // ROOTHISTCNV_RCWNTCNV_H

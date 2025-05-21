@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IALGMANAGER_H
-#define GAUDIKERNEL_IALGMANAGER_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/IComponentManager.h>
@@ -70,5 +69,3 @@ public:
     return SmartIF<T>( algorithm( typeName, createIf ) );
   }
 };
-
-#endif // GAUDI_IALGMANAGER_H

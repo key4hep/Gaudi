@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_SERVICELOCATORHELPER_H
-#define GAUDIKERNEL_SERVICELOCATORHELPER_H
+#pragma once
 
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/ISvcLocator.h>
@@ -67,4 +66,3 @@ private:
   mutable MsgStream  m_msgLog;
   std::string        m_requesterName;
 };
-#endif

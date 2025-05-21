@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIHIVE_HIVENUMBERS_H
-#define GAUDIHIVE_HIVENUMBERS_H
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/IRndmGen.h>
@@ -93,5 +92,3 @@ namespace HiveRndm {
   };
 
 } // namespace HiveRndm
-
-#endif // GAUDIHIVE_HIVENumbers_H

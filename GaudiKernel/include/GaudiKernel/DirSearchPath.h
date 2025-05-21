@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef JOBOPTIONS_DIRSEARCHPATH_H
-#define JOBOPTIONS_DIRSEARCHPATH_H
+#pragma once
 /** @file DirSearchPath.h
  * @brief search for files in a list of directories
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
@@ -88,4 +87,3 @@ private:
   //
   std::vector<path> m_dirs; ///< the dir container
 };
-#endif // JOBOPTIONS_DIRSEARCHPATH_H

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,8 +21,7 @@
 //	Changes    :
 //
 //====================================================================
-#ifndef GAUDIKERNEL_MEMORY_H
-#define GAUDIKERNEL_MEMORY_H
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/Kernel.h>
@@ -116,4 +115,3 @@ namespace System {
   /// System Process Limits: Maximum amount of the page file this process is allowed to use
   GAUDI_API long virtualMemoryLimit( MemoryUnit unit = kByte, InfoType fetch = Quota, long pid = -1 );
 } // namespace System
-#endif // GAUDIKERNEL_MEMORY_H

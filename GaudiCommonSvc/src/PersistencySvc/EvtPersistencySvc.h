@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,8 +18,7 @@
 //	Author    : Markus Frank
 //
 //	===========================================================
-#ifndef PERSISTENCYSVC_EVTPERSISTENCYSVC_H
-#define PERSISTENCYSVC_EVTPERSISTENCYSVC_H 1
+#pragma once
 
 #include "PersistencySvc.h"
 
@@ -51,4 +50,3 @@ public:
   /// Standard Constructor
   EvtPersistencySvc( const std::string& name, ISvcLocator* svc );
 };
-#endif // PERSISTENCYSVC_EVTPERSISTENCYSVC_H

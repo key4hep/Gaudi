@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef _GAUDI_PLUGIN_SERVICE_V2_H_
-#define _GAUDI_PLUGIN_SERVICE_V2_H_
+#pragma once
 
 /// @author Marco Clemencic <marco.clemencic@cern.ch>
 /// See @ref GaudiPluginService-readme
@@ -200,5 +199,3 @@ namespace Gaudi {
 #  define DECLARE_FACTORY_WITH_ID( type, id, factory ) _PS_V2_DECLARE_FACTORY_WITH_ID( type, id, factory )
 #  define DECLARE_COMPONENT_PROPERTY( id, name, value ) _PS_V2_DECLARE_COMPONENT_PROPERTY( id, name, value )
 #endif
-
-#endif //_GAUDI_PLUGIN_SERVICE_H_

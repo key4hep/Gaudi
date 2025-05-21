@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_ITIMELINESVC_H
-#define GAUDIKERNEL_ITIMELINESVC_H
+#pragma once
 
 #include <GaudiKernel/IService.h>
 
@@ -50,5 +49,3 @@ public:
   virtual bool getTimelineEvent( TimelineEvent& ) const = 0;
   virtual bool isEnabled() const                        = 0;
 };
-
-#endif

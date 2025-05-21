@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@
 //
 //	Author     : M.Frank
 //	====================================================================
-#ifndef GAUDIKERNEL_SMARTDATASTOREPTR_H
-#define GAUDIKERNEL_SMARTDATASTOREPTR_H 1
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/SmartDataObjectPtr.h>
@@ -254,4 +253,3 @@ bool operator||( SmartDataStorePtr<B, LDB>& object, bool test ) {
   }
   return false; // Tough luck: One is missing.
 }
-#endif // GAUDIKERNEL_SMARTDATASTOREPTR_H

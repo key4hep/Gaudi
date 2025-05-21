@@ -15,8 +15,7 @@
  *      Author: Marco Clemencic
  */
 
-#ifndef COMMONMESSAGING_H_
-#define COMMONMESSAGING_H_
+#pragma once
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/IService.h>
@@ -193,5 +192,3 @@ protected:
     }
   }
 };
-
-#endif /* COMMONMESSAGING_H_ */

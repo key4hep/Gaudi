@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,8 +17,7 @@
 //      Author    : Markus Frank
 //
 //      ====================================================================
-#ifndef EVTCOLLECTION_WRITE_H
-#define EVTCOLLECTION_WRITE_H
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/Algorithm.h> // Required for inheritance
@@ -64,5 +63,3 @@ public:
   /// Event callback
   StatusCode execute() override;
 };
-
-#endif // EVTCOLLECTION_WRITE_H

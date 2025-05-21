@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,8 +15,7 @@
  *      Author: Ana Trisovic
  */
 
-#ifndef GAUDISVC_SRC_METADATASVC_METADATASVC_H_
-#define GAUDISVC_SRC_METADATASVC_METADATASVC_H_
+#pragma once
 
 #include <GaudiKernel/IMetaDataSvc.h>
 #include <GaudiKernel/Service.h>
@@ -40,5 +39,3 @@ namespace Gaudi {
     std::map<std::string, std::string> m_metadata;
   };
 } // namespace Gaudi
-
-#endif /* GAUDISVC_SRC_METADATASVC_METADATASVC_H_ */
