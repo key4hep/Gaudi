@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,17 +13,16 @@
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/Incident.h>
 #include <GaudiKernel/ThreadLocalContext.h>
+
 DECLARE_COMPONENT( IncidentProcAlg )
 
 namespace {
-  // ==========================================================================
   static const std::string s_unknown = "<unknown>";
   // Helper to get the name of the listener
   inline const std::string& getListenerName( IIncidentListener* lis ) {
     SmartIF<INamedInterface> iNamed( lis );
     return iNamed ? iNamed->name() : s_unknown;
   }
-  // ==========================================================================
 } // namespace
 
 IncidentProcAlg::IncidentProcAlg( const std::string& name, ISvcLocator* pSvcLocator )
@@ -36,7 +35,6 @@ StatusCode IncidentProcAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-//=============================================================================
 StatusCode IncidentProcAlg::execute( const EventContext& ctx ) const {
   auto      incPack = m_incSvc->getIncidents( &ctx );
   MsgStream log( msgSvc(), name() );

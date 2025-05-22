@@ -8,20 +8,14 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ===========================================================================
 #pragma once
-// ===========================================================================
-// Include files
-// ===========================================================================
+
 #include <string>
 
 namespace Gaudi {
   namespace Parsers {
     namespace Utils {
-      // ===========================================================================
       std::string replaceEnvironments( std::string_view input );
-      // ===========================================================================
     } // namespace Utils
   }   // namespace Parsers
 } // namespace Gaudi
-// ===========================================================================

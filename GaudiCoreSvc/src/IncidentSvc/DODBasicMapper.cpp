@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,10 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
-
+#include "DODBasicMapper.h"
 #include <Gaudi/Parsers/CommonParsers.h>
 #include <GaudiKernel/HashMap.h>
+
 // Local implementation of parsers from HashMap
 namespace Gaudi {
   namespace Parsers {
@@ -30,14 +30,6 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 
-// local
-#include "DODBasicMapper.h"
-
-// ----------------------------------------------------------------------------
-// Implementation file for class: DODBasicMapper
-//
-// 16/01/2012: Marco Clemencic
-// ----------------------------------------------------------------------------
 DECLARE_COMPONENT( DODBasicMapper )
 
 Gaudi::Utils::TypeNameString DODBasicMapper::algorithmForPath( const std::string& path ) {
@@ -49,5 +41,3 @@ std::string DODBasicMapper::nodeTypeForPath( const std::string& path ) {
   auto node = m_nodeMap.find( path );
   return ( node != m_nodeMap.end() ) ? node->second : "";
 }
-
-// ============================================================================

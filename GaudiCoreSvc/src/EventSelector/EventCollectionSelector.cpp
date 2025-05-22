@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
+#include "EventCollectionSelector.h"
 #include <GaudiKernel/EventSelectorDataStream.h>
 #include <GaudiKernel/GenericAddress.h>
 #include <GaudiKernel/IAddressCreator.h>
@@ -20,9 +20,6 @@
 #include <GaudiKernel/NTuple.h>
 #include <GaudiKernel/ObjectFactory.h>
 #include <GaudiKernel/SmartIF.h>
-
-#include "EventCollectionSelector.h"
-
 #include <memory>
 
 DECLARE_COMPONENT( EventCollectionSelector )

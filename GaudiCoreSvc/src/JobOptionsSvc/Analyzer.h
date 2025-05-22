@@ -9,25 +9,17 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL:
-// ============================================================================
+
 #include <string_view>
-// ============================================================================
+
 namespace Gaudi {
   namespace Parsers {
-    // ============================================================================
-    // Forward declarations
-    // ============================================================================
     class Messages;
     class Catalog;
     class Units;
     struct Node;
     class IncludedFiles;
     class PragmaOptions;
-    // ============================================================================
 
     /** Parse and analyze filename, save all messages and properties. Also output
      *  AST tree (http://en.wikipedia.org/wiki/Abstract_syntax_tree).
@@ -35,6 +27,5 @@ namespace Gaudi {
      */
     bool ReadOptions( std::string_view filename, std::string_view search_path, Messages* messages, Catalog* catalog,
                       Units* units, PragmaOptions* pragma, Node* root );
-    // ============================================================================
   } // namespace Parsers
 } // namespace Gaudi

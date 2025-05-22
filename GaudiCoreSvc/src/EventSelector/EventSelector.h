@@ -8,33 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	EventSelector.h
-//--------------------------------------------------------------------
-//
-//	Package    : EventSelector  (LHCb Event Selector Package)
-//
-//	Author     : M.Frank
-//  Created    : 4/10/00
-//
-//====================================================================
-//  Modified   : 11/11/06
-//
-//  Author     : Andres Felipe OSORIO OLIVEROS
-//             : Marco CLEMENCIC
-//
-//====================================================================
-
 #pragma once
 
-// Include files
 #include <GaudiKernel/IEvtSelector.h>
 #include <GaudiKernel/Service.h>
-
-// STL include files
 #include <vector>
 
-// Forward declarations
 class IIncidentSvc;
 class IAddressCreator;
 class IToolSvc;

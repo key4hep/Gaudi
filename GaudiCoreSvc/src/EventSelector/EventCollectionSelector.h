@@ -8,19 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	EventCollectionSelector.h
-//--------------------------------------------------------------------
-//
-//	Package    : EventCollectionSelector  (LHCb Event Selector Package)
-//
-//	Author     : M.Frank
-//  Created    : 4/10/00
-//
-//====================================================================
 #pragma once
 
-// Include files
 #include <GaudiKernel/GenericAddress.h>
 #include <GaudiKernel/IEvtSelector.h>
 #include <GaudiKernel/NTuple.h>
@@ -28,7 +17,6 @@
 
 #include <optional>
 
-// Forward declarations
 class INTuple;
 class INTupleSvc;
 class IAddressCreator;

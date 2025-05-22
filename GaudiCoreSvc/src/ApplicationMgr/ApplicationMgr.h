@@ -27,12 +27,10 @@
 #include <GaudiKernel/Service.h>
 #include <vector>
 
-// Forward declarations
 class ISvcLocator;
 class ServiceManager;
 class AlgorithmManager;
 class DLLClassManager;
-
 class IMessageSvc;
 class IIncidentSvc;
 class IRunable;

@@ -9,28 +9,16 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include Files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <algorithm>
-#include <list>
-#include <map>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/ChronoEntity.h>
 #include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/StringKey.h>
-// ============================================================================
-// TBB
-// ============================================================================
+#include <list>
 #include <tbb/concurrent_queue.h>
 #include <tbb/concurrent_unordered_map.h>
-// ============================================================================
+
 /**
  * @class IncidentSvc
  * @brief Default implementation of the IIncidentSvc interface.
@@ -56,8 +44,6 @@ public:
   // Inherited Service overrides:
   StatusCode finalize() override;
 
-  // IIncidentSvc interfaces overwrite
-  //
   void addListener( IIncidentListener* lis, const std::string& type = "", long priority = 0, bool rethrow = false,
                     bool singleShot = false ) override;
 
@@ -67,15 +53,12 @@ public:
   // TODO: return by value instead...
   void getListeners( std::vector<IIncidentListener*>& lis, const std::string& type = "" ) const override;
 
-  // Standard Constructor.
   IncidentSvc( const std::string& name, ISvcLocator* svc );
-  // Destructor.
   ~IncidentSvc() override;
   IIncidentSvc::IncidentPack getIncidents( const EventContext* ctx ) override;
 
 private:
   ListenerMap::iterator removeListenerFromList( ListenerMap::iterator, IIncidentListener* item, bool scheduleRemoval );
-  // ==========================================================================
   /// Internal function to allow incidents listening to all events
   void i_fireIncident( const Incident& incident, const std::string& type );
 
@@ -92,7 +75,6 @@ private:
   /// timer & it's lock
   mutable ChronoEntity m_timer;
   mutable bool         m_timerLock = false;
-  // ==========================================================================
   // When TBB supports unique_ptrs in concurrent queue typedef should be changed
   // typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
   typedef tbb::concurrent_queue<std::unique_ptr<Incident>>             IncQueue_t;
@@ -101,6 +83,3 @@ private:
   /// Event ID for each slot
   tbb::concurrent_unordered_map<EventContext::ContextID_t, EventContext::ContextEvt_t> m_slotEvent;
 };
-// ============================================================================
-// The END
-// ============================================================================

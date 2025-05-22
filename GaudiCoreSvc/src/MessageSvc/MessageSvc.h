@@ -10,22 +10,18 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
-#include <iosfwd>
-#include <map>
-#include <memory>
-#include <mutex>
-#include <set>
-#include <string>
-#include <vector>
-
 #include <Gaudi/Property.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/Message.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/StatusCode.h>
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <vector>
 
-// Forward declarations
 class ISvcLocator;
 
 //

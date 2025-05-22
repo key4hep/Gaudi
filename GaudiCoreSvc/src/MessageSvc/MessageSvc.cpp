@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,7 +20,6 @@
 #include <GaudiKernel/Message.h>
 #include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/System.h>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -62,14 +61,11 @@ namespace {
   }
 } // namespace
 
-// Instantiation of a static factory class used by clients to create
-// instances of this service
 DECLARE_COMPONENT( MessageSvc )
 
 static const std::string levelNames[MSG::NUM_LEVELS] = { "NIL",     "VERBOSE", "DEBUG", "INFO",
                                                          "WARNING", "ERROR",   "FATAL", "ALWAYS" };
 
-// Constructor
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc ) {
 
   m_outputLevel.declareUpdateHandler( [svcloc]( Gaudi::Details::PropertyBase& ) {
@@ -95,9 +91,6 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
   std::fill( std::begin( m_msgCount ), std::end( m_msgCount ), 0 );
 }
 
-// #############################################################################
-
-/// Initialize Service
 StatusCode MessageSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
@@ -112,9 +105,6 @@ StatusCode MessageSvc::initialize() {
   return StatusCode::SUCCESS;
 }
 
-// #############################################################################
-
-/// Reinitialize Service
 StatusCode MessageSvc::reinitialize() {
   m_state       = Gaudi::StateMachine::OFFLINE;
   StatusCode sc = initialize();
@@ -122,8 +112,6 @@ StatusCode MessageSvc::reinitialize() {
 
   return sc;
 }
-
-// #############################################################################
 
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop ) {
   const auto& pname = prop.name();
@@ -158,7 +146,6 @@ void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop ) {
     code = "";
   }
 }
-// #############################################################################
 
 void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop ) {
   // Just report problems in the settings of the limits and unknown limit parameters
@@ -178,7 +165,6 @@ void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop ) {
     return;
   }
 }
-// #############################################################################
 
 void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop ) {
 
@@ -207,8 +193,6 @@ void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop ) {
   }
 }
 
-// #############################################################################
-
 #ifdef NDEBUG
 void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& ) {}
 #else
@@ -220,10 +204,7 @@ void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& prop ) {
 }
 #endif
 
-// #############################################################################
-/// Finalize Service
 StatusCode MessageSvc::finalize() {
-
   m_suppress = false;
 
   {
@@ -330,12 +311,6 @@ StatusCode MessageSvc::finalize() {
   return StatusCode::SUCCESS;
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: reportMessage
-// Purpose: dispatches a message to the relevant streams.
-// ---------------------------------------------------------------------------
-//
 void MessageSvc::reportMessage( const Message& msg, int outputLevel ) {
   auto lock = std::scoped_lock{ m_reportMutex };
   i_reportMessage( msg, outputLevel );
@@ -388,30 +363,12 @@ void MessageSvc::i_reportMessage( const Message& msg, int outputLevel ) {
   if ( cmsg != &msg ) { delete cmsg; } // cppcheck-suppress autovarInvalidDeallocation; false positive
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: reportMessage
-// Purpose: dispatches a message to the relevant streams.
-// ---------------------------------------------------------------------------
-//
 void MessageSvc::reportMessage( const Message& msg ) { reportMessage( msg, outputLevel( msg.getSource() ) ); }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: reportMessage
-// Purpose: dispatches a message to the relevant streams.
-// ---------------------------------------------------------------------------
-//
 void MessageSvc::reportMessage( std::string source, int type, std::string message ) {
   reportMessage( Message{ std::move( source ), type, std::move( message ) } );
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: sendMessage
-// Purpose: finds a message for a given status code and dispatches it.
-// ---------------------------------------------------------------------------
-//
 void MessageSvc::reportMessage( const StatusCode& code, std::string_view source ) {
   auto lock = std::scoped_lock{ m_messageMapMutex };
   i_reportMessage( code, source );
@@ -434,41 +391,13 @@ void MessageSvc::i_reportMessage( const StatusCode& code, std::string_view sourc
   }
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: insertStream
-// Purpose: inserts a stream for a message type.
-// ---------------------------------------------------------------------------
-//
-
 void MessageSvc::insertStream( int key, std::string name, std::ostream* stream ) {
   m_streamMap.emplace( key, NamedStream( std::move( name ), stream ) );
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: eraseStream
-// Purpose: erases all the streams for all the message types.
-// ---------------------------------------------------------------------------
-//
-
 void MessageSvc::eraseStream() { m_streamMap.clear(); }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: eraseStream
-// Purpose: erases all the streams for a message type.
-// ---------------------------------------------------------------------------
-//
-
 void MessageSvc::eraseStream( int message_type ) { m_streamMap.erase( message_type ); }
-
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: eraseStream
-// Purpose: erases one stream for a message type.
-// ---------------------------------------------------------------------------
-//
 
 void MessageSvc::eraseStream( int key, std::ostream* stream ) {
   if ( stream ) {
@@ -477,61 +406,26 @@ void MessageSvc::eraseStream( int key, std::ostream* stream ) {
   }
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: eraseStream
-// Purpose: erases one stream for all message types.
-// ---------------------------------------------------------------------------
-//
-
 void MessageSvc::eraseStream( std::ostream* stream ) {
   if ( stream ) {
     erase_if( m_streamMap, [&]( StreamMap::const_reference j ) { return j.second.second == stream; } );
   }
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: insertMessage
-// Purpose: inserts a message for a status code.
-// ---------------------------------------------------------------------------
-//
-
 void MessageSvc::insertMessage( const StatusCode& key, Message msg ) {
   auto lock = std::scoped_lock{ m_messageMapMutex };
   m_messageMap.emplace( key, std::move( msg ) );
 }
-
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: eraseMessage
-// Purpose: erases all the messages for all the status codes.
-// ---------------------------------------------------------------------------
-//
 
 void MessageSvc::eraseMessage() {
   auto lock = std::scoped_lock{ m_messageMapMutex };
   m_messageMap.clear();
 }
 
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: eraseMessage
-// Purpose: erases all the messages for a status code.
-// ---------------------------------------------------------------------------
-//
-
 void MessageSvc::eraseMessage( const StatusCode& key ) {
   auto lock = std::scoped_lock{ m_messageMapMutex };
   m_messageMap.erase( key );
 }
-
-// #############################################################################
-// ---------------------------------------------------------------------------
-// Routine: eraseMessage
-// Purpose: erases one message for a status code.
-// ---------------------------------------------------------------------------
-//
 
 void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg ) {
   auto lock = std::scoped_lock{ m_messageMapMutex };
@@ -540,29 +434,17 @@ void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg ) {
             [&]( MessageMap::const_reference j ) { return j.second == msg; } );
 }
 
-// ---------------------------------------------------------------------------
-int MessageSvc::outputLevel() const {
-  // ---------------------------------------------------------------------------
-  return m_outputLevel;
-}
+int MessageSvc::outputLevel() const { return m_outputLevel; }
 
-// ---------------------------------------------------------------------------
 int MessageSvc::outputLevel( std::string_view source ) const {
-  // ---------------------------------------------------------------------------
   auto lock = std::scoped_lock{ m_thresholdMapMutex };
   auto it   = m_thresholdMap.find( source );
   return it != m_thresholdMap.end() ? it->second : m_outputLevel.value();
 }
 
-// ---------------------------------------------------------------------------
-void MessageSvc::setOutputLevel( int new_level ) {
-  // ---------------------------------------------------------------------------
-  m_outputLevel = new_level;
-}
+void MessageSvc::setOutputLevel( int new_level ) { m_outputLevel = new_level; }
 
-// ---------------------------------------------------------------------------
 void MessageSvc::setOutputLevel( std::string_view source, int level ) {
-  // ---------------------------------------------------------------------------
   auto lock = std::scoped_lock{ m_thresholdMapMutex };
 
   // only write if we really have to...
@@ -574,16 +456,12 @@ void MessageSvc::setOutputLevel( std::string_view source, int level ) {
   }
 }
 
-// ---------------------------------------------------------------------------
 std::string MessageSvc::getLogColor( int logLevel ) const {
-  // ---------------------------------------------------------------------------
   return ( logLevel < MSG::NUM_LEVELS ) ? m_logColorCodes[logLevel] : "";
 }
 
-// ---------------------------------------------------------------------------
 int MessageSvc::messageCount( MSG::Level level ) const { return m_msgCount[level]; }
 
-// ---------------------------------------------------------------------------
 void MessageSvc::incrInactiveCount( MSG::Level level, std::string_view source ) {
   auto entry = m_inactiveMap.find( source );
   if ( entry == m_inactiveMap.end() ) { entry = m_inactiveMap.emplace( source, MsgAry{} ).first; }
@@ -597,8 +475,6 @@ void MessageSvc::incrInactiveCount( MSG::Level level, std::string_view source ) 
     std::cout << t << std::endl;
   }
 }
-
-// ---------------------------------------------------------------------------
 
 void MessageSvc::setupLogStreams() {
   // reset state
@@ -622,5 +498,3 @@ void MessageSvc::setupLogStreams() {
     if ( stream->good() ) m_loggedStreams.emplace( iProp.first, stream );
   }
 }
-
-// ---------------------------------------------------------------------------

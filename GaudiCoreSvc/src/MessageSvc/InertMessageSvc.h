@@ -9,15 +9,12 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// Include files
-// FW
+
 #include "MessageSvc.h"
-// C++
 #include <functional>
 #include <memory>
-#include <thread>
-// External libs
 #include <tbb/concurrent_queue.h>
+#include <thread>
 
 /** @class InertMessageSvc InertMessageSvc.h MessageSvc/InertMessageSvc.h
  *
@@ -34,7 +31,6 @@
  */
 class InertMessageSvc : public MessageSvc {
 public:
-  /// Standard constructor
   using MessageSvc::MessageSvc;
 
   /// Initialization of the service.

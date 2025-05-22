@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,15 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Includes:
-// ============================================================================
 #include "Node.h"
-#include <algorithm>
 #include <numeric>
-// ============================================================================
+
 namespace gp = Gaudi::Parsers;
-// ============================================================================
 
 std::vector<std::string> init_names() {
   std::vector<std::string> n( gp::Node::NodeType::number_of_node_types );
@@ -53,13 +48,11 @@ std::vector<std::string> init_names() {
   return n;
 }
 
-// ============================================================================
 std::string gp::Node::name() const {
   static const auto names = init_names();
   return names[type];
 }
 
-// ============================================================================
 std::string gp::Node::ToString( int indent ) const {
 
   std::string result( indent, ' ' );
@@ -77,4 +70,3 @@ std::string gp::Node::ToString( int indent ) const {
   }
   return result;
 }
-// ============================================================================

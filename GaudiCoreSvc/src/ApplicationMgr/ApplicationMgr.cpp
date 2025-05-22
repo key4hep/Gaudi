@@ -30,7 +30,6 @@
 #include <TROOT.h>
 #include <algorithm>
 #include <cassert>
-#include <ctime>
 #include <limits>
 #include <sstream>
 
@@ -81,9 +80,6 @@ namespace {
 // (main programs) will not need to re-compile if there are changes
 // in the implementation
 
-//=======================================================================
-// Constructor
-//=======================================================================
 ApplicationMgr::ApplicationMgr( IInterface* ) {
   // IInterface initialization
   addRef(); // Initial count set to 1
@@ -161,9 +157,6 @@ StatusCode ApplicationMgr::queryInterface( const InterfaceID& iid, void** ppvi )
   return StatusCode::FAILURE;
 }
 
-//============================================================================
-// ApplicationMgr::i_startup()
-//============================================================================
 StatusCode ApplicationMgr::i_startup() {
 
   StatusCode sc;
@@ -282,9 +275,6 @@ StatusCode ApplicationMgr::i_startup() {
   return sc;
 }
 
-//============================================================================
-// IAppMgrUI implementation: ApplicationMgr::configure()
-//============================================================================
 StatusCode ApplicationMgr::configure() {
 
   // Check if the state is compatible with the transition
@@ -451,9 +441,6 @@ StatusCode ApplicationMgr::configure() {
   return StatusCode::SUCCESS;
 }
 
-//============================================================================
-// IAppMgrUI implementation: ApplicationMgr::initialize()
-//============================================================================
 StatusCode ApplicationMgr::initialize() {
   StatusCode sc;
 
@@ -503,9 +490,6 @@ StatusCode ApplicationMgr::initialize() {
   return sc;
 }
 
-//============================================================================
-// IAppMgrUI implementation: ApplicationMgr::start()
-//============================================================================
 StatusCode ApplicationMgr::start() {
 
   MsgStream log( m_messageSvc, name() );
@@ -537,9 +521,6 @@ StatusCode ApplicationMgr::start() {
       } );
 }
 
-//============================================================================
-// IAppMgrUI implementation: ApplicationMgr::nextEvent(int)
-//============================================================================
 StatusCode ApplicationMgr::nextEvent( int maxevt ) {
   if ( m_state != Gaudi::StateMachine::RUNNING ) {
     MsgStream log( m_messageSvc, name() );
@@ -554,9 +535,6 @@ StatusCode ApplicationMgr::nextEvent( int maxevt ) {
   return m_processingMgr->nextEvent( maxevt );
 }
 
-//============================================================================
-// IAppMgrUI implementation: ApplicationMgr::stop()
-//============================================================================
 StatusCode ApplicationMgr::stop() {
 
   MsgStream log( m_messageSvc, name() );
@@ -636,9 +614,6 @@ StatusCode ApplicationMgr::finalize() {
   return sc;
 }
 
-//============================================================================
-// IAppMgrUI implementation: ApplicationMgr::terminate()
-//============================================================================
 StatusCode ApplicationMgr::terminate() {
   MsgStream log( m_messageSvc, name() );
 
@@ -698,9 +673,6 @@ StatusCode ApplicationMgr::terminate() {
   return StatusCode::SUCCESS;
 }
 
-//============================================================================
-// Reach the required state going through all the needed transitions
-//============================================================================
 StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ignoreFailures ) {
   StatusCode sc = StatusCode::SUCCESS;
 
@@ -784,9 +756,6 @@ StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ign
   return sc;
 }
 
-//============================================================================
-// IAppMgrUI implementation: ApplicationMgr::run()
-//============================================================================
 StatusCode ApplicationMgr::run() {
   StatusCode sc = StatusCode::SUCCESS;
 
@@ -810,9 +779,6 @@ StatusCode ApplicationMgr::run() {
   return sc;
 }
 
-//============================================================================
-// IEventProcessor implementation: executeEvent(EventContext&&)
-//============================================================================
 StatusCode ApplicationMgr::executeEvent( EventContext&& ctx ) {
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
     if ( m_processingMgr ) { return m_processingMgr->executeEvent( std::move( ctx ) ); }
@@ -843,9 +809,7 @@ EventContext ApplicationMgr::createEventContext() {
   ss << "createEventContext: Invalid state \"" << FSMState() << '"';
   throw GaudiException( ss.str(), name(), StatusCode::FAILURE );
 }
-//============================================================================
-// IEventProcessor implementation: executeRun(int)
-//============================================================================
+
 StatusCode ApplicationMgr::executeRun( int evtmax ) {
   MsgStream log( m_messageSvc, name() );
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
@@ -857,9 +821,6 @@ StatusCode ApplicationMgr::executeRun( int evtmax ) {
   return StatusCode::FAILURE;
 }
 
-//============================================================================
-// IEventProcessor implementation: stopRun(int)
-//============================================================================
 StatusCode ApplicationMgr::stopRun() {
   MsgStream log( m_messageSvc, name() );
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
@@ -870,17 +831,11 @@ StatusCode ApplicationMgr::stopRun() {
   log << MSG::FATAL << "stopRun: Invalid state \"" << FSMState() << "\"" << endmsg;
   return StatusCode::FAILURE;
 }
-// Implementation of IAppMgrUI::name
 const std::string& ApplicationMgr::name() const { return m_name; }
 
-// implementation of IService::state
 Gaudi::StateMachine::State ApplicationMgr::FSMState() const { return m_state; }
-// implementation of IService::state
 Gaudi::StateMachine::State ApplicationMgr::targetFSMState() const { return m_targetState; }
 
-//============================================================================
-// implementation of IService::reinitilaize
-//============================================================================
 StatusCode ApplicationMgr::reinitialize() {
   MsgStream  log( m_messageSvc, name() );
   StatusCode retval = StatusCode::SUCCESS;
@@ -905,9 +860,6 @@ StatusCode ApplicationMgr::reinitialize() {
   return retval;
 }
 
-//============================================================================
-// implementation of IService::reinitiaize
-//============================================================================
 StatusCode ApplicationMgr::restart() {
   StatusCode retval = StatusCode::SUCCESS;
   StatusCode sc;
@@ -928,9 +880,6 @@ StatusCode ApplicationMgr::restart() {
   return retval;
 }
 
-//============================================================================
-// Handle properties of the event loop manager (Top alg/Output stream list)
-//============================================================================
 void ApplicationMgr::evtLoopPropertyHandler( Gaudi::Details::PropertyBase& p ) {
   if ( m_processingMgr ) {
     auto props = m_processingMgr.as<IProperty>();
@@ -938,18 +887,12 @@ void ApplicationMgr::evtLoopPropertyHandler( Gaudi::Details::PropertyBase& p ) {
   }
 }
 
-//============================================================================
-// External Service List handler
-//============================================================================
 void ApplicationMgr::createSvcNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeCreateSvcNameList() ).isSuccess() ) {
     throw GaudiException( "Failed to create ext services", "MinimalEventLoopMgr::createSvcNameListHandler",
                           StatusCode::FAILURE );
   }
 }
-//============================================================================
-//  decodeCreateSvcNameList
-//============================================================================
 StatusCode ApplicationMgr::decodeCreateSvcNameList() {
   StatusCode  result   = StatusCode::SUCCESS;
   const auto& theNames = m_createSvcNameList.value();
@@ -971,9 +914,6 @@ StatusCode ApplicationMgr::decodeCreateSvcNameList() {
   return result;
 }
 
-//============================================================================
-// External Service List handler
-//============================================================================
 void ApplicationMgr::extSvcNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeExtSvcNameList() ).isSuccess() ) {
     throw GaudiException( "Failed to declare ext services", "MinimalEventLoopMgr::extSvcNameListHandler",
@@ -981,9 +921,6 @@ void ApplicationMgr::extSvcNameListHandler( Gaudi::Details::PropertyBase& /* the
   }
 }
 
-//============================================================================
-//  decodeExtSvcNameList
-//============================================================================
 StatusCode ApplicationMgr::decodeExtSvcNameList() {
   StatusCode result = StatusCode::SUCCESS;
 
@@ -1010,25 +947,18 @@ StatusCode ApplicationMgr::decodeExtSvcNameList() {
   return result;
 }
 
-//============================================================================
-// Dll List handler
-//============================================================================
 void ApplicationMgr::dllNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeDllNameList() ).isSuccess() ) {
     throw GaudiException( "Failed to load DLLs.", "MinimalEventLoopMgr::dllNameListHandler", StatusCode::FAILURE );
   }
 }
 
-//============================================================================
-//  decodeDllNameList
-//============================================================================
 StatusCode ApplicationMgr::decodeDllNameList() {
 
   MsgStream  log( m_messageSvc, m_name );
   StatusCode result = StatusCode::SUCCESS;
 
   // Clean up multiple entries from DLL list
-  // -------------------------------------------------------------------------
   std::vector<std::string>            newList;
   std::map<std::string, unsigned int> dllInList, duplicateList;
   {
@@ -1052,7 +982,6 @@ StatusCode ApplicationMgr::decodeDllNameList() {
     }
     log << endmsg;
   }
-  // -------------------------------------------------------------------------
 
   const std::vector<std::string>& theNames = newList;
 

@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/ComponentManager.h>
 #include <GaudiKernel/IStateful.h>
 #include <GaudiKernel/ISvcLocator.h>
@@ -18,15 +17,11 @@
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/Map.h>
 #include <GaudiKernel/SmartIF.h>
-
 #include <algorithm>
 #include <list>
-#include <memory>
 #include <mutex>
 #include <string>
-#include <vector>
 
-// Forward declarations
 class IService;
 class IMessageSvc;
 

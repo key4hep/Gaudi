@@ -9,34 +9,25 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Includes:
-// ============================================================================
-// STD & STL:
-// ============================================================================
-#include <string>
-// ============================================================================
+
 #include "Position.h"
 #include "PropertyName.h"
 #include "PropertyValue.h"
-// ============================================================================
+#include <string>
+
 namespace Gaudi {
   namespace Parsers {
-    // ============================================================================
     class Property final {
-      // ----------------------------------------------------------------------------
     public:
-      // ----------------------------------------------------------------------------
       struct LessThen {
         bool operator()( const Property& first, const Property& second ) const {
           return first.FullName() < second.FullName();
         }
       };
 
-      // ----------------------------------------------------------------------------
       Property( PropertyName property_name, PropertyValue property_value )
           : property_name_( std::move( property_name ) ), property_value_( std::move( property_value ) ) {}
-      // ----------------------------------------------------------------------------
+
       const PropertyName& property_name() const { return property_name_; }
       PropertyValue&      property_value() { return property_value_; }
       // ----------------------------------------------------------------------------
@@ -48,13 +39,13 @@ namespace Gaudi {
         property_value_ -= value;
         return *this;
       }
-      // ----------------------------------------------------------------------------
+
       const Position& DefinedPosition() const;
       bool            HasDefinedPosition() const { return DefinedPosition().Exists(); }
-      // ----------------------------------------------------------------------------
+
       const Position& ValuePosition() const;
       bool            HasValuePosition() const { return ValuePosition().Exists(); }
-      // ----------------------------------------------------------------------------
+
       const std::string& ClientName() const;
       const std::string& NameInClient() const;
       std::string        FullName() const;
@@ -64,13 +55,10 @@ namespace Gaudi {
       bool               IsVector() const;
       bool               IsMap() const;
       bool               IsReference() const { return property_value_.IsReference(); }
-      // ----------------------------------------------------------------------------
+
     private:
-      // ----------------------------------------------------------------------------
       PropertyName  property_name_;
       PropertyValue property_value_;
     };
-    // ============================================================================
   } // namespace Parsers
 } // namespace Gaudi
-// ============================================================================

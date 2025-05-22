@@ -8,10 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
 #include "DLLClassManager.h"
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/IService.h>
@@ -20,23 +20,15 @@
 #include <GaudiKernel/ModuleIncident.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/System.h>
-
-#include <GaudiKernel/IAlgorithm.h>
-
 #include <cassert>
-#include <iostream>
 
-// default creator
 DLLClassManager::DLLClassManager( IInterface* iface ) : m_svclocator( iface ), m_pOuter( iface ) {
-
   assert( m_svclocator.isValid() );
-
   addRef(); // Initial count set to 1
 }
 
-// implementation of IClassManager::loadModule
 StatusCode DLLClassManager::loadModule( const std::string& module, bool fireIncident ) {
-  // Access the message service if not yet done already
+  // Access the message service if not yet done
   if ( !m_msgsvc ) m_msgsvc = m_svclocator;
   MsgStream log( m_msgsvc, "DllClassManager" );
 
@@ -74,7 +66,6 @@ StatusCode DLLClassManager::loadModule( const std::string& module, bool fireInci
   return StatusCode::SUCCESS;
 }
 
-// implementation of IInterface::queryInterface
 StatusCode DLLClassManager::queryInterface( const InterfaceID& iid, void** pinterface ) {
   // try local interfaces
   StatusCode sc = base_class::queryInterface( iid, pinterface );
