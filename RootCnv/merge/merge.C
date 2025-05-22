@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,14 +8,24 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIROOTCNV_ROOTDATABASEMERGER_H
-#  define GAUDIROOTCNV_ROOTDATABASEMERGER_H
-
-// C++ includes
-#  include <map>
-#  include <memory>
-#  include <string>
-#  include <vector>
+#include <TBranch.h>
+#include <TFile.h>
+#include <TInterpreter.h>
+#include <TKey.h>
+#include <TLeaf.h>
+#include <TROOT.h>
+#include <TSystem.h>
+#include <TTree.h>
+#include <TTreeCloner.h>
+#include <TUUID.h>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+#ifdef _WIN32
+#else
+#  include <libgen.h>
+#endif
 
 // Forward declarations
 class TTree;
@@ -89,26 +99,6 @@ namespace Gaudi {
     MergeStatus addSections( TTree* in, TTree* out );
   };
 } // End namespace Gaudi
-
-#endif // GAUDIROOTCNV_ROOTDATABASEMERGER_H
-
-#ifndef GAUDIROOTCNV_ROOTDATABASEMERGER_H
-#  include <RootDatabaseMerger.h>
-#endif // GAUDIROOTCNV_ROOTDATABASEMERGER_H
-#include <TBranch.h>
-#include <TFile.h>
-#include <TInterpreter.h>
-#include <TKey.h>
-#include <TLeaf.h>
-#include <TROOT.h>
-#include <TSystem.h>
-#include <TTree.h>
-#include <TTreeCloner.h>
-#include <TUUID.h>
-#ifdef _WIN32
-#else
-#  include <libgen.h>
-#endif
 
 using namespace Gaudi;
 using namespace std;
