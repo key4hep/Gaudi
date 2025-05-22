@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include Files
 #include <GaudiKernel/IAlgTool.h>
 #include <vector>
 

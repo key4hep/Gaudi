@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,18 +8,14 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
 #include <GaudiKernel/Time.h>
-
 #include <GaudiKernel/time_r.h>
-
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <iostream>
 
-// local
 using namespace Gaudi;
 
 // architecture dependent includes
@@ -84,9 +80,6 @@ static time_t timegm( struct tm* t ) {
 }
 #endif
 
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
 Time::Time( int year, int month, int day, int hour, int min, int sec, ValueType nsecs, bool local /* = true */ ) {
   tm val;
   memset( &val, 0, sizeof( val ) );
@@ -320,7 +313,6 @@ std::string Time::nanoformat( size_t minwidth /* = 1 */, size_t maxwidth /* = 9 
   return out;
 }
 
-//////////////////////////////////////////////////////////////////////
 /** Convert the #Time @a t into a MS-DOS date format.  */
 unsigned Time::toDosDate( Time time ) {
   // Use local time since DOS does too.
@@ -353,5 +345,3 @@ Time Time::fromDosDate( unsigned dosDate ) {
 
   return Time( mktime( &localtm ), 0 );
 }
-
-//=============================================================================

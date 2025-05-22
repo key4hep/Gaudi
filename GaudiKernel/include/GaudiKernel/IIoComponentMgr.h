@@ -15,35 +15,20 @@
 ///////////////////////////////////////////////////////////////////
 #pragma once
 
-/** @class IIoComponentMgr
- */
-
-// STL includes
-#include <string>
-
-// GaudiKernel includes
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/StatusCode.h>
+#include <string>
 
-// forward declare
 class IIoComponent;
 
 class GAUDI_API IIoComponentMgr : virtual public INamedInterface {
 public:
   DeclareInterfaceID( IIoComponentMgr, 1, 0 );
 
-  ///////////////////////////////////////////////////////////////////
-  // Public enums:
-  ///////////////////////////////////////////////////////////////////
-public:
   struct IoMode {
     enum Type { READ = 0, WRITE, RW, INVALID };
   };
 
-  ///////////////////////////////////////////////////////////////////
-  // Public methods:
-  ///////////////////////////////////////////////////////////////////
-public:
   /** @brief: allow a @c IIoComponent to register itself with this
    *          manager so appropriate actions can be taken when e.g.
    *          a @c fork(2) has been issued (this is usually handled

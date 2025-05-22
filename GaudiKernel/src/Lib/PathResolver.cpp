@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,22 +10,12 @@
 \***********************************************************************************/
 #include <GaudiKernel/PathResolver.h>
 #include <GaudiKernel/System.h>
-
-#ifdef WIN32
-// Disable warning
-//   C4996: 'std::copy': Function call with parameters that may be unsafe
-// Probably coming from Boost classification.
-#  pragma warning( disable : 4996 )
-#endif
-
-#include <iostream>
-#include <stdlib.h>
-#include <string>
-#include <vector>
-
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/filesystem.hpp>
+#include <stdlib.h>
+#include <string>
+#include <vector>
 
 namespace bf = boost::filesystem;
 using namespace std;
@@ -36,17 +26,11 @@ static const char* path_separator = ",;";
 static const char* path_separator = ",:";
 #endif
 
-//
-///////////////////////////////////////////////////////////////////////////
-//
-
 namespace System {
 
   typedef enum { PR_regular_file, PR_directory } PR_file_type;
 
   typedef enum { PR_local, PR_recursive } PR_search_type;
-
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   static bool PR_find( const bf::path& file, const string& search_list, PR_file_type file_type,
                        PathResolver::SearchType search_type, string& result ) {
@@ -113,8 +97,6 @@ namespace System {
     return found;
   }
 
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
   string PathResolver::find_file( const std::string& logical_file_name, const std::string& search_path,
                                   SearchType search_type ) {
 
@@ -123,8 +105,6 @@ namespace System {
 
     return ( find_file_from_list( logical_file_name, path_list, search_type ) );
   }
-
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   std::string PathResolver::find_file_from_list( const std::string& logical_file_name, const std::string& search_list,
                                                  SearchType search_type ) {
@@ -148,8 +128,6 @@ namespace System {
     return ( result );
   }
 
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
   string PathResolver::find_directory( const std::string& logical_file_name, const std::string& search_path,
                                        SearchType search_type ) {
     std::string path_list;
@@ -157,8 +135,6 @@ namespace System {
 
     return ( find_directory_from_list( logical_file_name, path_list, search_type ) );
   }
-
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   string PathResolver::find_directory_from_list( const std::string& logical_file_name, const std::string& search_list,
                                                  SearchType search_type ) {
@@ -168,8 +144,6 @@ namespace System {
 
     return ( result );
   }
-
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   PathResolver::SearchPathStatus PathResolver::check_search_path( const std::string& search_path ) {
     std::string path_list;
@@ -188,8 +162,6 @@ namespace System {
     return ( Ok );
   }
 
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
   std::string PathResolverFindXMLFile( const std::string& logical_file_name ) {
     return PathResolver::find_file( logical_file_name, "XMLPATH" );
   }
@@ -197,5 +169,4 @@ namespace System {
   std::string PathResolverFindDataFile( const std::string& logical_file_name ) {
     return PathResolver::find_file( logical_file_name, "DATAPATH" );
   }
-
 } // namespace System

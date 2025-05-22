@@ -10,10 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Include Files
 #include <GaudiKernel/IInterface.h>
 
-// Forward declarations
 class IIncidentListener;
 class Incident;
 

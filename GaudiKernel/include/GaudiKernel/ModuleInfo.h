@@ -8,23 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	ModuleInfo.h
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Definition of Systems internals
-//
-//	Author     : M.Frank
-//  Created    : 13/1/99
-//	Changes    :
-//====================================================================
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/Kernel.h>
-// STL include files
 #include <string>
 #include <vector>
 

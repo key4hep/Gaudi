@@ -10,10 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/IInterface.h>
 
-// Forward declarations
 class StreamBuffer;
 
 /** @class ISerialize ISerialize.h GaudiKernel/ISerialize.h

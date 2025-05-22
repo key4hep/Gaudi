@@ -21,7 +21,6 @@
 
 #pragma once
 
-// Include files
 #include <Math/Point3D.h>
 
 /** @namespace Gaudi

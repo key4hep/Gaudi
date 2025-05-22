@@ -8,20 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//	====================================================================
-//	SmartDataLocator.h
-//	--------------------------------------------------------------------
-//
-//	Package    : GaudiKernel ( The LHCb Offline System)
-//
-//  Description: Implementation of a smart pointer class to access
-//               easily (and efficiently) data stores.
-//
-//	Author     : M.Frank
-//	====================================================================
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/SmartDataPtr.h>
 
 /** A small class used to access easily (and efficiently) data items

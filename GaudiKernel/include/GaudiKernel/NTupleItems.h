@@ -16,12 +16,10 @@
 // The converter understands all items
 #define ALLOW_ALL_TYPES
 
-// STL include files
-#include <vector>
-
-// Framework include files
 #include "NTuple.h"
 #include <GaudiKernel/System.h>
+#include <vector>
+
 /**
  * @class NTupleItems NTupleItems.h GaudiKernel/NTupleItems.h
  *

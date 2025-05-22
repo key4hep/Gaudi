@@ -10,12 +10,11 @@
 \***********************************************************************************/
 #pragma once
 
-#include <exception>
-
 #include <Gaudi/IAuditor.h>
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IExceptionSvc.h>
 #include <GaudiKernel/SmartIF.h>
+#include <exception>
 
 class GaudiException;
 
@@ -158,7 +157,7 @@ namespace Gaudi {
       // status code: result of the function evaluation
       StatusCode m_sc = StatusCode::FAILURE; ///< status code : result of function evaluation
     };
-    // ========================================================================
+
     /** @class AuditorGuard Guards.h GaudiKernel/Guards.h
      *  It is a simple guard,
      *  which "locks" the scope for the Auditor Service
@@ -253,4 +252,4 @@ namespace Gaudi {
       }
     };
   } // namespace Guards
-} // end of namespace Gaudi
+} // namespace Gaudi

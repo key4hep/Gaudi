@@ -10,14 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
-#include <string>
-
-// Experiment specific include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/Kernel.h>
+#include <string>
 
-// forward declarations
 class IRegistry;
 
 /** @class IOpaqueAddress IOpaqueAddress.h GaudiKernel/IOpaqueAddress.h
@@ -31,7 +27,6 @@ class IRegistry;
 */
 class GAUDI_API IOpaqueAddress {
 public:
-  /// destructor
   virtual ~IOpaqueAddress() = default;
 
   /// Add reference to object

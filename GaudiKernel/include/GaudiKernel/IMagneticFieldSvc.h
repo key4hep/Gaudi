@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/StatusCode.h>
 
-// Forward declarations
 namespace ROOT {
   namespace Math {
     class DefaultCoordinateSystemTag;

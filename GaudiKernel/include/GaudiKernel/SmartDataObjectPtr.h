@@ -10,14 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
-#include <string>
-
-// Framework include files
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StatusCode.h>
+#include <string>
 
-// Forward declarations
 class SmartDataObjectPtr;
 class IDataProviderSvc;
 class IRegistry;

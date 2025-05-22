@@ -10,14 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IDataProviderSvc.h>
 #include <GaudiKernel/IService.h>
 #include <iostream>
 #include <string>
 #include <vector>
 
-// Forward declarations
 class DataObject;
 
 // added to allow use of AIDA in applications
@@ -258,20 +256,16 @@ public:
 
   using IDataProviderSvc::registerObject;
   virtual StatusCode registerObject( const std::string& fullPath, AIDA::IBaseHistogram* hObj ) = 0;
-  // ---------------------------
   virtual StatusCode registerObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IBaseHistogram* hObj ) = 0;
-  // ---------------------------
-  StatusCode registerObject( const std::string& parentPath, int item, AIDA::IBaseHistogram* hObj ) {
+                                     AIDA::IBaseHistogram* hObj )                              = 0;
+  StatusCode         registerObject( const std::string& parentPath, int item, AIDA::IBaseHistogram* hObj ) {
     return registerObject( parentPath, std::to_string( item ), hObj );
   }
-  // ---------------------------
   virtual StatusCode registerObject( DataObject* parentObj, const std::string& objPath,
                                      AIDA::IBaseHistogram* hObj ) = 0;
   virtual StatusCode registerObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
                                      AIDA::IBaseHistogram* hObj ) = 0;
-  // ---------------------------
-  StatusCode registerObject( DataObject* parentObj, int item, AIDA::IBaseHistogram* hObj ) {
+  StatusCode         registerObject( DataObject* parentObj, int item, AIDA::IBaseHistogram* hObj ) {
     return registerObject( parentObj, std::to_string( item ), hObj );
   }
 
@@ -284,46 +278,40 @@ public:
   // ==========================================================================
 
   using IDataProviderSvc::unregisterObject;
-  virtual StatusCode unregisterObject( AIDA::IBaseHistogram* hObj ) = 0;
-  // ---------------------------
+  virtual StatusCode unregisterObject( AIDA::IBaseHistogram* hObj )                                = 0;
   virtual StatusCode unregisterObject( AIDA::IBaseHistogram* hObj, const std::string& objectPath ) = 0;
-  // ---------------------------
-  virtual StatusCode unregisterObject( AIDA::IBaseHistogram* hObj, int item ) = 0;
+  virtual StatusCode unregisterObject( AIDA::IBaseHistogram* hObj, int item )                      = 0;
 
   // ==========================================================================
   // Retrieve histogram from data store
   // ==========================================================================
 
   using IDataProviderSvc::retrieveObject;
-  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram3D*& h3dObj ) = 0;
-  // ---------------------------
-  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IHistogram3D*& h3dObj ) = 0;
-  // ---------------------------
+  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram1D*& h1dObj )  = 0;
+  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile1D*& h1dObj )    = 0;
+  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram2D*& h2dObj )  = 0;
+  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile2D*& h2dObj )    = 0;
+  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram3D*& h3dObj )  = 0;
+  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IHistogram1D*& h1dObj )                     = 0;
+  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IProfile1D*& h1dObj )                       = 0;
+  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IHistogram2D*& h2dObj )                     = 0;
+  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IProfile2D*& h2dObj )                       = 0;
+  virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::IHistogram3D*& h3dObj )                     = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IHistogram1D*& h1dObj ) = 0;
+                                     AIDA::IHistogram1D*& h1dObj )                                                  = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IProfile1D*& h1dObj )   = 0;
+                                     AIDA::IProfile1D*& h1dObj )                                                    = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IHistogram2D*& h2dObj ) = 0;
+                                     AIDA::IHistogram2D*& h2dObj )                                                  = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IProfile2D*& h2dObj )   = 0;
+                                     AIDA::IProfile2D*& h2dObj )                                                    = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IHistogram3D*& h3dObj ) = 0;
-  // ---------------------------
-  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IHistogram3D*& h3dObj ) = 0;
-  // ---------------------------
+                                     AIDA::IHistogram3D*& h3dObj )                                                  = 0;
+  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IHistogram1D*& h1dObj )         = 0;
+  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IProfile1D*& h1dObj )           = 0;
+  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IHistogram2D*& h2dObj )         = 0;
+  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IProfile2D*& h2dObj )           = 0;
+  virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IHistogram3D*& h3dObj )         = 0;
   virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath,
                                      AIDA::IHistogram1D*& h1dObj )                                                  = 0;
   virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath, AIDA::IProfile1D*& h1dObj ) = 0;
@@ -342,52 +330,47 @@ public:
                                      AIDA::IProfile2D*& h2dObj )                                                    = 0;
   virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
                                      AIDA::IHistogram3D*& h3dObj )                                                  = 0;
-  // ---------------------------
-  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IHistogram1D*& h1dObj )           = 0;
-  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IProfile1D*& h1dObj )             = 0;
-  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IHistogram2D*& h2dObj )           = 0;
-  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IProfile2D*& h2dObj )             = 0;
-  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IHistogram3D*& h3dObj )           = 0;
-  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram3D*& h3dObj ) = 0;
+  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IHistogram1D*& h1dObj )                 = 0;
+  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IProfile1D*& h1dObj )                   = 0;
+  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IHistogram2D*& h2dObj )                 = 0;
+  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IProfile2D*& h2dObj )                   = 0;
+  virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IHistogram3D*& h3dObj )                 = 0;
+  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram1D*& h1dObj )       = 0;
+  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile1D*& h1dObj )         = 0;
+  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram2D*& h2dObj )       = 0;
+  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile2D*& h2dObj )         = 0;
+  virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram3D*& h3dObj )       = 0;
 
   // ==========================================================================
   // Find histogram identified by its full path in the data store
   // ==========================================================================
 
   using IDataProviderSvc::findObject;
-  virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode findObject( const std::string& fullPath, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode findObject( const std::string& fullPath, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram3D*& h3dObj ) = 0;
-  // ---------------------------
-  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram3D*& h2dObj ) = 0;
-  // ---------------------------
+  virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram1D*& h1dObj )                       = 0;
+  virtual StatusCode findObject( const std::string& fullPath, AIDA::IProfile1D*& h1dObj )                         = 0;
+  virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram2D*& h2dObj )                       = 0;
+  virtual StatusCode findObject( const std::string& fullPath, AIDA::IProfile2D*& h2dObj )                         = 0;
+  virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram3D*& h3dObj )                       = 0;
+  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram1D*& h1dObj )    = 0;
+  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile1D*& h1dObj )      = 0;
+  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram2D*& h2dObj )    = 0;
+  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile2D*& h2dObj )      = 0;
+  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram3D*& h2dObj )    = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
-                                 AIDA::IHistogram1D*& h1dObj ) = 0;
+                                 AIDA::IHistogram1D*& h1dObj )                                                    = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
-                                 AIDA::IProfile1D*& h1dObj )   = 0;
+                                 AIDA::IProfile1D*& h1dObj )                                                      = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
-                                 AIDA::IHistogram2D*& h2dObj ) = 0;
+                                 AIDA::IHistogram2D*& h2dObj )                                                    = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
-                                 AIDA::IProfile2D*& h2dObj )   = 0;
+                                 AIDA::IProfile2D*& h2dObj )                                                      = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
-                                 AIDA::IHistogram3D*& h3dObj ) = 0;
-  // ---------------------------
-  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IHistogram3D*& h3dObj ) = 0;
-  // ---------------------------
+                                 AIDA::IHistogram3D*& h3dObj )                                                    = 0;
+  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IHistogram1D*& h1dObj )           = 0;
+  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IProfile1D*& h1dObj )             = 0;
+  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IHistogram2D*& h2dObj )           = 0;
+  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IProfile2D*& h2dObj )             = 0;
+  virtual StatusCode findObject( const std::string& parentPath, int item, AIDA::IHistogram3D*& h3dObj )           = 0;
   virtual StatusCode findObject( DataObject* parentObj, const std::string& objPath, AIDA::IHistogram1D*& h1dObj ) = 0;
   virtual StatusCode findObject( DataObject* parentObj, const std::string& objPath, AIDA::IProfile1D*& h1dObj )   = 0;
   virtual StatusCode findObject( DataObject* parentObj, const std::string& objPath, AIDA::IHistogram2D*& h2dObj ) = 0;
@@ -403,28 +386,25 @@ public:
                                  AIDA::IProfile2D*& h2dObj )                                                      = 0;
   virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
                                  AIDA::IHistogram3D*& h3dObj )                                                    = 0;
-  // ---------------------------
-  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IHistogram1D*& h1dObj )           = 0;
-  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IProfile1D*& h1dObj )             = 0;
-  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IHistogram2D*& h2dObj )           = 0;
-  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IProfile2D*& h2dObj )             = 0;
-  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IHistogram3D*& h3dObj )           = 0;
-  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram1D*& h1dObj ) = 0;
-  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile1D*& h1dObj )   = 0;
-  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram2D*& h2dObj ) = 0;
-  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile2D*& h2dObj )   = 0;
-  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram3D*& h3dObj ) = 0;
+  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IHistogram1D*& h1dObj )                   = 0;
+  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IProfile1D*& h1dObj )                     = 0;
+  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IHistogram2D*& h2dObj )                   = 0;
+  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IProfile2D*& h2dObj )                     = 0;
+  virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IHistogram3D*& h3dObj )                   = 0;
+  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram1D*& h1dObj )         = 0;
+  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile1D*& h1dObj )           = 0;
+  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram2D*& h2dObj )         = 0;
+  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IProfile2D*& h2dObj )           = 0;
+  virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IHistogram3D*& h3dObj )         = 0;
 
   // ==========================================================================
   // ASCII output
   // ==========================================================================
-  // --------------------------------------------------------------------------
   // Print functions (ASCII graphical representation)
 
-  // Print (ASCII) the histogram into the output stream
+  /// Print (ASCII) the histogram into the output stream
   virtual std::ostream& print( AIDA::IBaseHistogram* h, std::ostream& s = std::cout ) const = 0;
 
-  // --------------------------------------------------------------------------
   // Write functions (ASCII table containing numbers e.g. bin height)
 
   /// Write (ASCII) the histogram table into the output stream

@@ -10,14 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
-#include <vector>
-
-// Framework include files
 #include <GaudiKernel/IRndmGen.h>
 #include <GaudiKernel/SmartIF.h>
+#include <vector>
 
-// Forward declarations
 class IRndmGen;
 class IRndmGenSvc;
 

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,17 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-///////////////////////////////////////////////////////////////////////////
-//
-// GaudiHistory/AlgorithmHistory.cpp
-//
-// Contains history information for an Algorithm
-//
-//
-// @author: Charles Leggett
-//
-///////////////////////////////////////////////////////////////////////////
-
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/AlgorithmHistory.h>
 #include <GaudiKernel/JobHistory.h>
@@ -27,14 +16,7 @@
 
 using std::endl;
 using std::ostream;
-using std::type_info;
 using std::vector;
-
-//**********************************************************************
-// Member functions.
-//**********************************************************************
-
-// Constructor.
 
 AlgorithmHistory::AlgorithmHistory( const Gaudi::Algorithm& alg, const JobHistory* job )
     : m_algorithm_type( System::typeinfoName( typeid( alg ) ) )
@@ -43,8 +25,6 @@ AlgorithmHistory::AlgorithmHistory( const Gaudi::Algorithm& alg, const JobHistor
     , m_algorithm( &alg )
     , m_properties( alg.getProperties() )
     , m_jobHistory( job ) {}
-
-//**********************************************************************
 
 AlgorithmHistory::AlgorithmHistory( std::string algVersion, std::string algName, std::string algType,
                                     const PropertyList& props,
@@ -57,23 +37,14 @@ AlgorithmHistory::AlgorithmHistory( std::string algVersion, std::string algName,
     , m_subalgorithm_histories( subHists )
     , m_jobHistory( nullptr ) {}
 
-//**********************************************************************
-
-// Destructor.
-
 AlgorithmHistory::~AlgorithmHistory() {
   for ( auto& i : m_subalgorithm_histories ) delete i;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 const CLID& AlgorithmHistory::classID() {
-
   static const CLID CLID_AlgorithmHistory = 56809101; // from `clid AlgorithmHistory`
   return CLID_AlgorithmHistory;
 }
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 std::ostream& AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
 
@@ -106,5 +77,3 @@ std::ostream& AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int i
   }
   return ost;
 }
-
-//**********************************************************************

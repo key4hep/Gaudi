@@ -10,15 +10,14 @@
 \***********************************************************************************/
 #pragma once
 
+#include <GaudiKernel/ContainedObject.h>
+#include <GaudiKernel/KeyedContainer.h>
+#include <GaudiKernel/KeyedTraits.h>
+
 namespace GaudiDict {
   template <class T>
   struct KeyedObjectDict;
 }
-
-// Framework include files
-#include <GaudiKernel/ContainedObject.h>
-#include <GaudiKernel/KeyedContainer.h>
-#include <GaudiKernel/KeyedTraits.h>
 
 /** Definition of the templated KeyedObject class.
  *

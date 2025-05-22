@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include Files
 #include <Gaudi/Details/PropertyBase.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IInterface.h>

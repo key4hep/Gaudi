@@ -10,11 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IInterface.h>
-
-// C++ include files
 #include <chrono>
 #include <functional>
 #include <memory>

@@ -21,7 +21,6 @@
 
 #pragma once
 
-// Include files
 #include <GaudiKernel/Vector4DTypes.h>
 
 /** @namespace Gaudi

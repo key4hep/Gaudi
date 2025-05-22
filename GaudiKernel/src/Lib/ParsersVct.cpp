@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,16 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-#include <GaudiKernel/VectorsAsProperty.h>
-// ============================================================================
 #include <Gaudi/Parsers/Factory.h>
 #include <GaudiKernel/ToStream.h>
-// ============================================================================
+#include <GaudiKernel/VectorsAsProperty.h>
+
 namespace {
-  // ==========================================================================
   typedef std::map<std::string, double> MAP;
 
   template <unsigned int N>
@@ -28,9 +23,7 @@ namespace {
     }
     return m.end();
   }
-  // ==========================================================================
 } // namespace
-// ============================================================================
 namespace Gaudi {
   namespace Parsers {
     template <typename T1, typename T2>
@@ -42,11 +35,9 @@ namespace Gaudi {
       //@attention always
       return StatusCode::SUCCESS;
     }
-    // ==========================================================================
 
     StatusCode parse( Gaudi::XYZPoint& result, std::string_view input ) { return parse_( result, input ); }
 
-    // ==========================================================================
     /*  parse 3D-vector
      *  @param result (output) the parsed vector
      *  @param input  (input)  the input string
@@ -58,56 +49,47 @@ namespace Gaudi {
 
       Gaudi::XYZPoint point;
       StatusCode      sc = parse( point, input );
-      if ( sc.isFailure() ) { return sc; } // RETURN
+      if ( sc.isFailure() ) { return sc; }
       result = point;
-      return StatusCode::SUCCESS; // RETURN
+      return StatusCode::SUCCESS;
     }
 
     StatusCode parse( Gaudi::LorentzVector& result, std::string_view input ) { return parse_( result, input ); }
 
-    // ==========================================================================
     /*  parse the vector of points
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    // ==========================================================================
     StatusCode parse( std::vector<Gaudi::XYZPoint>& result, std::string_view input ) {
       result.clear();
       return parse_( result, input );
     }
-    // ==========================================================================
     /*  parse the vector of vectors
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    // ==========================================================================
     StatusCode parse( std::vector<Gaudi::XYZVector>& result, std::string_view input ) {
       result.clear();
       return parse_( result, input );
     }
 
 #ifndef _WIN32
-    // ==========================================================================
     /*  parse the vector of vectors
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
-    // ==========================================================================
     StatusCode parse( std::vector<Gaudi::LorentzVector>& result, std::string_view input ) {
       return parse_( result, input );
     }
 #endif
   } // namespace Parsers
 } // namespace Gaudi
-// ============================================================================
-// print XYZ-point
-// ============================================================================
 std::ostream& Gaudi::Utils::toStream( const Gaudi::XYZPoint& obj, std::ostream& s ) {
   s << "( ";
   toStream( obj.X(), s );
@@ -118,9 +100,6 @@ std::ostream& Gaudi::Utils::toStream( const Gaudi::XYZPoint& obj, std::ostream& 
   s << " )";
   return s;
 }
-// ============================================================================
-// print XYZ-vector
-// ============================================================================
 std::ostream& Gaudi::Utils::toStream( const Gaudi::XYZVector& obj, std::ostream& s ) {
   s << "( ";
   toStream( obj.X(), s );
@@ -132,9 +111,6 @@ std::ostream& Gaudi::Utils::toStream( const Gaudi::XYZVector& obj, std::ostream&
 
   return s;
 }
-// ============================================================================
-// print LorentzVector
-// ============================================================================
 std::ostream& Gaudi::Utils::toStream( const Gaudi::LorentzVector& obj, std::ostream& s ) {
 
   s << "( ";
@@ -149,4 +125,3 @@ std::ostream& Gaudi::Utils::toStream( const Gaudi::LorentzVector& obj, std::ostr
 
   return s;
 }
-// ============================================================================

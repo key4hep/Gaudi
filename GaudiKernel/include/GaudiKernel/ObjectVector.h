@@ -10,12 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/ObjectContainerBase.h>
 #include <GaudiKernel/StreamBuffer.h>
-
 #include <iomanip>
 #include <vector>
 
@@ -65,7 +63,6 @@ public:
 #endif
 
 public:
-  /// Constructors
   ObjectVector()                                       = default;
   ObjectVector( const ObjectVector<TYPE>& )            = delete;
   ObjectVector& operator=( const ObjectVector<TYPE>& ) = delete;
@@ -73,7 +70,6 @@ public:
     std::for_each( begin(), end(), [this]( TYPE* obj ) { obj->setParent( this ); } );
   }
 
-  /// Destructor
   ~ObjectVector() override {
     for ( auto& i : m_vector ) {
       // Set the back pointer to 0 to avoid repetitional searching
@@ -273,6 +269,5 @@ public:
   }
 
 private:
-  /// The STL vector itself
   std::vector<TYPE*> m_vector;
 };

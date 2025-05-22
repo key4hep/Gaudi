@@ -10,13 +10,11 @@
 \***********************************************************************************/
 #pragma once
 
-#include <memory>
-// Framework include files
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/NTuple.h>
 #include <GaudiKernel/SmartIF.h>
+#include <memory>
 
-// Forward declarations
 class INTupleSvc;
 class IConversionSvc;
 
@@ -99,8 +97,7 @@ namespace NTuple {
     StatusCode readRecord() override;
     /// Save the NTuple
     StatusCode save() override;
-
-  }; // end class definition: Tuple
+  };
 
   // Concrete column wise N tuple class definition
   class ColumnWiseTuple : public TupleImp {
@@ -111,7 +108,7 @@ namespace NTuple {
     const CLID& clID() const override { return classID(); }
     /// Static access to class defininition structure
     static const CLID& classID() { return CLID_ColumnWiseTuple; }
-  }; // end class definition: ColumnWiseTuple
+  };
 
   // Concrete column wise N tuple class definition
   class RowWiseTuple : public TupleImp {
@@ -122,5 +119,5 @@ namespace NTuple {
     const CLID& clID() const override { return classID(); }
     /// Static access to class defininition structure
     static const CLID& classID() { return CLID_RowWiseTuple; }
-  }; // end class definition: RowWiseTuple
+  };
 } // namespace NTuple

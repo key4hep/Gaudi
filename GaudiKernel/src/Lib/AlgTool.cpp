@@ -8,23 +8,20 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
-#include <GaudiKernel/AlgTool.h>
-#include <GaudiKernel/IDataManagerSvc.h>
-#include <GaudiKernel/IMessageSvc.h>
-#include <GaudiKernel/ISvcLocator.h>
-
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Auditor.h>
+#include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/DataHandleHolderVisitor.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Guards.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IMessageSvc.h>
+#include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/ServiceLocatorHelper.h>
 #include <GaudiKernel/System.h>
 #include <GaudiKernel/ToolHandle.h>
 
-//------------------------------------------------------------------------------
 namespace {
   template <typename FUN>
   StatusCode attempt( AlgTool& tool, const char* label, FUN&& fun ) {
@@ -46,22 +43,19 @@ namespace {
   }
 } // namespace
 
-//------------------------------------------------------------------------------
-StatusCode AlgTool::queryInterface( const InterfaceID& riid, void** ppvi )
-//------------------------------------------------------------------------------
-{
-  if ( !ppvi ) { return StatusCode::FAILURE; } // RETURN
+StatusCode AlgTool::queryInterface( const InterfaceID& riid, void** ppvi ) {
+  if ( !ppvi ) { return StatusCode::FAILURE; }
   StatusCode sc = base_class::queryInterface( riid, ppvi );
   if ( sc.isSuccess() ) return sc;
   auto i = std::find_if( std::begin( m_interfaceList ), std::end( m_interfaceList ),
                          [&]( const std::pair<InterfaceID, void*>& item ) { return item.first.versionMatch( riid ); } );
   if ( i == std::end( m_interfaceList ) ) {
     *ppvi = nullptr;
-    return Status::NO_INTERFACE; // RETURN
+    return Status::NO_INTERFACE;
   }
   *ppvi = i->second;
   addRef();
-  return StatusCode::SUCCESS; // RETURN
+  return StatusCode::SUCCESS;
 }
 
 void const* AlgTool::i_cast( const InterfaceID& riid ) const {
@@ -74,37 +68,15 @@ void const* AlgTool::i_cast( const InterfaceID& riid ) const {
   }
   return nullptr;
 }
-//------------------------------------------------------------------------------
-const std::string& AlgTool::name() const
-//------------------------------------------------------------------------------
-{
-  return m_name;
-}
 
-//------------------------------------------------------------------------------
-const std::string& AlgTool::type() const
-//------------------------------------------------------------------------------
-{
-  return m_type;
-}
+const std::string& AlgTool::name() const { return m_name; }
 
-//------------------------------------------------------------------------------
-const IInterface* AlgTool::parent() const
-//------------------------------------------------------------------------------
-{
-  return m_parent;
-}
+const std::string& AlgTool::type() const { return m_type; }
 
-//------------------------------------------------------------------------------
-SmartIF<ISvcLocator>& AlgTool::serviceLocator() const
-//------------------------------------------------------------------------------
-{
-  return m_svcLocator;
-}
+const IInterface* AlgTool::parent() const { return m_parent; }
 
-// ============================================================================
-// accessor to event service  service
-// ============================================================================
+SmartIF<ISvcLocator>& AlgTool::serviceLocator() const { return m_svcLocator; }
+
 IDataProviderSvc* AlgTool::evtSvc() const {
   if ( !m_evtSvc ) {
     m_evtSvc = service( "EventDataSvc", true );
@@ -112,10 +84,7 @@ IDataProviderSvc* AlgTool::evtSvc() const {
   }
   return m_evtSvc.get();
 }
-//------------------------------------------------------------------------------
-IToolSvc* AlgTool::toolSvc() const
-//------------------------------------------------------------------------------
-{
+IToolSvc* AlgTool::toolSvc() const {
   if ( !m_ptoolSvc ) {
     m_ptoolSvc = service( "ToolSvc", true );
     if ( !m_ptoolSvc ) { throw GaudiException( "Service [ToolSvc] not found", name(), StatusCode::FAILURE ); }
@@ -123,9 +92,7 @@ IToolSvc* AlgTool::toolSvc() const
   return m_ptoolSvc.get();
 }
 
-//------------------------------------------------------------------------------
 AlgTool::AlgTool( std::string type, std::string name, const IInterface* parent )
-    //------------------------------------------------------------------------------
     : m_type( std::move( type ) ), m_name( std::move( name ) ), m_parent( parent ) {
   addRef(); // Initial count set to 1
 
@@ -167,9 +134,7 @@ AlgTool::AlgTool( std::string type, std::string name, const IInterface* parent )
   m_auditorRestart      = audit;
 }
 
-//-----------------------------------------------------------------------------
 StatusCode AlgTool::sysInitialize() {
-  //-----------------------------------------------------------------------------
   return attempt( *this, "sysInitialize", [&]() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::INITIALIZE, m_state );
     Gaudi::Guards::AuditorGuard guard( name(),
@@ -205,19 +170,14 @@ StatusCode AlgTool::sysInitialize() {
     return sc;
   } );
 }
-//------------------------------------------------------------------------------
-StatusCode AlgTool::initialize()
-//------------------------------------------------------------------------------
-{
+StatusCode AlgTool::initialize() {
   // For the time being there is nothing to be done here.
   // Setting the properties is done by the ToolSvc calling setProperties()
   // explicitly.
   return StatusCode::SUCCESS;
 }
 
-//-----------------------------------------------------------------------------
 StatusCode AlgTool::sysStart() {
-  //-----------------------------------------------------------------------------
   return attempt( *this, "sysStart", [&]() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
     Gaudi::Guards::AuditorGuard guard( name(),
@@ -229,17 +189,12 @@ StatusCode AlgTool::sysStart() {
   } );
 }
 
-//------------------------------------------------------------------------------
-StatusCode AlgTool::start()
-//------------------------------------------------------------------------------
-{
+StatusCode AlgTool::start() {
   // For the time being there is nothing to be done here.
   return StatusCode::SUCCESS;
 }
 
-//-----------------------------------------------------------------------------
 StatusCode AlgTool::sysStop() {
-  //-----------------------------------------------------------------------------
   return attempt( *this, "sysStop", [&]() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::STOP, m_state );
     Gaudi::Guards::AuditorGuard guard( name(),
@@ -251,17 +206,12 @@ StatusCode AlgTool::sysStop() {
   } );
 }
 
-//------------------------------------------------------------------------------
-StatusCode AlgTool::stop()
-//------------------------------------------------------------------------------
-{
+StatusCode AlgTool::stop() {
   // For the time being there is nothing to be done here.
   return StatusCode::SUCCESS;
 }
 
-//-----------------------------------------------------------------------------
 StatusCode AlgTool::sysFinalize() {
-  //-----------------------------------------------------------------------------
   return attempt( *this, "sysFinalize", [&]() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::FINALIZE, m_state );
     Gaudi::Guards::AuditorGuard guard( name(),
@@ -272,17 +222,12 @@ StatusCode AlgTool::sysFinalize() {
     return sc;
   } );
 }
-//------------------------------------------------------------------------------
-StatusCode AlgTool::finalize()
-//------------------------------------------------------------------------------
-{
+StatusCode AlgTool::finalize() {
   // For the time being there is nothing to be done here.
   return StatusCode::SUCCESS;
 }
 
-//-----------------------------------------------------------------------------
 StatusCode AlgTool::sysReinitialize() {
-  //-----------------------------------------------------------------------------
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::INITIALIZED != FSMState() ) {
@@ -298,10 +243,7 @@ StatusCode AlgTool::sysReinitialize() {
   } );
 }
 
-//------------------------------------------------------------------------------
-StatusCode AlgTool::reinitialize()
-//------------------------------------------------------------------------------
-{
+StatusCode AlgTool::reinitialize() {
   /* @TODO
    * MCl 2008-10-23: the implementation of reinitialize as finalize+initialize
    *                 is causing too many problems
@@ -321,9 +263,7 @@ StatusCode AlgTool::reinitialize()
   return StatusCode::SUCCESS;
 }
 
-//-----------------------------------------------------------------------------
 StatusCode AlgTool::sysRestart() {
-  //-----------------------------------------------------------------------------
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::RUNNING != FSMState() ) {
@@ -340,10 +280,7 @@ StatusCode AlgTool::sysRestart() {
   } );
 }
 
-//------------------------------------------------------------------------------
-StatusCode AlgTool::restart()
-//------------------------------------------------------------------------------
-{
+StatusCode AlgTool::restart() {
   // Default implementation is stop+start
   StatusCode sc = stop();
   if ( sc.isFailure() ) {
@@ -358,10 +295,7 @@ StatusCode AlgTool::restart()
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-AlgTool::~AlgTool()
-//------------------------------------------------------------------------------
-{
+AlgTool::~AlgTool() {
   if ( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll( this ); }
 }
 
@@ -418,15 +352,12 @@ std::vector<IAlgTool*>& AlgTool::tools() {
   return m_tools;
 }
 
-//------------------------------------------------------------------------------
 SmartIF<IService> AlgTool::service( std::string_view name, const bool createIf, const bool quiet ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.service( name, quiet, createIf );
 }
 
-//-----------------------------------------------------------------------------
 IAuditorSvc* AlgTool::auditorSvc() const {
-  //---------------------------------------------------------------------------
   if ( !m_pAuditorSvc ) {
     m_pAuditorSvc = service( "AuditorSvc", true );
     if ( !m_pAuditorSvc ) { throw GaudiException( "Service [AuditorSvc] not found", name(), StatusCode::FAILURE ); }
@@ -434,9 +365,7 @@ IAuditorSvc* AlgTool::auditorSvc() const {
   return m_pAuditorSvc.get();
 }
 
-//-----------------------------------------------------------------------------
 void AlgTool::acceptDHVisitor( IDataHandleVisitor* vis ) const {
-  //-----------------------------------------------------------------------------
   vis->visit( this );
 
   for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );

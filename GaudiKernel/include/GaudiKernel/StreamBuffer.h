@@ -10,7 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/swab.h>
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
@@ -20,10 +21,6 @@
 #include <typeinfo>
 #include <vector>
 
-#include <GaudiKernel/Kernel.h>
-#include <GaudiKernel/swab.h>
-
-// forward declarations
 class StreamBuffer;
 class DataObject;
 class ContainedObject;

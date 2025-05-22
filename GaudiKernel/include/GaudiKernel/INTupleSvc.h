@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/IDataProviderSvc.h>
 
-// Forward declarations
 namespace NTuple {
   class Tuple;
   struct Directory;

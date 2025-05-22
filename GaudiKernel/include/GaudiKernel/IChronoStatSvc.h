@@ -8,22 +8,14 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <iostream>
-#include <string>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/IChronoSvc.h>
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/IStatSvc.h>
-// ============================================================================
+#include <iostream>
+#include <string>
+
 /** @class IChronoStatSvc IChronoStatSvc.h GaudiKernel/IChronoStatSvc.h
  *
  *  The IChronoStatSvc is the interface implemented by the ChronoStatService.
@@ -44,6 +36,3 @@ public:
   /// InterfaceID
   DeclareInterfaceID( IChronoStatSvc, 6, 0 );
 };
-// ============================================================================
-// The END
-// ============================================================================

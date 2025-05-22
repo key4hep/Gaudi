@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IService.h>
 #include <string>
 
-// forward declarations
 class StatEntity;
 class Stat;
 

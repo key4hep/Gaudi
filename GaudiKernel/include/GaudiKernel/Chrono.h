@@ -9,19 +9,12 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD& STL
-// ============================================================================
-#include <string>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/ChronoEntity.h>
 #include <GaudiKernel/IChronoSvc.h>
 #include <GaudiKernel/Kernel.h>
-// ============================================================================
+#include <string>
+
 /** @class Chrono GaudiKernel/Chrono.h
  *
  * A small utility class for chronometry of user codes
@@ -33,7 +26,6 @@
  */
 class GAUDI_API Chrono {
 public:
-  // =========================================================================
   /** Constructor from Chrono Service and the tag
    *
    *  @code
@@ -61,16 +53,11 @@ public:
     if ( svc ) { m_chrono = svc->chronoStart( tag ); }
   }
 
-  // =========================================================================
-  /** Move Constructor
-   **/
-
   Chrono( Chrono&& rhs ) {
     m_chrono     = rhs.m_chrono;
     rhs.m_chrono = nullptr;
   }
 
-  // =========================================================================
   /** Constructor from Chrono Service and the tag
    *
    *  @code
@@ -97,7 +84,7 @@ public:
   {
     if ( svc ) { m_chrono = svc->chronoStart( tag ); }
   }
-  // =========================================================================
+
   /** Constructor from Chrono Object/Entity
    *
    *  @code
@@ -121,7 +108,7 @@ public:
   Chrono( ChronoEntity* c ) : m_chrono( c ) {
     if ( m_chrono ) { m_chrono->start(); }
   }
-  // =========================================================================
+
   /** Constructor from Chrono Object/Entity
    *
    *  @code
@@ -143,24 +130,16 @@ public:
    *  @param c the reference to Chrono Object/Entity
    */
   Chrono( ChronoEntity& c ) : m_chrono( &c ) { m_chrono->start(); }
-  // =========================================================================
+
   /// Destructor , stop the chrono
   ~Chrono() {
     if ( m_chrono ) { m_chrono->stop(); }
   }
-  // =========================================================================
+
 private:
-  // =========================================================================
-  /// delete the copy constructor and assignment operators
   Chrono( const Chrono& )            = delete;
   Chrono& operator=( const Chrono& ) = delete;
-  // =========================================================================
-private:
-  // ==========================================================================
+
   /// The actual chronometer
   ChronoEntity* m_chrono = nullptr; // The actual chronometer
-  // ==========================================================================
 };
-// ============================================================================
-// The END
-// ============================================================================

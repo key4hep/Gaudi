@@ -9,20 +9,13 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Iinclude files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <iostream>
-#include <string>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/IStatSvc.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/StatEntity.h>
-// ============================================================================
+#include <iostream>
+#include <string>
+
 /** @class Stat  Stat.h GaudiKernel/Stat.h
  *
  *  Small wrapper class for easy manipulation with generic counters
@@ -131,7 +124,6 @@ public:
   Stat& operator=( const Stat& ) = default;
   /// destructor
   ~Stat() = default;
-  // ==========================================================================
   /// get the entity
   const StatEntity* entity() const { return m_entity; }
   /// dereference operaqtor
@@ -140,7 +132,6 @@ public:
   operator const StatEntity&() const { return *entity(); }
   /// check validity
   bool operator!() const { return 0 == m_entity; }
-  // ==========================================================================
   /** General increment for the counter
    *
    *  @code
@@ -223,7 +214,6 @@ public:
     if ( 0 != right.entity() ) { ( *this ) += *right.entity(); }
     return *this;
   }
-  // ==========================================================================
   /// representation as string
   std::string toString() const;
   /** printout to std::ostream
@@ -236,14 +226,13 @@ public:
    *  @return the reference to the output stream
    */
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
-  // ==========================================================================
   /// alternative access to underlying counter
   StatEntity* counter() const { return m_entity; }
   /// counter name
   const std::string& name() const { return m_tag; }
   /// counter group
   const std::string& group() const { return m_group; }
-  // ==========================================================================
+
 private:
   // underlying counter
   StatEntity* m_entity = nullptr; ///< underlying counter
@@ -254,23 +243,13 @@ private:
   // Stat  service
   SmartIF<IStatSvc> m_stat; ///< Stat  service
 };
-// ============================================================================
 /// external operator for addition of Stat and a number
 GAUDI_API Stat operator+( const Stat& stat, const double value );
-// ============================================================================
 /// external operator for subtraction of Stat and a number
 GAUDI_API Stat operator-( const Stat& stat, const double value );
-// ============================================================================
 /// external operator for addition of Stat and a number
 GAUDI_API Stat operator+( const double value, const Stat& stat );
-// ============================================================================
 /// external operator for addition of Stat and Stat
 GAUDI_API Stat operator+( const Stat& stat, const Stat& value );
-// ============================================================================
 /// external printout operator to std::ostream
 GAUDI_API std::ostream& operator<<( std::ostream& stream, const Stat& stat );
-// ============================================================================
-
-// ============================================================================
-// The END
-// ============================================================================

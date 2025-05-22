@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,36 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	RegistryEntry.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : DataSvc ( The LHCb Offline System)
-//
-//  Description: implementation of the Transient data store
-//
-//	Author     : M.Frank
-//  History    :
-// +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who
-// +---------+----------------------------------------------+---------
-// | 29/10/98| Initial version                              | MF
-// | 03/02/99| Protect dynamic_cast with try-catch clauses  | MF
-// +---------+----------------------------------------------+---------
-//
-//====================================================================
-#define DATASVC_REGISTRYENTRY_CPP
-
-// STL include files
-#include <algorithm>
-
-// Interfaces
+#include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/IDataStoreAgent.h>
 #include <GaudiKernel/IOpaqueAddress.h>
-
-// Framework include files
-#include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/RegistryEntry.h>
+#include <algorithm>
 
 // If you absolutely need optimization: switch off dynamic_cast.
 // This improves access to the data store roughly by more than 10 %

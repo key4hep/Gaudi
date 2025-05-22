@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,30 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	MsgStream.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : System ( The LHCb Offline System)
-//
-//  Description: Class to ease error logging to the message service
-//
-//	Author     : M.Frank
-//  History    :
-// +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who
-// +---------+----------------------------------------------+---------
-// | 29/10/98| Initial version                              | MF
-// +---------+----------------------------------------------+---------
-//
-//====================================================================
-#define KERNEL_MSGSTREAM_CPP
-
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/Message.h>
 #include <GaudiKernel/MsgStream.h>
-
 #include <cstdarg>
 #include <cstdio>
 #include <iostream>

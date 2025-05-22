@@ -10,13 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IStateful.h>
 
-/** @class IComponentManager IComponentManager.h GaudiKernel/IComponentManager.h
-
-    @author Marco Clemencic
-*/
 class GAUDI_API IComponentManager : virtual public IStateful {
 public:
   /// InterfaceID

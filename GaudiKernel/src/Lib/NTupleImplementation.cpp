@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,34 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//  NTuple class implementation
-//--------------------------------------------------------------------
-//
-//  Package    : Gaudi/NTupleSvc ( The LHCb Offline System)
-//  Author     : M.Frank
-//
-//  +---------+----------------------------------------------+--------+
-//  |    Date |                 Comment                      | Who    |
-//  +---------+----------------------------------------------+--------+
-//  | 21/10/99| Initial version.                             | MF     |
-//  +---------+----------------------------------------------+--------+
-//====================================================================
-#define GAUDI_NTUPLEIMP_CPP 1
-
-// Framework include files
 #include <GaudiKernel/IDataSelector.h>
 #include <GaudiKernel/INTupleSvc.h>
 #include <GaudiKernel/ISelectStatement.h>
 #include <GaudiKernel/NTupleImplementation.h>
 
-/*
- */
 namespace NTuple {
-  /// Standard Constructor
   TupleImp::TupleImp( std::string title ) : m_title( std::move( title ) ) {}
-
-  /// Standard Destructor
   TupleImp::~TupleImp() {
     for ( auto& i : m_items ) i->release();
   }
@@ -107,4 +86,4 @@ namespace NTuple {
   StatusCode TupleImp::readRecord() { return m_ntupleSvc->readRecord( this ); }
   /// Save the NTuple
   StatusCode TupleImp::save() { return m_ntupleSvc->save( this ); }
-} // end namespace NTuple
+} // namespace NTuple

@@ -10,11 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
-#include <string>
-
-// Framework include files
 #include <GaudiKernel/IInterface.h>
+#include <string>
 
 /** @class ISelectStatement ISelectStatement.h GaudiKernel/ISelectStatement.h
 

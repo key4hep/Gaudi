@@ -8,7 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include Files
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Guards.h>
 #include <GaudiKernel/IAuditorSvc.h>

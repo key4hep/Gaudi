@@ -10,7 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-// Includes
+#include <Gaudi/Concepts.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/GaudiHandle.h>
@@ -19,11 +19,10 @@
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/ServiceLocatorHelper.h>
-
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 
-// class predeclarations
 class IAlgTool;
 class IToolSvc;
 class ServiceHandleProperty;
@@ -38,9 +37,6 @@ class ServiceHandleProperty;
 template <class T>
 class ServiceHandle : public GaudiHandle<T> {
 public:
-  //
-  // Constructors etc.
-  //
   /** Create a handle ('smart pointer') to a service.
       The arguments are passed on to ServiceSvc, and have the same meaning:
       @param serviceName name of the service
@@ -77,12 +73,6 @@ public:
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */
   using GaudiHandle<T>::retrieve;
 
-  //  /** Release the Service.
-  //    Function must be repeated here to avoid hiding the function release( T*& ) */
-  //   StatusCode release() const { // not really const, because it updates m_pObject
-  //     return GaudiHandle<T>::release();
-  //   }
-
   /// Allow non const access to the service, even from a const handle...
   T* get() const { return ::details::nonConst( GaudiHandle<T>::get() ); }
 
@@ -103,9 +93,6 @@ protected:
   }
 
 private:
-  //
-  // Private helper functions
-  //
   SmartIF<ISvcLocator>& serviceLocator() const { // not really const, because it may change m_pSvcLocator
     if ( !m_pSvcLocator ) {
       m_pSvcLocator = Gaudi::svcLocator();
@@ -125,9 +112,7 @@ private:
     }
     return m_pMessageSvc;
   }
-  //
-  // private data members
-  //
+
   mutable SmartIF<ISvcLocator> m_pSvcLocator;
   mutable SmartIF<IMessageSvc> m_pMessageSvc;
 };
@@ -145,9 +130,6 @@ private:
 template <class T>
 class ServiceHandleArray : public GaudiHandleArray<ServiceHandle<T>> {
 public:
-  //
-  // Constructors
-  //
   /** Generic constructor. Probably not very useful...
    **/
   ServiceHandleArray( const std::vector<std::string>& myTypesAndNamesList, const std::string& myComponentType,

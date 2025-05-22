@@ -8,22 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//	====================================================================
-//	SmartRefVector.h
-//	--------------------------------------------------------------------
-//
-//	Package   : Kernel
-//
-//	Author    : Markus Frank
-//
-//	====================================================================
 #pragma once
 
-// STL include files
-#include <vector>
-
-// Include files
 #include <GaudiKernel/SmartRef.h>
+#include <vector>
 
 // forward declare _object and PyObject to avoid including Python.h here
 struct _object;
@@ -99,20 +87,14 @@ protected:
 public:
   using SmartRefVectorPythonizer::__cppyy_pythonize__;
 
-  /// Standard Constructor
   SmartRefVector() {
     m_contd = 0;
     m_data  = 0;
   }
-  /// templated Constructor
   template <class ITERATOR>
   SmartRefVector( ITERATOR first, ITERATOR last )
       : std::vector<SmartRef<TYPE>>( first, last ), m_data( 0 ), m_contd( 0 ) {}
-  /// Copy Constructor
   SmartRefVector( const SmartRefVector& copy ) : std::vector<SmartRef<TYPE>>( copy ) { *this = copy; }
-  /// Standard destructor
-  // virtual ~SmartRefVector()                  {
-  //}
 
   /// operator(): assigns parent object for serialisation
   SmartRefVector<TYPE>& operator()( ContainedObject* pObj ) {

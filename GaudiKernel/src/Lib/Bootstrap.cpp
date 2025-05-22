@@ -180,10 +180,6 @@ IAppMgrUI* Gaudi::createApplicationMgr() {
   return createApplicationMgr( "GaudiCoreSvc", "ApplicationMgr" );
 }
 
-//=======================================================================
-// BootSvcLocator
-//=======================================================================
-
 static std::list<IService*> s_bootServices;
 static SmartIF<IService>    s_bootService;
 static SmartIF<IInterface>  s_bootInterface;

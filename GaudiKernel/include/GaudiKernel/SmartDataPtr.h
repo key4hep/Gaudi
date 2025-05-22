@@ -8,20 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//	====================================================================
-//	SmartDataPtr.h
-//	--------------------------------------------------------------------
-//
-//	Package    : GaudiKernel ( The LHCb Offline System)
-//
-//  Description: Implementation of a smart pointer class to access
-//               easily (and efficiently) data stores.
-//
-//	Author     : M.Frank
-//	====================================================================
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/SmartDataStorePtr.h>
 
@@ -130,8 +118,6 @@ public:
   */
   SmartDataPtr( const SmartDataObjectPtr& copy ) : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( copy ) {}
 
-  /** Standard destructor
-   */
   virtual ~SmartDataPtr() = default;
 
   /// Automatic conversion to data type

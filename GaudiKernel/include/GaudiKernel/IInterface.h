@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <Gaudi/Concepts.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StatusCode.h>

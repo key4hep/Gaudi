@@ -9,8 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
+
 #include <Gaudi/PluginService.h>
 #include <GaudiKernel/CommonMessaging.h>
 #include <GaudiKernel/DataObjID.h>
@@ -30,18 +29,13 @@
 #include <GaudiKernel/DataHandle.h>
 #include <GaudiKernel/DataHandleHolderBase.h>
 #include <GaudiKernel/IDataHandleHolder.h>
-
-template <class T>
-class DataObjectHandle;
-
-class ToolHandleInfo;
-
 #include <list>
 #include <vector>
 
-// Forward declarations
+template <class T>
+class DataObjectHandle;
+class ToolHandleInfo;
 class ToolSvc;
-
 class ToolVisitor;
 
 /** @class AlgTool AlgTool.h GaudiKernel/AlgTool.h
@@ -174,7 +168,6 @@ public:
     return sc;
   }
 
-  // ==========================================================================
   // declare ToolHandleArrays to the AlgTool
   template <class T>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr,
@@ -220,7 +213,6 @@ private:
   void initToolHandles() const;
 
 public:
-  // ==========================================================================
   /// Access the auditor service
   IAuditorSvc* auditorSvc() const;
 

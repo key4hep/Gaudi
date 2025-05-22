@@ -10,16 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
-#include <string>
-#include <vector>
-
-// Framework include files
 #include <GaudiKernel/IRndmGen.h>
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/SmartIF.h>
+#include <string>
+#include <vector>
 
-// Forward declarations
 class IRndmGen;
 class StreamBuffer;
 class IRndmEngine;

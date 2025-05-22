@@ -10,12 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/ObjectContainerBase.h>
 #include <GaudiKernel/StreamBuffer.h>
-
 #include <iomanip>
 #include <list>
 
@@ -65,13 +63,10 @@ public:
 #endif
 
 public:
-  /// Constructors
-  ObjectList() = default;
-
+  ObjectList()                                     = default;
   ObjectList( const ObjectList<TYPE>& )            = delete;
   ObjectList& operator=( const ObjectList<TYPE>& ) = delete;
 
-  /// Destructor
   ~ObjectList() override { clear(); }
 
   /// Retrieve pointer to class definition structure
@@ -250,6 +245,5 @@ public:
   }
 
 private:
-  /// The STL list
   std::list<TYPE*> m_list;
 };

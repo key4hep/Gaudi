@@ -10,19 +10,16 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/ObjectContainerBase.h>
 #include <GaudiKernel/StreamBuffer.h>
 #include <iostream>
 
-// Forward declarations
 template <class TYPE>
 class ObjectVector;
 template <class TYPE>
 class ObjectList;
 
-// Typedefs
 typedef ObjectVector<ContainedObject> ContainedObjectVector;
 typedef ObjectList<ContainedObject>   ContainedObjectList;
 

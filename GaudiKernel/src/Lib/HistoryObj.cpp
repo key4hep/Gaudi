@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,27 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//      History.cpp
-//--------------------------------------------------------------------
-//
-//  Description: Implementation of HistoryObj base class
-//
-//  Author     : Charles Leggett
-//====================================================================
-
-#define GAUDIKERNEL_HISTORYOBJ_CPP
-
 #include <Gaudi/Property.h>
 #include <GaudiKernel/HistoryObj.h>
 
-using namespace std;
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 std::string HistoryObj::convert_string( const std::string& input_string ) {
-
   // Conversion of special characteres into xml language
 
   std::string modified_string;
@@ -51,8 +34,6 @@ std::string HistoryObj::convert_string( const std::string& input_string ) {
   return modified_string;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void HistoryObj::indent( std::ostream& ost, int i ) const {
   while ( i > 0 ) {
     ost << " ";
@@ -60,12 +41,7 @@ void HistoryObj::indent( std::ostream& ost, int i ) const {
   }
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 const CLID& HistoryObj::classID() {
-
   static const CLID CLID_HistoryObj = 86452397;
   return CLID_HistoryObj;
 }
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

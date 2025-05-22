@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IDataManagerSvc.h>
 #include <GaudiKernel/IDataProviderSvc.h>
@@ -18,27 +17,17 @@
 #include <GaudiKernel/RegistryEntry.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/ServiceHandle.h>
-
-// System libraries
 #include <mutex>
 
 namespace {
   typedef std::recursive_mutex tsDataSvcMutex;
 } // namespace
-
-// Forward declarations
-// Generic address
 class IOpaqueAddress;
-// Generic interface to data object class
 class DataObject;
-// Data store agent
 class IDataStoreAgent;
 
-// Do not clutter global namespace for helpers...
 namespace DataSvcHelpers {
-  // Map of objects where loading is inhibited
   class InhibitMap;
-  // Generic registry entry
   class RegistryEntry;
 } // namespace DataSvcHelpers
 

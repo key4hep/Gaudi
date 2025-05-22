@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,32 +9,19 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
+#include <Gaudi/Parsers/Grammars.h>
+#include <GaudiKernel/StatusCode.h>
+#include <boost/mpl/assert.hpp>
+#include <boost/type_traits.hpp>
 #include <map>
 #include <string>
 #include <vector>
-// ============================================================================
-// Boost:
-// ============================================================================
-#include <boost/mpl/assert.hpp>
-#include <boost/type_traits.hpp>
-// ============================================================================
-// Gaudi
-// ============================================================================
-#include <Gaudi/Parsers/Grammars.h>
-#include <GaudiKernel/StatusCode.h>
-// ============================================================================
+
 namespace Gaudi {
   namespace Parsers {
-    // ========================================================================
     typedef std::string_view::const_iterator IteratorT;
-    // typedef boost::spirit::ascii::space_type Skipper;
-    typedef SkipperGrammar<IteratorT> Skipper;
-    // ========================================================================
+    typedef SkipperGrammar<IteratorT>        Skipper;
     template <typename ResultT>
     inline StatusCode parse_( ResultT& result, std::string_view input ) {
       Skipper                                                 skipper;
@@ -43,7 +30,6 @@ namespace Gaudi {
       return ( qi::phrase_parse( iter, end, g, skipper, result ) && ( iter == end ) ? StatusCode::SUCCESS
                                                                                     : StatusCode::FAILURE );
     }
-    //=========================================================================
     template <>
     inline StatusCode parse_( std::string& result, std::string_view input ) {
       Skipper                                            skipper;
@@ -53,11 +39,9 @@ namespace Gaudi {
       //@attention always
       return StatusCode::SUCCESS;
     }
-    //=========================================================================
     template <typename ResultT>
     inline StatusCode parse( ResultT& result, std::string_view input ) {
       return parse_( result, input );
     }
-    //=========================================================================
   } // namespace Parsers
 } // namespace Gaudi

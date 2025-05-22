@@ -8,12 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-///////////////////////////////////////////////////////////////////
-// IFileMgr.h
-// Manages all file open/reopen/close
-// Author: C.Leggett
-///////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include <GaudiKernel/ClassID.h>
@@ -146,8 +140,6 @@ namespace Io {
   inline std::ostream& operator<<( std::ostream& s, const IoFlag& f ) { return s << IoFlagName( f ); }
   inline std::ostream& operator<<( std::ostream& s, const IoFlags& f ) { return s << IoFlagName( f ); }
 
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
   //
   // Technologies
   //
@@ -158,8 +150,6 @@ namespace Io {
     static const std::array<const char*, SQLITE + 1> tbl = { { "UNKNOWN", "POSIX", "ROOT", "BS", "HDF5", "SQLITE" } };
     return t < tbl.size() ? s << tbl[t] : s;
   }
-
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   //
   // File Attributes
@@ -233,8 +223,6 @@ namespace Io {
     bool        m_shared = false;
   };
 
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
   //
   // Handler functions
   //
@@ -268,8 +256,6 @@ namespace Io {
         : tech( t ), b_open_fcn( o ), b_close_fcn( c1 ), b_closeP_fcn( c2 ), b_reopen_fcn( r1 ), b_reopenP_fcn( r2 ) {}
   };
 
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
   //
   // Callback Actions
   //
@@ -286,9 +272,6 @@ namespace Io {
 #define FILEMGR_CALLBACK_ARGS const Io::FileAttr*, const std::string&
   typedef std::function<StatusCode( FILEMGR_CALLBACK_ARGS )> bfcn_action_t;
 } // namespace Io
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class GAUDI_API IFileMgr : virtual public IService {
 

@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Includes
 #include <GaudiKernel/GaudiHandle.h>
 #include <GaudiKernel/IAlgTool.h>
 #include <GaudiKernel/IBinder.h>
@@ -18,7 +17,6 @@
 #include <GaudiKernel/IToolSvc.h>
 #include <GaudiKernel/ServiceHandle.h>
 #include <GaudiKernel/TaggedBool.h>
-
 #include <cassert>
 #include <concepts>
 #include <ostream>
@@ -28,16 +26,13 @@
 #include <utility>
 #include <vector>
 
-// forward declarations
 class IInterface;
 class IToolSvc;
-
 namespace Gaudi {
   class Algorithm;
 }
 class AlgTool;
 class Service;
-
 using DisableTool = Gaudi::tagged_bool<class DisableTool_tag>;
 using EnableTool  = Gaudi::tagged_bool<class EnableTool_tag>;
 

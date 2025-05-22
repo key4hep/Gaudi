@@ -10,12 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/Kernel.h>
 
-// Forward declarations
-// Generic interface to data object class
 class IConversionSvc;
 
 /** @class IPersistencySvc IPersistencySvc.h GaudiKernel/IPersistencySvc.h

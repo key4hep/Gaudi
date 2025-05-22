@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,20 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	EventSelectorDataStream.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : EventSelectorDataStream  (The LHCb Event Selector Package)
-//
-//
-//	Author     : M.Frank
-//      Created    : 4/10/00
-//	Changes    : R. Lambert 2009-09-04
-//
-//====================================================================
-#define GAUDISVC_EVENTSELECTOR_EVENTSELECTORDATASTREAM_CPP 1
-// Include files
 #include <GaudiKernel/AttribStringParser.h>
 #include <GaudiKernel/EventSelectorDataStream.h>
 #include <GaudiKernel/IConversionSvc.h>

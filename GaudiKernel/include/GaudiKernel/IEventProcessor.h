@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IInterface.h>
 

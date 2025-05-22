@@ -10,14 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/IInterface.h>
-
-// C++ include files
 #include <string>
 
-// Forward declarations
 class IOpaqueAddress;
 
 /** @class IAddressCreator IAddressCreator.h GaudiKernel/IAddressCreator.h

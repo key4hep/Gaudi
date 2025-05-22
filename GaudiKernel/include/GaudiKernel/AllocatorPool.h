@@ -112,7 +112,7 @@ namespace GaudiUtils {
     int                nchunks = 0;
   };
 
-} // end of namespace GaudiUtils
+} // namespace GaudiUtils
 
 // ************************************************************
 // Alloc
@@ -140,7 +140,3 @@ inline void GaudiUtils::AllocatorPool::Free( void* b ) {
 // ************************************************************
 //
 inline unsigned int GaudiUtils::AllocatorPool::Size() const { return nchunks * csize; }
-
-// ============================================================================
-// The END
-// ============================================================================

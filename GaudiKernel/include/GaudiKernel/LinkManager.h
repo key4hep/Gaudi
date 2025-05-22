@@ -10,12 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// STL includes
+#include <GaudiKernel/Kernel.h>
 #include <memory>
 #include <string>
 #include <vector>
-// Gaudi
-#include <GaudiKernel/Kernel.h>
 
 class DataObject;
 class IOpaqueAddress;

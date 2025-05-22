@@ -8,20 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	Win32PsApi.h
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Definition of Systems internals for WIN32
-//               This file is NOT meant to be used outside this
-//               sub-package!
-//
-//	Author     : M.Frank
-//  Created    : 13/11/00
-//	Changes    :
-//====================================================================
 #pragma once
 #ifdef _WIN32
 typedef struct _MODULEINFO {

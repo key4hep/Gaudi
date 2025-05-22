@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,14 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// GauduKernel
-// ============================================================================
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Range.h>
-// ============================================================================
+
 /** @file
  *
  *  This file has been imported from
@@ -31,15 +26,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2001-01-23
  */
-// ============================================================================
-/*  Helpful function to throw an out-of-range exception for class Range_
- *  @param index invalid index
- *  @param size  range size
- */
-// ============================================================================
+
 void Gaudi::details::rangeException( const long /* index */, const size_t /* size  */ ) {
   throw GaudiException( "Out-of-Range for class Gaudi::Range_", "RangeError", StatusCode::FAILURE );
 }
-// ============================================================================
-// The END
-// ============================================================================

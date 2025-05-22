@@ -9,24 +9,18 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
 #include <cstddef>
 #include <numeric>
-// ============================================================================
-// Boost
-// ============================================================================
+
 #include <boost/functional/hash.hpp>
-// ============================================================================
+
 namespace GaudiUtils {
   /// Generic hash implementation (for easy migration to the new Hash class).
   //  To enable the generic hash for a user defined class, it is enough to add
   //  few lines to the .cpp files that needs them
   //  @code
-  //  #include "GaudiKernel/Hash.h"
+  //  #include <GaudiKernel/Hash.h>
   //  class MyType;
   //  namespace GaudiUtils {
   //    template <>
@@ -35,17 +29,14 @@ namespace GaudiUtils {
   //  @endcode
   template <class T>
   struct GenericHash {
-    // ========================================================================
     /// the generic hash function
     inline std::size_t operator()( const T& key ) const {
       const char* p = reinterpret_cast<const char*>( &key );
       return std::accumulate( p, p + sizeof( T ), std::size_t{ 0 },
                               []( std::size_t res, const char& c ) { return ( res << 1 ) ^ c; } );
     }
-    // ========================================================================
   };
 
-  // ==========================================================================
   /** @class Hash Hash.h GaudiKernel/Hash.h
    *
    * Simple hash function.
@@ -100,38 +91,27 @@ namespace GaudiUtils {
    */
   template <class T>
   struct Hash {
-    // ========================================================================
     /// the hash-function
     inline std::size_t operator()( const T& key ) const;
-    // ========================================================================
   };
-  // ==========================================================================
   /// the partial specialization for pointers
   template <class T>
   struct Hash<T*> {
-    // ========================================================================
     /// the hash-function
     inline std::size_t operator()( const T* key ) const;
-    // ========================================================================
   };
-  // ==========================================================================
   /// generic specialization for arrays
   template <class T, unsigned N>
   struct Hash<T ( & )[N]> {
-    // ========================================================================
     /// the hash-function
     inline std::size_t operator()( T ( &key )[N] ) const { return boost::hash_range( key, key + N ); }
-    // ========================================================================
   };
   /// generic specialization for arrays
   template <class T, unsigned N>
   struct Hash<const T ( & )[N]> {
-    // ========================================================================
     /// the hash-function
     inline std::size_t operator()( const T ( &key )[N] ) const { return boost::hash_range( key, key + N ); }
-    // ========================================================================
   };
-  // ==========================================================================
   /// remove extra qualifiers:
   template <class T>
   struct Hash<const T> : public Hash<T> {};
@@ -144,7 +124,6 @@ namespace GaudiUtils {
   /// remove extra qualifiers:
   template <class T>
   struct Hash<const T&> : public Hash<T> {};
-  // ==========================================================================
   /// the generic implementations of hash-function
   template <class T>
   inline std::size_t Hash<T>::operator()( const T& key ) const {
@@ -167,9 +146,4 @@ namespace GaudiUtils {
     }
     return seed;
   }
-
-  // ==========================================================================
-} // end of namespace GaudiUtils
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace GaudiUtils

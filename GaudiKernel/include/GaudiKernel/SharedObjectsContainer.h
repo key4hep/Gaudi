@@ -9,20 +9,13 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <algorithm>
-#include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/ObjectContainerBase.h>
-// ============================================================================
+#include <algorithm>
+#include <vector>
+
 /** @class SharedObjectsContainer GaudiKernel/SharedObjectsContainer.h
  *
  *  Very simple class to represent the container of objects which are
@@ -37,10 +30,9 @@
 template <class TYPE>
 class SharedObjectsContainer : public ObjectContainerBase {
 public:
-  // ==========================================================================
   /// the actual container type
   typedef std::vector<const TYPE*> ConstVector;
-  /// various types (to make STL happy)
+  // various types (to make STL happy)
   typedef typename ConstVector::value_type             value_type;
   typedef typename ConstVector::size_type              size_type;
   typedef typename ConstVector::reference              reference;
@@ -49,15 +41,10 @@ public:
   typedef typename ConstVector::const_iterator         const_iterator;
   typedef typename ConstVector::reverse_iterator       reverse_iterator;
   typedef typename ConstVector::const_reverse_iterator const_reverse_iterator;
-  // ==========================================================================
-public:
-  // ==========================================================================
-  // the default constructor (creates the empty vector)
-  SharedObjectsContainer() = default;
-  // move constructor and move assignement
+
+  SharedObjectsContainer()                                      = default;
   SharedObjectsContainer( SharedObjectsContainer&& )            = default;
   SharedObjectsContainer& operator=( SharedObjectsContainer&& ) = default;
-  // the constructor from the data
   SharedObjectsContainer( const ConstVector& data ) : m_data( data ) {}
   SharedObjectsContainer( ConstVector&& data ) : m_data( std::move( data ) ) {}
 
@@ -94,9 +81,7 @@ public:
   SharedObjectsContainer( DATA first, DATA last, const PREDICATE& cut ) {
     insert( first, last, cut );
   }
-  // ==========================================================================
-public:
-  // ==========================================================================
+
   /// Retrieve the unique class ID (virtual)
   const CLID& clID() const override { return SharedObjectsContainer<TYPE>::classID(); }
   /// Retrieve the unuqie class ID (static)
@@ -110,16 +95,10 @@ public:
     //
     return s_clid;
   }
-  // ==========================================================================
-public:
-  // ==========================================================================
   /// get the access to the underlying container (const)
   inline const ConstVector& data() const { return m_data; }
   /// cast to the underlying container
   operator const ConstVector&() const { return data(); }
-  // ==========================================================================
-public:
-  // ==========================================================================
   /// get the actual size of the container
   size_type size() const { return m_data.size(); }
   /// empty container?
@@ -246,9 +225,6 @@ public:
     m_data.erase( i );
     return true;
   }
-  // ==========================================================================
-public:
-  // ==========================================================================
   /// index access
   reference operator[]( size_type index ) { return m_data[index]; }
   /// index access (const-version)
@@ -260,10 +236,7 @@ public:
   /// checked access
   reference at( size_type index ) { return m_data.at( index ); }
   /// checked access (const-version)
-  const_reference at( size_type index ) const { return m_data.at( index ); }
-  // ==========================================================================
-public:
-  // ==========================================================================
+  const_reference        at( size_type index ) const { return m_data.at( index ); }
   iterator               begin() { return m_data.begin(); }
   iterator               end() { return m_data.end(); }
   const_iterator         begin() const { return m_data.begin(); }
@@ -272,9 +245,6 @@ public:
   reverse_iterator       rend() { return m_data.rend(); }
   const_reverse_iterator rbegin() const { return m_data.rbegin(); }
   const_reverse_iterator rend() const { return m_data.rend(); }
-  // ==========================================================================
-public:
-  // ==========================================================================
   /// the first element (only for non-empty vectors)
   reference front() { return m_data.front(); }
   /// the first element (only for non-empty vectors) (const-version)
@@ -283,9 +253,6 @@ public:
   reference back() { return m_data.back(); }
   /// the last  element (only for non-empty vectors) (const-version)
   const_reference back() const { return m_data.back(); }
-  // ==========================================================================
-public:
-  // ==========================================================================
   /// equal content with other container ?
   bool operator==( const SharedObjectsContainer& right ) const { return &right == this || right.m_data == m_data; }
   /// equal content with corresponding vector ?
@@ -297,24 +264,23 @@ public:
   // ==========================================================================
   // ObjectContainerBase methods:
   // ==========================================================================
-public:
   /** Distance of a given object from the beginning of its container
    *  @param object the object to be checked
    */
   long index( const ContainedObject* object ) const override {
     auto _i = std::find( begin(), end(), object );
-    return end() != _i ? ( _i - begin() ) : -1; // RETURN
+    return end() != _i ? ( _i - begin() ) : -1;
   }
   /** Pointer to an object of a given distance
    *  @param index th eindex to be checked
    *  @return the object
    */
   const ContainedObject* containedObject( long index ) const override {
-    if ( 0 > index || !( index < (long)size() ) ) { return nullptr; } // RETURN
+    if ( 0 > index || !( index < (long)size() ) ) { return nullptr; }
     return m_data[index];
   }
   ContainedObject* containedObject( long index ) override {
-    if ( 0 > index || !( index < (long)size() ) ) { return nullptr; } // RETURN
+    if ( 0 > index || !( index < (long)size() ) ) { return nullptr; }
     return &const_cast<TYPE&>( *m_data[index] );
   }
   /// Number of objects in the container
@@ -324,9 +290,9 @@ public:
    *  returned.
    */
   long add( ContainedObject* object ) override {
-    if ( !object ) { return -1; } // RETURN
+    if ( !object ) { return -1; }
     TYPE* _obj = dynamic_cast<TYPE*>( object );
-    if ( !_obj ) { return -1; } // RETURN
+    if ( !_obj ) { return -1; }
     const size_type pos = size();
     push_back( _obj );
     return pos;
@@ -337,18 +303,12 @@ public:
    */
   long remove( ContainedObject* value ) override {
     auto _i = std::find( begin(), end(), value );
-    if ( end() == _i ) { return -1; } // RETURN
+    if ( end() == _i ) { return -1; }
     const size_type pos = _i - begin();
     m_data.erase( _i );
-    return pos; // RETURN
+    return pos;
   }
-  // ==========================================================================
+
 private:
-  // ==========================================================================
-  // the actual data
   ConstVector m_data; // the actual data
-  // ==========================================================================
 };
-// ============================================================================
-// The END
-// ============================================================================

@@ -10,13 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
+#include <GaudiKernel/Kernel.h>
 #include <string>
 
-// Framework include files
-#include <GaudiKernel/Kernel.h>
-
-// Forward declarations
 class IAppMgrUI;
 class ISvcLocator;
 class IInterface;

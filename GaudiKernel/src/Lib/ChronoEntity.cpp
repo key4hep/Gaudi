@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,19 +13,8 @@
 #include <GaudiKernel/System.h>
 #include <algorithm>
 #include <boost/format.hpp>
-#include <cmath>
-#include <cstdio>
 #include <fmt/format.h>
-#include <iomanip>
-#include <iostream>
 
-// ============================================================================
-/** @file
- *  implementation file for class ChronoEntity
- *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
- *  @date:   December 1, 1999
- */
-// ============================================================================
 namespace {
   /// the unit used by ChronoEntity is microsecond
   constexpr double microsecond = 1; // unit here is microsecond
@@ -76,29 +65,18 @@ IChronoSvc::ChronoStatus ChronoEntity::stop() {
 
   return m_status;
 }
-// ============================================================================
-// print user time
-// ============================================================================
 std::string ChronoEntity::outputUserTime() const {
   return "Time User   : " +
          format( uTotalTime(), uMinimalTime(), uMeanTime(), uRMSTime(), uMaximalTime(), nOfMeasurements() );
 }
-// ============================================================================
-// print system time
-// ============================================================================
 std::string ChronoEntity::outputSystemTime() const {
   return "Time System : " +
          format( kTotalTime(), kMinimalTime(), kMeanTime(), kRMSTime(), kMaximalTime(), nOfMeasurements() );
 }
-// ============================================================================
-// print time
 std::string ChronoEntity::outputElapsedTime() const {
   return "TimeElapsed: " +
          format( eTotalTime(), eMinimalTime(), eMeanTime(), eRMSTime(), eMaximalTime(), nOfMeasurements() );
 }
-// ============================================================================
-// print the chrono
-// ============================================================================
 std::string ChronoEntity::format( const double total, const double minimal, const double mean, const double rms,
                                   const double maximal, const unsigned long number ) const {
 
@@ -136,9 +114,6 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
 
   return fmt::format( fmt, unit_name, (double)( total / unit ), number, stats() );
 }
-// ============================================================================
-// compound assignment operator
-// ============================================================================
 ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e ) {
   // System::ProcessTime type
   m_delta += e.m_delta;
@@ -156,21 +131,11 @@ ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e ) {
   return *this;
 }
 
-// ============================================================================
-/*  print the chrono according the format and units
- *  @param typ  the chrono type
- *  @param fmt  the format string
- *  @param unit the unit
- *  @return the string representations
- *  @see boost::format
- */
-// ============================================================================
 std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, std::string_view fmt, System::TimeType unit ) const {
   boost::format _fmt( std::string{ fmt } );
   // allow various number of arguments
   using namespace boost::io;
   _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );
-  //
   double _unit = microsecond;
   switch ( unit ) {
   case System::Year:
@@ -204,7 +169,6 @@ std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, std::string_vi
     _unit = microsecond;
     break;
   }
-  //
   const StatEntity* stat = &m_user;
   switch ( typ ) {
   case IChronoSvc::USER:
@@ -220,7 +184,6 @@ std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, std::string_vi
     stat = &m_user;
     break;
   }
-  //
   _fmt % ( stat->nEntries() )           // %1 : #entries
       % ( stat->flag() / _unit )        // %2 : total time
       % ( stat->flagMean() / _unit )    // %3 : mean time
@@ -228,11 +191,5 @@ std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, std::string_vi
       % ( stat->flagMeanErr() / _unit ) // %5 : error in mean time
       % ( stat->flagMin() / _unit )     // %6 : minimal time
       % ( stat->flagMax() / _unit );    // %7 : maximal time
-  //
   return _fmt.str();
 }
-// ==========================================================================
-
-// ============================================================================
-// The END
-// ============================================================================

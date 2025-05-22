@@ -9,19 +9,12 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
+
 #include <Gaudi/Parsers/CommonParsers.h>
 #include <Gaudi/Parsers/Factory.h>
-// ============================================================================
-// STD & STL
-// ============================================================================
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/StringKey.h>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
-// ============================================================================
-#include <GaudiKernel/StatusCode.h>
-#include <GaudiKernel/StringKey.h>
-// ============================================================================

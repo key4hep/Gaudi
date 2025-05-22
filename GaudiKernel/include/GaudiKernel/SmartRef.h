@@ -8,24 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//	====================================================================
-//	SmartRef.h
-//	--------------------------------------------------------------------
-//
-//	Package   : Kernel
-//
-//	Author    : Markus Frank
-//
-//	====================================================================
 #pragma once
 
-// Include files
 #include <GaudiKernel/ContainedObject.h>
 #include <GaudiKernel/SmartRefBase.h>
-
 #include <typeinfo>
 
-// Forward declarations
 template <class TYPE>
 class SmartRefArray;
 template <class TYPE>

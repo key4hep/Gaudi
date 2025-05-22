@@ -10,26 +10,23 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/ISvcManager.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/TypeNameString.h>
-
 #include <list>
 #include <string>
 
-// Forward class declaration
 class IService;
 namespace Gaudi::Monitoring {
   struct Hub;
 }
-
 namespace Gaudi {
   namespace Interfaces {
     struct IOptionsSvc;
   }
 } // namespace Gaudi
+
 #define GAUDI_HAS_IOPTIONS_SVC
 
 /** @class ISvcLocator ISvcLocator.h GaudiKernel/ISvcLocator.h

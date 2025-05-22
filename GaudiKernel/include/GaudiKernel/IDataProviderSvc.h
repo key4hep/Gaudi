@@ -10,18 +10,14 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IInterface.h>
-
-// C/C++ include files
 #include <string>
 #include <string_view>
 
-// Forward declarations
 class IOpaqueAddress;
 class IRegistry;
-#include <GaudiKernel/DataObject.h>
-#include <GaudiKernel/DataStoreItem.h>
 
 /** @class IDataProviderSvc IDataProviderSvc.h GaudiKernel/IDataProviderSvc.h
  *
@@ -52,7 +48,7 @@ class IRegistry;
 class GAUDI_API IDataProviderSvc : virtual public IInterface {
 
   /// Helper function to convert item numbers to path strings
-  //  /// i.e. int -> "/" + int
+  /// i.e. int -> "/" + int
   static inline std::string itemToPath( int item ) { return '/' + std::to_string( item ); }
 
 public:

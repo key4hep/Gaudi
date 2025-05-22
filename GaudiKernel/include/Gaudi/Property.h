@@ -23,7 +23,6 @@
 #include <utility>
 
 namespace Gaudi {
-  // ============================================================================
   /** Implementation of property with value of concrete type.
    *
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -31,27 +30,22 @@ namespace Gaudi {
    *  @author Marco Clemencic
    *  @date 2016-06-16
    */
-  // ============================================================================
   template <class TYPE, class VERIFIER = Details::Property::NullVerifier,
             class HANDLERS = Details::Property::UpdateHandler>
   class Property : public Details::PropertyBase {
   public:
-    // ==========================================================================
     /// Hosted type
     using StorageType  = TYPE;
     using ValueType    = typename std::remove_reference<StorageType>::type;
     using VerifierType = VERIFIER;
     using HandlersType = HANDLERS;
-    // ==========================================================================
 
   private:
-    /// Storage.
     StorageType  m_value;
     VerifierType m_verifier;
     HandlersType m_handlers;
 
   public:
-    // ==========================================================================
     /// the constructor with property name, value and documentation.
     template <class T = StorageType>
     Property( std::string name, T&& value, std::string doc = "", std::string semantics = "" )
@@ -354,7 +348,6 @@ namespace Gaudi {
       return value().makeHandles( arg );
     }
     /// @}
-    // ==========================================================================
 
     // Delegate operator() to the value
     template <class... Args>
@@ -646,7 +639,6 @@ private:
 
 namespace Gaudi {
   namespace Utils {
-    // ========================================================================
     /** simple function which check the existence of the property with
      *  the given name.
      *
@@ -665,7 +657,6 @@ namespace Gaudi {
      *  @date   2006-09-09
      */
     GAUDI_API bool hasProperty( const IProperty* p, std::string_view name );
-    // ========================================================================
     /** simple function which check the existence of the property with
      *  the given name.
      *
@@ -684,7 +675,6 @@ namespace Gaudi {
      *  @date   2006-09-09
      */
     GAUDI_API bool hasProperty( const IInterface* p, std::string_view name );
-    // ========================================================================
     /** simple function which gets the property with given name
      *  from the component
      *
@@ -703,7 +693,6 @@ namespace Gaudi {
      *  @date   2006-09-09
      */
     GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IProperty* p, std::string_view name );
-    // ========================================================================
     /** simple function which gets the property with given name
      *  from the component
      *
@@ -722,7 +711,6 @@ namespace Gaudi {
      *  @date   2006-09-09
      */
     GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IInterface* p, std::string_view name );
-    // ========================================================================
     /** check  the property by name from  the list of the properties
      *
      *  @code
@@ -746,7 +734,6 @@ namespace Gaudi {
      *  @date   2006-09-09
      */
     GAUDI_API bool hasProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, std::string_view name );
-    // ========================================================================
     /** get the property by name from  the list of the properties
      *
      *  @code
@@ -771,7 +758,6 @@ namespace Gaudi {
      */
     GAUDI_API const Gaudi::Details::PropertyBase*
                     getProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, std::string_view name );
-    // ========================================================================
     /** simple function to set the property of the given object from the value
      *
      *  @code
@@ -797,7 +783,6 @@ namespace Gaudi {
      */
     template <class TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value, const std::string& doc );
-    // ========================================================================
     /** simple function to set the property of the given object from the value
      *
      *  @code
@@ -824,7 +809,6 @@ namespace Gaudi {
     StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value ) {
       return setProperty( component, name, value, std::string() );
     }
-    // ========================================================================
     /** the full specialization of the
      *  previous method setProperty( IProperty, std::string, const TYPE&)
      *  for standard strings
@@ -840,7 +824,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name, const std::string& value,
                                       const std::string& doc = "" );
-    // ========================================================================
     /** the full specialization of the
      *  method setProperty( IProperty, std::string, const TYPE&)
      *  for C-strings
@@ -856,7 +839,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name, const char* value,
                                       const std::string& doc = "" );
-    // ========================================================================
     /** the full specialization of the
      *  method setProperty( IProperty, std::string, const TYPE&)
      *  for C-arrays
@@ -875,7 +857,6 @@ namespace Gaudi {
                             const std::string& doc = "" ) {
       return component ? setProperty( component, name, std::string( value, value + N ), doc ) : StatusCode::FAILURE;
     }
-    // ========================================================================
     /** simple function to set the property of the given object from the value
      *
      *  @code
@@ -913,7 +894,6 @@ namespace Gaudi {
                  ? Gaudi::Utils::setProperty( component, name, toString( value ), doc )
                  : StatusCode::FAILURE;
     }
-    // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
      *
@@ -937,7 +917,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name,
                                       const Gaudi::Details::PropertyBase* property, const std::string& doc = "" );
-    // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
      *
@@ -961,7 +940,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name,
                                       const Gaudi::Details::PropertyBase& property, const std::string& doc = "" );
-    // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
      *
@@ -989,7 +967,6 @@ namespace Gaudi {
                             const std::string& doc = "" ) {
       return setProperty( component, name, &value, doc );
     }
-    // ========================================================================
     /** simple function to set the property of the given object from the value
      *
      *  @code
@@ -1017,7 +994,6 @@ namespace Gaudi {
       auto property = SmartIF<IProperty>{ component };
       return property ? setProperty( property, name, value, doc ) : StatusCode::FAILURE;
     }
-    // ========================================================================
     /** the full specialization of the
      *  method setProperty( IInterface , std::string, const TYPE&)
      *  for standard strings
@@ -1032,7 +1008,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name, const std::string& value,
                                       const std::string& doc = "" );
-    // ========================================================================
     /** the full specialization of the
      *  method setProperty( IInterface , std::string, const TYPE&)
      *  for C-strings
@@ -1047,7 +1022,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name, const char* value,
                                       const std::string& doc = "" );
-    // ========================================================================
     /** the full specialization of the
      *  method setProperty( IInterface, std::string, const TYPE&)
      *  for C-arrays
@@ -1067,7 +1041,6 @@ namespace Gaudi {
       if ( !component ) { return StatusCode::FAILURE; }
       return setProperty( component, name, std::string{ value, value + N }, doc );
     }
-    // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
      *
@@ -1091,7 +1064,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name,
                                       const Gaudi::Details::PropertyBase* property, const std::string& doc = "" );
-    // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
      *
@@ -1115,7 +1087,6 @@ namespace Gaudi {
      */
     GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name,
                                       const Gaudi::Details::PropertyBase& property, const std::string& doc = "" );
-    // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
      *
@@ -1143,6 +1114,5 @@ namespace Gaudi {
                             const std::string& doc = "" ) {
       return setProperty( component, name, &value, doc );
     }
-    // ========================================================================
   } // namespace Utils
-} // end of namespace Gaudi
+} // namespace Gaudi

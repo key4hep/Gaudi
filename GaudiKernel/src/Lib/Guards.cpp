@@ -8,13 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-
-#include <exception>
-
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Guards.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/System.h>
+#include <exception>
 
 /** @file
  *  Implementation file for class Gaudi::Guards::ExceptionGuard
@@ -23,26 +21,19 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-03-07
  */
+
 void Gaudi::Guards::ExceptionGuard::handle( const GaudiException& exc, MsgStream& log ) {
-  // the general printout
   log << MSG::FATAL << System::typeinfoName( typeid( exc ) ) << "('" << exc.tag() << "') is caught!" << endmsg;
-  // print the details about the exception:
   log << MSG::ERROR << exc << endmsg;
-  // get the status code form the exception:
   m_sc = exc.code();
 }
 
-// Local handle (print) of std::exception
 void Gaudi::Guards::ExceptionGuard::handle( const std::exception& exc, MsgStream& log ) {
-  // the general printout
   log << MSG::FATAL << System::typeinfoName( typeid( exc ) ) << " is caught!" << endmsg;
-  // print the detailes abotu the exception:
   log << MSG::ERROR << exc.what() << endmsg;
 }
 
-// Local handle (print) of unknown exception
 void Gaudi::Guards::ExceptionGuard::handle( MsgStream& log ) {
-  // the general printout
   log << MSG::FATAL << "UNKNOWN exception is caught!" << endmsg;
 }
 

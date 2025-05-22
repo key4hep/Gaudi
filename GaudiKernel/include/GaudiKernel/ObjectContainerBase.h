@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/Kernel.h>
 
-// Forward declarations
 class ContainedObject;
 
 /** @class ObjectContainerBase ObjectContainerBase.h GaudiKernel/ObjectContainerBase.h

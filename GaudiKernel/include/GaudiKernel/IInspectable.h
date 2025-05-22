@@ -10,10 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Include Files
 #include <GaudiKernel/Kernel.h>
 
-// Forward declaration
 class IInspector;
 class IInspectable;
 
@@ -25,7 +23,6 @@ class IInspectable;
 */
 class GAUDI_API IInspectable {
 public:
-  /// destructor
   virtual ~IInspectable() = default;
 
   /** return FALSE if doesn't accept Inspecetor so that diagnostic

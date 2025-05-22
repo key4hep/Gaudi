@@ -8,30 +8,19 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
+#include <GaudiKernel/MapBase.h>
+#include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/StringKey.h>
 #include <algorithm>
 #include <functional>
 #include <initializer_list>
 #include <ostream>
 #include <utility>
 #include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include <GaudiKernel/MapBase.h>
 
-// For parsers
-#include <GaudiKernel/StatusCode.h>
-#include <GaudiKernel/StringKey.h>
-// ============================================================================
 namespace GaudiUtils {
-  // ==========================================================================
   /** @class VectorMap GaudiKernel/VectorMap.h
    *
    *  A bit modified version of 'Loki::AssocVector' associative
@@ -110,7 +99,6 @@ namespace GaudiUtils {
             class ALLOCATOR = std::allocator<std::pair<KEY, VALUE>>>
   class VectorMap : public Gaudi::Utils::MapBase {
   public:
-    // ========================================================================
     /// the actual type of key
     typedef KEY key_type;
     /// the actual type of value
@@ -119,9 +107,8 @@ namespace GaudiUtils {
     typedef KEYCOMPARE key_compare;
     /// the actual storage item
     typedef std::pair<key_type, mapped_type> value_type;
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// allocator (could be useful for optimizations)
     typedef ALLOCATOR allocator_type;
     /// the types to conform STL
@@ -132,19 +119,16 @@ namespace GaudiUtils {
     typedef typename ALLOCATOR::size_type size_type;
     /// the types to conform STL
     typedef typename ALLOCATOR::difference_type difference_type;
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// the actual storage container (no export)
     typedef std::vector<value_type, allocator_type> _vector;
-    // ========================================================================
+
   protected:
-    // ========================================================================
     /// the regular iterator  (no export)
     typedef typename _vector::iterator _iterator;
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// visible const_iterator (exported)
     typedef typename _vector::const_iterator iterator;
     /// visible const_iterator (exported)
@@ -157,16 +141,14 @@ namespace GaudiUtils {
     typedef std::pair<iterator, iterator> iterators;
     /// visible iterator pait
     typedef std::pair<iterator, bool> result_type;
-    // ========================================================================
+
   public:
-    // ========================================================================
     /** @struct _compare_type
      *  The actual structure used to compare the elements
      *  Only "key" is important for comparison
      */
     struct _compare_type : public key_compare {
     public:
-      // ======================================================================
       /// constructor from the key-comparison criteria
       _compare_type( const key_compare& cmp ) : key_compare( cmp ) {}
       /// default constructor
@@ -181,16 +163,12 @@ namespace GaudiUtils {
       bool operator()( const key_type& k, const value_type& v ) const { return operator()( k, v.first ); }
       /// compare pair (key,mapped) and the key: use compare by keys
       bool operator()( const value_type& v, const key_type& k ) const { return operator()( v.first, k ); }
-      // ======================================================================
     };
-    // ========================================================================
     /// the actual comparison criteria for valye_type objects
     typedef _compare_type compare_type;
-    // ========================================================================
+
   public:
-    // ========================================================================
     // sequential access  (only const-versions!)
-    // ========================================================================
     /// "begin"  iterator for sequential access (const-only version!)
     iterator begin() const { return m_vct.begin(); }
     /// "end"    iterator for sequential access (const-only version!)
@@ -199,14 +177,11 @@ namespace GaudiUtils {
     reverse_iterator rbegin() const { return m_vct.rbegin(); }
     /// "rend"   iterator for sequential access (const-only version!)
     reverse_iterator rend() const { return m_vct.rend(); }
-    // ========================================================================
     // list operations : erase & insert
-    // ========================================================================
     /** erase the element using the iterator
      *  @param pos position of the element to be erased
      */
     void erase( iterator pos ) { m_vct.erase( iter( pos ) ); }
-    // ========================================================================
     /** erase the element using the key
      *
      *  @code
@@ -229,7 +204,6 @@ namespace GaudiUtils {
       erase( pos );
       return 1;
     }
-    // ========================================================================
     /** erase the sequence of elements using the iterators
      *  @param first begin iterator of sub-sequence to be erased
      *  @param end   end iterator of the sub_sequence to be erased
@@ -239,7 +213,6 @@ namespace GaudiUtils {
       m_vct.erase( iter( first ), iter( last ) );
       return last - first;
     }
-    // ========================================================================
     /** erase the sequence of elements using the sequence of keys
      *
      *  @code
@@ -266,7 +239,6 @@ namespace GaudiUtils {
       for ( ; first != last; ++first ) { res += erase( *first ); }
       return res;
     }
-    // ========================================================================
     /** insert the (key,value) pair into the container
      *
      *  @attention there is no replacement for the existing key!
@@ -309,7 +281,6 @@ namespace GaudiUtils {
      *          which allows to distinguish the actual insertion
      */
     result_type insert( const key_type& key, const mapped_type& mapped ) { return insert( value_type( key, mapped ) ); }
-    // ========================================================================
     /** insert the (key,value) pair into the container
      *
      *  @attention there is no replacement for the existing element!
@@ -359,7 +330,6 @@ namespace GaudiUtils {
       }
       return result_type( iter( result ), !found );
     }
-    // ========================================================================
     /** insert the element with some guess about its new position
      *  With the right guess the method could be  more efficient
      *  @attention there is no replacement for the existing element!
@@ -375,7 +345,6 @@ namespace GaudiUtils {
       }
       return insert( value );
     }
-    // ========================================================================
     /** insert the (key,value) pair into the container
      *  With the right guess the method could be more efficient
      *  @attention there is no replacement for the existing element!
@@ -388,7 +357,6 @@ namespace GaudiUtils {
     result_type insert( iterator pos, const key_type& key, const mapped_type& mapped ) {
       return insert( pos, value_type( key, mapped ) );
     }
-    // ========================================================================
     /** insert the sequence of elements into the container
      *  @attention there is no replacement for the existing element!
      *  @param first the begin iterator of the sequence
@@ -398,7 +366,6 @@ namespace GaudiUtils {
     void insert( PAIRS first, PAIRS last ) {
       for ( ; first != last; ++first ) { insert( *first ); }
     }
-    // ========================================================================
     /** insert into the container the elements from
      *  2 "parallel" sequences
      *  @attention there is no replacement for the existing element!
@@ -410,9 +377,7 @@ namespace GaudiUtils {
     void insert( KEYS kf, KEYS kl, VALUES vf ) {
       for ( ; kf != kl; ++kf, ++vf ) { insert( *kf, *vf ); }
     }
-    // ========================================================================
     // map operations: lookup, count, ...
-    // ========================================================================
     /** find the element by key
      *
      *  @code
@@ -441,7 +406,6 @@ namespace GaudiUtils {
       if ( end() != res && compare( key, res->first ) ) { res = end(); }
       return res;
     }
-    // ========================================================================
     /** count number of elements with the certain key
      *
      *  @code
@@ -458,13 +422,10 @@ namespace GaudiUtils {
      *  @return number of elements with the given key (0 or 1)
      */
     size_type count( const key_type& key ) const { return end() == find( key ) ? 0 : 1; }
-    // ========================================================================
     iterator  lower_bound( const key_type& key ) const { return std::lower_bound( begin(), end(), key, compare() ); }
     iterator  upper_bound( const key_type& key ) const { return std::upper_bound( begin(), end(), key, compare() ); }
     iterators equal_range( const key_type& key ) const { return std::equal_range( begin(), end(), key, compare() ); }
-    // ========================================================================
     // general container operations :
-    // ========================================================================
     /// empty container ?
     bool empty() const { return m_vct.empty(); }
     /// number of elements
@@ -475,24 +436,18 @@ namespace GaudiUtils {
     void clear() { m_vct.clear(); }
     /// reserve the space in the container for at least 'num' elements
     void reserve( size_type num ) { m_vct.reserve( num ); }
-    // ========================================================================
     /// swap function, which 'swaps' the content of two containers
     void swap( VectorMap& other ) { std::swap( m_vct, other.m_vct ); }
-    // ========================================================================
     // The basic comparison operators for container
-    // ========================================================================
     /// comparison criteria for containers
     bool operator==( const VectorMap& other ) const { return m_vct == other.m_vct; }
     /// comparison criteria for containers
     bool operator<( const VectorMap& other ) const { return m_vct < other.m_vct; }
-    // ========================================================================
     // The derived comparison operators for container
-    // ========================================================================
     friend bool operator>( const VectorMap& left, const VectorMap& right ) { return right < left; }
     friend bool operator!=( const VectorMap& left, const VectorMap& right ) { return !( left == right ); }
     friend bool operator>=( const VectorMap& left, const VectorMap& right ) { return !( left < right ); }
     friend bool operator<=( const VectorMap& left, const VectorMap& right ) { return !( right < left ); }
-    // ========================================================================
     /** forced insertion of the key/mapped pair
      *  The method acts like "insert" but it *DOES*
      *  overwrite the existing mapped value.
@@ -533,7 +488,6 @@ namespace GaudiUtils {
       //
       return true;
     }
-    // ========================================================================
     /** forced insertion of the key/mapped pair
      *  The method acts like "insert" but it *DOES*
      *  overwrite the mapped value.
@@ -563,7 +517,6 @@ namespace GaudiUtils {
      *  @return true if the existing value has been replaced
      */
     bool update( const value_type& val ) { return update( val.first, val.second ); }
-    // ========================================================================
     /** access to element by key (const version)
      *  there is no container increment for missing keys
      *
@@ -601,7 +554,6 @@ namespace GaudiUtils {
       if ( end() == res ) { return s_default; }
       return res->second;
     }
-    // ========================================================================
     /** access to element by key (const version)
      *  there is no container increment for missing keys
      *
@@ -633,7 +585,6 @@ namespace GaudiUtils {
      *  @return mapped value
      */
     const mapped_type& operator[]( const key_type& key ) const { return ( *this )( key ); }
-    // ========================================================================
     /** checked access to elements by key
      *  throw std::out_of_range exception for non-existing keys
      *
@@ -656,17 +607,14 @@ namespace GaudiUtils {
       if ( end() == res ) this->throw_out_of_range_exception();
       return res->second; // cppcheck-suppress derefInvalidIteratorRedundantCheck; the above throws
     }
-    // ========================================================================
+
   public:
-    // ========================================================================
     // Constructors, destructors, etc.
-    // ========================================================================
     /** default constructor from the the allocator
      *  @param cmp comparison criteria for the key
      *  @param alloc allocator to be used
      */
     VectorMap( const allocator_type& alloc = allocator_type() ) : m_vct( alloc ) {}
-    // ========================================================================
     /** templated constructor from "convertible" sequence
      *  @param first 'begin'-iterator for the convertible sequence
      *  @param last  'end'-iterator for the convertible sequence
@@ -677,7 +625,6 @@ namespace GaudiUtils {
     VectorMap( INPUT first, INPUT last, const allocator_type& alloc = allocator_type() ) : m_vct( first, last, alloc ) {
       std::sort( m_vct.begin(), m_vct.end(), compare() );
     }
-    // ========================================================================
     /** tconstructor from initializer list
      *  @param list
      *  @param cmp comparison criteria for the key
@@ -687,11 +634,9 @@ namespace GaudiUtils {
         : m_vct( first, alloc ) {
       std::sort( m_vct.begin(), m_vct.end(), compare() );
     }
-    // ========================================================================
+
   public:
-    // ========================================================================
     // The specific public accessors
-    // ========================================================================
     /// get the comparison criteria itself
     const compare_type& compare() const {
       static const compare_type s_cmp = compare_type();
@@ -701,9 +646,8 @@ namespace GaudiUtils {
     const key_compare& compare_key() const { return compare(); }
     /// printout to ostream - not implemented
     friend std::ostream& operator<<( std::ostream& str, const VectorMap& /* obj */ ) { return str; }
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// merge two maps
     inline VectorMap& merge( const VectorMap& right ) {
       for ( const auto& i : right ) { update( i.first, i.second ); }
@@ -715,9 +659,8 @@ namespace GaudiUtils {
       for ( const auto& i : right ) { update( i.first, i.second ); }
       return *this;
     }
-    // ========================================================================
+
   public:
-    // ========================================================================
     /** useful method for python decoration:
      *  @param index (INPUT) the index
      *  @return the key at given index
@@ -740,11 +683,9 @@ namespace GaudiUtils {
       std::advance( it, index );
       return it->second;
     }
-    // ========================================================================
+
   protected:
-    // ========================================================================
     // Pure technical helper functions
-    // ========================================================================
     /** compare the objects using the comaprison criteria
      *  @param obj the first object
      *  @param obj the second object
@@ -754,37 +695,29 @@ namespace GaudiUtils {
     bool compare( const TYPE1& obj1, const TYPE2& obj2 ) const {
       return compare()( obj1, obj2 );
     }
-    // ========================================================================
     /// 'lower-bound' - non-const version
     _iterator lower_bound( const key_type& key ) {
       return std::lower_bound( m_vct.begin(), m_vct.end(), key, compare() );
     }
-    // ========================================================================
     /// the conversion from 'const' to 'non-const' iterator
     _iterator iter( iterator p ) {
       auto result = m_vct.begin();
       std::advance( result, std::distance( begin(), p ) );
       return result;
     }
-    // ========================================================================
     /// the conversion from 'non-const' to 'const' iterator
     iterator iter( _iterator p ) {
       auto result = begin();
       std::advance( result, std::distance( m_vct.begin(), p ) );
       return result;
     }
-    // ========================================================================
+
   private:
-    // ========================================================================
     /// the underlying sorted vector of (key,mapped) pairs
     _vector m_vct; // the underlying sorted vector of (key,mapped) pairs
-    // ========================================================================
   };
-  // ==========================================================================
-} //                                               end of namespace GaudiUtils
-// ============================================================================
+} // namespace GaudiUtils
 namespace std {
-  // ==========================================================================
   /** the definition of specialized algorithm for swapping
    *  @param left  object to be swapped
    *  @param right object to be swapped
@@ -794,14 +727,9 @@ namespace std {
                     GaudiUtils::VectorMap<KEY, VALUE, KEYCOMPARE, ALLOCATOR>& right ) {
     left.swap( right );
   }
-  // ===========================================================================
-} //                                                       end of namespace std
-// ============================================================================
-// ============================================================================
+} // namespace std
 namespace Gaudi {
-  // ==========================================================================
   namespace Parsers {
-    // ========================================================================
     /** parse the key from the string
      *  @see Gaudi::Parsers
      *  @see Gaudi::Parsers::parse
@@ -812,7 +740,6 @@ namespace Gaudi {
      *  @return status code
      */
     GAUDI_API StatusCode parse( GaudiUtils::VectorMap<std::string, double>& result, std::string_view input );
-    // ========================================================================
     /** parse the vector of keys from the string
      *  @see Gaudi::Parsers
      *  @see Gaudi::Parsers::parse
@@ -824,11 +751,5 @@ namespace Gaudi {
      *  @return status code
      */
     GAUDI_API StatusCode parse( GaudiUtils::VectorMap<Gaudi::StringKey, double>& result, std::string_view input );
-    // ========================================================================
   } // namespace Parsers
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

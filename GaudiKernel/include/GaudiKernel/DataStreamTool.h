@@ -10,18 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
-
-#include <vector>
-
-// from Gaudi
 #include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/IDataStreamTool.h>
 #include <GaudiKernel/IEvtSelector.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/Service.h>
-
-class IIncidentSvc;
+#include <vector>
 
 /** @class DataStreamTool DataStreamTool.h GaudiKernel/DataStreamTool.h
  *

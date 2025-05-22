@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,19 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//      Debugger.cpp
-//--------------------------------------------------------------------
-//
-//      Package    : System (The LHCb System service)
-//
-//  Description: Invoke interactively the debugger from a
-//               running application
-//
-//      Author     : M.Frank
-//  Created    : 13/1/99
-//      Changes    :
-//====================================================================
 #if defined( _WIN32 )
 
 #  if _MSC_VER < 1500
@@ -50,7 +37,6 @@ namespace Win {
 #  include <unistd.h>
 #endif
 
-// Framework include files
 #include <GaudiKernel/Debugger.h>
 
 /// Break the execution of the application and invoke the debugger

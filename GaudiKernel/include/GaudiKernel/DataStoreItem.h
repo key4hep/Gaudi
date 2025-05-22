@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
 #include <string>
 
 /** @class DataStoreItem DataStoreItem.h GaudiKernel/DataStoreItem.h

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,22 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//  ProcStat.cpp
-//--------------------------------------------------------------------
-//
-//  Package    : System (The LHCb System service)
-//
-//  Description: Invoke interactively the ProcStat from a
-//               running application
-//
-//  Author     : M.Frank
-//  Created    : 13/11/00
-//  Changes    :
-//
-//====================================================================
-#define GAUDIKERNEL_PROCSTAT_CPP
-
 #ifndef __APPLE__
 static const long TICK_TO_100NSEC = 100000;
 #endif // not __APPLE__
@@ -356,7 +340,6 @@ void readProcStat( long pid, linux_proc& pinfo ) {
 static inline long processID( long pid ) { return ( pid > 0 ) ? pid : ( ::getpid() ); }
 #endif // not __APPLE__
 
-// Framework include files
 #include "ProcessDescriptor.h"
 #include <GaudiKernel/ModuleInfo.h>
 #include <GaudiKernel/System.h>

@@ -9,13 +9,10 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// Include files
-// from STL
-#include <string>
 
-// from Gaudi
 #include <GaudiKernel/IAlgTool.h>
 #include <GaudiKernel/TypeNameString.h>
+#include <string>
 
 /** Interface of tools used by the DataOnDemandSvc to choose the algorithm to be
  * run to produce the data at a path.

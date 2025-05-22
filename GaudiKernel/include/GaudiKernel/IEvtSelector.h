@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/IOpaqueAddress.h>
 #include <GaudiKernel/StatusCode.h>

@@ -9,22 +9,12 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
+#include <Gaudi/Parsers/CommonParsers.h>
+#include <Math/SVector.h>
 #include <algorithm>
 #include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include <Gaudi/Parsers/CommonParsers.h>
-// ============================================================================
-// ROOT/SVector
-// ============================================================================
-#include <Math/SVector.h>
-// ============================================================================
+
 /** @file
  *  Declaration of parsing functions for generic vectors to allow
  *  their usage as properties for Gaudi components
@@ -35,11 +25,8 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2009-09-05
  */
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace Parsers {
-    // ========================================================================
     /** parse SVector
      *  @param result (output) the parsed vector
      *  @param input  (input)  the input string
@@ -51,8 +38,8 @@ namespace Gaudi {
     StatusCode parse( ROOT::Math::SVector<SCALAR, N>& result, std::string_view input ) {
       std::vector<double> tmp;
       StatusCode          sc = parse( tmp, input );
-      if ( sc.isFailure() ) { return sc; }                   // RETURN
-      if ( N != tmp.size() ) { return StatusCode::FAILURE; } // RETURN
+      if ( sc.isFailure() ) { return sc; }
+      if ( N != tmp.size() ) { return StatusCode::FAILURE; }
 #ifdef WIN32
 // Disable warning
 //    C4996: 'std::copy': Function call with parameters that may be unsafe
@@ -66,18 +53,11 @@ namespace Gaudi {
 #endif
       return StatusCode::SUCCESS;
     }
-    // ========================================================================
   } // namespace Parsers
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
-namespace Gaudi {
-  // ==========================================================================
+
   namespace Utils {
-    // ========================================================================
     template <class SCALAR>
     std::ostream& toStream( const SCALAR&, std::ostream& );
-    // ========================================================================
     /** the general streaming function for SVector using python-tupel format
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-07
@@ -91,10 +71,5 @@ namespace Gaudi {
       }
       return s << " )";
     }
-    // ========================================================================
   } // namespace Utils
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

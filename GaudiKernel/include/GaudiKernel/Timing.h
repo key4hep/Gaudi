@@ -8,20 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	Timing.h
-//--------------------------------------------------------------------
-//
-//	Package    : Gaudi/System (The LHCb System service)
-//
-//  Description: Definition of Systems internals
-//
-//	Author     : M.Frank
-//      Created    : 13/1/99
-//====================================================================
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/SystemBase.h>
 

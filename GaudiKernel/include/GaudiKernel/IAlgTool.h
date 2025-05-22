@@ -10,12 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/IStateful.h>
 #include <string>
-
-// Forward declarations
 class IAlgorithm;
 
 /** @class IAlgTool IAlgTool.h GaudiKernel/IAlgTool.h
