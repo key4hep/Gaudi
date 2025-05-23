@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2022-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2022-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -18,14 +18,14 @@ def test_property_default(with_global_instances):
     # check we actually have two instances
     assert id(a) != id(b)
     # the two instances have the same value so far
-    assert a.TH.typeAndName == b.TH.typeAndName
+    assert a.DefProp.AString == b.DefProp.AString
     # and its not dummy
-    assert a.TH.typeAndName != "dummy"
+    assert a.DefProp.AString != "dummy"
     # now we change one and that should not affect the other
-    orig_b_value = b.TH.typeAndName
-    a.TH.typeAndName = "dummy"
-    assert a.TH.typeAndName == "dummy"
-    assert b.TH.typeAndName == orig_b_value
+    orig_b_value = b.DefProp.AString
+    a.DefProp.AString = "dummy"
+    assert a.DefProp.AString == "dummy"
+    assert b.DefProp.AString == orig_b_value
 
 
 def test_sequence_property_default(with_global_instances):
