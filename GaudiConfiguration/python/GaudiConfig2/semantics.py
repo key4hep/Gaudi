@@ -315,6 +315,39 @@ class ComponentHandleSemantics(PropertySemantics):
         return a.merge(b)
 
 
+class GaudiHandleArraySemantics(DefaultSemantics):
+    """Semantics for GaudiHandleArrays."""
+
+    __handled_types__ = (
+        "PrivateToolHandleArray",
+        "PublicToolHandleArray",
+        "ServiceHandleArray",
+    )
+
+    def __init__(self, cpp_type):
+        super().__init__(cpp_type)
+        self.handle_type = getattr(GaudiKernel.GaudiHandles, self.cpp_type)
+
+    def store(self, value):
+        # flag that the value was explicitly set (see DefaultSemantics)
+        self._is_set = True
+
+        # Create HandleArray from value if needed (it does all the type checking)
+        if not isinstance(value, self.handle_type):
+            value = self.handle_type(value)
+        return value
+
+    def merge(self, b, a):
+        for comp in b:
+            try:
+                # If a component with that name exists in a, we merge it
+                a.__getitem__(comp.getName()).merge(comp)
+            except IndexError:
+                # Otherwise append it
+                a.append(comp)
+        return a
+
+
 def extract_template_args(cpp_type):
     """
     Return an iterator over the list of template arguments in a C++ type

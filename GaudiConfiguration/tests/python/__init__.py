@@ -10,7 +10,7 @@
 #####################################################################################
 import os
 
-from GaudiKernel.GaudiHandles import PrivateToolHandle
+from GaudiKernel.GaudiHandles import PrivateToolHandle, PrivateToolHandleArray
 
 os.environ["GAUDICONFIG2_DB"] = __name__ + "._DB"
 
@@ -108,6 +108,7 @@ _DB = {
             "DefProp": ("FooProperty", FooProperty("Foo")),
             "TH": ("PrivateToolHandle", PrivateToolHandle("TestConf::MyTool/SomeTool")),
             "EmptyTH": ("PrivateToolHandle", PrivateToolHandle()),
+            "THA": ("PrivateToolHandleArray", PrivateToolHandleArray()),
             "VS": ("std::vector<std::string,std::allocator<std::string> >", []),
             "OS": (
                 "std::vector<std::string,std::allocator<std::string> >",

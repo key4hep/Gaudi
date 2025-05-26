@@ -10,8 +10,9 @@
 #####################################################################################
 import pytest
 from GaudiConfig2.Configurables import TestConf
-from GaudiKernel.GaudiHandles import PrivateToolHandle
 from GaudiConfig2.semantics import ComponentHandleSemantics, getSemanticsFor
+
+from GaudiKernel.GaudiHandles import PrivateToolHandle, PrivateToolHandleArray
 
 
 def test_semantics_lookup():
@@ -79,3 +80,38 @@ def test_alg_empty_handle():
     alg = TestConf.AlgWithComplexProperty()
     with pytest.raises(AttributeError):
         alg.EmptyTH.AString = "foo"
+
+
+#################################################################################
+# Tests for GaudiHandleArraySemantics
+#################################################################################
+
+
+def test_array_from_list():
+    s = getSemanticsFor("PrivateToolHandleArray")
+    h = s.store([])
+    assert isinstance(h, PrivateToolHandleArray)
+
+
+def test_array_merge():
+    s = getSemanticsFor("PrivateToolHandleArray")
+
+    # Two different tools
+    h1 = s.store([TestConf.MyTool("a")])
+    h2 = s.store([TestConf.MyTool("b")])
+    s.merge(h1, h2)
+    assert len(h2) == 2
+
+    # Same tool
+    tool = TestConf.MyTool("a")
+    h1 = s.store([tool])
+    h2 = s.store([tool])
+    s.merge(h1, h2)
+    assert h2 == [tool]
+
+    # Conflicting properties
+    h1 = s.store([TestConf.MyTool(AString="a")])
+    h2 = s.store([TestConf.MyTool(AString="b")])
+
+    with pytest.raises(ValueError):
+        s.merge(h1, h2)
