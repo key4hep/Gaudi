@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -13,6 +13,20 @@ import os
 from GaudiKernel.GaudiHandles import PrivateToolHandle
 
 os.environ["GAUDICONFIG2_DB"] = __name__ + "._DB"
+
+
+class FooProperty:
+    """Property type to test DefaultSemantics"""
+
+    def __init__(self, value=""):
+        self.AString = value
+
+    def __opt_value__(self):
+        return self.AString
+
+    def __eq__(self, other):
+        return type(self) is type(other) and self.AString == other.AString
+
 
 _DB = {
     "MyAlgorithm": {},
@@ -84,6 +98,7 @@ _DB = {
         "__component_type__": "Algorithm",
         "__doc__": "configurable for testing default semantics on non trivial properties",
         "properties": {
+            "DefProp": ("FooProperty", FooProperty("Foo")),
             "TH": ("PrivateToolHandle", PrivateToolHandle("MyTool/SomeTool")),
             "VS": ("std::vector<std::string,std::allocator<std::string> >", []),
             "OS": (

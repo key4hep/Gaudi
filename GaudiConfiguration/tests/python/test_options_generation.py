@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -71,27 +71,27 @@ def test_special_cases_for_is_set_with_default_handler(with_global_instances):
     p = AlgWithComplexProperty("Dummy")
     assert p.__opt_properties__() == {}
     # just accessing is not setting, so it should not appear
-    p.TH
+    p.DefProp
     assert p.__opt_properties__() == {}
     # internal change to same as default, equivalent to no change
-    p.TH.typeAndName = "ToolType/AndName"
+    p.DefProp.AString = "Hello"
     assert p.__opt_properties__() == {
-        "Dummy.TH": '"ToolType/AndName"',
+        "Dummy.DefProp": '"Hello"',
     }
     # internal change to same as default, equivalent to no change
-    p.TH.typeAndName = p._descriptors["TH"].default.typeAndName
+    p.DefProp.AString = p._descriptors["DefProp"].default.AString
     assert p.__opt_properties__() == {}
     # explicit set as default, equivalent to change
-    p.TH = p._descriptors["TH"].default
+    p.DefProp = p._descriptors["DefProp"].default
     assert p.__opt_properties__() == {
-        "Dummy.TH": '"MyTool/SomeTool"',
+        "Dummy.DefProp": '"Foo"',
     }
 
     p = AlgWithComplexProperty("Dummy2")
     # explicit set as default, equivalent to change (never retrieved)
-    p.TH = p._descriptors["TH"].default
+    p.DefProp = p._descriptors["DefProp"].default
     assert p.__opt_properties__() == {
-        "Dummy2.TH": '"MyTool/SomeTool"',
+        "Dummy2.DefProp": '"Foo"',
     }
 
 
