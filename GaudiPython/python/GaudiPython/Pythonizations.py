@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -141,13 +141,6 @@ gbl.DataObject.__repr__ = _printFillStream
 gbl.ObjectContainerBase.__getitem__ = _container__getitem__
 gbl.ObjectContainerBase.__len__ = _container__len__
 gbl.ObjectContainerBase.__iter__ = _container__iter__
-
-gbl.IUpdateManagerSvc.update = (
-    lambda self, obj: gbl.IUpdateManagerSvc.PythonHelper.update(self, obj)
-)
-gbl.IUpdateManagerSvc.invalidate = (
-    lambda self, obj: gbl.IUpdateManagerSvc.PythonHelper.invalidate(self, obj)
-)
 
 # ---Globals--------------------------------------------------------------------
 if not hasattr(gbl.StatusCode, "SUCCESS"):

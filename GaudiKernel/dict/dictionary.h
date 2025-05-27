@@ -97,7 +97,6 @@
 #include <GaudiKernel/ISvcManager.h>
 #include <GaudiKernel/ITHistSvc.h>
 #include <GaudiKernel/IToolSvc.h>
-#include <GaudiKernel/IUpdateManagerSvc.h>
 #include <GaudiKernel/IUpdateable.h>
 #include <GaudiKernel/IValidity.h>
 #include <GaudiKernel/Incident.h>
@@ -168,13 +167,6 @@ namespace GaudiKernelDict {
     SmartDataPtr<ObjectContainerBase> p2{ 0, "" };
   };
 } // namespace GaudiKernelDict
-
-class IUpdateManagerSvc::PythonHelper {
-public:
-  static StatusCode update( IUpdateManagerSvc* ums, void* obj ) { return ums->i_update( obj ); }
-
-  static void invalidate( IUpdateManagerSvc* ums, void* obj ) { return ums->i_invalidate( obj ); }
-};
 
 #ifdef __ICC
 // disable icc warning #858: type qualifier on return type is meaningless
