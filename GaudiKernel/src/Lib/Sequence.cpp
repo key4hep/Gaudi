@@ -48,8 +48,6 @@ StatusCode Sequence::finalize() {
     return StatusCode::FAILURE;
   }
 
-  // Release all sub-algorithms
-  for ( auto& it : m_subAlgms ) it->release();
   m_subAlgms.clear();
 
   return Algorithm::finalize();
