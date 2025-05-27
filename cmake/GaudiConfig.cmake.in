@@ -18,7 +18,6 @@ The following targets will be imported:
 * Header only libraries
   * ``Gaudi::Functional``
   * ``Gaudi::GaudiHiveHeaders``
-  * ``Gaudi::GaudiProfilingHeaders``
 * Executable
   * ``Gaudi::Allocator``
   * ``Gaudi::concurrentRun``

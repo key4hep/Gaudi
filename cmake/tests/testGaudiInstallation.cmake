@@ -58,10 +58,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Scripts not installed correctly,"
             " compareRootHistos.py not found in bin/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/bin/GaudiProfiler)
-        message(FATAL_ERROR "Scripts not installed correctly,"
-            " GaudiProfiler not found in bin/")
-    endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/bin/dumpMetaData)
         message(FATAL_ERROR "Scripts not installed correctly,"
             " dumpMetaData not found in bin/")
@@ -166,10 +162,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Python modules not installed correctly,"
             " GMPBase.py not found in python/GaudiMP/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiProfiling/GenerateGaudiOpts.py)
-        message(FATAL_ERROR "Python modules not installed correctly,"
-            " GenerateGaudiOpts.py not found in python/GaudiProfiling/")
-    endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiSvc/ExtraModules.py)
         message(FATAL_ERROR "Python modules not installed correctly,"
             " ExtraModules.py not found in python/GaudiSvc/")
@@ -182,10 +174,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiTestSuite/PyExample.so)
         message(FATAL_ERROR "Binary python modules not installed correctly,"
             " PyExample.so not found in python/GaudiTestSuite/")
-    endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiProfiling/PyCPUFamily.so)
-        message(FATAL_ERROR "Binary python modules not installed correctly,"
-            " PyCPUFamily.so not found in python/GaudiProfiling/")
     endif()
     # Check config files
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/lib/cmake/Gaudi/GaudiConfig.cmake)
