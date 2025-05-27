@@ -194,12 +194,6 @@ endif()
 gaudi_generate_version_header_file()
 
 # Framework level tests
-# Test scripts inside cmake/
-gaudi_add_pytest(cmake/extract_qmtest_metadata.py
-  PREFIX cmake.doctest.
-  ROOT_DIR cmake
-  OPTIONS --doctest-modules
-)
 
 if(NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME) # If we are building the full stack as one project
   # we do not install nor package nor register CMake tests
@@ -246,7 +240,6 @@ gaudi_install(CMAKE cmake/GaudiToolbox.cmake
                     cmake/modules) # Find*.cmake
 
 install(PROGRAMS
-        cmake/extract_qmtest_metadata.py # used in gaudi_add_tests(QMTest)
         cmake/scan_dict_deps.py # used in gaudi_add_dictionary(...)
     DESTINATION "${GAUDI_INSTALL_CONFIGDIR}"
 )

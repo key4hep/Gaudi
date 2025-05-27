@@ -174,7 +174,6 @@ set_target_properties(ToolVisitorTest_test PROPERTIES ENABLE_EXPORTS TRUE)
 gaudi_generate_confuserdb()
 
 # Tests
-gaudi_add_tests(QMTest)
 gaudi_add_pytest(tests/pytest)
 
 # Some tests depend on configuration options

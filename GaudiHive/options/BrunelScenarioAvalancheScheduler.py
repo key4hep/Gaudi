@@ -1,6 +1,6 @@
 #!/usr/bin/env gaudirun.py
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -18,16 +18,9 @@ from Configurables import (
     HiveWhiteBoard,
 )
 from Gaudi.Configuration import *
-from GaudiTesting import SKIP_RETURN_CODE
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
-try:
-    from GaudiHive import precedence
-except ImportError:
-    # of versions of LCG/heptools do not provide the required package networkx
-    import sys
-
-    sys.exit(SKIP_RETURN_CODE)  # consider the test skipped
+from GaudiHive import precedence
 
 # metaconfig
 evtslots = 1
