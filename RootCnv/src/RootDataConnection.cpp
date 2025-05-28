@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -66,7 +66,7 @@ namespace {
   std::array<char, 256> init_table() {
     std::array<char, 256> table;
     std::iota( std::begin( table ), std::end( table ), 0 );
-    return table;
+    return table; // cppcheck-suppress uninitvar; false positive
   }
 
   struct RootDataConnectionCategory : StatusCode::Category {
