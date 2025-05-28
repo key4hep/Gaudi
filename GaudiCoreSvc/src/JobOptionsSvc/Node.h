@@ -101,6 +101,7 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 // ============================================================================
+// cppcheck-suppress unknownMacro
 BOOST_FUSION_ADAPT_STRUCT( Gaudi::Parsers::Node,
                            ( Gaudi::Parsers::Node::NodeType,
                              type )( std::string, value )( std::vector<Gaudi::Parsers::Node>, children ) )
