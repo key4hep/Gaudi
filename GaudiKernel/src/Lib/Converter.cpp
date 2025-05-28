@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -113,28 +113,6 @@ SmartIF<IMessageSvc>& Converter::msgSvc() const {
 /// Standard Constructor
 Converter::Converter( long storage_type, const CLID& class_type, ISvcLocator* svc )
     : m_storageType( storage_type ), m_classType( class_type ), m_svcLocator( svc ) {}
-
-StatusCode Converter::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid,
-                                 void** ppSvc ) const {
-  // Check for name of conversion service
-  SmartIF<INamedInterface> cnvsvc( conversionSvc() );
-  if ( cnvsvc ) {
-    const ServiceLocatorHelper helper( *serviceLocator(), "Converter", cnvsvc->name() );
-    return helper.getService( svcName, createIf, iid, ppSvc );
-  }
-  return StatusCode::FAILURE;
-}
-
-StatusCode Converter::service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
-                                 void** ppSvc ) const {
-  // Check for name of conversion service
-  SmartIF<INamedInterface> cnvsvc( conversionSvc() );
-  if ( cnvsvc ) {
-    const ServiceLocatorHelper helper( *serviceLocator(), "Converter", cnvsvc->name() );
-    return helper.createService( svcType, svcName, iid, ppSvc );
-  }
-  return StatusCode::FAILURE;
-}
 
 SmartIF<IService> Converter::service( const std::string& name, const bool createIf ) const {
   SmartIF<INamedInterface> cnvsvc( conversionSvc() );

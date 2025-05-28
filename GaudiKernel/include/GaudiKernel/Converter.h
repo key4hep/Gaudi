@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -93,20 +93,6 @@ public:
   /// Standard Constructor
   Converter( long storage_type, const CLID& class_type, ISvcLocator* svc = 0 );
 
-  /// Access a service by name, creating it if it doesn't already exist.
-  template <class T>
-  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( const std::string& name, T*& psvc, bool createIf = false ) const {
-    return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
-  }
-
-  /// Access a service by name, type creating it if it doesn't already exist.
-  template <class T>
-  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( const std::string& type, const std::string& name, T*& psvc ) const {
-    return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
-  }
-
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service( const std::string& name, const bool createIf = true ) const;
 
@@ -135,12 +121,6 @@ private:
   mutable SmartIF<ISvcLocator> m_svcLocator;
   /// MessageSvc reference
   mutable SmartIF<IMessageSvc> m_messageSvc;
-
-  /** implementation of legacy service method */
-  [[deprecated]] StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid,
-                                       void** ppSvc ) const;
-  [[deprecated]] StatusCode service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
-                                       void** ppSvc ) const;
 };
 
 // Identified class for converters' factories
