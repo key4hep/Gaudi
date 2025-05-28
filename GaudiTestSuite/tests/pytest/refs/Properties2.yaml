@@ -104,7 +104,6 @@ stdout: |-
   AppMgrRunable.AuditInitialize: False
   AppMgrRunable.AuditReinitialize: False
   AppMgrRunable.AuditRestart: False
-  AppMgrRunable.AuditServices: False
   AppMgrRunable.AuditStart: False
   AppMgrRunable.AuditStop: False
   AppMgrRunable.AutoRetrieveTools: True
@@ -154,7 +153,6 @@ stdout: |-
   DetectorDataSvc.AuditInitialize: False
   DetectorDataSvc.AuditReinitialize: False
   DetectorDataSvc.AuditRestart: False
-  DetectorDataSvc.AuditServices: False
   DetectorDataSvc.AuditStart: False
   DetectorDataSvc.AuditStop: False
   DetectorDataSvc.AutoRetrieveTools: True
@@ -177,7 +175,6 @@ stdout: |-
   DetectorPersistencySvc.AuditInitialize: False
   DetectorPersistencySvc.AuditReinitialize: False
   DetectorPersistencySvc.AuditRestart: False
-  DetectorPersistencySvc.AuditServices: False
   DetectorPersistencySvc.AuditStart: False
   DetectorPersistencySvc.AuditStop: False
   DetectorPersistencySvc.AutoRetrieveTools: True
@@ -190,7 +187,6 @@ stdout: |-
   EventDataSvc.AuditInitialize: False
   EventDataSvc.AuditReinitialize: False
   EventDataSvc.AuditRestart: False
-  EventDataSvc.AuditServices: False
   EventDataSvc.AuditStart: False
   EventDataSvc.AuditStop: False
   EventDataSvc.AutoRetrieveTools: True
@@ -208,7 +204,6 @@ stdout: |-
   EventLoopMgr.AuditInitialize: False
   EventLoopMgr.AuditReinitialize: False
   EventLoopMgr.AuditRestart: False
-  EventLoopMgr.AuditServices: False
   EventLoopMgr.AuditStart: False
   EventLoopMgr.AuditStop: False
   EventLoopMgr.AutoRetrieveTools: True
@@ -223,7 +218,6 @@ stdout: |-
   EventPersistencySvc.AuditInitialize: False
   EventPersistencySvc.AuditReinitialize: False
   EventPersistencySvc.AuditRestart: False
-  EventPersistencySvc.AuditServices: False
   EventPersistencySvc.AuditStart: False
   EventPersistencySvc.AuditStop: False
   EventPersistencySvc.AutoRetrieveTools: True
@@ -234,7 +228,6 @@ stdout: |-
   IncidentSvc.AuditInitialize: False
   IncidentSvc.AuditReinitialize: False
   IncidentSvc.AuditRestart: False
-  IncidentSvc.AuditServices: False
   IncidentSvc.AuditStart: False
   IncidentSvc.AuditStop: False
   IncidentSvc.AutoRetrieveTools: True
@@ -244,7 +237,6 @@ stdout: |-
   JobOptionsSvc.AuditInitialize: False
   JobOptionsSvc.AuditReinitialize: False
   JobOptionsSvc.AuditRestart: False
-  JobOptionsSvc.AuditServices: False
   JobOptionsSvc.AuditStart: False
   JobOptionsSvc.AuditStop: False
   JobOptionsSvc.AutoRetrieveTools: True
@@ -262,7 +254,6 @@ stdout: |-
   MessageSvc.AuditInitialize: False
   MessageSvc.AuditReinitialize: False
   MessageSvc.AuditRestart: False
-  MessageSvc.AuditServices: False
   MessageSvc.AuditStart: False
   MessageSvc.AuditStop: False
   MessageSvc.AutoRetrieveTools: True
@@ -300,7 +291,6 @@ stdout: |-
   MessageSvc.warningColorCode: [ 'yellow' ]
   MessageSvc.warningLimit: 500
   PropertyAlg.Asynchronous: False
-  PropertyAlg.AuditAlgorithms: False
   PropertyAlg.AuditExecute: False
   PropertyAlg.AuditFinalize: False
   PropertyAlg.AuditInitialize: False
@@ -353,7 +343,6 @@ stdout: |-
   TimelineSvc.AuditInitialize: False
   TimelineSvc.AuditReinitialize: False
   TimelineSvc.AuditRestart: False
-  TimelineSvc.AuditServices: False
   TimelineSvc.AuditStart: False
   TimelineSvc.AuditStop: False
   TimelineSvc.AutoRetrieveTools: True

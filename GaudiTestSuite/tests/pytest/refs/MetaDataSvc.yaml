@@ -15,7 +15,6 @@ stdout: |-
   AlgExecStateSvc.AuditInitialize:False
   AlgExecStateSvc.AuditReinitialize:False
   AlgExecStateSvc.AuditRestart:False
-  AlgExecStateSvc.AuditServices:False
   AlgExecStateSvc.AuditStart:False
   AlgExecStateSvc.AuditStop:False
   AlgExecStateSvc.AutoRetrieveTools:True
@@ -25,7 +24,6 @@ stdout: |-
   AppMgrRunable.AuditInitialize:False
   AppMgrRunable.AuditReinitialize:False
   AppMgrRunable.AuditRestart:False
-  AppMgrRunable.AuditServices:False
   AppMgrRunable.AuditStart:False
   AppMgrRunable.AuditStop:False
   AppMgrRunable.AutoRetrieveTools:True
@@ -73,7 +71,6 @@ stdout: |-
   EventDataSvc.AuditInitialize:False
   EventDataSvc.AuditReinitialize:False
   EventDataSvc.AuditRestart:False
-  EventDataSvc.AuditServices:False
   EventDataSvc.AuditStart:False
   EventDataSvc.AuditStop:False
   EventDataSvc.AutoRetrieveTools:True
@@ -91,7 +88,6 @@ stdout: |-
   EventLoopMgr.AuditInitialize:False
   EventLoopMgr.AuditReinitialize:False
   EventLoopMgr.AuditRestart:False
-  EventLoopMgr.AuditServices:False
   EventLoopMgr.AuditStart:False
   EventLoopMgr.AuditStop:False
   EventLoopMgr.AutoRetrieveTools:True
@@ -106,7 +102,6 @@ stdout: |-
   EventPersistencySvc.AuditInitialize:False
   EventPersistencySvc.AuditReinitialize:False
   EventPersistencySvc.AuditRestart:False
-  EventPersistencySvc.AuditServices:False
   EventPersistencySvc.AuditStart:False
   EventPersistencySvc.AuditStop:False
   EventPersistencySvc.AutoRetrieveTools:True
@@ -117,7 +112,6 @@ stdout: |-
   Gaudi::MetaDataSvc.AuditInitialize:False
   Gaudi::MetaDataSvc.AuditReinitialize:False
   Gaudi::MetaDataSvc.AuditRestart:False
-  Gaudi::MetaDataSvc.AuditServices:False
   Gaudi::MetaDataSvc.AuditStart:False
   Gaudi::MetaDataSvc.AuditStop:False
   Gaudi::MetaDataSvc.AutoRetrieveTools:True
@@ -128,7 +122,6 @@ stdout: |-
   Gaudi::Monitoring::MessageSvcSink.AuditInitialize:False
   Gaudi::Monitoring::MessageSvcSink.AuditReinitialize:False
   Gaudi::Monitoring::MessageSvcSink.AuditRestart:False
-  Gaudi::Monitoring::MessageSvcSink.AuditServices:False
   Gaudi::Monitoring::MessageSvcSink.AuditStart:False
   Gaudi::Monitoring::MessageSvcSink.AuditStop:False
   Gaudi::Monitoring::MessageSvcSink.AutoFlushPeriod:0.00000
@@ -143,7 +136,6 @@ stdout: |-
   HistogramDataSvc.AuditInitialize:False
   HistogramDataSvc.AuditReinitialize:False
   HistogramDataSvc.AuditRestart:False
-  HistogramDataSvc.AuditServices:False
   HistogramDataSvc.AuditStart:False
   HistogramDataSvc.AuditStop:False
   HistogramDataSvc.AutoRetrieveTools:True
@@ -163,7 +155,6 @@ stdout: |-
   HistogramPersistencySvc.AuditInitialize:False
   HistogramPersistencySvc.AuditReinitialize:False
   HistogramPersistencySvc.AuditRestart:False
-  HistogramPersistencySvc.AuditServices:False
   HistogramPersistencySvc.AuditStart:False
   HistogramPersistencySvc.AuditStop:False
   HistogramPersistencySvc.AutoRetrieveTools:True
@@ -179,7 +170,6 @@ stdout: |-
   IncidentSvc.AuditInitialize:False
   IncidentSvc.AuditReinitialize:False
   IncidentSvc.AuditRestart:False
-  IncidentSvc.AuditServices:False
   IncidentSvc.AuditStart:False
   IncidentSvc.AuditStop:False
   IncidentSvc.AutoRetrieveTools:True
@@ -189,7 +179,6 @@ stdout: |-
   JobOptionsSvc.AuditInitialize:False
   JobOptionsSvc.AuditReinitialize:False
   JobOptionsSvc.AuditRestart:False
-  JobOptionsSvc.AuditServices:False
   JobOptionsSvc.AuditStart:False
   JobOptionsSvc.AuditStop:False
   JobOptionsSvc.AutoRetrieveTools:True
@@ -207,7 +196,6 @@ stdout: |-
   MessageSvc.AuditInitialize:False
   MessageSvc.AuditReinitialize:False
   MessageSvc.AuditRestart:False
-  MessageSvc.AuditServices:False
   MessageSvc.AuditStart:False
   MessageSvc.AuditStop:False
   MessageSvc.AutoRetrieveTools:True
@@ -245,7 +233,6 @@ stdout: |-
   MessageSvc.warningColorCode:[ 'yellow' ]
   MessageSvc.warningLimit:500
   NTupleAlgorithm.Asynchronous:False
-  NTupleAlgorithm.AuditAlgorithms:False
   NTupleAlgorithm.AuditExecute:False
   NTupleAlgorithm.AuditFinalize:False
   NTupleAlgorithm.AuditInitialize:False
@@ -268,7 +255,6 @@ stdout: |-
   NTupleSvc.AuditInitialize:False
   NTupleSvc.AuditReinitialize:False
   NTupleSvc.AuditRestart:False
-  NTupleSvc.AuditServices:False
   NTupleSvc.AuditStart:False
   NTupleSvc.AuditStop:False
   NTupleSvc.AutoRetrieveTools:True
@@ -289,7 +275,6 @@ stdout: |-
   NTupleSvcConversions.AuditInitialize:False
   NTupleSvcConversions.AuditReinitialize:False
   NTupleSvcConversions.AuditRestart:False
-  NTupleSvcConversions.AuditServices:False
   NTupleSvcConversions.AuditStart:False
   NTupleSvcConversions.AuditStop:False
   NTupleSvcConversions.AutoRetrieveTools:True
@@ -299,7 +284,6 @@ stdout: |-
   RootHistSvc.AuditInitialize:False
   RootHistSvc.AuditReinitialize:False
   RootHistSvc.AuditRestart:False
-  RootHistSvc.AuditServices:False
   RootHistSvc.AuditStart:False
   RootHistSvc.AuditStop:False
   RootHistSvc.AutoRetrieveTools:True
@@ -312,7 +296,6 @@ stdout: |-
   TimelineSvc.AuditInitialize:False
   TimelineSvc.AuditReinitialize:False
   TimelineSvc.AuditRestart:False
-  TimelineSvc.AuditServices:False
   TimelineSvc.AuditStart:False
   TimelineSvc.AuditStop:False
   TimelineSvc.AutoRetrieveTools:True
