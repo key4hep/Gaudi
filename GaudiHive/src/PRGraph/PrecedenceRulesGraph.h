@@ -195,12 +195,13 @@ namespace precedence {
 
   struct EntityState {
     EntityState( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator, bool conditionsEnabled )
-        : m_slot( slot ), m_conditionsEnabled( conditionsEnabled ) {
+        : m_slot( slot )
+        , m_whiteboard( svcLocator->service<IHiveWhiteBoard>( "EventDataSvc", false ) )
+        , m_conditionsEnabled( conditionsEnabled ) {
       SmartIF<IMessageSvc> msgSvc{ svcLocator };
       MsgStream            log{ msgSvc, "EntityState.Getter" };
 
       // Figure if we can discover the data object states
-      m_whiteboard = svcLocator->service<IHiveWhiteBoard>( "EventDataSvc", false );
       if ( !m_whiteboard.isValid() ) {
         log << MSG::WARNING << "Failed to locate EventDataSvc: no way to add DO "
             << "states to the TTT dump " << endmsg;
@@ -255,12 +256,12 @@ namespace precedence {
   };
 
   struct StartTime {
-    StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
+    StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator )
+        : m_slot( slot ), m_timelineSvc( svcLocator->service<ITimelineSvc>( "TimelineSvc", false ) ) {
       SmartIF<IMessageSvc> msgSvc{ svcLocator };
       MsgStream            log{ msgSvc, "StartTime.Getter" };
 
       // Figure if we can discover the algorithm timings
-      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
       if ( !m_timelineSvc.isValid() ) {
         log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to "
             << "add algorithm start time to the TTT dumps" << endmsg;
@@ -295,12 +296,12 @@ namespace precedence {
   };
 
   struct EndTime {
-    EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
+    EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator )
+        : m_slot( slot ), m_timelineSvc( svcLocator->service<ITimelineSvc>( "TimelineSvc", false ) ) {
       SmartIF<IMessageSvc> msgSvc{ svcLocator };
       MsgStream            log{ msgSvc, "EndTime.Getter" };
 
       // Figure if we can discover the algorithm timings
-      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
       if ( !m_timelineSvc.isValid() )
         log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to add "
             << "algorithm completion time to the TTT dumps" << endmsg;
@@ -334,12 +335,12 @@ namespace precedence {
   };
 
   struct Duration {
-    Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
+    Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator )
+        : m_slot( slot ), m_timelineSvc( svcLocator->service<ITimelineSvc>( "TimelineSvc", false ) ) {
       SmartIF<IMessageSvc> msgSvc{ svcLocator };
       MsgStream            log{ msgSvc, "Duration.Getter" };
 
       // Figure if we can discover the algorithm timings
-      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
       if ( !m_timelineSvc.isValid() )
         log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to add "
             << "algorithm's runtimes to the TTT dumps" << endmsg;
