@@ -1242,7 +1242,6 @@ class ConfigurableAlgTool(Configurable):
     __slots__ = {
         "_jobOptName": "",
         "OutputLevel": 0,
-        "AuditTools": 0,
         "AuditInitialize": 0,
         "AuditFinalize": 0,
     }
