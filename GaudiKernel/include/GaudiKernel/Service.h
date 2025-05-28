@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -230,7 +230,6 @@ protected:
   // Properties
 
   Gaudi::Property<int>  m_outputLevel{ this, "OutputLevel", MSG::NIL, "output level" };
-  Gaudi::Property<bool> m_auditInit{ this, "AuditServices", false, "[[deprecated]] unused" };
   Gaudi::Property<bool> m_auditorInitialize{ this, "AuditInitialize", false, "trigger auditor on initialize()" };
   Gaudi::Property<bool> m_auditorStart{ this, "AuditStart", false, "trigger auditor on start()" };
   Gaudi::Property<bool> m_auditorStop{ this, "AuditStop", false, "trigger auditor on stop()" };

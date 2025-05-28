@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -346,7 +346,6 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
   Gaudi::Property<bool> audit( false );
   auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
   if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) { audit.assign( appMgr->getProperty( "AuditServices" ) ); }
-  m_auditInit           = audit;
   m_auditorInitialize   = audit;
   m_auditorStart        = audit;
   m_auditorStop         = audit;
