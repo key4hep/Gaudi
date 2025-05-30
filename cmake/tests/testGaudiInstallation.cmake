@@ -174,9 +174,9 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Python modules not installed correctly,"
             " ExtraModules.py not found in python/GaudiSvc/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiTesting/Run.py)
+    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiTesting/GaudiExeTest.py)
         message(FATAL_ERROR "Python modules not installed correctly,"
-            " Run.py not found in python/GaudiTesting/")
+            " GaudiExeTest.py not found in python/GaudiTesting/")
     endif()
     # -- check binary python modules
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/python/GaudiTestSuite/PyExample.so)
@@ -207,10 +207,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/lib/cmake/Gaudi/GaudiDependencies.cmake)
         message(FATAL_ERROR "Gaudi not installed correctly,"
             " GaudiDependencies.cmake not found in lib/cmake/Gaudi/")
-    endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/lib/cmake/Gaudi/extract_qmtest_metadata.py)
-        message(FATAL_ERROR "gaudi_*() functions not installed correctly,"
-            " extract_qmtest_metadata.py not found in lib/cmake/Gaudi/")
     endif()
     if(NOT EXISTS ${GAUDI_INSTALL_DIR}/lib/cmake/Gaudi/modules/Findunwind.cmake)
         message(FATAL_ERROR "find module files not installed correctly,"

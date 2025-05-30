@@ -101,8 +101,9 @@ Functions
 
 #]========================================================================]
 
-include_guard(GLOBAL) # Protect from multiple include (global scope, because
-                      # everything defined in this file is globally visible)
+# Protect from multiple include
+# (global scope, because everything defined in this file is globally visible)
+include_guard(GLOBAL)
 
 set(GAUDI_TOOLBOX_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE PATH "Directory containing this file")
 
@@ -656,7 +657,6 @@ function(gaudi_add_executable exe_name)
     _gaudi_runtime_prepend(path $<TARGET_FILE_DIR:${exe_name}>)
 endfunction()
 
-
 #[========================================================================[.rst:
 .. command:: gaudi_add_tests
 
@@ -694,73 +694,21 @@ function(gaudi_add_tests type)
 
     # Custom test_directory
     set(test_directory)
-    if(ARGV1)
+    if(ARGC GREATER 1)
         set(test_directory "${ARGV1}")
     endif()
 
     # Test framework used
-    if(type STREQUAL "QMTest")
-
-        if(NOT TARGET Python::Interpreter)
-            message(FATAL_ERROR "No python interpreter was found, call find_package(Python REQUIRED Interpreter) first.")
-        endif()
-
-        if(test_directory)
-            set(qmtest_root_dir "${test_directory}")
-        else()
-            set(qmtest_root_dir "${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest")
-        endif()
-        file(GLOB_RECURSE qmt_files RELATIVE "${qmtest_root_dir}" "${qmtest_root_dir}/*.qmt") # ordered lexicographically
-        string(TOLOWER "${package_name}" subdir_name_lower)
-        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/qmtest_tmp")
-        # Add a test for each qmt files
-        foreach(qmt_file IN LISTS qmt_files)
-            string(REPLACE ".qmt" "" qmt_name "${qmt_file}")
-            string(REPLACE ".qms/" "." qmt_name "${qmt_name}")
-            string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
-            add_test(NAME ${package_name}.${qmt_name}
-                     COMMAND run $<TARGET_FILE:Python::Interpreter> -m GaudiTesting.Run
-                        --skip-return-code 77
-                        --report ctest
-                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/qmtest_tmp
-                        --workdir ${qmtest_root_dir}
-                        ${qmtest_root_dir}/${qmt_file}
-                     WORKING_DIRECTORY "${qmtest_root_dir}")
-            set_tests_properties(${package_name}.${qmt_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name};QMTest"
-                                                                        SKIP_RETURN_CODE 77
-                                                                        TIMEOUT 0)
-        endforeach()
-        # Extract dependencies to a cmake file
-        find_file(extract_qmtest_metadata extract_qmtest_metadata.py
-                  PATHS ${Gaudi_SOURCE_DIR}/cmake # When building Gaudi
-                        ${Gaudi_DIR}              # When using an installed Gaudi
-                  NO_DEFAULT_PATH)
-        if(NOT extract_qmtest_metadata)
-            message(FATAL_ERROR "Cannot find extract_qmtest_metadata.py")
-        endif()
-        mark_as_advanced(extract_qmtest_metadata)
-        # Note: we rely on the Python instalation available a configure time
-        execute_process(COMMAND python3 ${extract_qmtest_metadata}
-                                ${package_name} ${qmtest_root_dir}
-                        OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
-                        RESULT_VARIABLE qmt_deps_retcode)
-        if(NOT qmt_deps_retcode EQUAL "0")
-            message(FATAL_ERROR "Failed to compute dependencies of QMTest tests.")
-            return()
-        endif()
-        # Include the generated file with the QMTest dependencies
-        include(${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake)
-
-    elseif(type STREQUAL "pytest")
-        _import_pytest() # creates the imported target pytest for the
-                         # generator expression $<TARGET_FILE:pytest>
+    if(type STREQUAL "pytest")
+        set(orig_test_directory ${test_directory})
         if(NOT test_directory)
-            set(test_directory "${CMAKE_CURRENT_SOURCE_DIR}/tests/pytest")
+            set(test_directory "tests/pytest")
         endif()
-        get_filename_component(name "${test_directory}" NAME)
-        add_test(NAME ${package_name}.${name}
-                COMMAND run $<TARGET_FILE:pytest> -v --doctest-modules ${test_directory})
-        set_tests_properties(${package_name}.${name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
+        message(WARNING "please, consider replacing
+          'gaudi_add_tests(pytest ${orig_test_directory})'
+           with
+          'gaudi_add_pytest(${test_directory} OPTIONS -v --doctest-modules)'")
+        gaudi_add_pytest(${test_directory} OPTIONS -v --doctest-modules)
     else()
         message(FATAL_ERROR "${type} is not a valid test framework.")
     endif()
@@ -1057,7 +1005,7 @@ function(gaudi_add_dictionary dictionary)
 
     # Workaround for rootcling not knowing what nodiscard is
     if(ROOT_VERSION MATCHES "^6\.22.*")
-      list(APPEND ARG_OPTIONS -Wno-unknown-attributes)
+        list(APPEND ARG_OPTIONS -Wno-unknown-attributes)
     endif()
 
     if(TARGET Python::Interpreter
@@ -1599,11 +1547,11 @@ endif()
 
 # deprecate variables if a target exist
 function(__deprecate_var_for_target var access val file)
-  if(access STREQUAL "READ_ACCESS" AND
+    if(access STREQUAL "READ_ACCESS" AND
         (NOT file MATCHES ".*Find.+\\.cmake") AND
         (NOT file MATCHES ".*Config\\.cmake") )
-    message(DEPRECATION "The variable ${var} is deprecated, use the target instead.")
-  endif()
+        message(DEPRECATION "The variable ${var} is deprecated, use the target instead.")
+    endif()
 endfunction()
 # then call
 # variable_watch(var_name __deprecate_var_for_target)
