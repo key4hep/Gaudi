@@ -51,8 +51,8 @@ StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
 }
 
 // createService
-StatusCode AlgorithmManager::createAlgorithm( std::string algtype, std::string algname, IAlgorithm*& algorithm,
-                                              bool managed, bool checkIfExists ) {
+StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const std::string& algname,
+                                              IAlgorithm*& algorithm, bool managed, bool checkIfExists ) {
   // Check is the algorithm is already existing
   if ( checkIfExists ) {
     if ( existsAlgorithm( algname ) ) {
@@ -125,12 +125,12 @@ bool AlgorithmManager::existsAlgorithm( std::string_view name ) const {
 }
 
 // Return the list of Algorithms
-const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const {
-  m_listOfPtrs.clear();
-  m_listOfPtrs.reserve( m_algs.size() );
-  std::transform( std::begin( m_algs ), std::end( m_algs ), std::back_inserter( m_listOfPtrs ),
+std::vector<IAlgorithm*> AlgorithmManager::getAlgorithms() const {
+  std::vector<IAlgorithm*> listOfPtrs;
+  listOfPtrs.reserve( m_algs.size() );
+  std::transform( std::begin( m_algs ), std::end( m_algs ), std::back_inserter( listOfPtrs ),
                   []( const AlgorithmItem& alg ) { return alg.algorithm; } );
-  return m_listOfPtrs;
+  return listOfPtrs;
 }
 
 StatusCode AlgorithmManager::initialize() {
