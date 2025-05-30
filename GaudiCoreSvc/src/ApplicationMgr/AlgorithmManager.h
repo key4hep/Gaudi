@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -96,9 +96,9 @@ public:
   void outputLevelUpdate() override;
 
 private:
-  std::vector<AlgorithmItem>                                     m_algs; ///< algorithms maintained by AlgorithmManager
-  std::unordered_multimap<std::string_view, SmartIF<IAlgorithm>> m_algsMap; ///< algorithms maintained by
-                                                                            ///< AlgorithmManager
+  std::vector<AlgorithmItem>                                m_algs;    ///< algorithms maintained by AlgorithmManager
+  std::unordered_multimap<std::string, SmartIF<IAlgorithm>> m_algsMap; ///< algorithms maintained by
+                                                                       ///< AlgorithmManager
 
   /// List of pointers to the know services used to implement getAlgorithms()
   mutable std::vector<IAlgorithm*> m_listOfPtrs;
