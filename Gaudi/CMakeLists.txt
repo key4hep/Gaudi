@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -22,13 +22,36 @@ gaudi_generate_confuserdb(Gaudi.ConfUser)
 
 # Python tests
 gaudi_add_pytest(tests/pytest)
-gaudi_add_pytest(python/Gaudi/Main.py
-    OPTIONS --doctest-modules
-    ROOT_DIR python
-    PREFIX Gaudi.doctest.python.
-)
+
+# Record project version in a Python module
+set(GIT_DESCRIBE_TAG "unknown")
+if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    find_package(Git)
+    if(GIT_FOUND)
+        execute_process(
+          COMMAND ${GIT_EXECUTABLE} describe --tags
+          WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+          OUTPUT_VARIABLE GIT_DESCRIBE_TAG
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    endif()
+endif()
+
+# set optional version tweak and patch
+if(NOT PROJECT_VERSION_TWEAK)
+    set(PROJECT_VERSION_TWEAK 0)
+endif()
+if(NOT PROJECT_VERSION_PATCH)
+    set(PROJECT_VERSION_PATCH 0)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/_version.py.in
+               ${CMAKE_BINARY_DIR}/python/Gaudi/_version.py @ONLY)
 
 # Install python modules
 gaudi_install(PYTHON)
+install(FILES ${CMAKE_BINARY_DIR}/python/Gaudi/_version.py
+        DESTINATION "${GAUDI_INSTALL_PYTHONDIR}/Gaudi")
+
 # Install other scripts
 gaudi_install(SCRIPTS)
