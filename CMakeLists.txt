@@ -153,6 +153,27 @@ if(GAUDI_USE_CUDA)
   set(CMAKE_CUDA_EXTENSIONS OFF)
 endif()
 
+# CppCheck
+option(GAUDI_USE_CPPCHECK "Enable Cppcheck" OFF)
+
+if(GAUDI_USE_CPPCHECK)
+   find_package(Cppcheck)
+   if (CPPCHECK_FOUND)
+      set( CMAKE_CXX_CPPCHECK
+         ${CPPCHECK_EXECUTABLE}
+         "--enable=warning,portability,performance"
+         "--quiet" "--inline-suppr" "--template=gcc"
+         # we are using these libraries
+         "--library=boost"
+         "--library=python"
+         # suppressions
+         "--suppress=duplInheritedMember"          # common occurrance
+         "--suppress=normalCheckLevelMaxBranches"  # do not warn about too complex code
+         "--suppress=*:*Dict.cxx"                  # do not check auto-generated code
+         CACHE STRING "cppcheck command line options" FORCE )
+   endif()
+endif()
+
 # Enable testing with CTest/CDash
 include(CTest)
 
