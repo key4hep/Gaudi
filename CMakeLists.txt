@@ -113,9 +113,6 @@ include(cmake/GaudiToolbox.cmake)
 # Export the list of compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Enable/Disable output of compile_commands.json" FORCE)
 
-set(GAUDI_USE_PYTHON_MAJOR 3 CACHE STRING "Major version of Python to use")
-string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_USE_PYTHON_MAJOR ${GAUDI_USE_PYTHON_MAJOR})\n")
-
 # Find all the dependencies of the project
 list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules") # (Find*.cmake)
 include(cmake/GaudiDependencies.cmake)

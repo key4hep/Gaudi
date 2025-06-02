@@ -33,21 +33,6 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-### Older versions of CERN SFT LCG views
-Prior to LCG 99, the versions of CMake and Ninja in the CERN SFT LCG views were
-not good enough and Python was still 2.x, so the recipe to build Gaudi is
-slightly different in that case:
-
-```sh
-. /cvmfs/sft.cern.ch/lcg/views/LCG_97a/x86_64-centos7-gcc9-opt/setup.sh
-export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.18.3/Linux-x86_64/bin:$PATH
-export PATH=/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.10.0/Linux-x86_64:$PATH
-export CMAKE_GENERATOR=Ninja
-cd Gaudi
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGAUDI_USE_PYTHON_MAJOR=$(python -c "import sys; print(sys.version_info[0])")
-cmake --build build
-```
-
 ## Run from the build directory
 
 For testing and debugging there is no need to install, but Gaudi requires some

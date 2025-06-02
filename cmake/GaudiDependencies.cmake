@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -106,14 +106,7 @@ if(GAUDI_USE_CUDA)
   find_package(CUDAToolkit ${__quiet} REQUIRED)
 endif()
 
-if(GAUDI_USE_PYTHON_MAJOR STREQUAL "2")
-  set(_gaudi_Python_MIN_VERSION 2.7.15)
-elseif(GAUDI_USE_PYTHON_MAJOR STREQUAL "3")
-  set(_gaudi_Python_MIN_VERSION 3.7)
-else()
-  message(FATAL_ERROR "Invalid value for GAUDI_USE_PYTHON_MAJOR (${GAUDI_USE_PYTHON_MAJOR}), only 2 and 3 are supported")
-endif()
-find_package(Python ${_gaudi_Python_MIN_VERSION} ${__quiet} REQUIRED Interpreter Development)
+find_package(Python 3.7 ${__quiet} REQUIRED Interpreter Development)
 
 find_package(ROOT 6.18 ${__quiet} CONFIG REQUIRED Core RIO Hist Thread Matrix
   MathCore Net XMLIO Tree TreePlayer Graf3d Graf Gpad)
