@@ -8,6 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// cppcheck-suppress-file useInitializationList; for consistency
+
 #pragma once
 
 #ifdef __GNUC__

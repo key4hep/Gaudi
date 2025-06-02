@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -49,10 +49,10 @@ Gaudi::Application::Factory::ReturnType Gaudi::Application::create( std::string_
   return Factory::create( type, std::move( opts ) );
 }
 
-Gaudi::Application::Application( Gaudi::Application::Options options ) {
-  // # Prepare the application
-  // - instantiate
-  app = Gaudi::createApplicationMgr();
+Gaudi::Application::Application( Gaudi::Application::Options options )
+    : // instantiate
+    app( Gaudi::createApplicationMgr() ) {
+
   GAUDI_ASSERT_THROW_NAME( app, "failure instantiating ApplicationMgr", "Gaudi::Application" );
 
   // - main configuration

@@ -189,14 +189,12 @@ public:
   template <typename CT = T, typename NCT = std::remove_const_t<T>>
   GaudiHandle( const GaudiHandle<NCT>& other )
     requires( std::is_const_v<CT> && !std::is_same_v<CT, NCT> )
-      : GaudiHandleBase( other ) {
-    m_pObject = other.get();
+      : GaudiHandleBase( other ), m_pObject( other.get() ) {
     if ( m_pObject ) ::details::nonConst( m_pObject.load() )->addRef();
   }
 
   /** Copy constructor needed for correct ref-counting */
-  GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other ) {
-    m_pObject = other.m_pObject.load();
+  GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other ), m_pObject( other.m_pObject.load() ) {
     if ( m_pObject ) ::details::nonConst( m_pObject.load() )->addRef();
   }
 

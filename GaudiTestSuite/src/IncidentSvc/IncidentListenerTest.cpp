@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,8 +21,7 @@
 
 //=============================================================================
 IncidentListenerTest::IncidentListenerTest( const std::string& name, ISvcLocator* svcloc, long shots )
-    : m_name( name ), m_shots( shots ) {
-  m_msgSvc = svcloc; // default message service
+    : m_name( name ), m_shots( shots ), m_msgSvc( svcloc ) {
   if ( !m_msgSvc ) throw GaudiException( "Cannot find MessageSvc", m_name, StatusCode::FAILURE );
   m_incSvc = svcloc->service( "IncidentSvc" );
   if ( !m_incSvc ) throw GaudiException( "Cannot find IncidentSvc", m_name, StatusCode::FAILURE );

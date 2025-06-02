@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -73,7 +73,7 @@ const std::string& System::moduleName() {
       }
       std::string mod = moduleName;
 #elif defined( __linux ) || defined( __APPLE__ )
-      std::string mod = ::basename( (char*)( (Dl_info*)moduleHandle() )->dli_fname );
+      std::string mod  = ::basename( (char*)( (Dl_info*)moduleHandle() )->dli_fname );
 #elif __hpux
       std::string mod = ::basename( ( (HMODULE*)moduleHandle() )->dsc.filename );
 #endif
@@ -96,11 +96,11 @@ const std::string& System::moduleNameFull() {
         module = name;
       }
 #else
-      const char* path =
+
 #  if defined( __linux ) || defined( __APPLE__ )
-          ( (Dl_info*)moduleHandle() )->dli_fname;
+      const char* path = ( (Dl_info*)moduleHandle() )->dli_fname;
 #  elif __hpux
-          ( (HMODULE*)moduleHandle() )->dsc.filename;
+      const char* path = ( (HMODULE*)moduleHandle() )->dsc.filename;
 #  endif
       if ( ::realpath( path, name ) ) module = name;
 #endif
@@ -198,6 +198,7 @@ System::ImageHandle System::exeHandle() {
   // Don't know how to solve this .....
   return 0;
 #endif
+  return 0;
 }
 
 const std::string& System::exeName() {
