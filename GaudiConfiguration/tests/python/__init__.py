@@ -10,7 +10,7 @@
 #####################################################################################
 import os
 
-from GaudiKernel.GaudiHandles import PrivateToolHandle
+from GaudiKernel.GaudiHandles import PrivateToolHandle, PrivateToolHandleArray
 
 os.environ["GAUDICONFIG2_DB"] = __name__ + "._DB"
 
@@ -93,13 +93,22 @@ _DB = {
             ),
         },
     },
+    "TestConf::MyTool": {
+        "__component_type__": "AlgTool",
+        "__doc__": "this is MyTool",
+        "properties": {
+            "AString": ("std::string", "text", "some doc string"),
+        },
+    },
     "TestConf::TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >": {},
     "TestConf::AlgWithComplexProperty": {
         "__component_type__": "Algorithm",
         "__doc__": "configurable for testing default semantics on non trivial properties",
         "properties": {
             "DefProp": ("FooProperty", FooProperty("Foo")),
-            "TH": ("PrivateToolHandle", PrivateToolHandle("MyTool/SomeTool")),
+            "TH": ("PrivateToolHandle", PrivateToolHandle("TestConf::MyTool/SomeTool")),
+            "EmptyTH": ("PrivateToolHandle", PrivateToolHandle()),
+            "THA": ("PrivateToolHandleArray", PrivateToolHandleArray()),
             "VS": ("std::vector<std::string,std::allocator<std::string> >", []),
             "OS": (
                 "std::vector<std::string,std::allocator<std::string> >",
