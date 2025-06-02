@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,6 +11,8 @@
 import ctypes
 import os
 import sys
+
+from ._version import __version__, git_describe_tag, version_info  # noqa: F401
 
 __configurables_module_fullname__ = __name__ + ".Configurables"
 __ignore_missing_configurables__ = False
