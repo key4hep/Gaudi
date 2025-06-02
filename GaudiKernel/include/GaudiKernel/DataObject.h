@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,6 +12,7 @@
 
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/StatusCode.h>
+#include <atomic>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -36,7 +37,7 @@ static const CLID CLID_DataObject = 1;
 class GAUDI_API DataObject {
 private:
   /// Reference count
-  unsigned long m_refCount = 0;
+  std::atomic<unsigned long> m_refCount = 0;
   /// Version number
   unsigned char m_version = 0;
   /// Pointer to the Registry Object
