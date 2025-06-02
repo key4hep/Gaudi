@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,7 +18,7 @@
 
 class IAlgTool;
 class AlgResourcePool;
-class AlgExecState;
+class AlgExecStateRef;
 class EventContext;
 
 namespace Gaudi {
@@ -126,8 +126,10 @@ public:
   */
   virtual StatusCode sysFinalize() = 0;
 
-  /// reference to AlgExecState of Alg
-  virtual AlgExecState& execState( const EventContext& ctx ) const = 0;
+  /** get the AlgExecStateRef of current algorithm
+   *  Actually a small wrapper around it, thus the plain object return type
+   */
+  virtual AlgExecStateRef execState( const EventContext& ctx ) const = 0;
 
   /// Is this algorithm enabled or disabled?
   virtual bool isEnabled() const = 0;

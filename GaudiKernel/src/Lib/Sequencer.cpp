@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -72,10 +72,10 @@ namespace Gaudi {
     StatusCode result = StatusCode::SUCCESS;
     ON_DEBUG   debug() << name() << " Sequencer::execute()" << endmsg;
 
-    auto& state = execState( ctx );
+    auto state = execState( ctx );
 
     // Bypass the loop if this sequencer is disabled or has already been executed
-    if ( isEnabled() && !( execState( ctx ).state() == AlgExecState::State::Done ) ) {
+    if ( isEnabled() && !( state.state() == AlgExecState::Done ) ) {
       Gaudi::Algorithm* lastAlgorithm;
       result = execute( ctx, *subAlgorithms(), m_isInverted, lastAlgorithm );
       if ( result.isSuccess() ) {
@@ -108,7 +108,7 @@ namespace Gaudi {
       }
 
       // Prevent multiple executions of this sequencer for the current event
-      state.setState( AlgExecState::State::Done );
+      state.setState( AlgExecState::Done );
     }
     return result;
   }
@@ -338,7 +338,7 @@ namespace Gaudi {
                                  std::size_t first ) const {
     StatusCode result = StatusCode::SUCCESS;
 
-    auto& state = execState( ctx );
+    auto state = execState( ctx );
     state.setFilterPassed( !m_modeOR ); //  for OR, result will be false, unless (at least) one is true
                                         //  for AND, result will be true, unless (at least) one is false
                                         //    also see comment below ....)
@@ -399,7 +399,7 @@ namespace Gaudi {
   StatusCode Sequencer::executeMember( Gaudi::Algorithm* theAlgorithm, const EventContext& context ) const {
     StatusCode result = StatusCode::SUCCESS;
     if ( theAlgorithm->isEnabled() ) {
-      if ( theAlgorithm->execState( context ).state() != AlgExecState::State::Done ) {
+      if ( theAlgorithm->execState( context ).state() != AlgExecState::Done ) {
         result = theAlgorithm->sysExecute( context );
       }
     }

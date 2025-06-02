@@ -94,16 +94,16 @@ stdout: |-
   ApplicationMgr       INFO Application Manager Started successfully
   AlgExecStateSvc   VERBOSE reset(0)
   AlgExecStateSvc     DEBUG resizing state containers to : 1
-  AlgExecStateSvc     DEBUG adding alg OutputStream to 1 slots
   AlgExecStateSvc     DEBUG adding alg DataCreator to 1 slots
   AlgExecStateSvc     DEBUG adding alg OddEvents to 1 slots
   AlgExecStateSvc     DEBUG adding alg EvenEvents to 1 slots
+  AlgExecStateSvc     DEBUG adding alg OutputStream to 1 slots
   AlgExecStateSvc   VERBOSE dumping state:
     [slot: 0, incident: Invalid]:
-    +    OddEvents  e: n
-    + OutputStream  e: n
-    +   EvenEvents  e: n
     +  DataCreator  e: n
+    +    OddEvents  e: n
+    +   EvenEvents  e: n
+    + OutputStream  e: n
   DataCreator          INFO Adding 4 objects to EventDataSvc
   DataCreator          INFO Adding 'A'
   DataCreator          INFO Adding 'B'

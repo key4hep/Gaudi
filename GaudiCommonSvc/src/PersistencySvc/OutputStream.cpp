@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,7 +38,7 @@ DECLARE_COMPONENT( OutputStream )
 namespace {
   bool passed( const Gaudi::Algorithm* alg ) {
     const auto& algState = alg->execState( Gaudi::Hive::currentContext() );
-    return algState.state() == AlgExecState::State::Done && algState.filterPassed();
+    return algState.state() == AlgExecState::Done && algState.filterPassed();
   }
 } // namespace
 
