@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -48,69 +48,11 @@ public:
   /// InterfaceID
   DeclareInterfaceID( ISvcLocator, 3, 0 );
 
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  /** Get a reference to the service given a service name
-      @param name Service name
-      @param svc Returned service pointer
-  */
-  [[deprecated( "use ISvcLocator::service<T>(type_name, createIf) -> SmartIF<T>" )]] virtual StatusCode
-  getService( const Gaudi::Utils::TypeNameString& typeName, IService*& svc, const bool createIf = true ) {
-    SmartIF<IService>& s = service( typeName, createIf );
-    svc                  = s.get();
-    if ( svc ) {
-      svc->addRef(); // Needed to maintain the correct reference counting.
-      return StatusCode::SUCCESS;
-    }
-    return StatusCode::FAILURE;
-  }
-
-  /** Get a specific interface pointer given a service name and interface id
-      @param name Service name
-      @param iid Interface ID
-      @param pinterface Returned pointer to the requested interface
-  */
-  [[deprecated( "use ISvcLocator::service<T>(type_name, createIf) -> SmartIF<T>" )]] virtual StatusCode
-  getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid, IInterface*& pinterface ) {
-    auto svc = service( typeName, false );
-    return svc ? svc->queryInterface( iid, (void**)&pinterface ) : StatusCode::FAILURE;
-  }
-
-/** Get a reference to a service and create it if it does not exists
-    @param name Service name
-    @param svc Returned service pointer
-    @param createIf flag to control the creation
-*/
-// virtual StatusCode getService( const Gaudi::Utils::TypeNameString& name,
-//                               IService*& svc,
-//                               bool createIf ) = 0;
-#endif
-
   /// Return the list of Services
   virtual const std::list<IService*>& getServices() const = 0;
 
   /// Check the existence of a service given a service name
   virtual bool existsService( std::string_view name ) const = 0;
-
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  /// Templated method to access a service by name.
-  template <class T>
-  [[deprecated( "use ISvcLocator::service<T>(type_name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( const Gaudi::Utils::TypeNameString& name, T*& svc, bool createIf = true ) {
-    if ( createIf ) {
-      IService*  s;
-      StatusCode sc = getService( name, s, true );
-      if ( !sc.isSuccess() ) return sc; // Must check if initialization was OK!
-    }
-    return getService( name, T::interfaceID(), (IInterface*&)svc );
-  }
-
-  /// Templated method to access a service by type and name.
-  template <class T>
-  [[deprecated( "use ISvcLocator::service<T>(type_name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( std::string_view type, std::string_view name, T*& svc, bool createIf = true ) {
-    return service( std::string{ type }.append( "/" ).append( name ), svc, createIf );
-  }
-#endif
 
   /// Returns a smart pointer to a service.
   virtual SmartIF<IService>& service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) = 0;

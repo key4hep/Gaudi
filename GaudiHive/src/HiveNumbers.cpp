@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -63,20 +63,3 @@ StatusCode HiveRndm::HiveNumbers::finalize() {
   }
   return StatusCode::SUCCESS;
 }
-
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-// Construct and initialize the generator
-HiveRndm::HiveNumbers::HiveNumbers( IRndmGenSvc* svc, const IRndmGen::Param& par )
-    : m_buffer_index( 0 ), m_buffer_size( HIVENUMBERS_BUFFER_SIZE ), m_generator( 0 ) {
-  StatusCode status = initialize( svc, par );
-  if ( !status.isSuccess() ) { throw GaudiException( "Initialization failed !", "HiveRndm::HiveNumbers", status ); }
-}
-
-// Initialize the generator
-StatusCode HiveRndm::HiveNumbers::initialize( IRndmGenSvc* svc, const IRndmGen::Param& par ) {
-  return initialize( SmartIF<IRndmGenSvc>( svc ), par );
-}
-#  pragma GCC diagnostic pop
-#endif

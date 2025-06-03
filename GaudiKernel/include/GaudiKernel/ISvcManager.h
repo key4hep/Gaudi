@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,17 +13,11 @@
 
 // Include files
 #include <GaudiKernel/IComponentManager.h>
+#include <GaudiKernel/IService.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/TypeNameString.h>
 #include <string>
 
-// Forward class declaration
-#if defined( GAUDI_V20_COMPAT ) || ( !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR ) )
-class ISvcFactory;
-#  include <GaudiKernel/IService.h>
-#else
-class IService;
-#endif
 class ISvcLocator;
 
 /** @class ISvcManager ISvcManager.h GaudiKernel/ISvcManager.h
@@ -49,18 +43,6 @@ public:
    */
   virtual StatusCode addService( IService* svc, int prio = DEFAULT_SVC_PRIORITY ) = 0;
 
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  /** Add a service to the "active" list of services of the factory
-   * @param svc Pointer to the service
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated( "use addService(type_name, prio) instead" )]] virtual StatusCode
-  addService( const std::string& typ, const std::string& nam, int prio ) {
-    return addService( Gaudi::Utils::TypeNameString( nam, typ ), prio );
-  }
-#endif
-
   /** Add a service to the "active" list of services of the factory
    * @param svc Pointer to the service
    *
@@ -81,20 +63,6 @@ public:
    * @return StatusCode indicating success or failure.
    */
   virtual StatusCode removeService( std::string_view nam ) = 0;
-
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  /** Declare an abstract factory for a given service type
-   * @param factory Abstract factory reference
-   * @param svctype Service type name
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode declareSvcFactory( const ISvcFactory& /*factory*/,
-                                                       const std::string& /*svctype*/ ) {
-    // This function is never used.
-    return StatusCode::FAILURE;
-  }
-#endif
 
   /** Declare the type of the service to be used when crating a given service name
    * @param svcname Service name
@@ -120,74 +88,6 @@ public:
    *       the underlying implementation would have much more freedom)
    */
   virtual SmartIF<IService>& createService( const Gaudi::Utils::TypeNameString& nametype ) = 0;
-
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  /** Creates and instance of a service type that has been declared beforehand and
-   * assigns it a name. It returns a pointer to an IService.
-   * @param svctype Service type name
-   * @param svcname Service name to be set
-   * @param svc Returned service pointer
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated( "use createService(type_name) instead" )]] virtual StatusCode
-  createService( const std::string& svctype, const std::string& svcname, IService*& svc ) {
-    SmartIF<IService> s = createService( svctype + "/" + svcname );
-    svc                 = s.get();
-    if ( svc ) {
-      svc->addRef(); // Needed to maintain the correct reference counting.
-      return StatusCode::SUCCESS;
-    }
-    return StatusCode::FAILURE;
-  }
-
-  /** Access to service factory by name to create unmanaged services
-   * @param  svc_type    [IN]      Name of the service type
-   * @param  fac         [OUT]     Reference to store pointer to service factory
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode getFactory( const std::string& /*svc_type*/, const ISvcFactory*& /*fac*/ ) const {
-    // This function is never used.
-    return StatusCode::FAILURE;
-  }
-
-  /** Initializes the list of "active" services
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode initializeServices() { return initialize(); }
-
-  /** Starts the list of "active" services
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode startServices() { return start(); }
-
-  /** Stops the list of "active" services
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode stopServices() { return stop(); }
-
-  /** Finalizes the list of "active" services
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode finalizeServices() { return finalize(); }
-
-  /** Reinitializes the list of "active" services
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode reinitializeServices() { return reinitialize(); }
-
-  /** Restarts the list of "active" services
-   *
-   * @return StatusCode indicating success or failure.
-   */
-  [[deprecated]] virtual StatusCode restartServices() { return restart(); }
-#endif
 
   virtual int        getPriority( std::string_view name ) const    = 0;
   virtual StatusCode setPriority( std::string_view name, int pri ) = 0;

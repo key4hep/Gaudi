@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -49,12 +49,6 @@ namespace Gaudi {
   */
   class BootSvcLocator : public implements<ISvcLocator> {
   public:
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-    StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
-                           IInterface*& pinterface ) override;
-    StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, IService*& svc,
-                           const bool createIf = true ) override;
-#endif
     const std::list<IService*>& getServices() const override;
     bool                        existsService( std::string_view name ) const override;
 
@@ -195,32 +189,6 @@ static SmartIF<IService>    s_bootService;
 static SmartIF<IInterface>  s_bootInterface;
 
 using Gaudi::BootSvcLocator;
-
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
-                                              IInterface*& pinterface ) {
-  StatusCode sc = StatusCode::FAILURE;
-  if ( s_appmgrInstance ) {
-    sc = s_svclocInstance->getService( typeName, iid, pinterface );
-  } else {
-    pinterface = s_bootInterface.get();
-  }
-  return sc;
-}
-StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString& typeName, IService*& svc,
-                                              const bool createIf ) {
-  StatusCode sc = StatusCode::FAILURE;
-  if ( s_appmgrInstance ) {
-    sc = s_svclocInstance->getService( typeName, svc, createIf );
-  } else {
-    svc = s_bootService.get();
-  }
-  return sc;
-}
-#  pragma GCC diagnostic pop
-#endif
 
 const std::list<IService*>& Gaudi::BootSvcLocator::getServices() const {
   return s_appmgrInstance ? s_svclocInstance->getServices() : s_bootServices;

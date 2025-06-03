@@ -54,17 +54,6 @@ public:
                                       bool checkIfExists = true // Flag to indicate if clones of existing algorithms can
                                                                 // be created
                                       ) = 0;
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  /// Find an algorithm with given name in the list of known algorithms
-  [[deprecated( "use IAlgManager::algorithm(type_name, createIf) -> SmartIF<IAlgorithm>" )]] virtual StatusCode
-  getAlgorithm( std::string_view name, // Algorithm name to be searched
-                IAlgorithm*&     alg   // Returned algorithm
-  ) const {
-    SmartIF<IAlgorithm>& si = const_cast<IAlgManager*>( this )->algorithm( name, false );
-    alg                     = si.get();
-    return si ? StatusCode::SUCCESS : StatusCode::FAILURE;
-  }
-#endif
   /// Check the existence of an algorithm with a given name in the list of known algorithms
   virtual bool existsAlgorithm( std::string_view name // Algorithm name to be searched
   ) const = 0;

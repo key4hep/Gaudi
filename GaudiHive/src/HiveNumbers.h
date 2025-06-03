@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -57,12 +57,6 @@ namespace HiveRndm {
     virtual ~HiveNumbers();
     /// Initialization
     virtual StatusCode initialize( const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par );
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-    /// Initializing constructor
-    [[deprecated]] HiveNumbers( IRndmGenSvc* svc, const IRndmGen::Param& par );
-    /// Initialization
-    [[deprecated]] virtual StatusCode initialize( IRndmGenSvc* svc, const IRndmGen::Param& par );
-#endif
     /// Finalization
     virtual StatusCode finalize();
     /// Check if the number supply is possible
