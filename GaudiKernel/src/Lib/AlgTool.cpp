@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -409,19 +409,6 @@ std::vector<IAlgTool*>& AlgTool::tools() {
 }
 
 //------------------------------------------------------------------------------
-/// implementation of service method
-StatusCode AlgTool::service_i( std::string_view svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
-  const ServiceLocatorHelper helper( *serviceLocator(), *this );
-  return helper.getService( svcName, createIf, iid, ppSvc );
-}
-
-//------------------------------------------------------------------------------
-StatusCode AlgTool::service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
-                               void** ppSvc ) const {
-  const ServiceLocatorHelper helper( *serviceLocator(), *this );
-  return helper.createService( svcType, svcName, iid, ppSvc );
-}
-
 SmartIF<IService> AlgTool::service( std::string_view name, const bool createIf, const bool quiet ) const {
   const ServiceLocatorHelper helper( *serviceLocator(), *this );
   return helper.service( name, quiet, createIf );

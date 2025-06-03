@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -321,12 +321,6 @@ private:
   mutable std::vector<BaseToolHandle*>       m_toolHandles;
   mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
-
-  /** implementation of legacy service method */
-  [[deprecated]] StatusCode service_i( std::string_view algName, bool createIf, const InterfaceID& iid,
-                                       void** ppSvc ) const;
-  [[deprecated]] StatusCode service_i( std::string_view svcType, std::string_view svcName, const InterfaceID& iid,
-                                       void** ppS ) const;
 
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
