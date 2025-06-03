@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -119,7 +119,9 @@ def loadConfigurableDb():
 
     log.debug("loading confDb files...")
     nFiles = 0  # counter of imported files
-    pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
+    pathlist = os.getenv("GAUDI_PLUGIN_PATH", "").split(os.pathsep) + os.getenv(
+        "LD_LIBRARY_PATH", ""
+    ).split(os.pathsep)
     ignored_files = set(os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
     for path in pathlist:
         if not os.path.isdir(path):
