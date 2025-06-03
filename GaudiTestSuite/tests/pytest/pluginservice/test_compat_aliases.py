@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -17,6 +17,6 @@ class TestCompatAliases(GaudiExeTest):
     @classmethod
     def update_env(cls, env):
         env["LD_LIBRARY_PATH"] = cls.expand_vars_from(
-            "$ENV_CMAKE_BINARY_DIR/GaudiPluginService:$ENV_CMAKE_BINARY_DIR/Gaudi/GaudiPluginService:$LD_LIBRARY_PATH",
+            "$ENV_PROJECT_BINARY_DIR/GaudiPluginService:$ENV_PROJECT_BINARY_DIR/Gaudi/GaudiPluginService:$LD_LIBRARY_PATH",
             env,
         )

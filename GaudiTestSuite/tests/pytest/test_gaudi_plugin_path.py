@@ -20,7 +20,7 @@ class TestGaudiPluginPath(GaudiExeTest):
     @classmethod
     def update_env(cls, env):
         env["GAUDI_PLUGIN_PATH"] = cls.expand_vars_from(
-            "$ENV_CMAKE_BINARY_DIR/GaudiPluginService:$ENV_CMAKE_BINARY_DIR/Gaudi/GaudiPluginService:$LD_LIBRARY_PATH",
+            "$ENV_PROJECT_BINARY_DIR/GaudiPluginService:$ENV_PROJECT_BINARY_DIR/Gaudi/GaudiPluginService:$LD_LIBRARY_PATH",
             env,
         )
 
@@ -36,5 +36,5 @@ class TestGaudiPluginPath(GaudiExeTest):
                         to_add.append(path)
                         break
         env["LD_LIBRARY_PATH"] = cls.expand_vars_from(
-            f"$ENV_CMAKE_BINARY_DIR/GaudiKernel:{':'.join(to_add)}", env
+            f"$ENV_PROJECT_BINARY_DIR/GaudiKernel:{':'.join(to_add)}", env
         )
