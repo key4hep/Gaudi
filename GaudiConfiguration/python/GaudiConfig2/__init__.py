@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,7 +15,6 @@ Configurables = ConfigurablesDB(__name__ + ".Configurables")
 del ConfigurablesDB  # no need to use this class after this point
 
 import re
-from sys import version_info
 
 from GaudiConfig2._configurables import (  # noqa: F401
     Configurable,
@@ -23,9 +22,6 @@ from GaudiConfig2._configurables import (  # noqa: F401
     all_options,
     useGlobalInstances,
 )
-
-if version_info >= (3,):  # pragma no cover
-    basestring = str
 
 # Regular expression to check if any of the options is a Python callable,
 # in the form of a string like `package.sub_package.module:callable` or
@@ -71,7 +67,7 @@ def invokeConfig(func, *args, **kwargs):
     from importlib import import_module
 
     if not callable(func):
-        if isinstance(func, basestring):
+        if isinstance(func, str):
             m = CALLABLE_FORMAT.match(func)
             if m and m.group("module"):
                 func = getattr(import_module(m.group("module")), m.group("callable"))

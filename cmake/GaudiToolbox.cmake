@@ -552,14 +552,11 @@ function(gaudi_add_python_module module_name)
         "SOURCES;LINK"
         ${ARGN}
     )
-    # Detect which python package is used and compile the module
-    # FIXME: (The day CMake can invoke functions whose name are in a variable, use a loop)
+    # Detect which Python package is used and compile the module
     if(COMMAND Python_add_library)
         Python_add_library(${module_name} MODULE ${ARG_SOURCES})
     elseif(COMMAND Python3_add_library)
         Python3_add_library(${module_name} MODULE ${ARG_SOURCES})
-    elseif(COMMAND Python2_add_library)
-        Python2_add_library(${module_name} MODULE ${ARG_SOURCES})
     else()
         message(FATAL_ERROR "Python is not available, call find_package(Python) first.")
     endif()
