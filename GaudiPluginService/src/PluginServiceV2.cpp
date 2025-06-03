@@ -96,6 +96,17 @@ namespace Gaudi {
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
+        bool Registry::tryDLOpen( const std::string_view& libName ) const {
+          const void* handle = dlopen( libName.data(), RTLD_LAZY | RTLD_GLOBAL );
+          if ( !handle ) {
+            std::cout << "dlopen failed for " << libName << std::endl;
+            logger().warning( "cannot load " + std::string( libName ) );
+            if ( char* dlmsg = dlerror() ) { logger().warning( dlmsg ); }
+            return false;
+          }
+          return true;
+        }
+
         Registry& Registry::instance() {
           auto            _guard = std::scoped_lock{ ::registrySingletonMutex };
           static Registry r;
@@ -125,75 +136,62 @@ namespace Gaudi {
         void Registry::initialize() {
           auto _guard = std::scoped_lock{ m_mutex };
 #if defined( _WIN32 )
-          const char* envVar = "PATH";
-          const char  sep    = ';';
+          const auto envVars = { "PATH" };
+          const char sep     = ';';
 #elif defined( __APPLE__ )
-          const char* envVar = "GAUDI_PLUGIN_PATH";
-          const char  sep    = ':';
+          const auto envVars = { "GAUDI_PLUGIN_PATH" };
+          const char sep     = ':';
 #else
-          const char* envVar = "LD_LIBRARY_PATH";
-          const char  sep    = ':';
+          const auto envVars = { "GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH" };
+          const char sep     = ':';
 #endif
 
-          std::regex  line_format{ "^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$" };
-          std::smatch m;
-
-          std::string_view search_path;
-          if ( auto ptr = std::getenv( envVar ) ) search_path = std::string_view{ ptr };
-          if ( !search_path.empty() ) {
+          std::regex line_format{ "^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$" };
+          for ( const auto& envVar : envVars ) {
+            std::smatch       m;
+            std::stringstream search_path;
+            if ( auto ptr = std::getenv( envVar ) ) search_path << ptr;
             logger().debug( std::string( "searching factories in " ) + envVar );
 
-            std::string_view::size_type start_pos = 0, end_pos = 0;
-            while ( start_pos != std::string_view::npos ) {
+            // std::string_view::size_type start_pos = 0, end_pos = 0;
+            std::string dir;
+            while ( std::getline( search_path, dir, sep ) ) {
               // correctly handle begin of string or path separator
-              if ( start_pos ) ++start_pos;
-
-              end_pos = search_path.find( sep, start_pos );
-              fs::path dirName =
-#ifdef USE_BOOST_FILESYSTEM
-                  std::string{ search_path.substr( start_pos, end_pos - start_pos ) };
-#else
-                  search_path.substr( start_pos, end_pos - start_pos );
-#endif
-              start_pos = end_pos;
-              logger().debug( " looking into " + dirName.string() );
+              logger().debug( " looking into " + dir );
               // look for files called "*.components" in the directory
-              if ( is_directory( dirName ) ) {
-                for ( auto& p : fs::directory_iterator( dirName ) ) {
-                  if ( p.path().extension() == ".components" && is_regular_file( p.path() ) ) {
-                    // read the file
-                    const auto& fullPath = p.path().string();
-                    logger().debug( "  reading " + p.path().filename().string() );
-                    std::ifstream factories{ fullPath };
-                    std::string   line;
-                    int           factoriesCount = 0;
-                    int           lineCount      = 0;
-                    while ( !factories.eof() ) {
-                      ++lineCount;
-                      std::getline( factories, line );
-                      if ( regex_match( line, m, line_format ) ) {
-                        if ( m[1] == "v2" ) { // ignore non "v2" and "empty" lines
-                          const std::string lib{ m[2] };
-                          const std::string fact{ m[3] };
-                          m_factories.emplace( fact, FactoryInfo{ lib, {}, { { "ClassName", fact } } } );
+              if ( !fs::is_directory( dir ) ) { continue; }
+              for ( const auto& p : fs::directory_iterator( dir ) ) {
+                if ( p.path().extension() != ".components" || !is_regular_file( p.path() ) ) { continue; }
+                // read the file
+                const auto& fullPath = p.path().string();
+                logger().debug( "  reading " + p.path().filename().string() );
+                std::ifstream factories{ fullPath };
+                std::string   line;
+                int           factoriesCount = 0;
+                int           lineCount      = 0;
+                while ( !factories.eof() ) {
+                  ++lineCount;
+                  std::getline( factories, line );
+                  if ( regex_match( line, m, line_format ) ) {
+                    if ( m[1] != "v2" ) { continue; } // ignore non "v2" and "empty" lines
+                    const std::string lib{ m[2] };
+                    const std::string fact{ m[3] };
+                    m_factories.emplace( fact, FactoryInfo{ lib, {}, { { "ClassName", fact } } } );
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
-                          // add an alias for the factory using the Reflex convention
-                          std::string old_name = old_style_name( fact );
-                          if ( fact != old_name ) {
-                            m_factories.emplace(
-                                old_name, FactoryInfo{ lib, {}, { { "ReflexName", "true" }, { "ClassName", fact } } } );
-                          }
+                    // add an alias for the factory using the Reflex convention
+                    std::string old_name = old_style_name( fact );
+                    if ( fact != old_name ) {
+                      m_factories.emplace(
+                          old_name, FactoryInfo{ lib, {}, { { "ReflexName", "true" }, { "ClassName", fact } } } );
+                    }
 #endif
-                          ++factoriesCount;
-                        }
-                      } else {
-                        logger().warning( "failed to parse line " + fullPath + ':' + std::to_string( lineCount ) );
-                      }
-                    }
-                    if ( logger().level() <= Logger::Debug ) {
-                      logger().debug( "  found " + std::to_string( factoriesCount ) + " factories" );
-                    }
+                    ++factoriesCount;
+                  } else {
+                    logger().warning( "failed to parse line " + fullPath + ':' + std::to_string( lineCount ) );
                   }
+                }
+                if ( logger().level() <= Logger::Debug ) {
+                  logger().debug( "  found " + std::to_string( factoriesCount ) + " factories" );
                 }
               }
             }
@@ -249,56 +247,32 @@ namespace Gaudi {
           const FactoryMap&        facts   = factories();
           auto                     f       = facts.find( id );
 
-          if ( f != facts.end() ) {
-            if ( load && !f->second.is_set() ) {
-              const std::string library = f->second.library;
-#ifdef __APPLE__
-              std::string_view search_path;
-              if ( auto ptr = std::getenv( "GAUDI_PLUGIN_PATH" ) ) search_path = std::string_view{ ptr };
-              if ( !search_path.empty() ) {
+          if ( f == facts.end() ) { return unknown; }
+          if ( !load || f->second.is_set() ) { return f->second; }
+          const std::string_view library = f->second.library;
 
-                std::string_view::size_type start_pos = 0, end_pos = 0;
-                while ( start_pos != std::string_view::npos ) {
-                  // correctly handle begin of string or path separator
-                  if ( start_pos ) ++start_pos;
-
-                  end_pos = search_path.find( ":", start_pos );
-                  fs::path dirName =
-#  ifdef USE_BOOST_FILESYSTEM
-                      std::string{ search_path.substr( start_pos, end_pos - start_pos ) };
-#  else
-                      search_path.substr( start_pos, end_pos - start_pos );
-#  endif
-                  start_pos = end_pos;
-
-                  logger().debug( " looking into " + dirName.string() );
-                  // look for files called "*.components" in the directory
-                  if ( is_directory( dirName ) && is_regular_file( dirName / fs::path( library ) ) ) {
-                    logger().debug( "found " + dirName.string() + "/" + library.c_str() + " for factory " + id );
-                    if ( !dlopen( ( dirName.string() + "/" + library ).c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
-                      logger().warning( "cannot load " + library + " for factory " + id );
-                      char* dlmsg = dlerror();
-                      if ( dlmsg ) logger().warning( dlmsg );
-                      return unknown;
-                    }
-                  }
-                }
-              }
-#else
-
-              if ( !dlopen( library.c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
-                logger().warning( "cannot load " + library + " for factory " + id );
-                char* dlmsg = dlerror();
-                if ( dlmsg ) logger().warning( dlmsg );
+          // dlopen can not look into GAUDI_PLUGIN_PATH so a search is reimplemented here
+          // and if not found then we fall back to dlopen without full paths
+          // that will look in LD_LIBRARY_PATH
+          std::stringstream ss;
+          if ( auto ptr = std::getenv( "GAUDI_PLUGIN_PATH" ) ) ss << ptr;
+          std::string dir;
+          bool        found = false;
+          while ( std::getline( ss, dir, ':' ) && !found ) {
+            if ( !fs::exists( dir ) ) { continue; }
+            if ( is_regular_file( dir / fs::path( library ) ) ) {
+              // logger().debug( "found " + dirName.string() + "/" + library.c_str() + " for factory " + id );
+              if ( !tryDLOpen( ( dir / fs::path( library ) ).string() ) ) {
                 return unknown;
+              } else {
+                found = true;
+                break;
               }
-#endif
-              f = facts.find( id ); // ensure that the iterator is valid
             }
-            return f->second;
-          } else {
-            return unknown;
           }
+          if ( !found && !tryDLOpen( library ) ) return unknown;
+          f = facts.find( id ); // ensure that the iterator is valid
+          return f->second;
         }
 
         Registry& Registry::addProperty( const KeyType& id, const KeyType& k, const std::string& v ) {

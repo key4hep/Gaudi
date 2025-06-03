@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -19,20 +19,25 @@ class ConfDB2(object):
         import shelve
 
         self._dbs = {}
-        pathvar = "DYLD_LIBRARY_PATH" if sys.platform == "darwin" else "LD_LIBRARY_PATH"
-        for path in os.getenv(pathvar, "").split(os.pathsep):
-            if not os.path.isdir(path):
-                continue
-            dbfiles = [
-                os.path.join(path, f)
-                for f in os.listdir(path)
-                if f.endswith(".confdb2") and os.path.isfile(os.path.join(path, f))
-            ]
-            dbfiles.sort()
-            for db in [shelve.open(f, "r") for f in dbfiles]:
-                for key in db:
-                    if key not in self._dbs:
-                        self._dbs[key] = db
+        pathvars = (
+            ["DYLD_LIBRARY_PATH"]
+            if sys.platform == "darwin"
+            else ["GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH"]
+        )
+        for pathvar in pathvars:
+            for path in os.getenv(pathvar, "").split(os.pathsep):
+                if not os.path.isdir(path):
+                    continue
+                dbfiles = [
+                    os.path.join(path, f)
+                    for f in os.listdir(path)
+                    if f.endswith(".confdb2") and os.path.isfile(os.path.join(path, f))
+                ]
+                dbfiles.sort()
+                for db in [shelve.open(f, "r") for f in dbfiles]:
+                    for key in db:
+                        if key not in self._dbs:
+                            self._dbs[key] = db
 
     def __getitem__(self, key):
         return self._dbs[key][key]
