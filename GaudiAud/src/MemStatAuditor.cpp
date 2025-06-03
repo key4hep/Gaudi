@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,28 +19,28 @@
     @date    04/02/2001
 */
 
-#include "CommonAuditor.h"
 #include "ProcStats.h"
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/IChronoStatSvc.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/Stat.h>
 
-class MemStatAuditor : public CommonAuditor {
+class MemStatAuditor : public Gaudi::Auditor {
 public:
-  using CommonAuditor::CommonAuditor;
+  using Auditor::Auditor;
 
   StatusCode initialize() override;
 
-  void i_before( CustomEventTypeRef /*evt*/, std::string_view /*caller*/ ) override {
+  void before( std::string const& /*evt*/, std::string const& /*caller*/, EventContext const& ) override {
     // It's not interesting to monitor the memory usage before the methods.
   }
 
-  void i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& ) override {
+  void after( std::string const& evt, std::string const& caller, EventContext const&, const StatusCode& ) override {
     i_printinfo( "Memory usage has changed after", evt, caller );
   }
 
 private:
-  void                    i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller );
+  void                    i_printinfo( std::string_view msg, std::string const& evt, std::string_view caller );
   SmartIF<IChronoStatSvc> m_stat;
 
   /// vsize of the previous call to printinfo
@@ -50,7 +50,7 @@ private:
 DECLARE_COMPONENT( MemStatAuditor )
 
 StatusCode MemStatAuditor::initialize() {
-  return CommonAuditor::initialize().andThen( [&]() -> StatusCode {
+  return Auditor::initialize().andThen( [&]() -> StatusCode {
     m_stat = serviceLocator()->service( "ChronoStatSvc" );
     if ( !m_stat ) {
       error() << "Cannot get ChronoStatSvc" << endmsg;
@@ -60,7 +60,7 @@ StatusCode MemStatAuditor::initialize() {
   } );
 }
 
-void MemStatAuditor::i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller ) {
+void MemStatAuditor::i_printinfo( std::string_view msg, std::string const& evt, std::string_view caller ) {
   // cannot be exactly 0
   double deltaVSize = 0.00001;
 

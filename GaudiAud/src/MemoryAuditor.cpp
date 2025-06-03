@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,40 +11,40 @@
 // MemoryAuditor:
 //  An auditor that monitors memory usage
 
-#include "CommonAuditor.h"
 #include "ProcStats.h"
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/MsgStream.h>
 
 /// Monitors the memory use of each algorithm
 ///
 /// @author M. Shapiro, LBNL
 /// @author Marco Clemencic
-class MemoryAuditor : public CommonAuditor {
+class MemoryAuditor : public Gaudi::Auditor {
 public:
-  using CommonAuditor::CommonAuditor;
+  using Auditor::Auditor;
 
 protected:
   /// Default (catch-all) "before" Auditor hook
-  void i_before( CustomEventTypeRef evt, std::string_view caller ) override;
+  void before( std::string const& evt, std::string const&, EventContext const& ) override;
 
   /// Default (catch-all) "after" Auditor hook
-  void i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& sc ) override;
+  void after( std::string const& evt, std::string const& caller, EventContext const&, const StatusCode& sc ) override;
 
   /// Report the memory usage.
-  virtual void i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller );
+  virtual void i_printinfo( std::string_view msg, std::string const& evt, std::string_view caller );
 };
 
 DECLARE_COMPONENT( MemoryAuditor )
 
-void MemoryAuditor::i_before( CustomEventTypeRef evt, std::string_view caller ) {
+void MemoryAuditor::before( std::string const& evt, std::string const& caller, EventContext const& ) {
   i_printinfo( "Memory usage before", evt, caller );
 }
 
-void MemoryAuditor::i_after( CustomEventTypeRef evt, std::string_view caller, const StatusCode& ) {
+void MemoryAuditor::after( std::string const& evt, std::string const& caller, EventContext const&, const StatusCode& ) {
   i_printinfo( "Memory usage has changed after", evt, caller );
 }
 
-void MemoryAuditor::i_printinfo( std::string_view msg, CustomEventTypeRef evt, std::string_view caller ) {
+void MemoryAuditor::i_printinfo( std::string_view msg, std::string const& evt, std::string_view caller ) {
   /// Get the process informations.
   /// fetch true if it was possible to retrieve the informations.
   if ( procInfo pInfo; ProcStats::instance()->fetch( pInfo ) ) {

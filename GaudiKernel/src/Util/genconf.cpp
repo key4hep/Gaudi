@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -25,9 +25,10 @@
 #endif
 
 #include <Gaudi/Algorithm.h>
+#include <Gaudi/Auditor.h>
+#include <Gaudi/IAuditor.h>
 #include <Gaudi/PluginService.h>
 #include <GaudiKernel/AlgTool.h>
-#include <GaudiKernel/Auditor.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/DataHandle.h>
 #include <GaudiKernel/DataHandleProperty.h>
@@ -36,7 +37,6 @@
 #include <GaudiKernel/IAlgTool.h>
 #include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/IAppMgrUI.h>
-#include <GaudiKernel/IAuditor.h>
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/Service.h>
@@ -123,7 +123,8 @@ namespace {
       { typeid( Gaudi::Algorithm::Factory::FactoryType ).name(), component_t::Algorithm },
       { typeid( Service::Factory::FactoryType ).name(), component_t::Service },
       { typeid( AlgTool::Factory::FactoryType ).name(), component_t::AlgTool },
-      { typeid( Auditor::Factory::FactoryType ).name(), component_t::Auditor },
+      // factories for new Auditors
+      { typeid( Gaudi::Auditor::Factory::FactoryType ).name(), component_t::Auditor },
   };
 
   const std::string& toString( component_t type ) {
@@ -579,7 +580,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
           prop->release();
           break;
         case component_t::Auditor:
-          prop = SmartIF<IAuditor>( Auditor::Factory::create( factoryName, cname, svcLoc ).release() );
+          prop = SmartIF<Gaudi::IAuditor>( Gaudi::Auditor::Factory::create( factoryName, cname, svcLoc ).release() );
           break;
         case component_t::ApplicationMgr:
           prop = SmartIF<ISvcLocator>( svcLoc );

@@ -90,7 +90,7 @@ namespace Gaudi {
     try {
 
       { // limit the scope of the guard
-        Gaudi::Guards::AuditorGuard guard( this,
+        Gaudi::Guards::AuditorGuard guard( name(),
                                            // check if we want to audit the initialize
                                            ( m_auditorInitialize ) ? auditorSvc().get() : nullptr,
                                            IAuditor::Initialize );
@@ -205,7 +205,7 @@ namespace Gaudi {
     // Invoke start() method of the derived class inside a try/catch clause
     try {
       { // limit the scope of the guard
-        Gaudi::Guards::AuditorGuard guard( this,
+        Gaudi::Guards::AuditorGuard guard( name(),
                                            // check if we want to audit the initialize
                                            ( m_auditorStart ) ? auditorSvc().get() : nullptr, IAuditor::Start );
         // Invoke the start() method of the derived class
@@ -255,7 +255,7 @@ namespace Gaudi {
     StatusCode sc( StatusCode::SUCCESS );
     // Invoke reinitialize() method of the derived class inside a try/catch clause
     try {
-      Gaudi::Guards::AuditorGuard guard( this,
+      Gaudi::Guards::AuditorGuard guard( name(),
                                          // check if we want to audit the initialize
                                          ( m_auditorReinitialize ) ? auditorSvc().get() : nullptr,
                                          IAuditor::ReInitialize );
@@ -298,7 +298,7 @@ namespace Gaudi {
     StatusCode sc( StatusCode::FAILURE );
     // Invoke reinitialize() method of the derived class inside a try/catch clause
     try {
-      Gaudi::Guards::AuditorGuard guard( this,
+      Gaudi::Guards::AuditorGuard guard( name(),
                                          // check if we want to audit the initialize
                                          ( m_auditorRestart ) ? auditorSvc().get() : nullptr, IAuditor::ReStart );
       // Invoke the reinitialize() method of the derived class
@@ -339,9 +339,10 @@ namespace Gaudi {
     // lock the context service
     Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, ctx );
 
-    Gaudi::Guards::AuditorGuard guard( this,
+    Gaudi::Guards::AuditorGuard guard( name(),
                                        // check if we want to audit the initialize
-                                       ( m_auditorExecute ) ? auditorSvc().get() : nullptr, IAuditor::Execute, status );
+                                       ( m_auditorExecute ) ? auditorSvc().get() : nullptr, IAuditor::Execute, status,
+                                       ctx );
 
     try {
       ITimelineSvc::TimelineRecorder timelineRecoder;
@@ -416,7 +417,7 @@ namespace Gaudi {
     // Invoke stop() method of the derived class inside a try/catch clause
     try {
       { // limit the scope of the guard
-        Gaudi::Guards::AuditorGuard guard( this,
+        Gaudi::Guards::AuditorGuard guard( name(),
                                            // check if we want to audit the initialize
                                            ( m_auditorStop ) ? auditorSvc().get() : nullptr, IAuditor::Stop );
 
@@ -460,7 +461,7 @@ namespace Gaudi {
     // Invoke finalize() method of the derived class inside a try/catch clause
     try {
       { // limit the scope of the guard
-        Gaudi::Guards::AuditorGuard guard( this,
+        Gaudi::Guards::AuditorGuard guard( name(),
                                            // check if we want to audit the initialize
                                            ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, IAuditor::Finalize );
         // Invoke the finalize() method of the derived class

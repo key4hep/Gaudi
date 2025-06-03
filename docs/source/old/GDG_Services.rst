@@ -1011,7 +1011,7 @@ Implementing new Auditors
 
     .. code-block:: cpp
 
-        #include "GaudiKernel/Auditor.h"
+        #include "Gaudi/Auditor.h"
         class ChronoAuditor : virtual public Auditor {
 
         public:

@@ -8,10 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <GaudiKernel/Auditor.h>
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/MsgStream.h>
 
-// ============================================================================
 /** @class LoggingAuditor
  *
  *  Simple auditor that prints the event being audited.
@@ -21,52 +20,16 @@
  */
 namespace GaudiTestSuite {
 
-  class LoggingAuditor : public Auditor {
+  class LoggingAuditor : public Gaudi::Auditor {
   public:
     /// constructor
     using Auditor::Auditor;
 
-    void before( StandardEventType evt, INamedInterface* caller ) override {
-      auto& log = info();
-      log << "Auditing before of " << evt;
-      if ( caller ) log << " for " << caller->name();
-      log << endmsg;
-    }
-
-    void after( StandardEventType evt, INamedInterface* caller, const StatusCode& ) override {
-      auto& log = info();
-      log << "Auditing after of " << evt;
-      if ( caller ) log << " for " << caller->name();
-      log << endmsg;
-    }
-
-    void before( CustomEventTypeRef evt, INamedInterface* caller ) override {
-      auto& log = info();
-      log << "Auditing before of " << evt;
-      if ( caller ) log << " for " << caller->name();
-      log << endmsg;
-    }
-
-    void after( CustomEventTypeRef evt, INamedInterface* caller, const StatusCode& ) override {
-      auto& log = info();
-      log << "Auditing after of " << evt;
-      if ( caller ) log << " for " << caller->name();
-      log << endmsg;
-    }
-
-    void before( StandardEventType evt, const std::string& caller ) override {
+    void before( std::string const& evt, std::string const& caller, EventContext const& ) override {
       info() << "Auditing before of " << evt << " for " << caller << endmsg;
     }
 
-    void after( StandardEventType evt, const std::string& caller, const StatusCode& ) override {
-      info() << "Auditing after of " << evt << " for " << caller << endmsg;
-    }
-
-    void before( CustomEventTypeRef evt, const std::string& caller ) override {
-      info() << "Auditing before of " << evt << " for " << caller << endmsg;
-    }
-
-    void after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& ) override {
+    void after( std::string const& evt, std::string const& caller, EventContext const&, StatusCode const& ) override {
       info() << "Auditing after of " << evt << " for " << caller << endmsg;
     }
   };

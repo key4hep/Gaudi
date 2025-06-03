@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <GaudiKernel/Auditor.h>
+#include <Gaudi/Auditor.h>
 #include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IIncidentSvc.h>
@@ -31,8 +31,6 @@
 
 #include <perfmon/perfmon.h>
 #include <perfmon/perfmon_dfl_smpl.h>
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -99,7 +97,7 @@ static uint64_t last_overflow;
 static uint64_t last_count;
 static int      sp[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
 
-static std::stack<std::pair<INamedInterface*, std::vector<unsigned long int>>> alg_stack;
+static std::stack<std::pair<std::string, std::vector<unsigned long int>>> alg_stack;
 /*END: perfmon*/
 
 namespace {
@@ -149,8 +147,6 @@ namespace {
     static PFMon&          instance() { return s_instance; }
 
   private:
-    // static void failure() { throw 1; }
-
     void* handle;
 
     PFMon() {
@@ -176,10 +172,6 @@ namespace {
         pfm_strerror         = function_cast<pfm_strerror_t>( dlsym( handle, "pfm_strerror" ) );
         pfm_set_options      = function_cast<pfm_set_options_t>( dlsym( handle, "pfm_set_options" ) );
         pfm_get_num_counters = function_cast<pfm_get_num_counters_t>( dlsym( handle, "pfm_get_num_counters" ) );
-      } else {
-        // pfm_start = pfm_stop = pfm_self_stop = pfm_restart = pfm_read_pmds = pfm_initialize = pfm_find_full_event =
-        // pfm_dispatch_events = pfm_create_context = pfm_write_pmcs = pfm_write_pmds = pfm_load_context = pfm_strerror
-        // = pfm_set_options = pfm_get_num_counters = failure;
       }
     }
     ~PFMon() {
@@ -205,20 +197,11 @@ namespace {
  *  @date 2009-10-28
  */
 
-class PerfMonAuditor : virtual public Auditor {
+class PerfMonAuditor : virtual public Gaudi::Auditor {
 public:
-  void before( StandardEventType evt, INamedInterface* alg ) override;
-  void after( StandardEventType evt, INamedInterface* alg, const StatusCode& sc ) override;
-  using Auditor::after;
-  using Auditor::before;
+  void before( std::string const&, std::string const&, EventContext const& ) override;
+  void after( std::string const&, std::string const&, EventContext const&, const StatusCode& ) override;
 
-private:
-  void i_beforeInitialize( INamedInterface* alg );
-  void i_afterInitialize( INamedInterface* alg );
-  void i_beforeExecute( INamedInterface* alg );
-  void i_afterExecute( INamedInterface* alg );
-
-public:
   StatusCode initialize() override;
   StatusCode finalize() override;
   int        is_nehalem() {
@@ -241,41 +224,6 @@ public:
 
 private:
   PFMon& m_pfm;
-  /*
-    typedef void (*pfm_stop_t)(int);
-    pfm_stop_t pfm_stop;
-    typedef void (*pfm_self_stop_t)(int);
-    pfm_self_stop_t pfm_self_stop;
-
-    typedef os_err_t (*pfm_restart_t)(int);
-    pfm_restart_t pfm_restart;
-
-    //typedef int (*pfm_read_pmds_t)(int, pfarg_pmd_t*, int);
-    //pfm_read_pmds_t pfm_read_pmds;
-
-    typedef pfm_err_t (*pfm_initialize_t)();
-    pfm_initialize_t pfm_initialize;
-    typedef pfm_err_t (*pfm_find_full_event_t)(const char *, pfmlib_event_t *);
-    pfm_find_full_event_t pfm_find_full_event;
-    typedef pfm_err_t (*pfm_dispatch_events_t)(pfmlib_input_param_t *, void *, pfmlib_output_param_t *, void *);
-    pfm_dispatch_events_t pfm_dispatch_events;
-    typedef os_err_t (*pfm_create_context_t)(pfarg_ctx_t *, char *, void *, size_t);
-    pfm_create_context_t pfm_create_context;
-    typedef os_err_t (*pfm_write_pmcs_t)(int, pfarg_pmc_t *, int);
-    pfm_write_pmcs_t pfm_write_pmcs;
-    typedef os_err_t (*pfm_write_pmds_t)(int, pfarg_pmd_t *, int);
-    pfm_write_pmds_t pfm_write_pmds;
-    typedef os_err_t (*pfm_load_context_t)(int, pfarg_load_t *);
-    pfm_load_context_t pfm_load_context;
-    typedef os_err_t (*pfm_start_t)(int fd, pfarg_start_t *);
-    pfm_start_t pfm_start;
-    typedef char* (*pfm_strerror_t)(int);
-    pfm_strerror_t pfm_strerror;
-    typedef pfm_err_t (*pfm_set_options_t)(pfmlib_options_t *);
-    pfm_set_options_t pfm_set_options;
-    typedef pfm_err_t (*pfm_get_num_counters_t)(unsigned int *);
-    pfm_get_num_counters_t pfm_get_num_counters;
-  */
 
 public:
   PerfMonAuditor( const std::string& name, ISvcLocator* pSvc )
@@ -307,46 +255,6 @@ public:
     declareProperty( "SAMPLE", sampling );
     declareProperty( "START_AT_EVENT", start_at_event );
     declareProperty( "IS_NEHALEM", is_nehalem_ret );
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-    /*
-    // loading functions from PFM library
-      void* handle = dlopen("libpfm.so", RTLD_NOW);
-        if (!handle) {
-    //      error() << "Cannot open library: " << dlerror() << endmsg;
-        }
-      typedef void (*hello_t)();
-        hello_t hello = (hello_t) dlsym(handle, "hello");
-        if (!hello) {
-    //        error() << "Cannot load symbol 'hello': " << dlerror() << endmsg;
-            dlclose(handle);
-        }
-
-        pfm_start = (pfm_start_t) dlsym(handle, "pfm_start");
-        pfm_stop = (pfm_stop_t) dlsym(handle, "pfm_stop");
-        pfm_self_stop = (pfm_self_stop_t) dlsym(handle, "pfm_stop"); //it's the same
-        pfm_restart = (pfm_restart_t) dlsym(handle, "pfm_restart");
-        //pfm_read_pmds = (pfm_read_pmds_t) dlsym(handle, "pfm_read_pmds");
-        pfm_initialize = (pfm_initialize_t) dlsym(handle, "pfm_initialize");
-        pfm_find_full_event = (pfm_find_full_event_t) dlsym(handle, "pfm_find_full_event");
-        pfm_dispatch_events = (pfm_dispatch_events_t) dlsym(handle, "pfm_dispatch_events");
-        pfm_create_context = (pfm_create_context_t) dlsym(handle, "pfm_create_context");
-        pfm_write_pmcs = (pfm_write_pmcs_t) dlsym(handle, "pfm_write_pmcs");
-        pfm_write_pmds = (pfm_write_pmds_t) dlsym(handle, "pfm_write_pmds");
-        pfm_load_context = (pfm_load_context_t) dlsym(handle, "pfm_load_context");
-        pfm_strerror = (pfm_strerror_t) dlsym(handle, "pfm_strerror");
-        pfm_set_options = (pfm_set_options_t) dlsym(handle, "pfm_set_options");
-        pfm_get_num_counters = (pfm_get_num_counters_t) dlsym(handle, "pfm_get_num_counters");
-        // use it to do the calculation
-    //    info() << "Calling hello..." << endmsg;
-    //    hello();
-
-        // close the library
-    //    info() << "Closing library..." << endmsg;
-        dlclose(handle);
-    */
-
-    ///////////////////////////////////////////////////////////////////////////////////////
   }
 
   virtual ~PerfMonAuditor() {} // virtual destructor
@@ -495,7 +403,7 @@ void PerfMonAuditor::stoppm() {
   m_pfm.pfm_stop( fd );
   if ( m_pfm.pfm_read_pmds( fd, pd, inp.pfp_event_count ) == -1 ) { error() << "Could not read pmds" << endmsg; }
   for ( int i = 0; i < used_counters_number; i++ ) {
-    results[i][( alg_stack.top().first )->name()].push_back( alg_stack.top().second[i] + pd[i].reg_value );
+    results[i][alg_stack.top().first].push_back( alg_stack.top().second[i] + pd[i].reg_value );
   }
 
   close( fd );
@@ -600,9 +508,7 @@ void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_siz
   entry = collected_samples;
   while ( count-- ) {
     // if(ent->ovfl_pmd>=0 && ent->ovfl_pmd<=3)
-    if ( ent->ovfl_pmd <= 3 ) {
-      ( ( samples[ent->ovfl_pmd] )[( alg_stack.top().first )->name()] )[(unsigned long)( ent->ip )]++;
-    }
+    if ( ent->ovfl_pmd <= 3 ) { ( ( samples[ent->ovfl_pmd] )[alg_stack.top().first] )[(unsigned long)( ent->ip )]++; }
     pos += entry_size;
     ent = (pfm_dfl_smpl_entry_t*)pos;
     entry++;
@@ -875,59 +781,19 @@ StatusCode PerfMonAuditor::finalize() {
   return Auditor::finalize();
 }
 
-void PerfMonAuditor::before( StandardEventType evt, INamedInterface* alg ) {
-  switch ( evt ) {
-  case IAuditor::Initialize:
-    i_beforeInitialize( alg );
-    break;
-  case IAuditor::Execute:
-    i_beforeExecute( alg );
-    break;
-  default:
-    break;
-  }
-  return;
-}
-
-void PerfMonAuditor::after( StandardEventType evt, INamedInterface* alg, const StatusCode& ) {
-  switch ( evt ) {
-  case IAuditor::Initialize:
-    i_afterInitialize( alg );
-    break;
-  case IAuditor::Execute:
-    i_afterExecute( alg );
-    break;
-  default:
-    break;
-  }
-  return;
-}
-
-void PerfMonAuditor::i_beforeInitialize( INamedInterface* ) {}
-
-void PerfMonAuditor::i_afterInitialize( INamedInterface* ) {}
-
-void PerfMonAuditor::i_beforeExecute( INamedInterface* alg ) {
-  if ( !alg ) return;
-  // info() << "before:inside! " << alg->name() << endmsg;
+void PerfMonAuditor::before( std::string const& event, std::string const& alg, EventContext const& ) {
+  if ( event != Gaudi::IAuditor::Execute ) return;
   if ( first_alg ) {
     first_alg      = false;
-    first_alg_name = alg->name();
-    // info() << "first_alg_name= " << alg->name() << endmsg;
+    first_alg_name = alg;
   }
   if ( !event_count_reached ) {
-    if ( !first_alg_name.compare( alg->name() ) ) {
+    if ( !first_alg_name.compare( alg ) ) {
       ph_ev_count++;
-      // info() << "EVENT COUNT: " << ph_ev_count << endmsg;
-      if ( ph_ev_count == start_at_event ) {
-        event_count_reached = true;
-        // info() << "!!! EVENT COUNT REACHED: " << ph_ev_count << endmsg;
-      }
+      if ( ph_ev_count == start_at_event ) { event_count_reached = true; }
     }
   }
   if ( event_count_reached ) {
-    // info() << "before:inside! " << alg->name() << endmsg;
-
     if ( !alg_stack.empty() ) {
       if ( sampling == 0 )
         pausepm(); // pausing father algorithm counting
@@ -944,12 +810,9 @@ void PerfMonAuditor::i_beforeExecute( INamedInterface* alg ) {
   }
 }
 
-void PerfMonAuditor::i_afterExecute( INamedInterface* alg ) {
-  if ( !alg ) { return; } // info() << "after:inside! " << alg->name() << endmsg;
-
+void PerfMonAuditor::after( std::string const& event, std::string const&, EventContext const&, const StatusCode& ) {
+  if ( event != Gaudi::IAuditor::Execute ) return;
   if ( event_count_reached ) {
-    // info() << "after:inside! " << alg->name() << endmsg;
-
     if ( sampling == 0 )
       stoppm();
     else
