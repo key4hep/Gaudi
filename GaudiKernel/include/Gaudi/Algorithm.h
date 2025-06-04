@@ -489,18 +489,19 @@ namespace Gaudi {
 
     Gaudi::Property<unsigned int> m_errorMax{ this, "ErrorMax", 1, "[[deprecated]] max number of errors" };
 
-    Gaudi::Property<bool> m_auditInit{ this, "AuditAlgorithms", Details::getDefaultAuditorValue( m_pSvcLocator ),
-                                       "[[deprecated]] unused" };
-    Gaudi::Property<bool> m_auditorInitialize{ this, "AuditInitialize", m_auditInit.value(),
-                                               "trigger auditor on initialize()" };
-    Gaudi::Property<bool> m_auditorReinitialize{ this, "AuditReinitialize", m_auditInit.value(),
+    Gaudi::Property<bool> m_auditorInitialize{
+        this, "AuditInitialize", Details::getDefaultAuditorValue( m_pSvcLocator ), "trigger auditor on initialize()" };
+    Gaudi::Property<bool> m_auditorReinitialize{ this, "AuditReinitialize", m_auditorInitialize.value(),
                                                  "trigger auditor on reinitialize()" };
-    Gaudi::Property<bool> m_auditorRestart{ this, "AuditRestart", m_auditInit.value(), "trigger auditor on restart()" };
-    Gaudi::Property<bool> m_auditorExecute{ this, "AuditExecute", m_auditInit.value(), "trigger auditor on execute()" };
-    Gaudi::Property<bool> m_auditorFinalize{ this, "AuditFinalize", m_auditInit.value(),
+    Gaudi::Property<bool> m_auditorRestart{ this, "AuditRestart", m_auditorInitialize.value(),
+                                            "trigger auditor on restart()" };
+    Gaudi::Property<bool> m_auditorExecute{ this, "AuditExecute", m_auditorInitialize.value(),
+                                            "trigger auditor on execute()" };
+    Gaudi::Property<bool> m_auditorFinalize{ this, "AuditFinalize", m_auditorInitialize.value(),
                                              "trigger auditor on finalize()" };
-    Gaudi::Property<bool> m_auditorStart{ this, "AuditStart", m_auditInit.value(), "trigger auditor on start()" };
-    Gaudi::Property<bool> m_auditorStop{ this, "AuditStop", m_auditInit.value(), "trigger auditor on stop()" };
+    Gaudi::Property<bool> m_auditorStart{ this, "AuditStart", m_auditorInitialize.value(),
+                                          "trigger auditor on start()" };
+    Gaudi::Property<bool> m_auditorStop{ this, "AuditStop", m_auditorInitialize.value(), "trigger auditor on stop()" };
 
     Gaudi::Property<bool> m_doTimeline{ this, "Timeline", true, "send events to TimelineSvc" };
 

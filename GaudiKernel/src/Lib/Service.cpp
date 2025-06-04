@@ -348,7 +348,6 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
   Gaudi::Property<bool> audit( false );
   auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
   if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) { audit.assign( appMgr->getProperty( "AuditServices" ) ); }
-  m_auditInit           = audit;
   m_auditorInitialize   = audit;
   m_auditorStart        = audit;
   m_auditorStop         = audit;

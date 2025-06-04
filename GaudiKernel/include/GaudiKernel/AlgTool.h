@@ -308,7 +308,6 @@ private:
   Gaudi::Property<std::string> m_monitorSvcName{ this, "MonitorService", "MonitorSvc",
                                                  "name to use for Monitor Service" };
 
-  Gaudi::Property<bool> m_auditInit{ this, "AuditTools", false, "[[deprecated]] unused" };
   Gaudi::Property<bool> m_auditorInitialize{ this, "AuditInitialize", false, "trigger auditor on initialize()" };
   Gaudi::Property<bool> m_auditorStart{ this, "AuditStart", false, "trigger auditor on start()" };
   Gaudi::Property<bool> m_auditorStop{ this, "AuditStop", false, "trigger auditor on stop()" };

@@ -4,7 +4,6 @@ stdout: |-
   |-Enable                     = True
   |-ErrorMax                   = 1
   |-ErrorCount                 = 0
-  |-AuditAlgorithms            = False
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditExecute               = False
@@ -30,7 +29,6 @@ stdout: |-
   |-Enable                     = True
   |-ErrorMax                   = 1
   |-ErrorCount                 = 0
-  |-AuditAlgorithms            = False
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditExecute               = False
@@ -56,7 +54,6 @@ stdout: |-
   |-Enable                     = True
   |-ErrorMax                   = 1
   |-ErrorCount                 = 0
-  |-AuditAlgorithms            = False
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditExecute               = False
@@ -83,7 +80,6 @@ stdout: |-
   |-Enable                     = True
   |-ErrorMax                   = 1
   |-ErrorCount                 = 0
-  |-AuditAlgorithms            = False
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditExecute               = False
@@ -110,7 +106,6 @@ stdout: |-
   |-Enable                     = True
   |-ErrorMax                   = 1
   |-ErrorCount                 = 0
-  |-AuditAlgorithms            = False
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditExecute               = False

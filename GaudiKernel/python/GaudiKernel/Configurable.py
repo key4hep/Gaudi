@@ -1137,7 +1137,6 @@ class ConfigurableAlgorithm(Configurable):
         "Enable": 1,
         "ErrorMax": 1,
         "ErrorCount": 0,
-        "AuditAlgorithms": 0,
         "AuditInitialize": 0,
         "AuditReinitialize": 0,
         "AuditExecute": 0,
@@ -1209,7 +1208,6 @@ class ConfigurableAlgorithm(Configurable):
 class ConfigurableService(Configurable):
     __slots__ = {
         "OutputLevel": 0,
-        "AuditServices": 0,
         "AuditInitialize": 0,
         "AuditFinalize": 0,
     }
@@ -1243,7 +1241,6 @@ class ConfigurableAlgTool(Configurable):
     __slots__ = {
         "_jobOptName": "",
         "OutputLevel": 0,
-        "AuditTools": 0,
         "AuditInitialize": 0,
         "AuditFinalize": 0,
     }

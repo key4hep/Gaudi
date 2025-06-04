@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "COPYING".                                            *
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( JobOptionsSvc ) {
   BOOST_CHECK( jos.isSet( "ApplicationMgr.AppName" ) );
   BOOST_CHECK_EQUAL( jos.get( "ApplicationMgr.AppName" ), "'test_JOS.exe'" );
 
-  BOOST_CHECK_EQUAL( jos.items().size(), 96 );
+  BOOST_CHECK_EQUAL( jos.items().size(), 94 );
 
   BOOST_CHECK( !jos.has( "MyAlg.SomeOpt" ) );
   BOOST_CHECK( !jos.isSet( "MyAlg.SomeOpt" ) );
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( JobOptionsSvc ) {
   BOOST_CHECK( jos.isSet( "MyAlg.SomeOpt" ) );
   BOOST_CHECK_EQUAL( jos.get( "MyAlg.SomeOpt" ), "42" );
 
-  BOOST_CHECK_EQUAL( jos.items().size(), 97 );
+  BOOST_CHECK_EQUAL( jos.items().size(), 95 );
   BOOST_CHECK_EQUAL( jos.items( [&jos]( const auto& p ) { return jos.isSet( std::get<0>( p ) ); } ).size(), 2 );
   BOOST_CHECK_EQUAL( jos.items( std::regex{ ".*Level" } ).size(), 5 );
 }
