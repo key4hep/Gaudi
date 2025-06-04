@@ -43,11 +43,8 @@ namespace Gaudi {
   namespace Details {
     bool getDefaultAuditorValue( ISvcLocator* loc ) {
       assert( loc != nullptr );
-      Gaudi::Property<bool> audit{ false };
-      auto                  appMgr = loc->service<IProperty>( "ApplicationMgr" );
-      if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
-        audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );
-      }
+      Gaudi::Property<bool> audit{ "AuditAlgorithms", false };
+      if ( auto appMgr = loc->service<IProperty>( "ApplicationMgr" ) ) { appMgr->getProperty( &audit ).ignore(); }
       return audit.value();
     }
   } // namespace Details

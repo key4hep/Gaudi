@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -25,13 +25,6 @@ BOOST_AUTO_TEST_CASE( value_props_constructors ) {
     BOOST_CHECK_EQUAL( p.ownerTypeName(), "unknown owner type" );
   }
   {
-    Gaudi::Property<std::string> p( "abc" );
-    BOOST_CHECK_EQUAL( p.value(), "abc" );
-    BOOST_CHECK_EQUAL( p.name(), "" );
-    BOOST_CHECK_EQUAL( p.documentation(), "" );
-    BOOST_CHECK_EQUAL( p.ownerTypeName(), "unknown owner type" );
-  }
-  {
     Gaudi::Property<std::string> p( "abc", "xyz" );
     BOOST_CHECK_EQUAL( p.value(), "xyz" );
     BOOST_CHECK_EQUAL( p.name(), "abc" );
@@ -48,13 +41,6 @@ BOOST_AUTO_TEST_CASE( value_props_constructors ) {
   {
     Gaudi::Property<int> p;
     BOOST_CHECK_EQUAL( p.value(), 0 );
-    BOOST_CHECK_EQUAL( p.name(), "" );
-    BOOST_CHECK_EQUAL( p.documentation(), "" );
-    BOOST_CHECK_EQUAL( p.ownerTypeName(), "unknown owner type" );
-  }
-  {
-    Gaudi::Property<int> p( 123 );
-    BOOST_CHECK_EQUAL( p.value(), 123 );
     BOOST_CHECK_EQUAL( p.name(), "" );
     BOOST_CHECK_EQUAL( p.documentation(), "" );
     BOOST_CHECK_EQUAL( p.ownerTypeName(), "unknown owner type" );
@@ -134,23 +120,23 @@ T convert_to( T v ) {
 
 BOOST_AUTO_TEST_CASE( implicit_conversion ) {
   {
-    Gaudi::Property<int> p( 123 );
+    Gaudi::Property<int> p( "p", 123 );
     BOOST_CHECK_EQUAL( convert_to<int>( p ), 123 );
     BOOST_CHECK_EQUAL( convert_to<long>( p ), 123 );
     BOOST_CHECK_EQUAL( convert_to<double>( p ), 123 );
   }
   {
-    Gaudi::Property<bool> p( true );
+    Gaudi::Property<bool> p( "p", true );
     BOOST_CHECK_EQUAL( convert_to<int>( p ), 1 );
     BOOST_CHECK_EQUAL( convert_to<bool>( p ), true );
   }
   {
-    Gaudi::Property<bool> p( false );
+    Gaudi::Property<bool> p( "p", false );
     BOOST_CHECK_EQUAL( convert_to<int>( p ), 0 );
     BOOST_CHECK_EQUAL( convert_to<bool>( p ), false );
   }
   {
-    Gaudi::Property<std::string> p( "Hello World" );
+    Gaudi::Property<std::string> p( "p", "Hello World" );
     BOOST_CHECK_EQUAL( convert_to<std::string_view>( p ), "Hello World" );
   }
 }
@@ -240,8 +226,8 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
 BOOST_AUTO_TEST_CASE( backward_compatibility_2 ) {
   // string conversion compatibility
   {
-    Gaudi::Property<int>         dst{ 0 };
-    Gaudi::Property<std::string> src{ "321" };
+    Gaudi::Property<int>         dst{ "name", 0 };
+    Gaudi::Property<std::string> src{ "name", "321" };
     BOOST_CHECK_EQUAL( dst.value(), 0 );
     BOOST_CHECK( dst.assign( src ) );
     BOOST_CHECK_EQUAL( dst.value(), 321 );
@@ -252,14 +238,14 @@ BOOST_AUTO_TEST_CASE( backward_compatibility_2 ) {
   }
   {
     // string property as from options (old JobOptionsSvc)
-    Gaudi::Property<std::string> opt{ "\"NONE\"" };
+    Gaudi::Property<std::string> opt{ "opt", "\"NONE\"" };
     Gaudi::Property<std::string> p{};
     BOOST_CHECK( opt.load( p ) );
     BOOST_CHECK_EQUAL( p.value(), "NONE" );
   }
   {
     // string property as from options (old JobOptionsSvc)
-    Gaudi::Property<std::string>  opt{ "\"NONE\"" };
+    Gaudi::Property<std::string>  opt{ "opt", "\"NONE\"" };
     std::string                   dst;
     Gaudi::Property<std::string&> p{ "test", dst };
     BOOST_CHECK( opt.load( p ) );

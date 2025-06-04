@@ -345,9 +345,11 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
   }
 
   // Initialize the default value from ApplicationMgr AuditAlgorithms
-  Gaudi::Property<bool> audit( false );
-  auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
-  if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) { audit.assign( appMgr->getProperty( "AuditServices" ) ); }
+  Gaudi::Property<bool> audit( "AuditServices", false );
+  if ( auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" ) ) {
+    appMgr->getProperty( &audit ).ignore();
+  }
+
   m_auditorInitialize   = audit;
   m_auditorStart        = audit;
   m_auditorStop         = audit;
