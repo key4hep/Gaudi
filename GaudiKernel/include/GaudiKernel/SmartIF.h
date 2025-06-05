@@ -14,7 +14,6 @@
 // Framework include files
 #include <GaudiKernel/IInterface.h>
 #include <memory>
-#include <type_traits>
 
 /** @class SmartIF SmartIF.h GaudiKernel/SmartIF.h
  *
@@ -109,10 +108,8 @@ public:
     if ( static_cast<const IInterface*>( ptr ) == static_cast<const IInterface*>( m_interface ) ) return;
     if ( m_interface ) m_interface->release();
     if ( ptr ) {
-      const_cast<std::remove_const_t<OTHER>*>( ptr )
-          ->queryInterface( TYPE::interfaceID(),
-                            pp_cast<void>( const_cast<std::remove_const_t<TYPE>**>( &m_interface ) ) )
-          .ignore();
+      m_interface = ptr->template cast<TYPE>();
+      if ( m_interface ) m_interface->addRef();
     } else {
       m_interface = nullptr;
     }

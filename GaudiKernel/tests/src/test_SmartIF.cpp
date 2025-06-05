@@ -340,3 +340,18 @@ TEST_CASE( "SmartIF of const T" ) {
   // no instances left
   CHECK( BaseTestSvc::s_instances == 0 );
 }
+
+TEST_CASE( "SmartIF for concrete service" ) {
+  {
+    std::unique_ptr<IInterface> iface = std::make_unique<BaseTestSvc>();
+    REQUIRE( iface );
+    auto                 old = iface.get();
+    SmartIF<BaseTestSvc> svc{ std::move( iface ) };
+    REQUIRE( svc );
+    CHECK( svc.get() == old );
+    CHECK( svc->refCount() == 1 );
+    CHECK( BaseTestSvc::s_instances == 1 );
+  }
+  // no instances left
+  CHECK( BaseTestSvc::s_instances == 0 );
+}
