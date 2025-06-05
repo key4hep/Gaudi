@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -84,10 +84,6 @@ public:
   inline TYPE& operator*() const { return *m_interface; }
   /// Get interface pointer
   inline TYPE* get() const { return m_interface; }
-#if !defined( GAUDI_V22_API ) && !defined( NEW_SMARTIF )
-  /// Get reference to the pointer
-  [[deprecated]] inline TYPE*& pRef() { return m_interface; }
-#endif
 
   // ---------- Cast methods ----------
   /// Set the internal pointer to the passed one disposing of the old one.

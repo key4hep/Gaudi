@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,23 +38,12 @@
  */
 class GAUDI_API InterfaceID final {
 public:
-#if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
-  /// constructor from a pack long
-  [[deprecated( "use InterfaceID(id, major, minor) instead" )]] constexpr InterfaceID( unsigned long lid )
-      : m_id( lid & 0xFFFF ), m_major_ver( ( lid & 0xFF000000 ) >> 24 ), m_minor_ver( ( lid & 0xFF0000 ) >> 16 ) {}
-#endif
   /// constructor from components
   constexpr InterfaceID( unsigned long id, unsigned long major, unsigned long minor = 0 )
       : m_id( id ), m_major_ver( major ), m_minor_ver( minor ) {}
   /// constructor from components
   InterfaceID( const char* name, unsigned long major, unsigned long minor = 0 )
       : m_id( hash32( name ) ), m_major_ver( major ), m_minor_ver( minor ) {}
-#if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
-  /// conversion to unsigned long
-  [[deprecated]] constexpr operator unsigned long() const {
-    return ( m_major_ver << 24 ) + ( m_minor_ver << 16 ) + m_id;
-  }
-#endif
   /// get the interface identifier
   constexpr unsigned long id() const { return m_id; }
   /// get the major version of the interface
@@ -87,13 +76,11 @@ public:
     return hash;
   }
 
-  // #ifdef GAUDI_V20_COMPAT
   /// ostream operator for InterfaceID. Needed by PluginSvc
   friend std::ostream& operator<<( std::ostream& s, const InterfaceID& id ) {
     s << "IID_" << id.id();
     return s;
   }
-  // #endif
 
 private:
   unsigned long m_id;
@@ -248,24 +235,10 @@ public:
   static inline const InterfaceID& interfaceID() { return iid::interfaceID(); }
 
   /// main cast function
-  virtual void* i_cast( const InterfaceID& ) const
-#if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
-  {
-    return nullptr;
-  }
-#else
-      = 0;
-#endif
+  virtual void* i_cast( const InterfaceID& ) const = 0;
 
   /// Returns a vector of strings containing the names of all the implemented interfaces.
-  virtual std::vector<std::string> getInterfaceNames() const
-#if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
-  {
-    return {};
-  }
-#else
-      = 0;
-#endif
+  virtual std::vector<std::string> getInterfaceNames() const = 0;
 
   /// Increment the reference count of Interface instance
   virtual unsigned long addRef() = 0;
@@ -274,16 +247,7 @@ public:
   virtual unsigned long release() = 0;
 
   /// Current reference count
-  virtual unsigned long refCount() const
-#if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
-  {
-    IInterface* ths = const_cast<IInterface*>( this );
-    ths->addRef();
-    return ths->release();
-  } // new method, so we need a default implementation for v20 compatibility
-#else
-      = 0;
-#endif
+  virtual unsigned long refCount() const = 0;
 
   /// Set the void** to the pointer to the requested interface of the instance.
   virtual StatusCode queryInterface( const InterfaceID& ti, void** pp ) = 0;

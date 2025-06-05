@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -40,19 +40,3 @@ StatusCode Rndm::Numbers::finalize() {
   }
   return StatusCode::SUCCESS;
 }
-
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-// Construct and initialize the generator
-Rndm::Numbers::Numbers( IRndmGenSvc* svc, const IRndmGen::Param& par ) {
-  StatusCode status = initialize( svc, par );
-  if ( !status.isSuccess() ) { throw GaudiException( "Initialization failed !", "Rndm::Numbers", status ); }
-}
-
-// Initialize the generator
-StatusCode Rndm::Numbers::initialize( IRndmGenSvc* svc, const IRndmGen::Param& par ) {
-  return initialize( SmartIF<IRndmGenSvc>( svc ), par );
-}
-#  pragma GCC diagnostic pop
-#endif

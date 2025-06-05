@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -41,13 +41,6 @@ public:
       , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), requesterName )
       , // use requester msg level
       m_requesterName( std::move( requesterName ) ) {}
-#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  [[deprecated( "use ServiceLocatorHelper(svcLoc, requesterName) instead" )]] ServiceLocatorHelper(
-      ISvcLocator&     svcLoc,
-      const MsgStream& log, // use requester msg level
-      std::string      requesterName )
-      : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( std::move( requesterName ) ) {}
-#endif
 
   StatusCode getService( std::string_view name, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
     return createIf ? createService( name, iid, ppSvc ) : locateService( name, iid, ppSvc, true );

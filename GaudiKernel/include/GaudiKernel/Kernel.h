@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -43,8 +43,7 @@ typedef unsigned long long int ulonglong;
 #endif
 
 // ---------------------------------- Symbol visibility macros (begin)
-// Enabled on in Gaudi v21 mode
-#if !defined( GAUDI_V20_COMPAT ) || defined( G21_HIDE_SYMBOLS )
+#if defined( G21_HIDE_SYMBOLS )
 // These macros will allow selection on exported symbols
 // taken from http://gcc.gnu.org/wiki/Visibility
 #  if __GNUC__ >= 4 && !defined( __CINT__ )
@@ -86,7 +85,7 @@ typedef unsigned long long int ulonglong;
 #  define GAUDI_IMPORT
 #  define GAUDI_EXPORT
 #  define GAUDI_LOCAL
-#endif // GAUDI_V20_COMPAT
+#endif
 // ---------------------------------- Symbol visibility macros (end)
 
 // -----------------------------------------------------------------------------
