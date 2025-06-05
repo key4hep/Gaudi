@@ -130,23 +130,6 @@ public:
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;
 
-  /** Access a service by name,
-   *  creating it if it doesn't already exist.
-   */
-  template <class T>
-  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode service( std::string_view name, T*& svc,
-                                                                                       bool createIf = true ) const {
-    return service_i( name, createIf, T::interfaceID(), (void**)&svc );
-  }
-
-  /** Access a service by name, type creating it if it doesn't already exist.
-   */
-  template <class T>
-  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( std::string_view type, std::string_view name, T*& svc ) const {
-    return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &svc ) );
-  }
-
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service( std::string_view name, const bool createIf = true, const bool quiet = false ) const;
 
