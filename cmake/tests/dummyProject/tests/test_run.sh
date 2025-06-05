@@ -41,9 +41,9 @@ then
     exit 5
 fi
 
-if [ "x$ENV_CMAKE_BINARY_DIR" = "x" ]
+if [ "x$ENV_PROJECT_BINARY_DIR" = "x" ]
 then
-    echo "Error ENV_CMAKE_BINARY_DIR not set"
+    echo "Error ENV_PROJECT_BINARY_DIR not set"
     exit 6
 fi
 
