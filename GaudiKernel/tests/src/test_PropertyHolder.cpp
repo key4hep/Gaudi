@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -24,9 +24,9 @@ namespace {
 } // namespace
 
 BOOST_AUTO_TEST_CASE( declareProperty ) {
-  Gaudi::Property<std::string> p1{ "v1" };
-  Gaudi::Property<std::string> p2{ "v2" };
-  Gaudi::Property<std::string> p3{ "v3" };
+  Gaudi::Property<std::string> p1{ "p1", "v1" };
+  Gaudi::Property<std::string> p2{ "p2", "v2" };
+  Gaudi::Property<std::string> p3{ "p3", "v3" };
   {
     AnonymousPropertyHolder mgr;
     mgr.declareProperty( "p1", p1 );

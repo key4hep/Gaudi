@@ -120,7 +120,8 @@ namespace Gaudi {
     /// compiler picks up the copy constructor instead of this one.
     template <typename T>
       requires( !std::is_same_v<Property, std::remove_reference_t<T>> )
-    Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "", "" ), m_value( std::forward<T>( v ) ) {}
+    [[deprecated( "anonymous properties are deprecated" )]] Property( T&& v )
+        : Details::PropertyBase( typeid( ValueType ), "", "", "" ), m_value( std::forward<T>( v ) ) {}
 
     /// Construct an anonymous property with default constructed value.
     /// Can be used only if StorageType is default constructible.

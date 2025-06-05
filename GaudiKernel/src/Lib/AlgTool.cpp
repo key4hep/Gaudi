@@ -142,12 +142,12 @@ AlgTool::AlgTool( std::string type, std::string name, const IInterface* parent )
 
   // Auditor monitoring properties
   // Initialize the default value from ApplicationMgr AuditAlgorithms
-  Gaudi::Property<bool> audit( false );
+  Gaudi::Property<bool> audit( "AuditTools", false );
   // note that here we need that the service locator is already defined
-  if ( auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
-       appMgr && appMgr->hasProperty( "AuditTools" ) ) {
-    audit.assign( appMgr->getProperty( "AuditTools" ) );
+  if ( auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" ) ) {
+    appMgr->getProperty( &audit ).ignore();
   }
+
   m_auditorInitialize   = audit;
   m_auditorStart        = audit;
   m_auditorStop         = audit;
