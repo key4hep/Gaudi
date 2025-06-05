@@ -86,7 +86,7 @@ cmake_minimum_required(VERSION 3.19)
 # Optional CUDA
 option(GAUDI_USE_CUDA "Build AsynchronousAlgorithm features that require CUDA")
 if(GAUDI_USE_CUDA)
-  set(optionalCUDA CUDA)
+    set(optionalCUDA CUDA)
 else()
     set(optionalCUDA)
 endif()
@@ -101,7 +101,7 @@ include(cmake/DeveloperBuildType.cmake)
 
 # set RPATH (currently only on macOS)
 if(APPLE)
-  include(cmake/GaudiRPath.cmake)
+    include(cmake/GaudiRPath.cmake)
 endif()
 
 # Set up the GAUDI_ATOMIC_LIBS variable
@@ -124,30 +124,30 @@ set(GAUDI_ENABLE_GAUDIPARTPROP ${GAUDI_ENABLE_GAUDIPARTPROP})
 
 # The C++ standard used must be the same as ROOT's
 if(NOT GAUDI_CXX_STANDARD)
-  # Check if ROOT_CXX_STANDARD is already defined
-  if(DEFINED ROOT_CXX_STANDARD)
-    message(STATUS "ROOT_CXX_STANDARD is already defined by ROOT. Using it...")
-  else()
-    # Deduce CXX_STANDARD from ROOT_CXX_FLAGS
-    set(ROOT_CXX_FLAGS_TEMP ${ROOT_CXX_FLAGS}) # Use a temporary variable to avoid modifying the original
-    separate_arguments(ROOT_CXX_FLAGS_TEMP)
-    list(FILTER ROOT_CXX_FLAGS_TEMP INCLUDE REGEX "-std=(c|gnu)\\+\\+[0-9]+")
-    list(TRANSFORM ROOT_CXX_FLAGS_TEMP REPLACE "-std=(c|gnu)\\+\\+([0-9]+)" "\\2")
-    if(NOT ROOT_CXX_FLAGS_TEMP)
-      message(FATAL_ERROR "Cannot find the C++ standard of ROOT")
+    # Check if ROOT_CXX_STANDARD is already defined
+    if(DEFINED ROOT_CXX_STANDARD)
+        message(STATUS "ROOT_CXX_STANDARD is already defined by ROOT. Using it...")
+    else()
+        # Deduce CXX_STANDARD from ROOT_CXX_FLAGS
+        set(ROOT_CXX_FLAGS_TEMP ${ROOT_CXX_FLAGS}) # Use a temporary variable to avoid modifying the original
+        separate_arguments(ROOT_CXX_FLAGS_TEMP)
+        list(FILTER ROOT_CXX_FLAGS_TEMP INCLUDE REGEX "-std=(c|gnu)\\+\\+[0-9]+")
+        list(TRANSFORM ROOT_CXX_FLAGS_TEMP REPLACE "-std=(c|gnu)\\+\\+([0-9]+)" "\\2")
+        if(NOT ROOT_CXX_FLAGS_TEMP)
+            message(FATAL_ERROR "Cannot find the C++ standard of ROOT")
+        endif()
+        list(GET ROOT_CXX_FLAGS_TEMP 0 ROOT_CXX_STANDARD)
     endif()
-    list(GET ROOT_CXX_FLAGS_TEMP 0 ROOT_CXX_STANDARD)
-  endif()
-  set(GAUDI_CXX_STANDARD ${ROOT_CXX_STANDARD} CACHE STRING "The version of C++ used to compile Gaudi")
+    set(GAUDI_CXX_STANDARD ${ROOT_CXX_STANDARD} CACHE STRING "The version of C++ used to compile Gaudi")
 endif()
 message(STATUS "Gaudi will be built using C++${GAUDI_CXX_STANDARD} standard.")
 set(CMAKE_CXX_STANDARD ${GAUDI_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE) # do not fall back on older version
 set(CMAKE_CXX_EXTENSIONS OFF) # strict c++.. instead of gnu++..
 if(GAUDI_USE_CUDA)
-  set(CMAKE_CUDA_STANDARD ${GAUDI_CXX_STANDARD})
-  set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
-  set(CMAKE_CUDA_EXTENSIONS OFF)
+    set(CMAKE_CUDA_STANDARD ${GAUDI_CXX_STANDARD})
+    set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
+    set(CMAKE_CUDA_EXTENSIONS OFF)
 endif()
 
 # CppCheck
@@ -176,8 +176,8 @@ include(CTest)
 
 # These are test-only, private dependencies
 if(BUILD_TESTING)
-  find_package(Catch2 REQUIRED)
-  include(Catch)
+    find_package(Catch2 REQUIRED)
+    include(Catch)
 endif()
 
 # Include sub-projects one by one without introducing dependency conflicts
@@ -195,7 +195,6 @@ add_subdirectory(GaudiHive)
 add_subdirectory(GaudiMonitor)
 add_subdirectory(GaudiMP)
 add_subdirectory(GaudiPartProp)
-add_subdirectory(GaudiProfiling)
 add_subdirectory(GaudiPython)
 add_subdirectory(GaudiRelease)
 add_subdirectory(GaudiSvc)
@@ -205,7 +204,7 @@ add_subdirectory(RootHistCnv)
 add_subdirectory(GaudiTestSuite)
 add_subdirectory(GaudiExamples)
 if(GAUDI_USE_CUDA)
-add_subdirectory(GaudiCUDA)
+    add_subdirectory(GaudiCUDA)
 endif()
 
 # Generate GAUDI_VERSION.h
@@ -214,16 +213,16 @@ gaudi_generate_version_header_file()
 # Framework level tests
 
 if(NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME) # If we are building the full stack as one project
-  # we do not install nor package nor register CMake tests
-  # but we add Gaudi's CMake modules to the CMAKE_MODULE_PATH for downstream projects
-  list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE)
+    # we do not install nor package nor register CMake tests
+    # but we add Gaudi's CMake modules to the CMAKE_MODULE_PATH for downstream projects
+    list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE)
 
-  # Set the version of the project as a cache variable to be seen by other
-  # projects in the same super-project.
-  set(${PROJECT_NAME}_VERSION "${PROJECT_VERSION}" CACHE STRING "Version of ${PROJECT_NAME}" FORCE)
+    # Set the version of the project as a cache variable to be seen by other
+    # projects in the same super-project.
+    set(${PROJECT_NAME}_VERSION "${PROJECT_VERSION}" CACHE STRING "Version of ${PROJECT_NAME}" FORCE)
 
-  return()
+    return()
 endif()
 
 # Unit tests of gaudi_* functions
@@ -277,12 +276,12 @@ set(CPACK_PACKAGE_VENDOR "CERN-LHCb")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 foreach(v IN ITEMS MAJOR MINOR PATCH)
-   set(CPACK_PACKAGE_VERSION_${v} ${PROJECT_VERSION_${v}})
+    set(CPACK_PACKAGE_VERSION_${v} ${PROJECT_VERSION_${v}})
 endforeach()
 if(DEFINED BINARY_TAG)
-  set(CPACK_SYSTEM_NAME ${BINARY_TAG})
+    set(CPACK_SYSTEM_NAME ${BINARY_TAG})
 elseif(DEFINED ENV{BINARY_TAG})
-  set(CPACK_SYSTEM_NAME $ENV{BINARY_TAG})
+    set(CPACK_SYSTEM_NAME $ENV{BINARY_TAG})
 endif()
 set(CPACK_GENERATOR "ZIP;RPM") # package format
 # The following line is needed to prevent the compilation of python modules before packaging (an incorrect version of python may be used).
@@ -296,10 +295,10 @@ include(CPack)
 # Optionally enable compatibility with old-style CMake configurations, via helper module
 option(GAUDI_LEGACY_CMAKE_SUPPORT "Enable compatibility with old-style CMake builds" "$ENV{GAUDI_LEGACY_CMAKE_SUPPORT}")
 if(GAUDI_LEGACY_CMAKE_SUPPORT)
-  find_file(legacy_cmake_config_support NAMES LegacyGaudiCMakeSupport.cmake)
-  if(legacy_cmake_config_support)
-    include(${legacy_cmake_config_support})
-  else()
-    message(FATAL_ERROR "GAUDI_LEGACY_CMAKE_SUPPORT set to TRUE, but cannot find LegacyGaudiCMakeSupport.cmake")
-  endif()
+    find_file(legacy_cmake_config_support NAMES LegacyGaudiCMakeSupport.cmake)
+    if(legacy_cmake_config_support)
+        include(${legacy_cmake_config_support})
+    else()
+        message(FATAL_ERROR "GAUDI_LEGACY_CMAKE_SUPPORT set to TRUE, but cannot find LegacyGaudiCMakeSupport.cmake")
+    endif()
 endif()
