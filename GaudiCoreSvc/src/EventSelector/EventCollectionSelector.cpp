@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -111,16 +111,16 @@ StatusCode EventCollectionSelector::connectDataSource( const std::string& db, co
 
 /// Connect to existing N-tuple
 StatusCode EventCollectionSelector::connectTuple( const std::string& nam, const std::string& itName,
-                                                  NTuple::Tuple*& tup, NTuple::Item<IOpaqueAddress*>*& item ) const {
+                                                  NTuple::Tuple*&                               tup,
+                                                  std::optional<NTuple::Item<IOpaqueAddress*>>& item ) const {
   std::string top    = "/NTUPLES/" + name() + '/' + nam;
   StatusCode  status = m_tupleSvc->retrieveObject( top, (DataObject*&)tup );
   if ( status.isSuccess() ) {
-    item   = new NTuple::Item<IOpaqueAddress*>();
+    item.emplace();
     status = tup->item( itName, *item );
     if ( status.isSuccess() ) return status;
     error() << "Item " << itName << " is not part of the collection:" << top << endmsg;
-    delete item;
-    item = nullptr;
+    item.reset();
   } else {
     error() << "Cannot connect to collection:" << top << endmsg;
   }
@@ -215,18 +215,6 @@ StatusCode EventCollectionSelector::finalize() {
   m_tupleSvc     = nullptr;
   return Service::finalize();
 }
-
-// FIXME - method below generates leak errors with sanitizer
-//
-// clang-format off
-// Direct leak of 48 byte(s) in 2 object(s) allocated from:
-//    #0 0x7f36dab12da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
-//    #1 0x7f36cca8cf7e in EventCollectionSelector::connectTuple(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, NTuple::Tuple*&, NTuple::Item<IOpaqueAddress*>*&) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:104
-//    #2 0x7f36cca8c27f in EventCollectionSelector::connectCollection(EventCollectionSelector::MyContextType*) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:183
-//    #3 0x7f36cca8c808 in EventCollectionSelector::createContext(IEvtSelector::Context*&) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:209
-// clang-format on
-//
-// These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
 
 /// Create a new event loop context
 StatusCode EventCollectionSelector::createContext( Context*& refpCtxt ) const {
