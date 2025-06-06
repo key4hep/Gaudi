@@ -13,6 +13,7 @@
 
 // Framework include files
 #include <GaudiKernel/IInterface.h>
+#include <memory>
 
 /** @class SmartIF SmartIF.h GaudiKernel/SmartIF.h
  *
@@ -66,6 +67,11 @@ public:
   }
   /// Standard Destructor.
   inline ~SmartIF() { reset(); }
+
+  template <class T>
+  inline SmartIF( std::unique_ptr<T>&& rhs ) {
+    reset( rhs.release() );
+  }
 
   // ---------- Boolean and comparison methods ----------
   /// Allow for check if smart pointer is valid.

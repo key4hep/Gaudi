@@ -12,6 +12,7 @@
 #include <GaudiKernel/SmartIF.h>
 #include <memory>
 #include <string>
+#include <utility>
 
 #if __has_include( <catch2/catch.hpp> )
 // Catch2 v2
@@ -89,7 +90,7 @@ namespace {
       return nullptr;
     }
 
-    SmartIF<IAnotherInterface> m_anotherInterface{ new AnotherInterfaceImpl() };
+    SmartIF<IAnotherInterface> m_anotherInterface{ std::make_unique<AnotherInterfaceImpl>() };
   };
 } // namespace
 
@@ -278,4 +279,30 @@ TEST_CASE( "SmartIF interface delegation" ) {
   CHECK( impl->refCount() == 3 );    // iface, impl, svc
   CHECK( another->refCount() == 2 ); // indirect impl, direct another
   CHECK( another.get() == impl->m_anotherInterface.get() );
+}
+
+TEST_CASE( "SmartIF from unique_ptr" ) {
+  {
+    std::unique_ptr<IInterface> iface = std::make_unique<BaseTestSvc>();
+    REQUIRE( iface );
+    auto                old = iface.get();
+    SmartIF<IInterface> svc{ std::move( iface ) };
+    REQUIRE( svc );
+    CHECK( svc.get() == old );
+    CHECK( svc->refCount() == 1 );
+    CHECK( BaseTestSvc::s_instances == 1 );
+  }
+  {
+    std::unique_ptr<IInterface> iface = std::make_unique<BaseTestSvc>();
+    REQUIRE( iface );
+    auto              old = iface.get();
+    SmartIF<IService> svc;
+    svc = std::move( iface );
+    REQUIRE( svc );
+    CHECK( svc.get() == old );
+    CHECK( svc->refCount() == 1 );
+    CHECK( BaseTestSvc::s_instances == 1 );
+  }
+  // no instances left
+  CHECK( BaseTestSvc::s_instances == 0 );
 }
