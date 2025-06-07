@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -27,6 +27,8 @@
 #include <GaudiKernel/NTuple.h>
 #include <GaudiKernel/Service.h>
 
+#include <optional>
+
 // Forward declarations
 class INTuple;
 class INTupleSvc;
@@ -53,27 +55,21 @@ class EventCollectionSelector : public extends<Service, IEvtSelector> {
 public:
   class MyContextType : public IEvtSelector::Context {
   public:
-    std::string                    criteria;
-    NTuple::Tuple*                 tuple;
-    NTuple::Item<IOpaqueAddress*>* item;
-    IOpaqueAddress*                addressBuffer;
-    MyContextType( NTuple::Tuple* t, NTuple::Item<IOpaqueAddress*>* i ) {
-      addressBuffer = new GenericAddress();
-      addressBuffer->addRef();
-      tuple = t;
-      item  = i;
-    }
+    std::string                                  criteria;
+    NTuple::Tuple*                               tuple;
+    std::optional<NTuple::Item<IOpaqueAddress*>> item{};
+    IOpaqueAddress*                              addressBuffer;
     MyContextType( MyContextType* ctxt = nullptr ) {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
       tuple = ( ctxt ) ? ctxt->tuple : nullptr;
-      item  = ( ctxt ) ? ctxt->item : nullptr;
+      if ( ctxt ) item.emplace( *ctxt->item );
     }
     MyContextType( const MyContextType& ctxt ) : IEvtSelector::Context( ctxt ) {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
       tuple = ctxt.tuple;
-      item  = ctxt.item;
+      item.emplace( *ctxt.item );
     }
     ~MyContextType() override { addressBuffer->release(); }
     MyContextType& operator=( const MyContextType& ) = delete;
@@ -188,7 +184,7 @@ public:
   virtual StatusCode connectDataSource( const std::string& db, const std::string& typ ) const;
   /// Connect to existing N-tuple
   virtual StatusCode connectTuple( const std::string& nam, const std::string& itName, NTuple::Tuple*& tup,
-                                   NTuple::Item<IOpaqueAddress*>*& item ) const;
+                                   std::optional<NTuple::Item<IOpaqueAddress*>>& item ) const;
   /// Connect selection statement to refine data access
   virtual StatusCode connectStatement( const std::string& typ, const std::string& crit, INTuple* tuple ) const;
   /// Read next record of the N-tuple
