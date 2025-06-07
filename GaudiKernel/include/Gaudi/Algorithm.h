@@ -200,20 +200,6 @@ namespace Gaudi {
     /// Get the number of failures of the algorithm.
     unsigned int errorCount() const;
 
-    /// Access a service by name, creating it if it doesn't already exist.
-    template <class T>
-    [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-    service( std::string_view name, T*& psvc, bool createIf = true ) const {
-      return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
-    }
-
-    /// Access a service by name and type, creating it if it doesn't already exist.
-    template <class T>
-    [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-    service( std::string_view svcType, std::string_view svcName, T*& psvc ) const {
-      return service_i( svcType, svcName, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
-    }
-
     /// Return a pointer to the service identified by name (or "type/name")
     SmartIF<IService> service( std::string_view name, const bool createIf = true, const bool quiet = false ) const;
 

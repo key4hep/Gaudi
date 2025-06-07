@@ -82,50 +82,11 @@ public:
   /** Retrieve pointer to service locator        */
   SmartIF<ISvcLocator>& serviceLocator() const override;
 
-  /** Access a service by name, creating it if it doesn't already exist.
-   */
-  template <class T>
-  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( const std::string& name, const T*& psvc, bool createIf = true ) const {
-    ISvcLocator& svcLoc = *serviceLocator();
-    auto         ptr    = ServiceLocatorHelper( svcLoc, *this )
-                   .service<T>( name, !createIf, // quiet
-                                createIf );
-    if ( ptr ) {
-      psvc = ptr.get();
-      const_cast<T*>( psvc )->addRef();
-      return StatusCode::SUCCESS;
-    }
-    // else
-    psvc = nullptr;
-    return StatusCode::FAILURE;
-  }
-
-  template <class T>
-  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( const std::string& name, T*& psvc, bool createIf = true ) const {
-    auto ptr = service<T>( name, createIf );
-    psvc     = ( ptr ? ptr.get() : nullptr );
-    if ( psvc ) {
-      psvc->addRef();
-      return StatusCode::SUCCESS;
-    }
-    return StatusCode::FAILURE;
-  }
-
   template <typename IFace = IService>
   SmartIF<IFace> service( const std::string& name, bool createIf = true ) const {
     return ServiceLocatorHelper( *serviceLocator(), *this )
         .service<IFace>( name, !createIf, // quiet
                          createIf );
-  }
-
-  /** Access a service by name and type, creating it if it doesn't already exist.
-   */
-  template <class T>
-  [[deprecated( "use service<T>(name, createIf) -> SmartIF<T>" )]] StatusCode
-  service( const std::string& svcType, const std::string& svcName, T*& psvc ) const {
-    return service( svcType + "/" + svcName, psvc );
   }
 
   // ==========================================================================
