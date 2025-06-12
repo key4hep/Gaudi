@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -45,9 +45,9 @@ public:
 
 public:
   /** Reference Interface instance               */
-  unsigned long addRef() override { return ++m_refCount; }
+  unsigned long addRef() const override { return ++m_refCount; }
   /** Release Interface instance                 */
-  unsigned long release() override {
+  unsigned long release() const override {
     auto count = m_refCount.load();
     // thread-safe decrement, but make sure we don't go below 0
     // (if the last two references are being released at the same time, this guarantees that
@@ -63,7 +63,7 @@ public:
 
 protected:
   /** Reference counter                          */
-  std::atomic_ulong m_refCount = { 0 };
+  mutable std::atomic_ulong m_refCount = { 0 };
 };
 
 template <typename I1>

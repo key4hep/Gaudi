@@ -177,9 +177,9 @@ public:
     return dummyService;
   }
 
-  virtual unsigned long addRef() override { return 0; }
+  virtual unsigned long addRef() const override { return 1; }
 
-  virtual unsigned long release() override { return 0; }
+  virtual unsigned long release() const override { return 1; }
 
   virtual StatusCode queryInterface( const InterfaceID&, void** ) override { return StatusCode::SUCCESS; }
 

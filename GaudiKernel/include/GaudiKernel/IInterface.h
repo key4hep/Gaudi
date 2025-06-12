@@ -241,10 +241,10 @@ public:
   virtual std::vector<std::string> getInterfaceNames() const = 0;
 
   /// Increment the reference count of Interface instance
-  virtual unsigned long addRef() = 0;
+  virtual unsigned long addRef() const = 0;
 
   /// Release Interface instance
-  virtual unsigned long release() = 0;
+  virtual unsigned long release() const = 0;
 
   /// Current reference count
   virtual unsigned long refCount() const = 0;

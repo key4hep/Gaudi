@@ -306,3 +306,37 @@ TEST_CASE( "SmartIF from unique_ptr" ) {
   // no instances left
   CHECK( BaseTestSvc::s_instances == 0 );
 }
+
+TEST_CASE( "SmartIF of const T" ) {
+  {
+    SmartIF<const IInterface> svc{ std::make_unique<BaseTestSvc>() };
+    REQUIRE( svc );
+    CHECK( svc->refCount() == 1 );
+    CHECK( BaseTestSvc::s_instances == 1 );
+
+    // Note:
+    // ```cpp
+    // auto another = svc.as<IService>();
+    // ```
+    // fails to compile
+
+    auto another = svc.as<const IService>();
+    REQUIRE( another );
+    CHECK( another->refCount() == 2 );
+    CHECK( another.get() == svc.get() );
+  }
+
+  { // conversion from non-const to const
+    SmartIF<IInterface> svc{ std::make_unique<BaseTestSvc>() };
+    REQUIRE( svc );
+    CHECK( svc->refCount() == 1 );
+    CHECK( BaseTestSvc::s_instances == 1 );
+
+    auto another = svc.as<const IService>();
+    REQUIRE( another );
+    CHECK( another->refCount() == 2 );
+    CHECK( another.get() == svc.get() );
+  }
+  // no instances left
+  CHECK( BaseTestSvc::s_instances == 0 );
+}

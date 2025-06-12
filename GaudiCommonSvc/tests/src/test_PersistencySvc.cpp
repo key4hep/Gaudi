@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -130,7 +130,7 @@ namespace {
       return out;
     }
     // avoid a segfault that may arise from the race condition we want to check
-    std::size_t release() override { return 1; }
+    std::size_t release() const override { return 1; }
     // I use this time_point to synchronize the threads and expose race conditions.
     static std::chrono::steady_clock::time_point checkpoint;
     // flag to be able to introduce a tiny delay between the two threads
