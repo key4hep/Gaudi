@@ -48,9 +48,14 @@ public:
   unsigned long addRef() override { return ++m_refCount; }
   /** Release Interface instance                 */
   unsigned long release() override {
-    /* Avoid to decrement 0 */
-    auto count = ( m_refCount ? --m_refCount : m_refCount.load() );
-    if ( count == 0 ) delete this;
+    auto count = m_refCount.load();
+    // thread-safe decrement, but make sure we don't go below 0
+    // (if the last two references are being released at the same time, this guarantees that
+    // one decrements m_refCount from 2 to 1 and the other from 1 to 0)
+    while ( count > 0 && !m_refCount.compare_exchange_weak( count, count - 1 ) ) {}
+    // when we reach this point, we managed to set m_refCount to "count - 1"
+    // and if that means "0" we are in charge of deleting ourself
+    if ( ( count - 1 ) == 0 ) delete this;
     return count;
   }
   /** Current reference count                    */
