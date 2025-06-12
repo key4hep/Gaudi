@@ -108,8 +108,8 @@ def comparePaths(t1, t2):
         print("Neither tuple is Reference Root file reference?")
         return
 
-    dsks = ds.keys()
-    dpks = dp.keys()
+    dsks = list(ds.keys())
+    dpks = list(dp.keys())
     dsks.sort()
     dpks.sort()
 
