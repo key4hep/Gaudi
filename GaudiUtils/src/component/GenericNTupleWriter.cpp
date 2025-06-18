@@ -188,6 +188,8 @@ public:
   virtual void const* i_cast( const InterfaceID& ) const override { return nullptr; }
 
   virtual unsigned long refCount() const override { return 1; }
+
+  virtual unsigned long decRef() const override { return 1; }
 };
 
 // Utility function tests

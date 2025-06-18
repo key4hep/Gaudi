@@ -68,6 +68,13 @@ namespace {
 
   struct AnotherInterfaceImpl : virtual implements<IAnotherInterface> {};
 
+  struct IOneMoreInterface : virtual IInterface {
+    DeclareInterfaceID( IOneMoreInterface, 1, 0 );
+    virtual ~IOneMoreInterface() = default;
+  };
+
+  struct OneMoreInterfaceImpl : virtual implements<IOneMoreInterface> {};
+
   struct DelegateImpl : BaseTestSvc {
     const std::string& name() const override {
       static const std::string name = "DelegateImpl";
@@ -81,16 +88,26 @@ namespace {
         if ( m_anotherInterface ) m_anotherInterface->addRef();
         return StatusCode::SUCCESS;
       }
+      // Note: this is explicitly not handled in i_cast because we want to test the
+      // fallback to queryInterface
+      if ( iid == IOneMoreInterface::interfaceID() ) {
+        *ppvi = m_oneMoreInterface.get();
+        if ( m_oneMoreInterface ) m_oneMoreInterface->addRef();
+        return StatusCode::SUCCESS;
+      }
       return BaseTestSvc::queryInterface( iid, ppvi );
     }
 
     void const* i_cast( const InterfaceID& iid ) const override {
       if ( auto output = BaseTestSvc::i_cast( iid ) ) { return output; }
       if ( iid == IAnotherInterface::interfaceID() ) { return m_anotherInterface.get(); }
+      // Note: we do not handle IOneMoreInterface in i_cast because we want to test the
+      // fallback to queryInterface
       return nullptr;
     }
 
     SmartIF<IAnotherInterface> m_anotherInterface{ std::make_unique<AnotherInterfaceImpl>() };
+    SmartIF<IOneMoreInterface> m_oneMoreInterface{ std::make_unique<OneMoreInterfaceImpl>() };
   };
 } // namespace
 
@@ -279,6 +296,13 @@ TEST_CASE( "SmartIF interface delegation" ) {
   CHECK( impl->refCount() == 3 );    // iface, impl, svc
   CHECK( another->refCount() == 2 ); // indirect impl, direct another
   CHECK( another.get() == impl->m_anotherInterface.get() );
+
+  // Note: this will try i_cast and fallback to queryInterface
+  auto onemore = iface.as<IOneMoreInterface>();
+  REQUIRE( onemore );
+  CHECK( impl->refCount() == 3 );    // iface, impl, svc
+  CHECK( onemore->refCount() == 2 ); // indirect impl, direct onemore
+  CHECK( onemore.get() == impl->m_oneMoreInterface.get() );
 }
 
 TEST_CASE( "SmartIF from unique_ptr" ) {

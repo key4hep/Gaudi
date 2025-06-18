@@ -237,12 +237,38 @@ public:
 
   template <Gaudi::IsInterface TARGET>
   TARGET* cast() {
-    return reinterpret_cast<TARGET*>( i_cast( TARGET::interfaceID() ) );
+    if ( auto output = i_cast( TARGET::interfaceID() ) ) { return reinterpret_cast<TARGET*>( output ); }
+    if constexpr ( Gaudi::IsInterface<TARGET> ) {
+      void* tgt = nullptr;
+      queryInterface( TARGET::interfaceID(), &tgt ).ignore();
+      if ( tgt ) {
+        // queryInterface bumps the reference count of the target object, but we should not
+        auto* target = reinterpret_cast<TARGET*>( tgt );
+        // we cannot use release() because we may be called with an object with initial reference count of 0 and that
+        // would delete the object
+        static_cast<const IInterface*>( target )->decRef();
+        return target;
+      }
+    }
+    return nullptr;
   }
 
   template <Gaudi::IsInterface TARGET>
   TARGET const* cast() const {
-    return reinterpret_cast<TARGET const*>( i_cast( TARGET::interfaceID() ) );
+    if ( auto output = i_cast( TARGET::interfaceID() ) ) { return reinterpret_cast<TARGET const*>( output ); }
+    if constexpr ( Gaudi::IsInterface<TARGET> ) {
+      void* tgt = nullptr;
+      const_cast<IInterface*>( this )->queryInterface( TARGET::interfaceID(), &tgt ).ignore();
+      if ( tgt ) {
+        // queryInterface bumps the reference count of the target object, but we should not
+        auto* target = reinterpret_cast<const TARGET*>( tgt );
+        // we cannot use release() because we may be called with an object with initial reference count of 0 and that
+        // would delete the object
+        static_cast<const IInterface*>( target )->decRef();
+        return target;
+      }
+    }
+    return nullptr;
   }
 
   template <typename TARGET>
@@ -296,18 +322,20 @@ public:
   void* i_cast( const InterfaceID& iid ) {
     return const_cast<void*>( const_cast<const IInterface*>( this )->i_cast( iid ) );
   }
+
+protected:
+  /// Decrement reference count and return the new reference count
+  virtual unsigned long decRef() const = 0;
 };
 
 STATUSCODE_ENUM_DECL( IInterface::Status )
 
 namespace Gaudi {
-  /// Cast a IInterface pointer to an IInterface specialization (TARGET).
   template <typename TARGET>
   TARGET* Cast( IInterface* i ) {
     return i ? i->cast<TARGET>() : nullptr;
   }
-  /// Cast a IInterface pointer to an IInterface specialization (TARGET).
-  /// const version
+
   template <typename TARGET>
   const TARGET* Cast( const IInterface* i ) {
     return i ? i->cast<const TARGET>() : nullptr;

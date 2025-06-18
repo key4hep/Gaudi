@@ -13,6 +13,7 @@
 
 #include <GaudiKernel/IInterface.h>
 #include <atomic>
+#include <cassert>
 
 /// Base class used to implement the interfaces.
 template <typename... Interfaces>
@@ -48,20 +49,27 @@ public:
   unsigned long addRef() const override { return ++m_refCount; }
   /** Release Interface instance                 */
   unsigned long release() const override {
-    auto count = m_refCount.load();
-    // thread-safe decrement, but make sure we don't go below 0
-    // (if the last two references are being released at the same time, this guarantees that
-    // one decrements m_refCount from 2 to 1 and the other from 1 to 0)
-    while ( count > 0 && !m_refCount.compare_exchange_weak( count, count - 1 ) ) {}
-    // when we reach this point, we managed to set m_refCount to "count - 1"
-    // and if that means "0" we are in charge of deleting ourself
-    if ( ( count - 1 ) == 0 ) delete this;
-    return count;
+    if ( auto count = decRef() ) {
+      return count;
+    } else {
+      delete this;
+      return 0;
+    }
   }
   /** Current reference count                    */
   unsigned long refCount() const override { return m_refCount.load(); }
 
 protected:
+  unsigned long decRef() const override {
+    auto count = m_refCount.load();
+    // thread-safe decrement, but make sure we don't go below 0
+    // (if the last two references are being released at the same time, this guarantees that
+    // one decrements m_refCount from 2 to 1 and the other from 1 to 0)
+    while ( count > 0 && !m_refCount.compare_exchange_weak( count, count - 1 ) ) { assert( count > 0 ); }
+    // when we reach this point, we managed to set m_refCount to "count - 1", so no need to read it again
+    return count - 1;
+  }
+
   /** Reference counter                          */
   mutable std::atomic_ulong m_refCount = { 0 };
 };
