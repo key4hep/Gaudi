@@ -185,7 +185,7 @@ public:
 
   virtual std::vector<std::string> getInterfaceNames() const override { return {}; }
 
-  virtual void* i_cast( const InterfaceID& ) const override { return nullptr; }
+  virtual void const* i_cast( const InterfaceID& ) const override { return nullptr; }
 
   virtual unsigned long refCount() const override { return 1; }
 };

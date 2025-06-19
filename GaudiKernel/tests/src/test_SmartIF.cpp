@@ -84,7 +84,7 @@ namespace {
       return BaseTestSvc::queryInterface( iid, ppvi );
     }
 
-    void* i_cast( const InterfaceID& iid ) const override {
+    void const* i_cast( const InterfaceID& iid ) const override {
       if ( auto output = BaseTestSvc::i_cast( iid ) ) { return output; }
       if ( iid == IAnotherInterface::interfaceID() ) { return m_anotherInterface.get(); }
       return nullptr;

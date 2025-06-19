@@ -12,6 +12,7 @@
 #define GAUDIKERNEL_IINTERFACE_H
 
 // Include files
+#include <Gaudi/Concepts.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/System.h>
@@ -234,8 +235,27 @@ public:
   /// Return an instance of InterfaceID identifying the interface.
   static inline const InterfaceID& interfaceID() { return iid::interfaceID(); }
 
-  /// main cast function
-  virtual void* i_cast( const InterfaceID& ) const = 0;
+  template <Gaudi::IsInterface TARGET>
+  TARGET* cast() {
+    return reinterpret_cast<TARGET*>( i_cast( TARGET::interfaceID() ) );
+  }
+
+  template <Gaudi::IsInterface TARGET>
+  TARGET const* cast() const {
+    return reinterpret_cast<TARGET const*>( i_cast( TARGET::interfaceID() ) );
+  }
+
+  template <typename TARGET>
+    requires( !Gaudi::IsInterface<TARGET> )
+  TARGET* cast() {
+    return dynamic_cast<TARGET*>( this );
+  }
+
+  template <typename TARGET>
+    requires( !Gaudi::IsInterface<TARGET> )
+  TARGET const* cast() const {
+    return dynamic_cast<TARGET const*>( this );
+  }
 
   /// Returns a vector of strings containing the names of all the implemented interfaces.
   virtual std::vector<std::string> getInterfaceNames() const = 0;
@@ -268,6 +288,14 @@ public:
 
   /// Virtual destructor
   virtual ~IInterface() = default;
+
+  // Note: these cannot be protected methods because they may be needed by specializations
+  // that delegate to other instances (like queryInterface does).
+  virtual void const* i_cast( const InterfaceID& ) const = 0;
+
+  void* i_cast( const InterfaceID& iid ) {
+    return const_cast<void*>( const_cast<const IInterface*>( this )->i_cast( iid ) );
+  }
 };
 
 STATUSCODE_ENUM_DECL( IInterface::Status )
@@ -276,13 +304,13 @@ namespace Gaudi {
   /// Cast a IInterface pointer to an IInterface specialization (TARGET).
   template <typename TARGET>
   TARGET* Cast( IInterface* i ) {
-    return reinterpret_cast<TARGET*>( i->i_cast( TARGET::interfaceID() ) );
+    return i ? i->cast<TARGET>() : nullptr;
   }
   /// Cast a IInterface pointer to an IInterface specialization (TARGET).
   /// const version
   template <typename TARGET>
   const TARGET* Cast( const IInterface* i ) {
-    return reinterpret_cast<const TARGET*>( i->i_cast( TARGET::interfaceID() ) );
+    return i ? i->cast<const TARGET>() : nullptr;
   }
 } // namespace Gaudi
 

@@ -36,7 +36,7 @@ namespace {
   struct BaseAlgo : INamedInterface, IProperty {
     unsigned long            addRef() const override { return 1; };
     unsigned long            release() const override { return 1; };
-    void*                    i_cast( const InterfaceID& ) const override { return nullptr; }
+    void const*              i_cast( const InterfaceID& ) const override { return nullptr; }
     std::vector<std::string> getInterfaceNames() const override { return {}; }
     unsigned long            refCount() const override { return 1; }
     StatusCode               queryInterface( const InterfaceID&, void** ) override { return StatusCode::FAILURE; };

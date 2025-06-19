@@ -25,7 +25,7 @@ struct GAUDI_API implements : virtual public extend_interfaces<Interfaces...> {
 
 public:
   /**Implementation of IInterface::i_cast. */
-  void* i_cast( const InterfaceID& tid ) const override { return Gaudi::iid_cast( tid, iids{}, this ); }
+  void const* i_cast( const InterfaceID& tid ) const override { return Gaudi::iid_cast( tid, iids{}, this ); }
   /** Implementation of IInterface::queryInterface. */
   StatusCode queryInterface( const InterfaceID& ti, void** pp ) override {
     if ( !pp ) return StatusCode::FAILURE;
