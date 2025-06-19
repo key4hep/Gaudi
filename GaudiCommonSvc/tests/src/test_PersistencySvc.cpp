@@ -57,6 +57,14 @@ namespace {
       return serviceMap.find( std::string{ name } ) != serviceMap.end();
     }
 
+    void const* i_cast( const InterfaceID& iid ) const override {
+      if ( iid == IMessageSvc::interfaceID() ) {
+        auto m = const_cast<MiniSvcMgr*>( this )->ISvcLocator::service<IMessageSvc>( "MessageSvc" ).get();
+        return static_cast<IMessageSvc*>( m );
+      }
+      return implements::i_cast( iid );
+    }
+
     StatusCode queryInterface( const InterfaceID& iid, void** pp ) override {
       if ( iid == IMessageSvc::interfaceID() ) {
         auto m = ISvcLocator::service<IMessageSvc>( "MessageSvc" ).get();

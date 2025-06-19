@@ -63,6 +63,17 @@ StatusCode AlgTool::queryInterface( const InterfaceID& riid, void** ppvi )
   addRef();
   return StatusCode::SUCCESS; // RETURN
 }
+
+void const* AlgTool::i_cast( const InterfaceID& riid ) const {
+  if ( auto output = base_class::i_cast( riid ) ) { return output; }
+  if ( auto i =
+           std::find_if( std::begin( m_interfaceList ), std::end( m_interfaceList ),
+                         [&]( const std::pair<InterfaceID, void*>& item ) { return item.first.versionMatch( riid ); } );
+       i != std::end( m_interfaceList ) ) {
+    return i->second;
+  }
+  return nullptr;
+}
 //------------------------------------------------------------------------------
 const std::string& AlgTool::name() const
 //------------------------------------------------------------------------------
