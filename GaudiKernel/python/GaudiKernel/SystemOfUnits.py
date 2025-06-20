@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -152,7 +152,7 @@ ps = picosecond
 # Electric charge [Q]
 #
 eplus = 1.0  # positron charge
-e_SI = 1.602176487e-19  # positron charge in coulomb
+e_SI = 1.602176634e-19  # positron charge in coulomb
 coulomb = eplus / e_SI  # coulomb = 6.24150 e+18 * eplus
 
 #
