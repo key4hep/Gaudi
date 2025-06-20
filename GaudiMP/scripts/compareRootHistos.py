@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -108,8 +108,8 @@ def comparePaths(t1, t2):
         print("Neither tuple is Reference Root file reference?")
         return
 
-    dsks = ds.keys()
-    dpks = dp.keys()
+    dsks = list(ds.keys())
+    dpks = list(dp.keys())
     dsks.sort()
     dpks.sort()
 
