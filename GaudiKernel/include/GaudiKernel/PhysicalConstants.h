@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -57,7 +57,7 @@ namespace Gaudi {
     constexpr double halfpi = pi / 2;
     constexpr double pi2    = pi * pi;
 
-    constexpr double Avogadro = 6.0221367e+23 / mole;
+    constexpr double Avogadro = 6.02214076e+23 / mole;
 
     //
     // c   = 299.792458 mm/ns
@@ -71,7 +71,7 @@ namespace Gaudi {
     // hbar  = 6.58212e-13 MeV*ns
     // hbarc = 197.32705e-12 MeV*mm
     //
-    constexpr double h_Planck      = 6.62606896e-34 * joule * s;
+    constexpr double h_Planck      = 6.62607015e-34 * joule * s;
     constexpr double hbar_Planck   = h_Planck / twopi;
     constexpr double hbarc         = hbar_Planck * c_light;
     constexpr double hbarc_squared = hbarc * hbarc;
@@ -109,7 +109,7 @@ namespace Gaudi {
 
     constexpr double twopi_mc2_rcl2 = twopi * electron_mass_c2 * classic_electr_radius * classic_electr_radius;
 
-    constexpr double k_Boltzmann = 8.617343e-11 * MeV / kelvin;
+    constexpr double k_Boltzmann = 8.617333e-11 * MeV / kelvin;
 
     constexpr double STP_Temperature = 273.15 * kelvin;
     constexpr double STP_Pressure    = 1. * atmosphere;
