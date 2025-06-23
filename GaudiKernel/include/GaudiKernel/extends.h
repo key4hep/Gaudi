@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,7 +28,7 @@ public:
   using BASE::BASE;
 
   /// Implementation of IInterface::i_cast.
-  void* i_cast( const InterfaceID& tid ) const override {
+  void const* i_cast( const InterfaceID& tid ) const override {
     using iids = typename extend_interfaces_base::ext_iids;
     void* ptr  = Gaudi::iid_cast( tid, iids{}, this );
     return ptr ? ptr : BASE::i_cast( tid );

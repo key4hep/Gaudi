@@ -82,3 +82,8 @@ StatusCode DLLClassManager::queryInterface( const InterfaceID& iid, void** pinte
   // fall back on the owner
   return m_pOuter->queryInterface( iid, pinterface );
 }
+void const* DLLClassManager::i_cast( const InterfaceID& iid ) const {
+  if ( auto output = base_class::i_cast( iid ) ) return output;
+  // fall back on the owner
+  return m_pOuter->i_cast( iid );
+}

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -33,4 +33,11 @@ StatusCode ComponentManager::queryInterface( const InterfaceID& iid, void** pint
   StatusCode sc = base_class::queryInterface( iid, pinterface );
   // fall back on the owner, if local interface didn't match...
   return sc.isSuccess() ? sc : m_application->queryInterface( iid, pinterface );
+}
+
+void const* ComponentManager::i_cast( const InterfaceID& iid ) const {
+  // try local interfaces
+  if ( auto output = base_class::i_cast( iid ); output ) { return output; }
+  // fall back on the owner, if local interface didn't match...
+  return m_application->i_cast( iid );
 }

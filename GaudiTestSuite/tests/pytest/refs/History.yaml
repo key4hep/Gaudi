@@ -17,9 +17,8 @@ stdout: "JobOptionsSvc        INFO Job options successfully file History.opts\nA
   \         INFO Unable to locate service \"EventSelector\": No events will be processed\
   \ from external input.\e[m\nServiceManager      DEBUG Initializing service HistorySvc\e\
   [m\nHistorySvc          DEBUG Initializing HistorySvc\e[m\nAlgContextSvc     VERBOSE\
-  \ ServiceLocatorHelper::service: found service IncidentSvc\e[m\nHistorySvc.AlgC...VERBOSE\
-  \ ServiceLocatorHelper::service: found service AlgContextSvc\e[m\nHistorySvc   \
-  \     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc\e[m\nApplicationMgr\
+  \ ServiceLocatorHelper::service: found service IncidentSvc\e[m\nHistorySvc     \
+  \   VERBOSE ServiceLocatorHelper::service: found service IncidentSvc\e[m\nApplicationMgr\
   \       INFO Application Manager Initialized successfully\e[m\nServiceManager  \
   \    DEBUG Starting service AppMgrRunable\e[m\nServiceManager      DEBUG Starting\
   \ service IncidentSvc\e[m\nServiceManager      DEBUG Starting service EventPersistencySvc\e\

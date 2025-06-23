@@ -31,11 +31,12 @@ namespace {
     MonitoringHub  m_monitHub{};
   };
   struct BaseAlgo : INamedInterface, IProperty {
-    unsigned long            addRef() override { return 0; };
-    unsigned long            release() override { return 0; };
-    void*                    i_cast( const InterfaceID& ) const override { return nullptr; }
+    unsigned long            addRef() const override { return 1; };
+    unsigned long            release() const override { return 1; };
+    void const*              i_cast( const InterfaceID& ) const override { return nullptr; }
     std::vector<std::string> getInterfaceNames() const override { return {}; }
-    unsigned long            refCount() const override { return 0; }
+    unsigned long            refCount() const override { return 1; }
+    unsigned long            decRef() const override { return 1; }
     StatusCode               queryInterface( const InterfaceID&, void** ) override { return StatusCode::FAILURE; };
     const std::string&       name() const override { return m_name; };
     std::string              m_name{};

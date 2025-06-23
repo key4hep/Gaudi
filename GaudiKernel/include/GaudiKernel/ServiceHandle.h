@@ -12,7 +12,6 @@
 #define GAUDIKERNEL_SERVICEHANDLE_H
 
 // Includes
-#include <Gaudi/Concepts.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/GaudiHandle.h>
@@ -22,7 +21,6 @@
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/ServiceLocatorHelper.h>
 
-#include <stdexcept>
 #include <string>
 #include <type_traits>
 
@@ -95,33 +93,15 @@ public:
 
 protected:
   /** Do the real retrieval of the Service. */
-  StatusCode retrieve( T*& service ) const override { return i_retrieve( service ); }
-
-  /// retrieve the service for ServiceHandles<ISomeInterfaces>
-  template <Gaudi::IsInterface I = T>
-  StatusCode i_retrieve( I*& service ) const {
+  StatusCode retrieve( T*& service ) const override {
     const ServiceLocatorHelper helper( *serviceLocator(), GaudiHandleBase::messageName(), this->parentName() );
-    return helper.getService( GaudiHandleBase::typeAndName(), true, I::interfaceID(), (void**)&service );
+    if ( auto svc = helper.service<T>( GaudiHandleBase::typeAndName(), /* quiet = */ true, /* createIf = */ true ) ) {
+      svc->addRef();
+      service = svc.get();
+      return StatusCode::SUCCESS;
+    }
+    return StatusCode::FAILURE;
   }
-
-  /// retrieve the service for ServiceHandles<ActualService>
-  template <typename I = T>
-    requires( !Gaudi::IsInterface<I> )
-  StatusCode i_retrieve( I*& service ) const {
-    IService* svc = nullptr;
-    return i_retrieve( svc ).andThen( [&] {
-      service = dynamic_cast<I*>( svc );
-      if ( !service )
-        throw GaudiException( "unable to dcast Service " + this->typeAndName() + " to " +
-                                  System::typeinfoName( typeid( T ) ),
-                              this->typeAndName() + " retrieve", StatusCode::FAILURE );
-    } );
-  }
-
-  //   /** Do the real release of the Service */
-  //   virtual StatusCode release( T* service ) const {
-  //     return service->release();
-  //   }
 
 private:
   //

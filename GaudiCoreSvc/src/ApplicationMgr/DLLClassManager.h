@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -44,7 +44,8 @@ public:
   StatusCode loadModule( const std::string& module, bool fireIncident = true ) override;
 
   /// implementation of IInterface::queryInterface
-  StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
+  StatusCode  queryInterface( const InterfaceID& iid, void** pinterface ) override;
+  void const* i_cast( const InterfaceID& iid ) const override;
 
 private:
   SmartIF<ISvcLocator> m_svclocator; // Service locator reference

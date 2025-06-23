@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,6 +13,7 @@
 
 #include <GaudiKernel/IInterface.h>
 #include <atomic>
+#include <cassert>
 
 /// Base class used to implement the interfaces.
 template <typename... Interfaces>
@@ -25,7 +26,7 @@ struct GAUDI_API implements : virtual public extend_interfaces<Interfaces...> {
 
 public:
   /**Implementation of IInterface::i_cast. */
-  void* i_cast( const InterfaceID& tid ) const override { return Gaudi::iid_cast( tid, iids{}, this ); }
+  void const* i_cast( const InterfaceID& tid ) const override { return Gaudi::iid_cast( tid, iids{}, this ); }
   /** Implementation of IInterface::queryInterface. */
   StatusCode queryInterface( const InterfaceID& ti, void** pp ) override {
     if ( !pp ) return StatusCode::FAILURE;
@@ -45,20 +46,32 @@ public:
 
 public:
   /** Reference Interface instance               */
-  unsigned long addRef() override { return ++m_refCount; }
+  unsigned long addRef() const override { return ++m_refCount; }
   /** Release Interface instance                 */
-  unsigned long release() override {
-    /* Avoid to decrement 0 */
-    auto count = ( m_refCount ? --m_refCount : m_refCount.load() );
-    if ( count == 0 ) delete this;
-    return count;
+  unsigned long release() const override {
+    if ( auto count = decRef() ) {
+      return count;
+    } else {
+      delete this;
+      return 0;
+    }
   }
   /** Current reference count                    */
   unsigned long refCount() const override { return m_refCount.load(); }
 
 protected:
+  unsigned long decRef() const override {
+    auto count = m_refCount.load();
+    // thread-safe decrement, but make sure we don't go below 0
+    // (if the last two references are being released at the same time, this guarantees that
+    // one decrements m_refCount from 2 to 1 and the other from 1 to 0)
+    while ( count > 0 && !m_refCount.compare_exchange_weak( count, count - 1 ) ) { assert( count > 0 ); }
+    // when we reach this point, we managed to set m_refCount to "count - 1", so no need to read it again
+    return count - 1;
+  }
+
   /** Reference counter                          */
-  std::atomic_ulong m_refCount = { 0 };
+  mutable std::atomic_ulong m_refCount = { 0 };
 };
 
 template <typename I1>

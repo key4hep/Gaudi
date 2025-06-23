@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -32,9 +32,13 @@ public:
   const InterfaceID& componentBaseInterface() const override;
 
   /// Specialized queryInterface implementation.
-  /// If an interface is not fount in the implemented ones, we fall back on the
+  /// If an interface is not found in the implemented ones, we fall back on the
   /// owner.
   StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
+  /// Specialized i_cast implementation.
+  /// If an interface is not found in the implemented ones, we fall back on the
+  /// owner.
+  void const* i_cast( const InterfaceID& iid ) const override;
 
   SmartIF<ISvcLocator>& serviceLocator() const override {
     if ( !m_svcLocator ) m_svcLocator = m_application;

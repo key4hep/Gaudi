@@ -177,17 +177,19 @@ public:
     return dummyService;
   }
 
-  virtual unsigned long addRef() override { return 0; }
+  virtual unsigned long addRef() const override { return 1; }
 
-  virtual unsigned long release() override { return 0; }
+  virtual unsigned long release() const override { return 1; }
 
   virtual StatusCode queryInterface( const InterfaceID&, void** ) override { return StatusCode::SUCCESS; }
 
   virtual std::vector<std::string> getInterfaceNames() const override { return {}; }
 
-  virtual void* i_cast( const InterfaceID& ) const override { return nullptr; }
+  virtual void const* i_cast( const InterfaceID& ) const override { return nullptr; }
 
   virtual unsigned long refCount() const override { return 1; }
+
+  virtual unsigned long decRef() const override { return 1; }
 };
 
 // Utility function tests

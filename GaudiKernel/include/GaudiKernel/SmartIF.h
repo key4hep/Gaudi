@@ -13,6 +13,7 @@
 
 // Framework include files
 #include <GaudiKernel/IInterface.h>
+#include <memory>
 
 /** @class SmartIF SmartIF.h GaudiKernel/SmartIF.h
  *
@@ -67,6 +68,11 @@ public:
   /// Standard Destructor.
   inline ~SmartIF() { reset(); }
 
+  template <class T>
+  inline SmartIF( std::unique_ptr<T>&& rhs ) {
+    reset( rhs.release() );
+  }
+
   // ---------- Boolean and comparison methods ----------
   /// Allow for check if smart pointer is valid.
   inline bool isValid() const { return m_interface != nullptr; }
@@ -99,10 +105,11 @@ public:
   /// Version for pointers of types inheriting from IInterface.
   template <class OTHER>
   inline void reset( OTHER* ptr ) {
-    if ( static_cast<IInterface*>( ptr ) == static_cast<IInterface*>( m_interface ) ) return;
+    if ( static_cast<const IInterface*>( ptr ) == static_cast<const IInterface*>( m_interface ) ) return;
     if ( m_interface ) m_interface->release();
     if ( ptr ) {
-      ptr->queryInterface( TYPE::interfaceID(), pp_cast<void>( &m_interface ) ).ignore();
+      m_interface = ptr->template cast<TYPE>();
+      if ( m_interface ) m_interface->addRef();
     } else {
       m_interface = nullptr;
     }

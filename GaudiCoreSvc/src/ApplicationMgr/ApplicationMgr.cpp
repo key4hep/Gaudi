@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -118,9 +118,26 @@ ApplicationMgr::ApplicationMgr( IInterface* ) {
                    "HistogramPersistencySvc/HistogramPersistencySvc" };
 }
 
-//============================================================================
-// IInterface implementation: queryInterface::addRef()
-//============================================================================
+void const* ApplicationMgr::i_cast( const InterfaceID& iid ) const {
+  // try our own interfaces
+  if ( auto output = base_class::i_cast( iid ) ) { return output; }
+  // delegate to other instances
+  if ( ISvcLocator::interfaceID().versionMatch( iid ) ) { return serviceLocator().get(); }
+  if ( ISvcManager::interfaceID().versionMatch( iid ) ) {
+    return const_cast<ApplicationMgr*>( this )->svcManager().get();
+  }
+  if ( IAlgManager::interfaceID().versionMatch( iid ) ) {
+    return const_cast<ApplicationMgr*>( this )->algManager().get();
+  }
+  if ( IClassManager::interfaceID().versionMatch( iid ) ) { return m_classManager.get(); }
+  if ( IMessageSvc::interfaceID().versionMatch( iid ) ) {
+    // Note that 0 can be a valid IMessageSvc pointer value (when used for
+    // MsgStream).
+    return m_messageSvc.get();
+  }
+  return nullptr;
+}
+
 StatusCode ApplicationMgr::queryInterface( const InterfaceID& iid, void** ppvi ) {
   if ( !ppvi ) { return StatusCode::FAILURE; }
 
