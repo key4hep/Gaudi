@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -187,42 +187,37 @@ def _getAllOpts_old(explicit_defaults=False):
 
     old_opts = {}
 
-    # some algorithms may be generater when we call "getValuedProperties"
-    # so we need a few iterations before we get the full list
+    # Keep track of which algorithms we have already processed to avoid
+    # computing them many times
+    done_conf = set()
+    # More algorithms may be generated when we call "getValuedProperties" so we
+    # may need a few iterations before we get the full list
     # (see GaudiConfig.ControlFlow)
-    needed_conf = []
-    count = 0
-    new_count = -1
-    while count != new_count:
-        count = new_count
-        needed_conf = getNeededConfigurables()
-        new_count = len(needed_conf)
-        for n in needed_conf:
-            c = Configurable.allConfigurables[n]
-            if hasattr(c, "getValuedProperties"):
-                c.getValuedProperties()
+    while True:
+        needed_conf = [n for n in getNeededConfigurables() if n not in done_conf]
+        if not needed_conf:
+            break
 
-    for n in needed_conf:
-        c = Configurable.allConfigurables[n]
-        items = (
-            chain(c.getDefaultProperties().items(), c.getValuedProperties().items())
-            if explicit_defaults
-            else c.getValuedProperties().items()
-        )
-        for p, v in items:
-            # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
-            if hasattr(Configurable, "PropertyReference") and isinstance(
-                v, Configurable.PropertyReference
-            ):
-                # this is done in "getFullName", but the exception is ignored,
-                # so we do it again to get it
-                v = v.__resolve__()
-            if isinstance(v, str):
-                # properly escape quotes in the string (see gaudi/Gaudi#78)
-                v = '"%s"' % v.replace('"', '\\"')
-            elif hasattr(v, "__opt_value__"):
-                v = v.__opt_value__()
-            old_opts[".".join((n, p))] = str(v)
+        for n in needed_conf:
+            done_conf.add(n)
+            c = Configurable.allConfigurables[n]
+            items = getattr(c, "getValuedProperties", dict)().items()
+            if explicit_defaults:
+                items = chain(c.getDefaultProperties().items(), items)
+            for p, v in items:
+                # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
+                if hasattr(Configurable, "PropertyReference") and isinstance(
+                    v, Configurable.PropertyReference
+                ):
+                    # this is done in "getFullName", but the exception is ignored,
+                    # so we do it again to get it
+                    v = v.__resolve__()
+                if isinstance(v, str):
+                    # properly escape quotes in the string (see gaudi/Gaudi#78)
+                    v = '"%s"' % v.replace('"', '\\"')
+                elif hasattr(v, "__opt_value__"):
+                    v = v.__opt_value__()
+                old_opts[".".join((n, p))] = str(v)
 
     return old_opts
 
