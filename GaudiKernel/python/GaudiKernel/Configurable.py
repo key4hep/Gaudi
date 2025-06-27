@@ -68,6 +68,11 @@ __all__ = [
     "removePostConfigAction",
 ]
 
+
+class _DefaultPropertiesCollectorHelper:
+    pass
+
+
 # for messaging
 import logging
 
@@ -734,11 +739,8 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
 
     @classmethod
     def getDefaultProperties(cls):
-        class collector:
-            pass
-
         # user provided defaults
-        c = collector()
+        c = _DefaultPropertiesCollectorHelper()
         cls.setDefaults(c)
 
         # defaults from C++
@@ -750,11 +752,8 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
 
     @classmethod
     def getDefaultProperty(cls, name):
-        class collector:
-            pass
-
         # user provided defaults
-        c = collector()
+        c = _DefaultPropertiesCollectorHelper()
         cls.setDefaults(c)
 
         if name in c.__dict__:
