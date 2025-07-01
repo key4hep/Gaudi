@@ -41,6 +41,10 @@ class Test(GaudiExeTest):
         file, _, _ = setup_file_tree
         assert not file.IsZombie(), "Output file should not be a zombie"
 
+    def test_tree_compression(self, setup_file_tree):
+        file, _, _ = setup_file_tree
+        assert file.GetCompressionAlgorithm() == 4
+
 
 def config():
     from GaudiConfig2 import Configurables as C
@@ -54,8 +58,8 @@ def config():
 
     fileSvc = C.FileSvc(
         Config={
-            "Histogram": f"{OUTPUT_FILE_NAME}?mode=recreate&flag=test",
-            "Ntuple": f"{OUTPUT_FILE_NAME}?mode=recreate&flag=test",
+            "Histogram": f"{OUTPUT_FILE_NAME}?mode=recreate&flag=test&compress=404",
+            "Ntuple": f"{OUTPUT_FILE_NAME}?mode=recreate&flag=test&compress=404",
         }
     )
 
