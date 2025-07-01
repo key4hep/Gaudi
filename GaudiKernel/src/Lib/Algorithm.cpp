@@ -115,7 +115,7 @@ namespace Gaudi {
       sc = StatusCode::FAILURE;
     }
 
-    algExecStateSvc()->addAlg( this );
+    m_execSvcKey = algExecStateSvc()->addAlg( this );
 
     //
     //// build list of data dependencies
@@ -325,8 +325,8 @@ namespace Gaudi {
       return StatusCode::SUCCESS;
     }
 
-    AlgExecState& algState = execState( ctx );
-    algState.setState( AlgExecState::State::Executing );
+    AlgExecStateRef algState{ *algExecStateSvc(), ctx, m_execSvcKey };
+    algState.setState( AlgExecState::Executing );
     StatusCode status;
 
     // Should performance profile be performed ?
@@ -394,7 +394,7 @@ namespace Gaudi {
       }
     }
 
-    algState.setState( AlgExecState::State::Done, status );
+    algState.setState( AlgExecState::Done, status );
 
     return status;
   }
@@ -533,8 +533,8 @@ namespace Gaudi {
 
   bool Algorithm::isEnabled() const { return m_isEnabled; }
 
-  AlgExecState& Algorithm::execState( const EventContext& ctx ) const {
-    return algExecStateSvc()->algExecState( const_cast<IAlgorithm*>( (const IAlgorithm*)this ), ctx );
+  AlgExecStateRef Algorithm::execState( const EventContext& ctx ) const {
+    return { *algExecStateSvc(), ctx, m_execSvcKey };
   }
 
   template <typename IFace>

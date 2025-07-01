@@ -413,8 +413,9 @@ namespace Gaudi {
     void setIndex( const unsigned int& idx ) override;
 
   public:
-    /// reference to AlgExecState of Alg
-    AlgExecState& execState( const EventContext& ctx ) const override;
+    /// get the AlgExecStateRef of current algorithm
+    /// Actually a small wrapper around it, thus the plain object return type
+    AlgExecStateRef execState( const EventContext& ctx ) const override;
 
     /// Produce string represention of the control flow expression.
     std::ostream& toControlFlowExpression( std::ostream& os ) const override;
@@ -430,6 +431,9 @@ namespace Gaudi {
     std::string      m_type;      ///< Algorithm's type
     std::string      m_version;   ///< Algorithm's version
     unsigned int     m_index = 0; ///< Algorithm's index
+
+    /// identifier of this algorithm in the AlgExecStateSvc
+    AlgExecStateRef::AlgKey m_execSvcKey;
 
     // tools used by algorithm
     mutable std::vector<IAlgTool*>             m_tools;

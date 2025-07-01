@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,12 +15,11 @@
 namespace Gaudi {
   namespace details {
     bool LegacyAlgorithmAdapter::isExecuted() const {
-      return execState( Gaudi::Hive::currentContext() ).state() == AlgExecState::State::Done;
+      return execState( Gaudi::Hive::currentContext() ).state() == AlgExecState::Done;
     }
 
     void LegacyAlgorithmAdapter::setExecuted( bool state ) const {
-      execState( Gaudi::Hive::currentContext() )
-          .setState( state ? AlgExecState::State::Done : AlgExecState::State::None );
+      execState( Gaudi::Hive::currentContext() ).setState( state ? AlgExecState::Done : AlgExecState::None );
     }
 
     bool LegacyAlgorithmAdapter::filterPassed() const {

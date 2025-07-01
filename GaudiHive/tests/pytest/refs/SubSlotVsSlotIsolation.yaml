@@ -179,16 +179,16 @@ stdout: |-
     A6 (9), w/ decision: TRUE(1), in state: EVTACCEPTED
   ------------------------------ Algorithm Execution States -----------------------------
     [slot: 0, incident: AlgStall]:
+    +            A1  e: d f: 1 sc: SUCCESS
+    +            A2  e: n
+    +            A3  e: n
+    +   viewNodeOne  e: n
     +            A4  e: d f: 1 sc: SUCCESS
     +            A5  e: n
-    +   viewNodeOne  e: n
-    +            A7  e: n
-    +            A3  e: n
-    +            A2  e: n
-    + createViewSeq  e: n
-    +            A1  e: d f: 1 sc: SUCCESS
     +            A6  e: n
     +   viewNodeTwo  e: n
+    +            A7  e: n
+    + createViewSeq  e: n
   =========================================================================================
   ++++++++++++++++++++++++++++++++++++++ END OF DUMP ++++++++++++++++++++++++++++++++++++++
   =========================================================================================

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -137,7 +137,7 @@ StatusCode ReplayOutputStream::execute() {
     SmartIF<IAlgorithm>& alg = this->m_outputStreams[name];
     if ( alg ) {
       const auto& ctx = Gaudi::Hive::currentContext();
-      if ( alg->execState( ctx ).state() != AlgExecState::State::Done ) {
+      if ( alg->execState( ctx ).state() != AlgExecState::Done ) {
         alg->sysExecute( ctx ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       } else {
         this->warning() << name << " already executed for the current event" << endmsg;
