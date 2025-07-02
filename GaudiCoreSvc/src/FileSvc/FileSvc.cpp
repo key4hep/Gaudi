@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -25,16 +25,19 @@ public:
   // Constructor
   FileSvc( const std::string& name, ISvcLocator* svc );
 
-  virtual StatusCode initialize() override;
+  StatusCode initialize() override;
 
-  virtual StatusCode finalize() override;
+  StatusCode finalize() override;
 
   /** Get a TFile pointer based on an identifier.
 
    * @param identifier A string identifying the file (2 identifiers can point to the same TFile).
    * @return An shared pointer to a TFile object corresponding to the specified identifier.
    */
-  virtual std::shared_ptr<TFile> getFile( const std::string& identifier ) override;
+  std::shared_ptr<TFile> getFile( const std::string& identifier ) override;
+
+  /// Check if a given identifier is known to the service.
+  bool hasIdentifier( const std::string& identifier ) const override;
 
 public:
   // Property to map file identifiers to file paths
@@ -173,6 +176,10 @@ std::shared_ptr<TFile> FileSvc::getFile( const std::string& identifier ) {
   if ( it != m_identifiers.end() && it->second < m_files.size() ) { return m_files[it->second]; }
   error() << "No file associated with identifier: " << identifier << endmsg;
   return nullptr;
+}
+
+bool FileSvc::hasIdentifier( const std::string& identifier ) const {
+  return m_identifiers.find( boost::to_lower_copy( identifier ) ) != m_identifiers.end();
 }
 
 std::shared_ptr<TFile> FileSvc::openFile( const std::string& filePath, const std::string& option, int compress ) {
