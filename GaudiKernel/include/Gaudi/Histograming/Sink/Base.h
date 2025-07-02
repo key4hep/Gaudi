@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,10 +10,13 @@
 \***********************************************************************************/
 
 #include <Gaudi/BaseSink.h>
+#include <Gaudi/Interfaces/IFileSvc.h>
 #include <Gaudi/MonitoringHub.h>
+#include <GaudiKernel/ServiceHandle.h>
 #include <TFile.h>
 #include <filesystem>
 #include <map>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
@@ -44,19 +47,31 @@ namespace Gaudi::Histograming::Sink {
 
     StatusCode initialize() override {
       return BaseSink::initialize().andThen( [&] {
-        // empty output file if it exists, as we will update it at the end
-        // This allows multiple Sinks to write to the same ROOT file
-        std::filesystem::remove( m_fileName.value() );
-        info() << "Writing ROOT histograms to: " << m_fileName.value() << endmsg;
+        if ( m_fileSvc.retrieve() && m_fileSvc->hasIdentifier( m_fileName ) ) {
+          // the target files is available through FileSvc
+          info() << "Writing ROOT histograms to: " << m_fileName.value() << " ("
+                 << m_fileSvc->getFile( m_fileName )->GetName() << ')' << endmsg;
+        } else {
+          // we are not using FileSvc to open the TFile, so we have to
+          // empty output file if it exists, as we will update it at the end
+          // This allows multiple Sinks to write to the same ROOT file
+          std::filesystem::remove( m_fileName.value() );
+          info() << "Writing ROOT histograms to: " << m_fileName.value() << endmsg;
+        }
       } );
     }
 
     void flush( bool ) override {
-      // File is updated so that multiple sinks can write to the same file
-      // As we are in stop, there is no multithreading so it is safe
-      // As we dropped the file at initialization, no old data from a previous
-      // run may be mixed with new one
-      TFile histoFile( m_fileName.value().c_str(), "UPDATE" );
+      std::shared_ptr<TFile> histoFile;
+      if ( m_fileSvc.get() && m_fileSvc->hasIdentifier( m_fileName ) ) {
+        histoFile = m_fileSvc->getFile( m_fileName );
+      } else {
+        // File is updated so that multiple sinks can write to the same file
+        // As we are in stop, there is no multithreading so it is safe
+        // As we dropped the file at initialization, no old data from a previous
+        // run may be mixed with new one
+        histoFile = std::make_shared<TFile>( m_fileName.value().c_str(), "UPDATE" );
+      }
       // get all entities, sorted by component and name
       applyToAllSortedEntities( [this, &histoFile]( std::string const& component, std::string const& name,
                                                     Monitoring::Hub::Entity const& ent ) {
@@ -64,7 +79,7 @@ namespace Gaudi::Histograming::Sink {
         auto typeIndex = ent.typeIndex();
         auto binSaver  = m_binRegistry.find( typeIndex );
         if ( binSaver != m_binRegistry.end() ) {
-          binSaver->second( histoFile, component, name, ent );
+          binSaver->second( *histoFile, component, name, ent );
           return;
         }
         // no fast track, let's use json intermediate format
@@ -75,7 +90,7 @@ namespace Gaudi::Histograming::Sink {
         // as ROOT anyway treats everything as doubles in histograms
         type       = type.substr( 0, type.find_last_of( ':' ) );
         auto saver = m_registry.find( { type, dim } );
-        if ( saver != m_registry.end() ) ( saver->second )( histoFile, component, name, j );
+        if ( saver != m_registry.end() ) ( saver->second )( *histoFile, component, name, j );
       } );
       info() << "Completed update of ROOT histograms in: " << m_fileName.value() << endmsg;
     }
@@ -96,6 +111,8 @@ namespace Gaudi::Histograming::Sink {
 
     Gaudi::Property<std::string> m_fileName{ this, "FileName", "testHisto.root",
                                              "Name of file where to save histograms" };
+
+    ServiceHandle<Gaudi::Interfaces::IFileSvc> m_fileSvc{ this, "FileSvc", "FileSvc" };
   };
 
 } // namespace Gaudi::Histograming::Sink
