@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "COPYING".                                            *
@@ -26,10 +26,13 @@ namespace Gaudi {
      */
     struct IFileSvc : virtual IInterface {
       // InterfaceID declaration.
-      DeclareInterfaceID( IFileSvc, 1, 0 );
+      DeclareInterfaceID( IFileSvc, 1, 1 );
 
-      // Get an shared pointer to a TFile based on an identifier
+      /// Get a shared pointer to a TFile based on an identifier.
       virtual std::shared_ptr<TFile> getFile( const std::string& identifier ) = 0;
+
+      /// Check if a given identifier is known to the service.
+      virtual bool hasIdentifier( const std::string& identifier ) const = 0;
     };
   } // namespace Interfaces
 } // namespace Gaudi
