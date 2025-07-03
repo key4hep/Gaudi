@@ -6,6 +6,106 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v40r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r0) - 2025-07-03
+After a long time in the works, we are excited to announce a new major release
+of Gaudi.
+
+As often it is the case in Gaudi, this means that, rather than major changes,
+there are a number of backward incompatible changes, but, in general, they are
+removal of long deprecated code. A couple of notable exceptions are the
+refactoring of `IAlgExecStateSvc` and `Auditor`, which could not be added
+preserving backward compatibility.
+
+A few notable features we removed are:
+- compatibility with Gaudi v20 API
+- the GaudiProfiling subdirectory
+- Python2 support remnants
+- support from QMTest test configuration files
+
+We improved `AlgExecStateSvc`, `Auditor`, `GaudiConfig2`, `SmartIF`, histogram
+counters and more, and fixed a large number of bugs.
+
+We also fixed the build with gcc 14 and gcc 15 (with C++23 enabled).
+
+The list of changes is long and I want to warmly thank all the people that made
+this release possible:
+@cburr,
+@cmssst,
+@fwinkl,
+@graven,
+@jcarcell,
+@jonrob,
+@leggett,
+@smh,
+@sponce,
+@staider,
+@turra.
+
+### Changed
+- Replace include guards with `#pragma once` (gaudi/Gaudi!1747)
+- Refactoring of `(I)AlgExecStateSvc` to hide internal types and optimize implementation (gaudi/Gaudi!1762)
+- Update Avogardro, Plank, Boltzmann and e_SI to conform to CLHEP-2.4.4.0 (gaudi/Gaudi!1173)
+- `Algorithm`+`AlgTool`+`Service`: remove deprecated service methods (gaudi/Gaudi!1765)
+- Drop backward compatibilty with Gaudi v20 (gaudi/Gaudi!1764)
+- Set `ENV_PROJECT_BINARY_DIR` instead of `ENV_CMAKE_BINARY_DIR` (gaudi/Gaudi!1763)
+- `Property`: deprecate anonymous properties (gaudi/Gaudi#360, gaudi/Gaudi!1756)
+- Remove `GaudiProfiling` (gaudi/Gaudi#358, gaudi/Gaudi!1751)
+- Remove last usages of detected idiom (replace with requires) (gaudi/Gaudi!1739)
+- Remove deprecated Audit properties (gaudi/Gaudi!1757)
+- Modernized and evolved `Auditor`s (gaudi/Gaudi!1724)
+- Cleanup remaining Python2 support (gaudi/Gaudi#145, gaudi/Gaudi!1761)
+- Remove backward compatible alias `GaudiExamples` (gaudi/Gaudi#293, gaudi/Gaudi!1632)
+- Remove deprecated `service_i` methods (gaudi/Gaudi!1758)
+- Drop `QMTest` support (gaudi/Gaudi#333, gaudi/Gaudi!1671)
+- Remove deprecated `Gaudi/Chrono/ChronoIO.h` (gaudi/Gaudi!1709, gaudi/Gaudi!1710)
+- `GaudiHandle`: remove unused `setDefaultType[AndName]` methods (gaudi/Gaudi!1731)
+- Remove deprecated old parsers headers (gaudi/Gaudi#339, gaudi/Gaudi!1712)
+- Quiet the `EventLoopMgr` (gaudi/Gaudi!993)
+- Cleaned up `Auditor` interface, removing deprecated methods (gaudi/Gaudi!1723)
+- `SubprocessBaseTest`: limit recorded environment variables (gaudi/Gaudi!1722)
+
+### Added
+- `Gaudi::Histograming::Sink::Root`: use IFileSvc if possible (gaudi/Gaudi!1774)
+- Add compression algorithm option to `FileSvc` configuration (gaudi/Gaudi!1677)
+- Add support for `SmartIF` templated with a concrete type (gaudi/Gaudi#344, gaudi/Gaudi#20, gaudi/Gaudi!1766)
+- Always search in `GAUDI_PLUGIN_PATH` before `LD_LIBRARY_PATH` (gaudi/Gaudi!1733)
+- Add `FindCppcheck.cmake` module and configuration (gaudi/Gaudi!1755)
+- Add information like the version to the Gaudi python module (gaudi/Gaudi!1740)
+- `GaudiConfig2`: add component handle semantics (gaudi/Gaudi!1734)
+- Added helper class `HistogramMap` allowing to declare maps of Histograms (gaudi/Gaudi!1728)
+- Add a new `TimelineEvent.h` not to pull chrono in Algorithm.h (gaudi/Gaudi!1721)
+- `GaudiHandleArray`: implement index method (gaudi/Gaudi!1735)
+
+### Fixed
+- Remove useless comments (gaudi/Gaudi!1749)
+- Avoid defining a new type every time `getDefaultProperty` is called (gaudi/Gaudi!1772)
+- Avoid duplicated work in `_getAllOpts_old` (gaudi/Gaudi!1771)
+- Fix `compareRootHistos.py` Python3 compatibility (gaudi/Gaudi!1769)
+- Fixed memory leak in `EventCollectionSelector`, reported by lsan compilation (gaudi/Gaudi!1767)
+- Fix configuration problem for multiply-nested tools. (gaudi/Gaudi!1759)
+- Make `DataObject` refcount atomic. (gaudi/Gaudi!1760)
+- `StaticHistogram`: return labels by const-ref (cppcheck) (gaudi/Gaudi!1754)
+- Fix Cppcheck defects (gaudi/Gaudi!1753)
+- Remove use of `aligned_storage` from `Gaudi::Interface::Bind::Box` (gaudi/Gaudi!1742)
+- `IAlgManager`: minor interface cleanup (gaudi/Gaudi!1746)
+- Remove `root_map_dump.py` and a couple of Win32 batch scripts (gaudi/Gaudi!1750)
+- `AlgorithmManager`: store algorithm name as string copy (gaudi/Gaudi!1744)
+- `Sequence`: do not call release on sub-algorithms (gaudi/Gaudi!1745)
+- Update check on LCG version to skip test_heapchecker (gaudi/Gaudi!1743)
+- Fix compilation errors with gcc 15.1 and C++23 in `ScalarTransformer.h` (gaudi/Gaudi#361, gaudi/Gaudi!1741)
+- `GaudiConfig2`: use dedicated `Property` type for `DefaultSemantics` test (gaudi/Gaudi!1748)
+- Fix implementation of `formatName` (gaudi/Gaudi#362, gaudi/Gaudi!1738)
+- `Histograming/Sink/Utils.h`: Fix machine precision issues for histograms with both positive and negative entries (gaudi/Gaudi!1732)
+- `IoComponentEntry`: code cleanup (gaudi/Gaudi#26, gaudi/Gaudi!1730)
+- Improve the error message when passing a wrong value for a property (gaudi/Gaudi!1729)
+- Prefer concepts / requires clauses over SFINAE (gaudi/Gaudi!1726)
+- `GaudiHandle`: forbid setting attributes (gaudi/Gaudi!1736)
+- Add missing include (needed with gcc14) (gaudi/Gaudi!1737)
+- Add a few headers that are being used but not included (gaudi/Gaudi!1720)
+- Correctly set `Gaudi_VERSION` when building as a subproject (gaudi/Gaudi!1718)
+- Drop request for ROOTHist component of ROOT (gaudi/Gaudi#359, gaudi/Gaudi!1727)
+
+
 ## [v39r4](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r4) - 2025-03-20
 Another minor release to pick up some bug fixes and minor improvements in preparation
 for 2025 data taking (for LHCb).
