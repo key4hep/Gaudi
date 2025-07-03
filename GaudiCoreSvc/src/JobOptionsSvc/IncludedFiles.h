@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef JOBOPTIONSVC_INCLUDED_FILES_H_
-#define JOBOPTIONSVC_INCLUDED_FILES_H_
+#pragma once
 // ============================================================================
 // Includes:
 // ============================================================================
@@ -40,4 +39,3 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 // ============================================================================
-#endif //  JOBOPTIONSVC_INCLUDED_FILES_H_

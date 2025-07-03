@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,8 +15,7 @@
 //	Package    : Gaudi/RndmGen ( The LHCb Offline System)
 //	Author     : M.Frank
 //====================================================================
-#ifndef GAUDI_RANDOMGENSVC_RNDMGEN_H
-#define GAUDI_RANDOMGENSVC_RNDMGEN_H 1
+#pragma once
 
 #include <memory>
 // Framework include files
@@ -78,5 +77,3 @@ public:
   */
   StatusCode shootArray( std::vector<double>& array, long howmany, long start ) const override;
 };
-
-#endif // GAUDI_RANDOMGENSVC_RNDMGEN_H

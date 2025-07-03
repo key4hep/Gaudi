@@ -20,8 +20,7 @@
  * Apache License version 2.0 or later.
  ******************************************************************************/
 
-#ifndef INSTRSET_H
-#define INSTRSET_H 20102
+#pragma once
 
 // Allow the use of floating point permute instructions on integer vectors.
 // Some CPU's have an extra latency of 1 or 2 clock cycles for this, but
@@ -1430,5 +1429,3 @@ static inline uint32_t bit_scan_reverse( uint64_t a ) {
 #ifdef VCL_NAMESPACE
 }
 #endif
-
-#endif // INSTRSET_H

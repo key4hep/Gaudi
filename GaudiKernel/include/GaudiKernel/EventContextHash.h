@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef __EVENT_CONTEXT_HASH_H
-#define __EVENT_CONTEXT_HASH_H
+#pragma once
 #include <GaudiKernel/EventContext.h>
 /**
  * @class EventContextHash Create a hash from EventContext so
@@ -32,5 +31,3 @@ public:
   std::size_t operator()( const EventContext& ctx ) const { return hash( ctx ); }
   bool        operator()( const EventContext& ctx, const EventContext& ctxb ) const { return equal( ctx, ctxb ); }
 };
-
-#endif

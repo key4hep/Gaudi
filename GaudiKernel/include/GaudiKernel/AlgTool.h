@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_ALGTOOL_H
-#define GAUDIKERNEL_ALGTOOL_H
+#pragma once
 // ============================================================================
 // Include files
 #include <Gaudi/PluginService.h>
@@ -308,5 +307,3 @@ private:
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
 };
-
-#endif // GAUDIKERNEL_ALGTOOL_H

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_CLASSID_H
-#define GAUDIKERNEL_CLASSID_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/Kernel.h>
@@ -90,5 +89,3 @@ const long GiGaKine_StorageType = 0x32; // = 50 (DEC)
 const long GiGaGeom_StorageType = 0x33; // = 51 (DEC)
 const long GiGaTraj_StorageType = 0x34; //
 const long GiGaHits_StorageType = 0x35; //
-
-#endif // GAUDIKERNEL_CLASSID_H

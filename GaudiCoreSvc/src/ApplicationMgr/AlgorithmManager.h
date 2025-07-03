@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDISVC_ALGORITHMMANAGER_H
-#define GAUDISVC_ALGORITHMMANAGER_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/ComponentManager.h>
@@ -102,4 +101,3 @@ private:
 
   AlgTypeAliasesMap m_algTypeAliases;
 };
-#endif // GAUDISVC_ALGORITHMFACTORY_H

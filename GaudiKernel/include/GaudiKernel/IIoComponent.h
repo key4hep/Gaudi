@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,8 +13,7 @@
 // Header file for class IIoComponent
 // Author: S.Binet<binet@cern.ch>
 ///////////////////////////////////////////////////////////////////
-#ifndef GAUDIKERNEL_IIOCOMPONENT_H
-#define GAUDIKERNEL_IIOCOMPONENT_H 1
+#pragma once
 
 /** @class IIoComponent
  */
@@ -39,5 +38,3 @@ public:
 
   virtual StatusCode io_finalize() { return StatusCode::SUCCESS; }
 };
-
-#endif //> !GAUDIKERNEL_IIOCOMPONENT_H

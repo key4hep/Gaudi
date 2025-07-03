@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef JOBOPTIONSVC_MESSAGES_H_
-#define JOBOPTIONSVC_MESSAGES_H_
+#pragma once
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -60,5 +59,3 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 // ============================================================================
-
-#endif // JOBOPTIONSVC_MESSAGES_H_

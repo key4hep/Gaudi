@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,8 +23,7 @@
 //
 //====================================================================
 
-#ifndef GAUDIROOTCNV_ROOTEVTSELECTOR_H
-#define GAUDIROOTCNV_ROOTEVTSELECTOR_H 1
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/IEvtSelector.h>
@@ -151,4 +150,3 @@ namespace Gaudi {
     std::string m_criteria;
   };
 } // namespace Gaudi
-#endif // GAUDIROOTCNV_ROOTEVTSELECTOR_H

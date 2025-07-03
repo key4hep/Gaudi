@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_SERVICE_H
-#define GAUDIKERNEL_SERVICE_H
+#pragma once
 // ============================================================================
 // Include files
 // ============================================================================
@@ -206,5 +205,3 @@ protected:
   /** Auditor Service                            */
   mutable SmartIF<IAuditorSvc> m_pAuditorSvc;
 };
-
-#endif // GAUDIKERNEL_SERVICE_H

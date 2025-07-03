@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,8 +17,7 @@
 //	Author    : Markus Frank
 //
 //	====================================================================
-#ifndef KERNEL_SMARTREF_H
-#define KERNEL_SMARTREF_H 1
+#pragma once
 
 // Include files
 #include <GaudiKernel/ContainedObject.h>
@@ -254,5 +253,3 @@ public:
   // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
   friend StreamBuffer& operator>>( StreamBuffer& _s, SmartRef<TYPE>& ptr ) { return ptr.readRef( _s ); }
 };
-
-#endif // KERNEL_SMARTREF_H

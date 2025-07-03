@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@
  */
 //---------------------------------------------------------------------------------
 
-#ifndef GAUDIKERNEL_POINT3DTYPES_H
-#define GAUDIKERNEL_POINT3DTYPES_H 1
+#pragma once
 
 // Include files
 #include <Math/Point3D.h>
@@ -46,4 +45,3 @@ namespace Gaudi {
   typedef ROOT::Math::RhoEtaPhiPointF RhoEtaPhiPointF; ///< 3D RhoEtaPhi point (float)
   typedef ROOT::Math::RhoZPhiPointF   RhoZPhiPointF;   ///< 3D RhoZPhi point (float)
 } // namespace Gaudi
-#endif // KERNEL_POINT3DTYPES_H

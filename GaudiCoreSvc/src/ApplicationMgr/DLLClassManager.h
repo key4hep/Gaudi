@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDI_DLLCLASSMANAGER_H
-#define GAUDI_DLLCLASSMANAGER_H 1
+#pragma once
 
 // Include files
 #include <GaudiKernel/IClassManager.h>
@@ -52,4 +51,3 @@ private:
   SmartIF<IMessageSvc> m_msgsvc;     // Message Service reference
   SmartIF<IInterface>  m_pOuter;     // Interface hub reference (ApplicationMgr)
 };
-#endif // GAUDI_DLLCLASSMANAGER_H

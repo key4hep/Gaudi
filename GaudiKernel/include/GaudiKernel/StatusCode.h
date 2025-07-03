@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_STATUSCODE_H
-#define GAUDIKERNEL_STATUSCODE_H
+#pragma once
 
 #include <boost/preprocessor/facilities/overload.hpp>
 #include <functional>
@@ -349,5 +348,3 @@ inline StatusCode& StatusCode::operator|=( const StatusCode& rhs ) {
   m_code               = OR[l][r];
   return *this;
 }
-
-#endif // GAUDIKERNEL_STATUSCODE_H

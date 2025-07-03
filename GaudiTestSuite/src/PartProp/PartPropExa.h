@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIEXAMPLES_PARTPROPEXA_H
-#define GAUDIEXAMPLES_PARTPROPEXA_H 1
+#pragma once
 
 #include <GaudiKernel/Algorithm.h>
 #include <GaudiKernel/ServiceHandle.h>
@@ -45,5 +44,3 @@ namespace HepPDT {
     CommonParticleData* processUnknownID( ParticleID, const ParticleDataTable& pdt ) override;
   };
 } // namespace HepPDT
-
-#endif // GAUDIEXAMPLES_PARTPROPEXA_H

@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_PROPERTYHOLDER_H
-#define GAUDIKERNEL_PROPERTYHOLDER_H
+#pragma once
 // ============================================================================
 // Include files
 // ============================================================================
@@ -297,4 +296,3 @@ private:
   /// Properties owned by PropertyHolder, to be deleted.
   std::vector<std::unique_ptr<Gaudi::Details::PropertyBase>> m_todelete;
 };
-#endif

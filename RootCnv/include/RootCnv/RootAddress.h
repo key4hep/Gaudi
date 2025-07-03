@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,8 +14,7 @@
 //
 //	Author     : M.Frank
 //====================================================================
-#ifndef GAUDIROOTCNV_ROOTADDRESS_H
-#define GAUDIROOTCNV_ROOTADDRESS_H
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/GenericAddress.h>
@@ -59,5 +58,3 @@ namespace Gaudi {
     virtual ~RootAddress() { delete select; }
   };
 } // namespace Gaudi
-
-#endif // GAUDIROOTCNV_ROOTADDRESS_H

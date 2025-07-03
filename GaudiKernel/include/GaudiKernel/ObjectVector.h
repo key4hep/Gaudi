@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_OBJECTVECTOR_H
-#define GAUDIKERNEL_OBJECTVECTOR_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/ClassID.h>
@@ -277,5 +276,3 @@ private:
   /// The STL vector itself
   std::vector<TYPE*> m_vector;
 };
-
-#endif // GAUDIKERNEL_OBJECTVECTOR_H

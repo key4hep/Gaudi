@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,20 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	RootEvtSelector.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : RootCnv
-//
-//	Author     : M.Frank
-//====================================================================
-#ifndef GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
-#  define GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
-
-// Include files
-#  include <RootCnv/RootEvtSelector.h>
-#  include <vector>
+#include <GaudiKernel/AttribStringParser.h>
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IPersistencySvc.h>
+#include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/TypeNameString.h>
+#include <RootCnv/RootCnvSvc.h>
+#include <RootCnv/RootDataConnection.h>
+#include <RootCnv/RootEvtSelector.h>
+#include <TBranch.h>
+#include <vector>
 
 // Forward declarations
 class TBranch;
@@ -107,19 +105,6 @@ namespace Gaudi {
     void setBranch( TBranch* b ) { m_branch = b; }
   };
 } // namespace Gaudi
-#endif // GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
-
-// Include files
-#include <GaudiKernel/AttribStringParser.h>
-#include <GaudiKernel/ClassID.h>
-#include <GaudiKernel/IDataManagerSvc.h>
-#include <GaudiKernel/IPersistencySvc.h>
-#include <GaudiKernel/ISvcLocator.h>
-#include <GaudiKernel/MsgStream.h>
-#include <GaudiKernel/TypeNameString.h>
-#include <RootCnv/RootCnvSvc.h>
-#include <RootCnv/RootDataConnection.h>
-#include <TBranch.h>
 
 using namespace Gaudi;
 using namespace std;

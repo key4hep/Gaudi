@@ -19,8 +19,7 @@
  * @author Marco Clemencic
  * (adapted from the code found in LHCbKernel, original author unknown)
  */
-#ifndef GAUDIKERNEL_SERIALIZESTL_H_
-#define GAUDIKERNEL_SERIALIZESTL_H_
+#pragma once
 
 #include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/Map.h>
@@ -167,5 +166,3 @@ namespace GaudiUtils {
   }
 
 } // namespace GaudiUtils
-
-#endif /*GAUDIKERNEL_SERIALIZESTL_H_*/

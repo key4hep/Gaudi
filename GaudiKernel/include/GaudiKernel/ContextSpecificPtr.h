@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef _GAUDI_CONTEXTSPECIFICPTR_H_
-#define _GAUDI_CONTEXTSPECIFICPTR_H_
+#pragma once
 
 #include <functional>
 #include <mutex>
@@ -209,5 +208,3 @@ namespace Gaudi {
     };
   } // namespace Hive
 } // namespace Gaudi
-
-#endif // _GAUDI_CONTEXTSPECIFICPTR_H_

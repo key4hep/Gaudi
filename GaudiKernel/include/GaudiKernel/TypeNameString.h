@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_TYPENAMESTRING_H
-#define GAUDIKERNEL_TYPENAMESTRING_H
+#pragma once
 #include <ostream>
 #include <string>
 #include <utility>
@@ -56,5 +55,3 @@ namespace Gaudi {
     }
   } // namespace Utils
 } // namespace Gaudi
-
-#endif // GAUDIKERNEL_TYPENAMESTRING_H

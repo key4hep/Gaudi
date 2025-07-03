@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_MINIMALEVENTLOOPMGR_H
-#define GAUDIKERNEL_MINIMALEVENTLOOPMGR_H 1
+#pragma once
 
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IAlgExecStateSvc.h>
@@ -128,4 +127,3 @@ protected:
   // number of events processed
   size_t m_nevt{ 0 };
 };
-#endif // GAUDIKERNEL_MINIMALEVENTLOOPMGR_H

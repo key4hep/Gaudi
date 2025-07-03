@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,8 +14,7 @@
 //  Author     : M.Frank
 //
 //------------------------------------------------------------------------------
-#ifndef ROOT_ROOTSTATCNV_H
-#define ROOT_ROOTSTATCNV_H 1
+#pragma once
 
 // Include files
 #include <GaudiKernel/MsgStream.h>
@@ -107,4 +106,3 @@ namespace Gaudi {
     RootStatCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr );
   };
 } // namespace Gaudi
-#endif // ROOT_RootStatCnv_H

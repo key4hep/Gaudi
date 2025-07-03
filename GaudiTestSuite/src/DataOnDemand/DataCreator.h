@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIEXAMPLE_DATACREATOR_H
-#define GAUDIEXAMPLE_DATACREATOR_H 1
+#pragma once
 
 // Include files
 #include <GaudiKernel/Algorithm.h>
@@ -31,5 +30,3 @@ public:
 private:
   Gaudi::Property<std::string> m_data{ this, "Data", "/Event/Unknown" };
 };
-
-#endif // GAUDIEXAMPLE_HELLOWORLD_H

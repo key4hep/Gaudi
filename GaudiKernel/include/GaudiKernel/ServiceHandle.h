@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_SERVICEHANDLE_H
-#define GAUDIKERNEL_SERVICEHANDLE_H
+#pragma once
 
 // Includes
 #include <GaudiKernel/Bootstrap.h>
@@ -178,5 +177,3 @@ template <class T>
 inline std::ostream& operator<<( std::ostream& os, const ServiceHandleArray<T>& handle ) {
   return operator<<( os, static_cast<const GaudiHandleInfo&>( handle ) );
 }
-
-#endif // ! GAUDIKERNEL_SERVICEHANDLE_H

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,8 +22,7 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#ifndef HEPRNDM_HEPRNDMGENERATOR_H
-#define HEPRNDM_HEPRNDMGENERATOR_H 1
+#pragma once
 
 // Framework include files
 #include "RndmGen.h"
@@ -69,5 +68,3 @@ namespace HepRndm {
     return StatusCode::FAILURE;
   }
 } // namespace HepRndm
-
-#endif // HEPRNDM_HEPRNDMGENERATOR_H

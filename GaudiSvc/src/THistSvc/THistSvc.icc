@@ -8,20 +8,14 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDISVC_THISTSVC_ICC
-#define GAUDISVC_THISTSVC_ICC
+#pragma once
 
+#include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/System.h>
+#include <TFile.h>
+#include <TObject.h>
 #include <map>
 #include <string>
-
-#include "TFile.h"
-#include "TObject.h"
-
-#ifndef GAUDIKERNEL_MSGSTREAM_H
-#  include "GaudiKernel/MsgStream.h"
-#endif
-
-#include "GaudiKernel/System.h"
 
 template <typename T>
 StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist, const std::string& id, bool shared ) {
@@ -341,5 +335,3 @@ LockedHandle<T> THistSvc::getShared_i( const std::string& name ) const {
   }
   return hist;
 }
-
-#endif // GAUDISVC_THISTSVC_ICC

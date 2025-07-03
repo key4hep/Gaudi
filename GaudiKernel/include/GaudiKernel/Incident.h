@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDI_INCIDENT_H
-#define GAUDI_INCIDENT_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/EventContext.h>
@@ -116,5 +115,3 @@ namespace IncidentType {
   _inc_type_( SvcPostFinalize );
 } // namespace IncidentType
 #undef _inc_type_
-
-#endif // GAUDI_INCIDENT_H

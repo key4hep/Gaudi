@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_ISVCLOCATOR_H
-#define GAUDIKERNEL_ISVCLOCATOR_H 1
+#pragma once
 
 // Include files
 #include <GaudiKernel/IInterface.h>
@@ -74,5 +73,3 @@ public:
 
   Gaudi::Monitoring::Hub& monitoringHub();
 };
-
-#endif // GAUDI_ISVCLOCATOR_H

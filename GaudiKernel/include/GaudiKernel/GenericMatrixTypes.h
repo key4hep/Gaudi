@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@
  */
 //---------------------------------------------------------------------------------
 
-#ifndef GAUDIKERNEL_GENERICMATRIXTYPES_H
-#define GAUDIKERNEL_GENERICMATRIXTYPES_H 1
+#pragma once
 
 // Include files
 #include <Math/SMatrix.h>
@@ -78,4 +77,3 @@ namespace Gaudi {
   typedef ROOT::Math::SMatrix<float, 3, 6> Matrix3x6F; ///< Generic 3x6 matrix (float)
   typedef ROOT::Math::SMatrix<float, 4, 3> Matrix4x3F; ///< Generic 4x3 matrix (float)
 } // namespace Gaudi
-#endif // KERNEL_GENERICMATRIXTYPES_H

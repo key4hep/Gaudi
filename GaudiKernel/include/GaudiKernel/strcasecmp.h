@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_STRCASECMP_H
-#define GAUDIKERNEL_STRCASECMP_H
+#pragma once
 
 #ifdef _WIN32
 #  include <cstring>
@@ -18,5 +17,3 @@ inline int strncasecmp( const char* s1, const char* s2, size_t n ) { return ::_s
 #else // Unix uses string.h
 #  include <string.h>
 #endif
-
-#endif // GAUDIKERNEL_STRCASECMP_H

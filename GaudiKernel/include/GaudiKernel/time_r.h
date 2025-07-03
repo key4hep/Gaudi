@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_TIME_R_H
-#define GAUDIKERNEL_TIME_R_H
+#pragma once
 
 #include <ctime>
 
@@ -34,5 +33,3 @@ inline struct tm* gmtime_r( const time_t* sec, struct tm* result ) {
 }
 
 #endif
-
-#endif // GAUDIKERNEL_TIME_R_H

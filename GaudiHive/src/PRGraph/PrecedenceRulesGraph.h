@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIHIVE_PRECEDENCERULESGRAPH_H
-#define GAUDIHIVE_PRECEDENCERULESGRAPH_H
+#pragma once
 
 // std includes
 #include <algorithm>
@@ -722,4 +721,3 @@ namespace concurrency {
   };
 
 } // namespace concurrency
-#endif

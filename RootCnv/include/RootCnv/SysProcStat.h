@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,8 +15,7 @@
  *      Author: Ivan Valencik
  */
 
-#ifndef SYSPROCSTAT_H_
-#define SYSPROCSTAT_H_
+#pragma once
 
 namespace Gaudi {
   class SysProcStat {
@@ -37,4 +36,3 @@ namespace Gaudi {
     virtual int update();
   };
 } // namespace Gaudi
-#endif /* SYSPROCSTAT_H_ */

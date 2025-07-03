@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef JOBOPTIONSVC_NODE_H_
-#define JOBOPTIONSVC_NODE_H_
+#pragma once
 // ============================================================================
 // Includes:
 // ============================================================================
@@ -106,4 +105,3 @@ BOOST_FUSION_ADAPT_STRUCT( Gaudi::Parsers::Node,
                            ( Gaudi::Parsers::Node::NodeType,
                              type )( std::string, value )( std::vector<Gaudi::Parsers::Node>, children ) )
 // ============================================================================
-#endif // JOBOPTIONSVC_NODE_H_

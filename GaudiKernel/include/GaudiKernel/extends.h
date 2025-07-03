@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_EXTENDS_H
-#define GAUDIKERNEL_EXTENDS_H
+#pragma once
 
 #include <GaudiKernel/IInterface.h>
 
@@ -64,5 +63,3 @@ template <typename BASE, typename I1, typename I2, typename I3>
 using extends3 = extends<BASE, I1, I2, I3>;
 template <typename BASE, typename I1, typename I2, typename I3, typename I4>
 using extends4 = extends<BASE, I1, I2, I3, I4>;
-
-#endif /* GAUDIKERNEL_EXTENDS_H */

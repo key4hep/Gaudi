@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,8 +14,7 @@
 // Author: C.Leggett
 ///////////////////////////////////////////////////////////////////
 
-#ifndef GAUDIKERNEL_IFILEMGR_H
-#define GAUDIKERNEL_IFILEMGR_H 1
+#pragma once
 
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/IService.h>
@@ -387,4 +386,3 @@ public:
   virtual void suppressAction( const std::string& )                    = 0;
   virtual void suppressAction( const std::string&, const Io::Action& ) = 0;
 };
-#endif

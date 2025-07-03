@@ -1,6 +1,5 @@
 // Copyright 2011 alexander.mazurov@gmail.com
-#ifndef JOBOPTIONSVC_FILE_PARSER_H_
-#define JOBOPTIONSVC_FILE_PARSER_H_
+#pragma once
 // ============================================================================
 // Include files
 // ============================================================================
@@ -36,4 +35,3 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 // ============================================================================
-#endif // JOBOPTIONSVC_FILE_PARSER_H_

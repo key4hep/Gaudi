@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_ISVCMANAGER_H
-#define GAUDIKERNEL_ISVCMANAGER_H
+#pragma once
 
 // Include files
 #include <GaudiKernel/IComponentManager.h>
@@ -97,5 +96,3 @@ public:
   /// Set the value of the initialization loop check flag.
   virtual void setLoopCheckEnabled( bool en = true ) = 0;
 };
-
-#endif // GAUDIKERNEL_ISVCMANAGER_H

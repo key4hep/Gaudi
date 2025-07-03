@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,8 +14,7 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef GAUDIROOTCNV_ROOTDATABASECNV_H
-#define GAUDIROOTCNV_ROOTDATABASECNV_H 1
+#pragma once
 
 // Framework include files
 #include <RootCnv/RootDirectoryCnv.h>
@@ -63,4 +62,3 @@ namespace Gaudi {
     StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;
   };
 } // namespace Gaudi
-#endif // GAUDIROOTCNV_ROOTDATABASECNV_H

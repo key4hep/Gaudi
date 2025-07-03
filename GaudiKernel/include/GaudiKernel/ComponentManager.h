@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef COMPONENTMANAGER_H_
-#define COMPONENTMANAGER_H_
+#pragma once
 
 #include <GaudiKernel/CommonMessaging.h>
 #include <GaudiKernel/IComponentManager.h>
@@ -91,5 +90,3 @@ protected:
 
   friend ApplicationMgr;
 };
-
-#endif /* COMPONENTMANAGER_H_ */

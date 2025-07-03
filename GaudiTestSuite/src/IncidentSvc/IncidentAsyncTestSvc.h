@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIEXAMPLES_INCIDENTASYNCTESTSVC_H_
-#define GAUDIEXAMPLES_INCIDENTASYNCTESTSVC_H_
+#pragma once
 
 #include "IIncidentAsyncTestSvc.h"
 #include <Gaudi/Property.h>
@@ -49,5 +48,3 @@ private:
   tbb::concurrent_unordered_map<EventContext, uint64_t, EventContextHash, EventContextHash> m_ctxData;
   std::mutex                                                                                m_eraseMutex;
 };
-
-#endif /*GAUDIEXAMPLES_INCIDENREGISTRYTESTLISTENER_H_*/

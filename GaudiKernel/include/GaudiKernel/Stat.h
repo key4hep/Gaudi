@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef __GAUDI_CHRONOSTATSVC_STAT_H__
-#define __GAUDI_CHRONOSTATSVC_STAT_H__
+#pragma once
 // ============================================================================
 // Iinclude files
 // ============================================================================
@@ -275,4 +274,3 @@ GAUDI_API std::ostream& operator<<( std::ostream& stream, const Stat& stat );
 // ============================================================================
 // The END
 // ============================================================================
-#endif // __GAUDI_CHRONOSTATSVC_STAT_H__

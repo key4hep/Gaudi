@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDI_APPLICATIONMGR_H
-#define GAUDI_APPLICATIONMGR_H
+#pragma once
 
 #include <Gaudi/Interfaces/IQueueingEventProcessor.h>
 #include <Gaudi/MonitoringHub.h>
@@ -332,4 +331,3 @@ private:
     throw GaudiException{ s.str(), self->name(), StatusCode::FAILURE };
   }
 };
-#endif // GAUDI_APPLICATIONMGR_H

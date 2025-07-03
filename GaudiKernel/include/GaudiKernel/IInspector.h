@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_IINSPECTOR_H
-#define GAUDIKERNEL_IINSPECTOR_H
+#pragma once
 
 // STL Include files
 #include <string>
@@ -114,4 +113,3 @@ public:
     return inspectContByValue( new _V<T>( obj ), _TT<T>(), _TT<_VVV>(), _TT<_TTT>(), (void*)pOwner, _TT<O>(), comment );
   }
 };
-#endif // GAUDIKERNEL_IINSPECTOR_H

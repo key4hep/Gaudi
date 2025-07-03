@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_GAUDIHANDLE_H
-#define GAUDIKERNEL_GAUDIHANDLE_H
+#pragma once
 
 // Includes
 #include <Gaudi/Property.h>
@@ -531,5 +530,3 @@ private:
   HandleVector m_handleArray;
   bool         m_retrieved{ false };
 };
-
-#endif // ! GAUDIKERNEL_GAUDIHANDLE_H

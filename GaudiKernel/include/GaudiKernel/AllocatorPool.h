@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -55,8 +55,7 @@
 // Author: G.Cosmo (CERN), November 2000
 // -------------------------------------------------------------------
 
-#ifndef GAUDIKERNEL_AllocatorPool_h
-#define GAUDIKERNEL_AllocatorPool_h 1
+#pragma once
 
 #include <GaudiKernel/Kernel.h>
 #include <memory>
@@ -145,4 +144,3 @@ inline unsigned int GaudiUtils::AllocatorPool::Size() const { return nchunks * c
 // ============================================================================
 // The END
 // ============================================================================
-#endif

@@ -13,8 +13,7 @@
 // Header file for class IoComponentMgr
 // Author: S.Binet<binet@cern.ch>
 ///////////////////////////////////////////////////////////////////
-#ifndef GAUDIMP_IOCOMPONENTMGR_H
-#define GAUDIMP_IOCOMPONENTMGR_H 1
+#pragma once
 
 // Python includes
 #include <Python.h>
@@ -180,5 +179,3 @@ private:
 
   std::string list() const;
 };
-
-#endif //> !GAUDIMP_IOCOMPONENTMGR_H

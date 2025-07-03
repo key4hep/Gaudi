@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_KERNEL_H
-#define GAUDIKERNEL_KERNEL_H
+#pragma once
 
 // Some pragmas to avoid warnings in VisualC
 #ifdef _WIN32
@@ -153,5 +152,3 @@ typedef unsigned long long int ulonglong;
 #  define GAUDI_LOOP_UNROLL( x )
 #endif
 // -----------------------------------------------------------------------------
-
-#endif // GAUDIKERNEL_KERNEL_H

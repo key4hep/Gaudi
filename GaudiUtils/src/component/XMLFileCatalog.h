@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIUTILS_XMLFILECATALOG_H
-#define GAUDIUTILS_XMLFILECATALOG_H
+#pragma once
 
 #include <GaudiUtils/IFileCatalog.h>
 #include <xercesc/dom/DOMDocument.hpp>
@@ -117,4 +116,3 @@ namespace Gaudi {
   /// Create file identifier using UUID mechanism
   std::string createGuidAsString();
 } /* End namespace Gaudi                 */
-#endif /* GAUDIUTILS_XMLFILECATALOG_H   */

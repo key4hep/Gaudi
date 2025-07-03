@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDISVC_EVENTLOOPMGR_H
-#define GAUDISVC_EVENTLOOPMGR_H 1
+#pragma once
 
 #include <GaudiKernel/IConversionSvc.h>
 #include <GaudiKernel/IDataManagerSvc.h>
@@ -89,4 +88,3 @@ public:
   /// implementation of IEventProcessor::executeEvent(EventContext&&)
   StatusCode executeEvent( EventContext&& ctx ) override;
 };
-#endif // GAUDISVC_EVENTLOOPMGR_H

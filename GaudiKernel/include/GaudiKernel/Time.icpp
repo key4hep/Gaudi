@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDIKERNEL_TIME_ICPP
-#define GAUDIKERNEL_TIME_ICPP 1
+#pragma once
 
 // Implementation of inline function for classes Gaudi::Time and Gaudi::TimeSpan
 
@@ -220,5 +219,3 @@ class backwards_compatibility_hack_time_timespan {
 inline bool operator<( backwards_compatibility_hack_time_timespan, backwards_compatibility_hack_time_timespan ) {
   return false;
 }
-
-#endif

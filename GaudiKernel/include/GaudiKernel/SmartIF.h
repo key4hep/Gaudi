@@ -8,8 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifndef GAUDI_SMARTIF_H
-#define GAUDI_SMARTIF_H 1
+#pragma once
 
 // Framework include files
 #include <GaudiKernel/IInterface.h>
@@ -153,5 +152,3 @@ template <typename IFace>
 SmartIF<IFace> make_SmartIF( IFace* iface ) {
   return SmartIF<IFace>{ iface };
 }
-
-#endif // GAUDI_SMARTIF_H
