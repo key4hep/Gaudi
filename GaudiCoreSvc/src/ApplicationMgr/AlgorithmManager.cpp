@@ -8,7 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
 #include "AlgorithmManager.h"
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/IAlgExecStateSvc.h>
@@ -24,19 +23,16 @@
 /// needed when no algorithm is found or could be returned
 static SmartIF<IAlgorithm> no_algorithm;
 
-// constructor
 AlgorithmManager::AlgorithmManager( IInterface* application ) : base_class( application, IAlgorithm::interfaceID() ) {
   addRef(); // Initial count set to 1
 }
 
-// addAlgorithm
 StatusCode AlgorithmManager::addAlgorithm( IAlgorithm* alg ) {
   m_algs.push_back( alg );
   m_algsMap.emplace( alg->name(), alg );
   return StatusCode::SUCCESS;
 }
 
-// removeAlgorithm
 StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
   auto it = std::find( m_algs.begin(), m_algs.end(), alg );
   if ( it == m_algs.end() ) { return StatusCode::FAILURE; }
@@ -50,10 +46,9 @@ StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
   return StatusCode::SUCCESS;
 }
 
-// createService
 StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const std::string& algname,
                                               IAlgorithm*& algorithm, bool managed, bool checkIfExists ) {
-  // Check is the algorithm is already existing
+  // Check if the algorithm is already existing
   if ( checkIfExists ) {
     if ( existsAlgorithm( algname ) ) {
       // return an error because an algorithm with that name already exists
@@ -119,12 +114,10 @@ SmartIF<IAlgorithm>& AlgorithmManager::algorithm( const Gaudi::Utils::TypeNameSt
   return no_algorithm;
 }
 
-// existsAlgorithm
 bool AlgorithmManager::existsAlgorithm( std::string_view name ) const {
   return m_algsMap.find( std::string( name ) ) != m_algsMap.end();
 }
 
-// Return the list of Algorithms
 std::vector<IAlgorithm*> AlgorithmManager::getAlgorithms() const {
   std::vector<IAlgorithm*> listOfPtrs;
   listOfPtrs.reserve( m_algs.size() );

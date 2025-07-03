@@ -9,19 +9,13 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
+
 #include <Gaudi/Parsers/CommonParsers.h>
 #include <Gaudi/Parsers/Factory.h>
-// ============================================================================
-// STD & STL
-// ============================================================================
 #include <set>
 #include <string_view>
 #include <unordered_set>
-// ============================================================================
-// ============================================================================
+
 #define PARSERS_DEF_FOR_SET( InnerType )                                                                               \
   StatusCode Gaudi::Parsers::parse( std::set<InnerType>& result, std::string_view input ) {                            \
     return Gaudi::Parsers::parse_( result, input );                                                                    \
@@ -29,4 +23,3 @@
   StatusCode Gaudi::Parsers::parse( std::unordered_set<InnerType>& result, std::string_view input ) {                  \
     return Gaudi::Parsers::parse_( result, input );                                                                    \
   }
-// ============================================================================

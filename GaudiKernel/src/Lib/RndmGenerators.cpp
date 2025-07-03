@@ -8,9 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#define GAUDI_RNDMGENSVC_RNDMGENGENERATORS_CPP
-
-// Framework include files
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IRndmGen.h>
 #include <GaudiKernel/IRndmGenSvc.h>

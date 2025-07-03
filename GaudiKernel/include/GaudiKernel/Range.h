@@ -9,19 +9,12 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <algorithm>
-#include <utility>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/detected.h>
-// ============================================================================
+#include <algorithm>
+#include <utility>
+
 /** @file
  *
  *  This file has been imported from
@@ -37,18 +30,15 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2001-01-23
  */
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace details {
-    // ========================================================================
     /** Helpful function to throw an "out-of-range exception" for class Range_
      *  @see GaudiException
      *  @param index invalid index
      *  @param size  range size
      */
     GAUDI_API void rangeException( const long index, const size_t size );
-    // ========================================================================
+
     /// helper structure to get container type
     template <class CONTAINER>
     struct container {
@@ -56,16 +46,15 @@ namespace Gaudi {
       using _has_container_t = typename T::Container;
       using Container        = Gaudi::cpp17::detected_or_t<CONTAINER, _has_container_t, CONTAINER>;
     };
-    // =========================================================================
   } // namespace details
-  // ==========================================================================
+
   /** @struct RangeBase_ GaudiUtils/Range.h
    *  helper class to simplify the dealing with ranges in Python
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date 2006-09-01
    */
   struct RangeBase_ {};
-  // ==========================================================================
+
   /** @class Range_ Range.h GaudiUtils/Range.h
    *
    *  Useful class for representation of "sequence" of the objects
@@ -94,29 +83,23 @@ namespace Gaudi {
     static_assert( std::is_same_v<ITERATOR, typename CONTAINER::const_iterator> );
 
   public:
-    // ========================================================================
     /// type for actual contained iterator
     using Container      = typename Gaudi::details::container<CONTAINER>::Container;
     using const_iterator = typename CONTAINER::const_iterator;
     using iterator       = const_iterator;
     using Base           = std::pair<iterator, iterator>;
-    //
+
   private:
-    //
     typedef typename std::iterator_traits<iterator> iter_traits;
-    //
+
   public:
-    //
     typedef typename iter_traits::value_type value_type;
     typedef typename iter_traits::reference  reference;
     typedef typename iter_traits::reference  const_reference;
-    //
+
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<iterator> const_reverse_iterator;
-    /// internal types
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// default constructor
     Range_() = default;
     /** Constructor
@@ -137,9 +120,9 @@ namespace Gaudi {
      * @param ibegin  iterator to begin of empty sequence
      */
     Range_( iterator ibegin ) : m_base( ibegin, ibegin ) {}
-    /// destructor
+
     ~Range_() = default;
-    // ========================================================================
+
     /// empty sequence ?
     bool empty() const { return m_base.second == m_base.first; }
     /// size of the sequence (number of elements)
@@ -160,25 +143,25 @@ namespace Gaudi {
     const_reference front() const { return *begin(); }
     /// access for the back  element (only for non-empty ranges!)
     const_reference back() const { return *std::prev( end() ); }
-    // ========================================================================
+
     /// get a "slice" of a range, in Python style
     Range_ slice( long index1, long index2 ) const {
       // trivial cases
-      if ( empty() || index1 == index2 ) { return Range_(); } // RETURN
+      if ( empty() || index1 == index2 ) { return Range_(); }
       // adjust indices
       if ( index1 < 0 ) { index1 += size(); }
       if ( index2 < 0 ) { index2 += size(); }
       // check
-      if ( index1 < 0 ) { return Range_(); }      // RETURN
-      if ( index2 < index1 ) { return Range_(); } // RETURN
+      if ( index1 < 0 ) { return Range_(); }
+      if ( index2 < index1 ) { return Range_(); }
 
-      if ( index1 > (long)size() ) { return Range_(); } // RETURN
+      if ( index1 > (long)size() ) { return Range_(); }
       if ( index2 > (long)size() ) { index2 = size(); }
 
       // construct the slice
-      return Range_( std::next( begin(), index1 ), std::next( begin(), index2 ) ); // RETURN
+      return Range_( std::next( begin(), index1 ), std::next( begin(), index2 ) );
     }
-    // ========================================================================
+
     /** non-checked access to the elements by index
      *  (valid only for non-empty sequences)
      *  @param index the index of the lement to be accessed
@@ -198,9 +181,7 @@ namespace Gaudi {
       if ( index < 0 || index >= (long)size() ) { Gaudi::details::rangeException( index, size() ); }
       return ( *this )( index );
     }
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// compare with another range
     template <class C, class I>
     bool operator<( const Range_<C, I>& right ) const {
@@ -211,12 +192,10 @@ namespace Gaudi {
     bool operator<( const ANOTHERCONTAINER& right ) const {
       return std::lexicographical_compare( begin(), end(), right.begin(), right.end() );
     }
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// equality with another range
     bool operator==( const Range_& right ) const {
-      if ( &right == this ) { return true; } // RETURN
+      if ( &right == this ) { return true; }
       return right.size() == size() && std::equal( begin(), end(), right.begin() );
     }
     /// compare with another container
@@ -224,28 +203,21 @@ namespace Gaudi {
     bool operator==( const ANOTHERCONTAINER& right ) const {
       return right.size() == size() && std::equal( begin(), end(), right.begin() );
     }
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// empty sequence?
     bool operator!() const { return empty(); }
     /// non-empty sequence?
     explicit operator bool() const { return !empty(); }
-    // ========================================================================
-  public:
-    // ========================================================================
+
     /// conversion operator to the std::pair
     operator const Base&() const { return base(); }
     /// conversion operator to the std::pair
     inline const Base& base() const { return m_base; }
-    // ========================================================================
+
   private:
-    // ========================================================================
-    // the base itself
     Base m_base; ///< the base itself
-    // ========================================================================
-  }; // end of class Range_
-  // ==========================================================================
+  };
+
   /** simple function to create the range from the arbitrary container
    *
    *  @code
@@ -277,8 +249,4 @@ namespace Gaudi {
   inline Range_<CONTAINER> range( const CONTAINER& cnt ) {
     return Range_<CONTAINER>( cnt.begin(), cnt.end() );
   }
-  // ==========================================================================
-} // end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

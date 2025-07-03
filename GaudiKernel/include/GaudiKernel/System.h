@@ -10,15 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/Kernel.h>
-// STL include files
+#include <GaudiKernel/ModuleInfo.h>
+#include <GaudiKernel/Timing.h>
 #include <string>
 #include <typeinfo>
 #include <vector>
-
-#include <GaudiKernel/ModuleInfo.h>
-#include <GaudiKernel/Timing.h>
 
 #ifdef __linux
 #  include <pthread.h>

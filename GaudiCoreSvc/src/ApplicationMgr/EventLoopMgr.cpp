@@ -13,14 +13,13 @@
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/Incident.h>
+#include <GaudiKernel/Memory.h>
 #include <GaudiKernel/MsgStream.h>
-
 #include <chrono>
 #include <numeric>
 #include <utility>
 #include <vector>
 
-// Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( EventLoopMgr )
 
 #define ON_DEBUG if ( outputLevel() <= MSG::DEBUG )
@@ -29,14 +28,8 @@ DECLARE_COMPONENT( EventLoopMgr )
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
-//--------------------------------------------------------------------------------------------
-// Standard Destructor
-//--------------------------------------------------------------------------------------------
 EventLoopMgr::~EventLoopMgr() { delete m_evtContext; }
 
-//--------------------------------------------------------------------------------------------
-// implementation of IAppMgrUI::initialize
-//--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::initialize() {
   // Initialize the base class
   StatusCode sc = MinimalEventLoopMgr::initialize();
@@ -102,9 +95,7 @@ StatusCode EventLoopMgr::initialize() {
 
   return StatusCode::SUCCESS;
 }
-//--------------------------------------------------------------------------------------------
-// implementation of IService::reinitialize
-//--------------------------------------------------------------------------------------------
+
 StatusCode EventLoopMgr::reinitialize() {
 
   // Initialize the base class
@@ -165,9 +156,6 @@ StatusCode EventLoopMgr::reinitialize() {
   return sc;
 }
 
-//--------------------------------------------------------------------------------------------
-// implementation of IService::stop
-//--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::stop() {
   if ( !m_endEventFired ) {
     // Fire pending EndEvent incident
@@ -180,9 +168,6 @@ StatusCode EventLoopMgr::stop() {
       .orElse( [this]() { DEBMSG << "Clear of Event data store failed" << endmsg; } );
 }
 
-//--------------------------------------------------------------------------------------------
-// implementation of IAppMgrUI::finalize
-//--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::finalize() {
   // Finalize base class
   StatusCode sc = MinimalEventLoopMgr::finalize();
@@ -241,9 +226,6 @@ StatusCode EventLoopMgr::finalize() {
   return StatusCode::SUCCESS;
 }
 
-//--------------------------------------------------------------------------------------------
-// executeEvent(void* par)
-//--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::executeEvent( EventContext&& ctx ) {
 
   // DP Monitoring
@@ -266,11 +248,6 @@ StatusCode EventLoopMgr::executeEvent( EventContext&& ctx ) {
   return sc;
 }
 
-//--------------------------------------------------------------------------------------------
-// implementation of IAppMgrUI::nextEvent
-//--------------------------------------------------------------------------------------------
-// External libraries
-#include <GaudiKernel/Memory.h>
 StatusCode EventLoopMgr::nextEvent( int maxevt ) {
 
   // DP Monitoring

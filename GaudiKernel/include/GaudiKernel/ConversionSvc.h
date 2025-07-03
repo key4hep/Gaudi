@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IAddressCreator.h>
 #include <GaudiKernel/IConversionSvc.h>
 #include <GaudiKernel/IDataProviderSvc.h>

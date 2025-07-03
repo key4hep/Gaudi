@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,24 +8,19 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-
 #include <Gaudi/Accumulators/StaticHistogram.h>
 #include <Gaudi/BaseSink.h>
 #include <Gaudi/Histograming/Sink/Utils.h>
 #include <Gaudi/MonitoringHub.h>
 #include <GaudiKernel/MsgStream.h>
-
 #include <boost/algorithm/string.hpp>
-
 #include <fmt/core.h>
 #include <fmt/format.h>
-
 #include <map>
 #include <sstream>
 #include <string_view>
 
 namespace {
-
   /**
    * map of formating strings for the different Entities printed here
    * note that the format of each entry has to be something like {0:name|fmt} where :

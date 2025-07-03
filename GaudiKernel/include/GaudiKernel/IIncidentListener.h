@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include Files
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/Incident.h>
 #include <string>

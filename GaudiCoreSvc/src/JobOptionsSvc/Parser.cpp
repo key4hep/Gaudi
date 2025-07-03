@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,15 +21,12 @@
 #include <fstream>
 #include <sstream>
 
-// ============================================================================
-namespace classic = boost::spirit::classic;
-namespace bf      = boost::filesystem;
-namespace gp      = Gaudi::Parsers;
-namespace gpu     = Gaudi::Parsers::Utils;
-namespace qi      = boost::spirit::qi;
-// ============================================================================
-namespace {
+namespace bf  = boost::filesystem;
+namespace gp  = Gaudi::Parsers;
+namespace gpu = Gaudi::Parsers::Utils;
+namespace qi  = boost::spirit::qi;
 
+namespace {
   // Return last line and column number of text in `s` with newline delimiter `delim`
   std::pair<int, int> GetLastLineAndColumn( std::string_view s, const char delim = '\n' ) {
     size_t line = 1;
@@ -69,7 +66,6 @@ namespace {
     return false;
   }
 
-  // ============================================================================
   template <typename Grammar>
   bool ParseFile( const gp::Position& from, std::string_view filename, std::string_view search_path,
                   gp::IncludedFiles* included, gp::Messages* messages, gp::Node* root ) {
@@ -104,24 +100,21 @@ namespace {
       return true;
     }
   }
-  // ============================================================================
 } // namespace
-// ============================================================================
+
 bool gp::Parse( std::string_view filename, std::string_view search_path, IncludedFiles* included, Messages* messages,
                 Node* root ) {
   return Parse( Position(), filename, search_path, included, messages, root );
 }
-// ============================================================================
+
 bool gp::Parse( const Position& from, std::string_view filename, std::string_view search_path, IncludedFiles* included,
                 Messages* messages, Node* root ) {
   using Grammar = FileGrammar<Iterator, SkipperGrammar<Iterator>>;
   return ParseFile<Grammar>( from, filename, search_path, included, messages, root );
 }
 
-// ============================================================================
 bool gp::ParseUnits( const Position& from, std::string_view filename, std::string_view search_path,
                      IncludedFiles* included, Messages* messages, Node* root ) {
   using Grammar = UnitsGrammar<Iterator, SkipperGrammar<Iterator>>;
   return ParseFile<Grammar>( from, filename, search_path, included, messages, root );
 }
-// ============================================================================

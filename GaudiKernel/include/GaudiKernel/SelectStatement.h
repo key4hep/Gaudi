@@ -8,20 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//==============================================================================
-//
-// Package : Kernel
-//
-// Author  : M.Frank 10/10/00
-//
-//==============================================================================
 #pragma once
 
-// STL include files
-#include <string>
-
-// Framework include files
 #include <GaudiKernel/ISelectStatement.h>
+#include <string>
 
 /** Class of a selection statement.
   A select statement can either contain

@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include Files
 #include <GaudiKernel/IService.h>
 #include <map>
 

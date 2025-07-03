@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/IInterface.h>
 
-// Forward declarations
 class IDataProviderSvc;
 class IAddressCreator;
 class IConversionSvc;

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,20 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ===========================================================================
-// Include files
-// ===========================================================================
 #include "Utils.h"
-// ===========================================================================
-// Boost
-// ===========================================================================
+#include <GaudiKernel/System.h>
 #include <boost/algorithm/string.hpp>
 #include <regex>
-// ===========================================================================
-// Gaudi
-// ===========================================================================
-#include <GaudiKernel/System.h>
-// ===========================================================================
 
 namespace gpu = Gaudi::Parsers::Utils;
 
@@ -46,4 +36,3 @@ std::string gpu::replaceEnvironments( std::string_view input ) {
   }
   return result;
 }
-// ===========================================================================

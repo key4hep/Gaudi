@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/StatusCode.h>
-
 #include <exception>
 #include <memory>
 #include <ostream>

@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/IStateful.h>
 #include <string>

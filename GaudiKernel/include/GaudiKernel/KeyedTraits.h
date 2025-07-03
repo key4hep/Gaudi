@@ -12,11 +12,9 @@
 
 #define CHECK_KEYED_CONTAINER
 
-// Include files
 #include <GaudiKernel/Kernel.h> // GAUDI_API
 #include <vector>
 
-// Forward declarations
 template <class K>
 class KeyedObject;
 template <class T, class M>
@@ -35,8 +33,6 @@ namespace Containers {
     OBJ_INSERTED,     /**< Object was inserted into the container.           */
     OBJ_CANNOT_INSERT /**< Cannot insert object into container.              */
   };
-
-  // Forward declarations
 
   /// Container traits class
   template <class CONTAINER, class DATATYPE>

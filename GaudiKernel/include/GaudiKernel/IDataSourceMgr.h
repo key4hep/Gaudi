@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/IInterface.h>
 
 /** @class IDataSourceMgr IDataSourceMgr.h GaudiKernel/IDataSourceMgr.h

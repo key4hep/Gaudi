@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,7 +20,6 @@
 #include "Units.h"
 #include <GaudiKernel/Environment.h>
 #include <fmt/format.h>
-#include <iostream>
 #include <memory>
 
 namespace gp = Gaudi::Parsers;
@@ -35,7 +34,6 @@ static bool IncludeNode( gp::Node* node, std::string_view search_path, gp::Inclu
   std::copy( begin( include_root.children ), end( include_root.children ), std::back_inserter( node->children ) );
   return true;
 }
-// ============================================================================
 static bool UnitsNode( gp::Node* node, std::string_view search_path, gp::IncludedFiles* included,
                        gp::Messages* messages ) {
   gp::Node units_root;
@@ -46,7 +44,6 @@ static bool UnitsNode( gp::Node* node, std::string_view search_path, gp::Include
   std::copy( begin( units_root.children ), end( units_root.children ), std::back_inserter( node->children ) );
   return true;
 }
-// ============================================================================
 static std::unique_ptr<gp::PropertyName> GetPropertyName( const gp::Node* node ) {
   if ( node->children.size() == 1 ) {
     return std::make_unique<gp::PropertyName>( node->children[0].value, node->position );
@@ -59,12 +56,10 @@ static std::unique_ptr<gp::PropertyName> GetPropertyName( const gp::Node* node )
   }
   return std::make_unique<gp::PropertyName>( client, node->children[node->children.size() - 1].value, node->position );
 }
-// ============================================================================
 static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node, gp::Catalog* catalog,
                                                             gp::Units* units ) {
   std::unique_ptr<gp::PropertyValue> value;
   switch ( node->type ) {
-  // ------------------------------------------------------------------------
   case gp::Node::kReal: {
     //  Example:
     //  <real value="10" line="3" column="7">
@@ -88,19 +83,16 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
     }
     break;
   }
-  // ------------------------------------------------------------------------
   case gp::Node::kString: {
     std::stringstream ss;
     ss << std::quoted( node->value );
     value = std::make_unique<gp::PropertyValue>( ss.str() );
     break;
   }
-  // ------------------------------------------------------------------------
   case gp::Node::kBool: {
     value = std::make_unique<gp::PropertyValue>( node->value );
     break;
   }
-  // ------------------------------------------------------------------------
   case gp::Node::kVector: {
     std::vector<std::string> result;
     result.reserve( node->children.size() );
@@ -109,7 +101,6 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
     value = std::make_unique<gp::PropertyValue>( std::move( result ) );
     break;
   }
-  // ------------------------------------------------------------------------
   case gp::Node::kMap: {
     gp::PropertyValue::MapOfStrings result;
     for ( const auto& child : node->children ) {
@@ -128,7 +119,6 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
 #endif
     break;
   }
-  // ------------------------------------------------------------------------
   case gp::Node::kProperty: {
     auto          property = GetPropertyName( node );
     gp::Property* exists   = catalog->Find( property->client(), property->property() );
@@ -149,7 +139,6 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
     value = std::make_unique<gp::PropertyValue>( std::move( reference ), property->position(), true );
     break;
   }
-  // ------------------------------------------------------------------------
   default: {
     assert( false );
     break;
@@ -158,7 +147,6 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
   return value;
 }
 
-// ============================================================================
 static std::string SignString( gp::Node::NodeType type ) {
   switch ( type ) {
   case gp::Node::kEqual: {
@@ -179,12 +167,10 @@ static std::string SignString( gp::Node::NodeType type ) {
   }
   return "unknown";
 }
-// ============================================================================
 static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalog* catalog, gp::Units* units,
                         bool is_print ) {
-  // ----------------------------------------------------------------------------
   std::unique_ptr<gp::PropertyValue> value;
-  // ----------------------------------------------------------------------------
+
   auto property = GetPropertyName( &node->children[0] );
   try {
     value = GetPropertyValue( &node->children[2], catalog, units );
@@ -192,14 +178,11 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
     messages->AddError( ex.position(), ex.what() );
     return false;
   }
-  // ------------------------------------------------------------------------
+
   bool          reassign = false;
   gp::Property* exists   = catalog->Find( property->client(), property->property() );
-  // ----------------------------------------------------------------------------
+
   if ( exists ) {
-    // ----------------------------------------------------------------------
-    // If property already exists:
-    // ----------------------------------------------------------------------
     try {
       if ( node->children[1].type == gp::Node::kEqual ) {
         std::string message = fmt::format( "Reassignment of option '{}'.", property->FullName() );
@@ -224,7 +207,7 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
       return false;
     }
   }
-  // ----------------------------------------------------------------------------
+
   bool result = true;
   if ( !exists || reassign ) { result = catalog->Add( new gp::Property( *property, *value ) ); }
 
@@ -235,13 +218,12 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
   }
   return result;
 }
-// ============================================================================
+
 static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* units, bool is_print ) {
-  // --------------------------------------------------------------------------
   double      left  = std::stod( node->children[0].value );
   std::string name  = node->children[1].value;
   double      right = std::stod( node->children[2].value );
-  // --------------------------------------------------------------------------
+
   gp::Units::Container::mapped_type exists;
   if ( units->Find( name, exists ) ) {
     std::string message = fmt::format( "Unit '{}' already defined", name );
@@ -249,7 +231,7 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
     messages->AddError( node->children[1].position, message );
     return false;
   }
-  // --------------------------------------------------------------------------
+
   bool result = units->Add( name, right / left, node->children[1].position );
   if ( result && is_print ) {
     std::string message = fmt::format( "{} {} = {}", left, name, right );
@@ -257,13 +239,12 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
   }
   return result;
 }
-// ============================================================================
+
 static bool ConditionNode( gp::Node* node, gp::Catalog* catalog, gp::Node** next ) {
-  // ----------------------------------------------------------------------------
   auto property_name = GetPropertyName( &node->children[0] );
-  // --------------------------------------------------------------------------
+
   bool is_defined = ( nullptr != catalog->Find( property_name->client(), property_name->property() ) );
-  // --------------------------------------------------------------------------
+
   if ( ( is_defined && ( node->children[1].type == gp::Node::kIfdef ) ) ||
        ( !is_defined && ( node->children[1].type == gp::Node::kIfndef ) ) ) {
     *next = &node->children[1];
@@ -274,44 +255,42 @@ static bool ConditionNode( gp::Node* node, gp::Catalog* catalog, gp::Node** next
   }
   return true;
 }
-// ============================================================================
+
 static bool Analyze( gp::Node* node, std::string_view search_path, gp::IncludedFiles* included, gp::Messages* messages,
                      gp::Catalog* catalog, gp::Units* units, gp::PragmaOptions* pragma ) {
-  // ----------------------------------------------------------------------------
   bool      result       = true;
   bool      local_result = true;
   bool      skip_childs  = true;
   gp::Node* next_root    = node;
-  // ------------------------------------------------------------------------
+
   switch ( node->type ) {
-  // ------------------------------------------------------------------------
   case gp::Node::kRoot: {
     skip_childs = false;
     break;
   }
-  // ----------------------------------------------------------------------
+
   case gp::Node::kInclude: {
     local_result = IncludeNode( node, search_path, included, messages );
     skip_childs  = false;
     break;
   }
-  // ----------------------------------------------------------------------
+
   case gp::Node::kUnits: {
     local_result = UnitsNode( node, search_path, included, messages );
     skip_childs  = false;
     break;
   }
-  // ----------------------------------------------------------------------
+
   case gp::Node::kAssign: {
     local_result = AssignNode( node, messages, catalog, units, pragma->is_print() );
     break;
   }
-  // ----------------------------------------------------------------------
+
   case gp::Node::kUnit: {
     local_result = UnitNode( node, messages, units, pragma->is_print() );
     break;
   }
-  // ----------------------------------------------------------------------
+
   case gp::Node::kCondition: {
     local_result = ConditionNode( node, catalog, &next_root );
     skip_childs  = false;
@@ -347,7 +326,7 @@ static bool Analyze( gp::Node* node, std::string_view search_path, gp::IncludedF
     }
     break;
   }
-  // ----------------------------------------------------------------------
+
   default: {
     break;
   }
@@ -383,7 +362,6 @@ bool Unreference( gp::Catalog& catalog, gp::Messages* messages ) {
   return unreference_result;
 }
 
-// ============================================================================
 bool gp::ReadOptions( std::string_view filename, std::string_view search_path, Messages* messages, Catalog* catalog,
                       Units* units, PragmaOptions* pragma, Node* root ) {
   // Extract Path
@@ -395,5 +373,3 @@ bool gp::ReadOptions( std::string_view filename, std::string_view search_path, M
   bool result2 = Unreference( *catalog, messages );
   return result1 && result2;
 }
-
-// ============================================================================

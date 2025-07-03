@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,21 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//  NTuple name space: Selector class implementation
-//--------------------------------------------------------------------
-//
-//  Package    : Gaudi/NTupleSvc ( The LHCb Offline System)
-//  Author     : M.Frank
-//
-//  +---------+----------------------------------------------+--------+
-//  |    Date |                 Comment                      | Who    |
-//  +---------+----------------------------------------------+--------+
-//  | 10/10/00| Initial version.                             | MF     |
-//  +---------+----------------------------------------------+--------+
-//====================================================================
-#define GAUDI_NTUPLEITEMS_CPP 1
-
 #include <GaudiKernel/NTuple.h>
 #include <GaudiKernel/Selector.h>
 

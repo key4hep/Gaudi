@@ -9,17 +9,10 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <string>
-// ============================================================================
-// GaudiUtils
-// ============================================================================
+
 #include <GaudiKernel/Range.h>
-// ============================================================================
+#include <string>
+
 /** @file
  *
  *  This file has been imported from
@@ -35,9 +28,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2001-01-23
  */
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   /** @class NamedRange NamedRange.h GaudiUtils/NamedRange.h
    *
    *  New concept of "named" range : range with name
@@ -50,14 +41,12 @@ namespace Gaudi {
   template <class CONTAINER, class ITERATOR = typename CONTAINER::const_iterator>
   class NamedRange_ : public Gaudi::Range_<CONTAINER, ITERATOR> {
   protected:
-    // ========================================================================
     /// the base class
     typedef Gaudi::Range_<CONTAINER, ITERATOR> Base;
     /// "self"-type
     typedef NamedRange_<CONTAINER, ITERATOR> Self;
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// default constructor
     NamedRange_() = default;
     /** Constructor
@@ -89,30 +78,25 @@ namespace Gaudi {
      */
     NamedRange_( typename Base::iterator ibegin, std::string name = "" )
         : Base( ibegin, ibegin ), m_name( std::move( name ) ) {}
-    /// destructor
+
     ~NamedRange_() = default;
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// get a "slice" of a range, in Python style
     NamedRange_ slice( long index1, long index2 ) const { return NamedRange_( Base::slice( index1, index2 ), m_name ); }
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// get the name of the range
     const std::string& name() const { return m_name; }
     /// set the name of the range
     void setName( std::string value ) { m_name = std::move( value ); }
-    // ========================================================================
     using Base::operator==;
 
   private:
-    // ========================================================================
     /// the name, associated to the range
     std::string m_name; // the name associated to the range
-    // ========================================================================
   };
-  // ==========================================================================
+
   /** simple function to create the named range from arbitrary container
    *  @code
    *
@@ -127,8 +111,4 @@ namespace Gaudi {
   NamedRange_<CONTAINER> range( const CONTAINER& cnt, std::string name ) {
     return NamedRange_<CONTAINER>( cnt.begin(), cnt.end(), std::move( name ) );
   }
-  // ==========================================================================
-} // end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

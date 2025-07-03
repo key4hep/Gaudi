@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -48,10 +48,8 @@ namespace ba = boost::algorithm;
 class ToolSvc : public extends<Service, IToolSvc> {
 
 public:
-  /// Standard Constructor.
   using extends::extends;
 
-  /// Destructor.
   ~ToolSvc() override;
 
   /// Finalize the service.
@@ -97,11 +95,10 @@ public:
 
   void registerObserver( IToolSvc::Observer* obs ) override;
 
-private: // methods
+private:
   /// Finalize the given tool, with exception handling
   StatusCode finalizeTool( IAlgTool* itool ) const;
 
-private: // data
   Gaudi::Property<bool> m_checkNamedToolsConfigured{
       this, "CheckedNamedToolsConfigured", false,
       "Check that tools which do not have the default name have some explicit configuration." };
@@ -199,21 +196,15 @@ namespace {
 
 } // namespace
 
-// Instantiation of a static factory class used by clients to create
-//  instances of this service
 DECLARE_COMPONENT( ToolSvc )
 
-//------------------------------------------------------------------------------
 ToolSvc::~ToolSvc() {
   // tell the remaining observers that we're gone, and forget about unregistering..
   std::for_each( std::begin( m_observers ), std::end( m_observers ),
                  [&]( IToolSvc::Observer* obs ) { obs->setUnregister( {} ); } );
 }
 
-//------------------------------------------------------------------------------
-StatusCode ToolSvc::finalize()
-//------------------------------------------------------------------------------
-{
+StatusCode ToolSvc::finalize() {
   // Finalize and delete all left-over tools. Normally all tools created with
   // ToolSvc are left over, since ToolSvc holds a refCount (via AlgTool ctor).
   // Several cases need to be covered:
@@ -356,20 +347,12 @@ StatusCode ToolSvc::finalize()
   return ( Service::finalize().isSuccess() && !fail ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 
-// ===================================================================================
-/** the indicator for the tool to be "PUBLIC"
- *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
- */
-// ===================================================================================
 namespace {
   static const std::string s_PUBLIC = ":PUBLIC";
 }
 
-//------------------------------------------------------------------------------
 StatusCode ToolSvc::retrieve( std::string_view tooltype, const InterfaceID& iid, IAlgTool*& tool,
-                              const IInterface* parent, bool createIf )
-//------------------------------------------------------------------------------
-{
+                              const IInterface* parent, bool createIf ) {
   // check for tools, which by name are required to be public:
   if ( ba::ends_with( tooltype, s_PUBLIC ) ) {
     // parent for PUBLIC tool is 'this', i.e. ToolSvc
@@ -387,13 +370,8 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, const InterfaceID& iid,
   return retrieve( tooltype.substr( 0, pos ), tooltype.substr( pos + 1 ), iid, tool, parent, createIf );
 }
 
-// ===================================================================================
-
-//------------------------------------------------------------------------------
 StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolname, const InterfaceID& iid,
-                              IAlgTool*& tool, const IInterface* parent, bool createIf )
-//------------------------------------------------------------------------------
-{
+                              IAlgTool*& tool, const IInterface* parent, bool createIf ) {
   // check the applicability of another method:
   // ignore the provided name if it is empty or the type contains a name
   if ( toolname.empty() || ( std::string_view::npos != tooltype.find( '/' ) ) ) {
@@ -447,10 +425,8 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
                  [&]( IToolSvc::Observer* obs ) { obs->onRetrieve( itool ); } );
   return sc;
 }
-//------------------------------------------------------------------------------
-std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
-//------------------------------------------------------------------------------
-{
+
+std::vector<std::string> ToolSvc::getInstances( std::string_view toolType ) {
 
   std::vector<std::string> tools;
   auto                     lock = std::scoped_lock{ m_mut };
@@ -459,27 +435,21 @@ std::vector<std::string> ToolSvc::getInstances( std::string_view toolType )
   }
   return tools;
 }
-//------------------------------------------------------------------------------
-std::vector<std::string> ToolSvc::getInstances() const
-//------------------------------------------------------------------------------
-{
+
+std::vector<std::string> ToolSvc::getInstances() const {
   auto                     lock = std::scoped_lock{ m_mut };
   std::vector<std::string> tools{ m_instancesTools.size() };
   std::transform( std::begin( m_instancesTools ), std::end( m_instancesTools ), std::begin( tools ),
                   []( const IAlgTool* t ) { return t->name(); } );
   return tools;
 }
-//------------------------------------------------------------------------------
-std::vector<IAlgTool*> ToolSvc::getTools() const
-//------------------------------------------------------------------------------
-{
+
+std::vector<IAlgTool*> ToolSvc::getTools() const {
   auto lock = std::scoped_lock{ m_mut };
   return { std::begin( m_instancesTools ), std::end( m_instancesTools ) };
 }
-//------------------------------------------------------------------------------
-StatusCode ToolSvc::releaseTool( IAlgTool* tool )
-//------------------------------------------------------------------------------
-{
+
+StatusCode ToolSvc::releaseTool( IAlgTool* tool ) {
   auto       lock = std::scoped_lock{ m_mut };
   StatusCode sc( StatusCode::SUCCESS );
   // test if tool is in known list (protect trying to access a previously deleted tool)
@@ -506,10 +476,7 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
   return sc;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ToolSvc::create( const std::string& tooltype, const IInterface* parent, IAlgTool*& tool )
-//------------------------------------------------------------------------------
-{
+StatusCode ToolSvc::create( const std::string& tooltype, const IInterface* parent, IAlgTool*& tool ) {
   const std::string& toolname = tooltype;
   return create( tooltype, toolname, parent, tool );
 }
@@ -558,7 +525,6 @@ namespace {
   }
 } // namespace
 
-//------------------------------------------------------------------------------
 /**
  * Now able to handle clones. The test of tool existence is performed according to
  * three criteria: name, type and parent.
@@ -567,9 +533,7 @@ namespace {
  * No clones of public tools are allowed since they would be undistinguishable.
  **/
 StatusCode ToolSvc::create( const std::string& tooltype, const std::string& toolname, const IInterface* parent,
-                            IAlgTool*& tool )
-//------------------------------------------------------------------------------
-{
+                            IAlgTool*& tool ) {
 
   // protect against empty type
   if ( tooltype.empty() ) {
@@ -706,18 +670,15 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-std::string ToolSvc::nameTool( std::string_view toolname, const IInterface* parent )
-//------------------------------------------------------------------------------
-{
+std::string ToolSvc::nameTool( std::string_view toolname, const IInterface* parent ) {
 
-  if ( !parent ) { return std::string{ this->name() }.append( "." ).append( toolname ); } // RETURN
+  if ( !parent ) { return std::string{ this->name() }.append( "." ).append( toolname ); }
 
   // check that parent has a name!
   auto named_parent = SmartIF<INamedInterface>( const_cast<IInterface*>( parent ) );
   if ( named_parent ) {
     auto fullname = std::string{ named_parent->name() }.append( "." ).append( toolname );
-    return fullname; // RETURN
+    return fullname;
   }
 
   error() << "Private Tools only allowed for components implementing INamedInterface" << endmsg;
@@ -725,18 +686,12 @@ std::string ToolSvc::nameTool( std::string_view toolname, const IInterface* pare
   return std::string{ "." }.append( toolname );
 }
 
-//------------------------------------------------------------------------------
-bool ToolSvc::existsTool( std::string_view fullname ) const
-//------------------------------------------------------------------------------
-{
+bool ToolSvc::existsTool( std::string_view fullname ) const {
   auto lock = std::scoped_lock{ m_mut };
   return m_instancesTools.contains( fullname );
 }
 
-//------------------------------------------------------------------------------
-StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
-//------------------------------------------------------------------------------
-{
+StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const {
 
   // Cache tool name in case of errors
   const auto& toolName = itool->name();
@@ -763,9 +718,7 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
   return sc;
 }
 
-//------------------------------------------------------------------------------
 void ToolSvc::registerObserver( IToolSvc::Observer* obs ) {
-  //------------------------------------------------------------------------------
   if ( !obs ) throw GaudiException( "Received NULL pointer", this->name() + "::registerObserver", StatusCode::FAILURE );
 
   auto lock = std::scoped_lock{ m_mut };
@@ -777,10 +730,7 @@ void ToolSvc::registerObserver( IToolSvc::Observer* obs ) {
   m_observers.push_back( obs );
 }
 
-//------------------------------------------------------------------------------
-StatusCode ToolSvc::start()
-//------------------------------------------------------------------------------
-{
+StatusCode ToolSvc::start() {
 
   ON_DEBUG debug() << "START transition for AlgTools" << endmsg;
 
@@ -819,10 +769,7 @@ StatusCode ToolSvc::start()
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ToolSvc::stop()
-//------------------------------------------------------------------------------
-{
+StatusCode ToolSvc::stop() {
 
   ON_DEBUG debug() << "STOP transition for AlgTools" << endmsg;
 

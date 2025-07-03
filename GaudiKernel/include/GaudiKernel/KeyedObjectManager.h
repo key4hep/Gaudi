@@ -10,22 +10,15 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/KeyedTraits.h>
-
-// STL includes
 #include <vector>
 
-// Forward declarations
 class ObjectContainerBase;
 class ContainedObject;
 
-/** Containers namespace
- */
 namespace Containers {
-
   /// Object manipulator type definition
   typedef long ( *MANIPULATOR )( void* );
   /// Parametrisation class for hashmap-like implementation.

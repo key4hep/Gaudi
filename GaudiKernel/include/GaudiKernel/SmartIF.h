@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/IInterface.h>
 #include <memory>
 
@@ -32,8 +31,6 @@ private:
   TYPE* m_interface = nullptr;
 
 public:
-  // ---------- Construction and destruction ----------
-  /// Default constructor.
   inline SmartIF() = default;
   /// Standard constructor from pointer.
   inline SmartIF( TYPE* ptr ) : m_interface( ptr ) {
@@ -44,13 +41,10 @@ public:
   inline SmartIF( OTHER* ptr ) {
     if ( ptr ) reset( ptr );
   }
-  /// Copy constructor.
   inline SmartIF( const SmartIF& rhs ) : m_interface( rhs.get() ) {
     if ( m_interface ) m_interface->addRef();
   }
-  /// Move constructor
   inline SmartIF( SmartIF&& rhs ) : m_interface( rhs.m_interface ) { rhs.m_interface = nullptr; }
-  /// Move assignement
   inline SmartIF& operator=( SmartIF&& rhs ) {
     if ( m_interface ) m_interface->release();
     m_interface     = rhs.m_interface;
@@ -64,7 +58,6 @@ public:
   inline explicit SmartIF( const SmartIF<T>& rhs ) {
     reset( rhs.get() );
   }
-  /// Standard Destructor.
   inline ~SmartIF() { reset(); }
 
   template <class T>
@@ -72,14 +65,12 @@ public:
     reset( rhs.release() );
   }
 
-  // ---------- Boolean and comparison methods ----------
   /// Allow for check if smart pointer is valid.
   inline bool isValid() const { return m_interface != nullptr; }
 
   inline explicit operator bool() const { return isValid(); }
   inline bool operator!() const { return !isValid(); }
 
-  // ---------- Pointer access methods ----------
   /// Automatic conversion to pointer.
   /// It is also used by the compiler for automatic conversion to boolean.
   inline operator TYPE*() const { return m_interface; }

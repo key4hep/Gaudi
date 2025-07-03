@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework includes
 #include <GaudiKernel/IRunable.h>
 #include <GaudiKernel/Service.h>
 
-// Forward declarations
 class IAppMgrUI;
 
 /** Class definition of AppMgrRunable.

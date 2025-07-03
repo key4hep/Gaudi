@@ -12,7 +12,6 @@
 
 #include <mutex>
 
-// =======================================================================
 /** @class LockedHandle
  *
  *  Provides automatic lock/unlock access to a class upon deref of ptr.

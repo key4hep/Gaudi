@@ -9,27 +9,17 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
+#include <GaudiKernel/Kernel.h>
 #include <iosfwd>
 #include <string>
-// ============================================================================
-// Gaudi
-// ============================================================================
-#include <GaudiKernel/Kernel.h>
-// ============================================================================
-// Forward decalrations
-// ============================================================================
-class IHistogramSvc; ///< GaudiKernel
+
+class IHistogramSvc;
 namespace AIDA {
   class IHistogram1D;
 } // namespace AIDA
-// ============================================================================
+
 namespace Gaudi {
-  // ==========================================================================
   /** @class Histo1DDef HistoDef.h GaudiKernel/HistoDef.h
    *  Simple helper class for description of 1D-histogram
    *  The class is targeted to act as the primary "histogram property",
@@ -39,7 +29,6 @@ namespace Gaudi {
    */
   class GAUDI_API Histo1DDef final {
   public:
-    // ========================================================================
     /** full constructor from edges, #bins and the title
      *  @param low  the low  edge of the histogram
      *  @param high the high edge of the histogram
@@ -47,7 +36,6 @@ namespace Gaudi {
      *  @param title the historgam title
      */
     Histo1DDef( double low, double high, int bins = 100, std::string title = "" );
-    // ========================================================================
     /** full constructor from edges, #bins and the title
      *  @param title the historgam title
      *  @param low  the low  edge of the histogram
@@ -55,9 +43,6 @@ namespace Gaudi {
      *  @param bins number of bins
      */
     Histo1DDef( std::string title = "", double low = 0.0, double high = 1.0, int bins = 100 );
-    // ========================================================================
-  public:
-    // ========================================================================
     /// get the low edge
     double lowEdge() const { return m_low; }
     /// get the high  edge
@@ -66,9 +51,6 @@ namespace Gaudi {
     int bins() const { return m_bins; }
     /// get the title
     const std::string& title() const { return m_title; }
-    // ========================================================================
-  public:
-    // ========================================================================
     /// set low edge
     void setLowEdge( double value ) { m_low = value; }
     /// set high edge
@@ -77,52 +59,32 @@ namespace Gaudi {
     void setBins( int value ) { m_bins = value; }
     /// set the title
     void setTitle( std::string value ) { m_title = std::move( value ); }
-    // ========================================================================
-  public:
-    // ========================================================================
     /// printout of the histogram definition
     std::ostream& fillStream( std::ostream& o ) const;
-    // ========================================================================
-  public:
-    // ========================================================================
     /// ordering operator (to please BoundedVerifier)
     friend bool operator<( const Histo1DDef& left, const Histo1DDef& right );
-    // ========================================================================
     /// the streamer operator for class Gaudi::Histo1DDef
     friend std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo );
-    // ========================================================================
-  public:
-    // ========================================================================
     /// check if all fields are "reasonable"
-    bool ok() const { return 0 < bins() && lowEdge() < highEdge(); }
-    // ========================================================================
-  private:
-    // ========================================================================
-    // Histogram title
+    bool        ok() const { return 0 < bins() && lowEdge() < highEdge(); }
     std::string m_title; ///< Histogram title
-    // Low  Edge
-    double m_low; ///< Low  Edge
-    // High Edge
-    double m_high; ///< High Edge
-    // Number of bins
-    int m_bins; ///< Number of bins
-    // ========================================================================
+    double      m_low;   ///< Low  Edge
+    double      m_high;  ///< High Edge
+    int         m_bins;  ///< Number of bins
   };
-  // ==========================================================================
+
   /** @namespace Gaudi::Histos
    *  collection of simple utilities to deal with histograms
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2007-09-17
    */
   namespace Histos {
-    // ========================================================================
     /** helper function to book 1D-histogram
      *  @param svc pointer to Histogram Service
      *  @param path full path in Histogram Data Store
      *  @param hist histogram desctription
      */
     GAUDI_API AIDA::IHistogram1D* book( IHistogramSvc* svc, const std::string& path, const Gaudi::Histo1DDef& hist );
-    // ========================================================================
     /** helper function to book 1D-histogram
      *  @param svc  pointer to Histogram Service
      *  @param dir  directory path in Histogram Data Store
@@ -131,7 +93,6 @@ namespace Gaudi {
      */
     GAUDI_API AIDA::IHistogram1D* book( IHistogramSvc* svc, const std::string& dir, const std::string& id,
                                         const Gaudi::Histo1DDef& hist );
-    // ========================================================================
     /** helper function to book 1D-histogram
      *  @param svc pointer to Histogram Service
      *  @param dir  directory path in Histogram Data Store
@@ -140,10 +101,5 @@ namespace Gaudi {
      */
     GAUDI_API AIDA::IHistogram1D* book( IHistogramSvc* svc, const std::string& dir, const int id,
                                         const Gaudi::Histo1DDef& hist );
-    // ========================================================================
   } // namespace Histos
-  // ==========================================================================
-} // end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

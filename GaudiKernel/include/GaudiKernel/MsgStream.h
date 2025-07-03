@@ -10,11 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/SerializeSTL.h>
-// Standard C++ classes
-#include <cstdio>
 #include <iomanip>
 #include <sstream>
 #include <string>

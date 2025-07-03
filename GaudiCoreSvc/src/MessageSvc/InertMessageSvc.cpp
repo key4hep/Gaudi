@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,18 +8,9 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include files
-
 #include "InertMessageSvc.h"
 
-// ----------------------------------------------------------------------------
-// Implementation file for class: InertMessageSvc
-//
-// 12/02/2013: Danilo Piparo
-// ----------------------------------------------------------------------------
 DECLARE_COMPONENT( InertMessageSvc )
-
-//---------------------------------------------------------------------------
 
 StatusCode InertMessageSvc::initialize() {
   StatusCode sc = MessageSvc::initialize(); // must be executed first
@@ -31,15 +22,11 @@ StatusCode InertMessageSvc::initialize() {
   return StatusCode::SUCCESS;
 }
 
-//---------------------------------------------------------------------------
-
 StatusCode InertMessageSvc::InertMessageSvc::finalize() {
   m_deactivate();
   m_thread.join();
   return MessageSvc::finalize(); // must be called after all other actions
 }
-
-//---------------------------------------------------------------------------
 
 void InertMessageSvc::m_activate() {
   m_isActive = true;
@@ -50,8 +37,6 @@ void InertMessageSvc::m_activate() {
   }
 }
 
-//---------------------------------------------------------------------------
-
 void InertMessageSvc::m_deactivate() {
   if ( m_isActive ) {
     // This would be the last action
@@ -59,7 +44,6 @@ void InertMessageSvc::m_deactivate() {
   }
 }
 
-//---------------------------------------------------------------------------
 /**
  * The message action is created and pushed to the message queue.
  * The message is captured by value since the one referenced by msg can
@@ -72,19 +56,13 @@ void InertMessageSvc::reportMessage( const Message& msg, int outputLevel ) {
       [this, m = Message( msg ), outputLevel]() { this->i_reportMessage( m, outputLevel ); } );
 }
 
-//---------------------------------------------------------------------------
-
 void InertMessageSvc::reportMessage( const Message& msg ) {
   // msg has to be copied as the reference may become invalid by the time it's used
   m_messageActionsQueue.emplace(
       [this, m = Message( msg )]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
 }
 
-//---------------------------------------------------------------------------
-
 void InertMessageSvc::reportMessage( const StatusCode& code, std::string_view source ) {
   // msg has to be copied as the source may become invalid by the time it's used
   m_messageActionsQueue.emplace( [this, code, s = std::string{ source }]() { this->i_reportMessage( code, s ); } );
 }
-
-//---------------------------------------------------------------------------

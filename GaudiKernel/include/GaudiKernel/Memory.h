@@ -8,22 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	Memory.h
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Information of memory usage from a given process
-//
-//	Author     : M.Frank
-//  Created    : 13/11/00
-//	Changes    :
-//
-//====================================================================
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/SystemBase.h>
 

@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/Kernel.h>
 #include <string>
@@ -22,9 +21,7 @@
  *  @author P. Mato
  *  @date   2001/01/19
  */
-
 class GAUDI_API Incident {
-
 public:
   /// Default Constructor
   Incident( const std::string& source, ///< Incident source (service or algorithm name)
@@ -37,7 +34,6 @@ public:
             )
       : m_source( source ), m_type( type ), m_ctx( ctx ) {}
 
-  /// Destructor
   virtual ~Incident() = default;
 
   /** Access to the incident type
@@ -71,6 +67,7 @@ private:
     extern const std::string x;                                                                                        \
     const std::string        x { #x }
 #endif
+
 /** @namespace IncidentType
  *
  *  Namespace for pre-defined common incident types

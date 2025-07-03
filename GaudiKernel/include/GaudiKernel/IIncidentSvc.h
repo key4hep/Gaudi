@@ -10,16 +10,14 @@
 \***********************************************************************************/
 #pragma once
 
-// Include Files
 #include <GaudiKernel/EventContextHash.h>
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/Incident.h>
 #include <memory>
 #include <string>
 #include <vector>
-// Forward declarations
+
 class IIncidentListener;
-// class Incident;
 
 /** @class IIncidentSvc IIncidentSvc.h GaudiKernel/IIncidentSvc.h
 

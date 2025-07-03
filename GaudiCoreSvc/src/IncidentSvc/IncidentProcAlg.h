@@ -17,26 +17,13 @@
 
 class GAUDI_API IncidentProcAlg : public Gaudi::Algorithm {
 public:
-  /**
-   ** Constructor(s)
-   **/
   IncidentProcAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
-  /**
-   ** Destructor
-   **/
-  virtual ~IncidentProcAlg(){};
-
-  /*****************************
-   ** Public Function Members **
-   *****************************/
+  virtual ~IncidentProcAlg() {}
 
   StatusCode initialize() override;
   StatusCode execute( const EventContext& ctx ) const override;
 
 private:
   SmartIF<IIncidentSvc> m_incSvc;
-  /**************************
-   ** Private Data Members **
-   **************************/
 };

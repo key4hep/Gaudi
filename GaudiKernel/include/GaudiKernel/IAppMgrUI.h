@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/StateMachine.h>
 #include <GaudiKernel/StatusCode.h>
-
 #include <string>
 
 namespace Gaudi::Monitoring {

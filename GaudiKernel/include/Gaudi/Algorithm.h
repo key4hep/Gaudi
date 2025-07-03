@@ -9,9 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
+
 #include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/IProperty.h>
@@ -19,7 +17,6 @@
 #include <GaudiKernel/IStateful.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/ITimelineSvc.h>
-
 #include <string>
 #include <vector>
 
@@ -282,7 +279,6 @@ namespace Gaudi {
     /// register for Algorithm Context Service?
     bool registerContext() const { return m_registerContext; }
 
-    // ==========================================================================
     using PropertyHolderImpl::declareProperty;
 
     // declare Tools to the Algorithms
@@ -293,7 +289,6 @@ namespace Gaudi {
       return PropertyHolderImpl::declareProperty( name, hndl, doc );
     }
 
-    // ==========================================================================
     // declare ToolHandleArrays to the Algorithms
 
     template <class T>
@@ -303,7 +298,6 @@ namespace Gaudi {
       return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
     }
 
-    // ==========================================================================
     /** @brief Access the monitor service
      *
      *   @attention Note that this method will return a NULL pointer if no monitor service is

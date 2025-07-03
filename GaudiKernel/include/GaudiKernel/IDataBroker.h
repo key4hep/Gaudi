@@ -10,16 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework includes
 #include <GaudiKernel/DataObjID.h>
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/TypeNameString.h>
-
-// C++ includes
 #include <string>
 #include <vector>
 
-// Forward class declaration
 namespace Gaudi {
   class Algorithm;
 }

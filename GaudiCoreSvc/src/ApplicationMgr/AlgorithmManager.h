@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/ComponentManager.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IAlgorithm.h>
@@ -22,7 +21,6 @@
 #include <unordered_map>
 #include <vector>
 
-// Forward declarations
 class ISvcLocator;
 class IMessageSvc;
 

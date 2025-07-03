@@ -10,12 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Includes
 #include <Gaudi/Property.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/System.h>
-
 #include <algorithm>
 #include <iostream>
 #include <string>

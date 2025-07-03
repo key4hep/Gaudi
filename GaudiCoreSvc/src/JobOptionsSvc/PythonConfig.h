@@ -10,9 +10,7 @@
 \***********************************************************************************/
 #pragma once
 #include <Gaudi/Interfaces/IOptionsSvc.h>
-
 #include <GaudiKernel/StatusCode.h>
-
 #include <string>
 
 // Class to translate between Python and C++ worlds

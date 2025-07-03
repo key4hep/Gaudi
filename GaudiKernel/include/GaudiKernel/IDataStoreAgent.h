@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/Kernel.h>
 #include <functional>
 
-// Forward declarations:
 class IRegistry;
 
 /** @class IDataStoreAgent IDataStoreAgent.h GaudiKernel/IDataStoreAgent.h

@@ -9,12 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// Include files
-// from Gaudi
+
 #include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/HashMap.h>
-
-// Implemented interfaces
 #include <GaudiKernel/IDODAlgMapper.h>
 #include <GaudiKernel/IDODNodeMapper.h>
 

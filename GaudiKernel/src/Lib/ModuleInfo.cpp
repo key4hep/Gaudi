@@ -8,28 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	ModuleInfo.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Implementation of Systems internals
-//
-//	Author     : M.Frank
-//      Created    : 13/1/99
-//	Changes    :
-//====================================================================
-#define SYSTEM_MODULEINFO_CPP
-
-// #include <ctime>
-#include <cstdlib>
-#include <cstring>
-// #include <iostream>
-// #include <typeinfo>
-
 #include <GaudiKernel/ModuleInfo.h>
 #include <GaudiKernel/System.h>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef _WIN32
 #  define NOMSG
@@ -49,7 +31,6 @@ static PsApiFunctions _psApi;
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
 #  include <cstdio>
 #  include <dlfcn.h>
-#  include <errno.h>
 #  include <libgen.h>
 #  include <string.h>
 #  include <sys/param.h>

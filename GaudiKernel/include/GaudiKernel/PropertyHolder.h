@@ -9,21 +9,8 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <algorithm>
-#include <functional>
-#include <iostream>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
+#include <Gaudi/Interfaces/IOptionsSvc.h>
 #include <Gaudi/Property.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/DataHandleProperty.h>
@@ -31,9 +18,14 @@
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
+#include <algorithm>
+#include <functional>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include <Gaudi/Interfaces/IOptionsSvc.h>
-// ============================================================================
 namespace Gaudi {
   namespace Details {
 
@@ -161,7 +153,6 @@ public:
     if ( pp && pp->assign( p ) ) return StatusCode::SUCCESS;
     return StatusCode::FAILURE;
   }
-  // ==========================================================================
   /** set the property from the formatted string
    *  @see IProperty
    */
@@ -172,7 +163,6 @@ public:
     if ( sc.isFailure() ) return sc;
     return setPropertyRepr( name, value );
   }
-  // ==========================================================================
   /** set the property from name and value string representation
    *  @see IProperty
    */
@@ -185,7 +175,6 @@ public:
       throw GaudiException{ "error setting property " + n, this->name(), StatusCode::FAILURE, err };
     }
   }
-  // ==========================================================================
   /** get the property
    *  @see IProperty
    */
@@ -196,7 +185,6 @@ public:
     } catch ( ... ) {}
     return StatusCode::FAILURE;
   }
-  // ==========================================================================
   /** get the property by name
    *  @see IProperty
    */
@@ -205,7 +193,6 @@ public:
     if ( !p ) throw std::out_of_range( "Property " + std::string{ name } + " not found." );
     return *p;
   }
-  // ==========================================================================
   /** convert the property to the string
    *  @see IProperty
    */
@@ -217,12 +204,10 @@ public:
     v = p->toString();
     return StatusCode::SUCCESS;
   }
-  // ==========================================================================
   /** get all properties
    *  @see IProperty
    */
   const std::vector<Gaudi::Details::PropertyBase*>& getProperties() const override { return m_properties; }
-  // ==========================================================================
   /** Return true if we have a property with the given name.
    *  @see IProperty
    */
@@ -234,7 +219,6 @@ public:
            any_of( begin( m_remoteProperties ), end( m_remoteProperties ),
                    [&name]( const auto& prop ) { return Gaudi::Utils::iequal( prop.name, name ); } );
   }
-  // ==========================================================================
   /// \fixme property and bindPropertiesTo should be protected
   // get local or remote property by name
   Gaudi::Details::PropertyBase* property( std::string_view name ) const {
@@ -248,7 +232,7 @@ public:
       if ( !p ) continue;
       return property( it.remName, p->getProperties() );
     }
-    return nullptr; // RETURN
+    return nullptr;
   }
 
   void bindPropertiesTo( Gaudi::Interfaces::IOptionsSvc& optsSvc ) {
@@ -266,7 +250,7 @@ private:
     auto it = std::find_if( props.begin(), props.end(), [name]( Gaudi::Details::PropertyBase* p ) {
       return p && Gaudi::Utils::iequal( p->name(), name );
     } );
-    return ( it != props.end() ) ? *it : nullptr; // RETURN
+    return ( it != props.end() ) ? *it : nullptr;
   }
 
   /// Issue a runtime warning if the name is already present in the

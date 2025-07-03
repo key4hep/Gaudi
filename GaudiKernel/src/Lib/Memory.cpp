@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,37 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	Memory.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Information of memory usage from a given process
-//
-//	Author     : M.Frank
-//  Created    : 13/11/00
-//	Changes    :
-//
-//====================================================================
-#define GAUDIKERNEL_MEMORY_CPP
+#include "ProcessDescriptor.h"
+#include <GaudiKernel/Memory.h>
+#include <limits.h>
 
 #ifdef _WIN32
 #  include <process.h>
 #  define getpid _getpid
 #else
-#  include <cstdio>
-#  include <errno.h>
 #  include <libgen.h>
-#  include <string.h>
 #  include <sys/times.h>
 #  include <unistd.h>
 #endif
-
-// Framework include files
-#include "ProcessDescriptor.h"
-#include <GaudiKernel/Memory.h>
-#include <limits.h>
 
 /// Convert requested memory value from kByte to requested value
 long System::adjustMemory( MemoryUnit unit, long value ) {

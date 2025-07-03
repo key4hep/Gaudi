@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,46 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	TsDataSvc.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : System ( The LHCb Offline System)
-//
-//  Description: implementation of the Transient data service: TsDataSvc
-//
-//  Author     : M.Frank
-//  History    :
-// +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who
-// +---------+----------------------------------------------+---------
-// | 29/10/98| Initial version                              | M.Frank
-// | 20/2/99 | Automatic data preloading introduced.        | M.Frank
-// | 25/4/13 | Locking for concurrent access introduced.    | D.Piparo
-// +---------+----------------------------------------------+---------
-//
-//====================================================================
-#define TSDATASVC_DATASVC_CPP
-
-// Framework include files
+#include <GaudiKernel/DataIncident.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IConversionSvc.h>
 #include <GaudiKernel/IConverter.h>
 #include <GaudiKernel/IOpaqueAddress.h>
-
-#include <GaudiKernel/DataObject.h>
-#include <GaudiKernel/GaudiException.h>
-
-#include <GaudiKernel/DataIncident.h>
 #include <GaudiKernel/RegistryEntry.h>
 #include <GaudiKernel/TsDataSvc.h>
-
-// Include files
-#include <algorithm>
 #include <cassert>
 #include <cstdlib>
-#include <mutex>
-#include <sstream>
-#include <vector>
+#include <string>
+#include <string_view>
 
 // Macro to lock a scope
 #define STD_LOCK_GUARD_MACRO std::scoped_lock lock{ m_accessMutex };
@@ -841,7 +813,7 @@ StatusCode TsDataSvc::reinitialize() {
     error() << "Failed to access incident service." << endmsg;
     return sc;
   }
-  // return
+
   return StatusCode::SUCCESS;
 }
 

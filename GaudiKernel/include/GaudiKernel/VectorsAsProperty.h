@@ -9,21 +9,16 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <map>
-#include <string>
-#include <vector>
-// ============================================================================
+
 #include <GaudiKernel/Point3DTypes.h>
 #include <GaudiKernel/Point4DTypes.h>
 #include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/Vector3DTypes.h>
 #include <GaudiKernel/Vector4DTypes.h>
-// ============================================================================
+#include <map>
+#include <string>
+#include <vector>
+
 /** @file
  *  Declaration of parsing functions for various ROOT::Math objects to allow
  *  their usage as properties for Gaudi components
@@ -34,11 +29,8 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2009-09-05
  */
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace Parsers {
-    // ========================================================================
     /** parse 3D-point
      *
      *  Valid representations of 3D-point:
@@ -75,7 +67,6 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     GAUDI_API StatusCode parse( Gaudi::XYZPoint& result, std::string_view input );
-    // ========================================================================
     /** parse 3D-vector
      *
      *  Valid representations of 3D-vector:
@@ -112,7 +103,6 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     GAUDI_API StatusCode parse( Gaudi::XYZVector& result, std::string_view input );
-    // ========================================================================
     /** parse LorentzVector
      *
      *  Valid representations of Lorenzt vector
@@ -182,7 +172,6 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     GAUDI_API StatusCode parse( Gaudi::LorentzVector& result, std::string_view input );
-    // ========================================================================
     /** parse the vector of points
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
@@ -190,7 +179,6 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     GAUDI_API StatusCode parse( std::vector<Gaudi::XYZPoint>& result, std::string_view input );
-    // ========================================================================
     /** parse the vector of vectors
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
@@ -198,7 +186,6 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     GAUDI_API StatusCode parse( std::vector<Gaudi::XYZVector>& result, std::string_view input );
-    // ========================================================================
     /** parse the vector of vectors
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
@@ -206,25 +193,15 @@ namespace Gaudi {
      *  @date 2009-09-05
      */
     GAUDI_API StatusCode parse( std::vector<Gaudi::LorentzVector>& result, std::string_view input );
-    // ========================================================================
   } // namespace Parsers
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
+} // namespace Gaudi
 namespace Gaudi {
-  // =========================================================================
   namespace Utils {
-    // ========================================================================
     /// print XYZ point
     GAUDI_API std::ostream& toStream( const Gaudi::XYZPoint& obj, std::ostream& s );
     /// print XYZ vector
     GAUDI_API std::ostream& toStream( const Gaudi::XYZVector& obj, std::ostream& s );
     /// print Lorentz vector
     GAUDI_API std::ostream& toStream( const Gaudi::LorentzVector& obj, std::ostream& s );
-    // ========================================================================
   } // namespace Utils
-  // ==========================================================================
-} // end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

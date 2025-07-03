@@ -9,17 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
+#include <Gaudi/Parsers/CommonParsers.h>
 #include <algorithm>
-// ============================================================================
-// Boost
-// ============================================================================
 #include <boost/array.hpp>
-// ============================================================================
+
 /** @file
  *  Collection of utilities, which allows to use class boost::array
  *  as property for Gaudi-components
@@ -33,9 +27,7 @@
 // 1) Streamers : value -> string
 // ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace Utils {
-    // ========================================================================
     template <class ITERATOR>
     inline std::ostream& toStream( ITERATOR           first,   // begin of the sequence
                                    ITERATOR           last,    //   end of the sequence
@@ -43,7 +35,6 @@ namespace Gaudi {
                                    const std::string& open,    //               opening
                                    const std::string& close,   //               closing
                                    const std::string& delim ); //             delimiter
-    // ========================================================================
     /** printout of class boost::array
      *  The format is "Python's tuple"
      *  @param  obj (INPUT)  the arary to be printed
@@ -56,21 +47,13 @@ namespace Gaudi {
     inline std::ostream& toStream( const boost::array<TYPE, N>& obj, std::ostream& s ) {
       return toStream( obj.begin(), obj.end(), s, "( ", " )", " , " );
     }
-    // ========================================================================
   } // namespace Utils
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
+} // namespace Gaudi
 // ============================================================================
 // 2) Parsers: string -> value
 // ============================================================================
-// GaudiKernel
-// ============================================================================
-#include <Gaudi/Parsers/CommonParsers.h>
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace Parsers {
-    // ========================================================================
     /** parse class boost::array from the string
      *  @param result (OUTPUT) the actual result
      *  @param input  (INPUT)  the input string
@@ -92,10 +75,5 @@ namespace Gaudi {
       //
       return StatusCode::SUCCESS;
     }
-    // ========================================================================
   } // namespace Parsers
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

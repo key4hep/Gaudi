@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,19 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	System.cpp
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Implementation of Systems internals
-//
-//	Author     : M.Frank
-//  Created    : 13/1/99
-//	Changes    :
-//====================================================================
-#define SYSTEM_SYSTEM_CPP
+#include <GaudiKernel/System.h>
 #include <algorithm>
 #include <array>
 #include <cstdlib>
@@ -32,8 +20,6 @@
 #include <regex>
 #include <sstream>
 #include <typeinfo>
-
-#include <GaudiKernel/System.h>
 
 // Platform specific include(s):
 #ifdef __linux__

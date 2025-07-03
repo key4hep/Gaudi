@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IComponentManager.h>
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/SmartIF.h>

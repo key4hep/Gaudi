@@ -9,20 +9,13 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files:
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/SmartIF.h>
-// ============================================================================
+#include <vector>
+
 /** @class IAlgContextSvc
  *  An abstract interface for Algorithm Context Service
  *  @author ATLAS Collaboration
@@ -46,7 +39,7 @@ public:
   /// get the stack of executed algorithms
   virtual const Algorithms& algorithms() const = 0;
 };
-// ============================================================================
+
 namespace Gaudi {
   namespace Utils {
     /** @class AlgContext
@@ -124,4 +117,4 @@ namespace Gaudi {
       const EventContext&     m_context;
     };
   } // namespace Utils
-} // end of namespace Gaudi
+} // namespace Gaudi

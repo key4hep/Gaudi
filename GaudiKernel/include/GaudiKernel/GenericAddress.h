@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/IOpaqueAddress.h>
 #include <GaudiKernel/Kernel.h>
 
-// Forward declarations
 class IRegistry;
 
 /** @class GenericAddress GenericAddress.h GaudiKernel/GenericAddress.h

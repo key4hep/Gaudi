@@ -9,16 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include Files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <map>
-#include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/ChronoEntity.h>
 #include <GaudiKernel/IDODAlgMapper.h>
 #include <GaudiKernel/IDODNodeMapper.h>
@@ -26,20 +17,17 @@
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/StatEntity.h>
 #include <GaudiKernel/StringKey.h>
-// ============================================================================
-// ROOT TClass
-// ============================================================================
 #include <TClass.h>
-// ============================================================================
-// Forward declarations
-// ============================================================================
+#include <map>
+#include <vector>
+
 class IAlgTool;
 class IAlgorithm;
 class IAlgManager;
 class IIncidentSvc;
 class IDataProviderSvc;
 class IToolSvc;
-// ============================================================================
+
 /** @class DataOnDemandSvc DataOnDemandSvc.h
  *
  * The DataOnDemandSvc listens to incidents typically
@@ -98,11 +86,9 @@ class IToolSvc;
  */
 class DataOnDemandSvc : public extends<Service, IIncidentListener> {
 public:
-  // ==========================================================================
-  // Typedefs
   typedef std::vector<std::string> Setup;
   typedef TClass*                  ClassH;
-  // ==========================================================================
+
   /** @struct Protection
    *  Helper class of the DataOnDemandSvc
    *  @author  M.Frank
@@ -112,14 +98,12 @@ public:
     Protection( bool& b ) : m_bool( b ) { m_bool = true; }
     ~Protection() { m_bool = false; }
   };
-  // ==========================================================================
   /** @struct Node
    *  Helper class of the DataOnDemandSvc
    *  @author  M.Frank
    *  @version 1.0
    */
   struct Node final {
-    // ========================================================================
     /// the actual class
     ClassH        clazz; // the actual class
     std::string   name;
@@ -127,14 +111,12 @@ public:
     bool          executing = false;
     /// trivial object? DataObject?
     bool dataObject = false; // trivial object? DataObject?
-    // =======================================================================
+
     Node() = default;
-    // ========================================================================
+
     Node( ClassH c, bool e, std::string n )
         : clazz( c ), name( std::move( n ) ), executing( e ), dataObject( "DataObject" == name ) {}
-    // ========================================================================
   };
-  // ==========================================================================
   /// @struct Leaf
   struct Leaf {
     IAlgorithm*   algorithm = nullptr;
@@ -147,9 +129,8 @@ public:
     Leaf& operator=( const Leaf& l ) = default;
     Leaf( std::string t, std::string n ) : name( std::move( n ) ), type( std::move( t ) ) {}
   };
-  // ==========================================================================
+
 public:
-  // ==========================================================================
   typedef GaudiUtils::HashMap<Gaudi::StringKey, Node> NodeMap;
   typedef GaudiUtils::HashMap<Gaudi::StringKey, Leaf> AlgMap;
   /// Inherited Service overrides: Service initialization
@@ -162,44 +143,37 @@ public:
   void handle( const Incident& incident ) override;
   /// Standard initializing service constructor.
   using extends::extends;
-  // ==========================================================================
+
 protected:
-  // ==========================================================================
   /** Configure handler for leaf
    *  @param   leaf   [IN]    Reference to leaf handler
    *  @return StatusCode indicating success or failure
    */
   StatusCode configureHandler( Leaf& leaf );
-  // ==========================================================================
   /** Execute leaf handler (algorithm)
    *  @param   tag    [IN]    Path to requested leaf
    *  @param   leaf   [IN]    Reference to leaf handler
    *  @return StatusCode indicating success or failure
    */
   StatusCode execHandler( const std::string& tag, Leaf& leaf );
-  // ==========================================================================
   /** Execute node handler (simple object creation using seal reflection)
    *  @param   tag    [IN]    Path to requested leaf
    *  @param   node   [IN]    Reference to node handler
    *  @return StatusCode indicating success or failure
    */
   StatusCode execHandler( const std::string& tag, Node& node );
-  // ==========================================================================
   /// Initialize node handlers
   StatusCode setupNodeHandlers();
-  // ==========================================================================
   /// Initialize leaf handlers
   StatusCode setupAlgHandlers();
-  // ==========================================================================
   /// Setup routine (called by (re-) initialize
   StatusCode setup();
   /// Internal method to initialize a node handler.
   void i_setNodeHandler( const std::string& name, const std::string& type );
   /// Internal method to initialize an algorithm handler.
   StatusCode i_setAlgHandler( const std::string& name, const Gaudi::Utils::TypeNameString& alg );
-  // ==========================================================================
+
 protected:
-  // ==========================================================================
   /// update the handlers
   StatusCode update();
   /** dump the content of DataOnDemand service
@@ -207,9 +181,8 @@ protected:
    *  @param mode   the printout mode
    */
   void dump( const MSG::Level level, const bool mode = true ) const;
-  // ==========================================================================
+
 private:
-  // ==========================================================================
   void force_update( Gaudi::Details::PropertyBase& p ) {
     verbose() << "updated property " << p.name() << ", forcing update" << endmsg;
     m_updateRequired = true;
@@ -219,7 +192,6 @@ private:
     force_update( p );
   };
 
-  // ==========================================================================
   /// Incident service
   SmartIF<IIncidentSvc> m_incSvc = nullptr;
   /// Algorithm manager
@@ -234,23 +206,22 @@ private:
   NodeMap m_nodes;
 
   bool m_updateRequired = true;
-  // ==========================================================================
+
   ChronoEntity       m_total;
   unsigned long long m_statAlg  = 0;
   unsigned long long m_statNode = 0;
   unsigned long long m_stat     = 0;
-  // ==========================================================================
+
   ChronoEntity m_timer_nodes;
   ChronoEntity m_timer_algs;
   ChronoEntity m_timer_all;
   bool         m_locked_nodes = false;
   bool         m_locked_algs  = false;
   bool         m_locked_all   = false;
-  // ==========================================================================
+
   std::vector<IDODNodeMapper*> m_nodeMappers;
   std::vector<IDODAlgMapper*>  m_algMappers;
-  // ==========================================================================
-  // Properties
+
   Gaudi::Property<std::string> m_trapType{ this, "IncidentName", "DataFault", "the type of handled Incident" };
   Gaudi::Property<std::string> m_dataSvcName{ this, "DataSvc", "EventDataSvc", "DataSvc name" };
 
@@ -282,8 +253,3 @@ private:
   Gaudi::Property<std::vector<std::string>> m_algMapTools{
       this, "AlgMappingTools", {}, "list of tools of type IDODAlgMapper" };
 };
-// ============================================================================
-
-// ============================================================================
-// The END
-// ============================================================================

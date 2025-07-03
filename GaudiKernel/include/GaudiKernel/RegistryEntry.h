@@ -10,16 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StatusCode.h>
-
-// STL include files
 #include <string_view>
 #include <vector>
 
-// Forward declarations
 class DataSvc;
 // DP add this fwd decl for thread safety
 class TsDataSvc;

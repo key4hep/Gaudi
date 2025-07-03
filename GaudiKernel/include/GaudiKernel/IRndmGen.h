@@ -10,12 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
+#include <GaudiKernel/IInterface.h>
 #include <string>
 #include <vector>
-
-// Framework include files
-#include <GaudiKernel/IInterface.h>
 
 // Declaration of the interface ID ( interface id, major version, minor version)
 static const InterfaceID IID_IRndmBit( 150, 1, 0 );

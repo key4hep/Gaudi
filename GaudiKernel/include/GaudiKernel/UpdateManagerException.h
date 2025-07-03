@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/GaudiException.h>
 
 /** @class UpdateManagerException UpdateManagerException.h GaudiKernel/UpdateManagerException.h
@@ -24,7 +23,6 @@
  */
 class GAUDI_API UpdateManagerException : public GaudiException {
 public:
-  /// Standard constructor
   UpdateManagerException( const std::string& Message = "unspecified exception",
                           const std::string& Tag = "*UpdateManagerSvc*", const StatusCode& Code = StatusCode::FAILURE )
       : GaudiException( Message, Tag, Code ) {}
@@ -33,9 +31,7 @@ public:
                           const GaudiException& Ex )
       : GaudiException( Message, Tag, Code, Ex ) {}
 
-  /// Destructor.
   ~UpdateManagerException() throw() override = default;
 
-  /// Clone the exception.
   UpdateManagerException* clone() const override { return new UpdateManagerException( *this ); }
 };

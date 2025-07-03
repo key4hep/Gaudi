@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IConversionSvc.h>
 #include <GaudiKernel/IDataManagerSvc.h>
@@ -19,17 +18,10 @@
 #include <GaudiKernel/RegistryEntry.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/SmartIF.h>
-
 #include <string_view>
 
-// Forward declarations
-// Incident service
-class IIncidentSvc;
-// Generic address
 class IOpaqueAddress;
-// Generic interface to data object class
 class DataObject;
-// Data store agent
 class IDataStoreAgent;
 
 // Do not clutter global namespace for helpers...

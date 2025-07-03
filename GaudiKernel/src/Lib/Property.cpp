@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,32 +8,20 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <algorithm>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
 #include <Gaudi/Property.h>
 #include <GaudiKernel/GaudiHandle.h>
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/PropertyHolder.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/ToStream.h>
-// ============================================================================
-// Boost
-// ============================================================================
+#include <algorithm>
 #include <boost/algorithm/string/compare.hpp>
-// ============================================================================
+#include <functional>
+#include <memory>
+#include <string>
+#include <unordered_set>
+#include <utility>
+
 namespace {
   /// helper class to compare pointers to string using the strings
   struct PtrCmp {
@@ -54,14 +42,10 @@ std::string_view PropertyBase::to_view( std::string str ) {
   return **( all_strings.insert( std::make_unique<std::string>( std::move( str ) ) ).first );
 }
 
-// ============================================================================
-// the printout of the property value
-// ============================================================================
 std::ostream& PropertyBase::fillStream( std::ostream& stream ) const {
   return stream << " '" << name() << "':" << toString();
 }
 
-// ============================================================================
 /*  simple function which check the existence of the property with
  *  the given name.
  *
@@ -79,12 +63,10 @@ std::ostream& PropertyBase::fillStream( std::ostream& stream ) const {
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
-// ============================================================================
 bool Gaudi::Utils::hasProperty( const IInterface* p, std::string_view name ) {
   // delegate to another method after trivial check
   return p && getProperty( p, name );
 }
-// ============================================================================
 /*  simple function which check the existence of the property with
  *  the given name.
  *
@@ -102,12 +84,10 @@ bool Gaudi::Utils::hasProperty( const IInterface* p, std::string_view name ) {
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
-// ============================================================================
 bool Gaudi::Utils::hasProperty( const IProperty* p, std::string_view name ) {
   // delegate the actual work to another method ;
   return p && p->hasProperty( name );
 }
-// ============================================================================
 //
 // GaudiHandleProperty implementation
 //
@@ -177,7 +157,6 @@ StatusCode GaudiHandleArrayProperty::fromString( const std::string& source ) {
   return StatusCode::SUCCESS;
 }
 
-// ============================================================================
 namespace {
   template <typename C1, typename C2, typename BinaryPredicate>
   bool equal_( const C1& c1, const C2& c2, BinaryPredicate&& p ) {
@@ -192,7 +171,6 @@ namespace {
     };
   }
 } // namespace
-// ============================================================================
 /*  simple function which gets the property with given name
  *  from the component
  *
@@ -210,17 +188,15 @@ namespace {
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
-// ============================================================================
 PropertyBase* Gaudi::Utils::getProperty( const IProperty* p, std::string_view name ) {
   // trivial check
-  if ( !p ) { return nullptr; } // RETURN
+  if ( !p ) { return nullptr; }
   // get all properties
   const auto& props = p->getProperties();
   // comparison criteria:
   auto ifound = std::find_if( props.begin(), props.end(), is_iByName( name ) );
   return ifound != props.end() ? *ifound : nullptr;
 }
-// ============================================================================
 /*  simple function which gets the property with given name
  *  from the component
  *
@@ -238,17 +214,15 @@ PropertyBase* Gaudi::Utils::getProperty( const IProperty* p, std::string_view na
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
-// ============================================================================
 PropertyBase* Gaudi::Utils::getProperty( const IInterface* p, std::string_view name ) {
   // trivial check
-  if ( !p ) { return nullptr; } // RETURN
+  if ( !p ) { return nullptr; }
   // remove const-qualifier
   IInterface* _i = const_cast<IInterface*>( p );
-  if ( !_i ) { return nullptr; } // RETURN
+  if ( !_i ) { return nullptr; }
   SmartIF<IProperty> property( _i );
   return property ? getProperty( property, name ) : nullptr;
 }
-// ============================================================================
 /*  check  the property by name from  the list of the properties
  *
  *  @code
@@ -271,12 +245,10 @@ PropertyBase* Gaudi::Utils::getProperty( const IInterface* p, std::string_view n
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
-// ============================================================================
 bool Gaudi::Utils::hasProperty( const std::vector<const PropertyBase*>* p, std::string_view name ) {
   // delegate to another method
   return getProperty( p, name );
 }
-// ============================================================================
 /*  get the property by name from  the list of the properties
  *
  *  @code
@@ -298,14 +270,12 @@ bool Gaudi::Utils::hasProperty( const std::vector<const PropertyBase*>* p, std::
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
-// ============================================================================
 const PropertyBase* Gaudi::Utils::getProperty( const std::vector<const PropertyBase*>* p, std::string_view name ) {
   // trivial check
-  if ( !p ) { return nullptr; } // RETURN
+  if ( !p ) { return nullptr; }
   auto ifound = std::find_if( p->begin(), p->end(), is_iByName( name ) );
-  return p->end() != ifound ? *ifound : nullptr; // RETURN
+  return p->end() != ifound ? *ifound : nullptr;
 }
-// ============================================================================
 /* the full specialization of the
  *  method setProperty( IProperty, std::string, const TYPE&)
  *  for C-strings
@@ -319,12 +289,10 @@ const PropertyBase* Gaudi::Utils::getProperty( const std::vector<const PropertyB
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const char* value,
                                       const std::string& doc ) {
   return Gaudi::Utils::setProperty( component, name, std::string{ value }, doc );
 }
-// ============================================================================
 /* the full specialization of the
  * method Gaudi::Utils::setProperty( IProperty, std::string, const TYPE&)
  * for standard strings
@@ -337,10 +305,9 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const std::string& value,
                                       const std::string& doc ) {
-  if ( !component ) { return StatusCode::FAILURE; } // RETURN
+  if ( !component ) { return StatusCode::FAILURE; }
   if ( !component->hasProperty( name ) ) { return StatusCode::FAILURE; }
   StatusCode sc = component->setPropertyRepr( name, value );
   if ( !doc.empty() ) {
@@ -350,7 +317,6 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
   sc.ignore();
   return sc;
 }
-// ============================================================================
 /*  simple function to set the property of the given object from another
  *  property
  *
@@ -372,7 +338,6 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
  * @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const PropertyBase* property,
                                       const std::string& doc ) {
   if ( !component || !property ) return StatusCode::FAILURE;
@@ -381,7 +346,6 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
   if ( !doc.empty() ) { p->setDocumentation( doc ); }
   return StatusCode::SUCCESS;
 }
-// ============================================================================
 /* simple function to set the property of the given object from another
  *  property
  *
@@ -403,12 +367,10 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
  * @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const PropertyBase& property,
                                       const std::string& doc ) {
   return setProperty( component, name, &property, doc );
 }
-// ============================================================================
 /*  the full specialization of the
  *  method setProperty( IInterface , std::string, const TYPE&)
  *  for standard strings
@@ -421,14 +383,12 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const std::string& value,
                                       const std::string& doc ) {
   if ( !component ) { return StatusCode::FAILURE; }
   SmartIF<IProperty> property( component );
   return property ? setProperty( property, name, value, doc ) : StatusCode::FAILURE;
 }
-// ============================================================================
 /*  the full specialization of the
  *  method setProperty( IInterface , std::string, const TYPE&)
  *  for C-strings
@@ -441,12 +401,10 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const char* value,
                                       const std::string& doc ) {
   return setProperty( component, name, std::string{ value }, doc );
 }
-// ============================================================================
 /*  simple function to set the property of the given object from another
  *  property
  *
@@ -468,7 +426,6 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
  * @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const PropertyBase* property,
                                       const std::string& doc ) {
   if ( !component ) { return StatusCode::FAILURE; }
@@ -476,7 +433,6 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
   if ( !prop ) { return StatusCode::FAILURE; }
   return setProperty( prop, name, property, doc );
 }
-// ============================================================================
 /*  simple function to set the property of the given object from another
  *  property
  *
@@ -498,12 +454,10 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
  * @date 2007-05-13
  */
-// ============================================================================
 StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const PropertyBase& property,
                                       const std::string& doc ) {
   return setProperty( component, name, &property, doc );
 }
-// ============================================================================
 
 Gaudi::Details::WeakPropertyRef::operator std::string() const {
   using Gaudi::Utils::toString;

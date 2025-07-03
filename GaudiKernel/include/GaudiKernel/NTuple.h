@@ -9,28 +9,21 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Framework include files
-// ============================================================================
+
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataTypeInfo.h>
 #include <GaudiKernel/INTuple.h>
 #include <GaudiKernel/IOpaqueAddress.h>
 #include <GaudiKernel/SmartDataPtr.h>
-// ============================================================================
-// STL include files
-// ============================================================================
 #include <algorithm>
 #include <cfloat>
 #include <limits>
 #include <stdexcept>
 #include <string>
-// ============================================================================
-// Forward declarations
-// ============================================================================
+
 class NTupleFile;
 class NTupleDirectory;
-// ============================================================================
+
 /**
  * NTuple name space
  *
@@ -59,7 +52,7 @@ namespace NTuple {
   class Array;
   template <class TYP>
   class Matrix;
-  // ==========================================================================
+
   /// Class defining a range
   template <class TYP>
   class Range {
@@ -92,7 +85,7 @@ namespace NTuple {
     /// Maximal number of data
     static TYP max() { return std::numeric_limits<TYP>::max(); }
   };
-  // ==========================================================================
+
   template <>
   class Range<bool> {
   public:
@@ -113,7 +106,7 @@ namespace NTuple {
     /// Maximal number of data
     static bool max() { return true; }
   };
-  // ==========================================================================
+
   template <>
   inline IOpaqueAddress* Range<IOpaqueAddress*>::min() {
     return (IOpaqueAddress*)0x0;
@@ -122,7 +115,7 @@ namespace NTuple {
   inline IOpaqueAddress* Range<IOpaqueAddress*>::max() {
     return (IOpaqueAddress*)0xffffffff;
   }
-  // ==========================================================================
+
   /** Abstract class describing basic data in an Ntuple.
    */
   template <class TYP>
@@ -139,7 +132,7 @@ namespace NTuple {
     /// Access the range if specified
     virtual const ItemRange& range() const = 0;
   };
-  // ==========================================================================
+
   /** Abstract class describing a column in a N tuple.
    */
   template <class TYP>
@@ -159,7 +152,7 @@ namespace NTuple {
     /// Access to data by reference (CONST)
     virtual TYP get() const { return *this->m_buffer; }
   };
-  // ==========================================================================
+
   /** Abstract class describing a column-array in a N tuple.
    */
   template <class TYP>
@@ -188,7 +181,7 @@ namespace NTuple {
     TYP* begin() { return this->m_buffer; }
     TYP* end() { return this->m_buffer + this->length(); }
   };
-  // ==========================================================================
+
   /** Abstract class describing a matrix column in a N tuple.
    */
   template <class TYP>
@@ -218,7 +211,7 @@ namespace NTuple {
     /// Access to data by reference (CONST)
     const TYP* column( long i ) const { return this->m_buffer + i * m_rows; }
   };
-  // ==========================================================================
+
   /** Class acting as a smart pointer holding a N tuple entry.
    */
   template <class TYP>
@@ -251,7 +244,7 @@ namespace NTuple {
     /// Access the range
     const Range<TYP>& range() const { return m_ptr->range(); }
   };
-  // ==========================================================================
+
   /** Class acting as a smart pointer holding a N tuple _Item.
    */
   template <class TYP>
@@ -300,7 +293,7 @@ namespace NTuple {
       return *this;
     }
   };
-  // ==========================================================================
+
   /** Specialization acting as a smart pointer holding a N tuple _Item.
    */
   template <>
@@ -324,7 +317,7 @@ namespace NTuple {
       return *this;
     }
   };
-  // ==========================================================================
+
   /** Class acting as a smart pointer holding a N tuple _Item.
    */
   template <class TYP>
@@ -352,7 +345,7 @@ namespace NTuple {
     TYP* begin() { return this->m_ptr->begin(); }
     TYP* end() { return this->m_ptr->end(); }
   };
-  // =========================================================================
+
   /** Class acting as a smart pointer holding a N tuple _Item.
    */
   template <class TYP>
@@ -377,7 +370,7 @@ namespace NTuple {
       return this->m_ptr->column( i );
     }
   };
-  // =========================================================================
+
   /** Abstract base class which allows the user to interact with the
       actual N tuple implementation.
       The class is abstract, because the template methods must
@@ -957,7 +950,7 @@ namespace NTuple {
     /// Access "open" flag
     bool isOpen() const { return m_isOpen; }
   };
-  // =========================================================================
+
   // inhibit certain types by defining specialized templates which do not
   // allow for construction.
   template <>
@@ -976,7 +969,7 @@ namespace NTuple {
     virtual ~Matrix()    = default;
     virtual void dummy() = 0;
   };
-// =========================================================================
+
 #ifndef ALLOW_ALL_TYPES
 #else
   typedef Item<bool>               BoolItem;
@@ -1020,7 +1013,7 @@ namespace NTuple {
   inline std::ostream& operator<<( std::ostream& s, const Item<T>& obj ) {
     return s << T( obj );
   }
-} // end of namespace NTuple
+} // namespace NTuple
 
 // Useful:
 typedef SmartDataPtr<NTuple::Tuple>     NTuplePtr;

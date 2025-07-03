@@ -9,9 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
+
 #include <Gaudi/PluginService.h>
 #include <Gaudi/Property.h>
 #include <GaudiKernel/CommonMessaging.h>
@@ -24,17 +22,13 @@
 #include <GaudiKernel/ServiceLocatorHelper.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/ToolHandle.h>
-
-// ============================================================================
 #include <mutex>
 #include <vector>
-// ============================================================================
-// Forward declarations
-// ============================================================================
+
 class IMessageSvc;
 class ISvcManager;
 class ServiceManager;
-// ============================================================================
+
 /** @class Service GaudiKernel/Service.h
  *
  *  Base class for all services. It implements the IService and IProperty interfaces.
@@ -150,14 +144,12 @@ private:
   void initToolHandles() const;
 
 public:
-  // ==========================================================================
   /** The standard auditor service.May not be invoked before sysInitialize()
    *  has been invoked.
    */
   SmartIF<IAuditorSvc>& auditorSvc() const;
 
 protected:
-  /** Standard Destructor                        */
   ~Service() override;
   /** Service state                              */
   Gaudi::StateMachine::State m_state = Gaudi::StateMachine::OFFLINE;

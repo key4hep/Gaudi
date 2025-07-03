@@ -10,13 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
-// from STL
-#include <string>
-
-// from Gaudi
 #include <GaudiKernel/IAlgTool.h>
 #include <GaudiKernel/Time.h>
+#include <string>
 
 /** @class IEventTimeDecoder IEventTimeDecoder.h GaudiKernel/IEventTimeDecoder.h
  *

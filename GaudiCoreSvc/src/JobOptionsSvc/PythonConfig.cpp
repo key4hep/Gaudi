@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,14 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "PythonConfig.h"
-
+#include <boost/python.hpp>
 #include <iostream>
 
-// boost includes
-#include <boost/python.hpp>
 using namespace boost::python;
 
-//-----------------------------------------------------------------------------
 StatusCode PythonConfig::evaluateConfig( const std::string& filename, const std::string& preAction,
                                          const std::string& postAction ) {
   try {

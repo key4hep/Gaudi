@@ -10,16 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/StatusCode.h>
 #include <string>
 #include <typeinfo>
 #include <vector>
 
-// Framework include files
-#include <GaudiKernel/Kernel.h>
-#include <GaudiKernel/StatusCode.h>
-
-// Forward declarations
 class INTuple;
 class INTupleItem;
 class ISelectStatement;

@@ -10,15 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
-// from STL
+#include <GaudiKernel/IInterface.h>
 #include <string>
 #include <typeinfo>
 
-// from Gaudi
-#include <GaudiKernel/IInterface.h>
-
-// forward declarations
 class DataObject;
 class ValidDataObject;
 class IUpdateManagerSvc;
@@ -37,7 +32,6 @@ namespace Gaudi {
  */
 class BaseObjectMemberFunction {
 public:
-  /// Virtual destructor.
   virtual ~BaseObjectMemberFunction() = default;
 
   virtual StatusCode operator()() const = 0;
@@ -123,7 +117,6 @@ protected:
  */
 class BasePtrSetter {
 public:
-  /// Empty virtual destructor.
   virtual ~BasePtrSetter() = default;
   /// sets the internal pointer to the provided data object (with a dynamic_cast).
   virtual void set( DataObject* ) = 0;

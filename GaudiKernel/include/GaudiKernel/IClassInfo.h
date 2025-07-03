@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Experiment specific include files
 #include <GaudiKernel/ClassID.h>
 #include <GaudiKernel/Kernel.h>
 

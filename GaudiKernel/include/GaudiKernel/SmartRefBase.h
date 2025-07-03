@@ -8,19 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//	====================================================================
-//	SmartRefBase.h
-//	--------------------------------------------------------------------
-//
-//	Package   : Gaudi/Kernel
-//              Base class for SmartReference objects
-//
-//	Author    : Markus Frank
-//
-//	====================================================================
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/StreamBuffer.h>
 
 class ObjectContainerBase;

@@ -10,10 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files:
 #include <GaudiKernel/IDataProviderSvc.h>
 
-// Forward declarations:
 class DataObject;
 
 // Added to allow use of AIDA in applications

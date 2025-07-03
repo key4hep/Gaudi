@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -30,7 +30,6 @@ std::vector<std::string> gp::Catalog::ClientNames() const {
   std::transform( std::begin( catalog_ ), std::end( catalog_ ), std::back_inserter( result ), select1st );
   return result;
 }
-// ============================================================================
 bool gp::Catalog::Add( Property* property ) {
   assert( property );
   auto it = catalog_.find( property->ClientName() );
@@ -45,7 +44,6 @@ bool gp::Catalog::Add( Property* property ) {
   // TODO: check return value
   return true;
 }
-// ============================================================================
 gp::Property* gp::Catalog::Find( std::string_view client, std::string_view name ) {
   auto it = catalog_.find( client );
   if ( it == catalog_.end() ) return nullptr;
@@ -55,7 +53,6 @@ gp::Property* gp::Catalog::Find( std::string_view client, std::string_view name 
 
   return ( pit != it->second.end() ) ? &*pit : nullptr;
 }
-// ============================================================================
 std::string gp::Catalog::ToString() const {
   std::string result;
   for ( const auto& client : catalog_ ) {
@@ -63,9 +60,6 @@ std::string gp::Catalog::ToString() const {
   }
   return result;
 }
-// ============================================================================
-// print the content of the catalogue to std::ostream
-// ============================================================================
 std::ostream& Gaudi::Parsers::Catalog::fillStream( std::ostream& o ) const {
   o << R"(// ==================================================================================
 //       Parser catalog

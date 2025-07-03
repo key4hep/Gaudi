@@ -10,14 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IComponentManager.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/TypeNameString.h>
 #include <list>
 #include <string>
 
-// Forward class declaration
 class IService;
 class IAlgorithm;
 class ISvcLocator;

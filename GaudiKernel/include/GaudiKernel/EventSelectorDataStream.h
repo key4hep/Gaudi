@@ -8,28 +8,13 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	EventSelectorDataStream.h
-//--------------------------------------------------------------------
-//
-//	Package    : EventSelectorDataStream  (LHCb Event Selector Package)
-//
-//	Author     : M.Frank
-//      Created    : 4/10/00
-//	Changes    : R. Lambert 2009-09-04
-//
-//====================================================================
 #pragma once
 
-// Include files
 #include <Gaudi/Property.h>
 #include <GaudiKernel/IEvtSelector.h>
-
-// STL include files
 #include <iostream>
 #include <vector>
 
-// Forward declarations
 class MsgStream;
 class ISvcLocator;
 class EventSelectorDataStream;

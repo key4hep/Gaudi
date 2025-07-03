@@ -10,12 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IInterface.h>
 #include <iostream>
 #include <string>
 
-// Forward declarations
 class StatusCode;
 class Message;
 

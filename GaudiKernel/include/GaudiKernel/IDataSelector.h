@@ -10,10 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <vector>
 
-// Forward declarations
 class DataObject;
 
 /** 	This is only a placeholder to allow me compiling

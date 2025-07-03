@@ -9,24 +9,17 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Includes:
-// ============================================================================
-// STD & STL:
-// ============================================================================
+
+#include "Position.h"
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <variant>
 #include <vector>
-// ============================================================================
-#include "Position.h"
-// ============================================================================
+
 namespace Gaudi {
   namespace Parsers {
-    // ============================================================================
     class PropertyValue final {
-      // ----------------------------------------------------------------------------
     public:
       using VectorOfStrings = std::vector<std::string>;
       using MapOfStrings    = std::map<std::string, std::string, std::less<>>;
@@ -48,29 +41,25 @@ namespace Gaudi {
 
       MapOfStrings&       Map() { return std::get<MapOfStrings>( value_ ); }
       const MapOfStrings& Map() const { return std::get<MapOfStrings>( value_ ); }
-      // ----------------------------------------------------------------------------
+
       std::string ToString() const;
       bool        HasPosition() const { return position_.Exists(); }
       bool        IsSimple() const;
       bool        IsVector() const;
       bool        IsMap() const;
       bool        IsReference() const { return is_reference_; };
-      // ----------------------------------------------------------------------------
-      // Operators:
-      // ----------------------------------------------------------------------------
 
       PropertyValue&      operator+=( const PropertyValue& right );
       const PropertyValue operator+( const PropertyValue& right );
       PropertyValue&      operator-=( const PropertyValue& right );
       const PropertyValue operator-( const PropertyValue& right );
-      // bool operator == (const PropertyValue& right) const;
+
     private:
       Value    value_;
       Position position_;
       bool     is_reference_;
-      // ----------------------------------------------------------------------------
-    }; //  class PropertyValue
-    // ============================================================================
+    };
+
     class PropertyValueException : public std::runtime_error {
     public:
       PropertyValueException( const std::string& message ) : std::runtime_error( message ) {}
@@ -107,7 +96,5 @@ namespace Gaudi {
     private:
       Position position_;
     };
-    // ============================================================================
   } // namespace Parsers
 } // namespace Gaudi
-// ============================================================================

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,34 +8,14 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-///////////////////////////////////////////////////////////////////////////
-//
-// GaudiHistory/JobHistory.cpp
-//
-// Contains history information for a job. Imports all environment vars
-// and info from uname
-//
-//
-// @author: Charles Leggett
-//
-///////////////////////////////////////////////////////////////////////////
-
 #include <Gaudi/Property.h>
 #include <GaudiKernel/JobHistory.h>
 #include <GaudiKernel/System.h>
-
-#include <cstdlib>
 #include <iostream>
 
 using std::endl;
 using std::ostream;
 using std::string;
-
-//**********************************************************************
-// Member functions.
-//**********************************************************************
-
-// Constructor.
 
 JobHistory::JobHistory() : m_start_time( 0 ) {
 
@@ -72,10 +52,6 @@ JobHistory::JobHistory( const std::string& rel, const std::string& os, const std
     , m_os_version( osver )
     , m_machine( mach )
     , m_start_time( time ) {}
-
-//**********************************************************************
-
-// Destructor.
 
 JobHistory::~JobHistory() = default;
 
@@ -130,5 +106,3 @@ std::ostream& JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/
 
   return ost;
 }
-
-//**********************************************************************

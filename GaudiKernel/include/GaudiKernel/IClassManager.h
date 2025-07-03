@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/IInterface.h>
 #include <string>
 
-// Forward class declaration
 class ISvcLocator;
 
 /** @class IClassManager IClassManager.h GaudiKernel/IClassManager.h

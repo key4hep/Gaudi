@@ -27,6 +27,7 @@
 #include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/System.h>
 #include <algorithm>
+#include <fstream>
 #include <functional>
 #include <memory>
 #include <nlohmann/json.hpp>
@@ -131,13 +132,10 @@ private:
   std::vector<std::pair<std::regex, std::string>> m_globalDefaults;
 };
 
-// ============================================================================
 DECLARE_COMPONENT( JobOptionsSvc )
-// ============================================================================
-// Namespace aliases:
-// ============================================================================
+
 namespace gp = Gaudi::Parsers;
-// ============================================================================
+
 JobOptionsSvc::JobOptionsSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc ) {
   if ( System::isEnvSet( "JOBOPTSEARCHPATH" ) ) m_dir_search_path = System::getEnv( "JOBOPTSEARCHPATH" );
   if ( System::isEnvSet( "JOBOPTSDUMPFILE" ) ) m_dump = System::getEnv( "JOBOPTSDUMPFILE" );
@@ -148,7 +146,7 @@ JobOptionsSvc::JobOptionsSvc( const std::string& name, ISvcLocator* svc ) : base
     for ( const auto& p : m_globalDefaultsProp ) { m_globalDefaults.emplace_back( p.first, p.second ); }
   } );
 }
-// ============================================================================
+
 StatusCode JobOptionsSvc::initialize() {
   // Call base class initializer
   StatusCode sc = Service::initialize();
@@ -165,6 +163,7 @@ StatusCode JobOptionsSvc::initialize() {
   }
   return sc;
 }
+
 StatusCode JobOptionsSvc::stop() {
   if ( m_reportUnused ) {
     std::vector<std::string> unused;
@@ -185,7 +184,6 @@ StatusCode JobOptionsSvc::stop() {
   return Service::stop();
 }
 
-// ============================================================================
 StatusCode JobOptionsSvc::start() {
   if ( !m_dump.empty() ) { dump( m_dump ); }
   return StatusCode::SUCCESS;
@@ -195,7 +193,7 @@ void JobOptionsSvc::dump( const std::string& file, const gp::Catalog& catalog ) 
   std::ofstream out( file, std::ios_base::out | std::ios_base::trunc );
   if ( !out ) {
     error() << "Unable to open dump-file \"" + file + "\"" << endmsg;
-    return; // RETURN
+    return;
   }
   info() << "Properties are dumped into \"" + file + "\"" << endmsg;
   // perform the actual dump:
@@ -248,7 +246,6 @@ StatusCode JobOptionsSvc::readOptions( std::string_view file, std::string_view p
   StatusCode        sc = gp::ReadOptions( file, path, &messages, &catalog, &units, &pragma, &ast ) ? StatusCode::SUCCESS
                                                                                                    : StatusCode::FAILURE;
 
-  // --------------------------------------------------------------------------
   if ( sc.isSuccess() ) {
     if ( pragma.IsPrintOptions() ) { info() << "Print options" << std::endl << catalog << endmsg; }
     if ( pragma.IsPrintTree() ) { info() << "Print tree:" << std::endl << ast.ToString() << endmsg; }
@@ -258,7 +255,6 @@ StatusCode JobOptionsSvc::readOptions( std::string_view file, std::string_view p
   } else {
     fatal() << "Job options errors." << endmsg;
   }
-  // ----------------------------------------------------------------------------
   return sc;
 }
 

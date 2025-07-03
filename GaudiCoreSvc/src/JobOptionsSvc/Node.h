@@ -9,27 +9,17 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Includes:
-// ============================================================================
-// STD & STL:
-// ============================================================================
-#include <string>
-#include <vector>
-// ============================================================================
-// BOOST:
-// ============================================================================
 
+#include "Iterator.h"
+#include "Position.h"
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/unused.hpp>
 #include <boost/range/iterator_range.hpp>
-// ============================================================================
-#include "Iterator.h"
-#include "Position.h"
-// ============================================================================
+#include <string>
+#include <vector>
+
 namespace Gaudi {
   namespace Parsers {
-    // ============================================================================
     struct Node final {
       enum NodeType {
         kRoot,
@@ -73,10 +63,10 @@ namespace Gaudi {
       std::string name() const;
       std::string ToString( int indent = 0 ) const;
     };
-    // ============================================================================
+
     struct NodeOperations final {
       struct value {};
-      //---------------------------------------------------------------------------
+
       void operator()( Node& node, Node::NodeType type ) const { node.type = type; }
 
       void operator()( Node& node, Node child ) const { node.children.push_back( std::move( child ) ); }
@@ -93,15 +83,10 @@ namespace Gaudi {
         const IteratorPosition& pos = iter.get_position();
         node.position               = Position( pos.file, pos.line, pos.column );
       }
-
-      //---------------------------------------------------------------------------
     };
-    // ============================================================================
   } // namespace Parsers
 } // namespace Gaudi
-// ============================================================================
 // cppcheck-suppress unknownMacro
 BOOST_FUSION_ADAPT_STRUCT( Gaudi::Parsers::Node,
                            ( Gaudi::Parsers::Node::NodeType,
                              type )( std::string, value )( std::vector<Gaudi::Parsers::Node>, children ) )
-// ============================================================================

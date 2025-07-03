@@ -10,12 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/Incident.h>
 #include <string>
 
 /**
- * @class ModuleIncident
  * @brief base class for Module-related incident
  * @author P. Calafiura
  */

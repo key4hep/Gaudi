@@ -9,19 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <map>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <GaudiKernel/MapBase.h>
-// ============================================================================
+#include <map>
+
 namespace GaudiUtils {
-  // ==========================================================================
   /** @class Map GaudiKernel/Map.h
    *
    * Extension of the STL map.
@@ -89,7 +81,6 @@ namespace GaudiUtils {
   template <typename K, typename T, typename M = std::map<K, T>>
   class Map : public Gaudi::Utils::MapBase {
   public:
-    // ========================================================================
     // ---- types
     typedef M map_type;
     typedef K key_type;
@@ -105,25 +96,17 @@ namespace GaudiUtils {
 
     typedef typename map_type::iterator       iterator;
     typedef typename map_type::const_iterator const_iterator;
-    // typedef typename map_type::reverse_iterator reverse_iterator;
-    // typedef typename map_type::const_reverse_iterator const_reverse_iterator;
-    // ========================================================================
+
   protected:
-    // ========================================================================
     map_type                 m_map;
     static const result_type s_null_value;
-    // ========================================================================
-  public:
-    // ---- Constructors
 
-    /// Standard constructor
+  public:
     Map() = default;
 
     /// Constructor from a standard map
     Map( const map_type& other ) : m_map( other ) {}
 
-    // /// Copy Constructor
-    // Map(const Map& other): m_map(other.m_map) {}
     /// Construct from a subset.
     template <typename In>
     Map( In&& first, In&& last ) : m_map( std::forward<In>( first ), std::forward<In>( last ) ) {}
@@ -140,12 +123,6 @@ namespace GaudiUtils {
 
     inline const_iterator begin() const { return m_map.begin(); }
     inline const_iterator end() const { return m_map.end(); }
-
-    // inline reverse_iterator rbegin() { return m_map.rbegin(); }
-    // inline reverse_iterator rend()   { return m_map.rend(); }
-
-    // inline const_reverse_iterator rbegin() const { return m_map.rbegin(); }
-    // inline const_reverse_iterator rend()   const { return m_map.rend(); }
 
     //    -- subscription
 
@@ -230,7 +207,6 @@ namespace GaudiUtils {
       /// return the default value if not present
       return it != m_map.end() ? it->second : s_null_value;
     }
-    // ========================================================================
     /** Access elements of a const Map.
      *  There is no automatic extension of the map for missing keys!
      *
@@ -254,14 +230,12 @@ namespace GaudiUtils {
      *           and the default value overwise
      */
     inline const mapped_type& operator[]( const key_type& key ) const { return ( *this )( key ); }
-    // ========================================================================
     /** checked access to the map
      *  @exception std::out_of_range for missing keys
      *  @param  key (INPUT) the key
      *  @return the value for the existing key
      */
     inline const result_type& at( const argument_type& key ) const { return m_map.at( key ); }
-    // ========================================================================
     /// Merge two maps.
     inline Map& merge( const map_type& other ) {
       m_map.insert( std::begin( other ), std::end( other ) );
@@ -280,15 +254,11 @@ namespace GaudiUtils {
     }
     // update the key
     void update( const key_type& key, const mapped_type& mapped ) { ( *this )[key] = mapped; }
-    // ========================================================================
+
   public:
-    // ========================================================================
     /// Allows to use the Map wherever an std::map is explicitly requested.
     inline operator map_type&() { return m_map; }
     inline operator const map_type&() const { return m_map; }
-    // ========================================================================
-  public:
-    // ========================================================================
     /** useful method for python decoration:
      *  @param index (INPUT) the index
      *  @return the key at given index
@@ -307,15 +277,7 @@ namespace GaudiUtils {
       if ( index >= size() ) { this->throw_out_of_range_exception(); }
       return std::next( this->begin(), index )->second;
     }
-    // ========================================================================
   };
-  // ==========================================================================
   template <typename K, typename T, typename M>
   const typename Map<K, T, M>::result_type Map<K, T, M>::s_null_value = typename Map<K, T, M>::result_type();
-  // ==========================================================================
 } // namespace GaudiUtils
-// ============================================================================
-
-// ============================================================================
-// The END
-// ============================================================================

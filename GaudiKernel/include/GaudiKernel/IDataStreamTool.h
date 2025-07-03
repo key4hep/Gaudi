@@ -10,12 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
-// from STL
-#include <string>
-
-// from Gaudi
 #include <GaudiKernel/IAlgTool.h>
+#include <string>
 
 class IEvtSelector;
 class EventSelectorDataStream;

@@ -10,11 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// STL include files
-#include <vector>
-
-// Framework include files
 #include <GaudiKernel/IInterface.h>
+#include <vector>
 
 /** @class IRndmEngine IRndmEngine.h GaudiKernel/IRndmEngine.h
 

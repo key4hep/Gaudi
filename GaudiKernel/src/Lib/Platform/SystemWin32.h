@@ -11,7 +11,6 @@
 // Dear emacs, this is -*- c++ -*-
 #pragma once
 
-// System include(s):
 #include <string>
 #include <vector>
 

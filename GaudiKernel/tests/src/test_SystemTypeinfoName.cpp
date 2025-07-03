@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,11 +14,8 @@
 #define BOOST_TEST_MODULE test_SystemTypeinfoName
 #include <boost/test/unit_test.hpp>
 
-// System include(s):
-#include <string>
-
-// GaudiKernel include(s):
 #include <GaudiKernel/System.h>
+#include <string>
 
 /// Primitive test class used in the tests
 class TestClass {};

@@ -10,8 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
-//   for the architecture independent int64 definition (long long)
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StreamBuffer.h>

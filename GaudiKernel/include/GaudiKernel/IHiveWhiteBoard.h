@@ -10,11 +10,8 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/DataObjID.h>
 #include <GaudiKernel/IInterface.h>
-
-// C++ include files
 #include <string>
 
 /**@class IHiveWhiteBoard IHiveWhiteBoard.h GaudiKernel/IHiveWhiteBoard.h

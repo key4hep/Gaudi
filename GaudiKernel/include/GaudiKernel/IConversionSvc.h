@@ -10,12 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
+#include <GaudiKernel/IConverter.h>
 #include <string>
 
-#include <GaudiKernel/IConverter.h>
-
-// Forward declarations
 class ICnvFactory;
 
 /** @class IConversionSvc IConversionSvc.h GaudiKernel/IConversionSvc.h

@@ -8,18 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	SystemBase.h
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Definition of Systems internals
-//
-//	Author     : M.Frank
-//  Created    : 13/11/00
-//	Changes    :
-//====================================================================
 #pragma once
 
 namespace System {

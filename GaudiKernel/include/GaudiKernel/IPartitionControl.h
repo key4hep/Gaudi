@@ -10,10 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/IInterface.h>
-
-// C++ include files
 #include <string>
 
 /**@class IPartitionControl IPartitionControl.h GaudiKernel/IPartitionControl.h

@@ -8,13 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
+#include <GaudiKernel/HashMap.h>
+#include <GaudiKernel/Map.h>
+#include <GaudiKernel/SerializeSTL.h>
+#include <GaudiKernel/VectorMap.h>
 #include <array>
 #include <iomanip>
 #include <iostream>
@@ -25,14 +24,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include <GaudiKernel/HashMap.h>
-#include <GaudiKernel/Map.h>
-#include <GaudiKernel/SerializeSTL.h>
-#include <GaudiKernel/VectorMap.h>
-// ============================================================================
+
 /** @file GaudiKernel/ToStream.h
  *  implementation of various functions for streaming.
  *  this functionality is essential for usage of various types as property for
@@ -42,11 +34,8 @@
  *  @todo ToStream.h : reimplement in terms of functors, to allow
  *                     easier specializations
  */
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace Utils {
-    // ========================================================================
     /** the generic implementation of the printout to the std::ostream
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -54,7 +43,6 @@ namespace Gaudi {
      */
     template <class TYPE>
     std::ostream& toStream( const TYPE& obj, std::ostream& s );
-    // ========================================================================
     /** the helper function to print the sequence
      *  @param first (INPUT)  begin-iterator for the sequence
      *  @param last  (INPUT)  end-iterator for the sequence
@@ -73,7 +61,6 @@ namespace Gaudi {
                                    const std::string& open,    //               opening
                                    const std::string& close,   //               closing
                                    const std::string& delim ); //             delimiter
-    // ========================================================================
     /** the printtout of the strings.
      *  the string is printed a'la Python using the quotes
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
@@ -110,7 +97,6 @@ namespace Gaudi {
       const int p = static_cast<int>( s.precision() );
       return s << std::setprecision( prec ) << obj << std::setprecision( p );
     }
-    // ========================================================================
     /** the partial template specialization of
      *  <c>std::pair<KTYPE,VTYPE></c> printout
      *  the pair is printed a'la Python tuple: " ( a , b )"
@@ -126,7 +112,6 @@ namespace Gaudi {
     template <typename... Args>
     inline std::ostream& toStream( const std::tuple<Args...>& tuple, std::ostream& s );
 
-    // ========================================================================
     /** the partial template specialization of <c>std::vector<TYPE,ALLOCATOR></c>
      *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
@@ -137,7 +122,6 @@ namespace Gaudi {
     inline std::ostream& toStream( const std::vector<TYPE, ALLOCATOR>& obj, std::ostream& s ) {
       return toStream( obj.begin(), obj.end(), s, "[ ", " ]", " , " );
     }
-    // ========================================================================
     /** the partial template specialization of <c>std::list<TYPE,ALLOCATOR></c>
      *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
@@ -148,7 +132,6 @@ namespace Gaudi {
     inline std::ostream& toStream( const std::list<TYPE, ALLOCATOR>& obj, std::ostream& s ) {
       return toStream( obj.begin(), obj.end(), s, "[ ", " ]", " , " );
     }
-    // ========================================================================
     /** the partial template specialization of <c>std::set<TYPE,CMP,ALLOCATOR></c>
      *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
@@ -159,7 +142,6 @@ namespace Gaudi {
     inline std::ostream& toStream( const std::set<TYPE, CMP, ALLOCATOR>& obj, std::ostream& s ) {
       return toStream( obj.begin(), obj.end(), s, "[ ", " ]", " , " );
     }
-    // ========================================================================
     /** the partial template specialization of <c>std::unordered_set<TYPE,HASH,CMP,ALLOCATOR></c>
      *  printout. The set is printed a'la Python set: "{ a, b, c }"
      */
@@ -168,7 +150,6 @@ namespace Gaudi {
       auto ordered = std::set( obj.begin(), obj.end() ); // ensure reproducible printout
       return obj.empty() ? s << "set()" : toStream( ordered.begin(), ordered.end(), s, "{ ", " }", " , " );
     }
-    // ========================================================================
     /** the partial template specialization of
      *  <c>std::map<KTYPE,VTYPE,CMP,ALLOCATOR></c> printout
      *  the map is printed a'la Python dict: " ( a : b , c: d , e : f )"
@@ -185,7 +166,6 @@ namespace Gaudi {
                              } )
              << " }";
     }
-    // ========================================================================
     /** the partial template specialization of
      *  <c>GaudiUtils::VectorMap<KTYPE,VTYPE,CMP,ALLOCATOR></c> printout
      *  the map is printed a'la Python dict: " ( a : b , c: d , e : f )"
@@ -203,7 +183,6 @@ namespace Gaudi {
                              } )
              << " }";
     }
-    // ========================================================================
     /** the partial template specialization of
      *  <c>GaudiUtils::Map<KTYPE,VTYPE,MAP></c> printout
      *  the map is printed a'la Python dict: " ( a : b , c: d , e : f )"
@@ -221,7 +200,6 @@ namespace Gaudi {
                              } )
              << " }";
     }
-    // ========================================================================
     /** the partial template specialization of
      *  <c>GaudiUtils::HashMap<KTYPE,VTYPE,HASH,MAP></c> printout
      *  the map is printed a'la Python dict: " ( a : b , c: d , e : f )"
@@ -235,7 +213,6 @@ namespace Gaudi {
       // Copy the hash map into a map to have it ordered by key.
       return toStream( GaudiUtils::Map<KTYPE, VTYPE>{ obj.begin(), obj.end() }, s );
     }
-    // ========================================================================
     /** the specialization for C-arrays, a'la python tuple
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
@@ -248,7 +225,6 @@ namespace Gaudi {
         return toStream( obj, obj + N, s, "( ", " )", " , " );
       }
     }
-    // ========================================================================
     /** the specialization for std::array, a'la python tuple
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-16
@@ -261,7 +237,6 @@ namespace Gaudi {
         return toStream( begin( obj ), end( obj ), s, "( ", " )", " , " );
       }
     }
-    // ========================================================================
     /** the specialization for C-string, a'la python tuple
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
@@ -270,13 +245,11 @@ namespace Gaudi {
     std::ostream& toStream( const char ( &obj )[N], std::ostream& s ) {
       return toStream( std::string( obj, obj + N ), s );
     }
-    // ========================================================================
     /** the specialization for C-string, a'la python tuple
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
      */
     inline std::ostream& toStream( const char* obj, std::ostream& s ) { return toStream( std::string( obj ), s ); }
-    // ========================================================================
     /** the generic implementation of the printout to the std::ostream
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -286,7 +259,6 @@ namespace Gaudi {
     inline std::ostream& toStream( const TYPE& obj, std::ostream& s ) {
       return s << obj;
     }
-    // ========================================================================
     // helper function to print a tuple of any size
     template <class Tuple, std::size_t N>
     struct TuplePrinter {
@@ -317,7 +289,6 @@ namespace Gaudi {
       }
       return out << " ) ";
     }
-    // ========================================================================
     /** the helper function to print the sequence
      *  @param first (INPUT)  begin-iterator for the sequence
      *  @param last  (INPUT)  end-iterator for the sequence
@@ -344,7 +315,6 @@ namespace Gaudi {
              << close;
     }
 
-    // ========================================================================
     /** the generic implementation of the type conversion to the string
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -361,10 +331,5 @@ namespace Gaudi {
       s.flags( orig_flags );
       return s.str();
     }
-    // ========================================================================
   } // namespace Utils
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

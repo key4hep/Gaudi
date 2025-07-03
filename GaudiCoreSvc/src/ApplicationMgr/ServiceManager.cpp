@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,7 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-// Include files
 #include "ServiceManager.h"
 #include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IIncidentSvc.h>
@@ -22,10 +21,8 @@
 #include <GaudiKernel/System.h>
 #include <GaudiKernel/TypeNameString.h>
 #include <GaudiKernel/reverse.h>
-
 #include <algorithm>
 #include <cassert>
-#include <functional>
 #include <iostream>
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
@@ -50,7 +47,6 @@ namespace {
   }
 } // namespace
 
-// constructor
 ServiceManager::ServiceManager( IInterface* application )
     : base_class( application, IService::interfaceID() ), m_appSvc( application ) {
   // Set the service locator to myself
@@ -58,17 +54,12 @@ ServiceManager::ServiceManager( IInterface* application )
   addRef(); // increase ref count, so we live forever...
 }
 
-// destructor
 ServiceManager::~ServiceManager() {
   //-- inform the orphan services that I am gone....
   for ( auto& svc : m_listsvc ) svc.service->setServiceManager( nullptr );
 }
 
-//------------------------------------------------------------------------------
-// Instantiate a service
-SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameString& typeName )
-//------------------------------------------------------------------------------
-{
+SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameString& typeName ) {
   // Check if the service is already existing
   if ( existsService( typeName.name() ) ) {
     // return an error because a service with that name already exists
@@ -114,11 +105,7 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
                                    // allow relocations of those...
 }
 
-//------------------------------------------------------------------------------
-// add a service to the managed list
-StatusCode ServiceManager::addService( IService* svc, int prio )
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::addService( IService* svc, int prio ) {
   auto it  = find( svc );
   auto lck = std::scoped_lock{ m_gLock };
   if ( it != m_listsvc.end() ) {
@@ -130,11 +117,7 @@ StatusCode ServiceManager::addService( IService* svc, int prio )
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-// add the service with the give type and name to the active list
-StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeName, int prio )
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeName, int prio ) {
   auto it = find( typeName.name() ); // try to find the service by name
   if ( it == m_listsvc.end() ) {     // not found
     // If the service does not exist, we create it
@@ -173,8 +156,6 @@ StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeN
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-// Returns a smart pointer to a service.
 SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf ) {
   const std::string& name = typeName.name();
 
@@ -218,55 +199,35 @@ SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& 
   }
 }
 
-//------------------------------------------------------------------------------
-const std::list<IService*>& ServiceManager::getServices() const
-//------------------------------------------------------------------------------
-{
+const std::list<IService*>& ServiceManager::getServices() const {
   m_listOfPtrs.clear();
   std::transform( std::begin( m_listsvc ), std::end( m_listsvc ), std::back_inserter( m_listOfPtrs ),
                   []( ListSvc::const_reference i ) { return i.service.get(); } );
   return m_listOfPtrs;
 }
 
-//------------------------------------------------------------------------------
-bool ServiceManager::existsService( std::string_view name ) const
-//------------------------------------------------------------------------------
-{
-  return find( name ) != m_listsvc.end();
-}
+bool ServiceManager::existsService( std::string_view name ) const { return find( name ) != m_listsvc.end(); }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::removeService( IService* svc )
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::removeService( IService* svc ) {
   auto it = find( svc );
   if ( it == m_listsvc.end() ) return StatusCode::FAILURE;
   m_listsvc.erase( it );
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::removeService( std::string_view name )
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::removeService( std::string_view name ) {
   auto it = find( name );
   if ( it == m_listsvc.end() ) return StatusCode::FAILURE;
   m_listsvc.erase( it );
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::declareSvcType( std::string svcname, std::string svctype )
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::declareSvcType( std::string svcname, std::string svctype ) {
   m_maptype.insert_or_assign( std::move( svcname ), std::move( svctype ) );
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::initialize()
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::initialize() {
   // ensure that the list is ordered by priority
   m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
@@ -297,10 +258,7 @@ StatusCode ServiceManager::initialize()
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::start()
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::start() {
   // ensure that the list is ordered by priority
   m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
@@ -330,10 +288,7 @@ StatusCode ServiceManager::start()
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::stop()
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::stop() {
   // ensure that the list is ordered by priority
   m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
@@ -364,10 +319,7 @@ StatusCode ServiceManager::stop()
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::reinitialize()
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::reinitialize() {
   // ensure that the list is ordered by priority
   m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
@@ -385,10 +337,7 @@ StatusCode ServiceManager::reinitialize()
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::restart()
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::restart() {
   // ensure that the list is ordered by priority
   m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
@@ -406,10 +355,7 @@ StatusCode ServiceManager::restart()
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-StatusCode ServiceManager::finalize()
-//------------------------------------------------------------------------------
-{
+StatusCode ServiceManager::finalize() {
   // make sure that HistogramDataSvc and THistSvc get finalized after the
   // ToolSvc, and the FileMgr after that
   int pri_tool = getPriority( "ToolSvc" );
@@ -482,34 +428,21 @@ StatusCode ServiceManager::finalize()
   return sc;
 }
 
-//------------------------------------------------------------------------------
 int ServiceManager::getPriority( std::string_view name ) const {
-  //------------------------------------------------------------------------------
   auto it = find( name );
   return ( it != m_listsvc.end() ) ? it->priority : 0;
 }
 
-//------------------------------------------------------------------------------
 StatusCode ServiceManager::setPriority( std::string_view name, int prio ) {
-  //------------------------------------------------------------------------------
   auto it = find( name );
   if ( it == m_listsvc.end() ) return StatusCode::FAILURE;
   it->priority = prio;
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
-// Get the value of the initialization loop check flag.
-//------------------------------------------------------------------------------
 bool ServiceManager::loopCheckEnabled() const { return m_loopCheck; }
-//------------------------------------------------------------------------------
-// Set the value of the initialization loop check flag.
-//------------------------------------------------------------------------------
 void ServiceManager::setLoopCheckEnabled( bool en ) { m_loopCheck = en; }
 
-//------------------------------------------------------------------------------
-// Dump out contents of service list
-//------------------------------------------------------------------------------
 void ServiceManager::dump() const {
 
   auto& log = info();

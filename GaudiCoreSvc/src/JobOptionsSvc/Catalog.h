@@ -9,31 +9,16 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// STD & STL:
-// ============================================================================
+#include "Property.h"
+#include "PropertyName.h"
+#include "PropertyValue.h"
+#include <boost/ptr_container/ptr_set.hpp>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-// ============================================================================
-// Boost:
-// ============================================================================
-#include <boost/ptr_container/ptr_set.hpp>
-// ============================================================================
-// Local:
-// ============================================================================
-#include "Property.h"
-#include "PropertyName.h"
-#include "PropertyValue.h"
-// ============================================================================
-// Namespace aliases:
-// ============================================================================
-// ...
-// ============================================================================
 namespace Gaudi {
   namespace Parsers {
-    // ============================================================================
     class Catalog final {
     public:
       typedef boost::ptr_set<Property, Property::LessThen>    PropertySet;
@@ -60,11 +45,8 @@ namespace Gaudi {
     private:
       CatalogSet catalog_;
     };
-    // ============================================================================
     /// printout operator
-    // ============================================================================
     inline std::ostream& operator<<( std::ostream& o, const Catalog& c ) { return c.fillStream( o ); }
-    // ============================================================================
   } // namespace Parsers
 } // namespace Gaudi
 
@@ -72,5 +54,3 @@ template <typename Value>
 inline bool Gaudi::Parsers::Catalog::Add( std::string client, std::string property, const Value& value ) {
   return Add( new Property( PropertyName( std::move( client ), std::move( property ) ), PropertyValue( value ) ) );
 }
-
-// ============================================================================

@@ -9,15 +9,8 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Includes:
-// ============================================================================
-// STD & STL:
-// ============================================================================
-#include <string>
-// ============================================================================
-// Boost:
-// ============================================================================
+
+#include "Node.h"
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/fusion.hpp>
 #include <boost/phoenix/operator.hpp>
@@ -29,25 +22,16 @@
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 #include <boost/spirit/repository/include/qi_confix.hpp>
 #include <boost/spirit/repository/include/qi_iter_pos.hpp>
+#include <string>
 
-// ============================================================================
-//  Project:
-// ============================================================================
-#include "Node.h"
-//============================================================================
 namespace Gaudi {
   namespace Parsers {
-    // ============================================================================
-    // Namespace aliases:
-    // ============================================================================
     namespace sp  = boost::spirit;
     namespace ph  = boost::phoenix;
     namespace qi  = sp::qi;
     namespace enc = sp::ascii;
     namespace rep = sp::repository;
-    //=============================================================================
-    // Grammars
-    //=============================================================================
+
     template <typename Iterator>
     struct SkipperGrammar : qi::grammar<Iterator> {
       SkipperGrammar() : SkipperGrammar::base_type( comments ) {
@@ -56,12 +40,10 @@ namespace Gaudi {
       }
       qi::rule<Iterator> comments;
     };
-    // ============================================================================
+
     template <typename Iterator, typename Skipper>
     struct StringGrammar : qi::grammar<Iterator, std::string(), qi::locals<char>, Skipper> {
-      //---------------------------------------------------------------------------
       typedef std::string ResultT;
-      //---------------------------------------------------------------------
       StringGrammar() : StringGrammar::base_type( str ) {
         begin_quote = enc::char_( "\"'" );
         quote       = enc::char_( qi::_r1 );
@@ -71,18 +53,13 @@ namespace Gaudi {
                             ( enc::char_[qi::_val += qi::_1] - quote( qi::_a ) ) ) >>
                          quote( qi::_a )];
       }
-      //-----------------------------------------------------------------------------
       qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
       qi::rule<Iterator, char()>                                   begin_quote;
       qi::rule<Iterator, void( char )>                             quote;
-      //-----------------------------------------------------------------------------
     };
-    // ============================================================================
     template <typename Iterator, typename Skipper>
     struct IdentifierGrammar : qi::grammar<Iterator, Node(), Skipper> {
-      //-----------------------------------------------------------------------------
       typedef std::string ResultT;
-      //-----------------------------------------------------------------------------
       IdentifierGrammar() : IdentifierGrammar::base_type( ident ) {
         ident =
             rep::qi::iter_pos[op( qi::_val, qi::_1 )] >> str[op( qi::_val, qi::_1 )][op( qi::_val, Node::kIdentifier )];
@@ -90,43 +67,32 @@ namespace Gaudi {
               *( qi::lit( "::" ) >> inner[qi::_val += ( "::" + qi::_1 )] );
         inner = qi::alpha >> *( qi::alnum | qi::char_( '_' ) );
       }
-      // ----------------------------------------------------------------------------
       qi::rule<Iterator, Node(), Skipper>        ident;
       qi::rule<Iterator, std::string(), Skipper> str;
       qi::rule<Iterator, std::string()>          inner;
       ph::function<NodeOperations>               op;
     };
-    // ============================================================================
     template <typename Iterator, typename Skipper>
     struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper> {
-      // ----------------------------------------------------------------------------
       typedef bool ResultT;
-      // ----------------------------------------------------------------------------
       BoolGrammar() : BoolGrammar::base_type( boolean ) {
         boolean = enc::no_case[qi::lit( "true" )[qi::_val = true] | qi::lit( "false" )[qi::_val = false]];
       }
-      // ----------------------------------------------------------------------------
       qi::rule<Iterator, bool(), Skipper> boolean;
     };
-    // ============================================================================
     template <typename Iterator, typename Skipper>
     struct RealGrammar : qi::grammar<Iterator, Node(), Skipper> {
-      // ----------------------------------------------------------------------------
       typedef bool ResultT;
-      //---------------------------------------------------------------------
       RealGrammar() : RealGrammar::base_type( real ) {
         real = qi::raw[qi::double_][op( qi::_val, qi::_1 )][op( qi::_val, Node::kReal )] >> -qi::char_( 'L' ) >>
                -( -qi::char_( '*' ) >> gunit[op( qi::_val, qi::_1 )] );
       }
-      // ----------------------------------------------------------------------------
       qi::rule<Iterator, Node(), Skipper>  real;
       IdentifierGrammar<Iterator, Skipper> gunit;
       ph::function<NodeOperations>         op;
     };
-    // ============================================================================
     template <typename Iterator, typename Skipper>
     struct UnitsGrammar : qi::grammar<Iterator, Node(), Skipper> {
-      // ----------------------------------------------------------------------------
       UnitsGrammar() : UnitsGrammar::base_type( units ) {
         units = *unit[op( qi::_val, qi::_1 )];
         unit  = rep::qi::iter_pos[op( qi::_val, qi::_1 )] >> val[op( qi::_val, qi::_1 )] >> -qi::lit( '*' ) >>
@@ -135,12 +101,10 @@ namespace Gaudi {
         ;
         val = qi::raw[qi::double_][op( qi::_val, qi::_1 )][op( qi::_val, Node::kReal )];
       }
-      // ----------------------------------------------------------------------------
       qi::rule<Iterator, Node(), Skipper>  units, unit, val;
       IdentifierGrammar<Iterator, Skipper> gunit;
       ph::function<NodeOperations>         op;
     };
-    // ============================================================================
     template <typename Iterator, typename Skipper>
     struct FileGrammar : qi::grammar<Iterator, Node(), Skipper> {
       FileGrammar() : FileGrammar::base_type( file ) {
@@ -200,7 +164,5 @@ namespace Gaudi {
       IdentifierGrammar<Iterator, Skipper>                        gidentifier;
       ph::function<NodeOperations>                                op;
     };
-    // ============================================================================
   } // namespace Parsers
 } // namespace Gaudi
-// ============================================================================

@@ -10,7 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
+#include <GaudiKernel/KeyedObject.h>
+#include <GaudiKernel/KeyedObjectManager.h>
+#include <GaudiKernel/ObjectContainerBase.h>
 #include <algorithm>
 #include <iterator>
 
@@ -18,14 +20,6 @@ namespace GaudiDict {
   template <class T>
   struct KeyedContainerDict;
 }
-
-// Framework include files
-#include <GaudiKernel/KeyedObject.h>
-#include <GaudiKernel/KeyedObjectManager.h>
-#include <GaudiKernel/ObjectContainerBase.h>
-
-// Forward declarations
-// template <class T, class M> class KeyedContainer;
 
 #ifdef WIN32
 #  define FORCE_INLINE __forceinline

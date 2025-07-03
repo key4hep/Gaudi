@@ -8,19 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//	============================================================
-//
-//	EventIterator.h
-//	------------------------------------------------------------
-//
-//	Package   : EventSelector
-//
-//	Author    : Markus Frank
-//
-//	===========================================================
 #pragma once
 
-// Include files
 #include <GaudiKernel/IDataStreamTool.h>
 #include <GaudiKernel/IEvtSelector.h>
 

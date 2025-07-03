@@ -10,13 +10,11 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/Hash.h>
 #include <GaudiKernel/Map.h>
 #include <unordered_map>
 
 namespace GaudiUtils {
-  // ==========================================================================
   /** @class HashMap HashMap.h GaudiKernel/HashMap.h
    *
    * Common class providing an architecture-independent hash map.

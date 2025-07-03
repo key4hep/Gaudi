@@ -8,20 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-
-//---------------------------------------------------------------------------------
-/** @file Vector4DTypes.h
- *
- *  4 vector typedefs
- *
- *  @author Juan PALACIOS
- *  @date   2005-11-21
- */
-//---------------------------------------------------------------------------------
-
 #pragma once
 
-// Include files
 #include <Math/Vector4D.h>
 
 /** @namespace Gaudi

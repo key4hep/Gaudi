@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,28 +8,16 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// ============================================================================
-// Include files
-// ============================================================================
 #include "PropertyValue.h"
 #include <GaudiKernel/compose.h>
-// ============================================================================
-// STD & STL:
-// ============================================================================
-// ============================================================================
-// Boost:
-// ============================================================================
 #include <boost/algorithm/string/join.hpp>
 #include <boost/format.hpp>
-// ============================================================================
+
 namespace gp = Gaudi::Parsers;
-// ============================================================================
-bool gp::PropertyValue::IsSimple() const { return std::holds_alternative<std::string>( value_ ); }
-// ============================================================================
-bool gp::PropertyValue::IsVector() const { return std::holds_alternative<VectorOfStrings>( value_ ); }
-// ============================================================================
-bool gp::PropertyValue::IsMap() const { return std::holds_alternative<MapOfStrings>( value_ ); }
-// ============================================================================
+
+bool               gp::PropertyValue::IsSimple() const { return std::holds_alternative<std::string>( value_ ); }
+bool               gp::PropertyValue::IsVector() const { return std::holds_alternative<VectorOfStrings>( value_ ); }
+bool               gp::PropertyValue::IsMap() const { return std::holds_alternative<MapOfStrings>( value_ ); }
 gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right ) {
 
   if ( IsReference() ) { throw PropertyValueException::WrongLValue(); }
@@ -69,7 +57,7 @@ gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right ) {
 const gp::PropertyValue gp::PropertyValue::operator-( const PropertyValue& right ) {
   return PropertyValue{ *this } -= right;
 }
-// ============================================================================
+
 std::string gp::PropertyValue::ToString() const {
   if ( IsReference() ) {
     const auto& value = std::get<VectorOfStrings>( value_ );

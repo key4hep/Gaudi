@@ -8,19 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//	Debugger.h
-//--------------------------------------------------------------------
-//
-//	Package    : System (The LHCb System service)
-//
-//  Description: Invoke interactively the debugger from a
-//               running application
-//
-//	Author     : M.Frank
-//  Created    : 13/1/99
-//	Changes    :
-//====================================================================
 #pragma once
 
 #include <GaudiKernel/Kernel.h>

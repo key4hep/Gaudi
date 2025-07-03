@@ -9,17 +9,13 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include <Gaudi/Property.h>
 #include <GaudiKernel/HistoDef.h>
+
 namespace Gaudi {
   namespace Details {
     namespace Property {
-      // ============================================================================
       /** Check if the value is OK
        *  it is a nesessary template specialisation to avoid the compilation error
        *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -31,7 +27,6 @@ namespace Gaudi {
              ( m_hasUpperBound && ( m_upperBound < value ) ) )
           throw std::out_of_range( "value " + Gaudi::Utils::toString( value ) + " outside range" );
       }
-      // ============================================================================
       /** Check if the value is OK
        *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
        *  @date 2007-09-18
@@ -40,18 +35,10 @@ namespace Gaudi {
       inline void NullVerifier::operator()<Gaudi::Histo1DDef>( const Gaudi::Histo1DDef& value ) const {
         if ( !value.ok() ) throw std::invalid_argument( "bad value " + Gaudi::Utils::toString( value ) );
       }
-      // ============================================================================
     } // namespace Property
   }   // namespace Details
 } // namespace Gaudi
-// ============================================================================
 /// the actual type of "histogram property"
 typedef Gaudi::Property<Gaudi::Histo1DDef> Histo1DProperty;
-// ============================================================================
 /// the actual type of "histogram property reference"
 typedef Gaudi::Property<Gaudi::Histo1DDef&> Histo1DPropertyRef;
-// ============================================================================
-
-// ============================================================================
-// The END
-// ============================================================================

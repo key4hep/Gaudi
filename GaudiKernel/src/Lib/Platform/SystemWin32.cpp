@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,13 +9,10 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-// System include(s):
+#include "SystemWin32.h"
 #include <cstring>
 #include <sstream>
 #include <windows.h>
-
-// Local include(s):
-#include "SystemWin32.h"
 
 // Disable warning C4996 triggered by C standard library calls
 #pragma warning( disable : 4996 )

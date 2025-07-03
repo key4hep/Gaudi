@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,17 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-///////////////////////////////////////////////////////////////////////////
-//
-// GaudiHistory/AlgToolHistory.cpp
-//
-// Contains history information for an AlgTool
-//
-//
-// @author: Charles Leggett
-//
-///////////////////////////////////////////////////////////////////////////
-
 #include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/AlgToolHistory.h>
 #include <GaudiKernel/JobHistory.h>
@@ -36,8 +25,6 @@ AlgToolHistory::AlgToolHistory( const AlgTool& alg, const JobHistory* job )
     , m_properties( alg.getProperties() )
     , m_jobHistory( job ) {}
 
-//**********************************************************************
-
 AlgToolHistory::AlgToolHistory( std::string algVersion, std::string algName, std::string algType, const AlgTool* tool,
                                 const PropertyList& props,
                                 const JobHistory*   job )
@@ -47,8 +34,6 @@ AlgToolHistory::AlgToolHistory( std::string algVersion, std::string algName, std
     , m_tool( tool )
     , m_properties( props )
     , m_jobHistory( job ) {}
-
-//**********************************************************************
 
 const CLID& AlgToolHistory::classID() {
 

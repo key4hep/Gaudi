@@ -10,14 +10,10 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework includes
 #include <GaudiKernel/IInterface.h>
-
-// C++ includes
 #include <list>
 #include <string_view>
 
-// Forward class declaration
 class IAlgorithm;
 
 /** @class IAlgResourcePool IAlgResourcePool.h GaudiKernel/IAlgResourcePool.h

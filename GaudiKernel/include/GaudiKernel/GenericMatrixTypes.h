@@ -21,7 +21,6 @@
 
 #pragma once
 
-// Include files
 #include <Math/SMatrix.h>
 
 /** @namespace Gaudi

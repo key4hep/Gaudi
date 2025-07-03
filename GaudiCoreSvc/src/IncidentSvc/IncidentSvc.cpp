@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,15 +9,12 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #ifdef _WIN32
-// ============================================================================
 // Avoid conflicts between windows and the message service.
-// ============================================================================
 #  define NOMSG
 #  define NOGDI
 #endif
-// ============================================================================
-// Include Files
-// ============================================================================
+
+#include "IncidentSvc.h"
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IIncidentListener.h>
@@ -26,25 +23,16 @@
 #include <GaudiKernel/LockedChrono.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/SmartIF.h>
-#include <functional>
-// ============================================================================
-// Local
-// ============================================================================
-#include "IncidentSvc.h"
-// ============================================================================
-// Instantiation of a static factory class used by clients to create
-//  instances of this service
+
 DECLARE_COMPONENT( IncidentSvc )
-// ============================================================================
+
 namespace {
-  // ==========================================================================
   static const std::string s_unknown = "<unknown>";
   // Helper to get the name of the listener
   inline const std::string& getListenerName( IIncidentListener* lis ) {
     SmartIF<INamedInterface> iNamed( lis );
     return iNamed ? iNamed->name() : s_unknown;
   }
-  // ==========================================================================
 } // namespace
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
@@ -53,13 +41,8 @@ namespace {
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
-// ============================================================================
-// Constructors and Destructors
-// ============================================================================
 IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc ) {}
-// ============================================================================
 IncidentSvc::~IncidentSvc() { auto lock = std::scoped_lock{ m_listenerMapMutex }; }
-// ============================================================================
 StatusCode IncidentSvc::finalize() {
   DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] ", System::milliSec )
          << m_timer.outputUserTime( "Total:%2%[s]", System::Sec ) << endmsg;
@@ -69,9 +52,6 @@ StatusCode IncidentSvc::finalize() {
   // Finalize this specific service
   return Service::finalize();
 }
-// ============================================================================
-// Inherited IIncidentSvc overrides:
-// ============================================================================
 void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, long prio, bool rethrow,
                                bool singleShot ) {
   static const std::string all{ "ALL" };
@@ -98,7 +78,6 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
   DEBMSG << "Adding [" << type << "] listener '" << getListenerName( lis ) << "' with priority " << prio << endmsg;
   llist.emplace( i, IIncidentSvc::Listener{ lis, prio, rethrow, singleShot } );
 }
-// ============================================================================
 IncidentSvc::ListenerMap::iterator
 IncidentSvc::removeListenerFromList( ListenerMap::iterator i, IIncidentListener* item, bool scheduleRemoval ) {
   auto match = [&]( ListenerList::const_reference j ) { return !item || item == j.iListener; };
@@ -117,7 +96,6 @@ IncidentSvc::removeListenerFromList( ListenerMap::iterator i, IIncidentListener*
   }
   return c.empty() ? m_listenerMap.erase( i ) : std::next( i );
 }
-// ============================================================================
 void IncidentSvc::removeListener( IIncidentListener* lis, const std::string& type ) {
   auto lock = std::scoped_lock{ m_listenerMapMutex };
 
@@ -130,14 +108,12 @@ void IncidentSvc::removeListener( IIncidentListener* lis, const std::string& typ
     if ( i != m_listenerMap.end() ) removeListenerFromList( i, lis, scheduleForRemoval );
   }
 }
-// ============================================================================
 namespace {
   /// Helper class to identify a singleShot Listener
   constexpr struct isSingleShot_t {
     bool operator()( const IncidentSvc::Listener& l ) const { return l.singleShot; }
   } isSingleShot{};
 } // namespace
-// ============================================================================
 void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& listenerType ) {
 
   auto lock = std::scoped_lock{ m_listenerMapMutex };
@@ -211,7 +187,6 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
 
   m_currentIncidentType = nullptr;
 }
-// ============================================================================
 void IncidentSvc::fireIncident( const Incident& incident ) {
 
   Gaudi::Utils::LockedChrono timer( m_timer, m_timerLock );
@@ -223,7 +198,6 @@ void IncidentSvc::fireIncident( const Incident& incident ) {
     i_fireIncident( incident, "ALL" );
   }
 }
-// ============================================================================
 void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
 
   const EventContext& ctx = incident->context();
@@ -248,7 +222,6 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
   }
   incItr->second.push( std::move( incident ) );
 }
-// ============================================================================
 
 void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::string& type ) const {
   static const std::string ALL{ "ALL" };
@@ -264,8 +237,6 @@ void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::s
                     []( const Listener& j ) { return j.iListener; } );
   }
 }
-
-// ============================================================================
 
 IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx ) {
   IIncidentSvc::IncidentPack p;
@@ -289,6 +260,3 @@ IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx ) 
   }
   return p;
 }
-// ============================================================================
-// The END
-// ============================================================================

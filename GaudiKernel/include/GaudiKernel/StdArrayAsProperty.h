@@ -9,15 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
+
 #include <GaudiKernel/ToStream.h>
 #include <algorithm>
 #include <array>
-// ============================================================================
+
 /** @file
  *  Collection of utilities, which allows to use class std::array
  *  as property for Gaudi-components
@@ -29,13 +25,9 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *  @date 2009-09-16
  */
-// ============================================================================
 #include <Gaudi/Parsers/CommonParsers.h>
-// ============================================================================
 namespace Gaudi {
-  // ==========================================================================
   namespace Parsers {
-    // ========================================================================
     /** parse class std::array from the string
      *  @param result (OUTPUT) the actual result
      *  @param input  (INPUT)  the input string
@@ -52,10 +44,5 @@ namespace Gaudi {
       std::copy( tmp.begin(), tmp.end(), result.begin() );
       return StatusCode::SUCCESS;
     }
-    // ========================================================================
   } // namespace Parsers
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
-// The END
-// ============================================================================
+} // namespace Gaudi

@@ -10,11 +10,9 @@
 \***********************************************************************************/
 #pragma once
 
-// Include files
 #include <GaudiKernel/Kernel.h>
 #include <string>
 
-// forward declarations
 class DataObject;
 class IOpaqueAddress;
 class IDataProviderSvc;
@@ -30,7 +28,6 @@ class IDataProviderSvc;
 */
 class GAUDI_API IRegistry {
 public:
-  /// Type definitions
   /// Name type
   typedef std::string name_type;
   /// Identifier Key type

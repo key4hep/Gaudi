@@ -17,23 +17,17 @@
 #ifndef __clang__
 #  pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
-// ============================================================================
-// Include files
-// ============================================================================
+
 #include <Gaudi/Parsers/CommonParsers.h>
 #include <Gaudi/Parsers/Factory.h>
-// ============================================================================
-// STD & STL
-// ============================================================================
 #include <string>
 #include <string_view>
-// ============================================================================
-// ============================================================================
+
 #define PARSERS_DEF_FOR_SINGLE( Type )                                                                                 \
   StatusCode Gaudi::Parsers::parse( Type& result, std::string_view input ) {                                           \
     return Gaudi::Parsers::parse_( result, input );                                                                    \
   }
-// ============================================================================
+
 PARSERS_DEF_FOR_SINGLE( bool )
 PARSERS_DEF_FOR_SINGLE( char )
 PARSERS_DEF_FOR_SINGLE( unsigned char )

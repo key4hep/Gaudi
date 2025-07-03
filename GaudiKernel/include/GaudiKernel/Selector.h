@@ -8,31 +8,15 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-//====================================================================
-//  NTuple name space: Selector class definition
-//--------------------------------------------------------------------
-//
-//  Package    : Gaudi/NTupleSvc ( The LHCb Offline System)
-//  Author     : M.Frank
-//
-//  +---------+----------------------------------------------+--------+
-//  |    Date |                 Comment                      | Who    |
-//  +---------+----------------------------------------------+--------+
-//  | 10/10/00| Initial version.                             | MF     |
-//  +---------+----------------------------------------------+--------+
-//====================================================================
 #pragma once
 
-// Framework include files
 #include <GaudiKernel/SelectStatement.h>
 
-// Forward declarations
 namespace NTuple {
   class Tuple;
 }
 
 namespace NTuple {
-
   /** NTuple Selector class.
    */
   class GAUDI_API Selector : public SelectStatement {
