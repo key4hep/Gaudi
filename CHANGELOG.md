@@ -30,7 +30,6 @@ We also fixed the build with gcc 14 and gcc 15 (with C++23 enabled).
 The list of changes is long and I want to warmly thank all the people that made
 this release possible:
 @cburr,
-@cmssst,
 @fwinkl,
 @graven,
 @jcarcell,
@@ -38,6 +37,7 @@ this release possible:
 @leggett,
 @smh,
 @sponce,
+@ssnyder,
 @staider,
 @turra.
 
