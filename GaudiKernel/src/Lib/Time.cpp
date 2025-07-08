@@ -9,7 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <GaudiKernel/Time.h>
-#include <GaudiKernel/time_r.h>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
