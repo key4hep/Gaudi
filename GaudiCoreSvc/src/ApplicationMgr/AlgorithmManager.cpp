@@ -16,9 +16,8 @@
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/System.h>
 #include <GaudiKernel/TypeNameString.h>
-#ifndef _WIN32
-#  include <errno.h>
-#endif
+
+#include <errno.h>
 
 /// needed when no algorithm is found or could be returned
 static SmartIF<IAlgorithm> no_algorithm;
@@ -66,10 +65,8 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
   algorithm = Gaudi::Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() ).release();
   if ( !algorithm ) {
     this->error() << "Algorithm of type " << actualalgtype << " is unknown (No factory available)." << endmsg;
-#ifndef _WIN32
     errno =
         0xAFFEDEAD; // code used by Gaudi for library load errors: forces getLastErrorString do use dlerror (on Linux)
-#endif
     std::string err = System::getLastErrorString();
     if ( !err.empty() ) this->error() << err << endmsg;
     this->error() << "More information may be available by setting the global jobOpt \"PluginDebugLevel\" to 1"

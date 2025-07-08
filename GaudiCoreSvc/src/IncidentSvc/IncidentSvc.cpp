@@ -8,11 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef _WIN32
-// Avoid conflicts between windows and the message service.
-#  define NOMSG
-#  define NOGDI
-#endif
 
 #include "IncidentSvc.h"
 #include <GaudiKernel/AppReturnCode.h>

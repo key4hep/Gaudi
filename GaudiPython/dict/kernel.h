@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -33,10 +33,6 @@
 #include <GaudiKernel/StringKey.h>
 #include <GaudiKernel/VectorMap.h>
 
-#ifdef _WIN32
-#  include <GaudiKernel/GaudiHandle.h>
-#endif
-
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
 #  pragma warning( disable : 177 )
@@ -54,9 +50,6 @@
 #  pragma clang diagnostic pop
 #endif
 #ifdef AIDA_FOUND
-#  ifdef _WIN32
-#    include <AIDA/IAnnotation.h>
-#  endif // _WIN32
 #  include <AIDA/IAxis.h>
 #  include <AIDA/IHistogram.h>
 #  include <AIDA/IHistogram1D.h>
@@ -200,11 +193,6 @@ namespace GaudiPython {
 namespace __gnu_cxx {
   struct dummy {};
 } // namespace __gnu_cxx
-
-#ifdef _WIN32
-#  pragma warning( disable : 4345 )
-#  pragma warning( disable : 4624 )
-#endif
 
 #ifdef __ICC
 // disable icc warning #191: type qualifier is meaningless on cast type

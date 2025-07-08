@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -100,11 +100,9 @@ StatusCode PythonScriptingSvc::initialize()
   PyRun_SimpleString( "def Service(n): return g.service(n)" );
   PyRun_SimpleString( "def Algorithm(n): return g.algorithm(n)" );
   PyRun_SimpleString( "def Property(n): return g.service(n)" );
-// For command-line completion (unix only)
-#if !defined( _WIN32 )
+  // For command-line completion
   PyRun_SimpleString( "import rlcompleter" );
   PyRun_SimpleString( "rlcompleter.readline.parse_and_bind('tab: complete')" );
-#endif
   return StatusCode::SUCCESS;
 }
 

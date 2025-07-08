@@ -127,8 +127,8 @@ namespace System {
     };
 
   public:
-    ProcessDescriptor();
-    virtual ~ProcessDescriptor();
+    ProcessDescriptor()          = default;
+    virtual ~ProcessDescriptor() = default;
     long query( long pid, InfoType fetch, PROCESS_BASIC_INFORMATION* info );
     long query( long pid, InfoType fetch, POOLED_USAGE_AND_LIMITS* info );
     long query( long pid, InfoType fetch, KERNEL_USER_TIMES* info );

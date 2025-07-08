@@ -32,9 +32,6 @@ struct GAUDI_API TimeException : GaudiException {
 };
 
 struct tm;
-#ifdef WIN32
-typedef struct _FILETIME FILETIME;
-#endif
 
 namespace Gaudi {
 
@@ -283,9 +280,7 @@ namespace Gaudi {
     static Time max();
     /// Returns the current time.
     static Time current();
-#ifdef WIN32
-    static Time from( const FILETIME* systime );
-#endif
+
     static Time build( bool local, const tm& base, TimeSpan diff = 0 );
 
     tm split( bool local, int* nsecpart = 0 ) const;

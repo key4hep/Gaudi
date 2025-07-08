@@ -10,17 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-// Some pragmas to avoid warnings in VisualC
-#ifdef _WIN32
-// Disable warning C4786: identifier was truncated to '255' characters in the debug information
-#  pragma warning( disable : 4786 )
-// Disable warning C4291: no matching operator delete found; memory will not be freed if initialization throws an
-// exception
-#  pragma warning( disable : 4291 )
-// Disable warning C4250: inheritance via dominance
-#  pragma warning( disable : 4250 )
-#endif
-
 // Large integer definition depends of the platform
 #ifndef NO_LONGLONG_TYPEDEF
 typedef long long int          longlong;
@@ -47,29 +36,6 @@ typedef unsigned long long int ulonglong;
 // taken from http://gcc.gnu.org/wiki/Visibility
 #  if __GNUC__ >= 4 && !defined( __CINT__ )
 #    define GAUDI_HASCLASSVISIBILITY
-#  endif
-
-#  ifdef _WIN32
-/*
-#  define GAUDI_IMPORT __declspec(dllimport)
-#  define GAUDI_EXPORT __declspec(dllexport)
-#  define GAUDI_LOCAL
-*/
-// The symbol visibility is disabled on Win32 because it is not possible to
-// make coexists the gcc and VC ways.
-#    define GAUDI_IMPORT
-#    define GAUDI_EXPORT
-#    define GAUDI_LOCAL
-#  else
-#    if defined( GAUDI_HASCLASSVISIBILITY )
-#      define GAUDI_IMPORT __attribute__( ( visibility( "default" ) ) )
-#      define GAUDI_EXPORT __attribute__( ( visibility( "default" ) ) )
-#      define GAUDI_LOCAL __attribute__( ( visibility( "hidden" ) ) )
-#    else
-#      define GAUDI_IMPORT
-#      define GAUDI_EXPORT
-#      define GAUDI_LOCAL
-#    endif
 #  endif
 
 // Define GAUDI_API for DLL builds

@@ -547,9 +547,6 @@ inline StreamBuffer::SwapAction StreamBuffer::swapBuffer( int siz ) const {
 #elif defined( __linux ) && !defined( __powerpc )
     //    return m_swapEnabled ? SWAP : NOSWAP;
     return NOSWAP;
-#elif defined( BORLAND ) || defined( _WIN32 ) || defined( WIN32 )
-    //    return m_swapEnabled ? SWAP : NOSWAP;
-    return NOSWAP;
 #else
     return m_swapEnabled ? SWAP : NOSWAP;
 //    return NOSWAP;

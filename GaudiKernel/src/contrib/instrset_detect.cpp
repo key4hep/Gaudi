@@ -7,7 +7,7 @@
  * Description:
  * Functions for checking which instruction sets are supported.
  *
- * (c) Copyright 2012-2019 Agner Fog.
+ * (c) Copyright 2012-2025 Agner Fog.
  * Apache License version 2.0 or later.
  ******************************************************************************/
 
@@ -31,7 +31,7 @@ namespace VCL_NAMESPACE {
   __asm( "xgetbv" : "=a"( a ), "=d"( d ) : "c"( ctr ) : );
   return a | ( uint64_t( d ) << 32 );
 
-#else // #elif defined (_WIN32)                      // other compiler. try inline assembly with masm/intel/MS syntax
+#else // other compiler. try inline assembly with masm/intel/MS syntax
   uint32_t a, d;
   __asm {
         mov ecx, ctr

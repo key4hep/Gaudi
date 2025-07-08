@@ -8,16 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef _WIN32
-// Disable a warning in Boost program_options headers:
-// inconsistent linkage in program_options/variables_map.hpp
-#  pragma warning( disable : 4273 )
-
-// Avoid conflicts between windows and the message service.
-#  define NOMSG
-#  define NOGDI
-#endif
-
 #ifdef __ICC
 // disable icc warning #279: controlling expression is constant
 // ... a lot of noise produced by the boost/filesystem/operations.hpp
@@ -157,9 +147,7 @@ namespace {
   }
   //-----------------------------------------------------------------------------
   inline std::string libNativeName( const std::string& libName ) {
-#if defined( _WIN32 )
-    return libName + ".dll";
-#elif defined( __linux ) || defined( __APPLE__ )
+#if defined( __linux ) || defined( __APPLE__ )
     return "lib" + libName + ".so";
 #else
     // variant of the GIGO design pattern

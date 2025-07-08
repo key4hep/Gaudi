@@ -178,9 +178,6 @@ if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
                                      src/Lib/Platform/SystemMacOS.mm)
   target_link_libraries(GaudiKernel PUBLIC "-framework Foundation -framework CoreFoundation")
-elseif(WIN32)
-  target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemWin32.h
-                                     src/Lib/Platform/SystemWin32.cpp)
 elseif(UNIX)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemLinux.h
                                      src/Lib/Platform/SystemLinux.cpp)
@@ -205,12 +202,6 @@ gaudi_add_executable(genconf
        ROOT::Core)
 target_compile_definitions(genconf PRIVATE BOOST_LOG_DYN_LINK)
 set_target_properties(genconf PROPERTIES ENABLE_EXPORTS TRUE)
-
-if(WIN32)
-  gaudi_add_executable(genwindef
-    SOURCES src/Util/genwindef.cpp
-            src/Util/LibSymbolInfo.cpp)
-endif()
 
 # ROOT dictionaries
 gaudi_add_dictionary(GaudiKernelDict

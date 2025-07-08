@@ -13,11 +13,7 @@
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/SystemBase.h>
 
-#ifdef _WIN32
-#  include <windows.h>
-#else
-#  include <sys/time.h>
-#endif
+#include <sys/time.h>
 
 /** Note: OS specific details for process timing
 
@@ -27,11 +23,6 @@
       - kernelTime:   returns the amount of time the process has spent in kernel mode
       - userTime:     returns the amount of time the process has spent in user mode
       - cpuTime:      returns kernel+user time
-
-
-      On Windows NT Time is expressed as
-      the amount of time that has elapsed since midnight on
-      January 1, 1601 at Greenwich, England.
 
       On Unix time is expressed as
       the amount of time that has elapsed since midnight on
@@ -245,15 +236,9 @@ namespace System {
   // This is frequently used and thus we inline it if possible
   template <TimeType T>
   inline long long currentTime() {
-#ifdef _WIN32
-    long long current = 0;
-    ::GetSystemTimeAsFileTime( (FILETIME*)&current );
-    return adjustTime<T>( current - UNIX_BASE_TIME );
-#else
     struct timeval tv;
     ::gettimeofday( &tv, 0 );
     return adjustTime<T>( ( tv.tv_sec * 1000000 + tv.tv_usec ) * 10 );
-#endif
   }
 
   // Define all template versions here to avoid code bloat

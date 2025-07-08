@@ -13,30 +13,13 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifdef _WIN32
-#  define NOMSG
-#  define NOGDI
-#  define strcasecmp _stricmp
-#  define strncasecmp _strnicmp
-#  include "Win32PsApi.h"
-#  include <process.h>
-#  include <windows.h>
-static PsApiFunctions _psApi;
-#  define getpid _getpid
-#  undef NOMSG
-#  undef NOGDI
-#  ifndef PATH_MAX
-#    define PATH_MAX 1024
-#  endif
-#else // UNIX...: first the EGCS stuff, then the OS dependent includes
-#  include <cstdio>
-#  include <dlfcn.h>
-#  include <libgen.h>
-#  include <string.h>
-#  include <sys/param.h>
-#  include <sys/times.h>
-#  include <unistd.h>
-#endif
+#include <cstdio>
+#include <dlfcn.h>
+#include <libgen.h>
+#include <string.h>
+#include <sys/param.h>
+#include <sys/times.h>
+#include <unistd.h>
 
 static System::ImageHandle      ModuleHandle = nullptr;
 static std::vector<std::string> s_linkedModules;
@@ -46,17 +29,10 @@ const std::string& System::moduleName() {
   static std::string module( "" );
   if ( module == "" ) {
     if ( processHandle() && moduleHandle() ) {
-#ifdef _WIN32
-      char moduleName[256] = { "Unknown.module" };
-      moduleName[0]        = 0;
-      if ( _psApi ) {
-        _psApi.GetModuleBaseNameA( processHandle(), (HINSTANCE)moduleHandle(), moduleName, sizeof( moduleName ) );
-      }
-      std::string mod = moduleName;
-#elif defined( __linux ) || defined( __APPLE__ )
-      std::string mod  = ::basename( (char*)( (Dl_info*)moduleHandle() )->dli_fname );
+#if defined( __linux ) || defined( __APPLE__ )
+      std::string mod = ::basename( (char*)( (Dl_info*)moduleHandle() )->dli_fname );
 #elif __hpux
-      std::string mod = ::basename( ( (HMODULE*)moduleHandle() )->dsc.filename );
+      std::string mod  = ::basename( ( (HMODULE*)moduleHandle() )->dsc.filename );
 #endif
       module = mod.substr( 0, mod.rfind( '.' ) );
     }
@@ -71,20 +47,12 @@ const std::string& System::moduleNameFull() {
     if ( processHandle() && moduleHandle() ) {
       char name[PATH_MAX] = { "Unknown.module" };
       name[0]             = 0;
-#ifdef _WIN32
-      if ( _psApi ) {
-        _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)moduleHandle(), name, sizeof( name ) );
-        module = name;
-      }
-#else
-
-#  if defined( __linux ) || defined( __APPLE__ )
+#if defined( __linux ) || defined( __APPLE__ )
       const char* path = ( (Dl_info*)moduleHandle() )->dli_fname;
-#  elif __hpux
+#elif __hpux
       const char* path = ( (HMODULE*)moduleHandle() )->dsc.filename;
-#  endif
-      if ( ::realpath( path, name ) ) module = name;
 #endif
+      if ( ::realpath( path, name ) ) module = name;
     }
   }
   return module;
@@ -100,11 +68,7 @@ System::ModuleType System::moduleType() {
       type = EXECUTABLE;
     else if ( module[loc] == 'e' || module[loc] == 'E' )
       type = EXECUTABLE;
-#ifdef _WIN32
-    else if ( module[loc] == 'd' || module[loc] == 'D' )
-#else
     else if ( module[loc] == 's' && module[loc + 1] == 'o' )
-#endif
       type = SHAREDLIB;
     else
       type = UNKNOWN;
@@ -114,12 +78,8 @@ System::ModuleType System::moduleType() {
 
 /// Retrieve processhandle
 void* System::processHandle() {
-  static long pid = ::getpid();
-#ifdef _WIN32
-  static HANDLE hP = ::OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid );
-#else
-  static void* hP = (void*)pid;
-#endif
+  static long  pid = ::getpid();
+  static void* hP  = (void*)pid;
   return hP;
 }
 
@@ -128,14 +88,7 @@ void System::setModuleHandle( System::ImageHandle handle ) { ModuleHandle = hand
 System::ImageHandle System::moduleHandle() {
   if ( !ModuleHandle ) {
     if ( processHandle() ) {
-#ifdef _WIN32
-      static HINSTANCE handle = 0;
-      DWORD            cbNeeded;
-      if ( 0 == handle && _psApi ) {
-        if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {}
-      }
-      return handle;
-#elif defined( __linux ) || defined( __APPLE__ )
+#if defined( __linux ) || defined( __APPLE__ )
       static Dl_info info;
       if ( ::dladdr( reinterpret_cast<void*>( System::moduleHandle ), &info ) ) return &info;
 #elif __hpux
@@ -147,17 +100,7 @@ System::ImageHandle System::moduleHandle() {
 }
 
 System::ImageHandle System::exeHandle() {
-#ifdef _WIN32
-  if ( processHandle() ) {
-    static HINSTANCE handle = 0;
-    DWORD            cbNeeded;
-    if ( 0 == handle && _psApi ) {
-      if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {}
-    }
-    return handle;
-  }
-  return 0;
-#elif defined( __linux ) || defined( __APPLE__ )
+#if defined( __linux ) || defined( __APPLE__ )
   // This does NOT work!
   static Dl_info infoBuf, *info = &infoBuf;
   if ( !info ) {
@@ -187,12 +130,7 @@ const std::string& System::exeName() {
   if ( module.length() == 0 ) {
     char name[PATH_MAX] = { "Unknown.module" };
     name[0]             = 0;
-#ifdef _WIN32
-    if ( _psApi && processHandle() ) {
-      _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)exeHandle(), name, sizeof( name ) );
-      module = name;
-    }
-#elif defined( __linux ) || defined( __APPLE__ )
+#if defined( __linux ) || defined( __APPLE__ )
     char cmd[512];
     ::sprintf( cmd, "/proc/%d/exe", ::getpid() );
     module = "Unknown";
@@ -206,20 +144,7 @@ const std::string& System::exeName() {
 
 const std::vector<std::string> System::linkedModules() {
   if ( s_linkedModules.size() == 0 ) {
-#ifdef _WIN32
-    char      name[255]; // Maximum file name length on NT 4.0
-    DWORD     cbNeeded;
-    HINSTANCE handle[1024];
-    if ( _psApi ) {
-      if ( _psApi.EnumProcessModules( processHandle(), handle, sizeof( handle ), &cbNeeded ) ) {
-        for ( size_t i = 0; i < cbNeeded / sizeof( HANDLE ); i++ ) {
-          if ( 0 < _psApi.GetModuleFileNameExA( processHandle(), handle[i], name, sizeof( name ) ) ) {
-            s_linkedModules.push_back( name );
-          }
-        }
-      }
-    }
-#elif defined( __linux ) || defined( __APPLE__ )
+#if defined( __linux ) || defined( __APPLE__ )
     char ff[512], cmd[1024], fname[1024], buf1[64], buf2[64], buf3[64], buf4[64];
     ::sprintf( ff, "/proc/%d/maps", ::getpid() );
     FILE* maps = ::fopen( ff, "r" );

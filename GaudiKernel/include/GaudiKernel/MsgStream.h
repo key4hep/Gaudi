@@ -200,26 +200,7 @@ inline MsgStream& endmsg( MsgStream& s ) { return s.doOutput(); }
 /// MsgStream format utility "a la sprintf(...)"
 GAUDI_API std::string format( const char*, ... );
 
-#ifdef _WIN32
-template <class _E>
-inline MsgStream& operator<<( MsgStream& s, const std::_Fillobj<_E>& obj ) {
-#  if _MSC_VER > 1300
-  if ( s.isActive() ) s.stream().fill( obj._Fill );
-#  else
-  if ( s.isActive() ) s.stream().fill( obj._Ch );
-#  endif
-  return s;
-}
-template <class _Tm>
-inline MsgStream& operator<<( MsgStream& s, const std::_Smanip<_Tm>& manip ) {
-#  if _MSC_VER > 1300
-  if ( s.isActive() ) ( *manip._Pfun )( s.stream(), manip._Manarg );
-#  else
-  if ( s.isActive() ) ( *manip._Pf )( s.stream(), manip._Manarg );
-#  endif
-  return s;
-}
-#elif defined( __GNUC__ )
+#if defined( __GNUC__ )
 #  ifndef __APPLE__
 inline MsgStream& operator<<( MsgStream& s, const std::_Setiosflags& manip ) {
   try {
@@ -267,7 +248,7 @@ inline MsgStream& operator<<( MsgStream& s, const std::smanip<_Tm>& manip ) {
   } catch ( ... ) {}
   return s;
 }
-#endif   // WIN32 or (__GNUC__)
+#endif   // __GNUC__
 
 namespace MSG {
   inline MsgStream& dec( MsgStream& log ) {

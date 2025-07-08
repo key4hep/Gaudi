@@ -20,11 +20,7 @@
 namespace bf = boost::filesystem;
 using namespace std;
 
-#ifdef _WIN32
-static const char* path_separator = ",;";
-#else
 static const char* path_separator = ",:";
-#endif
 
 namespace System {
 

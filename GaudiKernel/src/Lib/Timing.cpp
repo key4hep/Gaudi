@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -27,34 +27,23 @@
 
 #include <climits>
 #include <ctime>
-#ifdef _WIN32
-#  include <windows.h>
-#else
-#  include <sys/time.h>
-#  include <sys/times.h>
-#  include <unistd.h>
-#endif
+#include <sys/time.h>
+#include <sys/times.h>
+#include <unistd.h>
 
-#ifdef _WIN32
-static const long long UNIX_BASE_TIME = 116444736000000000;
-#else
 static const long long UNIX_BASE_TIME = 0;
-#endif
 
 // convert time from internal representation to the appropriate type
-// Internal representation for WIN32: 100 nanosecond intervals
-//                             Unix:    1 clock tick (usually 10 milliseconds)
+// Internal representation for Unix:    1 clock tick (usually 10 milliseconds)
 long long System::adjustTime( TimeType typ, long long t ) {
   if ( t != -1 ) {
-#ifndef _WIN32
-/////////    t *= 10000000;           // in 100 nanosecond intervals
-//  t /= CLK_TCK ;     // needs division by clock tick unit
-/// unfortunately "-ansi" flag turn off the correct definition of CLK_TCK
-/// and forces it to be equal CLOCKS_PER_SEC, it is wrong!
-///////// t /= 100 ;
+    /////////    t *= 10000000;           // in 100 nanosecond intervals
+    //  t /= CLK_TCK ;     // needs division by clock tick unit
+    /// unfortunately "-ansi" flag turn off the correct definition of CLK_TCK
+    /// and forces it to be equal CLOCKS_PER_SEC, it is wrong!
+    ///////// t /= 100 ;
 
-///  t /= CLOCKS_PER_SEC;     // needs division by clock tick unit
-#endif
+    ///  t /= CLOCKS_PER_SEC;     // needs division by clock tick unit
     switch ( typ ) {
     case Year:
       return adjustTime<Year>( t );
@@ -85,13 +74,9 @@ long long System::adjustTime( TimeType typ, long long t ) {
 
 /// Retrieve the number of ticks since system startup
 long long System::tickCount() {
-  long long count = 10000;
-#ifdef _WIN32
-  count *= ::GetTickCount(); // Number of milliSec since system startup
-#else
+  long long  count = 10000;
   struct tms buf;
   count *= 10 * times( &buf );
-#endif
   return count;
 }
 

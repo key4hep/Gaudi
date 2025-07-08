@@ -8,11 +8,6 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef _WIN32
-// Avoid conflicts between windows and the message service.
-#  define NOMSG
-#  define NOGDI
-#endif
 
 #include "MessageSvc.h"
 #include <GaudiKernel/IAppMgrUI.h>
@@ -94,10 +89,6 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
 StatusCode MessageSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
-
-#ifdef _WIN32
-  m_color = false;
-#endif
 
   // make sure the map of logged stream names is initialized
   setupLogStreams();

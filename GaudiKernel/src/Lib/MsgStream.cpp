@@ -62,18 +62,15 @@ MsgStream& MsgStream::doOutput() {
 }
 
 void MsgStream::setColor( MSG::Color col ) {
-#ifndef _WIN32
   if ( m_useColors ) {
     int fc = 90 + col;
     try { // this may throw and we must not do it
       m_stream << "\x1b[" << fc << ";1m";
     } catch ( ... ) {}
   }
-#endif
 }
 
 void MsgStream::setColor( MSG::Color fg, MSG::Color bg ) {
-#ifndef _WIN32
   if ( m_useColors ) {
     try { // this may throw and we must not do it
       int fc = 90 + fg;
@@ -83,17 +80,14 @@ void MsgStream::setColor( MSG::Color fg, MSG::Color bg ) {
       m_stream << ";1m";
     } catch ( ... ) {}
   }
-#endif
 }
 
 void MsgStream::resetColor() {
-#ifndef _WIN32
   if ( m_useColors ) {
     try { // this may throw and we must not do it
       m_stream << "\x1b[m" << m_service->getLogColor( m_currLevel );
     } catch ( ... ) {}
   }
-#endif
 }
 
 std::string format( const char* fmt, ... ) {

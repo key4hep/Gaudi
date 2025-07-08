@@ -54,13 +54,8 @@ public:
   typedef typename std::list<TYPE*>::reverse_iterator       reverse_iterator;
   typedef typename std::list<TYPE*>::const_reverse_iterator const_reverse_iterator;
 
-#ifdef _WIN32
-  typedef typename std::vector<TYPE*>::_Tptr  pointer;
-  typedef typename std::vector<TYPE*>::_Ctptr const_pointer;
-#else
   typedef typename std::vector<TYPE*>::pointer       pointer;
   typedef typename std::vector<TYPE*>::const_pointer const_pointer;
-#endif
 
 public:
   ObjectList()                                     = default;

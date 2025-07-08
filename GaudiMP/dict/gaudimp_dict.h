@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,10 +28,6 @@
 #include <GaudiKernel/StatEntity.h>
 #include <GaudiKernel/StringKey.h>
 
-#ifdef _WIN32
-#  include <GaudiKernel/GaudiHandle.h>
-#endif
-
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
 #  pragma warning( disable : 177 )
@@ -41,11 +37,6 @@
 
 #include <GaudiMP/PyROOTPickle.h>
 #include <GaudiMP/TESSerializer.h>
-
-#ifdef _WIN32
-#  pragma warning( disable : 4345 )
-#  pragma warning( disable : 4624 )
-#endif
 
 #ifdef __ICC
 // disable icc warning #191: type qualifier is meaningless on cast type
