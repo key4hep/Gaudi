@@ -67,7 +67,7 @@ namespace Gaudi {
     FidMap     m_fidMap;
     StatusCode connectDataIO( int typ, IoType rw, CSTR fn, CSTR technology, bool keep, Connection* con );
     StatusCode reconnect( Entry* e );
-    StatusCode error( CSTR msg, bool rethrow );
+    StatusCode error( CSTR msg );
     StatusCode establishConnection( Connection* con );
 
     SmartIF<IIncidentSvc> m_incSvc; /// the incident service

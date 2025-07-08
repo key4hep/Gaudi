@@ -22,7 +22,6 @@
 #include <GaudiKernel/ContainedObject.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataStreamTool.h>
-#include <GaudiKernel/Debugger.h>
 #include <GaudiKernel/Environment.h>
 #include <GaudiKernel/EventSelectorDataStream.h>
 #include <GaudiKernel/GaudiHandle.h>

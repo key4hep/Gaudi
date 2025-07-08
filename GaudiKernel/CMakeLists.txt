@@ -68,7 +68,6 @@ gaudi_add_library(GaudiKernel
           src/Lib/DataStreamTool.cpp
           src/Lib/DataSvc.cpp
           src/Lib/DataTypeInfo.cpp
-          src/Lib/Debugger.cpp
           src/Lib/Dictionary.cpp
           src/Lib/DirSearchPath.cpp
           src/Lib/Environment.cpp

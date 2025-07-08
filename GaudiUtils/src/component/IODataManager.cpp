@@ -11,7 +11,6 @@
 // Framework include files
 #include "IODataManager.h"
 #include <GaudiKernel/AppReturnCode.h>
-#include <GaudiKernel/Debugger.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/Incident.h>
 #include <GaudiKernel/MsgStream.h>
@@ -78,10 +77,9 @@ StatusCode IODataManager::finalize() {
 }
 
 /// Small routine to issue exceptions
-StatusCode IODataManager::error( CSTR msg, bool rethrow ) {
+StatusCode IODataManager::error( CSTR msg ) {
   MsgStream log( msgSvc(), name() );
   log << MSG::ERROR << "Error: " << msg << endmsg;
-  if ( rethrow ) System::breakExecution();
   return StatusCode::FAILURE;
 }
 
@@ -101,14 +99,14 @@ StatusCode IODataManager::connectRead( bool keep_open, Connection* con ) {
     return connectDataIO( UNKNOWN, Connection::READ, con->name(), "UNKNOWN", keep_open, con );
   }
   std::string dsn = con ? con->name() : std::string( "Unknown" );
-  return error( "Failed to connect to data:" + dsn, false );
+  return error( "Failed to connect to data:" + dsn );
 }
 
 /// Connect data file for reading
 StatusCode IODataManager::connectWrite( Connection* con, IoType mode, CSTR doctype ) {
   if ( !establishConnection( con ) ) { return connectDataIO( UNKNOWN, mode, con->name(), doctype, true, con ); }
   std::string dsn = con ? con->name() : std::string( "Unknown" );
-  return error( "Failed to connect to data:" + dsn, false );
+  return error( "Failed to connect to data:" + dsn );
 }
 
 /// Read raw byte buffer from input stream
@@ -208,7 +206,7 @@ IIODataManager::Connection* IODataManager::connection( CSTR dataset ) const {
 }
 
 StatusCode IODataManager::establishConnection( Connection* con ) {
-  if ( !con ) return error( "Severe logic bug: No connection object avalible.", true );
+  if ( !con ) return error( "Severe logic bug: No connection object avalible." );
 
   if ( con->isConnected() ) {
     con->resetAge();
@@ -219,7 +217,7 @@ StatusCode IODataManager::establishConnection( Connection* con ) {
     Connection* c = i->second->connection;
     if ( c != con ) {
       m_incSvc->fireIncident( Incident( con->name(), IncidentType::FailInputFile ) );
-      return error( "Severe logic bug: Twice identical connection object for DSN:" + con->name(), true );
+      return error( "Severe logic bug: Twice identical connection object for DSN:" + con->name() );
     }
     if ( reconnect( i->second ).isSuccess() ) return StatusCode::SUCCESS;
   }
@@ -254,7 +252,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
           if ( !m_useGFAL ) {
             if ( m_quarantine ) s_badFiles.insert( dsn );
             m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
-            error( "connectDataIO> failed to resolve FID:" + dsn, false ).ignore();
+            error( "connectDataIO> failed to resolve FID:" + dsn ).ignore();
             return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
           } else if ( dsn.length() == 36 && dsn[8] == '-' && dsn[13] == '-' ) {
             std::string gfal_name = "gfal:guid:" + dsn;
@@ -265,7 +263,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
           }
           if ( m_quarantine ) s_badFiles.insert( dsn );
           m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
-          error( "connectDataIO> Failed to resolve FID:" + dsn, false ).ignore();
+          error( "connectDataIO> Failed to resolve FID:" + dsn ).ignore();
           return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
         }
         // keep track of the current return code before we start iterating over
@@ -337,7 +335,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
           delete e;
           if ( m_quarantine ) s_badFiles.insert( dsn );
           m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
-          error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid, false ).ignore();
+          error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid ).ignore();
           return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
         }
         fid               = connection->fid();
@@ -356,7 +354,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
       if ( !reconnect( ( *fi ).second ).isSuccess() ) {
         if ( m_quarantine ) s_badFiles.insert( dsn );
         m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
-        error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid, false ).ignore();
+        error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid ).ignore();
         return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
       }
       return StatusCode::SUCCESS;
@@ -369,10 +367,10 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
     }
     return sc;
   } catch ( std::exception& e ) {
-    error( std::string( "connectDataIO> Caught exception:" ) + e.what(), false ).ignore();
-  } catch ( ... ) { error( std::string( "connectDataIO> Caught unknown exception" ), false ).ignore(); }
+    error( std::string( "connectDataIO> Caught exception:" ) + e.what() ).ignore();
+  } catch ( ... ) { error( std::string( "connectDataIO> Caught unknown exception" ) ).ignore(); }
   m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
-  error( "connectDataIO> The dataset " + dsn + " cannot be opened.", false ).ignore();
+  error( "connectDataIO> The dataset " + dsn + " cannot be opened." ).ignore();
   s_badFiles.insert( dsn );
   return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
 }
