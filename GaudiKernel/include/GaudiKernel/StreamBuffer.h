@@ -11,7 +11,6 @@
 #pragma once
 
 #include <GaudiKernel/Kernel.h>
-#include <GaudiKernel/swab.h>
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
@@ -19,6 +18,7 @@
 #include <list>
 #include <string>
 #include <typeinfo>
+#include <unistd.h>
 #include <vector>
 
 class StreamBuffer;
@@ -567,7 +567,7 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz ) {
 #ifdef __APPLE__
     for ( int i = 0, j = siz - 1; i < siz; i++, j-- ) tar[j] = src[i];
 #else
-    ::_swab( src, buff, siz );
+    ::swab( src, buff, siz );
 #endif
     src = buff;
     [[fallthrough]];
@@ -592,7 +592,7 @@ inline void StreamBuffer::swapFromBuffer( void* target, int siz ) {
 #ifdef __APPLE__
     for ( int i = 0, j = siz - 1; i < siz; i++, j-- ) tar[j] = src[i];
 #else
-    ::_swab( src, tar, siz );
+    ::swab( src, tar, siz );
 #endif
     break;
   case NOSWAP:
