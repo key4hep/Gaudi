@@ -24,11 +24,11 @@
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/MsgStream.h>
-#include <GaudiKernel/strcasecmp.h>
 
 #include "OutputStream.h"
 
 #include <set>
+#include <strings.h>
 
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT( OutputStream )
