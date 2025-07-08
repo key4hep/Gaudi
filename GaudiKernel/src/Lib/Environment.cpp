@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -66,14 +66,7 @@ std::string System::homeDirectory() {
   std::string home_dir = "./";
   // Try to replace the current value with the content of several
   // environment variables
-  if ( !( System::getEnv( "home", home_dir ) || System::getEnv( "HOME", home_dir ) ) ) {
-    // for Windows NT HOME might be defined as either $(HOMESHARE)/$(HOMEPATH)
-    //                                         or     $(HOMEDRIVE)/$(HOMEPATH)
-    if ( System::getEnv( "HOMESHARE", home_dir ) || System::getEnv( "HOMEDRIVE", home_dir ) ) {
-      std::string path;
-      if ( System::getEnv( "HOMEPATH", path ) ) home_dir += path;
-    }
-  }
+  System::getEnv( "home", home_dir ) || System::getEnv( "HOME", home_dir );
   return home_dir;
 }
 
