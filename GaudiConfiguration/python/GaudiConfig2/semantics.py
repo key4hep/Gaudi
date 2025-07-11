@@ -706,6 +706,25 @@ class MappingSemantics(PropertySemantics):
             value = self.default(value)
         return value.opt_value()
 
+    def merge(self, a, b):
+        """Merge two maps. Throw ValueError if there are conflicting key/value pairs."""
+
+        # Optimization for most common case
+        if a == b:
+            return a
+
+        for k, v in b.items():
+            try:
+                va = a[k]
+            except KeyError:
+                a[k] = v
+            else:
+                if va != v:
+                    raise ValueError(
+                        f"conflicting values in map for key {k}: {v} and {va}"
+                    )
+        return a
+
 
 SEMANTICS = [
     c
