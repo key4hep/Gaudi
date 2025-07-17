@@ -11,6 +11,7 @@
 #include "AvalancheSchedulerSvc.h"
 #include "AlgTask.h"
 #include "FiberManager.h"
+#include "GraphDumper.h"
 #include "ThreadPoolSvc.h"
 
 // Framework includes
@@ -1179,75 +1180,8 @@ StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, Dat
   // Both maps should have the same algorithm entries
   assert( inDeps.size() == outDeps.size() );
 
-  // Check file extension
-  enum class FileType : short { UNKNOWN, DOT, MD };
-  std::regex fileExtensionRegexDot( ".dot$" );
-  std::regex fileExtensionRegexMd( ".md$" );
-
-  std::string fileName      = m_dataDepsGraphFile.value();
-  FileType    fileExtension = FileType::UNKNOWN;
-  if ( std::regex_search( m_dataDepsGraphFile.value(), fileExtensionRegexDot ) ) {
-    fileExtension = FileType::DOT;
-  } else if ( std::regex_search( m_dataDepsGraphFile.value(), fileExtensionRegexMd ) ) {
-    fileExtension = FileType::MD;
-  } else {
-    fileExtension = FileType::DOT;
-    fileName      = fileName + ".dot";
-  }
-  info() << "Dumping data dependencies graph to file: " << fileName << endmsg;
-
-  std::string startGraph = "";
-  std::string stopGraph  = "";
-  // define functions
-  std::function<std::string( const std::string&, const std::string& )> defineAlg;
-  std::function<std::string( const DataObjID& )>                       defineObj;
-  std::function<std::string( const DataObjID&, const std::string& )>   defineInput;
-  std::function<std::string( const std::string&, const DataObjID& )>   defineOutput;
-
-  if ( fileExtension == FileType::DOT ) {
-    // .dot file
-    startGraph = "digraph datadeps {\nrankdir=\"LR\";\n\n";
-    stopGraph  = "\n}\n";
-
-    defineAlg = []( const std::string& alg, const std::string& idx ) -> std::string {
-      return "Alg_" + idx + " [label=\"" + alg + "\";shape=box];\n";
-    };
-
-    defineObj = []( const DataObjID& obj ) -> std::string {
-      return "obj_" + std::to_string( obj.hash() ) + " [label=\"" + obj.key() + "\"];\n";
-    };
-
-    defineInput = []( const DataObjID& obj, const std::string& alg ) -> std::string {
-      return "obj_" + std::to_string( obj.hash() ) + " -> " + "Alg_" + alg + ";\n";
-    };
-
-    defineOutput = []( const std::string& alg, const DataObjID& obj ) -> std::string {
-      return "Alg_" + alg + " -> " + "obj_" + std::to_string( obj.hash() ) + ";\n";
-    };
-  } else {
-    // .md file
-    startGraph = "```mermaid\ngraph LR;\n\n";
-    stopGraph  = "\n```\n";
-
-    defineAlg = []( const std::string& alg, const std::string& idx ) -> std::string {
-      return "Alg_" + idx + "{{" + alg + "}}\n";
-    };
-
-    defineObj = []( const DataObjID& obj ) -> std::string {
-      return "obj_" + std::to_string( obj.hash() ) + ">" + obj.key() + "]\n";
-    };
-
-    defineInput = []( const DataObjID& obj, const std::string& alg ) -> std::string {
-      return "obj_" + std::to_string( obj.hash() ) + " --> " + "Alg_" + alg + "\n";
-    };
-
-    defineOutput = []( const std::string& alg, const DataObjID& obj ) -> std::string {
-      return "Alg_" + alg + " --> " + "obj_" + std::to_string( obj.hash() ) + "\n";
-    };
-  } // fileExtension
-
-  std::ofstream dataDepthGraphFile( m_dataDepsGraphFile.value(), std::ofstream::out );
-  dataDepthGraphFile << startGraph;
+  Gaudi::Hive::Graph g{ m_dataDepsGraphFile.value() };
+  info() << "Dumping data dependencies graph to file: " << g.fileName() << endmsg;
 
   // define algs and objects
   std::set<std::size_t> definedObjects;
@@ -1258,36 +1192,35 @@ StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, Dat
 
   // inDeps and outDeps should have the same entries
   std::size_t algoIndex = 0ul;
-  for ( const auto& [name, ideps] : inDeps ) {
-    if ( not std::regex_search( name, algNameRegex ) ) continue;
-    dataDepthGraphFile << defineAlg( name, std::to_string( algoIndex ) );
+  for ( const auto& [algName, ideps] : inDeps ) {
+    if ( not std::regex_search( algName, algNameRegex ) ) continue;
+    std::string algIndex = "Alg_" + std::to_string( algoIndex );
+    g.addNode( algName, algIndex );
 
     // inputs
     for ( const auto& dep : ideps ) {
       if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
 
       const auto [itr, inserted] = definedObjects.insert( dep.hash() );
-      if ( inserted ) dataDepthGraphFile << defineObj( dep );
+      std::string objIndex       = "obj_" + std::to_string( dep.hash() );
+      if ( inserted ) g.addNode( dep.key(), objIndex );
 
-      dataDepthGraphFile << defineInput( dep, std::to_string( algoIndex ) );
+      g.addEdge( dep.key(), objIndex, algName, algIndex );
     } // loop on ideps
 
-    const auto& odeps = outDeps.at( name );
+    const auto& odeps = outDeps.at( algName );
     for ( const auto& dep : odeps ) {
       if ( not std::regex_search( dep.fullKey(), objNameRegex ) ) continue;
 
       const auto [itr, inserted] = definedObjects.insert( dep.hash() );
-      if ( inserted ) dataDepthGraphFile << defineObj( dep );
+      std::string objIndex       = "obj_" + std::to_string( dep.hash() );
+      if ( inserted ) g.addNode( dep.key(), objIndex );
 
-      dataDepthGraphFile << defineOutput( std::to_string( algoIndex ), dep );
+      g.addEdge( algName, algIndex, dep.key(), objIndex );
     } // loop on odeps
 
     ++algoIndex;
   } // loop on inDeps
-
-  // end the file
-  dataDepthGraphFile << stopGraph;
-  dataDepthGraphFile.close();
 
   return StatusCode::SUCCESS;
 }

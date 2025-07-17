@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,6 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include "GraphDumper.h"
+
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IAlgManager.h>
@@ -55,6 +57,11 @@ private:
   Gaudi::Property<std::vector<std::string>> m_producers{
       this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies" };
 
+  Gaudi::Property<std::string> m_dataDepsGraphFile{
+      this, "DataDepsGraphFile", "",
+      "Name of the output file (.dot or .md extensions allowed) containing the data dependency graph. If empty, no "
+      "graph is dumped" };
+
   struct AlgEntry {
     size_t                    index;
     SmartIF<IAlgorithm>       ialg;
@@ -86,6 +93,8 @@ private:
 
   void visit( AlgEntry const& alg, std::vector<std::string> const& stoppers, std::vector<Gaudi::Algorithm*>& sorted,
               std::vector<bool>& visited, std::vector<bool>& visiting ) const;
+
+  void dumpGraphFile() const;
 };
 
 DECLARE_COMPONENT( HiveDataBrokerSvc )
@@ -244,6 +253,9 @@ HiveDataBrokerSvc::mapProducers( std::map<std::string, AlgEntry>& algorithms ) c
     debug() << endmsg;
   }
 
+  // If requested, dump a graph of the data dependencies in a .dot or .md file
+  if ( not m_dataDepsGraphFile.empty() ) { dumpGraphFile(); }
+
   // figure out all outputs
   std::map<DataObjID, const AlgEntry*> producers;
   for ( auto& [name, alg] : algorithms ) {
@@ -360,4 +372,29 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
     debug() << std::endl << endmsg;
   }
   return result;
+}
+
+void HiveDataBrokerSvc::dumpGraphFile() const {
+  Gaudi::Hive::Graph g{ m_dataDepsGraphFile.value() };
+  info() << "Dumping data dependencies graph to file: " << g.fileName() << endmsg;
+
+  // define algs and objects
+  std::set<std::size_t> definedObjects;
+
+  // loop over all algorithms to create nodes
+  for ( const auto& [name, entry] : m_algorithms ) { g.addNode( entry.alg->name(), std::to_string( entry.index ) ); }
+
+  // loop over all algorithms to create list of outputs with corresponding alg indexes
+  std::unordered_map<std::string, size_t> output2Idx;
+  for ( const auto& [name, entry] : m_algorithms ) {
+    for ( const auto* id : sorted_( entry.alg->outputDataObjs() ) ) { output2Idx[id->key()] = entry.index; }
+  }
+
+  // loop over all algorithms to create edges
+  for ( const auto& [name, entry] : m_algorithms ) {
+    for ( const auto* id : sorted_( entry.alg->inputDataObjs() ) ) {
+      g.addEdge( entry.alg->name(), std::to_string( entry.index ), id->key(), std::to_string( output2Idx[id->key()] ),
+                 id->key() );
+    }
+  }
 }

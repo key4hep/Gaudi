@@ -1,6 +1,6 @@
 #!/usr/bin/env gaudirun.py
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -68,9 +68,7 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 # It's called slim since it has less functionalities overall than the good-old
 # event loop manager. Here we just set its outputlevel to DEBUG.
 
-slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG
-)
+slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc")
 
 # -------------------------------------------------------------------------------
 
@@ -79,13 +77,11 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(
+    ThreadPoolSize=threads, OutputLevel=WARNING, DataDepsGraphFile="graphDump.dot"
+)
 
 # -------------------------------------------------------------------------------
-
-# Algo Resource Pool -----------------------------------------------------------
-# Nothing special here, we just set the debug level.
-AlgResourcePool(OutputLevel=DEBUG)
 
 CPUCrunchSvc(shortCalib=True)
 

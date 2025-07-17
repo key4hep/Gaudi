@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -65,3 +65,9 @@ gaudi_install(PYTHON)
 gaudi_install(SCRIPTS)
 
 gaudi_add_pytest(tests/pytest)
+
+if(BUILD_TESTING)
+
+  gaudi_add_executable(test_GraphDumper SOURCES tests/src/test_GraphDumper.cpp LINK Boost::unit_test_framework TEST)
+
+endif()
