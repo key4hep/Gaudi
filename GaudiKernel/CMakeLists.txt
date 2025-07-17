@@ -401,6 +401,7 @@ if(BUILD_TESTING)
       tests/src/test_PropertyFmt.cpp
       tests/src/test_finally.cpp
       tests/src/test_SmartIF.cpp
+      tests/src/test_SmartRef.cpp
     LINK
       GaudiKernel
       Catch2::Catch2WithMain

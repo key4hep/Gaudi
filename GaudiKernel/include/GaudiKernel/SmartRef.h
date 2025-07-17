@@ -13,6 +13,7 @@
 #include <GaudiKernel/ContainedObject.h>
 #include <GaudiKernel/SmartRefBase.h>
 #include <typeinfo>
+#include <utility>
 
 template <class TYPE>
 class SmartRefArray;
@@ -155,15 +156,10 @@ public:
     if ( !m_target && c.m_target ) return c.m_base.isEqualEx( c.m_target, m_base );
     return false;
   }
+  bool operator==( SmartRef<TYPE>& rhs ) { return std::as_const( *this ) == std::as_const( rhs ); }
 
+  friend bool operator==( SmartRef<TYPE>& lhs, TYPE* rhs ) { return lhs.target() == rhs; }
   friend bool operator==( const SmartRef<TYPE>& lhs, const TYPE* rhs ) { return lhs.target() == rhs; }
-  friend bool operator==( const TYPE* lhs, const SmartRef<TYPE>& rhs ) { return rhs.target() == lhs; }
-
-  /// NON-Equality operator
-  bool operator!=( const SmartRef<TYPE>& c ) const { return !( this->operator==( c ) ); }
-
-  friend bool operator!=( const SmartRef<TYPE>& lhs, const TYPE* rhs ) { return lhs.target() != rhs; }
-  friend bool operator!=( const TYPE* lhs, const SmartRef<TYPE>& rhs ) { return rhs.target() != lhs; }
 
   /// explicit conversion to bool to check for object existence (will load object)
   explicit operator bool() const { return target() != nullptr; }
