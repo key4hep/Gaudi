@@ -155,17 +155,15 @@ public:
     if ( !m_target && c.m_target ) return c.m_base.isEqualEx( c.m_target, m_base );
     return false;
   }
-  friend bool operator==( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() == nullptr; }
 
-  /// Friend helper to check for object existence (will load object)
-  friend bool operator==( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() == nullptr; }
+  friend bool operator==( const SmartRef<TYPE>& lhs, const TYPE* rhs ) { return lhs.target() == rhs; }
+  friend bool operator==( const TYPE* lhs, const SmartRef<TYPE>& rhs ) { return rhs.target() == lhs; }
+
   /// NON-Equality operator
   bool operator!=( const SmartRef<TYPE>& c ) const { return !( this->operator==( c ) ); }
 
-  friend bool operator!=( const SmartRef<TYPE>& ref, std::nullptr_t ) { return ref.target() != nullptr; }
-
-  /// Friend helper to check for object existence (will load object)
-  friend bool operator!=( std::nullptr_t, const SmartRef<TYPE>& ref ) { return ref.target() != nullptr; }
+  friend bool operator!=( const SmartRef<TYPE>& lhs, const TYPE* rhs ) { return lhs.target() != rhs; }
+  friend bool operator!=( const TYPE* lhs, const SmartRef<TYPE>& rhs ) { return rhs.target() != lhs; }
 
   /// explicit conversion to bool to check for object existence (will load object)
   explicit operator bool() const { return target() != nullptr; }
