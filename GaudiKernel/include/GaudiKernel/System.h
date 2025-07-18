@@ -77,7 +77,7 @@ namespace System {
   //    7  or above = AVX supported by CPU and operating system
   //    8  or above = AVX2
   //    9  or above = AVX512F
-  GAUDI_API int instructionsetLevel();
+  [[deprecated]] GAUDI_API int instructionsetLevel();
   /// User login name
   GAUDI_API const std::string& accountName();
   /// Number of arguments passed to the commandline
