@@ -19,27 +19,39 @@
 #include <vector>
 
 namespace Gaudi {
-  /** @class StringKey GaudiKernel/StringKey.h
-   *  The helper class to represent the efficient "key" for access.
-   *  Essentially it is a bit modified version ("boost-free") of the
-   *  original class
-   *  stringKey by Gerhard Raven, which is heavily used now in HLT
+  /** @class StringKey
+   *  Helper class for efficient "key" access for strings.
+   *
+   *  Multiple lookups of the same key can be speed up by using
+   *  a pre-computed key:
+   *  @code
+   *
+   *   std::map<StringKey, double> m = {...};
+   *   const StringKey& key("SomeLongKey");
+   *
+   *   // EFFICIENT:
+   *   auto i1 = m.find ( key ) ;
+   *
+   *   // CAN BE VERY INEFICIENT:
+   *   auto i2 = m_find( "SomeLongKey" );
+   *
+   *  @endcode
    *
    *  @attention NEVER use the actual hash value for anything stored in
    *  files, as it is not guaranteed that the hashing scheme will remain
    *  the same.
    *
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+   *  @author Gerhard Raven (based on stringKey)
    *  @date   2009-04-08
    */
   class GAUDI_API StringKey {
   public:
     /// constructor from plain C-string, perform hashing
     StringKey( const char* key = "" ) : StringKey{ std::string{ key } } {}
-    //
     /// constructor from std::string, perform hashing
     StringKey( std::string key ); // constructor, perform hashing
-  public:
+
     /// the actual string
     const std::string& str() const { return m_str; }
     /// implicit cast to std::string
@@ -49,62 +61,16 @@ namespace Gaudi {
     /// empty key?
     bool operator!() const { return empty(); }
 
-  public:
-    /** equality                                                            Key
-     *  for efficiency reason compare the hash-values first
-     */
-    friend bool operator==( const StringKey& lhs, const StringKey& rhs ) {
-      return lhs.m_hash == rhs.m_hash && lhs.m_str == rhs.m_str;
-    }
-    /** equality, without hashing                                        string
-     *  rely on the native string equality
-     */
-    friend bool operator==( const StringKey& lhs, const std::string& rhs ) { return lhs.m_str == rhs; }
-    friend bool operator==( const std::string& lhs, const StringKey& rhs ) { return rhs == lhs; }
-    friend bool operator==( const StringKey& lhs, std::string_view rhs ) { return lhs.m_str == rhs; }
-    friend bool operator==( std::string_view lhs, const StringKey& rhs ) { return rhs == lhs; }
+    /// Compiler generated equality operator first comparing hash, then string (see below)
+    bool operator==( const StringKey& ) const = default;
+    /// Compiler generated spaceship operator first comparing hash, then string (see below)
+    auto operator<=>( const StringKey& ) const = default;
 
-  public: // non-equality
-    /// non equality                                                      Key
-    friend bool operator!=( const StringKey& lhs, const StringKey& rhs ) { return !( lhs == rhs ); }
-    /// non-equality                                                   string
-    friend bool operator!=( const StringKey& lhs, std::string_view rhs ) { return !( lhs == rhs ); }
-    friend bool operator!=( const StringKey& lhs, const std::string& rhs ) { return !( lhs == rhs ); }
-    friend bool operator!=( std::string_view lhs, const StringKey& rhs ) { return !( lhs == rhs ); }
-    friend bool operator!=( const std::string& lhs, const StringKey& rhs ) { return !( lhs == rhs ); }
-    // ordering
-  public:
-    /** less                                                                key
-     *  It can be used as a key for std::map, e.g.
-     *  <code>std::map<StringKey,double></code>
-     *  Note that with such maps one can gain if using prehashed key:
-     *  @code
-     *
-     *   typedef std::map<StringKey,double> MAP ;
-     *
-     *   const StringKey& key = ...  ;
-     *
-     *   const MAP& m = ... ;
-     *
-     *   // EFFICIENT:
-     *  MAP::const_iterator i1 = m.find ( key ) ;
-     *
-     *  // CAN BE VERY INEFICIENT:
-     *  MAP::const_iterator i2 = m_find( "SomeLongKey,_e.g._TES_Locaiton" );
-     *
-     *  @endcode
-     */
-    friend bool operator<( const StringKey& lhs, const StringKey& rhs ) {
-      return lhs.m_hash == rhs.m_hash ? lhs.m_str < rhs.m_str : lhs.m_hash < rhs.m_hash;
-    }
-    /// greater                                                             key
-    friend bool operator>( const StringKey& lhs, const StringKey& rhs ) { return rhs < lhs; }
-    /// less or equal                                                       key
-    friend bool operator<=( const StringKey& lhs, const StringKey& rhs ) { return !( lhs > rhs ); }
-    /// greater or equal                                                    key
-    friend bool operator>=( const StringKey& lhs, const StringKey& rhs ) { return !( lhs < rhs ); }
-    // few helper methods for indirect usage, mainly for Python
-  public:
+    /// Comparison to other string-like types
+    bool operator==( const char* rhs ) const { return m_str == rhs; }
+    bool operator==( std::string_view rhs ) const { return m_str == rhs; }
+    bool operator==( const std::string& rhs ) const { return m_str == rhs; }
+
     /** the actual access to the hash
      *  @attention NEVER use the actual hash value for anything stored in
      *             files, as it is not guaranteed that the hashing scheme
@@ -128,15 +94,22 @@ namespace Gaudi {
     /// non-equality operator for python
     bool __neq__( const std::string_view right ) const;
 
-  public:
     /// string representation (for properties)
     std::string toString() const; // string representation (for properties)
+
   private:
-    /// the actual string:
-    std::string m_str; // the actual string
-    /// the hash:
-    std::size_t m_hash; //          the hash
+    // !!!
+    // Do not change the order of these two members. The compiler-generated
+    // comparison operators will first compare the hash (fast) and then the full string.
+    // !!!
+
+    /// the hash
+    std::size_t m_hash;
+
+    /// the actual string
+    std::string m_str;
   };
+
   /** hash-function: heeded for boost::hash
    *  @attention NEVER use the actual hash value for anything stored in
    *  files, as it is not guaranteed that the hashing scheme will remain
@@ -149,11 +122,13 @@ namespace Gaudi {
    */
   inline std::size_t hash_value( const Gaudi::StringKey& key ) { return key.__hash__(); }
 } // namespace Gaudi
+
 // interoperability with std::string and const char*
 inline std::string operator+( const std::string& lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
 inline std::string operator+( const char* lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
 inline std::string operator+( const Gaudi::StringKey& lhs, const std::string& rhs ) { return lhs.str() + rhs; }
 inline std::string operator+( const Gaudi::StringKey& lhs, const char* rhs ) { return lhs.str() + rhs; }
+
 // Streaming  value -> string
 namespace Gaudi {
   namespace Utils {
@@ -176,6 +151,7 @@ namespace Gaudi {
    */
   inline std::ostream& operator<<( std::ostream& o, const Gaudi::StringKey& key ) { return o << key.str(); }
 } // namespace Gaudi
+
 // Parsing : string -> value
 namespace Gaudi {
   namespace Parsers {
@@ -201,6 +177,7 @@ namespace Gaudi {
     GAUDI_API StatusCode parse( std::vector<Gaudi::StringKey>& result, std::string_view input );
   } // namespace Parsers
 } // namespace Gaudi
+
 namespace std {
   /// specialization of hash function used in C++11 collections like
   /// std::unordered_map
