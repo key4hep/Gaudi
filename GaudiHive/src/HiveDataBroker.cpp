@@ -29,12 +29,6 @@ namespace ranges = std::ranges;
 #  include <range/v3/view/filter.hpp>
 #  include <range/v3/view/reverse.hpp>
 #  include <range/v3/view/transform.hpp>
-// upstream has renamed namespace ranges::view ranges::views
-#  if RANGE_V3_VERSION < 900
-namespace ranges::views {
-  using namespace ranges::view;
-}
-#  endif
 #endif
 
 class HiveDataBrokerSvc final : public extends<Service, IDataBroker> {

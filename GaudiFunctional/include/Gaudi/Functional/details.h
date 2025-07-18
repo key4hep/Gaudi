@@ -28,12 +28,6 @@
 #  include <range/v3/version.hpp>
 #  include <range/v3/view/const.hpp>
 #  include <range/v3/view/zip.hpp>
-// upstream has renamed namespace ranges::view ranges::views
-#  if RANGE_V3_VERSION < 900
-namespace ranges::views {
-  using namespace ranges::view;
-}
-#  endif
 #endif
 
 #if defined( __clang__ ) && ( __clang_major__ < 11 ) || defined( __APPLE__ ) && ( __clang_major__ < 12 )
@@ -495,8 +489,8 @@ namespace Gaudi::Functional::details {
   }
 
   template <typename Handle, typename Algo>
-  auto get( const Handle& handle, const Algo&, const EventContext& )
-      -> decltype( details::deref( handle.get() ) ) // make it SFINAE friendly...
+  auto get( const Handle& handle, const Algo&,
+            const EventContext& ) -> decltype( details::deref( handle.get() ) ) // make it SFINAE friendly...
   {
     return details::deref( handle.get() );
   }
