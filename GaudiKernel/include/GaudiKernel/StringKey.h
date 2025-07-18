@@ -12,20 +12,32 @@
 
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StatusCode.h>
-#include <algorithm>
-#include <functional>
 #include <iosfwd>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace Gaudi {
+
+  /**
+   * Transparent hash operator for heterogeneous lookups.
+   * @code
+   *  std::unordered_set<Gaudi::StringKey, Gaudi::StringKeyHash, std::equal_to<>> set;
+   * @endcode
+   */
+  struct StringKeyHash {
+    using is_transparent = void;
+    size_t operator()( const char* s ) const { return std::hash<std::string_view>{}( s ); }
+    size_t operator()( std::string_view s ) const { return std::hash<std::string_view>{}( s ); }
+    size_t operator()( const std::string& s ) const { return std::hash<std::string>{}( s ); }
+  };
+
   /** @class StringKey
    *  Helper class for efficient "key" access for strings.
    *
    *  Multiple lookups of the same key can be speed up by using
    *  a pre-computed key:
    *  @code
-   *
    *   std::map<StringKey, double> m = {...};
    *   const StringKey& key("SomeLongKey");
    *
@@ -34,7 +46,14 @@ namespace Gaudi {
    *
    *   // CAN BE VERY INEFICIENT:
    *   auto i2 = m_find( "SomeLongKey" );
+   *  @endcode
    *
+   *  The class also supports heterogeneous lookups without the need to construct a
+   *  temporary StringKey object:
+   *  @code
+   *   std::unordered_set<Gaudi::StringKey, Gaudi::StringKeyHash, std::equal_to<>> s = {...};
+   *
+   *   s.contains("foo");
    *  @endcode
    *
    *  @attention NEVER use the actual hash value for anything stored in
@@ -43,14 +62,19 @@ namespace Gaudi {
    *
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @author Gerhard Raven (based on stringKey)
+   *  @author Frank Winklmeier
    *  @date   2009-04-08
    */
   class GAUDI_API StringKey {
   public:
+    /// Default constructor from empty string
+    StringKey() : StringKey( std::string_view{} ) {}
     /// constructor from plain C-string, perform hashing
-    StringKey( const char* key = "" ) : StringKey{ std::string{ key } } {}
+    StringKey( const char* key ) : StringKey( std::string_view{ key } ) {}
+    /// constructor from std::string_view, perform hashing
+    StringKey( std::string_view key ) : m_hash{ StringKeyHash()( key ) }, m_str( key ) {}
     /// constructor from std::string, perform hashing
-    StringKey( std::string key ); // constructor, perform hashing
+    StringKey( std::string key ) : m_hash{ StringKeyHash()( key ) }, m_str( std::move( key ) ) {}
 
     /// the actual string
     const std::string& str() const { return m_str; }

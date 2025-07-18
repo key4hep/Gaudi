@@ -19,7 +19,6 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  */
 
-Gaudi::StringKey::StringKey( std::string key ) : m_hash( std::hash<std::string>()( key ) ), m_str( std::move( key ) ) {}
 std::string        Gaudi::StringKey::toString() const { return Gaudi::Utils::toString( m_str ); }
 const std::string& Gaudi::StringKey::__str__() const { return m_str; }
 std::string        Gaudi::StringKey::__repr__() const { return toString(); }

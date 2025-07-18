@@ -15,6 +15,8 @@
 #include <GaudiKernel/StringKey.h>
 
 #include <map>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 
 void func( const Gaudi::StringKey& ) {}
@@ -29,6 +31,12 @@ BOOST_AUTO_TEST_CASE( construct ) {
     Gaudi::StringKey sk( "foo" );
     BOOST_CHECK( sk.str() == "foo" );
   }
+  {
+    std::string_view sv( "foo" );
+    Gaudi::StringKey sk( sv );
+    BOOST_CHECK( sk.str() == "foo" );
+  }
+
   // https://its.cern.ch/jira/browse/GAUDI-905
   func( "test" );
 }
@@ -38,6 +46,7 @@ BOOST_AUTO_TEST_CASE( empty ) {
   BOOST_CHECK( sk.empty() );
   BOOST_CHECK( !sk );
   BOOST_CHECK( sk.str().empty() );
+  BOOST_CHECK( sk == Gaudi::StringKey( "" ) );
 }
 
 BOOST_AUTO_TEST_CASE( comparison ) {
@@ -87,4 +96,38 @@ BOOST_AUTO_TEST_CASE( unordered_map ) {
   std::unordered_map<Gaudi::StringKey, int> m = { { "one", 1 }, { "two", 2 } };
   BOOST_CHECK( m["one"] == 1 );
   BOOST_CHECK( m["two"] == 2 );
+}
+
+/// StringKey class that throws when constructor is called
+class StringKeyThrow : public Gaudi::StringKey {
+public:
+  StringKeyThrow( std::string key ) : Gaudi::StringKey( std::move( key ) ) {
+    throw std::runtime_error( "StringKey constructor called for \"" + str() + "\"" );
+  }
+  using Gaudi::StringKey::StringKey;
+};
+
+BOOST_AUTO_TEST_CASE( heterogeneous_lookup ) {
+  // Define map with heterogeneous lookup using the throwing StringKey
+  std::unordered_map<StringKeyThrow, int, Gaudi::StringKeyHash, std::equal_to<>> m = { { "one", 1 }, { "two", 2 } };
+
+  // The following lookups should not create a temporary StringKey.
+  BOOST_CHECK( m.contains( "one" ) );
+  BOOST_CHECK( m.find( "one" )->second == 1 );
+
+  std::string_view one = "one";
+  BOOST_CHECK( m.contains( one ) );
+  BOOST_CHECK( m.find( one )->second == 1 );
+
+  const std::string two = "two";
+  BOOST_CHECK( m.contains( two ) );
+  BOOST_CHECK( m.find( two )->second == 2 );
+
+  // TODO: in C++26, operator[] and at() should also work
+}
+
+BOOST_AUTO_TEST_CASE( stringkey_hash ) {
+  // Ensure hashes from different types agree
+  Gaudi::StringKeyHash hasher;
+  BOOST_CHECK( hasher( std::string( "foo" ) ) == hasher( std::string_view( "foo" ) ) );
 }
