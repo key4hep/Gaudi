@@ -20,16 +20,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include <iomanip>
+#include <ranges>
 #include <stdexcept>
-#ifdef __cpp_lib_ranges
-#  include <ranges>
-namespace ranges = std::ranges;
-#else
-#  include <range/v3/algorithm/for_each.hpp>
-#  include <range/v3/view/filter.hpp>
-#  include <range/v3/view/reverse.hpp>
-#  include <range/v3/view/transform.hpp>
-#endif
 
 class HiveDataBrokerSvc final : public extends<Service, IDataBroker> {
 public:
@@ -137,11 +129,12 @@ StatusCode HiveDataBrokerSvc::initialize() {
     m_algorithms = instantiateAndInitializeAlgorithms( m_producers );
 
     // warn about non-reentrant algorithms
-    ranges::for_each( m_algorithms | ranges::views::transform( []( const auto& entry ) { return entry.second.alg; } ) |
-                          ranges::views::filter( []( const auto* alg ) { return alg->cardinality() > 0; } ),
-                      [&]( const Gaudi::Algorithm* alg ) {
-                        this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{ *alg } << endmsg;
-                      } );
+    std::ranges::for_each( m_algorithms |
+                               std::ranges::views::transform( []( const auto& entry ) { return entry.second.alg; } ) |
+                               std::ranges::views::filter( []( const auto* alg ) { return alg->cardinality() > 0; } ),
+                           [&]( const Gaudi::Algorithm* alg ) {
+                             this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{ *alg } << endmsg;
+                           } );
     //== Print the list of the created algorithms
     if ( msgLevel( MSG::DEBUG ) ) {
       MsgStream& msg = debug();
