@@ -44,13 +44,13 @@ namespace Gaudi {
     virtual StatusCode sysFinalize() = 0;
 
     // Defining a set of standard events used internally by the framework
-    inline static const std::string Initialize   = "Initialize";
-    inline static const std::string ReInitialize = "ReInitialize";
-    inline static const std::string Start        = "Start";
-    inline static const std::string ReStart      = "ReStart";
-    inline static const std::string Execute      = "Execute";
-    inline static const std::string Stop         = "Stop";
-    inline static const std::string Finalize     = "Finalize";
+    static const std::string Initialize;
+    static const std::string ReInitialize;
+    static const std::string Start;
+    static const std::string ReStart;
+    static const std::string Execute;
+    static const std::string Stop;
+    static const std::string Finalize;
   };
 
 } // namespace Gaudi
