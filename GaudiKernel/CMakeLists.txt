@@ -210,11 +210,6 @@ if(WIN32)
             src/Util/LibSymbolInfo.cpp)
 endif()
 
-gaudi_add_executable(instructionsetLevel
-  SOURCES src/Util/instructionsetLevel.cpp
-  LINK GaudiKernel
-       GaudiPluginService)
-
 # ROOT dictionaries
 gaudi_add_dictionary(GaudiKernelDict
                      HEADERFILES dict/dictionary.h
