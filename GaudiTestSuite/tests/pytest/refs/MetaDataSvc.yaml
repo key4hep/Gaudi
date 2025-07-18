@@ -80,7 +80,7 @@ stdout: |-
   EventDataSvc.EnableAccessHandler:False
   EventDataSvc.EnableFaultHandler:False
   EventDataSvc.ForceLeaves:False
-  EventDataSvc.InhibitPathes:[  ]
+  EventDataSvc.InhibitPaths:[  ]
   EventDataSvc.OutputLevel:3
   EventDataSvc.RootCLID:110
   EventDataSvc.RootName:'/Event'
@@ -145,7 +145,7 @@ stdout: |-
   HistogramDataSvc.EnableAccessHandler:False
   HistogramDataSvc.EnableFaultHandler:False
   HistogramDataSvc.ForceLeaves:False
-  HistogramDataSvc.InhibitPathes:[  ]
+  HistogramDataSvc.InhibitPaths:[  ]
   HistogramDataSvc.Input:[  ]
   HistogramDataSvc.OutputLevel:3
   HistogramDataSvc.Predefined1DHistos:{  }
@@ -265,7 +265,7 @@ stdout: |-
   NTupleSvc.EnableAccessHandler:False
   NTupleSvc.EnableFaultHandler:False
   NTupleSvc.ForceLeaves:False
-  NTupleSvc.InhibitPathes:[  ]
+  NTupleSvc.InhibitPaths:[  ]
   NTupleSvc.Input:[  ]
   NTupleSvc.Output:[ 'MyTuples DATAFILE=\'ntuple_with_metadata.root\' OPT=\'NEW\' TYP=\'ROOT\'' ]
   NTupleSvc.OutputLevel:3

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -135,7 +135,7 @@ protected:
                                        "force creation of default leaves on registerObject" };
   Gaudi::Property<bool>                     m_enableFaultHdlr{ this, "EnableFaultHandler", false,
                                            "enable incidents on data creation requests" };
-  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{ this, "InhibitPathes", {}, "inhibited leaves" };
+  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{ this, "InhibitPaths", {}, "inhibited leaves" };
 
   /// Pointer to data loader service
   SmartIF<IConversionSvc> m_dataLoader;

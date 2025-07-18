@@ -61,7 +61,7 @@ class GAUDI_API TsDataSvc : public extends<Service, IDataProviderSvc, IDataManag
   Gaudi::Property<std::string>              m_rootName{ this, "RootName", "/Event", "name of root entry" };
   Gaudi::Property<bool>                     m_forceLeaves{ this, "ForceLeaves", false,
                                        "force creation of default leaves on registerObject" };
-  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{ this, "InhibitPathes", {}, "inhibited leaves" };
+  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{ this, "InhibitPaths", {}, "inhibited leaves" };
 
   Gaudi::Property<bool>        m_enableFaultHdlr{ this, "EnableFaultHandler", false,
                                            "enable incidents on data creation requests" };
