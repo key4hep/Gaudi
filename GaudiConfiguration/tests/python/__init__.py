@@ -118,4 +118,11 @@ _DB = {
             ),
         },
     },
+    "TestConf::AlgWithUnknownSemantics": {
+        "__component_type__": "Algorithm",
+        "__doc__": "configurable for testing unknown semantics",
+        "properties": {
+            "AVector": ("std::vector<int>", [], "", "FooSemantics<int>"),
+        },
+    },
 }

@@ -716,10 +716,18 @@ SEMANTICS = [
 ]
 
 
-def getSemanticsFor(cpp_type):
+def getSemanticsFor(cpp_type, strict=False):
+    """Return semantics for given type. If no type-specific semantics can be found
+    return DefaultSemantics. In strict mode, raise a TypeError instead.
+    """
+
     for semantics in SEMANTICS:
         try:
             return semantics(cpp_type)
         except TypeError:
             pass
+
+    if strict:
+        raise TypeError(f"No semantics found for {cpp_type}")
+
     return DefaultSemantics(cpp_type)
