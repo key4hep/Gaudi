@@ -17,7 +17,6 @@
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/NamedRange.h>
-#include <boost/algorithm/string/replace.hpp>
 #include <type_traits>
 
 //---------------------------------------------------------------------------
@@ -90,6 +89,7 @@ namespace details {
   template <Gaudi::DataHandle::Mode mode, typename T, typename U = T>
   using Payload_t = typename Payload_helper<mode, T, U>::type;
 
+  std::string replace_all( std::string str, std::string_view from, std::string_view to );
 } // namespace details
 
 //---------------------------------------------------------------------------
@@ -138,9 +138,8 @@ public:
   T* put( std::unique_ptr<T> object ) const;
 
   std::string pythonRepr() const override {
-    auto repr = DataObjectHandleBase::pythonRepr();
-    boost::replace_all( repr, default_type, System::typeinfoName( typeid( T ) ) );
-    return repr;
+    return ::details::replace_all( DataObjectHandleBase::pythonRepr(), default_type,
+                                   System::typeinfoName( typeid( T ) ) );
   }
 
 private:
@@ -204,9 +203,8 @@ public:
   Range get() const;
 
   std::string pythonRepr() const override {
-    auto repr = DataObjectHandleBase::pythonRepr();
-    boost::replace_all( repr, default_type, System::typeinfoName( typeid( Gaudi::Range_<T> ) ) );
-    return repr;
+    return ::details::replace_all( DataObjectHandleBase::pythonRepr(), default_type,
+                                   System::typeinfoName( typeid( Gaudi::Range_<T> ) ) );
   }
 
 private:
@@ -249,9 +247,8 @@ public:
   Range get() const;
 
   std::string pythonRepr() const override {
-    auto repr = DataObjectHandleBase::pythonRepr();
-    boost::replace_all( repr, default_type, System::typeinfoName( typeid( Gaudi::NamedRange_<T> ) ) );
-    return repr;
+    return ::details::replace_all( DataObjectHandleBase::pythonRepr(), default_type,
+                                   System::typeinfoName( typeid( Gaudi::NamedRange_<T> ) ) );
   }
 
 private:
@@ -295,9 +292,8 @@ public:
   std::optional<Range> get() const;
 
   std::string pythonRepr() const override {
-    auto repr = DataObjectHandleBase::pythonRepr();
-    boost::replace_all( repr, default_type, System::typeinfoName( typeid( std::optional<Gaudi::NamedRange_<T>> ) ) );
-    return repr;
+    return ::details::replace_all( DataObjectHandleBase::pythonRepr(), default_type,
+                                   System::typeinfoName( typeid( std::optional<Gaudi::NamedRange_<T>> ) ) );
   }
 
 private:
@@ -354,9 +350,8 @@ public:
   std::optional<std::size_t> size() const { return _get()->size(); }
 
   std::string pythonRepr() const override {
-    auto repr = DataObjectHandleBase::pythonRepr();
-    boost::replace_all( repr, default_type, System::typeinfoName( typeid( T ) ) );
-    return repr;
+    return ::details::replace_all( DataObjectHandleBase::pythonRepr(), default_type,
+                                   System::typeinfoName( typeid( T ) ) );
   }
 
 private:
@@ -413,9 +408,8 @@ public:
   std::optional<std::size_t> size() const { return _get()->size(); }
 
   std::string pythonRepr() const override {
-    auto repr = DataObjectHandleBase::pythonRepr();
-    boost::replace_all( repr, default_type, System::typeinfoName( typeid( View ) ) );
-    return repr;
+    return ::details::replace_all( DataObjectHandleBase::pythonRepr(), default_type,
+                                   System::typeinfoName( typeid( View ) ) );
   }
 
 private:
