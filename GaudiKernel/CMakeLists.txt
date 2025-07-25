@@ -123,6 +123,7 @@ gaudi_add_library(GaudiKernel
           src/Lib/Range.cpp
           src/Lib/RegistryEntry.cpp
           src/Lib/RenounceToolInputsVisitor.cpp
+          src/Lib/ReplaceAll.cpp
           src/Lib/RndmGenerators.cpp
           src/Lib/RndmTypeInfos.cpp
           src/Lib/Selector.cpp
