@@ -289,6 +289,9 @@ class GaudiExeTest(SubprocessBaseTest):
         """
         Test the standard output against the reference.
         """
+        if not self.reference or reference.get("stdout") is None:
+            pytest.skip("No stdout reference")
+
         out = self.preprocessor(stdout.decode("utf-8", errors="backslashreplace"))
         self.validate_with_reference(out, "stdout", reference, record_property)
 
