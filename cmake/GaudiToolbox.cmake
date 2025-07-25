@@ -895,7 +895,7 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
             --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
             --ctest-output-file=${base_filename}.tests.cmake
-            --ctest-pytest-command=$<TARGET_FILE:run>\\ $<TARGET_FILE:pytest>\\ ${ARG_OPTIONS_ESC}
+            --ctest-pytest-command=${CMAKE_CROSSCOMPILING_EMULATOR}\\ $<TARGET_FILE:run>\\ $<TARGET_FILE:pytest>\\ ${ARG_OPTIONS_ESC}
             --ctest-pytest-root-dir=${ARG_ROOT_DIR}
             --ctest-prefix=${ARG_PREFIX}
             --ctest-label=${PROJECT_NAME}
