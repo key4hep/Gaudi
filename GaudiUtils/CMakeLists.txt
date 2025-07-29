@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -78,11 +78,10 @@ if(BUILD_TESTING)
                             GaudiUtilsLib
                             GaudiKernel
                             UUID::uuid
-                            XercesC::XercesC)
+                            XercesC::XercesC
+                          TEST)
     set_property(TARGET testXMLFileCatalogWrite
       APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
-    add_test(NAME ${package_name}.testXMLFileCatalogWrite
-            COMMAND run $<TARGET_FILE:testXMLFileCatalogWrite>)
 
     gaudi_add_executable(testXMLFileCatalogRead
                           SOURCES
@@ -93,11 +92,10 @@ if(BUILD_TESTING)
                             GaudiUtilsLib
                             GaudiKernel
                             UUID::uuid
-                            XercesC::XercesC)
+                            XercesC::XercesC
+                          TEST)
     set_property(TARGET testXMLFileCatalogRead
       APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogRead=main)
-    add_test(NAME ${package_name}.testXMLFileCatalogRead
-            COMMAND run $<TARGET_FILE:testXMLFileCatalogRead>)
     set_property(TEST ${package_name}.testXMLFileCatalogRead
       PROPERTY DEPENDS ${package_name}.testXMLFileCatalogWrite)
   endif()

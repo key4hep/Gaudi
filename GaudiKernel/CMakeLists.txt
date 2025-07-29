@@ -255,10 +255,9 @@ if(BUILD_TESTING)
                       TEST)
 
   gaudi_add_executable(PathResolver_test SOURCES tests/src/PathResolver_test.cpp
-    LINK GaudiKernel)
-  add_test(NAME ${package_name}.PathResolver_test
-          COMMAND run $<TARGET_FILE:PathResolver_test>
-          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    LINK GaudiKernel TEST)
+  set_property(TEST ${package_name}.PathResolver_test
+    PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
   gaudi_add_executable(Parsers_test SOURCES tests/src/parsers.cpp
     LINK GaudiKernel TEST)
