@@ -165,7 +165,7 @@ stdout: |-
   DetectorDataSvc.EnableAccessHandler: False
   DetectorDataSvc.EnableFaultHandler: False
   DetectorDataSvc.ForceLeaves: False
-  DetectorDataSvc.InhibitPathes: [  ]
+  DetectorDataSvc.InhibitPaths: [  ]
   DetectorDataSvc.OutputLevel: 3
   DetectorDataSvc.PersistencySvc: 'DetectorPersistencySvc'
   DetectorDataSvc.RootCLID: 3
@@ -196,7 +196,7 @@ stdout: |-
   EventDataSvc.EnableAccessHandler: False
   EventDataSvc.EnableFaultHandler: False
   EventDataSvc.ForceLeaves: False
-  EventDataSvc.InhibitPathes: [  ]
+  EventDataSvc.InhibitPaths: [  ]
   EventDataSvc.OutputLevel: 3
   EventDataSvc.RootCLID: 110
   EventDataSvc.RootName: '/Event'
