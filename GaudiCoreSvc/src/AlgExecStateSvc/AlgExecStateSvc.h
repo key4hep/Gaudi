@@ -114,8 +114,8 @@ private:
   std::vector<AlgStates> m_algStates;
   // one map entry per event slot and subslot, with AlgKey as a key, for sparse storage
   std::vector<std::vector<AlgStatesWithSubSlot>> m_algSubSlotStates;
-  // algorithm name to slot, needed to regognize double addition
-  std::unordered_map<Gaudi::StringKey, AlgExecStateRef::AlgKey> m_algNameToIndex;
+  // algorithm name to slot (with heterogeneous lookup), needed to regognize double addition
+  std::unordered_map<Gaudi::StringKey, AlgExecStateRef::AlgKey, Gaudi::StringKeyHash, std::equal_to<>> m_algNameToIndex;
 
   std::vector<EventStatus::Status> m_eventStatus;
   std::vector<Gaudi::StringKey>    m_preInitAlgs;
