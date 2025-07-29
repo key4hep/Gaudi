@@ -45,7 +45,6 @@ gaudi_add_module(GaudiHive
                       ROOT::Hist
                       ROOT::RIO
                       TBB::tbb
-                      Rangev3::rangev3
                       fmt::fmt
                       ${rt_LIBRARY}
                       ${GAUDI_ATOMIC_LIBS})
