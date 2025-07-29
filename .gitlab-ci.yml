@@ -43,7 +43,7 @@ variables:
     - cp build/compile_commands.json .
     # run the tests
     - cd build
-    - if ctest -T test -j $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
+    - if ctest -T test -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
     - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
     - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
@@ -128,7 +128,7 @@ variables:
     - cp build/compile_commands.json .
     # run the tests
     - cd build
-    - if ctest -T test -j $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
+    - if ctest -T test -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
     - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
     - cd ..
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
