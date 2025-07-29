@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -36,7 +36,11 @@ class Property(object):
     def __init__(self, cpp_type, default, doc="undocumented", semantics=None):
         from .semantics import getSemanticsFor
 
-        self.semantics = getSemanticsFor(semantics or cpp_type)
+        if semantics is None:
+            self.semantics = getSemanticsFor(cpp_type)
+        else:
+            self.semantics = getSemanticsFor(semantics, strict=True)
+
         self.default = default
         self.__doc__ = doc
 
