@@ -171,6 +171,20 @@ warnings-check:lcg:105c:x86_64-el9-gcc13-opt:no-examples:
     - job: "lcg:105c:x86_64-el9-gcc13-opt:no-examples"
       artifacts: true
 
+lcg-view:107:x86_64-el9-gcc13-opt:cuda:
+  <<: *template_lcg_view_build
+  tags:
+    - k8s-gpu
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+  variables:
+    CUDACXX: /cvmfs/projects.cern.ch/lcg/releases/cuda/12.8.1/x86_64-linux/bin/nvcc
+    GAUDI_HIGH_MEM_JOB_SLOTS: 4  # maximum for current GPU runners to avoid OOM killer during build
+warnings-check:lcg-view:107:x86_64-el9-gcc13-opt:cuda:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg-view:107:x86_64-el9-gcc13-opt:cuda"
+      artifacts: true
+
 # LHCb-style build
 lhcb:105c:x86_64_v3-el9-gcc13-opt+g:
   <<: *template_lhcb_build
