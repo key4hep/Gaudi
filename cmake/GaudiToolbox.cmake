@@ -141,6 +141,18 @@ set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cm
 set(scan_dict_deps_command ${GAUDI_TOOLBOX_DIR}/scan_dict_deps.py
     CACHE INTERNAL "command to use to scan dependencies of dictionary headers")
 
+# Configure (Ninja-only) job pool for memory-intensive build targets (2 GB per slot)
+set(GAUDI_HIGH_MEM_JOB_SLOTS "$ENV{GAUDI_HIGH_MEM_JOB_SLOTS}" CACHE STRING
+   "Number of high memory build slots (2GB per slot). If empty, deduce form total physical memory.")
+
+if(NOT GAUDI_HIGH_MEM_JOB_SLOTS)
+   cmake_host_system_information(RESULT _host_ram_mb QUERY TOTAL_PHYSICAL_MEMORY)
+   math(EXPR GAUDI_HIGH_MEM_JOB_SLOTS "${_host_ram_mb} / 2000" OUTPUT_FORMAT DECIMAL)
+endif()
+
+set_property(GLOBAL APPEND PROPERTY JOB_POOLS GAUDI_HIGH_MEM_JOB_POOL=${GAUDI_HIGH_MEM_JOB_SLOTS})
+message(DEBUG "Configuring ${GAUDI_HIGH_MEM_JOB_SLOTS} high-memory (2 GB) build slots")
+
 ##################################### PGO  #####################################
 
 if(DEFINED GAUDI_PGO)

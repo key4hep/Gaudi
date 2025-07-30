@@ -172,6 +172,9 @@ target_include_directories(GaudiKernel
   PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
   )
 
+# Limit number of parallel builds (Ninja only)
+set_target_properties(GaudiKernel PROPERTIES JOB_POOL_COMPILE GAUDI_HIGH_MEM_JOB_POOL)
+
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
                                      src/Lib/Platform/SystemMacOS.mm)
