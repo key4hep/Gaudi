@@ -19,7 +19,7 @@ variables:
     - cvmfs
   before_script:
     # Add Ninja and CMake to the PATH
-    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.20.0/Linux-$(uname -m)/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.11.1/Linux-$(uname -m)/bin:$PATH"
+    - export PATH="/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.30.6/Linux-$(uname -m)/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.12.1/Linux-$(uname -m)/bin:$PATH"
     - export CCACHE_DIR=$PWD/.ccache
     - "export LCG_VERSION=$(cut -d: -f2 <<< $CI_JOB_NAME)"
     - "export platform=$(cut -d: -f3 <<< $CI_JOB_NAME)"
