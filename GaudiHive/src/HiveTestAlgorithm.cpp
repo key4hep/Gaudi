@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -27,7 +27,7 @@ public:
   MyObject( int d ) : m_data( d ) { c_instances++; }
   MyObject( const MyObject& o ) : DataObject(), m_data( o.m_data ) { c_instances++; }
   ~MyObject() { d_instances++; }
-  int         getData() { return m_data; }
+  int         getData() const { return m_data; }
   static void dump() { cout << "MyObject (C/D): " << c_instances << "/" << d_instances << endl; }
 };
 
@@ -64,7 +64,7 @@ StatusCode HiveTestAlgorithm::execute() {
   info() << ":HiveTestAlgorithm::getting inputs... " << evt << endmsg;
 
   for ( auto& handle : m_inputHandles ) {
-    auto obj = dynamic_cast<MyObject*>( handle->get() );
+    auto obj = dynamic_cast<MyObject const*>( handle->get() );
     if ( !obj ) {
       fatal() << "Unable to dcast inputHandles object" << endmsg;
       return StatusCode::FAILURE;
