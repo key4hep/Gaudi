@@ -9,9 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "PropertyValue.h"
+#include <GaudiKernel/SerializeSTL.h>
 #include <GaudiKernel/compose.h>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/format.hpp>
+#include <algorithm>
 
 namespace gp = Gaudi::Parsers;
 
@@ -38,19 +38,18 @@ const gp::PropertyValue gp::PropertyValue::operator+( const PropertyValue& right
 
 gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right ) {
   if ( IsReference() ) { throw PropertyValueException::WrongLValue(); }
-  std::visit(
-      Gaudi::overload( []( std::vector<std::string>& lhs,
-                           const std::string&        rhs ) { lhs.erase( std::find( lhs.begin(), lhs.end(), rhs ) ); },
-                       []( std::vector<std::string>& lhs, const std::vector<std::string>& rhs ) {
-                         for ( const auto& item : rhs ) lhs.erase( std::find( lhs.begin(), lhs.end(), item ) );
-                       },
-                       []( std::map<std::string, std::string>& lhs, const std::string& rhs ) { lhs.erase( rhs ); },
-                       []( std::map<std::string, std::string>& lhs, const std::vector<std::string>& rhs ) {
-                         for ( const auto& item : rhs ) lhs.erase( item );
-                       },
-                       []( std::string&, const auto& ) { throw PropertyValueException::WrongLValue(); },
-                       []( auto&, const auto& ) { throw PropertyValueException::WrongRValue(); } ),
-      value_, right.value_ );
+  std::visit( Gaudi::overload( []( VectorOfStrings&   lhs,
+                                   const std::string& rhs ) { lhs.erase( std::find( lhs.begin(), lhs.end(), rhs ) ); },
+                               []( VectorOfStrings& lhs, const VectorOfStrings& rhs ) {
+                                 for ( const auto& item : rhs ) lhs.erase( std::find( lhs.begin(), lhs.end(), item ) );
+                               },
+                               []( MapOfStrings& lhs, const std::string& rhs ) { lhs.erase( rhs ); },
+                               []( MapOfStrings& lhs, const VectorOfStrings& rhs ) {
+                                 for ( const auto& item : rhs ) lhs.erase( item );
+                               },
+                               []( std::string&, const auto& ) { throw PropertyValueException::WrongLValue(); },
+                               []( auto&, const auto& ) { throw PropertyValueException::WrongRValue(); } ),
+              value_, right.value_ );
   return *this;
 }
 
@@ -68,16 +67,12 @@ std::string gp::PropertyValue::ToString() const {
     }
   }
   return std::visit(
-      Gaudi::overload( []( const std::string& v ) { return v; },
-                       []( const VectorOfStrings& v ) { return '[' + boost::algorithm::join( v, ", " ) + ']'; },
-                       []( const MapOfStrings& v ) {
-                         std::string result = "{";
-                         std::string delim  = "";
-                         for ( const auto& in : v ) {
-                           result += delim + in.first + ":" + in.second;
-                           delim = ", ";
-                         }
-                         return result + "}";
-                       } ),
+      []( const auto& v ) {
+        // make sure to be consistent by explicitly re-using `GaudiUtils::operator<<`
+        using GaudiUtils::operator<<;
+        std::ostringstream s{};
+        s << v;
+        return s.str();
+      },
       value_ );
 }

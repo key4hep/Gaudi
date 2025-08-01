@@ -27,9 +27,7 @@ namespace Gaudi {
    */
   struct StringKeyHash {
     using is_transparent = void;
-    size_t operator()( const char* s ) const { return std::hash<std::string_view>{}( s ); }
     size_t operator()( std::string_view s ) const { return std::hash<std::string_view>{}( s ); }
-    size_t operator()( const std::string& s ) const { return std::hash<std::string>{}( s ); }
   };
 
   /** @class StringKey
@@ -79,7 +77,9 @@ namespace Gaudi {
     /// the actual string
     const std::string& str() const { return m_str; }
     /// implicit cast to std::string
-    operator const std::string&() const { return str(); }
+    operator const std::string&() const { return m_str; }
+    /// implicit cast to std::string_view
+    operator std::string_view() const { return m_str; }
     /// empty key?
     bool empty() const { return m_str.empty(); }
     /// empty key?
@@ -121,6 +121,12 @@ namespace Gaudi {
     /// string representation (for properties)
     std::string toString() const; // string representation (for properties)
 
+    // interoperability with std::string and const char*
+    friend std::string operator+( const std::string& lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
+    friend std::string operator+( const char* lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
+    friend std::string operator+( const Gaudi::StringKey& lhs, const std::string& rhs ) { return lhs.str() + rhs; }
+    friend std::string operator+( const Gaudi::StringKey& lhs, const char* rhs ) { return lhs.str() + rhs; }
+
   private:
     // !!!
     // Do not change the order of these two members. The compiler-generated
@@ -146,12 +152,6 @@ namespace Gaudi {
    */
   inline std::size_t hash_value( const Gaudi::StringKey& key ) { return key.__hash__(); }
 } // namespace Gaudi
-
-// interoperability with std::string and const char*
-inline std::string operator+( const std::string& lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
-inline std::string operator+( const char* lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
-inline std::string operator+( const Gaudi::StringKey& lhs, const std::string& rhs ) { return lhs.str() + rhs; }
-inline std::string operator+( const Gaudi::StringKey& lhs, const char* rhs ) { return lhs.str() + rhs; }
 
 // Streaming  value -> string
 namespace Gaudi {
@@ -208,6 +208,6 @@ namespace std {
   /// \see https://its.cern.ch/jira/browse/GAUDI-973
   template <>
   struct hash<Gaudi::StringKey> {
-    inline std::size_t operator()( Gaudi::StringKey const& s ) const { return hash_value( s ); }
+    std::size_t operator()( Gaudi::StringKey const& s ) const { return hash_value( s ); }
   };
 } // namespace std

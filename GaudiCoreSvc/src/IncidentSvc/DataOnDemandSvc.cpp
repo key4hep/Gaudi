@@ -37,8 +37,9 @@ namespace {
    *  @param prefix prefix to be removed
    *  @return input string without prefix
    */
-  inline std::string no_prefix( const std::string& value, const std::string& prefix ) {
-    return boost::algorithm::starts_with( value, prefix ) ? value.substr( prefix.size() ) : value;
+  std::string no_prefix( std::string_view value, std::string_view prefix ) {
+    if ( value.starts_with( prefix ) ) value.remove_prefix( prefix.size() );
+    return std::string{ value };
   }
   /** add a prefix (if needed) to all keys of the map
    *  the previous key is removed
@@ -52,7 +53,7 @@ namespace {
     if ( prefix.empty() ) { return 0; }
     /// loop over all entries to find the  proper keys
     auto it = std::find_if_not( _map.begin(), _map.end(), [&]( typename MAP::ValueType::const_reference i ) {
-      return boost::algorithm::starts_with( i.first, prefix );
+      return i.first.starts_with( prefix );
     } );
     if ( it == _map.end() ) return 0;
     std::string key   = prefix + it->first;
