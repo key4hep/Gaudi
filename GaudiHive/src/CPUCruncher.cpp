@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -171,7 +171,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
     if ( !inputHandle->isValid() ) continue;
 
     VERBOSE_MSG << "get from TS: " << inputHandle->objKey() << endmsg;
-    DataObject* obj = nullptr;
+    const DataObject* obj = nullptr;
     for ( unsigned int i = 0; i < m_rwRepetitions; ++i ) { obj = inputHandle->get(); }
     if ( obj == nullptr ) error() << "A read object was a null pointer." << endmsg;
   }
