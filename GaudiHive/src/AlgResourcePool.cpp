@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,8 +14,6 @@
 #include <functional>
 #include <queue>
 #include <sstream>
-
-// DP TODO: Manage SmartIFs and not pointers to algorithms
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AlgResourcePool )
@@ -65,7 +63,7 @@ StatusCode AlgResourcePool::start() {
   if ( !startSc.isSuccess() ) return startSc;
 
   // sys-Start the algorithms
-  for ( auto& ialgo : m_algList ) {
+  for ( IAlgorithm* ialgo : m_algList ) {
     startSc = ialgo->sysStart();
     if ( startSc.isFailure() ) {
       error() << "Unable to start Algorithm: " << ialgo->name() << endmsg;
@@ -175,7 +173,8 @@ StatusCode AlgResourcePool::releaseResource( std::string_view name ) {
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::flattenSequencer( Gaudi::Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth ) {
+StatusCode AlgResourcePool::flattenSequencer( IAlgorithm* algo, std::list<IAlgorithm*>& alglist,
+                                              unsigned int recursionDepth ) {
 
   StatusCode sc = StatusCode::SUCCESS;
 
@@ -216,45 +215,22 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
     return StatusCode::FAILURE;
   }
 
-  // Useful lambda not to repeat ourselves --------------------------
-  auto createAlg = [&algMan, this]( const std::string& item_type, const std::string& item_name, IAlgorithm*& algo ) {
-    StatusCode createAlgSc = algMan->createAlgorithm( item_type, item_name, algo, true, false );
-    if ( createAlgSc.isFailure() )
-      this->warning() << "Algorithm " << item_type << "/" << item_name << " could not be created." << endmsg;
-  };
-  // End of lambda --------------------------------------------------
-
   StatusCode sc = StatusCode::SUCCESS;
 
   // Fill the top algorithm list ----
-  const std::vector<std::string>& topAlgNames = m_topAlgNames.value();
-  for ( auto& name : topAlgNames ) {
-    IAlgorithm* algo( nullptr );
-
-    Gaudi::Utils::TypeNameString item( name );
-    const std::string&           item_name = item.name();
-    const std::string&           item_type = item.type();
-    SmartIF<IAlgorithm>          algoSmartIF( algMan->algorithm( item_name, false ) );
-
-    if ( !algoSmartIF.isValid() ) {
-      createAlg( item_type, item_name, algo );
-      algoSmartIF = algo;
+  for ( const std::string& typeName : m_topAlgNames ) {
+    IAlgorithm* algo = algMan->algorithm( typeName, /*createIf*/ true ).get();
+    sc               = algo->sysInitialize();
+    if ( sc.isFailure() ) {
+      error() << "Unable to initialize Algorithm: " << algo->name() << endmsg;
+      return sc;
     }
-
-    algoSmartIF->sysInitialize().ignore();
-    m_topAlgList.push_back( algoSmartIF );
+    m_topAlgList.push_back( algo );
   }
   // Top algorithm list filled ----
 
   // Now we unroll it ----
-  for ( auto& algoSmartIF : m_topAlgList ) {
-    Gaudi::Algorithm* algorithm = dynamic_cast<Gaudi::Algorithm*>( algoSmartIF.get() );
-    if ( !algorithm ) {
-      fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
-      return StatusCode::FAILURE;
-    }
-    sc = flattenSequencer( algorithm, m_flatUniqueAlgList );
-  }
+  for ( IAlgorithm* ialgo : m_topAlgList ) { sc = flattenSequencer( ialgo, m_flatUniqueAlgList ); }
   // stupid O(N^2) unique-ification..
   for ( auto i = begin( m_flatUniqueAlgList ); i != end( m_flatUniqueAlgList ); ++i ) {
     auto n = next( i );
@@ -265,9 +241,9 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
         ++n;
     }
   }
-  if ( msgLevel( MSG::DEBUG ) ) {
+  ON_DEBUG {
     debug() << "List of algorithms is: " << endmsg;
-    for ( auto& algo : m_flatUniqueAlgList )
+    for ( IAlgorithm* algo : m_flatUniqueAlgList )
       debug() << "  o " << algo->type() << "/" << algo->name() << " @ " << algo << endmsg;
   }
 
@@ -276,25 +252,17 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
   // Now let's manage the clones
   unsigned int           resource_counter( 0 );
   std::hash<std::string> hash_function;
-  for ( auto& ialgoSmartIF : m_flatUniqueAlgList ) {
+  for ( IAlgorithm* ialgo : m_flatUniqueAlgList ) {
 
-    const std::string& item_name = ialgoSmartIF->name();
+    const std::string&      item_name = ialgo->name();
+    const std::string&      item_type = ialgo->type();
+    size_t                  algo_id   = hash_function( item_name );
+    concurrentQueueIAlgPtr* queue     = new concurrentQueueIAlgPtr();
+    m_algqueue_map[algo_id]           = queue;
 
-    verbose() << "Treating resource management and clones of " << item_name << endmsg;
-
-    Gaudi::Algorithm* algo = dynamic_cast<Gaudi::Algorithm*>( ialgoSmartIF.get() );
-    if ( !algo ) {
-      fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
-      return StatusCode::FAILURE;
+    if ( msgLevel( MSG::VERBOSE ) ) {
+      verbose() << "Treating resource management and clones of " << item_name << endmsg;
     }
-    const std::string& item_type = algo->type();
-
-    size_t                  algo_id = hash_function( item_name );
-    concurrentQueueIAlgPtr* queue   = new concurrentQueueIAlgPtr();
-    m_algqueue_map[algo_id]         = queue;
-
-    // DP TODO Do it properly with SmartIFs, also in the queues
-    IAlgorithm* ialgo( ialgoSmartIF.get() );
 
     queue->push( ialgo );
     m_algList.push_back( ialgo );
@@ -340,18 +308,15 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
     // potentially create clones; if not lazy creation we have to do it now
     if ( !m_lazyCreation ) {
       for ( unsigned int i = 1, end = m_n_of_allowed_instances[algo_id]; i < end; ++i ) {
-        debug() << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
+        DEBUG_MSG << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
         IAlgorithm* ialgoClone( nullptr );
-        createAlg( item_type, item_name, ialgoClone );
+
+        StatusCode createAlgSc =
+            algMan->createAlgorithm( item_type, item_name, ialgoClone, /*managed*/ true, /*checkIfExists*/ false );
+
         ialgoClone->setIndex( i );
-        if ( ialgoClone->sysInitialize().isFailure() ) {
-          error() << "unable to initialize Algorithm clone " << ialgoClone->name() << endmsg;
-          sc = StatusCode::FAILURE;
-          // FIXME: should we delete this failed clone?
-        } else {
-          queue->push( ialgoClone );
-          m_n_of_created_instances[algo_id] += 1;
-        }
+        queue->push( ialgoClone );
+        m_n_of_created_instances[algo_id] += 1;
       }
     }
   }
@@ -368,19 +333,11 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
 
 //---------------------------------------------------------------------------
 
-std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList() {
-  m_flatUniqueAlgPtrList.clear();
-  for ( auto algoSmartIF : m_flatUniqueAlgList ) m_flatUniqueAlgPtrList.push_back( algoSmartIF.get() );
-  return m_flatUniqueAlgPtrList;
-}
+std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList() { return m_flatUniqueAlgList; }
 
 //---------------------------------------------------------------------------
 
-std::list<IAlgorithm*> AlgResourcePool::getTopAlgList() {
-  m_topAlgPtrList.clear();
-  for ( auto algoSmartIF : m_topAlgList ) m_topAlgPtrList.push_back( algoSmartIF.get() );
-  return m_topAlgPtrList;
-}
+std::list<IAlgorithm*> AlgResourcePool::getTopAlgList() { return m_topAlgList; }
 
 //---------------------------------------------------------------------------
 void AlgResourcePool::dumpInstanceMisses() const {
@@ -420,7 +377,7 @@ StatusCode AlgResourcePool::stop() {
   if ( !stopSc.isSuccess() ) return stopSc;
 
   // sys-Stop the algorithm
-  for ( auto& ialgo : m_algList ) {
+  for ( IAlgorithm* ialgo : m_algList ) {
     stopSc = ialgo->sysStop();
     if ( stopSc.isFailure() ) {
       error() << "Unable to stop Algorithm: " << ialgo->name() << endmsg;
@@ -433,8 +390,6 @@ StatusCode AlgResourcePool::stop() {
 }
 
 StatusCode AlgResourcePool::finalize() {
-  // we do not need to hold the ref counts of the algorithms anymore
-  // (this triggers algorithms destructors)
   m_topAlgList.clear();
   m_algList.clear();
   m_flatUniqueAlgList.clear();

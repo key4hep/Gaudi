@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #pragma once
 
-#include <Gaudi/Algorithm.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IAlgResourcePool.h>
 #include <GaudiKernel/IAlgorithm.h>
@@ -61,7 +60,6 @@ public:
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
-  typedef std::list<SmartIF<IAlgorithm>>             ListAlg;
   typedef boost::dynamic_bitset<>                    state_type;
 
   std::mutex m_resource_mutex;
@@ -77,7 +75,8 @@ private:
   StatusCode decodeTopAlgs();
 
   /// Recursively flatten an algList
-  StatusCode flattenSequencer( Gaudi::Algorithm* sequencer, ListAlg& alglist, unsigned int recursionDepth = 0 );
+  StatusCode flattenSequencer( IAlgorithm* sequencer, std::list<IAlgorithm*>& alglist,
+                               unsigned int recursionDepth = 0 );
 
   /// Dump recorded Algorithm instance misses
   void dumpInstanceMisses() const;
@@ -94,17 +93,11 @@ private:
       "Count and print out algorithm instance misses. Useful for finding ways to improve throughput scalability." };
 
   /// The list of all algorithms created within the Pool which are not top
-  ListAlg m_algList;
+  std::list<IAlgorithm*> m_algList;
 
   /// The list of top algorithms
-  ListAlg m_topAlgList;
+  std::list<IAlgorithm*> m_topAlgList;
 
   /// The flat list of algorithms w/o clones
-  ListAlg m_flatUniqueAlgList;
-
-  /// The flat list of algorithms w/o clones which is returned
-  std::list<IAlgorithm*> m_flatUniqueAlgPtrList;
-
-  /// The top list of algorithms
-  std::list<IAlgorithm*> m_topAlgPtrList;
+  std::list<IAlgorithm*> m_flatUniqueAlgList;
 };
