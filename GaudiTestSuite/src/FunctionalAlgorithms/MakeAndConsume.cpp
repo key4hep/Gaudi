@@ -221,9 +221,10 @@ namespace Gaudi::TestSuite {
       std::vector<int> out;
       out.reserve( nelements );
       // Concatenate the input vectors to form the output
-      for ( const auto& intVector : intVectors ) {
+      for ( auto& intVector : intVectors ) {
         info() << "Concatening vector " << intVector << endmsg;
         out.insert( out.end(), intVector.begin(), intVector.end() );
+        // intVector.clear(); // should not be possible!!! and does indeed not compile ;-)
       }
       info() << "Storing output vector " << out << " to " << outputLocation() << endmsg;
       return out;
@@ -231,6 +232,36 @@ namespace Gaudi::TestSuite {
   };
 
   DECLARE_COMPONENT( IntVectorsToIntVector )
+
+  struct PIntVectorsToIntVector final
+      : public Gaudi::Functional::MergingTransformer<
+            std::vector<int>( const Gaudi::Functional::vector_of_const_<std::vector<int>*>& ), BaseClass_t> {
+
+    PIntVectorsToIntVector( const std::string& name, ISvcLocator* svcLoc )
+        : MergingTransformer( name, svcLoc, { "InputLocations", {} },
+                              { "OutputLocation", "/Event/MyConcatenatedIntVector" } ) {}
+
+    std::vector<int>
+    operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>*>& intVectors ) const override {
+      // Create a vector and pre-allocate enough space for the number of integers we have
+      auto             nelements = std::accumulate( intVectors.begin(), intVectors.end(), 0,
+                                                    []( const auto a, const auto b ) { return a + ( b ? b->size() : 0 ); } );
+      std::vector<int> out;
+      out.reserve( nelements );
+      // Concatenate the input vectors to form the output
+      for ( auto& intVector : intVectors ) {
+        info() << "Concatening vector " << intVector << endmsg;
+        if ( intVector ) {
+          out.insert( out.end(), intVector->begin(), intVector->end() );
+          // intVector->clear(); // should not be possible!!! and does indeed not compile ;-)
+        }
+      }
+      info() << "Storing output vector " << out << " to " << outputLocation() << endmsg;
+      return out;
+    }
+  };
+
+  DECLARE_COMPONENT( PIntVectorsToIntVector )
 
   struct FloatDataConsumer final : Gaudi::Functional::Consumer<void( const float& ), BaseClass_t> {
 
@@ -650,5 +681,17 @@ namespace Gaudi::TestSuite {
   };
 
   DECLARE_COMPONENT( OpaqueProducer )
+
+  static_assert( std::ranges::forward_range<Gaudi::Functional::vector_of_const_<void*>> );
+  static_assert( std::ranges::forward_range<Gaudi::Functional::vector_of_const_<int>> );
+  static_assert( std::ranges::forward_range<Gaudi::Functional::vector_of_const_<std::vector<int>*>> );
+  static_assert( std::ranges::forward_range<Gaudi::Functional::vector_of_const_<std::vector<int>>> );
+  static_assert( std::same_as<typename Gaudi::Functional::vector_of_const_<std::vector<int>*>::value_type,
+                              std::vector<int> const*> );
+  static_assert( std::same_as<typename Gaudi::Functional::vector_of_const_<std::vector<int>>::value_type,
+                              std::vector<int> const> );
+  static_assert(
+      std::same_as<typename Gaudi::Functional::vector_of_const_<Gaudi::Range_<std::vector<void*>>>::value_type,
+                   Gaudi::Range_<std::vector<void*>> const> );
 
 } // namespace Gaudi::TestSuite

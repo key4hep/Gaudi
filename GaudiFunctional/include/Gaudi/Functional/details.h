@@ -16,7 +16,6 @@
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IBinder.h>
 #include <GaudiKernel/ThreadLocalContext.h>
-#include <GaudiKernel/detected.h>
 #include <cassert>
 #include <sstream>
 #include <type_traits>
@@ -28,15 +27,6 @@
 #  include <range/v3/version.hpp>
 #  include <range/v3/view/const.hpp>
 #  include <range/v3/view/zip.hpp>
-#endif
-
-#if defined( __clang__ ) && ( __clang_major__ < 11 ) || defined( __APPLE__ ) && ( __clang_major__ < 12 )
-#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN                                                                     \
-    _Pragma( "clang diagnostic push" ) _Pragma( "clang diagnostic ignored \"-Wunused-lambda-capture\"" )
-#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END _Pragma( "clang diagnostic pop" )
-#else
-#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
-#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
 #endif
 
 // temporary hack to help in transition to updated constructor
@@ -157,8 +147,7 @@ namespace Gaudi::Functional::details {
     decltype( auto ) operator()( F&& f, Arg&& arg ) const {
       return std::invoke( std::forward<F>( f ), std::forward<Arg>( arg ) );
     }
-    template <typename F, typename Arg>
-      requires( is_optional<Arg> )
+    template <typename F, is_optional Arg>
     void operator()( F&& f, Arg&& arg ) const {
       if ( arg ) std::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
     }
@@ -258,15 +247,6 @@ namespace Gaudi::Functional::details {
     template <typename T>
     constexpr static bool is_gaudi_range_v<std::optional<Gaudi::NamedRange_<T>>> = true;
 
-    template <typename Container, typename Value>
-    void push_back( Container& c, const Value& v, std::true_type ) {
-      c.push_back( v );
-    }
-    template <typename Container, typename Value>
-    void push_back( Container& c, const Value& v, std::false_type ) {
-      c.push_back( &v );
-    }
-
     template <typename In>
     struct get_from_handle {
       template <template <typename> class Handle, std::convertible_to<In> I>
@@ -292,124 +272,136 @@ namespace Gaudi::Functional::details {
       } // In is-a pointer
     };
 
-    template <typename T>
-    T* deref_if( T* const t, std::false_type ) {
-      return t;
-    }
-    template <typename T>
-    T& deref_if( T* const t, std::true_type ) {
-      return *t;
-    }
+    template <typename Iterator>
+    class indirect_iterator {
+      using traits = std::iterator_traits<Iterator>;
+      Iterator m_iter;
+
+    public:
+      using iterator_category [[maybe_unused]] = typename traits::iterator_category;
+      using difference_type [[maybe_unused]]   = typename traits::difference_type;
+      using reference                          = decltype( **m_iter );
+      using value_type [[maybe_unused]]        = std::remove_reference_t<reference>;
+      using pointer [[maybe_unused]]           = std::add_pointer_t<value_type>;
+
+      indirect_iterator() = default;
+      constexpr explicit indirect_iterator( Iterator i ) : m_iter( std::move( i ) ) {}
+
+      constexpr reference operator*() const { return **m_iter; }
+
+      constexpr bool operator==( const indirect_iterator& rhs ) const { return m_iter == rhs.m_iter; }
+
+      constexpr indirect_iterator& operator++() {
+        ++m_iter;
+        return *this;
+      }
+      constexpr indirect_iterator operator++( int ) {
+        auto i = *this;
+        ++*this;
+        return i;
+      }
+
+      // bidirectional iterator operations (if possible)
+      constexpr indirect_iterator& operator--()
+        requires std::bidirectional_iterator<Iterator>
+      {
+        --m_iter;
+        return *this;
+      }
+      constexpr indirect_iterator operator--( int )
+        requires std::bidirectional_iterator<Iterator>
+      {
+        auto i = *this;
+        --*this;
+        return i;
+      }
+
+      // random access iterator operations (if possible)
+      constexpr indirect_iterator& operator+=( difference_type n )
+        requires std::random_access_iterator<Iterator>
+      {
+        m_iter += n;
+        return *this;
+      }
+      constexpr indirect_iterator operator+( difference_type n ) const
+        requires std::random_access_iterator<Iterator>
+      {
+        auto i = *this;
+        return i += n;
+      }
+      constexpr indirect_iterator& operator-=( difference_type n )
+        requires std::random_access_iterator<Iterator>
+      {
+        m_iter -= n;
+        return *this;
+      }
+      constexpr indirect_iterator operator-( difference_type n ) const
+        requires std::random_access_iterator<Iterator>
+      {
+        auto i = *this;
+        return i -= n;
+      }
+      constexpr difference_type operator-( const indirect_iterator& other ) const
+        requires std::random_access_iterator<Iterator>
+      {
+        return m_iter - other.m_iter;
+      }
+      constexpr reference operator[]( difference_type n ) const
+        requires std::random_access_iterator<Iterator>
+      {
+        return **( m_iter + n );
+      }
+    };
+
   } // namespace details2
 
   template <typename Container>
   class vector_of_const_ {
     static constexpr bool is_pointer = std::is_pointer_v<Container>;
     static constexpr bool is_range   = details2::is_gaudi_range_v<Container>;
-    using val_t                      = std::add_const_t<std::remove_pointer_t<Container>>;
-    using ptr_t                      = std::add_pointer_t<val_t>;
-    using ref_t                      = std::add_lvalue_reference_t<val_t>;
-    using ContainerVector            = std::vector<std::conditional_t<is_range, std::remove_const_t<val_t>, ptr_t>>;
+    // TODO: refuse pointer to a range... range must always be by value
+    using val_t           = std::add_const_t<std::remove_pointer_t<Container>>;
+    using ptr_t           = std::add_pointer_t<val_t>;
+    using ContainerVector = std::vector<std::conditional_t<is_range, std::remove_const_t<val_t>, ptr_t>>;
     ContainerVector m_containers;
+
+    constexpr static decltype( auto ) wrap( ContainerVector::const_reference t ) {
+      if constexpr ( is_pointer || is_range ) {
+        return t;
+      } else {
+        return *t;
+      }
+    }
+    constexpr static auto wrap( ContainerVector::const_iterator i ) {
+      if constexpr ( is_pointer || is_range ) {
+        return i;
+      } else {
+        return details2::indirect_iterator{ i };
+      }
+    }
 
   public:
     using value_type = std::conditional_t<is_pointer, ptr_t, val_t>;
     using size_type  = typename ContainerVector::size_type;
-    class iterator {
-      using it_t = typename ContainerVector::const_iterator;
-      it_t m_i;
-      friend class vector_of_const_;
-      iterator( it_t iter ) : m_i( iter ) {}
-      using ret_t = std::conditional_t<is_pointer, ptr_t, ref_t>;
 
-    public:
-      using iterator_category = typename it_t::iterator_category;
-      using value_type        = typename it_t::iterator_category;
-      using reference         = typename it_t::reference;
-      using pointer           = typename it_t::pointer;
-      using difference_type   = typename it_t::difference_type;
-
-      friend bool operator!=( const iterator& lhs, const iterator& rhs ) { return lhs.m_i != rhs.m_i; }
-      friend bool operator==( const iterator& lhs, const iterator& rhs ) { return lhs.m_i == rhs.m_i; }
-      friend auto operator-( const iterator& lhs, const iterator& rhs ) { return lhs.m_i - rhs.m_i; }
-      ret_t       operator*() const {
-        if constexpr ( is_range ) {
-          return *m_i;
-        } else {
-          return details2::deref_if( *m_i, std::bool_constant<!is_pointer>{} );
-        }
-      }
-      iterator& operator++() {
-        ++m_i;
-        return *this;
-      }
-      iterator& operator--() {
-        --m_i;
-        return *this;
-      }
-      bool is_null() const { return !*m_i; }
-      explicit operator bool() const { return !is_null(); }
-    };
     vector_of_const_() = default;
     void reserve( size_type size ) { m_containers.reserve( size ); }
-    template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_pointer,ptr_t,val_t>>
+    template <typename T>
     void push_back( T&& container ) {
-      details2::push_back( m_containers, std::forward<T>( container ),
-                           std::bool_constant < is_pointer || is_range > {} );
-    } // note: does not copy its argument, so we're not really a container...
-    iterator  begin() const { return m_containers.begin(); }
-    iterator  end() const { return m_containers.end(); }
-    size_type size() const { return m_containers.size(); }
-
-    template <typename X = Container>
-      requires( !std::is_pointer_v<X> )
-    ref_t front() const {
-      return *m_containers.front();
+      if constexpr ( is_pointer || is_range ) {
+        m_containers.push_back( container );
+      } else {
+        // note: does not copy its argument, so we're not really a container...
+        m_containers.push_back( &container );
+      }
     }
-
-    template <typename X = Container>
-      requires( std::is_pointer_v<X> )
-    ptr_t front() const {
-      return m_containers.front();
-    }
-
-    template <typename X = Container>
-      requires( !std::is_pointer_v<X> )
-    ref_t back() const {
-      return *m_containers.back();
-    }
-
-    template <typename X = Container>
-      requires( std::is_pointer_v<X> )
-    ptr_t back() const {
-      return m_containers.back();
-    }
-
-    template <typename X = Container>
-      requires( !std::is_pointer_v<X> )
-    ref_t operator[]( size_type i ) const {
-      return *m_containers[i];
-    }
-
-    template <typename X = Container>
-      requires( std::is_pointer_v<X> )
-    ptr_t operator[]( size_type i ) const {
-      return m_containers[i];
-    }
-
-    template <typename X = Container>
-      requires( !std::is_pointer_v<X> )
-    ref_t at( size_type i ) const {
-      return *m_containers[i];
-    }
-
-    template <typename X = Container>
-      requires( std::is_pointer_v<X> )
-    ptr_t at( size_type i ) const {
-      return m_containers[i];
-    }
-
-    bool is_null( size_type i ) const { return !m_containers[i]; }
+    auto             begin() const { return wrap( m_containers.begin() ); }
+    auto             end() const { return wrap( m_containers.end() ); }
+    decltype( auto ) front() const { return wrap( m_containers.front() ); }
+    decltype( auto ) back() const { return wrap( m_containers.back() ); }
+    decltype( auto ) operator[]( size_type i ) const { return wrap( m_containers[i] ); }
+    decltype( auto ) at( size_type i ) const { return wrap( m_containers.at( i ) ); }
+    size_type        size() const { return m_containers.size(); }
   };
 
   /////////////////////////////////////////
