@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -35,11 +35,7 @@ namespace Gaudi {
      */
     class SignalMonitorSvc : public extends<Service, Gaudi::ISignalMonitor> {
     public:
-#ifdef _WIN32
-      typedef void( __cdecl* handler_t )( int );
-#else
       typedef struct sigaction handler_t;
-#endif
 
       /// Declare a signal to be monitored.
       /// It installs a signal handler for the requested signal.
@@ -47,15 +43,10 @@ namespace Gaudi {
         if ( !m_monitored[signum] ) {
           handler_t sa;
           handler_t oldact;
-#ifdef _WIN32
-          sa     = SignalMonitorSvc::dispatcher;
-          oldact = signal( signum, sa );
-#else
           sa.sa_handler = SignalMonitorSvc::dispatcher;
           sigemptyset( &sa.sa_mask );
           sa.sa_flags = 0;
           sigaction( signum, &sa, &oldact );
-#endif
           m_oldActions[signum] = oldact;
           m_monitored[signum]  = ( propagate ) ? SignalMonitorSvc::propagate : SignalMonitorSvc::trap;
         }
@@ -65,11 +56,7 @@ namespace Gaudi {
       /// the previous signal handler.
       void ignoreSignal( int signum ) override {
         if ( m_monitored[signum] ) {
-#ifdef _WIN32
-          (void)signal( signum, m_oldActions[signum] );
-#else
           sigaction( signum, &m_oldActions[signum], nullptr );
-#endif
           m_oldActions[signum] = m_defaultAction;
           m_monitored[signum]  = ignored;
         }
@@ -86,13 +73,9 @@ namespace Gaudi {
 
       /// Initialize internal variables of the service and set the instance pointer.
       SignalMonitorSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {
-#ifdef _WIN32
-        m_defaultAction = SIG_DFL;
-#else
         m_defaultAction.sa_handler = SIG_DFL;
         sigemptyset( &m_defaultAction.sa_mask );
         m_defaultAction.sa_flags = 0;
-#endif
         for ( int i = 0; i < NSIG; ++i ) {
           m_caught[i]     = 0;
           m_monitored[i]  = ignored;
@@ -119,29 +102,15 @@ namespace Gaudi {
       MonitoringMode m_monitored[NSIG];
       /// Array of flags for received signals.
       sig_atomic_t m_caught[NSIG];
-/// Helper variable for default signal action.
-#ifdef _WIN32
-      handler_t m_defaultAction{ nullptr };
-#else
+      /// Helper variable for default signal action.
       handler_t m_defaultAction;
-#endif
       /// List of replaced signal actions (for the recovery when disable the monitoring).
       handler_t m_oldActions[NSIG];
 
       void i_handle( int signum ) {
         m_caught[signum] = 1;
-        if ( m_monitored[signum] == propagate &&
-#ifdef _WIN32
-             m_oldActions[signum] != SIG_DFL
-#else
-             m_oldActions[signum].sa_handler != SIG_DFL
-#endif
-        ) {
-#ifdef _WIN32
-          m_oldActions[signum]( signum );
-#else
+        if ( m_monitored[signum] == propagate && m_oldActions[signum].sa_handler != SIG_DFL ) {
           m_oldActions[signum].sa_handler( signum );
-#endif
         }
       }
 
@@ -179,31 +148,9 @@ namespace Gaudi {
 #include <GaudiKernel/IIncidentSvc.h>
 
 namespace {
-  // hack because windows doesn't provide sys_siglist
   const char* sig_desc( int signum ) {
     if ( signum >= NSIG || signum < 0 ) return nullptr;
-#ifdef _WIN32
-    switch ( signum ) {
-    case SIGINT:
-      return "Interrupt";
-    case SIGILL:
-      return "Illegal instruction";
-    case SIGFPE:
-      return "Floating point exception";
-    case SIGSEGV:
-      return "Segmentation fault";
-    case SIGTERM:
-      return "Terminated";
-    case SIGBREAK:
-      return "Trace/breakpoint trap";
-    case SIGABRT:
-      return "Aborted";
-    default:
-      return 0;
-    }
-#else
     return strsignal( signum );
-#endif
   }
 
   /// Helper class to map signal names and numbers.

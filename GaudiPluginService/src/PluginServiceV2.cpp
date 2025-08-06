@@ -135,10 +135,7 @@ namespace Gaudi {
 
         void Registry::initialize() {
           auto _guard = std::scoped_lock{ m_mutex };
-#if defined( _WIN32 )
-          const auto envVars = { "PATH" };
-          const char sep     = ';';
-#elif defined( __APPLE__ )
+#if defined( __APPLE__ )
           const auto envVars = { "GAUDI_PLUGIN_PATH" };
           const char sep     = ':';
 #else

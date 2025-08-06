@@ -26,8 +26,6 @@
 #  include "Platform/SystemLinux.h"
 #elif defined( __APPLE__ )
 #  include "Platform/SystemMacOS.h"
-#elif defined( _WIN32 )
-#  include "Platform/SystemWin32.h"
 #endif
 
 #ifdef __x86_64
@@ -36,59 +34,41 @@
 #  undef VCL_NAMESPACE
 #endif
 
-#ifdef _WIN32
-#  define strcasecmp _stricmp
-#  define strncasecmp _strnicmp
-#  define getpid _getpid
-#  define NOMSG
-#  define NOGDI
-#  include <process.h>
-#  include <windows.h>
-#  undef NOMSG
-#  undef NOGDI
-static const std::array<const char*, 1> SHLIB_SUFFIXES = { ".dll" };
-#else // UNIX...: first the EGCS stuff, then the OS dependent includes
-#  include <cstdio>
-#  include <cxxabi.h>
-#  include <errno.h>
-#  include <libgen.h>
-#  include <string.h>
-#  include <sys/times.h>
+#include <cstdio>
+#include <cxxabi.h>
+#include <errno.h>
+#include <libgen.h>
+#include <string.h>
+#include <sys/times.h>
+#include <unistd.h>
+#if defined( __linux ) || defined( __APPLE__ )
+#  include <dlfcn.h>
+#  include <sys/utsname.h>
 #  include <unistd.h>
-#  if defined( __linux ) || defined( __APPLE__ )
-#    include <dlfcn.h>
-#    include <sys/utsname.h>
-#    include <unistd.h>
-#  elif __hpux
-#    include <dl.h>
+#elif __hpux
+#  include <dl.h>
 struct HMODULE {
   shl_descriptor dsc;
   long           numSym;
   shl_symbol*    sym;
 };
-#  endif // HPUX or not...
+#endif // HPUX or not...
 
-#  ifdef __APPLE__
+#ifdef __APPLE__
 static const std::array<const char*, 2> SHLIB_SUFFIXES = { ".dylib", ".so" };
-#  else
+#else
 static const std::array<const char*, 1> SHLIB_SUFFIXES = { ".so" };
-#  endif // __APPLE__
-
-#endif // Windows or Unix...
+#endif // __APPLE__
 
 static unsigned long doLoad( const std::string& name, System::ImageHandle* handle ) {
-#ifdef _WIN32
-  void* mh = ::LoadLibrary( name.length() == 0 ? System::exeName().c_str() : name.c_str() );
-  *handle  = mh;
-#else
   const char* path = name.c_str();
-#  if defined( __linux )
-  void*       mh   = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
-  *handle          = mh;
-#  elif defined( __APPLE__ )
+#if defined( __linux )
   void* mh = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
   *handle  = mh;
-#  elif __hpux
+#elif defined( __APPLE__ )
+  void* mh = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
+  *handle  = mh;
+#elif __hpux
   shl_t    mh  = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
   HMODULE* mod = new HMODULE;
   if ( 0 != mh ) {
@@ -101,7 +81,6 @@ static unsigned long doLoad( const std::string& name, System::ImageHandle* handl
       *handle       = mod;
     }
   }
-#  endif
 #endif
   if ( !*handle ) { return System::getLastError(); }
   return 1;
@@ -179,9 +158,7 @@ unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* hand
 
 /// unload dynamic link library
 unsigned long System::unloadDynamicLib( ImageHandle handle ) {
-#ifdef _WIN32
-  if ( !::FreeLibrary( (HINSTANCE)handle ) ) {
-#elif defined( __linux ) || defined( __APPLE__ )
+#if defined( __linux ) || defined( __APPLE__ )
   ::dlclose( handle );
   if ( 0 ) {
 #elif __hpux
@@ -202,11 +179,7 @@ unsigned long System::unloadDynamicLib( ImageHandle handle ) {
 
 /// Get a specific function defined in the DLL
 unsigned long System::getProcedureByName( ImageHandle handle, const std::string& name, EntryPoint* pFunction ) {
-#ifdef _WIN32
-  *pFunction = ( EntryPoint )::GetProcAddress( (HINSTANCE)handle, name.data() );
-  if ( 0 == *pFunction ) { return System::getLastError(); }
-  return 1;
-#elif defined( __linux )
+#if defined( __linux )
   *pFunction = reinterpret_cast<EntryPoint>( ::dlsym( handle, name.c_str() ) );
   if ( !*pFunction ) {
     errno = 0xAFFEDEAD;
@@ -253,12 +226,8 @@ unsigned long System::getProcedureByName( ImageHandle handle, const std::string&
 
 /// Retrieve last error code
 unsigned long System::getLastError() {
-#ifdef _WIN32
-  return ::GetLastError();
-#else
   // convert errno (int) to unsigned long
   return static_cast<unsigned long>( static_cast<unsigned int>( errno ) );
-#endif
 }
 
 /// Retrieve last error code as string
@@ -270,16 +239,7 @@ const std::string System::getLastErrorString() {
 /// Retrieve error code as string for a given error
 const std::string System::getErrorString( unsigned long error ) {
   std::string errString = "";
-#ifdef _WIN32
-  LPVOID lpMessageBuffer;
-  ::FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error,
-                   MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), // The user default language
-                   (LPTSTR)&lpMessageBuffer, 0, NULL );
-  errString = (const char*)lpMessageBuffer;
-  // Free the buffer allocated by the system
-  ::LocalFree( lpMessageBuffer );
-#else
-  char* cerrString( nullptr );
+  char*       cerrString( nullptr );
   // Remember: for linux dl* routines must be handled differently!
   if ( error == 0xAFFEDEAD ) {
     cerrString = ::dlerror();
@@ -294,7 +254,6 @@ const std::string System::getErrorString( unsigned long error ) {
     cerrString = ::strerror( error );
     errString  = std::string( cerrString );
   }
-#endif
   return errString;
 }
 
@@ -366,12 +325,6 @@ char** System::argv() {
   return (char**)&( args[0] );
 }
 
-#ifdef WIN32
-// disable warning
-//   C4996: 'getenv': This function or variable may be unsafe.
-#  pragma warning( disable : 4996 )
-#endif
-
 /// get a particular env var, return "UNKNOWN" if not defined
 std::string System::getEnv( const char* var ) {
   char* env;
@@ -401,9 +354,7 @@ bool System::isEnvSet( const char* var ) { return getenv( var ) != nullptr; }
 #  include <crt_externs.h>
 #endif
 std::vector<std::string> System::getEnv() {
-#if defined( _WIN32 )
-#  define environ _environ
-#elif defined( __APPLE__ )
+#if defined( __APPLE__ )
   static char** environ = *_NSGetEnviron();
 #endif
   std::vector<std::string> vars;
@@ -425,7 +376,7 @@ int System::backTrace( [[maybe_unused]] void** addresses, [[maybe_unused]] const
   int count = backtrace( addresses, depth );
   return count > 0 ? count : 0;
 
-#else // windows and osx parts not implemented
+#else // osx parts not implemented
   return 0;
 #endif
 }
@@ -480,34 +431,17 @@ bool System::getStackLevel( [[maybe_unused]] void* addresses, [[maybe_unused]] v
     return false;
   }
 
-#else // not implemented for windows and osx
+#else // not implemented for osx
   return false;
 #endif
 }
 
 /// set an environment variables. @return 0 if successful, -1 if not
 int System::setEnv( const std::string& name, const std::string& value, int overwrite ) {
-#ifndef WIN32
-  // UNIX version
   return value.empty() ?
                        // remove if set to nothing (and return success)
          ::unsetenv( name.c_str() ),
          0 :
                        // set the value
          ::setenv( name.c_str(), value.c_str(), overwrite );
-#else
-  // Windows version
-  if ( value.empty() ) {
-    // equivalent to unsetenv
-    return ::_putenv( ( name + "=" ).c_str() );
-  } else {
-    if ( !getenv( name.c_str() ) || overwrite ) {
-      // set if not yet present or overwrite is set (force)
-      return ::_putenv( ( name + "=" + value ).c_str() );
-    }
-  }
-  return 0; // if we get here, we are trying to set a variable already set, but
-            // not to overwrite.
-            // It is considered a success on Linux (man P setenv)
-#endif
 }

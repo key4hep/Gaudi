@@ -77,7 +77,6 @@ namespace Gaudi {
       return parse_( result, input );
     }
 
-#ifndef _WIN32
     /*  parse the vector of vectors
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
@@ -87,7 +86,6 @@ namespace Gaudi {
     StatusCode parse( std::vector<Gaudi::LorentzVector>& result, std::string_view input ) {
       return parse_( result, input );
     }
-#endif
   } // namespace Parsers
 } // namespace Gaudi
 std::ostream& Gaudi::Utils::toStream( const Gaudi::XYZPoint& obj, std::ostream& s ) {

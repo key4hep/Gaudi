@@ -32,12 +32,8 @@ public:
   /// \name constructors
   //@{
   DirSearchPath() { addCWD(); }
-/// \throws boost::filesystem::filesystem_error
-#ifdef _WIN32
-  DirSearchPath( const std::string& stringifiedPath, const char* separator = ",;" );
-#else
+  /// \throws boost::filesystem::filesystem_error
   DirSearchPath( const std::string& stringifiedPath, const char* separator = ",:" );
-#endif
   //@}
 
   /// \name modifiers

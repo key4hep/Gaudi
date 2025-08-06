@@ -18,14 +18,11 @@
 #include <TTree.h>
 #include <TTreeCloner.h>
 #include <TUUID.h>
+#include <libgen.h>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
-#ifdef _WIN32
-#else
-#  include <libgen.h>
-#endif
 
 // Forward declarations
 class TTree;

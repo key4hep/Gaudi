@@ -25,7 +25,6 @@
 #include <GaudiKernel/Incident.h>
 #include <GaudiKernel/LinkManager.h>
 #include <GaudiKernel/MsgStream.h>
-#include <GaudiKernel/strcasecmp.h>
 #include <RootCnv/RootDataConnection.h>
 // ROOT include files
 #include <TBranch.h>
@@ -49,6 +48,7 @@ static int s_compressionLevel = 1;
 #include <limits>
 #include <numeric>
 #include <stdexcept>
+#include <strings.h>
 
 using namespace Gaudi;
 using namespace std;

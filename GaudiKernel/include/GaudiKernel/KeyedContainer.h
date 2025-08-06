@@ -21,12 +21,6 @@ namespace GaudiDict {
   struct KeyedContainerDict;
 }
 
-#ifdef WIN32
-#  define FORCE_INLINE __forceinline
-#else
-#  define FORCE_INLINE inline
-#endif
-
 /** template class KeyedContainer, KeyedContainer.h
  *
  *  This class represents a container, where the contained objects
@@ -130,7 +124,7 @@ private:
     return traits::checkKey( p, k ) ? p : 0;
   }
 #else
-  FORCE_INLINE value_type i_object( const key_type& k ) const {
+  inline value_type i_object( const key_type& k ) const {
     return 0 == m_cont.isDirect() ? value_type( *( m_random->begin() + traits::hash( k ) ) )
                                   : value_type( m_cont.object( traits::hash( k ) ) );
   }
@@ -629,5 +623,3 @@ inline void KeyedContainer<DATATYPE, MAPPING>::erase( iterator start_pos, iterat
   std::vector<void*>::iterator i2   = v->begin() + std::distance( m_sequential.begin(), stop_pos );
   m_cont.erase( i1, i2 ); // cppcheck-suppress iterators1
 }
-
-#undef FORCE_INLINE

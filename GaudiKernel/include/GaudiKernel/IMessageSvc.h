@@ -23,16 +23,6 @@ namespace MSG {
   enum Color { BLACK = 0, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE, NUM_COLORS };
 } // namespace MSG
 
-#ifdef _WIN32
-// Avoid (hopefully) conflicts between Windows' headers and MSG.
-#  ifndef NOMSG
-#    define NOMSG
-#    ifndef NOGDI
-#      define NOGDI
-#    endif
-#  endif
-#endif
-
 /** @class IMessageSvc IMessageSvc.h GaudiKernel/IMessageSvc.h
 
     The IMessage is the interface implemented by the message service.

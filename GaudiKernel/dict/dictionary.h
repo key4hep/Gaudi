@@ -22,7 +22,6 @@
 #include <GaudiKernel/ContainedObject.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataStreamTool.h>
-#include <GaudiKernel/Debugger.h>
 #include <GaudiKernel/Environment.h>
 #include <GaudiKernel/EventSelectorDataStream.h>
 #include <GaudiKernel/GaudiHandle.h>
@@ -177,15 +176,6 @@ public:
 
   static void invalidate( IUpdateManagerSvc* ums, void* obj ) { return ums->i_invalidate( obj ); }
 };
-
-#ifdef _WIN32
-// FIXME: (MCl) The generated dictionary produce a few warnings C4345, since I
-//              cannot fix them, I just disable them.
-
-// Disable warning C4345: behavior change: an object of POD type constructed with an initializer of the
-//                        form () will be default-initialized
-#  pragma warning( disable : 4345 )
-#endif
 
 #ifdef __ICC
 // disable icc warning #858: type qualifier on return type is meaningless

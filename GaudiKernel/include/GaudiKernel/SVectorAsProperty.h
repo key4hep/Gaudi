@@ -40,17 +40,7 @@ namespace Gaudi {
       StatusCode          sc = parse( tmp, input );
       if ( sc.isFailure() ) { return sc; }
       if ( N != tmp.size() ) { return StatusCode::FAILURE; }
-#ifdef WIN32
-// Disable warning
-//    C4996: 'std::copy': Function call with parameters that may be unsafe
-// The parameters are checked
-#  pragma warning( push )
-#  pragma warning( disable : 4996 )
-#endif
       std::copy( tmp.begin(), tmp.end(), result.begin() );
-#ifdef WIN32
-#  pragma warning( pop )
-#endif
       return StatusCode::SUCCESS;
     }
   } // namespace Parsers

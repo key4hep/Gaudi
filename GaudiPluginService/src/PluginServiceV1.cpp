@@ -137,15 +137,10 @@ namespace Gaudi {
         void Registry::initialize() {
           auto _guard = std::scoped_lock{ m_mutex };
           if ( m_initialized ) return;
-          m_initialized = true;
-#if defined( _WIN32 )
-          const char* envVar = "PATH";
-          const char  sep    = ';';
-#else
-          const char* envVar = "LD_LIBRARY_PATH";
-          const char  sep    = ':';
-#endif
-          char* search_path = ::getenv( envVar );
+          m_initialized           = true;
+          const char* envVar      = "LD_LIBRARY_PATH";
+          const char  sep         = ':';
+          char*       search_path = ::getenv( envVar );
           if ( search_path ) {
             logger().debug( std::string( "searching factories in " ) + envVar );
             std::string            path( search_path );

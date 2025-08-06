@@ -10,16 +10,10 @@
 \***********************************************************************************/
 #include "ProcessDescriptor.h"
 #include <GaudiKernel/Memory.h>
+#include <libgen.h>
 #include <limits.h>
-
-#ifdef _WIN32
-#  include <process.h>
-#  define getpid _getpid
-#else
-#  include <libgen.h>
-#  include <sys/times.h>
-#  include <unistd.h>
-#endif
+#include <sys/times.h>
+#include <unistd.h>
 
 /// Convert requested memory value from kByte to requested value
 long System::adjustMemory( MemoryUnit unit, long value ) {

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -44,41 +44,7 @@ public:
 };
 #endif
 
-#if defined( _WIN32 ) && defined( _DLL )
-namespace win {
-// Avoid conflicts between Windows' headers and MSG.
-#  ifndef NOMSG
-#    define NOMSG
-#    ifndef NOGDI
-#      define NOGDI
-#    endif
-#  endif
-#  include <windows.h>
-} // namespace win
-
-win::BOOL APIENTRY DllMain( win::HINSTANCE hinstDLL,   // handle to DLL module
-                            win::DWORD     fdwReason,  // reason for calling function
-                            win::LPVOID    lpvReserved // reserved
-) {
-  System::setModuleHandle( hinstDLL );
-  switch ( fdwReason ) {
-  case DLL_PROCESS_ATTACH: {
-    GaudiDll::initialize( hinstDLL );
-  } break;
-  case DLL_THREAD_ATTACH:
-    break;
-  case DLL_THREAD_DETACH:
-    break;
-  case DLL_PROCESS_DETACH: {
-    GaudiDll::finalize( hinstDLL );
-    // Since the System class is shared now, we may no longer close the
-    // Process handle!  M.F.
-    // win::CloseHandle(System::processHandle());
-  } break;
-  }
-  return TRUE;
-}
-#elif __linux
+#if defined( __linux )
 static void _init() __attribute__( ( constructor ) );
 static void _fini() __attribute__( ( destructor ) );
 
@@ -95,6 +61,6 @@ static void _fini() {
   // FIXME GaudiDll::finalize(0);
 }
 
-#endif // WIN32
+#endif
 
 #endif // SYSTEM_DLLMAIN_ICPP

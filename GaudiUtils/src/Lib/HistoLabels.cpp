@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,12 +13,6 @@
 //-----------------------------------------------------------------------------
 // Implementation file for class : HistoLabels
 //-----------------------------------------------------------------------------
-#ifdef WIN32
-// Disable warning
-//   warning C4996: 'sprintf': This function or variable may be unsafe.
-// coming from TString.h
-#  pragma warning( disable : 4996 )
-#endif
 
 // local
 #include <GaudiUtils/Aida2ROOT.h>
