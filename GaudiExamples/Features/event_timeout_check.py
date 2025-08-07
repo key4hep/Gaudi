@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025, 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -55,7 +55,7 @@ def add_event_timeout(
     # configure a Gaudi::EventWatchdogAlg
     watchdog = C.Gaudi.EventWatchdogAlg(
         EventTimeout=timeout_seconds,  # sleep for this number of seconds
-        StackTrace=True,  # print a stack trace when we wake up
+        StackTrace=False,  # no stack trace (may be slow, see issue #349)
         AbortOnTimeout=True,  # kill the process on timeout
     )
     # wrap original list of algorithms into a sequence to ensure the watchdog
