@@ -12,7 +12,6 @@
 #include "PropertyName.h"
 #include "PropertyValue.h"
 #include "Utils.h"
-#include <boost/format.hpp>
 
 namespace gp  = Gaudi::Parsers;
 namespace gpu = Gaudi::Parsers::Utils;

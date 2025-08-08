@@ -99,17 +99,15 @@ public:
   /// Add link by object reference and path
   long addLink( const std::string& path, const DataObject* pObject );
 
-  struct Sentinel {};
-  Sentinel end() const { return {}; }
-  auto     begin() const {
+  auto end() const { return std::default_sentinel; }
+  auto begin() const {
     class Iterator {
       int                i;
       LinkManager const* parent;
 
     public:
       Iterator( LinkManager const* p, int i ) : i{ i }, parent{ p } {}
-      bool      operator==( Sentinel ) const { return i == parent->size(); }
-      bool      operator!=( Sentinel ) const { return !( *this == Sentinel{} ); }
+      bool      operator==( std::default_sentinel_t ) const { return i == parent->size(); }
       Iterator& operator++() {
         ++i;
         return *this;

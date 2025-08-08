@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,8 +22,6 @@
 #include <tbb/concurrent_queue.h>
 
 #include <ThreadLocalStorage.h>
-
-#include <boost/algorithm/string/predicate.hpp>
 
 #include <algorithm>
 #include <iomanip>
@@ -475,7 +473,7 @@ StatusCode EvtStoreSvc::clearStore( size_t partition ) {
 StatusCode EvtStoreSvc::clearSubTree( std::string_view top ) {
   top = normalize_path( top, rootName() );
   return fwd( [&]( Partition& p ) {
-    p.store->erase_if( [top]( const auto& value ) { return boost::algorithm::starts_with( value.first, top ); } );
+    p.store->erase_if( [top]( const auto& value ) { return value.first.starts_with( top ); } );
     return StatusCode::SUCCESS;
   } );
 }
@@ -494,7 +492,7 @@ StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* 
     auto         cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
     std::set<const Entry*, decltype( cmp )> keys{ std::move( cmp ) };
     for ( const auto& v : *p.store ) {
-      if ( boost::algorithm::starts_with( v.second.identifier(), top ) ) keys.insert( &v.second );
+      if ( v.second.identifier().starts_with( top ) ) keys.insert( &v.second );
     }
     auto k = keys.begin();
     while ( k != keys.end() ) {
@@ -502,8 +500,7 @@ StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* 
       int         level  = std::count( id.begin(), id.end(), '/' ) + nbSlashesInRootName;
       bool        accept = pAgent->analyse( const_cast<Entry*>( *( k++ ) ), level );
       if ( !accept ) {
-        k = std::find_if_not( k, keys.end(),
-                              [&id]( const auto& e ) { return boost::algorithm::starts_with( e->identifier(), id ); } );
+        k = std::find_if_not( k, keys.end(), [&id]( const auto& e ) { return e->identifier().starts_with( id ); } );
       }
     }
     return StatusCode::SUCCESS;
@@ -567,10 +564,9 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
               << endmsg;
     return StatusCode::SUCCESS;
   }
-  if ( std::any_of( m_inhibitPrefixes.begin(), m_inhibitPrefixes.end(),
-                    [addrPath = addr->par()[1]]( std::string_view prefix ) {
-                      return boost::algorithm::starts_with( addrPath, prefix );
-                    } ) ) {
+  if ( std::any_of(
+           m_inhibitPrefixes.begin(), m_inhibitPrefixes.end(),
+           [addrPath = addr->par()[1]]( std::string_view prefix ) { return addrPath.starts_with( prefix ); } ) ) {
     if ( msgLevel( MSG::DEBUG ) )
       debug() << "Attempt to load " << addr->par()[1] << " from file " << addr->par()[0] << " blocked -- path inhibited"
               << endmsg;

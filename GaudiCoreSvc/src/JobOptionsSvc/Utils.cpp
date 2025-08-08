@@ -10,7 +10,6 @@
 \***********************************************************************************/
 #include "Utils.h"
 #include <GaudiKernel/System.h>
-#include <boost/algorithm/string.hpp>
 #include <regex>
 
 namespace gpu = Gaudi::Parsers::Utils;
@@ -23,12 +22,12 @@ std::string gpu::replaceEnvironments( std::string_view input ) {
   auto                                                 end    = input.end();
   std::match_results<std::string_view::const_iterator> what;
   auto                                                 flags = std::regex_constants::match_default;
+  std::size_t                                          from  = 0;
   while ( std::regex_search( start, end, what, expression, flags ) ) {
-    std::string var{ what[2].first, what[2].second };
-    if ( var.empty() ) var = std::string{ what[3].first, what[3].second };
-    std::string env;
-    if ( System::getEnv( var, env ) ) {
-      boost::algorithm::replace_first( result, std::string{ what[0].first, what[0].second }, env );
+    if ( std::string env; System::getEnv( what[what[2].matched ? 2 : 3].str(), env ) ) {
+      auto pos = result.find( what[0].first, from, what[0].length() );
+      result.replace( pos, what[0].length(), env );
+      from = pos + env.size();
     }
     start = what[0].second;
     // update flags:

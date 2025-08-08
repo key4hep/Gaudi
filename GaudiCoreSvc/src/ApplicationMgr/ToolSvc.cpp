@@ -17,8 +17,6 @@
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/Service.h>
 #include <algorithm>
-#include <boost/algorithm/string/erase.hpp>
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/circular_buffer.hpp>
 #include <cassert>
 #include <functional>
@@ -27,7 +25,6 @@
 #include <numeric>
 #include <string>
 #include <vector>
-namespace ba = boost::algorithm;
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
@@ -108,7 +105,6 @@ private:
   /// Common Tools
   class ToolList {
     std::vector<IAlgTool*> m_tools; // List of all instances of tools
-#ifdef __cpp_lib_generic_unordered_lookup
     struct Hash {
       using is_transparent = void;
       std::size_t operator()( IAlgTool const* s ) const noexcept { return std::hash<std::string_view>{}( s->name() ); }
@@ -121,28 +117,17 @@ private:
       bool operator()( std::string_view lhs, IAlgTool const* rhs ) const { return lhs == rhs->name(); }
     };
     std::unordered_multiset<IAlgTool*, Hash, Equal> m_map;
-#else
-    std::unordered_multimap<std::string_view, IAlgTool*> m_map;
-#endif
 
   public:
     void remove( IAlgTool* tool ) {
       m_tools.erase( std::remove( std::begin( m_tools ), std::end( m_tools ), tool ), std::end( m_tools ) );
       auto range = m_map.equal_range( tool->name() );
-#ifdef __cpp_lib_generic_unordered_lookup
-      auto itm = std::find_if( range.first, range.second, [&]( auto const& p ) { return p == tool; } );
-#else
-      auto itm = std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second == tool; } );
-#endif
+      auto itm   = std::find_if( range.first, range.second, [&]( auto const& p ) { return p == tool; } );
       if ( itm != range.second ) m_map.erase( itm );
     }
     void push_back( IAlgTool* tool ) {
       m_tools.push_back( tool );
-#ifdef __cpp_lib_generic_unordered_lookup
       m_map.emplace( tool );
-#else
-      m_map.emplace( tool->name(), tool );
-#endif
     }
 
     bool contains( std::string_view name ) const { return m_map.find( name ) != m_map.end(); }
@@ -155,14 +140,8 @@ private:
     auto end() const { return m_tools.end(); }
     auto find( std::string_view name, const IInterface* parent ) const {
       auto range = m_map.equal_range( name );
-#ifdef __cpp_lib_generic_unordered_lookup
-      auto it = std::find_if( range.first, range.second, [&]( auto const& p ) { return p->parent() == parent; } );
+      auto it    = std::find_if( range.first, range.second, [&]( auto const& p ) { return p->parent() == parent; } );
       return it != range.second ? *it : nullptr;
-#else
-      auto it =
-          std::find_if( range.first, range.second, [&]( auto const& p ) { return p.second->parent() == parent; } );
-      return it != range.second ? it->second : nullptr;
-#endif
     }
     std::vector<IAlgTool*> grab() && {
       m_map.clear();
@@ -348,13 +327,13 @@ StatusCode ToolSvc::finalize() {
 }
 
 namespace {
-  static const std::string s_PUBLIC = ":PUBLIC";
+  constexpr std::string_view s_PUBLIC = ":PUBLIC";
 }
 
 StatusCode ToolSvc::retrieve( std::string_view tooltype, const InterfaceID& iid, IAlgTool*& tool,
                               const IInterface* parent, bool createIf ) {
   // check for tools, which by name are required to be public:
-  if ( ba::ends_with( tooltype, s_PUBLIC ) ) {
+  if ( tooltype.ends_with( s_PUBLIC ) ) {
     // parent for PUBLIC tool is 'this', i.e. ToolSvc
     tooltype.remove_suffix( s_PUBLIC.size() );
     return retrieve( tooltype, iid, tool, this, createIf );
@@ -379,7 +358,7 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
   }
 
   // check for tools, which by name are required to be public:
-  if ( ba::ends_with( toolname, s_PUBLIC ) ) {
+  if ( toolname.ends_with( s_PUBLIC ) ) {
     // parent for PUBLIC tool is this, i.e. ToolSvc
     toolname.remove_suffix( s_PUBLIC.size() );
     return retrieve( tooltype, toolname, iid, tool, this, createIf );
