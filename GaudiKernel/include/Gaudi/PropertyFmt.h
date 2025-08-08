@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2023-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -53,9 +53,11 @@
 
 #include <Gaudi/Property.h>
 #include <fmt/format.h>
+#include <format>
 #include <iomanip>
 #include <sstream>
 
+/// Formatter for <fmt> library
 template <typename T, typename V, typename H>
 struct fmt::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
   bool           debug = false;
@@ -85,6 +87,42 @@ struct fmt::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
       }
     } else {
       return formatter<T>::format( static_cast<const T&>( p ), ctx );
+    }
+  }
+};
+
+/// Formatter for standard <format> library
+template <typename T, typename V, typename H>
+struct std::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
+  // A helpful error message:
+#ifndef __cpp_lib_format_ranges
+  static_assert( !std::ranges::range<T> || std::is_same_v<T, std::string>,
+                 "Range-valued Property formatting is not supported with std::format in C++20" );
+#endif
+
+  bool           debug = false;
+  constexpr auto parse( std::format_parse_context& ctx ) {
+    auto it = ctx.begin(), end = ctx.end();
+    if ( it != end && *it == '?' ) {
+      debug = true;
+      ++it;
+      if ( it != end && *it != '}' ) throw std::format_error( "invalid format" );
+      return it;
+    }
+    return std::formatter<T>::parse( ctx );
+  }
+
+  auto format( const Gaudi::Property<T, V, H>& p, format_context& ctx ) const {
+    if ( debug ) {
+      if constexpr ( std::is_same_v<T, std::string> ) {
+        std::stringstream s;
+        s << std::quoted( p.value(), '\'' );
+        return std::format_to( ctx.out(), " '{}':{}", p.name(), s.str() );
+      } else {
+        return std::format_to( ctx.out(), " '{}':{}", p.name(), p.value() );
+      }
+    } else {
+      return std::formatter<T>::format( static_cast<const T&>( p ), ctx );
     }
   }
 };
