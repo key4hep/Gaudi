@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -70,13 +70,11 @@ namespace Gaudi::Functional {
               /// and the optional is not engaged)
               details::invoke_optionally(
                   [&out...]( auto&& outdata ) {
-                    GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
                     std::apply(
                         [&out...]( auto&&... outdata1 ) {
                           ( details::insert( out, std::forward<decltype( outdata1 )>( outdata1 ) ), ... );
                         },
                         std::forward<decltype( outdata )>( outdata ) );
-                    GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
                   },
                   std::apply( [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); },
                               indata ) );

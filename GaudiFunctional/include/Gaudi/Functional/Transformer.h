@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -99,8 +99,6 @@ namespace Gaudi ::Functional {
         try {
           std::apply(
               [this]( auto&... ohandle ) {
-                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
-
                 if constexpr ( sizeof...( In ) == 0 ) {
                   std::apply( [&ohandle...](
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
@@ -110,7 +108,6 @@ namespace Gaudi ::Functional {
                                   auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
                               filter_evtcontext_t<In...>::apply( std::as_const( *this ), this->m_inputs ) );
                 }
-                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
               },
               this->m_outputs );
           return FilterDecision::PASSED;
@@ -132,7 +129,6 @@ namespace Gaudi ::Functional {
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
-          GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
           std::apply(
               [this, &ctx]( auto&... ohandle ) {
                 if constexpr ( sizeof...( In ) == 0 ) {
@@ -150,7 +146,6 @@ namespace Gaudi ::Functional {
                 }
               },
               this->m_outputs );
-          GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
           return FilterDecision::PASSED;
         } catch ( GaudiException& e ) {
           if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
@@ -178,14 +173,12 @@ namespace Gaudi ::Functional {
         try {
           return std::apply(
                      [&]( auto&... ohandle ) {
-                       GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
                        return std::apply(
                            [&ohandle...]( bool passed, auto&&... data ) {
                              ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                              return passed;
                            },
                            filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
-                       GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
                      },
                      this->m_outputs )
                      ? FilterDecision::PASSED
@@ -209,7 +202,7 @@ namespace Gaudi ::Functional {
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
           return std::apply(
-                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN[&]( auto&... ohandle ) {
+                     [&]( auto&... ohandle ) {
                        return std::apply(
                            [&ohandle...]( bool passed, auto&&... data ) {
                              ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
@@ -217,8 +210,6 @@ namespace Gaudi ::Functional {
                            },
                            filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
                      },
-                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
-
                      this->m_outputs )
                      ? FilterDecision::PASSED
                      : FilterDecision::FAILED;

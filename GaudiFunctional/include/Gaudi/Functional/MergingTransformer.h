@@ -305,14 +305,12 @@ namespace Gaudi::Functional {
       try {
         std::apply(
             [&]( auto&... outhandle ) {
-              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
               std::apply(
                   [&outhandle...]( auto&&... data ) {
                     ( details::put( outhandle, std::forward<decltype( data )>( data ) ), ... );
                   },
                   std::apply( [&]( auto&&... ins ) { return std::as_const( *this )( std::as_const( ins )... ); },
                               inss ) );
-              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
             },
             this->m_outputs );
         return FilterDecision::PASSED;
@@ -367,14 +365,12 @@ namespace Gaudi::Functional {
       try {
         return std::apply(
                    [&]( auto&... outhandle ) {
-                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
                      return std::apply(
                          [&outhandle...]( bool passed, auto&&... data ) {
                            ( details::put( outhandle, std::forward<decltype( data )>( data ) ), ... );
                            return passed;
                          },
                          ( *this )( std::as_const( ins ) ) );
-                     GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
                    },
                    this->m_outputs )
                    ? FilterDecision::PASSED
