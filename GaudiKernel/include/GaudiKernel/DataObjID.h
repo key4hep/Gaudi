@@ -80,7 +80,6 @@ public:
 
   friend bool operator<( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash < rhs.m_hash; }
   friend bool operator==( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash == rhs.m_hash; }
-  friend bool operator!=( const DataObjID& lhs, const DataObjID& rhs ) { return !( lhs == rhs ); }
 
   friend StatusCode    parse( DataObjID& dest, std::string_view src );
   friend std::ostream& toStream( const DataObjID& v, std::ostream& o );
