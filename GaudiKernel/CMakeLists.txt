@@ -155,7 +155,6 @@ gaudi_add_library(GaudiKernel
            Boost::filesystem
            Boost::thread
            Boost::regex
-           Boost::system
            Boost::chrono
            TBB::tbb
            ${CMAKE_DL_LIBS}

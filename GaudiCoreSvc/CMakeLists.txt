@@ -58,7 +58,6 @@ gaudi_add_module(GaudiCoreSvc
                    Boost::filesystem
                    Boost::python
                    Boost::regex
-                   Boost::system
                    Boost::thread
                    nlohmann_json::nlohmann_json
                    TBB::tbb
