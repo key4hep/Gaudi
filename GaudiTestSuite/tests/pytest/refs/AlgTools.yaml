@@ -293,26 +293,26 @@ stdout: |-
   ApplicationMgr       INFO Application Manager Stopped successfully
   MyAlg                INFO finalizing....
   ToolSvc              INFO Removing all tools created by ToolSvc
-  MyAlg.ToolWithName   INFO finalize() has been called
-  MyAlg.MyTool         INFO finalize() has been called
-  ToolSvc.MyTool       INFO finalize() has been called
-  ToolSvc.ToolB       DEBUG Finalize
   MyAlg.LegacyToo...   INFO finalize() has been called
   ToolSvc.Generic...   INFO finalize() has been called
   ToolSvc.Another...   INFO finalize() has been called
   ToolSvc.Another...   INFO finalize() has been called
+  MyAlg.ToolWithName   INFO finalize() has been called
+  MyAlg.MyTool         INFO finalize() has been called
+  ToolSvc.MyTool       INFO finalize() has been called
+  ToolSvc.ToolB       DEBUG Finalize
   MyAlg.WrongIfac...   INFO finalize() has been called
   ToolSvc.ToolA       DEBUG Finalize
   MyAlg.PrivToolH...   INFO finalize() has been called
   ToolSvc.ConstGe...   INFO finalize() has been called
   ToolSvc.PubTool...   INFO finalize() has been called
-  MyAlg.ToolWithName   INFO destructor has been called
-  MyAlg.MyTool         INFO destructor has been called
-  ToolSvc.MyTool       INFO destructor has been called
   MyAlg.LegacyToo...   INFO destructor has been called
   ToolSvc.Generic...   INFO destructor has been called
   ToolSvc.Another...   INFO destructor has been called
   ToolSvc.Another...   INFO destructor has been called
+  MyAlg.ToolWithName   INFO destructor has been called
+  MyAlg.MyTool         INFO destructor has been called
+  ToolSvc.MyTool       INFO destructor has been called
   MyAlg.WrongIfac...   INFO destructor has been called
   MyAlg.PrivToolH...   INFO destructor has been called
   ToolSvc.ConstGe...   INFO destructor has been called

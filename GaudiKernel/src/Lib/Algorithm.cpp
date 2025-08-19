@@ -463,6 +463,11 @@ namespace Gaudi {
                                            ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, IAuditor::Finalize );
         // Invoke the finalize() method of the derived class
         sc = finalize();
+
+        // Finalize ToolHandles
+        for ( GaudiHandleArrayBase* thArr : m_toolHandleArrays )
+          thArr->release().orThrow( "Cannot release " + thArr->propertyName() );
+        for ( BaseToolHandle* th : m_toolHandles ) th->release().orThrow( "Cannot release " + th->typeAndName() );
       }
       if ( sc.isSuccess() ) {
         // Indicate that this Algorithm has been finalized to prevent duplicate attempts
