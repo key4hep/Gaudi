@@ -449,6 +449,10 @@ public:
    */
   const key_type& insert( const value_type val, const key_type& kval );
 
+  const key_type& insert( std::unique_ptr<contained_type> val, const key_type& kval ) {
+    return insert( val.release(), kval );
+  }
+
   /** Insert entry to the container with automatic key assignment.
    *  This member function inserts an element, which is identified by its
    *  reference to the container. No key value is supplied. The key
@@ -471,6 +475,8 @@ public:
    *                  successful, an exception is thrown.
    */
   const key_type& insert( const value_type val );
+
+  const key_type& insert( std::unique_ptr<contained_type> val ) { return insert( val.release() ); }
   //@}
 };
 
