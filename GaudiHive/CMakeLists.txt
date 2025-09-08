@@ -38,7 +38,6 @@ gaudi_add_module(GaudiHive
                  LINK GaudiKernel
                       Gaudi::Functional
                       Boost::headers
-                      Boost::system
                       Boost::filesystem
                       Boost::fiber
                       Boost::graph

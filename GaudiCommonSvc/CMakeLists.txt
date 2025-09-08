@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -22,7 +22,7 @@ if(GAUDI_USE_AIDA)
                             src/HistogramSvc/P2D.cpp
                     LINK
                       PUBLIC GaudiKernel
-                             Boost::system
+                             Boost::headers
                              Boost::filesystem
                              Rangev3::rangev3
                              ROOT::Hist
@@ -59,7 +59,7 @@ gaudi_add_module(GaudiCommonSvc
                          src/PersistencySvc/SequentialOutputStream.cpp
                          src/PersistencySvc/TagCollectionStream.cpp
                  LINK GaudiKernel
-                      Boost::system
+                      Boost::headers
                       Boost::filesystem
                       Rangev3::rangev3
                       ROOT::Hist
