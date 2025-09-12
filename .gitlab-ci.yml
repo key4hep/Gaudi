@@ -203,41 +203,23 @@ warnings-check:lhcb:105c:x86_64_v3-el9-gcc13-opt+g:
       artifacts: true
 
 # Build on LCG View
-lcg-view:105c:x86_64-el9-gcc13-opt:
+lcg-view:107:x86_64-el9-gcc14-opt:
   <<: *template_lcg_view_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg-view:105c:x86_64-el9-gcc13-opt:
+warnings-check:lcg-view:107:x86_64-el9-gcc14-opt:
   <<: *template_warnings_check
   needs:
-    - job: "lcg-view:105c:x86_64-el9-gcc13-opt"
+    - job: "lcg-view:107:x86_64-el9-gcc14-opt"
       artifacts: true
 
 # Compatibility
-lcg-view:105c:x86_64-el9-clang16-opt:
+lcg-view:107:x86_64-el9-clang19-opt:
   <<: *template_lcg_view_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg-view:105c:x86_64-el9-clang16-opt:
+warnings-check:lcg-view:107:x86_64-el9-clang19-opt:
   <<: *template_warnings_check
   needs:
-    - job: "lcg-view:105c:x86_64-el9-clang16-opt"
-      artifacts: true
-
-lcg-view:106:x86_64-el9-gcc13-opt:
-  <<: *template_lcg_view_build
-  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg-view:106:x86_64-el9-gcc13-opt:
-  <<: *template_warnings_check
-  needs:
-    - job: "lcg-view:106:x86_64-el9-gcc13-opt"
-      artifacts: true
-
-lcg-view:104:x86_64-el9-gcc13-opt:
-  <<: *template_lcg_view_build
-  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg-view:104:x86_64-el9-gcc13-opt:
-  <<: *template_warnings_check
-  needs:
-    - job: "lcg-view:104:x86_64-el9-gcc13-opt"
+    - job: "lcg-view:107:x86_64-el9-clang19-opt"
       artifacts: true
 
 
@@ -307,7 +289,7 @@ website:
       - public
     expire_in: 1 day
 
-doxygen:105c:x86_64-el9-gcc13-opt:
+doxygen:107:x86_64-el9-gcc14-opt:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   script:
@@ -330,7 +312,7 @@ deploy-website:
   needs:
     - job: "website"
       artifacts: true
-    - job: "doxygen:105c:x86_64-el9-gcc13-opt"
+    - job: "doxygen:107:x86_64-el9-gcc14-opt"
       artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
