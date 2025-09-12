@@ -81,5 +81,14 @@ namespace GaudiUtils {
   public:
     typedef H     hasher;
     inline hasher hash_funct() const { return this->m_map.hash_funct(); }
+
+    /// Serialize a GaudiUtils::HashMap in a python like format. E.g. "{a: 1, b: 2}".
+    /// This implementation is not efficient, but very simple. Anyway a print-out
+    /// of a hash map is not something that we do every second.
+    friend std::ostream& operator<<( std::ostream& s, const GaudiUtils::HashMap<K, T, H, M>& m ) {
+      // Copy the hash map into a map to have it ordered by key.
+      return s << GaudiUtils::Map<K, T>( m.begin(), m.end() );
+    }
   };
+
 } // namespace GaudiUtils

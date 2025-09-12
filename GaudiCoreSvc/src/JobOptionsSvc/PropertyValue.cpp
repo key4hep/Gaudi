@@ -12,6 +12,7 @@
 #include <GaudiKernel/SerializeSTL.h>
 #include <GaudiKernel/compose.h>
 #include <algorithm>
+#include <sstream>
 
 namespace gp = Gaudi::Parsers;
 
