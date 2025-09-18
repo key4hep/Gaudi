@@ -23,6 +23,87 @@
 #include <ranges>
 #include <stdexcept>
 
+namespace {
+  struct AlgEntry {
+    size_t                        index;
+    SmartIF<IAlgorithm>           ialg;
+    Gaudi::Algorithm*             alg;
+    std::set<AlgEntry const*>     dependsOn;
+    std::vector<DataObjID const*> inputs;
+    std::vector<DataObjID const*> outputs;
+
+    friend bool operator<( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index < rhs.index; }
+
+    friend bool operator==( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index == rhs.index; }
+
+    AlgEntry( size_t i, SmartIF<IAlgorithm>&& p )
+        : index{ i }, ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
+      if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
+      // gather _all_ the inputs and outputs in a well-defined, reproducible manner,
+      // removing any duplication (sometimes, extra{Out,In}putDeps entries will already appear in {Out,In}putDataObjs)
+      constexpr auto gather = []( auto& c, auto const& in1, auto const& in2 ) {
+        for ( const DataObjID& id : in1 ) c.push_back( &id );
+        for ( const DataObjID& id : in2 ) c.push_back( &id );
+        constexpr auto by_key = []( const DataObjID* id ) { return id->fullKey(); };
+        std::ranges::sort( c, std::less{}, by_key );
+        auto od = std::ranges::unique( c, std::equal_to{}, by_key );
+        c.erase( od.begin(), od.end() );
+      };
+      gather( outputs, alg->outputDataObjs(), alg->extraOutputDeps() );
+      gather( inputs, alg->inputDataObjs(), alg->extraInputDeps() );
+    }
+  };
+
+  template <std::ranges::range R>
+    requires std::common_reference_with<std::ranges::range_reference_t<R>, const AlgEntry&>
+  void dumpGraphFile( std::string const& fname, R const& algorithms ) {
+    Gaudi::Hive::Graph g{ fname };
+
+    // loop over all algorithms to create nodes
+    for ( const AlgEntry& entry : algorithms ) { g.addNode( entry.alg->name(), std::to_string( entry.index ) ); }
+
+    // loop over all algorithms to create list of outputs with corresponding alg indexes
+    std::unordered_map<std::string, size_t> output2Idx;
+    for ( const AlgEntry& entry : algorithms ) {
+      for ( const auto* id : entry.outputs ) { output2Idx[id->key()] = entry.index; }
+    }
+
+    // loop over all algorithms to create edges
+    for ( const AlgEntry& entry : algorithms ) {
+      for ( const auto* id : entry.inputs ) {
+        g.addEdge( entry.alg->name(), std::to_string( entry.index ), id->key(), std::to_string( output2Idx[id->key()] ),
+                   id->key() );
+      }
+    }
+  }
+
+  struct AlgorithmRepr {
+    const Gaudi::Algorithm& parent;
+
+    friend std::ostream& operator<<( std::ostream& s, const AlgorithmRepr& a ) {
+      std::string typ = System::typeinfoName( typeid( a.parent ) );
+      s << typ;
+      if ( a.parent.name() != typ ) s << "/" << a.parent.name();
+      return s;
+    }
+  };
+
+  // Used for making debugging dumps.
+  template <typename T>
+  std::vector<const T*> sorted_( const std::set<T*>& s ) {
+    std::vector<const T*> v{ s.begin(), s.end() };
+    std::sort( v.begin(), v.end(), []( const auto* lhs, const auto* rhs ) { return *lhs < *rhs; } );
+    return v;
+  }
+
+  SmartIF<IAlgorithm> createAlgorithm( IAlgManager& am, const std::string& type, const std::string& name ) {
+    // Maybe modify the AppMgr interface to return Algorithm* ??
+    IAlgorithm* tmp = nullptr;
+    StatusCode  sc  = am.createAlgorithm( type, name, tmp );
+    return sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr;
+  }
+} // namespace
+
 class HiveDataBrokerSvc final : public extends<Service, IDataBroker> {
 public:
   using extends::extends;
@@ -48,22 +129,6 @@ private:
       "Name of the output file (.dot or .md extensions allowed) containing the data dependency graph. If empty, no "
       "graph is dumped" };
 
-  struct AlgEntry {
-    size_t                    index;
-    SmartIF<IAlgorithm>       ialg;
-    Gaudi::Algorithm*         alg;
-    std::set<AlgEntry const*> dependsOn;
-
-    friend bool operator<( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index < rhs.index; }
-
-    friend bool operator==( AlgEntry const& lhs, AlgEntry const& rhs ) { return lhs.index == rhs.index; }
-
-    AlgEntry( size_t i, SmartIF<IAlgorithm>&& p )
-        : index{ i }, ialg{ std::move( p ) }, alg{ dynamic_cast<Gaudi::Algorithm*>( ialg.get() ) } {
-      if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
-    }
-  };
-
   std::map<std::string, AlgEntry>
   instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const; // algorithms must be fully
                                                                                      // initialized first, as
@@ -79,49 +144,9 @@ private:
 
   void visit( AlgEntry const& alg, std::vector<std::string> const& stoppers, std::vector<Gaudi::Algorithm*>& sorted,
               std::vector<bool>& visited, std::vector<bool>& visiting ) const;
-
-  void dumpGraphFile() const;
 };
 
 DECLARE_COMPONENT( HiveDataBrokerSvc )
-
-namespace {
-  struct AlgorithmRepr {
-    const Gaudi::Algorithm& parent;
-
-    friend std::ostream& operator<<( std::ostream& s, const AlgorithmRepr& a ) {
-      std::string typ = System::typeinfoName( typeid( a.parent ) );
-      s << typ;
-      if ( a.parent.name() != typ ) s << "/" << a.parent.name();
-      return s;
-    }
-  };
-
-  // Sort a DataObjIDColl in a well-defined, reproducible manner.
-  // Used for making debugging dumps.
-  std::vector<const DataObjID*> sorted_( const DataObjIDColl& coll ) {
-    std::vector<const DataObjID*> v;
-    v.reserve( coll.size() );
-    for ( const DataObjID& id : coll ) v.push_back( &id );
-    std::sort( v.begin(), v.end(),
-               []( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); } );
-    return v;
-  }
-
-  template <typename T>
-  std::vector<const T*> sorted_( const std::set<T*>& s ) {
-    std::vector<const T*> v{ s.begin(), s.end() };
-    std::sort( v.begin(), v.end(), []( const auto* lhs, const auto* rhs ) { return *lhs < *rhs; } );
-    return v;
-  }
-
-  SmartIF<IAlgorithm> createAlgorithm( IAlgManager& am, const std::string& type, const std::string& name ) {
-    // Maybe modify the AppMgr interface to return Algorithm* ??
-    IAlgorithm* tmp = nullptr;
-    StatusCode  sc  = am.createAlgorithm( type, name, tmp );
-    return sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr;
-  }
-} // namespace
 
 StatusCode HiveDataBrokerSvc::initialize() {
   return Service::initialize().andThen( [&] {
@@ -129,21 +154,23 @@ StatusCode HiveDataBrokerSvc::initialize() {
     m_algorithms = instantiateAndInitializeAlgorithms( m_producers );
 
     // warn about non-reentrant algorithms
-    std::ranges::for_each( m_algorithms |
-                               std::ranges::views::transform( []( const auto& entry ) { return entry.second.alg; } ) |
+    std::ranges::for_each( m_algorithms | std::ranges::views::transform( []( const auto& entry ) -> decltype( auto ) {
+                             return entry.second.alg;
+                           } ) |
                                std::ranges::views::filter( []( const auto* alg ) { return alg->cardinality() > 0; } ),
                            [&]( const Gaudi::Algorithm* alg ) {
                              this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{ *alg } << endmsg;
                            } );
     //== Print the list of the created algorithms
     if ( msgLevel( MSG::DEBUG ) ) {
-      MsgStream& msg = debug();
-      msg << "Available DataProducers: ";
-      GaudiUtils::details::ostream_joiner(
-          msg, m_algorithms, ", ", []( auto& os, const std::pair<std::string, AlgEntry>& e ) -> decltype( auto ) {
-            return os << AlgorithmRepr{ *e.second.alg };
-          } );
-      msg << endmsg;
+      debug() << "Available DataProducers:\n";
+      std::ranges::for_each( m_algorithms | std::ranges::views::transform( []( const auto& entry ) -> decltype( auto ) {
+                               return entry.second.alg;
+                             } ),
+                             [&]( const Gaudi::Algorithm* alg ) {
+                               this->debug() << "  " << AlgorithmRepr{ *alg } << " " << alg->outputDataObjs() << " "
+                                             << alg->extraOutputDeps() << endmsg;
+                             } );
     }
 
     // populate m_dependencies and set AlgEntry::dependsOn
@@ -190,7 +217,7 @@ StatusCode HiveDataBrokerSvc::finalize() {
   return Service::finalize();
 }
 
-std::map<std::string, HiveDataBrokerSvc::AlgEntry>
+std::map<std::string, AlgEntry>
 HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const {
   std::map<std::string, AlgEntry> algorithms;
 
@@ -228,31 +255,32 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
   return algorithms;
 }
 
-std::map<DataObjID, HiveDataBrokerSvc::AlgEntry const*>
+std::map<DataObjID, AlgEntry const*>
 HiveDataBrokerSvc::mapProducers( std::map<std::string, AlgEntry>& algorithms ) const {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "Data Dependencies for Algorithms:";
     for ( const auto& [name, entry] : m_algorithms ) {
       debug() << "\n " << name << " :";
-      for ( const auto* id : sorted_( entry.alg->inputDataObjs() ) ) { debug() << "\n    o INPUT  " << id->key(); }
-      for ( const auto* id : sorted_( entry.alg->outputDataObjs() ) ) { debug() << "\n    o OUTPUT " << id->key(); }
+      for ( const auto* id : entry.inputs ) { debug() << "\n    o INPUT  " << id->key(); }
+      for ( const auto* id : entry.outputs ) { debug() << "\n    o OUTPUT " << id->key(); }
     }
     debug() << endmsg;
   }
 
   // If requested, dump a graph of the data dependencies in a .dot or .md file
-  if ( not m_dataDepsGraphFile.empty() ) { dumpGraphFile(); }
+  if ( !m_dataDepsGraphFile.empty() ) {
+    info() << "Dumping data dependencies graph to file: " << m_dataDepsGraphFile.value() << endmsg;
+    dumpGraphFile( m_dataDepsGraphFile, m_algorithms | std::views::values );
+  }
 
   // figure out all outputs
   std::map<DataObjID, const AlgEntry*> producers;
   for ( auto& [name, alg] : algorithms ) {
-    const auto& output = alg.alg->outputDataObjs();
-    if ( output.empty() ) { continue; }
-    for ( auto id : output ) {
-      auto r = producers.emplace( id, &alg );
+    for ( auto id : alg.outputs ) {
+      auto r = producers.emplace( *id, &alg );
       if ( !r.second ) {
-        throw GaudiException( "multiple algorithms declare " + id.key() + " as output (" + name + " and " +
-                                  producers[id]->alg->name() + " at least). This is not allowed",
+        throw GaudiException( "multiple algorithms declare " + id->key() + " as output (" + name + " and " +
+                                  producers[*id]->alg->name() + " at least). This is not allowed",
                               __func__, StatusCode::FAILURE );
       }
     }
@@ -260,8 +288,7 @@ HiveDataBrokerSvc::mapProducers( std::map<std::string, AlgEntry>& algorithms ) c
 
   // resolve dependencies
   for ( auto& [name, algEntry] : algorithms ) {
-    auto input = sorted_( algEntry.alg->inputDataObjs() );
-    for ( const DataObjID* idp : input ) {
+    for ( const DataObjID* idp : algEntry.inputs ) {
       DataObjID id        = *idp;
       auto      iproducer = producers.find( id );
       if ( iproducer != producers.end() ) {
@@ -359,29 +386,4 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& re
     debug() << std::endl << endmsg;
   }
   return result;
-}
-
-void HiveDataBrokerSvc::dumpGraphFile() const {
-  Gaudi::Hive::Graph g{ m_dataDepsGraphFile.value() };
-  info() << "Dumping data dependencies graph to file: " << g.fileName() << endmsg;
-
-  // define algs and objects
-  std::set<std::size_t> definedObjects;
-
-  // loop over all algorithms to create nodes
-  for ( const auto& [name, entry] : m_algorithms ) { g.addNode( entry.alg->name(), std::to_string( entry.index ) ); }
-
-  // loop over all algorithms to create list of outputs with corresponding alg indexes
-  std::unordered_map<std::string, size_t> output2Idx;
-  for ( const auto& [name, entry] : m_algorithms ) {
-    for ( const auto* id : sorted_( entry.alg->outputDataObjs() ) ) { output2Idx[id->key()] = entry.index; }
-  }
-
-  // loop over all algorithms to create edges
-  for ( const auto& [name, entry] : m_algorithms ) {
-    for ( const auto* id : sorted_( entry.alg->inputDataObjs() ) ) {
-      g.addEdge( entry.alg->name(), std::to_string( entry.index ), id->key(), std::to_string( output2Idx[id->key()] ),
-                 id->key() );
-    }
-  }
 }
