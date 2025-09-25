@@ -81,7 +81,7 @@ Maintainer's guide: `<https://twiki.cern.ch/twiki/bin/view/LHCb/MaintainGaudiCMa
 
 #]========================================================================]
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.29)
 
 # Optional CUDA
 option(GAUDI_USE_CUDA "Build AsynchronousAlgorithm features that require CUDA")
