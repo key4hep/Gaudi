@@ -41,23 +41,6 @@ public:
       , // use requester msg level
       m_requesterName( std::move( requesterName ) ) {}
 
-  [[deprecated( "Service retrieval via pointer is deprecated. Use service(...) instead." )]] StatusCode
-  getService( std::string_view name, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    return createIf ? createService( name, iid, ppSvc ) : locateService( name, iid, ppSvc, true );
-#pragma GCC diagnostic pop
-  }
-
-  [[deprecated( "Service retrieval via pointer is deprecated. Use service(...) instead." )]] StatusCode
-  locateService( std::string_view name, const InterfaceID& iid, void** ppSvc, bool quiet = false ) const;
-
-  [[deprecated( "Service creation via pointer is deprecated. Use service(..., createIf=true) instead." )]] StatusCode
-  createService( std::string_view name, const InterfaceID& iid, void** ppSvc ) const;
-
-  [[deprecated( "Service creation via pointer is deprecated. Use service(..., createIf=true) instead." )]] StatusCode
-  createService( std::string_view type, std::string_view name, const InterfaceID& iid, void** ppSvc ) const;
-
   SmartIF<IService> service( std::string_view name, const bool quiet = false, const bool createIf = true ) const;
 
   template <typename T>

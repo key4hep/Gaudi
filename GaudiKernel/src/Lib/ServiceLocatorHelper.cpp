@@ -8,47 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include <GaudiKernel/ServiceLocatorHelper.h>
-
 #include <GaudiKernel/IService.h>
-#include <GaudiKernel/ISvcLocator.h>
-#include <GaudiKernel/MsgStream.h>
-
-#include <fmt/format.h>
-
-StatusCode ServiceLocatorHelper::locateService( std::string_view name, const InterfaceID& iid, void** ppSvc,
-                                                bool quiet ) const {
-  auto theSvc = service( name, quiet, false );
-  if ( !theSvc ) return StatusCode::FAILURE;
-  StatusCode sc = theSvc->queryInterface( iid, ppSvc );
-  if ( !sc.isSuccess() ) {
-    *ppSvc = nullptr;
-    if ( !quiet )
-      log() << MSG::ERROR << "ServiceLocatorHelper::locateService: wrong interface id " << iid << " for service "
-            << name << endmsg;
-  }
-  return sc;
-}
-
-StatusCode ServiceLocatorHelper::createService( std::string_view name, const InterfaceID& iid, void** ppSvc ) const {
-  auto theSvc = service( name, false, true );
-  if ( !theSvc ) return StatusCode::FAILURE;
-  StatusCode sc = theSvc->queryInterface( iid, ppSvc );
-  if ( !sc.isSuccess() ) {
-    *ppSvc = nullptr;
-    log() << MSG::ERROR << "ServiceLocatorHelper::createService: wrong interface id " << iid << " for service " << name
-          << endmsg;
-  }
-  return sc;
-}
-
-StatusCode ServiceLocatorHelper::createService( std::string_view type, std::string_view name, const InterfaceID& iid,
-                                                void** ppSvc ) const {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  return createService( fmt::format( "{}/{}", type, name ), iid, ppSvc );
-#pragma GCC diagnostic pop
-}
+#include <GaudiKernel/ServiceLocatorHelper.h>
 
 SmartIF<IService> ServiceLocatorHelper::service( std::string_view name, const bool quiet, const bool createIf ) const {
   SmartIF<IService> theSvc = serviceLocator()->service( name, createIf );
