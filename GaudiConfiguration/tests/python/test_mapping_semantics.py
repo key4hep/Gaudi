@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -148,3 +148,19 @@ def test_nested_map_vector_bad():
     s = S.getSemanticsFor("map<int,vector<std::string>>")
     with pytest.raises(TypeError):
         s.store({1: ["a", "b"], 2: ["c", 0, "e"]})
+
+
+def test_merge():
+    s = S.getSemanticsFor("std::map<std::string, int>")
+    s1 = s.store({"a": 1, "b": 2})
+    s2 = s.store({"a": 1, "c": 3})
+    s.merge(s1, s2)
+    assert s1 == {"a": 1, "b": 2, "c": 3}
+
+
+def test_merge_fail():
+    s = S.getSemanticsFor("std::map<std::string, int>")
+    s1 = s.store({"a": 1, "b": 2})
+    s2 = s.store({"a": 1, "b": 3})
+    with pytest.raises(ValueError):
+        s.merge(s1, s2)
