@@ -72,7 +72,6 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/IncidentSvc/IncidentAsyncTestSvc.cpp
                          src/IncidentSvc/IncidentListenerTest.cpp
                          src/IncidentSvc/IncidentListenerTestAlg.cpp
-                         src/IntelProfiler/CpuHungryAlg.cpp
                          src/IO/EvtCollectionSelector.cpp
                          src/IO/EvtCollectionWrite.cpp
                          src/IO/EvtExtCollectionSelector.cpp
