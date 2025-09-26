@@ -11,6 +11,7 @@
 #pragma once
 
 #include <GaudiKernel/MapBase.h>
+#include <GaudiKernel/SerializeSTL.h>
 #include <map>
 
 namespace GaudiUtils {
@@ -277,7 +278,13 @@ namespace GaudiUtils {
       if ( index >= size() ) { this->throw_out_of_range_exception(); }
       return std::next( this->begin(), index )->second;
     }
+
+    /// Serialize a GaudiUtils::Map in a python like format. E.g. "{a: 1, b: 2}".
+    friend std::ostream& operator<<( std::ostream& s, const GaudiUtils::Map<K, T, M>& m ) {
+      return s << static_cast<const M&>( m );
+    }
   };
   template <typename K, typename T, typename M>
   const typename Map<K, T, M>::result_type Map<K, T, M>::s_null_value = typename Map<K, T, M>::result_type();
+
 } // namespace GaudiUtils

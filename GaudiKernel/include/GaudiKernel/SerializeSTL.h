@@ -11,7 +11,7 @@
 /** @file GaudiKernel/SerializeSTL.h
  *
  * Provide serialization function (output only) for some common STL classes
- * (vectors, lists, pairs, maps) plus GaudiUtils::Map and GaudiUtils::HashMap.
+ * (vectors, lists, pairs, maps).
  *
  * To use the serializer provided by this file, one should add
  * "using namespace GaudiUtils" (possibly inside the function (scope) calling "<<").
@@ -21,8 +21,6 @@
  */
 #pragma once
 
-#include <GaudiKernel/HashMap.h>
-#include <GaudiKernel/Map.h>
 #include <array>
 #include <list>
 #include <map>
@@ -64,14 +62,6 @@ namespace GaudiUtils {
   /// Serialize an std::map in a python like format. E.g. "{a: 1, b: 2}".
   template <class T1, class T2, class COMP, class ALLOC>
   std::ostream& operator<<( std::ostream& s, const std::map<T1, T2, COMP, ALLOC>& m );
-
-  /// Serialize a GaudiUtils::Map in a python like format. E.g. "{a: 1, b: 2}".
-  template <class K, class T, class M>
-  std::ostream& operator<<( std::ostream& s, const GaudiUtils::Map<K, T, M>& m );
-
-  /// Serialize a GaudiUtils::HashMap in a python like format. E.g. "{a: 1, b: 2}".
-  template <class K, class T, class H, class M>
-  std::ostream& operator<<( std::ostream& s, const GaudiUtils::HashMap<K, T, H, M>& m );
 
   namespace details {
 
@@ -149,20 +139,6 @@ namespace GaudiUtils {
                                       return os << p.first << ": " << p.second;
                                     } )
            << "}";
-  }
-
-  template <class K, class T, class M>
-  std::ostream& operator<<( std::ostream& s, const GaudiUtils::Map<K, T, M>& m ) {
-    // Serialize the internal map.
-    return s << static_cast<const M&>( m );
-  }
-
-  /// This implementation is not efficient, but very simple. Anyway a print-out
-  /// of a hash map is not something that we do every second.
-  template <class K, class T, class H, class M>
-  std::ostream& operator<<( std::ostream& s, const GaudiUtils::HashMap<K, T, H, M>& m ) {
-    // Copy the hash map into a map to have it ordered by key.
-    return s << GaudiUtils::Map<K, T>( m.begin(), m.end() );
   }
 
 } // namespace GaudiUtils

@@ -24,6 +24,7 @@
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/SerializeSTL.h>
 
 #include "OutputStream.h"
 
