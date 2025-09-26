@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -80,5 +80,15 @@ TEST_CASE( "PeriodicAction" ) {
       std::this_thread::sleep_for( 510ms );
     }
     CHECK( counter == 3 );
+  }
+
+  SECTION( "zero duration" ) {
+    // should not start a timer if duration is zero
+    int counter{ 0 };
+    {
+      PeriodicAction periodic{ [&counter]() { ++counter; }, 0ms, true };
+      std::this_thread::sleep_for( 10ms );
+    }
+    CHECK( counter == 0 );
   }
 }
