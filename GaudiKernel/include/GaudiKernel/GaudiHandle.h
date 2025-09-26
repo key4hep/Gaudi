@@ -388,6 +388,12 @@ public:
       Implemented in GaudiHandleArray. */
   virtual BaseHandleArray getBaseArray() = 0;
 
+  /** Retrieve all tools */
+  virtual StatusCode retrieve() = 0;
+
+  /** Release all tools */
+  virtual StatusCode release() = 0;
+
   /** To be able to tell if Array was ever retreived **/
   virtual bool retrieved() const = 0;
 };
@@ -495,7 +501,7 @@ public:
   }
 
   /** Retrieve all tools */
-  StatusCode retrieve() {
+  StatusCode retrieve() override {
     StatusCode sc = StatusCode::SUCCESS;
     for ( auto& i : *this ) {
       // stop at first failure
@@ -509,7 +515,7 @@ public:
   }
 
   /** Release all tools */
-  StatusCode release() {
+  StatusCode release() override {
     StatusCode sc = StatusCode::SUCCESS;
     for ( auto& i : *this ) {
       // continue trying to release other tools even if we fail...

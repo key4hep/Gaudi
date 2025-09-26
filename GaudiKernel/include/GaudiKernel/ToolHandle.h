@@ -89,6 +89,8 @@ public:
   virtual StatusCode retrieve( DisableTool sd ) = 0;
   virtual StatusCode retrieve( EnableTool sd )  = 0;
 
+  virtual StatusCode release() const = 0;
+
   const IAlgTool* get() const { return getAsIAlgTool(); }
 
   IAlgTool* get() { return getAsIAlgTool(); }
@@ -247,7 +249,7 @@ public:
 
   /** Release the AlgTool.
       Function must be repeated here to avoid hiding the function release( T*& ) */
-  StatusCode release() const { // not really const, because it updates m_pObject
+  StatusCode release() const override { // not really const, because it updates m_pObject
     return GaudiHandle<T>::release();
   }
 
