@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,9 +19,7 @@
 #include <csignal>
 #include <fmt/format.h>
 #include <mutex>
-#include <range/v3/range/conversion.hpp>
-#include <range/v3/view/remove.hpp>
-#include <range/v3/view/transform.hpp>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -110,11 +108,11 @@ namespace Gaudi {
 
       std::vector<IScheduler*> schedulers;
       if ( m_stackTrace ) {
-        using namespace ranges;
         // if we ask for the stack trace we are also interested in the state of the scheduler
-        schedulers = svcLoc()->getServices() |
-                     views::transform( []( auto svc ) { return Gaudi::Cast<IScheduler>( svc ); } ) |
-                     views::remove( nullptr ) | to<std::vector>();
+        std::ranges::copy( svcLoc()->getServices() |
+                               std::views::transform( []( auto svc ) { return Gaudi::Cast<IScheduler>( svc ); } ) |
+                               std::views::filter( []( auto* p ) { return p != nullptr; } ),
+                           std::back_inserter( schedulers ) );
       }
 
       Action action{ MsgStream{ msgSvc(), "EventWatchdog" }, m_stackTrace, m_abortOnTimeout, m_eventTimeout,

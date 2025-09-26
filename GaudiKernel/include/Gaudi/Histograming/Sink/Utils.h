@@ -28,9 +28,7 @@
 #include <gsl/span>
 #include <nlohmann/json.hpp>
 #include <range/v3/numeric/accumulate.hpp>
-#include <range/v3/range/conversion.hpp>
-#include <range/v3/view/split_when.hpp>
-#include <range/v3/view/transform.hpp>
+#include <ranges>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -328,27 +326,23 @@ namespace Gaudi::Histograming::Sink {
      * changes to the ROOT directory given in the current ROOT file and returns
      * the current directory before the change
      */
-    inline TDirectory* changeDir( TFile& file, const std::string& dir ) {
+    inline TDirectory* changeDir( TFile& file, std::string_view dir ) {
       // remember the current directory
       auto previousDir = gDirectory;
       // find or create the directory for the histogram
-      using namespace ranges;
-      auto is_delimiter        = []( auto c ) { return c == '/' || c == '.'; };
-      auto transform_to_string = views::transform( []( auto&& rng ) { return rng | to<std::string>; } );
-      auto currentDir          = accumulate( dir | views::split_when( is_delimiter ) | transform_to_string,
-                                             file.GetDirectory( "" ), []( auto current, auto&& dir_level ) {
-                                      if ( current ) {
-                                        // try to get next level
-                                        auto nextDir = current->GetDirectory( dir_level.c_str() );
-                                        // if it does not exist, create it
-                                        if ( !nextDir ) nextDir = current->mkdir( dir_level.c_str() );
-                                        // move to next level
-                                        current = nextDir;
-                                      }
-                                      return current;
-                                    } );
+      auto currentDir = ranges::accumulate(
+          dir | std::views::transform( []( char c ) { return c == '.' ? '/' : c; } ) | std::views::split( '/' ) |
+              std::views::transform( []<std::ranges::input_range R>( R&& r ) {
+                return std::string( std::ranges::begin( r ), std::ranges::end( r ) );
+              } ),
+          file.GetDirectory( "" ), []( TDirectory* current, std::string const& d ) -> TDirectory* {
+            if ( !current ) return current;
+            if ( auto next = current->GetDirectory( d.c_str() ); next ) return next;
+            return current->mkdir( d.c_str() );
+          } );
       if ( !currentDir )
-        throw GaudiException( "Could not create directory " + dir, "Histogram::Sink::Root", StatusCode::FAILURE );
+        throw GaudiException( fmt::format( "Could not create directory {}", dir ), "Histogram::Sink::Root",
+                              StatusCode::FAILURE );
       // switch to the directory
       currentDir->cd();
       return previousDir;
