@@ -641,15 +641,13 @@ function(gaudi_add_executable exe_name)
         set_tests_properties(${package_name}.${exe_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
     endif()
     # install
-    set(_export)
     if(NOT ARG_TEST)
-        set(_export EXPORT ${PROJECT_NAME})
         add_executable(${PROJECT_NAME}::${exe_name} ALIAS ${exe_name})
+        install(
+           TARGETS  ${exe_name}
+           EXPORT ${PROJECT_NAME}
+           ${_gaudi_install_optional})
     endif()
-    install(
-        TARGETS  ${exe_name}
-        ${_export}
-        ${_gaudi_install_optional})
     # Runtime PATH with run
     _gaudi_runtime_prepend(path $<TARGET_FILE_DIR:${exe_name}>)
 endfunction()
