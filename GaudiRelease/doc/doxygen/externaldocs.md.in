@@ -3,16 +3,53 @@ Related external libraries    {#externaldocs}
 
 From [LCG version @LCG_VERSION@][lcg-details]:
 
-- LCG Application Area:
-  - [ROOT @ROOT_config_version@][root] (persistency)
-  - [@RELAX_config_version@][relax] (common dictionaries for I/O and interactivity)
+## Required Dependencies
 
-- Externals:
-  - [Boost @Boost_version@](http://www.boost.org/doc/libs/@Boost_url_version@/)
-  - [AIDA @AIDA_config_version@](http://aida.freehep.org/doc/v@AIDA_config_version@/api/) (histogramming)
-  - [Xerces-C @XercesC_config_version@](http://xml.apache.org/xerces-c/api-@XercesC_major_version@)
+- **Core Libraries:**
+  - [ROOT @ROOT_config_version@][root] (persistency, histogramming, I/O)
+  - [Boost @Boost_version@](http://www.boost.org/doc/libs/@Boost_url_version@/) (filesystem, regex, fiber, thread, python, unit_test_framework, program_options, log, log_setup, graph)
   - [Python @Python_config_version@](http://www.python.org/doc/@Python_config_version@/) (scripting and interactivity)
-  - [HepMC @HepMC_config_version@](http://lcgapp.cern.ch/project/simu/HepMC/)
+  - [TBB @TBB_config_version@](https://www.threadingbuildingblocks.org/) (threading building blocks)
+
+- **System Libraries:**
+  - UUID (universally unique identifier)
+  - Threads (POSIX threads)
+  - ZLIB @ZLIB_config_version@ (compression)
+  - Rangev3 (C++ ranges library)
+  - cppgsl (C++ Guidelines Support Library)
+  - fmt (formatting library)
+  - nlohmann_json (JSON library)
+
+## Optional Dependencies
+
+- **Histogramming:**
+  - [AIDA @AIDA_config_version@](http://aida.freehep.org/doc/v@AIDA_config_version@/api/) (Abstract Interfaces for Data Analysis)
+
+- **XML Processing:**
+  - [Xerces-C @XercesC_config_version@](http://xml.apache.org/xerces-c/api-@XercesC_major_version@)
+
+- **Physics Libraries:**
+  - [CLHEP @CLHEP_config_version@](http://proj-clhep.web.cern.ch/proj-clhep/) (C++ Class Library for High Energy Physics)
+  - [HepPDT @HepPDT_config_version@](http://lcgapp.cern.ch/project/simu/HepPDT/) (Particle Data Table)
+
+- **Testing:**
+  - [Catch2 @Catch2_config_version@](https://github.com/catchorg/Catch2) (modern C++ testing framework)
+  - [CppUnit @CppUnit_config_version@](https://freedesktop.org/wiki/Software/cppunit/) (unit testing framework)
+  - Boost unit_test_framework (part of Boost libraries)
+
+- **Documentation:**
+  - [Doxygen @Doxygen_config_version@](https://www.doxygen.nl/) (documentation generation)
+
+- **GPU Computing:**
+  - [CUDA](https://developer.nvidia.com/cuda-toolkit) (when GAUDI_USE_CUDA is enabled)
+
+## Platform-Specific Dependencies
+
+- **Linux:**
+  - rt (real-time library)
+
+- **macOS:**
+  - Foundation (Core Foundation framework)
 
 
 See also:
@@ -24,7 +61,4 @@ See also:
 
 
 [lcg-details]: http://lcginfo.cern.ch/release/@LCG_VERSION@/
-[coral]: https://twiki.cern.ch/twiki/bin/view/Persistency/Coral
-[cool]: https://twiki.cern.ch/twiki/bin/view/Persistency/Cool
 [root]: http://root.cern.ch/
-[relax]: https://twiki.cern.ch/twiki/bin/view/LCG/RELAX
