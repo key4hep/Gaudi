@@ -6,15 +6,15 @@ From [LCG version @LCG_VERSION@][lcg-details]:
 ## Required Dependencies
 
 - **Core Libraries:**
-  - [ROOT @ROOT_config_version@][root] (persistency, histogramming, I/O)
-  - [Boost @Boost_version@](http://www.boost.org/doc/libs/@Boost_url_version@/) (filesystem, regex, fiber, thread, python, unit_test_framework, program_options, log, log_setup, graph)
-  - [Python @Python_config_version@](http://www.python.org/doc/@Python_config_version@/) (scripting and interactivity)
-  - [TBB @TBB_config_version@](https://www.threadingbuildingblocks.org/) (threading building blocks)
+  - [ROOT][root] (persistency, histogramming, I/O)
+  - [Boost](http://www.boost.org/) (filesystem, regex, fiber, thread, python, unit_test_framework, program_options, log, log_setup, graph)
+  - [Python](http://www.python.org/) (scripting and interactivity)
+  - [TBB](https://www.threadingbuildingblocks.org/) (threading building blocks)
 
 - **System Libraries:**
   - UUID (universally unique identifier)
   - Threads (POSIX threads)
-  - ZLIB @ZLIB_config_version@ (compression)
+  - ZLIB (compression)
   - Rangev3 (C++ ranges library)
   - cppgsl (C++ Guidelines Support Library)
   - fmt (formatting library)
@@ -23,22 +23,22 @@ From [LCG version @LCG_VERSION@][lcg-details]:
 ## Optional Dependencies
 
 - **Histogramming:**
-  - [AIDA @AIDA_config_version@](http://aida.freehep.org/doc/v@AIDA_config_version@/api/) (Abstract Interfaces for Data Analysis)
+  - [AIDA](http://aida.freehep.org/) (Abstract Interfaces for Data Analysis)
 
 - **XML Processing:**
-  - [Xerces-C @XercesC_config_version@](http://xml.apache.org/xerces-c/api-@XercesC_major_version@)
+  - [Xerces-C](http://xml.apache.org/xerces-c/) (XML parser)
 
 - **Physics Libraries:**
-  - [CLHEP @CLHEP_config_version@](http://proj-clhep.web.cern.ch/proj-clhep/) (C++ Class Library for High Energy Physics)
-  - [HepPDT @HepPDT_config_version@](http://lcgapp.cern.ch/project/simu/HepPDT/) (Particle Data Table)
+  - [CLHEP](http://proj-clhep.web.cern.ch/proj-clhep/) (C++ Class Library for High Energy Physics)
+  - [HepPDT](http://lcgapp.cern.ch/project/simu/HepPDT/) (Particle Data Table)
 
 - **Testing:**
-  - [Catch2 @Catch2_config_version@](https://github.com/catchorg/Catch2) (modern C++ testing framework)
-  - [CppUnit @CppUnit_config_version@](https://freedesktop.org/wiki/Software/cppunit/) (unit testing framework)
+  - [Catch2](https://github.com/catchorg/Catch2) (modern C++ testing framework)
+  - [CppUnit](https://freedesktop.org/wiki/Software/cppunit/) (unit testing framework)
   - Boost unit_test_framework (part of Boost libraries)
 
 - **Documentation:**
-  - [Doxygen @Doxygen_config_version@](https://www.doxygen.nl/) (documentation generation)
+  - [Doxygen](https://www.doxygen.nl/) (documentation generation)
 
 - **GPU Computing:**
   - [CUDA](https://developer.nvidia.com/cuda-toolkit) (when GAUDI_USE_CUDA is enabled)

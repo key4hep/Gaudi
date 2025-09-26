@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -107,6 +107,10 @@ elseif(EXISTS "${PROJECT_SOURCE_DIR}/.git")
   set(DOC_PROJECT_VERSION "${GIT_DESCRIBE_VERSION} (${GIT_COMMIT_SHA})")
 else()
   set(DOC_PROJECT_VERSION "${PROJECT_VERSION}")
+endif()
+
+if(NOT DEFINED LCG_VERSION AND "$ENV{LCG_VERSION}")
+    set(LCG_VERSION "$ENV{LCG_VERSION}")
 endif()
 
 # copy the template files
