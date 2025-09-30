@@ -10,9 +10,11 @@
 \***********************************************************************************/
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/details/BranchWrapper.h>
+#include <TMemFile.h>
 #include <TTree.h>
 #include <format>
 #include <map>
+#include <memory>
 #include <string>
 
 namespace {
@@ -33,33 +35,34 @@ namespace {
 namespace Gaudi::details {
 
   BranchWrapper::BranchWrapper( const gsl::not_null<TTree*> tree, const std::string& className,
-                                const std::string& branchName, const std::string& location, const std::string& algName )
-      : m_className( className ), m_branchName( branchName ), m_location( location ), m_algName( algName ) {
+                                const std::string& branchName, const std::string& location, const std::string& algName,
+                                unsigned int bufferSize, unsigned int splitLevel )
+      : m_className( className ), m_location( location ) {
     auto leafListTag = getLeafListForType( m_className );
     if ( leafListTag ) {
       // Create a branch for fundamental types using the leaflist
-      m_branch         = tree->Branch( m_branchName.c_str(), &m_dataBuffer,
-                                       ( std::format( "{}/{}", m_className, leafListTag.value() ) ).c_str() );
+      m_branch         = tree->Branch( branchName.c_str(), &m_dataBuffer,
+                                       ( std::format( "{}/{}", m_className, leafListTag.value() ) ).c_str(), bufferSize );
       setBranchAddress = []( gsl::not_null<TBranch*> br, const void** wrappedDataPtr ) {
         br->SetAddress( const_cast<void*>( *wrappedDataPtr ) );
       };
 
     } else if ( TClass::GetClass( m_className.c_str() ) ) {
       // Create a branch for object types using the classname string
-      m_branch         = tree->Branch( m_branchName.c_str(), m_className.c_str(), &m_dataBuffer );
+      m_branch         = tree->Branch( branchName.c_str(), m_className.c_str(), &m_dataBuffer, bufferSize, splitLevel );
       setBranchAddress = []( gsl::not_null<TBranch*> br, const void** wrappedDataPtr ) {
         br->SetAddress( wrappedDataPtr );
       };
 
     } else {
       throw GaudiException( std::format( "Cannot create branch {} for unknown class: {}. Provide a dictionary please.",
-                                         m_branchName, m_className ),
-                            m_algName, StatusCode::FAILURE );
+                                         branchName, m_className ),
+                            algName, StatusCode::FAILURE );
     }
 
     if ( !m_branch ) {
-      throw GaudiException( std::format( "Failed to create branch {} for type {}.", m_branchName, m_className ),
-                            m_algName, StatusCode::FAILURE );
+      throw GaudiException( std::format( "Failed to create branch {} for type {}.", branchName, m_className ), algName,
+                            StatusCode::FAILURE );
     }
   }
 
@@ -78,7 +81,32 @@ namespace Gaudi::details {
     setBranchAddress( m_branch, &m_dataBuffer );
   }
 
-  const std::string& BranchWrapper::getLocation() const { return m_location; }
+  unsigned int BranchWrapper::computeOptimalBufferSize( unsigned int minBufferSize, unsigned int maxBufferSize,
+                                                        unsigned int approxEventsPerBasket, unsigned int splitLevel ) {
+    // simply try to write one item in a dummey branch of a dummy tree im memory and measure size
+    auto dummy_file  = std::make_unique<TMemFile>( "dummy.root", "CREATE" );
+    auto dummy_tree  = std::make_unique<TTree>( "DummyTree", "DummyTree", splitLevel, dummy_file->GetDirectory( "/" ) );
+    auto leafListTag = getLeafListForType( m_className );
+    TBranch* dummy_branch{ nullptr };
+    if ( leafListTag ) {
+      // Create a branch for fundamental types using the leaflist
+      dummy_branch =
+          dummy_tree->Branch( "DummyBranch", &m_dataBuffer,
+                              ( fmt::format( "{}/{}", m_className, leafListTag.value() ) ).c_str(), minBufferSize );
+    } else if ( TClass::GetClass( m_className.c_str() ) ) {
+      // Create a branch for object types using the classname string
+      dummy_branch = dummy_tree->Branch( "DummyBranch", m_className.c_str(), &m_dataBuffer, minBufferSize, splitLevel );
+    } // no else as unknown className would have raised an exception at constructor level
+    int nWritten = dummy_branch->Fill();
+    if ( nWritten >= 0 ) {
+      unsigned int newBasketSize = nWritten * approxEventsPerBasket;
+      // Ensure that newBasketSize doesn't wrap around
+      if ( std::numeric_limits<Int_t>::max() / approxEventsPerBasket < (unsigned int)nWritten ) {
+        newBasketSize = std::numeric_limits<Int_t>::max();
+      }
+      return std::min( maxBufferSize, std::max( minBufferSize, newBasketSize ) );
+    }
+    return minBufferSize;
+  }
 
-  const std::string& BranchWrapper::getClassName() const { return m_className; }
 } // namespace Gaudi::details
