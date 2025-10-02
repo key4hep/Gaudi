@@ -41,16 +41,6 @@ public:
       , // use requester msg level
       m_requesterName( std::move( requesterName ) ) {}
 
-  StatusCode getService( std::string_view name, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
-    return createIf ? createService( name, iid, ppSvc ) : locateService( name, iid, ppSvc, true );
-  }
-
-  StatusCode locateService( std::string_view name, const InterfaceID& iid, void** ppSvc, bool quiet = false ) const;
-
-  StatusCode createService( std::string_view name, const InterfaceID& iid, void** ppSvc ) const;
-
-  StatusCode createService( std::string_view type, std::string_view name, const InterfaceID& iid, void** ppSvc ) const;
-
   SmartIF<IService> service( std::string_view name, const bool quiet = false, const bool createIf = true ) const;
 
   template <typename T>
