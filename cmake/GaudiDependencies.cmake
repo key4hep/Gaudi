@@ -58,11 +58,7 @@ Depending on what was used to build Gaudi:
 * CLHEP>=2.4.1.0
 * HepPDT
 * CppUnit
-* unwind
-* gperftools>=2.7.0
 * Doxygen>=1.8.15
-* IntelAmplifier
-* jemalloc
 
 Depending on the platform:
 * Linux
@@ -127,14 +123,11 @@ set(_gaudi_CLHEP_MIN_VERSION 2.4.0.1)
 set(_gaudi_Doxygen_MIN_VERSION 1.8.15)
 set(CLHEP_FORCE_MODE CONFIG)
 
-set(deps AIDA HepPDT CLHEP gperftools IntelAmplifier jemalloc unwind XercesC)
+set(deps AIDA HepPDT CLHEP XercesC)
 if(NOT CMAKE_FIND_PACKAGE_NAME)
   # these build-time only dependencies are not needed downstream
   list(APPEND deps CppUnit Doxygen)
 endif()
-
-# Identify dependencies using pkgconfig (by the pkgconfig module to use)
-set(gperftools_pkgconfig_module "libprofiler>=2.7.0")
 
 option(GAUDI_ENABLE_GAUDIPARTPROP "Build the subdirectory GaudiPartProp" YES)
 option(GAUDI_BUILD_EXAMPLES "Build the directory GaudiExamples" YES)
@@ -144,12 +137,7 @@ foreach(dep IN LISTS deps)
 
   if(NOT CMAKE_FIND_PACKAGE_NAME)
     # if we are not in GaudiConfig.cmake, we define the options
-    if(dep STREQUAL "IntelAmplifier")
-      set(default NO)
-    else()
-      set(default YES)
-    endif()
-    option(GAUDI_USE_${DEP} "Enable the dependency ${dep}" ${default})
+    option(GAUDI_USE_${DEP} "Enable the dependency ${dep}" YES)
     # this is to record in GaudiConfig.cmake what was enabled at build time
     string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_USE_${DEP} ${GAUDI_USE_${DEP}})\n")
   endif()
