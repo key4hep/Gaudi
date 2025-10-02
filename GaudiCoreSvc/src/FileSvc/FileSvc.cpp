@@ -20,6 +20,22 @@
 #include <unordered_map>
 #include <vector>
 
+/**
+ *
+ * Implementation of the IFileSvc interface, allowing algorithms to access ROOT files
+ * via a centralized service, and ensuring that files are shared appropriately and not
+ * unintentionally overwritten or duplicated.
+ *
+ * Files can be accessed via an identifier and should be listed at configuration time
+ * through the Config property.
+ *
+ * Note that the paths given to Config property are URL syntax, that is they support
+ * extra paremeters in key=vlaue form after a '?' and seprated by '&'
+ * Supported parameters are :
+ *   mode : one of 'CREATE' (default), 'RECREATE', 'UPDATE'
+ *   compress : integer describing compression level to be used
+ *              (see ROOT::RCompressionSetting::EDefaults)
+ */
 class FileSvc : public extends<Service, Gaudi::Interfaces::IFileSvc> {
 public:
   // Constructor
@@ -29,8 +45,9 @@ public:
 
   StatusCode finalize() override;
 
-  /** Get a TFile pointer based on an identifier.
-
+  /**
+   * Get a TFile pointer based on an identifier.
+   *
    * @param identifier A string identifying the file (2 identifiers can point to the same TFile).
    * @return An shared pointer to a TFile object corresponding to the specified identifier.
    */
@@ -40,12 +57,13 @@ public:
   bool hasIdentifier( const std::string& identifier ) const override;
 
 public:
-  // Property to map file identifiers to file paths
+  // See FileSvc documentation for the syntax supported for paths
   Gaudi::Property<std::map<std::string, std::string>> m_config{
       this, "Config", {}, "Map of keywords to file paths for file access" };
 
 private:
-  /** Open a file based on a specified path and opening mode.
+  /**
+   * Open a file based on a specified path and opening mode.
    *
    * @param filePath The file path.
    * @param option The file opening options to pass to root ("NEW/CREATE", "RECREATE", "UPDATE").
