@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,7 +21,7 @@ PeriodicAction::PeriodicAction( callback_t callback, std::chrono::milliseconds p
 PeriodicAction::~PeriodicAction() { stop(); }
 
 void PeriodicAction::start() {
-  if ( !m_thread.joinable() ) {
+  if ( !m_thread.joinable() && m_period_duration.count() > 0 ) {
     // Note: we can move the callback because we are not going to use it
     // outside of the thread
     m_thread = std::thread{ [period_duration = m_period_duration, callback = std::move( m_callback ),
