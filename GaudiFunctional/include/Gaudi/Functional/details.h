@@ -24,14 +24,9 @@
 #  define GAUDI_FUNCTIONAL_USES_STD_RANGES 1
 #  include <ranges>
 #else
-#  include <range/v3/version.hpp>
 #  include <range/v3/view/const.hpp>
 #  include <range/v3/view/zip.hpp>
 #endif
-
-// temporary hack to help in transition to updated constructor
-// allows to write code which is forward and backwards compatible
-#define GAUDI_FUNCTIONAL_CONSTRUCTOR_USES_TUPLE
 
 namespace Gaudi::Functional::details {
 
@@ -467,7 +462,6 @@ namespace Gaudi::Functional::details {
       std::is_base_of_v<Gaudi::details::LegacyAlgorithmAdapter, details::BaseClass_t<Traits>>;
 
   /////////
-#define GAUDI_FUNCTIONAL_MAKE_VECTOR_OF_HANDLES_USES_DATAOBJID
 
   template <typename Handles>
   Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<DataObjID>& init ) {
@@ -507,14 +501,13 @@ namespace Gaudi::Functional::details {
                    "EventContext can only appear as first argument" );
 
     template <typename Algorithm, typename Handles>
-    static auto apply( const Algorithm& algo, Handles& handles ) {
-      return std::apply(
-          [&]( const auto&... handle ) { return algo( get( handle, algo, Gaudi::Hive::currentContext() )... ); },
-          handles );
-    }
-    template <typename Algorithm, typename Handles>
     static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
       return std::apply( [&]( const auto&... handle ) { return algo( get( handle, algo, ctx )... ); }, handles );
+    }
+
+    template <typename Algorithm, typename Handles>
+    static auto apply( const Algorithm& algo, Handles& handles ) {
+      return apply( algo, Gaudi::Hive::currentContext(), handles );
     }
   };
 
