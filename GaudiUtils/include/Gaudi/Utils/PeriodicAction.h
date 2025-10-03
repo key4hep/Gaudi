@@ -23,8 +23,8 @@ namespace Gaudi::Utils {
    *
    * The thread starts as soon as the instance is created and it's automatically terminated
    * (and joined) on destruction.
-   * It's also possible to defer the start (if requested at construction time) and
-   * anticipate the stop.
+   * It's also possible to defer the start (if requested at construction time),
+   * anticipate the stop and specify a maximum number of repetitions (if >0).
    */
   class PeriodicAction {
   public:
@@ -32,7 +32,8 @@ namespace Gaudi::Utils {
     using time_point = clock::time_point;
     using callback_t = std::function<void()>;
 
-    PeriodicAction( callback_t callback, std::chrono::milliseconds period_duration, bool autostart = true );
+    PeriodicAction( callback_t callback, std::chrono::milliseconds period_duration, bool autostart = true,
+                    unsigned int repetitions = 0 );
     PeriodicAction( PeriodicAction&& )            = default;
     PeriodicAction& operator=( PeriodicAction&& ) = default;
 
@@ -46,5 +47,6 @@ namespace Gaudi::Utils {
     std::promise<void>        m_stop_thread;
     callback_t                m_callback;
     std::chrono::milliseconds m_period_duration;
+    unsigned int              m_repetitions;
   };
 } // namespace Gaudi::Utils
