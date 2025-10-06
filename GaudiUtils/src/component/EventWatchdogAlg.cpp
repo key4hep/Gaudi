@@ -1,5 +1,9 @@
 /***********************************************************************************\
+<<<<<<< HEAD
 * (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+=======
+* (c) Copyright 2024-2025, 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+>>>>>>> 2d2761275 (Replace fmt library with std::format where possible)
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,7 +21,7 @@
 #include <algorithm>
 #include <chrono>
 #include <csignal>
-#include <fmt/format.h>
+#include <format>
 #include <mutex>
 #include <ranges>
 #include <string>
@@ -46,7 +50,7 @@ namespace Gaudi {
   class EventWatchdogAlg : public Gaudi::Functional::Transformer<PeriodicAction( EventContext const& )> {
   public:
     EventWatchdogAlg( const std::string& name, ISvcLocator* pSvcLocator )
-        : Transformer( name, pSvcLocator, KeyValue{ "TimerLocation", fmt::format( ".{}-timer", sanitize( name ) ) } ) {
+        : Transformer( name, pSvcLocator, KeyValue{ "TimerLocation", std::format( ".{}-timer", sanitize( name ) ) } ) {
       // timeout period cannot be smaller than 1
       m_eventTimeout.verifier().setLower( 1 );
     }
@@ -70,14 +74,14 @@ namespace Gaudi {
         void operator()() {
           ++counter;
           if ( counter == 1 ) {
-            log << MSG::WARNING << fmt::format( "More than {}s since the beginning of the event ({})", timeout, ctx )
+            log << MSG::WARNING << std::format( "More than {}s since the beginning of the event ({})", timeout, ctx )
                 << endmsg;
           } else {
-            log << MSG::WARNING << fmt::format( "Another {}s passed since last timeout ({})", timeout, ctx ) << endmsg;
+            log << MSG::WARNING << std::format( "Another {}s passed since last timeout ({})", timeout, ctx ) << endmsg;
           }
           if ( log.level() <= MSG::INFO ) {
             log << MSG::INFO
-                << fmt::format( "Current memory usage is virtual size = {} MB, resident set size = {} MB",
+                << std::format( "Current memory usage is virtual size = {} MB, resident set size = {} MB",
                                 System::virtualMemory() / 1024., System::pagedMemory() / 1024. )
                 << endmsg;
           }
@@ -87,12 +91,12 @@ namespace Gaudi {
             for ( auto scheduler : schedulers ) { scheduler->dumpState(); }
             if ( gSystem ) {
               // TSystem::StackTrace() prints on the standard error, so we do the same
-              fmt::print( stderr, "=== Stalled event: current stack trace ({}) ===\n", ctx );
+              std::cerr << std::format( "=== Stalled event: current stack trace ({}) ===\n", ctx );
               gSystem->StackTrace();
             }
           }
           if ( abortOnTimeout ) {
-            log << MSG::FATAL << fmt::format( "too much time on a single event ({}): aborting process", ctx ) << endmsg;
+            log << MSG::FATAL << std::format( "too much time on a single event ({}): aborting process", ctx ) << endmsg;
             std::raise( SIGQUIT );
           }
         }
@@ -101,7 +105,7 @@ namespace Gaudi {
           if ( counter ) {
             const std::chrono::duration<float, std::chrono::seconds::period> duration =
                 std::chrono::steady_clock::now() - eventStart;
-            log << MSG::INFO << fmt::format( "An event ({}) took {:.3f}s", ctx, duration.count() ) << endmsg;
+            log << MSG::INFO << std::format( "An event ({}) took {:.3f}s", ctx, duration.count() ) << endmsg;
           }
         }
       };

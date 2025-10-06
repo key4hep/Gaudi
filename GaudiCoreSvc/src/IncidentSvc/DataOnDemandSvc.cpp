@@ -24,7 +24,7 @@
 #include <GaudiKernel/ThreadLocalContext.h>
 #include <GaudiKernel/ToStream.h>
 #include <GaudiKernel/TypeNameString.h>
-#include <fmt/format.h>
+#include <format>
 #include <map>
 #include <math.h>
 #include <set>
@@ -621,14 +621,14 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
     msg << "Data-On-Demand Actions has been used for:";
   }
 
-  const auto header = fmt::format( " | {3:<{0}.{0}s} | {4:<{1}.{1}s} | {5:>{2}.{2}s} |", n1, n2, n3, "Address",
+  const auto header = std::format( " | {3:<{0}.{0}s} | {4:<{1}.{1}s} | {5:>{2}.{2}s} |", n1, n2, n3, "Address",
                                    "Creator", ( mode ? "S" : "#" ) );
-  const auto line   = fmt::format( " {0:-^{1}}", "", header.size() - 1 );
+  const auto line   = std::format( " {0:-^{1}}", "", header.size() - 1 );
   msg << '\n' << line << '\n' << header << '\n' << line;
 
   // make the actual printout:
   for ( const auto& item : _m ) {
-    msg << fmt::format( "\n | {3:<{0}.{0}s} | {4:<{1}.{1}s} | {5:>{2}.{2}s} |", n1, n2, n3, item.first,
+    msg << std::format( "\n | {3:<{0}.{0}s} | {4:<{1}.{1}s} | {5:>{2}.{2}s} |", n1, n2, n3, item.first,
                         item.second.first, item.second.second );
   }
 

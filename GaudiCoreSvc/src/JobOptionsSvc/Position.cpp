@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,8 +9,8 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "Position.h"
-#include <fmt/format.h>
+#include <format>
 #include <string>
 std::string Gaudi::Parsers::Position::ToString() const {
-  return fmt::format( "{}: ({}, {})", filename_, line_, column_ );
+  return std::format( "{}: ({}, {})", filename_, line_, column_ );
 }

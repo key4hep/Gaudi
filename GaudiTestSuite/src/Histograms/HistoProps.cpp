@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,7 +18,7 @@
 // ============================================================================
 #include <Gaudi/Accumulators/StaticHistogram.h>
 #include <GaudiKernel/Algorithm.h>
-#include <fmt/format.h>
+#include <format>
 // ============================================================================
 /** @file
  *  simple example, which illustrates the usage of "histogram properties"
@@ -57,10 +57,10 @@ namespace Gaudi {
       }
       StatusCode finalize() override {
         auto format = []( std::string_view name, const nlohmann::json& data ) {
-          return fmt::format( " | {:25} | {:25} | {:7} |", name, data["axis"][0]["title"].get<std::string>(),
+          return std::format( " | {:25} | {:25} | {:7} |", name, data["axis"][0]["title"].get<std::string>(),
                               data["nEntries"].get<unsigned long long>() );
         };
-        always() << fmt::format( "Histograms report\n | {:25} | {:25} | {:7} |\n", "name", "title", "entries" )
+        always() << std::format( "Histograms report\n | {:25} | {:25} | {:7} |\n", "name", "title", "entries" )
                  << format( "Histo1", *m_hist1 ) << '\n'
                  << format( "Histo2", *m_hist2 ) << endmsg;
         return Algorithm::finalize();

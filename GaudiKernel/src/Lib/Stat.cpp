@@ -11,9 +11,8 @@
 #include <GaudiKernel/IStatSvc.h>
 #include <GaudiKernel/Stat.h>
 #include <GaudiKernel/StatEntity.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <sstream>
+#include <format>
+#include <iostream>
 
 /** @file
  *  Implementation file for class Stat
@@ -21,9 +20,6 @@
  *  @date 2005-08-02
  *  @date 2007-07-08
  */
-
-template <>
-struct fmt::formatter<StatEntity> : fmt::ostream_formatter {};
 
 Stat::Stat( IStatSvc* svc, const std::string& tag ) : m_tag( tag ), m_group(), m_stat( svc ) {
   if ( m_stat ) {
@@ -54,16 +50,16 @@ std::string Stat::toString() const {
 }
 
 std::ostream& Stat::print( std::ostream& o ) const {
-  auto        entity = ( m_entity ) ? fmt::format( "{}", *m_entity ) : "NULL";
+  auto        entity = ( m_entity ) ? m_entity->toString() : "NULL";
   std::string tag;
   if ( !m_tag.empty() ) {
     if ( !m_group.empty() ) {
-      tag = fmt::format( "\"{}::{}\"", m_group, m_tag );
+      tag = std::format( "\"{}::{}\"", m_group, m_tag );
     } else {
-      tag = fmt::format( "\"{}\"", m_tag );
+      tag = std::format( "\"{}\"", m_tag );
     }
   }
-  return o << fmt::format( " {:^30} {}", tag, entity );
+  return o << std::format( " {:^30} {}", tag, entity );
 }
 
 Stat operator+( const Stat& stat, const double value ) {

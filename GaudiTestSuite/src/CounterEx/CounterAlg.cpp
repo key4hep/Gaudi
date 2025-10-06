@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,7 +12,7 @@
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/Functional/Consumer.h>
 #include <deque>
-#include <fmt/format.h>
+#include <format>
 #include <mutex>
 
 /// Simple algorithm illustrating the usage of different "counters"
@@ -37,7 +37,7 @@ struct CounterAlg : Gaudi::Functional::Consumer<void()> {
       // deque is not thread safe
       std::scoped_lock lock( counterDequeMutex );
       if ( counterCount < 20 ) {
-        counterDeque.emplace_back( this, fmt::format( "DQCounter{}", counterDeque.size() ) );
+        counterDeque.emplace_back( this, std::format( "DQCounter{}", counterDeque.size() ) );
         ++counterCount;
       }
       if ( counterCount == 20 && counterDeque.size() > 10 ) { counterDeque.pop_front(); }

@@ -17,7 +17,7 @@
 #include <array>
 #include <cassert>
 #include <cmath>
-#include <fmt/format.h>
+#include <format>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <type_traits>
@@ -68,7 +68,7 @@ namespace Gaudi::Accumulators {
     inline void requireValidTitle( std::string_view sv ) {
       if ( !sv.empty() && ( std::isspace( sv.back() ) || std::isspace( sv.front() ) ) ) {
         throw GaudiException(
-            fmt::format( "Histogram title \'{}\' has whitespace at front or back -- please remove", sv ),
+            std::format( "Histogram title \'{}\' has whitespace at front or back -- please remove", sv ),
             "Gaudi::Accumulators", StatusCode::FAILURE );
       }
     }
@@ -538,7 +538,7 @@ namespace Gaudi::Accumulators {
     std::tuple_element_t<0, AxisTupleType> const& _getAxis( size_t i,
                                                             typename std::tuple_size<AxisTupleType>::type ) const {
       throw std::logic_error(
-          fmt::format( "Retrieving axis {} in Histogram of dimension {}", i, std::tuple_size_v<AxisTupleType> ) );
+          std::format( "Retrieving axis {} in Histogram of dimension {}", i, std::tuple_size_v<AxisTupleType> ) );
     }
     template <size_t N>
       requires( std::tuple_size_v<AxisTupleType> != N )

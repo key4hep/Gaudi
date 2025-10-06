@@ -13,7 +13,7 @@
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/SmartIF.h>
 #include <chrono>
-#include <fmt/format.h>
+#include <format>
 #include <string>
 #include <type_traits>
 #include <unordered_map>
@@ -72,7 +72,7 @@ struct AlgTimingAuditor final : extends<Gaudi::Auditor, IIncidentListener> {
     if ( m_incSvc ) {
       const auto count      = m_eventLoopStats.count;
       const auto total_time = m_eventLoopStats.total_time;
-      info() << fmt::format( "{:<30.30} | {:9.4} | {:9} | {:9.4}", "EVENT LOOP",
+      info() << std::format( "{:<30.30} | {:9.4} | {:9} | {:9.4}", "EVENT LOOP",
                              count ? ms( total_time ).count() / count : 0.f, count, s( total_time ).count() )
              << endmsg;
     }
@@ -82,7 +82,7 @@ struct AlgTimingAuditor final : extends<Gaudi::Auditor, IIncidentListener> {
       std::string indented_name = std::string( m_depths[offset], ' ' ) + name;
       const auto  count         = m_stats[offset].count;
       const auto  total_time    = m_stats[offset].total_time;
-      info() << fmt::format( "{:<30.30} | {:9.4} | {:9} | {:9.4}", indented_name,
+      info() << std::format( "{:<30.30} | {:9.4} | {:9} | {:9.4}", indented_name,
                              count ? ms( total_time ).count() / count : 0.f, count, s( total_time ).count() )
              << endmsg;
     }

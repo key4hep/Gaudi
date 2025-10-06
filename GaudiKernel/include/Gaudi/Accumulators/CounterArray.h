@@ -20,7 +20,7 @@ namespace Gaudi::Accumulators {
   namespace details {
 
     /**
-     * Default formating for counter names, only calling fmt::format
+     * Default formating for counter names, only calling std::format
      * on the text given at construction and passing the histo index as argument
      */
     struct FormatCounterDefault {
@@ -78,7 +78,7 @@ namespace Gaudi::Accumulators {
    *    // Array of 5 simple counters with custom names. Names will be "0^2=0", "1^2=1", "2^2=4", ...
    *    CounterArray<Counter<>, 5> customCounters{
    *      &algo,
-   *      []( int n ) { return fmt::format( "{}^2={}", n, n*n ); }
+   *      []( int n ) { return std::format( "{}^2={}", n, n*n ); }
    *    }
    *    ++customCounters[3];
    *    // increment via local buffer object

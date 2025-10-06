@@ -13,7 +13,7 @@
 #include <GaudiKernel/System.h>
 #include <algorithm>
 #include <boost/format.hpp>
-#include <fmt/format.h>
+#include <format>
 
 namespace {
   /// the unit used by ChronoEntity is microsecond
@@ -105,14 +105,14 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
                                             [&]( const auto& i ) { return total < std::get<0>( i ) * std::get<1>( i ); } );
       auto             unit      = std::get<1>( *i );
       std::string_view unit_name = std::get<2>( *i );
-      return fmt::format( stat_fmt, unit_name, (double)( mean / unit ), (double)( rms / unit ),
+      return std::format( stat_fmt, unit_name, (double)( mean / unit ), (double)( rms / unit ),
                           (double)( minimal / unit ), (double)( maximal / unit ) );
     } else {
       return {};
     }
   };
 
-  return fmt::format( fmt, unit_name, (double)( total / unit ), number, stats() );
+  return std::format( fmt, unit_name, (double)( total / unit ), number, stats() );
 }
 ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e ) {
   // System::ProcessTime type

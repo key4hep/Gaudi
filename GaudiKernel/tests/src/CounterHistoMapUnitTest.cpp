@@ -100,9 +100,9 @@ BOOST_AUTO_TEST_CASE( test_static_counter_histos, *boost::unit_test::tolerance( 
     // testing a map int to 1D, regular histograms, with non standard names / titles
     Gaudi::Accumulators::HistogramMap<int, Gaudi::Accumulators::StaticHistogram<1>> histo1d{
         &algo,
-        []( int n ) { return fmt::format( "SGaudiH1D-{}-{}", n, n ^ 2 ); },
+        []( int n ) { return std::format( "SGaudiH1D-{}-{}", n, n ^ 2 ); },
         [nb = 5]( int n ) {
-          return fmt::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
+          return std::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
         },
         { 21, -10.5, 10.5, "X" } };
     for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
@@ -116,8 +116,8 @@ BOOST_AUTO_TEST_CASE( test_static_counter_histos, *boost::unit_test::tolerance( 
     // testing a map string to 1D, regular histograms, with non standard names / titles
     Gaudi::Accumulators::HistogramMap<std::string, Gaudi::Accumulators::StaticHistogram<1>> histo1d{
         &algo,
-        []( std::string const& s ) { return fmt::format( "SGaudiH1D-{}-{}", s, s ); },
-        []( std::string const& s ) { return fmt::format( "Title number {} of Histogram arrays", s ); },
+        []( std::string const& s ) { return std::format( "SGaudiH1D-{}-{}", s, s ); },
+        []( std::string const& s ) { return std::format( "Title number {} of Histogram arrays", s ); },
         { 21, -10.5, 10.5, "X" } };
     ++histo1d["one"][-10.0];
     ++histo1d["two"][-10.0];
@@ -135,8 +135,8 @@ BOOST_AUTO_TEST_CASE( test_static_counter_histos, *boost::unit_test::tolerance( 
     // testing a map pair<int, string> to 1D, regular histograms, with non standard names / titles
     Gaudi::Accumulators::HistogramMap<std::pair<int, std::string>, Gaudi::Accumulators::StaticHistogram<1>> histo1d{
         &algo,
-        []( std::pair<int, std::string> const& p ) { return fmt::format( "GaudiH1D-{}-{}", p.first, p.second ); },
-        []( std::pair<int, std::string> const& p ) { return fmt::format( "Title {} ({})", p.second, p.first ); },
+        []( std::pair<int, std::string> const& p ) { return std::format( "GaudiH1D-{}-{}", p.first, p.second ); },
+        []( std::pair<int, std::string> const& p ) { return std::format( "Title {} ({})", p.second, p.first ); },
         { 21, -10.5, 10.5, "X" } };
     ++histo1d[{ 1, "one" }][-10.0];
     ++histo1d[{ 2, "two" }][-10.0];

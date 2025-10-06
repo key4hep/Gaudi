@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2023-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-#include <fmt/format.h>
+#include <format>
 
 #include <atomic>
 #include <memory_resource>
@@ -25,8 +25,8 @@ namespace Gaudi {
       if ( idx > 20 ) { idx = 20; }
       // splitting 30 into 36 - 6 gives us 6 digits after the decimal point
       double reduced = std::round( number / std::pow( 10, 3 * idx - 36 ) ) / 1e6;
-      if ( unit.size() <= 1 ) { return fmt::format( "{} {}{}", reduced, prefix[idx], unit ); }
-      return fmt::format( "{} {}·{}", reduced, prefix[idx], unit );
+      if ( unit.size() <= 1 ) { return std::format( "{} {}{}", reduced, prefix[idx], unit ); }
+      return std::format( "{} {}·{}", reduced, prefix[idx], unit );
     }
     std::string                err_fmt( cudaError_t err, std::string file, int line );
     cudaError_t                cuda_stream_await( cudaStream_t stream );
@@ -42,7 +42,9 @@ namespace Gaudi {
       public:
         ~PinnedMemoryResource() {
 #ifndef NDEBUG
-          fmt::print( "Allocated {} times and deallocated {} times\n", num_allocs.load(), num_deallocs.load() );
+          std::cout << std::format( "Allocated {} times and deallocated {} times\n", num_allocs.load(),
+                                    num_deallocs.load() )
+                    << std::endl;
 #endif
         }
       };

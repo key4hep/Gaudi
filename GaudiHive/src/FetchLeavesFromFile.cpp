@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -16,7 +16,7 @@
 #include <GaudiKernel/IOpaqueAddress.h>
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/SmartIF.h>
-#include <fmt/format.h>
+#include <format>
 
 namespace Gaudi {
   namespace Hive {
@@ -66,7 +66,7 @@ namespace Gaudi {
         DataObject* obj = nullptr;
         evtSvc()
             ->retrieveObject( m_rootNode, obj )
-            .orThrow( fmt::format( "failed to retrieve {} from {}", m_rootNode.value(), m_dataSvcName.value() ),
+            .orThrow( std::format( "failed to retrieve {} from {}", m_rootNode.value(), m_dataSvcName.value() ),
                       name() );
       }
       // result
@@ -92,7 +92,7 @@ namespace Gaudi {
                                      reg->dataSvc()
                                          ->retrieveObject( reg->identifier(), obj )
                                          .orElse( [&]() {
-                                           failure_msg = fmt::format( "failed to retrieve {} from {}",
+                                           failure_msg = std::format( "failed to retrieve {} from {}",
                                                                       reg->identifier(), m_dataSvcName.value() );
                                            // we do not really care about the exception we throw because traverseSubTree
                                            // will just use it to abort the traversal

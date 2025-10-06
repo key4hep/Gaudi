@@ -26,7 +26,7 @@
 #include <TH1.h>
 #include <TProfile.h>
 #include <cmath>
-#include <fmt/format.h>
+#include <format>
 #include <iostream>
 #include <numeric>
 #include <sstream>
@@ -325,13 +325,13 @@ namespace {
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string yLabel( double value ) { return fmt::format( "{:10.3g}", value ); }
+  inline std::string yLabel( double value ) { return std::format( "{:10.3g}", value ); }
   // ==========================================================================
   /** make the label for x-axis
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string xLabel( const double value ) { return fmt::format( "{:9.3g}", value ); }
+  inline std::string xLabel( const double value ) { return std::format( "{:9.3g}", value ); }
   // ==========================================================================
   /// get "correct" symbol
   char symbBin( const Histo::Bin& bin, const double yLow, const double yHigh, const bool yNull, const bool errors ) {
@@ -565,7 +565,7 @@ std::string Gaudi::Utils::Histos::histoDump( const AIDA::IHistogram1D* histo, co
   StatusCode sc = _getHisto( histo, hist );
   if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
-  stream << fmt::format( R"( Histo TES   : "{}"
+  stream << std::format( R"( Histo TES   : "{}"
  Histo Title : "{}"
 
  Mean        : {:11.5g} +- {:<10.4g}
@@ -591,7 +591,7 @@ std::string Gaudi::Utils::Histos::histoDump( const AIDA::IHistogram1D* histo, co
   if ( a.size() ) {
     stream << " Annotation\n";
     for ( int i = 0; i < a.size(); ++i ) {
-      stream << fmt::format( " | {:<25.25s} : {:<45.45s} |\n", a.key( i ), a.value( i ) );
+      stream << std::format( " | {:<25.25s} : {:<45.45s} |\n", a.key( i ), a.value( i ) );
     }
     stream << '\n';
   }
@@ -616,7 +616,7 @@ std::string Gaudi::Utils::Histos::histoDump( const AIDA::IProfile1D* histo, cons
   StatusCode sc = _getHisto( histo, hist, spread );
   if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
-  stream << fmt::format( R"( Histo TES   : "{}"
+  stream << std::format( R"( Histo TES   : "{}"
  Histo Title : "{}"
 
  Mean        : {:11.5g}
@@ -637,7 +637,7 @@ std::string Gaudi::Utils::Histos::histoDump( const AIDA::IProfile1D* histo, cons
   if ( a.size() ) {
     stream << " Annotation\n";
     for ( int i = 0; i < a.size(); ++i ) {
-      stream << fmt::format( " | {:<25.25s} : {:<45.45s} |\n", a.key( i ), a.value( i ) );
+      stream << std::format( " | {:<25.25s} : {:<45.45s} |\n", a.key( i ), a.value( i ) );
     }
     stream << std::endl;
   }
@@ -665,7 +665,7 @@ std::string Gaudi::Utils::Histos::histoDump( const TH1* histo, const std::size_t
   StatusCode sc = _getHisto( histo, hist );
   if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
-  stream << fmt::format( R"( Histo Name  : "{}"
+  stream << std::format( R"( Histo Name  : "{}"
  Histo Title : "{}"
 
  Mean        : {:11.5g} +- {:<10.4g}
@@ -704,7 +704,7 @@ std::string Gaudi::Utils::Histos::histoDump( const TProfile* histo, const std::s
   StatusCode sc = _getHisto( histo, hist, true );
   if ( sc.isFailure() ) { return stream.str(); } // RETURN
 
-  stream << fmt::format( R"( Profile Name  : "{}"
+  stream << std::format( R"( Profile Name  : "{}"
  Profile Title : "{}"
 
  Mean        : {:11.5g}
