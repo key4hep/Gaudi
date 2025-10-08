@@ -311,9 +311,11 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
         DEBUG_MSG << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
         IAlgorithm* ialgoClone( nullptr );
 
-        StatusCode createAlgSc =
-            algMan->createAlgorithm( item_type, item_name, ialgoClone, /*managed*/ true, /*checkIfExists*/ false );
-
+        if ( StatusCode createAlgSc =
+                 algMan->createAlgorithm( item_type, item_name, ialgoClone, /*managed*/ true, /*checkIfExists*/ false );
+             createAlgSc.isFailure() ) {
+          return createAlgSc;
+        }
         ialgoClone->setIndex( i );
         queue->push( ialgoClone );
         m_n_of_created_instances[algo_id] += 1;
