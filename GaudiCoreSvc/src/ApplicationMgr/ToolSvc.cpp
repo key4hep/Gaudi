@@ -102,6 +102,12 @@ private:
 
   Gaudi::Property<bool> m_showToolDataDeps{ this, "ShowDataDeps", false, "show the data dependencies of AlgTools" };
 
+  Gaudi::Property<std::set<std::string>> m_blessed_public_tools{
+      this,
+      "AllowedPublicTools",
+      {},
+      "if non-empty, block the creation of public tools that are not listed in the set" };
+
   /// Common Tools
   class ToolList {
     std::vector<IAlgTool*> m_tools; // List of all instances of tools
@@ -546,6 +552,12 @@ StatusCode ToolSvc::create( const std::string& tooltype, const std::string& tool
     }
     ON_DEBUG debug() << "Creating clone of " << fullname << endmsg;
   }
+  // if there is a non-empty list of blessed public tools, only allow those to be created
+  if ( parent == this && !m_blessed_public_tools.empty() && !m_blessed_public_tools.value().contains( fullname ) ) {
+    error() << "Tool " << fullname << " is not in the list of allowed public tools" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   // instantiate the tool using the factory
   try {
     toolguard.create( tooltype, fullname, parent );
