@@ -66,13 +66,6 @@ StatusCode DLLClassManager::loadModule( const std::string& module, bool fireInci
   return StatusCode::SUCCESS;
 }
 
-StatusCode DLLClassManager::queryInterface( const InterfaceID& iid, void** pinterface ) {
-  // try local interfaces
-  StatusCode sc = base_class::queryInterface( iid, pinterface );
-  if ( sc.isSuccess() ) return sc;
-  // fall back on the owner
-  return m_pOuter->queryInterface( iid, pinterface );
-}
 void const* DLLClassManager::i_cast( const InterfaceID& iid ) const {
   if ( auto output = base_class::i_cast( iid ) ) return output;
   // fall back on the owner

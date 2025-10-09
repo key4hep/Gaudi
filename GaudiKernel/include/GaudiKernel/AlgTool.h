@@ -60,7 +60,6 @@ public:
   using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;
 
   /// Query for a given interface
-  StatusCode  queryInterface( const InterfaceID& riid, void** ppvUnknown ) override;
   void const* i_cast( const InterfaceID& riid ) const override;
 
   /// Retrieve full identifying name of the concrete tool object.

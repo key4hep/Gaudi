@@ -43,21 +43,6 @@ namespace {
   }
 } // namespace
 
-StatusCode AlgTool::queryInterface( const InterfaceID& riid, void** ppvi ) {
-  if ( !ppvi ) { return StatusCode::FAILURE; }
-  StatusCode sc = base_class::queryInterface( riid, ppvi );
-  if ( sc.isSuccess() ) return sc;
-  auto i = std::find_if( std::begin( m_interfaceList ), std::end( m_interfaceList ),
-                         [&]( const std::pair<InterfaceID, void*>& item ) { return item.first.versionMatch( riid ); } );
-  if ( i == std::end( m_interfaceList ) ) {
-    *ppvi = nullptr;
-    return Status::NO_INTERFACE;
-  }
-  *ppvi = i->second;
-  addRef();
-  return StatusCode::SUCCESS;
-}
-
 void const* AlgTool::i_cast( const InterfaceID& riid ) const {
   if ( auto output = base_class::i_cast( riid ) ) { return output; }
   if ( auto i =

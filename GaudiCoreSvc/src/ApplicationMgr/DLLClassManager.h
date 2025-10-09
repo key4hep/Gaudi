@@ -42,8 +42,7 @@ public:
   // implementation of IClassManager::loadModule
   StatusCode loadModule( const std::string& module, bool fireIncident = true ) override;
 
-  /// implementation of IInterface::queryInterface
-  StatusCode  queryInterface( const InterfaceID& iid, void** pinterface ) override;
+  // Allow delegation of interfaces implementations
   void const* i_cast( const InterfaceID& iid ) const override;
 
 private:
