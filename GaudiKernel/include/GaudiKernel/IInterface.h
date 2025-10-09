@@ -238,7 +238,10 @@ public:
     if ( auto output = i_cast( TARGET::interfaceID() ) ) { return reinterpret_cast<TARGET*>( output ); }
     if constexpr ( Gaudi::IsInterface<TARGET> ) {
       void* tgt = nullptr;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       queryInterface( TARGET::interfaceID(), &tgt ).ignore();
+#pragma GCC diagnostic pop
       if ( tgt ) {
         // queryInterface bumps the reference count of the target object, but we should not
         auto* target = reinterpret_cast<TARGET*>( tgt );
@@ -256,7 +259,10 @@ public:
     if ( auto output = i_cast( TARGET::interfaceID() ) ) { return reinterpret_cast<TARGET const*>( output ); }
     if constexpr ( Gaudi::IsInterface<TARGET> ) {
       void* tgt = nullptr;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       const_cast<IInterface*>( this )->queryInterface( TARGET::interfaceID(), &tgt ).ignore();
+#pragma GCC diagnostic pop
       if ( tgt ) {
         // queryInterface bumps the reference count of the target object, but we should not
         auto* target = reinterpret_cast<const TARGET*>( tgt );
@@ -294,7 +300,8 @@ public:
   virtual unsigned long refCount() const = 0;
 
   /// Set the void** to the pointer to the requested interface of the instance.
-  virtual StatusCode queryInterface( const InterfaceID& ti, void** pp ) = 0;
+  [[deprecated( "avoid calling queryInterface, use SmartIF instead or override the i_cast method" )]] virtual StatusCode
+  queryInterface( const InterfaceID& ti, void** pp ) = 0;
 
   /// Return status
   enum class Status : StatusCode::code_t {
