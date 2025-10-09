@@ -24,12 +24,14 @@ struct GAUDI_API implements : virtual public extend_interfaces<Interfaces...> {
   using iids                   = typename extend_interfaces_base::ext_iids;
 
 public:
+  using extend_interfaces_base::i_cast;
+
   /**Implementation of IInterface::i_cast. */
   void const* i_cast( const InterfaceID& tid ) const override { return Gaudi::iid_cast( tid, iids{}, this ); }
   /** Implementation of IInterface::queryInterface. */
   StatusCode queryInterface( const InterfaceID& ti, void** pp ) override {
     if ( !pp ) return StatusCode::FAILURE;
-    *pp = Gaudi::iid_cast( ti, iids{}, this );
+    *pp = i_cast( ti );
     if ( !*pp ) return StatusCode::FAILURE; /* cast failed */
     this->addRef();
     return StatusCode::SUCCESS;
