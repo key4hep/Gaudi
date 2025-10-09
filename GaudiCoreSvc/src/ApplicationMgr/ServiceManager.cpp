@@ -85,11 +85,10 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
     fatal() << "No Service factory for " << type << " available." << endmsg;
     return no_service;
   }
-  // Check the compatibility of the version of the interface obtained
-  if ( !isValidInterface( service ) ) {
-    fatal() << "Incompatible interface IService version for " << type << endmsg;
-    return no_service;
-  }
+  // FIXME: we used to have an invocation of isValidInterface, which implied an addRef() call
+  // now that isValidInterface has been deprecated, I added a call to addRef(), but I'm not
+  // sure if this is the right thing to do.
+  service->addRef();
 
   if ( name == "JobOptionsSvc" ) {
     if ( !dynamic_cast<Gaudi::Interfaces::IOptionsSvc*>( service ) ) {

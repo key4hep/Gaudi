@@ -358,7 +358,7 @@ namespace Gaudi {
     @author Pere Mato
 */
 template <class IFace>
-bool isValidInterface( IFace* i ) {
+[[deprecated]] bool isValidInterface( IFace* i ) {
   return i->template cast<IFace>();
 }
 
