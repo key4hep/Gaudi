@@ -352,8 +352,7 @@ namespace Gaudi {
 */
 template <class IFace>
 bool isValidInterface( IFace* i ) {
-  void* ii = nullptr;
-  return i->queryInterface( IFace::interfaceID(), &ii ).isSuccess();
+  return i->template cast<IFace>();
 }
 
 /// Small function to be used instead of the construct (void**)&pointer, which

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,16 +22,22 @@ DECLARE_COMPONENT( AppMgrRunable )
 
 // IService implementation: initialize the service
 StatusCode AppMgrRunable::initialize() {
-  StatusCode sc = Service::initialize();
-  if ( sc.isSuccess() ) {
-    sc = serviceLocator()->queryInterface( IAppMgrUI::interfaceID(), pp_cast<void>( &m_appMgrUI ) );
-    // get property from application manager
-    if ( m_evtMax == (int)0xFEEDBABE ) {
-      auto props = serviceLocator()->as<IProperty>();
-      setProperty( props->getProperty( "EvtMax" ) ).ignore();
-    }
-  }
-  return sc;
+  return base_class::initialize()
+      .andThen( [this] {
+        m_appMgrUI = serviceLocator();
+        if ( !m_appMgrUI ) {
+          error() << "Failed to get IAppMgrUI" << endmsg;
+          return StatusCode::FAILURE;
+        }
+        return StatusCode::SUCCESS;
+      } )
+      .andThen( [this]() -> StatusCode {
+        if ( m_evtMax == (int)0xFEEDBABE ) {
+          auto props = serviceLocator()->as<IProperty>();
+          return setProperty( props->getProperty( "EvtMax" ) );
+        }
+        return StatusCode::SUCCESS;
+      } );
 }
 
 // IService implementation: initialize the service
