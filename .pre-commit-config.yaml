@@ -16,10 +16,6 @@ repos:
     rev: v16.0.6
     hooks:
     -   id: clang-format
-    -   id: clang-format
-        name: clang-format (non-standard extensions)
-        types_or: [file]
-        files: \.(icc|icpp)$
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
     rev: v0.4.4
