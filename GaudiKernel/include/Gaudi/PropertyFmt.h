@@ -57,67 +57,47 @@
 #include <iomanip>
 #include <sstream>
 
-/// Formatter for <fmt> library
-template <typename T, typename V, typename H>
-struct fmt::formatter<Gaudi::Property<T, V, H>> : fmt::formatter<T> {
-  bool           debug = false;
-  constexpr auto parse( fmt::format_parse_context& ctx ) {
-    auto it = ctx.begin(), end = ctx.end();
-    if ( it != end && *it == '?' ) {
-      debug = true;
-      ++it;
-      if ( it != end && *it != '}' ) throw fmt::format_error( "invalid format" );
-      return it;
-    }
-    return fmt::formatter<T>::parse( ctx );
-  }
-  auto format( const Gaudi::Property<T, V, H>& p, fmt::format_context& ctx ) const {
-    if ( debug ) {
-      if constexpr ( std::is_same_v<T, std::string> ) {
-        std::stringstream s;
-        s << std::quoted( p.value(), '\'' );
-        return fmt::format_to( ctx.out(), " '{}':{}", p.name(), s.str() );
-      } else {
-        return fmt::format_to( ctx.out(), " '{}':{}", p.name(), p.value() );
-      }
-    } else {
-      return fmt::formatter<T>::format( static_cast<const T&>( p ), ctx );
-    }
-  }
-};
+#define GAUDI_PROPERTY_FORMATTING_IMPL( ns, assert_for_ranges )                                                        \
+  template <typename T, typename V, typename H>                                                                        \
+  struct ns::formatter<Gaudi::Property<T, V, H>> : ns::formatter<T> {                                                  \
+    assert_for_ranges;                                                                                                 \
+    bool           debug = false;                                                                                      \
+    constexpr auto parse( ns::format_parse_context& ctx ) {                                                            \
+      auto it = ctx.begin(), end = ctx.end();                                                                          \
+      if ( it != end && *it == '?' ) {                                                                                 \
+        debug = true;                                                                                                  \
+        ++it;                                                                                                          \
+        if ( it != end && *it != '}' ) throw ns::format_error( "invalid format" );                                     \
+        return it;                                                                                                     \
+      }                                                                                                                \
+      return ns::formatter<T>::parse( ctx );                                                                           \
+    }                                                                                                                  \
+    auto format( const Gaudi::Property<T, V, H>& p, ns::format_context& ctx ) const {                                  \
+      if ( debug ) {                                                                                                   \
+        if constexpr ( std::is_same_v<T, std::string> ) {                                                              \
+          std::stringstream s;                                                                                         \
+          s << std::quoted( p.value(), '\'' );                                                                         \
+          return ns::format_to( ctx.out(), " '{}':{}", p.name(), s.str() );                                            \
+        } else {                                                                                                       \
+          return ns::format_to( ctx.out(), " '{}':{}", p.name(), p.value() );                                          \
+        }                                                                                                              \
+      } else {                                                                                                         \
+        return ns::formatter<T>::format( static_cast<const T&>( p ), ctx );                                            \
+      }                                                                                                                \
+    }                                                                                                                  \
+  };
 
-/// Formatter for standard <format> library
-template <typename T, typename V, typename H>
-struct std::formatter<Gaudi::Property<T, V, H>> : std::formatter<T> {
-  // A helpful error message:
+GAUDI_PROPERTY_FORMATTING_IMPL( fmt, static_assert( true ) )
+
 #ifndef __cpp_lib_format_ranges
-  static_assert( !std::ranges::range<T> || std::is_same_v<T, std::string>,
-                 "Range-valued Property formatting is not supported with std::format in C++20" );
+#  define assert_for_ranges                                                                                            \
+    static_assert( !std::ranges::range<T> || std::is_same_v<T, std::string>,                                           \
+                   "Range-valued Property formatting is not supported with std::format in C++20" )
+#else
+#  define assert_for_ranges static_assert( true )
 #endif
 
-  bool           debug = false;
-  constexpr auto parse( std::format_parse_context& ctx ) {
-    auto it = ctx.begin(), end = ctx.end();
-    if ( it != end && *it == '?' ) {
-      debug = true;
-      ++it;
-      if ( it != end && *it != '}' ) throw std::format_error( "invalid format" );
-      return it;
-    }
-    return std::formatter<T>::parse( ctx );
-  }
+GAUDI_PROPERTY_FORMATTING_IMPL( std, assert_for_ranges )
 
-  auto format( const Gaudi::Property<T, V, H>& p, std::format_context& ctx ) const {
-    if ( debug ) {
-      if constexpr ( std::is_same_v<T, std::string> ) {
-        std::stringstream s;
-        s << std::quoted( p.value(), '\'' );
-        return std::format_to( ctx.out(), " '{}':{}", p.name(), s.str() );
-      } else {
-        return std::format_to( ctx.out(), " '{}':{}", p.name(), p.value() );
-      }
-    } else {
-      return std::formatter<T>::format( static_cast<const T&>( p ), ctx );
-    }
-  }
-};
+#undef assert_for_ranges
+#undef GAUDI_PROPERTY_FORMATTING_IMPL
