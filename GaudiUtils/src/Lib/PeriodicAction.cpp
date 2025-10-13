@@ -13,8 +13,9 @@
 
 using Gaudi::Utils::PeriodicAction;
 
-PeriodicAction::PeriodicAction( callback_t callback, std::chrono::milliseconds period_duration, bool autostart )
-    : m_callback{ std::move( callback ) }, m_period_duration{ period_duration } {
+PeriodicAction::PeriodicAction( callback_t callback, std::chrono::milliseconds period_duration, bool autostart,
+                                unsigned int repetitions )
+    : m_callback{ std::move( callback ) }, m_period_duration{ period_duration }, m_repetitions{ repetitions } {
   if ( autostart ) start();
 }
 
@@ -25,9 +26,12 @@ void PeriodicAction::start() {
     // Note: we can move the callback because we are not going to use it
     // outside of the thread
     m_thread = std::thread{ [period_duration = m_period_duration, callback = std::move( m_callback ),
-                             stop_signal = m_stop_thread.get_future()] {
-      auto next_call = clock::now() + period_duration;
-      while ( stop_signal.wait_until( next_call ) == std::future_status::timeout ) {
+                             stop_signal = m_stop_thread.get_future(), repetitions = m_repetitions] {
+      unsigned int n         = 0;
+      auto         next_call = clock::now() + period_duration;
+      while ( ( repetitions == 0 || n < repetitions ) &&
+              stop_signal.wait_until( next_call ) == std::future_status::timeout ) {
+        ++n;
         callback();
         // ensure the next call is at a multiple
         // of m_period_duration after the last one

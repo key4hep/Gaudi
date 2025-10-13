@@ -91,4 +91,13 @@ TEST_CASE( "PeriodicAction" ) {
     }
     CHECK( counter == 0 );
   }
+
+  SECTION( "repetitions" ) {
+    int counter{ 0 };
+    {
+      PeriodicAction periodic{ [&counter]() { ++counter; }, 2ms, true, 3 };
+      std::this_thread::sleep_for( 20ms );
+    }
+    CHECK( counter == 3 );
+  }
 }
