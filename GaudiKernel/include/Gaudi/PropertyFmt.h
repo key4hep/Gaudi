@@ -59,24 +59,19 @@
 
 /// Formatter for <fmt> library
 template <typename T, typename V, typename H>
-struct fmt::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
+struct fmt::formatter<Gaudi::Property<T, V, H>> : fmt::formatter<T> {
   bool           debug = false;
-  constexpr auto parse( format_parse_context& ctx ) -> format_parse_context::iterator {
+  constexpr auto parse( fmt::format_parse_context& ctx ) {
     auto it = ctx.begin(), end = ctx.end();
     if ( it != end && *it == '?' ) {
       debug = true;
       ++it;
-      if ( it != end && *it != '}' )
-#if FMT_VERSION >= 110000
-        report_error( "invalid format" );
-#else
-        detail::throw_format_error( "invalid format" );
-#endif
+      if ( it != end && *it != '}' ) throw fmt::format_error( "invalid format" );
       return it;
     }
-    return formatter<T>::parse( ctx );
+    return fmt::formatter<T>::parse( ctx );
   }
-  auto format( const Gaudi::Property<T, V, H>& p, format_context& ctx ) const {
+  auto format( const Gaudi::Property<T, V, H>& p, fmt::format_context& ctx ) const {
     if ( debug ) {
       if constexpr ( std::is_same_v<T, std::string> ) {
         std::stringstream s;
@@ -86,14 +81,14 @@ struct fmt::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
         return fmt::format_to( ctx.out(), " '{}':{}", p.name(), p.value() );
       }
     } else {
-      return formatter<T>::format( static_cast<const T&>( p ), ctx );
+      return fmt::formatter<T>::format( static_cast<const T&>( p ), ctx );
     }
   }
 };
 
 /// Formatter for standard <format> library
 template <typename T, typename V, typename H>
-struct std::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
+struct std::formatter<Gaudi::Property<T, V, H>> : std::formatter<T> {
   // A helpful error message:
 #ifndef __cpp_lib_format_ranges
   static_assert( !std::ranges::range<T> || std::is_same_v<T, std::string>,
@@ -112,7 +107,7 @@ struct std::formatter<Gaudi::Property<T, V, H>> : formatter<T> {
     return std::formatter<T>::parse( ctx );
   }
 
-  auto format( const Gaudi::Property<T, V, H>& p, format_context& ctx ) const {
+  auto format( const Gaudi::Property<T, V, H>& p, std::format_context& ctx ) const {
     if ( debug ) {
       if constexpr ( std::is_same_v<T, std::string> ) {
         std::stringstream s;
