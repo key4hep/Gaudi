@@ -72,6 +72,7 @@ if(BUILD_TESTING)
     gaudi_add_executable(testXMLFileCatalogWrite
                           SOURCES
                             src/component/createGuidAsString.cpp
+                            src/component/XMLCatalogTestWrite.cpp
                             src/component/XMLCatalogTest.cpp
                             src/component/XMLFileCatalog.cpp
                           LINK
@@ -80,12 +81,11 @@ if(BUILD_TESTING)
                             UUID::uuid
                             XercesC::XercesC
                           TEST)
-    set_property(TARGET testXMLFileCatalogWrite
-      APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
 
     gaudi_add_executable(testXMLFileCatalogRead
                           SOURCES
                             src/component/createGuidAsString.cpp
+                            src/component/XMLCatalogTestRead.cpp
                             src/component/XMLCatalogTest.cpp
                             src/component/XMLFileCatalog.cpp
                           LINK
@@ -94,8 +94,6 @@ if(BUILD_TESTING)
                             UUID::uuid
                             XercesC::XercesC
                           TEST)
-    set_property(TARGET testXMLFileCatalogRead
-      APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogRead=main)
     set_property(TEST ${package_name}.testXMLFileCatalogRead
       PROPERTY DEPENDS ${package_name}.testXMLFileCatalogWrite)
   endif()
