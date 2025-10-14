@@ -17,193 +17,47 @@
 
 #include <GaudiKernel/Time.h>
 
-// from SPI version of the testdriver
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/TextOutputter.h>
-#include <cppunit/TextTestRunner.h>
-#include <cppunit/XmlOutputter.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
+#if __has_include( <catch2/catch.hpp>)
+// Catch2 v2
+#  include <catch2/catch.hpp>
+#else
+// Catch2 v3
+#  include <catch2/catch_test_macros.hpp>
+#endif
 
-// to produce one line per test
-#include <cppunit/TestResult.h>
-// #include <cppunit/BriefTestProgressListener.h>
-// #include <cppunit/TestResultCollector.h>
+TEST_CASE( "Gaudi::Time nanoformat", "[GaudiTime]" ) {
+  Gaudi::Time t( 2011, 0, 13, 14, 22, 45, 123000, true );
 
-// needed by the implementation of cool::ProgressListener
-#include <cppunit/Test.h>
-#include <cppunit/TestFailure.h>
-#include <cppunit/TestListener.h>
+  CHECK( t.nanoformat() == "000123" );
+  CHECK( t.nanoformat( 9 ) == "000123000" );
+  CHECK( t.nanoformat( 2, 7 ) == "000123" );
+  CHECK( t.nanoformat( 1, 3 ) == "0" );
+  CHECK( t.nanoformat( 1, 5 ) == "00012" );
+  CHECK( t.nanoformat( 3, 3 ) == "000" );
+}
 
-// provides macros for the tests
-#include <cppunit/extensions/HelperMacros.h>
+TEST_CASE( "Gaudi::Time format", "[GaudiTime]" ) {
+  Gaudi::Time t( 2011, 0, 13, 14, 22, 45, 1230000, true );
 
-#include <memory>
+  CHECK( t.format( true, "%Y-%m-%d %H:%M:%S" ) == "2011-01-13 14:22:45" );
+  CHECK( t.format( true, "%Y-%m-%d %H:%M:%S.%f" ) == "2011-01-13 14:22:45.001" );
+  CHECK( t.format( true, "%H:%M:%S %Y/%m/%d " ) == "14:22:45 2011/01/13 " );
+}
 
-namespace GaudiKernelTest {
-  class TimeTest : public CppUnit::TestFixture {
+TEST_CASE( "Gaudi::Time ordering", "[GaudiTime]" ) {
+  Gaudi::Time t1( 2011, 0, 13, 14, 22, 45, 1230000, true );
+  Gaudi::Time t2( 2011, 0, 13, 14, 22, 45, 1230000, true );
+  Gaudi::Time t3( 2011, 0, 13, 14, 22, 46, 1230000, true );
 
-    CPPUNIT_TEST_SUITE( TimeTest );
+  CHECK( t1 == t2 );
+  CHECK( t1 <= t2 );
+  CHECK( t1 >= t2 );
+  CHECK_FALSE( t1 != t2 );
 
-    CPPUNIT_TEST( test_nanoformat );
-    CPPUNIT_TEST( test_format );
-    CPPUNIT_TEST( test_ordering );
-
-    CPPUNIT_TEST_SUITE_END();
-
-  public:
-    TimeTest() {}
-    virtual ~TimeTest() {}
-
-    void test_nanoformat() {
-      Gaudi::Time t( 2011, 0, 13, 14, 22, 45, 123000, true );
-
-      CPPUNIT_ASSERT_EQUAL( std::string( "000123" ), t.nanoformat() );
-      CPPUNIT_ASSERT_EQUAL( std::string( "000123000" ), t.nanoformat( 9 ) );
-      CPPUNIT_ASSERT_EQUAL( std::string( "000123" ), t.nanoformat( 2, 7 ) );
-      CPPUNIT_ASSERT_EQUAL( std::string( "0" ), t.nanoformat( 1, 3 ) );
-      CPPUNIT_ASSERT_EQUAL( std::string( "00012" ), t.nanoformat( 1, 5 ) );
-      CPPUNIT_ASSERT_EQUAL( std::string( "000" ), t.nanoformat( 3, 3 ) );
-    }
-
-    void test_format() {
-      Gaudi::Time t( 2011, 0, 13, 14, 22, 45, 1230000, true );
-
-      CPPUNIT_ASSERT_EQUAL( std::string( "2011-01-13 14:22:45" ), t.format( true, "%Y-%m-%d %H:%M:%S" ) );
-      CPPUNIT_ASSERT_EQUAL( std::string( "2011-01-13 14:22:45.001" ), t.format( true, "%Y-%m-%d %H:%M:%S.%f" ) );
-      CPPUNIT_ASSERT_EQUAL( std::string( "14:22:45 2011/01/13 " ), t.format( true, "%H:%M:%S %Y/%m/%d " ) );
-    }
-
-    void test_ordering() {
-      Gaudi::Time t1( 2011, 0, 13, 14, 22, 45, 1230000, true );
-      Gaudi::Time t2( 2011, 0, 13, 14, 22, 45, 1230000, true );
-      Gaudi::Time t3( 2011, 0, 13, 14, 22, 46, 1230000, true );
-
-      CPPUNIT_ASSERT( t1 == t2 );
-      CPPUNIT_ASSERT( t1 <= t2 );
-      CPPUNIT_ASSERT( t1 >= t2 );
-      CPPUNIT_ASSERT( !( t1 != t2 ) );
-
-      CPPUNIT_ASSERT( t2 < t3 );
-      CPPUNIT_ASSERT( t2 <= t3 );
-      CPPUNIT_ASSERT( t2 != t3 );
-      CPPUNIT_ASSERT( !( t2 == t3 ) );
-      CPPUNIT_ASSERT( t3 > t2 );
-      CPPUNIT_ASSERT( t3 >= t2 );
-    }
-
-    void setUp() override {}
-
-    void tearDown() override {}
-  };
-
-  CPPUNIT_TEST_SUITE_REGISTRATION( TimeTest );
-
-  // Copied from the COOL implementation
-  /** @class ProgressListener
-   *
-   *  Simple TestListener printing one line per test in the standard output.
-   *
-   *  Based on  CppUnit::BriefTestProgressListener (copy and paste)
-   *  using std::cout instead of std::cerr.
-   *
-   *  @author Marco Clemencic
-   *  @date   2006-11-13
-   */
-  class ProgressListener : public CppUnit::TestListener {
-
-  public:
-    /// Default constructor.
-    ProgressListener() : m_lastTestFailed( false ) {}
-
-    /// Destructor.
-    virtual ~ProgressListener() {}
-
-    void startTest( CppUnit::Test* test ) override {
-      std::cout << test->getName();
-      std::cout.flush();
-      m_lastTestFailed = false;
-    }
-
-    void addFailure( const CppUnit::TestFailure& failure ) override {
-      std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
-      m_lastTestFailed = true;
-    }
-
-    void endTest( CppUnit::Test* /*test*/ ) override {
-      if ( !m_lastTestFailed ) std::cout << " : OK";
-      std::cout << std::endl;
-    }
-
-  private:
-    bool m_lastTestFailed;
-  };
-} // namespace GaudiKernelTest
-
-// Copied from the COOL implementation
-#include <stdexcept>
-int main( int argc, char* argv[] ) {
-  // Retrieve test path from command line first argument.
-  // Default to "" which resolve to the top level suite.
-  std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );
-
-  // Add a listener that collects test result
-  // CppUnit::TestResultCollector result;
-  // controller.addListener( &result );
-
-  /// Get the top level suite from the registry
-  CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
-
-  /// Adds the test to the list of test to run
-  // CppUnit::TestRunner runner;
-  CppUnit::TextTestRunner runner;
-  runner.addTest( suite );
-
-  // Change the default outputter to a compiler error format outputter
-  // uncomment the following line if you need a compiler outputter.
-  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(), std::cout ) );
-
-  // Change the default outputter to a xml error format outputter
-  // uncomment the following line if you need a xml outputter.
-  // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
-  //                                                    std::cout ) );
-
-  auto l = std::make_unique<GaudiKernelTest::ProgressListener>();
-  runner.eventManager().addListener( l.get() );
-
-  // CppUnit::TestResultCollector *collector =
-  //  new CppUnit::TestResultCollector();
-  // runner.eventManager().addListener(collector);
-
-  bool wasSuccessful = false;
-
-  try {
-    wasSuccessful = runner.run( testPath, false, true, false );
-  }
-
-  // Test path not resolved
-  catch ( std::invalid_argument& e ) {
-    std::cout << std::endl << "ERROR: " << e.what() << std::endl;
-    return 0;
-  }
-
-  // Should never happen?
-  catch ( std::exception& e ) {
-    std::cout << std::endl << "UNEXPECTED STD EXCEPTION CAUGHT: " << e.what() << std::endl;
-    return 0;
-  }
-
-  // Should never happen?
-  catch ( ... ) {
-    std::cout << std::endl << "UNKNOWN EXCEPTION CAUGHT" << std::endl;
-    return 0;
-  }
-
-  // Return error code 1 if the one of tests failed.
-  // Print a message on standard error if something failed (for QMTest)
-  if ( !wasSuccessful ) std::cerr << "Error: CppUnit Failures" << std::endl;
-  int retcode = wasSuccessful ? 0 : 1;
-
-  // Uncomment the next line if you want to integrate CppUnit with Oval
-  // std::cout << "[OVAL] Cppunit-result =" << retcode << std::endl;
-  return retcode;
+  CHECK( t2 < t3 );
+  CHECK( t2 <= t3 );
+  CHECK( t2 != t3 );
+  CHECK_FALSE( t2 == t3 );
+  CHECK( t3 > t2 );
+  CHECK( t3 >= t2 );
 }
