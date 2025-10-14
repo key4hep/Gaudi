@@ -34,7 +34,6 @@ From [LCG version @LCG_VERSION@][lcg-details]:
 
 - **Testing:**
   - [Catch2](https://github.com/catchorg/Catch2) (modern C++ testing framework)
-  - [CppUnit](https://freedesktop.org/wiki/Software/cppunit/) (unit testing framework)
   - Boost unit_test_framework (part of Boost libraries)
 
 - **Documentation:**

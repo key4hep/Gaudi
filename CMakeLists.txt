@@ -37,7 +37,6 @@ after the configuration or use ccmake or cmake-gui.
   * GAUDI_USE_XERCESC
   * GAUDI_USE_CLHEP
   * GAUDI_USE_HEPPDT
-  * GAUDI_USE_CPPUNIT
   * GAUDI_USE_DOXYGEN
   * GAUDI_USE_CUDA
 * Install options

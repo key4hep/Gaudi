@@ -66,7 +66,7 @@ endif()
 
 # Build and register tests
 if(BUILD_TESTING)
-  if(GAUDI_USE_CPPUNIT AND GAUDI_USE_XERCESC)
+  if(GAUDI_USE_XERCESC)
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     gaudi_add_executable(testXMLFileCatalogWrite
                           SOURCES

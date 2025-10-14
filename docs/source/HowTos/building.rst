@@ -89,7 +89,6 @@ uuid                        yes
 VDT                         yes
 AIDA                        no, needed for RootHistCnv
 XercesC                     no, used for the XML file catalogue
-CppUnit                     no
 HepPDT                      no
 CLHEP                       no
 OpenCL                      no
