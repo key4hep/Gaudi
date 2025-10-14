@@ -637,8 +637,25 @@ function(gaudi_add_executable exe_name)
     # test
     if(ARG_TEST)
         get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-        add_test(NAME ${package_name}.${exe_name} COMMAND run $<TARGET_FILE:${exe_name}>)
-        set_tests_properties(${package_name}.${exe_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
+        if(ARG_LINK MATCHES "Catch2")
+            # if somebody links the test executable against Catch2, we use
+            # Catch2's discover_tests function, but we need to make sure Catch2
+            # is available
+            if(NOT COMMAND catch_discover_tests)
+                message(DEBUG "catch_discover_tests is not available, try to find it")
+                find_package(Catch2 REQUIRED QUIET)
+                include(Catch)
+            endif()
+            catch_discover_tests(${exe_name}
+                TEST_PREFIX ${package_name}.
+                PROPERTIES
+                    LABELS "${PROJECT_NAME}"
+                    LABELS "${PROJECT_NAME}.${package_name}"
+            )
+        else()
+            add_test(NAME ${package_name}.${exe_name} COMMAND run $<TARGET_FILE:${exe_name}>)
+            set_tests_properties(${package_name}.${exe_name} PROPERTIES LABELS "${PROJECT_NAME};${package_name}")
+        endif()
     endif()
     # install
     if(NOT ARG_TEST)

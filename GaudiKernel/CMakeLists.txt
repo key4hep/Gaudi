@@ -374,12 +374,7 @@ if(BUILD_TESTING)
       Catch2::Catch2WithMain
       nlohmann_json::nlohmann_json
       Boost::thread
-  )
-  catch_discover_tests(GaudiKernel_catch2_tests
-      TEST_PREFIX GaudiKernel.
-      PROPERTIES
-          LABELS "Gaudi"
-          LABELS "Gaudi.GaudiKernel"
+    TEST
   )
 
   gaudi_add_pytest(tests/pytest)
