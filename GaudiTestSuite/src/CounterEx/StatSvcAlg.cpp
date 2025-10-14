@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -79,7 +79,7 @@ StatusCode GaudiTestSuite::StatSvcAlg::execute() {
   st1 -= 0.1000452;
   st2 += st1;
   ++st3;
-  st2--;
+  --st2;
 
   eff += 0 < cos( 20 * st2->flag() );
 
