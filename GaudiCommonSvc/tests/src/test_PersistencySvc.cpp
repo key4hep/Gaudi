@@ -199,7 +199,7 @@ TEST_CASE( "PersistencySvc thread safety" ) {
 
   // make sure no error message was reported
   auto c = dynamic_cast<CapturingMsgSvc*>( svcMgr.as<IMessageSvc>().get() );
-  for ( auto m : c->all_messages ) {
+  for ( const Message& m : c->all_messages ) {
     std::ostringstream msg;
     msg << m;
     CHECK_THAT( msg.str(), !ContainsSubstring( "ERROR" ) );
