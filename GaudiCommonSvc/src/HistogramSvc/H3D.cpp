@@ -120,9 +120,9 @@ bool Gaudi::Histogram3D::fill( double x, double y, double z, double weight ) {
 
 void* Gaudi::Histogram3D::cast( const std::string& className ) const {
   if ( className == "AIDA::IHistogram3D" ) {
-    return (AIDA::IHistogram3D*)this;
+    return static_cast<AIDA::IHistogram3D*>( const_cast<Gaudi::Histogram3D*>( this ) );
   } else if ( className == "AIDA::IHistogram" ) {
-    return (AIDA::IHistogram*)this;
+    return static_cast<AIDA::IHistogram*>( const_cast<Gaudi::Histogram3D*>( this ) );
   }
   return nullptr;
 }

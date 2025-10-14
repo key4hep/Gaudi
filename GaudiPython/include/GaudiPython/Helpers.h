@@ -225,7 +225,7 @@ namespace GaudiPython {
         PyErr_SetString( PyExc_IndexError, "buffer index out of range" );
         return nullptr;
       }
-      return toPython( (T*)buf + idx );
+      return toPython( reinterpret_cast<T*>( buf ) + idx );
     }
 
   public:

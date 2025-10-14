@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -316,8 +316,8 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
             r  = paddr[k];
             pA = ( *(GenericAddress**)j->buffer() );
             if ( pA ) { // Fill only if item is connected!
-              spar = (string*)pA->par();
-              ipar = (unsigned long*)pA->ipar();
+              spar = const_cast<string*>( pA->par() );
+              ipar = const_cast<unsigned long*>( pA->ipar() );
               log() << MSG::DEBUG;
               pair<const RootRef*, const RootDataConnection::ContainerSection*> ls =
                   con->getMergeSection( tree->GetName(), entry );
@@ -751,9 +751,9 @@ StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTr
           switch ( j->type() ) {
           case DataTypeInfo::OBJECT_ADDR: {
             RootRef         r  = con->tool()->poolRef( addr[k].token.m_oid.first );
-            GenericAddress* pA = ( *(GenericAddress**)buf );
+            GenericAddress* pA = *reinterpret_cast<GenericAddress**>( buf );
             if ( pA ) { // Fill only if item is connected!
-              string* spar = (string*)pA->par();
+              string* spar = const_cast<string*>( pA->par() );
               ipar         = (unsigned long*)pA->ipar();
               spar[0]      = con->getDb( r.dbase );
               spar[1]      = con->getCont( r.container );

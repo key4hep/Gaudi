@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -147,7 +147,7 @@ StatusCode TagCollectionStream::writeObjects() {
                 << endmsg;
         return StatusCode::FAILURE;
       }
-      std::string*   par  = (std::string*)m_addr->par();
+      std::string*   par  = const_cast<std::string*>( m_addr->par() );
       unsigned long* ipar = (unsigned long*)m_addr->ipar();
       m_addr->setClID( pA->clID() );
       m_addr->setSvcType( pA->svcType() );

@@ -393,7 +393,7 @@ namespace NTuple {
     StatusCode i_item( const std::string& name, _Item<TYPE*>*& result ) const {
       try {
         _Item<void*>* p = dynamic_cast<_Item<void*>*>( i_find( name ) );
-        result          = (_Item<TYPE*>*)p;
+        result          = reinterpret_cast<_Item<TYPE*>*>( p );
       } catch ( ... ) { result = nullptr; }
       return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
@@ -453,7 +453,8 @@ namespace NTuple {
     template <class TYPE>
     StatusCode i_addObject( const std::string& name, _Item<TYPE*>*& result, const std::type_info& /* typ */ ) {
       if ( !i_find( name ) && clID() == CLID_ColumnWiseTuple ) {
-        return add( result = (_Item<TYPE*>*)_Item<void*>::create( this, name, typeid( TYPE ), 0, 0, 0 ) );
+        return add(
+            result = reinterpret_cast<_Item<TYPE*>*>( _Item<void*>::create( this, name, typeid( TYPE ), 0, 0, 0 ) ) );
       }
       return StatusCode::FAILURE;
     }
