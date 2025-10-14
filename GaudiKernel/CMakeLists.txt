@@ -362,9 +362,6 @@ if(BUILD_TESTING)
     gaudi_add_executable(test_AnyDataObject SOURCES tests/src/test_AnyDataObject.cpp
       LINK GaudiKernel CppUnit::cppunit TEST)
 
-    gaudi_add_executable(test_DataHandleVector SOURCES tests/src/test_DataHandleVector.cpp
-      LINK GaudiKernel CppUnit::cppunit TEST)
-
     gaudi_add_executable(test_GaudiTime SOURCES tests/src/test_GaudiTime.cpp
       LINK GaudiKernel CppUnit::cppunit TEST)
 
