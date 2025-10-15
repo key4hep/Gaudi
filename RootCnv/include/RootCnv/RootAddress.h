@@ -56,5 +56,8 @@ namespace Gaudi {
         : GenericAddress( svc, clid, p1, p2, ip1, ip2 ) {}
     /// Standard Destructor
     virtual ~RootAddress() { delete select; }
+
+    RootAddress( const RootAddress& )            = delete;
+    RootAddress& operator=( const RootAddress& ) = delete;
   };
 } // namespace Gaudi

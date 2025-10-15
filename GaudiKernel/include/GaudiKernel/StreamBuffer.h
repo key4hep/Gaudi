@@ -201,6 +201,10 @@ public:
   StreamBuffer( bool do_swap = true ) : m_swapEnabled( do_swap ) {}
   /// Standard destructor
   virtual ~StreamBuffer() { ::free( m_buffer ); }
+  /// No copy
+  StreamBuffer( const StreamBuffer& ) = delete;
+  /// No assignment
+  StreamBuffer& operator=( const StreamBuffer& ) = delete;
   /// Read access to data buffer
   const char* data() const { return m_buffer; }
   /// write access to data buffer
