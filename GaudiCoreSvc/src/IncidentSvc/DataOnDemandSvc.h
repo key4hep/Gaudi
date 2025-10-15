@@ -105,7 +105,7 @@ public:
    */
   struct Node final {
     /// the actual class
-    ClassH        clazz; // the actual class
+    ClassH        clazz = nullptr; // the actual class
     std::string   name;
     unsigned long num       = 0;
     bool          executing = false;
