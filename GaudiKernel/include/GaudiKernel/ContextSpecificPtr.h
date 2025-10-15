@@ -152,18 +152,28 @@ namespace Gaudi {
       /// Destructor.
       ~ContextSpecificData() { m_ptr.deleteAll(); }
 
-      operator T&() {
-        if ( !m_ptr ) m_ptr = new T( m_proto );
+      /// Access contained value.
+      T& get() const {
+        if ( !m_ptr ) m_ptr.set( new T( m_proto ) );
         return *m_ptr;
       }
 
-      operator T&() const {
-        if ( !m_ptr ) m_ptr = new T( m_proto );
-        return *m_ptr;
+      /// @{ Conversion and dereference operators.
+      operator T&() { return get(); }
+      operator const T&() const { return get(); }
+
+      ContextSpecificPtr<T>& operator->() {
+        get(); // ensure there is a value for this thread
+        return m_ptr;
       }
+      const ContextSpecificPtr<T>& operator->() const {
+        get(); // ensure there is a value for this thread
+        return m_ptr;
+      }
+      /// @}
 
       /// Assignment operator.
-      T& operator=( const T& other ) { return (T&)( *this ) = other; }
+      T& operator=( const T& other ) { return static_cast<T&>( *this ) = other; }
 
       /// Return the sum of all the contained values using init as first value.
       T accumulate( T init ) const { return accumulate( init, std::plus<>() ); }

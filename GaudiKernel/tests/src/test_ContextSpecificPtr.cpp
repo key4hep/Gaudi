@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -130,29 +130,29 @@ BOOST_AUTO_TEST_CASE( ctx_complex_data ) {
 
   setCurrentContextId( (ContextIdType)0 );
 
-  BOOST_CHECK( ( (TestClass&)i ).a == 0 );
-  BOOST_CHECK( ( (TestClass&)i ).b == 0 );
+  BOOST_CHECK( static_cast<TestClass&>( i ).a == 0 );
+  BOOST_CHECK( i.get().b == 0 );
 
-  BOOST_CHECK( ( (TestClass&)j ).a == 1 );
-  BOOST_CHECK( ( (TestClass&)j ).b == 2 );
+  BOOST_CHECK( j->a == 1 );
+  BOOST_CHECK( j->b == 2 );
 
   i = TestClass( 3, 4 );
 
   setCurrentContextId( 1 );
 
-  BOOST_CHECK( ( (TestClass&)i ).a == 0 );
-  BOOST_CHECK( ( (TestClass&)i ).b == 0 );
+  BOOST_CHECK( i->a == 0 );
+  BOOST_CHECK( i->b == 0 );
 
-  BOOST_CHECK( ( (TestClass&)j ).a == 1 );
-  BOOST_CHECK( ( (TestClass&)j ).b == 2 );
+  BOOST_CHECK( j->a == 1 );
+  BOOST_CHECK( j->b == 2 );
 
   setCurrentContextId( (ContextIdType)0 );
 
-  BOOST_CHECK( ( (TestClass&)i ).a == 3 );
-  BOOST_CHECK( ( (TestClass&)i ).b == 4 );
+  BOOST_CHECK( i->a == 3 );
+  BOOST_CHECK( i->b == 4 );
 
-  BOOST_CHECK( ( (TestClass&)j ).a == 1 );
-  BOOST_CHECK( ( (TestClass&)j ).b == 2 );
+  BOOST_CHECK( j->a == 1 );
+  BOOST_CHECK( j->b == 2 );
 }
 
 #include <chrono>
