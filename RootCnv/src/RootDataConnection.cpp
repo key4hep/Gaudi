@@ -27,6 +27,7 @@
 #include <GaudiKernel/MsgStream.h>
 #include <RootCnv/RootDataConnection.h>
 // ROOT include files
+#include <Compression.h>
 #include <TBranch.h>
 #include <TClass.h>
 #include <TFile.h>
@@ -34,12 +35,8 @@
 #include <TMemFile.h>
 #include <TROOT.h>
 #include <TTree.h>
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-#  include <Compression.h>
+
 static int s_compressionLevel = ROOT::CompressionSettings( ROOT::RCompressionSetting::EAlgorithm::kLZMA, 4 );
-#else
-static int s_compressionLevel = 1;
-#endif
 
 #define ROOT_HAS_630_FWD_COMPAT ROOT_VERSION_CODE > ROOT_VERSION( 6, 30, 4 )
 
@@ -124,7 +121,6 @@ STATUSCODE_ENUM_IMPL( Gaudi::RootDataConnection::Status, RootDataConnectionCateg
 
 /// Set the global compression level
 StatusCode RootConnectionSetup::setCompression( std::string_view compression ) {
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
   int  res = 0, level = ROOT::CompressionSettings( ROOT::RCompressionSetting::EAlgorithm::kLZMA, 6 );
   auto idx = compression.find( ':' );
   if ( idx != string::npos ) {
@@ -136,10 +132,8 @@ StatusCode RootConnectionSetup::setCompression( std::string_view compression ) {
       alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZMA;
     else if ( alg.size() == 3 && strncasecmp( alg.data(), "LZ4", 3 ) == 0 )
       alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZ4;
-#  if ROOT_VERSION_CODE >= ROOT_VERSION( 6, 20, 0 )
     else if ( alg.size() == 4 && strncasecmp( alg.data(), "ZSTD", 4 ) == 0 )
       alg_code = ROOT::RCompressionSetting::EAlgorithm::kZSTD;
-#  endif
     else
       throw runtime_error( "ERROR: request to set unknown ROOT compression algorithm:" + std::string{ alg } );
     res = ::sscanf( std::string{ compression.substr( idx + 1 ) }.c_str(), "%d",
@@ -156,10 +150,6 @@ StatusCode RootConnectionSetup::setCompression( std::string_view compression ) {
     return StatusCode::SUCCESS;
   }
   throw runtime_error( "ERROR: request to set unknown ROOT compression mechanism:" + std::string{ compression } );
-#else
-  if ( !compression.empty() ) {}
-  return StatusCode::SUCCESS;
-#endif
 }
 
 /// Global compression level
@@ -258,12 +248,10 @@ StatusCode RootDataConnection::connectRead() {
   if ( makeTool() ) {
     sc = m_tool->readRefs();
     sc.ignore();
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
     if ( sc == Status::ROOT_READ_ERROR ) {
       IIncidentSvc* inc = m_setup->incidentSvc();
       if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
     }
-#endif
   }
   if ( !sc.isSuccess() ) return sc;
   bool   need_fid = m_fid == m_pfn;
@@ -330,10 +318,8 @@ StatusCode RootDataConnection::connectWrite( IoType typ ) {
         StatusCode sc = m_tool->readRefs();
         sc.ignore();
         if ( sc == Status::ROOT_READ_ERROR ) {
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
           IIncidentSvc* inc = m_setup->incidentSvc();
           if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
-#endif
         }
         return sc;
       }
@@ -571,10 +557,8 @@ int RootDataConnection::loadObj( std::string_view section, std::string_view cnt,
           msgSvc() << "Load [" << entry << "] --> " << section << ":" << cnt << "  " << nb << " bytes." << endmsg;
         }
         if ( nb < 0 ) { // This is definitely an error...ROOT says if reads fail, -1 is issued.
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
           IIncidentSvc* inc = m_setup->incidentSvc();
           if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
-#endif
         } else if ( nb == 0 && pObj->clID() == CLID_DataObject ) {
           TFile* f   = b->GetFile();
           int    vsn = f->GetVersion();
@@ -603,7 +587,6 @@ int RootDataConnection::loadObj( std::string_view section, std::string_view cnt,
 int RootDataConnection::loadRefs( std::string_view section, std::string_view cnt, unsigned long entry,
                                   RootObjectRefs& refs ) {
   int nbytes = m_tool->loadRefs( section, cnt, entry, refs );
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
   if ( nbytes < 0 ) {
     // This is definitely an error:
     // -- Either branch not present at all or
@@ -611,7 +594,6 @@ int RootDataConnection::loadRefs( std::string_view section, std::string_view cnt
     IIncidentSvc* inc = m_setup->incidentSvc();
     if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
   }
-#endif
   return nbytes;
 }
 

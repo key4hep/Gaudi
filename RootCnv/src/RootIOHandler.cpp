@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -212,24 +212,9 @@ namespace GaudiRoot {
     static bool first = true;
     if ( first ) {
       first = false;
-#if ROOT_VERSION_CODE < ROOT_VERSION( 5, 99, 0 )
-      gSystem->Load( "libCintex" );
-      gROOT->ProcessLine( "Cintex::Cintex::Enable()" );
-      gROOT->ProcessLine( "#include <vector>" );
-      gInterpreter->EnableAutoLoading();
-      gInterpreter->AutoLoad( "DataObject" );
-      gInterpreter->AutoLoad( "PoolDbLinkManager" );
-      gSystem->Load( "libGaudiKernelDict" );
-      gSystem->Load( "libGaudiTestSuiteDict" );
-#else
-#  if ROOT_VERSION_CODE < ROOT_VERSION( 6, 19, 0 )
-      gInterpreter->EnableAutoLoading();
-#  else
       gInterpreter->LoadLibraryMap();
-#  endif
       gInterpreter->AutoLoad( "DataObject" );
       gInterpreter->AutoLoad( "PoolDbLinkManager" );
-#endif
 
       bool b1 = makeStreamer<SmartRefBase>( s );
       bool b2 = makeStreamer<ContainedObject>( s );
