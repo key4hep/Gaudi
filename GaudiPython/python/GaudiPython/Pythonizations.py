@@ -165,12 +165,6 @@ if hasattr(gbl.Gaudi.StringKey, "__cpp_ne__"):
     _ne = gbl.Gaudi.StringKey.__cpp_ne__
     setattr(gbl.Gaudi.StringKey, "__ne__", _ne)
 
-# ---Enabling Pickle support----------------------------------------------------
-if gbl.gROOT.GetVersionInt() <= 51800:
-    import libPyROOT
-
-    gbl.GaudiPython.PyROOTPickle.Initialize(libPyROOT, libPyROOT.ObjectProxy)
-
 # =============================================================================
 # decorate some map-like objects
 # =============================================================================

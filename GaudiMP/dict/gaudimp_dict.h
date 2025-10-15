@@ -35,7 +35,6 @@
 #  pragma warning( disable : 1125 )
 #endif
 
-#include <GaudiMP/PyROOTPickle.h>
 #include <GaudiMP/TESSerializer.h>
 
 #ifdef __ICC
