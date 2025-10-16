@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,6 +38,8 @@
 
 #include <GaudiKernel/System.h>
 
+#include <TROOT.h>
+
 using namespace Gaudi::TestSuite;
 
 DECLARE_COMPONENT( ReadAlg )
@@ -46,6 +48,10 @@ DECLARE_COMPONENT( ReadAlg )
 // Initialize
 //--------------------------------------------------------------------
 StatusCode ReadAlg::initialize() {
+  // make root work in multithreaded mode. This triggers some changes in particular in
+  // the way Streamers are used which need to be tested (see test_mtread)
+  ROOT::EnableThreadSafety();
+
   auto sc = Algorithm::initialize();
   if ( !sc ) return sc;
 
@@ -89,6 +95,8 @@ StatusCode ReadAlg::finalize() {
 // IIncidentListener override: Inform that a new incident has occured
 //--------------------------------------------------------------------
 void ReadAlg::handle( const Incident& incident ) {
+  // full serialization for thread safety
+  std::scoped_lock lock( m_mutex );
   always() << "Got incident: " << incident.type() << " Source:" << incident.source() << endmsg;
   if ( m_incidentName == incident.type() ) {
     std::string n = incident.source();
@@ -111,6 +119,8 @@ void ReadAlg::handle( const Incident& incident ) {
 // Execute
 //--------------------------------------------------------------------
 StatusCode ReadAlg::execute() {
+  // full serialization for thread safety
+  std::scoped_lock lock( m_mutex );
   // This just makes the code below a bit easier to read (and type)
   SmartDataPtr<Event> evt( eventSvc(), "/Event/Header" );
 

@@ -15,6 +15,8 @@
 #include <GaudiKernel/IIncidentListener.h> // Required for inheritance
 
 // Forward declarations
+#include <mutex>
+
 class IIncidentSvc;
 
 /** @class ReadAlg ReadAlg.h
@@ -30,6 +32,8 @@ class ReadAlg : public Algorithm, virtual public IIncidentListener {
   /// Reference to incident service
   SmartIF<IIncidentSvc>        m_incidentSvc;
   Gaudi::Property<std::string> m_incidentName{ this, "IncidentName", "", "incident name of records service" };
+  /// protection for thread safe usage
+  std::mutex m_mutex;
 
 public:
   /// Constructor: A constructor of this form must be provided.
