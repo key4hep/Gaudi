@@ -30,14 +30,7 @@ variables:
     - cmake --version
     - cmake -S . -B build -Wno-dev -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DGAUDI_TEST_PUBLIC_HEADERS_BUILD=yes -C ci-utils/preset-${PRESET}.cmake
     - ccache -z
-    # pre-heat ccache cache for GaudiKernel
-    - jobs=$(nproc)
-    - while [[ $jobs -ge 1 ]] ; do
-    -   cmake --build build -j $jobs --target GaudiKernel && break || true
-    -   jobs=$(( $jobs / 2 ))
-    - done
-    # build from scratch
-    - cmake --build build --target clean
+    # build
     - cmake --build build 2>&1 | tee build.log
     - ccache -s
     - cp build/compile_commands.json .
@@ -76,14 +69,7 @@ variables:
     - ccache -z
     - mkdir build.${BINARY_TAG}
     - if [ -e build/Testing ] ; then mv build/Testing build.${BINARY_TAG} ; fi
-    # pre-heat ccache cache for GaudiKernel
-    - jobs=$(nproc)
-    - while [[ $jobs -ge 1 ]] ; do
-    -   make BUILDFLAGS=-j$jobs GaudiKernel && break || true
-    -   jobs=$(( $jobs / 2 ))
-    - done
-    # build from scratch
-    - make clean
+    # build
     - make 2>&1 | tee build.log
     - ccache -s
     # run the tests
@@ -115,14 +101,7 @@ variables:
     - cmake --version
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_SCAN_FOR_MODULES=NO
     - ccache -z
-    # pre-heat ccache cache for GaudiKernel
-    - jobs=$(nproc)
-    - while [[ $jobs -ge 1 ]] ; do
-    -   cmake --build build -j $jobs --target GaudiKernel && break || true
-    -   jobs=$(( $jobs / 2 ))
-    - done
-    # build from scratch
-    - cmake --build build --target clean
+    # build
     - cmake --build build 2>&1 | tee build.log
     - ccache -s
     - cp build/compile_commands.json .
