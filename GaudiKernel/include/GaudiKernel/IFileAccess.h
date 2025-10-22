@@ -40,7 +40,10 @@ public:
   virtual std::optional<std::string> read( std::string const& url ) {
     auto is = open( url );
     if ( !is || !is->good() ) return std::nullopt;
-    return std::string{ std::istreambuf_iterator<char>{ *is }, std::istreambuf_iterator<char>{} };
+    auto s = std::string{ std::istreambuf_iterator<char>{ *is }, std::istreambuf_iterator<char>{} };
+    if ( is->fail() || is->bad() ) return std::nullopt;
+    if ( is->peek() != std::istream::traits_type::eof() ) return std::nullopt;
+    return s;
   }
 
   /// Protocols supported by the instance.
