@@ -13,7 +13,7 @@
 #include <Gaudi/details/BranchWrapper.h>
 #include <TFile.h>
 #include <TTree.h>
-#include <fmt/format.h>
+#include <format>
 #include <functional>
 #include <gsl/pointers>
 #include <mutex>
@@ -90,7 +90,7 @@ namespace Gaudi::NTuple {
 
       for ( std::size_t i = 0; const auto& wrapper : m_branchWrappers ) {
         m_eventSvc->retrieveObject( wrapper.getLocation(), pObjs[i++] )
-            .orThrow( fmt::format( "Failed to retrieve object for location '{}'. Ensure the location is correct and "
+            .orThrow( std::format( "Failed to retrieve object for location '{}'. Ensure the location is correct and "
                                    "the object exists.",
                                    wrapper.getLocation() ),
                       name() );

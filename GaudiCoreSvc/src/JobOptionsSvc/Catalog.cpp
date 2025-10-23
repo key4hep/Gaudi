@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "Catalog.h"
-#include <fmt/format.h>
+#include <format>
 
 namespace gp = Gaudi::Parsers;
 namespace {
@@ -70,14 +70,14 @@ std::ostream& Gaudi::Parsers::Catalog::fillStream( std::ostream& o ) const {
   size_t nProperties = 0;
 
   for ( const auto& client : catalog_ ) {
-    o << fmt::format( "// Properties of {:<25} # = {}", fmt::format( "'{}'", client.first ), client.second.size() );
+    o << std::format( "// Properties of {:<25} # = {}", std::format( "'{}'", client.first ), client.second.size() );
     ++nComponents;
     nProperties += client.second.size();
     for ( const auto& current : client.second ) {
-      o << fmt::format( "{:<44} = {} ;", current.FullName(), current.ValueAsString() );
+      o << std::format( "{:<44} = {} ;", current.FullName(), current.ValueAsString() );
     }
   }
-  o << fmt::format( R"(// ==================================================================================
+  o << std::format( R"(// ==================================================================================
 // End parser catalog #Components={} #Properties={}
 // ==================================================================================
 )",

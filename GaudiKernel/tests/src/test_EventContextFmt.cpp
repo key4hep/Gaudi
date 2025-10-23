@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,6 +9,9 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <GaudiKernel/EventContext.h>
+
+#include <fmt/format.h>
+#include <format>
 
 #if __has_include( <catch2/catch.hpp>)
 // Catch2 v2
@@ -20,14 +23,17 @@
 #endif
 
 TEST_CASE( "EventContext formatting" ) {
+  // One basic check for fmt library (code is shared)
   CHECK( fmt::format( "{}", EventContext{ 1, 2 } ) == "s: 2  e: 1" );
-  CHECK( fmt::format( "{}", EventContext{ 1, 2, 3 } ) == "s: 2  e: 1 sub: 3" );
-  CHECK( fmt::format( ">{:>20}<", EventContext{ 1, 2, 3 } ) == ">   s: 2  e: 1 sub: 3<" );
 
-  CHECK( fmt::format( "{}", EventContext{} ) == "INVALID" );
-  CHECK( fmt::format( "{}", EventContext{ 1 } ) == "INVALID" );
+  CHECK( std::format( "{}", EventContext{ 1, 2 } ) == "s: 2  e: 1" );
+  CHECK( std::format( "{}", EventContext{ 1, 2, 3 } ) == "s: 2  e: 1 sub: 3" );
+  CHECK( std::format( ">{:>20}<", EventContext{ 1, 2, 3 } ) == ">   s: 2  e: 1 sub: 3<" );
 
-  CHECK( fmt::format( "***{:^20}***", EventContext{} ) == "***      INVALID       ***" );
+  CHECK( std::format( "{}", EventContext{} ) == "INVALID" );
+  CHECK( std::format( "{}", EventContext{ 1 } ) == "INVALID" );
+
+  CHECK( std::format( "***{:^20}***", EventContext{} ) == "***      INVALID       ***" );
 
   EventContext ctx{ 1, 2, 3 };
   {

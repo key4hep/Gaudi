@@ -10,6 +10,8 @@
 \***********************************************************************************/
 #include <Gaudi/AsynchronousAlgorithm.h>
 
+#include <format>
+
 StatusCode Gaudi::AsynchronousAlgorithm::sysInitialize() {
   setAsynchronous( true );
   msg() << MSG::DEBUG << "Starting sysInitialize for AsynchronousAlgorithm" << endmsg;
@@ -18,7 +20,7 @@ StatusCode Gaudi::AsynchronousAlgorithm::sysInitialize() {
 
 StatusCode Gaudi::AsynchronousAlgorithm::sysExecute( const EventContext& ctx ) try {
   msg() << MSG::DEBUG << "Starting sysExecute for AsynchronousAlgorithm on slot " << ctx.slot()
-        << "with s_currentSlot = " << fmt::to_string( fmt::ptr( s_currentSlot.get() ) ) << endmsg;
+        << "with s_currentSlot = " << std::format( "{}", static_cast<void*>( s_currentSlot.get() ) ) << endmsg;
   if ( s_currentSlot.get() == nullptr ) {
     s_currentSlot.reset( new std::size_t( ctx.slot() ) );
   } else if ( *s_currentSlot != ctx.slot() ) {

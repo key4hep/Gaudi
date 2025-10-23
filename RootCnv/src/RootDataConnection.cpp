@@ -44,7 +44,7 @@ static int s_compressionLevel = 1;
 #define ROOT_HAS_630_FWD_COMPAT ROOT_VERSION_CODE > ROOT_VERSION( 6, 30, 4 )
 
 // C/C++ include files
-#include <fmt/format.h>
+#include <format>
 #include <limits>
 #include <numeric>
 #include <stdexcept>
@@ -450,7 +450,7 @@ TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
       auto key = m_file->GetKey( std::string{ section }.c_str() );
       if ( key ) {
         incidentSvc()->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
-        msgSvc() << MSG::ERROR << fmt::format( "failed to get TTree '{}' in {}", section, pfn() ) << endmsg;
+        msgSvc() << MSG::ERROR << std::format( "failed to get TTree '{}' in {}", section, pfn() ) << endmsg;
       }
     }
   }

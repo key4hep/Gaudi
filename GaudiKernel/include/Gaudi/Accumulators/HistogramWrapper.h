@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -54,11 +54,11 @@ namespace Gaudi::Accumulators {
                               typename HistogramType::AxisTupleType axis = {}, bool doNotInitialize = false )
         : m_name{ name }, m_title{ title }, m_axis{ axis } {
       // Create associated properties
-      owner->declareProperty( titlePropertyName(), m_title, fmt::format( "Title of histogram {}", name ) )
+      owner->declareProperty( titlePropertyName(), m_title, std::format( "Title of histogram {}", name ) )
           ->template setOwnerType<OWNER>();
       ( owner
             ->declareProperty( axisPropertyName<ND>(), std::get<ND>( m_axis ),
-                               fmt::format( "Axis {} of histogram {}", ND, name ) )
+                               std::format( "Axis {} of histogram {}", ND, name ) )
             ->template setOwnerType<OWNER>(),
         ... );
       // register creation of the Histogram at initialization time
@@ -88,7 +88,7 @@ namespace Gaudi::Accumulators {
     /// override of operator[] with extra checking that initialization happened
     [[nodiscard]] auto operator[]( typename HistogramType::AxisTupleArithmeticType v ) {
       if ( !m_histo ) {
-        throw std::logic_error( fmt::format( "Histogram {} is used before being initialized", m_name ) );
+        throw std::logic_error( std::format( "Histogram {} is used before being initialized", m_name ) );
       }
       return m_histo.value()[v];
     }
@@ -101,7 +101,7 @@ namespace Gaudi::Accumulators {
 
     friend void to_json( nlohmann::json& j, HistogramWrapperInternal const& h ) {
       if ( !h.m_histo ) {
-        throw std::logic_error( fmt::format( "Histogram {} is converted to json before being initialized", h.m_name ) );
+        throw std::logic_error( std::format( "Histogram {} is converted to json before being initialized", h.m_name ) );
       }
       j = h.m_histo.value();
     }
@@ -110,14 +110,14 @@ namespace Gaudi::Accumulators {
     void setTitle( std::string const& title ) {
       if ( m_histo )
         throw std::logic_error(
-            fmt::format( "Cannot modify title of histogram {} after it has been initialized", m_name ) );
+            std::format( "Cannot modify title of histogram {} after it has been initialized", m_name ) );
       m_title = title;
     }
     template <unsigned int N>
     void setAxis( std::tuple_element_t<N, typename HistogramType::AxisTupleType> const& axis ) {
       if ( m_histo )
         throw std::logic_error(
-            fmt::format( "Cannot modify axis {} of histogram {} after it has been initialized", N, m_name ) );
+            std::format( "Cannot modify axis {} of histogram {} after it has been initialized", N, m_name ) );
       std::get<N>( m_axis ) = axis;
     }
 
@@ -125,14 +125,14 @@ namespace Gaudi::Accumulators {
     auto& axis() const {
       if ( !m_histo )
         throw std::logic_error(
-            fmt::format( "Cannot get axis {} of histogram {} before it has been initialized", N, m_name ) );
+            std::format( "Cannot get axis {} of histogram {} before it has been initialized", N, m_name ) );
       return m_histo->template axis<N>();
     }
 
     auto& axis() const {
       if ( !m_histo )
         throw std::logic_error(
-            fmt::format( "Cannot get axis of histogram {} before it has been initialized", m_name ) );
+            std::format( "Cannot get axis of histogram {} before it has been initialized", m_name ) );
       return m_histo->axis();
     }
 
@@ -141,7 +141,7 @@ namespace Gaudi::Accumulators {
     // wrapping some methods of the underlyoing histogram
     auto buffer() {
       if ( !m_histo )
-        throw std::logic_error( fmt::format( "`buffer()` called on histogram {} before being initialized", m_name ) );
+        throw std::logic_error( std::format( "`buffer()` called on histogram {} before being initialized", m_name ) );
       return m_histo->buffer();
     }
 
@@ -154,10 +154,10 @@ namespace Gaudi::Accumulators {
           begin( name ), end( name ), []( auto& c ) { return !std::isalnum( c ); }, '_' );
       return name;
     }
-    std::string titlePropertyName() const { return fmt::format( "{}_Title", basePropertyName() ); }
+    std::string titlePropertyName() const { return std::format( "{}_Title", basePropertyName() ); }
     template <unsigned int N>
     std::string axisPropertyName() const {
-      return fmt::format( "{}_Axis{}", basePropertyName(), N );
+      return std::format( "{}_Axis{}", basePropertyName(), N );
     }
 
     // Members of the custom histogrem

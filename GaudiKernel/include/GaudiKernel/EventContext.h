@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,6 +14,7 @@
 #include <any>
 #include <cstddef>
 #include <fmt/format.h>
+#include <format>
 #include <iostream>
 #include <limits>
 
@@ -141,19 +142,28 @@ private:
   std::any m_extension;
 };
 
-template <>
-struct fmt::formatter<EventContext> : formatter<string_view> {
-  auto format( const EventContext& ec, format_context& ctx ) const {
+/// Custom formatter for EventContext to support std::format and fmt.
+/// TODO: can be simplified once we drop fmt support
+template <class BASE>
+struct EventContextFormatter : BASE {
+  auto format( const EventContext& ec, auto& ctx ) const {
     if ( ec.valid() ) {
       std::string out;
       if ( ec.usesSubSlot() ) {
-        out = fmt::format( "s: {}  e: {} sub: {}", ec.slot(), ec.evt(), ec.subSlot() );
+        out = std::format( "s: {}  e: {} sub: {}", ec.slot(), ec.evt(), ec.subSlot() );
       } else {
-        out = fmt::format( "s: {}  e: {}", ec.slot(), ec.evt() );
+        out = std::format( "s: {}  e: {}", ec.slot(), ec.evt() );
       }
-      return formatter<string_view>::format( out, ctx );
+      return BASE::format( out, ctx );
+
     } else {
-      return formatter<string_view>::format( "INVALID", ctx );
+      return BASE::format( "INVALID", ctx );
     }
   }
 };
+
+template <>
+struct std::formatter<EventContext> : EventContextFormatter<std::formatter<std::string_view>> {};
+
+template <>
+struct fmt::formatter<EventContext> : EventContextFormatter<fmt::formatter<std::string_view>> {};

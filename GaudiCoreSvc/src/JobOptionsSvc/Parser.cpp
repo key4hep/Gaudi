@@ -17,7 +17,7 @@
 #include "Utils.h"
 #include <GaudiKernel/PathResolver.h>
 #include <boost/filesystem.hpp>
-#include <fmt/format.h>
+#include <format>
 #include <fstream>
 #include <sstream>
 
@@ -96,7 +96,7 @@ namespace {
     } else {
       assert( included_from != nullptr );
       messages->AddWarning(
-          from, fmt::format( "File {} already included from {}", absolute_path, included_from->ToString() ) );
+          from, std::format( "File {} already included from {}", absolute_path, included_from->ToString() ) );
       return true;
     }
   }

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,7 +14,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <fmt/format.h>
+#include <format>
 
 #include <iostream>
 #include <vector>
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_counter_array ) {
     // check names
     unsigned int i = 0;
     for ( auto& entity : sink.m_entities ) {
-      BOOST_TEST( entity.name == fmt::format( "Counter-{}", i ) );
+      BOOST_TEST( entity.name == std::format( "Counter-{}", i ) );
       i++;
     }
     // check json output
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( test_counter_array ) {
     // check names
     unsigned int i = 0;
     for ( auto& entity : sink.m_entities ) {
-      BOOST_TEST( entity.name == fmt::format( "AvgCounter-{}", i ) );
+      BOOST_TEST( entity.name == std::format( "AvgCounter-{}", i ) );
       i++;
     }
     // check json output
@@ -94,14 +94,14 @@ BOOST_AUTO_TEST_CASE( test_counter_array ) {
   {
     // testing an array of simple counters, with non standard names
     Gaudi::Accumulators::CounterArray<Gaudi::Accumulators::Counter<>, 5> counters{
-        &algo, []( int n ) { return fmt::format( "Counter-{}-{}", n, n ^ 2 ); } };
+        &algo, []( int n ) { return std::format( "Counter-{}-{}", n, n ^ 2 ); } };
     // check increment
     for ( unsigned int i = 0; i < 5; i++ ) ++counters[i]; // increment counters
     for ( unsigned int i = 0; i < 5; i++ ) { BOOST_TEST( counters[i].nEntries() == 1 ); }
     // check names
     unsigned int i = 0;
     for ( auto& entity : sink.m_entities ) {
-      BOOST_TEST( entity.name == fmt::format( "Counter-{}-{}", i, i ^ 2 ) );
+      BOOST_TEST( entity.name == std::format( "Counter-{}-{}", i, i ^ 2 ) );
       i++;
     }
     // check json output

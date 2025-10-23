@@ -19,7 +19,7 @@
 #include "PropertyValue.h"
 #include "Units.h"
 #include <GaudiKernel/Environment.h>
-#include <fmt/format.h>
+#include <format>
 #include <memory>
 
 namespace gp = Gaudi::Parsers;
@@ -185,10 +185,10 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
   if ( exists ) {
     try {
       if ( node->children[1].type == gp::Node::kEqual ) {
-        std::string message = fmt::format( "Reassignment of option '{}'.", property->FullName() );
+        std::string message = std::format( "Reassignment of option '{}'.", property->FullName() );
 
         if ( exists->HasDefinedPosition() ) {
-          message += fmt::format( " Previously defined at {}.", exists->DefinedPosition().ToString() );
+          message += std::format( " Previously defined at {}.", exists->DefinedPosition().ToString() );
         }
         reassign = true;
         // INFO: we don't need this warning
@@ -201,7 +201,7 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
     } catch ( const gp::PropertyValueException& ex ) {
       std::string message = ex.what();
       if ( exists->HasDefinedPosition() ) {
-        message += fmt::format( " Previously defined at {}.", exists->DefinedPosition().ToString() );
+        message += std::format( " Previously defined at {}.", exists->DefinedPosition().ToString() );
       }
       messages->AddError( node->position, message );
       return false;
@@ -213,7 +213,7 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
 
   if ( result && is_print ) {
     std::string message =
-        fmt::format( "{} {} {}", property->FullName(), SignString( node->children[1].type ), value->ToString() );
+        std::format( "{} {} {}", property->FullName(), SignString( node->children[1].type ), value->ToString() );
     messages->AddInfo( node->position, message );
   }
   return result;
@@ -226,7 +226,7 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
 
   gp::Units::Container::mapped_type exists;
   if ( units->Find( name, exists ) ) {
-    std::string message = fmt::format( "Unit '{}' already defined", name );
+    std::string message = std::format( "Unit '{}' already defined", name );
     if ( exists.second.Exists() ) { message += " at " + exists.second.ToString(); }
     messages->AddError( node->children[1].position, message );
     return false;
@@ -234,7 +234,7 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
 
   bool result = units->Add( name, right / left, node->children[1].position );
   if ( result && is_print ) {
-    std::string message = fmt::format( "{} {} = {}", left, name, right );
+    std::string message = std::format( "{} {} = {}", left, name, right );
     messages->AddInfo( node->position, message );
   }
   return result;

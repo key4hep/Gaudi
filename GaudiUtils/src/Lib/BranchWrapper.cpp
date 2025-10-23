@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,7 +11,7 @@
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/details/BranchWrapper.h>
 #include <TTree.h>
-#include <fmt/format.h>
+#include <format>
 #include <map>
 #include <string>
 
@@ -39,7 +39,7 @@ namespace Gaudi::details {
     if ( leafListTag ) {
       // Create a branch for fundamental types using the leaflist
       m_branch         = tree->Branch( m_branchName.c_str(), &m_dataBuffer,
-                                       ( fmt::format( "{}/{}", m_className, leafListTag.value() ) ).c_str() );
+                                       ( std::format( "{}/{}", m_className, leafListTag.value() ) ).c_str() );
       setBranchAddress = []( gsl::not_null<TBranch*> br, const void** wrappedDataPtr ) {
         br->SetAddress( const_cast<void*>( *wrappedDataPtr ) );
       };
@@ -52,13 +52,13 @@ namespace Gaudi::details {
       };
 
     } else {
-      throw GaudiException( fmt::format( "Cannot create branch {} for unknown class: {}. Provide a dictionary please.",
+      throw GaudiException( std::format( "Cannot create branch {} for unknown class: {}. Provide a dictionary please.",
                                          m_branchName, m_className ),
                             m_algName, StatusCode::FAILURE );
     }
 
     if ( !m_branch ) {
-      throw GaudiException( fmt::format( "Failed to create branch {} for type {}.", m_branchName, m_className ),
+      throw GaudiException( std::format( "Failed to create branch {} for type {}.", m_branchName, m_className ),
                             m_algName, StatusCode::FAILURE );
     }
   }

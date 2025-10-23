@@ -13,7 +13,7 @@
 #include <cstdio>
 #include <sstream>
 
-#include <fmt/format.h>
+#include <format>
 
 // boost headers
 #include <boost/algorithm/string/case_conv.hpp>
@@ -1316,7 +1316,7 @@ void THistSvc::handle( const Incident& /* inc */ ) {
     if ( tf->GetSize() > mfs ) {
 
       if ( writeObjectsToFile().isFailure() ) { error() << "problems writing histograms" << endmsg; }
-      throw GaudiException( fmt::format( "file \"{}\" associated with stream \"{}\" has exceeded the max "
+      throw GaudiException( std::format( "file \"{}\" associated with stream \"{}\" has exceeded the max "
                                          "file size of {} MB. Terminating Job.",
                                          tf->GetName(), f.first, m_maxFileSize.value() ),
                             name(), StatusCode::FAILURE );

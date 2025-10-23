@@ -82,9 +82,9 @@ BOOST_AUTO_TEST_CASE( test_static_counter_histos, *boost::unit_test::tolerance( 
   {
     Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::StaticHistogram<1>, 5> histo1d{
         &algo,
-        []( int n ) { return fmt::format( "SGaudiH1D-{}-{}", n, n ^ 2 ); },
+        []( int n ) { return std::format( "SGaudiH1D-{}-{}", n, n ^ 2 ); },
         [nb = 5]( int n ) {
-          return fmt::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
+          return std::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
         },
         { 21, -10.5, 10.5, "X" } };
     for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( test_large_static_counter_histos, *boost::unit_test::toler
     for ( unsigned int i = 0; i < N; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
     for ( unsigned int i = 0; i < N; i++ ) BOOST_TEST( toJSON( histo1d[i] ).at( "bins" )[1] == 1 );
     for ( unsigned int i = 0; i < N; i++ ) {
-      BOOST_TEST( toJSON( histo1d[i] ).at( "title" ) == fmt::format( "A Gaudi 1D histogram - number {}", i ) );
+      BOOST_TEST( toJSON( histo1d[i] ).at( "title" ) == std::format( "A Gaudi 1D histogram - number {}", i ) );
       ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
       BOOST_TEST( toJSON( histo1d[i] ).at( "bins" )[1] == 2 );
     }
@@ -124,16 +124,16 @@ BOOST_AUTO_TEST_CASE( test_large_static_counter_histos, *boost::unit_test::toler
   {
     Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::StaticHistogram<1>, 100> histo1d{
         &algo,
-        []( int n ) { return fmt::format( "SGaudiH1D-{}-{}", n, n ^ 2 ); },
+        []( int n ) { return std::format( "SGaudiH1D-{}-{}", n, n ^ 2 ); },
         [nb = N]( int n ) {
-          return fmt::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
+          return std::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
         },
         { 21, -10.5, 10.5, "X" } };
     for ( unsigned int i = 0; i < N; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
     for ( unsigned int i = 0; i < N; i++ ) BOOST_TEST( toJSON( histo1d[i] ).at( "bins" )[1] == 1 );
     for ( unsigned int i = 0; i < N; i++ ) {
       BOOST_TEST( toJSON( histo1d[i] ).at( "title" ) ==
-                  fmt::format( "Title number {} of Histogram arrays of {} histograms in total", i, N ) );
+                  std::format( "Title number {} of Histogram arrays of {} histograms in total", i, N ) );
       ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
       BOOST_TEST( toJSON( histo1d[i] ).at( "bins" )[1] == 2 );
     }
@@ -149,9 +149,9 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
     Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::Histogram<1>, 5> histo1d{
         &algo, "GaudiH1D-{}", "WRONG TITLE !", { 1, -1, 1, "WRONG" } };
     for ( unsigned int i = 0; i < 5; i++ ) {
-      algo.setProperty( fmt::format( "GaudiH1D_{}_Title", i ), fmt::format( "A Gaudi 1D histogram - number {}", i ) )
+      algo.setProperty( std::format( "GaudiH1D_{}_Title", i ), std::format( "A Gaudi 1D histogram - number {}", i ) )
           .ignore();
-      algo.setProperty( fmt::format( "GaudiH1D_{}_Axis0", i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
+      algo.setProperty( std::format( "GaudiH1D_{}_Axis0", i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
     }
     for ( unsigned int i = 0; i < 5; i++ ) { histo1d[i].createHistogram( algo ); }
     for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin
@@ -166,9 +166,9 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
     Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::WeightedHistogram<2>, 7> histo2dw{
         &algo, "Name{}", "WRONG TITLE !", { 1, -1, 1, "WRONG" }, { 1, -1, 1, "WRONG" } };
     for ( unsigned int i = 0; i < 7; i++ ) {
-      algo.setProperty( fmt::format( "Name{}_Title", i ), fmt::format( "Title {}", i ) ).ignore();
-      algo.setProperty( fmt::format( "Name{}_Axis0", i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
-      algo.setProperty( fmt::format( "Name{}_Axis1", i ), "( 21, -10.5, 10.5, \"Y\" )" ).ignore();
+      algo.setProperty( std::format( "Name{}_Title", i ), std::format( "Title {}", i ) ).ignore();
+      algo.setProperty( std::format( "Name{}_Axis0", i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
+      algo.setProperty( std::format( "Name{}_Axis1", i ), "( 21, -10.5, 10.5, \"Y\" )" ).ignore();
     }
     for ( unsigned int i = 0; i < 7; i++ ) { histo2dw[i].createHistogram( algo ); }
     for ( unsigned int i = 0; i < 7; i++ ) histo2dw[i][{ -10.0, -10.0 }] += 0.25; // fill the first (non-overflow) bin
@@ -180,13 +180,13 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
   {
     Gaudi::Accumulators::HistogramArray<Gaudi::Accumulators::Histogram<1>, 5> histo1d{
         &algo,
-        []( int n ) { return fmt::format( "GaudiH1D-{}-{}", n, n * n ); },
+        []( int n ) { return std::format( "GaudiH1D-{}-{}", n, n * n ); },
         [nb = 5]( int n ) {
-          return fmt::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
+          return std::format( "Title number {} of Histogram arrays of {} histograms in total", n, nb );
         },
         { 1, -1, 1, "WRONG" } };
     for ( unsigned int i = 0; i < 5; i++ ) {
-      algo.setProperty( fmt::format( "GaudiH1D_{}_{}_Axis0", i, i * i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
+      algo.setProperty( std::format( "GaudiH1D_{}_{}_Axis0", i, i * i ), "( 21, -10.5, 10.5, \"X\" )" ).ignore();
     }
     for ( unsigned int i = 0; i < 5; i++ ) { histo1d[i].createHistogram( algo ); }
     for ( unsigned int i = 0; i < 5; i++ ) ++histo1d[i][-10.0]; // fill the first (non-overflow) bin

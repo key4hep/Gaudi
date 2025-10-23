@@ -104,7 +104,6 @@ if(BUILD_TESTING)
             GaudiUtilsLib
             Boost::headers
             Boost::unit_test_framework
-            fmt::fmt
             Gaudi::GaudiKernel
             ROOT::Tree
         TEST
