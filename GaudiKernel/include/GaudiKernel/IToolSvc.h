@@ -145,7 +145,10 @@ public:
    */
   template <class T>
   StatusCode retrieveTool( std::string_view type, T*& tool, const IInterface* parent = nullptr, bool createIf = true ) {
-    return retrieve( type, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
+    IAlgTool*  ialgtool{ nullptr };
+    StatusCode sc = retrieve( type, T::interfaceID(), ialgtool, parent, createIf );
+    tool          = Gaudi::Cast<T>( ialgtool );
+    return sc;
   }
 
   /** Retrieve specified tool sub-type with tool dependent part of the name
@@ -194,7 +197,10 @@ public:
   template <class T>
   StatusCode retrieveTool( std::string_view type, std::string_view name, T*& tool, const IInterface* parent = nullptr,
                            bool createIf = true ) {
-    return retrieve( type, name, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
+    IAlgTool*  ialgtool{ nullptr };
+    StatusCode sc = retrieve( type, name, T::interfaceID(), ialgtool, parent, createIf );
+    tool          = Gaudi::Cast<T>( ialgtool );
+    return sc;
   }
 
   /**  allow call-backs when a tool is a created
