@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2023-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -61,9 +61,17 @@ namespace {
   };
 } // namespace
 
-TEMPLATE_TEST_CASE( "property formatting", "", int, double, std::vector<int>, std::string ) {
+TEMPLATE_TEST_CASE( "fmt property formatting", "", int, double, std::vector<int>, std::string ) {
   test_data<TestType>       data;
   Gaudi::Property<TestType> p{ std::string{ data.name }, data.value };
   CHECK( fmt::format( "{}", p ) == data.fmt );
   CHECK( fmt::format( "{:?}", p ) == data.dbg );
+}
+
+// TODO: As of C++20, <format> does not yet support ranges
+TEMPLATE_TEST_CASE( "std::format property formatting", "", int, double, std::string ) {
+  test_data<TestType>       data;
+  Gaudi::Property<TestType> p{ std::string{ data.name }, data.value };
+  CHECK( std::format( "{}", p ) == data.fmt );
+  CHECK( std::format( "{:?}", p ) == data.dbg );
 }
