@@ -318,26 +318,20 @@ public:
     auto self = const_cast<ToolHandle<Gaudi::Interface::Bind::IBinder<IFace>>*>( this );
 
     return ToolHandle<IAlgTool>::retrieve().andThen( [&] {
-      const IAlgTool* tool = get();
+      IAlgTool* tool = self->get();
       assert( tool != nullptr ); // retrieve was succesfull, so get() better return something valid!
-      return const_cast<IAlgTool*>( tool )
-          ->queryInterface( IFace::interfaceID(), &( self->m_ptr ) )
-          .andThen( [&] {
-            // TODO: what happens to the refCount?
-            self->m_bind = []( const void* ptr, const EventContext& ) {
-              return Gaudi::Interface::Bind::Box<IFace>( static_cast<IFace const*>( ptr ) );
-            };
-          } )
-          .orElse( [&]() {
-            return const_cast<IAlgTool*>( tool )
-                ->queryInterface( Gaudi::Interface::Bind::IBinder<IFace>::interfaceID(), &( self->m_ptr ) )
-                .andThen( [&] {
-                  // TODO: what happens to the refCount?
-                  self->m_bind = []( const void* ptr, const EventContext& ctx ) {
-                    return static_cast<Gaudi::Interface::Bind::IBinder<IFace> const*>( ptr )->bind( ctx );
-                  };
-                } );
-          } );
+      if ( ( self->m_ptr = tool->template cast<IFace>() ) ) {
+        self->m_bind = []( const void* ptr, const EventContext& ) {
+          return Gaudi::Interface::Bind::Box<IFace>( static_cast<IFace const*>( ptr ) );
+        };
+      } else if ( ( self->m_ptr = tool->template cast<Gaudi::Interface::Bind::IBinder<IFace>>() ) ) {
+        self->m_bind = []( const void* ptr, const EventContext& ctx ) {
+          return static_cast<Gaudi::Interface::Bind::IBinder<IFace> const*>( ptr )->bind( ctx );
+        };
+      } else {
+        return StatusCode::FAILURE;
+      }
+      return StatusCode::SUCCESS;
     } );
   }
 

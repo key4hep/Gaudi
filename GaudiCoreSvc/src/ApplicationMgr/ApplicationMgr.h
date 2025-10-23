@@ -56,9 +56,8 @@ public:
   // default creator
   ApplicationMgr( IInterface* = nullptr );
 
+  // Allow delegation of interfaces implementations
   void const* i_cast( const InterfaceID& iid ) const override;
-  // implementation of IInterface::queryInterface
-  StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
 
   // implementation of IAppMgrUI::run
   StatusCode run() override;

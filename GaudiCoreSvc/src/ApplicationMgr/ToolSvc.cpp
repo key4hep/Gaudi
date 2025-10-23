@@ -370,8 +370,6 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
     return retrieve( tooltype, toolname, iid, tool, this, createIf );
   }
 
-  StatusCode sc( StatusCode::FAILURE );
-
   tool = nullptr;
 
   // If parent is not specified it means it is the ToolSvc itself
@@ -389,26 +387,27 @@ StatusCode ToolSvc::retrieve( std::string_view tooltype, std::string_view toolna
     // otherwise return failure
     if ( !createIf ) {
       warning() << "Tool " << toolname << " not found and creation not requested" << endmsg;
-      return sc;
+      return StatusCode::FAILURE;
     }
-    sc = create( std::string{ tooltype }, std::string{ toolname }, parent, itool );
+    auto sc = create( std::string{ tooltype }, std::string{ toolname }, parent, itool );
     if ( sc.isFailure() ) { return sc; }
   }
 
   // Get the right interface of it
-  sc = itool->queryInterface( iid, pp_cast<void>( &tool ) );
-  if ( sc.isFailure() ) {
+  tool = reinterpret_cast<IAlgTool*>( itool->i_cast( iid ) );
+  if ( !tool ) {
     error() << "Tool " << toolname << " either does not implement the correct interface, or its version is incompatible"
             << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
+  tool->addRef();
 
   ///////////////
   /// invoke retrieve callbacks...
   ///////////////
   std::for_each( std::begin( m_observers ), std::end( m_observers ),
                  [&]( IToolSvc::Observer* obs ) { obs->onRetrieve( itool ); } );
-  return sc;
+  return StatusCode::SUCCESS;
 }
 
 std::vector<std::string> ToolSvc::getInstances( std::string_view toolType ) {

@@ -26,6 +26,8 @@ public:
   /// forward constructor(s)
   using BASE::BASE;
 
+  using extend_interfaces_base::i_cast;
+
   /// Implementation of IInterface::i_cast.
   void const* i_cast( const InterfaceID& tid ) const override {
     using iids = typename extend_interfaces_base::ext_iids;
@@ -36,8 +38,7 @@ public:
   /// Implementation of IInterface::queryInterface.
   StatusCode queryInterface( const InterfaceID& ti, void** pp ) override {
     if ( !pp ) return StatusCode::FAILURE;
-    using iids = typename extend_interfaces_base::ext_iids;
-    *pp        = Gaudi::iid_cast( ti, iids{}, this );
+    *pp = i_cast( ti );
     // if cast failed, try the base class
     if ( !*pp ) return BASE::queryInterface( ti, pp );
     this->addRef();

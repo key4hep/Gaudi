@@ -65,16 +65,6 @@ namespace {
       return implements::i_cast( iid );
     }
 
-    StatusCode queryInterface( const InterfaceID& iid, void** pp ) override {
-      if ( iid == IMessageSvc::interfaceID() ) {
-        auto m = ISvcLocator::service<IMessageSvc>( "MessageSvc" ).get();
-        m->addRef();
-        *pp = static_cast<IMessageSvc*>( m );
-        return ( *pp ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
-      }
-      return implements::queryInterface( iid, pp );
-    }
-
     std::map<std::string, SmartIF<IService>> serviceMap;
   };
 

@@ -30,10 +30,6 @@ public:
   /// Basic interface id of the managed components.
   const InterfaceID& componentBaseInterface() const override;
 
-  /// Specialized queryInterface implementation.
-  /// If an interface is not found in the implemented ones, we fall back on the
-  /// owner.
-  StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
   /// Specialized i_cast implementation.
   /// If an interface is not found in the implemented ones, we fall back on the
   /// owner.

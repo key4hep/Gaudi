@@ -181,7 +181,7 @@ public:
 
   virtual unsigned long release() const override { return 1; }
 
-  virtual StatusCode queryInterface( const InterfaceID&, void** ) override { return StatusCode::SUCCESS; }
+  virtual StatusCode queryInterface( const InterfaceID&, void** ) override { return StatusCode::FAILURE; }
 
   virtual std::vector<std::string> getInterfaceNames() const override { return {}; }
 

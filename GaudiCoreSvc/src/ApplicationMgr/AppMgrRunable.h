@@ -35,7 +35,7 @@ class IAppMgrUI;
 class AppMgrRunable : public extends<Service, IRunable> {
 protected:
   /// Reference to application manager UI
-  IAppMgrUI*           m_appMgrUI = nullptr;
+  SmartIF<IAppMgrUI>   m_appMgrUI;
   Gaudi::Property<int> m_evtMax{ this, "EvtMax", 0xFEEDBABE, "number of events to be processed" };
 
 public:

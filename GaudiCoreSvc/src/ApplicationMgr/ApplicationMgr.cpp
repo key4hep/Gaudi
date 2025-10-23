@@ -134,29 +134,6 @@ void const* ApplicationMgr::i_cast( const InterfaceID& iid ) const {
   return nullptr;
 }
 
-StatusCode ApplicationMgr::queryInterface( const InterfaceID& iid, void** ppvi ) {
-  if ( !ppvi ) { return StatusCode::FAILURE; }
-
-  // try to find own/direct interfaces:
-  StatusCode sc = base_class::queryInterface( iid, ppvi );
-  if ( sc.isSuccess() ) return sc;
-
-  // find indirect interfaces :
-  if ( ISvcLocator::interfaceID().versionMatch( iid ) ) { return serviceLocator()->queryInterface( iid, ppvi ); }
-  if ( ISvcManager::interfaceID().versionMatch( iid ) ) { return svcManager()->queryInterface( iid, ppvi ); }
-  if ( IAlgManager::interfaceID().versionMatch( iid ) ) { return algManager()->queryInterface( iid, ppvi ); }
-  if ( IClassManager::interfaceID().versionMatch( iid ) ) { return m_classManager->queryInterface( iid, ppvi ); }
-  if ( IMessageSvc::interfaceID().versionMatch( iid ) ) {
-    *ppvi = m_messageSvc.get();
-    if ( m_messageSvc ) m_messageSvc->addRef();
-    // Note that 0 can be a valid IMessageSvc pointer value (when used for
-    // MsgStream).
-    return StatusCode::SUCCESS;
-  }
-  *ppvi = nullptr;
-  return StatusCode::FAILURE;
-}
-
 StatusCode ApplicationMgr::i_startup() {
 
   StatusCode sc;

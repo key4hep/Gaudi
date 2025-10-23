@@ -73,18 +73,10 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
                   << endmsg;
     return StatusCode::FAILURE;
   }
-  // Check the compatibility of the version of the interface obtained
-  if ( !isValidInterface( algorithm ) ) {
-    fatal() << "Incompatible interface IAlgorithm version for " << actualalgtype << endmsg;
-    return StatusCode::FAILURE;
-  }
   m_algs.emplace_back( algorithm, managed );
   m_algsMap.emplace( algorithm->name(), algorithm );
   // let the algorithm know its type
   algorithm->setType( std::move( actualalgtype ) );
-  // this is needed to keep the reference count correct, since isValidInterface(algorithm)
-  // implies an increment of the counter by 1
-  algorithm->release();
   StatusCode rc;
   if ( managed ) {
     // Bring the created algorithm to the target state of the ApplicationMgr

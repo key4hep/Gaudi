@@ -26,15 +26,6 @@ ComponentManager::ComponentManager( IInterface* application, const InterfaceID& 
 // Basic interface id of the managed components.
 const InterfaceID& ComponentManager::componentBaseInterface() const { return m_basicInterfaceId; }
 
-//------------------------------------------------------------------------------
-// queryInterface implementation that falls back on the owner.
-StatusCode ComponentManager::queryInterface( const InterfaceID& iid, void** pinterface ) {
-  // try local interfaces
-  StatusCode sc = base_class::queryInterface( iid, pinterface );
-  // fall back on the owner, if local interface didn't match...
-  return sc.isSuccess() ? sc : m_application->queryInterface( iid, pinterface );
-}
-
 void const* ComponentManager::i_cast( const InterfaceID& iid ) const {
   // try local interfaces
   if ( auto output = base_class::i_cast( iid ); output ) { return output; }
