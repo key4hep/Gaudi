@@ -355,26 +355,6 @@ if(BUILD_TESTING)
   set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY PASS_REGULAR_EXPRESSION "\\+\\+h2d\\[1\\.2\\]\; // ERROR: cannot fill a 2D histogram with a single index")
   set_property(TEST GaudiKernel.test_CounterHistoFail PROPERTY RESOURCE_LOCK build-system)
 
-  if(GAUDI_USE_CPPUNIT)
-    gaudi_add_executable(test_SerializeSTL SOURCES tests/src/test_SerializeSTL.cpp
-      LINK GaudiKernel CppUnit::cppunit TEST)
-
-    gaudi_add_executable(test_AnyDataObject SOURCES tests/src/test_AnyDataObject.cpp
-      LINK GaudiKernel CppUnit::cppunit TEST)
-
-    gaudi_add_executable(test_DataHandleVector SOURCES tests/src/test_DataHandleVector.cpp
-      LINK GaudiKernel CppUnit::cppunit TEST)
-
-    gaudi_add_executable(test_GaudiTime SOURCES tests/src/test_GaudiTime.cpp
-      LINK GaudiKernel CppUnit::cppunit TEST)
-
-    gaudi_add_executable(test_GaudiTiming SOURCES tests/src/test_GaudiTiming.cpp
-      LINK GaudiKernel CppUnit::cppunit TEST)
-
-    gaudi_add_executable(test_LockedHandle SOURCES tests/src/test_LockedHandle.cpp
-      LINK GaudiKernel CppUnit::cppunit Boost::thread ${CMAKE_DL_LIBS} TEST)
-  endif()
-
   gaudi_add_executable(GaudiKernel_catch2_tests
     SOURCES
       tests/src/CounterSerializationTest.cpp
@@ -384,16 +364,17 @@ if(BUILD_TESTING)
       tests/src/test_finally.cpp
       tests/src/test_SmartIF.cpp
       tests/src/test_SmartRef.cpp
+      tests/src/test_SerializeSTL.cpp
+      tests/src/test_AnyDataObject.cpp
+      tests/src/test_GaudiTime.cpp
+      tests/src/test_GaudiTiming.cpp
+      tests/src/test_LockedHandle.cpp
     LINK
       GaudiKernel
       Catch2::Catch2WithMain
       nlohmann_json::nlohmann_json
-  )
-  catch_discover_tests(GaudiKernel_catch2_tests
-      TEST_PREFIX GaudiKernel.
-      PROPERTIES
-          LABELS "Gaudi"
-          LABELS "Gaudi.GaudiKernel"
+      Boost::thread
+    TEST
   )
 
   gaudi_add_pytest(tests/pytest)

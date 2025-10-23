@@ -66,7 +66,7 @@ endif()
 
 # Build and register tests
 if(BUILD_TESTING)
-  if(GAUDI_USE_CPPUNIT AND GAUDI_USE_XERCESC)
+  if(GAUDI_USE_XERCESC)
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     gaudi_add_executable(testXMLFileCatalogWrite
                           SOURCES
@@ -116,13 +116,8 @@ if(BUILD_TESTING)
       LINK
           Catch2::Catch2WithMain
           GaudiUtilsLib
+      TEST
   )
   target_include_directories(GaudiUtilsTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
   target_compile_definitions(GaudiUtilsTests PRIVATE BUILD_UNIT_TESTS)
-  catch_discover_tests(GaudiUtilsTests
-      TEST_PREFIX GaudiUtils.
-      PROPERTIES
-          LABELS "Gaudi"
-          LABELS "Gaudi.GaudiUtils"
-  )
 endif()

@@ -57,7 +57,6 @@ Depending on what was used to build Gaudi:
 * XercesC
 * CLHEP>=2.4.1.0
 * HepPDT
-* CppUnit
 * Doxygen>=1.8.15
 
 Depending on the platform:
@@ -126,7 +125,7 @@ set(CLHEP_FORCE_MODE CONFIG)
 set(deps AIDA HepPDT CLHEP XercesC)
 if(NOT CMAKE_FIND_PACKAGE_NAME)
   # these build-time only dependencies are not needed downstream
-  list(APPEND deps CppUnit Doxygen)
+  list(APPEND deps Doxygen)
 endif()
 
 option(GAUDI_ENABLE_GAUDIPARTPROP "Build the subdirectory GaudiPartProp" YES)
