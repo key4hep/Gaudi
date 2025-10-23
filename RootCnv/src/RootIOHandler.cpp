@@ -88,7 +88,8 @@ namespace GaudiRoot {
     /// Callback for reading the object
     virtual void get( TBuffer& b, void* obj );
     /// Callback for writing the object
-    virtual void put( TBuffer& b, void* obj );
+    virtual void    put( TBuffer& b, void* obj );
+    TClassStreamer* Generate() const override { return new IOHandler( *this ); }
   };
 
   template <>
