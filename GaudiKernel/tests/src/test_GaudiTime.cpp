@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -46,6 +46,7 @@ namespace GaudiKernelTest {
 
     CPPUNIT_TEST( test_nanoformat );
     CPPUNIT_TEST( test_format );
+    CPPUNIT_TEST( test_ordering );
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -70,6 +71,24 @@ namespace GaudiKernelTest {
       CPPUNIT_ASSERT_EQUAL( std::string( "2011-01-13 14:22:45" ), t.format( true, "%Y-%m-%d %H:%M:%S" ) );
       CPPUNIT_ASSERT_EQUAL( std::string( "2011-01-13 14:22:45.001" ), t.format( true, "%Y-%m-%d %H:%M:%S.%f" ) );
       CPPUNIT_ASSERT_EQUAL( std::string( "14:22:45 2011/01/13 " ), t.format( true, "%H:%M:%S %Y/%m/%d " ) );
+    }
+
+    void test_ordering() {
+      Gaudi::Time t1( 2011, 0, 13, 14, 22, 45, 1230000, true );
+      Gaudi::Time t2( 2011, 0, 13, 14, 22, 45, 1230000, true );
+      Gaudi::Time t3( 2011, 0, 13, 14, 22, 46, 1230000, true );
+
+      CPPUNIT_ASSERT( t1 == t2 );
+      CPPUNIT_ASSERT( t1 <= t2 );
+      CPPUNIT_ASSERT( t1 >= t2 );
+      CPPUNIT_ASSERT( !( t1 != t2 ) );
+
+      CPPUNIT_ASSERT( t2 < t3 );
+      CPPUNIT_ASSERT( t2 <= t3 );
+      CPPUNIT_ASSERT( t2 != t3 );
+      CPPUNIT_ASSERT( !( t2 == t3 ) );
+      CPPUNIT_ASSERT( t3 > t2 );
+      CPPUNIT_ASSERT( t3 >= t2 );
     }
 
     void setUp() override {}

@@ -13,11 +13,9 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-#include <iostream>
+#include <sys/time.h>
 
 using namespace Gaudi;
-
-#include <sys/time.h>
 
 //-----------------------------------------------------------------------------
 // Implementation file for class : Gaudi::Time
@@ -171,12 +169,10 @@ std::string Time::format( bool local, std::string spec ) const {
       pos = spec.find( "%f", pos + 1 ); // search for the next occurrence
     }
   }
-  const int MIN_BUF_SIZE = 128;
+  const std::size_t MIN_BUF_SIZE = 128;
   do {
     // Guess how much we'll expand.  If we go wrong, we'll expand again. (with a minimum)
-    result.resize( std::max<std::string::size_type>(
-                       result.size() * 2, std::max<std::string::size_type>( spec.size() * 2, MIN_BUF_SIZE ) ),
-                   0 );
+    result.resize( std::max( result.size() * 2, std::max( spec.size() * 2, MIN_BUF_SIZE ) ), 0 );
     length = ::strftime( &result[0], result.size(), spec.c_str(), &time );
   } while ( !length );
 

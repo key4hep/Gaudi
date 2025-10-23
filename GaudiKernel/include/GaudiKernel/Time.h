@@ -12,7 +12,14 @@
 
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/StreamBuffer.h>
+#include <cstdint>
+#include <iostream>
+#include <limits>
+#include <string>
+#include <string_view>
+#include <utility>
 
 /** @class TimeException Time.h GaudiKernel/Time.h
  *
@@ -57,7 +64,7 @@ namespace Gaudi {
     friend class Time;
 
   public:
-    typedef long long ValueType;
+    using ValueType = std::int64_t;
 
     /** Initialize an empty (zero) time difference.  */
     TimeSpan() = default;
@@ -85,17 +92,7 @@ namespace Gaudi {
 
     ValueType ns() const;
 
-    friend bool operator==( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) { return t1.ns() == t2.ns(); }
-
-    friend bool operator!=( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) { return t1.ns() != t2.ns(); }
-
-    friend bool operator<( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) { return t1.ns() < t2.ns(); }
-
-    friend bool operator<=( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) { return t1.ns() <= t2.ns(); }
-
-    friend bool operator>( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) { return t1.ns() > t2.ns(); }
-
-    friend bool operator>=( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) { return t1.ns() >= t2.ns(); }
+    friend auto operator<=>( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) = default;
 
     friend Gaudi::TimeSpan operator+( const Gaudi::TimeSpan& ts1, const Gaudi::TimeSpan& ts2 ) {
       return Gaudi::TimeSpan( ts1.ns() + ts2.ns() );
@@ -236,7 +233,7 @@ namespace Gaudi {
     friend class TimeSpan;
 
   public:
-    typedef long long ValueType;
+    using ValueType = std::int64_t;
 
     /** Symbolic names for months */
     enum Months {
@@ -255,13 +252,13 @@ namespace Gaudi {
     };
 
     /** Seconds in 24 hours.  */
-    static const int SECS_PER_DAY = 86400;
+    inline static constexpr int SECS_PER_DAY = 86400;
 
     /** Seconds in one hour hour.  */
-    static const int SECS_PER_HOUR = 3600;
+    inline static constexpr int SECS_PER_HOUR = 3600;
 
     /** Nanoseconds in one second.  */
-    static const ValueType SEC_NSECS = 1000000000;
+    inline static constexpr ValueType SEC_NSECS = 1000000000;
 
     /** Initialize an empty (zero) time value.  */
     Time() = default;
@@ -306,7 +303,7 @@ namespace Gaudi {
     ValueType ns() const;
 
     std::string format( bool local, std::string spec = "%c" ) const;
-    std::string nanoformat( size_t minwidth = 1, size_t maxwidth = 9 ) const;
+    std::string nanoformat( std::size_t minwidth = 1, std::size_t maxwidth = 9 ) const;
 
     static bool isLeap( int year );
 
@@ -314,17 +311,7 @@ namespace Gaudi {
     static unsigned toDosDate( Time time );
     static Time     fromDosDate( unsigned dosDate );
 
-    friend bool operator==( const Gaudi::Time& t1, const Gaudi::Time& t2 ) { return t1.ns() == t2.ns(); }
-
-    friend bool operator!=( const Gaudi::Time& t1, const Gaudi::Time& t2 ) { return t1.ns() != t2.ns(); }
-
-    friend bool operator<( const Gaudi::Time& t1, const Gaudi::Time& t2 ) { return t1.ns() < t2.ns(); }
-
-    friend bool operator<=( const Gaudi::Time& t1, const Gaudi::Time& t2 ) { return t1.ns() <= t2.ns(); }
-
-    friend bool operator>( const Gaudi::Time& t1, const Gaudi::Time& t2 ) { return t1.ns() > t2.ns(); }
-
-    friend bool operator>=( const Gaudi::Time& t1, const Gaudi::Time& t2 ) { return t1.ns() >= t2.ns(); }
+    friend auto operator<=>( const Gaudi::Time& t1, const Gaudi::Time& t2 ) = default;
 
   private:
     ValueType m_nsecs = 0; //< Time value as nsecs from #epoch().
@@ -377,7 +364,7 @@ namespace Gaudi {
   inline Time Time::epoch() { return 0LL; }
 
   /** Return the maximum time.  */
-  inline Time Time::max() { return 0x7fffffffffffffffLL; }
+  inline Time Time::max() { return std::numeric_limits<ValueType>::max(); }
 
   /** Check if the @a year is a leap-year.  */
   inline bool Time::isLeap( int year ) {
