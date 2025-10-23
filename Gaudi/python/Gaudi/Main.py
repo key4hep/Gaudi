@@ -460,23 +460,33 @@ class gaudimain(object):
             result = self.runParallel(ncpus)
         return result
 
-    def hookDebugger(self, debugger="gdb"):
-        import os
+    def hookDebugger(self):
+        """Hook gdb to the current session. This is done by forking
+        the current process and replacing the parent with gdb, while
+        the child continues to run the program.
+        """
 
-        self.log.info("attaching debugger to PID " + str(os.getpid()))
-        pid = os.spawnvp(
-            os.P_NOWAIT, debugger, [debugger, "-q", "python", str(os.getpid())]
-        )
+        child_pid = os.fork()
 
-        # give debugger some time to attach to the python process
-        import time
+        if child_pid == 0:
+            # CHILD PROCESS - runs the actual program
+            return
+        else:
+            # PARENT PROCESS - becomes GDB
 
-        time.sleep(5)
-
-        # verify the process' existence (will raise OSError if failed)
-        os.waitpid(pid, os.WNOHANG)
-        os.kill(pid, 0)
-        return
+            # Replace parent process with GDB
+            args = [arg for arg in sys.argv if arg != "--gdb"]
+            os.execvp(
+                "gdb",
+                [
+                    "gdb",
+                    "-q",
+                    "-p",
+                    str(child_pid),
+                    "-ex",
+                    f"set args {' '.join(args)}",
+                ],
+            )
 
     def runSerial(self, attach_debugger):
         try:
