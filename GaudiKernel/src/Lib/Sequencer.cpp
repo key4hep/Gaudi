@@ -269,9 +269,9 @@ namespace Gaudi {
           if ( theName == theType ) {
             // This means that we got something like "Type:invert",
             // so we have to strip the ":invert" from the type too.
-            theType = theType.substr( 0, invert );
+            theType.resize( invert );
           }
-          theName    = theName.substr( 0, invert );
+          theName.resize( invert );
           isInverted = true;
         }
         // Check whether the supplied name corresponds to an existing

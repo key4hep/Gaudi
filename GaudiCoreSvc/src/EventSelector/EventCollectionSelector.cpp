@@ -34,11 +34,11 @@ public:
   typedef std::list<std::string> ListName;
 
 private:
-  GenericAddress*                m_pAddressBuffer = nullptr;
-  const EventCollectionSelector* m_pSelector      = nullptr;
+  GenericAddress*                m_pAddressBuffer{ nullptr };
+  const EventCollectionSelector* m_pSelector{ nullptr };
   ListName                       m_files;
   std::string                    m_criteria;
-  ListName::const_iterator       m_fileIterator;
+  ListName::const_iterator       m_fileIterator{ m_files.begin() };
   std::string                    m_currentInput;
 
 public:

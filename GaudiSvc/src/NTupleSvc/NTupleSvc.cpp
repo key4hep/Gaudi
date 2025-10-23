@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -499,7 +499,7 @@ StatusCode NTupleSvc::save( const std::string& fullPath ) {
 
 /// Save N tuple to disk. Must be called in order to close the ntuple file properly
 StatusCode NTupleSvc::save( NTuple::Tuple* n_tuple ) {
-  NTuple::TupleImp* tuple = (NTuple::TupleImp*)n_tuple;
+  NTuple::TupleImp* tuple = dynamic_cast<NTuple::TupleImp*>( n_tuple );
   if ( tuple ) {
     try {
       IConversionSvc* pSvc = tuple->conversionService();
@@ -525,7 +525,7 @@ StatusCode NTupleSvc::save( DataObject* pParent, const std::string& relPath ) {
 
 /// Write single record to N tuple.
 StatusCode NTupleSvc::writeRecord( NTuple::Tuple* n_tuple ) {
-  NTuple::TupleImp* tuple = (NTuple::TupleImp*)n_tuple;
+  NTuple::TupleImp* tuple = dynamic_cast<NTuple::TupleImp*>( n_tuple );
   if ( tuple ) {
     try {
       IConversionSvc* pSvc = tuple->conversionService();
@@ -566,7 +566,7 @@ StatusCode NTupleSvc::writeRecord( DataObject* pParent, const std::string& relPa
 /// Read single record from N tuple.
 StatusCode NTupleSvc::readRecord( NTuple::Tuple* n_tuple ) {
   StatusCode        status = Status::INVALID_OBJECT;
-  NTuple::TupleImp* tuple  = (NTuple::TupleImp*)n_tuple;
+  NTuple::TupleImp* tuple  = dynamic_cast<NTuple::TupleImp*>( n_tuple );
   if ( tuple ) {
     try {
       IConversionSvc* pSvc = tuple->conversionService();

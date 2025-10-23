@@ -201,6 +201,10 @@ public:
   StreamBuffer( bool do_swap = true ) : m_swapEnabled( do_swap ) {}
   /// Standard destructor
   virtual ~StreamBuffer() { ::free( m_buffer ); }
+  /// No copy
+  StreamBuffer( const StreamBuffer& ) = delete;
+  /// No assignment
+  StreamBuffer& operator=( const StreamBuffer& ) = delete;
   /// Read access to data buffer
   const char* data() const { return m_buffer; }
   /// write access to data buffer
@@ -287,7 +291,7 @@ public:
     m_identifiedLinks.pop_back();
   }
   void addIdentifiedLink( const DataObject* pObject, long hint ) {
-    m_identifiedLinks.push_back( IdentifiedLink( (DataObject*)pObject, hint ) );
+    m_identifiedLinks.push_back( IdentifiedLink( const_cast<DataObject*>( pObject ), hint ) );
   }
 
   void getContainedLink( ContainedObject*& pObject, long& hint, long& link ) {
@@ -298,7 +302,7 @@ public:
     m_containedLinks.pop_back();
   }
   void addContainedLink( const ContainedObject* pObject, long hint, long link ) {
-    m_containedLinks.push_back( ContainedLink( (ContainedObject*)pObject, hint, link ) );
+    m_containedLinks.push_back( ContainedLink( const_cast<ContainedObject*>( pObject ), hint, link ) );
   }
 
 #ifdef USE_STREAM_ANALYSER

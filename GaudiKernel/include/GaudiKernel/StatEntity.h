@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -148,8 +148,8 @@ public:
         } else {
           auto fmt = std::string{ " | " }.append( fmtHead ).append(
               "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |" );
-          return o << boost::format{ fmt } % std::string{ "\"" }.append( name ).append( "\"" ) % nEntries() % sum() %
-                          mean() % standard_deviation() % min() % max();
+          return ( o << boost::format{ fmt } % std::string{ "\"" }.append( name ).append( "\"" ) % nEntries() % sum() %
+                            mean() % standard_deviation() % min() % max() );
         }
       } else {
         constexpr auto fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|";

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -329,7 +329,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
   TIter      bitr( lbr );
   while ( TObject* tobjb = bitr() ) {
 
-    TBranch* br = (TBranch*)tobjb;
+    TBranch* br = dynamic_cast<TBranch*>( tobjb );
     itemTitle   = br->GetTitle();
 
     int ipos = itemTitle.find( "::" );

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -84,7 +84,7 @@ namespace {
   bool operator==( CSTR c, const XMLTag& b ) { return c == b.m_str; }
   struct XMLCollection {
     DOMElement* m_node;
-    XMLCollection( DOMNode* n, bool use_children = true ) : m_node( (DOMElement*)n ) {
+    XMLCollection( DOMNode* n, bool use_children = true ) : m_node( dynamic_cast<DOMElement*>( n ) ) {
       if ( use_children ) {
         if ( m_node ) m_node = (DOMElement*)m_node->getFirstChild();
         if ( m_node && m_node->getNodeType() != DOMNode::ELEMENT_NODE ) ++( *this );
@@ -141,7 +141,7 @@ namespace {
         <!ATTLIST metadata att_value CDATA #REQUIRED>\
         ";
       static const size_t len   = strlen( dtd );
-      return new MemBufInputSource( (const XMLByte*)dtd, len, dtdID, false );
+      return new MemBufInputSource( reinterpret_cast<const XMLByte*>( dtd ), len, dtdID, false );
     }
   };
 
@@ -216,7 +216,7 @@ void XMLFileCatalog::init() {
       m_parser->parse( xmlFile.c_str() );
     } else {
       const std::string& s = EmptyCatalog;
-      MemBufInputSource  src( (const XMLByte*)s.c_str(), s.length(), "MemCatalog" );
+      MemBufInputSource  src( reinterpret_cast<const XMLByte*>( s.c_str() ), s.length(), "MemCatalog" );
       m_parser->parse( src );
     }
     m_doc = m_parser->getDocument();
@@ -234,7 +234,7 @@ string XMLFileCatalog::lookupFID( const std::string& fid ) const {
   e             = e ? e->getParentNode() : 0; // Mode up to <File>
   if ( e ) {
     if ( e->getAttributes() ) { // Need to check this. The node may be no DOMElement
-      char* nam = XMLString::transcode( ( (DOMElement*)e )->getAttribute( Attr_ID ) );
+      char* nam = XMLString::transcode( ( dynamic_cast<DOMElement*>( e ) )->getAttribute( Attr_ID ) );
       if ( nam ) result = nam;
       XMLString::release( &nam );
     }
@@ -330,7 +330,7 @@ void XMLFileCatalog::registerFID( CSTR fid ) const {
 void XMLFileCatalog::renamePFN( CSTR pfn, CSTR new_pfn ) const {
   DOMNode* node = getDoc( true )->getElementById( XMLStr( pfn ) );
   if ( node && node->getNodeType() == DOMNode::ELEMENT_NODE ) {
-    ( (DOMElement*)node )->setAttribute( Attr_name, XMLStr( new_pfn ) );
+    ( dynamic_cast<DOMElement*>( node ) )->setAttribute( Attr_name, XMLStr( new_pfn ) );
     m_update = true;
   }
 }

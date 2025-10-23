@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -112,19 +112,19 @@ public:
           CLID idd = id >> 16;
           switch ( idd ) {
           case CLID_ObjectList >> 16: /* ObjectList    */
-            access( (ObjectList<ContainedObject>*)base );
+            access( static_cast<ObjectList<ContainedObject>*>( base ) );
             break;
           case CLID_ObjectVector >> 16: /* ObjectVector  */
-            access( (ObjectVector<ContainedObject>*)base );
+            access( static_cast<ObjectVector<ContainedObject>*>( base ) );
             break;
           case ( CLID_ObjectVector + 0x00030000 ) >> 16: /* Keyed Map     */
-            access( (KeyedContainer<KeyedObject<int>, Containers::Map>*)base );
+            access( static_cast<KeyedContainer<KeyedObject<int>, Containers::Map>*>( base ) );
             break;
           case ( CLID_ObjectVector + 0x00040000 ) >> 16: /* Keyed Hashmap */
-            access( (KeyedContainer<KeyedObject<int>, Containers::HashMap>*)base );
+            access( static_cast<KeyedContainer<KeyedObject<int>, Containers::HashMap>*>( base ) );
             break;
           case ( CLID_ObjectVector + 0x00050000 ) >> 16: /* Keyed array   */
-            access( (KeyedContainer<KeyedObject<int>, Containers::Array>*)base );
+            access( static_cast<KeyedContainer<KeyedObject<int>, Containers::Array>*>( base ) );
             break;
           }
         }

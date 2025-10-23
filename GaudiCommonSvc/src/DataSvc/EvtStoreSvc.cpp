@@ -157,7 +157,7 @@ namespace {
     }
   };
 
-  StatusCode dummy( std::string s ) {
+  StatusCode dummy( const std::string& s ) {
     std::string trace;
     System::backTrace( trace, 6, 2 );
     throw std::logic_error{ "Unsupported Function Called: " + s + "\n" + trace };
@@ -651,7 +651,7 @@ StatusCode EvtStoreSvc::unregisterObject( std::string_view sr ) {
   return fwd( [&]( Partition& p ) { return p.store->erase( sr ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE; } );
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item ) {
-  auto i = std::find( m_preLoads.begin(), m_preLoads.begin(), item );
+  auto i = std::find( m_preLoads.begin(), m_preLoads.end(), item );
   if ( i == m_preLoads.end() ) m_preLoads.push_back( item );
   return StatusCode::SUCCESS;
 }

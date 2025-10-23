@@ -52,7 +52,7 @@ public:
    *
    *  @return EventContext of the component that initiated the incident
    */
-  EventContext context() const { return m_ctx; }
+  const EventContext& context() const { return m_ctx; }
 
 private:
   std::string  m_source; ///< Incident source

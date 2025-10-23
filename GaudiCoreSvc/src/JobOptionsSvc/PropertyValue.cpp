@@ -70,7 +70,7 @@ std::string gp::PropertyValue::ToString() const {
   return std::visit(
       []( const auto& v ) {
         // make sure to be consistent by explicitly re-using `GaudiUtils::operator<<`
-        using GaudiUtils::operator<<;
+        using GaudiUtils::operator<<; // cppcheck-suppress constStatement
         std::ostringstream s{};
         s << v;
         return s.str();

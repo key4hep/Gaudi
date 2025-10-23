@@ -518,7 +518,8 @@ inline StatusCode KeyedContainer<DATATYPE, MAPPING>::update() {
 // Retrieve the full content of the object container by reference.
 template <class DATATYPE, class MAPPING>
 inline const std::vector<const ContainedObject*>* KeyedContainer<DATATYPE, MAPPING>::containedObjects() const {
-  return (const std::vector<const ContainedObject*>*)( ( 0 == m_cont.isDirect() ) ? m_random : &m_sequential );
+  return reinterpret_cast<const std::vector<const ContainedObject*>*>( ( 0 == m_cont.isDirect() ) ? m_random
+                                                                                                  : &m_sequential );
 }
 
 template <class DATATYPE, class MAPPING>
@@ -624,7 +625,7 @@ inline void KeyedContainer<DATATYPE, MAPPING>::erase( iterator start_pos, iterat
   }
   std::for_each( start_pos, stop_pos, _RemoveRelease( this ) );
   seq_type*                    sptr = &m_sequential; // avoid problems with strict-aliasing rules
-  std::vector<void*>*          v    = (std::vector<void*>*)sptr;
+  std::vector<void*>*          v    = reinterpret_cast<std::vector<void*>*>( sptr );
   std::vector<void*>::iterator i1   = v->begin() + std::distance( m_sequential.begin(), start_pos );
   std::vector<void*>::iterator i2   = v->begin() + std::distance( m_sequential.begin(), stop_pos );
   m_cont.erase( i1, i2 ); // cppcheck-suppress iterators1
