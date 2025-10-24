@@ -12,8 +12,7 @@
 
 # Build the library
 gaudi_add_library(GaudiMPLib
-                  SOURCES src/Lib/PyROOTPickle.cpp
-                          src/Lib/TESSerializer.cpp
+                  SOURCES src/Lib/TESSerializer.cpp
                   LINK
                      PUBLIC GaudiKernel
                             Python::Python

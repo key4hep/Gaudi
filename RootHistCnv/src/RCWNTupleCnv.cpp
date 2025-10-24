@@ -213,12 +213,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
     //  	<< (void*)item_buf_pos[i_item] << ")"
     //  	<< endmsg;
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 15, 0 )
-    auto br = new TBranch( rtree,
-#else
-    TBranch* br = new TBranch(
-#endif
-                           item_fullname[i_item].c_str(), buf_pos, itr->second.c_str(), basket_size );
+    auto br = new TBranch( rtree, item_fullname[i_item].c_str(), buf_pos, itr->second.c_str(), basket_size );
     if ( itr->first != "AUTO_BLK" ) {
       std::string title = itr->first;
       title             = itr->first + "::" + br->GetTitle();

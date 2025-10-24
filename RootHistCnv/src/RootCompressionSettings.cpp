@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -39,10 +39,8 @@ RootHistCnv::RootCompressionSettings::RootCompressionSettings( const std::string
       alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZMA;
     } else if ( alg == "LZ4" ) {
       alg_code = ROOT::RCompressionSetting::EAlgorithm::kLZ4;
-#if ROOT_VERSION_CODE >= ROOT_VERSION( 6, 20, 0 )
     } else if ( alg == "ZSTD" ) {
       alg_code = ROOT::RCompressionSetting::EAlgorithm::kZSTD;
-#endif
     } else {
       throw std::runtime_error( "ERROR: Unknown ROOT compression algorithm:" + alg );
     }
