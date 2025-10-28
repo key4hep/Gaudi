@@ -27,6 +27,9 @@
 // Framework include files
 #include "RndmEngine.h"
 #include <CLHEP/Random/Random.h>
+#include <memory>
+#include <mutex>
+#include <utility>
 
 // Forward declarations
 namespace CLHEP {
@@ -35,9 +38,88 @@ namespace CLHEP {
 
 namespace HepRndm {
 
+  template <typename Engine>
+  class SynchronizedEngine : public Engine {
+
+  private:
+    mutable std::mutex m_mutex;
+
+  public:
+    using Engine::Engine;
+
+  public:
+    // reimplement anything that should be locked for thread safety
+
+    double flat() override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::flat();
+    }
+    void flatArray( const int size, double* vect ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      Engine::flatArray( size, vect );
+    }
+    void setSeed( long seed, int n ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::setSeed( seed, n );
+    }
+    void setSeeds( const long* seeds, int n ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::setSeeds( seeds, n );
+    }
+    void saveStatus( const char filename[] = "Config.conf" ) const override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::saveStatus( filename );
+    }
+    void restoreStatus( const char filename[] = "Config.conf" ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::restoreStatus( filename );
+    }
+    void showStatus() const override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::showStatus();
+    }
+    std::ostream& put( std::ostream& os ) const override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::put( os );
+    }
+    std::istream& get( std::istream& is ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::get( is );
+    }
+    std::istream& getState( std::istream& is ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::getState( is );
+    }
+    std::vector<unsigned long> put() const override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::put();
+    }
+    bool get( const std::vector<unsigned long>& v ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::get( v );
+    }
+    bool getState( const std::vector<unsigned long>& v ) override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::getState( v );
+    }
+    operator double() override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::operator double();
+    }
+    operator float() override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::operator float();
+    }
+    operator unsigned int() override {
+      std::lock_guard<std::mutex> lock( m_mutex );
+      return Engine::operator unsigned int();
+    }
+  };
+
   class BaseEngine : public RndmEngine {
   protected:
     std::unique_ptr<CLHEP::HepRandomEngine> m_hepEngine;
+    Gaudi::Property<bool>                   m_threadSafe{ this, "ThreadSafe", true };
 
   public:
     BaseEngine( const std::string& name, ISvcLocator* loc ) : RndmEngine( name, loc ) {}
@@ -47,7 +129,7 @@ namespace HepRndm {
     double rndm() const override { return m_hepEngine->flat(); }
 
     StatusCode finalize() override {
-      if ( m_hepEngine ) CLHEP::HepRandom::setTheEngine( nullptr );
+      if ( m_hepEngine ) { CLHEP::HepRandom::setTheEngine( nullptr ); }
       m_hepEngine.reset();
       return RndmEngine::finalize();
     }
@@ -55,5 +137,10 @@ namespace HepRndm {
   protected:
     void                                            initEngine() { m_hepEngine = createEngine(); }
     virtual std::unique_ptr<CLHEP::HepRandomEngine> createEngine() = 0;
+    template <typename Engine, typename... Args>
+    auto create_engine( Args&&... args ) {
+      return ( m_threadSafe.value() ? std::make_unique<SynchronizedEngine<Engine>>( std::forward<Args>( args )... )
+                                    : std::make_unique<Engine>( std::forward<Args>( args )... ) );
+    }
   };
 } // namespace HepRndm

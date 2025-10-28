@@ -41,6 +41,12 @@ if(GAUDI_USE_CLHEP)
                                    src/RndmGenSvc/HepRndmGenerators.cpp
                                    src/RndmGenSvc/RndmGen.cpp)
    target_link_libraries(GaudiSvc PRIVATE CLHEP::CLHEP)
+
+    gaudi_add_executable(test_random_mt
+        SOURCES tests/src/test_random_mt.cpp
+        LINK GaudiKernel
+        TEST
+    )
 endif()
 
 # Install python modules
