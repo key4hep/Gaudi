@@ -104,7 +104,7 @@ stdout: |-
   ServiceManager      DEBUG Starting service RootCnvSvc
   ServiceManager      DEBUG Starting service EventLoopMgr
   ApplicationMgr       INFO Application Manager Started successfully
-  RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+  RndmGenSvc.Engine    INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>
   RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
   WriteAlg          VERBOSE ServiceLocatorHelper::service: found service RndmGenSvc

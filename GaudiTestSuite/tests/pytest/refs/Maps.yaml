@@ -2,35 +2,36 @@ stdout: "JobOptionsSvc        INFO Job options successfully file Maps.opts\nAppl
   \    SUCCESS\n====================================================================================================================================\n\
   ====================================================================================================================================\n\
   ApplicationMgr       INFO Application Manager Configured successfully\nRndmGenSvc.Engine\
-  \    INFO Generator engine type:CLHEP::RanluxEngine\nRndmGenSvc.Engine    INFO Current\
-  \ Seed:1234567 Luxury:3\nRndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>\n\
-  EventLoopMgr         INFO Unable to locate service \"EventSelector\": No events\
-  \ will be processed from external input.\nApplicationMgr       INFO Application\
-  \ Manager Initialized successfully\nApplicationMgr       INFO Application Manager\
-  \ Started successfully\nMap               SUCCESS  Inserting key -2 1st:  True True\
-  \ True True\nMap               SUCCESS 1 Map1: { -2 : -1.5600000 }\nMap        \
-  \       SUCCESS 1 Map2: { -2 : -1.5600000 }\nMap               SUCCESS 1 Map3: {\
-  \ -2 : -1.5600000 }\nMap               SUCCESS 1 Map4: { -2 : -1.5600000 }\nMap\
-  \               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0\n\
-  Map               SUCCESS 2 Map1: { -2 : -1.5600000 }\nMap               SUCCESS\
-  \ 2 Map2: { -2 : -1.5600000 }\nMap               SUCCESS 2 Map3: { -2 : -1.5600000\
-  \ }\nMap               SUCCESS 2 Map4: { -2 : -1.5600000 }\nMap               SUCCESS\
-  \  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0\nMap    \
-  \           SUCCESS 3 Map1: { -2 : -1.5600000 , 7 : 0.0000000 }\nMap           \
-  \    SUCCESS 3 Map2: { -2 : -1.5600000 }\nMap               SUCCESS 3 Map3: { -2\
-  \ : -1.5600000 , 7 : 0.0000000 }\nMap               SUCCESS 3 Map4: { -2 : -1.5600000\
-  \ , 7 : 0.0000000 }\nMap               SUCCESS  Inserting key -2 2nd:  False False\
-  \ False False\nMap               SUCCESS 4 Map1: { -2 : -1.5600000 , 7 : 0.0000000\
-  \ }\nMap               SUCCESS 4 Map2: { -2 : -1.5600000 }\nMap               SUCCESS\
-  \ 4 Map3: { -2 : -1.5600000 , 7 : 0.0000000 }\nMap               SUCCESS 4 Map4:\
-  \ { -2 : -1.5600000 , 7 : 0.0000000 }\nMap               SUCCESS  Erased :  True\
-  \ True True True\nMap               SUCCESS 5 Map1: { 7 : 0.0000000 }\nMap     \
-  \          SUCCESS 5 Map2: {  }\nMap               SUCCESS 5 Map3: { 7 : 0.0000000\
-  \ }\nMap               SUCCESS 5 Map4: { 7 : 0.0000000 }\nMap               SUCCESS\
-  \  Count key    0 :  0 0 0 0\nMap               SUCCESS  Count key    1 :  0 0 0\
-  \ 0\nMap               SUCCESS  Count key    7 :  1 0 1 1\nMap               SUCCESS\
-  \  Count key -100 :  0 0 0 0\nMap               SUCCESS  Inserting key 8 1st:  True\
-  \ True True True\nMap               SUCCESS 1 Map1: { 7 : 0.0000000 , 8 : 0.40000000\
+  \    INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>\n\
+  RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3\nRndmGenSvc           INFO\
+  \ Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>\nEventLoopMgr       \
+  \  INFO Unable to locate service \"EventSelector\": No events will be processed\
+  \ from external input.\nApplicationMgr       INFO Application Manager Initialized\
+  \ successfully\nApplicationMgr       INFO Application Manager Started successfully\n\
+  Map               SUCCESS  Inserting key -2 1st:  True True True True\nMap     \
+  \          SUCCESS 1 Map1: { -2 : -1.5600000 }\nMap               SUCCESS 1 Map2:\
+  \ { -2 : -1.5600000 }\nMap               SUCCESS 1 Map3: { -2 : -1.5600000 }\nMap\
+  \               SUCCESS 1 Map4: { -2 : -1.5600000 }\nMap               SUCCESS \
+  \     CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0\nMap               SUCCESS\
+  \ 2 Map1: { -2 : -1.5600000 }\nMap               SUCCESS 2 Map2: { -2 : -1.5600000\
+  \ }\nMap               SUCCESS 2 Map3: { -2 : -1.5600000 }\nMap               SUCCESS\
+  \ 2 Map4: { -2 : -1.5600000 }\nMap               SUCCESS  NON-CONST:   map1['7']:\
+  \ 0, map2['7']: 0, map3['7']: 0, map4['7']: 0\nMap               SUCCESS 3 Map1:\
+  \ { -2 : -1.5600000 , 7 : 0.0000000 }\nMap               SUCCESS 3 Map2: { -2 :\
+  \ -1.5600000 }\nMap               SUCCESS 3 Map3: { -2 : -1.5600000 , 7 : 0.0000000\
+  \ }\nMap               SUCCESS 3 Map4: { -2 : -1.5600000 , 7 : 0.0000000 }\nMap\
+  \               SUCCESS  Inserting key -2 2nd:  False False False False\nMap   \
+  \            SUCCESS 4 Map1: { -2 : -1.5600000 , 7 : 0.0000000 }\nMap          \
+  \     SUCCESS 4 Map2: { -2 : -1.5600000 }\nMap               SUCCESS 4 Map3: { -2\
+  \ : -1.5600000 , 7 : 0.0000000 }\nMap               SUCCESS 4 Map4: { -2 : -1.5600000\
+  \ , 7 : 0.0000000 }\nMap               SUCCESS  Erased :  True True True True\n\
+  Map               SUCCESS 5 Map1: { 7 : 0.0000000 }\nMap               SUCCESS 5\
+  \ Map2: {  }\nMap               SUCCESS 5 Map3: { 7 : 0.0000000 }\nMap         \
+  \      SUCCESS 5 Map4: { 7 : 0.0000000 }\nMap               SUCCESS  Count key \
+  \   0 :  0 0 0 0\nMap               SUCCESS  Count key    1 :  0 0 0 0\nMap    \
+  \           SUCCESS  Count key    7 :  1 0 1 1\nMap               SUCCESS  Count\
+  \ key -100 :  0 0 0 0\nMap               SUCCESS  Inserting key 8 1st:  True True\
+  \ True True\nMap               SUCCESS 1 Map1: { 7 : 0.0000000 , 8 : 0.40000000\
   \ }\nMap               SUCCESS 1 Map2: { 8 : 0.40000000 }\nMap               SUCCESS\
   \ 1 Map3: { 7 : 0.0000000 , 8 : 0.40000000 }\nMap               SUCCESS 1 Map4:\
   \ { 7 : 0.0000000 , 8 : 0.40000000 }\nMap               SUCCESS      CONST:   map2['1']:\

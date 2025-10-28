@@ -9,7 +9,7 @@ stdout: |-
   ServiceManager      DEBUG Initializing service EventLoopMgr
   EventLoopMgr        DEBUG Creating Top Algorithm RandomNumberAlg with name RandomNumberAlg
   TimelineSvc         DEBUG initialize
-  RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+  RndmGenSvc.Engine    INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>
   RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
   HistogramPersis...   INFO Added successfully Conversion service RootHistSvc

@@ -35,7 +35,7 @@ stdout: |-
   EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
-  RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+  RndmGenSvc.Engine    INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>
   RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
   ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1577836801.001 0 (-1) 1 (-1) 2 (-1)

@@ -83,23 +83,13 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistWrite.opts
   \ locate service \"EventSelector\": No events will be processed from external input.\e\
   [m\nApplicationMgr       INFO Application Manager Initialized successfully\e[m\n\
   ApplicationMgr       INFO Application Manager Started successfully\e[m\nRndmGenSvc.Engine\
-  \    INFO Generator engine type:CLHEP::RanluxEngine\e[m\nRndmGenSvc.Engine    INFO\
-  \ Current Seed:1234567 Luxury:3\e[m\nRndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>\e\
-  [m\nTHistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared\
-  \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH1F\e[m\nTHistSvc    \
-  \        DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M:\
-  \ ######## m: 0x######## o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG\
-  \ getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: ######## m:\
-  \ 0x######## o: 0x######## T: 1 TH3F\e[m\nTHistSvc            DEBUG getSharedHist:\
-  \ found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: ######## m: 0x########\
-  \ o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID:\
-  \ id: /rec/gauss2d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1\
-  \ TH2F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared\
-  \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH3F\e[m\nTHistSvc    \
-  \        DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s:\
-  \ 1 M: ######## m: 0x######## o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG\
-  \ getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: ######## m:\
-  \ 0x######## o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG getSharedHist:\
+  \    INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>\e\
+  [m\nRndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3\e[m\nRndmGenSvc    \
+  \       INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>\e[m\nTHistSvc\
+  \            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t:\
+  \ 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH1F\e[m\nTHistSvc       \
+  \     DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: ########\
+  \ m: 0x######## o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG getSharedHist:\
   \ found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: ######## m: 0x######## o:\
   \ 0x######## T: 1 TH3F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID:\
   \ id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x########\
@@ -193,34 +183,45 @@ stdout: "JobOptionsSvc        INFO Job options successfully file THistWrite.opts
   \ found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: ######## m: 0x######## o:\
   \ 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID:\
   \ id: /rec/gauss3d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1\
-  \ TH3F\e[m\nApplicationMgr       INFO Application Manager Stopped successfully\e\
-  [m\nTHistWrite           INFO Finalizing...\e[m\nTHistSvc            DEBUG vhid\
-  \ for /temp/TempHist7 is empty. deleting\e[m\nTHistSvc            DEBUG dumping\
-  \ THistSvc contents\nm_hlist:  size: 12\n - id: /new/Tree2 t: 1 s: 0 M: ########\
-  \ m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n - id: /rec/gauss2d\
-  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH2F :: [0x########] 1 {[0x########]}\n\
-  \ - id: /rec/gauss2d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T:\
-  \ 1 TH2F :: [0x########] 1 {[0x########]}\n - id: /rec/gauss3d t: 0 s: 0 M: ########\
-  \ m: 0 o: 0x######## T: 1 TH3F :: [0x########] 1 {[0x########]}\n - id: /rec/gauss3d_shared\
-  \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH3F :: [0x########] 1\
-  \ {[0x########]}\n - id: /rec/prof t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1\
-  \ TProfile :: [0x########] 1 {[0x########]}\n - id: /rec/trees/stuff/tree1 t: 0\
-  \ s: 0 M: ######## m: 0 o: 0x######## T: 2 TTree :: [0x########] 1 {[0x########]}\n\
-  \ - id: /temp/TempHist1 t: 1 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########]\
-  \ 1 {[0x########]}\n - id: /temp/TempHist5 t: 1 s: 0 M: ######## m: 0 o: 0x########\
-  \ T: 1 TH1F :: [0x########] 1 {[0x########]}\n - id: /temp/other/TempHist1a t: 1\
-  \ s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n\
-  \ - id: /upd/xxx/gauss1d t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########]\
-  \ 1 {[0x########]}\n - id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: ######## m: 0x########\
-  \ o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\nm_uids: 12\n - /new/Tree2\
-  \  [0x########]\n - /rec/gauss2d  [0x########]\n - /rec/gauss2d_shared  [0x########]\n\
-  \ - /rec/gauss3d  [0x########]\n - /rec/gauss3d_shared  [0x########]\n - /rec/prof\
-  \  [0x########]\n - /rec/trees/stuff/tree1  [0x########]\n - /temp/TempHist1  [0x########]\n\
-  \ - /temp/TempHist5  [0x########]\n - /temp/other/TempHist1a  [0x########]\n - /upd/xxx/gauss1d\
-  \  [0x########]\n - /upd/xxx/gauss1d_shared  [0x########]\nm_ids: 12\n - TempHist1\
-  \  [0x########]\n - TempHist5  [0x########]\n - Tree2  [0x########]\n - gauss2d\
-  \  [0x########]\n - gauss2d_shared  [0x########]\n - gauss3d  [0x########]\n - gauss3d_shared\
-  \  [0x########]\n - other/TempHist1a  [0x########]\n - prof  [0x########]\n - trees/stuff/tree1\
+  \ TH3F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared\
+  \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH1F\e[m\nTHistSvc    \
+  \        DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M:\
+  \ ######## m: 0x######## o: 0x######## T: 1 TH2F\e[m\nTHistSvc            DEBUG\
+  \ getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: ######## m:\
+  \ 0x######## o: 0x######## T: 1 TH3F\e[m\nTHistSvc            DEBUG getSharedHist:\
+  \ found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: ######## m: 0x########\
+  \ o: 0x######## T: 1 TH1F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID:\
+  \ id: /rec/gauss2d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1\
+  \ TH2F\e[m\nTHistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared\
+  \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH3F\e[m\nApplicationMgr\
+  \       INFO Application Manager Stopped successfully\e[m\nTHistWrite          \
+  \ INFO Finalizing...\e[m\nTHistSvc            DEBUG vhid for /temp/TempHist7 is\
+  \ empty. deleting\e[m\nTHistSvc            DEBUG dumping THistSvc contents\nm_hlist:\
+  \  size: 12\n - id: /new/Tree2 t: 1 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F\
+  \ :: [0x########] 1 {[0x########]}\n - id: /rec/gauss2d t: 0 s: 0 M: ######## m:\
+  \ 0 o: 0x######## T: 1 TH2F :: [0x########] 1 {[0x########]}\n - id: /rec/gauss2d_shared\
+  \ t: 0 s: 1 M: ######## m: 0x######## o: 0x######## T: 1 TH2F :: [0x########] 1\
+  \ {[0x########]}\n - id: /rec/gauss3d t: 0 s: 0 M: ######## m: 0 o: 0x######## T:\
+  \ 1 TH3F :: [0x########] 1 {[0x########]}\n - id: /rec/gauss3d_shared t: 0 s: 1\
+  \ M: ######## m: 0x######## o: 0x######## T: 1 TH3F :: [0x########] 1 {[0x########]}\n\
+  \ - id: /rec/prof t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TProfile :: [0x########]\
+  \ 1 {[0x########]}\n - id: /rec/trees/stuff/tree1 t: 0 s: 0 M: ######## m: 0 o:\
+  \ 0x######## T: 2 TTree :: [0x########] 1 {[0x########]}\n - id: /temp/TempHist1\
+  \ t: 1 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n\
+  \ - id: /temp/TempHist5 t: 1 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########]\
+  \ 1 {[0x########]}\n - id: /temp/other/TempHist1a t: 1 s: 0 M: ######## m: 0 o:\
+  \ 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n - id: /upd/xxx/gauss1d\
+  \ t: 0 s: 0 M: ######## m: 0 o: 0x######## T: 1 TH1F :: [0x########] 1 {[0x########]}\n\
+  \ - id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: ######## m: 0x######## o: 0x########\
+  \ T: 1 TH1F :: [0x########] 1 {[0x########]}\nm_uids: 12\n - /new/Tree2  [0x########]\n\
+  \ - /rec/gauss2d  [0x########]\n - /rec/gauss2d_shared  [0x########]\n - /rec/gauss3d\
+  \  [0x########]\n - /rec/gauss3d_shared  [0x########]\n - /rec/prof  [0x########]\n\
+  \ - /rec/trees/stuff/tree1  [0x########]\n - /temp/TempHist1  [0x########]\n - /temp/TempHist5\
+  \  [0x########]\n - /temp/other/TempHist1a  [0x########]\n - /upd/xxx/gauss1d  [0x########]\n\
+  \ - /upd/xxx/gauss1d_shared  [0x########]\nm_ids: 12\n - TempHist1  [0x########]\n\
+  \ - TempHist5  [0x########]\n - Tree2  [0x########]\n - gauss2d  [0x########]\n\
+  \ - gauss2d_shared  [0x########]\n - gauss3d  [0x########]\n - gauss3d_shared  [0x########]\n\
+  \ - other/TempHist1a  [0x########]\n - prof  [0x########]\n - trees/stuff/tree1\
   \  [0x########]\n - xxx/gauss1d  [0x########]\n - xxx/gauss1d_shared  [0x########]\n\
   m_tobjs: 12\n - 0x######## -> id: /new/Tree2 t: 1 s: 0 M: ######## m: 0 o: 0x########\
   \ T: 1 TH1F\n - 0x######## -> id: /rec/gauss2d t: 0 s: 0 M: ######## m: 0 o: 0x########\

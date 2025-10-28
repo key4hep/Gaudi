@@ -8,7 +8,7 @@ stdout: |-
   HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
   ApplicationMgr       INFO Application Manager Initialized successfully
   ApplicationMgr       INFO Application Manager Started successfully
-  RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+  RndmGenSvc.Engine    INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>
   RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
   RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
   Histos2              INFO Booked 2 Histogram(s) : 1D=2 2D=0 3D=0 1DProf=0 2DProf=0 3DProf=0
