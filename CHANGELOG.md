@@ -1,9 +1,88 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
+Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Frank Winklmeier @fwinkl
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+
+
+## [v40r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r1) - 2025-10-28
+This is a minor release with a number of fixes and improvements, but also
+cleanups, new features and the deprecation of some APIs.
+
+Apart from some occasional compile time warning or change in the standard
+output, this release is backward compatible, possibly with the only exception of
+a change in `ServiceLocatorHelper` that was meant to be applied in
+[v40r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r0) (gaudi/Gaudi!1800).
+
+A special thank to all the people that contributed to this release:
+@fwinkl,
+@graven,
+@jcarcell,
+@jonrob,
+@sailer,
+@sponce.
+
+### Changed
+- Drop support for ROOT<6.20 (gaudi/Gaudi!1831)
+- Port `CppUnit` tests to `Catch2` and improve `Catch2` support (gaudi/Gaudi#377, gaudi/Gaudi!1827)
+- Refactor `Time` and `TimeSpan` for modern C++ and add includes (gaudi/Gaudi!1826)
+- Deprecate direct access to `queryInterface` (gaudi/Gaudi#371, gaudi/Gaudi!1823)
+- Migrate to `std::format` where possible (gaudi/Gaudi!1804)
+- Avoid non conventional file extensions (gaudi/Gaudi!1825)
+- Add an `AllowedPublicTools` property to the ToolSvc (gaudi/Gaudi!1820)
+- Bump version to 40.1 (gaudi/Gaudi!1813)
+- Prefer `std::ranges` over ranges-v3 (gaudi/Gaudi!1817)
+- `[Hash]Map`: move stream operators from SerializeSTL (gaudi/Gaudi!1810)
+- `AlgResourcePool`: remove usage of SmartIF for algorithms (gaudi/Gaudi#154, gaudi/Gaudi!1793)
+- Require cmake >=3.29 and switch view builds to LCG_107 (gaudi/Gaudi#321, gaudi/Gaudi!1806)
+- Some simplifications of `Gaudi::Functional::details` (gaudi/Gaudi!1805)
+- Prefer C++20 + fmt + string_view over `boost::algorithm` (gaudi/Gaudi!1803)
+- Remove Windows support from code base (gaudi/Gaudi#365, gaudi/Gaudi!1794)
+- `GaudiConfig2`: raise exception if custom semantics cannot be found (gaudi/Gaudi#125, gaudi/Gaudi!1796)
+- `StringKey`: modernize code and add heterogeneous lookups (gaudi/Gaudi#372, gaudi/Gaudi!1788)
+- `System`: deprecate instructionsetLevel (gaudi/Gaudi#167, gaudi/Gaudi!1791)
+- Remove support for Range-v3 < 0.9 (gaudi/Gaudi#363, gaudi/Gaudi!1790)
+- `MsgCounter`: remove constructor from int (gaudi/Gaudi#242, gaudi/Gaudi!1792)
+- Factorized out creation of graphs from `AvalancheScheduler` and reused it to dump data dependencies in `HiveDataBroker` (gaudi/Gaudi!1779)
+
+### Added
+- `ContextSpecificData`: add dereference operators (gaudi/Gaudi!1829)
+- `Property`: add support for standard <format> library (gaudi/Gaudi!1807)
+- `PeriodicAction`: add option for maximum number of repetitions (gaudi/Gaudi!1815)
+- `GaudiConfig2`: add merge semantics for maps (gaudi/Gaudi!1783)
+- `Algorithm`: release tools in finalize (gaudi/Gaudi#23, gaudi/Gaudi!1799)
+- Add `KeyedContainer::insert` methods accepting `std::unique_ptr` (gaudi/Gaudi!1812)
+- Implement a `replace_all` function not to pull Boost in a header (gaudi/Gaudi!1768)
+
+### Fixed
+- `RndmGenSvc`: Add mutex locks around the underlying `CLHEP::HepRandomEngine` for thread safety (gaudi/Gaudi!1824)
+- More paranoid error checking in `IFileAccess::read` (gaudi/Gaudi!1835)
+- `IToolSvc`: replace C-style cast with `Gaudi::Cast` (gaudi/Gaudi!1830)
+- Fixed behavior of Streamers of ROOT in case EnableThreadSafety is activated (gaudi/Gaudi!1833)
+- Fixes for cppcheck 2.18 (gaudi/Gaudi!1828)
+- Add support for restarting when using `--gdb` (gaudi/Gaudi!1822)
+- Fix compiler warnings related to `extern "C"` (gaudi/Gaudi!1778)
+- Fix clang warning about unused variable (gaudi/Gaudi!1821)
+- Update external dependencies documentation and remove unused profiling utilities (gaudi/Gaudi#315, gaudi/Gaudi!1816)
+- `ServiceLocatorHelper`: remove methods retrieving bare service pointers (gaudi/Gaudi!1800)
+- `PeriodicAction`: protect against zero duration (gaudi/Gaudi!1818)
+- `GaudiToolbox`: do not install test executables (gaudi/Gaudi#244, gaudi/Gaudi!1797)
+- `PeriodicAction`: use `steady_clock` (gaudi/Gaudi!1814)
+- Add `#pragma once` to headers that do not have it (gaudi/Gaudi!1811)
+- `HiveDataBroker` should take extra{Out,In}putDeps into account (gaudi/Gaudi!1808)
+- `GaudiDependencies`: remove Boost::system, since that is header-only since 1.69 (gaudi/Gaudi!1809)
+- Disable stacktrace in event timeout test (gaudi/Gaudi#349, gaudi/Gaudi!1798)
+- Const correct usage of `DataObjectHandle<T>::get` (gaudi/Gaudi!1802)
+- `DataSvc`: rename InhibitPathes to InhibitPaths (gaudi/Gaudi#234, gaudi/Gaudi!1789)
+- CI: limit ctest load (gaudi/Gaudi!1795)
+- Use dbm.gnu with Python >= 3.13 (gaudi/Gaudi#368, gaudi/Gaudi!1777)
+- `GaudiExeTest`: flag test_stdout as skipped if there's no reference (gaudi/Gaudi!1780)
+- Add `CMAKE_CROSSCOMPILING_EMULATOR` to the invocation of pytest (gaudi/Gaudi!1784)
+- Fix ambiguity when comparing SmartRef<T> to T* (gaudi/Gaudi!1786)
+- `IAuditor`: define static strings in implementation (gaudi/Gaudi!1785)
+- Improve `SmartRef` comparison to pointers (gaudi/Gaudi!1776)
+- `IAuditor`: replace constexpr string with const (gaudi/Gaudi!1781)
 
 
 ## [v40r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r0) - 2025-07-03
