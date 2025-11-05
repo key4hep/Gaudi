@@ -109,4 +109,14 @@ namespace Gaudi::details {
     return minBufferSize;
   }
 
+  void BranchWrapper::padEntries() {
+    if ( !m_branch ) return;
+    auto nEvents  = m_branch->GetTree()->GetEntries();
+    auto nEntries = m_branch->GetEntries();
+    if ( nEntries < nEvents ) {
+      m_branch->SetAddress( nullptr );
+      for ( auto i = nEntries; i < nEvents; i++ ) { m_branch->Fill(); }
+    }
+  }
+
 } // namespace Gaudi::details

@@ -47,6 +47,8 @@ namespace Gaudi {
       /// compute optimal buffer size to fit given number of element per basket, respecting given min and max
       unsigned int computeOptimalBufferSize( unsigned int minBufferSize, unsigned int maxBufferSize,
                                              unsigned int approxEventsPerBasket, unsigned int splitLevel );
+      /// pad the number of item in the branch to the one of the Tree in which it leaves by adding empty entries
+      void padEntries();
     };
 
   } // namespace details
