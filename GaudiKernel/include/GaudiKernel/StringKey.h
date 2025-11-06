@@ -12,6 +12,7 @@
 
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StatusCode.h>
+#include <compare>
 #include <iosfwd>
 #include <map>
 #include <string>
@@ -95,6 +96,10 @@ namespace Gaudi {
     bool operator==( const char* rhs ) const { return m_str == rhs; }
     bool operator==( std::string_view rhs ) const { return m_str == rhs; }
     bool operator==( const std::string& rhs ) const { return m_str == rhs; }
+
+    auto operator<=>( const char* rhs ) const { return m_str <=> rhs; }
+    auto operator<=>( std::string_view rhs ) const { return m_str <=> rhs; }
+    auto operator<=>( const std::string& rhs ) const { return m_str <=> rhs; }
 
     /** the actual access to the hash
      *  @attention NEVER use the actual hash value for anything stored in

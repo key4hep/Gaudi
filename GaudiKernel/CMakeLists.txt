@@ -267,6 +267,9 @@ if(BUILD_TESTING)
   gaudi_add_executable(test_StringKey SOURCES tests/src/test_StringKey.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
+  gaudi_add_executable(test_VectorMap SOURCES tests/src/test_VectorMap.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
   gaudi_add_executable(test_PropertyHolder SOURCES tests/src/test_PropertyHolder.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,9 +14,11 @@
 #include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/StringKey.h>
 #include <algorithm>
+#include <concepts>
 #include <functional>
 #include <initializer_list>
 #include <ostream>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -95,8 +97,18 @@ namespace GaudiUtils {
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date   2005-07-23
    */
-  template <class KEY, class VALUE, class KEYCOMPARE = std::less<const KEY>,
-            class ALLOCATOR = std::allocator<std::pair<KEY, VALUE>>>
+
+  namespace detail {
+    // Comp must order K with Key in both directions, and be transparent
+    template <typename K, typename Key, typename Comp>
+    concept key_comparable =
+        (std::same_as<std::remove_cvref_t<K>, std::remove_cvref_t<Key>> && std::strict_weak_order<Comp, Key, Key>) ||
+        ( requires { typename Comp::is_transparent; } && std::strict_weak_order<Comp, K, Key> &&
+          std::strict_weak_order<Comp, Key, K> );
+  } // namespace detail
+
+  template <typename KEY, typename VALUE, typename KEYCOMPARE = std::less<>,
+            typename ALLOCATOR = std::allocator<std::pair<KEY, VALUE>>>
   class VectorMap : public Gaudi::Utils::MapBase {
   public:
     /// the actual type of key
@@ -149,20 +161,21 @@ namespace GaudiUtils {
      */
     struct _compare_type : public key_compare {
     public:
-      /// constructor from the key-comparison criteria
-      _compare_type( const key_compare& cmp ) : key_compare( cmp ) {}
-      /// default constructor
-      _compare_type() : key_compare() {}
+      using key_compare::key_compare;
       /// compare keys: use key_compare
-      bool operator()( const key_type& k1, const key_type& k2 ) const {
-        return this->key_compare::operator()( k1, k2 );
-      }
+      using key_compare::operator();
       /// compare pairs (key,mapped): use compare by keys
       bool operator()( const value_type& v1, const value_type& v2 ) const { return operator()( v1.first, v2.first ); }
       /// compare key and pair (key,mapped): use compare by keys
-      bool operator()( const key_type& k, const value_type& v ) const { return operator()( k, v.first ); }
+      template <detail::key_comparable<key_type, key_compare> K>
+      bool operator()( const K& k, const value_type& v ) const {
+        return operator()( k, v.first );
+      }
       /// compare pair (key,mapped) and the key: use compare by keys
-      bool operator()( const value_type& v, const key_type& k ) const { return operator()( v.first, k ); }
+      template <detail::key_comparable<key_type, key_compare> K>
+      bool operator()( const value_type& v, const K& k ) const {
+        return operator()( v.first, k );
+      }
     };
     /// the actual comparison criteria for valye_type objects
     typedef _compare_type compare_type;
@@ -198,7 +211,9 @@ namespace GaudiUtils {
      *  @param key key for the element to be erased
      *  @return number of erased elements (0 or 1)
      */
-    size_type erase( const key_type& key ) {
+    size_type erase( const key_type& key ) { return erase<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    size_type erase( const K& key ) {
       iterator pos = find( key );
       if ( end() == pos ) { return 0; }
       erase( pos );
@@ -354,8 +369,8 @@ namespace GaudiUtils {
      *  @return position of the inserted elements with the flag
      *          which indicated the actual insertion
      */
-    result_type insert( iterator pos, const key_type& key, const mapped_type& mapped ) {
-      return insert( pos, value_type( key, mapped ) );
+    result_type insert( iterator pos, key_type key, mapped_type mapped ) {
+      return insert( pos, value_type( std::move( key ), std::move( mapped ) ) );
     }
     /** insert the sequence of elements into the container
      *  @attention there is no replacement for the existing element!
@@ -401,7 +416,9 @@ namespace GaudiUtils {
      *  @param key key to be searched
      *  @return iterator to the element position in the container
      */
-    iterator find( const key_type& key ) const {
+    iterator find( const key_type& key ) const { return find<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    iterator find( const K& key ) const {
       iterator res = lower_bound( key );
       if ( end() != res && compare( key, res->first ) ) { res = end(); }
       return res;
@@ -421,10 +438,27 @@ namespace GaudiUtils {
      *  @param key key to be searched
      *  @return number of elements with the given key (0 or 1)
      */
-    size_type count( const key_type& key ) const { return end() == find( key ) ? 0 : 1; }
-    iterator  lower_bound( const key_type& key ) const { return std::lower_bound( begin(), end(), key, compare() ); }
-    iterator  upper_bound( const key_type& key ) const { return std::upper_bound( begin(), end(), key, compare() ); }
-    iterators equal_range( const key_type& key ) const { return std::equal_range( begin(), end(), key, compare() ); }
+
+    size_type count( const key_type& key ) const { return count<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    size_type count( const K& key ) const {
+      return end() == find( key ) ? 0 : 1;
+    }
+    iterator lower_bound( const key_type& key ) const { return lower_bound<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    iterator lower_bound( const K& key ) const {
+      return std::lower_bound( begin(), end(), key, compare() );
+    }
+    iterator upper_bound( const key_type& key ) const { return upper_bound<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    iterator upper_bound( const K& key ) const {
+      return std::upper_bound( begin(), end(), key, compare() );
+    }
+    iterators equal_range( const key_type& key ) const { return equal_range<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    iterators equal_range( const K& key ) const {
+      return std::equal_range( begin(), end(), key, compare() );
+    }
     // general container operations :
     /// empty container ?
     bool empty() const { return m_vct.empty(); }
@@ -442,12 +476,7 @@ namespace GaudiUtils {
     /// comparison criteria for containers
     bool operator==( const VectorMap& other ) const { return m_vct == other.m_vct; }
     /// comparison criteria for containers
-    bool operator<( const VectorMap& other ) const { return m_vct < other.m_vct; }
-    // The derived comparison operators for container
-    friend bool operator>( const VectorMap& left, const VectorMap& right ) { return right < left; }
-    friend bool operator!=( const VectorMap& left, const VectorMap& right ) { return !( left == right ); }
-    friend bool operator>=( const VectorMap& left, const VectorMap& right ) { return !( left < right ); }
-    friend bool operator<=( const VectorMap& left, const VectorMap& right ) { return !( right < left ); }
+    auto operator<=>( const VectorMap& other ) const { return m_vct <=> other.m_vct; }
     /** forced insertion of the key/mapped pair
      *  The method acts like "insert" but it *DOES*
      *  overwrite the existing mapped value.
@@ -477,7 +506,9 @@ namespace GaudiUtils {
      *  @param mapped mapped value
      *  @return true if the existing value has been replaced
      */
-    bool update( const key_type& key, const mapped_type& mapped ) {
+    bool update( const key_type& key, const mapped_type& mapped ) { return update<key_type>( key, mapped ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    bool update( const K& key, const mapped_type& mapped ) {
       _iterator result = lower_bound( key );
       if ( end() == result || compare( key, result->first ) ) {
         result = m_vct.insert( result, value_type( key, mapped ) );
@@ -548,7 +579,9 @@ namespace GaudiUtils {
      *  @return mapped value for existing key and the
      *                 default value for non-existing key
      */
-    const mapped_type& operator()( const key_type& key ) const {
+    const mapped_type& operator()( const key_type& key ) const { return this->template operator()<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    const mapped_type& operator()( const K& key ) const {
       static const mapped_type s_default = mapped_type();
       iterator                 res       = find( key );
       if ( end() == res ) { return s_default; }
@@ -585,6 +618,10 @@ namespace GaudiUtils {
      *  @return mapped value
      */
     const mapped_type& operator[]( const key_type& key ) const { return ( *this )( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    const mapped_type& operator[]( const K& key ) const {
+      return ( *this )( key );
+    }
     /** checked access to elements by key
      *  throw std::out_of_range exception for non-existing keys
      *
@@ -602,7 +639,9 @@ namespace GaudiUtils {
      *  @param key key value
      *  @return mapped value
      */
-    const mapped_type& at( const key_type& key ) const {
+    const mapped_type& at( const key_type& key ) const { return at<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    const mapped_type& at( const K& key ) const {
       iterator res = find( key );
       if ( end() == res ) this->throw_out_of_range_exception();
       return res->second; // cppcheck-suppress derefInvalidIteratorRedundantCheck; the above throws
@@ -696,7 +735,9 @@ namespace GaudiUtils {
       return compare()( obj1, obj2 );
     }
     /// 'lower-bound' - non-const version
-    _iterator lower_bound( const key_type& key ) {
+    _iterator lower_bound( const key_type& key ) { return lower_bound<key_type>( key ); }
+    template <detail::key_comparable<key_type, key_compare> K>
+    _iterator lower_bound( const K& key ) {
       return std::lower_bound( m_vct.begin(), m_vct.end(), key, compare() );
     }
     /// the conversion from 'const' to 'non-const' iterator
