@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -24,41 +24,41 @@ using namespace Gaudi::Parsers;
 BOOST_AUTO_TEST_CASE( test_StringGrammar ) {
   std::string result;
   BOOST_CHECK( parse( result, "'Hello \\ \\' world'" ) );
-  BOOST_CHECK( result == "Hello \\ ' world" );
+  BOOST_CHECK_EQUAL( result, "Hello \\ ' world" );
   BOOST_CHECK( parse( result, "string \"with\" quotes" ) );
-  BOOST_CHECK( result == "string \"with\" quotes" );
+  BOOST_CHECK_EQUAL( result, "string \"with\" quotes" );
 }
 
 BOOST_AUTO_TEST_CASE( test_IntGrammar ) {
   {
     int result;
     BOOST_CHECK( parse( result, "1000" ) );
-    BOOST_CHECK( result == 1000 );
+    BOOST_CHECK_EQUAL( result, 1000 );
   }
 
   {
     long result;
     BOOST_CHECK( parse( result, "1000" ) );
-    BOOST_CHECK( result == 1000 );
+    BOOST_CHECK_EQUAL( result, 1000 );
   }
 
   {
     long result;
     BOOST_CHECK( parse( result, "1L" ) );
-    BOOST_CHECK( result == 1 );
+    BOOST_CHECK_EQUAL( result, 1 );
   }
 
   {
     long result;
     BOOST_CHECK( parse( result, "100L" ) );
-    BOOST_CHECK( result == 100 );
+    BOOST_CHECK_EQUAL( result, 100 );
   }
 }
 
 BOOST_AUTO_TEST_CASE( test_CharGrammar ) {
   char result;
   BOOST_CHECK( parse( result, "'a'" ) );
-  BOOST_CHECK( result == 'a' );
+  BOOST_CHECK_EQUAL( result, 'a' );
 }
 
 BOOST_AUTO_TEST_CASE( test_BoolGrammar ) {
@@ -94,26 +94,26 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
   {
     std::vector<int> result;
     BOOST_CHECK( parse( result, "[1, 2,  3] // Test Comments" ) );
-    BOOST_CHECK( result.size() == 3 );
-    BOOST_CHECK( result[0] == 1 );
-    BOOST_CHECK( result[1] == 2 );
-    BOOST_CHECK( result[2] == 3 );
+    BOOST_CHECK_EQUAL( result.size(), 3 );
+    BOOST_CHECK_EQUAL( result[0], 1 );
+    BOOST_CHECK_EQUAL( result[1], 2 );
+    BOOST_CHECK_EQUAL( result[2], 3 );
   }
 
   {
     // trailing comma
     std::vector<int> result;
     BOOST_CHECK( parse( result, "[1, 2, 3,]" ) );
-    BOOST_CHECK( result.size() == 3 );
-    BOOST_CHECK( result[0] == 1 );
-    BOOST_CHECK( result[1] == 2 );
-    BOOST_CHECK( result[2] == 3 );
+    BOOST_CHECK_EQUAL( result.size(), 3 );
+    BOOST_CHECK_EQUAL( result[0], 1 );
+    BOOST_CHECK_EQUAL( result[1], 2 );
+    BOOST_CHECK_EQUAL( result[2], 3 );
   }
 
   {
     std::vector<std::vector<double>> result;
     BOOST_CHECK( parse( result, "[[1, 2]/* Test comments */,[3]]" ) );
-    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
     BOOST_CHECK_CLOSE( result[0][0], 1, 1.e-4 );
     BOOST_CHECK_CLOSE( result[0][1], 2, 1.e-4 );
     BOOST_CHECK_CLOSE( result[1][0], 3, 1.e-4 );
@@ -122,23 +122,23 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
   {
     std::vector<std::vector<int>> result;
     BOOST_CHECK( parse( result, "[[1, 2]/* Test comments */,[3]]" ) );
-    BOOST_CHECK( result.size() == 2 );
-    BOOST_CHECK( result[0][0] == 1 );
-    BOOST_CHECK( result[0][1] == 2 );
-    BOOST_CHECK( result[1][0] == 3 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
+    BOOST_CHECK_EQUAL( result[0][0], 1 );
+    BOOST_CHECK_EQUAL( result[0][1], 2 );
+    BOOST_CHECK_EQUAL( result[1][0], 3 );
   }
 
   {
     std::vector<double> result;
     BOOST_CHECK( parse( result, "[1.1, 2.2 ]" ) );
-    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
     BOOST_CHECK_CLOSE( result[0], 1.1, 1.e-4 );
     BOOST_CHECK_CLOSE( result[1], 2.2, 1.e-4 );
   }
   {
     std::set<double> result;
     BOOST_CHECK( parse( result, "[1.1, 2.2 ]" ) );
-    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
     auto it = result.begin();
     BOOST_CHECK_CLOSE( *it, 1.1, 1.e-4 );
     BOOST_CHECK_CLOSE( *( ++it ), 2.2, 1.e-4 );
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
   {
     std::list<double> result;
     BOOST_CHECK( parse( result, "[1.1, 2.2 ]" ) );
-    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
     auto it = result.begin();
     BOOST_CHECK_CLOSE( *it, 1.1, 1.e-4 );
     BOOST_CHECK_CLOSE( *( ++it ), 2.2, 1.e-4 );
@@ -165,9 +165,9 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
   {
     std::map<std::string, int> result;
     BOOST_CHECK( parse( result, "{'key':10, 'key1'=20}" ) );
-    BOOST_CHECK( result.size() == 2 );
-    BOOST_CHECK( result["key"] == 10 );
-    BOOST_CHECK( result["key1"] == 20 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
+    BOOST_CHECK_EQUAL( result["key"], 10 );
+    BOOST_CHECK_EQUAL( result["key1"], 20 );
   }
 
   {
@@ -179,23 +179,23 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
         'key1':20,
       }
     )" ) );
-    BOOST_CHECK( result.size() == 2 );
-    BOOST_CHECK( result["key"] == 10 );
-    BOOST_CHECK( result["key1"] == 20 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
+    BOOST_CHECK_EQUAL( result["key"], 10 );
+    BOOST_CHECK_EQUAL( result["key1"], 20 );
   }
 
   {
     std::map<std::string, std::vector<double>> result;
     BOOST_CHECK( parse( result, "{'key':[10.0,20.0]}" ) );
-    BOOST_CHECK( result.size() == 1 );
-    BOOST_CHECK( result["key"].size() == 2 );
+    BOOST_CHECK_EQUAL( result.size(), 1 );
+    BOOST_CHECK_EQUAL( result["key"].size(), 2 );
     BOOST_CHECK_CLOSE( result["key"][0], 10, 1.e-4 );
   }
 
   {
     std::map<std::string, std::pair<double, double>> result;
     BOOST_CHECK( parse( result, "{'key':(10.0,20.0)}" ) );
-    BOOST_CHECK( result.size() == 1 );
+    BOOST_CHECK_EQUAL( result.size(), 1 );
     BOOST_CHECK_CLOSE( result["key"].first, 10, 1.e-4 );
     BOOST_CHECK_CLOSE( result["key"].second, 20, 1.e-4 );
   }
@@ -203,15 +203,15 @@ BOOST_AUTO_TEST_CASE( test_MapGramar ) {
   {
     std::map<std::string, std::pair<int, int>> result;
     BOOST_CHECK( parse( result, "{'key':(10,20)}" ) );
-    BOOST_CHECK( result.size() == 1 );
-    BOOST_CHECK( result["key"].first == 10 );
-    BOOST_CHECK( result["key"].second == 20 );
+    BOOST_CHECK_EQUAL( result.size(), 1 );
+    BOOST_CHECK_EQUAL( result["key"].first, 10 );
+    BOOST_CHECK_EQUAL( result["key"].second, 20 );
   }
 
   {
     GaudiUtils::VectorMap<Gaudi::StringKey, double> result;
     BOOST_CHECK( parse( result, "{'key':10, 'key1'=20}" ) );
-    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
     Gaudi::StringKey key = std::string( "key" );
     BOOST_CHECK_CLOSE( result.at( key ), 10, 1.e-4 );
     key = std::string( "key1" );
@@ -240,19 +240,19 @@ BOOST_AUTO_TEST_CASE( test_HistoTypes ) {
   {
     Gaudi::Histo1DDef result;
     BOOST_CHECK( parse( result, "('test', 1.0,2.0, 100)" ) );
-    BOOST_CHECK( result.title() == "test" );
+    BOOST_CHECK_EQUAL( result.title(), "test" );
     BOOST_CHECK_CLOSE( result.lowEdge(), 1.0, 1.e-4 );
     BOOST_CHECK_CLOSE( result.highEdge(), 2.0, 1.e-4 );
-    BOOST_CHECK( result.bins() == 100 );
+    BOOST_CHECK_EQUAL( result.bins(), 100 );
   }
 
   {
     Gaudi::Histo1DDef result;
     BOOST_CHECK( parse( result, "(1.0,2.0, 'test', 100)" ) );
-    BOOST_CHECK( result.title() == "test" );
+    BOOST_CHECK_EQUAL( result.title(), "test" );
     BOOST_CHECK_CLOSE( result.lowEdge(), 1.0, 1.e-4 );
     BOOST_CHECK_CLOSE( result.highEdge(), 2.0, 1.e-4 );
-    BOOST_CHECK( result.bins() == 100 );
+    BOOST_CHECK_EQUAL( result.bins(), 100 );
   }
 }
 
@@ -260,37 +260,61 @@ BOOST_AUTO_TEST_CASE( test_Tuples ) {
   {
     std::tuple<int> result;
     BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(2)" ) );
-    BOOST_CHECK( std::get<0>( result ) == 2 );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
   }
   {
     // see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/21
     std::tuple<int> result;
     BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(2,)" ) );
-    BOOST_CHECK( std::get<0>( result ) == 2 );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+  }
+  {
+    std::tuple<int, int> result;
+    BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(2 , 3)" ) );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+    BOOST_CHECK_EQUAL( std::get<1>( result ), 3 );
+  }
+  {
+    std::tuple<int, bool> result;
+    BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(2,True)" ) );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+    BOOST_CHECK_EQUAL( std::get<1>( result ), true );
+
+    BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "( 2 , True , )" ) );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+    BOOST_CHECK_EQUAL( std::get<1>( result ), true );
   }
   {
     std::tuple<int, std::string> result;
     BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(2, 'hello')" ) );
-    BOOST_CHECK( std::get<0>( result ) == 2 );
-    BOOST_CHECK( std::get<1>( result ) == "hello" );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+    BOOST_CHECK_EQUAL( std::get<1>( result ), "hello" );
+
+    BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(  2 , \"hello\" )" ) );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+    BOOST_CHECK_EQUAL( std::get<1>( result ), "hello" );
+
+    BOOST_REQUIRE( Gaudi::Parsers::parse_( result, "(  2 , \"hello\",  )" ) );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+    BOOST_CHECK_EQUAL( std::get<1>( result ), "hello" );
   }
 
   {
     std::tuple<int, std::string, bool> result;
     BOOST_REQUIRE( Gaudi::Parsers::parse( result, "(2, 'hello', True)" ) );
-    BOOST_CHECK( std::get<0>( result ) == 2 );
-    BOOST_CHECK( std::get<1>( result ) == "hello" );
-    BOOST_CHECK( std::get<2>( result ) == true );
+    BOOST_CHECK_EQUAL( std::get<0>( result ), 2 );
+    BOOST_CHECK_EQUAL( std::get<1>( result ), "hello" );
+    BOOST_CHECK_EQUAL( std::get<2>( result ), true );
   }
 
   {
     std::vector<std::tuple<int, std::string, bool>> result;
     BOOST_REQUIRE( Gaudi::Parsers::parse( result, "[(2, 'hello', True), (3, 'world', False)]" ) );
-    BOOST_REQUIRE( result.size() == 2 );
-    BOOST_CHECK( std::get<0>( result[0] ) == 2 );
-    BOOST_CHECK( std::get<0>( result[1] ) == 3 );
-    BOOST_CHECK( std::get<1>( result[0] ) == "hello" );
-    BOOST_CHECK( std::get<1>( result[1] ) == "world" );
+    BOOST_REQUIRE_EQUAL( result.size(), 2 );
+    BOOST_CHECK_EQUAL( std::get<0>( result[0] ), 2 );
+    BOOST_CHECK_EQUAL( std::get<0>( result[1] ), 3 );
+    BOOST_CHECK_EQUAL( std::get<1>( result[0] ), "hello" );
+    BOOST_CHECK_EQUAL( std::get<1>( result[1] ), "world" );
     BOOST_CHECK( std::get<2>( result[0] ) );
     BOOST_CHECK( !std::get<2>( result[1] ) );
   }
@@ -304,8 +328,8 @@ BOOST_AUTO_TEST_CASE( test_Tuples ) {
 BOOST_AUTO_TEST_CASE( test_Array ) {
   std::array<int, 2> result;
   BOOST_REQUIRE( Gaudi::Parsers::parse( result, "(1, 2)" ) );
-  BOOST_CHECK( result[0] == 1 );
-  BOOST_CHECK( result[1] == 2 );
+  BOOST_CHECK_EQUAL( result[0], 1 );
+  BOOST_CHECK_EQUAL( result[1], 2 );
 }
 
 BOOST_AUTO_TEST_CASE( test_Set ) {
@@ -324,21 +348,21 @@ BOOST_AUTO_TEST_CASE( test_Set ) {
   {
     std::unordered_set<int> result;
     BOOST_CHECK( parse( result, "{1, 2, 3} // Test comment" ) );
-    BOOST_CHECK( result.size() == 3 );
+    BOOST_CHECK_EQUAL( result.size(), 3 );
     BOOST_CHECK( result == std::unordered_set<int>( { 1, 2, 3 } ) );
   }
 
   {
     std::unordered_set<int> result;
     BOOST_CHECK( parse( result, "{1, 2, 3,}" ) );
-    BOOST_CHECK( result.size() == 3 );
+    BOOST_CHECK_EQUAL( result.size(), 3 );
     BOOST_CHECK( result == std::unordered_set<int>( { 1, 2, 3 } ) );
   }
 
   {
     std::unordered_set<double> result;
     BOOST_CHECK( parse( result, "{1.1, 2.2, 3.3}" ) );
-    BOOST_CHECK( result.size() == 3 );
+    BOOST_CHECK_EQUAL( result.size(), 3 );
     const double sum = std::accumulate( result.begin(), result.end(), 0.0 );
     BOOST_CHECK_CLOSE( sum, 6.6, 1.e-4 );
   }
@@ -346,7 +370,7 @@ BOOST_AUTO_TEST_CASE( test_Set ) {
   {
     std::unordered_set<std::string> result;
     BOOST_CHECK( parse( result, "{'a', 'b'}" ) );
-    BOOST_CHECK( result.size() == 2 );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
     BOOST_CHECK( result == std::unordered_set<std::string>( { "a", "b" } ) );
   }
 }

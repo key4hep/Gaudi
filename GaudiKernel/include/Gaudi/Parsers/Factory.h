@@ -12,36 +12,31 @@
 
 #include <Gaudi/Parsers/Grammars.h>
 #include <GaudiKernel/StatusCode.h>
-#include <boost/mpl/assert.hpp>
-#include <boost/type_traits.hpp>
-#include <map>
 #include <string>
-#include <vector>
+#include <string_view>
 
-namespace Gaudi {
-  namespace Parsers {
-    typedef std::string_view::const_iterator IteratorT;
-    typedef SkipperGrammar<IteratorT>        Skipper;
-    template <typename ResultT>
-    inline StatusCode parse_( ResultT& result, std::string_view input ) {
-      Skipper                                                 skipper;
-      typename Grammar_<IteratorT, ResultT, Skipper>::Grammar g;
-      IteratorT                                               iter = input.begin(), end = input.end();
-      return ( qi::phrase_parse( iter, end, g, skipper, result ) && ( iter == end ) ? StatusCode::SUCCESS
-                                                                                    : StatusCode::FAILURE );
-    }
-    template <>
-    inline StatusCode parse_( std::string& result, std::string_view input ) {
-      Skipper                                            skipper;
-      Grammar_<IteratorT, std::string, Skipper>::Grammar g;
-      IteratorT                                          iter = input.begin(), end = input.end();
-      if ( !( qi::phrase_parse( iter, end, g, skipper, result ) && ( iter == end ) ) ) { result = input; }
-      //@attention always
-      return StatusCode::SUCCESS;
-    }
-    template <typename ResultT>
-    inline StatusCode parse( ResultT& result, std::string_view input ) {
-      return parse_( result, input );
-    }
-  } // namespace Parsers
-} // namespace Gaudi
+namespace Gaudi::Parsers {
+  typedef std::string_view::const_iterator IteratorT;
+  typedef SkipperGrammar<IteratorT>        Skipper;
+  template <typename ResultT>
+  inline StatusCode parse_( ResultT& result, std::string_view input ) {
+    Skipper                                                 skipper;
+    typename Grammar_<IteratorT, ResultT, Skipper>::Grammar g;
+    IteratorT                                               iter = input.begin(), end = input.end();
+    return ( qi::phrase_parse( iter, end, g, skipper, result ) && ( iter == end ) ? StatusCode::SUCCESS
+                                                                                  : StatusCode::FAILURE );
+  }
+  template <>
+  inline StatusCode parse_( std::string& result, std::string_view input ) {
+    Skipper                                            skipper;
+    Grammar_<IteratorT, std::string, Skipper>::Grammar g;
+    IteratorT                                          iter = input.begin(), end = input.end();
+    if ( !( qi::phrase_parse( iter, end, g, skipper, result ) && ( iter == end ) ) ) { result = input; }
+    //@attention always
+    return StatusCode::SUCCESS;
+  }
+  template <typename ResultT>
+  inline StatusCode parse( ResultT& result, std::string_view input ) {
+    return parse_( result, input );
+  }
+} // namespace Gaudi::Parsers

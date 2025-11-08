@@ -17,7 +17,6 @@
 #  pragma GCC system_header
 #endif
 
-#include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/HistoDef.h>
 #include <GaudiKernel/Point3DTypes.h>
 #include <GaudiKernel/Point4DTypes.h>
@@ -28,500 +27,414 @@
 #include <set>
 #include <string>
 #include <tuple>
-#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include <boost/fusion/include/std_pair.hpp>
-#include <boost/fusion/include/unused.hpp>
 #if ( BOOST_VERSION >= 187000 ) && ( BOOST_VERSION < 188000 )
 #  define BOOST_ALLOW_DEPRECATED_HEADERS
 #endif
 #include <boost/spirit/include/qi.hpp>
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
+#include <boost/fusion/adapted/std_tuple.hpp>
+#include <boost/phoenix/bind.hpp>
 #include <boost/phoenix/core.hpp>
+#include <boost/phoenix/object/construct.hpp>
 #include <boost/phoenix/operator.hpp>
-
 #include <boost/spirit/repository/include/qi_confix.hpp>
 
-namespace Gaudi {
-  namespace Parsers {
-    namespace sp  = boost::spirit;
-    namespace ph  = boost::phoenix;
-    namespace qi  = sp::qi;
-    namespace enc = sp::ascii;
-    namespace rep = sp::repository;
+namespace Gaudi::Parsers {
+  namespace sp  = boost::spirit;
+  namespace ph  = boost::phoenix;
+  namespace qi  = sp::qi;
+  namespace enc = sp::ascii;
 
-    typedef std::string::const_iterator DefaultIterator;
-    typedef enc::space_type             DefaultSkipper;
+  using DefaultIterator = std::string::const_iterator;
+  using DefaultSkipper  = enc::space_type;
 
-    template <typename Iterator, typename T, typename Skipper, class Enable = void>
-    struct Grammar_ {
-      /* READ THIS IF YOUR COMPILE BREAKS ON THE FOLLOWING LINE
-       *
-       * To users: You have to ask developers to implement parser for your type T
-       * To developer: You have to implement and register Grammar for type T
-       *
-       */
-      BOOST_MPL_ASSERT_MSG( false, GRAMMAR_FOR_TYPE_DOES_NOT_EXISTS, ( T ) );
-    };
+  template <typename Iterator, typename T, typename Skipper, class Enable = void>
+  struct Grammar_ {
+    /* READ THIS IF YOUR COMPILE BREAKS ON THE FOLLOWING LINE
+     *
+     * To users: You have to ask developers to implement parser for your type T
+     * To developer: You have to implement and register Grammar for type T
+     *
+     */
+    BOOST_MPL_ASSERT_MSG( false, GRAMMAR_FOR_TYPE_DOES_NOT_EXISTS, ( T ) );
+  };
 
 #define REGISTER_GRAMMAR( ResultType, GrammarName )                                                                    \
   template <typename Iterator, typename Skipper>                                                                       \
   struct Grammar_<Iterator, ResultType, Skipper> {                                                                     \
-    typedef GrammarName<Iterator, Skipper> Grammar;                                                                    \
+    using Grammar = GrammarName<Iterator, Skipper>;                                                                    \
   }
 
-    template <typename Iterator>
-    struct SkipperGrammar : qi::grammar<Iterator> {
-      SkipperGrammar() : SkipperGrammar::base_type( comments ) {
-        comments = enc::space | rep::confix( "/*", "*/" )[*( qi::char_ - "*/" )] |
-                   rep::confix( "//", ( sp::eol | sp::eoi ) )[*( qi::char_ - ( sp::eol | sp::eoi ) )];
+  template <typename Iterator>
+  struct SkipperGrammar : qi::grammar<Iterator> {
+    qi::rule<Iterator> comments;
+    SkipperGrammar() : SkipperGrammar::base_type( comments ) {
+      namespace rep = sp::repository;
+      comments      = enc::space | rep::confix( "/*", "*/" )[*( qi::char_ - "*/" )] |
+                 rep::confix( "//", ( sp::eol | sp::eoi ) )[*( qi::char_ - ( sp::eol | sp::eoi ) )];
+    }
+  };
+
+  template <typename It, typename Skipper>
+  struct StringGrammar : qi::grammar<It, std::string(), qi::locals<char, std::string>, Skipper> {
+    qi::rule<It, std::string(), qi::locals<char, std::string>, Skipper> str;
+
+    StringGrammar() : StringGrammar::base_type( str ) {
+      using enc::char_;
+      using qi::_a;
+      using qi::_b;
+
+      str = qi::lexeme[
+          // 1) capture opening quote into _a
+          qi::omit[char_( "\"'" )[_a = qi::_1]]
+          // 2) reset scratch buffer _b
+          >> qi::eps[_b = ph::construct<std::string>()]
+          // 3) body
+          >> *( ( qi::lit( '\\' ) >> char_( _a ) )[_b += _a] | ( qi::lit( '\\' ) >> char_( '\\' ) )[_b += '\\'] |
+                ( char_ - char_( _a ) )[_b += qi::_1] )
+          // 4) closing quote
+          >> qi::omit[char_( _a )]]
+                      // 5) single final assignment (backtrack-safe)
+                      [qi::_val = _b];
+    }
+  };
+  REGISTER_GRAMMAR( std::string, StringGrammar );
+  REGISTER_GRAMMAR( Gaudi::StringKey, StringGrammar );
+
+  template <typename Iterator, typename Skipper>
+  struct CharGrammar : qi::grammar<Iterator, char(), Skipper> {
+    using ResultT = char;
+    qi::rule<Iterator, char(), Skipper> ch;
+    CharGrammar() : CharGrammar::base_type( ch ) { ch = qi::int_parser<char>() | '\'' >> ( qi::char_ - '\'' ) >> '\''; }
+  };
+  REGISTER_GRAMMAR( char, CharGrammar );
+
+  template <typename Iterator, typename Skipper>
+  struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper> {
+    qi::symbols<char, bool>             kw;
+    qi::rule<Iterator, bool(), Skipper> boolean_literal;
+
+    BoolGrammar() : BoolGrammar::base_type( boolean_literal ) {
+      kw.add( "true", true )( "True", true )( "TRUE", true )( "1", true )( "false", false )( "False", false )(
+          "FALSE", false )( "0", false );
+      boolean_literal = kw;
+    }
+  };
+  REGISTER_GRAMMAR( bool, BoolGrammar );
+
+  template <typename Iterator, typename RT, typename Skipper>
+  struct IntGrammar : qi::grammar<Iterator, RT(), Skipper> {
+    using ResultT = RT;
+    IntGrammar() : IntGrammar::base_type( integer ) {
+      integer = qi::int_parser<RT>()[qi::_val = qi::_1] >> -qi::no_case[qi::char_( 'L' )];
+    }
+    qi::rule<Iterator, RT(), Skipper> integer;
+  };
+
+  template <typename Iterator, std::integral T, typename Skipper>
+  struct Grammar_<Iterator, T, Skipper> {
+    using Grammar = IntGrammar<Iterator, T, Skipper>;
+  };
+
+  template <typename Iterator, typename RT, typename Skipper>
+  struct RealGrammar : qi::grammar<Iterator, RT(), Skipper> {
+    using ResultT = RT;
+    RealGrammar() : RealGrammar::base_type( real ) { real = qi::real_parser<RT>(); }
+    qi::rule<Iterator, RT(), Skipper> real;
+  };
+
+  template <typename Iterator, std::floating_point T, typename Skipper>
+  struct Grammar_<Iterator, T, Skipper> {
+    using Grammar = RealGrammar<Iterator, T, Skipper>;
+  };
+
+  template <typename It, typename Skipper, typename... Ts>
+  struct TupleGrammar : qi::grammar<It, std::tuple<Ts...>(), Skipper> {
+    static_assert( sizeof...( Ts ) > 0, "Tuple must have at least one element" );
+    std::tuple<typename Grammar_<It, Ts, Skipper>::Grammar...> elems{};
+    qi::rule<It, std::tuple<Ts...>(), Skipper>                 tuple;
+    TupleGrammar() : TupleGrammar::base_type( tuple ) { init( std::make_index_sequence<sizeof...( Ts ) - 1>{} ); }
+
+  private:
+    template <std::size_t... Is>
+    void init( std::index_sequence<Is...> ) {
+      if constexpr ( sizeof...( Is ) == 0 ) {
+        tuple = qi::copy( ( qi::lit( '(' ) >> get<0>( elems ) >> -qi::lit( ',' ) >> qi::lit( ')' ) ) |
+                          ( qi::lit( '[' ) >> get<0>( elems ) >> -qi::lit( ',' ) >> qi::lit( ']' ) ) );
+      } else {
+        tuple = qi::copy(
+            ( qi::lit( '(' ) >> get<0>( elems ) >> ( ( ( qi::lit( ',' ) >> get<Is + 1>( elems ) ) ) >> ... ) >>
+              -qi::lit( ',' ) >> qi::lit( ')' ) ) |
+            ( qi::lit( '[' ) >> get<0>( elems ) >> ( ( ( qi::lit( ',' ) >> get<Is + 1>( elems ) ) ) >> ... ) >>
+              -qi::lit( ',' ) >> qi::lit( ']' ) ) );
       }
-      qi::rule<Iterator> comments;
-    };
+    }
+  };
 
-    template <typename Iterator, typename Skipper>
-    struct StringGrammar : qi::grammar<Iterator, std::string(), qi::locals<char>, Skipper> {
+  // Expose via the expected alias for backwards compatibility
+  template <typename Iterator, typename Skipper, typename... Ts>
+  struct Grammar_<Iterator, std::tuple<Ts...>, Skipper> {
+    using Grammar = TupleGrammar<Iterator, Skipper, Ts...>;
+  };
 
-      typedef std::string ResultT;
+  template <typename Iterator, typename VectorT, typename Skipper>
+  struct VectorGrammar : qi::grammar<Iterator, VectorT(), Skipper> {
+    using ResultT    = VectorT;
+    using value_type = typename VectorT::value_type;
 
-      StringGrammar() : StringGrammar::base_type( str ) {
-        begin_quote = enc::char_( "\"'" );
-        quote       = enc::char_( qi::_r1 );
+    typename Grammar_<Iterator, value_type, Skipper>::Grammar element;
+    qi::rule<Iterator, ResultT(), Skipper>                    list;
+    qi::rule<Iterator, Skipper>                               trailing_commas;
+    qi::rule<Iterator, ResultT(), Skipper>                    vec;
 
-        str = qi::lexeme[begin_quote[qi::_a = qi::_1] >
-                         *( ( enc::char_( '\\' ) >> quote( qi::_a ) )[qi::_val += qi::_a] |
-                            ( enc::char_( '\\' ) >> enc::char_( '\\' ) )[qi::_val += '\\'] |
-                            ( enc::char_[qi::_val += qi::_1] - quote( qi::_a ) ) ) > quote( qi::_a )];
-      }
+    VectorGrammar() : VectorGrammar::base_type( vec ) {
+      list            = element % ',';
+      trailing_commas = qi::omit[*enc::char_( ',' )];
+      vec             = ( '(' >> -list >> trailing_commas >> ')' ) | ( '[' >> -list >> trailing_commas >> ']' ) |
+            ( '{' >> -list >> trailing_commas >> '}' );
+    }
+  };
 
-      qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
-      qi::rule<Iterator, char()>                                   begin_quote;
-      qi::rule<Iterator, void( char )>                             quote;
-    };
-    REGISTER_GRAMMAR( std::string, StringGrammar );
-    REGISTER_GRAMMAR( Gaudi::StringKey, StringGrammar );
+  template <typename Iterator, typename InnerT, typename AllocatorT, typename Skipper>
+  struct Grammar_<Iterator, std::vector<InnerT, AllocatorT>, Skipper> {
+    using Grammar = VectorGrammar<Iterator, std::vector<InnerT, AllocatorT>, Skipper>;
+  };
 
-    template <typename Iterator, typename Skipper>
-    struct CharGrammar : qi::grammar<Iterator, char(), Skipper> {
-      typedef char ResultT;
-      CharGrammar() : CharGrammar::base_type( ch ) {
-        ch = qi::int_parser<char>() | '\'' >> ( qi::char_ - '\'' ) >> '\'';
-      }
-      qi::rule<Iterator, char(), Skipper> ch;
-    };
-    REGISTER_GRAMMAR( char, CharGrammar );
+  template <typename Iterator, typename InnerT, typename AllocatorT, typename Skipper>
+  struct Grammar_<Iterator, std::list<InnerT, AllocatorT>, Skipper> {
+    using Grammar = VectorGrammar<Iterator, std::list<InnerT, AllocatorT>, Skipper>;
+  };
 
-    template <typename Iterator, typename Skipper>
-    struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper> {
-      typedef bool ResultT;
-      BoolGrammar() : BoolGrammar::base_type( boolean_literal ) {
-        boolean_literal = ( qi::lit( "true" ) | "True" | "TRUE" | "1" )[qi::_val = true] |
-                          ( qi::lit( "false" ) | "False" | "FALSE" | "0" )[qi::_val = false];
-      }
-      qi::rule<Iterator, bool(), Skipper> boolean_literal;
-    };
-    REGISTER_GRAMMAR( bool, BoolGrammar );
+  template <typename Iterator, typename InnerT, typename CompareT, typename AllocatorT, typename Skipper>
+  struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper> {
+    using Grammar = VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper>;
+  };
 
-    template <typename Iterator, typename RT, typename Skipper>
-    struct IntGrammar : qi::grammar<Iterator, RT(), Skipper> {
-      typedef RT ResultT;
-      IntGrammar() : IntGrammar::base_type( integer ) {
-        integer = qi::int_parser<RT>()[qi::_val = qi::_1] >> -qi::no_case[qi::char_( 'L' )];
-      }
-      qi::rule<Iterator, RT(), Skipper> integer;
-    };
+  template <typename Iterator, typename SetT, typename Skipper>
+  struct SetGrammar : qi::grammar<Iterator, SetT(), qi::locals<char>, Skipper> {
+    SetGrammar() : SetGrammar::base_type( set ) {
+      // special handling of empty set as "{}" is always a dict
+      set = qi::lit( "set()" ) | grVector;
+    }
+    VectorGrammar<Iterator, SetT, Skipper>                grVector;
+    qi::rule<Iterator, SetT(), qi::locals<char>, Skipper> set;
+  };
 
-    template <typename Iterator, std::integral T, typename Skipper>
-    struct Grammar_<Iterator, T, Skipper> {
-      typedef IntGrammar<Iterator, T, Skipper> Grammar;
-    };
+  template <typename Iterator, typename InnerT, typename HashT, typename CompareT, typename AllocatorT,
+            typename Skipper>
+  struct Grammar_<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> {
+    using Grammar = SetGrammar<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper>;
+  };
 
-    template <typename Iterator, typename RT, typename Skipper>
-    struct RealGrammar : qi::grammar<Iterator, RT(), Skipper> {
-      typedef RT ResultT;
-      RealGrammar() : RealGrammar::base_type( real ) { real = qi::real_parser<RT>(); }
-      qi::rule<Iterator, RT(), Skipper> real;
-    };
+  template <typename Iterator, typename PairT, typename Skipper, char Delim = ','>
+  struct PairGrammar : qi::grammar<Iterator, PairT(), Skipper> {
+    typename Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar  key;
+    typename Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar val;
 
-    template <typename Iterator, std::floating_point T, typename Skipper>
-    struct Grammar_<Iterator, T, Skipper> {
-      typedef RealGrammar<Iterator, T, Skipper> Grammar;
-    };
+    qi::rule<Iterator, PairT(), Skipper> kv;
+    qi::rule<Iterator, PairT(), Skipper> pair;
 
-    template <typename T>
-    struct tuple_remove_first_type {};
+    PairGrammar() : PairGrammar::base_type( pair ) {
+      kv   = key >> qi::lit( Delim ) >> val;
+      pair = ( qi::lit( '(' ) >> kv >> qi::lit( ')' ) ) | ( qi::lit( '[' ) >> kv >> qi::lit( ']' ) );
+    }
+  };
 
-    template <typename T>
-    struct tuple_get_first_type {};
+  template <typename Iterator, typename KeyT, typename ValueT, typename Skipper>
+  struct Grammar_<Iterator, std::pair<KeyT, ValueT>, Skipper> {
+    using Grammar = PairGrammar<Iterator, std::pair<KeyT, ValueT>, Skipper>;
+  };
 
-    template <typename T, typename... Ts>
-    struct tuple_remove_first_type<std::tuple<T, Ts...>> {
-      typedef std::tuple<Ts...> type;
-    };
+  template <typename It, typename MapT, typename Skipper>
+  struct MapGrammar : qi::grammar<It, MapT(), Skipper> {
+    using KeyT    = typename MapT::key_type;
+    using MappedT = typename MapT::mapped_type;
+    using PairT   = std::pair<KeyT, MappedT>;
 
-    template <typename T, typename... Ts>
-    struct tuple_get_first_type<std::tuple<T, Ts...>> {
-      typedef T type;
-    };
+    typename Grammar_<It, KeyT, Skipper>::Grammar    key;
+    typename Grammar_<It, MappedT, Skipper>::Grammar val;
 
-    template <typename Iterator, typename TupleT, std::size_t N, typename Skipper>
-    struct TupleInnerGrammar
-        : qi::grammar<Iterator, TupleT(), qi::locals<typename tuple_get_first_type<TupleT>::type>, Skipper> {
-      typedef TupleT                                         ResultT;
-      typedef typename tuple_remove_first_type<TupleT>::type TailT;
-      typedef typename tuple_get_first_type<TupleT>::type    HeadT;
+    qi::rule<It, PairT(), Skipper>              kv;
+    qi::rule<It, std::vector<PairT>(), Skipper> list;
+    qi::rule<It, Skipper>                       trailing_commas;
+    qi::rule<It, std::vector<PairT>(), Skipper> bracketed;
+    qi::rule<It, MapT(), Skipper>               map;
 
-      struct Operations {
-        void operator()( ResultT& res, HeadT& head, TailT& tail ) const {
-          res = std::tuple_cat( std::tuple<HeadT>( head ), tail );
+    MapGrammar() : MapGrammar::base_type( map ) {
+      kv              = key >> ( qi::lit( ':' ) | qi::lit( '=' ) ) >> val;
+      list            = -( kv % ',' );
+      trailing_commas = qi::omit[*enc::char_( ',' )];
+      bracketed       = ( '[' >> list >> trailing_commas >> ']' ) | ( '{' >> list >> trailing_commas >> '}' );
+      map             = bracketed;
+    }
+  };
+
+  template <typename Iterator, typename KeyT, typename ValueT, typename KeyCompareT, typename AllocatorT,
+            typename Skipper>
+  struct Grammar_<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> {
+    using Grammar = MapGrammar<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper>;
+  };
+  template <typename Iterator, typename KeyT, typename ValueT, typename HashT, typename KeyEqT, typename AllocatorT,
+            typename Skipper>
+  struct Grammar_<Iterator, std::unordered_map<KeyT, ValueT, HashT, KeyEqT, AllocatorT>, Skipper> {
+    using Grammar = MapGrammar<Iterator, std::unordered_map<KeyT, ValueT, HashT, KeyEqT, AllocatorT>, Skipper>;
+  };
+  template <typename Iterator, typename KeyT, typename ValueT, typename KeyCompareT, typename AllocatorT,
+            typename Skipper>
+  struct Grammar_<Iterator, GaudiUtils::VectorMap<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> {
+    using Grammar = MapGrammar<Iterator, GaudiUtils::VectorMap<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper>;
+  };
+
+  template <typename Iterator, typename PointT, typename Skipper>
+  struct Pnt3DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
+    using ResultT = PointT;
+    using Scalar  = typename PointT::Scalar;
+
+    struct Operations {
+      void operator()( ResultT& res, const Scalar& scalar, const char xyz ) const {
+        switch ( xyz ) {
+        case 'x':
+          res.SetX( scalar );
+          break;
+        case 'y':
+          res.SetY( scalar );
+          break;
+        case 'z':
+          res.SetZ( scalar );
+          break;
+        default:
+          break;
         }
-      };
-
-      TupleInnerGrammar() : TupleInnerGrammar::base_type( tup ) {
-        tup = grHead[qi::_a = qi::_1] >> ',' >> grLast[op( qi::_val, qi::_a, qi::_1 )];
       }
-
-      TupleInnerGrammar<Iterator, TailT, N - 1, Skipper>   grLast;
-      typename Grammar_<Iterator, HeadT, Skipper>::Grammar grHead;
-
-      qi::rule<Iterator, ResultT(), qi::locals<HeadT>, Skipper> tup;
-      ph::function<Operations>                                  op;
     };
 
-    template <typename Iterator, typename TupleT, typename Skipper>
-    struct TupleInnerGrammar<Iterator, TupleT, 1, Skipper> : qi::grammar<Iterator, TupleT(), Skipper> {
-      typedef TupleT ResultT;
+    Pnt3DGrammar() : Pnt3DGrammar::base_type( point ) {
+      point = list | ( '(' >> list >> ')' ) | ( '[' >> list >> ']' );
+      list = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'x' )] >> ',' >>
+             -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'y' )] >> ',' >>
+             -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'z' )];
+    }
 
-      struct Operations {
-        void operator()( ResultT& res, const std::tuple_element_t<0, ResultT>& val ) const {
-          res                = ResultT();
-          std::get<0>( res ) = val;
+    qi::rule<Iterator, ResultT(), Skipper>                point, list;
+    typename Grammar_<Iterator, Scalar, Skipper>::Grammar scalar;
+    ph::function<Operations>                              op;
+  };
+
+  template <typename Iterator, typename T1, typename T2, typename Skipper>
+  struct Grammar_<Iterator, ROOT::Math::PositionVector3D<T1, T2>, Skipper> {
+    using Grammar = Pnt3DGrammar<Iterator, ROOT::Math::PositionVector3D<T1, T2>, Skipper>;
+  };
+
+  template <typename Iterator, typename T1, typename T2, typename Skipper>
+  struct Grammar_<Iterator, ROOT::Math::DisplacementVector3D<T1, T2>, Skipper> {
+    using Grammar = Pnt3DGrammar<Iterator, ROOT::Math::DisplacementVector3D<T1, T2>, Skipper>;
+  };
+
+  template <typename Iterator, typename PointT, typename Skipper>
+  struct Pnt4DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
+    using ResultT = PointT;
+    using ScalarT = typename PointT::Scalar;
+
+    struct Operations {
+      void operator()( ResultT& res, const ScalarT& scalar, const char xyz ) const {
+        switch ( xyz ) {
+        case 'x':
+          res.SetPx( scalar );
+          break;
+        case 'y':
+          res.SetPy( scalar );
+          break;
+        case 'z':
+          res.SetPz( scalar );
+          break;
+        case 'e':
+          res.SetE( scalar );
+          break;
+        default:
+          break;
         }
-      };
-
-      TupleInnerGrammar() : TupleInnerGrammar::base_type( tup ) { tup = grFirst[op( qi::_val, qi::_1 )]; }
-
-      typename Grammar_<Iterator, std::tuple_element_t<0, ResultT>, Skipper>::Grammar grFirst;
-
-      qi::rule<Iterator, ResultT(), Skipper> tup;
-      ph::function<Operations>               op;
-    };
-
-    template <typename Iterator, typename TupleT, std::size_t N, typename Skipper>
-    struct TupleGrammar : qi::grammar<Iterator, TupleT(), qi::locals<char>, Skipper> {
-      typedef TupleT ResultT;
-      TupleGrammar() : TupleGrammar::base_type( tup ) {
-        begin = enc::char_( '[' )[qi::_val = ']'] | enc::char_( '(' )[qi::_val = ')'];
-        end   = *( enc::char_( ',' ) ) >> enc::char_( qi::_r1 );
-
-        tup = begin[qi::_a = qi::_1] >> grTuple[qi::_val = qi::_1] >> end( qi::_a );
       }
-
-      qi::rule<Iterator, char()>                               begin;
-      qi::rule<Iterator, void( char )>                         end;
-      qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> tup;
-      TupleInnerGrammar<Iterator, TupleT, N, Skipper>          grTuple;
-    };
-
-    template <typename Iterator, typename Skipper, typename... Args>
-    struct Grammar_<Iterator, std::tuple<Args...>, Skipper> {
-      typedef TupleGrammar<Iterator, std::tuple<Args...>, sizeof...( Args ), Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename VectorT, typename Skipper>
-    struct VectorGrammar : qi::grammar<Iterator, VectorT(), qi::locals<char>, Skipper> {
-      typedef VectorT ResultT;
-
-      VectorGrammar() : VectorGrammar::base_type( vec ) {
-        begin =
-            enc::char_( '[' )[qi::_val = ']'] | enc::char_( '{' )[qi::_val = '}'] | enc::char_( '(' )[qi::_val = ')'];
-        end  = *( enc::char_( ',' ) ) >> enc::char_( qi::_r1 );
-        list = elementGrammar % ',';
-        vec  = begin[qi::_a = qi::_1] >> -list[qi::_val = qi::_1] >> end( qi::_a );
+      void operator()( ResultT& res, const ResultT& xyz ) const {
+        res.SetPx( xyz.Px() );
+        res.SetPy( xyz.Py() );
+        res.SetPz( xyz.Pz() );
       }
-
-      typename Grammar_<Iterator, typename VectorT::value_type, Skipper>::Grammar elementGrammar;
-      qi::rule<Iterator, char()>                                                  begin;
-      qi::rule<Iterator, void( char )>                                            end;
-
-      qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> vec;
-      qi::rule<Iterator, ResultT(), Skipper>                   list;
     };
 
-    template <typename Iterator, typename InnerT, typename AllocatorT, typename Skipper>
-    struct Grammar_<Iterator, std::vector<InnerT, AllocatorT>, Skipper> {
-      typedef VectorGrammar<Iterator, std::vector<InnerT, AllocatorT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename InnerT, typename AllocatorT, typename Skipper>
-    struct Grammar_<Iterator, std::list<InnerT, AllocatorT>, Skipper> {
-      typedef VectorGrammar<Iterator, std::list<InnerT, AllocatorT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename InnerT, typename CompareT, typename AllocatorT, typename Skipper>
-    struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper> {
-      typedef VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename SetT, typename Skipper>
-    struct SetGrammar : qi::grammar<Iterator, SetT(), qi::locals<char>, Skipper> {
-      SetGrammar() : SetGrammar::base_type( set ) {
-        // special handling of empty set as "{}" is always a dict
-        set = qi::lit( "set()" ) | grVector;
-      }
-      VectorGrammar<Iterator, SetT, Skipper>                grVector;
-      qi::rule<Iterator, SetT(), qi::locals<char>, Skipper> set;
-    };
-
-    template <typename Iterator, typename InnerT, typename HashT, typename CompareT, typename AllocatorT,
-              typename Skipper>
-    struct Grammar_<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> {
-      typedef SetGrammar<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename PairT, typename Skipper>
-    struct PairGrammar : qi::grammar<Iterator, PairT(), qi::locals<char>, Skipper> {
-      typedef PairT                       ResultT;
-      typedef typename PairT::first_type  first_type;
-      typedef typename PairT::second_type second_type;
-
-      struct first {};
-      struct second {};
-
-      PairGrammar() : PairGrammar( "," ) {}
-      PairGrammar( const std::string& delimeter ) : PairGrammar::base_type( pair ) {
-        begin   = enc::char_( '(' )[qi::_val = ')'] | enc::char_( '[' )[qi::_val = ']'];
-        end     = qi::char_( qi::_r1 );
-        pair    = begin[qi::_a = qi::_1] >> pair_in[qi::_val = qi::_1] >> end( qi::_a );
-        pair_in = key >> qi::lit( delimeter ) >> value;
-      }
-
-      typename Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar  key;
-      typename Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar value;
-      qi::rule<Iterator, char()>                                                 begin;
-      qi::rule<Iterator, void( char )>                                           end;
-      qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper>                   pair;
-      qi::rule<Iterator, ResultT(), Skipper>                                     pair_in;
-    };
-
-    template <typename Iterator, typename KeyT, typename ValueT, typename Skipper>
-    struct Grammar_<Iterator, std::pair<KeyT, ValueT>, Skipper> {
-      typedef PairGrammar<Iterator, std::pair<KeyT, ValueT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename MapT, typename Skipper>
-    struct MapGrammar : qi::grammar<Iterator, MapT(), Skipper> {
-      typedef MapT                       ResultT;
-      typedef typename MapT::key_type    KeyT;
-      typedef typename MapT::mapped_type MappedT;
-      typedef std::pair<KeyT, MappedT>   PairT;
-
-      typedef std::vector<PairT> VectorPairT;
-
-      struct tag_key {};
-      struct tag_mapped {};
-      struct Operations {
-        void operator()( ResultT& res, const VectorPairT& vec ) const {
-          for ( auto cur = vec.begin(); cur != vec.end(); ++cur ) { res.insert( *cur ); }
-        }
-        void operator()( PairT& res, const KeyT& key, tag_key ) const { res.first = key; }
-        void operator()( PairT& res, const MappedT& value, tag_mapped ) const { res.second = value; }
-      };
-
-      MapGrammar() : MapGrammar::base_type( map ) {
-        pair = key[op( qi::_val, qi::_1, tag_key() )] > ( qi::lit( ':' ) | '=' ) >
-               value[op( qi::_val, qi::_1, tag_mapped() )];
-        list = -( pair % enc::char_( ',' ) );
-        map  = ( ( '[' >> list >> ']' ) | ( '{' >> list >> '}' ) | ( '[' >> list >> ',' >> ']' ) |
-                ( '{' >> list >> ',' >> '}' ) )[op( qi::_val, qi::_1 )];
-      }
-
-      typename Grammar_<Iterator, typename MapT::key_type, Skipper>::Grammar    key;
-      typename Grammar_<Iterator, typename MapT::mapped_type, Skipper>::Grammar value;
-      qi::rule<Iterator, PairT(), Skipper>                                      pair;
-      qi::rule<Iterator, VectorPairT(), Skipper>                                list;
-      qi::rule<Iterator, ResultT(), Skipper>                                    map;
-      ph::function<Operations>                                                  op;
-    };
-
-    template <typename Iterator, typename KeyT, typename ValueT, typename KeyCompareT, typename AllocatorT,
-              typename Skipper>
-    struct Grammar_<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> {
-      typedef MapGrammar<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename KeyT, typename ValueT, typename HashT, typename KeyCompareT,
-              typename AllocatorT, typename Skipper>
-    struct Grammar_<Iterator, std::unordered_map<KeyT, ValueT, HashT, KeyCompareT, AllocatorT>, Skipper> {
-      typedef MapGrammar<Iterator, std::unordered_map<KeyT, ValueT, HashT, KeyCompareT, AllocatorT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename KeyT, typename ValueT, typename KeyCompareT, typename AllocatorT,
-              typename Skipper>
-    struct Grammar_<Iterator, GaudiUtils::VectorMap<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> {
-      typedef MapGrammar<Iterator, GaudiUtils::VectorMap<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> Grammar;
-    };
-
-    template <typename Iterator, typename PointT, typename Skipper>
-    struct Pnt3DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
-      typedef PointT                  ResultT;
-      typedef typename PointT::Scalar Scalar;
-
-      struct Operations {
-        void operator()( ResultT& res, const Scalar& scalar, const char xyz ) const {
-          switch ( xyz ) {
-          case 'x':
-            res.SetX( scalar );
-            break;
-          case 'y':
-            res.SetY( scalar );
-            break;
-          case 'z':
-            res.SetZ( scalar );
-            break;
-          default:
-            break;
-          }
-        }
-      };
-
-      Pnt3DGrammar() : Pnt3DGrammar::base_type( point ) {
-        point = list | ( '(' >> list >> ')' ) | ( '[' >> list >> ']' );
-        list  = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'x' )] >>
+    Pnt4DGrammar() : Pnt4DGrammar::base_type( point4d ) {
+      point4d = list4d | ( '(' >> list4d >> ')' ) | ( '[' >> list4d >> ']' );
+      list4d  = ( point3d[op( qi::_val, qi::_1 )] >> enc::char_( ";," ) >> e[op( qi::_val, qi::_1, 'e' )] ) |
+               ( e[op( qi::_val, qi::_1, 'e' )] >> enc::char_( ";," ) >> point3d[op( qi::_val, qi::_1 )] );
+      e       = -( enc::no_case[enc::char_( "te" )] >> ':' ) >> scalar[qi::_val = qi::_1];
+      point3d = list3d | ( '(' >> list3d >> ')' ) | ( '[' >> list3d >> ']' );
+      list3d  = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'x' )] >>
                ',' >> -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >>
                scalar[op( qi::_val, qi::_1, 'y' )] >> ',' >>
                -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'z' )];
-      }
+    }
 
-      qi::rule<Iterator, ResultT(), Skipper>                point, list;
-      typename Grammar_<Iterator, Scalar, Skipper>::Grammar scalar;
-      ph::function<Operations>                              op;
-    };
+    qi::rule<Iterator, ResultT(), Skipper>                 point3d, point4d, list3d, list4d;
+    qi::rule<Iterator, ScalarT(), Skipper>                 e;
+    typename Grammar_<Iterator, ScalarT, Skipper>::Grammar scalar;
+    ph::function<Operations>                               op;
+  };
 
-    template <typename Iterator, typename T1, typename T2, typename Skipper>
-    struct Grammar_<Iterator, ROOT::Math::PositionVector3D<T1, T2>, Skipper> {
-      typedef Pnt3DGrammar<Iterator, ROOT::Math::PositionVector3D<T1, T2>, Skipper> Grammar;
-    };
+  template <typename Iterator, typename T1, typename Skipper>
+  struct Grammar_<Iterator, ROOT::Math::LorentzVector<T1>, Skipper> {
+    typedef Pnt4DGrammar<Iterator, ROOT::Math::LorentzVector<T1>, Skipper> Grammar;
+  };
 
-    template <typename Iterator, typename T1, typename T2, typename Skipper>
-    struct Grammar_<Iterator, ROOT::Math::DisplacementVector3D<T1, T2>, Skipper> {
-      typedef Pnt3DGrammar<Iterator, ROOT::Math::DisplacementVector3D<T1, T2>, Skipper> Grammar;
-    };
+  template <typename Iterator, typename Skipper>
+  struct Histo1DGrammar : qi::grammar<Iterator, Gaudi::Histo1DDef(), Skipper> {
+    using ResultT = Gaudi::Histo1DDef;
 
-    template <typename Iterator, typename PointT, typename Skipper>
-    struct Pnt4DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
-      typedef PointT                  ResultT;
-      typedef typename PointT::Scalar ScalarT;
+    // sub-grammars
+    StringGrammar<Iterator, Skipper> title;
 
-      struct Operations {
-        void operator()( ResultT& res, const ScalarT& scalar, const char xyz ) const {
-          switch ( xyz ) {
-          case 'x':
-            res.SetPx( scalar );
-            break;
-          case 'y':
-            res.SetPy( scalar );
-            break;
-          case 'z':
-            res.SetPz( scalar );
-            break;
-          case 'e':
-            res.SetE( scalar );
-            break;
-          default:
-            break;
-          }
-        }
-        void operator()( ResultT& res, const ResultT& xyz ) const {
-          res.SetPx( xyz.Px() );
-          res.SetPy( xyz.Py() );
-          res.SetPz( xyz.Pz() );
-        }
-      };
+    // rules
+    qi::rule<Iterator, ResultT(), Skipper> hist;
+    qi::rule<Iterator, ResultT(), Skipper> val1, val2, val3;
 
-      Pnt4DGrammar() : Pnt4DGrammar::base_type( point4d ) {
-        point4d = list4d | ( '(' >> list4d >> ')' ) | ( '[' >> list4d >> ']' );
-        list4d  = ( point3d[op( qi::_val, qi::_1 )] >> enc::char_( ";," ) >> e[op( qi::_val, qi::_1, 'e' )] ) |
-                 ( e[op( qi::_val, qi::_1, 'e' )] >> enc::char_( ";," ) >> point3d[op( qi::_val, qi::_1 )] );
-        e = -( enc::no_case[enc::char_( "te" )] >> ':' ) >> scalar[qi::_val = qi::_1];
+    Histo1DGrammar() : Histo1DGrammar::base_type( hist ) {
+      // convenience setters (Phoenix binds)
+      auto setTitle = ph::bind( &ResultT::setTitle, qi::_val, qi::_1 );
+      auto setLo    = ph::bind( &ResultT::setLowEdge, qi::_val, qi::_1 );
+      auto setHi    = ph::bind( &ResultT::setHighEdge, qi::_val, qi::_1 );
+      auto setBins  = ph::bind( &ResultT::setBins, qi::_val, qi::_1 );
 
-        point3d = list3d | ( '(' >> list3d >> ')' ) | ( '[' >> list3d >> ']' );
-        list3d  = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'x' )] >>
-                 ',' >> -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >>
-                 scalar[op( qi::_val, qi::_1, 'y' )] >> ',' >>
-                 -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'z' )];
-      }
+      // title, lo, hi [, bins]
+      val1 = title[setTitle] >> ',' >> qi::double_[setLo] >> ',' >> qi::double_[setHi] >> -( ',' >> qi::int_[setBins] );
 
-      qi::rule<Iterator, ResultT(), Skipper>                 point3d, point4d, list3d, list4d;
-      qi::rule<Iterator, ScalarT(), Skipper>                 e;
-      typename Grammar_<Iterator, ScalarT, Skipper>::Grammar scalar;
-      ph::function<Operations>                               op;
-    };
+      // lo, hi, title [, bins]
+      val2 = qi::double_[setLo] >> ',' >> qi::double_[setHi] >> ',' >> title[setTitle] >> -( ',' >> qi::int_[setBins] );
 
-    template <typename Iterator, typename T1, typename Skipper>
-    struct Grammar_<Iterator, ROOT::Math::LorentzVector<T1>, Skipper> {
-      typedef Pnt4DGrammar<Iterator, ROOT::Math::LorentzVector<T1>, Skipper> Grammar;
-    };
+      // lo, hi [, title] [, bins]
+      val3 = qi::double_[setLo] >> ',' >> qi::double_[setHi] >> -( ',' >> title[setTitle] ) >>
+             -( ',' >> qi::int_[setBins] );
 
-    template <typename Iterator, typename Skipper>
-    struct Histo1DGrammar : qi::grammar<Iterator, Gaudi::Histo1DDef(), qi::locals<char>, Skipper> {
-      typedef Gaudi::Histo1DDef ResultT;
+      // accept either '(...)' or '[...]' around the payload;
+      hist = ( '(' >> ( val1 | val2 | val3 ) >> ')' ) | ( '[' >> ( val1 | val2 | val3 ) >> ']' );
+    }
+  };
+  REGISTER_GRAMMAR( Gaudi::Histo1DDef, Histo1DGrammar );
 
-      struct Operations {
-        void operator()( ResultT& res, const std::string& title ) const { res.setTitle( title ); }
-        void operator()( ResultT& res, const double& val, const char lh ) const {
-          switch ( lh ) {
-          case 'l':
-            res.setLowEdge( val );
-            break;
-          case 'h':
-            res.setHighEdge( val );
-            break;
-          default:
-            break;
-          }
-        }
-        void operator()( ResultT& res, int val ) const { res.setBins( val ); }
-        void operator()( ResultT& res ) const {}
-      };
+  template <typename Iterator, typename Skipper>
+  struct KeyValueGrammar : qi::grammar<Iterator, std::pair<std::string, std::string>(), Skipper> {
+    typedef std::pair<std::string, std::string> ResultT;
 
-      Histo1DGrammar() : Histo1DGrammar::base_type( hist ) {
-        val1 = title[op( qi::_val, qi::_1 )] >> ',' >> qi::double_[op( qi::_val, qi::_1, 'l' )] >> ',' >>
-               qi::double_[op( qi::_val, qi::_1, 'h' )] >> -( ',' >> qi::int_[op( qi::_val, qi::_1 )] );
-        val2 = qi::double_[op( qi::_val, qi::_1, 'l' )] >> ',' >> qi::double_[op( qi::_val, qi::_1, 'h' )] >> ',' >>
-               title[op( qi::_val, qi::_1 )] >> -( ',' >> qi::int_[op( qi::_val, qi::_1 )] );
-        val3 = qi::double_[op( qi::_val, qi::_1, 'l' )] >> ',' >> qi::double_[op( qi::_val, qi::_1, 'h' )] >>
-               -( ',' >> title[op( qi::_val, qi::_1 )] ) >> -( ',' >> qi::int_[op( qi::_val, qi::_1 )] );
-        begin = enc::char_( '[' )[qi::_val = ']'] | enc::char_( '(' )[qi::_val = ')'];
-        end   = enc::char_( qi::_r1 );
-        hist  = begin[qi::_a = qi::_1] >> ( val1 | val2 | val3 )[qi::_val = qi::_1] >> end( qi::_a );
-      }
+    struct first {};
+    struct second {};
 
-      qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> hist;
-      qi::rule<Iterator, ResultT(), Skipper>                   val1, val2, val3;
-      qi::rule<Iterator, char()>                               begin;
-      qi::rule<Iterator, void( char )>                         end;
-      StringGrammar<Iterator, Skipper>                         title;
-      ph::function<Operations>                                 op;
-    };
-    REGISTER_GRAMMAR( Gaudi::Histo1DDef, Histo1DGrammar );
+    KeyValueGrammar() : KeyValueGrammar::base_type( pair ) { pair = gstring >> ":" >> +enc::char_; }
 
-    template <typename Iterator, typename Skipper>
-    struct KeyValueGrammar : qi::grammar<Iterator, std::pair<std::string, std::string>(), Skipper> {
-      typedef std::pair<std::string, std::string> ResultT;
-
-      struct first {};
-      struct second {};
-
-      KeyValueGrammar() : KeyValueGrammar::base_type( pair ) { pair = gstring >> ":" >> +enc::char_; }
-
-      StringGrammar<Iterator, Skipper>       gstring;
-      qi::rule<Iterator, ResultT(), Skipper> pair;
-    };
-    // We don't register KeyalueGrammar because it's a special parser
-  } // namespace Parsers
-} // namespace Gaudi
+    StringGrammar<Iterator, Skipper>       gstring;
+    qi::rule<Iterator, ResultT(), Skipper> pair;
+  };
+  // We don't register KeyalueGrammar because it's a special parser
+} // namespace Gaudi::Parsers
