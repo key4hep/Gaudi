@@ -41,7 +41,6 @@
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/phoenix/bind.hpp>
 #include <boost/phoenix/core.hpp>
-#include <boost/phoenix/object/construct.hpp>
 #include <boost/phoenix/operator.hpp>
 #include <boost/spirit/repository/include/qi_confix.hpp>
 
@@ -50,9 +49,7 @@ namespace Gaudi::Parsers {
   namespace ph  = boost::phoenix;
   namespace qi  = sp::qi;
   namespace enc = sp::ascii;
-
-  using DefaultIterator = std::string::const_iterator;
-  using DefaultSkipper  = enc::space_type;
+  namespace rep = sp::repository;
 
   template <typename Iterator, typename T, typename Skipper, class Enable = void>
   struct Grammar_ {
@@ -75,33 +72,23 @@ namespace Gaudi::Parsers {
   struct SkipperGrammar : qi::grammar<Iterator> {
     qi::rule<Iterator> comments;
     SkipperGrammar() : SkipperGrammar::base_type( comments ) {
-      namespace rep = sp::repository;
-      comments      = enc::space | rep::confix( "/*", "*/" )[*( qi::char_ - "*/" )] |
+      comments = enc::space | rep::confix( "/*", "*/" )[*( qi::char_ - "*/" )] |
                  rep::confix( "//", ( sp::eol | sp::eoi ) )[*( qi::char_ - ( sp::eol | sp::eoi ) )];
     }
   };
 
   template <typename It, typename Skipper>
-  struct StringGrammar : qi::grammar<It, std::string(), qi::locals<char, std::string>, Skipper> {
-    qi::rule<It, std::string(), qi::locals<char, std::string>, Skipper> str;
-
+  struct StringGrammar : qi::grammar<It, std::string(), Skipper> {
+    qi::rule<It, std::string()>          dq_body, sq_body;
+    qi::rule<It, std::string(), Skipper> str;
     StringGrammar() : StringGrammar::base_type( str ) {
-      using enc::char_;
-      using qi::_a;
-      using qi::_b;
-
-      str = qi::lexeme[
-          // 1) capture opening quote into _a
-          qi::omit[char_( "\"'" )[_a = qi::_1]]
-          // 2) reset scratch buffer _b
-          >> qi::eps[_b = ph::construct<std::string>()]
-          // 3) body
-          >> *( ( qi::lit( '\\' ) >> char_( _a ) )[_b += _a] | ( qi::lit( '\\' ) >> char_( '\\' ) )[_b += '\\'] |
-                ( char_ - char_( _a ) )[_b += qi::_1] )
-          // 4) closing quote
-          >> qi::omit[char_( _a )]]
-                      // 5) single final assignment (backtrack-safe)
-                      [qi::_val = _b];
+      dq_body = qi::eps[qi::_val = std::string{}] >> *( ( qi::lit( '\\' ) >> qi::char_( '"' ) )[qi::_val += '"'] |
+                                                        ( qi::lit( '\\' ) >> qi::char_( '\\' ) )[qi::_val += '\\'] |
+                                                        ( qi::char_ - qi::char_( '"' ) )[qi::_val += qi::_1] );
+      sq_body = qi::eps[qi::_val = std::string{}] >> *( ( qi::lit( '\\' ) >> qi::char_( '\'' ) )[qi::_val += '\''] |
+                                                        ( qi::lit( '\\' ) >> qi::char_( '\\' ) )[qi::_val += '\\'] |
+                                                        ( qi::char_ - qi::char_( '\'' ) )[qi::_val += qi::_1] );
+      str     = qi::lexeme[rep::confix( '"', '"' )[dq_body] | rep::confix( '\'', '\'' )[sq_body]];
     }
   };
   REGISTER_GRAMMAR( std::string, StringGrammar );
@@ -158,6 +145,7 @@ namespace Gaudi::Parsers {
   struct TupleGrammar : qi::grammar<It, std::tuple<Ts...>(), Skipper> {
     static_assert( sizeof...( Ts ) > 0, "Tuple must have at least one element" );
     std::tuple<typename Grammar_<It, Ts, Skipper>::Grammar...> elems{};
+    qi::rule<It, std::tuple<Ts...>(), Skipper>                 body;
     qi::rule<It, std::tuple<Ts...>(), Skipper>                 tuple;
     TupleGrammar() : TupleGrammar::base_type( tuple ) { init( std::make_index_sequence<sizeof...( Ts ) - 1>{} ); }
 
@@ -165,15 +153,11 @@ namespace Gaudi::Parsers {
     template <std::size_t... Is>
     void init( std::index_sequence<Is...> ) {
       if constexpr ( sizeof...( Is ) == 0 ) {
-        tuple = qi::copy( ( qi::lit( '(' ) >> get<0>( elems ) >> -qi::lit( ',' ) >> qi::lit( ')' ) ) |
-                          ( qi::lit( '[' ) >> get<0>( elems ) >> -qi::lit( ',' ) >> qi::lit( ']' ) ) );
+        body = get<0>( elems ) >> -qi::lit( ',' );
       } else {
-        tuple = qi::copy(
-            ( qi::lit( '(' ) >> get<0>( elems ) >> ( ( ( qi::lit( ',' ) >> get<Is + 1>( elems ) ) ) >> ... ) >>
-              -qi::lit( ',' ) >> qi::lit( ')' ) ) |
-            ( qi::lit( '[' ) >> get<0>( elems ) >> ( ( ( qi::lit( ',' ) >> get<Is + 1>( elems ) ) ) >> ... ) >>
-              -qi::lit( ',' ) >> qi::lit( ']' ) ) );
+        body = get<0>( elems ) >> ( ( qi::lit( ',' ) >> get<Is + 1>( elems ) ) >> ... ) >> -qi::lit( ',' );
       }
+      tuple = rep::confix( '(', ')' )[body] | rep::confix( '[', ']' )[body];
     }
   };
 
@@ -187,17 +171,16 @@ namespace Gaudi::Parsers {
   struct VectorGrammar : qi::grammar<Iterator, VectorT(), Skipper> {
     using ResultT    = VectorT;
     using value_type = typename VectorT::value_type;
-
     typename Grammar_<Iterator, value_type, Skipper>::Grammar element;
     qi::rule<Iterator, ResultT(), Skipper>                    list;
     qi::rule<Iterator, Skipper>                               trailing_commas;
+    qi::rule<Iterator, ResultT(), Skipper>                    body;
     qi::rule<Iterator, ResultT(), Skipper>                    vec;
-
     VectorGrammar() : VectorGrammar::base_type( vec ) {
       list            = element % ',';
       trailing_commas = qi::omit[*enc::char_( ',' )];
-      vec             = ( '(' >> -list >> trailing_commas >> ')' ) | ( '[' >> -list >> trailing_commas >> ']' ) |
-            ( '{' >> -list >> trailing_commas >> '}' );
+      body            = -list >> trailing_commas;
+      vec             = rep::confix( '(', ')' )[body] | rep::confix( '[', ']' )[body] | rep::confix( '{', '}' )[body];
     }
   };
 
@@ -236,13 +219,11 @@ namespace Gaudi::Parsers {
   struct PairGrammar : qi::grammar<Iterator, PairT(), Skipper> {
     typename Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar  key;
     typename Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar val;
-
-    qi::rule<Iterator, PairT(), Skipper> kv;
-    qi::rule<Iterator, PairT(), Skipper> pair;
-
+    qi::rule<Iterator, PairT(), Skipper>                                       kv;
+    qi::rule<Iterator, PairT(), Skipper>                                       pair;
     PairGrammar() : PairGrammar::base_type( pair ) {
       kv   = key >> qi::lit( Delim ) >> val;
-      pair = ( qi::lit( '(' ) >> kv >> qi::lit( ')' ) ) | ( qi::lit( '[' ) >> kv >> qi::lit( ']' ) );
+      pair = rep::confix( '(', ')' )[kv] | rep::confix( '[', ']' )[kv];
     }
   };
 
@@ -261,17 +242,15 @@ namespace Gaudi::Parsers {
     typename Grammar_<It, MappedT, Skipper>::Grammar val;
 
     qi::rule<It, PairT(), Skipper>              kv;
-    qi::rule<It, std::vector<PairT>(), Skipper> list;
-    qi::rule<It, Skipper>                       trailing_commas;
+    qi::rule<It, std::vector<PairT>(), Skipper> body;
     qi::rule<It, std::vector<PairT>(), Skipper> bracketed;
     qi::rule<It, MapT(), Skipper>               map;
 
     MapGrammar() : MapGrammar::base_type( map ) {
-      kv              = key >> ( qi::lit( ':' ) | qi::lit( '=' ) ) >> val;
-      list            = -( kv % ',' );
-      trailing_commas = qi::omit[*enc::char_( ',' )];
-      bracketed       = ( '[' >> list >> trailing_commas >> ']' ) | ( '{' >> list >> trailing_commas >> '}' );
-      map             = bracketed;
+      kv        = key >> ( qi::lit( ':' ) | qi::lit( '=' ) ) >> val;
+      body      = -( kv % ',' ) >> qi::omit[*enc::char_( ',' )];
+      bracketed = rep::confix( '[', ']' )[body] | rep::confix( '{', '}' )[body];
+      map       = bracketed;
     }
   };
 
@@ -419,7 +398,7 @@ namespace Gaudi::Parsers {
              -( ',' >> qi::int_[setBins] );
 
       // accept either '(...)' or '[...]' around the payload;
-      hist = ( '(' >> ( val1 | val2 | val3 ) >> ')' ) | ( '[' >> ( val1 | val2 | val3 ) >> ']' );
+      hist = rep::confix( '(', ')' )[val1 | val2 | val3] | rep::confix( '[', ']' )[val1 | val2 | val3];
     }
   };
   REGISTER_GRAMMAR( Gaudi::Histo1DDef, Histo1DGrammar );
