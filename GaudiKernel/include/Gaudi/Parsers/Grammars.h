@@ -275,34 +275,18 @@ namespace Gaudi::Parsers {
     using ResultT = PointT;
     using Scalar  = typename PointT::Scalar;
 
-    struct Operations {
-      void operator()( ResultT& res, const Scalar& scalar, const char xyz ) const {
-        switch ( xyz ) {
-        case 'x':
-          res.SetX( scalar );
-          break;
-        case 'y':
-          res.SetY( scalar );
-          break;
-        case 'z':
-          res.SetZ( scalar );
-          break;
-        default:
-          break;
-        }
-      }
-    };
-
-    Pnt3DGrammar() : Pnt3DGrammar::base_type( point ) {
-      point = list | ( '(' >> list >> ')' ) | ( '[' >> list >> ']' );
-      list = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'x' )] >> ',' >>
-             -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'y' )] >> ',' >>
-             -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'z' )];
-    }
-
     qi::rule<Iterator, ResultT(), Skipper>                point, list;
     typename Grammar_<Iterator, Scalar, Skipper>::Grammar scalar;
-    ph::function<Operations>                              op;
+
+    Pnt3DGrammar() : Pnt3DGrammar::base_type( point ) {
+      auto const setX = ph::bind( &ResultT::SetX, qi::_val, qi::_1 );
+      auto const setY = ph::bind( &ResultT::SetY, qi::_val, qi::_1 );
+      auto const setZ = ph::bind( &ResultT::SetZ, qi::_val, qi::_1 );
+      list            = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[setX] >> ',' >>
+             -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >> scalar[setY] >> ',' >>
+             -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[setZ];
+      point = list | rep::confix( '(', ')' )[list] | rep::confix( '[', ']' )[list];
+    }
   };
 
   template <typename Iterator, typename T1, typename T2, typename Skipper>
@@ -320,48 +304,41 @@ namespace Gaudi::Parsers {
     using ResultT = PointT;
     using ScalarT = typename PointT::Scalar;
 
-    struct Operations {
-      void operator()( ResultT& res, const ScalarT& scalar, const char xyz ) const {
-        switch ( xyz ) {
-        case 'x':
-          res.SetPx( scalar );
-          break;
-        case 'y':
-          res.SetPy( scalar );
-          break;
-        case 'z':
-          res.SetPz( scalar );
-          break;
-        case 'e':
-          res.SetE( scalar );
-          break;
-        default:
-          break;
-        }
-      }
-      void operator()( ResultT& res, const ResultT& xyz ) const {
-        res.SetPx( xyz.Px() );
-        res.SetPy( xyz.Py() );
-        res.SetPz( xyz.Pz() );
-      }
-    };
-
-    Pnt4DGrammar() : Pnt4DGrammar::base_type( point4d ) {
-      point4d = list4d | ( '(' >> list4d >> ')' ) | ( '[' >> list4d >> ']' );
-      list4d  = ( point3d[op( qi::_val, qi::_1 )] >> enc::char_( ";," ) >> e[op( qi::_val, qi::_1, 'e' )] ) |
-               ( e[op( qi::_val, qi::_1, 'e' )] >> enc::char_( ";," ) >> point3d[op( qi::_val, qi::_1 )] );
-      e       = -( enc::no_case[enc::char_( "te" )] >> ':' ) >> scalar[qi::_val = qi::_1];
-      point3d = list3d | ( '(' >> list3d >> ')' ) | ( '[' >> list3d >> ']' );
-      list3d  = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'x' )] >>
-               ',' >> -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >>
-               scalar[op( qi::_val, qi::_1, 'y' )] >> ',' >>
-               -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'z' )];
-    }
-
     qi::rule<Iterator, ResultT(), Skipper>                 point3d, point4d, list3d, list4d;
     qi::rule<Iterator, ScalarT(), Skipper>                 e;
     typename Grammar_<Iterator, ScalarT, Skipper>::Grammar scalar;
-    ph::function<Operations>                               op;
+
+    Pnt4DGrammar() : Pnt4DGrammar::base_type( point4d ) {
+      auto const setPx  = ph::bind( &ResultT::SetPx, qi::_val, qi::_1 );
+      auto const setPy  = ph::bind( &ResultT::SetPy, qi::_val, qi::_1 );
+      auto const setPz  = ph::bind( &ResultT::SetPz, qi::_val, qi::_1 );
+      auto const setE   = ph::bind( &ResultT::SetE, qi::_val, qi::_1 );
+      auto const setXYZ = ph::bind(
+          +[]( ResultT& out, ResultT const& in ) {
+            out.SetPx( in.Px() );
+            out.SetPy( in.Py() );
+            out.SetPz( in.Pz() );
+          },
+          qi::_val, qi::_1 );
+
+      // energy: optional 't' or 'e' label + scalar, with explicit assignment
+      e = -( enc::no_case[enc::char_( "te" )] >> ':' ) >> scalar[qi::_val = qi::_1];
+
+      // 3D list: x,y,z with optional labels and aliases
+      list3d = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[setPx] >> ',' >>
+               -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >> scalar[setPy] >> ',' >>
+               -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[setPz];
+
+      // 3D point: bare, or wrapped in () or []
+      point3d = list3d | rep::confix( '(', ')' )[list3d] | rep::confix( '[', ']' )[list3d];
+
+      // 4D list: either (3D ; E) or (E ; 3D), ; or , as separator
+      list4d =
+          ( point3d[setXYZ] >> enc::char_( ";," ) >> e[setE] ) | ( e[setE] >> enc::char_( ";," ) >> point3d[setXYZ] );
+
+      // 4D point: bare, or wrapped in () or []
+      point4d = list4d | rep::confix( '(', ')' )[list4d] | rep::confix( '[', ']' )[list4d];
+    }
   };
 
   template <typename Iterator, typename T1, typename Skipper>
