@@ -8,6 +8,15 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+/// @fixme workaround for a warning in a Boost spirit header
+/// ```
+/// include/boost/spirit/.../real_impl.hpp:337:45: warning: 'n' may be used uninitialized [-Wmaybe-uninitialized]
+///   337 |             traits::assign_to(traits::negate(neg, n), attr);
+///       |                               ~~~~~~~~~~~~~~^~~~~~~~
+/// ```
+#ifndef __clang__
+#  pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <Gaudi/Parsers/Factory.h>
 #include <GaudiKernel/VectorMap.h>
 
