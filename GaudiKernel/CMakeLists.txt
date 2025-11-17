@@ -54,6 +54,7 @@ add_library(GaudiCommonParsers OBJECT EXCLUDE_FROM_ALL
     src/Lib/ParsersStandardMisc3.cpp
     src/Lib/ParsersStandardMisc4.cpp
     src/Lib/ParsersStandardMisc5.cpp
+    src/Lib/ParsersStandardMisc6.cpp
     src/Lib/ParsersStandardSingle.cpp
     src/Lib/ParsersVct.cpp
 )
