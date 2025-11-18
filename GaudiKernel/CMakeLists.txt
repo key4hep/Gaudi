@@ -38,7 +38,49 @@ if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   message(STATUS "Using VectorClass instrset_detect ${VectorClass_VERSION} at ${VectorClass_INCLUDE_DIR}")
 endif()
 
-# Build the library
+# Decouple the build of parsers from GaudiKernel to use a more
+# localized precompiled header and to constrain the use of a build
+# pool to the files that actually need it.
+add_library(GaudiCommonParsers OBJECT EXCLUDE_FROM_ALL
+    src/Lib/ParsersCollections.cpp
+    src/Lib/ParsersHistograms.cpp
+    src/Lib/ParsersStandardList1.cpp
+    src/Lib/ParsersStandardList2.cpp
+    src/Lib/ParsersStandardList3.cpp
+    src/Lib/ParsersStandardList4.cpp
+    src/Lib/ParsersStandardSet.cpp
+    src/Lib/ParsersStandardMisc1.cpp
+    src/Lib/ParsersStandardMisc2.cpp
+    src/Lib/ParsersStandardMisc3.cpp
+    src/Lib/ParsersStandardMisc4.cpp
+    src/Lib/ParsersStandardMisc5.cpp
+    src/Lib/ParsersStandardMisc6.cpp
+    src/Lib/ParsersStandardSingle.cpp
+    src/Lib/ParsersVct.cpp
+)
+target_include_directories(GaudiCommonParsers PRIVATE include)
+target_link_libraries(GaudiCommonParsers
+    PRIVATE
+        Boost::headers
+        ROOT::Core
+)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # workaround for a warning in a Boost spirit header (see 77ed99477)
+    target_compile_options(GaudiCommonParsers PRIVATE -Wno-maybe-uninitialized)
+endif()
+set_target_properties(GaudiCommonParsers PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+target_precompile_headers(GaudiCommonParsers
+    PRIVATE
+        include/Gaudi/Parsers/CommonParsers.h
+        include/Gaudi/Parsers/Factory.h
+        include/GaudiKernel/ToStream.h
+        include/GaudiKernel/VectorsAsProperty.h
+        include/GaudiKernel/VectorMap.h
+)
+# Limit number of parallel builds (Ninja only)
+set_target_properties(GaudiCommonParsers PROPERTIES JOB_POOL_COMPILE GAUDI_HIGH_MEM_JOB_POOL)
+
+# Build the main library
 gaudi_add_library(GaudiKernel
   SOURCES src/Lib/AlgContext.cpp
           src/Lib/Algorithm.cpp
@@ -102,20 +144,6 @@ gaudi_add_library(GaudiKernel
           src/Lib/MsgStream.cpp
           src/Lib/NTupleImplementation.cpp
           src/Lib/NTupleItems.cpp
-          src/Lib/ParsersCollections.cpp
-          src/Lib/ParsersHistograms.cpp
-          src/Lib/ParsersStandardList1.cpp
-          src/Lib/ParsersStandardList2.cpp
-          src/Lib/ParsersStandardList3.cpp
-          src/Lib/ParsersStandardList4.cpp
-          src/Lib/ParsersStandardSet.cpp
-          src/Lib/ParsersStandardMisc1.cpp
-          src/Lib/ParsersStandardMisc2.cpp
-          src/Lib/ParsersStandardMisc3.cpp
-          src/Lib/ParsersStandardMisc4.cpp
-          src/Lib/ParsersStandardMisc5.cpp
-          src/Lib/ParsersStandardSingle.cpp
-          src/Lib/ParsersVct.cpp
           src/Lib/PathResolver.cpp
           src/Lib/PrintAlgsSequences.cpp
           src/Lib/ProcessDescriptor.cpp
@@ -165,15 +193,13 @@ gaudi_add_library(GaudiKernel
            Rangev3::rangev3
            ${GAUDI_ATOMIC_LIBS}
     PRIVATE Python::Python
+            GaudiCommonParsers
 )
 gaudi_generate_version_header_file(GaudiKernel)
 target_include_directories(GaudiKernel
   PRIVATE ${VectorClass_INCLUDE_DIR}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # for GAUDI_VERSION.h
   )
-
-# Limit number of parallel builds (Ninja only)
-set_target_properties(GaudiKernel PROPERTIES JOB_POOL_COMPILE GAUDI_HIGH_MEM_JOB_POOL)
 
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
