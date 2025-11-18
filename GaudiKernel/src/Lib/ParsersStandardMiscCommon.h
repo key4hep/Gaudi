@@ -17,4 +17,13 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
+
+#define PARSERS_DEF_FOR_STRMAP( ValueType )                                                                            \
+  StatusCode Gaudi::Parsers::parse( std::map<std::string, ValueType>& result, std::string_view input ) {               \
+    return Gaudi::Parsers::parse_( result, input );                                                                    \
+  }                                                                                                                    \
+  StatusCode Gaudi::Parsers::parse( std::map<std::string, ValueType, std::less<>>& result, std::string_view input ) {  \
+    return Gaudi::Parsers::parse_( result, input );                                                                    \
+  }
