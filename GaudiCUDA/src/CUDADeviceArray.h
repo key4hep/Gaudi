@@ -119,8 +119,8 @@ namespace Gaudi::CUDA {
       Detail::freeNoStream( m_ptr );
     } else {
       Detail::freeWithStream( m_ptr, *m_stream );
+      m_stream->removeDependency();
     }
-    m_stream->removeDependency();
   }
 
   template <TriviallyCopyable T>
