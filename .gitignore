@@ -19,7 +19,7 @@ CPackSourceConfig.cmake
 CPackConfig.cmake
 cmake_install.cmake
 Testing/
-
+install*/
 # common byproducts
 *.pyc
 *.pyo

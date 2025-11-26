@@ -91,12 +91,18 @@ set(THREADS_PREFER_PTHREAD_FLAG YES)
 set(Boost_USE_STATIC_LIBS OFF)
 set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}) # FIXME: the day BoostConfig.cmake handles Boost_USE_STATIC_LIBS correctly
 set(BUILD_SHARED_LIBS ON)
-find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED system filesystem regex fiber
+find_package(Boost 1.70 ${__quiet} CONFIG REQUIRED filesystem regex fiber
   thread python unit_test_framework program_options log log_setup graph)
+
+# Boost::system is header-only since 1.69 and removed in 1.89
+# Create an alias to Boost::headers for compatibility
+if(NOT TARGET Boost::system)
+  add_library(Boost::system ALIAS Boost::headers)
+endif()
 
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 mark_as_advanced(Boost_DIR) # FIXME: the day Boost correctly marks as advanced its variables
-foreach(component IN ITEMS system filesystem regex thread python unit_test_framework
+foreach(component IN ITEMS filesystem regex thread python unit_test_framework
                            program_options log log_setup graph atomic chrono
                            date_time headers chrono)
   mark_as_advanced(boost_${component}_DIR)
