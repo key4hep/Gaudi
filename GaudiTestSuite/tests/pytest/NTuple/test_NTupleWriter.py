@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -33,15 +33,19 @@ class Test(GaudiExeTest):
             Tuple of the produced (ROOT file, ROOT TTree).
         """
         file = ROOT.TFile.Open(str(cwd / OUTPUT_FILE_NAME))
+        stree = file.Get("Simple" + ALG_NAME)
         tree = file.Get(ALG_NAME)
-        yield file, tree
+        yield file, stree, tree
         file.Close()
 
     def test_branch_creation(self, setup_file_tree):
         """
         Test to ensure that all expected branches are correctly created in the ROOT file.
         """
-        _, tree = setup_file_tree
+        _, stree, tree = setup_file_tree
+        assert stree.GetBranch("Branch1"), "Branch1 should exist in WriterTree."
+        assert stree.GetBranch("Branch2"), "Branch2 should exist in WriterTree."
+        assert stree.GetBranch("Branch3"), "Branch3 should exist in WriterTree."
         assert tree.GetBranch("Branch1"), "Branch1 should exist in WriterTree."
         assert tree.GetBranch("Branch2"), "Branch2 should exist in WriterTree."
         assert tree.GetBranch("Branch3"), "Branch3 should exist in WriterTree."
@@ -50,7 +54,17 @@ class Test(GaudiExeTest):
         """
         Verify the data within the branches to ensure they match expected transformations.
         """
-        _, tree = setup_file_tree
+        _, stree, tree = setup_file_tree
+        for entry in stree:
+            assert isinstance(
+                entry.Branch1, int
+            ), "Branch1 does not contain int values as expected."
+            assert isinstance(
+                entry.Branch2, int
+            ), "Branch2 does not contain int values as expected."
+            assert isinstance(
+                entry.Branch3, float
+            ), "Branch3 does not contain float values as expected."
         for entry in tree:
             assert isinstance(
                 entry.Branch1, int
@@ -64,7 +78,17 @@ class Test(GaudiExeTest):
 
     def test_data_values(self, setup_file_tree):
         """ """
-        _, tree = setup_file_tree
+        _, stree, tree = setup_file_tree
+        assert (
+            stree.GetEntries() == EXPECTED_ENTRIES * EXPECTED_VECTOR_SIZE
+        ), "Tree does not contain expected number of entries"
+        for entry in stree:
+            assert (
+                entry.Branch1 == entry.Branch2
+            ), "Branch1 does not contain the correct value."
+        assert (
+            tree.GetEntries() == EXPECTED_ENTRIES
+        ), "Tree does not contain expected number of entries"
         for entry in tree:
             assert (
                 entry.Branch1 == EXPECTED_VECTOR_SUM
@@ -84,6 +108,11 @@ def config():
 
     algs = [
         E.TestSuite.NTuple.IntVectorDataProducer("IntVectorDataProducer"),
+        E.TestSuite.NTuple.NTupleSimpleWriter_V(
+            "Simple" + ALG_NAME,
+            OutputFile="NTuple",
+            BranchNames=["Branch1", "Branch2", "Branch3"],
+        ),
         E.TestSuite.NTuple.NTupleWriter_V(
             ALG_NAME,
             OutputFile="NTuple",
