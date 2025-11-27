@@ -44,13 +44,16 @@ What is searched?
 ^^^^^^^^^^^^^^^^^
 
 * Boost>=1.70
-* Python>=2.7.15
+* Python>=3.7
 * ROOT>=6.18
 * UUID
 * TBB>=2019.0.11007.2
 * Threads
 * ZLIB>=1.2.11
 * Rangev3
+* cppgsl
+* fmt
+* nlohmann_json
 
 Depending on what was used to build Gaudi:
 * AIDA
@@ -58,6 +61,7 @@ Depending on what was used to build Gaudi:
 * CLHEP>=2.4.1.0
 * HepPDT
 * Doxygen>=1.8.15
+* CUDAToolkit
 
 Depending on the platform:
 * Linux
@@ -99,6 +103,10 @@ endforeach()
 
 if(GAUDI_USE_CUDA)
   find_package(CUDAToolkit ${__quiet} REQUIRED)
+endif()
+if(NOT CMAKE_FIND_PACKAGE_NAME)
+  # this is to record in GaudiConfig.cmake what was enabled at build time
+  string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_USE_CUDA ${GAUDI_USE_CUDA})\n")
 endif()
 
 find_package(Python 3.7 ${__quiet} REQUIRED Interpreter Development)
