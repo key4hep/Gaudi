@@ -42,16 +42,6 @@ public:
   DataObjectHandleBase( DataObjectHandleBase&& );
   DataObjectHandleBase& operator=( const DataObjectHandleBase& );
 
-  /// Autodeclaring constructor with property name, mode, key and documentation.
-  /// @note the use of requires is required to avoid ambiguities
-  template <std::derived_from<IProperty> OWNER, class K>
-  inline DataObjectHandleBase( OWNER* owner, Gaudi::DataHandle::Mode m, std::string name, K key = {},
-                               std::string doc = "" )
-      : DataObjectHandleBase( std::move( key ), m, owner ) {
-    auto p = owner->declareProperty( std::move( name ), *this, std::move( doc ) );
-    p->template setOwnerType<OWNER>();
-  }
-
   friend std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d );
 
   /// Check if the data object declared is optional for the algorithm
