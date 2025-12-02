@@ -15,6 +15,7 @@ import sys
 from collections.abc import MutableMapping, MutableSequence, MutableSet
 
 import GaudiKernel.GaudiHandles
+from GaudiKernel.DataHandle import DataHandle
 from GaudiKernel.GaudiHandles import GaudiHandle
 
 from . import Configurable, Configurables
@@ -346,6 +347,38 @@ class GaudiHandleArraySemantics(DefaultSemantics):
                 # Otherwise append it
                 a.append(comp)
         return a
+
+
+class DataHandleSemantics(PropertySemantics):
+    """
+    Semantics for data handles.
+    """
+
+    __handled_types__ = (re.compile(r"DataObject(Read|Write)Handle<.*>$"),)
+
+    def __init__(self, cpp_type):
+        super().__init__(cpp_type)
+        self._type = next(extract_template_args(cpp_type))
+        self._isCond = False  # no specific conditions handle in Gaudi yet
+
+        if cpp_type.startswith("DataObjectReadHandle"):
+            self._mode = "R"
+        elif cpp_type.startswith("DataObjectWriteHandle"):
+            self._mode = "W"
+        else:
+            raise TypeError(f"C++ type {cpp_type} not supported")
+
+    def store(self, value):
+        if isinstance(value, DataHandle):
+            v = value.Path
+        elif isinstance(value, str):
+            v = value
+        else:
+            raise TypeError(
+                f"cannot assign {value!r} ({type(value)}) to {self.name}"
+                ", expected string or DataHandle"
+            )
+        return DataHandle(v, self._mode, self._type, self._isCond)
 
 
 def extract_template_args(cpp_type):
