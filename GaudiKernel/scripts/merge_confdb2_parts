@@ -16,9 +16,11 @@ import sys
 from optparse import OptionParser
 
 # https://gitlab.cern.ch/gaudi/Gaudi/-/issues/368
-# Once fixed in https://github.com/python/cpython/issues/135386
-# the range of Python versions can be closed
-if sys.version_info >= (3, 13) and sys.platform.startswith("linux"):
+# Fixed in https://github.com/python/cpython/commit/8f2280272d7e551047b7fb3f7baea885275247b1 (3.13)
+# and https://github.com/python/cpython/commit/8ab7081015e6b7233762fea23452d50569fc20b5 (3.14)
+if (
+    (3, 13, 0) <= sys.version_info <= (3, 13, 7) or sys.version_info[:3] == (3, 14, 0)
+) and sys.platform.startswith("linux"):
     import dbm
     import dbm.gnu
 
