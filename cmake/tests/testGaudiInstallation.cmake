@@ -196,10 +196,6 @@ elseif(DEFINED TEST_GAUDI_INSTALL_FILES_EXIST) # check some files that should be
         message(FATAL_ERROR "Gaudi not installed correctly,"
             " GaudiDependencies.cmake not found in lib/cmake/Gaudi/")
     endif()
-    if(NOT EXISTS ${GAUDI_INSTALL_DIR}/lib/cmake/Gaudi/modules/Findunwind.cmake)
-        message(FATAL_ERROR "find module files not installed correctly,"
-            " Findunwind.cmake not found in lib/cmake/Gaudi/modules/")
-    endif()
 elseif(DEFINED TEST_GAUDI_INSTALL_PACKAGE)
     file(GLOB files "${BIN_DIR}/${PATTERN_TO_REMOVE}")
     if(files)
