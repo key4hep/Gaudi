@@ -252,7 +252,9 @@ namespace VCL_NAMESPACE {
         mov[esi + 12], edx
     }
 #  endif // compiler/platform
-#endif   // __x86_64__
+#else
+  for ( i = 0; i < 4; i++ ) { output[i] = 0; }
+#endif // __x86_64__
   }
 
 // Define popcount function. Gives sum of bits
