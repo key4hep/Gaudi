@@ -28,6 +28,5 @@ StatusCode Gaudi::Parsers::parse( std::string& name, std::string& value, std::st
   return StatusCode::FAILURE;
 }
 
-StatusCode Gaudi::Parsers::parse( std::map<std::string, std::pair<double, double>>& result, std::string_view input ) {
-  return Gaudi::Parsers::parse_( result, input );
-}
+using DoublePair = std::pair<double, double>;
+PARSERS_DEF_FOR_STRMAP( DoublePair )

@@ -10,6 +10,5 @@
 \***********************************************************************************/
 #include "ParsersStandardMiscCommon.h"
 
-StatusCode Gaudi::Parsers::parse( std::map<std::string, std::pair<int, int>>& result, std::string_view input ) {
-  return Gaudi::Parsers::parse_( result, input );
-}
+using IntPair = std::pair<int, int>;
+PARSERS_DEF_FOR_STRMAP( IntPair )

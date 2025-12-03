@@ -32,6 +32,10 @@
   GAUDI_API StatusCode parse( std::set<InnerType>& result, std::string_view input );                                   \
   GAUDI_API StatusCode parse( std::unordered_set<InnerType>& result, std::string_view input );
 
+#define PARSERS_DECL_FOR_STRMAP( ValueType )                                                                           \
+  GAUDI_API StatusCode parse( std::map<std::string, ValueType>& result, std::string_view input );                      \
+  GAUDI_API StatusCode parse( std::map<std::string, ValueType, std::less<>>& result, std::string_view input );
+
 /** @file
  *  The declaration of major parsing functions used e.g
  *  for (re)implementation of new extended properties see class Property
@@ -188,9 +192,20 @@ namespace Gaudi {
 
     PARSERS_DECL_FOR_SET( std::string )
 
-    // ========================================================================
-    // Advanced parses
-    // ========================================================================
+    // Parsers for std::map<std::string, T>
+    PARSERS_DECL_FOR_STRMAP( std::string )
+    PARSERS_DECL_FOR_STRMAP( int )
+    PARSERS_DECL_FOR_STRMAP( unsigned int )
+    PARSERS_DECL_FOR_STRMAP( double )
+    PARSERS_DECL_FOR_STRMAP( std::vector<std::string> )
+    PARSERS_DECL_FOR_STRMAP( std::vector<int> )
+    PARSERS_DECL_FOR_STRMAP( std::vector<double> )
+    using IntPair    = std::pair<int, int>; // needed to avoid macro parsing error due to brackets
+    using DoublePair = std::pair<double, double>;
+    PARSERS_DECL_FOR_STRMAP( IntPair )
+    PARSERS_DECL_FOR_STRMAP( DoublePair )
+    PARSERS_DECL_FOR_STRMAP( Gaudi::Histo1DDef )
+
     /** parse the <c>std::pair\<double,double\></c> value
      *
      *  @see Gaudi::Parsers::PairGrammar
@@ -308,96 +323,6 @@ namespace Gaudi {
      *  @date 2006-05-14
      */
     GAUDI_API StatusCode parse( std::map<int, double>& result, std::string_view input );
-    /** parse the <c>std::map\<std::string , std::string\></c> value
-     *
-     *  @see Gaudi::Parsers::MapGrammar
-     *  @see Gaudi::Parsers::StringGrammar
-     *  @param result (output) map with string key and value
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, std::string>& result, std::string_view input );
-    GAUDI_API StatusCode parse( std::map<std::string, std::string, std::less<>>& result, std::string_view input );
-    /** parse the <c>std::map\<std::string , int\></c> value
-     *
-     *  @see Gaudi::Parsers::MapGrammar
-     *  @see Gaudi::Parsers::StringGrammar
-     *  @see Gaudi::Parsers::IntGrammar
-     *  @param result (output) map with string key and integer value
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, int>& result, std::string_view input );
-    /** parse the <c>std::map\<std::string , double\></c> value
-     *
-     *  @see Gaudi::Parsers::MapGrammar
-     *  @see Gaudi::Parsers::StringGrammar
-     *  @see Gaudi::Parsers::RealGrammar
-     *  @param result (output) map with string key and integer value
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, double>& result, std::string_view input );
-    /** parse the <c>std::map\<std::string , std::vector\<std::string\> \></c>
-     *  value
-     *
-     *  @see Gaudi::Parsers::MapGrammar
-     *  @see Gaudi::Parsers::StringGrammar
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @param result (output) map with string value and
-     *                 vector of strings as value
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, std::vector<std::string>>& result, std::string_view input );
-    /** parse the <c>std::map\<std::string , std::vector\<int\> \></c> value
-     *
-     *  @see Gaudi::Parsers::MapGrammar
-     *  @see Gaudi::Parsers::StringGrammar
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @see Gaudi::Parsers::IntGrammar
-     *  @param result (output) map with string value and
-     *                 vector of integers as value
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, std::vector<int>>& result, std::string_view input );
-    /** parse the <c>std::map\<std::string , std::vector\<double\> \></c> value
-     *
-     *  @see Gaudi::Parsers::MapGrammar
-     *  @see Gaudi::Parsers::StringGrammar
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @see Gaudi::Parsers::RealGrammar
-     *  @param result (output) map with string value and
-     *                 vector of doubles as value
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, std::vector<double>>& result, std::string_view input );
     /** parse the <c>std::map\<int,std::string\> \></c> objects
      *
      *  @see Gaudi::Parsers::MapGrammar
@@ -414,11 +339,6 @@ namespace Gaudi {
      *  @date 2007-12-06
      */
     GAUDI_API StatusCode parse( std::map<unsigned int, std::string>& result, std::string_view input );
-    /** parse the <c>std::map\<unsigned int,std::string\> \></c> objects
-     *
-     *  @see Gaudi::Parsers::MapGrammar
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, unsigned int>& result, std::string_view input );
     /** parse the <c>GaudiUtils::Map\<K, V, M\></c> objects
      *
      *  @see Gaudi::Parsers::MapGrammar
@@ -463,34 +383,6 @@ namespace Gaudi {
      *  @date 2007-09-17
      */
     GAUDI_API StatusCode parse( Gaudi::Histo1DDef& histo, std::string_view input );
-    /** helper function, needed for implementation of "Histogram Property"
-     *  @param histos the map of the histogram descriptions (output)
-     *  @param input the string to be parsed
-     *  @return status code
-     *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @date 2007-09-17
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, Gaudi::Histo1DDef>& histos, std::string_view input );
-    /** helper function, needed for implementation of map of pairs
-     *  @param params the map of pair
-     *  @param input the string to be parsed
-     *  @return status code
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @date 2009-05-19
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, std::pair<double, double>>& params, std::string_view input );
-    /** helper function, needed for implementation of map of pairs
-     *  @param params the map of pair
-     *  @param input the string to be parsed
-     *  @return status code
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author David BACHER david.bacher@physics.ox.ac.uk
-     *  @date 2024-11-06
-     */
-    GAUDI_API StatusCode parse( std::map<std::string, std::pair<int, int>>& params, std::string_view input );
     /** parser function for C-arrays
      *  @param params C-array
      *  @param input the string to be parsed
