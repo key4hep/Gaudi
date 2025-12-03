@@ -92,9 +92,6 @@ XercesC                     no, used for the XML file catalogue
 HepPDT                      no
 CLHEP                       no
 OpenCL                      no
-unwind                      no
-gperftools                  no
-jemalloc                    no
 Rangev3                     no, needed with option GAUDI_USE_SYSTEM_RANGES_V3
 Doxygen                     no, needed to generate documentation
 cppgsl                      no, needed with option GAUDI_USE_SYSTEM_CPP_GSL
