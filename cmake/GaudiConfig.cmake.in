@@ -27,7 +27,6 @@ The following targets will be imported:
   * ``Gaudi::GaudiGenProfilingHtml``
   * ``Gaudi::genconf``
   * ``Gaudi::listcomponents``
-  * ``Gaudi::makeThesis``
   * ``Gaudi::profile_Property``
 * Tests
   * ``Gaudi::AsyncEventProcessorExample``

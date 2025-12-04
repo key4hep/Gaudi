@@ -48,8 +48,6 @@ gaudi_add_module(GaudiHive
                       ${GAUDI_ATOMIC_LIBS})
 
 # Build executable
-gaudi_add_executable(makeThesis
-                     SOURCES src/bin/makeThesis.cpp)
 gaudi_add_executable(concurrentRun
                      SOURCES src/bin/concurrentRun.cpp
                      LINK GaudiKernel
