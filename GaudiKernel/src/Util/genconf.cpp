@@ -290,7 +290,7 @@ int main( int argc, char** argv )
       "output directory for genconf files." )( "debug-level,d", po::value<int>()->default_value( 0 ), "debug level" )(
       "load-library,l", po::value<Strings_t>()->composing(), "preloading library" )(
       "user-module,m", po::value<string>(), "user-defined module to be imported by the genConf-generated one" )(
-      "no-init", "do not generate the (empty) __init__.py" )(
+      "no-init", "do not generate the (empty) __init__.py [deprecated]" )(
       "type", po::value<string>()->default_value( "conf,conf2" ), "comma-separate types of configurables to generate" );
 
   // declare a group of options that will be allowed both on command line
@@ -432,12 +432,6 @@ int main( int argc, char** argv )
     cout << "ERROR: Could not generate Configurable(s) !\n"
          << "ERROR: Got exception: " << e.what() << endl;
     return EXIT_FAILURE;
-  }
-
-  if ( EXIT_SUCCESS == sc && !vm.contains( "no-init" ) ) {
-    // create an empty __init__.py file in the output dir
-    std::fstream initPy( ( out / fs::path( "__init__.py" ) ).string(), std::ios_base::out | std::ios_base::trunc );
-    initPy << "## Hook for " << pkgName << " genConf module\n" << flush;
   }
 
   {
