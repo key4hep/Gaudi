@@ -177,6 +177,11 @@ if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
         GaudiTestSuite.pytest.test_particlepropsvc
     )
 endif()
+if(NOT GAUDI_USE_CUDA)
+  list(APPEND tests_to_disable
+       GaudiTestSuite.pytest.test_cuda
+     )
+endif()
 if(NOT GAUDI_USE_AIDA)
     list(APPEND tests_to_disable
         GaudiTestSuite.pytest.bug.test_71216
