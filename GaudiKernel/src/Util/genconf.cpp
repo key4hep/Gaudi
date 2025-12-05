@@ -345,6 +345,8 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
+  if ( vm.contains( "no-init" ) ) { cout << "WARNING: option --no-init is deprecated as it is not needed anymore.\n"; }
+
   if ( vm.contains( "package-name" ) ) {
     pkgName = vm["package-name"].as<string>();
   } else {
