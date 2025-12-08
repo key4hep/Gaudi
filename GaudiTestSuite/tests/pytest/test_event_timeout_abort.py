@@ -8,7 +8,6 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import os
 import re
 
 import pytest
@@ -16,7 +15,7 @@ from GaudiTesting import GaudiExeTest, platform_matches
 
 
 @pytest.mark.skipif(
-    "CI" in os.environ or platform_matches(["asan", "lsan", "ubsan", "tsan"]),
+    platform_matches(["asan", "lsan", "ubsan", "tsan"]),
     reason="Unsupported platform",
 )
 class TestEventTimeoutAbort(GaudiExeTest):
