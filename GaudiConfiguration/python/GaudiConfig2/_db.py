@@ -17,6 +17,7 @@ import sys
 class ConfDB2(object):
     def __init__(self):
         import shelve
+        from pathlib import Path
 
         self._dbs = {}
         pathvars = (
@@ -24,20 +25,20 @@ class ConfDB2(object):
             if sys.platform == "darwin"
             else ["GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH"]
         )
+        ignored_files = set(os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
         for pathvar in pathvars:
             for path in os.getenv(pathvar, "").split(os.pathsep):
-                if not os.path.isdir(path):
+                if not path:
                     continue
                 dbfiles = [
-                    os.path.join(path, f)
-                    for f in os.listdir(path)
-                    if f.endswith(".confdb2") and os.path.isfile(os.path.join(path, f))
+                    f.absolute().as_posix()
+                    for f in Path(path).glob("*.confdb2")
+                    if f.absolute().as_posix() not in ignored_files
                 ]
                 dbfiles.sort()
                 for db in [shelve.open(f, "r") for f in dbfiles]:
                     for key in db:
-                        if key not in self._dbs:
-                            self._dbs[key] = db
+                        self._dbs.setdefault(key, db)
 
     def __getitem__(self, key):
         return self._dbs[key][key]
