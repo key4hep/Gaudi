@@ -60,6 +60,7 @@ PropertyAlg.DoubleArrayWithoutUnits = { 1100000.0 , -20., 33.0, 0.4 };
 PropertyAlg.PInt    = 101 ;
 PropertyAlg.PDouble = 101.E5;
 PropertyAlg.PString = "hundred 'one'";
+PropertyAlg.PString2 = " and a half";
 PropertyAlg.PBool   = true;
 
 

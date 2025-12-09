@@ -72,6 +72,7 @@ private:
   Gaudi::PropertyWithReadHandler<double> p_double{ this, "PDouble", 100. };
 
   Gaudi::Property<std::string> p_string{ this, "PString", "hundred" };
+  Gaudi::Property<std::string> p_string2{ this, "PString2", " thousand" };
   Gaudi::Property<bool>        p_bool{ this, "PBool", false };
 
   Gaudi::Property<std::vector<int>>         p_intarray{ this, "PIntArray" };

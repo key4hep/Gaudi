@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -88,6 +88,7 @@ PropertyAlg::PropertyAlg( const std::string& name, ISvcLocator* ploc ) : Algorit
   os << p_double; // avoid read handler from printing _during_ info()!
   info() << "PDouble = " << os.str() << endmsg;
   info() << "PString = " << p_string << endmsg;
+  info() << "PString2 = " << ( p_string + p_string2 ) << endmsg;
   info() << "PBool   = " << p_bool << endmsg;
   info() << "PIntArray    = " << p_intarray << endmsg;
   info() << "PDoubleArray = " << p_doublearray << endmsg;
@@ -129,6 +130,7 @@ StatusCode PropertyAlg::initialize() {
   os << p_double; // avoid read handler from printing _during_ info()!
   info() << "PDouble = " << os.str() << endmsg;
   info() << "PString = " << p_string << endmsg;
+  info() << "PString2 = " << ( p_string + p_string2 ) << endmsg;
   info() << "PBool   = " << p_bool << endmsg;
   info() << "PIntArray    = " << p_intarray << endmsg;
   info() << "PDoubleArray = " << p_doublearray << endmsg;

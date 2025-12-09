@@ -429,6 +429,7 @@ namespace Gaudi {
 
   /// implemantation of (value + property)
   template <class T, class TP, class V, class H>
+    requires( !std::is_base_of_v<Details::PropertyBase, T> )
   decltype( auto ) operator+( const T& v, const Property<TP, V, H>& p ) {
     return v + p.value();
   }
