@@ -30,8 +30,8 @@ namespace Gaudi {
    *  @author Marco Clemencic
    *  @date 2016-06-16
    */
-  template <class TYPE, class VERIFIER = Details::Property::NullVerifier,
-            class HANDLERS = Details::Property::UpdateHandler>
+  template <typename TYPE, typename VERIFIER = Details::Property::NullVerifier,
+            typename HANDLERS = Details::Property::UpdateHandler>
   class Property : public Details::PropertyBase {
   public:
     /// Hosted type
@@ -47,7 +47,7 @@ namespace Gaudi {
 
   public:
     /// the constructor with property name, value and documentation.
-    template <class T = StorageType>
+    template <typename T = StorageType>
     Property( std::string name, T&& value, std::string doc = "", std::string semantics = "" )
         : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ), std::move( semantics ) )
         , m_value( std::forward<T>( value ) ) {
@@ -64,7 +64,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use of requires is required to avoid ambiguities
-    template <std::derived_from<IProperty> OWNER, class T = StorageType>
+    template <std::derived_from<IProperty> OWNER, typename T = StorageType>
     Property( OWNER* owner, std::string name, T&& value, std::string doc = "", std::string semantics = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ), std::move( semantics ) ) {
       owner->declareProperty( *this );
@@ -73,7 +73,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
     /// @note the use of requires is required to avoid ambiguities
-    template <std::derived_from<IProperty> OWNER, class T = StorageType>
+    template <std::derived_from<IProperty> OWNER, typename T = StorageType>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
               std::string doc = "", std::string semantics = "" )
         : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ), std::move( semantics ) ) {
@@ -82,7 +82,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
     /// @note the use of requires is required to avoid ambiguities
-    template <std::derived_from<IProperty> OWNER, class T = StorageType>
+    template <std::derived_from<IProperty> OWNER, typename T = StorageType>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )( PropertyBase& ),
               std::string doc = "", std::string semantics = "" )
         : Property(
@@ -91,7 +91,7 @@ namespace Gaudi {
               std::move( semantics ) ) {}
     /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
     /// @note the use of requires is required to avoid ambiguities
-    template <std::derived_from<IProperty> OWNER, class T = StorageType>
+    template <std::derived_from<IProperty> OWNER, typename T = StorageType>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "",
               std::string semantics = "" )
         : Property(
@@ -101,7 +101,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
     /// @note the use of requires is required to avoid ambiguities
-    template <std::derived_from<IProperty> OWNER, class T = StorageType>
+    template <std::derived_from<IProperty> OWNER, typename T = StorageType>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
               Details::Property::ImmediatelyInvokeHandler invoke, std::string doc = "", std::string semantics = "" )
         : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ),
@@ -163,9 +163,9 @@ namespace Gaudi {
     //   return m_value;
     // }
 
-    template <typename Dummy = TYPE>
-      requires( std::is_constructible_v<std::string_view, Dummy> )
-    operator std::string_view() const {
+    operator std::string_view() const
+      requires std::constructible_from<std::string_view, TYPE>
+    {
       m_handlers.useReadHandler( *this );
       return m_value;
     }
@@ -188,36 +188,58 @@ namespace Gaudi {
     }
 
     /// equality comparison
-    template <class T>
-    bool operator==( const T& other ) const {
+    template <typename T>
+    bool operator==( const T& other ) const
+      requires requires {
+        { m_value == other } -> std::convertible_to<bool>;
+      }
+    {
       return m_value == other;
     }
 
     /// inequality comparison
-    template <class T>
-    bool operator!=( const T& other ) const {
+    template <typename T>
+    bool operator!=( const T& other ) const
+      requires requires {
+        { m_value != other } -> std::convertible_to<bool>;
+      }
+    {
       return m_value != other;
     }
 
     /// "less" comparison
-    template <class T>
-    bool operator<( const T& other ) const {
+    template <typename T>
+    bool operator<( const T& other ) const
+      requires requires {
+        { m_value < other } -> std::convertible_to<bool>;
+      }
+    {
       return m_value < other;
     }
 
     /// allow addition if possible between the property and the other types
-    template <class T>
-    decltype( auto ) operator+( const T& other ) const {
+    template <typename T>
+    auto operator+( const T& other ) const
+      requires requires { m_value + other; }
+    {
       return m_value + other;
     }
 
     /// Assignment from value.
-    template <class T = ValueType>
+    template <typename T>
+      requires( std::assignable_from<TYPE&, T &&> || std::constructible_from<TYPE, T &&> )
     Property& operator=( T&& v ) {
       m_verifier( v );
       m_value = std::forward<T>( v );
       m_handlers.useUpdateHandler( *this );
       return *this;
+    }
+
+    template <typename T = TYPE>
+      requires requires { typename T::value_type; } &&
+               std::constructible_from<TYPE, std::initializer_list<typename T::value_type>>
+    Property& operator=( std::initializer_list<typename T::value_type> ilist ) {
+      return *this = TYPE{ ilist };
     }
 
     /// Accessor to verifier.
@@ -242,118 +264,152 @@ namespace Gaudi {
     /// @name Helpers for easy use of string and vector properties.
     /// @{
     /// They are instantiated only if they are implemented in the wrapped class.
-    template <class T = const ValueType>
-    decltype( auto ) size() const {
+    auto size() const
+      requires requires { value().size(); }
+    {
       return value().size();
     }
-    template <class T = const ValueType, typename = decltype( std::declval<const T>().length() )>
-    decltype( auto ) length() const {
+    auto length() const
+      requires requires { value().length(); }
+    {
       return value().length();
     }
-    template <class T = const ValueType>
-    decltype( auto ) empty() const {
+    auto empty() const
+      requires requires { value().empty(); }
+    {
       return value().empty();
     }
-    template <class T = ValueType>
-    decltype( auto ) clear() {
+    void clear()
+      requires requires { value().clear(); }
+    {
       value().clear();
     }
-    template <class T = const ValueType, typename = decltype( std::declval<const T>().begin() )>
-    decltype( auto ) begin() const {
+    auto begin() const
+      requires requires { value().begin(); }
+    {
       return value().begin();
     }
-    template <class T = const ValueType>
-    decltype( auto ) end() const {
+    auto end() const
+      requires requires { value().end(); }
+    {
       return value().end();
     }
-    template <class T = ValueType, typename = decltype( std::declval<T>().begin() )>
-    decltype( auto ) begin() {
+    auto begin()
+      requires requires { value().begin(); }
+    {
       return value().begin();
     }
-    template <class T = ValueType>
-    decltype( auto ) end() {
+    auto end()
+      requires requires { value().end(); }
+    {
       return value().end();
     }
-    template <class ARG>
-    decltype( auto ) operator[]( const ARG& arg ) const {
+    template <typename ARG>
+    decltype( auto ) operator[]( const ARG& arg ) const
+      requires requires { value()[arg]; }
+    {
       return value()[arg];
     }
-    template <class ARG>
-    decltype( auto ) operator[]( const ARG& arg ) {
+    template <typename ARG>
+    decltype( auto ) operator[]( const ARG& arg )
+      requires requires { value()[arg]; }
+    {
       return value()[arg];
     }
-    template <class T = const ValueType>
-    decltype( auto ) find( const typename T::key_type& key ) const {
+    template <typename K>
+    decltype( auto ) find( const K& key ) const
+      requires requires { value().find( key ); }
+    {
       return value().find( key );
     }
-    template <class T = ValueType>
-    decltype( auto ) find( const typename T::key_type& key ) {
+    template <typename K>
+    decltype( auto ) find( const K& key )
+      requires requires { value().find( key ); }
+    {
       return value().find( key );
     }
-    template <class ARG, class T = ValueType>
-    decltype( auto ) erase( ARG arg ) {
+    template <typename T>
+    decltype( auto ) erase( T arg )
+      requires requires { value().erase( arg ); }
+    {
       return value().erase( arg );
     }
-    template <class = ValueType>
-    Property& operator++() {
+    Property& operator++()
+      requires requires { ++m_value; }
+    {
       ++value();
       return *this;
     }
-    template <class = ValueType>
-    ValueType operator++( int ) {
+    auto operator++( int )
+      requires requires { m_value++; }
+    {
       return m_value++;
     }
-    template <class = ValueType>
-    Property& operator--() {
+    Property& operator--()
+      requires requires { --value(); }
+    {
       --value();
       return *this;
     }
-    template <class = ValueType>
-    ValueType operator--( int ) {
+    auto operator--( int )
+      requires requires { m_value--; }
+    {
       return m_value--;
     }
-    template <class T = ValueType>
-    Property& operator+=( const T& other ) {
+    template <typename T>
+    Property& operator+=( const T& other )
+      requires requires { m_value += other; }
+    {
       m_value += other;
       return *this;
     }
-    template <class T = ValueType>
-    Property& operator-=( const T& other ) {
+    template <typename T>
+    Property& operator-=( const T& other )
+      requires requires { m_value -= other; }
+    {
       m_value -= other;
       return *this;
     }
     /// Helpers for DataHandles and derived classes
-    template <class T = const ValueType>
-    decltype( auto ) key() const {
+    decltype( auto ) key() const
+      requires requires { value().key(); }
+    {
       return value().key();
     }
-    template <class T = const ValueType>
-    decltype( auto ) objKey() const {
+    decltype( auto ) objKey() const
+      requires requires { value().objKey(); }
+    {
       return value().objKey();
     }
-    template <class T = const ValueType>
-    decltype( auto ) fullKey() const {
+    decltype( auto ) fullKey() const
+      requires requires { value().fullKey(); }
+    {
       return value().fullKey();
     }
-    template <class T = ValueType>
-    decltype( auto ) initialize() {
+    decltype( auto ) initialize()
+      requires requires { value().initialize(); }
+    {
       return value().initialize();
     }
-    template <class T = ValueType>
-    decltype( auto ) makeHandles() const {
+    decltype( auto ) makeHandles() const
+      requires requires { value().makeHandles(); }
+    {
       return value().makeHandles();
     }
-    template <class ARG, class T = ValueType>
-    decltype( auto ) makeHandles( const ARG& arg ) const {
+    template <typename ARG>
+    decltype( auto ) makeHandles( const ARG& arg ) const
+      requires requires { value().makeHandles( arg ); }
+    {
       return value().makeHandles( arg );
     }
     /// @}
 
     // Delegate operator() to the value
-    template <class... Args>
-    decltype( std::declval<ValueType>()( std::declval<Args&&>()... ) ) operator()( Args&&... args ) const
-        noexcept( noexcept( std::declval<ValueType>()( std::declval<Args&&>()... ) ) ) {
-      return value()( std::forward<Args>( args )... );
+    template <typename... Args>
+      requires std::invocable<ValueType&, Args...>
+    constexpr decltype( auto ) operator()( Args&&... args ) const
+        noexcept( std::is_nothrow_invocable_v<ValueType&, Args...> ) {
+      return std::invoke( value(), std::forward<Args>( args )... );
     }
 
   public:
@@ -416,37 +472,37 @@ namespace Gaudi {
   }; // namespace Gaudi
 
   /// delegate (value == property) to property operator==
-  template <class T, class TP, class V, class H>
+  template <typename T, typename TP, typename V, typename H>
   bool operator==( const T& v, const Property<TP, V, H>& p ) {
     return p.operator==( v );
   }
 
   /// delegate (value != property) to property operator!=
-  template <class T, class TP, class V, class H>
+  template <typename T, typename TP, typename V, typename H>
   bool operator!=( const T& v, const Property<TP, V, H>& p ) {
     return p.operator!=( v );
   }
 
   /// implemantation of (value + property)
-  template <class T, class TP, class V, class H>
+  template <typename T, typename TP, typename V, typename H>
     requires( !std::is_base_of_v<Details::PropertyBase, T> )
   decltype( auto ) operator+( const T& v, const Property<TP, V, H>& p ) {
     return v + p.value();
   }
 
-  template <class TYPE, class HANDLERS = Details::Property::UpdateHandler>
+  template <typename TYPE, typename HANDLERS = Details::Property::UpdateHandler>
   using CheckedProperty = Property<TYPE, Details::Property::BoundedVerifier<TYPE>, HANDLERS>;
 
-  template <class TYPE>
+  template <typename TYPE>
   using PropertyWithReadHandler =
       Property<TYPE, Details::Property::NullVerifier, Gaudi::Details::Property::ReadUpdateHandler>;
 
 } // namespace Gaudi
 
-template <class TYPE>
+template <typename TYPE>
 using SimpleProperty = Gaudi::Property<TYPE>;
 
-template <class TYPE>
+template <typename TYPE>
 using SimplePropertyRef = Gaudi::Property<TYPE&>;
 
 // Typedef Properties for built-in types
@@ -782,7 +838,7 @@ namespace Gaudi {
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    template <class TYPE>
+    template <typename TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value, const std::string& doc );
     /** simple function to set the property of the given object from the value
      *
@@ -806,7 +862,7 @@ namespace Gaudi {
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    template <class TYPE>
+    template <typename TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value ) {
       return setProperty( component, name, value, std::string() );
     }
@@ -888,7 +944,7 @@ namespace Gaudi {
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    template <class TYPE>
+    template <typename TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value, const std::string& doc ) {
       using Gaudi::Utils::toString;
       return component && hasProperty( component, name )
@@ -963,7 +1019,7 @@ namespace Gaudi {
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    template <class TYPE>
+    template <typename TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const Gaudi::Property<TYPE>& value,
                             const std::string& doc = "" ) {
       return setProperty( component, name, &value, doc );
@@ -988,7 +1044,7 @@ namespace Gaudi {
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    template <class TYPE>
+    template <typename TYPE>
     StatusCode setProperty( IInterface* component, const std::string& name, const TYPE& value,
                             const std::string& doc = "" ) {
       if ( !component ) { return StatusCode::FAILURE; }
@@ -1110,7 +1166,7 @@ namespace Gaudi {
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    template <class TYPE>
+    template <typename TYPE>
     StatusCode setProperty( IInterface* component, const std::string& name, const Gaudi::Property<TYPE>& value,
                             const std::string& doc = "" ) {
       return setProperty( component, name, &value, doc );
