@@ -28,7 +28,100 @@
 namespace Gaudi::NTuple {
 
   /**
-   * @struct Writer
+   * @brief Wrapper around a given NTuple
+   *
+   * Provides the functionality for initializing branches in a ROOT TTree,
+   * filling the tree, and writing it to a given file.
+   *
+   * An algorithm wanting to write NTuple would typically declare one or several Wrappers as its member
+   * and call initTree at initialization, fillTree during processing (that one is thread safe)
+   * and finally writeTree at finalization
+   * initTree and writeTree are not thread safe
+   *
+   * @tparam COLUMNS Variadic template parameters representing data types in the NTuple
+   */
+  template <typename... COLUMNS>
+  class Wrapper {
+  public:
+    // Initialize the TTree and creates branches
+    void initTree( TFile& file, std::string const& algName, std::string const& name,
+                   std::array<std::string, sizeof...( COLUMNS )> const& branchNames ) {
+      file.cd();
+      m_tree = std::make_unique<TTree>( name.c_str(), "Tree of Writer Algorithm" ).release();
+      m_branchWrappers.reserve( m_branchWrappers.size() + sizeof...( COLUMNS ) );
+      createBranches( std::make_index_sequence<sizeof...( COLUMNS )>{}, algName, branchNames );
+    }
+
+    /**
+     * fills the tree with given data
+     * this is safe to be called in the threaded context
+     */
+    void fillTree( std::tuple<COLUMNS...> const& data ) const {
+      std::scoped_lock lock{ m_mtx };
+      std::apply(
+          [&]( const auto&... elems ) {
+            size_t index = 0;
+            ( ..., m_branchWrappers[index++].setDataPtr( const_cast<void*>( static_cast<const void*>( &elems ) ) ) );
+          },
+          data );
+      m_tree->Fill();
+    }
+
+    // Write the TTree to the given ROOT file
+    void writeTree( TFile& file, std::string const& algName ) {
+      file.cd();
+      if ( m_tree->Write() <= 0 ) {
+        throw GaudiException( "Failed to write TTree to ROOT file.", algName, StatusCode::FAILURE );
+      }
+      m_tree = nullptr;
+    }
+
+  private:
+    TTree*                                      m_tree{ nullptr };  // Pointer to the TTree being written to
+    mutable std::vector<details::BranchWrapper> m_branchWrappers{}; // Container for BranchWrapper objects
+    mutable std::mutex                          m_mtx;              // Mutex for thread-safe operations
+
+    // Create branches in the TTree based on the provided names and output data types
+    template <std::size_t... Is>
+    void createBranches( std::index_sequence<Is...> const, std::string const& algName,
+                         std::array<std::string, sizeof...( COLUMNS )> const& branchNames ) const {
+      ( ..., m_branchWrappers.emplace_back(
+                 m_tree, System::typeinfoName( typeid( std::tuple_element_t<Is, std::tuple<COLUMNS...>> ) ),
+                 branchNames[Is], "", algName ) );
+    }
+  };
+
+  /**
+   * Small class wrapping an algorithm and adding management of a Root File via the FileSvc
+   *
+   * The file to be used is identified via Property OutputFile
+   * Can typically be used in conjunction with Wrapper to add support for NTuples in a given algorithm
+   * For simple cases (single NTuple), prefer to inherit directly from SimpleWriter or Writer (in case
+   * a single entry per event is required)
+   */
+  template <typename Base>
+  struct FileHolder : Base {
+    using Base::Base;
+    TFile* file() { return m_file.get(); }
+    // Initialize the algorithm, set up the ROOT file and a TTree branch for each input location
+    virtual StatusCode initialize() override {
+      return Base::initialize().andThen( [this]() {
+        m_file = m_fileSvc->getFile( m_fileId );
+        if ( !m_file ) {
+          this->error() << "Failed to retrieve TFile." << endmsg;
+          return StatusCode::FAILURE;
+        }
+        return StatusCode::SUCCESS;
+      } );
+    }
+
+  private:
+    Gaudi::Property<std::string> m_fileId{ this, "OutputFile", "NTuple", "Identifier for the TFile to write to." };
+    ServiceHandle<Gaudi::Interfaces::IFileSvc> m_fileSvc{ this, "FileSvc", "FileSvc" };
+    std::shared_ptr<TFile>                     m_file = nullptr; // Pointer to the ROOT file
+  };
+
+  /**
    * @brief Base template for NTuple::Writer.
    * Actual specializations of this template provide the functionality.
    */
@@ -38,13 +131,12 @@ namespace Gaudi::NTuple {
   };
 
   /**
-   * @struct SimpleWriter
    * @brief Specialized Algorithm for NTuple writing.
    *
-   * Provides the functionality for initializing branches in a ROOT TTree,
-   * transforming input data, filling the tree, and writing it to a file.
+   * Provides the functionality for handling a single NTuple in an algorithm
+   * If several NTuples are used in parallel, one should use the FileHolder and Wrapper classes directly
    *
-   * An algorithm inheriting from this class needs to implement the operator() and can call fillTree
+   * An algorithm inheriting from this class needs to implement the operator() and call fillTree
    * as many times as needed per event. Note that fillTree is internally synchronized, so calling it
    * is thread safe.
    * The main Properties are :
@@ -58,83 +150,36 @@ namespace Gaudi::NTuple {
    */
   template <typename... OUTPUTs, typename... INPUTs, typename Traits_>
   struct SimpleWriter<std::tuple<OUTPUTs...>( const INPUTs&... ), Traits_>
-      : Gaudi::Functional::Consumer<void( const INPUTs&... ), Traits_> {
-    using Consumer_t = Gaudi::Functional::Consumer<void( const INPUTs&... ), Traits_>;
+      : FileHolder<Gaudi::Functional::Consumer<void( const INPUTs&... ), Traits_>> {
+    using Consumer_t = FileHolder<Gaudi::Functional::Consumer<void( const INPUTs&... ), Traits_>>;
     using Consumer_t::Consumer_t;
 
-    Gaudi::Property<std::string> m_fileId{ this, "OutputFile", "NTuple", "Identifier for the TFile to write to." };
     Gaudi::Property<std::string> m_ntupleTname{ this, "NTupleName", this->name(), "Name of the TTree." };
     Gaudi::Property<std::array<std::string, sizeof...( OUTPUTs )>> m_branchNames{
         this, "BranchNames", {}, "Names of the tree branches." }; // Names for the tree branches
 
-    // Fill the TTree with transformed data
-    void fillTree( const std::tuple<OUTPUTs...>& transformedData ) const {
-      std::scoped_lock lock{ m_mtx };
-      std::apply(
-          [&]( const auto&... elems ) {
-            size_t index = 0;
-            ( ..., m_branchWrappers[index++].setDataPtr( const_cast<void*>( static_cast<const void*>( &elems ) ) ) );
-          },
-          transformedData );
-      m_tree->Fill();
-    }
-
     // Initialize the algorithm, set up the ROOT file and a TTree branch for each input location
     virtual StatusCode initialize() override {
       return Consumer_t::initialize().andThen( [this]() {
-        m_file = m_fileSvc->getFile( m_fileId );
-        if ( !m_file ) {
-          this->error() << "Failed to retrieve TFile." << endmsg;
-          return StatusCode::FAILURE;
-        }
-        this->initTree( m_file, m_ntupleTname.value(), m_branchNames.value(), this->name() );
+        m_ntuple.initTree( *this->file(), this->name(), m_ntupleTname.value(), m_branchNames.value() );
         return StatusCode::SUCCESS;
       } );
     }
 
+    // Fill the TTree with transformed data
+    void fillTree( const std::tuple<OUTPUTs...>& data ) const { m_ntuple.fillTree( data ); }
+
     // Finalize the algorithm by writing the TTree to the file and closing it
     virtual StatusCode finalize() override {
-      this->writeTree( m_file, this->name() );
+      m_ntuple.writeTree( *this->file(), this->name() );
       return Consumer_t::finalize();
     }
 
   private:
-    // Initialize the TTree and creates branches
-    void initTree( const std::shared_ptr<TFile>& file, const std::string& ntupleName,
-                   const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames, const std::string& algName ) {
-      file->cd();
-      m_tree = std::make_unique<TTree>( ntupleName.c_str(), "Tree of Writer Algorithm" ).release();
-      m_branchWrappers.reserve( m_branchWrappers.size() + sizeof...( OUTPUTs ) );
-      createBranchesForOutputs( branchNames, std::make_index_sequence<sizeof...( OUTPUTs )>{}, algName );
-    }
-
-    // Create branches in the TTree based on the provided names and output data types
-    template <std::size_t... Is>
-    void createBranchesForOutputs( const gsl::span<std::string, sizeof...( OUTPUTs )> branchNames,
-                                   const std::index_sequence<Is...>, const std::string& algName ) const {
-      ( ..., m_branchWrappers.emplace_back(
-                 m_tree, System::typeinfoName( typeid( std::tuple_element_t<Is, std::tuple<OUTPUTs...>> ) ),
-                 branchNames[Is], "", algName ) );
-    }
-
-    // Write the TTree to the associated ROOT file
-    void writeTree( const std::shared_ptr<TFile>& file, const std::string& algName ) {
-      file->cd();
-      if ( m_tree->Write() <= 0 ) {
-        throw GaudiException( "Failed to write TTree to ROOT file.", algName, StatusCode::FAILURE );
-      }
-      m_tree = nullptr;
-    }
-
-    ServiceHandle<Gaudi::Interfaces::IFileSvc>  m_fileSvc{ this, "FileSvc", "FileSvc" };
-    TTree*                                      m_tree = nullptr;   // Pointer to the TTree being written to
-    mutable std::vector<details::BranchWrapper> m_branchWrappers{}; // Container for BranchWrapper objects
-    std::shared_ptr<TFile>                      m_file = nullptr;   // Pointer to the ROOT file
-    mutable std::mutex                          m_mtx;              // Mutex for thread-safe operations
+    Wrapper<OUTPUTs...> m_ntuple;
   };
 
   /**
-   * @struct Writer
    * @brief Base template for NTuple::Writer.
    * Actual specializations of this template provide the functionality.
    */
@@ -146,9 +191,8 @@ namespace Gaudi::NTuple {
   };
 
   /**
-   * @struct Writer
-   * @brief Specialized algorithm for NTuple writing where one line is written per event
-   * and a transformation from INPUTS to the stored items, aka OUTPUTS
+   * @brief Specialized algorithm for NTuple writing when exactly one entry is written per event
+   * and a transformation is used to convert INPUTS to the stored items, aka OUTPUTS
    *
    * A class inheriting Writer only has to provide the transform method converting
    * INPUTS into OUTPUTS.
