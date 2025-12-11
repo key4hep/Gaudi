@@ -11,7 +11,7 @@
 from GaudiTesting import GaudiExeTest
 
 
-class TestCounterAlg(GaudiExeTest):
+class TestGPUSimpleTest(GaudiExeTest):
     command = [
         "gaudirun.py",
         "../../../GaudiCUDA/options/GPUAvalancheSchedulerSimpleTest.py",

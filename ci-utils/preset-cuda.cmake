@@ -1,2 +1,0 @@
-# Enable CUDA
-set(GAUDI_USE_CUDA ON CACHE BOOL "")
