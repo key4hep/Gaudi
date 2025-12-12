@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2021-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2021-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -13,7 +13,20 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import pytest
-from GaudiTests import run_gaudi
+
+
+def run_gaudi(*args, **kwargs):
+    """
+    Helper to simplify the invocation of gaudirun.py in tests.
+    """
+    from subprocess import run
+
+    cmd = ["gaudirun.py"]
+    cmd.extend(str(x) for x in args)
+
+    print("running", cmd)
+    return run(cmd, **kwargs)
+
 
 # Extra options to test usage of ToolHandleArray as Properties
 # The  ThreaPoolSvc is used for its ThreadInitTools property of type PrivateToolHandleArray
