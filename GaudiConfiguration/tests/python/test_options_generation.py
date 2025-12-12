@@ -40,8 +40,8 @@ def test_props(with_global_instances):
     print(p.__opt_properties__(explicit_defaults=True))
     assert p.__opt_properties__(explicit_defaults=True) == {
         "Dummy.Int": "0",
-        "Dummy.String": '"default"',
-        "Dummy.Tool": '"TestConf::SimpleOptsAlgTool"',
+        "Dummy.String": f'{repr("default")}',
+        "Dummy.Tool": f'{repr("TestConf::SimpleOptsAlgTool")}',
     }
     p.Int = 42
     assert p.__opt_properties__() == {
@@ -50,8 +50,8 @@ def test_props(with_global_instances):
     p.Tool = SimpleOptsAlgTool("MyTool", parent=p)
     assert p.__opt_properties__(explicit_defaults=True) == {
         "Dummy.Int": "42",
-        "Dummy.String": '"default"',
-        "Dummy.Tool": '"TestConf::SimpleOptsAlgTool/Dummy.MyTool"',
+        "Dummy.String": f'{repr("default")}',
+        "Dummy.Tool": f'{repr("TestConf::SimpleOptsAlgTool/Dummy.MyTool")}',
     }
 
 
@@ -76,7 +76,7 @@ def test_special_cases_for_is_set_with_default_handler(with_global_instances):
     # internal change to same as default, equivalent to no change
     p.DefProp.AString = "Hello"
     assert p.__opt_properties__() == {
-        "Dummy.DefProp": '"Hello"',
+        "Dummy.DefProp": f'{repr("Hello")}',
     }
     # internal change to same as default, equivalent to no change
     p.DefProp.AString = p._descriptors["DefProp"].default.AString
@@ -84,14 +84,14 @@ def test_special_cases_for_is_set_with_default_handler(with_global_instances):
     # explicit set as default, equivalent to change
     p.DefProp = p._descriptors["DefProp"].default
     assert p.__opt_properties__() == {
-        "Dummy.DefProp": '"Foo"',
+        "Dummy.DefProp": f'{repr("Foo")}',
     }
 
     p = AlgWithComplexProperty("Dummy2")
     # explicit set as default, equivalent to change (never retrieved)
     p.DefProp = p._descriptors["DefProp"].default
     assert p.__opt_properties__() == {
-        "Dummy2.DefProp": '"Foo"',
+        "Dummy2.DefProp": f'{repr("Foo")}',
     }
 
 
@@ -104,12 +104,12 @@ def test_all_options_default(with_global_instances):
     assert all_options() == {}
     assert all_options(explicit_defaults=True) == {
         "Parent.Int": "0",
-        "Parent.String": '"default"',
-        "Parent.Tool": '"TestConf::SimpleOptsAlgTool"',
+        "Parent.String": f'{repr("default")}',
+        "Parent.Tool": f'{repr("TestConf::SimpleOptsAlgTool")}',
         "Parent.MyTool.Bool": "False",
         "AnotherAlg.Int": "0",
-        "AnotherAlg.String": '"default"',
-        "AnotherAlg.Tool": '"TestConf::SimpleOptsAlgTool"',
+        "AnotherAlg.String": f'{repr("default")}',
+        "AnotherAlg.Tool": f'{repr("TestConf::SimpleOptsAlgTool")}',
     }
 
 
@@ -126,12 +126,12 @@ def test_all_options(with_global_instances):
     }
     assert all_options(explicit_defaults=True) == {
         "Parent.Int": "9",
-        "Parent.String": '"default"',
-        "Parent.Tool": '"TestConf::SimpleOptsAlgTool"',
+        "Parent.String": f'{repr("default")}',
+        "Parent.Tool": f'{repr("TestConf::SimpleOptsAlgTool")}',
         "Parent.MyTool.Bool": "False",
         "AnotherAlg.Int": "0",
-        "AnotherAlg.String": '"default"',
-        "AnotherAlg.Tool": '"TestConf::SimpleOptsAlgTool"',
+        "AnotherAlg.String": f'{repr("default")}',
+        "AnotherAlg.Tool": f'{repr("TestConf::SimpleOptsAlgTool")}',
     }
 
 

@@ -212,12 +212,11 @@ def _getAllOpts_old(explicit_defaults=False):
                     # this is done in "getFullName", but the exception is ignored,
                     # so we do it again to get it
                     v = v.__resolve__()
-                if isinstance(v, str):
-                    # properly escape quotes in the string (see gaudi/Gaudi#78)
-                    v = '"%s"' % v.replace('"', '\\"')
-                elif hasattr(v, "__opt_value__"):
+                if hasattr(v, "__opt_value__"):
                     v = v.__opt_value__()
-                old_opts[".".join((n, p))] = str(v)
+                else:
+                    v = repr(v)
+                old_opts[".".join((n, p))] = v
 
     return old_opts
 

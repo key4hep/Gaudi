@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2021-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2021-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -18,7 +18,9 @@ from GaudiTests import run_gaudi
 
 def gen_opts_dict(options):
     with NamedTemporaryFile(mode="w+", suffix=".py") as tmp:
-        run_gaudi("--dry-run", "--output", tmp.name, options)
+        p = run_gaudi("--dry-run", "--output", tmp.name, options, capture_output=True)
+        # make sure there are no warnings while loading generated options
+        assert p.stderr == b""
         return literal_eval(tmp.read())
 
 

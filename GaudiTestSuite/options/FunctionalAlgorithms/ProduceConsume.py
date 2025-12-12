@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -20,6 +20,8 @@ from Configurables import Gaudi__TestSuite__FloatDataConsumer as FloatDataConsum
 from Configurables import Gaudi__TestSuite__FrExpTransformer as FrExpTransformer
 from Configurables import Gaudi__TestSuite__IntDataConsumer as IntDataConsumer
 from Configurables import Gaudi__TestSuite__IntDataProducer as IntDataProducer
+from Configurables import Gaudi__TestSuite__StringDataConsumer as StringDataConsumer
+from Configurables import Gaudi__TestSuite__StringDataProducer as StringDataProducer
 from Configurables import (
     Gaudi__TestSuite__IntIntToFloatFloatData as IntIntToFloatFloatData,
 )
@@ -64,9 +66,11 @@ for configurable in sorted(
     [
         ToolConsumer,
         IntDataProducer,
+        StringDataProducer,
         VectorDataProducer,
         FloatDataConsumer,
         IntDataConsumer,
+        StringDataConsumer,
         IntToFloatData,
         IntIntToFloatFloatData,
         IntVectorsToIntVector,
@@ -107,6 +111,8 @@ app.TopAlg = [
     IntDataProducer("IntDataProducer"),
     OtherIntDataProducer,
     IntDataConsumer("IntDataConsumer"),
+    StringDataProducer("StringDataProducer", Value=r"component\.name"),
+    StringDataConsumer("StringDataConsumer"),
     ToolConsumer("MyToolConsumer", MyTool=MyExampleTool(Message="Hello World!!!")),
     ToolConsumer(
         "MyBoundToolConsumer", MyTool=MyConsumerTool(MyInt="/Event/MyOtherInt")

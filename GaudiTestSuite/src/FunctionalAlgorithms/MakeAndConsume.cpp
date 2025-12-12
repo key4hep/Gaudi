@@ -105,6 +105,21 @@ namespace Gaudi::TestSuite {
 
   DECLARE_COMPONENT( IntDataProducer )
 
+  struct StringDataProducer final : Gaudi::Functional::Producer<std::string(), BaseClass_t> {
+
+    StringDataProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyString" ) ) {}
+
+    std::string operator()() const override {
+      info() << "executing StringDataProducer, storing " << m_value.value() << " into " << outputLocation() << endmsg;
+      return m_value;
+    }
+
+    Gaudi::Property<std::string> m_value{ this, "Value", "Any value", "The string value to produce." };
+  };
+
+  DECLARE_COMPONENT( StringDataProducer )
+
   struct VectorDataProducer final : Gaudi::Functional::Producer<std::vector<int>(), BaseClass_t> {
 
     Gaudi::Property<std::vector<int>> m_data{ this, "Data", { 3, 3, 3, 3 } };
@@ -150,6 +165,18 @@ namespace Gaudi::TestSuite {
   };
 
   DECLARE_COMPONENT( IntDataConsumer )
+
+  struct StringDataConsumer final : Gaudi::Functional::Consumer<void( const std::string& ), BaseClass_t> {
+
+    StringDataConsumer( const std::string& name, ISvcLocator* svcLoc )
+        : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyString" ) ) {}
+
+    void operator()( const std::string& input ) const override {
+      info() << "executing StringDataConsumer, consuming " << input << " from " << inputLocation() << endmsg;
+    }
+  };
+
+  DECLARE_COMPONENT( StringDataConsumer )
 
   struct IntToFloatData final : Gaudi::Functional::Transformer<float( const int& ), BaseClass_t> {
 

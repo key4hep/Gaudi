@@ -338,7 +338,7 @@ stdout: |-
   PropertyAlg.Timeline: False
   PropertyAlg.UInt64: 4294967296
   PropertyAlg.UInt64Array: [ 4294967296 ]
-  PropertyProxy.String: "This is set by the proxy"
+  PropertyProxy.String: 'This is set by the proxy'
   TimelineSvc.AuditFinalize: False
   TimelineSvc.AuditInitialize: False
   TimelineSvc.AuditReinitialize: False
