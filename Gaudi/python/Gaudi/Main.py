@@ -214,8 +214,10 @@ def _getAllOpts_old(explicit_defaults=False):
                     v = v.__resolve__()
                 if hasattr(v, "__opt_value__"):
                     v = v.__opt_value__()
-                else:
+                elif isinstance(v, str):
                     v = repr(v)
+                else:
+                    v = str(v)
                 old_opts[".".join((n, p))] = v
 
     return old_opts
