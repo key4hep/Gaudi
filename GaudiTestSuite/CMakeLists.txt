@@ -177,6 +177,23 @@ if(NOT GAUDI_ENABLE_GAUDIPARTPROP)
         GaudiTestSuite.pytest.test_particlepropsvc
     )
 endif()
+
+if(GAUDI_USE_CUDA)
+   find_program(NVSMI_EXECUTABLE nvidia-smi)
+   if( NVSMI_EXECUTABLE )
+      execute_process( COMMAND ${NVSMI_EXECUTABLE} -L
+         RESULT_VARIABLE _nvsmi_code
+         OUTPUT_QUIET ERROR_QUIET )
+   endif()
+endif()
+
+# Disable GPU tests if there is no GPU installed
+if(NOT GAUDI_USE_CUDA OR NOT _nvsmi_code EQUAL 0)
+   list(APPEND tests_to_disable
+       GaudiTestSuite.pytest.test_cuda
+     )
+endif()
+
 if(NOT GAUDI_USE_AIDA)
     list(APPEND tests_to_disable
         GaudiTestSuite.pytest.bug.test_71216

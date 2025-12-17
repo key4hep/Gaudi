@@ -1,6 +1,6 @@
 #!/usr/bin/env gaudirun.py
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -52,7 +52,7 @@ from Gaudi.Configuration import *
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
 evtslots = 48
-evtMax = 30000
+evtMax = 50
 cardinality = 16
 threads = 16
 gpuThreads = 4
