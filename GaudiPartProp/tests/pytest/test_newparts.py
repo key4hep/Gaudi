@@ -15,7 +15,7 @@ class Test(GaudiExeTest):
     command = ["../../tests/scripts/newparts.py"]
 
     test_block1 = GaudiExeTest.find_reference_block("""
-        Gaudi::Particle...SUCCESS  New/updated particles (from "Particles" property)
+        Gaudi::Particle... SUCCESS  New/updated particles (from "Particles" property)
          ------------------------------------------------------------------------------------------------------------------------------------------------------------------
          | #    |        Name       |     PdgID    |   Q  |        Mass       |    (c*)Tau/Gamma  |  MaxWidth  |        EvtGen        |  PythiaID  |     Antiparticle     |
          ------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Test(GaudiExeTest):
          ------------------------------------------------------------------------------------------------------------------------------------------------------------------
         """)
     test_block2 = GaudiExeTest.find_reference_block("""
-        Gaudi::Particle...SUCCESS  New/updated particles (from "Particles" property)
+        Gaudi::Particle... SUCCESS  New/updated particles (from "Particles" property)
          ------------------------------------------------------------------------------------------------------------------------------------------------------------------
          | #    |        Name       |     PdgID    |   Q  |        Mass       |    (c*)Tau/Gamma  |  MaxWidth  |        EvtGen        |  PythiaID  |     Antiparticle     |
          ------------------------------------------------------------------------------------------------------------------------------------------------------------------

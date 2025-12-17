@@ -29,6 +29,6 @@ class Test(GaudiExeTest):
 
     test_check_line = GaudiExeTest.find_reference_block(
         """
-        ToolSvc           WARNING TestTool/ToolSvc.ToolA : Explicitly named tools should be configured! (assigned name=ToolA, default is TestTool)
+        ToolSvc            WARNING TestTool/ToolSvc.ToolA : Explicitly named tools should be configured! (assigned name=ToolA, default is TestTool)
         """
     )

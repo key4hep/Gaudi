@@ -50,57 +50,57 @@ stdout: |-
    'viewNodeTwo': {'Members': ['Test::ViewTester/A5', 'Test::ViewTester/A6'],
                    'Sequential': False,
                    'ShortCircuit': False}}
-  MessageSvc           INFO Activating in a separate thread
-  ApplicationMgr    SUCCESS
+  MessageSvc            INFO Activating in a separate thread
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  ThreadPoolSvc        INFO no thread init tools attached
-  AvalancheSchedu...   INFO Activating scheduler in a separate thread
-  AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
-  createViewSeq     VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-  createViewSeq     VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-  createViewSeq       DEBUG A1 doesn't exist - created and appended to member list
-  createViewSeq       DEBUG viewNodeOne doesn't exist - created and appended to member list
-  createViewSeq       DEBUG A4 doesn't exist - created and appended to member list
-  createViewSeq       DEBUG viewNodeTwo doesn't exist - created and appended to member list
-  createViewSeq       DEBUG A7 doesn't exist - created and appended to member list
-  createViewSeq        INFO Member list: Test::ViewTester/A1, Gaudi::Sequencer/viewNodeOne, Test::ViewTester/A4, Gaudi::Sequencer/viewNodeTwo, Test::ViewTester/A7
-  A1                  DEBUG input handles: 0
-  A1                  DEBUG output handles: 0
-  viewNodeOne          INFO Member list: Test::ViewTester/A2, Test::ViewTester/A3
-  A2                  DEBUG adding output key /Event/a2
-  A2                  DEBUG input handles: 0
-  A2                  DEBUG output handles: 1
+  ApplicationMgr        INFO Application Manager Configured successfully
+  ThreadPoolSvc         INFO no thread init tools attached
+  AvalancheSchedu...    INFO Activating scheduler in a separate thread
+  AlgResourcePool       INFO TopAlg list empty. Recovering the one of Application Manager
+  createViewSeq      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  createViewSeq      VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+  createViewSeq        DEBUG A1 doesn't exist - created and appended to member list
+  createViewSeq        DEBUG viewNodeOne doesn't exist - created and appended to member list
+  createViewSeq        DEBUG A4 doesn't exist - created and appended to member list
+  createViewSeq        DEBUG viewNodeTwo doesn't exist - created and appended to member list
+  createViewSeq        DEBUG A7 doesn't exist - created and appended to member list
+  createViewSeq         INFO Member list: Test::ViewTester/A1, Gaudi::Sequencer/viewNodeOne, Test::ViewTester/A4, Gaudi::Sequencer/viewNodeTwo, Test::ViewTester/A7
+  A1                   DEBUG input handles: 0
+  A1                   DEBUG output handles: 0
+  viewNodeOne           INFO Member list: Test::ViewTester/A2, Test::ViewTester/A3
+  A2                   DEBUG adding output key /Event/a2
+  A2                   DEBUG input handles: 0
+  A2                   DEBUG output handles: 1
     + OUTPUT '/Event/a2'
-  A3                  DEBUG adding input key /Event/a2
-  A3                  DEBUG input handles: 1
-  A3                  DEBUG output handles: 0
+  A3                   DEBUG adding input key /Event/a2
+  A3                   DEBUG input handles: 1
+  A3                   DEBUG output handles: 0
     + INPUT  '/Event/a2'
-  A4                  DEBUG adding output key /Event/a4
-  A4                  DEBUG input handles: 0
-  A4                  DEBUG output handles: 1
+  A4                   DEBUG adding output key /Event/a4
+  A4                   DEBUG input handles: 0
+  A4                   DEBUG output handles: 1
     + OUTPUT '/Event/a4'
-  viewNodeTwo          INFO Member list: Test::ViewTester/A5, Test::ViewTester/A6
-  A5                  DEBUG adding input key /Event/a4
-  A5                  DEBUG input handles: 1
-  A5                  DEBUG output handles: 0
+  viewNodeTwo           INFO Member list: Test::ViewTester/A5, Test::ViewTester/A6
+  A5                   DEBUG adding input key /Event/a4
+  A5                   DEBUG input handles: 1
+  A5                   DEBUG output handles: 0
     + INPUT  '/Event/a4'
-  A6                  DEBUG input handles: 0
-  A6                  DEBUG output handles: 0
-  A7                  DEBUG input handles: 0
-  A7                  DEBUG output handles: 0
-  createViewSeq     VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
-  AlgResourcePool     DEBUG List of algorithms is:
-  AlgResourcePool     DEBUG   o Test::ViewTester/A1 @ 0x########
-  AlgResourcePool     DEBUG   o Test::ViewTester/A2 @ 0x########
-  AlgResourcePool     DEBUG   o Test::ViewTester/A3 @ 0x########
-  AlgResourcePool     DEBUG   o Test::ViewTester/A4 @ 0x########
-  AlgResourcePool     DEBUG   o Test::ViewTester/A5 @ 0x########
-  AlgResourcePool     DEBUG   o Test::ViewTester/A6 @ 0x########
-  AlgResourcePool     DEBUG   o Test::ViewTester/A7 @ 0x########
-  AvalancheSchedu...   INFO Found 7 algorithms
-  AvalancheSchedu...   INFO Data Dependencies for Algorithms:
+  A6                   DEBUG input handles: 0
+  A6                   DEBUG output handles: 0
+  A7                   DEBUG input handles: 0
+  A7                   DEBUG output handles: 0
+  createViewSeq      VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+  AlgResourcePool      DEBUG List of algorithms is:
+  AlgResourcePool      DEBUG   o Test::ViewTester/A1 @ 0x########
+  AlgResourcePool      DEBUG   o Test::ViewTester/A2 @ 0x########
+  AlgResourcePool      DEBUG   o Test::ViewTester/A3 @ 0x########
+  AlgResourcePool      DEBUG   o Test::ViewTester/A4 @ 0x########
+  AlgResourcePool      DEBUG   o Test::ViewTester/A5 @ 0x########
+  AlgResourcePool      DEBUG   o Test::ViewTester/A6 @ 0x########
+  AlgResourcePool      DEBUG   o Test::ViewTester/A7 @ 0x########
+  AvalancheSchedu...    INFO Found 7 algorithms
+  AvalancheSchedu...    INFO Data Dependencies for Algorithms:
     A1
         none
     A2
@@ -115,36 +115,36 @@ stdout: |-
         none
     A7
         none
-  PrecedenceSvc        INFO Assembling CF and DF task precedence rules
-  PrecedenceSvc        INFO PrecedenceSvc initialized successfully
-  AvalancheSchedu...   INFO Concurrency level information:
-  AvalancheSchedu...   INFO  o Number of events in flight: 1
-  AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':1
-  AvalancheSchedu...   INFO  o Fiber thread pool size:  'NumOffloadThreads':2
-  AvalancheSchedu...   INFO Task scheduling settings:
-  AvalancheSchedu...   INFO  o Avalanche generation mode: disabled
-  AvalancheSchedu...   INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
-  AvalancheSchedu...   INFO  o Scheduling of condition tasks: disabled
-  HiveSlimEventLo...   INFO "EventSelector" disabled: no events will be processed from external input.
-  HiveSlimEventLo...   INFO Found 0 events in black list
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-  HiveSlimEventLo...   INFO Starting loop on events
-  HiveSlimEventLo...  DEBUG work loop iteration 0
-  HiveSlimEventLo...  DEBUG createdEvts: 0, freeslots: 1
-  HiveSlimEventLo...  DEBUG work loop iteration 1
-  HiveSlimEventLo...  DEBUG Draining the scheduler
-  HiveSlimEventLo...  DEBUG Waiting for a context
-  A1                   INFO Running in whole event context
-  A1                   INFO Attached view viewOne0 to node viewNodeOne for s: 0  e: 0
-  A2                   INFO Running in view viewOne0
-  A3                   INFO Running in view viewOne0
-  A4                   INFO Running in whole event context
-  A4                   INFO Attached view viewTwo0 to node viewNodeTwo for s: 0  e: 0
-  A6                   INFO Running in view viewTwo0
-  AvalancheSchedu...  ERROR *** Stall detected, event context: s: 0  e: 0
-  AvalancheSchedu...  ERROR Event 0 on slot 0 failed
-  AvalancheSchedu...   INFO Dumping scheduler state
+  PrecedenceSvc         INFO Assembling CF and DF task precedence rules
+  PrecedenceSvc         INFO PrecedenceSvc initialized successfully
+  AvalancheSchedu...    INFO Concurrency level information:
+  AvalancheSchedu...    INFO  o Number of events in flight: 1
+  AvalancheSchedu...    INFO  o TBB thread pool size:  'ThreadPoolSize':1
+  AvalancheSchedu...    INFO  o Fiber thread pool size:  'NumOffloadThreads':2
+  AvalancheSchedu...    INFO Task scheduling settings:
+  AvalancheSchedu...    INFO  o Avalanche generation mode: disabled
+  AvalancheSchedu...    INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
+  AvalancheSchedu...    INFO  o Scheduling of condition tasks: disabled
+  HiveSlimEventLo...    INFO "EventSelector" disabled: no events will be processed from external input.
+  HiveSlimEventLo...    INFO Found 0 events in black list
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+  HiveSlimEventLo...    INFO Starting loop on events
+  HiveSlimEventLo...   DEBUG work loop iteration 0
+  HiveSlimEventLo...   DEBUG createdEvts: 0, freeslots: 1
+  HiveSlimEventLo...   DEBUG work loop iteration 1
+  HiveSlimEventLo...   DEBUG Draining the scheduler
+  HiveSlimEventLo...   DEBUG Waiting for a context
+  A1                    INFO Running in whole event context
+  A1                    INFO Attached view viewOne0 to node viewNodeOne for s: 0  e: 0
+  A2                    INFO Running in view viewOne0
+  A3                    INFO Running in view viewOne0
+  A4                    INFO Running in whole event context
+  A4                    INFO Attached view viewTwo0 to node viewNodeTwo for s: 0  e: 0
+  A6                    INFO Running in view viewTwo0
+  AvalancheSchedu...   ERROR *** Stall detected, event context: s: 0  e: 0
+  AvalancheSchedu...   ERROR Event 0 on slot 0 failed
+  AvalancheSchedu...    INFO Dumping scheduler state
   =========================================================================================
   ++++++++++++++++++++++++++++++++++++ SCHEDULER STATE ++++++++++++++++++++++++++++++++++++
   =========================================================================================
@@ -192,12 +192,12 @@ stdout: |-
   =========================================================================================
   ++++++++++++++++++++++++++++++++++++++ END OF DUMP ++++++++++++++++++++++++++++++++++++++
   =========================================================================================
-  PrecedenceSvc     WARNING To trace temporal and topological aspects of execution flow, set DumpPrecedenceRules property to True
-  HiveSlimEventLo...  DEBUG Context obtained
-  HiveSlimEventLo...  FATAL Failed event detected on s: 0  e: 0
-  HiveSlimEventLo...  DEBUG Clearing slot 0 (event 0) of the whiteboard
-  HiveSlimEventLo...   INFO 0 events were SKIPed
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  AvalancheSchedu...   INFO Joining Scheduler thread
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr      ERROR Application Manager Terminated with error code 1
+  PrecedenceSvc      WARNING To trace temporal and topological aspects of execution flow, set DumpPrecedenceRules property to True
+  HiveSlimEventLo...   DEBUG Context obtained
+  HiveSlimEventLo...   FATAL Failed event detected on s: 0  e: 0
+  HiveSlimEventLo...   DEBUG Clearing slot 0 (event 0) of the whiteboard
+  HiveSlimEventLo...    INFO 0 events were SKIPed
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  AvalancheSchedu...    INFO Joining Scheduler thread
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr       ERROR Application Manager Terminated with error code 1

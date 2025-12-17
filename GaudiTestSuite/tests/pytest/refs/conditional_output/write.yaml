@@ -22,199 +22,199 @@ stdout: |-
                                                            '/Event/B#1']},
                     'Output': "DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
    'RootCnvSvc': {'OutputLevel': 3}}
-  ApplicationMgr    SUCCESS
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  ServiceManager      DEBUG Initializing service FileRecordDataSvc
-  FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-  FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service PersistencySvc/FileRecordPersistencySvc
-  ServiceManager      DEBUG Initializing service AppMgrRunable
-  ServiceManager      DEBUG Initializing service EventLoopMgr
-  EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-  EventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-  EventLoopMgr        DEBUG Creating Output Stream OutputStream/OutputStream
-  EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::PutDataObjectAlg with name DataCreator
-  EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::OddEventsFilter with name OddEvents
-  EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::EvenEventsFilter with name EvenEvents
-  DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-  TimelineSvc         DEBUG initialize
-  DataCreator       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-  DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-  DataCreator       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
-  AlgExecStateSvc     DEBUG preInit: will add Alg DataCreator later
-  DataCreator         DEBUG input handles: 0
-  DataCreator         DEBUG output handles: 0
-  OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-  OddEvents         VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-  OddEvents         VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
-  AlgExecStateSvc     DEBUG preInit: will add Alg OddEvents later
-  OddEvents           DEBUG input handles: 0
-  OddEvents           DEBUG output handles: 0
-  EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-  EvenEvents        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-  EvenEvents        VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
-  AlgExecStateSvc     DEBUG preInit: will add Alg EvenEvents later
-  EvenEvents          DEBUG input handles: 0
-  EvenEvents          DEBUG output handles: 0
-  OutputStream      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-  OutputStream      VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-  EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
-  EventPersistenc...   INFO Added successfully Conversion service RootCnvSvc
-  OutputStream        DEBUG ItemList    : []
-  OutputStream        DEBUG OptItemList : []
-  OutputStream        DEBUG AlgDependentItemList : {EvenEvents: [/Event/A#1, /Event/C#1], OddEvents: [/Event/A#1, /Event/B#1]}
-  OutputStream        DEBUG Adding OutputStream item /Event with 1 level(s).
-  OutputStream        DEBUG Adding OutputStream item /Event/A with 1 level(s).
-  OutputStream        DEBUG Adding OutputStream item /Event with 1 level(s).
-  OutputStream        DEBUG Adding OutputStream item /Event/C with 1 level(s).
-  OutputStream        DEBUG Adding OutputStream item /Event with 1 level(s).
-  OutputStream        DEBUG Adding OutputStream item /Event/A with 1 level(s).
-  OutputStream        DEBUG Adding OutputStream item /Event with 1 level(s).
-  OutputStream        DEBUG Adding OutputStream item /Event/B with 1 level(s).
-  OutputStream         INFO Data source: EventDataSvc output: DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-  OutputStream      VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
-  AlgExecStateSvc     DEBUG preInit: will add Alg OutputStream later
-  OutputStream        DEBUG input handles: 0
-  OutputStream        DEBUG output handles: 0
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ServiceManager      DEBUG Starting service FileRecordDataSvc
-  ServiceManager      DEBUG Starting service AppMgrRunable
-  ServiceManager      DEBUG Starting service IncidentSvc
-  ServiceManager      DEBUG Starting service FileRecordPersistencySvc
-  ServiceManager      DEBUG Starting service EventPersistencySvc
-  ServiceManager      DEBUG Starting service EventDataSvc
-  ServiceManager      DEBUG Starting service TimelineSvc
-  ServiceManager      DEBUG Starting service AlgExecStateSvc
-  ServiceManager      DEBUG Starting service FileCatalog
-  ServiceManager      DEBUG Starting service IODataManager
-  ServiceManager      DEBUG Starting service RootCnvSvc
-  ServiceManager      DEBUG Starting service EventLoopMgr
-  ApplicationMgr       INFO Application Manager Started successfully
-  AlgExecStateSvc   VERBOSE reset(0)
-  AlgExecStateSvc     DEBUG resizing state containers to : 1
-  AlgExecStateSvc     DEBUG adding alg DataCreator to 1 slots
-  AlgExecStateSvc     DEBUG adding alg OddEvents to 1 slots
-  AlgExecStateSvc     DEBUG adding alg EvenEvents to 1 slots
-  AlgExecStateSvc     DEBUG adding alg OutputStream to 1 slots
-  AlgExecStateSvc   VERBOSE dumping state:
+  ApplicationMgr        INFO Application Manager Configured successfully
+  ServiceManager       DEBUG Initializing service FileRecordDataSvc
+  FileRecordDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+  FileRecordDataSvc  VERBOSE ServiceLocatorHelper::service: found service PersistencySvc/FileRecordPersistencySvc
+  ServiceManager       DEBUG Initializing service AppMgrRunable
+  ServiceManager       DEBUG Initializing service EventLoopMgr
+  EventDataSvc       VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+  EventLoopMgr       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  EventLoopMgr         DEBUG Creating Output Stream OutputStream/OutputStream
+  EventLoopMgr         DEBUG Creating Top Algorithm GaudiTesting::PutDataObjectAlg with name DataCreator
+  EventLoopMgr         DEBUG Creating Top Algorithm GaudiTesting::OddEventsFilter with name OddEvents
+  EventLoopMgr         DEBUG Creating Top Algorithm GaudiTesting::EvenEventsFilter with name EvenEvents
+  DataCreator        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  TimelineSvc          DEBUG initialize
+  DataCreator        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+  DataCreator        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  DataCreator        VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+  AlgExecStateSvc      DEBUG preInit: will add Alg DataCreator later
+  DataCreator          DEBUG input handles: 0
+  DataCreator          DEBUG output handles: 0
+  OddEvents          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  OddEvents          VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+  OddEvents          VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+  AlgExecStateSvc      DEBUG preInit: will add Alg OddEvents later
+  OddEvents            DEBUG input handles: 0
+  OddEvents            DEBUG output handles: 0
+  EvenEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  EvenEvents         VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+  EvenEvents         VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+  AlgExecStateSvc      DEBUG preInit: will add Alg EvenEvents later
+  EvenEvents           DEBUG input handles: 0
+  EvenEvents           DEBUG output handles: 0
+  OutputStream       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+  OutputStream       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+  EventPersistenc... VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
+  EventPersistenc...    INFO Added successfully Conversion service RootCnvSvc
+  OutputStream         DEBUG ItemList    : []
+  OutputStream         DEBUG OptItemList : []
+  OutputStream         DEBUG AlgDependentItemList : {EvenEvents: [/Event/A#1, /Event/C#1], OddEvents: [/Event/A#1, /Event/B#1]}
+  OutputStream         DEBUG Adding OutputStream item /Event with 1 level(s).
+  OutputStream         DEBUG Adding OutputStream item /Event/A with 1 level(s).
+  OutputStream         DEBUG Adding OutputStream item /Event with 1 level(s).
+  OutputStream         DEBUG Adding OutputStream item /Event/C with 1 level(s).
+  OutputStream         DEBUG Adding OutputStream item /Event with 1 level(s).
+  OutputStream         DEBUG Adding OutputStream item /Event/A with 1 level(s).
+  OutputStream         DEBUG Adding OutputStream item /Event with 1 level(s).
+  OutputStream         DEBUG Adding OutputStream item /Event/B with 1 level(s).
+  OutputStream          INFO Data source: EventDataSvc output: DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+  OutputStream       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+  AlgExecStateSvc      DEBUG preInit: will add Alg OutputStream later
+  OutputStream         DEBUG input handles: 0
+  OutputStream         DEBUG output handles: 0
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ServiceManager       DEBUG Starting service FileRecordDataSvc
+  ServiceManager       DEBUG Starting service AppMgrRunable
+  ServiceManager       DEBUG Starting service IncidentSvc
+  ServiceManager       DEBUG Starting service FileRecordPersistencySvc
+  ServiceManager       DEBUG Starting service EventPersistencySvc
+  ServiceManager       DEBUG Starting service EventDataSvc
+  ServiceManager       DEBUG Starting service TimelineSvc
+  ServiceManager       DEBUG Starting service AlgExecStateSvc
+  ServiceManager       DEBUG Starting service FileCatalog
+  ServiceManager       DEBUG Starting service IODataManager
+  ServiceManager       DEBUG Starting service RootCnvSvc
+  ServiceManager       DEBUG Starting service EventLoopMgr
+  ApplicationMgr        INFO Application Manager Started successfully
+  AlgExecStateSvc    VERBOSE reset(0)
+  AlgExecStateSvc      DEBUG resizing state containers to : 1
+  AlgExecStateSvc      DEBUG adding alg DataCreator to 1 slots
+  AlgExecStateSvc      DEBUG adding alg OddEvents to 1 slots
+  AlgExecStateSvc      DEBUG adding alg EvenEvents to 1 slots
+  AlgExecStateSvc      DEBUG adding alg OutputStream to 1 slots
+  AlgExecStateSvc    VERBOSE dumping state:
     [slot: 0, incident: Invalid]:
     +  DataCreator  e: n
     +    OddEvents  e: n
     +   EvenEvents  e: n
     + OutputStream  e: n
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  AlgExecStateSvc   VERBOSE reset(0)
-  DataCreator          INFO Adding 4 objects to EventDataSvc
-  DataCreator          INFO Adding 'A'
-  DataCreator          INFO Adding 'B'
-  DataCreator          INFO Adding 'C'
-  DataCreator          INFO Adding 'D'
-  OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
-  ServiceManager      DEBUG Stopping service EventLoopMgr
-  ServiceManager      DEBUG Stopping service RootCnvSvc
-  ServiceManager      DEBUG Stopping service IODataManager
-  ServiceManager      DEBUG Stopping service FileCatalog
-  ServiceManager      DEBUG Stopping service AlgExecStateSvc
-  ServiceManager      DEBUG Stopping service TimelineSvc
-  ServiceManager      DEBUG Stopping service EventDataSvc
-  ServiceManager      DEBUG Stopping service EventPersistencySvc
-  ServiceManager      DEBUG Stopping service FileRecordPersistencySvc
-  ServiceManager      DEBUG Stopping service IncidentSvc
-  ServiceManager      DEBUG Stopping service AppMgrRunable
-  ServiceManager      DEBUG Stopping service FileRecordDataSvc
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  ServiceManager      DEBUG Finalizing service EventLoopMgr
-  OutputStream         INFO Events output: 10
-  ServiceManager      DEBUG Finalizing service RootCnvSvc
-  ServiceManager      DEBUG Finalizing service IODataManager
-  ServiceManager      DEBUG Finalizing service FileCatalog
-  ServiceManager      DEBUG Finalizing service AlgExecStateSvc
-  ServiceManager      DEBUG Finalizing service TimelineSvc
-  ServiceManager      DEBUG Finalizing service EventDataSvc
-  ServiceManager      DEBUG Finalizing service EventPersistencySvc
-  ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
-  ServiceManager      DEBUG Finalizing service IncidentSvc
-  ServiceManager      DEBUG Finalizing service AppMgrRunable
-  ServiceManager      DEBUG Finalizing service FileRecordDataSvc
-  ServiceManager      DEBUG Looping over all active services...
-  ServiceManager      DEBUG ---- MessageSvc (refCount = 21)
-  ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
-  ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
-  ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
-  ServiceManager      DEBUG ---- IncidentSvc (refCount = 3)
-  ServiceManager      DEBUG ---- FileRecordPersistencySvc (refCount = 2)
-  ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
-  ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
-  ServiceManager      DEBUG ---- TimelineSvc (refCount = 3)
-  ServiceManager      DEBUG ---- AlgExecStateSvc (refCount = 4)
-  ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
-  ServiceManager      DEBUG ---- IODataManager (refCount = 2)
-  ServiceManager      DEBUG ---- RootCnvSvc (refCount = 2)
-  ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'OddEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  AlgExecStateSvc    VERBOSE reset(0)
+  DataCreator           INFO Adding 4 objects to EventDataSvc
+  DataCreator           INFO Adding 'A'
+  DataCreator           INFO Adding 'B'
+  DataCreator           INFO Adding 'C'
+  DataCreator           INFO Adding 'D'
+  OutputStream         DEBUG Algorithm 'EvenEvents' fired. Adding [0x########, 0x########, 0x########, 0x########]
+  ServiceManager       DEBUG Stopping service EventLoopMgr
+  ServiceManager       DEBUG Stopping service RootCnvSvc
+  ServiceManager       DEBUG Stopping service IODataManager
+  ServiceManager       DEBUG Stopping service FileCatalog
+  ServiceManager       DEBUG Stopping service AlgExecStateSvc
+  ServiceManager       DEBUG Stopping service TimelineSvc
+  ServiceManager       DEBUG Stopping service EventDataSvc
+  ServiceManager       DEBUG Stopping service EventPersistencySvc
+  ServiceManager       DEBUG Stopping service FileRecordPersistencySvc
+  ServiceManager       DEBUG Stopping service IncidentSvc
+  ServiceManager       DEBUG Stopping service AppMgrRunable
+  ServiceManager       DEBUG Stopping service FileRecordDataSvc
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  ServiceManager       DEBUG Finalizing service EventLoopMgr
+  OutputStream          INFO Events output: 10
+  ServiceManager       DEBUG Finalizing service RootCnvSvc
+  ServiceManager       DEBUG Finalizing service IODataManager
+  ServiceManager       DEBUG Finalizing service FileCatalog
+  ServiceManager       DEBUG Finalizing service AlgExecStateSvc
+  ServiceManager       DEBUG Finalizing service TimelineSvc
+  ServiceManager       DEBUG Finalizing service EventDataSvc
+  ServiceManager       DEBUG Finalizing service EventPersistencySvc
+  ServiceManager       DEBUG Finalizing service FileRecordPersistencySvc
+  ServiceManager       DEBUG Finalizing service IncidentSvc
+  ServiceManager       DEBUG Finalizing service AppMgrRunable
+  ServiceManager       DEBUG Finalizing service FileRecordDataSvc
+  ServiceManager       DEBUG Looping over all active services...
+  ServiceManager       DEBUG ---- MessageSvc (refCount = 21)
+  ServiceManager       DEBUG ---- JobOptionsSvc (refCount = 2)
+  ServiceManager       DEBUG ---- FileRecordDataSvc (refCount = 3)
+  ServiceManager       DEBUG ---- AppMgrRunable (refCount = 3)
+  ServiceManager       DEBUG ---- IncidentSvc (refCount = 3)
+  ServiceManager       DEBUG ---- FileRecordPersistencySvc (refCount = 2)
+  ServiceManager       DEBUG ---- EventPersistencySvc (refCount = 2)
+  ServiceManager       DEBUG ---- EventDataSvc (refCount = 3)
+  ServiceManager       DEBUG ---- TimelineSvc (refCount = 3)
+  ServiceManager       DEBUG ---- AlgExecStateSvc (refCount = 4)
+  ServiceManager       DEBUG ---- FileCatalog (refCount = 2)
+  ServiceManager       DEBUG ---- IODataManager (refCount = 2)
+  ServiceManager       DEBUG ---- RootCnvSvc (refCount = 2)
+  ServiceManager       DEBUG ---- EventLoopMgr (refCount = 3)
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees: {}

@@ -1,28 +1,28 @@
 stdout: |-
-  JobOptionsSvc        INFO Job options successfully file NTuples.opts
-  ApplicationMgr    SUCCESS
+  JobOptionsSvc         INFO Job options successfully file NTuples.opts
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  NTupleSvc            INFO Added stream file:ntuple.root as MyTuples
-  RFileCnv             INFO opening Root file "ntuple.root" for writing
-  NTupleAlgorithm      INFO Finished booking NTuples
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-  RRWNTupleCnv         INFO ID 1: added branch: Ntrack / Ntrack/I
-  RRWNTupleCnv         INFO ID 1: added branch: Energy / Energy/F
-  RRWNTupleCnv         INFO Booked TTree with ID:1 "Row-wise N-Tuple example"
-  RCWNTupleCnv         INFO Booked TTree with ID: 2 "Col-Wise NTuple examples" in directory ntuple.root:/simple
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  NTupleAlgorithm      INFO Finalizing...
-  EventLoopMgr         INFO Histograms converted successfully according to request.
-  RFileCnv             INFO dumping contents of /NTUPLES/MyTuples
+  ApplicationMgr        INFO Application Manager Configured successfully
+  NTupleSvc             INFO Added stream file:ntuple.root as MyTuples
+  RFileCnv              INFO opening Root file "ntuple.root" for writing
+  NTupleAlgorithm       INFO Finished booking NTuples
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  HistogramPersis...    INFO Added successfully Conversion service RootHistSvc
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+  RRWNTupleCnv          INFO ID 1: added branch: Ntrack / Ntrack/I
+  RRWNTupleCnv          INFO ID 1: added branch: Energy / Energy/F
+  RRWNTupleCnv          INFO Booked TTree with ID:1 "Row-wise N-Tuple example"
+  RCWNTupleCnv          INFO Booked TTree with ID: 2 "Col-Wise NTuple examples" in directory ntuple.root:/simple
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  NTupleAlgorithm       INFO Finalizing...
+  EventLoopMgr          INFO Histograms converted successfully according to request.
+  RFileCnv              INFO dumping contents of /NTUPLES/MyTuples
   TFile: name=ntuple.root, title=Gaudi Trees, option=CREATE
-  NTupleSvc            INFO NTuples saved successfully
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  NTupleSvc             INFO NTuples saved successfully
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees:
   '2':

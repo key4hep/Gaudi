@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -18,7 +18,7 @@ class Test(GaudiExeTest):
 
     test_signature = GaudiExeTest.find_reference_block(
         """
-        PrecedenceSvc       ERROR   Strongly connected components found in DF realm:
+        PrecedenceSvc        ERROR   Strongly connected components found in DF realm:
          o [lowlink:3] | CycledAlg1 | CycledAlg3 | CycledAlg2 |
         """
     )

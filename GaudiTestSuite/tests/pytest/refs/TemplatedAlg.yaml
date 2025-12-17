@@ -1,18 +1,18 @@
 stdout: |-
-  JobOptionsSvc        INFO Job options successfully file TemplatedAlg.opts
-  ApplicationMgr    SUCCESS
+  JobOptionsSvc         INFO Job options successfully file TemplatedAlg.opts
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  TAlgIS1              INFO Initializing TemplatedAlg instance TAlgIS1 of type TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >
-  TAlgIS2              INFO Initializing TemplatedAlg instance TAlgIS2 of type TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >
-  TAlgDB1              INFO Initializing TemplatedAlg instance TAlgDB1 of type TemplatedAlg<double, bool>
-  TAlgDB2              INFO Initializing TemplatedAlg instance TAlgDB2 of type TemplatedAlg<double, bool>
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  ApplicationMgr        INFO Application Manager Configured successfully
+  TAlgIS1               INFO Initializing TemplatedAlg instance TAlgIS1 of type TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >
+  TAlgIS2               INFO Initializing TemplatedAlg instance TAlgIS2 of type TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >
+  TAlgDB1               INFO Initializing TemplatedAlg instance TAlgDB1 of type TemplatedAlg<double, bool>
+  TAlgDB2               INFO Initializing TemplatedAlg instance TAlgDB2 of type TemplatedAlg<double, bool>
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees: {}

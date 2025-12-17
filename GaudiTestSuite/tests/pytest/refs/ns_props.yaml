@@ -1,15 +1,15 @@
 stdout: |-
-  ApplicationMgr    SUCCESS
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-  EventSelector        INFO End of event input reached.
-  EventLoopMgr         INFO No more events in event selection
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  ToolSvc              INFO Removing all tools created by ToolSvc
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  ApplicationMgr        INFO Application Manager Configured successfully
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+  EventSelector         INFO End of event input reached.
+  EventLoopMgr          INFO No more events in event selection
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  ToolSvc               INFO Removing all tools created by ToolSvc
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees: {}

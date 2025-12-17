@@ -1,26 +1,26 @@
 stdout: |-
-  JobOptionsSvc        INFO Job options successfully file QotdAlg.opts
-  ApplicationMgr    SUCCESS
+  JobOptionsSvc         INFO Job options successfully file QotdAlg.opts
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr    VERBOSE declared service EvtDataSvc/EventDataSvc
-  ApplicationMgr    VERBOSE declared service DetDataSvc/DetectorDataSvc
-  ApplicationMgr    VERBOSE declared service HistogramSvc/HistogramDataSvc
-  ApplicationMgr    VERBOSE declared service HbookCnv::PersSvc/HbookHistSvc
-  ApplicationMgr    VERBOSE declared service RootHistCnv::PersSvc/RootHistSvc
-  ApplicationMgr    VERBOSE declared service EvtPersistencySvc/EventPersistencySvc
-  ApplicationMgr    VERBOSE declared service DetPersistencySvc/DetectorPersistencySvc
-  ApplicationMgr    VERBOSE declared service HistogramPersistencySvc/HistogramPersistencySvc
-  ApplicationMgr      DEBUG Loading declared DLL's
-  ApplicationMgr    VERBOSE added service EventLoopMgr/EventLoopMgr
-  ApplicationMgr       INFO Application Manager Configured successfully
-               Qotd1   INFO Initializing Qotd1...
-               Qotd2   INFO Initializing Qotd2...
-               Qotd3   INFO Initializing Qotd3...
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-               Qotd1   INFO Event #0
+  ApplicationMgr     VERBOSE declared service EvtDataSvc/EventDataSvc
+  ApplicationMgr     VERBOSE declared service DetDataSvc/DetectorDataSvc
+  ApplicationMgr     VERBOSE declared service HistogramSvc/HistogramDataSvc
+  ApplicationMgr     VERBOSE declared service HbookCnv::PersSvc/HbookHistSvc
+  ApplicationMgr     VERBOSE declared service RootHistCnv::PersSvc/RootHistSvc
+  ApplicationMgr     VERBOSE declared service EvtPersistencySvc/EventPersistencySvc
+  ApplicationMgr     VERBOSE declared service DetPersistencySvc/DetectorPersistencySvc
+  ApplicationMgr     VERBOSE declared service HistogramPersistencySvc/HistogramPersistencySvc
+  ApplicationMgr       DEBUG Loading declared DLL's
+  ApplicationMgr     VERBOSE added service EventLoopMgr/EventLoopMgr
+  ApplicationMgr        INFO Application Manager Configured successfully
+               Qotd1    INFO Initializing Qotd1...
+               Qotd2    INFO Initializing Qotd2...
+               Qotd3    INFO Initializing Qotd3...
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+               Qotd1    INFO Event #0
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -28,7 +28,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd2   INFO Event #0
+               Qotd2    INFO Event #0
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -36,7 +36,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd3   INFO Event #0
+               Qotd3    INFO Event #0
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -44,7 +44,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd1   INFO Event #1
+               Qotd1    INFO Event #1
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -52,7 +52,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd2   INFO Event #1
+               Qotd2    INFO Event #1
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -60,7 +60,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd3   INFO Event #1
+               Qotd3    INFO Event #1
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -68,7 +68,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd1   INFO Event #2
+               Qotd1    INFO Event #2
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -76,7 +76,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd2   INFO Event #2
+               Qotd2    INFO Event #2
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -84,7 +84,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd3   INFO Event #2
+               Qotd3    INFO Event #2
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -92,7 +92,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd1   INFO Event #3
+               Qotd1    INFO Event #3
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -100,7 +100,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd2   INFO Event #3
+               Qotd2    INFO Event #3
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -108,7 +108,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd3   INFO Event #3
+               Qotd3    INFO Event #3
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -116,7 +116,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd1   INFO Event #4
+               Qotd1    INFO Event #4
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -124,7 +124,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd2   INFO Event #4
+               Qotd2    INFO Event #4
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -132,7 +132,7 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-               Qotd3   INFO Event #4
+               Qotd3    INFO Event #4
    --- famous quotes ---
    - God does not play dice with the Universe.
    - 640K of memory should be enough for anybody.
@@ -140,11 +140,11 @@ stdout: |-
    - In a few minutes a computer can make a mistake so great that it would have taken many men many months to equal it.
    - GIGO is not a design pattern.
    --- famous quotes --- [DONE]
-  ApplicationMgr       INFO Application Manager Stopped successfully
-               Qotd1   INFO Finalizing...
-               Qotd2   INFO Finalizing...
-               Qotd3   INFO Finalizing...
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  ApplicationMgr        INFO Application Manager Stopped successfully
+               Qotd1    INFO Finalizing...
+               Qotd2    INFO Finalizing...
+               Qotd3    INFO Finalizing...
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees: {}
