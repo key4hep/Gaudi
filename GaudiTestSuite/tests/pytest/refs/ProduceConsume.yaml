@@ -39,6 +39,10 @@ stdout: |-
     InputLocation: "std::shared_ptr<Gaudi::TestSuite::Foo>"
   "Gaudi::TestSuite::ShrdPtrProducer":
     OutputLocation: "std::shared_ptr<Gaudi::TestSuite::Foo>"
+  "Gaudi::TestSuite::StringDataConsumer":
+    InputLocation: "std::string"
+  "Gaudi::TestSuite::StringDataProducer":
+    OutputLocation: "std::string"
   "Gaudi::TestSuite::ToolConsumer":
   "Gaudi::TestSuite::VectorDataProducer":
     OutputLocation: "std::vector<int,std::allocator<int> >"
@@ -54,6 +58,8 @@ stdout: |-
   IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
   OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
   IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
+  StringDataProducer   INFO executing StringDataProducer, storing component\.name into /Event/MyString
+  StringDataConsumer   INFO executing StringDataConsumer, consuming component\.name from /Event/MyString
   MyToolConsumer....SUCCESS Hello World!!!
   MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
   IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat
@@ -130,6 +136,8 @@ stdout: |-
   IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
   OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
   IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
+  StringDataProducer   INFO executing StringDataProducer, storing component\.name into /Event/MyString
+  StringDataConsumer   INFO executing StringDataConsumer, consuming component\.name from /Event/MyString
   MyToolConsumer....SUCCESS Hello World!!!
   MyBoundToolCons...SUCCESS BoundInstance - got: 7 from /Event/MyOtherInt
   IntToFloatData       INFO Converting: 7 from /Event/MyInt and storing it into /Event/MyFloat

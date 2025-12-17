@@ -172,6 +172,9 @@ class GaudiHandleArray(MutableSequence):
         """Print in a form which can be parsed"""
         return self.toStringProperty()
 
+    def __opt_value__(self):
+        return self.toStringProperty()
+
     def _indexToKey(self, index):
         """Convert list index to dictionary key"""
         return list(self._items.keys())[index]

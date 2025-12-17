@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2021-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2021-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,10 +15,21 @@ from tempfile import NamedTemporaryFile
 import pytest
 from GaudiTests import run_gaudi
 
+# Extra options to test usage of ToolHandleArray as Properties
+# The  ThreaPoolSvc is used for its ThreadInitTools property of type PrivateToolHandleArray
+extraOpts = [
+    "--option=from GaudiHive.GaudiHiveConf import ThreadPoolSvc",
+    '--option=ApplicationMgr().ExtSvc.append(ThreadPoolSvc("ThreadPoolSvc",ThreadInitTools=["NonExistingTool"]))',
+]
 
-def gen_opts_dict(options):
+
+def gen_opts_dict(options, extra=[]):
     with NamedTemporaryFile(mode="w+", suffix=".py") as tmp:
-        run_gaudi("--dry-run", "--output", tmp.name, options)
+        p = run_gaudi(
+            "--dry-run", "--output", tmp.name, options, *extra, capture_output=True
+        )
+        # make sure there are no warnings while loading generated options
+        assert p.stderr == b""
         return literal_eval(tmp.read())
 
 
@@ -32,13 +43,13 @@ options = [
 
 @pytest.fixture(scope="module", params=options)
 def options_expected(request):
-    yield request.param, gen_opts_dict(request.param)
+    yield request.param, gen_opts_dict(request.param, extraOpts)
 
 
 @pytest.mark.parametrize("filetype", ["opts", "pkl", "json", "yaml", "yml"])
 def test_opts_dump(filetype, options_expected):
     opts, expected = options_expected
     with NamedTemporaryFile(suffix=f".{filetype}") as dump:
-        run_gaudi("--dry-run", "--output", dump.name, opts)
+        run_gaudi("--dry-run", "--output", dump.name, opts, *extraOpts)
         configuration = gen_opts_dict(dump.name)
         assert configuration == expected

@@ -124,8 +124,6 @@ def opt_repr(value):
     """
     if hasattr(value, "__opt_repr__"):
         return value.__opt_repr__()
-    elif isinstance(value, str):
-        return '"{}"'.format(value.replace('"', '\\"'))
     return repr(value)
 
 
