@@ -452,8 +452,10 @@ public:
   /// @note the use of requires is required to avoid ambiguities
   template <std::derived_from<IProperty> OWNER, typename K>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, K key = {}, std::string doc = "" )
-      : ::details::ReadHandle<T>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), std::move( key ),
-                                  std::move( doc ) ) {}
+      : ::details::ReadHandle<T>( std::move( key ), Gaudi::DataHandle::Reader, owner ) {
+    auto p = owner->declareProperty( std::move( propertyName ), *this, std::move( doc ) );
+    p->template setOwnerType<OWNER>();
+  }
 
   template <typename... Args>
   DataObjectReadHandle( std::tuple<Args...>&& args )
@@ -474,8 +476,10 @@ public:
   /// @note the use of requires is required to avoid ambiguities
   template <std::derived_from<IProperty> OWNER, typename K>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, K key = {}, std::string doc = "" )
-      : ::details::WriteHandle<T, U>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), std::move( key ),
-                                      std::move( doc ) ) {}
+      : ::details::WriteHandle<T, U>( std::move( key ), Gaudi::DataHandle::Writer, owner ) {
+    auto p = owner->declareProperty( std::move( propertyName ), *this, std::move( doc ) );
+    p->template setOwnerType<OWNER>();
+  }
 
   template <typename... Args>
   DataObjectWriteHandle( std::tuple<Args...>&& args )

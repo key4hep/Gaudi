@@ -10,6 +10,7 @@
 #####################################################################################
 import os
 
+from GaudiKernel.DataHandle import DataHandle
 from GaudiKernel.GaudiHandles import PrivateToolHandle, PrivateToolHandleArray
 
 os.environ["GAUDICONFIG2_DB"] = __name__ + "._DB"
@@ -115,6 +116,20 @@ _DB = {
                 [],
                 "",
                 "OrderedSet<string>",
+            ),
+        },
+    },
+    "TestConf::AlgWithDataHandles": {
+        "__component_type__": "Algorithm",
+        "__doc__": "configurable for testing DataHandle properties",
+        "properties": {
+            "Input": (
+                "DataObjectReadHandle<FooType>",
+                DataHandle("/Event/Foo", "R", "FooType"),
+            ),
+            "Output": (
+                "DataObjectWriteHandle<FooType>",
+                DataHandle("/Event/Foo", "W", "FooType"),
             ),
         },
     },
