@@ -184,23 +184,12 @@ for w, o, r in [
         r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}(?!-0{12})-[0-9A-Fa-f]{12}",
         "00000000-0000-0000-0000-000000000000",
     ),
-    # Absorb a change in ServiceLocatorHelper
-    (
-        "ServiceLocatorHelper::",
-        "ServiceLocatorHelper::(create|locate)Service",
-        "ServiceLocatorHelper::service",
-    ),
-    # Remove the leading 0 in Windows' exponential format
-    (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
-    # Output line changed in Gaudi v24
-    (None, r"Service reference count check:", r"Looping over all active services..."),
     # Ignore count of declared properties (anyway they are all printed)
     (
         None,
         r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+",
         r"\1NN",
     ),
-    ("ApplicationMgr", r"(declareMultiSvcType|addMultiSvc): ", ""),
     (r"Property \['Name': Value\]", r"( =  '[^']+':)'(.*)'", r"\1\2"),
     ("TimelineSvc", "to file  'TimelineFile':", "to file "),
     ("DataObjectHandleBase", r'DataObjectHandleBase\("([^"]*)"\)', r"'\1'"),
@@ -209,10 +198,8 @@ for w, o, r in [
 
 lineSkipper = LineSkipper(
     [
-        "//GP:",
         "Time User",
         "Welcome to",
-        "This machine has a speed",
         "running on",
         "[INFO]",
         "[WARNING]",
@@ -220,27 +207,22 @@ lineSkipper = LineSkipper(
         "DEBUG Service base class initialized successfully",
         # changed between v20 and v21
         "DEBUG Incident  timing:",
-        # introduced with patch #3487
-        # changed the level of the message from INFO to
-        # DEBUG
-        "INFO  'CnvServices':[",
         # message removed because could be printed in constructor
         "DEBUG  'CnvServices':[",
         # The signal handler complains about SIGXCPU not
         # defined on some platforms
         "SIGXCPU",
-        # Message removed with redesing of JobOptionsSvc
-        "ServiceLocatorHelper::service: found service JobOptionsSvc",
         # Ignore warnings for properties case mismatch
         "mismatching case for property name:",
-        # Message demoted to DEBUG in gaudi/Gaudi!992
-        "Histograms saving not required.",
         # Message added in gaudi/Gaudi!577
         "Properties are dumped into",
         # Messages changed in gaudi/Gaudi!1426
         "WARNING no ROOT output file name",
         "INFO Writing ROOT histograms to:",
         "INFO Completed update of ROOT histograms in:",
+        "INFO Disconnect from dataset",
+        "INFO Disconnected from dataset",
+        "INFO Disconnected data IO:",
         # absorb changes in data dependencies reports (https://gitlab.cern.ch/gaudi/Gaudi/-/merge_requests/1348)
         "Data Deps for ",
         "data dependencies:",
@@ -254,49 +236,21 @@ lineSkipper = LineSkipper(
         # skip the message reporting the version of the root file
         r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:",
         r"File '.*.xml' does not exist",
-        r"INFO Refer to dataset .* by its file ID:",
         r"INFO Referring to dataset .* by its file ID:",
-        r"INFO Disconnect from dataset",
-        r"INFO Disconnected from dataset",
-        r"INFO Disconnected data IO:",
         r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
-        # Ignore StatusCodeSvc related messages
-        r".*StatusCodeSvc.*",
-        r".*StatusCodeCheck.*",
-        r"Num\s*\|\s*Function\s*\|\s*Source Library",
+        # skip '---'
         r"^[-+]*\s*$",
-        # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
-        r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
-        # Hide unchecked StatusCodes from dictionaries
-        r"^ +[0-9]+ \|.*ROOT",
-        r"^ +[0-9]+ \|.*\|.*Dict",
         # Hide EventLoopMgr total timing report
         r"EventLoopMgr.*---> Loop Finished",
         r"HiveSlimEventLo.*---> Loop Finished",
-        # Remove ROOT TTree summary table, which changes from one version to the
-        # other
+        # Remove ROOT TTree summary table, which changes from one version to the other
         r"^\*.*\*$",
         # Remove Histos Summaries
         r"SUCCESS\s*Booked \d+ Histogram\(s\)",
         r"^ \|",
         r"^ ID=",
-        # Ignore added/removed properties
-        r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
-        r"Property(.*)'Audit(Begin|End)Run':",
-        # these were missing in tools
-        r"Property(.*)'AuditRe(start|initialize)':",
-        r"Property(.*)'Blocking':",
-        # removed with gaudi/Gaudi!273
-        r"Property(.*)'ErrorCount(er)?':",
-        # added with gaudi/Gaudi!306
-        r"Property(.*)'Sequential':",
-        # added with gaudi/Gaudi!314
-        r"Property(.*)'FilterCircularDependencies':",
-        # removed with gaudi/Gaudi!316
-        r"Property(.*)'IsClonable':",
         # ignore uninteresting/obsolete messages
         r"Property update for OutputLevel : new value =",
-        r"EventLoopMgr\s*DEBUG Creating OutputStream",
     ],
 )
 
