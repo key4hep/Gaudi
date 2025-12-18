@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -36,20 +36,20 @@ class TestSignalHandler(GaudiExeTest):
         return "\n".join(
             line
             for line in stdout.splitlines()
-            if "EventLoopMgr      SUCCESS Event Number =" not in line
+            if "EventLoopMgr       SUCCESS Event Number =" not in line
             and " ---> Loop Finished" not in line
         )
 
     test_check_line = GaudiExeTest.find_reference_block(
         """
-        GaudiTesting::S...   INFO 3 events to go
-        GaudiTesting::S...   INFO 2 events to go
-        GaudiTesting::S...   INFO 1 events to go
-        GaudiTesting::S...   INFO Raising signal now
-        Gaudi::Utils::S...WARNING Received signal 'SIGINT' (2, Interrupt)
-        Gaudi::Utils::S...WARNING Scheduling a stop
-        EventLoopMgr      SUCCESS Terminating event processing loop due to a stop scheduled by an incident listener
-        ApplicationMgr       INFO Application Manager Stopped successfully
+        GaudiTesting::S...    INFO 3 events to go
+        GaudiTesting::S...    INFO 2 events to go
+        GaudiTesting::S...    INFO 1 events to go
+        GaudiTesting::S...    INFO Raising signal now
+        Gaudi::Utils::S... WARNING Received signal 'SIGINT' (2, Interrupt)
+        Gaudi::Utils::S... WARNING Scheduling a stop
+        EventLoopMgr       SUCCESS Terminating event processing loop due to a stop scheduled by an incident listener
+        ApplicationMgr        INFO Application Manager Stopped successfully
         """,
         preprocessor=filter_out,
     )

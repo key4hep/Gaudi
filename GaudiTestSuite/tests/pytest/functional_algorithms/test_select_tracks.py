@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -23,5 +23,6 @@ class Test(GaudiExeTest):
 
     def test_stdout(self, stdout):
         assert (
-            b"Gaudi::TestSuit...   INFO extracted 49546 tracks in 2000 events" in stdout
+            b"Gaudi::TestSuit...    INFO extracted 49546 tracks in 2000 events"
+            in stdout
         )

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -26,7 +26,7 @@ class TestCustomFactory(GaudiExeTest):
 
     expected = [
         b"created CustomFactoryAlgorithm at",
-        b"CFA                  INFO running",
+        b"CFA                   INFO running",
     ]
 
     @pytest.mark.parametrize("line", expected)

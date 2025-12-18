@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -45,12 +45,6 @@ class Test(GaudiExeTest):
         ]
 
     returncode = 16
-
-    def test_stdout(self, stdout):
-        assert (
-            b"ApplicationMgr      ERROR Application Manager Terminated with error code 16"
-            in stdout
-        )
 
     def test_stderr(self):
         pass

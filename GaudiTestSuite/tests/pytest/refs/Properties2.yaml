@@ -1,105 +1,105 @@
 stdout: |-
-  ApplicationMgr    SUCCESS
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  EventLoopMgr        DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
-  PropertyAlg          INFO Before Initialization......
-  PropertyAlg          INFO Int    = 100
-  PropertyAlg          INFO Int64  = 100
-  PropertyAlg          INFO UInt64 = 100
-  PropertyAlg          INFO Double = 100
-  PropertyAlg          INFO String = hundred
-  PropertyAlg          INFO Bool   = 1
-  PropertyAlg          INFO IntArray    = []
-  PropertyAlg          INFO Int64Array  = []
-  PropertyAlg          INFO UInt64Array = []
-  PropertyAlg          INFO DoubleArray = []
-  PropertyAlg          INFO StringArray = []
-  PropertyAlg          INFO BoolArray   = []
-  PropertyAlg          INFO EmptyArray  = []
-  PropertyAlg          INFO IntPairArray  = []
-  PropertyAlg          INFO DoublePairArray  = []
-  PropertyAlg          INFO IntSet = []
-  PropertyAlg          INFO StringSet = []
-  PropertyAlg          INFO FloatUnorderedSet = []
-  PropertyAlg          INFO PInt    =  'PInt':100
-  PropertyAlg          INFO Read handler called for property:  'PDouble':100.00000
-  PropertyAlg          INFO PDouble =  'PDouble':100.00000
-  PropertyAlg          INFO PString =  'PString':'hundred'
-  PropertyAlg          INFO PBool   =  'PBool':False
-  PropertyAlg          INFO PIntArray    =  'PIntArray':[  ]
-  PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[  ]
-  PropertyAlg          INFO PStringArray =  'PStringArray':[  ]
-  PropertyAlg          INFO PBoolArray   =  'PBoolArray':[  ]
-  EventLoopMgr        DEBUG Creating Top Algorithm PropertyProxy with name PropertyProxy
-  PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
-  PropertyAlg          INFO Update handler called for property:  'PDouble':10100000.
-  PropertyAlg          INFO After Initialization having read the JobOptions file...
-  PropertyAlg          INFO Int    = 101
-  PropertyAlg          INFO Int64  = 4294967296
-  PropertyAlg          INFO UInt64 = 4294967296
-  PropertyAlg          INFO Double = 1.011e+12
-  PropertyAlg          INFO String = hundred "one"
-  PropertyAlg          INFO Bool   = 0
-  PropertyAlg          INFO IntArray    = [1, 2, 3, 5]
-  PropertyAlg          INFO Int64Array  = [4294967296]
-  PropertyAlg          INFO UInt64Array = [4294967296]
-  PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004]
-  PropertyAlg          INFO StringArray = [one, two, four]
-  PropertyAlg          INFO BoolArray   = [0, 1, 0]
-  PropertyAlg          INFO EmptyArray  = []
-  PropertyAlg          INFO IntPairArray  = [(1, 2), (3, 4), (5, 6)]
-  PropertyAlg          INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)]
-  PropertyAlg          INFO IntSet = [1, 2]
-  PropertyAlg          INFO StringSet = [one, two]
-  PropertyAlg          INFO FloatUnorderedSet = [1.1, 2.2]
-  PropertyAlg          INFO StringMap =  'StringMap':{ 'one' : 'une' }
-  PropertyAlg          INFO PInt    =  'PInt':101
-  PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
-  PropertyAlg          INFO PDouble =  'PDouble':10100000.
-  PropertyAlg          INFO PString =  'PString':'hundred \'one\''
-  PropertyAlg          INFO PBool   =  'PBool':True
-  PropertyAlg          INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
-  PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[ 1.1000000 , 2.0000000 , 3.3000000 ]
-  PropertyAlg          INFO PStringArray =  'PStringArray':[ 'one' , 'two' , 'four' ]
-  PropertyAlg          INFO PBoolArray   =  'PBoolArray':[ True , False , True , False ]
-  PropertyAlg          INFO DoubleArrayWithUnits[0] = 1.1e+06
-  PropertyAlg          INFO DoubleArrayWithUnits[1] = -20
-  PropertyAlg          INFO DoubleArrayWithUnits[2] = 33
-  PropertyAlg          INFO DoubleArrayWithUnits[3] = 0.4
-  PropertyAlg          INFO ===============Checking Property Verifier ===============
-  PropertyAlg          INFO Playing with PropertyVerifiers...
-  PropertyAlg          INFO PInt= 155 [should be 155, bounds are 0, 200]
-  PropertyAlg          INFO Got an exception when setting a value outside bounds
-  PropertyAlg          INFO PInt=  'PInt':155 [should be 155]
-  PropertyAlg          INFO ===============Checking Property CallBaks ===============
-  PropertyAlg          INFO Accessing PDouble ...
-  PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
-  PropertyAlg          INFO Value obtained is: 1.01e+07
-  PropertyAlg          INFO Updating PDouble ...
-  PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
-  PropertyAlg          INFO Update handler called for property:  'PDouble':999.00000
-  PropertyAlg          INFO ==========Checking Accesing Properties by string=========
-  PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [  ];
-  DetectorDataSvc      INFO Detector description not requested to be loaded
-  PropertyAlg          INFO  Set property ApplicationMgr.ExtSvc =  ["EvtDataSvc/EventDataSvc", "DetDataSvc/DetectorDataSvc"];
-  PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' ];
-  PropertyAlg          INFO  Set property ApplicationMgr.ExtSvc =  [ 'EventDataSvc', 'DetectorDataSvc'];
-  PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [ 'EventDataSvc' , 'DetectorDataSvc' ];
-  PropertyAlg         ERROR PBool can not be set to T
-  PropertyAlg         ERROR Bool can not be set to T
-  PropertyAlg         ERROR PBool can not be set to F
-  PropertyAlg         ERROR Bool can not be set to F
-  PropertyAlg         ERROR PBool can not be set to 10
-  PropertyAlg         ERROR Bool can not be set to 10
-  MsgTest           WARNING This should be printed if threshold is WARNING
-  MsgTest             ERROR This should be printed if threshold is ERROR
-  MsgTest             FATAL This should be printed if threshold is FATAL
-  MsgTest           SUCCESS This should be printed ALWAYS
-  PropertyAlg          INFO =================================================
-  PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
-  PropertyAlg          INFO Dump of the property catalogue:
+  ApplicationMgr        INFO Application Manager Configured successfully
+  EventLoopMgr         DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
+  PropertyAlg           INFO Before Initialization......
+  PropertyAlg           INFO Int    = 100
+  PropertyAlg           INFO Int64  = 100
+  PropertyAlg           INFO UInt64 = 100
+  PropertyAlg           INFO Double = 100
+  PropertyAlg           INFO String = hundred
+  PropertyAlg           INFO Bool   = 1
+  PropertyAlg           INFO IntArray    = []
+  PropertyAlg           INFO Int64Array  = []
+  PropertyAlg           INFO UInt64Array = []
+  PropertyAlg           INFO DoubleArray = []
+  PropertyAlg           INFO StringArray = []
+  PropertyAlg           INFO BoolArray   = []
+  PropertyAlg           INFO EmptyArray  = []
+  PropertyAlg           INFO IntPairArray  = []
+  PropertyAlg           INFO DoublePairArray  = []
+  PropertyAlg           INFO IntSet = []
+  PropertyAlg           INFO StringSet = []
+  PropertyAlg           INFO FloatUnorderedSet = []
+  PropertyAlg           INFO PInt    =  'PInt':100
+  PropertyAlg           INFO Read handler called for property:  'PDouble':100.00000
+  PropertyAlg           INFO PDouble =  'PDouble':100.00000
+  PropertyAlg           INFO PString =  'PString':'hundred'
+  PropertyAlg           INFO PBool   =  'PBool':False
+  PropertyAlg           INFO PIntArray    =  'PIntArray':[  ]
+  PropertyAlg           INFO PDoubleArray =  'PDoubleArray':[  ]
+  PropertyAlg           INFO PStringArray =  'PStringArray':[  ]
+  PropertyAlg           INFO PBoolArray   =  'PBoolArray':[  ]
+  EventLoopMgr         DEBUG Creating Top Algorithm PropertyProxy with name PropertyProxy
+  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000.
+  PropertyAlg           INFO Update handler called for property:  'PDouble':10100000.
+  PropertyAlg           INFO After Initialization having read the JobOptions file...
+  PropertyAlg           INFO Int    = 101
+  PropertyAlg           INFO Int64  = 4294967296
+  PropertyAlg           INFO UInt64 = 4294967296
+  PropertyAlg           INFO Double = 1.011e+12
+  PropertyAlg           INFO String = hundred "one"
+  PropertyAlg           INFO Bool   = 0
+  PropertyAlg           INFO IntArray    = [1, 2, 3, 5]
+  PropertyAlg           INFO Int64Array  = [4294967296]
+  PropertyAlg           INFO UInt64Array = [4294967296]
+  PropertyAlg           INFO DoubleArray = [-11, 2, 3.3, 0.0004]
+  PropertyAlg           INFO StringArray = [one, two, four]
+  PropertyAlg           INFO BoolArray   = [0, 1, 0]
+  PropertyAlg           INFO EmptyArray  = []
+  PropertyAlg           INFO IntPairArray  = [(1, 2), (3, 4), (5, 6)]
+  PropertyAlg           INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)]
+  PropertyAlg           INFO IntSet = [1, 2]
+  PropertyAlg           INFO StringSet = [one, two]
+  PropertyAlg           INFO FloatUnorderedSet = [1.1, 2.2]
+  PropertyAlg           INFO StringMap =  'StringMap':{ 'one' : 'une' }
+  PropertyAlg           INFO PInt    =  'PInt':101
+  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000.
+  PropertyAlg           INFO PDouble =  'PDouble':10100000.
+  PropertyAlg           INFO PString =  'PString':'hundred \'one\''
+  PropertyAlg           INFO PBool   =  'PBool':True
+  PropertyAlg           INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
+  PropertyAlg           INFO PDoubleArray =  'PDoubleArray':[ 1.1000000 , 2.0000000 , 3.3000000 ]
+  PropertyAlg           INFO PStringArray =  'PStringArray':[ 'one' , 'two' , 'four' ]
+  PropertyAlg           INFO PBoolArray   =  'PBoolArray':[ True , False , True , False ]
+  PropertyAlg           INFO DoubleArrayWithUnits[0] = 1.1e+06
+  PropertyAlg           INFO DoubleArrayWithUnits[1] = -20
+  PropertyAlg           INFO DoubleArrayWithUnits[2] = 33
+  PropertyAlg           INFO DoubleArrayWithUnits[3] = 0.4
+  PropertyAlg           INFO ===============Checking Property Verifier ===============
+  PropertyAlg           INFO Playing with PropertyVerifiers...
+  PropertyAlg           INFO PInt= 155 [should be 155, bounds are 0, 200]
+  PropertyAlg           INFO Got an exception when setting a value outside bounds
+  PropertyAlg           INFO PInt=  'PInt':155 [should be 155]
+  PropertyAlg           INFO ===============Checking Property CallBaks ===============
+  PropertyAlg           INFO Accessing PDouble ...
+  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000.
+  PropertyAlg           INFO Value obtained is: 1.01e+07
+  PropertyAlg           INFO Updating PDouble ...
+  PropertyAlg           INFO Read handler called for property:  'PDouble':999.00000
+  PropertyAlg           INFO Update handler called for property:  'PDouble':999.00000
+  PropertyAlg           INFO ==========Checking Accesing Properties by string=========
+  PropertyAlg           INFO  Got property ApplicationMgr.ExtSvc = [  ];
+  DetectorDataSvc       INFO Detector description not requested to be loaded
+  PropertyAlg           INFO  Set property ApplicationMgr.ExtSvc =  ["EvtDataSvc/EventDataSvc", "DetDataSvc/DetectorDataSvc"];
+  PropertyAlg           INFO  Got property ApplicationMgr.ExtSvc = [ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' ];
+  PropertyAlg           INFO  Set property ApplicationMgr.ExtSvc =  [ 'EventDataSvc', 'DetectorDataSvc'];
+  PropertyAlg           INFO  Got property ApplicationMgr.ExtSvc = [ 'EventDataSvc' , 'DetectorDataSvc' ];
+  PropertyAlg          ERROR PBool can not be set to T
+  PropertyAlg          ERROR Bool can not be set to T
+  PropertyAlg          ERROR PBool can not be set to F
+  PropertyAlg          ERROR Bool can not be set to F
+  PropertyAlg          ERROR PBool can not be set to 10
+  PropertyAlg          ERROR Bool can not be set to 10
+  MsgTest            WARNING This should be printed if threshold is WARNING
+  MsgTest              ERROR This should be printed if threshold is ERROR
+  MsgTest              FATAL This should be printed if threshold is FATAL
+  MsgTest            SUCCESS This should be printed ALWAYS
+  PropertyAlg           INFO =================================================
+  PropertyAlg           INFO Read handler called for property:  'PDouble':999.00000
+  PropertyAlg           INFO Dump of the property catalogue:
   AppMgrRunable.AuditFinalize: False
   AppMgrRunable.AuditInitialize: False
   AppMgrRunable.AuditReinitialize: False
@@ -258,7 +258,7 @@ stdout: |-
   MessageSvc.AuditStop: False
   MessageSvc.AutoRetrieveTools: True
   MessageSvc.CheckToolDeps: True
-  MessageSvc.Format: '% F%18W%S%7W%R%T %0W%M'
+  MessageSvc.Format: '% F%18W%S %7W%R%T %0W%M'
   MessageSvc.OutputLevel: 3
   MessageSvc.alwaysColorCode: [  ]
   MessageSvc.alwaysLimit: 0
@@ -352,27 +352,27 @@ stdout: |-
   TimelineSvc.Partial: False
   TimelineSvc.RecordTimeline: False
   TimelineSvc.TimelineFile: 'timeline.csv'
-  PropertyAlg          INFO =================================================
-  PropertyAlg          INFO PInt=  'PInt':154 [should be 154]
-  PropertyAlg          INFO Try to assign invalid value to DoubleArray
-  PropertyAlg         ERROR got exception: Cannot convert '{"12.12", "13.13"}' for property 'DoubleArray' in class 'PropertyAlg': std::invalid_argument, cannot parse '{"12.12", "13.13"}' to std::vector<double,std::allocator<double> >
-  PropertyAlg          INFO Try to assign invalid value to StringMap
-  PropertyAlg         ERROR got exception: Cannot convert '{"one", {"une", "eins"}}' for property 'StringMap' in class 'PropertyAlg': std::invalid_argument, cannot parse '{"one", {"une", "eins"}}' to std::map<std::string,std::string,std::less<std::string>,std::allocator<std::pair<std::string const,std::string> > >
-  PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004]
-  PropertyAlg          INFO =================================================
-  PropertyProxy        INFO  Got property this.RInt = 101;
-  PropertyProxy        INFO  Set property this.RInt = 1001;
-  PropertyProxy        INFO  Got property this.RInt = 1001;
-  PropertyProxy        INFO  Got property this.String = This is set by the proxy;
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-  PropertyAlg          INFO executing....
-  PropertyProxy        INFO executing....
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  PropertyAlg          INFO finalizing....
-  PropertyProxy        INFO finalizing....
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  PropertyAlg           INFO =================================================
+  PropertyAlg           INFO PInt=  'PInt':154 [should be 154]
+  PropertyAlg           INFO Try to assign invalid value to DoubleArray
+  PropertyAlg          ERROR got exception: Cannot convert '{"12.12", "13.13"}' for property 'DoubleArray' in class 'PropertyAlg': std::invalid_argument, cannot parse '{"12.12", "13.13"}' to std::vector<double,std::allocator<double> >
+  PropertyAlg           INFO Try to assign invalid value to StringMap
+  PropertyAlg          ERROR got exception: Cannot convert '{"one", {"une", "eins"}}' for property 'StringMap' in class 'PropertyAlg': std::invalid_argument, cannot parse '{"one", {"une", "eins"}}' to std::map<std::string,std::string,std::less<std::string>,std::allocator<std::pair<std::string const,std::string> > >
+  PropertyAlg           INFO DoubleArray = [-11, 2, 3.3, 0.0004]
+  PropertyAlg           INFO =================================================
+  PropertyProxy         INFO  Got property this.RInt = 101;
+  PropertyProxy         INFO  Set property this.RInt = 1001;
+  PropertyProxy         INFO  Got property this.RInt = 1001;
+  PropertyProxy         INFO  Got property this.String = This is set by the proxy;
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+  PropertyAlg           INFO executing....
+  PropertyProxy         INFO executing....
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  PropertyAlg           INFO finalizing....
+  PropertyProxy         INFO finalizing....
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees: {}

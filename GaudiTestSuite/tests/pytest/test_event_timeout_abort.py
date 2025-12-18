@@ -43,7 +43,7 @@ class TestEventTimeoutAbort(GaudiExeTest):
 
     test_stdout = GaudiExeTest.find_reference_block(
         """
-        EventWatchdog       FATAL too much time on a single event (s: 0  e: 0): aborting process
+        EventWatchdog        FATAL too much time on a single event (s: 0  e: 0): aborting process
         """,
         preprocessor=filter_out,
     )

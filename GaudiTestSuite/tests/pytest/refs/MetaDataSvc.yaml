@@ -1,16 +1,16 @@
 stdout: |-
-  ApplicationMgr    SUCCESS
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  NTupleSvc            INFO Added stream file:ntuple_with_metadata.root as MyTuples
-  RFileCnv             INFO opening Root file "ntuple_with_metadata.root" for writing
-  NTupleAlgorithm      INFO Finished booking NTuples
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  Gaudi::MetaDataSvc  DEBUG started
-  Gaudi::MetaDataSvc  DEBUG Metadata collected:
+  ApplicationMgr        INFO Application Manager Configured successfully
+  NTupleSvc             INFO Added stream file:ntuple_with_metadata.root as MyTuples
+  RFileCnv              INFO opening Root file "ntuple_with_metadata.root" for writing
+  NTupleAlgorithm       INFO Finished booking NTuples
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  HistogramPersis...    INFO Added successfully Conversion service RootHistSvc
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  Gaudi::MetaDataSvc   DEBUG started
+  Gaudi::MetaDataSvc   DEBUG Metadata collected:
   AlgExecStateSvc.AuditFinalize:False
   AlgExecStateSvc.AuditInitialize:False
   AlgExecStateSvc.AuditReinitialize:False
@@ -200,7 +200,7 @@ stdout: |-
   MessageSvc.AuditStop:False
   MessageSvc.AutoRetrieveTools:True
   MessageSvc.CheckToolDeps:True
-  MessageSvc.Format:'% F%18W%S%7W%R%T %0W%M'
+  MessageSvc.Format:'% F%18W%S %7W%R%T %0W%M'
   MessageSvc.OutputLevel:3
   MessageSvc.alwaysColorCode:[  ]
   MessageSvc.alwaysLimit:0
@@ -305,19 +305,19 @@ stdout: |-
   TimelineSvc.Partial:False
   TimelineSvc.RecordTimeline:False
   TimelineSvc.TimelineFile:'timeline.csv'
-  ApplicationMgr       INFO Application Manager Started successfully
-  RRWNTupleCnv         INFO ID 1: added branch: Ntrack / Ntrack/I
-  RRWNTupleCnv         INFO ID 1: added branch: Energy / Energy/F
-  RRWNTupleCnv         INFO Booked TTree with ID:1 "Row-wise N-Tuple example"
-  RCWNTupleCnv         INFO Booked TTree with ID: 2 "Col-Wise NTuple examples" in directory ntuple_with_metadata.root:/simple
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  NTupleAlgorithm      INFO Finalizing...
-  EventLoopMgr         INFO Histograms converted successfully according to request.
-  RFileCnv             INFO dumping contents of /NTUPLES/MyTuples
+  ApplicationMgr        INFO Application Manager Started successfully
+  RRWNTupleCnv          INFO ID 1: added branch: Ntrack / Ntrack/I
+  RRWNTupleCnv          INFO ID 1: added branch: Energy / Energy/F
+  RRWNTupleCnv          INFO Booked TTree with ID:1 "Row-wise N-Tuple example"
+  RCWNTupleCnv          INFO Booked TTree with ID: 2 "Col-Wise NTuple examples" in directory ntuple_with_metadata.root:/simple
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  NTupleAlgorithm       INFO Finalizing...
+  EventLoopMgr          INFO Histograms converted successfully according to request.
+  RFileCnv              INFO dumping contents of /NTUPLES/MyTuples
   TFile: name=ntuple_with_metadata.root, title=Gaudi Trees, option=CREATE
-  NTupleSvc            INFO NTuples saved successfully
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  NTupleSvc             INFO NTuples saved successfully
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees:
   '2':

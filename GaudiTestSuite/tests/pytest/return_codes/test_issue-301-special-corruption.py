@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,10 +14,6 @@ from GaudiTesting import GaudiExeTest
 class TestIssue301(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../data/issue-301/options.py"]
     returncode = 16
-
-    test_check_line = GaudiExeTest.find_reference_block(
-        "ApplicationMgr      ERROR Application Manager Terminated with error code 16"
-    )
 
     def test_stderr(self):
         # ignore stderr

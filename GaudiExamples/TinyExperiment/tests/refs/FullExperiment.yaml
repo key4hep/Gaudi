@@ -126,15 +126,15 @@ stdout: |-
   |-MCTracksLocation           = DataHandle('/Event/MCTracks','R','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
   |-DeltaThetaMax              = 0.01  (default: 0.001)
   \----- (End of Algorithm Gaudi::Example::TinyExperiment::CheckerAlg/CheckerAlg) --------------------
-  ApplicationMgr    SUCCESS
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  ThreadPoolSvc        INFO no thread init tools attached
-  AvalancheSchedu...   INFO Activating scheduler in a separate thread
-  AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
-  AvalancheSchedu...   INFO Found 5 algorithms
-  AvalancheSchedu...   INFO Data Dependencies for Algorithms:
+  ApplicationMgr        INFO Application Manager Configured successfully
+  ThreadPoolSvc         INFO no thread init tools attached
+  AvalancheSchedu...    INFO Activating scheduler in a separate thread
+  AlgResourcePool       INFO TopAlg list empty. Recovering the one of Application Manager
+  AvalancheSchedu...    INFO Found 5 algorithms
+  AvalancheSchedu...    INFO Data Dependencies for Algorithms:
     GeneratorAlg
       o OUTPUT '/Event/MCTracks'
     SimulationAlg
@@ -149,30 +149,30 @@ stdout: |-
     CheckerAlg
       o INPUT  '/Event/MCTracks'
       o INPUT  '/Event/Tracks'
-  PrecedenceSvc        INFO Assembling CF and DF task precedence rules
-  PrecedenceSvc        INFO PrecedenceSvc initialized successfully
-  AvalancheSchedu...   INFO Concurrency level information:
-  AvalancheSchedu...   INFO  o Number of events in flight: 12
-  AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':10
-  AvalancheSchedu...   INFO  o Fiber thread pool size:  'NumOffloadThreads':2
-  AvalancheSchedu...   INFO Task scheduling settings:
-  AvalancheSchedu...   INFO  o Avalanche generation mode: disabled
-  AvalancheSchedu...   INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
-  AvalancheSchedu...   INFO  o Scheduling of condition tasks: disabled
-  HiveSlimEventLo...   INFO "EventSelector" disabled: no events will be processed from external input.
-  HiveSlimEventLo...   INFO Found 0 events in black list
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-  HiveSlimEventLo...   INFO Starting loop on events
-  HiveSlimEventLo...   INFO 0 events were SKIPed
-  CheckerAlg           INFO Number of counters : 3
-  DigitizationAlg      INFO Number of counters : 1
-  GeneratorAlg         INFO Number of counters : 1
-  SimulationAlg        INFO Number of counters : 1
-  TrackingAlg          INFO Number of counters : 1
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  AvalancheSchedu...   INFO Joining Scheduler thread
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  PrecedenceSvc         INFO Assembling CF and DF task precedence rules
+  PrecedenceSvc         INFO PrecedenceSvc initialized successfully
+  AvalancheSchedu...    INFO Concurrency level information:
+  AvalancheSchedu...    INFO  o Number of events in flight: 12
+  AvalancheSchedu...    INFO  o TBB thread pool size:  'ThreadPoolSize':10
+  AvalancheSchedu...    INFO  o Fiber thread pool size:  'NumOffloadThreads':2
+  AvalancheSchedu...    INFO Task scheduling settings:
+  AvalancheSchedu...    INFO  o Avalanche generation mode: disabled
+  AvalancheSchedu...    INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
+  AvalancheSchedu...    INFO  o Scheduling of condition tasks: disabled
+  HiveSlimEventLo...    INFO "EventSelector" disabled: no events will be processed from external input.
+  HiveSlimEventLo...    INFO Found 0 events in black list
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+  HiveSlimEventLo...    INFO Starting loop on events
+  HiveSlimEventLo...    INFO 0 events were SKIPed
+  CheckerAlg            INFO Number of counters : 3
+  DigitizationAlg       INFO Number of counters : 1
+  GeneratorAlg          INFO Number of counters : 1
+  SimulationAlg         INFO Number of counters : 1
+  TrackingAlg           INFO Number of counters : 1
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  AvalancheSchedu...    INFO Joining Scheduler thread
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees: {}

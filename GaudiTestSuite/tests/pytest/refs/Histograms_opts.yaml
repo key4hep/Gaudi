@@ -1,23 +1,23 @@
 stdout: |-
-  JobOptionsSvc        INFO Job options successfully file Histograms.opts
-  ApplicationMgr    SUCCESS
+  JobOptionsSvc         INFO Job options successfully file Histograms.opts
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  HistogramPersis...   INFO Added successfully Conversion service RootHistSvc
-  ApplicationMgr       INFO Application Manager Initialized successfully
-  ApplicationMgr       INFO Application Manager Started successfully
-  RndmGenSvc.Engine    INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>
-  RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
-  RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-  Histos2              INFO Booked 2 Histogram(s) : 1D=2 2D=0 3D=0 1DProf=0 2DProf=0 3DProf=0
-  Histos2              INFO 1D histograms in directory "Histos2" : 2
-  ApplicationMgr       INFO Application Manager Stopped successfully
-  Histos2           SUCCESS Histograms report
-  EventLoopMgr         INFO Histograms converted successfully according to request.
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  ApplicationMgr        INFO Application Manager Configured successfully
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  HistogramPersis...    INFO Added successfully Conversion service RootHistSvc
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  ApplicationMgr        INFO Application Manager Started successfully
+  RndmGenSvc.Engine     INFO Generator engine type:HepRndm::SynchronizedEngine<CLHEP::RanluxEngine>
+  RndmGenSvc.Engine     INFO Current Seed:1234567 Luxury:3
+  RndmGenSvc            INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+  Histos2               INFO Booked 2 Histogram(s) : 1D=2 2D=0 3D=0 1DProf=0 2DProf=0 3DProf=0
+  Histos2               INFO 1D histograms in directory "Histos2" : 2
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  Histos2            SUCCESS Histograms report
+  EventLoopMgr          INFO Histograms converted successfully according to request.
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos:
   Histos2:
     1D:

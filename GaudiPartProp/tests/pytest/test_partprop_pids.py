@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,7 +15,6 @@ class Test(GaudiExeTest):
     command = ["../scripts/pids.py"]
 
     test_block = GaudiExeTest.find_reference_block("""
-        ApplicationMgr       INFO Application Manager Initialized successfully
         (-1000020040, 1000020040, True, True, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, -6, 1, 0, 0, 2, 4, 0, 0, 100)
         (-1000020030, 1000020030, True, True, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, -6, 2, 0, 0, 2, 3, 0, 0, 100)
         (-1000010030, 1000010030, True, True, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, -3, 2, 0, 0, 1, 3, 0, 0, 100)

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -33,32 +33,32 @@ class TestGlobalDefaults(GaudiExeTest):
 
     test_check_line = GaudiExeTest.find_reference_block(
         """
-        alg0                 INFO initializing....
-        alg1                DEBUG Property update for OutputLevel : new value = 1
-        alg1              VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-        alg1              VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-        alg1                 INFO initializing....
-        alg1              VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
-        alg1                DEBUG input handles: 0
-        alg1                DEBUG output handles: 0
-        alg2                DEBUG Property update for OutputLevel : new value = 2
-        alg2                 INFO initializing....
-        alg2                DEBUG input handles: 0
-        alg2                DEBUG output handles: 0
-        alg3                DEBUG Property update for OutputLevel : new value = 1
-        alg3              VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-        alg3              VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
-        alg3                 INFO initializing....
-        alg3              VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
-        alg3                DEBUG input handles: 0
-        alg3                DEBUG output handles: 0
-        alg4                DEBUG Property update for OutputLevel : new value = 2
-        alg4                 INFO initializing....
-        alg4                DEBUG input handles: 0
-        alg4                DEBUG output handles: 0
-        alg6                 INFO initializing....
-        alg7                 INFO initializing....
-        alg8                 INFO initializing....
-        alg9                 INFO initializing....
+        alg0                  INFO initializing....
+        alg1                 DEBUG Property update for OutputLevel : new value = 1
+        alg1               VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+        alg1               VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+        alg1                  INFO initializing....
+        alg1               VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+        alg1                 DEBUG input handles: 0
+        alg1                 DEBUG output handles: 0
+        alg2                 DEBUG Property update for OutputLevel : new value = 2
+        alg2                  INFO initializing....
+        alg2                 DEBUG input handles: 0
+        alg2                 DEBUG output handles: 0
+        alg3                 DEBUG Property update for OutputLevel : new value = 1
+        alg3               VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+        alg3               VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+        alg3                  INFO initializing....
+        alg3               VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
+        alg3                 DEBUG input handles: 0
+        alg3                 DEBUG output handles: 0
+        alg4                 DEBUG Property update for OutputLevel : new value = 2
+        alg4                  INFO initializing....
+        alg4                 DEBUG input handles: 0
+        alg4                 DEBUG output handles: 0
+        alg6                  INFO initializing....
+        alg7                  INFO initializing....
+        alg8                  INFO initializing....
+        alg9                  INFO initializing....
         """
     )

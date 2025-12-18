@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -210,14 +210,10 @@ for w, o, r in [
 lineSkipper = LineSkipper(
     [
         "//GP:",
-        "JobOptionsSvc        INFO # ",
-        "JobOptionsSvc     WARNING # ",
         "Time User",
         "Welcome to",
         "This machine has a speed",
         "running on",
-        "ToolSvc.Sequenc...   INFO",
-        "DataListenerSvc      INFO XML written to file:",
         "[INFO]",
         "[WARNING]",
         "DEBUG No writable file catalog found which contains FID:",
@@ -250,7 +246,10 @@ lineSkipper = LineSkipper(
         "data dependencies:",
     ],
     regexps=[
-        r"^JobOptionsSvc        INFO *$",
+        # Job property printouts
+        r"^JobOptionsSvc\s+INFO # ",
+        r"^JobOptionsSvc\s+WARNING # ",
+        r"^JobOptionsSvc\s+INFO *$",
         r"^# ",  # Ignore python comments
         # skip the message reporting the version of the root file
         r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:",

@@ -1,22 +1,22 @@
 stdout: |-
-  ApplicationMgr    SUCCESS
+  ApplicationMgr     SUCCESS
   ====================================================================================================================================
   ====================================================================================================================================
-  ApplicationMgr       INFO Application Manager Configured successfully
+  ApplicationMgr        INFO Application Manager Configured successfully
   Callback properly called at INITIALIZE
-  EventLoopMgr         INFO Unable to locate service "EventSelector": No events will be processed from external input.
-  ApplicationMgr       INFO Application Manager Initialized successfully
+  EventLoopMgr          INFO Unable to locate service "EventSelector": No events will be processed from external input.
+  ApplicationMgr        INFO Application Manager Initialized successfully
   Callback properly called at START
-  ApplicationMgr       INFO Application Manager Started successfully
+  ApplicationMgr        INFO Application Manager Started successfully
   Executing
   Executing
   Executing
   Executing
   Executing
   Callback properly called at STOP
-  ApplicationMgr       INFO Application Manager Stopped successfully
+  ApplicationMgr        INFO Application Manager Stopped successfully
   Callback properly called at FINALIZE
-  ApplicationMgr       INFO Application Manager Finalized successfully
-  ApplicationMgr       INFO Application Manager Terminated successfully
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
 histos: {}
 ttrees: {}

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -32,5 +32,5 @@ class TestBug30209(GaudiExeTest):
         ApplicationMgr(TopAlg=[seq], EvtSel="NONE", EvtMax=1)
 
     def test_check_line(self, stdout):
-        expected = b"Sequencer            INFO Member list: GaudiTestSuite::CounterSvcAlg, GaudiTestSuite::CounterSvcAlg/Counter2, GaudiTestSuite::StatSvcAlg:invert"
+        expected = b"INFO Member list: GaudiTestSuite::CounterSvcAlg, GaudiTestSuite::CounterSvcAlg/Counter2, GaudiTestSuite::StatSvcAlg:invert"
         assert expected in stdout

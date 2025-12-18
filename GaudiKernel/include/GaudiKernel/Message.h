@@ -171,7 +171,7 @@ private:
   //@}
 
   /// The default message format.
-  static constexpr const char* DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
+  static constexpr const char* DEFAULT_FORMAT = "% F%18W%S %7W%R%T %0W%M";
 
   /// The default time format (accepts strftime formatters plus \%f for milliseconds).
   static constexpr const char* DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";

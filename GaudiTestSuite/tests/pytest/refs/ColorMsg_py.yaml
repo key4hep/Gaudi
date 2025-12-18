@@ -1,78 +1,79 @@
-stdout: "ApplicationMgr    SUCCESS\n====================================================================================================================================\n\
+stdout: "ApplicationMgr     SUCCESS\n====================================================================================================================================\n\
   ====================================================================================================================================\n\
-  ApplicationMgr       INFO Application Manager Configured successfully\n\e[92;1mServiceManager\
-  \      DEBUG Initializing service AppMgrRunable\e[m\n\e[92;1mServiceManager    \
-  \  DEBUG Initializing service EventLoopMgr\e[m\n\e[95;4mEventDataSvc      VERBOSE\
+  ApplicationMgr        INFO Application Manager Configured successfully\n\e[92;1mServiceManager\
+  \       DEBUG Initializing service AppMgrRunable\e[m\n\e[92;1mServiceManager   \
+  \    DEBUG Initializing service EventLoopMgr\e[m\n\e[95;4mEventDataSvc       VERBOSE\
   \ ServiceLocatorHelper::service: found service IncidentSvc\e[m\n\e[95;4mEventLoopMgr\
-  \      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc\e[m\n\e\
-  [92;1mEventLoopMgr        DEBUG Creating Top Algorithm ColorMsgAlg with name ColorMsgAlg\e\
-  [m\n\e[95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service\
-  \ EventDataSvc\e[m\n\e[92;1mTimelineSvc         DEBUG initialize\e[m\n\e[95;4mColorMsgAlg\
-  \       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc\e[m\n\e\
-  [95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc\e\
-  [m\n\e[92;1mAlgExecStateSvc     DEBUG preInit: will add Alg ColorMsgAlg later\e\
-  [m\n\e[92;1mColorMsgAlg         DEBUG input handles: 0\e[m\n\e[92;1mColorMsgAlg\
-  \         DEBUG output handles: 0\e[m\n\e[96;1mEventLoopMgr         INFO Unable\
+  \       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc\e[m\n\e\
+  [92;1mEventLoopMgr         DEBUG Creating Top Algorithm ColorMsgAlg with name ColorMsgAlg\e\
+  [m\n\e[95;4mColorMsgAlg        VERBOSE ServiceLocatorHelper::service: found service\
+  \ EventDataSvc\e[m\n\e[92;1mTimelineSvc          DEBUG initialize\e[m\n\e[95;4mColorMsgAlg\
+  \        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc\e[m\n\e\
+  [95;4mColorMsgAlg        VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc\e\
+  [m\n\e[92;1mAlgExecStateSvc      DEBUG preInit: will add Alg ColorMsgAlg later\e\
+  [m\n\e[92;1mColorMsgAlg          DEBUG input handles: 0\e[m\n\e[92;1mColorMsgAlg\
+  \          DEBUG output handles: 0\e[m\n\e[96;1mEventLoopMgr          INFO Unable\
   \ to locate service \"EventSelector\": No events will be processed from external\
-  \ input.\e[m\n\e[96;1mApplicationMgr       INFO Application Manager Initialized\
-  \ successfully\e[m\n\e[92;1mServiceManager      DEBUG Starting service AppMgrRunable\e\
-  [m\n\e[92;1mServiceManager      DEBUG Starting service IncidentSvc\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Starting service EventPersistencySvc\e[m\n\e[92;1mServiceManager  \
-  \    DEBUG Starting service EventDataSvc\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Starting service TimelineSvc\e[m\n\e[92;1mServiceManager      DEBUG Starting service\
-  \ AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG Starting service EventLoopMgr\e\
-  [m\n\e[96;1mApplicationMgr       INFO Application Manager Started successfully\e\
-  [m\n\e[95;4mAlgExecStateSvc   VERBOSE reset(0)\e[m\n\e[92;1mAlgExecStateSvc    \
-  \ DEBUG resizing state containers to : 1\e[m\n\e[92;1mAlgExecStateSvc     DEBUG\
-  \ adding alg ColorMsgAlg to 1 slots\e[m\n\e[95;4mAlgExecStateSvc   VERBOSE dumping\
-  \ state:\n  [slot: 0, incident: Invalid]:\n  + ColorMsgAlg  e: n\n\e[m\n\e[94;101;1mColorMsgAlg\
-  \         FATAL THIS IS A FATAL MESSAGE\e[m\n\e[97;101;1mColorMsgAlg         ERROR\
-  \ THIS IS AN ERROR MESSAGE\e[m\n\e[93;1mColorMsgAlg       WARNING THIS IS A WARNING\
-  \ MESSAGE\e[m\n\e[96;1mColorMsgAlg          INFO THIS IS A INFO MESSAGE\e[m\n\e\
-  [92;1mColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE\e[m\n\e[95;4mColorMsgAlg\
-  \       VERBOSE THIS IS A VERBOSE MESSAGE\e[m\n\e[97;101;1mColorMsgAlg         ERROR\
-  \ this is another\e[92;1m error \e[m\e[97;101;1mmessage\e[m\n\e[93;1mColorMsgAlg\
-  \       WARNING This is another\e[95;1m warning \e[m\e[93;1mmessage\e[m\n\e[96;1mColorMsgAlg\
-  \          INFO testing colour\e[m\n\e[96;1mColorMsgAlg          INFO setting....\e\
+  \ input.\e[m\n\e[96;1mApplicationMgr        INFO Application Manager Initialized\
+  \ successfully\e[m\n\e[92;1mServiceManager       DEBUG Starting service AppMgrRunable\e\
+  [m\n\e[92;1mServiceManager       DEBUG Starting service IncidentSvc\e[m\n\e[92;1mServiceManager\
+  \       DEBUG Starting service EventPersistencySvc\e[m\n\e[92;1mServiceManager \
+  \      DEBUG Starting service EventDataSvc\e[m\n\e[92;1mServiceManager       DEBUG\
+  \ Starting service TimelineSvc\e[m\n\e[92;1mServiceManager       DEBUG Starting\
+  \ service AlgExecStateSvc\e[m\n\e[92;1mServiceManager       DEBUG Starting service\
+  \ EventLoopMgr\e[m\n\e[96;1mApplicationMgr        INFO Application Manager Started\
+  \ successfully\e[m\n\e[95;4mAlgExecStateSvc    VERBOSE reset(0)\e[m\n\e[92;1mAlgExecStateSvc\
+  \      DEBUG resizing state containers to : 1\e[m\n\e[92;1mAlgExecStateSvc     \
+  \ DEBUG adding alg ColorMsgAlg to 1 slots\e[m\n\e[95;4mAlgExecStateSvc    VERBOSE\
+  \ dumping state:\n  [slot: 0, incident: Invalid]:\n  + ColorMsgAlg  e: n\n\e[m\n\
+  \e[94;101;1mColorMsgAlg          FATAL THIS IS A FATAL MESSAGE\e[m\n\e[97;101;1mColorMsgAlg\
+  \          ERROR THIS IS AN ERROR MESSAGE\e[m\n\e[93;1mColorMsgAlg        WARNING\
+  \ THIS IS A WARNING MESSAGE\e[m\n\e[96;1mColorMsgAlg           INFO THIS IS A INFO\
+  \ MESSAGE\e[m\n\e[92;1mColorMsgAlg          DEBUG THIS IS A DEBUG MESSAGE\e[m\n\e\
+  [95;4mColorMsgAlg        VERBOSE THIS IS A VERBOSE MESSAGE\e[m\n\e[97;101;1mColorMsgAlg\
+  \          ERROR this is another\e[92;1m error \e[m\e[97;101;1mmessage\e[m\n\e[93;1mColorMsgAlg\
+  \        WARNING This is another\e[95;1m warning \e[m\e[93;1mmessage\e[m\n\e[96;1mColorMsgAlg\
+  \           INFO testing colour\e[m\n\e[96;1mColorMsgAlg           INFO setting....\e\
   [93;1mthis should be in yellow\e[91;1m and red\e[m\n\e[96;1mColorMsgAlg        \
-  \  INFO multicolor: \e[94;102;1mthis is blue on green\e[95;107;1m and purple on\
-  \ white\e[m\n\e[96;1mColorMsgAlg          INFO \e[92;1mThis is green. \e[93;104;1mThis\
+  \   INFO multicolor: \e[94;102;1mthis is blue on green\e[95;107;1m and purple on\
+  \ white\e[m\n\e[96;1mColorMsgAlg           INFO \e[92;1mThis is green. \e[93;104;1mThis\
   \ is in yellow on blue. \e[m\e[96;1mThis is back to normal\e[m\n\e[95;4mAlgExecStateSvc\
-  \   VERBOSE reset(0)\e[m\n\e[94;101;1mColorMsgAlg         FATAL THIS IS A FATAL\
-  \ MESSAGE\e[m\n\e[97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE\e\
-  [m\n\e[93;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE\e[m\n\e[96;1mColorMsgAlg\
-  \          INFO THIS IS A INFO MESSAGE\e[m\n\e[92;1mColorMsgAlg         DEBUG THIS\
-  \ IS A DEBUG MESSAGE\e[m\n\e[95;4mColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE\e\
-  [m\n\e[97;101;1mColorMsgAlg         ERROR this is another\e[92;1m error \e[m\e[97;101;1mmessage\e\
-  [m\n\e[93;1mColorMsgAlg       WARNING This is another\e[95;1m warning \e[m\e[93;1mmessage\e\
-  [m\n\e[96;1mColorMsgAlg          INFO testing colour\e[m\n\e[96;1mColorMsgAlg  \
-  \        INFO setting....\e[93;1mthis should be in yellow\e[91;1m and red\e[m\n\e\
-  [96;1mColorMsgAlg          INFO multicolor: \e[94;102;1mthis is blue on green\e\
-  [95;107;1m and purple on white\e[m\n\e[96;1mColorMsgAlg          INFO \e[92;1mThis\
-  \ is green. \e[93;104;1mThis is in yellow on blue. \e[m\e[96;1mThis is back to normal\e\
-  [m\n\e[92;1mServiceManager      DEBUG Stopping service EventLoopMgr\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Stopping service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Stopping service TimelineSvc\e[m\n\e[92;1mServiceManager      DEBUG Stopping service\
-  \ EventDataSvc\e[m\n\e[92;1mServiceManager      DEBUG Stopping service EventPersistencySvc\e\
-  [m\n\e[92;1mServiceManager      DEBUG Stopping service IncidentSvc\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Stopping service AppMgrRunable\e[m\n\e[96;1mApplicationMgr       INFO\
-  \ Application Manager Stopped successfully\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Finalizing service EventLoopMgr\e[m\n\e[92;1mServiceManager      DEBUG Finalizing\
-  \ service AlgExecStateSvc\e[m\n\e[92;1mServiceManager      DEBUG Finalizing service\
-  \ TimelineSvc\e[m\n\e[92;1mServiceManager      DEBUG Finalizing service EventDataSvc\e\
-  [m\n\e[92;1mServiceManager      DEBUG Finalizing service EventPersistencySvc\e[m\n\
-  \e[92;1mServiceManager      DEBUG Finalizing service IncidentSvc\e[m\n\e[92;1mServiceManager\
-  \      DEBUG Finalizing service AppMgrRunable\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ Looping over all active services...\e[m\n\e[92;1mServiceManager      DEBUG ----\
-  \ MessageSvc (refCount = 15)\e[m\n\e[92;1mServiceManager      DEBUG ---- JobOptionsSvc\
-  \ (refCount = 2)\e[m\n\e[92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount\
-  \ = 3)\e[m\n\e[92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)\e\
-  [m\n\e[92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)\e\
-  [m\n\e[92;1mServiceManager      DEBUG ---- EventDataSvc (refCount = 3)\e[m\n\e[92;1mServiceManager\
-  \      DEBUG ---- TimelineSvc (refCount = 2)\e[m\n\e[92;1mServiceManager      DEBUG\
-  \ ---- AlgExecStateSvc (refCount = 3)\e[m\n\e[92;1mServiceManager      DEBUG ----\
-  \ EventLoopMgr (refCount = 3)\e[m\n\e[96;1mApplicationMgr       INFO Application\
-  \ Manager Finalized successfully\e[m\n\e[96;1mApplicationMgr       INFO Application\
+  \    VERBOSE reset(0)\e[m\n\e[94;101;1mColorMsgAlg          FATAL THIS IS A FATAL\
+  \ MESSAGE\e[m\n\e[97;101;1mColorMsgAlg          ERROR THIS IS AN ERROR MESSAGE\e\
+  [m\n\e[93;1mColorMsgAlg        WARNING THIS IS A WARNING MESSAGE\e[m\n\e[96;1mColorMsgAlg\
+  \           INFO THIS IS A INFO MESSAGE\e[m\n\e[92;1mColorMsgAlg          DEBUG\
+  \ THIS IS A DEBUG MESSAGE\e[m\n\e[95;4mColorMsgAlg        VERBOSE THIS IS A VERBOSE\
+  \ MESSAGE\e[m\n\e[97;101;1mColorMsgAlg          ERROR this is another\e[92;1m error\
+  \ \e[m\e[97;101;1mmessage\e[m\n\e[93;1mColorMsgAlg        WARNING This is another\e\
+  [95;1m warning \e[m\e[93;1mmessage\e[m\n\e[96;1mColorMsgAlg           INFO testing\
+  \ colour\e[m\n\e[96;1mColorMsgAlg           INFO setting....\e[93;1mthis should\
+  \ be in yellow\e[91;1m and red\e[m\n\e[96;1mColorMsgAlg           INFO multicolor:\
+  \ \e[94;102;1mthis is blue on green\e[95;107;1m and purple on white\e[m\n\e[96;1mColorMsgAlg\
+  \           INFO \e[92;1mThis is green. \e[93;104;1mThis is in yellow on blue. \e\
+  [m\e[96;1mThis is back to normal\e[m\n\e[92;1mServiceManager       DEBUG Stopping\
+  \ service EventLoopMgr\e[m\n\e[92;1mServiceManager       DEBUG Stopping service\
+  \ AlgExecStateSvc\e[m\n\e[92;1mServiceManager       DEBUG Stopping service TimelineSvc\e\
+  [m\n\e[92;1mServiceManager       DEBUG Stopping service EventDataSvc\e[m\n\e[92;1mServiceManager\
+  \       DEBUG Stopping service EventPersistencySvc\e[m\n\e[92;1mServiceManager \
+  \      DEBUG Stopping service IncidentSvc\e[m\n\e[92;1mServiceManager       DEBUG\
+  \ Stopping service AppMgrRunable\e[m\n\e[96;1mApplicationMgr        INFO Application\
+  \ Manager Stopped successfully\e[m\n\e[92;1mServiceManager       DEBUG Finalizing\
+  \ service EventLoopMgr\e[m\n\e[92;1mServiceManager       DEBUG Finalizing service\
+  \ AlgExecStateSvc\e[m\n\e[92;1mServiceManager       DEBUG Finalizing service TimelineSvc\e\
+  [m\n\e[92;1mServiceManager       DEBUG Finalizing service EventDataSvc\e[m\n\e[92;1mServiceManager\
+  \       DEBUG Finalizing service EventPersistencySvc\e[m\n\e[92;1mServiceManager\
+  \       DEBUG Finalizing service IncidentSvc\e[m\n\e[92;1mServiceManager       DEBUG\
+  \ Finalizing service AppMgrRunable\e[m\n\e[92;1mServiceManager       DEBUG Looping\
+  \ over all active services...\e[m\n\e[92;1mServiceManager       DEBUG ---- MessageSvc\
+  \ (refCount = 15)\e[m\n\e[92;1mServiceManager       DEBUG ---- JobOptionsSvc (refCount\
+  \ = 2)\e[m\n\e[92;1mServiceManager       DEBUG ---- AppMgrRunable (refCount = 3)\e\
+  [m\n\e[92;1mServiceManager       DEBUG ---- IncidentSvc (refCount = 2)\e[m\n\e[92;1mServiceManager\
+  \       DEBUG ---- EventPersistencySvc (refCount = 2)\e[m\n\e[92;1mServiceManager\
+  \       DEBUG ---- EventDataSvc (refCount = 3)\e[m\n\e[92;1mServiceManager     \
+  \  DEBUG ---- TimelineSvc (refCount = 2)\e[m\n\e[92;1mServiceManager       DEBUG\
+  \ ---- AlgExecStateSvc (refCount = 3)\e[m\n\e[92;1mServiceManager       DEBUG ----\
+  \ EventLoopMgr (refCount = 3)\e[m\n\e[96;1mApplicationMgr        INFO Application\
+  \ Manager Finalized successfully\e[m\n\e[96;1mApplicationMgr        INFO Application\
   \ Manager Terminated successfully\e[m"
 histos: {}
 ttrees: {}
