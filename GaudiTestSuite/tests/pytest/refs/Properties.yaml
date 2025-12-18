@@ -28,6 +28,7 @@ stdout: |-
   PropertyAlg           INFO Read handler called for property:  'PDouble':100.00000
   PropertyAlg           INFO PDouble =  'PDouble':100.00000
   PropertyAlg           INFO PString =  'PString':'hundred'
+  PropertyAlg           INFO PString2 = hundred thousand
   PropertyAlg           INFO PBool   =  'PBool':False
   PropertyAlg           INFO PIntArray    =  'PIntArray':[  ]
   PropertyAlg           INFO PDoubleArray =  'PDoubleArray':[  ]
@@ -60,6 +61,7 @@ stdout: |-
   PropertyAlg           INFO Read handler called for property:  'PDouble':10100000.
   PropertyAlg           INFO PDouble =  'PDouble':10100000.
   PropertyAlg           INFO PString =  'PString':'hundred \'one\''
+  PropertyAlg           INFO PString2 = hundred 'one' and a half
   PropertyAlg           INFO PBool   =  'PBool':True
   PropertyAlg           INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
   PropertyAlg           INFO PDoubleArray =  'PDoubleArray':[ 1.1000000 , 2.0000000 , 3.3000000 ]
@@ -330,6 +332,7 @@ stdout: |-
   PropertyAlg.PInt: 155
   PropertyAlg.PIntArray: [ 1 , 2 , 3 , 5 ]
   PropertyAlg.PString: 'hundred \'one\''
+  PropertyAlg.PString2: ' and a half'
   PropertyAlg.PStringArray: [ 'one' , 'two' , 'four' ]
   PropertyAlg.RegisterForContextService: False
   PropertyAlg.String: 'hundred "one"'
