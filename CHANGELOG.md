@@ -6,6 +6,54 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Frank
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v40r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r2) - 2025-12-18
+This is a minor release with a few fixes and improvements, mostly meant as a checkpoint
+before the end of the year.
+
+It's a backward compatible release with a few caveats:
+- the drop of the `genconf` generated `__init__.py` is fixing an inconsistency left after gaudi/Gaudi!1607
+  (from [v39r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v39r0)), but it may have interferences
+  if there are other versions of Gaudi in the `PYTHONPATH`
+- the change of the default format for messages may affect users relying on the old format
+
+A special thanks to all the people that contributed to this release:
+@bstanisl,
+@clemenci,
+@fwinkl,
+@graven,
+@jcarcell,
+@mafila,
+@sponce.
+
+### Changed
+- Constrain `Property` member functions (gaudi/Gaudi!1864)
+- `GaudiTesting`: cleanup preprocessor patterns (gaudi/Gaudi#166, gaudi/Gaudi!1853)
+- `Message`: add extra space before message level (gaudi/Gaudi#166, gaudi/Gaudi!1852)
+- `genconf`: stop generating and installing `__init__.py` (gaudi/Gaudi!1858)
+- Improvements to `BranchWrapper` and add documentation to `FileSvc` (gaudi/Gaudi!1837)
+- Use the default of shelve (sqlite3 since Python 3.13) when possible for merge_confdb2_parts (gaudi/Gaudi#368, gaudi/Gaudi!1832)
+- Bump pre-commit-hooks repo to remove deprecation warning (gaudi/Gaudi!1845)
+- Extract parsers into `GaudiCommonParsers` object (gaudi/Gaudi!1840)
+- Refactor Grammars (gaudi/Gaudi!1839)
+- `GaudiToolbox`: add `Ninja` JOB POOL (gaudi/Gaudi#153, gaudi/Gaudi!1834)
+
+### Added
+- `CI`: add CUDA build (gaudi/Gaudi#374, gaudi/Gaudi!1801)
+- `GaudiConfig2`: add `DataHandle` semantics (gaudi/Gaudi#308, gaudi/Gaudi!1856)
+- `ConfDB2`: add support for `CONFIGURABLE_DB_IGNORE` and cleanup (gaudi/Gaudi!1855)
+- `GaudiTestSuite`: add test for `ToolSvc.CheckedNamedToolsConfigured` (gaudi/Gaudi#260, gaudi/Gaudi!1849)
+- `Parsers`: support string map properties with heterogenous lookup (gaudi/Gaudi!1841)
+- `GaudiCUDA`: fix `nullptr` dereference, set `GAUDI_USE_CUDA` option for `CMake` config (gaudi/Gaudi!1846)
+
+### Fixed
+- Fixed `operator+` related to `Property` (gaudi/Gaudi!1863)
+- Fixed string representation in option files (json in particular) (gaudi/Gaudi!1865)
+- Delete an unused executable: `makeThesis` (gaudi/Gaudi!1857)
+- `test_event_timeout_abort`: remove check on stack trace format (gaudi/Gaudi!1851)
+- `GaudiKernel`: initialize cpuid output for other platforms (gaudi/Gaudi#168, gaudi/Gaudi!1848)
+- remove modules and references to options related to profiling (gaudi/Gaudi!1844)
+
+
 ## [v40r1](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r1) - 2025-10-28
 This is a minor release with a number of fixes and improvements, but also
 cleanups, new features and the deprecation of some APIs.
