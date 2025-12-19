@@ -380,6 +380,9 @@ class DataHandleSemantics(PropertySemantics):
             )
         return DataHandle(v, self._mode, self._type, self._isCond)
 
+    def opt_value(self, value):
+        return value.Path
+
 
 def extract_template_args(cpp_type):
     """
