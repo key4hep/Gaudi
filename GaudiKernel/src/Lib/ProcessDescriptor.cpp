@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -429,7 +429,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* in
     const ssize_t bufsize = 1024;
     char          buf[bufsize];
     pid = processID( pid );
-    sprintf( buf, "/proc/%ld/statm", pid );
+    snprintf( buf, sizeof( buf ), "/proc/%ld/statm", pid );
     long    size, resident, share, trs, lrs, drs, dt;
     int     fd    = open( buf, O_RDONLY );
     ssize_t nread = read( fd, buf, bufsize );

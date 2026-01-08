@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -125,7 +125,7 @@ StatusCode RootPerfMonSvc::stop() {
     const char* fn = i.c_str();
     Long_t      id, siz, flags, tim;
     if ( 0 == gSystem->GetPathInfo( fn, &id, &siz, &flags, &tim ) ) {
-      ::sprintf( text, "%ld", siz );
+      ::snprintf( text, sizeof( text ), "%ld", siz );
       map->Add( new TObjString( fn ), new TObjString( text ) );
     }
   }
