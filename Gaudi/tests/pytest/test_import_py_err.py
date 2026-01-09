@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -16,6 +16,8 @@ from GaudiTesting import GaudiExeTest
 class Test(GaudiExeTest):
     environment = [
         f"JOBOPTSEARCHPATH={Path(__file__).parent.parent / 'pyjobopts'}",
+        # Disable colored tracebacks in Python 3.14+ to get predictable output
+        "PYTHON_COLORS=0",
     ]
 
     command = ["gaudirun.py", "--dry-run", "--verbose", "main_err.py"]
