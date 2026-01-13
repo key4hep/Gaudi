@@ -57,6 +57,8 @@ namespace System {
 #ifndef __APPLE__
 #  include <sys/procfs.h>
 #else
+#  include <mach/mach.h>
+#  include <mach/task_info.h>
 #  include <sys/resource.h>
 #  include <sys/time.h>
 #endif
@@ -453,7 +455,48 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* in
     info->PagefileUsage              = prc.vsize - resident * pg_size;
     info->PeakPagefileUsage          = prc.vsize - resident * pg_size;
 #elif defined( __APPLE__ )
-    if ( pid ) {}
+    // Use Mach API to get memory information on macOS
+    // Note: We can only query our own task reliably without special entitlements
+    mach_task_basic_info_data_t taskInfo;
+    mach_msg_type_number_t      infoCount = MACH_TASK_BASIC_INFO_COUNT;
+
+    kern_return_t kr = task_info( mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&taskInfo, &infoCount );
+    if ( kr == KERN_SUCCESS ) {
+      info->VirtualSize                = taskInfo.virtual_size;
+      info->PeakVirtualSize            = taskInfo.virtual_size; // macOS doesn't track peak, use current
+      info->WorkingSetSize             = taskInfo.resident_size;
+      info->PeakWorkingSetSize         = taskInfo.resident_size_max;
+      info->QuotaPagedPoolUsage        = 0;
+      info->QuotaPeakPagedPoolUsage    = 0;
+      info->QuotaNonPagedPoolUsage     = 0;
+      info->QuotaPeakNonPagedPoolUsage = 0;
+      info->PagefileUsage              = taskInfo.virtual_size - taskInfo.resident_size;
+      info->PeakPagefileUsage          = taskInfo.virtual_size - taskInfo.resident_size;
+
+      // Get page fault count from getrusage (not available in task_info)
+      struct rusage usage;
+      if ( getrusage( RUSAGE_SELF, &usage ) == 0 ) {
+        info->PageFaultCount = static_cast<unsigned long>( usage.ru_majflt + usage.ru_minflt );
+      } else {
+        info->PageFaultCount = 0;
+      }
+      status = 1;
+    } else {
+      // Zero out the struct on failure so we don't return garbage
+      info->VirtualSize                = 0;
+      info->PeakVirtualSize            = 0;
+      info->WorkingSetSize             = 0;
+      info->PeakWorkingSetSize         = 0;
+      info->PageFaultCount             = 0;
+      info->QuotaPagedPoolUsage        = 0;
+      info->QuotaPeakPagedPoolUsage    = 0;
+      info->QuotaNonPagedPoolUsage     = 0;
+      info->QuotaPeakNonPagedPoolUsage = 0;
+      info->PagefileUsage              = 0;
+      info->PeakPagefileUsage          = 0;
+      status                           = 0;
+    }
+    (void)pid; // suppress unused parameter warning
 #else  // All Other
     if ( pid ) {}
 #endif // End ALL OS
