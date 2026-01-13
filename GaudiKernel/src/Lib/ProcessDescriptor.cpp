@@ -56,6 +56,9 @@ namespace System {
 #include <unistd.h>
 #ifndef __APPLE__
 #  include <sys/procfs.h>
+#else
+#  include <sys/resource.h>
+#  include <sys/time.h>
 #endif
 #include <cstdio>
 #include <sys/resource.h>
@@ -567,9 +570,30 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     status = 1;
 
 #elif defined( __APPLE__ )
-    if ( pid ) {}
-// FIXME (MCl): Make an alternative function get timing on OSX
-// times() seems to cause a segmentation fault
+    // Use getrusage for user and kernel times on macOS
+    // Track process start time using a static variable initialized on first call
+    static long long prc_start = 0;
+    if ( prc_start == 0 ) {
+      struct timeval tv;
+      gettimeofday( &tv, nullptr );
+      // Convert to 100-nanosecond units: 1 sec = 10,000,000 units, 1 usec = 10 units
+      prc_start = static_cast<long long>( tv.tv_sec ) * 10000000LL + static_cast<long long>( tv.tv_usec ) * 10LL;
+    }
+
+    struct rusage usage;
+    if ( getrusage( RUSAGE_SELF, &usage ) == 0 ) {
+      // Convert timeval to 100-nanosecond units
+      info->UserTime = static_cast<long long>( usage.ru_utime.tv_sec ) * 10000000LL +
+                       static_cast<long long>( usage.ru_utime.tv_usec ) * 10LL;
+      info->KernelTime = static_cast<long long>( usage.ru_stime.tv_sec ) * 10000000LL +
+                         static_cast<long long>( usage.ru_stime.tv_usec ) * 10LL;
+      info->CreateTime = prc_start;
+      info->ExitTime   = 0;
+      status           = 1;
+    } else {
+      status = 0;
+    }
+    (void)pid; // suppress unused parameter warning
 #else // no /proc file system: assume sys_start for the first call
     tms              tmsb;
     static clock_t   sys_start = times( 0 );
