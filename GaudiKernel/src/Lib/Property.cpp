@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -461,7 +461,7 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
 
 Gaudi::Details::WeakPropertyRef::operator std::string() const {
   using Gaudi::Utils::toString;
-  return m_property ? ( ( m_property->type_info() == &typeid( std::string ) ) ? toString( m_property->toString() )
+  return m_property ? ( ( *m_property->type_info() == typeid( std::string ) ) ? toString( m_property->toString() )
                                                                               : m_property->toString() )
                     : m_value;
 }
