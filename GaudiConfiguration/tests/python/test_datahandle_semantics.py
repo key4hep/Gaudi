@@ -36,6 +36,7 @@ def test_from_string():
     assert d.mode() == "R"
     assert d.type() == "Foo"
     assert d.isCondition() is False
+    assert s.opt_value(d) == "/Event/F1"
 
 
 def test_from_handle():
@@ -46,6 +47,7 @@ def test_from_handle():
     assert d.mode() == "W"
     assert d.type() == "Foo"
     assert d.isCondition() is False
+    assert s.opt_value(d) == "/Event/F1"
 
 
 def test_from_other_handle():
@@ -56,6 +58,7 @@ def test_from_other_handle():
     assert d.Path == "/Event/F1"
     assert d.mode() == "W"
     assert d.type() == "Foo"
+    assert s.opt_value(d) == "/Event/F1"
 
 
 def test_in_alg():
@@ -66,3 +69,7 @@ def test_in_alg():
     assert isinstance(alg.Output, DataHandle)
     assert alg.Input == "Event/R1"
     assert alg.Output == "Event/W1"
+    assert alg.__opt_properties__() == {
+        "TestConf::AlgWithDataHandles.Input": f"{repr('Event/R1')}",
+        "TestConf::AlgWithDataHandles.Output": f"{repr('Event/W1')}",
+    }
