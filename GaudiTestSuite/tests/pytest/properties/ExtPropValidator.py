@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -35,7 +35,7 @@ def validate(stdout):
             "ccc": ["a", "b", "c"],
         },
         "MapUIntString": {0: "UZero", 1: "UOne", 2: "UTwo"},
-        "PairDD": (3141.592, 2.1828183),
+        "PairDD": (3141.592, 2.18281828),
         "PairII": (3, 2),
         "VectorOfPairsDD": [
             (0.0, 1.0),
