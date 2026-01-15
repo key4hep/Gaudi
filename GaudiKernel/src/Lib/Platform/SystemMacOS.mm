@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,12 +14,10 @@
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSString.h>
 #import <sys/utsname.h>
-#import <cxxabi.h>
-#import <memory>
-#import <regex>
 
 // Local import(s):
 #import "SystemMacOS.h"
+#import "TypeNormalization.h"
 
 namespace System
 {
@@ -42,25 +40,7 @@ namespace System
       return result;
     }
 
-    std::string typeinfoName( const char* class_name ) {
-
-      // Demangle the name:
-      int status;
-      auto realname = std::unique_ptr<char, decltype( free )*>(
-        abi::__cxa_demangle( class_name, nullptr, nullptr, &status ), std::free );
-      if ( !realname ) return class_name;
-
-      // Substitute the full type of std::string with "std::string"
-      static const std::regex cxx11_string{
-       "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >( (?=>))?"};
-      std::string result = std::regex_replace( realname.get(), cxx11_string, "std::string" );
-
-      // Substitute ', ' with ','
-      static const std::regex comma_space{", "};
-      result = std::regex_replace( result, comma_space, "," );
-
-      return result;
-    }
+    std::string typeinfoName( const char* class_name ) { return Detail::normalizeTypeName( class_name ); }
 
     std::string hostName() {
 
