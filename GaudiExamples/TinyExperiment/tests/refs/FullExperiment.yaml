@@ -1,16 +1,15 @@
 stdout: |-
   /***** Algorithm Gaudi::Example::TinyExperiment::GeneratorAlg/GeneratorAlg *************************
+  |-ExtraInputs                = set()  (default: set())
+  |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
   |-ErrorMax                   = 1
-  |-ErrorCount                 = 0
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
+  |-AuditRestart               = False
   |-AuditExecute               = False
   |-AuditFinalize              = False
-  |-ExtraInputs                = set()  (default: set())
-  |-ExtraOutputs               = set()  (default: set())
-  |-AuditRestart               = False
   |-AuditStart                 = False
   |-AuditStop                  = False
   |-Timeline                   = True
@@ -25,17 +24,16 @@ stdout: |-
   |-NbTracksToGenerate         = 10  (default: 10)
   \----- (End of Algorithm Gaudi::Example::TinyExperiment::GeneratorAlg/GeneratorAlg) ----------------
   /***** Algorithm Gaudi::Example::TinyExperiment::SimulationAlg/SimulationAlg ***********************
+  |-ExtraInputs                = set()  (default: set())
+  |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
   |-ErrorMax                   = 1
-  |-ErrorCount                 = 0
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
+  |-AuditRestart               = False
   |-AuditExecute               = False
   |-AuditFinalize              = False
-  |-ExtraInputs                = set()  (default: set())
-  |-ExtraOutputs               = set()  (default: set())
-  |-AuditRestart               = False
   |-AuditStart                 = False
   |-AuditStop                  = False
   |-Timeline                   = True
@@ -50,17 +48,16 @@ stdout: |-
   |-NbHitsPerTrack             = 15  (default: 10)
   \----- (End of Algorithm Gaudi::Example::TinyExperiment::SimulationAlg/SimulationAlg) --------------
   /***** Algorithm Gaudi::Example::TinyExperiment::DigitizationAlg/DigitizationAlg *******************
+  |-ExtraInputs                = set()  (default: set())
+  |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
   |-ErrorMax                   = 1
-  |-ErrorCount                 = 0
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
+  |-AuditRestart               = False
   |-AuditExecute               = False
   |-AuditFinalize              = False
-  |-ExtraInputs                = set()  (default: set())
-  |-ExtraOutputs               = set()  (default: set())
-  |-AuditRestart               = False
   |-AuditStart                 = False
   |-AuditStop                  = False
   |-Timeline                   = True
@@ -76,17 +73,16 @@ stdout: |-
   |-SigmaNoise                 = 0.1  (default: 1.0)
   \----- (End of Algorithm Gaudi::Example::TinyExperiment::DigitizationAlg/DigitizationAlg) ----------
   /***** Algorithm Gaudi::Example::TinyExperiment::TrackingAlg/TrackingAlg ***************************
+  |-ExtraInputs                = set()  (default: set())
+  |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
   |-ErrorMax                   = 1
-  |-ErrorCount                 = 0
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
+  |-AuditRestart               = False
   |-AuditExecute               = False
   |-AuditFinalize              = False
-  |-ExtraInputs                = set()  (default: set())
-  |-ExtraOutputs               = set()  (default: set())
-  |-AuditRestart               = False
   |-AuditStart                 = False
   |-AuditStop                  = False
   |-Timeline                   = True
@@ -102,17 +98,16 @@ stdout: |-
   |-Sensibility                = 6  (default: 6)
   \----- (End of Algorithm Gaudi::Example::TinyExperiment::TrackingAlg/TrackingAlg) ------------------
   /***** Algorithm Gaudi::Example::TinyExperiment::CheckerAlg/CheckerAlg *****************************
+  |-ExtraInputs                = set()  (default: set())
+  |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
   |-ErrorMax                   = 1
-  |-ErrorCount                 = 0
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
+  |-AuditRestart               = False
   |-AuditExecute               = False
   |-AuditFinalize              = False
-  |-ExtraInputs                = set()  (default: set())
-  |-ExtraOutputs               = set()  (default: set())
-  |-AuditRestart               = False
   |-AuditStart                 = False
   |-AuditStop                  = False
   |-Timeline                   = True
