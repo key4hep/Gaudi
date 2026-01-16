@@ -55,11 +55,10 @@ BOOST_AUTO_TEST_CASE( template_types ) {
 /// Test nested STL containers (cross-platform consistency)
 BOOST_AUTO_TEST_CASE( nested_stl_types ) {
   // These test the normalization of std::__cxx11:: (libstdc++) and std::__1:: (libc++)
-  // as well as >> to > > spacing
+  // as well as >> to > > spacing, and ", " to "," normalization
   BOOST_CHECK( System::typeinfoName( typeid( std::vector<std::string> ) ) ==
-               "std::vector<std::string, std::allocator<std::string> >" );
-  BOOST_CHECK( System::typeinfoName( typeid( std::vector<int> ) ) == "std::vector<int, std::allocator<int> >" );
-  BOOST_CHECK(
-      System::typeinfoName( typeid( std::map<std::string, int> ) ) ==
-      "std::map<std::string, int, std::less<std::string>, std::allocator<std::pair<std::string const, int> > >" );
+               "std::vector<std::string,std::allocator<std::string> >" );
+  BOOST_CHECK( System::typeinfoName( typeid( std::vector<int> ) ) == "std::vector<int,std::allocator<int> >" );
+  BOOST_CHECK( System::typeinfoName( typeid( std::map<std::string, int> ) ) ==
+               "std::map<std::string,int,std::less<std::string>,std::allocator<std::pair<std::string const,int> > >" );
 }

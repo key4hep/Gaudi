@@ -40,7 +40,7 @@ namespace System
       return result;
     }
 
-    std::string typeinfoName( const char* class_name ) { return Detail::normalizeTypeName( class_name ); }
+    std::string typeinfoName( const char* class_name ) { return Detail::normalizeTypeName( class_name, true ); }
 
     std::string hostName() {
 

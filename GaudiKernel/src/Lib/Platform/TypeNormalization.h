@@ -25,7 +25,8 @@ namespace System {
     /// - Removes std::__cxx11:: and std::__1:: inline namespace prefixes
     /// - Converts basic_string<char,...> to std::string
     /// - Normalizes ">>" to "> >" (C++03 style spacing)
-    inline std::string normalizeTypeName( const char* mangled_name ) {
+    /// @param normalize_commas If true, also converts ", " to "," (legacy behavior)
+    inline std::string normalizeTypeName( const char* mangled_name, bool normalize_commas = false ) {
       int  status;
       auto realname = std::unique_ptr<char, decltype( free )*>(
           abi::__cxa_demangle( mangled_name, nullptr, nullptr, &status ), std::free );
@@ -51,6 +52,12 @@ namespace System {
       static const std::regex angle_brackets{ ">>" };
       result = std::regex_replace( result, angle_brackets, "> >" );
       result = std::regex_replace( result, angle_brackets, "> >" ); // twice for >>>
+
+      // Optionally normalize commas: ", " to "," (legacy behavior)
+      if ( normalize_commas ) {
+        static const std::regex comma_space{ ", " };
+        result = std::regex_replace( result, comma_space, "," );
+      }
 
       return result;
     }
