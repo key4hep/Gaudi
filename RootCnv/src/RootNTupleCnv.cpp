@@ -46,21 +46,51 @@
 using namespace Gaudi;
 using namespace std;
 
-static inline istream& loadLong( istream& is ) {
-  long i;
-  is >> i;
+// Helper to read values from stream - default uses operator>>
+template <class TYP>
+static inline istream& readValue( istream& is, TYP& val ) {
+  return is >> val;
+}
+// For pointer types, just read and discard a long (pointers have meaningless 0 values in the descriptor)
+template <class TYP>
+static inline istream& readValue( istream& is, TYP*& ) {
+  long dummy;
+  return is >> dummy;
+}
+// Specializations for float/double to work around libc++ vs libstdc++ difference.
+//
+// libc++ (macOS/clang) sets failbit when parsing floating point values near the
+// minimum representable value (e.g., FLT_MIN ~1.17549e-38), even though the value
+// is parsed correctly. libstdc++ (Linux/gcc) does not set failbit in this case.
+// This is due to ambiguity in the C++ standard about when failbit should be set
+// for underflow conditions (see LWG Issue 3689).
+//
+// Reproducer:
+//   echo '#include <iostream>
+//   #include <sstream>
+//   int main() {
+//       std::istringstream is("1.17549e-38");
+//       float f;
+//       is >> f;
+//       std::cout << "good=" << is.good() << " fail=" << is.fail() << " val=" << f << std::endl;
+//   }' | c++ -x c++ - -o /tmp/test && /tmp/test
+//
+// libstdc++ (Linux): good=0 fail=0 val=1.17549e-38
+// libc++ (macOS):    good=0 fail=1 val=1.17549e-38
+//
+// The workaround clears failbit if a value was successfully read (i.e., not bad/eof).
+template <>
+inline istream& readValue<float>( istream& is, float& val ) {
+  is >> val;
+  if ( is.fail() && !is.bad() && !is.eof() ) is.clear( is.rdstate() & ~std::ios::failbit );
   return is;
 }
-static inline istream& operator>>( istream& is, IOpaqueAddress*& /*pObj*/ ) { return loadLong( is ); }
-
-#if 0
-static inline istream& operator>>(istream& is, SmartRef<DataObject>& /*pObj*/)
-{  return loadLong(is);          }
-static inline istream& operator>>(istream& is, SmartRef<ContainedObject>& /*pObj*/)
-{  return loadLong(is);          }
-static inline istream& operator>>(istream& is, string& /*pObj*/)
-{  return loadLong(is);          }
-#endif
+template <>
+inline istream& readValue<double>( istream& is, double& val ) {
+  is >> val;
+  if ( is.fail() && !is.bad() && !is.eof() ) is.clear( is.rdstate() & ~std::ios::failbit );
+  return is;
+}
 
 template <class TYP>
 static StatusCode createItem( TTree* tree, INTuple* tuple, istream& is, const string& name, bool add,
@@ -75,7 +105,8 @@ static StatusCode createItem( TTree* tree, INTuple* tuple, istream& is, const st
   for ( int i = 0; i < ndim; i++ ) is >> dim[i] >> c;
 
   TYP low = null, high = null;
-  is >> low >> c >> high >> c;
+  readValue( is, low ) >> c;
+  readValue( is, high ) >> c;
   is >> c;
   switch ( ndim ) {
   case 0:
