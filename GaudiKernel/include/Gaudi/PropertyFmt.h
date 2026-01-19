@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2023-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -53,9 +53,15 @@
 
 #include <Gaudi/Property.h>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <format>
 #include <iomanip>
 #include <sstream>
+
+// Disable fmt's automatic range formatting for Gaudi::Property
+// This prevents ambiguity with fmt 11+ which auto-detects ranges
+template <typename T, typename V, typename H, typename Char>
+struct fmt::is_range<Gaudi::Property<T, V, H>, Char> : std::false_type {};
 
 #define GAUDI_PROPERTY_FORMATTING_IMPL( ns, assert_for_ranges )                                                        \
   template <typename T, typename V, typename H>                                                                        \
