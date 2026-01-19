@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -132,7 +132,7 @@ const std::string& System::exeName() {
     name[0]             = 0;
 #if defined( __linux ) || defined( __APPLE__ )
     char cmd[512];
-    ::sprintf( cmd, "/proc/%d/exe", ::getpid() );
+    ::snprintf( cmd, sizeof( cmd ), "/proc/%d/exe", ::getpid() );
     module = "Unknown";
     if ( ::readlink( cmd, name, sizeof( name ) ) >= 0 ) module = name;
 #elif __hpux
@@ -146,7 +146,7 @@ const std::vector<std::string> System::linkedModules() {
   if ( s_linkedModules.size() == 0 ) {
 #if defined( __linux ) || defined( __APPLE__ )
     char ff[512], cmd[1024], fname[1024], buf1[64], buf2[64], buf3[64], buf4[64];
-    ::sprintf( ff, "/proc/%d/maps", ::getpid() );
+    ::snprintf( ff, sizeof( ff ), "/proc/%d/maps", ::getpid() );
     FILE* maps = ::fopen( ff, "r" );
     while ( ::fgets( cmd, sizeof( cmd ), maps ) ) {
       int len;

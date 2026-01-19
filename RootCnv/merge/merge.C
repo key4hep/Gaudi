@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -176,8 +176,8 @@ MergeStatus RootDatabaseMerger::createFID() {
       TBranch*  b = t->GetBranch( "Params" );
       if ( b ) {
         uuid.GetUUID( d.buf );
-        sprintf( text, fmt, d.ibuf[0], d.sbuf[2], d.sbuf[3], d.buf[8], d.buf[9], d.buf[10], d.buf[11], d.buf[12],
-                 d.buf[13], d.buf[14], d.buf[15] );
+        snprintf( text, sizeof( text ), fmt, d.ibuf[0], d.sbuf[2], d.sbuf[3], d.buf[8], d.buf[9], d.buf[10], d.buf[11],
+                  d.buf[12], d.buf[13], d.buf[14], d.buf[15] );
         b->SetAddress( text );
         b->Fill();
         t->Write();
@@ -217,7 +217,7 @@ MergeStatus RootDatabaseMerger::saveSections() {
         for ( const auto& i : m_sections ) {
           string cont = i.first;
           for ( const auto& j : i.second ) {
-            ::sprintf( text, "[CNT=%s][START=%d][LEN=%d]", cont.c_str(), j.start, j.length );
+            ::snprintf( text, sizeof( text ), "[CNT=%s][START=%d][LEN=%d]", cont.c_str(), j.start, j.length );
             nb = t->Fill();
             ++total;
             if ( nb > 0 )
@@ -226,7 +226,7 @@ MergeStatus RootDatabaseMerger::saveSections() {
               ::printf( "+++ Failed to update Sections tree with new entries. [WRITE_ERROR]\n" );
           }
         }
-        ::sprintf( text, "[END-OF-SECTION]" );
+        ::snprintf( text, sizeof( text ), "[END-OF-SECTION]" );
         nb = t->Fill();
         ++total;
         if ( nb > 0 )
@@ -254,7 +254,7 @@ void RootDatabaseMerger::dumpSections() {
     string prefix = i.first;
     for ( const auto& j : i.second ) {
       char text[1024];
-      ::sprintf( text, "['%s'][%d]", prefix.c_str(), cnt++ );
+      ::snprintf( text, sizeof( text ), "['%s'][%d]", prefix.c_str(), cnt++ );
       if ( s_dbg ) {
         ::printf( "+++ section %-55s Start:%8d ... %8d [%d entries]\n", text, j.start, j.start + j.length, j.length );
       }

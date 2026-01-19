@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -547,7 +547,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr ) 
             desc = n + desc;
             break;
           case 2:
-            sprintf( text, "[%ld]", it->dim( 0 ) );
+            snprintf( text, sizeof( text ), "[%ld]", it->dim( 0 ) );
             tmp = text;
             [[fallthrough]];
           case 1:
@@ -555,7 +555,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr ) 
               INTupleItem* itm = it->indexItem();
               desc             = n + tmp + "[" + itm->name() + "]" + desc;
             } else {
-              sprintf( text, "[%ld]", it->dim( 0 ) );
+              snprintf( text, sizeof( text ), "[%ld]", it->dim( 0 ) );
               desc = n + tmp + text + desc;
             }
           }
