@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -1534,7 +1534,7 @@ if(NOT CMAKE_SCRIPT_MODE_FILE AND NOT TARGET target_runtime_paths)
     endforeach()
     string(TOLOWER "${CMAKE_PROJECT_NAME}env.sh" _env_file)
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/${_env_file}
-                  CONTENT "#!/bin/sh
+                  CONTENT "#!/usr/bin/env bash
 # Auto-generated script to set environment variables
 export PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_path>>;${_ENV_PATH}>,EXCLUDE,^[^/]>>\${PATH:+:\${PATH}}\"
 export LD_LIBRARY_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_ld_library_path>>;${_ENV_LD_LIBRARY_PATH}>,EXCLUDE,^[^/]>>\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}\"
@@ -1552,7 +1552,7 @@ ${RUN_SCRIPT_EXTRA_COMMANDS}
 ")
     # Since we cannot tell file(GENERATE) to create an executable file (at generation time)
     # we create one (at configure time) that source the first one, then we make it executable
-    file(WRITE ${CMAKE_BINARY_DIR}/run "#!/bin/sh\n# Auto-generated script to set the environment before the execution of a command\n. ${CMAKE_BINARY_DIR}/${_env_file}\nexec \"$@\"\n")
+    file(WRITE ${CMAKE_BINARY_DIR}/run "#!/usr/bin/env bash\n# Auto-generated script to set the environment before the execution of a command\n. ${CMAKE_BINARY_DIR}/${_env_file}\nexec \"$@\"\n")
     execute_process(COMMAND chmod a+x ${CMAKE_BINARY_DIR}/run)
     # Add a executable target for convenience
     add_executable(run IMPORTED GLOBAL)
