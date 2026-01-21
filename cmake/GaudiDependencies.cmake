@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2020-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -61,7 +61,6 @@ Depending on what was used to build Gaudi:
 * CLHEP>=2.4.1.0
 * HepPDT
 * Doxygen>=1.8.15
-* CUDAToolkit
 
 Depending on the platform:
 * Linux
@@ -100,14 +99,6 @@ foreach(component IN ITEMS filesystem regex thread python unit_test_framework
                            date_time headers chrono)
   mark_as_advanced(boost_${component}_DIR)
 endforeach()
-
-if(GAUDI_USE_CUDA)
-  find_package(CUDAToolkit ${__quiet} REQUIRED)
-endif()
-if(NOT CMAKE_FIND_PACKAGE_NAME)
-  # this is to record in GaudiConfig.cmake what was enabled at build time
-  string(APPEND GAUDI_OPTIONAL_DEPENDENCIES "set(GAUDI_USE_CUDA ${GAUDI_USE_CUDA})\n")
-endif()
 
 find_package(Python 3.7 ${__quiet} REQUIRED Interpreter Development)
 

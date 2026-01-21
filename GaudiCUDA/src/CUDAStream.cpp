@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2023-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -99,6 +99,10 @@ namespace Gaudi::CUDA {
     available_streams.push( m_stream );
   }
 
+  Stream::operator cudaStream_t() { return m_stream; }
+
+  const Gaudi::AsynchronousAlgorithm* Stream::parent() { return m_parent; }
+
   StatusCode Stream::await() {
     auto        res        = boost::fibers::cuda::waitfor_all( m_stream );
     cudaError_t temp_error = std::get<1>( res );
@@ -110,4 +114,7 @@ namespace Gaudi::CUDA {
     }
     return m_parent->restoreAfterSuspend();
   }
+
+  void Stream::registerDependency() { ++m_dependents; }
+  void Stream::removeDependency() { --m_dependents; }
 } // namespace Gaudi::CUDA
