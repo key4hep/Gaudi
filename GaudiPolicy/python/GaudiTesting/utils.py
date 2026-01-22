@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -395,3 +395,132 @@ def find_ttree_summaries(stdout):
 
 def file_path_for_class(cls):
     return Path(sys.modules[cls.__module__].__file__)
+
+
+def _format_path(path: List[str]) -> str:
+    """Format a path list as a bracket-notation string for error messages."""
+    if not path:
+        return "root"
+    return "".join(f"[{p!r}]" for p in path)
+
+
+def _floats_close(a: float, b: float, rtol: float, atol: float) -> bool:
+    """Check if two floats are close within relative and absolute tolerance."""
+    # Handle exact equality first (includes inf == inf case)
+    if a == b:
+        return True
+    # Handle cases where difference is infinite (e.g., inf vs -inf)
+    diff = abs(a - b)
+    if diff == float("inf"):
+        return False
+    return diff <= atol + rtol * max(abs(a), abs(b))
+
+
+def _compare(
+    obj1: Any,
+    obj2: Any,
+    path: List[str],
+    rtol: float,
+    atol: float,
+    max_differences: int,
+    differences: List[str],
+) -> None:
+    """
+    Recursively compare two objects and append difference descriptions to the list.
+
+    Handles dicts, lists, floats (with tolerance), and other types (exact equality).
+    Stops early if max_differences is reached.
+    """
+    if len(differences) >= max_differences:
+        return
+
+    if type(obj1) is not type(obj2):
+        differences.append(
+            f"Type mismatch at {_format_path(path)}: {type(obj1).__name__} vs {type(obj2).__name__}"
+        )
+    elif isinstance(obj1, dict):
+        keys1, keys2 = set(obj1.keys()), set(obj2.keys())
+        for key in keys1 - keys2:
+            if len(differences) >= max_differences:
+                return
+            differences.append(
+                f"Extra key in first object at {_format_path(path)}: {key!r}"
+            )
+        for key in keys2 - keys1:
+            if len(differences) >= max_differences:
+                return
+            differences.append(
+                f"Extra key in second object at {_format_path(path)}: {key!r}"
+            )
+        for key in keys1 & keys2:
+            if len(differences) >= max_differences:
+                return
+            _compare(
+                obj1[key],
+                obj2[key],
+                path + [key],
+                rtol,
+                atol,
+                max_differences,
+                differences,
+            )
+    elif isinstance(obj1, list):
+        if len(obj1) != len(obj2):
+            differences.append(
+                f"List length mismatch at {_format_path(path)}: {len(obj1)} vs {len(obj2)}"
+            )
+        else:
+            for i, (item1, item2) in enumerate(zip(obj1, obj2)):
+                if len(differences) >= max_differences:
+                    return
+                _compare(
+                    item1, item2, path + [i], rtol, atol, max_differences, differences
+                )
+    elif isinstance(obj1, float):
+        if not _floats_close(obj1, obj2, rtol, atol):
+            differences.append(
+                f"Float mismatch at {_format_path(path)}: {obj1} vs {obj2} "
+                f"(diff={abs(obj1 - obj2)}, rtol={rtol}, atol={atol})"
+            )
+    elif obj1 != obj2:
+        differences.append(
+            f"Value mismatch at {_format_path(path)}: {obj1!r} vs {obj2!r}"
+        )
+
+
+def assert_objects_equal(
+    obj1: Any,
+    obj2: Any,
+    rtol: float = 1e-9,
+    atol: float = 0.0,
+    max_differences: int = 10,
+) -> None:
+    """
+    Assert that two JSON-like objects are equal, with tolerance for floating-point values.
+
+    Args:
+        obj1: First object to compare (can be dict, list, or primitive types)
+        obj2: Second object to compare
+        rtol: Relative tolerance for float comparisons (default: 1e-9)
+        atol: Absolute tolerance for float comparisons (default: 0.0)
+        max_differences: Maximum number of differences to report before stopping (default: 10)
+
+    Raises:
+        AssertionError: If the objects are not equal, with a detailed message
+                       showing differences found (up to max_differences).
+
+    Example:
+        >>> assert_objects_equal({"a": 1.0}, {"a": 1.0})  # passes
+        >>> assert_objects_equal({"a": 1.0}, {"a": 1.001}, atol=0.01)  # passes
+        >>> assert_objects_equal({"a": 1}, {"a": 2})  # raises AssertionError
+    """
+    differences: List[str] = []
+    _compare(obj1, obj2, [], rtol, atol, max_differences, differences)
+    if differences:
+        truncated = len(differences) >= max_differences
+        msg = f"Objects differ ({len(differences)} difference(s) found"
+        if truncated:
+            msg += ", output truncated"
+        msg += "):\n"
+        msg += "\n".join(f"  - {d}" for d in differences)
+        assert False, msg
