@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -378,6 +378,11 @@ if(BUILD_TESTING)
   target_include_directories(test_CounterHistoFail PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/GaudiPluginService/include
+  )
+  # Disable colored diagnostics to avoid ANSI escape codes breaking regex match
+  target_compile_options(test_CounterHistoFail PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=never>
+    $<$<CXX_COMPILER_ID:Clang,AppleClang>:-fno-color-diagnostics>
   )
   set_target_properties(test_CounterHistoFail PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
   add_test(NAME GaudiKernel.test_CounterHistoFail COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test_CounterHistoFail)
