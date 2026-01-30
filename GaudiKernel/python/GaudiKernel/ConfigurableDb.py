@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -20,9 +20,17 @@ __all__ = ["CfgDb", "cfgDb", "loadConfigurableDb", "getConfigurable"]
 
 import logging
 
-_transtable = str.maketrans("<>&*,: ().", "__rp__s___")
-
 log = logging.getLogger("ConfigurableDb")
+
+
+_TRANS_TABLE = str.maketrans("<>&*,: ().", "__rp__s___")
+
+
+def _normalize_cpp_type_name(name):
+    """
+    Translate a C++ type name (with templates etc.) to Python identifier.
+    """
+    return name.replace(", ", ",").translate(_TRANS_TABLE)
 
 
 class _CfgDb(dict):
@@ -158,7 +166,7 @@ def getConfigurable(className, requester="", assumeCxxClass=True):
     confClass = className
     if assumeCxxClass:
         # assume className is C++: --> translate to python
-        confClass = str.translate(confClass, _transtable)
+        confClass = _normalize_cpp_type_name(confClass)
 
     # see if I have it in my dictionary
     confClassInfo = cfgDb.get(confClass)
