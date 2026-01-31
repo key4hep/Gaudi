@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -71,54 +71,32 @@ def get_get_by_full_type_missing():
         C.getByType("Gaudi::NotThere")
 
 
-def test_confdb():
+def test_confdb(monkeypatch, tmp_path):
     import os
     import shelve
-    import sys
-
-    try:
-        from tempfile import TemporaryDirectory
-    except ImportError:
-        from contextlib import contextmanager
-
-        @contextmanager
-        def TemporaryDirectory():
-            from shutil import rmtree
-            from tempfile import mkdtemp
-
-            name = mkdtemp()
-            try:
-                yield name
-            finally:
-                rmtree(name)
 
     import GaudiConfig2._db
 
-    with TemporaryDirectory() as tmpdir:
-        db = shelve.open(os.path.join(tmpdir, "test1.confdb2"))
-        db.update(
-            ("Cls{}".format(i), {"properties": {"IntA": ("int", i)}}) for i in range(5)
-        )
-        db.close()
-        db = shelve.open(os.path.join(tmpdir, "test2.confdb2"))
-        db.update(
-            ("Cls{}".format(i), {"properties": {"IntB": ("int", i)}})
-            for i in range(3, 8)
-        )
-        db.close()
+    db = shelve.open(tmp_path.joinpath("test1.confdb2").as_posix())
+    db.update(
+        ("Cls{}".format(i), {"properties": {"IntA": ("int", i)}}) for i in range(5)
+    )
+    db.close()
+    db = shelve.open(tmp_path.joinpath("test2.confdb2").as_posix())
+    db.update(
+        ("Cls{}".format(i), {"properties": {"IntB": ("int", i)}}) for i in range(3, 8)
+    )
+    db.close()
 
-        pathvar = "DYLD_LIBRARY_PATH" if sys.platform == "darwin" else "LD_LIBRARY_PATH"
-        old_path = os.environ.get(pathvar)
-        os.environ[pathvar] = "{0}{1}{0}_not_there".format(tmpdir, os.pathsep)
+    monkeypatch.setenv(
+        "GAUDI_PLUGIN_PATH", "{0}{1}{0}_not_there".format(tmp_path, os.pathsep)
+    )
+    monkeypatch.delenv("LD_LIBRARY_PATH", raising=False)
+    monkeypatch.delenv("DYLD_LIBRARY_PATH", raising=False)
 
-        db = GaudiConfig2._db.ConfDB2()
-        assert set(db) == set("Cls{}".format(i) for i in range(8))
-        assert "Cls1" in db and "Cls9" not in db
-        assert "IntA" in db["Cls1"]["properties"]
-        assert "IntA" in db["Cls4"]["properties"]
-        assert "IntB" in db["Cls7"]["properties"]
-
-        if old_path is None:
-            del os.environ[pathvar]
-        else:
-            os.environ[pathvar] = old_path
+    db = GaudiConfig2._db.ConfDB2()
+    assert set(db) == set("Cls{}".format(i) for i in range(8))
+    assert "Cls1" in db and "Cls9" not in db
+    assert "IntA" in db["Cls1"]["properties"]
+    assert "IntA" in db["Cls4"]["properties"]
+    assert "IntB" in db["Cls7"]["properties"]
