@@ -148,7 +148,7 @@ namespace Gaudi {
         void Registry::initialize() {
           auto _guard = std::scoped_lock{ m_mutex };
 #if defined( __APPLE__ )
-          const auto envVars = { "GAUDI_PLUGIN_PATH" };
+          const auto envVars = { "GAUDI_PLUGIN_PATH", "DYLD_LIBRARY_PATH" };
           const char sep     = ':';
 #else
           const auto envVars = { "GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH" };
@@ -270,10 +270,10 @@ namespace Gaudi {
           while ( std::getline( ss, dir, ':' ) && !found ) {
             if ( !fs::exists( dir ) ) { continue; }
             if ( is_regular_file( dir / fs::path( library ) ) ) {
-              // logger().debug( "found " + dirName.string() + "/" + library.c_str() + " for factory " + id );
               if ( !tryDLOpen( ( dir / fs::path( library ) ).string() ) ) {
                 return unknown;
               } else {
+                logger().debug( "found " + ( dir / fs::path( library ) ).string() + " for factory " + id );
                 found = true;
                 break;
               }
