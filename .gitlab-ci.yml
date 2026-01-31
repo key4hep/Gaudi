@@ -138,7 +138,7 @@ variables:
     - cmake --install build
     # (convert relative install paths to absolute)
     - source build/install_dirs.sh
-    - for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_CONFIGDIR ; do
+    - for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_PLUGINDIR GAUDI_INSTALL_CONFIGDIR ; do
     -     value=$(eval echo '$'${var})
     -     if [ "${value:0:1}" != "/" ] ; then
     -         eval $var=$PWD/install/${value}
@@ -147,6 +147,7 @@ variables:
     - export PATH=$CMAKE_INSTALL_BINDIR:$PATH
     - export LD_LIBRARY_PATH=$CMAKE_INSTALL_LIBDIR:$LD_LIBRARY_PATH
     - export PYTHONPATH=$GAUDI_INSTALL_PYTHONDIR:$PYTHONPATH
+    - export GAUDI_PLUGIN_PATH=$GAUDI_INSTALL_PLUGINDIR
     - export CMAKE_PREFIX_PATH=$PWD/install:$CMAKE_PREFIX_PATH
     # Build k4FWCore
     - echo "=== Building k4FWCore ==="
