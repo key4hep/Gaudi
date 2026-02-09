@@ -1180,7 +1180,7 @@ function(gaudi_install type)
         endif()
         install(DIRECTORY ${directory}
             DESTINATION "${GAUDI_INSTALL_PYTHONDIR}"
-            REGEX "(~|\\.py[co]|\\.in)$" EXCLUDE)
+            REGEX "(~|\\.py[co]|\\.in|__pycache__)$" EXCLUDE)
         # Generate a special __init__.py in the build tree that gather every other pieces
         file(GLOB python_packages LIST_DIRECTORIES true "${directory}/*")
         list(FILTER python_packages EXCLUDE REGEX "\\.(py[co]?|in)$")
