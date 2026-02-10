@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -28,7 +28,7 @@ variables:
   script:
     - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
     - cmake --version
-    - cmake -S . -B build -Wno-dev -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DGAUDI_TEST_PUBLIC_HEADERS_BUILD=yes -C ci-utils/preset-${PRESET}.cmake
+    - cmake -S . -B build -Wno-dev -DCMAKE_TOOLCHAIN_FILE=lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DGAUDI_TEST_PUBLIC_HEADERS_BUILD=yes -C ci-utils/preset-${PRESET}.cmake
     - ccache -z
     # build
     - cmake --build build 2>&1 | tee build.log
@@ -99,7 +99,7 @@ variables:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
     - export CONFIGURABLE_DB_IGNORE="/cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/lib/Gaudi.confdb,/cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/lib/Gaudi.confdb2"
     - cmake --version
-    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_SCAN_FOR_MODULES=NO -DGAUDI_USE_CUDA=${CUDACXX:+ON}
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_SCAN_FOR_MODULES=NO -DGAUDI_USE_CUDA=${CUDACXX:+ON}
     - ccache -z
     # build
     - cmake --build build 2>&1 | tee build.log
