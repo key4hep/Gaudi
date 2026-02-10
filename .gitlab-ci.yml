@@ -114,6 +114,52 @@ variables:
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
 
+.key4hep_nightly_build: &template_key4hep_nightly_build
+  <<: *template_build
+  script:
+    # Source the Key4hep nightly setup
+    - . /cvmfs/sft-nightlies.cern.ch/lcg/views/devkey-head/latest/x86_64-el9-gcc14-opt/setup.sh
+    - export CONFIGURABLE_DB_IGNORE="/cvmfs/sft-nightlies.cern.ch/lcg/views/devkey-head/latest/x86_64-el9-gcc14-opt/lib/Gaudi.confdb,/cvmfs/sft-nightlies.cern.ch/lcg/views/devkey-head/latest/x86_64-el9-gcc14-opt/lib/Gaudi.confdb2"
+    - cmake --version
+    # Build Gaudi
+    - echo "=== Building Gaudi ==="
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_SCAN_FOR_MODULES=NO -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=$PWD/install
+    - ccache -z
+    - cmake --build build 2>&1 | tee build.log
+    - ccache -s
+    - cp build/compile_commands.json .
+    # Install Gaudi to local prefix and set the environment
+    - echo "=== Installing Gaudi ==="
+    - cmake --install build
+    - export PATH=$PWD/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
+    - export PYTHONPATH=$PWD/install/python:$PWD/install/lib/python3.*/site-packages:$PYTHONPATH
+    - export CMAKE_PREFIX_PATH=$PWD/install:$CMAKE_PREFIX_PATH
+    # Build k4FWCore
+    - echo "=== Building k4FWCore ==="
+    - git clone --depth 1 --branch main https://github.com/key4hep/k4FWCore
+    - cmake -S k4FWCore -B k4fwcore_build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PWD/install -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_SCAN_FOR_MODULES=NO 2>&1 | tee -a build.log
+    - cmake --build k4fwcore_build 2>&1 | tee -a build.log
+    # Run k4FWCore tests
+    - echo "=== Running k4FWCore tests ==="
+    - cd k4fwcore_build
+    - if ctest -T test -j $(nproc) --test-load $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
+    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
+    - cd ..
+    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
+    - test "$result" = "success"
+  artifacts:
+    paths:
+      - build.log
+      - compile_commands.json
+      - Test.xml
+    reports:
+      junit:
+        - results.xml
+    when: always
+    expire_in: 1 week
+
 .warnings-check: &template_warnings_check
   image: gitlab-registry.cern.ch/linuxsupport/alma9-base:latest
   variables:
@@ -217,6 +263,16 @@ warnings-check:lcg-view:107:x86_64-el9-clang19-opt:
   needs:
     - job: "lcg-view:107:x86_64-el9-clang19-opt"
       artifacts: true
+
+# Key4hep
+lcg-view:devkey-head:x86_64-el9-gcc14-opt:
+  <<: *template_key4hep_nightly_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+# warnings-check:lcg-view:devkey-head:x86_64-el9-gcc14-opt:
+#   <<: *template_warnings_check
+#   needs:
+#     - job: "lcg-view:devkey-head:x86_64-el9-gcc14-opt"
+#       artifacts: true
 
 
 ### Misc checks
