@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -365,18 +365,18 @@ std::vector<std::string> System::getEnv() {
 // -----------------------------------------------------------------------------
 // backtrace utilities
 // -----------------------------------------------------------------------------
-#ifdef __linux
+#if defined( __linux ) || defined( __APPLE__ )
 #  include <execinfo.h>
 #endif
 
 int System::backTrace( [[maybe_unused]] void** addresses, [[maybe_unused]] const int depth ) {
 
-#ifdef __linux
+#if defined( __linux ) || defined( __APPLE__ )
 
   int count = backtrace( addresses, depth );
   return count > 0 ? count : 0;
 
-#else // osx parts not implemented
+#else
   return 0;
 #endif
 }
@@ -408,7 +408,7 @@ bool System::backTrace( std::string& btrace, const int depth, const int offset )
 bool System::getStackLevel( [[maybe_unused]] void* addresses, [[maybe_unused]] void*& addr,
                             [[maybe_unused]] std::string& fnc, [[maybe_unused]] std::string& lib ) {
 
-#ifdef __linux
+#if defined( __linux ) || defined( __APPLE__ )
 
   Dl_info info;
 
@@ -431,7 +431,7 @@ bool System::getStackLevel( [[maybe_unused]] void* addresses, [[maybe_unused]] v
     return false;
   }
 
-#else // not implemented for osx
+#else
   return false;
 #endif
 }

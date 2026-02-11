@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,6 +11,7 @@
 import os
 import re
 import select
+import shutil
 import signal
 import subprocess
 import threading
@@ -131,17 +132,41 @@ class SubprocessBaseTest:
 
     @staticmethod
     def _collect_stack_trace(proc: subprocess.Popen) -> str:
-        cmd = [
-            "gdb",
-            "--pid",
-            str(proc.pid),
-            "--batch",
-            "--eval-command=thread apply all backtrace",
-        ]
-        gdb = subprocess.Popen(
+        """
+        Collect stack trace from a running process using the available debugger.
+        Uses lldb on macOS and gdb on Linux. Returns a message if no debugger
+        is available.
+        """
+        import sys
+
+        if sys.platform == "darwin":
+            # Use lldb on macOS
+            if not shutil.which("lldb"):
+                return "(lldb not available for stack trace collection)"
+            cmd = [
+                "lldb",
+                "-p",
+                str(proc.pid),
+                "-o",
+                "bt all",
+                "-o",
+                "quit",
+            ]
+        else:
+            # Use gdb on Linux
+            if not shutil.which("gdb"):
+                return "(gdb not available for stack trace collection)"
+            cmd = [
+                "gdb",
+                "--pid",
+                str(proc.pid),
+                "--batch",
+                "--eval-command=thread apply all backtrace",
+            ]
+        debugger = subprocess.Popen(
             cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
-        return gdb.communicate()[0].decode("utf-8", errors="backslashreplace")
+        return debugger.communicate()[0].decode("utf-8", errors="backslashreplace")
 
     @staticmethod
     def _terminate_process(proc: subprocess.Popen) -> None:

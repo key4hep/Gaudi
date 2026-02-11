@@ -56,6 +56,11 @@ namespace System {
 #include <unistd.h>
 #ifndef __APPLE__
 #  include <sys/procfs.h>
+#else
+#  include <mach/mach.h>
+#  include <mach/task_info.h>
+#  include <sys/resource.h>
+#  include <sys/time.h>
 #endif
 #include <cstdio>
 #include <sys/resource.h>
@@ -450,7 +455,48 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* in
     info->PagefileUsage              = prc.vsize - resident * pg_size;
     info->PeakPagefileUsage          = prc.vsize - resident * pg_size;
 #elif defined( __APPLE__ )
-    if ( pid ) {}
+    // Use Mach API to get memory information on macOS
+    // Note: We can only query our own task reliably without special entitlements
+    mach_task_basic_info_data_t taskInfo;
+    mach_msg_type_number_t      infoCount = MACH_TASK_BASIC_INFO_COUNT;
+
+    kern_return_t kr = task_info( mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&taskInfo, &infoCount );
+    if ( kr == KERN_SUCCESS ) {
+      info->VirtualSize                = taskInfo.virtual_size;
+      info->PeakVirtualSize            = taskInfo.virtual_size; // macOS doesn't track peak, use current
+      info->WorkingSetSize             = taskInfo.resident_size;
+      info->PeakWorkingSetSize         = taskInfo.resident_size_max;
+      info->QuotaPagedPoolUsage        = 0;
+      info->QuotaPeakPagedPoolUsage    = 0;
+      info->QuotaNonPagedPoolUsage     = 0;
+      info->QuotaPeakNonPagedPoolUsage = 0;
+      info->PagefileUsage              = taskInfo.virtual_size - taskInfo.resident_size;
+      info->PeakPagefileUsage          = taskInfo.virtual_size - taskInfo.resident_size;
+
+      // Get page fault count from getrusage (not available in task_info)
+      struct rusage usage;
+      if ( getrusage( RUSAGE_SELF, &usage ) == 0 ) {
+        info->PageFaultCount = static_cast<unsigned long>( usage.ru_majflt + usage.ru_minflt );
+      } else {
+        info->PageFaultCount = 0;
+      }
+      status = 1;
+    } else {
+      // Zero out the struct on failure so we don't return garbage
+      info->VirtualSize                = 0;
+      info->PeakVirtualSize            = 0;
+      info->WorkingSetSize             = 0;
+      info->PeakWorkingSetSize         = 0;
+      info->PageFaultCount             = 0;
+      info->QuotaPagedPoolUsage        = 0;
+      info->QuotaPeakPagedPoolUsage    = 0;
+      info->QuotaNonPagedPoolUsage     = 0;
+      info->QuotaPeakNonPagedPoolUsage = 0;
+      info->PagefileUsage              = 0;
+      info->PeakPagefileUsage          = 0;
+      status                           = 0;
+    }
+    (void)pid; // suppress unused parameter warning
 #else  // All Other
     if ( pid ) {}
 #endif // End ALL OS
@@ -567,9 +613,30 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     status = 1;
 
 #elif defined( __APPLE__ )
-    if ( pid ) {}
-// FIXME (MCl): Make an alternative function get timing on OSX
-// times() seems to cause a segmentation fault
+    // Use getrusage for user and kernel times on macOS
+    // Track process start time using a static variable initialized on first call
+    static long long prc_start = 0;
+    if ( prc_start == 0 ) {
+      struct timeval tv;
+      gettimeofday( &tv, nullptr );
+      // Convert to 100-nanosecond units: 1 sec = 10,000,000 units, 1 usec = 10 units
+      prc_start = static_cast<long long>( tv.tv_sec ) * 10000000LL + static_cast<long long>( tv.tv_usec ) * 10LL;
+    }
+
+    struct rusage usage;
+    if ( getrusage( RUSAGE_SELF, &usage ) == 0 ) {
+      // Convert timeval to 100-nanosecond units
+      info->UserTime = static_cast<long long>( usage.ru_utime.tv_sec ) * 10000000LL +
+                       static_cast<long long>( usage.ru_utime.tv_usec ) * 10LL;
+      info->KernelTime = static_cast<long long>( usage.ru_stime.tv_sec ) * 10000000LL +
+                         static_cast<long long>( usage.ru_stime.tv_usec ) * 10LL;
+      info->CreateTime = prc_start;
+      info->ExitTime   = 0;
+      status           = 1;
+    } else {
+      status = 0;
+    }
+    (void)pid; // suppress unused parameter warning
 #else // no /proc file system: assume sys_start for the first call
     tms              tmsb;
     static clock_t   sys_start = times( 0 );

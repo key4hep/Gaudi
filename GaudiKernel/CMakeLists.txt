@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -242,18 +242,26 @@ gaudi_install(PYTHON)
 # Install other scripts
 gaudi_install(SCRIPTS)
 
-# Check that gdb can be used for stack traces
-find_program(gdb_cmd gdb)
-mark_as_advanced(gdb_cmd)
-if(gdb_cmd)
-  get_filename_component(gdb_dir "${gdb_cmd}" DIRECTORY)
+# Check that a debugger can be used for stack traces
+if(APPLE)
+  find_program(debugger_cmd lldb)
+else()
+  find_program(debugger_cmd gdb)
+endif()
+mark_as_advanced(debugger_cmd)
+if(debugger_cmd)
+  get_filename_component(debugger_dir "${debugger_cmd}" DIRECTORY)
   file(TO_CMAKE_PATH "$ENV{PATH}" envpath)
-  if(NOT gdb_dir IN_LIST envpath)
+  if(NOT debugger_dir IN_LIST envpath)
     set_property(TARGET target_runtime_paths APPEND
-      PROPERTY runtime_path $<SHELL_PATH:${gdb_dir}>)
+      PROPERTY runtime_path $<SHELL_PATH:${debugger_dir}>)
   endif()
 else()
-  message(WARNING "gdb not found, you will not be able to have stack traces for problems")
+  if(APPLE)
+    message(WARNING "lldb not found, you will not be able to have stack traces for problems")
+  else()
+    message(WARNING "gdb not found, you will not be able to have stack traces for problems")
+  endif()
 endif()
 
 if(BUILD_TESTING)
