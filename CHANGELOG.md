@@ -6,6 +6,43 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Frank
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v40r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r3) - 2026-02-12
+Only a few bugfixes and some minor improvements for this release.
+
+A special thanks to all the people that contributed to this release:
+@alperezc,
+@bstanisl,
+@cburr,
+@fwinkl,
+@jcarcell,
+@rmatev,
+@sponce.
+
+### Changed
+- Improve dumping of job options and clean `ConfigurableAlgorithm` slots (gaudi/Gaudi!1881)
+- MultiStoreSvc and related interfaces/algorithms dropped (gaudi/Gaudi!1880)
+
+### Added
+- Add `assert_objects_equal` for comparing JSON-like objects (gaudi/Gaudi!1882)
+- Added a `SimpleWriter` class in `NTuple/Writer.h` (gaudi/Gaudi!1860)
+- Add a workflow for building k4FWCore in CI (gaudi/Gaudi!1889)
+
+### Fixed
+- macOS libc++ compatibility (gaudi/Gaudi!1884)
+- use type traits instead of function pointers in `Extremum` (gaudi/Gaudi!1875)
+- Do not create output file if not connected (gaudi/Gaudi#388, gaudi/Gaudi!1892)
+- Disable GCC colored diagnostics in `test_CounterHistoFail` (gaudi/Gaudi!1874)
+- macOS core system support (gaudi/Gaudi!1883)
+- Do not install `__pycache__` folders (gaudi/Gaudi!1891)
+- Remove `-DCMAKE_C_COMPILER_LAUNCHER` from the CI options (gaudi/Gaudi!1890)
+- Make CUDA dependency non-public (gaudi/Gaudi!1879)
+- Disable colored tracebacks in `test_import_py_err` for Python 3.14+ (gaudi/Gaudi!1873)
+- Replace deprecated `sprintf` with `snprintf` (gaudi/Gaudi!1870)
+- Add fmt 11+ compatibility to PropertyFmt.h (gaudi/Gaudi#345, gaudi/Gaudi!1871)
+- use bash instead of sh for generated env scripts (gaudi/Gaudi!1877)
+- `GaudiConfig2`: fix conversion to option value in `DataHandleSemantics` (gaudi/Gaudi#389, gaudi/Gaudi!1869)
+
+
 ## [v40r2](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r2) - 2025-12-18
 This is a minor release with a few fixes and improvements, mostly meant as a checkpoint
 before the end of the year.
