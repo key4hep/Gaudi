@@ -514,6 +514,9 @@ def assert_objects_equal(
         >>> assert_objects_equal({"a": 1.0}, {"a": 1.001}, atol=0.01)  # passes
         >>> assert_objects_equal({"a": 1}, {"a": 2})  # raises AssertionError
     """
+    # pytest will hide this frame from the reported traceback
+    __tracebackhide__ = True
+
     differences: List[str] = []
     _compare(obj1, obj2, [], rtol, atol, max_differences, differences)
     if differences:

@@ -14,7 +14,6 @@ import pytest
 # (see https://docs.pytest.org/en/stable/how-to/writing_plugins.html#assertion-rewriting)
 pytest.register_assert_rewrite("GaudiTesting.GaudiExeTest")
 pytest.register_assert_rewrite("GaudiTesting.SubprocessBaseTest")
-pytest.register_assert_rewrite("GaudiTesting.utils")
 
 # allow from GaudiTesting import GaudiExeTest
 from .GaudiExeTest import NO_ERROR_MESSAGES, GaudiExeTest  # noqa: F401
