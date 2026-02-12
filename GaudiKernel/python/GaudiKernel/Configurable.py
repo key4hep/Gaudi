@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -1132,14 +1132,6 @@ class ConfigurableGeneric(Configurable):
 class ConfigurableAlgorithm(Configurable):
     __slots__ = {
         "_jobOptName": 0,
-        "OutputLevel": 0,
-        "Enable": 1,
-        "ErrorMax": 1,
-        "ErrorCount": 0,
-        "AuditInitialize": 0,
-        "AuditReinitialize": 0,
-        "AuditExecute": 0,
-        "AuditFinalize": 0,
     }
 
     def __init__(self, name=Configurable.DefaultName):

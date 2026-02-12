@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,6 +11,7 @@
 #include <Gaudi/Parsers/Factory.h>
 #include <GaudiKernel/ToStream.h>
 #include <GaudiKernel/VectorsAsProperty.h>
+#include <format>
 
 namespace {
   typedef std::map<std::string, double> MAP;
@@ -89,37 +90,11 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 std::ostream& Gaudi::Utils::toStream( const Gaudi::XYZPoint& obj, std::ostream& s ) {
-  s << "( ";
-  toStream( obj.X(), s );
-  s << " , ";
-  toStream( obj.Y(), s );
-  s << " , ";
-  toStream( obj.Z(), s );
-  s << " )";
-  return s;
+  return s << std::format( "( {} , {} , {} )", obj.X(), obj.Y(), obj.Z() );
 }
 std::ostream& Gaudi::Utils::toStream( const Gaudi::XYZVector& obj, std::ostream& s ) {
-  s << "( ";
-  toStream( obj.X(), s );
-  s << " , ";
-  toStream( obj.Y(), s );
-  s << " , ";
-  toStream( obj.Z(), s );
-  s << " )";
-
-  return s;
+  return s << std::format( "( {} , {} , {} )", obj.X(), obj.Y(), obj.Z() );
 }
 std::ostream& Gaudi::Utils::toStream( const Gaudi::LorentzVector& obj, std::ostream& s ) {
-
-  s << "( ";
-  toStream( obj.Px(), s, 12 );
-  s << " , ";
-  toStream( obj.Py(), s, 12 );
-  s << " , ";
-  toStream( obj.Pz(), s, 13 );
-  s << " , ";
-  toStream( obj.E(), s, 14 );
-  s << " )";
-
-  return s;
+  return s << std::format( "( {} , {} , {} , {} )", obj.Px(), obj.Py(), obj.Pz(), obj.E() );
 }

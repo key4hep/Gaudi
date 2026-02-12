@@ -24,8 +24,8 @@ stdout: |-
   PropertyAlg           INFO StringSet = []
   PropertyAlg           INFO FloatUnorderedSet = []
   PropertyAlg           INFO PInt    =  'PInt':100
-  PropertyAlg           INFO Read handler called for property:  'PDouble':100.00000
-  PropertyAlg           INFO PDouble =  'PDouble':100.00000
+  PropertyAlg           INFO Read handler called for property:  'PDouble':100
+  PropertyAlg           INFO PDouble =  'PDouble':100
   PropertyAlg           INFO PString =  'PString':'hundred'
   PropertyAlg           INFO PString2 = hundred thousand
   PropertyAlg           INFO PBool   =  'PBool':False
@@ -34,8 +34,8 @@ stdout: |-
   PropertyAlg           INFO PStringArray =  'PStringArray':[  ]
   PropertyAlg           INFO PBoolArray   =  'PBoolArray':[  ]
   EventLoopMgr         DEBUG Creating Top Algorithm PropertyProxy with name PropertyProxy
-  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000.
-  PropertyAlg           INFO Update handler called for property:  'PDouble':10100000.
+  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000
+  PropertyAlg           INFO Update handler called for property:  'PDouble':10100000
   PropertyAlg           INFO After Initialization having read the JobOptions file...
   PropertyAlg           INFO Int    = 101
   PropertyAlg           INFO Int64  = 4294967296
@@ -57,13 +57,13 @@ stdout: |-
   PropertyAlg           INFO FloatUnorderedSet = [1.1, 2.2]
   PropertyAlg           INFO StringMap =  'StringMap':{ 'one' : 'une' }
   PropertyAlg           INFO PInt    =  'PInt':101
-  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000.
-  PropertyAlg           INFO PDouble =  'PDouble':10100000.
+  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000
+  PropertyAlg           INFO PDouble =  'PDouble':10100000
   PropertyAlg           INFO PString =  'PString':'hundred \'one\''
   PropertyAlg           INFO PString2 = hundred 'one' and a half
   PropertyAlg           INFO PBool   =  'PBool':True
   PropertyAlg           INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
-  PropertyAlg           INFO PDoubleArray =  'PDoubleArray':[ 1.1000000 , 2.0000000 , 3.3000000 ]
+  PropertyAlg           INFO PDoubleArray =  'PDoubleArray':[ 1.1 , 2 , 3.3 ]
   PropertyAlg           INFO PStringArray =  'PStringArray':[ 'one' , 'two' , 'four' ]
   PropertyAlg           INFO PBoolArray   =  'PBoolArray':[ True , False , True , False ]
   PropertyAlg           INFO DoubleArrayWithUnits[0] = 1.1e+06
@@ -77,11 +77,11 @@ stdout: |-
   PropertyAlg           INFO PInt=  'PInt':155 [should be 155]
   PropertyAlg           INFO ===============Checking Property CallBaks ===============
   PropertyAlg           INFO Accessing PDouble ...
-  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000.
+  PropertyAlg           INFO Read handler called for property:  'PDouble':10100000
   PropertyAlg           INFO Value obtained is: 1.01e+07
   PropertyAlg           INFO Updating PDouble ...
-  PropertyAlg           INFO Read handler called for property:  'PDouble':999.00000
-  PropertyAlg           INFO Update handler called for property:  'PDouble':999.00000
+  PropertyAlg           INFO Read handler called for property:  'PDouble':999
+  PropertyAlg           INFO Update handler called for property:  'PDouble':999
   PropertyAlg           INFO ==========Checking Accesing Properties by string=========
   PropertyAlg           INFO  Got property ApplicationMgr.ExtSvc = [  ];
   DetectorDataSvc       INFO Detector description not requested to be loaded
@@ -100,7 +100,7 @@ stdout: |-
   MsgTest              FATAL This should be printed if threshold is FATAL
   MsgTest            SUCCESS This should be printed ALWAYS
   PropertyAlg           INFO =================================================
-  PropertyAlg           INFO Read handler called for property:  'PDouble':999.00000
+  PropertyAlg           INFO Read handler called for property:  'PDouble':999
   PropertyAlg           INFO Dump of the property catalogue:
   AppMgrRunable.AuditFinalize: False
   AppMgrRunable.AuditInitialize: False
@@ -303,18 +303,18 @@ stdout: |-
   PropertyAlg.Bool: False
   PropertyAlg.BoolArray: [ False , True , False ]
   PropertyAlg.Cardinality: 1
-  PropertyAlg.Double: 1.0110000e+12
-  PropertyAlg.DoubleArray: [ -11.000000 , 2.0000000 , 3.3000000 , 0.00040000000 ]
-  PropertyAlg.DoubleArrayWithUnits: [ 1100000.0 , -20.000000 , 33.000000 , 0.40000000 ]
-  PropertyAlg.DoubleArrayWithoutUnits: [ 1100000.0 , -20.000000 , 33.000000 , 0.40000000 ]
-  PropertyAlg.DoublePairArray: [ ( 1.1000000 , 2.1000000 ) , ( 2.3000000 , 4.5000000 ) , ( 5.6000000 , 6.7000000 ) ]
+  PropertyAlg.Double: 1.011e+12
+  PropertyAlg.DoubleArray: [ -11 , 2 , 3.3 , 4e-04 ]
+  PropertyAlg.DoubleArrayWithUnits: [ 1100000 , -20 , 33 , 0.4 ]
+  PropertyAlg.DoubleArrayWithoutUnits: [ 1100000 , -20 , 33 , 0.4 ]
+  PropertyAlg.DoublePairArray: [ ( 1.1 , 2.1 ) , ( 2.3 , 4.5 ) , ( 5.6 , 6.7 ) ]
   PropertyAlg.EmptyArray: [  ]
   PropertyAlg.Enable: True
   PropertyAlg.ErrorMax: 1
   PropertyAlg.ExtraInputs: set()
   PropertyAlg.ExtraOutputs: set()
   PropertyAlg.FilterCircularDependencies: True
-  PropertyAlg.FloatUnorderedSet: { 1.10000 , 2.20000 }
+  PropertyAlg.FloatUnorderedSet: { 1.1 , 2.2 }
   PropertyAlg.Int: 101
   PropertyAlg.Int64: 4294967296
   PropertyAlg.Int64Array: [ 4294967296 ]
@@ -326,8 +326,8 @@ stdout: |-
   PropertyAlg.OutputLevel: 3
   PropertyAlg.PBool: False
   PropertyAlg.PBoolArray: [ True , False , True , False ]
-  PropertyAlg.PDouble: 999.00000
-  PropertyAlg.PDoubleArray: [ 1.1000000 , 2.0000000 , 3.3000000 ]
+  PropertyAlg.PDouble: 999
+  PropertyAlg.PDoubleArray: [ 1.1 , 2 , 3.3 ]
   PropertyAlg.PInt: 155
   PropertyAlg.PIntArray: [ 1 , 2 , 3 , 5 ]
   PropertyAlg.PString: 'hundred \'one\''

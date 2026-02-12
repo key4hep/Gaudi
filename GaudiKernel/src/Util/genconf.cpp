@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -826,7 +826,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
               ti == typeIndex<unsigned int>() || ti == typeIndex<long>() || ti == typeIndex<unsigned long>() ||
               ti == typeIndex<long long>() || ti == typeIndex<unsigned long long>() ) {
     pvalue = cvalue;
-  } else if ( ti == typeIndex<float>() || ti == typeIndex<double>() ) {
+  } else if ( ti == typeIndex<float>() || ti == typeIndex<double>() || ti == typeIndex<long double>() ) {
     // forces python to handle this as a float: put a dot in there...
     pvalue = boost::to_lower_copy( cvalue );
     if ( std::string::npos != pvalue.find( "nan" ) ) {
