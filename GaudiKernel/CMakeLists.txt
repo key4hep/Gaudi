@@ -129,7 +129,6 @@ gaudi_add_library(GaudiKernel
           src/Lib/IDataProviderSvc.cpp
           src/Lib/IInterface.cpp
           src/Lib/Incident.cpp
-          src/Lib/IPartitionControl.cpp
           src/Lib/ISvcLocator.cpp
           src/Lib/ITimelineSvc.cpp
           src/Lib/JobHistory.cpp
