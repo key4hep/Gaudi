@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -380,21 +380,39 @@ namespace Gaudi::Accumulators {
     }
   };
 
+  namespace detail {
+    /**
+     * Type trait providing the lowest possible value (to be used as initial value for Maximum)
+     */
+    template <typename Arithmetic>
+    struct Min {
+      static constexpr Arithmetic value() { return std::numeric_limits<Arithmetic>::lowest(); }
+    };
+
+    /**
+     * Type trait providing the highest possible value (to be used as initial value for Minimum)
+     */
+    template <typename Arithmetic>
+    struct Max {
+      static constexpr Arithmetic value() { return std::numeric_limits<Arithmetic>::max(); }
+    };
+  } // namespace detail
+
   /**
    * An Extremum ValueHandler, to be reused for Minimum and Maximum
    * operator(a, b) means if (Compare(b,a)) a = b In case of full atomicity, compare_exchange_weak is used.
    */
-  template <typename Arithmetic, atomicity Atomicity, typename Compare, Arithmetic ( *Initial )()>
+  template <typename Arithmetic, atomicity Atomicity, typename Compare, typename Initial>
   struct Extremum;
 
   /**
    * Extremum specialization in the case of atomicity none
    */
-  template <typename Arithmetic, typename Compare, Arithmetic ( *Initial )()>
+  template <typename Arithmetic, typename Compare, typename Initial>
   struct Extremum<Arithmetic, atomicity::none, Compare, Initial> : BaseValueHandler<Arithmetic, atomicity::none> {
     using typename BaseValueHandler<Arithmetic, atomicity::none>::OutputType;
     using typename BaseValueHandler<Arithmetic, atomicity::none>::InternalType;
-    static constexpr OutputType DefaultValue() { return Initial(); }
+    static constexpr OutputType DefaultValue() { return Initial::value(); }
     static void                 merge( InternalType& a, Arithmetic b ) noexcept {
       if ( Compare{}( b, a ) ) a = b;
     }
@@ -403,11 +421,11 @@ namespace Gaudi::Accumulators {
   /**
    * Extremum specialization in the case of atomicity full
    */
-  template <typename Arithmetic, typename Compare, Arithmetic ( *Initial )()>
+  template <typename Arithmetic, typename Compare, typename Initial>
   struct Extremum<Arithmetic, atomicity::full, Compare, Initial> : BaseValueHandler<Arithmetic, atomicity::full> {
     using typename BaseValueHandler<Arithmetic, atomicity::full>::OutputType;
     using typename BaseValueHandler<Arithmetic, atomicity::full>::InternalType;
-    static constexpr OutputType DefaultValue() { return Initial(); }
+    static constexpr OutputType DefaultValue() { return Initial::value(); }
     static void                 merge( InternalType& a, Arithmetic b ) noexcept {
       Arithmetic prev_value = BaseValueHandler<Arithmetic, atomicity::full>::getValue( a );
       while ( Compare{}( b, prev_value ) && !a.compare_exchange_weak( prev_value, b ) )
@@ -420,14 +438,14 @@ namespace Gaudi::Accumulators {
    * operator(a, b) means a = min(a, b) In case of full atomicity, compare_exchange_weak is used.
    */
   template <typename Arithmetic, atomicity Atomicity = atomicity::full>
-  using Minimum = Extremum<Arithmetic, Atomicity, std::less<Arithmetic>, std::numeric_limits<Arithmetic>::max>;
+  using Minimum = Extremum<Arithmetic, Atomicity, std::less<Arithmetic>, detail::Max<Arithmetic>>;
 
   /**
    * An Maximum ValueHandler
    * operator(a, b) means a = max(a, b) In case of full atomicity, compare_exchange_weak is used.
    */
   template <typename Arithmetic, atomicity Atomicity = atomicity::full>
-  using Maximum = Extremum<Arithmetic, Atomicity, std::greater<Arithmetic>, std::numeric_limits<Arithmetic>::lowest>;
+  using Maximum = Extremum<Arithmetic, Atomicity, std::greater<Arithmetic>, detail::Min<Arithmetic>>;
 
   /**
    * constant used to disambiguate construction of an empty Accumulator
