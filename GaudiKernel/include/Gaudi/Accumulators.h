@@ -380,21 +380,23 @@ namespace Gaudi::Accumulators {
     }
   };
 
-  /**
-   * Type trait providing the initial value for Maximum (lowest possible value)
-   */
-  template <typename Arithmetic>
-  struct MaxInitial {
-    static constexpr Arithmetic value() { return std::numeric_limits<Arithmetic>::lowest(); }
-  };
+  namespace detail {
+    /**
+     * Type trait providing the lowest possible value (to be used as initial value for Maximum)
+     */
+    template <typename Arithmetic>
+    struct Min {
+      static constexpr Arithmetic value() { return std::numeric_limits<Arithmetic>::lowest(); }
+    };
 
-  /**
-   * Type trait providing the initial value for Minimum (highest possible value)
-   */
-  template <typename Arithmetic>
-  struct MinInitial {
-    static constexpr Arithmetic value() { return std::numeric_limits<Arithmetic>::max(); }
-  };
+    /**
+     * Type trait providing the highest possible value (to be used as initial value for Minimum)
+     */
+    template <typename Arithmetic>
+    struct Max {
+      static constexpr Arithmetic value() { return std::numeric_limits<Arithmetic>::max(); }
+    };
+  } // namespace detail
 
   /**
    * An Extremum ValueHandler, to be reused for Minimum and Maximum
@@ -436,14 +438,14 @@ namespace Gaudi::Accumulators {
    * operator(a, b) means a = min(a, b) In case of full atomicity, compare_exchange_weak is used.
    */
   template <typename Arithmetic, atomicity Atomicity = atomicity::full>
-  using Minimum = Extremum<Arithmetic, Atomicity, std::less<Arithmetic>, MinInitial<Arithmetic>>;
+  using Minimum = Extremum<Arithmetic, Atomicity, std::less<Arithmetic>, detail::Max<Arithmetic>>;
 
   /**
    * An Maximum ValueHandler
    * operator(a, b) means a = max(a, b) In case of full atomicity, compare_exchange_weak is used.
    */
   template <typename Arithmetic, atomicity Atomicity = atomicity::full>
-  using Maximum = Extremum<Arithmetic, Atomicity, std::greater<Arithmetic>, MaxInitial<Arithmetic>>;
+  using Maximum = Extremum<Arithmetic, Atomicity, std::greater<Arithmetic>, detail::Min<Arithmetic>>;
 
   /**
    * constant used to disambiguate construction of an empty Accumulator
