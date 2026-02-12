@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,7 +15,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include <GaudiKernel/System.h>
+#include <map>
 #include <string>
+#include <vector>
 
 /// Primitive test class used in the tests
 class TestClass {};
@@ -48,4 +50,15 @@ BOOST_AUTO_TEST_CASE( template_types ) {
 
   CHECK_TYPE( TestContainer<float const&> );
   CHECK_TYPE( TestContainer<std::string const&> );
+}
+
+/// Test nested STL containers (cross-platform consistency)
+BOOST_AUTO_TEST_CASE( nested_stl_types ) {
+  // These test the normalization of std::__cxx11:: (libstdc++) and std::__1:: (libc++)
+  // as well as >> to > > spacing, and ", " to "," normalization
+  BOOST_CHECK( System::typeinfoName( typeid( std::vector<std::string> ) ) ==
+               "std::vector<std::string,std::allocator<std::string> >" );
+  BOOST_CHECK( System::typeinfoName( typeid( std::vector<int> ) ) == "std::vector<int,std::allocator<int> >" );
+  BOOST_CHECK( System::typeinfoName( typeid( std::map<std::string, int> ) ) ==
+               "std::map<std::string,int,std::less<std::string>,std::allocator<std::pair<std::string const,int> > >" );
 }

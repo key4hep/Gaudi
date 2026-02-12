@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -89,10 +89,22 @@ namespace Gaudi {
           auto realname = std::unique_ptr<char, decltype( free )*>(
               abi::__cxa_demangle( id.c_str(), nullptr, nullptr, &status ), free );
           if ( !realname ) return id;
-          return std::regex_replace(
-              realname.get(),
+          std::string result = realname.get();
+          // Normalize libstdc++ (Linux) std::string representation
+          result = std::regex_replace(
+              result,
               std::regex{ "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?" },
               "std::string" );
+          // Normalize libc++ (macOS) inline namespace - remove std::__1:: prefix
+          result = std::regex_replace( result, std::regex{ "std::__1::" }, "std::" );
+          // Normalize libc++ basic_string (after removing __1::)
+          result = std::regex_replace(
+              result, std::regex{ "std::basic_string<char, std::char_traits<char>, std::allocator<char>>( (?=>))?" },
+              "std::string" );
+          // Normalize closing angle brackets: >> to > > (match libstdc++ C++03 style)
+          result = std::regex_replace( result, std::regex{ ">>" }, "> >" );
+          result = std::regex_replace( result, std::regex{ ">>" }, "> >" ); // twice for >>>
+          return result;
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 

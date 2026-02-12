@@ -114,6 +114,17 @@ namespace Gaudi {
     inline std::ostream& toStream( const std::vector<TYPE, ALLOCATOR>& obj, std::ostream& s ) {
       return toStream( obj.begin(), obj.end(), s, "[ ", " ]", " , " );
     }
+    /** Specialization for std::vector<bool> to handle proxy reference types correctly.
+     *  libc++ uses a proxy type for std::vector<bool>::const_reference which doesn't
+     *  match the bool overload of toStream, causing booleans to print as 0/1.
+     */
+    inline std::ostream& toStream( const std::vector<bool>& obj, std::ostream& s ) {
+      using GaudiUtils::details::ostream_joiner;
+      return ostream_joiner(
+                 s << "[ ", obj, " , ",
+                 []( std::ostream& os, bool b ) -> std::ostream& { return os << ( b ? "True" : "False" ); } )
+             << " ]";
+    }
     /** the partial template specialization of <c>std::list<TYPE,ALLOCATOR></c>
      *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com

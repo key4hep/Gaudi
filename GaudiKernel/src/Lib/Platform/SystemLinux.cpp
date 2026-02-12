@@ -9,13 +9,11 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include "SystemLinux.h"
+#include "TypeNormalization.h"
 #include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cxxabi.h>
-#include <memory>
-#include <regex>
 #include <sys/types.h>
 #include <sys/utsname.h>
 #include <unistd.h>
@@ -47,25 +45,7 @@ namespace System {
       return result;
     }
 
-    std::string typeinfoName( const char* class_name ) {
-
-      // Demangle the name:
-      int  status;
-      auto realname = std::unique_ptr<char, decltype( free )*>(
-          abi::__cxa_demangle( class_name, nullptr, nullptr, &status ), std::free );
-      if ( !realname ) return class_name;
-
-      // Substitute the full type of std::string with "std::string"
-      static const std::regex cxx11_string{
-          "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?" };
-      std::string result = std::regex_replace( realname.get(), cxx11_string, "std::string" );
-
-      // Substitute ', ' with ','
-      static const std::regex comma_space{ ", " };
-      result = std::regex_replace( result, comma_space, "," );
-
-      return result;
-    }
+    std::string typeinfoName( const char* class_name ) { return Detail::normalizeTypeName( class_name, true ); }
 
     std::string hostName() {
 

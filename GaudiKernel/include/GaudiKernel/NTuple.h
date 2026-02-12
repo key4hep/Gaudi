@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -425,9 +425,9 @@ namespace NTuple {
     StatusCode i_addItem( const std::string& name, long, const std::string&, TYPE low, TYPE high,
                           _Item<TYPE>*& result ) {
       if ( !i_find( name ) ) {
-        TYPE nil;
-        nil = 0;
-        return add( result = _Item<TYPE>::create( this, name, typeid( TYPE ), low, high, nil ) );
+        TYPE zero;
+        zero = 0;
+        return add( result = _Item<TYPE>::create( this, name, typeid( TYPE ), low, high, zero ) );
       }
       return StatusCode::FAILURE;
     }
