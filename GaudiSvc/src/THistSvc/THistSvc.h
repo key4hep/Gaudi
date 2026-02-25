@@ -233,15 +233,18 @@ private:
     std::string                id{};
     TObject*                   obj{ nullptr };
     TFile*                     file{ nullptr };
-    std::shared_ptr<histMut_t> mutex;
+    std::unique_ptr<histMut_t> mutex;
     Mode                       mode{ INVALID };
     ObjectType                 type{ ObjectType::UNKNOWN };
     bool                       temp{ true };
     bool                       shared{ false };
 
     THistID()                                = default;
-    THistID( const THistID& rhs )            = default;
-    THistID& operator=( const THistID& rhs ) = default;
+    ~THistID()                               = default;
+    THistID( const THistID& rhs )            = delete;
+    THistID& operator=( const THistID& rhs ) = delete;
+    THistID( THistID&& rhs )                 = default;
+    THistID& operator=( THistID&& rhs )      = default;
     THistID( std::string& i, bool& t, TObject* o, TFile* f ) : id( i ), obj( o ), file( f ), temp( t ) {}
     THistID( std::string& i, bool& t, TObject* o, TFile* f, Mode m )
         : id( i ), obj( o ), file( f ), mode( m ), temp( t ) {}
@@ -530,16 +533,17 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   }
 
   // create a mutex for all shared histograms
-  if ( shared ) { hid.mutex = std::make_shared<histMut_t>(); }
+  if ( shared ) { hid.mutex = std::make_unique<histMut_t>(); }
 
   if ( exists ) {
     vhid_t* vi = uitr->second;
-    vi->push_back( hid );
+    vi->push_back( std::move( hid ) );
     phid = &( vi->back() );
 
     m_tobjs.emplace( to, std::pair<vhid_t*, size_t>( vi, vi->size() - 1 ) );
   } else {
-    vhid_t* vi = new vhid_t{ hid };
+    vhid_t* vi = new vhid_t;
+    vi->push_back( std::move( hid ) );
     m_hlist.emplace( m_hlist.end(), vi );
 
     phid = &( vi->back() );
@@ -549,7 +553,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     m_tobjs.emplace( to, std::pair<vhid_t*, size_t>( vi, 0 ) );
   }
 
-  if ( msgLevel( MSG::DEBUG ) ) { debug() << "regHist_i  THistID: " << hid << endmsg; }
+  if ( msgLevel( MSG::DEBUG ) ) { debug() << "regHist_i  THistID: " << *phid << endmsg; }
 
   return StatusCode::SUCCESS;
 }

@@ -578,8 +578,8 @@ StatusCode THistSvc::deReg( const std::string& id ) {
 StatusCode THistSvc::deReg( TObject* obj ) {
   objMap_t::iterator obj_itr = m_tobjs.find( obj );
   if ( obj_itr != m_tobjs.end() ) {
-    vhid_t* vhid = obj_itr->second.first;
-    THistID hid  = obj_itr->second.first->at( obj_itr->second.second );
+    vhid_t*        vhid = obj_itr->second.first;
+    const THistID& hid  = obj_itr->second.first->at( obj_itr->second.second );
 
     auto uid_itr = m_uids.find( hid.id );
     if ( uid_itr == m_uids.end() ) {
