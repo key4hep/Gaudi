@@ -1,5 +1,5 @@
 <!--
-    (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations
+    (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations
 
     This software is distributed under the terms of the Apache version 2 licence,
     copied verbatim in the file "LICENSE".
@@ -19,7 +19,6 @@
   <class name    = "std::ostream"/>
   <class name    = "std::basic_stringbuf<char,std::char_traits<char>,std::allocator<char> >" rootmap="false"/>
   <class name    = "std::map<std::basic_string<char>,std::basic_string<char> >"  rootmap="false"/>
-  <class pattern = "std::_Bit_reference*"/>
 
   <class name    = "std::list<IAlgorithm*>"/>
   <class name    = "std::list<IService*>"/>
