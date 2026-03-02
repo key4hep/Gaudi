@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -269,6 +269,7 @@ StatusCode THistWrite::finalize()
   TH1* h7 = nullptr;
   if ( m_ths->getHist( "TempHist7", h7 ).isFailure() ) { error() << "Couldn't retrieve TempHist7" << endmsg; }
   if ( m_ths->deReg( h7 ).isFailure() ) { error() << "Failed to deregister histogram TempHist7" << endmsg; }
+  delete h7;
 
   return StatusCode::SUCCESS;
 }

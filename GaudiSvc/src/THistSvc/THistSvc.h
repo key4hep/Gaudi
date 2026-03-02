@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,6 +28,7 @@
 #include <TObject.h>
 #include <TTree.h>
 #include <map>
+#include <memory>
 #include <string>
 
 class THistSvc : public extends<Service, ITHistSvc, IIncidentListener, IIoComponent> {
@@ -229,18 +230,21 @@ private:
 
   /// Helper struct that bundles the histogram ID with a mutex, TFile and TObject*
   struct THistID {
-    std::string id{};
-    TObject*    obj{ nullptr };
-    TFile*      file{ nullptr };
-    histMut_t*  mutex{ nullptr };
-    Mode        mode{ INVALID };
-    ObjectType  type{ ObjectType::UNKNOWN };
-    bool        temp{ true };
-    bool        shared{ false };
+    std::string                id{};
+    TObject*                   obj{ nullptr };
+    TFile*                     file{ nullptr };
+    std::unique_ptr<histMut_t> mutex;
+    Mode                       mode{ INVALID };
+    ObjectType                 type{ ObjectType::UNKNOWN };
+    bool                       temp{ true };
+    bool                       shared{ false };
 
     THistID()                                = default;
-    THistID( const THistID& rhs )            = default;
-    THistID& operator=( const THistID& rhs ) = default;
+    ~THistID()                               = default;
+    THistID( const THistID& rhs )            = delete;
+    THistID& operator=( const THistID& rhs ) = delete;
+    THistID( THistID&& rhs )                 = default;
+    THistID& operator=( THistID&& rhs )      = default;
     THistID( std::string& i, bool& t, TObject* o, TFile* f ) : id( i ), obj( o ), file( f ), temp( t ) {}
     THistID( std::string& i, bool& t, TObject* o, TFile* f, Mode m )
         : id( i ), obj( o ), file( f ), mode( m ), temp( t ) {}
@@ -248,8 +252,9 @@ private:
     bool operator<( THistID const& rhs ) const { return ( obj < rhs.obj ); }
 
     friend std::ostream& operator<<( std::ostream& ost, const THistID& hid ) {
-      ost << "id: " << hid.id << " t: " << hid.temp << " s: " << hid.shared << " M: " << hid.mode << " m: " << hid.mutex
-          << " o: " << hid.obj << " T: " << static_cast<int>( hid.type ) << " " << hid.obj->IsA()->GetName();
+      ost << "id: " << hid.id << " t: " << hid.temp << " s: " << hid.shared << " M: " << hid.mode
+          << " m: " << hid.mutex.get() << " o: " << hid.obj << " T: " << static_cast<int>( hid.type ) << " "
+          << hid.obj->IsA()->GetName();
       return ost;
     }
   };
@@ -528,16 +533,17 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   }
 
   // create a mutex for all shared histograms
-  if ( shared ) { hid.mutex = new histMut_t; }
+  if ( shared ) { hid.mutex = std::make_unique<histMut_t>(); }
 
   if ( exists ) {
     vhid_t* vi = uitr->second;
-    vi->push_back( hid );
+    vi->push_back( std::move( hid ) );
     phid = &( vi->back() );
 
     m_tobjs.emplace( to, std::pair<vhid_t*, size_t>( vi, vi->size() - 1 ) );
   } else {
-    vhid_t* vi = new vhid_t{ hid };
+    vhid_t* vi = new vhid_t;
+    vi->push_back( std::move( hid ) );
     m_hlist.emplace( m_hlist.end(), vi );
 
     phid = &( vi->back() );
@@ -547,7 +553,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     m_tobjs.emplace( to, std::pair<vhid_t*, size_t>( vi, 0 ) );
   }
 
-  if ( msgLevel( MSG::DEBUG ) ) { debug() << "regHist_i  THistID: " << hid << endmsg; }
+  if ( msgLevel( MSG::DEBUG ) ) { debug() << "regHist_i  THistID: " << *phid << endmsg; }
 
   return StatusCode::SUCCESS;
 }
@@ -656,7 +662,7 @@ LockedHandle<T> THistSvc::regShared_i( const std::string& id, std::unique_ptr<T>
     T*       phist = hist.get();
     THistID* phid  = nullptr;
     if ( regHist_i( std::move( hist ), id, true, phid ).isSuccess() ) {
-      lh.set( phist, phid->mutex );
+      lh.set( phist, phid->mutex.get() );
 
     } else {
       error() << "regSharedHist: unable to register shared hist with id \"" << id << "\"" << endmsg;
@@ -674,7 +680,7 @@ LockedHandle<T> THistSvc::regShared_i( const std::string& id, std::unique_ptr<T>
         error() << "regSharedHist: unable to dcast retrieved shared hist \"" << id << "\" of type "
                 << hid->obj->IsA()->GetName() << " to requested type " << System::typeinfoName( typeid( T ) ) << endmsg;
       } else {
-        lh.set( phist, hid->mutex );
+        lh.set( phist, hid->mutex.get() );
         delete hist.release();
       }
     }
@@ -697,7 +703,7 @@ LockedHandle<T> THistSvc::getShared_i( const std::string& name ) const {
       return hist;
     }
     T* h1 = dynamic_cast<T*>( hid->obj );
-    hist  = LockedHandle<T>( h1, hid->mutex );
+    hist  = LockedHandle<T>( h1, hid->mutex.get() );
 
     if ( msgLevel( MSG::DEBUG ) ) { debug() << "getSharedHist: found THistID: " << *hid << endmsg; }
   } else if ( i == 0 ) {

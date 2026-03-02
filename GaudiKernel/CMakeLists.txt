@@ -354,6 +354,10 @@ if(BUILD_TESTING)
 
   gaudi_add_executable(test_MonotonicArena SOURCES tests/src/test_MonotonicArena.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
+  # This test defines its own operator new and delete, which conflicts with
+  # the Leak and Address sanitizers
+  target_compile_options(test_MonotonicArena PRIVATE -fno-sanitize=leak,address)
+  target_link_options(test_MonotonicArena PRIVATE -fno-sanitize=leak,address)
 
   gaudi_add_executable(test_GaudiTimer SOURCES tests/src/test_GaudiTimer.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
